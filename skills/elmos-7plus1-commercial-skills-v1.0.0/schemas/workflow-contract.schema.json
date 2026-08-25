@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/workflow-contract/1.0",
+  "title": "Elmos Workflow Contract",
+  "type": "object",
+  "required": [
+    "workflow_version",
+    "workspace",
+    "concurrency",
+    "runtime",
+    "completion"
+  ],
+  "properties": {
+    "workflow_version": {
+      "type": "string"
+    },
+    "tracker": {
+      "type": "object"
+    },
+    "polling": {
+      "type": "object",
+      "properties": {
+        "interval_ms": {
+          "type": "integer",
+          "minimum": 1000
+        }
+      }
+    },
+    "workspace": {
+      "type": "object",
+      "required": [
+        "root",
+        "isolation"
+      ],
+      "properties": {
+        "root": {
+          "type": "string"
+        },
+        "isolation": {
+          "enum": [
+            "worktree",
+            "clone",
+            "container",
+            "remote"
+          ]
+        },
+        "preserve_on_failure": {
+          "type": "boolean"
+        }
+      }
+    },
+    "hooks": {
+      "type": "object"
+    },
+    "concurrency": {
+      "type": "object",
+      "required": [
+        "global"
+      ],
+      "properties": {
+        "global": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "per_tenant": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "per_project": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "per_state": {
+          "type": "object"
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "required": [
+        "adapter",
+        "approval_policy",
+        "sandbox"
+      ],
+      "properties": {
+        "adapter": {
+          "type": "string"
+        },
+        "max_turns": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_wall_clock_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "approval_policy": {
+          "enum": [
+            "ask",
+            "never"
+          ]
+        },
+        "sandbox": {
+          "enum": [
+            "read-only",
+            "workspace-write",
+            "danger-full-access"
+          ]
+        }
+      }
+    },
+    "routing": {
+      "type": "object"
+    },
+    "completion": {
+      "type": "object",
+      "required": [
+        "gate"
+      ]
+    },
+    "recovery": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

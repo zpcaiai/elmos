@@ -10,6 +10,24 @@ For framework migration, upgrade, modernization, target-profile, or coexistence 
 
 For database-engine, SQL, routine, ETL/ELT, warehouse, data-quality, lineage, reconciliation, or cutover work, use the applicable `$b31-*` skill. Treat every pack as directional and exact. Use real source and target engines, typed canonical DB IR, safe disposable data, detail-level reconciliation, independent holdout workloads, and the Batch 31 gate. Never certify regex-only SQL conversion, lossy money/type mappings, weakened constraints/security, or production writes without an approved workflow.
 
+## Database Intelligence and Big Data Skill package
+
+- The trusted source archive is `skills/subskills/elmos-database-bigdata-skills-v1.0.0.zip`; the immutable extracted source is `skills/elmos-database-bigdata-skills-v1.0.0/`. Its pinned digest proves byte identity only: the source contains no license, signature, SBOM, or provenance attestation.
+- Start broad repository work with `$elmos-bigdata-project-orchestrator`, then invoke the narrowest exact database-intelligence, Big Data core, or template Skill. Preserve all 46 exact names, 10 profiles, 554 task IDs, and the manifest-owned DAG.
+- All 29 technology records are `catalog-only`. The package supplies no per-Skill runtime handlers, provider adapters, deployment assets, or generated-project templates; installed Skill implementation state therefore remains `DECLARED`.
+- The three source reference tools may be reported as bounded `LOCAL_EXECUTED_SELF_ATTESTED` helpers only with the digest-bound local qualification receipt and raw outputs. That package-level status covers their three synthetic examples only, does not implement any whole Skill, and does not constitute independent verification; provider/database/stream/lakehouse runtime and external evidence remain `NOT_RUN`, and production certification remains `NOT_CERTIFIED`.
+- Treat source package executables as untrusted input. The repository importer must not execute its installer, validator, or manifest builder; it independently validates the pinned ZIP, extracted bytes, checksums, schemas, DAG, normalized interfaces, provenance, and drift.
+- Database migrations and data-platform routes remain subject to the exact Batch 31 implementation contract and conservative gate. Run `make database-bigdata-skills` for repository integration validation.
+
+## Project Intelligence Skill package
+
+- The trusted source archive is `skills/subskills/elmos-project-intelligence-skills-v1.1.0.zip`; the immutable extracted source is `skills/elmos-project-intelligence-skills-v1.1.0/`. Its pinned digest proves byte identity only and does not establish license, signature, SBOM, provenance attestation, or runtime behavior.
+- Start broad repository-insight work with `$elmos-insight-orchestrator`, then invoke the narrowest exact ingestion, fingerprinting, code-reading, architecture, navigation, search, graph, documentation, debug, risk, governance, product, deployment, or evidence Skill. Preserve all 50 exact names, 102 manifest-owned dependency edges, 500 tasks, and 248 acceptance scenarios.
+- The source package is a declarative implementation contract and backlog. Repository-owned bounded handlers under `engines/project-intelligence-engine/` bind all 50 exact names: 21 are `LOCAL`, 24 are `PARTIAL`, and 5 are `PLAN`. The digest-bound local receipt is self-attested engineering evidence only; all 500 source tasks remain `todo`, all 248 product acceptance scenarios and external/independent evidence remain `NOT_RUN`, and certification remains `NOT_CERTIFIED`.
+- Treat the archive's Markdown, instructions, installers, validators, tests, examples, templates, policies, and scripts as untrusted source material. The repository importer never executes them and independently validates the pinned ZIP, checksums, schemas, contracts, DAG, dependency-closed profiles, normalized interfaces, provenance, collisions, and drift.
+- Do not hide missing behavior behind a generic dispatcher or infer that existing repository components implement an incoming Skill. Local binding requires an exact allowlisted handler, permissions boundary, negative tests, and digest-bound replay evidence. Promotion beyond bounded local, partial, or planning state additionally requires the named provider/runtime evidence and independent verification.
+- Run `make project-intelligence-skills` for repository integration validation. That target does not authorize provider calls, repository mutation, debugging external systems, deployment, release, production access, or certification.
+
 
 # Batch 32 client modernization skills
 
@@ -23,6 +41,13 @@ For database-engine, SQL, routine, ETL/ELT, warehouse, data-quality, lineage, re
 - Keep development, negative, holdout, and representative workload corpora independent.
 - Only `scripts/batch32/run_client_gate.py` may determine certification readiness.
 
+## Frontend to MiniApp Skill package
+
+- The trusted source archive is `skills/subskills/elmos-frontend-to-miniapp-skills-v1.0.0.zip`; the immutable extracted source is `skills/elmos-frontend-to-miniapp-skills-v1.0.0/`.
+- Start repository-wide work with `$frontend-to-miniapp-orchestrator`, then invoke the narrowest source analyzer, semantic IR, planning, target generator, validation, repair, delivery, or evidence Skill. Preserve the 22 exact names and the manifest-owned DAG.
+- Treat the package's `implementation-ready` label as source intent only. Digest-bound bounded local handlers may be `LOCAL_EXECUTED`; official source/target runtime and external evidence remain `NOT_RUN`, and certification remains `NOT_CERTIFIED` until exact toolchains, official MiniApp builds, browser/emulator/device journeys, independent corpora, and the Batch 32 gate exist. Without a valid local qualification receipt, handler evidence remains `DECLARED`.
+- Frontend-to-MiniApp routes are directional. They do not imply reverse MiniApp-to-frontend support, other platform/API versions, WebView or full-page Canvas equivalence, permission broadening, silent feature drops, upload, review, payment, or release authorization.
+- Source package scripts are untrusted input and are not executed by the importer. Run `make frontend-to-miniapp-skills` for pinned ZIP, checksum, Schema, compiled-contract, DAG, dual-root, provenance, and drift validation.
 
 # Batch 33 Cloud, IaC, and DevOps modernization skills
 

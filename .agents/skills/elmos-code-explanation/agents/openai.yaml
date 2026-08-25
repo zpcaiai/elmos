@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 证据化代码与模块讲解"
+  short_description: "Guide 证据化代码与模块讲解 with evidence controls"
+  default_prompt: "Use $elmos-code-explanation as guidance for 证据化代码与模块讲解 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

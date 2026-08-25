@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/file-tree-manifest.schema.json",
+  "title": "ELMOS File Tree Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "tree_id",
+    "root_digest",
+    "entries",
+    "producer",
+    "validation_level"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "tree_id": {
+      "type": "string"
+    },
+    "root_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "logical_path",
+          "artifact_digest",
+          "mode"
+        ],
+        "properties": {
+          "logical_path": {
+            "type": "string"
+          },
+          "artifact_digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "mode": {
+            "type": "integer"
+          },
+          "ownership": {
+            "enum": [
+              "GENERATED",
+              "GENERATED_PROTECTED",
+              "USER",
+              "SHARED",
+              "EXTERNAL"
+            ]
+          },
+          "source_map_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "producer": {
+      "type": "object"
+    },
+    "validation_level": {
+      "enum": [
+        "UNVERIFIED",
+        "COMPILE_VERIFIED",
+        "TEST_VERIFIED",
+        "BEHAVIOR_VERIFIED",
+        "PRODUCTION_CERTIFIED",
+        "QUARANTINED"
+      ]
+    },
+    "evidence_bundle_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "previous_tree_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

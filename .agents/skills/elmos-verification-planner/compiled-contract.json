@@ -1,0 +1,64 @@
+{
+  "archive_content_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "dependencies": [
+    "elmos-conversion-reliability-verification-harness"
+  ],
+  "external_evidence_status": "NOT_RUN",
+  "implementation_state": "BLUEPRINT_IMPORTED",
+  "installed_name_resolution": {
+    "installed_name": "elmos-verification-planner",
+    "reason": "SOURCE_NAME_PRESERVED",
+    "source_name": "elmos-verification-planner"
+  },
+  "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
+  "kind": "archive-source-skill-wrapper",
+  "name": "elmos-verification-planner",
+  "namespace": "elmos-7plus1-commercial-v1",
+  "repository_handler_state": "LOCAL_IMPLEMENTED_BOUNDED",
+  "runtime_binding": {
+    "action": "plan-verification",
+    "capability_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/capability_registry.json",
+      "sha256": "sha256:a374f9b6d89b9e8c999f54b876f10b202576213a974190457cc8aaf1ad037ac7"
+    },
+    "mode": "local",
+    "module": "elmos_software_factory",
+    "operation": "evidence-gate",
+    "package_id": "P05",
+    "public_method_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/public_method_registry.json",
+      "sha256": "sha256:0171c8c6d4c5ee8b4cb1850ebd916ba485eead5f1984dd718386607be4fe029f"
+    },
+    "required_inputs": [
+      "claims",
+      "changes"
+    ],
+    "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+    "skill_name": "elmos-verification-planner",
+    "skill_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
+      "sha256": "sha256:c54404d806e3ced3f217c16f53bb2f36b5237d4aeb0558b3ea15c9d6dfa1d8f2"
+    },
+    "state": "BOUND_NOT_EXECUTED"
+  },
+  "runtime_evidence_status": "NOT_RUN",
+  "schema_version": "elmos.7plus1.compiled-skill-contract.v1",
+  "side_effects_authorized": false,
+  "source": {
+    "archive": "skills/subskills/archives/05-elmos-conversion-reliability-verification-harness-v1.0.0.zip",
+    "key": "P05:verification-planner",
+    "logical_path": "05-elmos-conversion-reliability-verification-harness/skills/verification-planner/SKILL.md",
+    "materialized_path": "05-elmos-conversion-reliability-verification-harness/skills/verification-planner/SKILL.md.source-data",
+    "name": "elmos-verification-planner",
+    "package_id": "P05",
+    "package_name": "elmos-conversion-reliability-verification-harness",
+    "path": "skills/elmos-7plus1-commercial-skills-v1.0.0/05-elmos-conversion-reliability-verification-harness/skills/verification-planner/SKILL.md.source-data",
+    "role": "child",
+    "sha256": "sha256:df79d52c279101d8510b3209699f10b0ee5b58fe4afb10fe4fabb2a28ccc40f7"
+  },
+  "source_dependencies": [
+    "elmos-conversion-reliability-verification-harness"
+  ],
+  "source_implementation_state": "BLUEPRINT_IMPORTED"
+}

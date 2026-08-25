@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Data Architecture Adr"
+  short_description: "Run this database and Big Data Skill with evidence controls"
+  default_prompt: "Use $elmos-data-architecture-adr with the pinned ELMOS database and Big Data contracts; keep catalog and runtime evidence distinct and fail closed on unknowns."

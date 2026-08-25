@@ -1,0 +1,109 @@
+{
+  "schema_version": "elmos.frontend-to-miniapp.compiled-skill-contract.v1",
+  "package_id": "elmos.frontend-to-miniapp.skills",
+  "package_version": "1.0.0",
+  "source_name": "douyin-miniapp-codegen",
+  "source_path": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/.agents/skills/douyin-miniapp-codegen/SKILL.md",
+  "source_sha256": "sha256:b577ee3b6df761186b9dccbf413e10d0796b2cb2615c7be05a95f2b76060029f",
+  "stage": "target-codegen",
+  "description": "Generate a native Douyin Mini Program project from validated IR and plans, including app/page configuration, components, styles, JS APIs, server OpenAPI contracts, tests, toolchain metadata, and traceability. Use only for the Douyin target.",
+  "depends_on": [
+    "miniapp-component-mapping-engine",
+    "miniapp-state-event-lifecycle-converter",
+    "miniapp-style-layout-converter",
+    "miniapp-third-party-dependency-migrator"
+  ],
+  "task_ids": [
+    "MAPP-025"
+  ],
+  "declared_outputs": [
+    "platforms/douyin/**",
+    "douyin-codegen-report.json",
+    "douyin-trace-map.json"
+  ],
+  "required_outputs": [
+    {
+      "path": "platforms/douyin/**",
+      "required": true
+    },
+    {
+      "path": "douyin-codegen-report.json",
+      "required": true
+    },
+    {
+      "path": "douyin-trace-map.json",
+      "required": true
+    }
+  ],
+  "gates": [
+    {
+      "name": "官方工具链构建通过",
+      "required": true
+    },
+    {
+      "name": "场景值测试通过",
+      "required": true
+    },
+    {
+      "name": "关键媒体/内容能力有契约证据",
+      "required": true
+    }
+  ],
+  "failure_policy": {
+    "silent_drop": "deny",
+    "max_retries": 2,
+    "escalate_on": [
+      "permission-change",
+      "real-payment",
+      "release",
+      "quality-gate-lowering",
+      "repeated-equivalent-patch"
+    ]
+  },
+  "runtime_binding": {
+    "runtime_authority": {
+      "package_path": "engines/frontend-client-engine",
+      "cli_command": "npm run miniapp",
+      "cli_entrypoint": "dist/src/miniapp-cli.js",
+      "structured_request_handler": "handleMiniappSkillRequest",
+      "json_handler": "runMiniappSkillJson",
+      "full_conversion_handler": "runMiniappConversion",
+      "package_conversion_handler": "runMiniappPackageConversion",
+      "package_cli_command": "npm run miniapp -- package",
+      "single_skill_handler": "executeMiniappSkill",
+      "skill_key": "douyin-miniapp-codegen"
+    },
+    "canonical_package_request": {
+      "source_schema": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json",
+      "request_case": "snake_case",
+      "wrapper_fields": [
+        "packageRequest",
+        "files",
+        "versionBindings",
+        "evidenceBindings"
+      ],
+      "handler_action": "run-package",
+      "handler_input_field": "packageInput",
+      "validator": "validateMiniappPackageConversionInput",
+      "compiler": "compileMiniappPackageConversionInput",
+      "runner": "runMiniappPackageConversion",
+      "cli_command": "npm run miniapp -- package",
+      "input_boundary": "caller-supplied-in-memory-files-no-disk-discovery"
+    },
+    "component_adapter": {
+      "package_path": "engines/component-dialect-engine",
+      "cli_command": "npm run miniapp-worker",
+      "cli_entrypoint": "dist/miniapp-worker.js",
+      "structured_request_handler": "handleMiniAppWorkerRequest",
+      "json_handler": "runMiniAppWorkerJson",
+      "emitter": "emitPlatformMiniApp"
+    }
+  },
+  "contract_state": "HANDLER_IMPLEMENTED",
+  "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+  "runtime_evidence_status": "DECLARED",
+  "external_evidence_status": "NOT_RUN",
+  "certification": "NOT_CERTIFIED",
+  "side_effects_authorized": false,
+  "maximum_local_claim": "HANDLER_IMPLEMENTED_NOT_EXECUTED"
+}

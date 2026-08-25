@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/evidence-trust-authority-root.schema.json",
+  "title": "evidence-trust-authority-root",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact",
+    "issuer_id",
+    "key_id",
+    "algorithm",
+    "public_key_base64",
+    "not_before",
+    "expires_at",
+    "authority_url",
+    "minimum_epoch",
+    "max_snapshot_lifetime_seconds",
+    "max_revocation_age_seconds",
+    "separate_from_evidence_authorities"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "artifact": { "const": "evidence-trust-authority-root" },
+    "issuer_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "key_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "algorithm": { "const": "Ed25519" },
+    "public_key_base64": { "type": "string", "minLength": 44, "maxLength": 44 },
+    "not_before": { "type": "string", "pattern": "Z$" },
+    "expires_at": { "type": "string", "pattern": "Z$" },
+    "authority_url": {
+      "oneOf": [
+        { "type": "string", "minLength": 1, "maxLength": 2048 },
+        { "type": "null" }
+      ]
+    },
+    "minimum_epoch": { "type": "integer", "minimum": 1 },
+    "max_snapshot_lifetime_seconds": { "type": "integer", "minimum": 1, "maximum": 3600 },
+    "max_revocation_age_seconds": { "type": "integer", "minimum": 1, "maximum": 3600 },
+    "separate_from_evidence_authorities": { "const": true }
+  }
+}

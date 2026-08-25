@@ -1,0 +1,57 @@
+{
+  "schema_version": "elmos.frontend-to-miniapp.local-runtime-evidence.v1",
+  "implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+  "state": "DECLARED",
+  "scope": "bounded-local-engineering",
+  "receipt": {
+    "state": "ABSENT",
+    "path": "artifacts/frontend-to-miniapp/local-runtime-receipt-v1/receipt.json"
+  },
+  "commands": [
+    {
+      "id": "component-build",
+      "command": "cd engines/component-dialect-engine && ./node_modules/.bin/tsc -p tsconfig.json",
+      "state": "NOT_RUN",
+      "claim": "TypeScript build"
+    },
+    {
+      "id": "component-tests",
+      "command": "cd engines/component-dialect-engine && ./node_modules/.bin/jest tests/platform-miniapps.test.ts tests/miniapp-worker.test.ts --runInBand",
+      "state": "NOT_RUN",
+      "claim": "canonical component worker and four direct IR emitters"
+    },
+    {
+      "id": "frontend-build",
+      "command": "cd engines/frontend-client-engine && ./node_modules/.bin/tsc -p tsconfig.json",
+      "state": "NOT_RUN",
+      "claim": "strict TypeScript build"
+    },
+    {
+      "id": "frontend-tests",
+      "command": "cd engines/frontend-client-engine && node --test --test-concurrency=1 dist/test/miniapp-contract-validation.test.js dist/test/miniapp-inventory.test.js dist/test/miniapp-semantic-ir.test.js dist/test/miniapp-four-platform-generation.test.js dist/test/miniapp-skill-runtime.test.js dist/test/miniapp-package-contract.test.js dist/test/miniapp-output-contracts.test.js",
+      "state": "NOT_RUN",
+      "claim": "contracts, inventory, semantic IR, source labels, target generators, Skill handlers, checkpoints and evidence gates"
+    },
+    {
+      "id": "integration-tests",
+      "command": "python tests/frontend-to-miniapp/test_integration.py",
+      "state": "NOT_RUN",
+      "claim": "archive, package, DAG, compiled contract and dual-root integration"
+    }
+  ],
+  "local_claims": {
+    "handlers_callable": false,
+    "source_labels_exercised": false,
+    "native_candidates_generated": false,
+    "resume_and_idempotency_exercised": false,
+    "negative_schema_and_path_cases_exercised": false
+  },
+  "official_platform_builds": "NOT_RUN",
+  "emulator_device_runtime": "NOT_RUN",
+  "visual_accessibility_performance": "NOT_RUN",
+  "independent_holdout_and_representative": "NOT_RUN",
+  "platform_review_upload_release": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "external_evidence_status": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "counterexample_id": "ce.path-traversal-archive-negative-control-v1",
+  "technique": "archive-security-negative-control",
+  "claim_id": "claim.archive-identity-and-nonexecution",
+  "failure_fingerprint": "sha256:b4a5fb184d236c153a133824b0be8d8b1984b4aec5aeca01d99654af68885aa6",
+  "environment_digest": "sha256:a3df7b93b9fa9bb3fcfae683381d40cdcd5b3dbc1a14275716be82ed10ee3582",
+  "artifact_digests": [
+    "sha256:89c1a63927a6a316ebcfeeac260e836225eeccf5701805314f91346e703166fd"
+  ],
+  "input_ref": "counterexamples/input.json",
+  "trace_ref": "certification/raw/importer-integration-tests.txt",
+  "replay": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/elmos-7plus1-commercial-skills -p 'test_*.py'",
+    "expected_fingerprint": "sha256:b4a5fb184d236c153a133824b0be8d8b1984b4aec5aeca01d99654af68885aa6"
+  },
+  "status": "reproduced",
+  "owner": "elmos-verification-engineering",
+  "execution_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "classification": "expected-synthetic-negative-control-rejection-not-a-product-defect"
+}

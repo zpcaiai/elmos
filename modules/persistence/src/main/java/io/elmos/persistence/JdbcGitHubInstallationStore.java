@@ -21,10 +21,14 @@ public class JdbcGitHubInstallationStore implements GitHubInstallationLifecycleS
     public JdbcGitHubInstallationStore(JdbcClient jdbc, ObjectMapper mapper) { this.jdbc = jdbc; this.mapper = mapper; }
 
     @Override @Transactional public boolean bindIfUnclaimed(GitHubInstallationLifecycleService.Installation installation) {
+        requireOrganization(installation.organizationId());
+        setTenant(installation.organizationId());
         int rows = jdbc.sql("""
-                insert into github_app_installations(installation_id, connection_id, github_installation_id, account_external_id,
-                    account_login, target_type, installed_at, permissions, repository_selection, status, last_synced_at)
-                select :id, connection_id, :external, :accountId, :login, :targetType, :installed, cast(:permissions as jsonb),
+                insert into github_app_installations(organization_id, installation_id, connection_id,
+                    github_installation_id, account_external_id, account_login, target_type,
+                    installed_at, permissions, repository_selection, status, last_synced_at)
+                select :organization, :id, connection_id, :external, :accountId, :login,
+                    :targetType, :installed, cast(:permissions as jsonb),
                     :selection, 'ACTIVE', :synced from scm_connections
                 where connection_id = :connection and organization_id = :organization
                 on conflict (github_installation_id) do nothing
@@ -37,12 +41,23 @@ public class JdbcGitHubInstallationStore implements GitHubInstallationLifecycleS
         return rows == 1;
     }
 
-    @Override public GitHubInstallationLifecycleService.Installation findByExternalId(long githubInstallationId) {
+    @Override
+    @Transactional(readOnly = true)
+    public GitHubInstallationLifecycleService.Installation findByExternalId(
+            String organizationId, long githubInstallationId
+    ) {
+        requireOrganization(organizationId);
+        setTenant(organizationId);
         return jdbc.sql("""
-                select gi.*, sc.organization_id from github_app_installations gi
-                join scm_connections sc on sc.connection_id = gi.connection_id
-                where gi.github_installation_id = :id
-                """).param("id", githubInstallationId).query((result, row) -> new GitHubInstallationLifecycleService.Installation(
+                select gi.* from github_app_installations gi
+                join scm_connections sc
+                  on sc.organization_id = gi.organization_id
+                 and sc.connection_id = gi.connection_id
+                where gi.organization_id = :organization
+                  and sc.organization_id = :organization
+                  and gi.github_installation_id = :id
+                """).param("organization", organizationId).param("id", githubInstallationId)
+                .query((result, row) -> new GitHubInstallationLifecycleService.Installation(
                         result.getString("installation_id"), result.getString("connection_id"), result.getString("organization_id"),
                         result.getLong("github_installation_id"), result.getLong("account_external_id"), result.getString("account_login"),
                         result.getString("target_type"), result.getString("repository_selection"), permissions(result.getString("permissions")),
@@ -51,23 +66,38 @@ public class JdbcGitHubInstallationStore implements GitHubInstallationLifecycleS
                         result.getObject("last_synced_at", OffsetDateTime.class).toInstant())).optional().orElse(null);
     }
 
-    @Override public void updateStatus(long githubInstallationId, GitHubInstallationLifecycleService.Status status, Instant changedAt) {
+    @Override
+    @Transactional
+    public void updateStatus(String organizationId, long githubInstallationId,
+                             GitHubInstallationLifecycleService.Status status, Instant changedAt) {
+        requireOrganization(organizationId);
+        setTenant(organizationId);
         int rows = jdbc.sql("""
                 update github_app_installations set status = :status,
                     suspended_at = case when :status = 'SUSPENDED' then :changed else null end,
                     deleted_at = case when :status = 'DELETED' then :changed else deleted_at end,
-                    last_synced_at = :changed where github_installation_id = :id
-                """).param("status", status.name()).param("changed", offset(changedAt)).param("id", githubInstallationId).update();
+                    last_synced_at = :changed
+                 where organization_id = :organization and github_installation_id = :id
+                """).param("status", status.name()).param("changed", offset(changedAt))
+                .param("organization", organizationId).param("id", githubInstallationId).update();
         if (rows != 1) throw new SecurityException("unknown GitHub App installation");
     }
 
-    @Override @Transactional public void replaceAuthorizedRepositories(long githubInstallationId,
+    @Override @Transactional public void replaceAuthorizedRepositories(
+            String organizationId, long githubInstallationId,
             Set<GitHubInstallationLifecycleService.Repository> repositories, Instant synchronizedAt) {
-        GitHubInstallationLifecycleService.Installation installation = findByExternalId(githubInstallationId);
+        requireOrganization(organizationId);
+        setTenant(organizationId);
+        GitHubInstallationLifecycleService.Installation installation =
+                findByExternalId(organizationId, githubInstallationId);
         if (installation == null || installation.status() != GitHubInstallationLifecycleService.Status.ACTIVE)
             throw new SecurityException("cannot synchronize an inactive installation");
-        jdbc.sql("update scm_repositories set authorization_status = 'REVOKED', synced_at = :at where installation_id = :installation")
-                .param("at", offset(synchronizedAt)).param("installation", installation.installationId()).update();
+        jdbc.sql("""
+                update scm_repositories
+                   set authorization_status = 'REVOKED', synced_at = :at
+                 where organization_id = :organization and installation_id = :installation
+                """).param("at", offset(synchronizedAt)).param("organization", organizationId)
+                .param("installation", installation.installationId()).update();
         for (var repository : repositories) {
             jdbc.sql("""
                     insert into repositories(repository_id, organization_id, scm_provider, external_id, default_branch)
@@ -78,11 +108,13 @@ public class JdbcGitHubInstallationStore implements GitHubInstallationLifecycleS
             int mapped = jdbc.sql("select count(*) from repositories where repository_id = :id and organization_id = :organization")
                     .param("id", repository.repositoryId()).param("organization", installation.organizationId()).query(Integer.class).single();
             if (mapped != 1) throw new SecurityException("repository id belongs to another organization");
-            jdbc.sql("""
-                    insert into scm_repositories(scm_repository_id, repository_id, installation_id, github_repository_id,
+            int updated = jdbc.sql("""
+                    insert into scm_repositories(organization_id, scm_repository_id, repository_id,
+                        installation_id, github_repository_id,
                         owner_login, repository_name, full_name, clone_url, html_url, default_branch, visibility,
                         archived, disabled, fork, parent_repository_external_id, authorization_status, synced_at)
-                    values (:scmId, :repositoryId, :installation, :external, :owner, :name, :fullName, :cloneUrl, :htmlUrl,
+                    values (:organization, :scmId, :repositoryId, :installation, :external,
+                        :owner, :name, :fullName, :cloneUrl, :htmlUrl,
                         :defaultBranch, :visibility, :archived, :disabled, :fork, :parent, 'AUTHORIZED', :synced)
                     on conflict (repository_id) do update set installation_id = excluded.installation_id,
                         owner_login = excluded.owner_login, repository_name = excluded.repository_name, full_name = excluded.full_name,
@@ -90,15 +122,41 @@ public class JdbcGitHubInstallationStore implements GitHubInstallationLifecycleS
                         visibility = excluded.visibility, archived = excluded.archived, disabled = excluded.disabled,
                         fork = excluded.fork, parent_repository_external_id = excluded.parent_repository_external_id,
                         authorization_status = 'AUTHORIZED', synced_at = excluded.synced_at
-                    """).param("scmId", "scm-" + repository.repositoryId()).param("repositoryId", repository.repositoryId())
+                    where scm_repositories.organization_id = excluded.organization_id
+                    """).param("organization", organizationId)
+                    .param("scmId", "scm-" + repository.repositoryId()).param("repositoryId", repository.repositoryId())
                     .param("installation", installation.installationId()).param("external", repository.githubRepositoryId())
                     .param("owner", repository.owner()).param("name", repository.name()).param("fullName", repository.fullName())
                     .param("cloneUrl", repository.cloneUrl()).param("htmlUrl", repository.htmlUrl()).param("defaultBranch", repository.defaultBranch())
                     .param("visibility", repository.visibility()).param("archived", repository.archived()).param("disabled", repository.disabled())
-                    .param("fork", repository.fork()).param("parent", repository.parentRepositoryId()).param("synced", offset(synchronizedAt)).update();
+                    .param("fork", repository.fork()).param("parent", repository.parentRepositoryId())
+                    .param("synced", offset(synchronizedAt)).update();
+            if (updated != 1) {
+                throw new SecurityException("repository mapping belongs to another organization");
+            }
         }
-        jdbc.sql("update github_app_installations set last_synced_at = :at where installation_id = :id")
-                .param("at", offset(synchronizedAt)).param("id", installation.installationId()).update();
+        int updatedInstallation = jdbc.sql("""
+                update github_app_installations set last_synced_at = :at
+                 where organization_id = :organization and installation_id = :id
+                """).param("at", offset(synchronizedAt)).param("organization", organizationId)
+                .param("id", installation.installationId()).update();
+        if (updatedInstallation != 1) {
+            throw new SecurityException("GitHub App installation lost tenant ownership");
+        }
+    }
+
+    private void setTenant(String organizationId) {
+        jdbc.sql("select set_config('app.organization_id', :organization, true)")
+                .param("organization", organizationId)
+                .query(String.class)
+                .single();
+    }
+
+    private static void requireOrganization(String organizationId) {
+        if (organizationId == null
+                || !organizationId.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,63}")) {
+            throw new SecurityException("trusted organization identity is invalid");
+        }
     }
 
     private String json(Map<String,String> value) { try { return mapper.writeValueAsString(value); } catch (JsonProcessingException e) { throw new IllegalArgumentException(e); } }

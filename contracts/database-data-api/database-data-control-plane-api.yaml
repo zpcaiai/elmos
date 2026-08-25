@@ -1,0 +1,64 @@
+openapi: 3.1.0
+info:
+  title: ELMOS ChinaDB SQL Preflight Control-Plane API
+  version: 1.0.0
+  description: Authenticated, tenant-bound proxy to the database-data worker. This surface never emits target SQL or certification.
+servers:
+  - url: http://localhost:8080
+security:
+  - bearerAuth: []
+paths:
+  /api/v1/database-data/sql-preflight/capabilities:
+    get:
+      operationId: getGovernedChinaDbSqlPreflightCapabilities
+      description: Requires workspace:view and returns the exact fail-closed commercial planning snapshot.
+      responses:
+        "200":
+          description: SPEC_ONLY snapshot with 13 targets and 78 planned routes.
+          content:
+            application/json:
+              schema:
+                $ref: "../../schemas/batch31/chinadb-commercial-capabilities.schema.json"
+        "401": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "502": { $ref: "#/components/responses/ChinaDbSqlFailure" }
+        "503": { $ref: "#/components/responses/ChinaDbSqlFailure" }
+  /api/v1/database-data/sql-preflight/assess:
+    post:
+      operationId: assessGovernedChinaDbSourceSql
+      description: Requires translation:execute, derives tenant and actor from authenticated identity, and always returns BLOCKED with targetSql null.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../../schemas/batch31/chinadb-sql-preflight-request.schema.json"
+      responses:
+        "200":
+          description: Typed source AST and blockers; every target or external check remains NOT_RUN.
+          content:
+            application/json:
+              schema:
+                $ref: "../../schemas/batch31/chinadb-sql-preflight-result.schema.json"
+        "400": { $ref: "#/components/responses/ChinaDbSqlFailure" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "409": { $ref: "#/components/responses/ChinaDbSqlFailure" }
+        "413": { $ref: "#/components/responses/ChinaDbSqlFailure" }
+        "502": { $ref: "#/components/responses/ChinaDbSqlFailure" }
+        "503": { $ref: "#/components/responses/ChinaDbSqlFailure" }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    ChinaDbSqlFailure:
+      description: Sanitized fail-closed SQL-preflight response.
+      content:
+        application/json:
+          schema:
+            $ref: "./database-data-api.yaml#/components/schemas/ChinaDbSqlFailure"
+    Problem:
+      description: Authentication or authorization failed before SQL preflight execution.

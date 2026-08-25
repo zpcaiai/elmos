@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/external-evidence-trust-snapshot.schema.json",
+  "title": "external-evidence-trust-snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["payload", "signature"],
+  "properties": {
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "artifact",
+        "issuer_id",
+        "issuer_key_id",
+        "snapshot_id",
+        "epoch",
+        "issued_at",
+        "expires_at",
+        "etag",
+        "trust_store_sha256",
+        "trust_store",
+        "revocations"
+      ],
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "artifact": { "const": "external-evidence-trust-snapshot" },
+        "issuer_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "issuer_key_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "snapshot_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "epoch": { "type": "integer", "minimum": 1 },
+        "issued_at": { "type": "string", "pattern": "Z$" },
+        "expires_at": { "type": "string", "pattern": "Z$" },
+        "etag": { "type": "string", "pattern": "^\"[A-Za-z0-9._:/+\\-]{1,128}\"$" },
+        "trust_store_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "trust_store": { "$ref": "evidence-trust-store.schema.json" },
+        "revocations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["key_id", "status", "checked_at", "next_update"],
+            "properties": {
+              "key_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+              "status": { "enum": ["GOOD", "REVOKED", "UNKNOWN"] },
+              "checked_at": { "type": "string", "pattern": "Z$" },
+              "next_update": { "type": "string", "pattern": "Z$" }
+            }
+          }
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "signature_base64"],
+      "properties": {
+        "algorithm": { "const": "Ed25519" },
+        "signature_base64": { "type": "string", "minLength": 88, "maxLength": 88 }
+      }
+    }
+  }
+}

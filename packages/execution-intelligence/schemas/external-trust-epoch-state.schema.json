@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/external-trust-epoch-state.schema.json",
+  "title": "external-trust-epoch-state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "issuer_id",
+    "issuer_key_id",
+    "epoch",
+    "snapshot_sha256",
+    "etag"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "issuer_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "issuer_key_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "epoch": { "type": "integer", "minimum": 1 },
+    "snapshot_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "etag": { "type": "string", "pattern": "^\"[A-Za-z0-9._:/+\\-]{1,128}\"$" }
+  }
+}

@@ -32,4 +32,18 @@ class GithubWebhookControllerTest {
         new GithubWebhookBodyLimitFilter(8).doFilter(request, response, chain);
         assertEquals(413, response.getStatus());
     }
+
+    @Test void distinguishesAResourceBindingFailureFromAnInvalidSignature() {
+        var service = new WebhookIngestionService(
+                new GithubWebhookVerifier(), ignored -> true,
+                new ObjectMapper(), Clock.systemUTC(), 1024);
+        var controller = new GithubWebhookController(service, List::of);
+
+        assertEquals(
+                "GITHUB_WEBHOOK_RESOURCE_BINDING_INVALID",
+                controller.forbiddenResource().get("code"));
+        assertEquals(
+                "GITHUB_WEBHOOK_SIGNATURE_INVALID",
+                controller.unauthorized().get("code"));
+    }
 }

@@ -122,7 +122,7 @@ PRODUCTION_WHEEL_FILENAMES = {
 }
 PINNED_SANDBOX_PATH = Path("/usr/bin/sandbox-exec")
 PINNED_SANDBOX_SHA256 = (
-    "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"
+    "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
 )
 PINNED_SANDBOX_BYTES = 102_368
 PINNED_SANDBOX_PROFILE = "(version 1)\n(allow default)\n(deny network*)\n"

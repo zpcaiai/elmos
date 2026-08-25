@@ -1,0 +1,38 @@
+{
+  "system_autonomous_runtime": {
+    "min": 3.68,
+    "likely": 6.7,
+    "max": 13.4,
+    "unit": "hours"
+  },
+  "human_equivalent_effort": {
+    "min": 136.8,
+    "likely": 210.5,
+    "max": 357.9,
+    "unit": "person-hours"
+  },
+  "human_in_the_loop_delay": {
+    "min": 0.0,
+    "likely": 0.0,
+    "max": 0.0,
+    "unit": "hours"
+  },
+  "estimated_token_cost": {
+    "input_tokens": 861189,
+    "output_tokens": 454516,
+    "currency": "UNPRICED",
+    "amount_range": {
+      "min": 0.0,
+      "max": 0.0
+    }
+  },
+  "assumptions": [
+    "System runtime is autonomous machine wall-clock time, not person-days.",
+    "Human-equivalent effort is a comparison baseline and is not added to system runtime.",
+    "HITL delay is zero unless the generated plan inserts approvals or waits for external systems.",
+    "Token price is unpriced unless command-line model prices are supplied.",
+    "Repository size, external service provisioning, benchmark duration and test failures can materially change the range."
+  ],
+  "confidence": 0.42,
+  "as_of": "2026-08-19"
+}

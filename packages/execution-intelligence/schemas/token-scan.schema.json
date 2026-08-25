@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/token-scan.schema.json",
+  "title": "Static token scan",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "root",
+    "counting_method",
+    "totals",
+    "groups"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "root": {
+      "type": "string"
+    },
+    "model": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "counting_method": {
+      "enum": [
+        "tiktoken",
+        "cjk-aware-heuristic"
+      ]
+    },
+    "exact_counts": {
+      "type": "boolean"
+    },
+    "totals": {
+      "type": "object",
+      "required": [
+        "files",
+        "bytes",
+        "characters",
+        "estimated_tokens"
+      ],
+      "properties": {
+        "files": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "characters": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "estimated_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skill_files": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skill_catalog_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skill_body_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "calibrated_tokens": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "group",
+          "files",
+          "estimated_tokens"
+        ],
+        "properties": {
+          "group": {
+            "type": "string"
+          },
+          "files": {
+            "type": "integer"
+          },
+          "estimated_tokens": {
+            "type": "integer"
+          },
+          "bytes": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array"
+    },
+    "largest_files": {
+      "type": "array"
+    },
+    "skills": {
+      "type": "array"
+    },
+    "skipped": {
+      "type": "array"
+    },
+    "calibration": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  }
+}

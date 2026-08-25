@@ -20,6 +20,10 @@ spring:
     problemdetails:
       enabled: true
 elmos:
+  action-cache:
+    enabled: ${ELMOS_ACTION_CACHE_ENABLED:false}
+    execution-caller-enabled: ${ELMOS_ACTION_CACHE_EXECUTION_CALLER_ENABLED:false}
+    sample-recompute-one-in-n: ${ELMOS_ACTION_CACHE_SAMPLE_RECOMPUTE_ONE_IN_N:0}
   database-data-preflight:
     enabled: ${ELMOS_DATABASE_DATA_PREFLIGHT_ENABLED:false}
     engine-base-url: ${ELMOS_DATABASE_DATA_ENGINE_BASE_URL:http://database-data-engine-worker:8089}
@@ -88,6 +92,7 @@ elmos:
     api-version: ${ELMOS_GITHUB_API_VERSION:2026-03-10}
     web-base-url: ${ELMOS_GITHUB_WEB_BASE_URL:https://github.com}
     api-base-url: ${ELMOS_GITHUB_API_BASE_URL:https://api.github.com}
+    clone-base-url: ${ELMOS_GITHUB_CLONE_BASE_URL:https://github.com}
     webhook:
       secret: ${ELMOS_GITHUB_WEBHOOK_SECRET:}
       previous-secret: ${ELMOS_GITHUB_WEBHOOK_PREVIOUS_SECRET:}
@@ -99,6 +104,38 @@ elmos:
     artifact-root: ${ELMOS_SNAPSHOT_ARTIFACT_ROOT:}
     materialized-root: ${ELMOS_SNAPSHOT_MATERIALIZED_ROOT:}
     max-artifact-bytes: ${ELMOS_SNAPSHOT_MAX_ARTIFACT_BYTES:1073741824}
+    materialization-lease:
+      holder-id: ${ELMOS_SNAPSHOT_MATERIALIZATION_LEASE_HOLDER_ID:}
+      duration: ${ELMOS_SNAPSHOT_MATERIALIZATION_LEASE_DURATION:PT2M}
+      heartbeat-interval: ${ELMOS_SNAPSHOT_MATERIALIZATION_LEASE_HEARTBEAT_INTERVAL:PT30S}
+      heartbeat-threads: ${ELMOS_SNAPSHOT_MATERIALIZATION_LEASE_HEARTBEAT_THREADS:2}
+    reconciliation:
+      pending-grace: ${ELMOS_SNAPSHOT_RECONCILIATION_PENDING_GRACE:PT5M}
+      scheduler-enabled: ${ELMOS_SNAPSHOT_RECONCILIATION_SCHEDULER_ENABLED:false}
+      worker-id: ${ELMOS_SNAPSHOT_RECONCILIATION_WORKER_ID:}
+      tenant-limit: ${ELMOS_SNAPSHOT_RECONCILIATION_TENANT_LIMIT:16}
+      per-tenant-limit: ${ELMOS_SNAPSHOT_RECONCILIATION_PER_TENANT_LIMIT:100}
+      scheduler-lease: ${ELMOS_SNAPSHOT_RECONCILIATION_SCHEDULER_LEASE:PT2M}
+      failure-retry: ${ELMOS_SNAPSHOT_RECONCILIATION_FAILURE_RETRY:PT1M}
+      scheduler-interval-ms: ${ELMOS_SNAPSHOT_RECONCILIATION_SCHEDULER_INTERVAL_MS:30000}
+    cas:
+      enabled: ${ELMOS_SNAPSHOT_CAS_ENABLED:false}
+      compatibility-read-enabled: ${ELMOS_SNAPSHOT_CAS_COMPATIBILITY_READ_ENABLED:false}
+      root: ${ELMOS_SNAPSHOT_CAS_ROOT:}
+      store-name: ${ELMOS_SNAPSHOT_CAS_STORE_NAME:snapshot-local}
+      data-residency: ${ELMOS_SNAPSHOT_CAS_DATA_RESIDENCY:}
+      security-tier: ${ELMOS_SNAPSHOT_CAS_SECURITY_TIER:CONFIDENTIAL}
+      encryption:
+        enabled: ${ELMOS_SNAPSHOT_CAS_ENCRYPTION_ENABLED:false}
+        provider: ${ELMOS_SNAPSHOT_CAS_ENCRYPTION_PROVIDER:DIRECTORY}
+        key-directory: ${ELMOS_SNAPSHOT_CAS_TENANT_KEY_DIRECTORY:}
+        kms-broker:
+          endpoint: ${ELMOS_CAS_KMS_BROKER_ENDPOINT:}
+          connect-timeout: ${ELMOS_CAS_KMS_BROKER_CONNECT_TIMEOUT:5s}
+          operation-timeout: ${ELMOS_CAS_KMS_BROKER_OPERATION_TIMEOUT:15s}
+          workload-spiffe-id: ${ELMOS_CAS_KMS_WORKLOAD_SPIFFE_ID:}
+          mtls-secret-reference: ${ELMOS_CAS_KMS_MTLS_SECRET_REFERENCE:}
+          authorization-secret-reference: ${ELMOS_CAS_KMS_AUTHORIZATION_SECRET_REFERENCE:}
 management:
   endpoint:
     health:

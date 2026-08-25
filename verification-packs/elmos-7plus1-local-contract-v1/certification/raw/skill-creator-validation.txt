@@ -1,0 +1,16 @@
+Validator: /Users/stephen/.codex/skills/.system/skill-creator/scripts/quick_validate.py::validate_skill
+Environment: /opt/homebrew/bin/uv run --quiet --with pyyaml==6.0.2 python
+Input names: unique installed_name values from docs/elmos-7plus1-commercial-skills/installed-manifest.json
+Date: 2026-08-24
+Exit code: 0
+
+root=.agents/skills validated=102 failures=0
+root=agent-skills/runtime validated=102 failures=0
+total_validated=204 total_failures=0 decision=PASSED
+
+Evidence classification: LOCAL_EXECUTED_SELF_ATTESTED
+An earlier system-Python attempt lacked PyYAML and was excluded as an
+environment setup failure; the recorded result uses the pinned PyYAML runtime.
+Skill Creator quick validation checks Skill structure/frontmatter and unfinished
+placeholders. It does not prove runtime behavior, independent quality, or
+certification.

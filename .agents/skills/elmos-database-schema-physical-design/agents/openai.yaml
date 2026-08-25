@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Database Schema Physical Design"
+  short_description: "Run this database and Big Data Skill with evidence controls"
+  default_prompt: "Use $elmos-database-schema-physical-design with the pinned ELMOS database and Big Data contracts; keep catalog and runtime evidence distinct and fail closed on unknowns."

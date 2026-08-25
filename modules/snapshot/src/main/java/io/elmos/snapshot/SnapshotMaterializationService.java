@@ -52,15 +52,35 @@ public final class SnapshotMaterializationService {
     private final Path root;
     private final SnapshotPorts.ArtifactReader artifacts;
     private final ObjectMapper json;
+    private final SnapshotMaterializationLeaseCoordinator leaseCoordinator;
 
+    /**
+     * Compatibility constructor for bounded local tests. Production wiring must use
+     * {@link #SnapshotMaterializationService(Path, SnapshotPorts.ArtifactReader, ObjectMapper,
+     * SnapshotMaterializationLeaseCoordinator)} so archive/GC cannot race artifact reads.
+     */
     public SnapshotMaterializationService(
             Path root,
             SnapshotPorts.ArtifactReader artifacts,
             ObjectMapper json
     ) {
+        this(root, artifacts, json, null);
+    }
+
+    /**
+     * Production constructor. The coordinator holds a durable fenced lease for every artifact
+     * read and validates the fence again before the materialization is published to its caller.
+     */
+    public SnapshotMaterializationService(
+            Path root,
+            SnapshotPorts.ArtifactReader artifacts,
+            ObjectMapper json,
+            SnapshotMaterializationLeaseCoordinator leaseCoordinator
+    ) {
         this.root = Objects.requireNonNull(root).toAbsolutePath().normalize();
         this.artifacts = Objects.requireNonNull(artifacts);
         this.json = Objects.requireNonNull(json);
+        this.leaseCoordinator = leaseCoordinator;
         try {
             Files.createDirectories(this.root);
             if (Files.isSymbolicLink(this.root)
@@ -85,8 +105,22 @@ public final class SnapshotMaterializationService {
             throw new SecurityException("only an available immutable snapshot may be materialized");
         }
         requireIdentifier(snapshot.snapshotId(), "snapshot");
+        requireIdentifier(snapshot.repositoryId(), "repository");
+        var resource = new SnapshotPorts.ArtifactResourceContext(
+                trustedOrganizationId, snapshot.repositoryId());
 
-        Path organizationRoot = confined(root.resolve(trustedOrganizationId));
+        if (leaseCoordinator != null) {
+            return leaseCoordinator.withLease(snapshot,
+                    () -> materializeUnderLease(resource, snapshot));
+        }
+        return materializeUnderLease(resource, snapshot);
+    }
+
+    private Materialization materializeUnderLease(
+            SnapshotPorts.ArtifactResourceContext resource,
+            SnapshotModel.RepositorySnapshot snapshot
+    ) {
+        Path organizationRoot = confined(root.resolve(resource.organizationId()));
         Path target = confined(organizationRoot.resolve(snapshot.snapshotId()));
         try {
             Files.createDirectories(organizationRoot);
@@ -96,7 +130,7 @@ public final class SnapshotMaterializationService {
             }
 
             byte[] manifestBytes;
-            try (InputStream input = artifacts.open(snapshot.manifestArtifactRef())) {
+            try (InputStream input = artifacts.open(resource, snapshot.manifestArtifactRef())) {
                 manifestBytes = readBounded(input, MAX_MANIFEST_BYTES);
             }
             requireDigest(manifestBytes, snapshot.manifestSha256(), "snapshot manifest");
@@ -106,7 +140,7 @@ public final class SnapshotMaterializationService {
 
             Path temporary = Files.createTempDirectory(organizationRoot, ".materialize-");
             try {
-                extract(snapshot, manifest, temporary);
+                extract(resource, snapshot, manifest, temporary);
                 writeMarker(temporary, snapshot);
                 makeReadOnly(temporary);
                 try {
@@ -133,6 +167,7 @@ public final class SnapshotMaterializationService {
     }
 
     private void extract(
+            SnapshotPorts.ArtifactResourceContext resource,
             SnapshotModel.RepositorySnapshot snapshot,
             DeterministicSnapshotArchiver.SnapshotManifest manifest,
             Path temporary
@@ -154,7 +189,7 @@ public final class SnapshotMaterializationService {
         }
 
         Set<String> observed = new HashSet<>();
-        try (InputStream raw = artifacts.open(snapshot.archiveArtifactRef());
+        try (InputStream raw = artifacts.open(resource, snapshot.archiveArtifactRef());
              VerifiedInputStream verified = new VerifiedInputStream(
                      raw, snapshot.archiveSize(), snapshot.archiveSha256());
              ZstdInputStream zstd = new ZstdInputStream(verified);

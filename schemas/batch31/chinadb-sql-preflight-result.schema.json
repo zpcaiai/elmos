@@ -1,0 +1,349 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch31/chinadb-sql-preflight-result.schema.json",
+  "title": "ELMOS ChinaDB SQL conversion preflight result",
+  "description": "Typed source assessment for an unimplemented ChinaDB target adapter. A conforming result is blocked, emits no target SQL, and carries no runtime or certification claim.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "queryId",
+    "sourceProfile",
+    "target",
+    "routeId",
+    "state",
+    "sourceDigest",
+    "capabilitySnapshotDigest",
+    "statements",
+    "blockers",
+    "targetSql",
+    "verification",
+    "certification"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "queryId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "sourceProfile": {
+      "$ref": "#/$defs/sourceProfile"
+    },
+    "target": {
+      "$ref": "#/$defs/target"
+    },
+    "routeId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*--to--(dm8|kingbasees|opengauss|tidb|gbase-8s|gbase-8c|gbase-8a|highgo-hgdb|oceanbase-oracle|oceanbase-mysql|gaussdb-oracle|gaussdb-m|goldendb)$"
+    },
+    "state": {
+      "const": "BLOCKED"
+    },
+    "sourceDigest": {
+      "$ref": "#/$defs/digest"
+    },
+    "capabilitySnapshotDigest": {
+      "$ref": "#/$defs/digest"
+    },
+    "statements": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "$ref": "#/$defs/statement"
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {
+        "$ref": "#/$defs/blocker"
+      }
+    },
+    "targetSql": {
+      "type": "null"
+    },
+    "verification": {
+      "$ref": "#/$defs/verification"
+    },
+    "certification": {
+      "const": "NOT_CERTIFIED"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verification": {
+            "properties": {
+              "sourceParse": {
+                "const": "PASSED"
+              }
+            },
+            "required": [
+              "sourceParse"
+            ]
+          }
+        },
+        "required": [
+          "verification"
+        ]
+      },
+      "then": {
+        "properties": {
+          "statements": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verification": {
+            "properties": {
+              "sourceParse": {
+                "const": "FAILED"
+              }
+            },
+            "required": [
+              "sourceParse"
+            ]
+          }
+        },
+        "required": [
+          "verification"
+        ]
+      },
+      "then": {
+        "properties": {
+          "statements": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "exactContext": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^(?![Xx]$)(?![Ll][Aa][Tt][Ee][Ss][Tt]$)(?![Cc][Uu][Rr][Rr][Ee][Nn][Tt]$)(?![Uu][Nn][Kk][Nn][Oo][Ww][Nn]$)(?![Uu][Nn][Ss][Pp][Ee][Cc][Ii][Ff][Ii][Ee][Dd]$)(?!.*(?:\\.\\*|\\.[Xx])$)[A-Za-z0-9][A-Za-z0-9._+:/~-]*$"
+    },
+    "sourceProfile": {
+      "enum": [
+        "postgresql-17.5",
+        "postgresql-18.4",
+        "mysql-8.4.10-lts",
+        "sqlserver-2022-cu26",
+        "oracle-26ai-ee",
+        "sqlite-3.53.3",
+        "duckdb-1.5.4"
+      ]
+    },
+    "targetId": {
+      "enum": [
+        "dm8",
+        "kingbasees",
+        "opengauss",
+        "tidb",
+        "gbase-8s",
+        "gbase-8c",
+        "gbase-8a",
+        "highgo-hgdb",
+        "oceanbase-oracle",
+        "oceanbase-mysql",
+        "gaussdb-oracle",
+        "gaussdb-m",
+        "goldendb"
+      ]
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "version",
+        "edition",
+        "compatibilityMode",
+        "driver",
+        "charset",
+        "collation",
+        "timeZone",
+        "adapterId",
+        "implementationStatus"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/targetId"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^(?![Xx]$)(?![Ll][Aa][Tt][Ee][Ss][Tt]$)(?![Cc][Uu][Rr][Rr][Ee][Nn][Tt]$)(?![Uu][Nn][Kk][Nn][Oo][Ww][Nn]$)(?![Uu][Nn][Ss][Pp][Ee][Cc][Ii][Ff][Ii][Ee][Dd]$)(?!.*(?:\\.\\*|\\.[Xx])$)[A-Za-z0-9][A-Za-z0-9._+~-]*$"
+        },
+        "edition": {
+          "$ref": "#/$defs/exactContext"
+        },
+        "compatibilityMode": {
+          "$ref": "#/$defs/exactContext"
+        },
+        "driver": {
+          "$ref": "#/$defs/exactContext"
+        },
+        "charset": {
+          "$ref": "#/$defs/exactContext"
+        },
+        "collation": {
+          "$ref": "#/$defs/exactContext"
+        },
+        "timeZone": {
+          "$ref": "#/$defs/exactContext"
+        },
+        "adapterId": {
+          "type": "string",
+          "pattern": "^chinadb\\.[a-z0-9][a-z0-9-]*\\.target-adapter\\.v1$"
+        },
+        "implementationStatus": {
+          "const": "SPEC_ONLY"
+        }
+      }
+    },
+    "statement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "kind",
+        "sourceAst",
+        "obligations"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "kind": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*$",
+          "maxLength": 128
+        },
+        "sourceAst": {
+          "oneOf": [
+            {
+              "type": "object",
+              "minProperties": 1
+            },
+            {
+              "type": "array",
+              "minItems": 1
+            }
+          ]
+        },
+        "obligations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        }
+      }
+    },
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "severity",
+        "statementIndex",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*$",
+          "maxLength": 128
+        },
+        "severity": {
+          "enum": [
+            "ERROR",
+            "WARNING"
+          ]
+        },
+        "statementIndex": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceParse",
+        "targetAdapter",
+        "targetEmit",
+        "targetReparse",
+        "sourceExecution",
+        "targetExecution",
+        "resultEquivalence",
+        "externalExecution"
+      ],
+      "properties": {
+        "sourceParse": {
+          "enum": [
+            "PASSED",
+            "FAILED"
+          ]
+        },
+        "targetAdapter": {
+          "const": "NOT_RUN"
+        },
+        "targetEmit": {
+          "const": "NOT_RUN"
+        },
+        "targetReparse": {
+          "const": "NOT_RUN"
+        },
+        "sourceExecution": {
+          "const": "NOT_RUN"
+        },
+        "targetExecution": {
+          "const": "NOT_RUN"
+        },
+        "resultEquivalence": {
+          "const": "NOT_RUN"
+        },
+        "externalExecution": {
+          "const": "NOT_RUN"
+        }
+      }
+    }
+  }
+}

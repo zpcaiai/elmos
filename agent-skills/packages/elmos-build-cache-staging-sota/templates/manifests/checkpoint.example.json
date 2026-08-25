@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0",
+  "checkpoint_id": "cp_01HXYZ",
+  "run_id": "run_20260819_001",
+  "node_id": "generate:user-service",
+  "attempt": 1,
+  "sequence": 7,
+  "lease_epoch": 3,
+  "source_snapshot": "cas://sha256/cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "action_key": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+  "artifacts": [
+    "cas://sha256/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  ],
+  "staged_files": [
+    "sf_01HXYZ"
+  ],
+  "completed_partitions": [
+    "UserService.findUser",
+    "UserService.createUser"
+  ],
+  "side_effect_receipts": [],
+  "journal_sequence": 184,
+  "resume_cursor": {
+    "next_symbol": "UserService.updateUser"
+  },
+  "dependencies": [],
+  "compatibility": {
+    "stage_version": "1.0.0",
+    "rule_pack_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+    "toolchain_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+  }
+}

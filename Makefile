@@ -113,6 +113,38 @@ chinadb-commercial-migration-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/integrate_chinadb_commercial_migration_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python -m unittest discover -s tests/chinadb-commercial-migration -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python -m unittest discover -s tests/chinadb-sql-extension-schema -p 'test_*.py'
+.PHONY: database-bigdata-skills
+database-bigdata-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_database_bigdata_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/database-bigdata-skills -p 'test_*.py'
+.PHONY: project-intelligence-skills
+project-intelligence-skills:
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 -m unittest discover -s engines/project-intelligence-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 tooling/qualify_project_intelligence_runtime.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_project_intelligence_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/project-intelligence-skills -p 'test_*.py'
+.PHONY: frontend-to-miniapp-skills
+frontend-to-miniapp-skills:
+	@set -eu; \
+	closeout() { \
+		status=$$?; \
+		trap - EXIT HUP INT TERM; \
+		set +e; \
+		PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --closeout-portable; \
+		closeout_status=$$?; \
+		set -e; \
+		if [ "$$status" -ne 0 ]; then exit "$$status"; fi; \
+		exit "$$closeout_status"; \
+	}; \
+	trap closeout EXIT; \
+	trap 'exit 129' HUP; \
+	trap 'exit 130' INT; \
+	trap 'exit 143' TERM; \
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --qualify-local; \
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --refresh-owned; \
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --check; \
+	node client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/replay-local-runtime.mjs --check; \
+	python3 scripts/batch32/run_client_gate.py client-packs/frontend-to-miniapp-vue3-wechat-v1
 modernization-b01-44-packages:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.cli packages --summary
 modernization-b01-44-foundation:
@@ -350,6 +382,23 @@ sql-dialect:
 	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev pytest
 	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev ruff check src tests
 	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev mypy --ignore-missing-imports src
+
+# What the polyglot engine actually does right now, by running it rather than
+# by reading it. Every capability question here had been answered by reading
+# code, and reading code has a specific failure mode: a rejection code in an
+# intermediate layer is not the system's boundary. `discover_unit()` refuses a
+# multi-function file; `discover_repository()` then splits that same result
+# into one READY unit per function. Only the second is the boundary.
+#
+# Rows reading NOT_PROBED mean this machine lacks that language's pinned
+# toolchain. That is an instruction to re-run somewhere that has it, never a
+# capability claim -- which is why this is a report, not a gate.
+.PHONY: capability-probe capability-probe-json
+capability-probe:
+	$(UV) --directory engines/polyglot-route-engine run --locked python tools/capability_probe.py
+
+capability-probe-json:
+	$(UV) --directory engines/polyglot-route-engine run --locked python tools/capability_probe.py --json
 # The component engine drives real framework toolchains (TypeScript,
 # @vue/compiler-sfc, vue-template-compiler, @angular/compiler,
 # svelte/compiler, @wxml/parser) plus real SSR renderers, so its tests are

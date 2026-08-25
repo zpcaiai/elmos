@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/debug-session.schema.json",
+  "title": "Elmos Debug Session",
+  "type": "object",
+  "required": [
+    "debug_session_id",
+    "tenant_id",
+    "project_id",
+    "revision_id",
+    "runtime_profile",
+    "target",
+    "mode",
+    "state",
+    "adapter",
+    "capabilities",
+    "policy"
+  ],
+  "properties": {
+    "debug_session_id": {
+      "type": "string"
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "revision_id": {
+      "type": "string"
+    },
+    "runtime_profile": {
+      "type": "object",
+      "required": [
+        "runtime_profile_id",
+        "image_digest"
+      ],
+      "properties": {
+        "runtime_profile_id": {
+          "type": "string"
+        },
+        "image_digest": {
+          "type": "string"
+        },
+        "toolchain": {
+          "type": "object"
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "required": [
+        "kind",
+        "ref"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "test",
+            "main",
+            "api",
+            "cli",
+            "cron",
+            "consumer",
+            "browser_scenario",
+            "replay"
+          ]
+        },
+        "ref": {
+          "type": "string"
+        }
+      }
+    },
+    "mode": {
+      "enum": [
+        "observe",
+        "guided",
+        "challenge",
+        "free",
+        "compare"
+      ]
+    },
+    "state": {
+      "enum": [
+        "requested",
+        "provisioning",
+        "building",
+        "launching",
+        "ready",
+        "paused",
+        "running",
+        "terminating",
+        "terminated",
+        "failed",
+        "expired"
+      ]
+    },
+    "adapter": {
+      "type": "object",
+      "required": [
+        "adapter_id",
+        "version",
+        "digest"
+      ],
+      "properties": {
+        "adapter_id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "digest": {
+          "type": "string"
+        }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "policy_id",
+        "environment",
+        "evaluate_mode"
+      ],
+      "properties": {
+        "policy_id": {
+          "type": "string"
+        },
+        "environment": {
+          "type": "string"
+        },
+        "evaluate_mode": {
+          "enum": [
+            "disabled",
+            "read_only",
+            "approved_ephemeral"
+          ]
+        }
+      }
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": true
+}

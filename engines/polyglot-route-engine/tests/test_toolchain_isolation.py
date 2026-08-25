@@ -5,6 +5,7 @@ import os
 import stat
 from dataclasses import replace
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -12,6 +13,67 @@ from elmos_polyglot_route import native, toolchains
 from elmos_polyglot_route.models import RouteError
 from elmos_polyglot_route.native import analyze, swift_analyzer_build_receipt
 from elmos_polyglot_route.validation import validate_source
+
+
+def test_toolchain_build_cache_write_probes_root_and_children(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        native.pwd,
+        "getpwuid",
+        lambda _uid: SimpleNamespace(pw_dir=str(tmp_path)),
+    )
+
+    directories = native._toolchain_build_cache(
+        "go",
+        "content-key",
+        ("gocache", "gopath"),
+    )
+
+    expected_root = (
+        tmp_path
+        / ".cache"
+        / "elmos-polyglot-route-engine"
+        / "toolchain-build-cache-v1"
+        / "go"
+        / "content-key"
+    )
+    assert directories == (expected_root / "gocache", expected_root / "gopath")
+    assert list(expected_root.rglob(".elmos-cache-write-probe-*")) == []
+
+
+@pytest.mark.parametrize("failure_call", (1, 2, 3), ids=("root", "first-child", "second-child"))
+def test_toolchain_build_cache_falls_back_when_any_cache_directory_is_not_writable(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    failure_call: int,
+) -> None:
+    monkeypatch.setattr(
+        native.pwd,
+        "getpwuid",
+        lambda _uid: SimpleNamespace(pw_dir=str(tmp_path)),
+    )
+    real_temporary_file = native.tempfile.TemporaryFile
+    calls = 0
+
+    def probed_temporary_file(*args: object, **kwargs: object):
+        nonlocal calls
+        calls += 1
+        if calls == failure_call:
+            raise PermissionError("sandbox denied cache write")
+        return real_temporary_file(*args, **kwargs)
+
+    monkeypatch.setattr(native.tempfile, "TemporaryFile", probed_temporary_file)
+
+    assert (
+        native._toolchain_build_cache(
+            "go",
+            "content-key",
+            ("gocache", "gopath"),
+        )
+        is None
+    )
 
 
 def test_minimal_subprocess_environment_drops_all_supported_injection_hooks(

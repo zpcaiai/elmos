@@ -1,0 +1,52 @@
+{
+  "profile_key": "frontend-to-miniapp-vue3-wechat-v1-acceptance",
+  "version": "0.1.0",
+  "owner": "elmos-miniapp-candidate-review",
+  "browser_matrix": ["wechat-devtools-emulator-NOT_RUN"],
+  "device_matrix": ["wechat-physical-device-NOT_RUN"],
+  "locales": ["und-en-fixture-literals"],
+  "themes": ["fixture-default"],
+  "rendering": {"modes": ["native-wxml-candidate"], "official_runtime_state": "NOT_RUN"},
+  "visual": {
+    "baseline_policy": "approved-only-no-auto-update",
+    "max_unapproved_differences": 0,
+    "state": "NOT_RUN"
+  },
+  "accessibility": {
+    "standard": "source-contract-preservation-candidate-v1",
+    "critical_violations": 0,
+    "automated_state": "NOT_RUN",
+    "assistive_technology_state": "NOT_RUN"
+  },
+  "interaction": {"p0_pass_rate": 1.0, "state": "NOT_RUN"},
+  "performance": {"budgets": {"launch_ms": 2000, "interaction_ms": 100}, "state": "NOT_RUN"},
+  "seo": {"required": false, "reason": "native MiniApp candidate"},
+  "i18n": {"missing_keys": 0, "state": "NOT_RUN"},
+  "security": {
+    "authorization_regressions": 0,
+    "forbidden_generated_capabilities": ["network", "platform-identity", "payment", "upload", "review", "release"],
+    "state": "NOT_RUN"
+  },
+  "p0_journeys": [
+    {
+      "id": "todo-enter-add-list-increment",
+      "steps": ["open /", "enter nonblank todo text", "tap Add", "observe trimmed item appended", "observe input cleared"],
+      "source_expected": "list count increments by one",
+      "target_runtime_state": "NOT_RUN"
+    }
+  ],
+  "thresholds": {
+    "source_fingerprint_coverage": 0.95,
+    "ui_ir_source_map_coverage": 0.95,
+    "target_build_green_rate": 1.0,
+    "target_startup_or_launch_rate": 1.0,
+    "p0_journey_pass_rate": 1.0,
+    "visual_regressions": 0,
+    "critical_accessibility_violations": 0
+  },
+  "exclusions": [
+    "all non-WeChat targets",
+    "all fixtures except the pinned Vue 3 todo fixture",
+    "reverse routes and production operations"
+  ]
+}

@@ -116,6 +116,7 @@ export function ChinaDbSqlPreflightStudio() {
   const [error, setError] = useState("");
   const errorSummary = useRef<HTMLDivElement>(null);
   const resultPanel = useRef<HTMLElement>(null);
+  const activeAssessment = useRef<AbortController | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -151,6 +152,9 @@ export function ChinaDbSqlPreflightStudio() {
     () => capabilities?.targets.find((target) => target.id === fields.targetId) ?? null,
     [capabilities, fields.targetId],
   );
+  const sourceRoutePlanned = !["sqlite-3.53.3", "duckdb-1.5.4"].includes(
+    fields.sourceProfile,
+  );
 
   function updateField<Key extends keyof FormFields>(key: Key, value: FormFields[Key]) {
     setFields((current) => ({ ...current, [key]: value }));
@@ -182,7 +186,12 @@ export function ChinaDbSqlPreflightStudio() {
     setError("");
     setResult(null);
     const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 17_000);
+    activeAssessment.current = controller;
+    let timedOut = false;
+    const timeout = window.setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, 17_000);
     try {
       const request = parseChinaDbSqlPreflightRequest({
         schemaVersion: "1.0",
@@ -210,12 +219,17 @@ export function ChinaDbSqlPreflightStudio() {
       setResult(parsed);
       requestAnimationFrame(() => resultPanel.current?.focus());
     } catch (submitError) {
-      setError(errorMessage(submitError));
+      setError(timedOut ? "预检请求超时，请稍后重试。" : errorMessage(submitError));
       requestAnimationFrame(() => errorSummary.current?.focus());
     } finally {
       window.clearTimeout(timeout);
+      if (activeAssessment.current === controller) activeAssessment.current = null;
       setBusy(false);
     }
+  }
+
+  function cancelAssessment() {
+    activeAssessment.current?.abort();
   }
 
   return (
@@ -251,7 +265,12 @@ export function ChinaDbSqlPreflightStudio() {
       )}
 
       <div className={styles.workspace}>
-        <form className={`surface-card ${styles.form}`} onSubmit={submit} data-telemetry-ignore="true">
+        <form
+          className={`surface-card ${styles.form}`}
+          onSubmit={submit}
+          data-telemetry-ignore="true"
+          aria-busy={busy}
+        >
           <div className={styles.sectionHeading}>
             <div><span className="overline">EXACT REQUEST</span><h2>源 SQL 与目标精确元组</h2></div>
             <StatusChip status="BLOCKED" compact />
@@ -261,11 +280,16 @@ export function ChinaDbSqlPreflightStudio() {
             <legend>源查询身份</legend>
             <div className={styles.gridTwo}>
               <label htmlFor="sql-query-id"><span>Query ID</span><input id="sql-query-id" value={fields.queryId} onChange={(event) => updateField("queryId", event.target.value)} maxLength={160} required autoComplete="off" /></label>
-              <label htmlFor="sql-source-profile"><span>精确源 Profile</span><select id="sql-source-profile" value={fields.sourceProfile} onChange={(event) => updateField("sourceProfile", event.target.value as FormFields["sourceProfile"])}>{chinaDbSqlSourceProfiles.map((profile) => <option value={profile} key={profile}>{profile}</option>)}</select></label>
+              <label htmlFor="sql-source-profile"><span>精确源 Profile</span><select id="sql-source-profile" aria-describedby="sql-source-profile-hint" value={fields.sourceProfile} onChange={(event) => updateField("sourceProfile", event.target.value as FormFields["sourceProfile"])}>{chinaDbSqlSourceProfiles.map((profile) => <option value={profile} key={profile}>{profile}</option>)}</select></label>
             </div>
+            <p id="sql-source-profile-hint" className={styles.sourceProfileHint}>
+              {sourceRoutePlanned
+                ? "该源家族存在 13 条商业目标规划路线；目标实现仍为 SPEC_ONLY。"
+                : "该 Profile 仅用于 typed source intake，不在 78 条商业规划路线内；结果将明确标记 COMMERCIAL_ROUTE_NOT_PLANNED。"}
+            </p>
           </fieldset>
 
-          <fieldset className={styles.fieldset}>
+          <fieldset className={styles.fieldset} aria-describedby={selectedTarget ? "sql-target-requirement" : undefined}>
             <legend>目标精确元组</legend>
             <div className={styles.gridTwo}>
               <label htmlFor="sql-target-id"><span>ChinaDB 目标</span><select id="sql-target-id" value={fields.targetId} onChange={(event) => updateField("targetId", event.target.value as FormFields["targetId"])} disabled={!capabilities}>{capabilities?.targets.map((target) => <option value={target.id} key={target.id}>{target.label} · {target.id}</option>) ?? <option value="dm8">等待能力快照</option>}</select></label>
@@ -277,7 +301,7 @@ export function ChinaDbSqlPreflightStudio() {
               <label htmlFor="sql-target-collation"><span>Collation</span><input id="sql-target-collation" value={fields.targetCollation} onChange={(event) => updateField("targetCollation", event.target.value)} maxLength={128} placeholder="例如 BINARY" required autoComplete="off" /></label>
               <label htmlFor="sql-target-timezone"><span>Time zone</span><input id="sql-target-timezone" value={fields.targetTimeZone} onChange={(event) => updateField("targetTimeZone", event.target.value)} maxLength={128} placeholder="例如 Asia/Shanghai" required autoComplete="off" /></label>
             </div>
-            {selectedTarget && <div className={styles.requirement}><Icon name="database" size={16} /><span><strong>{selectedTarget.label}</strong>{selectedTarget.versionRequirement}；{selectedTarget.compatibilityModeRequirement}</span></div>}
+            {selectedTarget && <div id="sql-target-requirement" className={styles.requirement}><Icon name="database" size={16} /><span><strong>{selectedTarget.label}</strong>{selectedTarget.versionRequirement}；{selectedTarget.compatibilityModeRequirement}</span></div>}
           </fieldset>
 
           <fieldset className={styles.fieldset}>
@@ -291,11 +315,14 @@ export function ChinaDbSqlPreflightStudio() {
             </div>)}</div>}
           </fieldset>
 
-          <label className={styles.sqlField} htmlFor="sql-source"><span>源 SQL</span><textarea id="sql-source" value={fields.sql} onChange={(event) => updateField("sql", event.target.value)} placeholder="粘贴已脱敏的查询；不要包含凭据、个人信息或未授权生产数据。" required spellCheck={false} /><small>UTF-8 最大 {chinaDbSqlInputLimitBytes / 1024} KiB。SQL 只发送到同源 BFF 和受信 control-plane，不保存为草稿。</small></label>
+          <label className={styles.sqlField} htmlFor="sql-source"><span>源 SQL</span><textarea id="sql-source" aria-describedby="sql-source-hint" value={fields.sql} onChange={(event) => updateField("sql", event.target.value)} placeholder="粘贴已脱敏的查询；不要包含凭据、个人信息或未授权生产数据。" required spellCheck={false} /><small id="sql-source-hint">UTF-8 最大 {chinaDbSqlInputLimitBytes / 1024} KiB。SQL 只发送到同源 BFF 和受信 control-plane，不保存为草稿。</small></label>
 
           <div className={styles.digestBlock}><span>能力快照摘要</span><code>{capabilities?.capabilitySnapshotDigest ?? "尚未绑定"}</code></div>
           <div className={styles.boundary}><Icon name="shield" size={17} /><p>本操作只解析源 SQL。不会生成目标 SQL、连接数据库、执行查询、验证等价性或签发认证。</p></div>
-          <div className={styles.actions}><button className="button button-primary" type="submit" disabled={!capabilities || busy}>{busy ? "正在只读解析…" : "运行只读预检"}</button></div>
+          <div className={styles.actions}>
+            {busy && <button className="button button-secondary" type="button" onClick={cancelAssessment}>取消本次预检</button>}
+            <button className="button button-primary" type="submit" disabled={!capabilities || busy}>{busy ? "正在只读解析…" : "运行只读预检"}</button>
+          </div>
         </form>
 
         <aside className={`surface-card ${styles.boundaryCard}`}>

@@ -70,6 +70,10 @@ _TYPE_SPELLING: dict[Language, dict[str, str]] = {
         "string": "NSString *",
     },
     "swift": {"integer": "Int64", "number": "Double", "boolean": "Bool", "string": "String"},
+    # Kotlin/JVM: `Long` is the same 64-bit signed integer Java's `long` is, and
+    # `Double` the same binary64. Emission targets the JVM, so the arithmetic
+    # semantics below are Java's.
+    "kotlin": {"integer": "Long", "number": "Double", "boolean": "Boolean", "string": "String"},
     # PHP's `int` is platform-width; the toolchain probe asserts PHP_INT_SIZE == 8,
     # so this spelling is the canonical 64-bit signed integer, and `float` is
     # binary64 on every build the probe accepts.
@@ -360,6 +364,47 @@ _JAVA_HELPERS: dict[str, str] = {
 }
 
 
+#: Kotlin runs on the JVM, so `Long` arithmetic wraps and `Long.MIN_VALUE / -1L`
+#: silently returns `Long.MIN_VALUE` -- identical to Java, and identical in what
+#: has to be guarded. `Math.addExact` and friends are `java.lang.Math`, which
+#: Kotlin/JVM imports by default, so only division, remainder and the float
+#: divisor guard are spelled out. These mirror `_JAVA_HELPERS` byte-for-byte in
+#: behaviour: a Kotlin target that disagreed with the Java target about
+#: `Long.MIN_VALUE / -1L` would break the route matrix's own transitivity.
+_KOTLIN_HELPERS: dict[str, str] = {
+    "checked_div": (
+        "private fun elmosCheckedDiv(left: Long, right: Long): Long {\n"
+        "    if (right == 0L) {\n"
+        f'        throw ArithmeticException("{_DIVIDE_BY_ZERO_MESSAGE}")\n'
+        "    }\n"
+        "    if (left == Long.MIN_VALUE && right == -1L) {\n"
+        f'        throw ArithmeticException("{_OVERFLOW_MESSAGE}")\n'
+        "    }\n"
+        "    return left / right\n"
+        "}"
+    ),
+    "checked_mod": (
+        "private fun elmosCheckedMod(left: Long, right: Long): Long {\n"
+        "    if (right == 0L) {\n"
+        f'        throw ArithmeticException("{_DIVIDE_BY_ZERO_MESSAGE}")\n'
+        "    }\n"
+        "    if (left == Long.MIN_VALUE && right == -1L) {\n"
+        f'        throw ArithmeticException("{_OVERFLOW_MESSAGE}")\n'
+        "    }\n"
+        "    return left % right\n"
+        "}"
+    ),
+    "non_zero_double": (
+        "private fun elmosNonZero(value: Double): Double {\n"
+        "    if (value == 0.0) {\n"
+        f'        throw ArithmeticException("{_DIVIDE_BY_ZERO_MESSAGE}")\n'
+        "    }\n"
+        "    return value\n"
+        "}"
+    ),
+}
+
+
 #: C# `checked` covers +, - and *; `/` and `%` already throw
 #: DivideByZeroException on a zero divisor and OverflowException on
 #: long.MinValue with -1, so only the float guard is left to add.
@@ -622,6 +667,7 @@ _PHP_HELPERS: dict[str, str] = {
 
 _HELPERS: dict[Language, dict[str, str]] = {
     "python": _PYTHON_HELPERS,
+    "kotlin": _KOTLIN_HELPERS,
     "typescript": _TYPESCRIPT_HELPERS,
     "javascript": _JAVASCRIPT_HELPERS,
     "go": _GO_HELPERS,
@@ -735,6 +781,18 @@ def _integer_literal(language: Language, value: int) -> str:
         # A JavaScript/TypeScript `number` cannot hold this exactly: 9007199254740993
         # silently becomes 9007199254740992.
         raise RouteError(f"INTEGER_LITERAL_UNSAFE_FOR_{language.upper()}:{value}")
+    if language == "kotlin":
+        if value == types.INTEGER_MIN:
+            # Kotlin has no negative literal either: `-9223372036854775808L` is
+            # unary minus applied to a literal one past `Long`'s range, which
+            # the compiler rejects outright.
+            return "Long.MIN_VALUE"
+        # Always suffixed, not just outside `Int` range. Kotlin does not widen
+        # `Int` to `Long` implicitly, so a bare `90` in `Math.addExact(score, 90)`
+        # looks for an `addExact(Long, Int)` overload that does not exist and
+        # fails to compile -- a bug that only shows up once an integer literal
+        # meets a checked-arithmetic call site.
+        return f"{value}L"
     if language in {"java", "csharp"} and not -(2**31) <= value <= 2**31 - 1:
         # Without the suffix this is an `int` literal in Java and C#, and
         # `long big() { return 9007199254740993; }` does not compile
@@ -785,6 +843,13 @@ def _string_literal(language: Language, value: str) -> str:
         # including a literal newline and raw UTF-8 -- stands for itself.
         escaped = value.replace("\\", "\\\\").replace("'", "\\'")
         return f"'{escaped}'"
+    if language == "kotlin":
+        # `$` opens a string template in Kotlin: `"a$b"` is a reference to `b`,
+        # and `"a$"` alone is a compile error. Kotlin understands JSON's other
+        # escapes and `\uXXXX`, so escaping the sigil is the whole difference
+        # from Java -- and it is silent, not a parse failure, whenever the name
+        # after it happens to resolve.
+        return encoded.replace("$", "\\$")
     if language == "swift":
         # Swift spells a unicode escape `\u{XXXX}`, not JSON's `\uXXXX`.
         # ensure_ascii=False leaves printable non-ASCII raw, so this only
@@ -830,6 +895,16 @@ _CHECKED_INTEGER_CALL: dict[Language, dict[str, tuple[str, tuple[str, ...]]]] = 
         "*": ("Math.multiplyExact", ()),
         "/": ("Migrated.elmosCheckedDiv", ("checked_div",)),
         "%": ("Migrated.elmosCheckedMod", ("checked_mod",)),
+    },
+    "kotlin": {
+        # `Math` is `java.lang.Math`, default-imported on Kotlin/JVM.
+        "+": ("Math.addExact", ()),
+        "-": ("Math.subtractExact", ()),
+        "*": ("Math.multiplyExact", ()),
+        # Unqualified: Kotlin's helpers are top-level declarations, not members
+        # of a wrapper type the way Java's are.
+        "/": ("elmosCheckedDiv", ("checked_div",)),
+        "%": ("elmosCheckedMod", ("checked_mod",)),
     },
     "python": {
         "+": ("_elmos_checked_add", ("integer_range", "checked_add")),
@@ -889,6 +964,7 @@ _FLOAT_NON_ZERO_GUARD: dict[Language, tuple[str, str]] = {
     "go": ("elmosNonZeroFloat64", "non_zero_float"),
     "rust": ("elmos_non_zero_f64", "non_zero_f64"),
     "swift": ("elmosNonZero", "non_zero_double"),
+    "kotlin": ("elmosNonZero", "non_zero_double"),
     "cpp": ("elmos_non_zero", "non_zero_double"),
     "objc": ("ElmosNonZero", "non_zero_double"),
     "php": ("elmos_non_zero_float", "non_zero_float"),
@@ -1107,6 +1183,31 @@ def _expression(
     raise RouteError(f"UNSUPPORTED_EMISSION_EXPRESSION:{expression.kind}")
 
 
+#: How each target spells a single-assignment local binding.
+#:
+#: The immutable spelling is chosen wherever the language has one -- Java's
+#: `final`, Rust and Swift's `let`, Kotlin's `val`, C++/Objective-C's `const`,
+#: TypeScript's `const`. The IR guarantees the name is bound once, so a target
+#: that can say so in its own syntax should: it keeps the emitted file honest
+#: for a human reader and lets the target's own compiler enforce what the IR
+#: only promises. C#, Go, Python and PHP have no local-immutability keyword,
+#: so they get the plain declaration.
+_LET_SPELLING: dict[Language, str] = {
+    "java": "final {type} {name} = {value}",
+    "csharp": "{type} {name} = {value}",
+    "python": "{name}: {type} = {value}",
+    "typescript": "const {name}: {type} = {value}",
+    "javascript": "const {name} = {value}",
+    "go": "var {name} {type} = {value}",
+    "rust": "let {name}: {type} = {value}",
+    "cpp": "const {type} {name} = {value}",
+    "objc": "const {type} {name} = {value}",
+    "swift": "let {name}: {type} = {value}",
+    "php": "{name} = {value}",
+    "kotlin": "val {name}: {type} = {value}",
+}
+
+
 def _statements(
     context: _Context,
     statements: tuple[Statement, ...],
@@ -1119,17 +1220,56 @@ def _statements(
     language = context.language
     lines: list[str] = []
     for statement in statements:
+        if statement.kind == "let" and statement.expression is not None:
+            if statement.name is None or statement.declared_type is None:
+                raise RouteError("UNSUPPORTED_EMISSION_STATEMENT:let")
+            try:
+                spelling = _LET_SPELLING[language]
+            except KeyError as error:
+                raise RouteError(f"LET_EMISSION_UNSUPPORTED:{language}") from error
+            suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
+            value = _expression(context, statement.expression, environment, top_level=True)
+            lines.append(
+                prefix
+                + spelling.format(
+                    type=_type(language, statement.declared_type),
+                    name=_variable(language, statement.name),
+                    value=value,
+                )
+                + suffix
+            )
+            # The binding is visible to every statement after it in this block.
+            # `environment` is this block's own dict -- `if` bodies below are
+            # handed a copy, which is what keeps a branch-local binding from
+            # leaking past the branch in targets that would not compile it.
+            environment[statement.name] = statement.declared_type
+            continue
         if statement.kind == "return" and statement.expression is not None:
             suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
             value = _expression(context, statement.expression, environment, top_level=True)
             if (
-                language in {"rust", "swift"}
+                language in {"rust", "swift", "kotlin"}
                 and return_type == "number"
                 and types.infer(statement.expression, environment) == "integer"
             ):
                 if language == "rust":
                     context.normalization_rules.add("rust.return.integer-to-number")
                     value = f"{value} as f64"
+                elif language == "kotlin":
+                    # Kotlin widens no numeric type implicitly, so
+                    # `fun f(v: Long): Double { return v }` does not compile --
+                    # the same reason Swift needs `Double(...)` here.  It was
+                    # missing while kotlin had no pinned compiler, which is
+                    # exactly when nothing could catch it: the emitted file is
+                    # never built, so only an assertion on the emitted text can
+                    # see the defect.
+                    #
+                    # Parenthesised because `.` binds tighter than unary minus:
+                    # `-5L.toDouble()` parses as `-(5L.toDouble())`.  That
+                    # happens to agree here, and relying on it would stop being
+                    # true the moment the expression form changes.
+                    context.normalization_rules.add("kotlin.return.integer-to-number")
+                    value = f"({value}).toDouble()"
                 else:
                     context.normalization_rules.add("swift.return.integer-to-number")
                     value = f"Double({value})"
@@ -1157,17 +1297,29 @@ def _statements(
             condition = _expression(context, statement.condition, environment, top_level=True)
             if language == "python":
                 lines.append(f"{prefix}if {condition}:")
-                lines.extend(_statements(context, statement.then_body, environment, indent + 1, return_type))
+                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type))
                 if statement.else_body:
                     lines.append(f"{prefix}else:")
-                    lines.extend(_statements(context, statement.else_body, environment, indent + 1, return_type))
+                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type))
             elif language in {"go", "rust"}:
                 lines.append(f"{prefix}if {condition} {{")
-                lines.extend(_statements(context, statement.then_body, environment, indent + 1, return_type))
-                lines.append(f"{prefix}}}")
+                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type))
                 if statement.else_body:
-                    lines.append(f"{prefix}else {{")
-                    lines.extend(_statements(context, statement.else_body, environment, indent + 1, return_type))
+                    # Go's semicolon rule inserts a `;` at the newline after a
+                    # closing brace, which strands the `else` and makes the file
+                    # fail to parse -- `unexpected keyword else, expected }`.
+                    # The brace and the keyword therefore have to share a line.
+                    # Rust has no such rule, so its existing shape is kept: it
+                    # was already valid, and rewriting it would churn evidence
+                    # for every emission that has an else branch.
+                    if language == "go":
+                        lines.append(f"{prefix}}} else {{")
+                    else:
+                        lines.append(f"{prefix}}}")
+                        lines.append(f"{prefix}else {{")
+                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type))
+                    lines.append(f"{prefix}}}")
+                else:
                     lines.append(f"{prefix}}}")
             else:
                 lines.append(f"{prefix}if ({condition}) {{")
@@ -1175,7 +1327,7 @@ def _statements(
                 lines.append(f"{prefix}}}")
                 if statement.else_body:
                     lines.append(f"{prefix}else {{")
-                    lines.extend(_statements(context, statement.else_body, environment, indent + 1, return_type))
+                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type))
                     lines.append(f"{prefix}}}")
             continue
         raise RouteError(f"UNSUPPORTED_EMISSION_STATEMENT:{statement.kind}")
@@ -1208,6 +1360,9 @@ def _signature(language: Language, function: Function) -> str:
             f"{_type(language, item.type)} {_variable(language, item.name)}" for item in function.parameters
         )
         return f"function {function.name}({parameters}): {return_type} {{"
+    if language == "kotlin":
+        parameters = ", ".join(f"{item.name}: {_type(language, item.type)}" for item in function.parameters)
+        return f"fun {function.name}({parameters}): {return_type} {{"
     if language == "swift":
         # `_` on every parameter keeps call sites positional, which is what
         # every other target and the behaviour harness emit.
@@ -1310,6 +1465,13 @@ def emit(
     if target == "rust":
         body = "\n\n".join([*helpers, functions])
         return _emitted_file(context, "migrated.rs", body + "\n")
+    if target == "kotlin":
+        # Kotlin allows top-level functions, so there is no wrapper type -- and
+        # therefore no qualifier on the helper call sites, unlike Java's
+        # `Migrated.elmosCheckedDiv`. The file name still carries the shared
+        # `Migrated` stem so the harness locates it the same way everywhere.
+        body = "\n\n".join([*helpers, functions])
+        return _emitted_file(context, "Migrated.kt", body + "\n")
     if target == "cpp":
         # <cstdint> for std::int64_t and <string> for std::string: both are
         # required by the canonical type spellings, so both are always

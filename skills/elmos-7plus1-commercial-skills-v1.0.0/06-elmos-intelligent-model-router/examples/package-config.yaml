@@ -1,0 +1,29 @@
+package_id: P06
+version: "1.0.0"
+enabled: true
+components:
+  - P06-C01
+  - P06-C02
+  - P06-C03
+  - P06-C04
+  - P06-C05
+  - P06-C06
+  - P06-C07
+  - P06-C08
+  - P06-C09
+  - P06-C10
+  - P06-C11
+  - P06-C12
+policy:
+  tenant_isolation: strict
+  evidence_gate_required: true
+  fail_closed: true
+  adapter_pin_required: true
+  default_data_scope: tenant-private
+limits:
+  max_parallel_tasks: 4
+  max_attempts: 3
+  max_wall_clock_seconds: 21600
+feature_flags:
+  experimental_upstream_adapters: false
+  shadow_mode: true

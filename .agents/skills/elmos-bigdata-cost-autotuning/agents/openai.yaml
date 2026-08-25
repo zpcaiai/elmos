@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Bigdata Cost Autotuning"
+  short_description: "Run this database and Big Data Skill with evidence controls"
+  default_prompt: "Use $elmos-bigdata-cost-autotuning with the pinned ELMOS database and Big Data contracts; keep catalog and runtime evidence distinct and fail closed on unknowns."

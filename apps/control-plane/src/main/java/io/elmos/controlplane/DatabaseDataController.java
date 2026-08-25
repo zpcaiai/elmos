@@ -51,28 +51,30 @@ public final class DatabaseDataController {
     }
 
     @GetMapping(value = "/sql-preflight/capabilities", produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonNode sqlPreflightCapabilities() {
+    public ResponseEntity<JsonNode> sqlPreflightCapabilities() {
         principal("workspace:view");
-        return sqlPreflight.capabilities();
+        return ResponseEntity.ok()
+                .header("Cache-Control", "private, no-store")
+                .body(sqlPreflight.capabilities());
     }
 
     @PostMapping(
             value = "/sql-preflight/assess",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonNode assessSql(@RequestBody byte[] request) {
+    public ResponseEntity<JsonNode> assessSql(@RequestBody byte[] request) {
         ControlPlanePrincipal principal = principal("translation:execute");
-        return sqlPreflight.assess(request, principal.organizationId(), principal.actorId());
+        return ResponseEntity.ok()
+                .header("Cache-Control", "private, no-store")
+                .body(sqlPreflight.assess(
+                        request, principal.organizationId(), principal.actorId()));
     }
 
     @ExceptionHandler(ChinaDbSqlPreflightFailure.class)
     ResponseEntity<Map<String, Object>> sqlPreflightFailure(ChinaDbSqlPreflightFailure error) {
-        return ResponseEntity.status(error.status()).body(Map.of(
-                "status", "BLOCKED",
-                "errorCode", error.errorCode(),
-                "message", error.safeMessage(),
-                "retryable", error.retryable(),
-                "certification", "NOT_CERTIFIED"));
+        return ResponseEntity.status(error.status())
+                .header("Cache-Control", "private, no-store")
+                .body(error.body());
     }
 
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})

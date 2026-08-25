@@ -1,0 +1,55 @@
+id: commerce.payment.request
+category: commerce
+source_patterns:
+  - framework: vue
+    symbol: paymentService.pay
+targets:
+  wechat:
+    support: decision
+    runtime: hybrid
+    permission:
+      - merchant-account
+      - platform-capability
+    review_risk: high
+    adapter: wechat-commerce
+    required_tests:
+      - order-idempotency
+      - callback-signature
+  alipay:
+    support: decision
+    runtime: hybrid
+    permission:
+      - merchant-account
+      - platform-capability
+    review_risk: high
+    adapter: alipay-commerce
+    required_tests:
+      - order-idempotency
+      - callback-signature
+  douyin:
+    support: decision
+    runtime: hybrid
+    permission:
+      - platform-capability
+    review_risk: high
+    adapter: douyin-commerce
+    required_tests:
+      - order-idempotency
+      - callback-signature
+  xiaohongshu:
+    support: decision
+    runtime: hybrid
+    permission:
+      - professional-account
+      - platform-capability
+    review_risk: high
+    adapter: xhs-commerce
+    required_tests:
+      - order-idempotency
+      - callback-signature
+fallback:
+  strategy: backend-order-plus-approved-checkout
+  requires_approval: true
+verified_at: "2026-08-19"
+source_refs:
+  - docs/PLATFORM-REFERENCES.md

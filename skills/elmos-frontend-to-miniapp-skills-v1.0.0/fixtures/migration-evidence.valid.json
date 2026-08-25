@@ -1,0 +1,57 @@
+{
+  "evidence_id": "evidence-demo",
+  "request_id": "conv-demo-001",
+  "source_revision": "0123456789abcdef",
+  "artifacts": [
+    {
+      "artifact_id": "ir",
+      "path": "runs/demo/ir/semantic-ir.json",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "producer": "miniapp-semantic-ir",
+      "status": "passed"
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "claim-build-wechat",
+      "type": "build",
+      "subject": "wechat",
+      "status": "passed",
+      "evidence_refs": [
+        "artifact-build-wechat"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "gate": "G0",
+      "status": "passed",
+      "evidence_refs": [
+        "artifact-request"
+      ]
+    },
+    {
+      "gate": "G4",
+      "status": "passed",
+      "evidence_refs": [
+        "artifact-build-wechat"
+      ]
+    }
+  ],
+  "approvals": [
+    {
+      "action": "release",
+      "status": "pending"
+    }
+  ],
+  "cost": {
+    "currency": "USD",
+    "total": 0.42,
+    "system_wall_clock_ms": 120000,
+    "breakdown": {
+      "model": 0.3,
+      "compute": 0.12
+    }
+  },
+  "release_status": "not-ready"
+}

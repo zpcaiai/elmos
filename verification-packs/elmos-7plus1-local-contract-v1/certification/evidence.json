@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-7plus1-local-contract-v1",
+  "metrics": {
+    "local_focused_test_count": 40,
+    "local_focused_test_pass_rate": 1.0,
+    "local_focused_test_failures": 0,
+    "installed_skills_per_root": 102,
+    "skill_creator_validated": 204,
+    "skill_creator_failures": 0
+  },
+  "zero_tolerance": {},
+  "local_runtime_test_result_digest": "sha256:a76072f65a834bef63c46b1f41cf58bafa5fc84ab61281c441a864ae040f1a09",
+  "local_installation_validation_digest": "sha256:8648afa549745e2db7d1fc2d5e79ecb40324a3ac89aaecc5ce696c62463d9d33",
+  "evidence_refs": [
+    "artifacts/source-archives.json",
+    "artifacts/target-artifacts.json",
+    "environment/local-validation-environment.json",
+    "technique-status.json",
+    "certification/local-pack-validation.json",
+    "certification/local-runtime-test-result.json",
+    "certification/local-installation-validation.json",
+    "certification/raw/install-summary.txt",
+    "certification/raw/install-check.txt",
+    "certification/raw/skill-creator-validation.txt",
+    "certification/gate-result.json"
+  ],
+  "execution_states": {
+    "batch35_schema_validation": "PASSED",
+    "conservative_gate": "PASSED_NOT_CERTIFIED",
+    "development": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "negative": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "installation": "LOCAL_INSTALLED_AND_CHECKED_SELF_ATTESTED",
+    "skill_creator_validation": "LOCAL_EXECUTED_SELF_ATTESTED_204_OF_204",
+    "holdout": "NOT_RUN",
+    "representative_workloads": "NOT_RUN",
+    "mutation": "NOT_RUN",
+    "fuzz": "NOT_RUN",
+    "symbolic_smt": "UNSUPPORTED",
+    "independent_review": "NOT_RUN",
+    "external_runtime": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "notes": [
+    "Exact archive identity, installed target identity, local pack validation, 40 focused local tests, read-only installation check, and 204 Skill Creator validations are recorded.",
+    "Local passing tests are self-attested bounded engineering evidence only; mutation, fuzz, proof, independent corpora, external runtime, and certification remain unavailable."
+  ]
+}

@@ -1383,19 +1383,19 @@ SWIFT_NETWORK_PROBE_BUILD_ENVIRONMENT = {
 SWIFT_NETWORK_SANDBOX = {
     "path": "/usr/bin/sandbox-exec",
     "sha256": (
-        "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"
+        "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
     ),
     "bytes": 102_368,
     "mode": "0755",
     "uid": 0,
     "gid": 0,
     "nlink": 1,
-    "cdhash_full": ("3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"),
+    "cdhash_full": ("4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625"),
 }
 SWIFT_NETWORK_VERIFIER = {
     "path": "/usr/bin/codesign",
     "sha256": (
-        "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"
+        "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"
     ),
     "bytes": 458_576,
     "mode": "0755",
@@ -2828,6 +2828,7 @@ def _probe_validation_environment(root: Path) -> dict[str, str]:
         "GIT_CONFIG_NOSYSTEM": "1",
         "GIT_CONFIG_GLOBAL": "/dev/null",
         "GIT_TERMINAL_PROMPT": "0",
+        "TEST_TELEMETRY_DIR": str(home / ".elmos-go-telemetry"),
         "XDG_CACHE_HOME": str(home / ".cache"),
         "PYTHONHASHSEED": "0",
         "PYTHONDONTWRITEBYTECODE": "1",

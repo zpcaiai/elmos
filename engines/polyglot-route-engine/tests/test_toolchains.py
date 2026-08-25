@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import subprocess
 import tempfile
 import time
 from pathlib import Path
@@ -8,6 +9,62 @@ import pytest
 
 from elmos_polyglot_route import toolchains
 from elmos_polyglot_route.models import RouteError
+
+
+def test_output_prefers_successful_stdout_over_diagnostic_stderr(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        toolchains.subprocess,
+        "run",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            args[0],
+            0,
+            stdout="Xcode 26.6\nBuild version 17F113\n",
+            stderr="DVTFilePathFSEvents: Failed to start fs event stream.\n",
+        ),
+    )
+
+    assert (
+        toolchains._output(["/usr/bin/env"], include_stderr=False)
+        == "Xcode 26.6\nBuild version 17F113"
+    )
+
+
+def test_output_keeps_successful_stderr_only_version_surfaces(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        toolchains.subprocess,
+        "run",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            args[0],
+            0,
+            stdout="",
+            stderr=toolchains._EXPECTED_JAVA_VERSION + "\n",
+        ),
+    )
+
+    assert toolchains._output(["/usr/bin/env"]) == toolchains._EXPECTED_JAVA_VERSION
+
+
+def test_output_keeps_split_success_identity_streams_by_default(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stdout = toolchains._EXPECTED_SWIFT_VERSION + "\n" + toolchains._EXPECTED_SWIFT_TARGET + "\n"
+    stderr = toolchains._EXPECTED_SWIFT_DRIVER_VERSION + "\n"
+    monkeypatch.setattr(
+        toolchains.subprocess,
+        "run",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            args[0],
+            0,
+            stdout=stdout,
+            stderr=stderr,
+        ),
+    )
+
+    assert toolchains._output(["/usr/bin/env"]) == (stdout + stderr).strip()
 
 
 def _mock_go_closure(monkeypatch: pytest.MonkeyPatch, observed: str) -> None:

@@ -888,6 +888,49 @@ function checkOperandTypes(array $function): void
  * changes what loading the file does, and the profile's claim is about the file
  * as a whole, not about one function read out of it.
  */
+/**
+ * Advance past one top-level construct that is not a function declaration.
+ *
+ * `lift()` answers one question: does this named function fit
+ * `typed-pure-function-v1`. Whether the *file* is fully covered is
+ * `--inventory`'s question, and it already records every class, constant,
+ * include edge and top-level statement as an explicit non-analyzable
+ * obligation that blocks repository completion.
+ *
+ * Failing here as well made the two layers contradict each other: enumeration
+ * would report `clean` as analyzable and the lifter would then refuse the file
+ * `clean` lives in, so any PHP file with so much as a `const` above the
+ * function was unliftable. Every other frontend in this engine locates the
+ * named function regardless of what else the file holds.
+ *
+ * Skipping loses nothing. A body that actually *uses* one of these names is
+ * still rejected -- the expression parser resolves parameters and nothing
+ * else, so a free identifier raises `PHP_CALL_OUTSIDE_CERTIFIED_SUBSET`.
+ */
+function skipTopLevelDeclaration(Cursor $cursor): void
+{
+    $depth = 0;
+    $opened = false;
+    while (!$cursor->atEnd()) {
+        $token = $cursor->next();
+        if ($token->kind === '{') {
+            $depth++;
+            $opened = true;
+            continue;
+        }
+        if ($token->kind === '}') {
+            $depth--;
+            if ($depth <= 0 && $opened) {
+                return;
+            }
+            continue;
+        }
+        if ($token->kind === ';' && $depth === 0) {
+            return;
+        }
+    }
+}
+
 function lift(Cursor $cursor, string $functionName, bool $emittedTarget): array
 {
     requireStrictTypes($cursor);
@@ -897,7 +940,9 @@ function lift(Cursor $cursor, string $functionName, bool $emittedTarget): array
     while (!$cursor->atEnd()) {
         $token = $cursor->peek();
         if ($token->kind !== T_FUNCTION) {
-            fail('PHP_UNSUPPORTED_STATEMENT', is_int($token->kind) ? token_name($token->kind) : $token->kind);
+            // Not this layer's decision -- see skipTopLevelDeclaration().
+            skipTopLevelDeclaration($cursor);
+            continue;
         }
         $start = $cursor->next()->start;
         if ($cursor->peek() !== null && $cursor->peek()->kind === '&') {
@@ -1097,6 +1142,434 @@ function stripInternal(mixed $node): mixed
 }
 
 
+/**
+ * MODULE ENUMERATION -- `typed-pure-module-v1`.
+ *
+ * `lift()` above answers "does this one named function fit the profile".
+ * That is not enough to migrate a repository: a file can also carry classes,
+ * constants, top-level statements and `require` edges, and silently ignoring
+ * them would let a file report full coverage while most of it was never
+ * looked at. Enumeration answers the other question -- what is *in* the file
+ * -- and marks each declaration `analyzable` only when the named-function
+ * frontend could even be asked about it. Everything else is surfaced as an
+ * explicit, non-analyzable obligation rather than dropped.
+ *
+ * The authority split is the same one every other frontend in this engine
+ * uses: enumeration establishes file closure, `lift()` decides profile fit.
+ * Enumeration therefore never rejects -- it reports.
+ */
+
+/** Does the file open with `declare(strict_types=1)`? Without it the profile's
+ *  type story does not hold, so nothing in the file can be analyzable. */
+function inventoryHasStrictTypes(array $tokens): bool
+{
+    if (count($tokens) < 8) {
+        return false;
+    }
+    return $tokens[0]->kind === T_OPEN_TAG
+        && $tokens[1]->kind === T_DECLARE
+        && $tokens[2]->kind === '('
+        && $tokens[3]->kind === T_STRING
+        && strtolower($tokens[3]->text) === 'strict_types'
+        && $tokens[4]->kind === '='
+        && $tokens[5]->kind === T_LNUMBER
+        && $tokens[5]->text === '1'
+        && $tokens[6]->kind === ')'
+        && $tokens[7]->kind === ';';
+}
+
+/** Read a possibly-qualified name (`Foo\Bar`) starting at $index. */
+function inventoryQualifiedName(array $tokens, int &$index): string
+{
+    $parts = '';
+    $count = count($tokens);
+    while ($index < $count) {
+        $kind = $tokens[$index]->kind;
+        if (
+            $kind === T_STRING
+            || $kind === T_NAME_QUALIFIED
+            || $kind === T_NAME_FULLY_QUALIFIED
+            || $kind === T_NAME_RELATIVE
+            || $kind === T_NS_SEPARATOR
+        ) {
+            $parts .= $tokens[$index]->text;
+            $index++;
+            continue;
+        }
+        break;
+    }
+    return $parts;
+}
+
+/**
+ * End byte of a declaration that starts at $index.
+ *
+ * A declaration ends either at its `;` (abstract method, interface method,
+ * `const`, `use`, top-level statement) or at the `}` that closes its body.
+ * Both are found by scanning at the declaration's own brace depth, so a
+ * nested closure or match arm cannot terminate the scan early.
+ */
+/**
+ * Where a declaration or statement that starts at $index ends.
+ *
+ * The two terminators are not interchangeable. `function f() {...}` ends at the
+ * brace that closes its body, while `$f = function () {...};` is an expression
+ * statement whose braces are interior and which ends at the `;` after them.
+ * Scanning for "the first closing brace" would cut the second one short and
+ * leave a stray `;` behind, so the caller states which shape it is reading.
+ *
+ * @return array{0: int, 1: int} token index and end byte, inclusive of the terminator
+ */
+function inventoryDeclarationEnd(array $tokens, int $index, bool $bodyTerminated): array
+{
+    $count = count($tokens);
+    $depth = 0;
+    $opened = false;
+    for ($cursor = $index; $cursor < $count; $cursor++) {
+        $text = $tokens[$cursor]->text;
+        if ($text === '{') {
+            $depth++;
+            $opened = true;
+            continue;
+        }
+        if ($text === '}') {
+            if ($depth === 0) {
+                // The brace closing an enclosing container, not this member.
+                $back = max($index, $cursor - 1);
+                return [$back, $tokens[$back]->end];
+            }
+            $depth--;
+            if ($depth === 0 && $opened && $bodyTerminated) {
+                return [$cursor, $tokens[$cursor]->end];
+            }
+            continue;
+        }
+        if ($text === ';' && $depth === 0) {
+            return [$cursor, $tokens[$cursor]->end];
+        }
+    }
+    return [$count - 1, $tokens[$count - 1]->end];
+}
+
+/** Parameter list and return type, sliced verbatim from the source bytes. */
+function inventorySignatureText(array $tokens, int $index, string $source): array
+{
+    $count = count($tokens);
+    $cursor = $index;
+    while ($cursor < $count && $tokens[$cursor]->text !== '(') {
+        if ($tokens[$cursor]->text === '{' || $tokens[$cursor]->text === ';') {
+            return ['source_parameters' => '', 'source_return_type' => ''];
+        }
+        $cursor++;
+    }
+    if ($cursor >= $count) {
+        return ['source_parameters' => '', 'source_return_type' => ''];
+    }
+    $parametersStart = $tokens[$cursor]->start;
+    $depth = 0;
+    for (; $cursor < $count; $cursor++) {
+        $text = $tokens[$cursor]->text;
+        if ($text === '(') {
+            $depth++;
+            continue;
+        }
+        if ($text === ')') {
+            $depth--;
+            if ($depth === 0) {
+                break;
+            }
+        }
+    }
+    if ($cursor >= $count) {
+        return ['source_parameters' => '', 'source_return_type' => ''];
+    }
+    $parameters = substr($source, $parametersStart, $tokens[$cursor]->end - $parametersStart);
+    $cursor++;
+    $returnType = '';
+    if ($cursor < $count && $tokens[$cursor]->text === ':') {
+        $cursor++;
+        if ($cursor < $count) {
+            $returnStart = $tokens[$cursor]->start;
+            $returnEnd = $returnStart;
+            while ($cursor < $count) {
+                $text = $tokens[$cursor]->text;
+                if ($text === '{' || $text === ';') {
+                    break;
+                }
+                $returnEnd = $tokens[$cursor]->end;
+                $cursor++;
+            }
+            $returnType = substr($source, $returnStart, $returnEnd - $returnStart);
+        }
+    }
+    return ['source_parameters' => $parameters, 'source_return_type' => $returnType];
+}
+
+/** @return list<array<string, mixed>> */
+function moduleInventorySubjects(array $tokens, string $file, string $source, bool $strictTypes): array
+{
+    $subjects = [];
+    $namespace = '';
+    $count = count($tokens);
+    $depth = 0;
+    /** @var list<array{kind: string, name: string, depth: int}> $containers */
+    $containers = [];
+
+    $push = static function (
+        string $name,
+        string $qualified,
+        string $kind,
+        bool $analyzable,
+        int $start,
+        int $end,
+        array $signature,
+    ) use (&$subjects, $file): void {
+        $subjects[] = [
+            'name' => $name,
+            'qualified_name' => $qualified,
+            'declaration_kind' => $kind,
+            'analyzable' => $analyzable,
+            'source_span' => span($file, $start, $end),
+            // An empty PHP array encodes as `[]`; the module-inventory contract
+            // requires an object here, so an empty signature must be forced.
+            'signature' => $signature === [] ? new stdClass() : $signature,
+        ];
+    };
+
+    for ($index = 0; $index < $count; $index++) {
+        $token = $tokens[$index];
+        $text = $token->text;
+
+        if ($text === '{') {
+            $depth++;
+            continue;
+        }
+        if ($text === '}') {
+            $depth--;
+            while ($containers !== [] && $containers[count($containers) - 1]['depth'] >= $depth) {
+                array_pop($containers);
+            }
+            continue;
+        }
+
+        $container = $containers === [] ? null : $containers[count($containers) - 1];
+        $prefix = $namespace === '' ? '' : $namespace . '\\';
+        $atFileScope = $depth === 0 && $container === null;
+
+        switch ($token->kind) {
+            case T_OPEN_TAG:
+            case T_CLOSE_TAG:
+            case T_OPEN_TAG_WITH_ECHO:
+                continue 2;
+
+            case T_FINAL:
+            case T_ABSTRACT:
+            case T_READONLY:
+            case T_STATIC:
+            case T_PUBLIC:
+            case T_PRIVATE:
+            case T_PROTECTED:
+            case T_VAR:
+                // A modifier belongs to the declaration that follows it.
+                continue 2;
+
+            case T_NAMESPACE:
+                [$endIndex, $endByte] = inventoryDeclarationEnd($tokens, $index, false);
+                $cursor = $index + 1;
+                $namespace = inventoryQualifiedName($tokens, $cursor);
+                $name = $namespace === '' ? '<global>' : $namespace;
+                $push($name, $name, 'namespace', false, $token->start, $endByte, []);
+                $index = $endIndex;
+                continue 2;
+
+            case T_DECLARE:
+                [$endIndex, $endByte] = inventoryDeclarationEnd($tokens, $index, false);
+                $directive = substr($source, $token->start, $endByte - $token->start);
+                if ($strictTypes && $index === 1 && $directive === 'declare(strict_types=1);') {
+                    $push(
+                        '<strict-types>',
+                        '<strict-types>',
+                        'php-profile-preamble',
+                        false,
+                        $token->start,
+                        $endByte,
+                        ['directive' => 'strict_types', 'value' => 1],
+                    );
+                } else {
+                    $push(
+                        '<declare>',
+                        $prefix . '<declare>',
+                        'declare-directive',
+                        false,
+                        $token->start,
+                        $endByte,
+                        [],
+                    );
+                }
+                $index = $endIndex;
+                continue 2;
+
+            case T_REQUIRE:
+            case T_REQUIRE_ONCE:
+            case T_INCLUDE:
+            case T_INCLUDE_ONCE:
+                // A file that pulls in another file is not closed on its own.
+                [$endIndex, $endByte] = inventoryDeclarationEnd($tokens, $index, false);
+                $directive = strtolower($text);
+                $push($directive, $prefix . $directive, 'include-directive', false, $token->start, $endByte, ['directive' => $directive]);
+                $index = $endIndex;
+                continue 2;
+
+            case T_USE:
+                [$endIndex, $endByte] = inventoryDeclarationEnd($tokens, $index, false);
+                $cursor = $index + 1;
+                $name = inventoryQualifiedName($tokens, $cursor);
+                $name = $name === '' ? '<use>' : $name;
+                if ($container !== null) {
+                    $push($name, $container['name'] . '::' . $name, 'trait-use', false, $token->start, $endByte, []);
+                } else {
+                    $push($name, $name, 'import', false, $token->start, $endByte, []);
+                }
+                $index = $endIndex;
+                continue 2;
+
+            case T_CLASS:
+            case T_INTERFACE:
+            case T_TRAIT:
+            case T_ENUM:
+                [$endIndex, $endByte] = inventoryDeclarationEnd($tokens, $index, true);
+                $kindName = match ($token->kind) {
+                    T_CLASS => 'class',
+                    T_INTERFACE => 'interface',
+                    T_TRAIT => 'trait',
+                    default => 'enum',
+                };
+                $cursor = $index + 1;
+                if ($cursor >= $count || $tokens[$cursor]->kind !== T_STRING) {
+                    // `new class {...}` or `Foo::class`; neither declares a type.
+                    continue 2;
+                }
+                $name = $tokens[$cursor]->text;
+                $qualified = $prefix . $name;
+                $push($name, $qualified, $kindName, false, $token->start, $endByte, []);
+                // Descend: the members are what closure is actually about.
+                $containers[] = ['kind' => $kindName, 'name' => $qualified, 'depth' => $depth];
+                continue 2;
+
+            case T_FUNCTION:
+                [$endIndex, $endByte] = inventoryDeclarationEnd($tokens, $index, true);
+                $cursor = $index + 1;
+                $byReference = ($cursor < $count && $tokens[$cursor]->text === '&');
+                if ($byReference) {
+                    $cursor++;
+                }
+                $signature = inventorySignatureText($tokens, $index, $source);
+                $signature['by_reference'] = $byReference;
+                if ($cursor >= $count || $tokens[$cursor]->kind !== T_STRING) {
+                    // Closure: an expression, not a declaration.
+                    $push('<closure>', $prefix . '<closure>', 'closure', false, $token->start, $endByte, $signature);
+                    $index = $endIndex;
+                    continue 2;
+                }
+                $name = $tokens[$cursor]->text;
+                if ($container !== null) {
+                    $push($name, $container['name'] . '::' . $name, 'method', false, $token->start, $endByte, $signature);
+                    $index = $endIndex;
+                    continue 2;
+                }
+                // Only an unconditional file-scope function can be asked about.
+                // A by-reference return is outside `typed-pure-function-v1`, and
+                // without `strict_types` the profile's type story does not hold.
+                $analyzable = $strictTypes && !$byReference && $depth === 0;
+                $push($name, $prefix . $name, 'function', $analyzable, $token->start, $endByte, $signature);
+                $index = $endIndex;
+                continue 2;
+
+            case T_FN:
+                [$endIndex, $endByte] = inventoryDeclarationEnd($tokens, $index, false);
+                $signature = inventorySignatureText($tokens, $index, $source);
+                $signature['by_reference'] = false;
+                $push('<arrow-function>', $prefix . '<arrow-function>', 'closure', false, $token->start, $endByte, $signature);
+                $index = $endIndex;
+                continue 2;
+
+            case T_CONST:
+                [$endIndex, $endByte] = inventoryDeclarationEnd($tokens, $index, false);
+                $cursor = $index + 1;
+                $name = ($cursor < $count && $tokens[$cursor]->kind === T_STRING) ? $tokens[$cursor]->text : '<const>';
+                if ($container !== null) {
+                    $push($name, $container['name'] . '::' . $name, 'class-constant', false, $token->start, $endByte, []);
+                } else {
+                    $push($name, $prefix . $name, 'constant', false, $token->start, $endByte, []);
+                }
+                $index = $endIndex;
+                continue 2;
+
+            case T_CASE:
+                // An enum case is a declaration; a `switch` case is not, and a
+                // switch body is always deeper than its enclosing container.
+                if ($container === null || $container['kind'] !== 'enum' || $depth !== $container['depth'] + 1) {
+                    continue 2;
+                }
+                [$endIndex, $endByte] = inventoryDeclarationEnd($tokens, $index, false);
+                $cursor = $index + 1;
+                $name = ($cursor < $count && $tokens[$cursor]->kind === T_STRING) ? $tokens[$cursor]->text : '<case>';
+                $push($name, $container['name'] . '::' . $name, 'enum-case', false, $token->start, $endByte, []);
+                $index = $endIndex;
+                continue 2;
+
+            case T_VARIABLE:
+                [$endIndex, $endByte] = inventoryDeclarationEnd($tokens, $index, false);
+                $bare = ltrim($text, '$');
+                if ($container !== null && $depth === $container['depth'] + 1) {
+                    $push($bare, $container['name'] . '::' . $bare, 'property', false, $token->start, $endByte, []);
+                    $index = $endIndex;
+                    continue 2;
+                }
+                if ($atFileScope) {
+                    $push($bare, $prefix . $bare, 'top-level-statement', false, $token->start, $endByte, []);
+                    $index = $endIndex;
+                }
+                continue 2;
+
+            default:
+                if ($text === ';' || $text === ',') {
+                    continue 2;
+                }
+                [$endIndex, $endByte] = inventoryDeclarationEnd($tokens, $index, false);
+                if ($atFileScope) {
+                    $push(strtolower($text), $prefix . strtolower($text), 'top-level-statement', false, $token->start, $endByte, []);
+                    $index = $endIndex;
+                }
+                continue 2;
+        }
+    }
+
+    return $subjects;
+}
+
+/** @return array<string, mixed> */
+function moduleInventory(string $path, string $source, string $analyzerVersion): array
+{
+    $file = basename($path);
+    $tokens = significant(lex($source));
+    $strictTypes = inventoryHasStrictTypes($tokens);
+    $subjects = moduleInventorySubjects($tokens, $file, $source, $strictTypes);
+
+    return [
+        'schema_version' => SCHEMA_VERSION,
+        'kind' => 'elmos.typed-pure-module-inventory',
+        'profile' => 'typed-pure-module-v1',
+        'source_language' => 'php',
+        'source_file' => $file,
+        'analyzer' => ANALYZER_NAME,
+        'analyzer_version' => $analyzerVersion,
+        'enumeration_status' => 'PASSED',
+        'subjects' => $subjects,
+        'diagnostics' => [],
+    ];
+}
+
 function main(array $argv): int
 {
     if (count($argv) < 3) {
@@ -1127,6 +1600,24 @@ function main(array $argv): int
     if ($source === false) {
         fwrite(STDERR, "PHP_ANALYZER_SOURCE_UNSAFE\n");
         return 1;
+    }
+
+    if ($functionName === '--inventory') {
+        try {
+            $inventory = moduleInventory(
+                $path,
+                $source,
+                'php-' . PHP_VERSION . ';tokenizer=' . phpversion('tokenizer'),
+            );
+        } catch (DomainError $error) {
+            fwrite(STDERR, $error->getMessage() . "\n");
+            return 1;
+        }
+        echo json_encode(
+            $inventory,
+            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION,
+        ), "\n";
+        return 0;
     }
 
     try {

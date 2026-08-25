@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 参考架构与服务边界"
+  short_description: "Guide 参考架构与服务边界 with evidence controls"
+  default_prompt: "Use $elmos-reference-architecture as guidance for 参考架构与服务边界 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

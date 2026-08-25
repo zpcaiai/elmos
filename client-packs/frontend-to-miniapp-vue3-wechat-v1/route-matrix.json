@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-to-miniapp-vue3-wechat-v1",
+  "tuples": [
+    {
+      "source_stack": "vue3-sfc-fixture",
+      "source_version": "source-package-1.0.0-parser-3.5.39",
+      "source_snapshot_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-1.06.2504010-NOT_RUN",
+      "generator_profile": "2026-08-20.1",
+      "journey": "todo-enter-add-list-increment",
+      "route": "/",
+      "status": "experimental",
+      "evidence_refs": ["ui-ir/model.json", "transformations/vue3-todo-to-wechat-native.json", "certification/local-static-evidence.json", "certification/local-runtime-candidate-evidence.json"],
+      "runtime_state": "LOCAL_EXECUTED_BOUNDED_SOURCE_DERIVED_CANDIDATE",
+      "certification": "NOT_CERTIFIED"
+    }
+  ],
+  "recertification_triggers": [
+    "any byte change in the six source fixture files",
+    "source dependency resolution or lockfile introduction",
+    "Vue compiler TypeScript parser or Node runtime change",
+    "WeChat platform profile generator or official toolchain change",
+    "route component state form accessibility or style contract change",
+    "visual baseline accessibility profile device or evidence policy change"
+  ]
+}

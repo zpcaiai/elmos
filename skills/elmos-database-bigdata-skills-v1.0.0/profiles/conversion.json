@@ -1,0 +1,10 @@
+{
+  "profile": "conversion",
+  "version": "1.0.0",
+  "skills": [
+    "elmos-database-migration-modernization",
+    "elmos-cdc-event-backbone",
+    "elmos-template-cdc-migration-modernization"
+  ],
+  "dependency_policy": "installer expands transitive dependencies"
+}

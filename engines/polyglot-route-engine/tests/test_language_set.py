@@ -1,10 +1,21 @@
 """Keep engine, repository-route and specialised-proof language sets explicit.
 
-The repository orchestration surface has one route record for every ordered
-pair of the ten supported languages.  That inventory breadth is deliberately
-separate from evidence strength: the native/JVM exact-eight profile carries
-additional module, span, behaviour and formal obligations, and no route becomes
-certified merely because it appears in the complete inventory.
+The route matrix has one route record for every ordered pair of the thirteen
+supported languages.  That inventory breadth is deliberately separate from
+three other things, and this module exists to keep them from collapsing into
+each other:
+
+* **Analyzability.**  ``PENDING_ANALYZER_LANGUAGES`` are declared matrix
+  members with no analyzer.  They are routed; they cannot be lifted from.
+* **Repository surface.**  ``REPOSITORY_SURFACE_LANGUAGES`` is what discovery,
+  inventory, placement and build files actually handle.
+* **Evidence strength.**  The native/JVM exact-eight profile carries additional
+  module, span, behaviour and formal obligations, and no route becomes
+  certified merely because it appears in the complete inventory.
+
+``javascript`` is deprecated: absent from the supported set and from every
+active route set, but its packs, its engine machinery and its provenance
+partition are retained at their recorded values.
 """
 
 from __future__ import annotations
@@ -24,8 +35,12 @@ from elmos_polyglot_route.models import (
     ANALYZABLE_LANGUAGES,
     COMPLETE_MATRIX_DIRECTED_PAIRS,
     COMPLETE_MATRIX_LANGUAGES,
+    DEPRECATED_DIRECTED_PAIRS,
+    DEPRECATED_LANGUAGES,
     ENGINE_ONLY_LANGUAGES,
     NODEJS_DIRECTED_PAIRS,
+    PENDING_ANALYZER_LANGUAGES,
+    REPOSITORY_SURFACE_LANGUAGES,
     ROUTED_LANGUAGES,
     ROUTED_PAIRS,
     SPECIALIZED_DIRECTED_PAIRS,
@@ -45,8 +60,53 @@ ROUTES = REPOSITORY_ROOT / "routes"
 def test_the_split_is_a_partition_of_the_supported_set() -> None:
     assert set(ROUTED_LANGUAGES) | set(ENGINE_ONLY_LANGUAGES) == set(SUPPORTED_LANGUAGES)
     assert not set(ROUTED_LANGUAGES) & set(ENGINE_ONLY_LANGUAGES)
-    # A language the engine cannot analyse could not be a route source.
-    assert set(ROUTED_LANGUAGES) <= set(ANALYZABLE_LANGUAGES)
+    # A language the engine cannot analyse could not be a route source -- with
+    # one explicit exception.  Kotlin, React and Flutter are declared in the
+    # matrix ahead of their analyzers, so the old ``ROUTED <= ANALYZABLE``
+    # invariant is now stated with that exception named rather than silently
+    # weakened: everything routed and not pending must still be analyzable.
+    assert set(ROUTED_LANGUAGES) - set(PENDING_ANALYZER_LANGUAGES) <= set(ANALYZABLE_LANGUAGES)
+    assert not set(ANALYZABLE_LANGUAGES) & set(PENDING_ANALYZER_LANGUAGES)
+    assert set(PENDING_ANALYZER_LANGUAGES) <= set(SUPPORTED_LANGUAGES)
+    # Deprecation and support are disjoint states, not overlapping ones.
+    assert not set(DEPRECATED_LANGUAGES) & set(SUPPORTED_LANGUAGES)
+
+
+def test_pending_analyzer_languages_cannot_produce_a_semantic_ir() -> None:
+    """A matrix member without an analyzer must fail closed, not lift."""
+
+    for language in PENDING_ANALYZER_LANGUAGES:
+        with pytest.raises(RouteError, match=rf"SOURCE_ANALYZER_NOT_IMPLEMENTED:{language}"):
+            SemanticIR.from_mapping(
+                {
+                    "schema_version": "1.0.0",
+                    "source_language": language,
+                    "source_file": f"unit.{language}",
+                    "analyzer": "test",
+                    "analyzer_version": "1",
+                    "functions": [
+                        {
+                            "name": "identity",
+                            "parameters": [{"name": "value", "type": "integer"}],
+                            "return_type": "integer",
+                            "body": [{"kind": "return", "expression": {"kind": "name", "value": "value"}}],
+                        }
+                    ],
+                    "diagnostics": [],
+                }
+            )
+
+
+def test_deprecated_language_keeps_its_engine_machinery_but_leaves_the_matrix() -> None:
+    assert DEPRECATED_LANGUAGES == ("javascript",)
+    # Still liftable: the Node.js analyzer, emitter and filed evidence stay.
+    assert "javascript" in REPOSITORY_SURFACE_LANGUAGES
+    # No longer routed in either direction.
+    assert not any("javascript" in pair for pair in ROUTED_PAIRS)
+    assert not is_routed_pair("javascript", "java")
+    assert not is_routed_pair("java", "javascript")
+    # The retired directions are still enumerable under their own name.
+    assert len(DEPRECATED_DIRECTED_PAIRS) == 20
 
 
 def test_the_routed_set_is_not_empty_and_engine_only_is_not_everything() -> None:
@@ -56,31 +116,41 @@ def test_the_routed_set_is_not_empty_and_engine_only_is_not_everything() -> None
     assert len(ENGINE_ONLY_LANGUAGES) < len(SUPPORTED_LANGUAGES)
 
 
-def test_repository_orchestration_has_a_complete_eleven_language_surface() -> None:
+def test_repository_orchestration_surface_is_exactly_the_supported_analyzable_set() -> None:
     source_inventory_languages = set(_EXTENSIONS.values())
     discovery_languages = {"python", *_DECLARATION_PATTERNS}
     target_project_languages = set(_PLACERS)
     target_build_languages = set(_BUILD_FILES)
 
-    assert source_inventory_languages == set(SUPPORTED_LANGUAGES)
-    assert discovery_languages == set(SUPPORTED_LANGUAGES)
-    assert target_project_languages == set(SUPPORTED_LANGUAGES)
-    assert target_build_languages == set(SUPPORTED_LANGUAGES)
+    # Compared against REPOSITORY_SURFACE_LANGUAGES, not SUPPORTED_LANGUAGES.
+    # A pending-analyzer language has no extension, no declaration pattern, no
+    # placer and no build file, and adding stubs so this comparison passes
+    # would assert support the engine does not have.
+    assert source_inventory_languages == set(REPOSITORY_SURFACE_LANGUAGES)
+    assert discovery_languages == set(REPOSITORY_SURFACE_LANGUAGES)
+    assert target_project_languages == set(REPOSITORY_SURFACE_LANGUAGES)
+    assert target_build_languages == set(REPOSITORY_SURFACE_LANGUAGES)
+    assert set(REPOSITORY_SURFACE_LANGUAGES) == (
+        set(SUPPORTED_LANGUAGES) | set(DEPRECATED_LANGUAGES)
+    ) - set(PENDING_ANALYZER_LANGUAGES)
 
     directed_pairs = {
         (source, target) for source in SUPPORTED_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target
     }
-    assert len(directed_pairs) == 110
+    assert len(directed_pairs) == 156
 
 
-def test_route_contract_is_complete_eleven_language_matrix_with_exact_subsets() -> None:
+def test_route_contract_is_complete_thirteen_language_matrix_with_exact_subsets() -> None:
     assert ROUTED_LANGUAGES == COMPLETE_MATRIX_LANGUAGES
-    assert len(COMPLETE_MATRIX_DIRECTED_PAIRS) == 110
+    assert len(COMPLETE_MATRIX_DIRECTED_PAIRS) == 156
     assert len(SPECIALIZED_DIRECTED_PAIRS) == 8
+    # Pinned to a literal.  If this ever reads 0 the pin was reverted to a
+    # comprehension over the language tuple and javascript's removal silently
+    # emptied it -- which would flip requires_concrete_source_spans for all 20.
     assert len(NODEJS_DIRECTED_PAIRS) == 20
-    assert len(COMPLETE_MATRIX_LANGUAGES) == 11
-    assert len(ROUTED_PAIRS) == 110
-    assert len(set(ROUTED_PAIRS)) == 110
+    assert len(COMPLETE_MATRIX_LANGUAGES) == 13
+    assert len(ROUTED_PAIRS) == 156
+    assert len(set(ROUTED_PAIRS)) == 156
     assert all(is_routed_pair(source, target) for source, target in ROUTED_PAIRS)
 
     assert is_routed_pair("php", "java")
@@ -92,8 +162,20 @@ def test_route_contract_is_complete_eleven_language_matrix_with_exact_subsets() 
     assert is_routed_pair("java", "objc")
     assert is_routed_pair("objc", "java")
     assert is_routed_pair("cpp", "python")
-    assert is_routed_pair("javascript", "java")
-    assert is_routed_pair("java", "javascript")
+    # The three new languages route against everything, in both directions.
+    assert is_routed_pair("kotlin", "go")
+    assert is_routed_pair("go", "kotlin")
+    assert is_routed_pair("react", "swift")
+    assert is_routed_pair("swift", "react")
+    assert is_routed_pair("flutter", "php")
+    assert is_routed_pair("php", "flutter")
+    assert is_routed_pair("kotlin", "react")
+    assert is_routed_pair("react", "flutter")
+    assert is_routed_pair("flutter", "kotlin")
+    assert not is_routed_pair("react", "react")
+    # Deprecated: declared once, routed never again.
+    assert not is_routed_pair("javascript", "java")
+    assert not is_routed_pair("java", "javascript")
     assert not is_routed_pair("java", "java")
     assert not is_routed_pair("unknown", "java")
 
@@ -296,11 +378,21 @@ def test_specialized_routes_reject_non_finite_number_cases() -> None:
 def test_every_declared_routed_pair_has_a_pack_and_nothing_else_does() -> None:
     present = {path.name for path in ROUTES.iterdir() if path.is_dir()}
     expected = {f"{source}-to-{target}" for source, target in ROUTED_PAIRS}
-    assert len(expected) == 110
+    deprecated = {f"{source}-to-{target}" for source, target in DEPRECATED_DIRECTED_PAIRS}
+    assert len(expected) == 156
+    assert len(deprecated) == 20
+    assert not expected & deprecated
     missing = sorted(expected - present)
     assert not missing, f"routed pairs with no pack: {missing}"
-    unexpected = sorted(present - expected)
-    assert not unexpected, f"packs for pairs the engine does not declare as routed: {unexpected}"
+    # Deprecated packs stay on disk with their evidence.  They are not routed,
+    # so they must not be silently accepted as "unexpected" either -- they are
+    # allowed exactly because they are declared deprecated, and nothing else is.
+    unexpected = sorted(present - expected - deprecated)
+    assert not unexpected, f"packs for pairs the engine does not declare: {unexpected}"
+    retired_without_pack = sorted(deprecated - present)
+    assert not retired_without_pack, (
+        f"deprecated packs were deleted instead of retained: {retired_without_pack}"
+    )
 
 
 def test_no_supported_language_remains_engine_only_after_explicit_matrix() -> None:
@@ -308,37 +400,73 @@ def test_no_supported_language_remains_engine_only_after_explicit_matrix() -> No
 
 
 @pytest.mark.skipif(not (ROUTES / "inventory.json").is_file(), reason="routes/inventory.json is not present")
-def test_inventory_declares_the_complete_110_with_preserved_provenance_sets() -> None:
+def test_inventory_declares_the_complete_156_with_preserved_provenance_sets() -> None:
+    """The inventory is generated by ``run_polyglot_routes.py --inventory-only``.
+
+    That regeneration requires the pinned macOS toolchain, so after a matrix
+    change this test is the thing that stays red until the inventory is
+    rewritten on a machine that has it.  A red assertion here means "the
+    inventory is stale", not "the matrix is wrong".
+    """
+
     inventory = json.loads((ROUTES / "inventory.json").read_text(encoding="utf-8"))
     assert set(inventory["languages"]) == set(SUPPORTED_LANGUAGES)
-    assert inventory["route_count"] == 110
-    assert len(inventory["routes"]) == 110
+    assert inventory["deprecated_languages"] == list(DEPRECATED_LANGUAGES)
+    assert inventory["pending_analyzer_languages"] == list(PENDING_ANALYZER_LANGUAGES)
+    assert inventory["route_count"] == 156
+    assert len(inventory["routes"]) == 156
     assert inventory["route_policy"] == {
-        "cartesian_expansion": "EXPLICIT_ELEVEN_LANGUAGE_MATRIX",
-        "complete_route_set": "eleven-language-complete-110",
+        "cartesian_expansion": "EXPLICIT_THIRTEEN_LANGUAGE_MATRIX",
+        "complete_route_set": "thirteen-language-complete-156",
         "completion_route_set": "nine-language-completion-34",
+        "deprecated_route_set": "javascript-node26-completion-18",
         "legacy_route_set": "legacy-complete-30",
         "mode": "complete-directed-matrix",
         "nodejs_route_set": "javascript-node26-completion-18",
         "php_route_set": "php-php85-completion-20",
+        "preserved_eleven_language_route_set": "eleven-language-complete-110",
         "preserved_nine_language_route_set": "nine-language-complete-72",
         "preserved_ten_language_route_set": "ten-language-complete-90",
         "specialized_route_set": "cpp-objc-swift-java-exact-8",
+        "v3_route_set": "kotlin-react-flutter-completion-66",
     }
     route_sets = inventory["route_sets"]
+
+    # Derived here rather than imported so this file is an independent second
+    # opinion on the shape of the matrix, not an echo of route_sets.py.
     legacy_languages = {"java", "python", "csharp", "typescript", "go", "rust"}
-    core_keys = {
-        f"{source}-to-{target}" for source in legacy_languages for target in legacy_languages if source != target
-    }
-    complete_keys = {f"{source}-to-{target}" for source, target in COMPLETE_MATRIX_DIRECTED_PAIRS}
+    eleven_languages = legacy_languages | {"javascript", "cpp", "objc", "swift", "php"}
+    ten_languages = eleven_languages - {"php"}
+    nine_languages = ten_languages - {"javascript"}
+    v3_languages = set(PENDING_ANALYZER_LANGUAGES)
+
+    def complete(languages: set[str]) -> set[str]:
+        return {
+            f"{source}-to-{target}"
+            for source in languages
+            for target in languages
+            if source != target
+        }
+
+    core_keys = complete(legacy_languages)
+    nine_language_keys = complete(nine_languages)
+    ten_language_keys = complete(ten_languages)
+    eleven_language_keys = complete(eleven_languages)
+    active_keys = {f"{source}-to-{target}" for source, target in COMPLETE_MATRIX_DIRECTED_PAIRS}
     specialized_keys = {f"{source}-to-{target}" for source, target in SPECIALIZED_DIRECTED_PAIRS}
-    ten_language_keys = {key for key in complete_keys if "php" not in key.split("-to-")}
-    nine_language_keys = {
-        key for key in ten_language_keys if "javascript" not in key.split("-to-")
-    }
-    php_keys = complete_keys - ten_language_keys
-    completion_keys = nine_language_keys - core_keys - specialized_keys
+    php_keys = eleven_language_keys - ten_language_keys
     nodejs_keys = ten_language_keys - nine_language_keys
+    completion_keys = nine_language_keys - core_keys - specialized_keys
+    v3_keys = {key for key in active_keys if v3_languages & set(key.split("-to-"))}
+
+    assert len(active_keys) == 156
+    assert len(v3_keys) == 66
+    assert len(eleven_language_keys) == 110
+    assert active_keys - eleven_language_keys == v3_keys
+    javascript_keys = {key for key in eleven_language_keys if "javascript" in key.split("-to-")}
+    assert len(javascript_keys) == 20
+    assert eleven_language_keys - active_keys == javascript_keys
+
     assert set(route_sets) == {
         "legacy-complete-30",
         "cpp-objc-swift-java-exact-8",
@@ -348,6 +476,8 @@ def test_inventory_declares_the_complete_110_with_preserved_provenance_sets() ->
         "ten-language-complete-90",
         "php-php85-completion-20",
         "eleven-language-complete-110",
+        "kotlin-react-flutter-completion-66",
+        "thirteen-language-complete-156",
     }
     assert route_sets["legacy-complete-30"]["policy"] == "complete-directed-permutation"
     assert set(route_sets["legacy-complete-30"]["route_keys"]) == core_keys
@@ -358,5 +488,15 @@ def test_inventory_declares_the_complete_110_with_preserved_provenance_sets() ->
     assert set(route_sets["javascript-node26-completion-18"]["route_keys"]) == nodejs_keys
     assert set(route_sets["ten-language-complete-90"]["route_keys"]) == ten_language_keys
     assert set(route_sets["php-php85-completion-20"]["route_keys"]) == php_keys
-    assert set(route_sets["eleven-language-complete-110"]["route_keys"]) == complete_keys
-    assert {route["route_key"] for route in inventory["routes"]} == complete_keys
+    # Frozen at its recorded value.  If this ever equals the active set, the
+    # 110 was renamed onto the 156 and 110 routes' evidence lost its address.
+    assert set(route_sets["eleven-language-complete-110"]["route_keys"]) == eleven_language_keys
+    assert set(route_sets["kotlin-react-flutter-completion-66"]["route_keys"]) == v3_keys
+    assert route_sets["kotlin-react-flutter-completion-66"]["analyzer_status"] == "PENDING_ANALYZER"
+    assert set(route_sets["thirteen-language-complete-156"]["route_keys"]) == active_keys
+
+    # The active inventory carries no deprecated direction.
+    assert {route["route_key"] for route in inventory["routes"]} == active_keys
+    assert not any(
+        "javascript" in route["route_key"].split("-to-") for route in inventory["routes"]
+    )

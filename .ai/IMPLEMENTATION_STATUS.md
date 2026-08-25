@@ -6,17 +6,35 @@
 
 > ### Route-count provenance — read before quoting any denominator (K6)
 >
-> Verified 2026-08-18, after `a2f6f6577 feat(route-engine): add php as the
-> eleventh language` landed. `routes/inventory.json` is the only authority.
+> Re-verified 2026-08-19 against the working tree. `routes/inventory.json` is
+> the only authority, and `models.py` + `scripts/batch29/route_sets.py` agree
+> with it.
 >
-> **Current surface: 110 directed routes across 11 languages** (11 × 10, no
-> self-routes), committed and matching the working tree.
+> **Current surface: 156 directed routes across 13 languages** (13 × 12, no
+> self-routes). `inventory.route_count == 156` and `len(inventory.routes) == 156`.
 >
-> `/72` and `/90` are both dead as denominators. They survive only as retained
-> provenance sets — `nine-language-complete-72`, `ten-language-complete-90` —
-> so historical evidence stays attributable, and neither describes the current
-> surface. The 182-node figure is the *pipeline test suite*; it is not a route
-> count and must never be added to or compared against one.
+> The 13 are: java, csharp, go, rust, python, typescript, cpp, objc, swift, php,
+> kotlin, react, flutter. **javascript is deprecated** and is deliberately absent
+> from the active set. **kotlin, react and flutter carry
+> `analyzer_status: PENDING_ANALYZER`** — they are declared matrix members whose
+> analyzers do not exist yet, and the 66 directions touching them are the
+> `kotlin-react-flutter-completion-66` set. Quoting 156 as *passing* rather than
+> as *declared* is therefore wrong today.
+>
+> **`routes/` holds 176 directories, not 156, and that is expected.** The 20
+> surplus directories are exactly the `deprecated_route_keys` of
+> `eleven-language-complete-110` — the javascript directions, retained so
+> historical evidence stays attributable. Verified by set equality on
+> 2026-08-19: `set(routes/ dirs) - set(inventory route_keys)` **==**
+> `eleven-language-complete-110.deprecated_route_keys`, and no declared route is
+> missing from disk.
+>
+> `/72`, `/90` and `/110` are all dead as denominators. They survive only as
+> retained provenance sets — `nine-language-complete-72`,
+> `ten-language-complete-90`, `eleven-language-complete-110` — so historical
+> evidence stays attributable, and none of them describes the current surface.
+> The 182- and 222-node figures are *pipeline test suites*; they are not route
+> counts and must never be added to or compared against one.
 >
 > `IMPLEMENTED` requires **all** of: real business logic (no TODO / `pass` /
 > `NotImplemented` / placeholder / hardcoded success), wired into a real call

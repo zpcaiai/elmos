@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch31/chinadb-sql-preflight-request.schema.json",
+  "title": "ELMOS ChinaDB SQL conversion preflight request",
+  "description": "A read-only, fail-closed assessment request. Target version and compatibility mode are exact route inputs, not support claims.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "queryId",
+    "sourceProfile",
+    "targetId",
+    "targetVersion",
+    "targetEdition",
+    "compatibilityMode",
+    "targetDriver",
+    "targetCharset",
+    "targetCollation",
+    "targetTimeZone",
+    "capabilitySnapshotDigest",
+    "sql",
+    "parameters"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "queryId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "sourceProfile": {
+      "$ref": "#/$defs/sourceProfile"
+    },
+    "targetId": {
+      "$ref": "#/$defs/targetId"
+    },
+    "targetVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^(?![Xx]$)(?![Ll][Aa][Tt][Ee][Ss][Tt]$)(?![Cc][Uu][Rr][Rr][Ee][Nn][Tt]$)(?![Uu][Nn][Kk][Nn][Oo][Ww][Nn]$)(?![Uu][Nn][Ss][Pp][Ee][Cc][Ii][Ff][Ii][Ee][Dd]$)(?!.*(?:\\.\\*|\\.[Xx])$)[A-Za-z0-9][A-Za-z0-9._+~-]*$"
+    },
+    "targetEdition": {
+      "$ref": "#/$defs/exactContext"
+    },
+    "compatibilityMode": {
+      "$ref": "#/$defs/exactContext"
+    },
+    "targetDriver": {
+      "$ref": "#/$defs/exactContext"
+    },
+    "targetCharset": {
+      "$ref": "#/$defs/exactContext"
+    },
+    "targetCollation": {
+      "$ref": "#/$defs/exactContext"
+    },
+    "targetTimeZone": {
+      "$ref": "#/$defs/exactContext"
+    },
+    "capabilitySnapshotDigest": {
+      "$ref": "#/$defs/digest"
+    },
+    "sql": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 262144,
+      "description": "Interactive preflight limit. Implementations additionally enforce 262144 UTF-8 bytes."
+    },
+    "parameters": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "$ref": "#/$defs/parameter"
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "exactContext": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^(?![Xx]$)(?![Ll][Aa][Tt][Ee][Ss][Tt]$)(?![Cc][Uu][Rr][Rr][Ee][Nn][Tt]$)(?![Uu][Nn][Kk][Nn][Oo][Ww][Nn]$)(?![Uu][Nn][Ss][Pp][Ee][Cc][Ii][Ff][Ii][Ee][Dd]$)(?!.*(?:\\.\\*|\\.[Xx])$)[A-Za-z0-9][A-Za-z0-9._+:/~-]*$"
+    },
+    "sourceProfile": {
+      "enum": [
+        "postgresql-17.5",
+        "postgresql-18.4",
+        "mysql-8.4.10-lts",
+        "sqlserver-2022-cu26",
+        "oracle-26ai-ee",
+        "sqlite-3.53.3",
+        "duckdb-1.5.4"
+      ]
+    },
+    "targetId": {
+      "enum": [
+        "dm8",
+        "kingbasees",
+        "opengauss",
+        "tidb",
+        "gbase-8s",
+        "gbase-8c",
+        "gbase-8a",
+        "highgo-hgdb",
+        "oceanbase-oracle",
+        "oceanbase-mysql",
+        "gaussdb-oracle",
+        "gaussdb-m",
+        "goldendb"
+      ]
+    },
+    "parameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "logicalType",
+        "nullable"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "logicalType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "nullable": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

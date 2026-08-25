@@ -1,0 +1,32 @@
+skill: miniapp-state-event-lifecycle-converter
+version: 1.0.0
+task_ids:
+- MAPP-017
+- MAPP-018
+required_outputs:
+- path: state-lowering-plan.json
+  required: true
+- path: event-binding-plan.json
+  required: true
+- path: lifecycle-plan.json
+  required: true
+- path: side-effect-ledger.json
+  required: true
+gates:
+- name: 状态引用闭合
+  required: true
+- name: 生命周期顺序验证
+  required: true
+- name: 副作用均有创建与清理策略
+  required: true
+- name: 关键事件顺序可测试
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

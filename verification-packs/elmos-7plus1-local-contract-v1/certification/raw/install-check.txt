@@ -1,0 +1,11 @@
+Command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_elmos_7plus1_skills.py --check
+Date: 2026-08-24
+Exit code: 0
+
+{"archive_entries": 469, "archives": 8, "canonical_source_files": 252, "certification_status": "NOT_CERTIFIED", "decision": "INSTALLATION_VERIFIED", "external_evidence_status": "NOT_RUN", "installed_skills": 102, "package": "elmos-7plus1-commercial-skills@1.0.0", "repo_owned_root_is_archive_member": false, "repo_owned_root_skill": "elmos-7plus1-commercial-software-factory", "runtime_evidence_status": "NOT_RUN", "source_scripts_executed": false, "source_skills": 101}
+
+Evidence classification: LOCAL_EXECUTED_SELF_ATTESTED
+The read-only check validates the current canonical tree, compiled and installed
+manifests, both installed roots, runtime bindings, conservative evidence states,
+collision-safe aliases, and drift rules. It is not independent verification or
+certification.

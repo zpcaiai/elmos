@@ -1,0 +1,30 @@
+skill: miniapp-capability-registry
+version: 1.0.0
+task_ids:
+- MAPP-013
+- MAPP-014
+required_outputs:
+- path: capability-resolution.json
+  required: true
+- path: compatibility-findings.json
+  required: true
+- path: required-permissions.json
+  required: true
+- path: backend-requirements.json
+  required: true
+gates:
+- name: IR capability 100% 有解析结果
+  required: true
+- name: C/D/E 100% 进入报告
+  required: true
+- name: 权限与后端依赖完整
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

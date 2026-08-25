@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "environment_key": "elmos-7plus1-local-pack-validation-macos-arm64-v1",
+  "operating_system": "macOS-arm64",
+  "python": "CPython 3.12.14 via uv",
+  "jsonschema": "4.25.1",
+  "network_required": false,
+  "production_access": false,
+  "provider_access": false,
+  "authorized_scope": "read-only Batch 35 pack validation plus focused standard-library importer and runtime unit/integration tests",
+  "local_test_commands": [
+    "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/software-factory-engine/src python3 -m unittest discover -s engines/software-factory-engine/tests -p 'test_*.py' -v",
+    "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/elmos-7plus1-commercial-skills -p 'test_*.py' -v"
+  ],
+  "limitations": [
+    "The local commands are self-attested engineering execution only and do not attest an independent verifier, holdout, representative, provider, or production environment."
+  ]
+}

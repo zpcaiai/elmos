@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/token-mix-comparison.schema.json",
+  "title": "Token category mix comparison",
+  "description": "The forecast's assumed split across the five disjoint token categories, next to a measured one. Never written back into the forecast: applied_to_forecast is const false.",
+  "type": "object",
+  "required": [
+    "schema_version", "artifact", "project_tokens_p50", "forecast", "observed",
+    "by_category", "cost_restatement", "cross_currency_comparison",
+    "sample_sufficient", "applied_to_forecast", "caveats"
+  ],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "artifact": { "const": "token-mix-comparison" },
+    "project_tokens_p50": { "type": "number", "minimum": 0 },
+    "forecast": { "$ref": "#/$defs/side" },
+    "observed": {
+      "allOf": [{ "$ref": "#/$defs/side" }],
+      "required": ["sessions", "models"]
+    },
+    "by_category": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["category", "forecast_share", "observed_share", "delta_share"],
+        "properties": {
+          "category": { "$ref": "#/$defs/category" },
+          "forecast_share": { "type": "number", "minimum": 0, "maximum": 1 },
+          "observed_share": { "type": "number", "minimum": 0, "maximum": 1 },
+          "delta_share": { "type": "number", "minimum": -1, "maximum": 1 },
+          "ratio": { "anyOf": [{ "type": "number", "minimum": 0 }, { "type": "null" }] }
+        }
+      }
+    },
+    "warmup": {
+      "description": "How the cumulative mix changes with session length. Cache reads are earned, so a short task never reaches a long session's mix.",
+      "anyOf": [
+        {
+          "type": "object",
+          "required": ["depths", "cached_input_share_at_full_session", "warmup_spread"],
+          "properties": {
+            "depths": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["turns", "total_tokens", "mix"],
+                "properties": {
+                  "turns": { "type": "integer", "minimum": 1 },
+                  "is_full_session": { "type": "boolean" },
+                  "total_tokens": { "type": "number", "minimum": 0 },
+                  "mix": { "type": "object" }
+                }
+              }
+            },
+            "cached_input_share_at_shallowest": { "type": "number", "minimum": 0, "maximum": 1 },
+            "cached_input_share_at_full_session": { "type": "number", "minimum": 0, "maximum": 1 },
+            "warmup_spread": { "type": "number" },
+            "per_turn_cached_share": { "type": "object" },
+            "how_to_use": { "type": "string" }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
+    "cost_restatement": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "model_id", "currency", "cost_under_forecast_mix",
+          "cost_under_observed_mix", "source_reference", "verified_at"
+        ],
+        "properties": {
+          "model_id": { "type": "string" },
+          "display_name": { "type": "string" },
+          "currency": { "type": "string" },
+          "cost_under_forecast_mix": { "type": "number", "minimum": 0 },
+          "cost_under_observed_mix": { "type": "number", "minimum": 0 },
+          "overstatement_factor": {
+            "anyOf": [{ "type": "number", "minimum": 0 }, { "type": "null" }]
+          },
+          "source_reference": { "type": "string" },
+          "verified_at": { "type": "string" }
+        }
+      }
+    },
+    "overstatement_factor_range": {
+      "anyOf": [
+        { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "number" } },
+        { "type": "null" }
+      ]
+    },
+    "cross_currency_comparison": {
+      "type": "null",
+      "description": "Always null. Currencies are never ranked against each other."
+    },
+    "sample_sufficient": { "type": "boolean" },
+    "minimum_sessions": { "type": "integer", "minimum": 1 },
+    "applied_to_forecast": {
+      "const": false,
+      "description": "This artifact is a comparison. It never rewrites the forecast it compares against."
+    },
+    "why_not_applied": { "type": "string" },
+    "why_this_matters": { "type": "string" },
+    "caveats": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+  },
+  "$defs": {
+    "category": {
+      "enum": ["input", "cached_input", "cache_write", "output", "reasoning_output"]
+    },
+    "side": {
+      "type": "object",
+      "required": ["counts", "total", "mix"],
+      "properties": {
+        "counts": { "type": "object" },
+        "total": { "type": "number", "minimum": 0 },
+        "mix": { "type": "object" },
+        "sessions": { "type": "integer", "minimum": 0 },
+        "models": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

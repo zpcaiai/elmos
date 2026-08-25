@@ -217,3 +217,133 @@ Primary threads for the active task:
 
 417 rollout files exist in total; ~30 of the most recent were filtered by `cwd`
 to isolate the elmos-scoped ones rather than loading the archive wholesale.
+
+---
+
+## 2026-08-20 current-session evidence ledger
+
+### Python local binding frontend
+
+| Evidence | Current result |
+| --- | --- |
+| `python_analyzer.py` | `ast.AnnAssign` emits typed IR `let`; bare/unbound/non-canonical forms fail with explicit source codes |
+| `discovery.py` | new Python/LET source-domain rejections classify as `UNSUPPORTED`, not `NOT_RUN` |
+| Atomic tests | 116 collected, exit 0 |
+| Ruff / strict MyPy | PASS / PASS on the task-owned Python source scope |
+| Real repository | clean LangGraph `49ae27c2ae983cfb92091b0dea9f7bc37a716479`: 447 tracked `.py`, 2 structural candidates, 0 analyzer READY |
+| Measurement artifact | `.ai/python-let-real-repository-measurement-2026-08-20.json`, SHA-256 `8bf904c0792daaa591d5c4e5caa0a2f686beaa96ef0d6d45dcf23ab5ddc3d19e` |
+| Decision | observed gain 0; keep profile v1; `NOT_CERTIFIED` |
+
+The final four-file scope committed as `a1d842042` (and unchanged at
+`fe836aab9`) has these SHA-256 values:
+
+```text
+discovery.py                     6b0daffc3fceeb1fc886d3d8619726e6971f54fc95cb6a4db2dc82bad288d9a7
+python_analyzer.py               5b4247d1616b5b6afc09cd89b3a01670a6a0b2aa3b13eab5523f8238c362a3cf
+test_repository_pipeline.py      034938a5196aed8dc0801e9cabcb5500144b9ab543262b455de5d8fe95d3bd5e
+test_python_local_bindings.py     70d3e582ecea4f3989b7092206386a6428a4985d9cd82135c6b9416b3209c461
+```
+
+The matrix owner reported the sole `fixed2` repository matrix **223/223 PASS**,
+the post-freeze set **503/503 PASS**, and pushed `a1d842042` plus `fe836aab9`
+with local/tracking/remote SHA equality and an empty index. ArkUI/Harmony device
+runtime evidence remains `NOT_RUN`; this result does not change certification.
+
+### Execution Intelligence
+
+- `make certify`, `make all`, and the CI readiness entrypoint are coded to
+  propagate a nonzero decision instead of suppressing it.
+- This protects only the command exit boundary. The local JSON/synthetic harness
+  can still be authored by the same executor and lacks digest-bound signed
+  provenance plus an independent verifier.
+- Current-source local evidence: entrypoint regression `3 passed`; package
+  tests `280 passed / 18 skipped`; Ruff, strict MyPy over 26 source files, and
+  workflow YAML parsing passed. A fresh real `make certify` returned exit 2 and
+  `BLOCK (pass 9 / fail 2 / not executed 0)` as required by the evidence floor.
+- Readiness remains `BLOCK / NOT_CERTIFIED`; no local synthetic result is
+  external, production, customer, or certification evidence.
+
+### Snapshot CAS slice
+
+> Historical pre-closure baseline. The final-current results and corrected posture are recorded in
+> the 2026-08-24 correction below; `NOT_RUN` statements in this subsection are not current.
+
+- Current source implements capture-time archive/manifest roots as one atomic,
+  generation-safe set; resource bindings separate immutable object metadata
+  from repository/project ownership; and verified dual-read accepts legacy
+  `cas:sha256:` and sized `cas://sha256/...` references under explicit modes.
+- JDBC catalog rows now preserve labels and exact provenance digest size.
+  Default-off tenant-local AES-GCM uses fresh nonces and tenant/key/digest-bound
+  AAD. This is a local encrypted tier, not production KMS or rotation evidence.
+- A durable JDBC ActionCache index now stores reconstructable metadata plus
+  invalidation/quarantine state. The v2 signature subject covers the complete
+  key/result/producer/risk/writer, and verified receipts/JDBC readback bind and
+  recompute its envelope digest. Current focused negative tests passed;
+  persisted trust decisions are still not cryptographically reverified against
+  signature bytes, key policy or current revocation state on lookup.
+- Current-source local evidence: full `modules/cas` tests and focused
+  catalog/GC, ActionCache/encryption, snapshot/integrations, persistence
+  migration and portfolio tests passed; control-plane main compile/package and
+  task-scoped static checks passed. The ordinary control-plane testCompile is
+  `BLOCKED_BY_UNRELATED_TEST_COMPILE` by the out-of-scope ChinaDB test constructor.
+  Live PostgreSQL, Docker/provider validation and a real two-process shared tier
+  remain `NOT_RUN`.
+- Still unresolved: snapshot delete/release caller, commit-unknown root
+  reconciliation, tenant-unscoped legacy reads, the workspace-service legacy-only path,
+  production KMS/key rotation, live PostgreSQL, a real shared object tier,
+  ActionCache execution wiring and trust revalidation, and the portfolio
+  process-local key→digest index.
+- The collector now treats missing/unreadable/substituted roots and unknown or malformed
+  manifests as unresolved and blocks the entire sweep; no production collector/delete caller
+  or complete retention/deletion lifecycle has been evidenced. Catalogue loads preserve legal
+  hold, but a hold applied after load can still race the later store delete without an atomic
+  production GC epoch/lock.
+- Runtime posture remains default-off `SINGLE_HOST / NOT_CERTIFIED`; no
+  cross-instance, at-rest production, GC-complete, or certification claim is
+  supported.
+
+No local result in this section changes R10 independent-client evidence,
+external verification, customer evidence, production evidence, or
+`certified_route_count=0`.
+
+### 2026-08-24 CAS / Snapshot / EI evidence correction
+
+| Evidence | Result | Supported claim |
+| --- | --- | --- |
+| Java focused Maven scope | 197/197 PASS across 34 classes | current task-owned Java contracts compile and pass locally |
+| PostgreSQL 17 / Flyway | V72 reached; 72/72 validated and applied in both final live runs | fresh-schema migration is executable locally; not a historical production upgrade proof |
+| CAS JDBC live | 10/10 PASS, no skip | catalog metadata, roots, durable ActionCache and current-trust invalidation work on a real local PostgreSQL |
+| Snapshot/RLS/webhook live | 5/5 PASS, no skip | tenant context resets, immutable lifecycle, stale reconciliation and signed-webhook tenant routing work on a real local PostgreSQL |
+| Snapshot lease/scheduler live | 3/3 PASS, no skip | fenced lease contention/recovery and bounded tenant-fair queue claiming work on a disposable PostgreSQL 17.5 instance |
+| MinIO process probe | PASS, PIDs 35250/35273, digest `a5f0c1b47f09bc1dcdd8d090143d9d2cef194ace81a91173e49690a214842c09`, 75 bytes | two distinct JVMs share an external object tier on one host |
+| EI package | 299 pass / 11 skip; PG conformance 22 pass / 0 skip | local code plus real local PostgreSQL backend contract |
+| EI static/install | Ruff PASS; strict MyPy PASS over 28 sources; wheel 25/7/2 resources PASS | source and installed-package engineering integrity |
+| EI external trust | focused pytest 48/48; Ruff PASS; strict MyPy PASS over 29 sources | digest-pinned authority root, signed monotonic trust snapshot and fresh revocation cache fail closed locally |
+| EI gate | schema-valid thin evidence -> `BLOCK`, exit 2; empty evidence -> `NOT_CERTIFIED` | failure and missing evidence both fail closed without conflation |
+| GitHub App evidence harness | unittest 17/17; Ruff PASS | local request/receipt/reconciliation contract only; no real App, delivery, redelivery or production DB |
+| Multi-host Kubernetes probe | bash/static PASS; missing-config negative exit 2 | fail-closed harness only; no cluster was contacted and no two-host evidence exists |
+| ArkUI/Harmony | `hdc` 3.2.0b; `hdc list targets -v` -> `[Empty]` | `NOT_RUN`, no device evidence |
+
+MinIO raw receipt directory:
+`.ai/cas-two-process-shared-tier-20260824T070853Z/`. Its own summary says
+`SINGLE_HOST_EXTERNAL_PROCESS`, `LOCAL_EXECUTED_SELF_ATTESTED`, and `NOT_CERTIFIED`.
+
+The local KMS tests validate provider binding, AAD, zeroization and startup refusal when no provider
+exists; they do not exercise a production KMS/HSM. ActionCache now has an opt-in application bean
+that refuses to start unless exactly one current-trust provider, authorizer and synchronous runner
+are supplied. The repository supplies no real production execution adapter for that seam, and the
+local detached-signature/live revalidation evidence does not supply an independently governed
+trust/revocation source.
+
+V72 provides fenced materialization leases and a bounded global reconciliation queue, with exact
+runtime-role function grants. Its disposable PostgreSQL tests do not establish deployment of stable
+holder identities, scheduler election, production archive/GC participation or cross-host behavior.
+The GitHub evidence collector has fail-closed local tests, but no real App or delivery was used. A
+fresh 72-migration database does not cure the pre-existing V9 ordering hazard for a database containing
+historical `audit_events`; that needs a controlled pre-V9 bootstrap, not Flyway `repair`.
+
+Supported status therefore remains exactly:
+
+- CAS: `SINGLE_HOST / NOT_CERTIFIED`
+- Execution Intelligence: `BLOCK / NOT_CERTIFIED`
+- ArkUI/Harmony device: `NOT_RUN / NOT_CERTIFIED`

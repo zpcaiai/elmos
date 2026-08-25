@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 架构规则与策略引擎
+  short_description: 定义并执行分层、依赖、安全、数据、接口和部署架构规则。用于阻止循环依赖、越界访问、共享数据库和未鉴权接口。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-architecture-rules 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

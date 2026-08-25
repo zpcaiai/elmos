@@ -1,0 +1,30 @@
+skill: miniapp-commerce-social-adapter
+version: 1.0.0
+task_ids:
+- MAPP-027
+- MAPP-028
+required_outputs:
+- path: commerce-social-contracts.json
+  required: true
+- path: backend-api-specs
+  required: true
+- path: platform-adapter-specs
+  required: true
+- path: risk-and-approval-plan.json
+  required: true
+gates:
+- name: 订单状态机无非法跳转
+  required: true
+- name: 回调重放测试通过
+  required: true
+- name: 四平台 contract 均有实现或明确结论
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

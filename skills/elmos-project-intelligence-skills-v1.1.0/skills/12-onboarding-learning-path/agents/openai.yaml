@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 项目介绍与新人学习路径
+  short_description: 根据角色生成项目概览、术语表、阅读顺序、核心流程和上手任务。用于新人入职、项目交接和跨团队理解。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-onboarding-learning-path 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

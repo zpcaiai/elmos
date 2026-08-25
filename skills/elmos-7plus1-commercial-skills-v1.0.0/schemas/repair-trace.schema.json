@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/repair-trace/1.0",
+  "title": "Repair Trace",
+  "type": "object",
+  "required": [
+    "trace_id",
+    "failure_signature",
+    "context",
+    "root_cause",
+    "repair",
+    "verification",
+    "scope"
+  ],
+  "properties": {
+    "trace_id": {
+      "type": "string"
+    },
+    "failure_signature": {
+      "type": "object"
+    },
+    "context": {
+      "type": "object"
+    },
+    "root_cause": {
+      "type": "object"
+    },
+    "bad_transformation": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "repair": {
+      "type": "object"
+    },
+    "verification": {
+      "type": "object"
+    },
+    "scope": {
+      "enum": [
+        "tenant",
+        "organization",
+        "global"
+      ]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

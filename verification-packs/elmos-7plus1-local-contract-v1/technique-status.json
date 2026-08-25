@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-7plus1-local-contract-v1",
+  "statuses": [
+    {
+      "technique": "schema-and-pack-structural-validation",
+      "status": "PASSED",
+      "scope": "Batch 35 JSON schema and conservative gate only"
+    },
+    {
+      "technique": "development-contract-tests",
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "evidence_ref": "certification/local-runtime-test-result.json"
+    },
+    {
+      "technique": "negative-controls",
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "evidence_ref": "certification/local-runtime-test-result.json"
+    },
+    {
+      "technique": "declared-counterexample-replay",
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "evidence_ref": "certification/raw/importer-integration-tests.txt"
+    },
+    {
+      "technique": "installed-state-check",
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "evidence_ref": "certification/local-installation-validation.json"
+    },
+    {
+      "technique": "skill-creator-structural-validation",
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED_204_OF_204",
+      "evidence_ref": "certification/raw/skill-creator-validation.txt"
+    },
+    {
+      "technique": "metamorphic-testing",
+      "status": "NOT_RUN"
+    },
+    {
+      "technique": "mutation-testing",
+      "status": "NOT_RUN"
+    },
+    {
+      "technique": "coverage-guided-fuzzing",
+      "status": "NOT_RUN"
+    },
+    {
+      "technique": "symbolic-execution",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "technique": "smt-proof",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "technique": "concurrency-schedule-exploration",
+      "status": "NOT_RUN"
+    },
+    {
+      "technique": "independent-holdout",
+      "status": "NOT_RUN"
+    },
+    {
+      "technique": "representative-workload",
+      "status": "NOT_RUN"
+    },
+    {
+      "technique": "provider-production-runtime",
+      "status": "NOT_RUN"
+    },
+    {
+      "technique": "external-certification",
+      "status": "NOT_CERTIFIED"
+    }
+  ]
+}

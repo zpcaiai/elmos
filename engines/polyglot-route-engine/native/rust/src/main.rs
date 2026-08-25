@@ -1,7 +1,7 @@
 use serde_json::{json, Value};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::{env, fs, panic, path::Path, process};
-use syn::{Attribute, BinOp, Block, Expr, FnArg, Item, Lit, Pat, ReturnType, Stmt, Type};
+use syn::{Attribute, BinOp, Block, Expr, ExprIf, FnArg, Item, Lit, Pat, ReturnType, Stmt, Type};
 
 /// Carries a rejection code out of one function's analysis without ending the
 /// process, so batch mode can report a per-function verdict.
@@ -175,6 +175,33 @@ fn expression(value: &Expr, emitted_target: bool) -> Value {
     }
 }
 
+/// Lifts one `if`, including an `else if` chain.
+///
+/// In Rust an `else if` is an else branch whose expression is itself an `if`
+/// -- spelling, not a new construct -- so it lifts into the nested
+/// `else: [if]` shape the IR already carries. Eight of this engine's ten
+/// frontends already produced that shape; Go and Rust rejected it instead,
+/// which cost twelve directed routes each for no semantic reason.
+///
+/// Anything else in the else position (a `match`, a bare expression) is still
+/// outside the profile and still fails closed.
+fn lift_if(branch: &ExprIf, emitted_target: bool) -> Value {
+    let otherwise = match branch.else_branch.as_ref() {
+        None => Vec::new(),
+        Some((_, value)) => match value.as_ref() {
+            Expr::Block(block) => statements(&block.block, emitted_target),
+            Expr::If(chained) => vec![lift_if(chained, emitted_target)],
+            _ => fail("RUST_ELSE_IF_OUTSIDE_CERTIFIED_SUBSET"),
+        },
+    };
+    json!({
+        "kind": "if",
+        "condition": expression(&branch.cond, emitted_target),
+        "then": statements(&branch.then_branch, emitted_target),
+        "else": otherwise,
+    })
+}
+
 fn statements(block: &Block, emitted_target: bool) -> Vec<Value> {
     block
         .stmts
@@ -186,21 +213,7 @@ fn statements(block: &Block, emitted_target: bool) -> Vec<Value> {
                 };
                 json!({"kind": "return", "expression": expression(value, emitted_target)})
             }
-            Stmt::Expr(Expr::If(branch), _) => {
-                let otherwise = match branch.else_branch.as_ref() {
-                    None => Vec::new(),
-                    Some((_, value)) => match value.as_ref() {
-                        Expr::Block(block) => statements(&block.block, emitted_target),
-                        _ => fail("RUST_ELSE_IF_OUTSIDE_CERTIFIED_SUBSET"),
-                    },
-                };
-                json!({
-                    "kind": "if",
-                    "condition": expression(&branch.cond, emitted_target),
-                    "then": statements(&branch.then_branch, emitted_target),
-                    "else": otherwise,
-                })
-            }
+            Stmt::Expr(Expr::If(branch), _) => lift_if(branch, emitted_target),
             _ => fail("RUST_UNSUPPORTED_STATEMENT"),
         })
         .collect()

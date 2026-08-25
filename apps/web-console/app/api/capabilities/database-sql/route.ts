@@ -11,8 +11,8 @@ export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
   try {
-    const context = chinaDbSqlContext(request);
-    return NextResponse.json(await fetchChinaDbSqlCapabilities(context), {
+    const context = chinaDbSqlContext(request, "workspace:view");
+    return NextResponse.json(await fetchChinaDbSqlCapabilities(context, request.signal), {
       headers: chinaDbSqlPrivateHeaders,
     });
   } catch (error) {

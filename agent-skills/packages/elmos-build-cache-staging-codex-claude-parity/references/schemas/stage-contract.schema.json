@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/stage-contract.schema.json",
+  "title": "ELMOS Stage Contract",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "stage_id",
+    "stage_version",
+    "inputs",
+    "outputs",
+    "fingerprint",
+    "cache_policy",
+    "workspace",
+    "determinism",
+    "checkpoint_policy"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "stage_id": {
+      "type": "string"
+    },
+    "stage_version": {
+      "type": "string"
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "fingerprint": {
+      "type": "object"
+    },
+    "cache_policy": {
+      "type": "object"
+    },
+    "workspace": {
+      "type": "object"
+    },
+    "determinism": {
+      "enum": [
+        "DETERMINISTIC",
+        "SEEDED",
+        "ENVIRONMENT_SENSITIVE",
+        "NONDETERMINISTIC_CANDIDATE_ONLY"
+      ]
+    },
+    "checkpoint_policy": {
+      "type": "object"
+    },
+    "side_effects": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "minimum_validation_level": {
+      "enum": [
+        "UNVERIFIED",
+        "COMPILE_VERIFIED",
+        "TEST_VERIFIED",
+        "BEHAVIOR_VERIFIED",
+        "PRODUCTION_CERTIFIED",
+        "QUARANTINED"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

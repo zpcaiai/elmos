@@ -8,7 +8,7 @@ public final class SnapshotModel {
 
     public enum Status {
         REQUESTED, RESOLVING_REF, FETCHING, VERIFYING, ARCHIVING, UPLOADING,
-        AVAILABLE, UNSUPPORTED_CONTENT, FAILED, QUARANTINED
+        AVAILABLE, ARCHIVED, UNSUPPORTED_CONTENT, FAILED, QUARANTINED
     }
 
     public record RepositorySnapshot(String snapshotId, String organizationId, String repositoryId,
@@ -24,15 +24,17 @@ public final class SnapshotModel {
             if (manifestSha256 != null && !manifestSha256.matches("[0-9a-f]{64}")) throw new IllegalArgumentException("invalid manifestSha256");
             if (snapshotSchemaVersion < 1) throw new IllegalArgumentException("snapshotSchemaVersion must be positive");
             Objects.requireNonNull(status); Objects.requireNonNull(capturedAt);
-            if (status == Status.AVAILABLE && (archiveArtifactRef == null || archiveSha256 == null || manifestArtifactRef == null || manifestSha256 == null || archiveSize <= 0)) {
-                throw new IllegalArgumentException("available snapshot requires immutable archive and manifest metadata");
+            boolean durable = status == Status.AVAILABLE || status == Status.ARCHIVED;
+            if (durable && (archiveArtifactRef == null || archiveSha256 == null || manifestArtifactRef == null || manifestSha256 == null || archiveSize <= 0)) {
+                throw new IllegalArgumentException("durable snapshot requires immutable archive and manifest metadata");
             }
-            if (status == Status.AVAILABLE && (archiveArtifactRef.isBlank() || manifestArtifactRef.isBlank()))
-                throw new IllegalArgumentException("available snapshot artifact references must not be blank");
+            if (durable && (archiveArtifactRef.isBlank() || manifestArtifactRef.isBlank()))
+                throw new IllegalArgumentException("durable snapshot artifact references must not be blank");
         }
 
         public RepositorySnapshot transition(Status next) {
-            if (status == Status.AVAILABLE) throw new IllegalStateException("available snapshot is immutable");
+            if (status == Status.AVAILABLE || status == Status.ARCHIVED)
+                throw new IllegalStateException("durable snapshot is immutable");
             if (status == Status.FAILED || status == Status.QUARANTINED || status == Status.UNSUPPORTED_CONTENT) throw new IllegalStateException("terminal snapshot is immutable");
             return new RepositorySnapshot(snapshotId, organizationId, repositoryId, requestedRef, resolvedCommitSha,
                     treeSha, archiveArtifactRef, archiveSha256, archiveSize, manifestArtifactRef, manifestSha256, snapshotSchemaVersion, next, capturedAt);

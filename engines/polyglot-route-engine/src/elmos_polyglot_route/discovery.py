@@ -24,7 +24,7 @@ from collections import Counter
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-from .models import SUPPORTED_LANGUAGES, Language, RouteError
+from .models import REPOSITORY_SURFACE_LANGUAGES, Language, RouteError
 from .native import analyze_many, inventory_module
 from .project_graph import (
     PythonCoverageSubject,
@@ -174,12 +174,24 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
             "JAVA_EXACT_ARITHMETIC_TYPE_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET",
+            "CONDITION_MUST_BE_BOOLEAN",
+            "DUPLICATE_PARAMETER",
+            "LET_NAME_ALREADY_BOUND",
+            "LET_TYPE_MISMATCH",
+            "OPERAND_TYPE_MISMATCH",
+            "PYTHON_ANNOTATED_DECLARATION_WITHOUT_VALUE",
+            "PYTHON_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_INTERFACE_STRING_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_METHOD_SHAPE_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_NULL_LITERAL_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET",
+            "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_UNSUPPORTED_EXPRESSION",
+            "PYTHON_UNSUPPORTED_LOCAL_TYPE",
             "JAVA_UNSUPPORTED_OPERATOR",
+            "RETURN_TYPE_MISMATCH",
+            "STRING_ORDERING_OUTSIDE_CERTIFIED_SUBSET",
+            "UNDECLARED_NAME",
             "JAVA_UNSUPPORTED_STATEMENT",
             "JAVA_UNSUPPORTED_TYPE",
         }
@@ -1066,7 +1078,7 @@ def discover_repository(
     """Classify every work unit in a repository route plan."""
     source_language = plan.get("source_language")
     target_language = plan.get("target_language")
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+    if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_LANGUAGE")
     if plan.get("kind") != "elmos.repository-route-plan":
         raise RouteError("REPOSITORY_PLAN_KIND_INVALID")
@@ -1380,7 +1392,7 @@ def inventory_repository_incident(
     source_language = plan.get("source_language")
     target_language = plan.get("target_language")
     units = plan.get("work_units")
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+    if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_LANGUAGE")
     if plan.get("kind") != "elmos.repository-route-plan" or plan.get("execution_status") != "NOT_RUN":
         raise RouteError("REPOSITORY_PLAN_KIND_INVALID")

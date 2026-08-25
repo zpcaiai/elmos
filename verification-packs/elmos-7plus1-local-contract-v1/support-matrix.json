@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-7plus1-local-contract-v1",
+  "capabilities": [
+    {
+      "key": "pinned-eight-archive-identity",
+      "status": "experimental",
+      "owner": "elmos-software-factory-engineering",
+      "evidence_refs": [
+        "artifacts/source-archives.json"
+      ],
+      "limitations": [
+        "Digest identity proves bytes only; it does not prove provenance, license, signature, SBOM, behavior, or safety."
+      ]
+    },
+    {
+      "key": "safe-nonexecuting-importer-contract",
+      "status": "experimental",
+      "owner": "elmos-software-factory-engineering",
+      "evidence_refs": [
+        "properties/sample.json",
+        "models/model.json",
+        "certification/local-runtime-test-result.json"
+      ],
+      "limitations": [
+        "40 focused local tests passed, but the evidence is self-attested and not an independent holdout, representative workload, or certification result."
+      ]
+    },
+    {
+      "key": "stdlib-runtime-fail-closed-contract",
+      "status": "experimental",
+      "owner": "elmos-software-factory-engineering",
+      "evidence_refs": [
+        "validation-profile.json",
+        "models/model.json",
+        "certification/local-runtime-test-result.json"
+      ],
+      "limitations": [
+        "Focused local bounded runtime tests passed; external adapters, providers, compilers, devices, training, deployment, and production execution remain NOT_RUN."
+      ]
+    },
+    {
+      "key": "installed-canonical-and-dual-root-state",
+      "status": "experimental",
+      "owner": "elmos-software-factory-engineering",
+      "evidence_refs": [
+        "artifacts/target-artifacts.json",
+        "certification/local-installation-validation.json",
+        "certification/raw/install-check.txt",
+        "certification/raw/skill-creator-validation.txt"
+      ],
+      "limitations": [
+        "Local self-attested install/check evidence only; 204 Skill Creator validations are structural and not runtime or independent certification evidence."
+      ]
+    },
+    {
+      "key": "metamorphic-import-order-invariance",
+      "status": "detected-only",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "metamorphic/sample.json"
+      ],
+      "limitations": [
+        "Relation is specified but execution is NOT_RUN."
+      ]
+    },
+    {
+      "key": "mutation-testing",
+      "status": "blocked",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "mutation/campaign.json"
+      ],
+      "limitations": [
+        "NOT_RUN: no isolated mutation campaign or independently reviewed equivalent-mutant classification exists."
+      ]
+    },
+    {
+      "key": "structured-fuzzing",
+      "status": "blocked",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "fuzz/campaign.json"
+      ],
+      "limitations": [
+        "NOT_RUN: no approved isolated fuzz execution, coverage trace, crash triage, or minimization evidence exists."
+      ]
+    },
+    {
+      "key": "symbolic-and-smt-proof",
+      "status": "blocked",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "solver/proof.json",
+        "technique-status.json"
+      ],
+      "limitations": [
+        "Unsupported and NOT_RUN: no solver binary, encoding, bounds, certificate, independent encoding, or concrete countermodel replay exists."
+      ]
+    },
+    {
+      "key": "independent-holdout-and-representative-workloads",
+      "status": "blocked",
+      "owner": "external-independent-verifier",
+      "evidence_refs": [
+        "corpus/holdout/manifest.json",
+        "corpus/representative-workloads/manifest.json"
+      ],
+      "limitations": [
+        "NOT_RUN: no untouched independent corpus or representative production-derived workload is supplied or authorized."
+      ]
+    },
+    {
+      "key": "provider-production-and-certification-evidence",
+      "status": "blocked",
+      "owner": "external-independent-verifier",
+      "evidence_refs": [
+        "certification/certification.json"
+      ],
+      "limitations": [
+        "NOT_RUN and NOT_CERTIFIED: local structural validation cannot authorize provider calls, deployment, production use, or certification."
+      ]
+    }
+  ]
+}

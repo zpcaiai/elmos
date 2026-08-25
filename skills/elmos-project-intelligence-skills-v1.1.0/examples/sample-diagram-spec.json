@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "diagram_id": "diagram-order-container",
+  "type": "c4-container",
+  "project_id": "elmos-demo",
+  "revision_id": "rev-demo-001",
+  "title": "订单系统容器图",
+  "view": {
+    "filters": [],
+    "grouping": [
+      "application",
+      "data"
+    ]
+  },
+  "theme": {
+    "name": "elmos-default"
+  },
+  "nodes": [
+    {
+      "id": "node-web",
+      "kind": "container",
+      "label": "Web App",
+      "group_id": "application",
+      "semantic": {
+        "technology": "React"
+      },
+      "evidence_refs": [
+        "ev-web-manifest"
+      ],
+      "confidence": 1.0,
+      "position": null,
+      "lock": {
+        "semantic": false,
+        "layout": false
+      }
+    },
+    {
+      "id": "node-order",
+      "kind": "container",
+      "label": "Order Service",
+      "group_id": "application",
+      "semantic": {
+        "technology": "Spring Boot"
+      },
+      "evidence_refs": [
+        "ev-order-build"
+      ],
+      "confidence": 1.0,
+      "position": null,
+      "lock": {
+        "semantic": false,
+        "layout": false
+      }
+    },
+    {
+      "id": "node-db",
+      "kind": "database",
+      "label": "Order DB",
+      "group_id": "data",
+      "semantic": {
+        "technology": "PostgreSQL"
+      },
+      "evidence_refs": [
+        "ev-ddl"
+      ],
+      "confidence": 0.95,
+      "position": null,
+      "lock": {
+        "semantic": false,
+        "layout": false
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-web-order",
+      "source": "node-web",
+      "target": "node-order",
+      "kind": "calls",
+      "label": "HTTPS/JSON",
+      "evidence_refs": [
+        "ev-api-client"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "id": "edge-order-db",
+      "source": "node-order",
+      "target": "node-db",
+      "kind": "writes",
+      "label": "JDBC",
+      "evidence_refs": [
+        "ev-repository"
+      ],
+      "confidence": 0.95
+    }
+  ],
+  "layout": {
+    "engine": "elk",
+    "positions": {}
+  }
+}

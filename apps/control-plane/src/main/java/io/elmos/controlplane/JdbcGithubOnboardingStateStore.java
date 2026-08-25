@@ -25,6 +25,7 @@ class JdbcGithubOnboardingStateStore implements GithubInstallationOnboardingServ
             String nonce,
             Instant expiresAt
     ) {
+        setTenant(organizationId);
         String connectionId = requestedConnectionId == null
                 ? "ghc-" + UUID.randomUUID()
                 : requestedConnectionId;
@@ -33,9 +34,7 @@ class JdbcGithubOnboardingStateStore implements GithubInstallationOnboardingServ
                 insert into scm_connections(
                     connection_id, organization_id, provider, status, created_at, updated_at
                 )
-                select :connection, organization_id, 'GITHUB', 'PENDING', :now, :now
-                from organizations
-                where organization_id=:organization
+                values (:connection, :organization, 'GITHUB', 'PENDING', :now, :now)
                 on conflict (connection_id) do nothing
                 """)
                 .param("connection", connectionId)
@@ -73,6 +72,7 @@ class JdbcGithubOnboardingStateStore implements GithubInstallationOnboardingServ
             Instant expiresAt,
             Instant now
     ) {
+        setTenant(organizationId);
         return jdbc.sql("""
                 update github_app_onboarding_states
                 set stage='OAUTH', installation_external_id=:installation,
@@ -100,6 +100,7 @@ class JdbcGithubOnboardingStateStore implements GithubInstallationOnboardingServ
             long installationId,
             Instant now
     ) {
+        setTenant(organizationId);
         return jdbc.sql("""
                 update github_app_onboarding_states
                 set consumed_at=:now, updated_at=:now
@@ -114,5 +115,16 @@ class JdbcGithubOnboardingStateStore implements GithubInstallationOnboardingServ
                 .param("connection", connectionId)
                 .param("installation", installationId)
                 .update() == 1;
+    }
+
+    private void setTenant(String organizationId) {
+        if (organizationId == null
+                || !organizationId.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,63}")) {
+            throw new SecurityException("trusted organization identity is invalid");
+        }
+        jdbc.sql("select set_config('app.organization_id', :organization, true)")
+                .param("organization", organizationId)
+                .query(String.class)
+                .single();
     }
 }

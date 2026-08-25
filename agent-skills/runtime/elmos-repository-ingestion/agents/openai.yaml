@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 仓库接入与修订冻结"
+  short_description: "Guide 仓库接入与修订冻结 with evidence controls"
+  default_prompt: "Use $elmos-repository-ingestion as guidance for 仓库接入与修订冻结 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

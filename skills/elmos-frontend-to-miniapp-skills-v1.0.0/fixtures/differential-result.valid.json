@@ -1,0 +1,39 @@
+{
+  "result_id": "diff-demo",
+  "flow_id": "add-todo",
+  "platform": "wechat",
+  "verdict": "passed",
+  "source_trace": [
+    {
+      "sequence": 0,
+      "type": "route.enter",
+      "value": "/",
+      "metadata": {}
+    },
+    {
+      "sequence": 1,
+      "type": "state.write",
+      "value": {
+        "todos": 1
+      },
+      "metadata": {}
+    }
+  ],
+  "target_trace": [
+    {
+      "sequence": 0,
+      "type": "route.enter",
+      "value": "/",
+      "metadata": {}
+    },
+    {
+      "sequence": 1,
+      "type": "state.write",
+      "value": {
+        "todos": 1
+      },
+      "metadata": {}
+    }
+  ],
+  "diffs": []
+}

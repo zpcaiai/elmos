@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.1.0",
+  "policy_epoch": "cache-policy-2026-08-19T09:00Z",
+  "tier": "L1_LOCAL_CAS",
+  "policy": "ADAPTIVE",
+  "capacity_bytes": 107374182400,
+  "objective_profile": "BALANCED",
+  "parameters": {
+    "candidate_policies": [
+      "S3_FIFO",
+      "SIEVE",
+      "W_TINY_LFU",
+      "GDSF"
+    ],
+    "minimum_dwell_epochs": 6,
+    "switch_hysteresis_percent": 5
+  },
+  "selector": {
+    "type": "OFF_PATH_LINEAR",
+    "feature_schema": "cache-workload-fingerprint-v1",
+    "selected_expert": "S3_FIFO"
+  },
+  "fallback_policy": "S3_FIFO",
+  "configuration_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "model_digest": null,
+  "trace_corpus_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "confidence": 0.91,
+  "reason_codes": [
+    "ONE_HIT_RATIO_HIGH",
+    "SMALL_OBJECT_REGIME",
+    "FIXED_POLICY_WITHIN_GUARDRAILS"
+  ],
+  "effective_from": "2026-08-19T09:00:00Z",
+  "expires_at": "2026-09-19T09:00:00Z"
+}

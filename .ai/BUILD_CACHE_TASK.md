@@ -1,0 +1,161 @@
+# BUILD_CACHE_TASK.md
+
+> Active task for the
+> `elmos-build-cache-staging-codex-claude-parity` skills package (v1.2.0),
+> layered on the retained `elmos-build-cache-staging-sota` v1.1.0 foundation.
+> Companion files: `BUILD_CACHE_IMPLEMENTATION_STATUS.md`,
+> `BUILD_CACHE_TEST_RESULTS.md`, `BUILD_CACHE_EVIDENCE.md`,
+> `BUILD_CACHE_HANDOFF.md`. The authoritative live task ledger is
+> `BUILD_CACHE_PROGRESS.md`.
+
+## Live synchronization snapshot — 2026-08-24
+
+- Pushed implementation SHA:
+  `73c68c0776031a8082a4feed7e1a598b71b330c2` (local/tracking/remote matched).
+- The package/import work and most local v1.2 runtime surfaces are complete.
+- Durable SLO control and five-layer composition are code-present but have no
+  post-change targeted test evidence.
+- Provider production routes, prompt-safe durable idempotent replay and the
+  two additional OpenAPI operations remain partial.
+- External evidence is `NOT_RUN`; v1.2 remains `NOT_CERTIFIED`.
+- See `BUILD_CACHE_PROGRESS.md` rows BC-01 through BC-19 for every task and its
+  exact remaining work. This synchronization itself is after the pushed
+  implementation commit and awaits the next authorized scoped Git window.
+
+- **Started:** 2026-08-19
+- **Second pass:** 2026-08-19 (closing the seven `PARTIAL` rows)
+- **Third pass:** 2026-08-19 (closing the four that remained)
+- **Fourth pass:** 2026-08-20 (the v1.1.0 SOTA package: 7 new P8 skills, plus
+  wiring the policy plane into the engine rather than beside it)
+- **Fifth pass:** 2026-08-20 (the v1.2.0 Codex/Claude cache-parity package:
+  detect and retain the 31 v1.1 Skills, then implement the 11 missing
+  P8-parity-foundation through P13-parity-rollout contracts without weakening
+  the correctness plane)
+- **Agents:** Claude for passes 1–4; Codex for the v1.2 pass
+- **Input package (passes 1–3):** `elmos-build-cache-staging-skills-v1.0.0`
+  (24 skills, P0–P7)
+- **Input package (pass 4):** `elmos-build-cache-staging-sota-skills-v1.1.0`
+  (31 skills, P0–P8 — the original 24 at `version: 1.1.0` plus 7 new SOTA
+  skills: trace/replay simulator, policy portfolio, DAG-aware prefetch,
+  cost-aware admission, adaptive orchestrator, learning-augmented control,
+  autotuning certification)
+- **Input package (pass 5):**
+  `elmos-build-cache-staging-codex-claude-parity-skills-v1.2.0.zip`
+  (42 Skills: 31 retained v1.1 contracts plus 11 new parity contracts; archive
+  SHA-256
+  `dde312b55a95cbc7af6753ec88f07833e93ffa296b782ddcf3ef1a6470b73cb7`)
+- **Scope agreed with the user (passes 1–3):** implement **all 24 skills** as real code,
+  land it under `engines/build-cache-engine/`, install the 24 `SKILL.md` files
+  into `agent-skills/runtime/`, run the package's `./validate.sh`, and record
+  progress here. The second pass adds: close every gap that was only open
+  because the first environment could not prove it, and re-verify. The fourth
+  pass adds: implement all 31 v1.1.0 skills, and satisfy the package's explicit
+  requirement that the policy plane "must be in the repository, not a
+  disconnected prototype" — so the portfolio has to be reachable from a real
+  call path and from configuration, not only from a benchmark script.
+  The fifth pass adds: preserve completed v1.1 behavior, install all 42 Skills
+  deterministically, and implement provider-prefix, context, environment,
+  affinity, coordination, diagnostics, parity-harness and rollout surfaces.
+  Attached-package prose is treated as an implementation contract and evidence
+  checklist, not as permission to execute untrusted package scripts or make
+  production/provider/deployment claims.
+
+## What "implemented" means for this task
+
+The package's `AGENTS.md` is explicit: architecture prose is not completion.
+For every skill the deliverable is production code in this repository plus
+automated tests, failure-path verification, telemetry, documentation, rollout
+controls, and machine-readable evidence. This file set is that evidence.
+
+Status vocabulary used in the companion files is the repository's closed set:
+`IMPLEMENTED` · `PARTIAL` · `STUB` · `MISSING` · `BROKEN` · `NOT VERIFIED`.
+
+`IMPLEMENTED` requires **all** of: real logic (no TODO / `pass` /
+`NotImplemented` / hardcoded success), wired into a real call chain, covered by
+a test that exercises the behaviour, and an **executed** result recorded in
+`BUILD_CACHE_TEST_RESULTS.md`.
+
+## Deliverables
+
+| Deliverable | Path |
+|---|---|
+| Implementation | `engines/build-cache-engine/src/elmos_build_cache/` (46 modules, 24 322 lines) |
+| Tests | `engines/build-cache-engine/tests/` (41 files, 12 165 lines, 933 tests) |
+| Tools | `engines/build-cache-engine/tools/cross_platform_snapshot.py` |
+| SQL migrations | `engines/build-cache-engine/migrations/{postgres,sqlite}/` (6 files) |
+| JSON Schemas | `engines/build-cache-engine/schemas/` — 10 files (+ packaged copy under `src/.../_data/`) |
+| OpenAPI | `engines/build-cache-engine/openapi/cache-control-plane.openapi.yaml` |
+| Configuration | `engines/build-cache-engine/config/elmos-cache{,.local}.yaml` |
+| CLI | `elmos-cache` console script (`elmos_build_cache.cli`) |
+| Skills | `agent-skills/runtime/elmos-*/SKILL.md` (31 directories; 7 added and 24 re-stamped to 1.1.0 in pass 4) |
+| Vendored package | `agent-skills/packages/elmos-build-cache-staging-sota/` (v1.1.0; the v1.0.0 `elmos-build-cache-staging-recovery/` is left intact beside it, so both `./validate.sh` run in-repo) |
+
+## Pass 2 — the seven `PARTIAL` rows
+
+| # | Gap as stated after pass 1 | Outcome |
+|---|---|---|
+| 1 | E2E-001 used a stand-in generator, not real stages | **Closed for this repository.** `tests/test_e2e_real_stages.py` runs a real `javac` and a real tree-sitter-driven Java→C# translation whose output is parsed back and compared against the source's public surface. Wiring ELMOS's *model-driven* stage stays out of scope — it lives in the orchestrator. |
+| 2 | PostgreSQL / S3 never seen a live service | **Closed.** PostgreSQL 16 and a live HTTP S3 endpoint, 47 + 12 executed tests. |
+| 3 | Chaos injection was in-process | **Closed.** Real `SIGKILL` at 8 kill points and a real tmpfs `ENOSPC` / inode exhaustion. |
+| 4 | Native adapters never ran a build tool | **Mostly closed.** Gradle, MSBuild/NuGet, Cargo, CMake+ccache, TypeScript/npm, pip and Go now run for real. Xcode/Swift, Flutter/pub and Maven Central are unavailable here and skip loudly. |
+| 5 | 12 of 13 languages hashed heuristically | **Closed.** `treesitter_hash.py` gives exact extraction for all twelve non-Python languages; Python keeps `ast`. |
+| 6 | HMAC signing / encryption | **Closed.** Ed25519 provenance signatures and AES-256-GCM envelope encryption, with policy refusing a symmetric signer in production. |
+| 7 | Overall `NOT_CERTIFIED` | Now `CERTIFIED_IN_SANDBOX`, with the residue named in `BUILD_CACHE_HANDOFF.md` §3. |
+
+## Pass 3 — the four that remained
+
+| # | Gap after pass 2 | Outcome |
+|---|---|---|
+| 1 | macOS / Windows snapshot fixtures | **Closed for macOS's filesystem, and generalised.** The fixture now has an identical root digest on Linux/ext4 and on a real macOS APFS volume reached through the desktop bridge. A latent defect surfaced on the way: a decomposed (NFD) filename produced a different digest, which is fixed. `snapshot.portability_findings` answers the question for any repository from any host, which is what the fixtures could never do. A native Darwin run and a Windows run are still uncaptured and are named in a skip. |
+| 2 | `overlay.py` had no test file | **Closed.** 36 tests, copy-on-write proven by inode and link count, the full lifecycle re-run inside a real kernel overlayfs mount. |
+| 3 | Swift / Flutter / Maven toolchains | **Partly closed.** Maven's local-repository redirection is now certified against Maven itself. Swift and Flutter are not obtainable in this sandbox; for both, everything about the adapter that does not need the tool is asserted, so the residue is one specific thing and it skips with its reason printed. |
+| 4 | ELMOS's own conversion stage | **Closed.** `elmos_route_stages.py` registers `engines/polyglot-route-engine` against these stage contracts. Its analyzer, IR and emitter run inside the pipeline; the emitted Java compiles and is executed against the Python original to earn `TEST_VERIFIED`; a sabotaged translation is caught. |
+
+## Pass 5 — v1.2 parity upgrade
+
+The importer inventories the archive before writing. It proves that the 31
+retained Skill bodies are unchanged apart from v1.2 frontmatter, installs only
+the required deltas, and adds the 11 new Skills. The immutable source is
+vendored at
+`agent-skills/packages/elmos-build-cache-staging-codex-claude-parity/`; the
+installed manifest is
+`docs/build-cache-staging-parity/installed-manifest.json`. All 42 Skill files
+are byte-identical across `agent-skills/runtime`, `.agents/skills`,
+`.codex/skills` and `.claude/skills`. The source archive was inspected and
+checksummed; its scripts were not executed by the importer.
+
+The implementation delta is:
+
+| Contract area | Engine surface |
+| --- | --- |
+| Provider prefix and canonical layout | `prompt_cache.py`, `prompt_tools.py` |
+| Durable repository context and compaction | `context_ledger.py`, `context_compaction.py` |
+| Environment identity, sealing and restore | `environment_cache.py`, `environment_service.py` |
+| Locality routing and multi-layer reuse | `affinity.py`, `coordinator.py` |
+| Content-free outcome diagnostics | `miss_diagnostics.py`, `parity_runtime.py` |
+| Exact corpus, evidence binding and measured gate | `parity.py`, `parity_harness.py` |
+| Durable v1.2 records | `parity_store.py`; SQLite 0003/0004 and PostgreSQL 0005/0006 |
+| Guarded tuning and rollout | `slo_autotune.py`, `pipeline.py` |
+| Seven-operation control plane and CLI | `parity_api.py`, `api.py`, `cli.py` |
+
+Completion is deliberately split into two evidence levels:
+
+- Local code, contract assets, migrations, importer checks and narrow tests are
+  engineering evidence for the implementation.
+- Live PostgreSQL execution of the new migrations, real provider/SDK/model
+  behavior, real environment images, independent parity-corpus execution and
+  production rollout remain `NOT_RUN`. The v1.2 result is `NOT_CERTIFIED`, and
+  none of the package's numerical parity thresholds is recorded as achieved.
+
+The previous v1.1 `CERTIFIED_IN_SANDBOX` wording is historical to that pass and
+must not be read as a v1.2 parity decision.
+
+## Out of scope for this pass
+
+- Calibrating `observability.DEFAULT_SLOS` against a real ELMOS workload.
+- A native Darwin and a Windows snapshot capture (no such host is reachable
+  from this session; one command produces each).
+- Swift and Flutter builds (no toolchain, and neither vendor host is on the
+  sandbox's network allowlist).
+
+See `BUILD_CACHE_HANDOFF.md` for the ordered list of what remains.

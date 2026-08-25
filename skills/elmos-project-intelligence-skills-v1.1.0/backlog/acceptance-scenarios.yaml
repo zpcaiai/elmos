@@ -1,0 +1,3227 @@
+version: 1.1.0
+scenario_count: 248
+scenarios:
+- id: AC-00-01
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 子技能选择与依赖正确且可解释。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Project Intelligence Studio 总编排 的对应功能、异常路径和恢复路径。
+  then: 子技能选择与依赖正确且可解释。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-00-02
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 每个批次均有可运行测试和验收证据。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Project Intelligence Studio 总编排 的对应功能、异常路径和恢复路径。
+  then: 每个批次均有可运行测试和验收证据。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-00-03
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 任务中断后可从最近检查点恢复且不重复副作用。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Project Intelligence Studio 总编排 的对应功能、异常路径和恢复路径。
+  then: 任务中断后可从最近检查点恢复且不重复副作用。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-00-04
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 最终报告可追踪到 Commit、分析版本和 artifact 版本。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Project Intelligence Studio 总编排 的对应功能、异常路径和恢复路径。
+  then: 最终报告可追踪到 Commit、分析版本和 artifact 版本。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-00-05
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 全包验证脚本返回成功。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Project Intelligence Studio 总编排 的对应功能、异常路径和恢复路径。
+  then: 全包验证脚本返回成功。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-01-01
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: 每个 Epic 至少关联一个用户角色、一个 API/界面和一个验收场景。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 产品范围与需求基线 的对应功能、异常路径和恢复路径。
+  then: 每个 Epic 至少关联一个用户角色、一个 API/界面和一个验收场景。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-01-02
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: P0 能独立形成从导入仓库到可证据化输出的闭环。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 产品范围与需求基线 的对应功能、异常路径和恢复路径。
+  then: P0 能独立形成从导入仓库到可证据化输出的闭环。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-01-03
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: 范围外清单明确，能防止在线 IDE 范围失控。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 产品范围与需求基线 的对应功能、异常路径和恢复路径。
+  then: 范围外清单明确，能防止在线 IDE 范围失控。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-01-04
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: 需求编号可在 backlog、测试和文档中追踪。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 产品范围与需求基线 的对应功能、异常路径和恢复路径。
+  then: 需求编号可在 backlog、测试和文档中追踪。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-02-01
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 服务边界无循环部署依赖。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 参考架构与服务边界 的对应功能、异常路径和恢复路径。
+  then: 服务边界无循环部署依赖。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-02-02
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 每个持久化数据类型有唯一主责存储。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 参考架构与服务边界 的对应功能、异常路径和恢复路径。
+  then: 每个持久化数据类型有唯一主责存储。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-02-03
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 任何 worker 重启后工作流可恢复。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 参考架构与服务边界 的对应功能、异常路径和恢复路径。
+  then: 任何 worker 重启后工作流可恢复。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-02-04
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 架构支持 SaaS、单租户私有化和离线受限部署。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 参考架构与服务边界 的对应功能、异常路径和恢复路径。
+  then: 架构支持 SaaS、单租户私有化和离线受限部署。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-02-05
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: ADR 记录关键替代方案及弃用原因。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 参考架构与服务边界 的对应功能、异常路径和恢复路径。
+  then: ADR 记录关键替代方案及弃用原因。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-03-01
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 相同 revision 重复导入得到相同 manifest hash。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 仓库接入与修订冻结 的对应功能、异常路径和恢复路径。
+  then: 相同 revision 重复导入得到相同 manifest hash。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-03-02
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 断点续传不会产生重复对象。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 仓库接入与修订冻结 的对应功能、异常路径和恢复路径。
+  then: 断点续传不会产生重复对象。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-03-03
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 子模块 revision 被明确记录。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 仓库接入与修订冻结 的对应功能、异常路径和恢复路径。
+  then: 子模块 revision 被明确记录。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-03-04
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 私有凭据不出现在日志、事件或 artifact。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 仓库接入与修订冻结 的对应功能、异常路径和恢复路径。
+  then: 私有凭据不出现在日志、事件或 artifact。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-03-05
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 删除项目后按保留策略可验证清除。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 仓库接入与修订冻结 的对应功能、异常路径和恢复路径。
+  then: 删除项目后按保留策略可验证清除。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-04-01
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 主语言与构建系统在基准仓库识别准确率达到目标阈值。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目指纹与技术栈识别 的对应功能、异常路径和恢复路径。
+  then: 主语言与构建系统在基准仓库识别准确率达到目标阈值。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-04-02
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 所有技术栈结论可跳转到证据文件。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目指纹与技术栈识别 的对应功能、异常路径和恢复路径。
+  then: 所有技术栈结论可跳转到证据文件。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-04-03
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 错误识别可人工覆盖且被版本化。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目指纹与技术栈识别 的对应功能、异常路径和恢复路径。
+  then: 错误识别可人工覆盖且被版本化。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-04-04
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 分析计划明确列出不支持或低置信度区域。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目指纹与技术栈识别 的对应功能、异常路径和恢复路径。
+  then: 分析计划明确列出不支持或低置信度区域。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-05-01
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: 受支持基准仓库文件解析成功率达到设定阈值。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 多语言解析与标准化 Code IR 的对应功能、异常路径和恢复路径。
+  then: 受支持基准仓库文件解析成功率达到设定阈值。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-05-02
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: 增量修改单文件只重建受影响 shard。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 多语言解析与标准化 Code IR 的对应功能、异常路径和恢复路径。
+  then: 增量修改单文件只重建受影响 shard。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-05-03
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: Symbol 位置与在线代码阅读器行号一致。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 多语言解析与标准化 Code IR 的对应功能、异常路径和恢复路径。
+  then: Symbol 位置与在线代码阅读器行号一致。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-05-04
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: 不支持语法有明确诊断和降级输出。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 多语言解析与标准化 Code IR 的对应功能、异常路径和恢复路径。
+  then: 不支持语法有明确诊断和降级输出。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-05-05
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: Code IR 通过 Schema 验证。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 多语言解析与标准化 Code IR 的对应功能、异常路径和恢复路径。
+  then: Code IR 通过 Schema 验证。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-06-01
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: Go to definition、find references 和 call hierarchy 在基准项目通过。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 符号、引用与调用图 的对应功能、异常路径和恢复路径。
+  then: Go to definition、find references 和 call hierarchy 在基准项目通过。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-06-02
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 循环依赖检测与人工基线一致。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 符号、引用与调用图 的对应功能、异常路径和恢复路径。
+  then: 循环依赖检测与人工基线一致。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-06-03
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 每条边可返回 evidence 与解析方法。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 符号、引用与调用图 的对应功能、异常路径和恢复路径。
+  then: 每条边可返回 evidence 与解析方法。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-06-04
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 增量更新后无幽灵边。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 符号、引用与调用图 的对应功能、异常路径和恢复路径。
+  then: 增量更新后无幽灵边。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-06-05
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 图查询 p95 达到 SLO。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 符号、引用与调用图 的对应功能、异常路径和恢复路径。
+  then: 图查询 p95 达到 SLO。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-07-01
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 同一事实在不同 artifact 中保持一致。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 统一 Project Intelligence Graph 的对应功能、异常路径和恢复路径。
+  then: 同一事实在不同 artifact 中保持一致。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-07-02
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 任意图节点可回到代码或运行证据。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 统一 Project Intelligence Graph 的对应功能、异常路径和恢复路径。
+  then: 任意图节点可回到代码或运行证据。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-07-03
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: revision diff 能解释节点和边变化。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 统一 Project Intelligence Graph 的对应功能、异常路径和恢复路径。
+  then: revision diff 能解释节点和边变化。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-07-04
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 人工 override 有审计和回滚。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 统一 Project Intelligence Graph 的对应功能、异常路径和恢复路径。
+  then: 人工 override 有审计和回滚。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-07-05
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 图质量指标可观测。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 统一 Project Intelligence Graph 的对应功能、异常路径和恢复路径。
+  then: 图质量指标可观测。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-08-01
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 随机抽取 claim 能定位到有效证据。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 证据图、可信度与来源追踪 的对应功能、异常路径和恢复路径。
+  then: 随机抽取 claim 能定位到有效证据。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-08-02
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 代码移动后可通过 symbol/revision 重定位或明确失效。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 证据图、可信度与来源追踪 的对应功能、异常路径和恢复路径。
+  then: 代码移动后可通过 symbol/revision 重定位或明确失效。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-08-03
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 冲突证据不被静默选择。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 证据图、可信度与来源追踪 的对应功能、异常路径和恢复路径。
+  then: 冲突证据不被静默选择。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-08-04
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 导出的证据包可离线验证哈希。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 证据图、可信度与来源追踪 的对应功能、异常路径和恢复路径。
+  then: 导出的证据包可离线验证哈希。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-08-05
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 所有生成器强制写 claim/evidence 关系。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 证据图、可信度与来源追踪 的对应功能、异常路径和恢复路径。
+  then: 所有生成器强制写 claim/evidence 关系。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-09-01
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 100k 文件项目文件树可交互且不冻结。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 在线代码阅读器 的对应功能、异常路径和恢复路径。
+  then: 100k 文件项目文件树可交互且不冻结。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-09-02
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 代码打开、标签切换和定位达到体验 SLO。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 在线代码阅读器 的对应功能、异常路径和恢复路径。
+  then: 代码打开、标签切换和定位达到体验 SLO。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-09-03
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 复制的深链在同权限用户下可复现。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 在线代码阅读器 的对应功能、异常路径和恢复路径。
+  then: 复制的深链在同权限用户下可复现。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-09-04
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: Diff 能区分自动生成、人工编辑和转换来源。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 在线代码阅读器 的对应功能、异常路径和恢复路径。
+  then: Diff 能区分自动生成、人工编辑和转换来源。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-09-05
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 权限撤销后缓存内容不可继续访问。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 在线代码阅读器 的对应功能、异常路径和恢复路径。
+  then: 权限撤销后缓存内容不可继续访问。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-10-01
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 基准项目主要语言导航准确率达到目标。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 语义导航与跨层追踪 的对应功能、异常路径和恢复路径。
+  then: 基准项目主要语言导航准确率达到目标。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-10-02
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 跨层路径可从页面追到数据表并返回证据。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 语义导航与跨层追踪 的对应功能、异常路径和恢复路径。
+  then: 跨层路径可从页面追到数据表并返回证据。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-10-03
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 大扇出查询有摘要和继续加载。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 语义导航与跨层追踪 的对应功能、异常路径和恢复路径。
+  then: 大扇出查询有摘要和继续加载。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-10-04
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 失效 symbol 链接有重定位或明确错误。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 语义导航与跨层追踪 的对应功能、异常路径和恢复路径。
+  then: 失效 symbol 链接有重定位或明确错误。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-10-05
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 导航权限测试全部通过。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 语义导航与跨层追踪 的对应功能、异常路径和恢复路径。
+  then: 导航权限测试全部通过。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-11-01
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 关键事实 claim 覆盖率达到目标。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 证据化代码与模块讲解 的对应功能、异常路径和恢复路径。
+  then: 关键事实 claim 覆盖率达到目标。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-11-02
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 随机证据链接有效。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 证据化代码与模块讲解 的对应功能、异常路径和恢复路径。
+  then: 随机证据链接有效。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-11-03
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 同一 revision 重复生成事实部分稳定。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 证据化代码与模块讲解 的对应功能、异常路径和恢复路径。
+  then: 同一 revision 重复生成事实部分稳定。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-11-04
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 安全测试能抵御注释/README 指令注入。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 证据化代码与模块讲解 的对应功能、异常路径和恢复路径。
+  then: 安全测试能抵御注释/README 指令注入。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-11-05
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 用户可反馈错误并形成 override/评测样本。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 证据化代码与模块讲解 的对应功能、异常路径和恢复路径。
+  then: 用户可反馈错误并形成 override/评测样本。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-12-01
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 用户能沿路径定位并运行最小开发闭环。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目介绍与新人学习路径 的对应功能、异常路径和恢复路径。
+  then: 用户能沿路径定位并运行最小开发闭环。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-12-02
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 每个学习节点有目标、材料、练习和完成条件。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目介绍与新人学习路径 的对应功能、异常路径和恢复路径。
+  then: 每个学习节点有目标、材料、练习和完成条件。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-12-03
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 路径中的文件和链接全部存在。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目介绍与新人学习路径 的对应功能、异常路径和恢复路径。
+  then: 路径中的文件和链接全部存在。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-12-04
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 项目变化后受影响节点被标记 stale。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目介绍与新人学习路径 的对应功能、异常路径和恢复路径。
+  then: 项目变化后受影响节点被标记 stale。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-12-05
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 角色间内容明显差异化。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目介绍与新人学习路径 的对应功能、异常路径和恢复路径。
+  then: 角色间内容明显差异化。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-13-01
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 系统上下文和容器图覆盖所有确认入口与外部依赖。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构自动发现与多视角讲解 的对应功能、异常路径和恢复路径。
+  then: 系统上下文和容器图覆盖所有确认入口与外部依赖。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-13-02
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 节点可下钻到代码成员。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构自动发现与多视角讲解 的对应功能、异常路径和恢复路径。
+  then: 节点可下钻到代码成员。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-13-03
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 人工 override 在重新分析后保持。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构自动发现与多视角讲解 的对应功能、异常路径和恢复路径。
+  then: 人工 override 在重新分析后保持。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-13-04
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 架构讲解关键结论有证据。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构自动发现与多视角讲解 的对应功能、异常路径和恢复路径。
+  then: 架构讲解关键结论有证据。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-13-05
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 当前/目标模型不会混写。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构自动发现与多视角讲解 的对应功能、异常路径和恢复路径。
+  then: 当前/目标模型不会混写。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-14-01
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 主要用户流程功能均可映射到 API/代码/数据。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 功能思维导图与业务能力地图 的对应功能、异常路径和恢复路径。
+  then: 主要用户流程功能均可映射到 API/代码/数据。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-14-02
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 功能图节点可双向导航。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 功能思维导图与业务能力地图 的对应功能、异常路径和恢复路径。
+  then: 功能图节点可双向导航。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-14-03
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 重复功能候选可识别。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 功能思维导图与业务能力地图 的对应功能、异常路径和恢复路径。
+  then: 重复功能候选可识别。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-14-04
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 未映射比例可量化。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 功能思维导图与业务能力地图 的对应功能、异常路径和恢复路径。
+  then: 未映射比例可量化。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-14-05
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 导出后可重新导入且不丢稳定 ID。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 功能思维导图与业务能力地图 的对应功能、异常路径和恢复路径。
+  then: 导出后可重新导入且不丢稳定 ID。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-15-01
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 基准流程的主要步骤、状态和副作用完整。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 业务与技术流程发现 的对应功能、异常路径和恢复路径。
+  then: 基准流程的主要步骤、状态和副作用完整。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-15-02
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 异常、重试和补偿可独立查看。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 业务与技术流程发现 的对应功能、异常路径和恢复路径。
+  then: 异常、重试和补偿可独立查看。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-15-03
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: Trace 能覆盖并确认已执行路径。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 业务与技术流程发现 的对应功能、异常路径和恢复路径。
+  then: Trace 能覆盖并确认已执行路径。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-15-04
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 流程图与 Flow IR 往返不丢语义。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 业务与技术流程发现 的对应功能、异常路径和恢复路径。
+  then: 流程图与 Flow IR 往返不丢语义。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-15-05
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 入口清单覆盖率可量化。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 业务与技术流程发现 的对应功能、异常路径和恢复路径。
+  then: 入口清单覆盖率可量化。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-16-01
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: ER 图与迁移/ORM 核心关系一致。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 数据架构、ER、DFD 与血缘 的对应功能、异常路径和恢复路径。
+  then: ER 图与迁移/ORM 核心关系一致。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-16-02
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: 主要写路径能追到数据资产。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 数据架构、ER、DFD 与血缘 的对应功能、异常路径和恢复路径。
+  then: 主要写路径能追到数据资产。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-16-03
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: CRUD 矩阵无跨 revision 混合。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 数据架构、ER、DFD 与血缘 的对应功能、异常路径和恢复路径。
+  then: CRUD 矩阵无跨 revision 混合。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-16-04
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: 敏感字段分类有证据和人工复核入口。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 数据架构、ER、DFD 与血缘 的对应功能、异常路径和恢复路径。
+  then: 敏感字段分类有证据和人工复核入口。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-16-05
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: 血缘边可回溯转换表达式或代码位置。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 数据架构、ER、DFD 与血缘 的对应功能、异常路径和恢复路径。
+  then: 血缘边可回溯转换表达式或代码位置。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-17-01
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: 已声明接口与实现映射覆盖率可量化。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 API、消息与集成拓扑 的对应功能、异常路径和恢复路径。
+  then: 已声明接口与实现映射覆盖率可量化。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-17-02
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: Breaking change 检测有正反例测试。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 API、消息与集成拓扑 的对应功能、异常路径和恢复路径。
+  then: Breaking change 检测有正反例测试。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-17-03
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: Topic 生产者/消费者链可追踪。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 API、消息与集成拓扑 的对应功能、异常路径和恢复路径。
+  then: Topic 生产者/消费者链可追踪。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-17-04
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: 未鉴权和未测试接口可筛选。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 API、消息与集成拓扑 的对应功能、异常路径和恢复路径。
+  then: 未鉴权和未测试接口可筛选。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-17-05
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: 拓扑节点可回到契约与代码。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 API、消息与集成拓扑 的对应功能、异常路径和恢复路径。
+  then: 拓扑节点可回到契约与代码。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-18-01
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 已知 Trace 可正确映射到服务/接口/数据库。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 运行时 Trace、日志与静态图谱融合 的对应功能、异常路径和恢复路径。
+  then: 已知 Trace 可正确映射到服务/接口/数据库。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-18-02
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 静态与运行差异有明确原因分类。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 运行时 Trace、日志与静态图谱融合 的对应功能、异常路径和恢复路径。
+  then: 静态与运行差异有明确原因分类。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-18-03
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 采样限制显示在每个运行结论旁。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 运行时 Trace、日志与静态图谱融合 的对应功能、异常路径和恢复路径。
+  then: 采样限制显示在每个运行结论旁。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-18-04
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 跨环境查询不会混淆。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 运行时 Trace、日志与静态图谱融合 的对应功能、异常路径和恢复路径。
+  then: 跨环境查询不会混淆。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-18-05
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 高容量导入有背压与保留策略。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 运行时 Trace、日志与静态图谱融合 的对应功能、异常路径和恢复路径。
+  then: 高容量导入有背压与保留策略。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-19-01
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 所有目录中的核心图表类型通过 Schema。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 统一图表语义规范 的对应功能、异常路径和恢复路径。
+  then: 所有目录中的核心图表类型通过 Schema。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-19-02
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 相同图谱与参数生成稳定 element ID。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 统一图表语义规范 的对应功能、异常路径和恢复路径。
+  then: 相同图谱与参数生成稳定 element ID。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-19-03
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 无效边和孤立证据引用被拒绝。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 统一图表语义规范 的对应功能、异常路径和恢复路径。
+  then: 无效边和孤立证据引用被拒绝。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-19-04
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: Spec 可由至少两个渲染器消费。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 统一图表语义规范 的对应功能、异常路径和恢复路径。
+  then: Spec 可由至少两个渲染器消费。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-19-05
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 版本迁移保持语义等价。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 统一图表语义规范 的对应功能、异常路径和恢复路径。
+  then: 版本迁移保持语义等价。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-20-01
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 核心图表快照测试通过。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 多格式图表生成与渲染 的对应功能、异常路径和恢复路径。
+  then: 核心图表快照测试通过。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-20-02
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 1000 节点压力图有受控降级且不 OOM。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 多格式图表生成与渲染 的对应功能、异常路径和恢复路径。
+  then: 1000 节点压力图有受控降级且不 OOM。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-20-03
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: SVG 中 element ID 与 Spec 一致。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 多格式图表生成与渲染 的对应功能、异常路径和恢复路径。
+  then: SVG 中 element ID 与 Spec 一致。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-20-04
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 同版本确定性渲染达到目标。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 多格式图表生成与渲染 的对应功能、异常路径和恢复路径。
+  then: 同版本确定性渲染达到目标。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-20-05
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 恶意 DSL 安全测试通过。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 多格式图表生成与渲染 的对应功能、异常路径和恢复路径。
+  then: 恶意 DSL 安全测试通过。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-21-01
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 自动再生成后布局和锁定内容正确保留。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 在线图表编辑与人工锁定 的对应功能、异常路径和恢复路径。
+  then: 自动再生成后布局和锁定内容正确保留。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-21-02
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 冲突可逐项解决并审计。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 在线图表编辑与人工锁定 的对应功能、异常路径和恢复路径。
+  then: 冲突可逐项解决并审计。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-21-03
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 撤销/重做覆盖核心操作。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 在线图表编辑与人工锁定 的对应功能、异常路径和恢复路径。
+  then: 撤销/重做覆盖核心操作。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-21-04
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 图节点点击可回代码和证据。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 在线图表编辑与人工锁定 的对应功能、异常路径和恢复路径。
+  then: 图节点点击可回代码和证据。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-21-05
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 导出再导入不丢人工 override。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 在线图表编辑与人工锁定 的对应功能、异常路径和恢复路径。
+  then: 导出再导入不丢人工 override。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-22-01
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 文档关键 claim 证据覆盖率达到阈值。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构与项目文档生成 的对应功能、异常路径和恢复路径。
+  then: 文档关键 claim 证据覆盖率达到阈值。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-22-02
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 内部链接和代码深链有效。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构与项目文档生成 的对应功能、异常路径和恢复路径。
+  then: 内部链接和代码深链有效。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-22-03
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 代码变更只更新受影响章节。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构与项目文档生成 的对应功能、异常路径和恢复路径。
+  then: 代码变更只更新受影响章节。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-22-04
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 人工内容在再生成后保留。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构与项目文档生成 的对应功能、异常路径和恢复路径。
+  then: 人工内容在再生成后保留。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-22-05
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 导出 Markdown/DOCX/PDF 的结构一致。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构与项目文档生成 的对应功能、异常路径和恢复路径。
+  then: 导出 Markdown/DOCX/PDF 的结构一致。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-23-01
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 所有文本无溢出且核心页面可编辑。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目介绍与技术汇报 PPT 生成 的对应功能、异常路径和恢复路径。
+  then: 所有文本无溢出且核心页面可编辑。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-23-02
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 关键结论有 evidence map。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目介绍与技术汇报 PPT 生成 的对应功能、异常路径和恢复路径。
+  then: 关键结论有 evidence map。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-23-03
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 相同模板重生成能保留锁定页。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目介绍与技术汇报 PPT 生成 的对应功能、异常路径和恢复路径。
+  then: 相同模板重生成能保留锁定页。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-23-04
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 不同受众故事线显著不同。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目介绍与技术汇报 PPT 生成 的对应功能、异常路径和恢复路径。
+  then: 不同受众故事线显著不同。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-23-05
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: PPTX 可被主流 Office 软件正常打开。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目介绍与技术汇报 PPT 生成 的对应功能、异常路径和恢复路径。
+  then: PPTX 可被主流 Office 软件正常打开。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-24-01
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 离线包完整可导航。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目全景报告与交付证据包 的对应功能、异常路径和恢复路径。
+  then: 离线包完整可导航。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-24-02
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: manifest 哈希验证成功。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目全景报告与交付证据包 的对应功能、异常路径和恢复路径。
+  then: manifest 哈希验证成功。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-24-03
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 所有关键引用可解析。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目全景报告与交付证据包 的对应功能、异常路径和恢复路径。
+  then: 所有关键引用可解析。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-24-04
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 脱敏规则测试通过。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目全景报告与交付证据包 的对应功能、异常路径和恢复路径。
+  then: 脱敏规则测试通过。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-24-05
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 报告状态与审批记录一致。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目全景报告与交付证据包 的对应功能、异常路径和恢复路径。
+  then: 报告状态与审批记录一致。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-25-01
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 黄金问题集准确率、引用正确率和无回答准确率达到目标。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目全局搜索与证据化问答 的对应功能、异常路径和恢复路径。
+  then: 黄金问题集准确率、引用正确率和无回答准确率达到目标。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-25-02
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 跨多跳路径问题可返回完整路径。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目全局搜索与证据化问答 的对应功能、异常路径和恢复路径。
+  then: 跨多跳路径问题可返回完整路径。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-25-03
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 权限与 prompt injection 红队通过。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目全局搜索与证据化问答 的对应功能、异常路径和恢复路径。
+  then: 权限与 prompt injection 红队通过。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-25-04
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 过期索引有清晰提示。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目全局搜索与证据化问答 的对应功能、异常路径和恢复路径。
+  then: 过期索引有清晰提示。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-25-05
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 用户纠错可进入评测而非直接改写事实。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 项目全局搜索与证据化问答 的对应功能、异常路径和恢复路径。
+  then: 用户纠错可进入评测而非直接改写事实。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-26-01
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 基准变更集召回率优先达到目标。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 变更影响与回归范围分析 的对应功能、异常路径和恢复路径。
+  then: 基准变更集召回率优先达到目标。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-26-02
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 每个受影响项可解释路径。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 变更影响与回归范围分析 的对应功能、异常路径和恢复路径。
+  then: 每个受影响项可解释路径。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-26-03
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 最小测试集覆盖已知失败回归。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 变更影响与回归范围分析 的对应功能、异常路径和恢复路径。
+  then: 最小测试集覆盖已知失败回归。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-26-04
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 受影响 artifact 被正确标 stale/regen。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 变更影响与回归范围分析 的对应功能、异常路径和恢复路径。
+  then: 受影响 artifact 被正确标 stale/regen。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-26-05
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 大图分析在预算内完成或可恢复。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 变更影响与回归范围分析 的对应功能、异常路径和恢复路径。
+  then: 大图分析在预算内完成或可恢复。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-27-01
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 规则 DSL 有 Schema 和单元测试。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构规则与策略引擎 的对应功能、异常路径和恢复路径。
+  then: 规则 DSL 有 Schema 和单元测试。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-27-02
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 已知违规被稳定检测。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构规则与策略引擎 的对应功能、异常路径和恢复路径。
+  then: 已知违规被稳定检测。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-27-03
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 例外到期后恢复失败。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构规则与策略引擎 的对应功能、异常路径和恢复路径。
+  then: 例外到期后恢复失败。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-27-04
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: CI 输出可定位到代码和路径。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构规则与策略引擎 的对应功能、异常路径和恢复路径。
+  then: CI 输出可定位到代码和路径。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-27-05
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 增量结果与全量结果一致。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 架构规则与策略引擎 的对应功能、异常路径和恢复路径。
+  then: 增量结果与全量结果一致。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-28-01
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 基准漂移场景全部正确分类。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 设计—代码—运行架构漂移检测 的对应功能、异常路径和恢复路径。
+  then: 基准漂移场景全部正确分类。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-28-02
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 误报可通过规则/override 解释性降低。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 设计—代码—运行架构漂移检测 的对应功能、异常路径和恢复路径。
+  then: 误报可通过规则/override 解释性降低。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-28-03
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 接受变更生成可审计基线版本。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 设计—代码—运行架构漂移检测 的对应功能、异常路径和恢复路径。
+  then: 接受变更生成可审计基线版本。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-28-04
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 文档和图表 stale 状态联动。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 设计—代码—运行架构漂移检测 的对应功能、异常路径和恢复路径。
+  then: 文档和图表 stale 状态联动。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-28-05
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: PR 中新增违规边能阻断。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 设计—代码—运行架构漂移检测 的对应功能、异常路径和恢复路径。
+  then: PR 中新增违规边能阻断。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-29-01
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 风险排序在历史缺陷回放中有可测预测力。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 风险、热点与技术债分析 的对应功能、异常路径和恢复路径。
+  then: 风险排序在历史缺陷回放中有可测预测力。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-29-02
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 每项技术债有证据、owner、影响和完成条件。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 风险、热点与技术债分析 的对应功能、异常路径和恢复路径。
+  then: 每项技术债有证据、owner、影响和完成条件。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-29-03
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 热力图可下钻。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 风险、热点与技术债分析 的对应功能、异常路径和恢复路径。
+  then: 热力图可下钻。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-29-04
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 数据缺失明确展示。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 风险、热点与技术债分析 的对应功能、异常路径和恢复路径。
+  then: 数据缺失明确展示。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-29-05
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 优先级变化可解释。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 风险、热点与技术债分析 的对应功能、异常路径和恢复路径。
+  then: 优先级变化可解释。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-30-01
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 关键入口有认证/授权检查覆盖。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 代码与架构安全分析及威胁建模 的对应功能、异常路径和恢复路径。
+  then: 关键入口有认证/授权检查覆盖。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-30-02
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 已知测试漏洞可检测。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 代码与架构安全分析及威胁建模 的对应功能、异常路径和恢复路径。
+  then: 已知测试漏洞可检测。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-30-03
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 威胁模型包含资产、边界、威胁、控制和残余风险。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 代码与架构安全分析及威胁建模 的对应功能、异常路径和恢复路径。
+  then: 威胁模型包含资产、边界、威胁、控制和残余风险。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-30-04
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 修复后可重跑并闭环证据。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 代码与架构安全分析及威胁建模 的对应功能、异常路径和恢复路径。
+  then: 修复后可重跑并闭环证据。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-30-05
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 高危未处置时不能通过生产认证。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 代码与架构安全分析及威胁建模 的对应功能、异常路径和恢复路径。
+  then: 高危未处置时不能通过生产认证。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-31-01
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 相同输入重跑命中且输出哈希一致。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 增量分析、缓存与检查点 的对应功能、异常路径和恢复路径。
+  then: 相同输入重跑命中且输出哈希一致。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-31-02
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 修改单文件只失效预期下游。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 增量分析、缓存与检查点 的对应功能、异常路径和恢复路径。
+  then: 修改单文件只失效预期下游。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-31-03
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: worker 强制终止后可恢复。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 增量分析、缓存与检查点 的对应功能、异常路径和恢复路径。
+  then: worker 强制终止后可恢复。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-31-04
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 重复恢复不重复外部副作用。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 增量分析、缓存与检查点 的对应功能、异常路径和恢复路径。
+  then: 重复恢复不重复外部副作用。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-31-05
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 缓存指标可按项目/阶段查看。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 增量分析、缓存与检查点 的对应功能、异常路径和恢复路径。
+  then: 缓存指标可按项目/阶段查看。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-32-01
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 三方合并核心场景通过。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Artifact 版本与人工内容保护 的对应功能、异常路径和恢复路径。
+  then: 三方合并核心场景通过。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-32-02
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 锁定内容跨再生成保持。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Artifact 版本与人工内容保护 的对应功能、异常路径和恢复路径。
+  then: 锁定内容跨再生成保持。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-32-03
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 每个版本可完整重建或验证。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Artifact 版本与人工内容保护 的对应功能、异常路径和恢复路径。
+  then: 每个版本可完整重建或验证。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-32-04
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 审批和状态转换权限正确。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Artifact 版本与人工内容保护 的对应功能、异常路径和恢复路径。
+  then: 审批和状态转换权限正确。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-32-05
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: stale artifact 不可误标 Certified。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Artifact 版本与人工内容保护 的对应功能、异常路径和恢复路径。
+  then: stale artifact 不可误标 Certified。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-33-01
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: 重复请求只产生一个有效 PR。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Git、文档 PR 与变更交付自动化 的对应功能、异常路径和恢复路径。
+  then: 重复请求只产生一个有效 PR。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-33-02
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: base 变化能重新基线或明确冲突。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Git、文档 PR 与变更交付自动化 的对应功能、异常路径和恢复路径。
+  then: base 变化能重新基线或明确冲突。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-33-03
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: PR 检查失败会阻止完成状态。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Git、文档 PR 与变更交付自动化 的对应功能、异常路径和恢复路径。
+  then: PR 检查失败会阻止完成状态。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-33-04
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: 审计可追踪到发起用户和生成版本。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Git、文档 PR 与变更交付自动化 的对应功能、异常路径和恢复路径。
+  then: 审计可追踪到发起用户和生成版本。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-33-05
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: 关闭/取消后资源被正确清理。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 Git、文档 PR 与变更交付自动化 的对应功能、异常路径和恢复路径。
+  then: 关闭/取消后资源被正确清理。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-34-01
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 权限矩阵自动测试覆盖允许与拒绝。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 协作、RBAC、审批与审计 的对应功能、异常路径和恢复路径。
+  then: 权限矩阵自动测试覆盖允许与拒绝。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-34-02
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 撤销后分享和缓存访问失效。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 协作、RBAC、审批与审计 的对应功能、异常路径和恢复路径。
+  then: 撤销后分享和缓存访问失效。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-34-03
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 跨租户查询红队无泄漏。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 协作、RBAC、审批与审计 的对应功能、异常路径和恢复路径。
+  then: 跨租户查询红队无泄漏。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-34-04
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 审批职责分离生效。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 协作、RBAC、审批与审计 的对应功能、异常路径和恢复路径。
+  then: 审批职责分离生效。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-34-05
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 审计事件包含 who/what/when/where/result。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 协作、RBAC、审批与审计 的对应功能、异常路径和恢复路径。
+  then: 审计事件包含 who/what/when/where/result。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-35-01
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 至少一个 Git 和一个 Trace 连接器端到端通过。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 外部系统、连接器与 MCP 集成 的对应功能、异常路径和恢复路径。
+  then: 至少一个 Git 和一个 Trace 连接器端到端通过。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-35-02
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 限流/过期 token/部分失败可恢复。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 外部系统、连接器与 MCP 集成 的对应功能、异常路径和恢复路径。
+  then: 限流/过期 token/部分失败可恢复。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-35-03
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 工具 Schema 通过契约测试。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 外部系统、连接器与 MCP 集成 的对应功能、异常路径和恢复路径。
+  then: 工具 Schema 通过契约测试。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-35-04
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 写操作幂等。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 外部系统、连接器与 MCP 集成 的对应功能、异常路径和恢复路径。
+  then: 写操作幂等。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-35-05
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 连接器可替换而不改分析核心。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 外部系统、连接器与 MCP 集成 的对应功能、异常路径和恢复路径。
+  then: 连接器可替换而不改分析核心。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-36-01
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 目标规模压测达到吞吐和内存预算。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 大型仓库与多仓库系统扩展 的对应功能、异常路径和恢复路径。
+  then: 目标规模压测达到吞吐和内存预算。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-36-02
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 部分失败可重试单 shard。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 大型仓库与多仓库系统扩展 的对应功能、异常路径和恢复路径。
+  then: 部分失败可重试单 shard。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-36-03
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 增量 1% 变更成本显著低于全量。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 大型仓库与多仓库系统扩展 的对应功能、异常路径和恢复路径。
+  then: 增量 1% 变更成本显著低于全量。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-36-04
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 公平调度避免大项目饿死小项目。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 大型仓库与多仓库系统扩展 的对应功能、异常路径和恢复路径。
+  then: 公平调度避免大项目饿死小项目。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-36-05
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: ETA 校准误差有持续监控。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 大型仓库与多仓库系统扩展 的对应功能、异常路径和恢复路径。
+  then: ETA 校准误差有持续监控。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-37-01
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 关键请求可端到端 Trace。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 可观测性、SLO 与运营指标 的对应功能、异常路径和恢复路径。
+  then: 关键请求可端到端 Trace。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-37-02
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 告警通过演练。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 可观测性、SLO 与运营指标 的对应功能、异常路径和恢复路径。
+  then: 告警通过演练。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-37-03
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 仪表盘能定位慢阶段和成本来源。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 可观测性、SLO 与运营指标 的对应功能、异常路径和恢复路径。
+  then: 仪表盘能定位慢阶段和成本来源。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-37-04
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 日志脱敏测试通过。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 可观测性、SLO 与运营指标 的对应功能、异常路径和恢复路径。
+  then: 日志脱敏测试通过。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-37-05
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: SLO 报告可按租户和版本比较。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 可观测性、SLO 与运营指标 的对应功能、异常路径和恢复路径。
+  then: SLO 报告可按租户和版本比较。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-38-01
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 所有 P0 Story 有自动化验收。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 测试、评测与数据质量 的对应功能、异常路径和恢复路径。
+  then: 所有 P0 Story 有自动化验收。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-38-02
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 黄金集版本化。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 测试、评测与数据质量 的对应功能、异常路径和恢复路径。
+  then: 黄金集版本化。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-38-03
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 权限、注入、恢复和幂等场景通过。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 测试、评测与数据质量 的对应功能、异常路径和恢复路径。
+  then: 权限、注入、恢复和幂等场景通过。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-38-04
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 质量回退能阻止发布。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 测试、评测与数据质量 的对应功能、异常路径和恢复路径。
+  then: 质量回退能阻止发布。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-38-05
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 测试失败可定位到需求和技能。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 测试、评测与数据质量 的对应功能、异常路径和恢复路径。
+  then: 测试失败可定位到需求和技能。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-39-01
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 源目标主要 symbol 映射可导航。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 与 Elmos 生成、转换、翻新引擎集成 的对应功能、异常路径和恢复路径。
+  then: 源目标主要 symbol 映射可导航。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-39-02
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 转换前后图表与文档一致。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 与 Elmos 生成、转换、翻新引擎集成 的对应功能、异常路径和恢复路径。
+  then: 转换前后图表与文档一致。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-39-03
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 失败定位能跳到规则、代码和测试。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 与 Elmos 生成、转换、翻新引擎集成 的对应功能、异常路径和恢复路径。
+  then: 失败定位能跳到规则、代码和测试。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-39-04
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 中断恢复不丢中间状态。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 与 Elmos 生成、转换、翻新引擎集成 的对应功能、异常路径和恢复路径。
+  then: 中断恢复不丢中间状态。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-39-05
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: E1-E5 认证状态由证据驱动。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 与 Elmos 生成、转换、翻新引擎集成 的对应功能、异常路径和恢复路径。
+  then: E1-E5 认证状态由证据驱动。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-40-01
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 历史回放 P50/P90 覆盖率达到校准目标。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 系统运行 ETA、Token 与成本估算 的对应功能、异常路径和恢复路径。
+  then: 历史回放 P50/P90 覆盖率达到校准目标。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-40-02
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: UI 同时展示机器 ETA 和人工审核。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 系统运行 ETA、Token 与成本估算 的对应功能、异常路径和恢复路径。
+  then: UI 同时展示机器 ETA 和人工审核。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-40-03
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 任务进度更新后 ETA 收敛。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 系统运行 ETA、Token 与成本估算 的对应功能、异常路径和恢复路径。
+  then: 任务进度更新后 ETA 收敛。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-40-04
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 费率变化可版本化重算。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 系统运行 ETA、Token 与成本估算 的对应功能、异常路径和恢复路径。
+  then: 费率变化可版本化重算。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-40-05
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 估算明细能解释主要成本驱动。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 系统运行 ETA、Token 与成本估算 的对应功能、异常路径和恢复路径。
+  then: 估算明细能解释主要成本驱动。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-41-01
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 从空环境可按文档部署。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 SaaS、私有化与离线部署 的对应功能、异常路径和恢复路径。
+  then: 从空环境可按文档部署。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-41-02
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 备份恢复演练通过。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 SaaS、私有化与离线部署 的对应功能、异常路径和恢复路径。
+  then: 备份恢复演练通过。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-41-03
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 滚动升级和回滚无数据破坏。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 SaaS、私有化与离线部署 的对应功能、异常路径和恢复路径。
+  then: 滚动升级和回滚无数据破坏。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-41-04
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 安全扫描达到门禁。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 SaaS、私有化与离线部署 的对应功能、异常路径和恢复路径。
+  then: 安全扫描达到门禁。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-41-05
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 私有化环境可在无公网模式运行核心能力。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 SaaS、私有化与离线部署 的对应功能、异常路径和恢复路径。
+  then: 私有化环境可在无公网模式运行核心能力。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-42-01
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 所有门禁有明确证据。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 生产验收与 E1–E5 认证 的对应功能、异常路径和恢复路径。
+  then: 所有门禁有明确证据。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-42-02
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 失败可生成可执行修复 backlog。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 生产验收与 E1–E5 认证 的对应功能、异常路径和恢复路径。
+  then: 失败可生成可执行修复 backlog。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-42-03
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 签名包可离线验证。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 生产验收与 E1–E5 认证 的对应功能、异常路径和恢复路径。
+  then: 签名包可离线验证。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-42-04
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 认证状态变更有职责分离与审计。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 生产验收与 E1–E5 认证 的对应功能、异常路径和恢复路径。
+  then: 认证状态变更有职责分离与审计。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-42-05
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: E4/E5 通过灾备和安全红队。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 生产验收与 E1–E5 认证 的对应功能、异常路径和恢复路径。
+  then: E4/E5 通过灾备和安全红队。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-43-01
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: Edition matrix 无矛盾。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 商业版本、计量与交付套餐 的对应功能、异常路径和恢复路径。
+  then: Edition matrix 无矛盾。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-43-02
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 计量与账单样例可对账。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 商业版本、计量与交付套餐 的对应功能、异常路径和恢复路径。
+  then: 计量与账单样例可对账。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-43-03
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 预算告警和硬限额测试通过。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 商业版本、计量与交付套餐 的对应功能、异常路径和恢复路径。
+  then: 预算告警和硬限额测试通过。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: required
+- id: AC-43-04
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 销售材料与真实实现/认证一致。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 商业版本、计量与交付套餐 的对应功能、异常路径和恢复路径。
+  then: 销售材料与真实实现/认证一致。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-43-05
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 单位经济模型能解释毛利主要驱动。
+  given: 已部署本技能依赖且使用固定 project revision；具备最小必要权限。
+  when: 执行 商业版本、计量与交付套餐 的对应功能、异常路径和恢复路径。
+  then: 单位经济模型能解释毛利主要驱动。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/analysis run
+  - 日志或 artifact hash
+  automation: preferred
+- id: AC-44-01
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: Java/Kotlin、Python、Node/TypeScript 和 .NET 四类 P0 适配器通过统一合规套件。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试适配器网关与能力协商 的正常、异常、权限、断线/恢复和清理路径。
+  then: Java/Kotlin、Python、Node/TypeScript 和 .NET 四类 P0 适配器通过统一合规套件。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-44-02
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: 不受支持的断点、反向执行或内存能力会被明确禁用并显示原因。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试适配器网关与能力协商 的正常、异常、权限、断线/恢复和清理路径。
+  then: 不受支持的断点、反向执行或内存能力会被明确禁用并显示原因。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-44-03
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: 网络短暂中断后会话能恢复，且不会重复执行调试命令。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试适配器网关与能力协商 的正常、异常、权限、断线/恢复和清理路径。
+  then: 网络短暂中断后会话能恢复，且不会重复执行调试命令。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-44-04
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: Source Map 能将前端暂停位置准确定位到固定 revision 的源代码。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试适配器网关与能力协商 的正常、异常、权限、断线/恢复和清理路径。
+  then: Source Map 能将前端暂停位置准确定位到固定 revision 的源代码。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: preferred
+- id: AC-44-05
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: 畸形、超大或恶意适配器消息被隔离，其他会话不受影响。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试适配器网关与能力协商 的正常、异常、权限、断线/恢复和清理路径。
+  then: 畸形、超大或恶意适配器消息被隔离，其他会话不受影响。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: preferred
+- id: AC-45-01
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 跨租户、宿主文件、Docker Socket、特权系统调用和未授权网络访问测试全部 fail closed。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试沙箱、运行环境与会话编排 的正常、异常、权限、断线/恢复和清理路径。
+  then: 跨租户、宿主文件、Docker Socket、特权系统调用和未授权网络访问测试全部 fail closed。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-45-02
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 会话结束后不存在残留进程、端口、凭据或可写工作区。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试沙箱、运行环境与会话编排 的正常、异常、权限、断线/恢复和清理路径。
+  then: 会话结束后不存在残留进程、端口、凭据或可写工作区。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-45-03
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 未获得 break-glass 授权时生产 attach 请求被拒绝并生成审计事件。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试沙箱、运行环境与会话编排 的正常、异常、权限、断线/恢复和清理路径。
+  then: 未获得 break-glass 授权时生产 attach 请求被拒绝并生成审计事件。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-45-04
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: Fork bomb、内存/磁盘耗尽、无限输出和网络滥用被配额与 kill switch 控制。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试沙箱、运行环境与会话编排 的正常、异常、权限、断线/恢复和清理路径。
+  then: Fork bomb、内存/磁盘耗尽、无限输出和网络滥用被配额与 kill switch 控制。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: preferred
+- id: AC-45-05
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 固定 manifest 的重复启动得到相同工具链、依赖和入口配置。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试沙箱、运行环境与会话编排 的正常、异常、权限、断线/恢复和清理路径。
+  then: 固定 manifest 的重复启动得到相同工具链、依赖和入口配置。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: preferred
+- id: AC-46-01
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 用户可从测试、方法或流程入口启动会话并完成断点、单步、变量查看和终止闭环。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 在线调试工作台 的正常、异常、权限、断线/恢复和清理路径。
+  then: 用户可从测试、方法或流程入口启动会话并完成断点、单步、变量查看和终止闭环。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-46-02
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 当前 Frame 可准确跳转代码，并同步高亮所属模块、流程步骤和数据副作用。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 在线调试工作台 的正常、异常、权限、断线/恢复和清理路径。
+  then: 当前 Frame 可准确跳转代码，并同步高亮所属模块、流程步骤和数据副作用。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-46-03
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 网络、SQL、缓存、消息和文件副作用按时间排序且标注证据来源。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 在线调试工作台 的正常、异常、权限、断线/恢复和清理路径。
+  then: 网络、SQL、缓存、消息和文件副作用按时间排序且标注证据来源。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-46-04
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 浏览器重连可恢复只读状态和面板，不重复执行上一条控制命令。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 在线调试工作台 的正常、异常、权限、断线/恢复和清理路径。
+  then: 浏览器重连可恢复只读状态和面板，不重复执行上一条控制命令。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: preferred
+- id: AC-46-05
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 权限撤销后会话访问立即失效，敏感变量和本地缓存不可继续查看。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 在线调试工作台 的正常、异常、权限、断线/恢复和清理路径。
+  then: 权限撤销后会话访问立即失效，敏感变量和本地缓存不可继续查看。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: preferred
+- id: AC-47-01
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 当前 Frame 讲解能引用实际变量、调用栈和代码证据，并正确标记推断。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试学习 Copilot 与互动实验 的正常、异常、权限、断线/恢复和清理路径。
+  then: 当前 Frame 讲解能引用实际变量、调用栈和代码证据，并正确标记推断。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-47-02
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: Challenge 模式在 Reveal 前不会泄漏预期分支、变量答案或修复方案。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试学习 Copilot 与互动实验 的正常、异常、权限、断线/恢复和清理路径。
+  then: Challenge 模式在 Reveal 前不会泄漏预期分支、变量答案或修复方案。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-47-03
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 代码变更后受影响 Mission/Lab 自动标记 stale，旧结果仍可审计。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试学习 Copilot 与互动实验 的正常、异常、权限、断线/恢复和清理路径。
+  then: 代码变更后受影响 Mission/Lab 自动标记 stale，旧结果仍可审计。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-47-04
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 同一 Lab 可用合成数据重复执行，并获得稳定的学习目标和验收结果。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试学习 Copilot 与互动实验 的正常、异常、权限、断线/恢复和清理路径。
+  then: 同一 Lab 可用合成数据重复执行，并获得稳定的学习目标和验收结果。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: preferred
+- id: AC-47-05
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 学习进度、笔记和评估遵守用户隐私、可访问性和团队权限规则。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试学习 Copilot 与互动实验 的正常、异常、权限、断线/恢复和清理路径。
+  then: 学习进度、笔记和评估遵守用户隐私、可访问性和团队权限规则。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: preferred
+- id: AC-48-01
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 不支持原生反向执行的运行时明确降级，UI 和报告不产生误导。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试记录、检查点与运行回放 的正常、异常、权限、断线/恢复和清理路径。
+  then: 不支持原生反向执行的运行时明确降级，UI 和报告不产生误导。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-48-02
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 固定测试、输入和环境的 R1/R2 重放在定义容差内复现关键状态与输出。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试记录、检查点与运行回放 的正常、异常、权限、断线/恢复和清理路径。
+  then: 固定测试、输入和环境的 R1/R2 重放在定义容差内复现关键状态与输出。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-48-03
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: Replay Bundle 的 Secret/PII 扫描无高危泄漏，字段省略有明确标记。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试记录、检查点与运行回放 的正常、异常、权限、断线/恢复和清理路径。
+  then: Replay Bundle 的 Secret/PII 扫描无高危泄漏，字段省略有明确标记。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-48-04
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 损坏、篡改、过期或版本不兼容的 Bundle 在运行前被拒绝。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试记录、检查点与运行回放 的正常、异常、权限、断线/恢复和清理路径。
+  then: 损坏、篡改、过期或版本不兼容的 Bundle 在运行前被拒绝。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: preferred
+- id: AC-48-05
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 超大调试会话按策略分块与截断，仍可浏览摘要和关键检查点。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 调试记录、检查点与运行回放 的正常、异常、权限、断线/恢复和清理路径。
+  then: 超大调试会话按策略分块与截断，仍可浏览摘要和关键检查点。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: preferred
+- id: AC-49-01
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 一次前端操作能关联到正确的后端请求、服务、数据库和消息链路。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 分布式调试、异步因果与源目标对照 的正常、异常、权限、断线/恢复和清理路径。
+  then: 一次前端操作能关联到正确的后端请求、服务、数据库和消息链路。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-49-02
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 异步链路缺少 propagation 时会显示断点和不确定性，而不是伪造因果边。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 分布式调试、异步因果与源目标对照 的正常、异常、权限、断线/恢复和清理路径。
+  then: 异步链路缺少 propagation 时会显示断点和不确定性，而不是伪造因果边。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-49-03
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 固定 fixture 的 Source/Target 状态或副作用分歧能被定位到对应 Frame 和映射。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 分布式调试、异步因果与源目标对照 的正常、异常、权限、断线/恢复和清理路径。
+  then: 固定 fixture 的 Source/Target 状态或副作用分歧能被定位到对应 Frame 和映射。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: required
+- id: AC-49-04
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 暂停单个服务不会造成无限死锁、消息租约泄漏或无界资源占用。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 分布式调试、异步因果与源目标对照 的正常、异常、权限、断线/恢复和清理路径。
+  then: 暂停单个服务不会造成无限死锁、消息租约泄漏或无界资源占用。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: preferred
+- id: AC-49-05
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 权限过滤后用户看不到未授权服务名称、日志摘要、变量或拓扑边。
+  given: 已部署固定 Project Revision、最小权限、受控 Debug Policy、一次性沙箱和匹配的 adapter/runtime 版本。
+  when: 执行 分布式调试、异步因果与源目标对照 的正常、异常、权限、断线/恢复和清理路径。
+  then: 权限过滤后用户看不到未授权服务名称、日志摘要、变量或拓扑边。
+  evidence_required:
+  - 测试结果
+  - API/事件或 UI 证据
+  - revision/debug session/adapter/runtime manifest
+  - 日志、审计、cleanup attestation 或 artifact hash
+  automation: preferred

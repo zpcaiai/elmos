@@ -1,0 +1,4 @@
+interface:
+  display_name: "elmos-package-dependency-governor"
+  short_description: "Use this imported Elmos commercial blueprint"
+  default_prompt: "Use $elmos-package-dependency-governor within its imported blueprint boundary; require real runtime and external evidence before completion claims."

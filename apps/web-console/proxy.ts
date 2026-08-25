@@ -35,6 +35,49 @@ function normalizedRoute(path: string): string {
     .slice(0, 160);
 }
 
+function auditFailure(
+  path: string,
+  errorCode: string,
+  message: string,
+  retryable: boolean,
+): NextResponse {
+  if (path.startsWith("/api/database-sql") || path.startsWith("/api/capabilities/database-sql")) {
+    return NextResponse.json(
+      {
+        schemaVersion: "1.0",
+        status: "BLOCKED",
+        errorCode,
+        message,
+        retryable,
+        targetSql: null,
+        verification: {
+          sourceParse: "NOT_RUN",
+          targetAdapter: "NOT_RUN",
+          targetEmit: "NOT_RUN",
+          targetReparse: "NOT_RUN",
+          sourceExecution: "NOT_RUN",
+          targetExecution: "NOT_RUN",
+          resultEquivalence: "NOT_RUN",
+          externalExecution: "NOT_RUN",
+        },
+        certification: "NOT_CERTIFIED",
+      },
+      {
+        status: 503,
+        headers: {
+          "Cache-Control": "private, no-store, max-age=0",
+          Vary: "Cookie, Authorization",
+          "X-ELMOS-ChinaDB-Fail-Closed": "1",
+        },
+      },
+    );
+  }
+  return NextResponse.json(
+    { errorCode, message, retryable },
+    { status: 503 },
+  );
+}
+
 async function auditApiAttempt(request: NextRequest): Promise<NextResponse | null> {
   const path = request.nextUrl.pathname;
   if (!path.startsWith("/api/") || path === "/api/telemetry/events" || path === "/api/health") {
@@ -60,13 +103,11 @@ async function auditApiAttempt(request: NextRequest): Promise<NextResponse | nul
     && expiry <= Date.now() + 24 * 60 * 60_000;
   if (!configured) {
     return process.env.NODE_ENV === "production"
-      ? NextResponse.json(
-        {
-          errorCode: "SERVER_OPERATION_AUDIT_NOT_CONFIGURED",
-          message: "服务端操作审计尚未配置。",
-          retryable: false,
-        },
-        { status: 503 },
+      ? auditFailure(
+        path,
+        "SERVER_OPERATION_AUDIT_NOT_CONFIGURED",
+        "服务端操作审计尚未配置。",
+        false,
       )
       : null;
   }
@@ -113,13 +154,11 @@ async function auditApiAttempt(request: NextRequest): Promise<NextResponse | nul
     );
     if (!response.ok) throw new Error("SERVER_OPERATION_AUDIT_REJECTED");
   } catch {
-    return NextResponse.json(
-      {
-        errorCode: "SERVER_OPERATION_AUDIT_UNAVAILABLE",
-        message: "服务端操作审计暂不可用。",
-        retryable: true,
-      },
-      { status: 503 },
+    return auditFailure(
+      path,
+      "SERVER_OPERATION_AUDIT_UNAVAILABLE",
+      "服务端操作审计暂不可用。",
+      true,
     );
   }
   return null;

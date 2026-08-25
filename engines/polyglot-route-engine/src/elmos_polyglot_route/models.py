@@ -9,58 +9,95 @@ Language = Literal[
     "python",
     "csharp",
     "typescript",
-    "javascript",
     "go",
     "rust",
     "cpp",
     "objc",
     "swift",
     "php",
+    "kotlin",
+    "react",
+    "flutter",
+    # Deprecated.  Kept in the type so the Node.js analyzer, emitter, assembly
+    # and evidence machinery that still ships in this engine remains typed.  It
+    # is deliberately absent from ``SUPPORTED_LANGUAGES`` below: no javascript
+    # direction is part of the active route matrix any more.
+    "javascript",
 ]
+
+#: Languages that are no longer part of the supported set but whose engine
+#: machinery and filed evidence stay in place.  A deprecated language is not a
+#: route source, not a route target, and not a member of any active route set;
+#: its packs under ``routes/`` and its provenance partition names are retained
+#: unchanged so archived evidence keeps its address.
+DEPRECATED_LANGUAGES: tuple[Language, ...] = ("javascript",)
+
 SUPPORTED_LANGUAGES: tuple[Language, ...] = (
     "java",
     "python",
     "csharp",
     "typescript",
-    "javascript",
     "go",
     "rust",
     "cpp",
     "objc",
     "swift",
     "php",
+    "kotlin",
+    "react",
+    "flutter",
 )
 
-#: Languages this engine can lift *from*. Every supported language is also a
-#: source: Swift is analyzed by the SwiftSyntax helper under
-#: `native/swift`, which `native.analyze` builds on demand the same way the
-#: TypeScript CLI is built. The distinction is kept as its own name because a
-#: newly added target is a smaller change than a newly added source, and
-#: callers that enumerate sources should say so explicitly.
-ANALYZABLE_LANGUAGES: tuple[Language, ...] = SUPPORTED_LANGUAGES
+#: Languages that are declared in the route matrix but have no native analyzer
+#: yet.  They are real matrix members -- every direction naming them has a
+#: route pack and a provenance owner -- but any attempt to *lift from* them
+#: fails closed with ``SOURCE_ANALYZER_NOT_IMPLEMENTED`` rather than silently
+#: producing an unbacked SemanticIR.  Moving a language out of this tuple is
+#: the single edit that turns its analyzer on, and it must not happen before a
+#: pinned toolchain and a real analyzer exist for it.
+PENDING_ANALYZER_LANGUAGES: tuple[Language, ...] = (
+    "kotlin",
+    "react",
+    "flutter",
+)
+
+#: Languages this engine can lift *from*.  This was an alias for
+#: ``SUPPORTED_LANGUAGES`` while every supported language had an analyzer.  It
+#: is now an explicit tuple because the matrix declares three languages ahead
+#: of their analyzers; keeping the alias would have made
+#: ``PENDING_ANALYZER_LANGUAGES`` decorative.  Swift is analyzed by the
+#: SwiftSyntax helper under `native/swift`, which `native.analyze` builds on
+#: demand the same way the TypeScript CLI is built.
+ANALYZABLE_LANGUAGES: tuple[Language, ...] = tuple(
+    language for language in SUPPORTED_LANGUAGES if language not in PENDING_ANALYZER_LANGUAGES
+)
+
+#: Languages the repository orchestration surface actually handles end to end:
+#: source inventory extensions, discovery declaration patterns, target project
+#: placement and target build files.  This is deliberately NOT
+#: ``SUPPORTED_LANGUAGES``.  A pending-analyzer language is a declared matrix
+#: member with no repository surface yet, and a deprecated language keeps its
+#: repository surface so filed evidence stays reproducible.  Adding a stub
+#: extension or placer for a pending language just to make a set comparison
+#: pass would claim support that does not exist.
+REPOSITORY_SURFACE_LANGUAGES: tuple[Language, ...] = tuple(
+    language
+    for language in (*SUPPORTED_LANGUAGES, *DEPRECATED_LANGUAGES)
+    if language not in PENDING_ANALYZER_LANGUAGES
+)
 
 #: The explicit complete route matrix.  Route-pack presence does not imply a
 #: local pass, repository pass, independent verification, or certification;
 #: those remain separate evidence-bound states for every direction.
-COMPLETE_MATRIX_LANGUAGES: tuple[Language, ...] = (
-    "java",
-    "python",
-    "csharp",
-    "typescript",
-    "javascript",
-    "go",
-    "rust",
-    "cpp",
-    "objc",
-    "swift",
-    "php",
-)
+COMPLETE_MATRIX_LANGUAGES: tuple[Language, ...] = SUPPORTED_LANGUAGES
 
 #: Backwards-compatible name used by the Batch 29 inventory and relifters.
 ROUTED_LANGUAGES: tuple[Language, ...] = COMPLETE_MATRIX_LANGUAGES
 
 #: Exact routes that retain the stricter native module profile.  They are a
 #: subset of the complete matrix, not the only routes for these languages.
+#: Unchanged by the thirteen-language expansion: all eight survive because the
+#: matrix stayed a full cartesian product.
 SPECIALIZED_DIRECTED_PAIRS: tuple[tuple[Language, Language], ...] = (
     ("cpp", "objc"),
     ("objc", "cpp"),
@@ -73,16 +110,43 @@ SPECIALIZED_DIRECTED_PAIRS: tuple[tuple[Language, Language], ...] = (
 )
 
 #: Exact Node.js route expansion.  JavaScript is a separate language identity
-#: from TypeScript: these 18 directions use Node.js ESM plus strict JSDoc
-#: contracts and retain their own evidence/gate state.  They deliberately do
-#: not extend ``SPECIALIZED_DIRECTED_PAIRS`` because that name and its eight
-#: entries are an immutable Batch 29 proof scope.
-NODEJS_DIRECTED_PAIRS: tuple[tuple[Language, Language], ...] = tuple(
-    (source, target)
-    for source in COMPLETE_MATRIX_LANGUAGES
-    for target in COMPLETE_MATRIX_LANGUAGES
-    if source != target and "javascript" in {source, target}
+#: from TypeScript: these 20 directions use Node.js ESM plus strict JSDoc
+#: contracts and retain their own evidence/gate state.
+#:
+#: PINNED TO A LITERAL.  This used to be a comprehension over
+#: ``COMPLETE_MATRIX_LANGUAGES`` filtered on ``"javascript" in {source, target}``.
+#: Deprecating javascript would have silently evaluated that comprehension to
+#: an empty tuple -- no error, no failing import -- and
+#: ``requires_concrete_source_spans`` would have flipped these 20 directions
+#: from the relaxed span contract to the strict one.  The value is frozen here
+#: precisely so that removing the language cannot rewrite it.
+NODEJS_DIRECTED_PAIRS: tuple[tuple[Language, Language], ...] = (
+    ("java", "javascript"),
+    ("python", "javascript"),
+    ("csharp", "javascript"),
+    ("typescript", "javascript"),
+    ("javascript", "java"),
+    ("javascript", "python"),
+    ("javascript", "csharp"),
+    ("javascript", "typescript"),
+    ("javascript", "go"),
+    ("javascript", "rust"),
+    ("javascript", "cpp"),
+    ("javascript", "objc"),
+    ("javascript", "swift"),
+    ("javascript", "php"),
+    ("go", "javascript"),
+    ("rust", "javascript"),
+    ("cpp", "javascript"),
+    ("objc", "javascript"),
+    ("swift", "javascript"),
+    ("php", "javascript"),
 )
+
+#: Directions that left the active matrix with javascript.  Identical in value
+#: to ``NODEJS_DIRECTED_PAIRS``; named separately because one is a provenance
+#: label for filed evidence and the other is a lifecycle state.
+DEPRECATED_DIRECTED_PAIRS: tuple[tuple[Language, Language], ...] = NODEJS_DIRECTED_PAIRS
 
 COMPLETE_MATRIX_DIRECTED_PAIRS: tuple[tuple[Language, Language], ...] = tuple(
     (source, target) for source in COMPLETE_MATRIX_LANGUAGES for target in COMPLETE_MATRIX_LANGUAGES if source != target
@@ -125,11 +189,13 @@ def requires_concrete_source_spans(source: str, target: str, profile: str) -> bo
 
 
 #: Backwards-compatible inventory field.  The repository orchestration surface
-#: now has an explicit route entry for every supported directed pair, so no
-#: supported language remains engine-only.  Evidence strength is still
-#: route-specific: the eight native/JVM pairs above use the specialised formal
-#: profile, while every route keeps its own local, independent and certification
-#: states.  An empty tuple must therefore not be read as a certification claim.
+#: has an explicit route entry for every supported directed pair, so no
+#: supported language is reachable only inside the engine.  This is a different
+#: axis from ``PENDING_ANALYZER_LANGUAGES``: those languages *are* routed, they
+#: simply cannot yet be lifted from.  Evidence strength is still route-specific:
+#: the eight native/JVM pairs above use the specialised formal profile, while
+#: every route keeps its own local, independent and certification states.  An
+#: empty tuple must therefore not be read as a certification claim.
 ENGINE_ONLY_LANGUAGES: tuple[Language, ...] = ()
 
 
@@ -355,6 +421,9 @@ class Statement:
     condition: Expression | None = None
     then_body: tuple[Statement, ...] = ()
     else_body: tuple[Statement, ...] = ()
+    #: `let` only: the bound name and its declared canonical type.
+    name: str | None = None
+    declared_type: str | None = None
     source_span: SourceSpan | None = None
 
     @classmethod
@@ -402,6 +471,40 @@ class Statement:
                 ),
                 source_span=_optional_source_span(value, _path),
             )
+        if kind == "let":
+            # A single-assignment local binding.
+            #
+            # Deliberately *not* an assignment: the name binds once, and only
+            # for the statements after it. Rebinding would make the function's
+            # meaning depend on statement order in a way the equivalence model
+            # has no way to compare, and the profile's whole claim is that a
+            # function is a typed pure expression tree.
+            #
+            # The type is declared rather than inferred. The frontend has
+            # already resolved it against the source language's own type
+            # system, and writing it into the IR is what lets `types.check`
+            # disagree instead of silently adopting whatever the expression
+            # happened to produce.
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "name", "type", "expression"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            name = _require_string(value["name"], f"{_path}.name")
+            declared_type = _require_string(value["type"], f"{_path}.type")
+            if not name:
+                raise RouteError(f"LET_NAME_REQUIRED:{_path}")
+            expression = value["expression"]
+            if type(expression) is not dict:
+                raise RouteError(f"LET_EXPRESSION_REQUIRED:{_path}")
+            return cls(
+                kind=kind,
+                name=name,
+                declared_type=declared_type,
+                expression=Expression.from_mapping(expression, _path=f"{_path}.expression"),
+                source_span=_optional_source_span(value, _path),
+            )
         raise RouteError(f"UNSUPPORTED_STATEMENT:{kind}")
 
     def semantic_mapping(self) -> dict[str, Any]:
@@ -413,6 +516,13 @@ class Statement:
                 "condition": self.condition.semantic_mapping(),
                 "then": [item.semantic_mapping() for item in self.then_body],
                 "else": [item.semantic_mapping() for item in self.else_body],
+            }
+        if self.kind == "let" and self.expression is not None:
+            return {
+                "kind": "let",
+                "name": self.name,
+                "type": self.declared_type,
+                "expression": self.expression.semantic_mapping(),
             }
         raise RouteError("INVALID_STATEMENT")
 
@@ -426,6 +536,13 @@ class Statement:
                 "condition": self.condition.to_mapping(),
                 "then": [item.to_mapping() for item in self.then_body],
                 "else": [item.to_mapping() for item in self.else_body],
+            }
+        elif self.kind == "let" and self.expression is not None:
+            result = {
+                "kind": "let",
+                "name": self.name,
+                "type": self.declared_type,
+                "expression": self.expression.to_mapping(),
             }
         else:
             raise RouteError("INVALID_STATEMENT")
@@ -524,8 +641,13 @@ class SemanticIR:
         if schema_version != "1.0.0":
             raise RouteError("UNSUPPORTED_SEMANTIC_IR")
         source_language = _require_string(value["source_language"], "semantic_ir.source_language")
-        if source_language not in SUPPORTED_LANGUAGES:
+        if source_language not in SUPPORTED_LANGUAGES and source_language not in DEPRECATED_LANGUAGES:
             raise RouteError(f"UNSUPPORTED_SOURCE_LANGUAGE:{source_language}")
+        if source_language in PENDING_ANALYZER_LANGUAGES:
+            # A matrix member without an analyzer must not be able to produce a
+            # SemanticIR at all: accepting one here would let a hand-written or
+            # mislabelled IR masquerade as a real lift.
+            raise RouteError(f"SOURCE_ANALYZER_NOT_IMPLEMENTED:{source_language}")
         source_file = _require_string(value["source_file"], "semantic_ir.source_file")
         analyzer = _require_string(value["analyzer"], "semantic_ir.analyzer")
         analyzer_version = _require_string(value["analyzer_version"], "semantic_ir.analyzer_version")

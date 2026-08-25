@@ -36,7 +36,7 @@ from .conversion_reporting import (
     write_conversion_reports,
 )
 from .discovery import discover_repository, inventory_repository_incident
-from .models import SUPPORTED_LANGUAGES, Language, RouteError
+from .models import REPOSITORY_SURFACE_LANGUAGES, Language, RouteError
 from .repository import plan_repository
 from .safe_io import atomic_output_file, atomic_write_bytes, stable_file_digest, stable_read_bytes
 
@@ -44,12 +44,71 @@ SCHEMA_VERSION = "1.0.0"
 REPORT_NAME = "repository-pipeline-report.json"
 ARTIFACT_NAME = "repository-migration-artifact.zip"
 ARTIFACT_MANIFEST_NAME = "artifact-manifest.json"
+PROJECT_GRAPH_NAME = "project-graph.json"
+#: Surfaces a consumer may read as "this run completed".  A failed run must
+#: not leave any of them from an earlier one visible.
+_FINAL_CLAIM_NAMES = (ARTIFACT_NAME, REPORT_NAME, ARTIFACT_MANIFEST_NAME)
+_PRIOR_CLAIM_SUFFIX = ".previous-handoff"
 CASES_MANIFEST_NAME = "behavior-cases-manifest.json"
 _MAX_CASE_FILES = 10_000
 _MAX_CASE_BYTES = 64 * 1024 * 1024
 MAX_ARTIFACT_UNCOMPRESSED_BYTES = 256 * 1024 * 1024
 MAX_ARTIFACT_COMPRESSED_BYTES = 256 * 1024 * 1024
 _MAX_PIPELINE_JSON_BYTES = 64 * 1024 * 1024
+
+
+
+def _validate_handoff_targets(output: Path) -> None:
+    for name in (
+        ARTIFACT_NAME,
+        REPORT_NAME,
+        ARTIFACT_MANIFEST_NAME,
+        PROJECT_GRAPH_NAME,
+        f"{ARTIFACT_NAME}.tmp",
+        f"{PROJECT_GRAPH_NAME}.tmp",
+        *(f"{claim}{_PRIOR_CLAIM_SUFFIX}" for claim in _FINAL_CLAIM_NAMES),
+    ):
+        candidate = output / name
+        if candidate.is_symlink():
+            raise RouteError("PIPELINE_OUTPUT_UNSAFE")
+        if candidate.exists() and not candidate.is_file():
+            raise RouteError("PIPELINE_OUTPUT_UNSAFE")
+
+
+def _quarantine_prior_final_claims(output: Path) -> list[tuple[Path, Path]]:
+    """Atomically remove prior COMPLETE surfaces from their public paths."""
+
+    moved: list[tuple[Path, Path]] = []
+    try:
+        for name in _FINAL_CLAIM_NAMES:
+            final = output / name
+            previous = output / f"{name}{_PRIOR_CLAIM_SUFFIX}"
+            if previous.exists():
+                previous.unlink()
+            if final.exists():
+                final.replace(previous)
+                moved.append((final, previous))
+    except OSError:
+        for final, previous in reversed(moved):
+            if previous.is_file() and not final.exists():
+                previous.replace(final)
+        raise
+    return moved
+
+
+def _discard_prior_final_claims(moved: list[tuple[Path, Path]]) -> None:
+    for _, previous in moved:
+        if previous.is_symlink() or (previous.exists() and not previous.is_file()):
+            raise RouteError("PIPELINE_PRIOR_HANDOFF_INVALID")
+        previous.unlink(missing_ok=True)
+
+
+def _invalidate_current_final_claims(output: Path) -> None:
+    for name in _FINAL_CLAIM_NAMES:
+        candidate = output / name
+        if candidate.is_symlink() or (candidate.exists() and not candidate.is_file()):
+            raise RouteError("PIPELINE_OUTPUT_UNSAFE")
+        candidate.unlink(missing_ok=True)
 
 
 def _write_json(path: Path, value: dict[str, Any]) -> None:
@@ -418,7 +477,7 @@ def _incident_batch(discovery: dict[str, Any], reason: str) -> dict[str, Any]:
     }
 
 
-def run_repository_pipeline(
+def _run_repository_pipeline_attempt(
     repository_root: Path,
     repository_ref: str,
     source_language: Language,
@@ -433,7 +492,7 @@ def run_repository_pipeline(
     recomputed from the read-only source on every invocation so source drift is
     detected before prior work is reused.
     """
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+    if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
@@ -854,3 +913,49 @@ def _behavior_coverage_summary(
         "independent_verification_status": "NOT_RUN",
         "external_verification_status": "NOT_RUN",
     }
+
+
+def run_repository_pipeline(
+    repository_root: Path,
+    repository_ref: str,
+    source_language: Language,
+    target_language: Language,
+    cases_directory: Path,
+    output: Path,
+) -> dict[str, Any]:
+    """Run one attempt while atomically isolating prior final status claims.
+
+    Argument validation happens *before* the quarantine on purpose.  Quarantine
+    is destructive on failure -- a run that fails deletes the previous run's
+    COMPLETE surfaces, because the directory it half-overwrote no longer
+    represents that earlier run.  A caller passing an unsupported language must
+    therefore be refused before anything is moved, or a typo would destroy a
+    perfectly good previous result.
+    """
+    if (
+        source_language not in REPOSITORY_SURFACE_LANGUAGES
+        or target_language not in REPOSITORY_SURFACE_LANGUAGES
+    ):
+        raise RouteError("UNSUPPORTED_LANGUAGE")
+    if source_language == target_language:
+        raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
+    if output.exists() and (output.is_symlink() or not output.is_dir()):
+        raise RouteError("PIPELINE_OUTPUT_UNSAFE")
+    output.mkdir(parents=True, exist_ok=True)
+    _validate_handoff_targets(output)
+    prior_claims = _quarantine_prior_final_claims(output)
+    try:
+        report = _run_repository_pipeline_attempt(
+            repository_root,
+            repository_ref,
+            source_language,
+            target_language,
+            cases_directory,
+            output,
+        )
+    except BaseException:
+        _invalidate_current_final_claims(output)
+        _discard_prior_final_claims(prior_claims)
+        raise
+    _discard_prior_final_claims(prior_claims)
+    return report

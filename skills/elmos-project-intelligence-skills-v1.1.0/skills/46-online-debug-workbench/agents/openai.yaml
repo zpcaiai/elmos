@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 在线调试工作台
+  short_description: 在在线代码阅读器中加入安全、可恢复的调试体验。用于断点、单步、调用栈、线程、变量、Watch、表达式、调试输出、运行时间线以及代码—架构—流程—数据联动。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-online-debug-workbench 按模块规格实施、测试并提供可复现证据。
+policy:
+  allow_implicit_invocation: true

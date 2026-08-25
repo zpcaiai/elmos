@@ -1,0 +1,30 @@
+skill: miniapp-third-party-dependency-migrator
+version: 1.0.0
+task_ids:
+- MAPP-021
+- MAPP-022
+required_outputs:
+- path: dependency-migration-plan.json
+  required: true
+- path: replacement-graph.json
+  required: true
+- path: license-report.json
+  required: true
+- path: supply-chain-findings.json
+  required: true
+gates:
+- name: 所有直接依赖有决策
+  required: true
+- name: 实际调用面可追踪
+  required: true
+- name: 高风险供应链项已阻断或批准
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

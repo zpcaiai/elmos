@@ -1,0 +1,63 @@
+{
+  "registry_version": "ILLUSTRATIVE-ONLY-1.0.0",
+  "base_currency": "USD",
+  "purpose": "验证费用计算链路。每一项 not_for_billing 都是 true，任何真实预算必须替换为已核验费率。",
+  "models": [
+    {
+      "id": "frontier-usd-illustrative",
+      "provider": "PLACEHOLDER",
+      "display_name": "Frontier tier (USD, 示例)",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "ILLUSTRATIVE_ONLY_REPLACE_WITH_VERIFIED_RATE_CARD",
+      "billing_mode": "api",
+      "not_for_billing": true,
+      "rates_per_million": {
+        "input": 3.0, "cached_input": 0.3, "cache_write": 3.75, "output": 15.0, "reasoning_output": 15.0
+      }
+    },
+    {
+      "id": "mid-usd-illustrative",
+      "provider": "PLACEHOLDER",
+      "display_name": "Mid tier (USD, 示例)",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "ILLUSTRATIVE_ONLY_REPLACE_WITH_VERIFIED_RATE_CARD",
+      "billing_mode": "api",
+      "not_for_billing": true,
+      "rates_per_million": {
+        "input": 1.0, "cached_input": 0.1, "cache_write": 1.25, "output": 5.0, "reasoning_output": 5.0
+      }
+    },
+    {
+      "id": "economy-usd-illustrative",
+      "provider": "PLACEHOLDER",
+      "display_name": "Economy tier (USD, 示例)",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "ILLUSTRATIVE_ONLY_REPLACE_WITH_VERIFIED_RATE_CARD",
+      "billing_mode": "api",
+      "not_for_billing": true,
+      "rates_per_million": {
+        "input": 0.3, "cached_input": 0.03, "cache_write": 0.35, "output": 1.2, "reasoning_output": 1.2
+      }
+    },
+    {
+      "id": "domestic-cny-illustrative",
+      "provider": "PLACEHOLDER",
+      "display_name": "国内方案 (CNY, 示例)",
+      "currency": "CNY",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "ILLUSTRATIVE_ONLY_REPLACE_WITH_VERIFIED_RATE_CARD",
+      "billing_mode": "api",
+      "not_for_billing": true,
+      "rates_per_million": {
+        "input": 4.0, "cached_input": 0.4, "cache_write": 4.5, "output": 16.0, "reasoning_output": 16.0
+      }
+    }
+  ]
+}

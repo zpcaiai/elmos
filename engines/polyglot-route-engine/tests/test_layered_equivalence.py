@@ -28,7 +28,7 @@ from elmos_polyglot_route.identifier_hygiene import (
     plan_identifiers,
     target_ir_view,
 )
-from elmos_polyglot_route.models import ROUTED_LANGUAGES, Language, RouteError, SemanticIR
+from elmos_polyglot_route.models import REPOSITORY_SURFACE_LANGUAGES, Language, RouteError, SemanticIR
 from elmos_polyglot_route.native import analyze
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -118,7 +118,11 @@ def _target_path(root: Path, target: Language, content: str, relative_path: str)
     return path
 
 
-@pytest.mark.parametrize("target", ROUTED_LANGUAGES)
+# Parametrised over REPOSITORY_SURFACE_LANGUAGES, not ROUTED_LANGUAGES: this
+# test relifts real emitter output, and a pending-analyzer target has no
+# emitter to relift.  Adding kotlin/react/flutter here would assert an emitter
+# that does not exist.
+@pytest.mark.parametrize("target", REPOSITORY_SURFACE_LANGUAGES)
 def test_each_routed_target_relifts_exact_emitter_compensation(tmp_path: Path, target: Language) -> None:
     source = _integer_ir()
     # Five of the routed targets refuse the source spelling for a function name

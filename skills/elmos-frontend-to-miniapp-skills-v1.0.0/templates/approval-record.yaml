@@ -1,0 +1,15 @@
+action: upload
+request_id: conv-example-001
+platform: wechat
+app_ref: platform-app://tenant/project/wechat
+artifact_sha256: "<build-artifact-sha256>"
+requested_by: "<user-ref>"
+status: pending
+required_roles:
+  - project-owner
+  - platform-app-owner
+conditions:
+  - G0-G9 applicable gates passed
+  - no unresolved critical/high findings
+  - artifact hash matches evidence
+expires_at: "<date-time>"

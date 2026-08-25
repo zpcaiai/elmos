@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0.0",
+  "tree_id": "tree_01HXYZ",
+  "root_digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+  "entries": [
+    {
+      "logical_path": "src/UserService/Services/UserService.cs",
+      "artifact_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "mode": 420,
+      "ownership": "GENERATED",
+      "source_map_ref": "cas://sha256/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "logical_path": "UserService.csproj",
+      "artifact_digest": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      "mode": 420,
+      "ownership": "GENERATED",
+      "source_map_ref": null
+    }
+  ],
+  "producer": {
+    "run_id": "run_20260819_001",
+    "stage_id": "target-tree-assembly"
+  },
+  "validation_level": "TEST_VERIFIED",
+  "evidence_bundle_ref": "cas://sha256/0000000000000000000000000000000000000000000000000000000000000000",
+  "previous_tree_ref": null
+}

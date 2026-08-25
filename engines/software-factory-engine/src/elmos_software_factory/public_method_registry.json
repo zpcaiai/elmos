@@ -1,0 +1,1488 @@
+{
+  "methods": [
+    {
+      "action": "resolve-package",
+      "domain_errors": [
+        "PACKAGE_NOT_FOUND",
+        "VERSION_CONFLICT"
+      ],
+      "execution_mode": "local",
+      "method": "PackageRegistry.resolve",
+      "package_id": "P00",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "package_id"
+      ]
+    },
+    {
+      "action": "compile-workflow",
+      "domain_errors": [
+        "WORKFLOW_INVALID",
+        "UNSAFE_HOOK"
+      ],
+      "execution_mode": "local",
+      "method": "WorkflowCompiler.compile",
+      "package_id": "P00",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "nodes"
+      ]
+    },
+    {
+      "action": "certify-release",
+      "domain_errors": [
+        "GATE_FAILED",
+        "EVIDENCE_STALE"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "ReleaseManager.certify",
+      "package_id": "P00",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "evidence_bundle"
+      ]
+    },
+    {
+      "action": "plan-job",
+      "domain_errors": [
+        "QUOTA_EXCEEDED",
+        "POLICY_DENIED"
+      ],
+      "execution_mode": "local",
+      "method": "ControlPlane.createJob",
+      "package_id": "P00",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "job",
+        "budget_micros"
+      ]
+    },
+    {
+      "action": "publish-config",
+      "domain_errors": [
+        "SCHEMA_INVALID",
+        "CANARY_FAILED"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "ConfigManager.publish",
+      "package_id": "P00",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "config_revision"
+      ]
+    },
+    {
+      "action": "start-session",
+      "domain_errors": [
+        "CAPABILITY_UNSUPPORTED",
+        "ADAPTER_UNAVAILABLE"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "HarnessRuntime.start",
+      "package_id": "P01",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID"
+      ],
+      "required_inputs": [
+        "execution_contract"
+      ]
+    },
+    {
+      "action": "append-session",
+      "domain_errors": [
+        "SESSION_CLOSED",
+        "EVENT_INVALID"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "Session.append",
+      "package_id": "P01",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "event"
+      ]
+    },
+    {
+      "action": "resume-session",
+      "domain_errors": [
+        "FORMAT_UNSUPPORTED",
+        "LOG_CORRUPT"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "Session.resume",
+      "package_id": "P01",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "session_id"
+      ]
+    },
+    {
+      "action": "execute-tool",
+      "domain_errors": [
+        "SCHEMA_INVALID",
+        "POLICY_DENIED",
+        "TOOL_TIMEOUT"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "ToolRuntime.execute",
+      "package_id": "P01",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "tool_call"
+      ]
+    },
+    {
+      "action": "resolve-task",
+      "domain_errors": [
+        "ALREADY_SETTLED",
+        "OUTPUT_INVALID"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "TaskRuntime.resolve",
+      "package_id": "P01",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "task_id",
+        "output"
+      ]
+    },
+    {
+      "action": "spawn-agent",
+      "domain_errors": [
+        "UNAUTHORIZED",
+        "DEPTH_EXCEEDED"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "SubagentRuntime.startContinuable",
+      "package_id": "P01",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "prompt",
+        "limits"
+      ]
+    },
+    {
+      "action": "launch-sandbox",
+      "domain_errors": [
+        "SANDBOX_UNAVAILABLE"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "Sandbox.confine",
+      "package_id": "P01",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "argv",
+        "sandbox_mode"
+      ]
+    },
+    {
+      "action": "permission-decision",
+      "domain_errors": [
+        "POLICY_ERROR"
+      ],
+      "execution_mode": "local",
+      "method": "Permission.decide",
+      "package_id": "P01",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "requested_permissions"
+      ]
+    },
+    {
+      "action": "scan-repository",
+      "domain_errors": [
+        "UNSUPPORTED_BUILD",
+        "ACCESS_DENIED"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "RepositoryScanner.scan",
+      "package_id": "P02",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "repository_snapshot"
+      ]
+    },
+    {
+      "action": "parse-ast",
+      "domain_errors": [
+        "PARSE_PARTIAL",
+        "VERSION_UNSUPPORTED"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "SemanticIndexer.index",
+      "package_id": "P02",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "inventory"
+      ]
+    },
+    {
+      "action": "build-graph",
+      "domain_errors": [
+        "GRAPH_INCONSISTENT"
+      ],
+      "execution_mode": "local",
+      "method": "GraphBuilder.build",
+      "package_id": "P02",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "inventory",
+        "edges"
+      ]
+    },
+    {
+      "action": "compile-semantic-ir",
+      "domain_errors": [
+        "SEMANTIC_CONFLICT"
+      ],
+      "execution_mode": "local",
+      "method": "SemanticIR.compile",
+      "package_id": "P02",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "inventory"
+      ]
+    },
+    {
+      "action": "discover-capabilities",
+      "domain_errors": [
+        "DISCOVERY_INCOMPLETE"
+      ],
+      "execution_mode": "local",
+      "method": "CapabilityDiscovery.discover",
+      "package_id": "P02",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "capabilities",
+        "unknowns"
+      ]
+    },
+    {
+      "action": "query-repository",
+      "domain_errors": [
+        "QUERY_TOO_EXPENSIVE"
+      ],
+      "execution_mode": "local",
+      "method": "RepoQuery.execute",
+      "package_id": "P02",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "inventory",
+        "query"
+      ]
+    },
+    {
+      "action": "expand-requirements",
+      "domain_errors": [
+        "REQUIREMENT_CONFLICT"
+      ],
+      "execution_mode": "local",
+      "method": "RequirementEngine.expand",
+      "package_id": "P03",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "requirements"
+      ]
+    },
+    {
+      "action": "design-architecture",
+      "domain_errors": [
+        "TARGET_INFEASIBLE"
+      ],
+      "execution_mode": "local",
+      "method": "ArchitectureSynthesizer.design",
+      "package_id": "P03",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "requirements",
+        "target_profile"
+      ]
+    },
+    {
+      "action": "plan-transformation",
+      "domain_errors": [
+        "NO_SAFE_RULE",
+        "RULE_CONFLICT"
+      ],
+      "execution_mode": "local",
+      "method": "RuleEngine.transform",
+      "package_id": "P03",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "requirements",
+        "rules"
+      ]
+    },
+    {
+      "action": "emit-source",
+      "domain_errors": [
+        "EMISSION_FAILED"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "Emitter.generate",
+      "package_id": "P03",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "target_ir"
+      ]
+    },
+    {
+      "action": "plan-migration",
+      "domain_errors": [
+        "NON_REVERSIBLE_CHANGE"
+      ],
+      "execution_mode": "local",
+      "method": "MigrationController.plan",
+      "package_id": "P03",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "requirements",
+        "rollback"
+      ]
+    },
+    {
+      "action": "evaluate-gap",
+      "domain_errors": [
+        "DECISION_REQUIRED"
+      ],
+      "execution_mode": "local",
+      "method": "GapManager.resolve",
+      "package_id": "P03",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "requirements"
+      ]
+    },
+    {
+      "action": "call-tracker",
+      "domain_errors": [
+        "TRACKER_UNAVAILABLE"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "TrackerAdapter.fetchCandidates",
+      "package_id": "P04",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "tracker_cursor"
+      ]
+    },
+    {
+      "action": "reconcile-tasks",
+      "domain_errors": [
+        "STATE_CONFLICT"
+      ],
+      "execution_mode": "local",
+      "method": "Scheduler.reconcile",
+      "package_id": "P04",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "nodes"
+      ]
+    },
+    {
+      "action": "dispatch-plan",
+      "domain_errors": [
+        "NO_CAPACITY",
+        "DEPENDENCY_BLOCKED"
+      ],
+      "execution_mode": "local",
+      "method": "TaskOrchestrator.dispatch",
+      "package_id": "P04",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "nodes",
+        "capacity"
+      ]
+    },
+    {
+      "action": "mutate-worktree",
+      "domain_errors": [
+        "WORKSPACE_UNSAFE"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "WorkspaceManager.prepare",
+      "package_id": "P04",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "workspace_request"
+      ]
+    },
+    {
+      "action": "compose-agent",
+      "domain_errors": [
+        "ROLE_UNAVAILABLE"
+      ],
+      "execution_mode": "local",
+      "method": "AgentRegistry.compose",
+      "package_id": "P04",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "roles"
+      ]
+    },
+    {
+      "action": "review-sweep",
+      "domain_errors": [
+        "REVIEW_ACCESS_DENIED"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "ReviewCoordinator.sweep",
+      "package_id": "P04",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "review_ref"
+      ]
+    },
+    {
+      "action": "assemble-proof",
+      "domain_errors": [
+        "EVIDENCE_INCOMPLETE"
+      ],
+      "execution_mode": "local",
+      "method": "ProofAssembler.build",
+      "package_id": "P04",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "evidence_refs"
+      ]
+    },
+    {
+      "action": "evaluate-coverage",
+      "domain_errors": [
+        "INVALID_TRANSITION"
+      ],
+      "execution_mode": "local",
+      "method": "CoverageLedger.update",
+      "package_id": "P05",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "claims"
+      ]
+    },
+    {
+      "action": "plan-verification",
+      "domain_errors": [
+        "COVERAGE_UNSATISFIABLE"
+      ],
+      "execution_mode": "local",
+      "method": "VerificationPlanner.plan",
+      "package_id": "P05",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "claims",
+        "changes"
+      ]
+    },
+    {
+      "action": "run-runtime",
+      "domain_errors": [
+        "ENVIRONMENT_MISMATCH"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "DifferentialRuntime.run",
+      "package_id": "P05",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "scenario_set"
+      ]
+    },
+    {
+      "action": "evaluate-gate",
+      "domain_errors": [
+        "EVIDENCE_STALE"
+      ],
+      "execution_mode": "local",
+      "method": "CompletionGate.evaluate",
+      "package_id": "P05",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "claims"
+      ]
+    },
+    {
+      "action": "plan-repair",
+      "domain_errors": [
+        "NO_PROGRESS",
+        "BUDGET_EXHAUSTED"
+      ],
+      "execution_mode": "local",
+      "method": "RepairLoop.submit",
+      "package_id": "P05",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "failures",
+        "budget_micros"
+      ]
+    },
+    {
+      "action": "certify-external",
+      "domain_errors": [
+        "CERTIFICATION_FAILED"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "CertificationEngine.certify",
+      "package_id": "P05",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "evidence_bundle"
+      ]
+    },
+    {
+      "action": "refresh-catalog",
+      "domain_errors": [
+        "CATALOG_STALE"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "ModelCatalog.refresh",
+      "package_id": "P06",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "provider"
+      ]
+    },
+    {
+      "action": "classify-task",
+      "domain_errors": [
+        "CLASSIFICATION_LOW_CONFIDENCE"
+      ],
+      "execution_mode": "local",
+      "method": "TaskClassifier.classify",
+      "package_id": "P06",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "task"
+      ]
+    },
+    {
+      "action": "route-plan",
+      "domain_errors": [
+        "NO_ELIGIBLE_ROUTE"
+      ],
+      "execution_mode": "local",
+      "method": "RoutePlanner.plan",
+      "package_id": "P06",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "candidates",
+        "data_classes"
+      ]
+    },
+    {
+      "action": "invoke-provider",
+      "domain_errors": [
+        "ALL_ROUTES_FAILED"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "RouteExecutor.execute",
+      "package_id": "P06",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "provider"
+      ]
+    },
+    {
+      "action": "forecast-cost",
+      "domain_errors": [
+        "INSUFFICIENT_HISTORY"
+      ],
+      "execution_mode": "local",
+      "method": "CostEngine.forecast",
+      "package_id": "P06",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "candidates",
+        "usage"
+      ]
+    },
+    {
+      "action": "record-feedback",
+      "domain_errors": [
+        "OUTCOME_UNVERIFIED"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "FeedbackStore.record",
+      "package_id": "P06",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "outcome"
+      ]
+    },
+    {
+      "action": "query-knowledge",
+      "domain_errors": [
+        "NO_TRUSTED_RULE"
+      ],
+      "execution_mode": "local",
+      "method": "TransformationKB.query",
+      "package_id": "P07",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "entries"
+      ]
+    },
+    {
+      "action": "rank-repairs",
+      "domain_errors": [
+        "NO_SIMILAR_CASE"
+      ],
+      "execution_mode": "local",
+      "method": "RepairCorpus.retrieve",
+      "package_id": "P07",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "entries",
+        "failure_signature"
+      ]
+    },
+    {
+      "action": "evaluate-promotion",
+      "domain_errors": [
+        "PROVENANCE_INSUFFICIENT"
+      ],
+      "execution_mode": "local",
+      "method": "RuleGovernance.propose",
+      "package_id": "P07",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "entries",
+        "candidate"
+      ]
+    },
+    {
+      "action": "publish-global",
+      "domain_errors": [
+        "PROMOTION_GATE_FAILED"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "RuleGovernance.promote",
+      "package_id": "P07",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "entries",
+        "candidate"
+      ]
+    },
+    {
+      "action": "external-benchmark",
+      "domain_errors": [
+        "BENCHMARK_ENV_INVALID"
+      ],
+      "execution_mode": "requires_adapter",
+      "method": "BenchmarkRunner.replay",
+      "package_id": "P07",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "corpus_version"
+      ]
+    },
+    {
+      "action": "plan-learning",
+      "domain_errors": [
+        "DATA_SCOPE_DENIED"
+      ],
+      "execution_mode": "local",
+      "method": "LearningQueue.enqueue",
+      "package_id": "P07",
+      "platform_errors": [
+        "REQUEST_INVALID",
+        "METHOD_NOT_FOUND",
+        "POLICY_DENIED",
+        "APPROVAL_REQUIRED",
+        "REQUIRED_INPUT_MISSING",
+        "REQUIRED_INPUT_INVALID",
+        "DEPENDENCY_BLOCKED",
+        "DEPENDENCY_SCOPE_MISMATCH",
+        "DEPENDENCY_IDENTITY_MISMATCH",
+        "DEPENDENCY_NOT_EXECUTED",
+        "EVIDENCE_SCOPE_MISMATCH",
+        "IDEMPOTENCY_KEY_REQUIRED",
+        "ADAPTER_REQUIRED",
+        "PAYLOAD_INVALID",
+        "CAPABILITY_UNSUPPORTED"
+      ],
+      "required_inputs": [
+        "entries",
+        "candidate",
+        "value_score"
+      ]
+    }
+  ],
+  "schema_version": "1.0"
+}

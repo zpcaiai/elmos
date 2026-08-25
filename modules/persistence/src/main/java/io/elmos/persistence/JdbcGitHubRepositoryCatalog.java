@@ -2,6 +2,7 @@ package io.elmos.persistence;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,8 +27,10 @@ public class JdbcGitHubRepositoryCatalog {
         this.jdbc = jdbc;
     }
 
+    @Transactional(readOnly = true)
     public List<AuthorizedRepository> listAuthorized(String organizationId) {
         requireOrganization(organizationId);
+        setTenant(organizationId);
         return jdbc.sql("""
                 select sr.repository_id, sr.github_repository_id,
                        gi.github_installation_id, sr.full_name,
@@ -39,7 +42,9 @@ public class JdbcGitHubRepositoryCatalog {
                   on sc.connection_id = gi.connection_id
                 join repositories r
                   on r.repository_id = sr.repository_id
-                where sc.organization_id = :organization
+                where sr.organization_id = :organization
+                  and gi.organization_id = :organization
+                  and sc.organization_id = :organization
                   and r.organization_id = :organization
                   and gi.status = 'ACTIVE'
                   and sr.authorization_status = 'AUTHORIZED'
@@ -58,15 +63,17 @@ public class JdbcGitHubRepositoryCatalog {
                 .list();
     }
 
+    @Transactional(readOnly = true)
     public AuthorizedRepository requireAuthorized(
             String organizationId,
             String repositoryId
     ) {
         requireOrganization(organizationId);
         if (repositoryId == null
-                || !repositoryId.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}")) {
+                || !repositoryId.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,63}")) {
             throw new SecurityException("repository identity is invalid");
         }
+        setTenant(organizationId);
         return jdbc.sql("""
                 select sr.repository_id, sr.github_repository_id,
                        gi.github_installation_id, sr.full_name,
@@ -78,7 +85,9 @@ public class JdbcGitHubRepositoryCatalog {
                   on sc.connection_id = gi.connection_id
                 join repositories r
                   on r.repository_id = sr.repository_id
-                where sc.organization_id = :organization
+                where sr.organization_id = :organization
+                  and gi.organization_id = :organization
+                  and sc.organization_id = :organization
                   and r.organization_id = :organization
                   and sr.repository_id = :repository
                   and gi.status = 'ACTIVE'
@@ -102,8 +111,15 @@ public class JdbcGitHubRepositoryCatalog {
 
     private static void requireOrganization(String organizationId) {
         if (organizationId == null
-                || !organizationId.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}")) {
+                || !organizationId.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,63}")) {
             throw new SecurityException("trusted organization identity is invalid");
         }
+    }
+
+    private void setTenant(String organizationId) {
+        jdbc.sql("select set_config('app.organization_id', :organization, true)")
+                .param("organization", organizationId)
+                .query(String.class)
+                .single();
     }
 }

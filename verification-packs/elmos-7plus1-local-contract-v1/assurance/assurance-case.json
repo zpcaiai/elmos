@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "case_key": "elmos-7plus1-local-contract-v1-assurance-v1",
+  "version": 1,
+  "owner": "elmos-verification-engineering",
+  "top_claim": "The pack conservatively describes the local archive-import and standard-library runtime contract without claiming execution, proof, production readiness, or certification beyond recorded evidence.",
+  "claims": [
+    {
+      "claim_id": "claim.archive-identity-and-nonexecution",
+      "statement": "The exact eight archive byte identities are recorded and archive content remains untrusted data.",
+      "status": "partially-supported",
+      "evidence_refs": [
+        "artifacts/source-archives.json",
+        "certification/local-runtime-test-result.json",
+        "certification/raw/importer-integration-tests.txt"
+      ],
+      "assumptions": [],
+      "limitations": [
+        "Importer development and negative execution is local and self-attested, not independent evidence.",
+        "Archive byte identity does not prove provenance, license, signature, SBOM, behavior, or safety."
+      ]
+    },
+    {
+      "claim_id": "claim.installed-contract-identity",
+      "statement": "The importer preserves canonical source identity, compiled contracts, dual-root interfaces, and runtime bindings without drift or collisions in disposable temporary-root execution.",
+      "status": "partially-supported",
+      "evidence_refs": [
+        "artifacts/target-artifacts.json",
+        "certification/local-installation-validation.json",
+        "certification/local-runtime-test-result.json",
+        "certification/raw/importer-integration-tests.txt"
+      ],
+      "assumptions": [],
+      "limitations": [
+        "A repository installation and read-only check are recorded locally, but execution and verification are self-attested.",
+        "Skill Creator validation covers structure/frontmatter only, not runtime behavior.",
+        "Independent holdout and verification remain NOT_RUN."
+      ]
+    },
+    {
+      "claim_id": "claim.runtime-fail-closed",
+      "statement": "Missing, unsupported, caller-asserted, provider, or external states cannot be promoted to successful local execution or certification.",
+      "status": "partially-supported",
+      "evidence_refs": [
+        "models/model.json",
+        "artifacts/target-artifacts.json",
+        "certification/local-runtime-test-result.json",
+        "certification/raw/runtime-tests.txt"
+      ],
+      "assumptions": [],
+      "limitations": [
+        "Focused runtime negative tests passed locally; mutation, fuzz, formal, provider, representative, and independent review evidence remain NOT_RUN."
+      ]
+    }
+  ],
+  "evidence": [
+    "artifacts/source-archives.json",
+    "artifacts/target-artifacts.json",
+    "environment/local-validation-environment.json",
+    "technique-status.json",
+    "certification/local-pack-validation.json",
+    "certification/local-runtime-test-result.json",
+    "certification/local-installation-validation.json",
+    "certification/raw/install-summary.txt",
+    "certification/raw/install-check.txt",
+    "certification/raw/skill-creator-validation.txt",
+    "certification/raw/runtime-tests.txt",
+    "certification/raw/importer-integration-tests.txt",
+    "certification/gate-result.json"
+  ],
+  "residual_risks": [
+    {
+      "risk_id": "risk.archive-provenance",
+      "risk": "The supplied archives have byte identity only; license, signature, SBOM, provenance attestation, and publisher trust are unavailable.",
+      "owner": "elmos-software-factory-engineering",
+      "status": "open",
+      "required_closure": "Approved provenance and legal/security review"
+    },
+    {
+      "risk_id": "risk.local-evidence-independence",
+      "risk": "Development and seeded negative tests are local and self-attested; mutation, fuzz, and independent replay remain NOT_RUN.",
+      "owner": "elmos-verification-engineering",
+      "status": "open",
+      "required_closure": "Separate authorized executor and independent verifier with signed digest-bound raw evidence"
+    },
+    {
+      "risk_id": "risk.formal-evidence",
+      "risk": "Symbolic and SMT techniques are unsupported and NOT_RUN; no bounded or universal proof exists.",
+      "owner": "elmos-verification-engineering",
+      "status": "open",
+      "required_closure": "Approved exact encoding, solver lock, independent validation, and concrete replay"
+    },
+    {
+      "risk_id": "risk.independent-corpora",
+      "risk": "Independent holdout and representative production-derived workload evidence is NOT_RUN.",
+      "owner": "external-independent-verifier",
+      "status": "open",
+      "required_closure": "Untouched authorized corpora executed by separate executor and verifier"
+    },
+    {
+      "risk_id": "risk.external-runtime",
+      "risk": "Provider, compiler, device, model-training, deployment, production, and external certification evidence is NOT_RUN.",
+      "owner": "external-independent-verifier",
+      "status": "open",
+      "required_closure": "Authorized exact external execution and independent evidence"
+    }
+  ],
+  "monitoring_obligations": [
+    "Invalidate the pack if any source archive name, size, or digest changes.",
+    "Invalidate local evidence if importer, runtime, schemas, bindings, or tests drift from the locked target digest.",
+    "Keep NOT_RUN, unsupported, unknown, and external states non-successful.",
+    "Reject certification while any P0 claim lacks independent evidence and approval."
+  ],
+  "approvals": []
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 设计—代码—运行架构漂移检测"
+  short_description: "Guide 设计—代码—运行架构漂移检测 with evidence controls"
+  default_prompt: "Use $elmos-architecture-drift as guidance for 设计—代码—运行架构漂移检测 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

@@ -1,0 +1,65 @@
+{
+  "mapping_id": "map-button-primary",
+  "source_component": {
+    "framework": "vue3",
+    "symbol": "BaseButton",
+    "usage_ref": "src/components/BaseButton.vue"
+  },
+  "semantic_role": "primary-action",
+  "requirements": {
+    "props": [
+      "disabled"
+    ],
+    "events": [
+      "tap"
+    ],
+    "slots": [
+      "default"
+    ],
+    "accessibility": [
+      "label"
+    ]
+  },
+  "targets": [
+    {
+      "platform": "wechat",
+      "classification": "A",
+      "strategy": "native",
+      "target_component": "button",
+      "tests": [
+        "tap",
+        "disabled"
+      ]
+    },
+    {
+      "platform": "alipay",
+      "classification": "A",
+      "strategy": "native",
+      "target_component": "button",
+      "tests": [
+        "tap",
+        "disabled"
+      ]
+    },
+    {
+      "platform": "douyin",
+      "classification": "A",
+      "strategy": "native",
+      "target_component": "button",
+      "tests": [
+        "tap",
+        "disabled"
+      ]
+    },
+    {
+      "platform": "xiaohongshu",
+      "classification": "A",
+      "strategy": "native",
+      "target_component": "button",
+      "tests": [
+        "tap",
+        "disabled"
+      ]
+    }
+  ]
+}

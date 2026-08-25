@@ -1,0 +1,22 @@
+{
+  "_comment": "Digests for the repository built by tools/cross_platform_snapshot.py. Run that script somewhere and add its JSON output under the matching key. 'platforms' is keyed by platform.system().lower(); 'filesystems' records runs whose interest is the filesystem rather than the operating system.",
+  "platforms": {
+    "linux": {
+      "release": "6.18.5-fc-v20",
+      "python": "3.12.3",
+      "files": 8,
+      "root_digest": "sha256:e6b1584f5ed742cfaf0557c80c6ee545899ab42b47d5a2952d3b3e45c891daa7",
+      "manifest_digest": "sha256:ea578182f23aed985c619a413cc2627a02c0944d5d3f24424d972d7b00bd90cc"
+    }
+  },
+  "filesystems": {
+    "apfs-via-linux-vm": {
+      "note": "The fixture was materialised on a real macOS APFS volume (case-insensitive and normalisation-insensitive, verified by probe) and read back through a FUSE export into a Linux VM running Python 3.10.12. This is not a native Darwin capture -- the syscalls are Linux's -- but it does exercise APFS and a second interpreter.",
+      "release": "6.8.0-136-generic",
+      "python": "3.10.12",
+      "files": 8,
+      "root_digest": "sha256:e6b1584f5ed742cfaf0557c80c6ee545899ab42b47d5a2952d3b3e45c891daa7",
+      "manifest_digest": "sha256:ea578182f23aed985c619a413cc2627a02c0944d5d3f24424d972d7b00bd90cc"
+    }
+  }
+}

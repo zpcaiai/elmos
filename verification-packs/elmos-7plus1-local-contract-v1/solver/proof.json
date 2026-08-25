@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "proof_id": "proof.elmos-7plus1-formal-not-run-v1",
+  "property_id": "property.untrusted-archive-never-grants-authority",
+  "solver": {
+    "name": "external-smt-or-symbolic-executor",
+    "version": "NOT_CONFIGURED",
+    "options": {},
+    "timeout_ms": 0
+  },
+  "status": "unsupported",
+  "assumptions": [
+    "Typed contracts and finite local tests, if later run, are engineering evidence and are not universal proof.",
+    "No solver encoding, theory, loop bounds, heap model, certificate, countermodel, or independent encoding is present."
+  ],
+  "input_digest": "sha256:89c1a63927a6a316ebcfeeac260e836225eeccf5701805314f91346e703166fd",
+  "evidence_refs": [
+    "technique-status.json"
+  ]
+}

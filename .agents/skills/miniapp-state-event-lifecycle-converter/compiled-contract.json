@@ -1,0 +1,117 @@
+{
+  "schema_version": "elmos.frontend-to-miniapp.compiled-skill-contract.v1",
+  "package_id": "elmos.frontend-to-miniapp.skills",
+  "package_version": "1.0.0",
+  "source_name": "miniapp-state-event-lifecycle-converter",
+  "source_path": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/.agents/skills/miniapp-state-event-lifecycle-converter/SKILL.md",
+  "source_sha256": "sha256:93baa89f9b93e4a88f5fed7b23d4aaf4b09392deb967ddd860c782ca0e580e7c",
+  "stage": "planning",
+  "description": "Lower framework state, derived values, effects, events, navigation hooks, and component/page/app lifecycles into platform-neutral execution plans and target-specific bindings. Use before code generation and during semantic diff repair.",
+  "depends_on": [
+    "miniapp-semantic-ir",
+    "miniapp-component-mapping-engine"
+  ],
+  "task_ids": [
+    "MAPP-017",
+    "MAPP-018"
+  ],
+  "declared_outputs": [
+    "state-lowering-plan.json",
+    "event-binding-plan.json",
+    "lifecycle-plan.json",
+    "side-effect-ledger.json"
+  ],
+  "required_outputs": [
+    {
+      "path": "state-lowering-plan.json",
+      "required": true
+    },
+    {
+      "path": "event-binding-plan.json",
+      "required": true
+    },
+    {
+      "path": "lifecycle-plan.json",
+      "required": true
+    },
+    {
+      "path": "side-effect-ledger.json",
+      "required": true
+    }
+  ],
+  "gates": [
+    {
+      "name": "状态引用闭合",
+      "required": true
+    },
+    {
+      "name": "生命周期顺序验证",
+      "required": true
+    },
+    {
+      "name": "副作用均有创建与清理策略",
+      "required": true
+    },
+    {
+      "name": "关键事件顺序可测试",
+      "required": true
+    }
+  ],
+  "failure_policy": {
+    "silent_drop": "deny",
+    "max_retries": 2,
+    "escalate_on": [
+      "permission-change",
+      "real-payment",
+      "release",
+      "quality-gate-lowering",
+      "repeated-equivalent-patch"
+    ]
+  },
+  "runtime_binding": {
+    "runtime_authority": {
+      "package_path": "engines/frontend-client-engine",
+      "cli_command": "npm run miniapp",
+      "cli_entrypoint": "dist/src/miniapp-cli.js",
+      "structured_request_handler": "handleMiniappSkillRequest",
+      "json_handler": "runMiniappSkillJson",
+      "full_conversion_handler": "runMiniappConversion",
+      "package_conversion_handler": "runMiniappPackageConversion",
+      "package_cli_command": "npm run miniapp -- package",
+      "single_skill_handler": "executeMiniappSkill",
+      "skill_key": "miniapp-state-event-lifecycle-converter"
+    },
+    "canonical_package_request": {
+      "source_schema": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json",
+      "request_case": "snake_case",
+      "wrapper_fields": [
+        "packageRequest",
+        "files",
+        "versionBindings",
+        "evidenceBindings"
+      ],
+      "handler_action": "run-package",
+      "handler_input_field": "packageInput",
+      "validator": "validateMiniappPackageConversionInput",
+      "compiler": "compileMiniappPackageConversionInput",
+      "runner": "runMiniappPackageConversion",
+      "cli_command": "npm run miniapp -- package",
+      "input_boundary": "caller-supplied-in-memory-files-no-disk-discovery"
+    },
+    "component_adapter": {
+      "package_path": "engines/component-dialect-engine",
+      "cli_command": "npm run miniapp-worker",
+      "cli_entrypoint": "dist/miniapp-worker.js",
+      "structured_request_handler": "handleMiniAppWorkerRequest",
+      "json_handler": "runMiniAppWorkerJson",
+      "emitter": "emitPlatformMiniApp"
+    }
+  },
+  "contract_state": "HANDLER_IMPLEMENTED",
+  "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+  "runtime_evidence_status": "DECLARED",
+  "external_evidence_status": "NOT_RUN",
+  "certification": "NOT_CERTIFIED",
+  "side_effects_authorized": false,
+  "maximum_local_claim": "HANDLER_IMPLEMENTED_NOT_EXECUTED"
+}

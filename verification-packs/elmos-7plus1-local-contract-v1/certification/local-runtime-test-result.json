@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-7plus1-local-contract-v1",
+  "executed_on": "2026-08-24",
+  "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "source_artifact_digest": "sha256:89c1a63927a6a316ebcfeeac260e836225eeccf5701805314f91346e703166fd",
+  "target_artifact_digest": "sha256:2d68e5ccd44465c0bee8307e042097c2b84d0e8201d7ee10ae6d2c44c296bc6c",
+  "target_manifest_digest": "sha256:dbe0c5c379ffa468b98b92a43c39fb08b914cd2e9e78ded0fe9533e864dde26b",
+  "environment_digest": "sha256:a3df7b93b9fa9bb3fcfae683381d40cdcd5b3dbc1a14275716be82ed10ee3582",
+  "commands": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/software-factory-engine/src python3 -m unittest discover -s engines/software-factory-engine/tests -p 'test_*.py' -v",
+      "exit_code": 0,
+      "test_count": 25,
+      "passed": 25,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite_duration_seconds": 2.218,
+      "raw_evidence_ref": "certification/raw/runtime-tests.txt",
+      "raw_evidence_digest": "sha256:ca5217118ffd43a0860f7813676888fc70116d6c986a2a5059476a3ca922a989"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/elmos-7plus1-commercial-skills -p 'test_*.py' -v",
+      "exit_code": 0,
+      "test_count": 15,
+      "passed": 15,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite_duration_seconds": 59.279,
+      "raw_evidence_ref": "certification/raw/importer-integration-tests.txt",
+      "raw_evidence_digest": "sha256:7b5686df37f825e24e39eb6987fb62f802f6a93f85afc266fdfda7457c0a433a"
+    }
+  ],
+  "totals": {
+    "tests": 40,
+    "passed": 40,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "pass_rate": 1.0
+  },
+  "development_scope": {
+    "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "covered": [
+      "exact eight-archive identity and 252-member union",
+      "101 source Skill inventory and 102 repository-owned wrapper contract",
+      "three runtime registries and four JSON schemas",
+      "exact 50 public-method modes and required inputs",
+      "meaningful bounded local handler outputs",
+      "temporary-root install/check, directory-mode, and conservative evidence-state behavior",
+      "collision-safe deterministic aliases preserve source identity without overwriting pre-existing owned names"
+    ]
+  },
+  "negative_scope": {
+    "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "covered": [
+      "path traversal, absolute, backslash, reserved, casefold, symlink, special, encrypted, and archive-budget rejection",
+      "unknown member, manifest, DAG, name, shared-byte, collision, stale-wrapper, and restrictive-umask controls",
+      "embedded archive scripts and Skill instructions remain non-executable untrusted data",
+      "unknown child/package actions and missing required inputs fail closed",
+      "caller availability and external observation cannot substitute for an adapter",
+      "scope/correlation mismatch, zero capacity, oversized input, and invalid JSON remain non-successful",
+      "external, provider, and evidence-gate states cannot be promoted to execution or certification"
+    ]
+  },
+  "limitations": [
+    "Evidence is local and self-attested; executor and verifier are not independent.",
+    "The install/check test used disposable temporary roots and did not install repository outputs.",
+    "No mutation, fuzz, solver, symbolic, concurrency campaign, holdout, representative workload, provider, production, external review, or certification execution was performed.",
+    "Finite passing tests are not proof of universal correctness."
+  ],
+  "certification_decision": "NOT_CERTIFIED"
+}

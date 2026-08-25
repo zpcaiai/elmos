@@ -13,6 +13,11 @@ import java.util.Set;
 
 public final class WebhookIngestionService {
     public enum Result { ACCEPTED, DUPLICATE }
+    public static final class ResourceBindingException extends SecurityException {
+        public ResourceBindingException() {
+            super("GitHub webhook resource binding is unavailable");
+        }
+    }
     public record Delivery(String deliveryId, String eventType, String action, Long repositoryExternalId,
                            Long installationExternalId, String payloadSha256, Instant receivedAt, String normalizedEventType) {}
     public interface DeliveryStore { boolean recordAndEnqueueIfAbsent(Delivery delivery); }

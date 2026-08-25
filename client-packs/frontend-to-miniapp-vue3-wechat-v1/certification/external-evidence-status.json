@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-to-miniapp-vue3-wechat-v1",
+  "checks": {
+    "source_install_build_startup": "NOT_RUN",
+    "official_wechat_toolchain_lock": "NOT_RUN",
+    "official_wechat_build": "NOT_RUN",
+    "official_wechat_preview": "NOT_RUN",
+    "wechat_devtools_emulator_journey": "NOT_RUN",
+    "wechat_physical_device_journey": "NOT_RUN",
+    "visual_equivalence": "NOT_RUN",
+    "accessibility_automated": "NOT_RUN",
+    "assistive_technology": "NOT_RUN",
+    "performance": "NOT_RUN",
+    "security_privacy_runtime": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "representative_workload": "NOT_RUN",
+    "independent_external_review": "NOT_RUN",
+    "upload": "NOT_RUN",
+    "platform_review": "NOT_RUN",
+    "release": "NOT_RUN"
+  },
+  "production_operation_authorized": false,
+  "certification": "NOT_CERTIFIED"
+}

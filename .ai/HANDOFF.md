@@ -11,6 +11,10 @@
   **Session 2026-08-14 — 182/182** section at the end of this file, which
   supersedes every earlier "matrix RUNNING / NOT_RUN / disk-blocked" statement
   in §0–§7.
+  > **Denominator note (2026-08-19):** the `182` and `/90` above are the figures
+  > that were current on 2026-08-14 and are kept as the record of that pass. The
+  > active surface is now **13 languages / 156 directed routes**; see
+  > *Denominator change — superseded 2026-08-19* at the end of this file.
 
 ---
 
@@ -693,3 +697,71 @@ and the schema requires content-verified artifacts for all 90×2 workloads — s
 placeholder campaign cannot even validate. R10 is 1,080 real executions on an
 independent corpus that does not exist on disk, plus a second actor. Full detail
 in `.ai/R10_INDEPENDENT_VERIFICATION.md`.
+
+---
+
+## Decision of record 2026-08-18 — wait for PHP module inventory, then run the FULL 222
+
+The owner chose to **wait for PHP module inventory to land and then run the full
+222-node matrix**, rather than bank a 202-node subset that excludes the 20
+php-as-source nodes. Do not produce, report, or record a 202/222 result as the
+campaign's matrix evidence.
+
+### Preflight gate — `.ai/matrix-preflight.sh`
+
+Run it before any launch; it exits 0 only when every gate is green, so the
+"launch and discover the wall three hours later" failure mode cannot repeat.
+Current reading:
+
+```text
+php-as-source (php-java)     BLOCKED -- 1 failed in 1.59s
+disk headroom                BLOCKED -- 19 GiB free, want >= 32
+exclusive window             BLOCKED -- 2 competing process(es)
+node topology pin            PASS      (opt/sqlite -> ../Cellar/sqlite/3.53.3)
+ruff                         PASS
+mypy --strict                PASS
+collected nodes              222
+PREFLIGHT: NO-GO
+```
+
+The php gate is a real 1.6 s route execution, not a grep: when
+`MODULE_INVENTORY_UNSUPPORTED:php` stops being raised, `php-java` passes and the
+gate flips green by itself. Nothing has to be remembered or hand-edited.
+
+Disk threshold is 32 GiB, not 12: the 182-node run consumed ~22 GiB net and 222
+nodes are heavier. The old 12/25 GiB start gates predate
+`tmp_path_retention_policy=failed` and should not be reused.
+
+### Carried state, all verified, none of it committed
+
+| | |
+| --- | --- |
+| K10 | Closed by `a2f6f6577`; ruff and strict mypy are green on 22 files with no change from this session |
+| K12 | **Applied, uncommitted** — `assembly.py` dropped its byte-identical sanitiser copy and imports `validation._bounded_process_diagnostic`; identity, behaviour, ruff, mypy and py_compile all verified. Commit only after a green full matrix |
+| Node pin | **Restored, not committed** — environment change only: `ln -sfn ../Cellar/sqlite/3.53.3 /opt/homebrew/opt/sqlite`. See `NODE_TOOLCHAIN_PIN_DRIFT.md`. A future `brew upgrade`/`brew link sqlite` silently reverts this and will re-break every Node-hosted route |
+| 20 php-source nodes | Structurally `MODULE_INVENTORY_UNSUPPORTED:php`; the blocker this decision waits on |
+| VOID logs | `matrix222-run-VOID-stopped-early.log` (22 marks, 4 F, no summary). Never splice |
+
+### Denominator change — superseded 2026-08-19
+
+The 11-language / 110-route / 222-node figure in the paragraph below is itself
+now historical. **Re-verified 2026-08-19 against the working tree: the active
+surface is 13 languages / 156 directed routes**, per `routes/inventory.json`
+(`route_count == 156`, `len(routes) == 156`), with `models.py` and
+`scripts/batch29/route_sets.py` agreeing.
+
+- javascript is **deprecated** and absent from the active set.
+- kotlin, react and flutter are declared but carry `PENDING_ANALYZER`; the 66
+  directions touching them are `kotlin-react-flutter-completion-66`. 156 is the
+  **declared** surface, not a passing count.
+- `routes/` holds **176** directories: 156 active + 20 retained javascript packs,
+  which are exactly `eleven-language-complete-110.deprecated_route_keys`
+  (verified by set equality; no declared route is missing from disk).
+- `/72`, `/90` and `/110` are all dead as denominators and survive only as
+  retained provenance sets. 182 and 222 are *test-node* counts, not route counts.
+
+Historical text below is kept as the record of how the work was recovered.
+
+Once it ran, the matrix was **11 languages / 110 directed routes / 222 nodes**.
+Every `/182`, `/90` and `/72` figure elsewhere in this file, `TASK.md` and
+`IMPLEMENTATION_STATUS.md` predates PHP and must be read as historical.

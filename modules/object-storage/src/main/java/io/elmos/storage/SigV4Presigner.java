@@ -24,9 +24,25 @@ import java.util.TreeMap;
  * {@code SigV4PresignerTest}. An SDK would add a large transitive tree for one
  * function this service uses.</p>
  *
- * <p>Only the query-string (presigned URL) flavour is implemented. The control
- * plane never streams object bytes itself, so header-based signing is not needed
- * and is deliberately absent rather than half-built.</p>
+ * <p>Two flavours are implemented, and they are genuinely different algorithms
+ * sharing one set of primitives:</p>
+ *
+ * <ul>
+ *   <li>{@link #presign} produces a query-string signed URL. The control plane hands
+ *       these to clients so it never has to stream object bytes itself.</li>
+ *   <li>{@link #authorizationHeader} produces the {@code Authorization} header for a
+ *       request this process makes directly. {@code modules/cas} needs it: a CAS tier
+ *       does read and write bytes, over range reads and multipart uploads that a
+ *       presigned URL cannot express.</li>
+ * </ul>
+ *
+ * <p>The header flavour was added rather than duplicated. A second SigV4
+ * implementation would mean a second RFC 3986 encoder, and the failure mode of the
+ * two drifting apart is a signature that verifies locally and 403s in production.
+ * The published AWS presign vector in {@code SigV4PresignerTest} pins the shared encoding and
+ * signing primitives; the CAS tests additionally exercise the header flavour end to end against
+ * a strict in-process S3 endpoint. That remains local engineering evidence, not a real-provider
+ * certification.</p>
  */
 public final class SigV4Presigner {
 
@@ -129,6 +145,97 @@ public final class SigV4Presigner {
         String url = base.getScheme() + "://" + host + canonicalUri + "?" + canonicalQuery
                 + "&X-Amz-Signature=" + signature;
         return URI.create(url);
+    }
+
+    // ---- header signing ----------------------------------------------------
+
+    /** SHA-256 of an empty body, the value S3 expects when there is no payload. */
+    public static final String EMPTY_PAYLOAD_SHA256 =
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+
+    /** The {@code x-amz-date} value for an instant. */
+    public static String amzDateTime(Instant signingTime) {
+        return AMZ_DATE_TIME.format(signingTime);
+    }
+
+    public static String sha256Hex(byte[] payload) {
+        try {
+            return hex(MessageDigest.getInstance("SHA-256").digest(payload));
+        } catch (Exception ex) {
+            throw new IllegalStateException("SHA-256 unavailable", ex);
+        }
+    }
+
+    /**
+     * Canonical form of a request path. Unlike {@link #encodePath}, which takes a bare
+     * object key, this keeps a leading slash: the canonical URI of {@code /bucket/key}
+     * is {@code /bucket/key}, and losing that slash silently changes the signature.
+     */
+    public static String canonicalUri(String path) {
+        if (path == null || path.isEmpty() || path.equals("/")) {
+            return "/";
+        }
+        boolean leadingSlash = path.charAt(0) == '/';
+        String encoded = encodePath(leadingSlash ? path.substring(1) : path);
+        return leadingSlash ? "/" + encoded : encoded;
+    }
+
+    /** Query parameters sorted by encoded name, as the canonical request requires. */
+    public static String canonicalQuery(Map<String, String> parameters) {
+        TreeMap<String, String> encoded = new TreeMap<>();
+        parameters.forEach((name, value) -> encoded.put(encode(name), encode(value == null ? "" : value)));
+        return joinQuery(encoded);
+    }
+
+    /**
+     * Builds the {@code Authorization} header for a header-signed request.
+     *
+     * <p>Every entry of {@code headers} is signed, so adding a header after calling this
+     * invalidates the request. {@code host}, {@code x-amz-date} and
+     * {@code x-amz-content-sha256} must all be present.
+     *
+     * @param payloadSha256 hex SHA-256 of the exact body being sent, or
+     *                      {@link #EMPTY_PAYLOAD_SHA256}. S3 rejects a mismatch, which is
+     *                      the point: the signature covers the bytes, not just the intent.
+     */
+    public static String authorizationHeader(String method,
+                                             String canonicalUri,
+                                             String canonicalQuery,
+                                             Map<String, String> headers,
+                                             String payloadSha256,
+                                             String region,
+                                             Credentials credentials,
+                                             Instant signingTime) {
+        TreeMap<String, String> canonicalHeaders = new TreeMap<>();
+        headers.forEach((name, value) -> canonicalHeaders.put(
+                name.toLowerCase(Locale.ROOT), value.trim().replaceAll("\\s+", " ")));
+        String signedHeaders = String.join(";", canonicalHeaders.keySet());
+
+        StringBuilder headerBlock = new StringBuilder();
+        canonicalHeaders.forEach((name, value) -> headerBlock.append(name).append(':').append(value).append('\n'));
+
+        String amzDateTime = AMZ_DATE_TIME.format(signingTime);
+        String amzDate = AMZ_DATE.format(signingTime);
+        String scope = amzDate + "/" + region + "/" + SERVICE + "/" + TERMINATOR;
+
+        String canonicalRequest = String.join("\n",
+                method.toUpperCase(Locale.ROOT),
+                canonicalUri,
+                canonicalQuery,
+                headerBlock.toString(),
+                signedHeaders,
+                payloadSha256);
+
+        String stringToSign = String.join("\n",
+                ALGORITHM,
+                amzDateTime,
+                scope,
+                hex(sha256(canonicalRequest)));
+
+        String signature = hex(hmac(signingKey(credentials.secretAccessKey(), amzDate, region), stringToSign));
+        return ALGORITHM + " Credential=" + credentials.accessKeyId() + "/" + scope
+                + ", SignedHeaders=" + signedHeaders
+                + ", Signature=" + signature;
     }
 
     // ---- signing primitives ------------------------------------------------

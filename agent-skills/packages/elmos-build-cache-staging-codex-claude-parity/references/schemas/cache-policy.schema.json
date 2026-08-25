@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/cache-policy.schema.json",
+  "title": "ELMOS Cache Policy Epoch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "policy_epoch",
+    "tier",
+    "policy",
+    "capacity_bytes",
+    "objective_profile",
+    "fallback_policy",
+    "configuration_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.1.0"
+    },
+    "policy_epoch": {
+      "type": "string"
+    },
+    "tier": {
+      "type": "string"
+    },
+    "policy": {
+      "enum": [
+        "LRU",
+        "SIEVE",
+        "S3_FIFO",
+        "W_TINY_LFU",
+        "SIZE_AWARE_TINY_LFU",
+        "GDSF",
+        "MERLIN",
+        "S4_FIFO",
+        "THREE_L_CACHE",
+        "ADAPTIVE"
+      ]
+    },
+    "capacity_bytes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "objective_profile": {
+      "enum": [
+        "DEV_SPEED",
+        "TOKEN_COST",
+        "BYTE_NETWORK",
+        "BALANCED",
+        "CERTIFICATION_RETENTION"
+      ]
+    },
+    "parameters": {
+      "type": "object"
+    },
+    "selector": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "fallback_policy": {
+      "enum": [
+        "LRU",
+        "SIEVE",
+        "S3_FIFO",
+        "W_TINY_LFU",
+        "SIZE_AWARE_TINY_LFU",
+        "GDSF"
+      ]
+    },
+    "configuration_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "model_digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "trace_corpus_digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "confidence": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "reason_codes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

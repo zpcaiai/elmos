@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "corpus_key": "vue3-wechat-representative-v1",
+  "independence_class": "representative-workload",
+  "may_author_transformation_rules": false,
+  "cases": [
+    {
+      "case_id": "REP-VUE3-WECHAT-001",
+      "journey": "launch enter multiple todos preserve ordering reject blank values and retain accessible controls",
+      "dataset": "synthetic-minimized-unmaterialized",
+      "device_matrix": ["wechat-devtools-emulator-NOT_RUN", "wechat-physical-device-NOT_RUN"],
+      "runtime_state": "NOT_RUN",
+      "reason": "Representative target application and authorized runtime environment are absent."
+    }
+  ],
+  "certification": "NOT_CERTIFIED"
+}

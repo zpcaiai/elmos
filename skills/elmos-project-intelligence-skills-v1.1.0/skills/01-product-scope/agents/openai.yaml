@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 产品范围与需求基线
+  short_description: 细化 Elmos 在线代码阅读、架构讲解、流程梳理、图表、文档和 PPT 等需求，并冻结可实施范围。用于 PRD、Epic、用户故事、优先级和范围控制。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-product-scope 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

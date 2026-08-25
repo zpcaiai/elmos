@@ -48,6 +48,22 @@ class Batch15ContractFixtureTest {
         String openApi = Files.readString(repositoryRoot.resolve(
                 "contracts/database-data-api/database-data-api.yaml"));
         assertTrue(openApi.contains("/engine/v1/execute-step"));
+        assertTrue(openApi.contains("/engine/v1/sql-preflight/capabilities"));
+        assertTrue(openApi.contains("/engine/v1/sql-preflight/assess"));
+        assertTrue(openApi.contains("chinadb-sql-preflight-request.schema.json"));
+        assertTrue(openApi.contains("targetSql: { type: \"null\" }"));
+        assertTrue(openApi.contains("certification: { const: NOT_CERTIFIED }"));
         assertTrue(openApi.contains("ELMOS_DATABASE_DATA"));
+
+        String controlPlaneOpenApi = Files.readString(repositoryRoot.resolve(
+                "contracts/database-data-api/database-data-control-plane-api.yaml"));
+        assertTrue(controlPlaneOpenApi.contains(
+                "/api/v1/database-data/sql-preflight/capabilities"));
+        assertTrue(controlPlaneOpenApi.contains(
+                "/api/v1/database-data/sql-preflight/assess"));
+        assertTrue(controlPlaneOpenApi.contains("Requires workspace:view"));
+        assertTrue(controlPlaneOpenApi.contains("Requires translation:execute"));
+        assertTrue(controlPlaneOpenApi.contains("bearerAuth"));
+        assertTrue(controlPlaneOpenApi.contains("ChinaDbSqlFailure"));
     }
 }

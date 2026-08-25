@@ -1,0 +1,21 @@
+{
+  "baseline_as_of": "2026-08-13",
+  "status": "implementation-planning baseline, not runtime proof",
+  "target": "GBase 8c",
+  "discovery_required": true,
+  "preferred_sources": [
+    "Oracle",
+    "PostgreSQL-class"
+  ],
+  "native_tool_hooks": [
+    "vendor migration tooling if available"
+  ],
+  "procedural_policy": "distributed_semantics_first",
+  "strategy_values": [
+    "NATIVE",
+    "REWRITE",
+    "LIFT_TO_APP",
+    "EMULATE_WITH_APPROVAL",
+    "UNSUPPORTED"
+  ]
+}

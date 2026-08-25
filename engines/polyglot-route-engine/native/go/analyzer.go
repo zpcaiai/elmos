@@ -134,6 +134,38 @@ func expression(expr ast.Expr, emittedTarget bool) map[string]any {
 	return nil
 }
 
+// ifStatement lifts one `if`, including an `else if` chain.
+//
+// The Go spec defines `else if` as an else branch whose statement is itself an
+// if statement -- it is spelling, not a new construct -- so it lifts into the
+// nested `else: [if]` shape the IR already carries. Every other frontend in
+// this engine (CPython's ast, SwiftSyntax, the TS compiler, JDT, Roslyn, clang,
+// ext/tokenizer) already produces exactly that shape; Go and Rust were the two
+// that rejected it instead, which cost twelve directed routes each for no
+// semantic reason.
+//
+// A nested `if` keeps its own Init check because the recursion re-enters here.
+func ifStatement(statement *ast.IfStmt, emittedTarget bool) map[string]any {
+	if statement.Init != nil {
+		fail("GO_IF_INIT_OUTSIDE_CERTIFIED_SUBSET")
+	}
+	elseBody := []map[string]any{}
+	if statement.Else != nil {
+		switch alternative := statement.Else.(type) {
+		case *ast.BlockStmt:
+			elseBody = statements(alternative, emittedTarget)
+		case *ast.IfStmt:
+			elseBody = []map[string]any{ifStatement(alternative, emittedTarget)}
+		default:
+			fail(fmt.Sprintf("GO_UNSUPPORTED_STATEMENT:%T", statement.Else))
+		}
+	}
+	return map[string]any{
+		"kind": "if", "condition": expression(statement.Cond, emittedTarget),
+		"then": statements(statement.Body, emittedTarget), "else": elseBody,
+	}
+}
+
 func statements(block *ast.BlockStmt, emittedTarget bool) []map[string]any {
 	result := make([]map[string]any, 0, len(block.List))
 	for _, raw := range block.List {
@@ -144,21 +176,7 @@ func statements(block *ast.BlockStmt, emittedTarget bool) []map[string]any {
 			}
 			result = append(result, map[string]any{"kind": "return", "expression": expression(statement.Results[0], emittedTarget)})
 		case *ast.IfStmt:
-			if statement.Init != nil {
-				fail("GO_IF_INIT_OUTSIDE_CERTIFIED_SUBSET")
-			}
-			elseBody := []map[string]any{}
-			if statement.Else != nil {
-				elseBlock, ok := statement.Else.(*ast.BlockStmt)
-				if !ok {
-					fail("GO_ELSE_IF_OUTSIDE_CERTIFIED_SUBSET")
-				}
-				elseBody = statements(elseBlock, emittedTarget)
-			}
-			result = append(result, map[string]any{
-				"kind": "if", "condition": expression(statement.Cond, emittedTarget),
-				"then": statements(statement.Body, emittedTarget), "else": elseBody,
-			})
+			result = append(result, ifStatement(statement, emittedTarget))
 		default:
 			fail(fmt.Sprintf("GO_UNSUPPORTED_STATEMENT:%T", raw))
 		}

@@ -1,0 +1,22 @@
+{
+  "repair_id": "repair-demo-001",
+  "finding_id": "visual-spacing-001",
+  "iteration": 1,
+  "strategy": "mapping-rule",
+  "patch_scope": [
+    "registry/components/button.yaml"
+  ],
+  "patch_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "rollback_ref": "git:before-repair-demo-001",
+  "validation": {
+    "reproduction": "passed",
+    "targeted_tests": [
+      "visual-button-spacing"
+    ],
+    "affected_gates": [
+      "G5",
+      "G6"
+    ]
+  },
+  "status": "passed"
+}

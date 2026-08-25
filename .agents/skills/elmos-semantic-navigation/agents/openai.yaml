@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 语义导航与跨层追踪"
+  short_description: "Guide 语义导航与跨层追踪 with evidence controls"
+  default_prompt: "Use $elmos-semantic-navigation as guidance for 语义导航与跨层追踪 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

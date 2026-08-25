@@ -19,6 +19,7 @@
         <module>modules/object-storage</module>
         <module>modules/scm</module>
         <module>modules/snapshot</module>
+        <module>modules/cas</module>
         <module>modules/secret</module>
         <module>modules/network-policy</module>
         <module>modules/workspace</module>

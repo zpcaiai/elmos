@@ -24,6 +24,8 @@ final class GithubRepositoryController {
     Map<String, Object> list(
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId
     ) {
+        ControlPlanePrincipal.requireDatabaseBound(
+                organizationId, "repository:read");
         List<JdbcGitHubRepositoryCatalog.AuthorizedRepository> values =
                 repositories.listAuthorized(organizationId);
         return Map.of(

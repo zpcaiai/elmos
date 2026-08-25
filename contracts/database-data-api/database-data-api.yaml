@@ -107,8 +107,97 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/JobResponse"
+  /engine/v1/sql-preflight/capabilities:
+    get:
+      operationId: getChinaDbSqlPreflightCapabilities
+      summary: Read the immutable ChinaDB commercial planning snapshot.
+      description: Returns SPEC_ONLY planning metadata. It does not contact a database or prove a target renderer.
+      responses:
+        "200":
+          description: Exact 13-target and 78-route planning snapshot.
+          headers:
+            Cache-Control: { schema: { type: string, const: "private, no-store" } }
+          content:
+            application/json:
+              schema:
+                $ref: "../../schemas/batch31/chinadb-commercial-capabilities.schema.json"
+        "502": { $ref: "#/components/responses/ChinaDbSqlFailure" }
+        "503": { $ref: "#/components/responses/ChinaDbSqlFailure" }
+  /engine/v1/sql-preflight/assess:
+    post:
+      operationId: assessChinaDbSourceSql
+      summary: Parse source SQL into typed AST and unresolved migration obligations.
+      description: Always fails closed with state BLOCKED and targetSql null; target execution and certification remain NOT_RUN and NOT_CERTIFIED.
+      parameters:
+        - $ref: "#/components/parameters/OrganizationId"
+        - $ref: "#/components/parameters/ActorId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../../schemas/batch31/chinadb-sql-preflight-request.schema.json"
+      responses:
+        "200":
+          description: Typed source assessment with explicit blockers and no target SQL.
+          headers:
+            Cache-Control: { schema: { type: string, const: "private, no-store" } }
+          content:
+            application/json:
+              schema:
+                $ref: "../../schemas/batch31/chinadb-sql-preflight-result.schema.json"
+        "400": { $ref: "#/components/responses/ChinaDbSqlFailure" }
+        "409": { $ref: "#/components/responses/ChinaDbSqlFailure" }
+        "413": { $ref: "#/components/responses/ChinaDbSqlFailure" }
+        "502": { $ref: "#/components/responses/ChinaDbSqlFailure" }
+        "503": { $ref: "#/components/responses/ChinaDbSqlFailure" }
 components:
+  parameters:
+    OrganizationId:
+      name: X-ELMOS-Organization-ID
+      in: header
+      required: true
+      schema: { type: string, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+    ActorId:
+      name: X-ELMOS-Actor-ID
+      in: header
+      required: true
+      schema: { type: string, pattern: "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}$" }
+  responses:
+    ChinaDbSqlFailure:
+      description: Sanitized fail-closed error; no SQL, upstream URL, or target output is returned.
+      headers:
+        Cache-Control: { schema: { type: string, const: "private, no-store" } }
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ChinaDbSqlFailure"
   schemas:
+    ChinaDbSqlFailure:
+      type: object
+      additionalProperties: false
+      required: [schemaVersion, status, errorCode, message, retryable, targetSql, verification, certification]
+      properties:
+        schemaVersion: { const: "1.0" }
+        status: { const: BLOCKED }
+        errorCode: { type: string, pattern: "^[A-Z][A-Z0-9_]{0,127}$" }
+        message: { type: string, minLength: 1, maxLength: 512 }
+        retryable: { type: boolean }
+        targetSql: { type: "null" }
+        verification:
+          type: object
+          additionalProperties: false
+          required: [sourceParse, targetAdapter, targetEmit, targetReparse, sourceExecution, targetExecution, resultEquivalence, externalExecution]
+          properties:
+            sourceParse: { const: NOT_RUN }
+            targetAdapter: { const: NOT_RUN }
+            targetEmit: { const: NOT_RUN }
+            targetReparse: { const: NOT_RUN }
+            sourceExecution: { const: NOT_RUN }
+            targetExecution: { const: NOT_RUN }
+            resultEquivalence: { const: NOT_RUN }
+            externalExecution: { const: NOT_RUN }
+        certification: { const: NOT_CERTIFIED }
     JobRequest:
       type: object
       additionalProperties: false

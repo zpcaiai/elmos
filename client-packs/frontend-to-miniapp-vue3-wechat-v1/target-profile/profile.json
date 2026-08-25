@@ -1,0 +1,53 @@
+{
+  "profile_key": "frontend-to-miniapp-vue3-wechat-v1-target",
+  "version": "2026-08-20.1",
+  "owner": "elmos-client-modernization-maintainers",
+  "framework": "wechat-native-miniapp-candidate",
+  "versions": ["wechat-base-library-3.9.1-requested-NOT_RUN"],
+  "generator_profile_version": "2026-08-20.1",
+  "official_toolchain_version": "wechat-devtools-1.06.2504010-NOT_RUN",
+  "language": "javascript",
+  "language_versions": ["ecmascript-2022-output-contract"],
+  "runtime": "wechat-miniapp-runtime-candidate",
+  "runtime_versions": ["wechat-base-library-3.9.1-requested-NOT_RUN"],
+  "build_tool": "local-semantic-ir-candidate-generator-1.0.0",
+  "package_manager": "none-generated-native-project",
+  "router": ["app-json-native-pages-contract-1"],
+  "rendering_strategy": {"mode": "native-wxml-candidate", "official_runtime_state": "NOT_RUN"},
+  "state_strategy": {"provider": "page-data-setdata-candidate", "pinia_runtime_bridge": "not-used"},
+  "form_strategy": {"provider": "native-input-value-bindinput-candidate", "trim_validation": "preserve"},
+  "styling_strategy": {"mode": "wxss-native-style-candidate", "unit_review": "required-NOT_RUN"},
+  "design_system_strategy": {"mode": "fixture-local-token-lowering-candidate"},
+  "api_client_strategy": {"provider": "none-in-scoped-fixture"},
+  "auth_strategy": {"mode": "deny-undeclared-platform-identity"},
+  "i18n_strategy": {"provider": "literal-en-fixture-copy-candidate"},
+  "accessibility_profile": {"standard": "source-contract-preservation-candidate-v1", "manual_review": "NOT_RUN"},
+  "browser_matrix": ["wechat-devtools-emulator-NOT_RUN"],
+  "device_profiles": ["wechat-physical-device-NOT_RUN"],
+  "test_profiles": ["batch32-static-contract-validation-v1", "official-wechat-build-NOT_RUN", "physical-device-p0-NOT_RUN"],
+  "provision": {"commands": ["NOT_RUN: install a pinned official WeChat toolchain only in an authorized environment"]},
+  "health_check": {"commands": ["NOT_RUN: launch candidate in exact declared WeChat emulator and physical device"]},
+  "security": {
+    "content_security_policy": "not-applicable-native-candidate",
+    "credential_policy": "no AppSecret private key upload credential or token in candidate pack",
+    "network": "deny undeclared network and platform APIs"
+  },
+  "lifecycle": {
+    "support_until": "not-established-experimental-pack",
+    "upgrade_policy": "any platform profile or official toolchain change requires a new exact tuple and recertification"
+  },
+  "file_model": {
+    "application_config": "app.json",
+    "page_config": "<page>.json",
+    "template_extension": ".wxml",
+    "style_extension": ".wxss",
+    "script_extension": ".js"
+  },
+  "authorization": {
+    "official_build": false,
+    "preview": false,
+    "upload": false,
+    "review": false,
+    "release": false
+  }
+}

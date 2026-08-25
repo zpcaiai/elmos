@@ -38,7 +38,11 @@ _IDENTIFIER_PATTERN = r"[A-Za-z_][A-Za-z0-9_]*"
 _IDENTIFIER_RE = re.compile(rf"^{_IDENTIFIER_PATTERN}$")
 _DIGEST_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 
-BindingRole = Literal["function", "parameter"]
+#: Locals are looked up in the rename map under a prefixed key so a binder and
+#: a reference to it never collide.
+_LOCAL_BINDER_PREFIX = "\x00local:"
+
+BindingRole = Literal["function", "parameter", "local"]
 CandidateStatus = Literal["REJECTED", "SELECTED"]
 BindingDecision = Literal["PRESERVED", "ALPHA_RENAMED"]
 UnitNamespaceScope = Literal[
@@ -196,6 +200,24 @@ _PHP_RESERVED = _words(
 #: dialects share one recorded policy digest.
 _PHP_DIALECT = "php-8.5.9-strict-types"
 
+#: Kotlin's hard keywords, plus the modifier and soft keywords that cannot
+#: appear as a bare declaration name in the positions this engine emits.
+#: Kotlin allows almost any of these when backtick-quoted; the engine never
+#: emits backticks, so the plain-identifier set is the one that matters.
+_KOTLIN_RESERVED = _words(
+    """
+    as break class continue do else false for fun if in interface is null object
+    package return super this throw true try typealias typeof val var when while
+    by catch constructor delegate dynamic field file finally get import init
+    param property receiver set setparam value where
+    abstract actual annotation companion const crossinline data enum expect
+    external final infix inline inner internal lateinit noinline open operator
+    out override private protected public reified sealed suspend tailrec vararg
+    """
+)
+
+_KOTLIN_DIALECT = "kotlin-2.4.10-jvm"
+
 _FORBIDDEN: dict[Language, frozenset[str]] = {
     "java": _words(
         """
@@ -279,6 +301,36 @@ _FORBIDDEN: dict[Language, frozenset[str]] = {
         elmos_harness_fp64 elmos_harness_hex_utf8 elmos_harness_subject actual_0
         """
     ),
+    # `Math` and `elmosNonZero` were missing.  Kotlin's emitted file calls
+    # `Math.addExact` and declares `private fun elmosNonZero`, both unqualified
+    # and both in the same top-level namespace as the migrated functions -- a
+    # source function named `elmosNonZero` would be a redeclaration error, and
+    # `elmosNonZeroDouble` (which was listed) is a name the emitter never
+    # writes.  Java's list, which does cover exactly what Java emits, is the
+    # shape to match.  `elmosCheckedAdd`/`Sub`/`Mul` are likewise not emitted
+    # today -- kotlin uses `Math.*Exact` for those three -- and are kept only
+    # because reserving an unused elmos-prefixed name costs nothing.
+    #
+    # `maxOf`/`minOf` are the only `kotlin.*` top-level functions whose signature
+    # a migrated function can match *exactly* over the canonical types --
+    # `maxOf(Long, Long): Long`, `maxOf(Double, Double): Double`. Verified with
+    # kotlinc 2.1.21: a file declaring `fun maxOf(a: Long, b: Long): Long`
+    # compiles, and an unqualified `maxOf(7L, 2L)` elsewhere in the module then
+    # resolves to the migrated function -- 3, not 7 -- with no diagnostic.
+    # The rest of the default-imported surface (`run`, `let`, `repeat`,
+    # `apply`, ...) takes a lambda, so overload resolution separates it from
+    # anything this profile emits and renaming it would only cost readability.
+    "kotlin": _words(
+        """
+        main Math Long Double Boolean String Int Float Short Byte Char Unit Nothing Any
+        ArithmeticException Exception RuntimeException Throwable error require check
+        elmosCheckedAdd elmosCheckedSub elmosCheckedMul elmosCheckedDiv elmosCheckedMod
+        elmosNonZero elmosNonZeroDouble
+        elmosHarnessSameFP64 elmosHarnessFP64 elmosHarnessHexUTF8
+        actual0
+        maxOf minOf
+        """
+    ),
 }
 
 _RESERVED: dict[Language, frozenset[str]] = {
@@ -293,6 +345,7 @@ _RESERVED: dict[Language, frozenset[str]] = {
     "objc": _OBJC_RESERVED,
     "swift": _SWIFT_RESERVED,
     "php": _PHP_RESERVED,
+    "kotlin": _KOTLIN_RESERVED,
 }
 
 _DIALECT: dict[Language, str] = {
@@ -307,6 +360,7 @@ _DIALECT: dict[Language, str] = {
     "objc": "objective-c-c17-apple-clang-21.0.0",
     "swift": "swift-6.3.3",
     "php": _PHP_DIALECT,
+    "kotlin": _KOTLIN_DIALECT,
 }
 
 _RESERVED_PATTERNS: dict[Language, tuple[str, ...]] = {
@@ -622,7 +676,7 @@ class IdentifierBinding:
         _require_digest(binding_id, "binding_id")
         _require_digest(scope_id, "scope_id")
         if (
-            role not in {"function", "parameter"}
+            role not in {"function", "parameter", "local"}
             or type(ordinal) is not int
             or ordinal < 0
             or not isinstance(source_name, str)
@@ -835,7 +889,12 @@ def _generated_candidate_name(
             }
         )
     ).hexdigest()[:16]
-    return f"elmos_fn_{digest}" if role == "function" else f"elmos_p{ordinal:03d}_{digest}"
+    if role == "function":
+        return f"elmos_fn_{digest}"
+    # `p` and `l` are kept apart so a generated name says which binder it came
+    # from; a local and a parameter share one target scope and would otherwise
+    # be indistinguishable in the emitted file.
+    return f"elmos_{'p' if role == 'parameter' else 'l'}{ordinal:03d}_{digest}"
 
 
 def _candidate_reasons(
@@ -995,6 +1054,11 @@ def plan_identifiers(
         bindings.append(binding)
 
     for function, function_binding in zip(ir.functions, function_bindings, strict=True):
+        # Parameters and locals share one `occupied` map because they share one
+        # scope in the target: a local that took a parameter's target name
+        # would shadow it in every brace language and be a redeclaration error
+        # in several. Allocating them against the same map is what makes the
+        # collision impossible rather than merely unlikely.
         parameter_occupied: dict[str, str] = {}
         for ordinal, parameter in enumerate(function.parameters):
             bindings.append(
@@ -1007,6 +1071,23 @@ def plan_identifiers(
                     ordinal=ordinal,
                     source_name=parameter.name,
                     canonical_type=parameter.type,
+                    signature_sha256=None,
+                    occupied=parameter_occupied,
+                )
+            )
+        for ordinal, local in enumerate(_local_bindings_in_order(function.body)):
+            if local.name is None or local.declared_type is None:
+                raise RouteError("IDENTIFIER_SOURCE_LOCAL_INVALID")
+            bindings.append(
+                _allocate_binding(
+                    policy=policy,
+                    source_semantic_sha256=source_semantic_sha256,
+                    unit_namespace_sha256=selected_namespace.digest,
+                    scope_id=function_binding.binding_id,
+                    role="local",
+                    ordinal=ordinal,
+                    source_name=local.name,
+                    canonical_type=local.declared_type,
                     signature_sha256=None,
                     occupied=parameter_occupied,
                 )
@@ -1086,6 +1167,23 @@ def _parameter_bindings(
     return tuple(matches)
 
 
+def _local_bindings_in_order(statements: tuple[Statement, ...]) -> list[Statement]:
+    """Every `let` in one function, in the order a reader meets them.
+
+    Depth-first in statement order -- an `if`'s condition cannot bind, so a
+    branch's bindings follow the branch. The order is what gives each local a
+    stable ordinal, and therefore a stable generated name across runs.
+    """
+    found: list[Statement] = []
+    for statement in statements:
+        if statement.kind == "let":
+            found.append(statement)
+        elif statement.kind == "if":
+            found.extend(_local_bindings_in_order(statement.then_body))
+            found.extend(_local_bindings_in_order(statement.else_body))
+    return found
+
+
 def _rename_expression(expression: Expression, names: dict[str, str], role: str) -> Expression:
     if expression.kind == "name":
         source_name = str(expression.value)
@@ -1111,6 +1209,16 @@ def _rename_statements(
 ) -> tuple[Statement, ...]:
     result: list[Statement] = []
     for statement in statements:
+        if statement.kind == "let" and statement.expression is not None and statement.name is not None:
+            # The initializer is renamed under the names visible *before* this
+            # binding; the binding becomes visible only afterwards.
+            renamed = _rename_expression(statement.expression, names, role)
+            target_name = names.get(_LOCAL_BINDER_PREFIX + statement.name)
+            if target_name is None:
+                raise RouteError(f"IDENTIFIER_{role}_LOCAL_UNMAPPED:{statement.name}")
+            names[statement.name] = target_name
+            result.append(replace(statement, name=target_name, expression=renamed))
+            continue
         if statement.kind == "return" and statement.expression is not None:
             result.append(
                 replace(
@@ -1123,13 +1231,40 @@ def _rename_statements(
                 replace(
                     statement,
                     condition=_rename_expression(statement.condition, names, role),
-                    then_body=_rename_statements(statement.then_body, names, role),
-                    else_body=_rename_statements(statement.else_body, names, role),
+                    then_body=_rename_statements(statement.then_body, dict(names), role),
+                    else_body=_rename_statements(statement.else_body, dict(names), role),
                 )
             )
         else:
             raise RouteError(f"IDENTIFIER_{role}_STATEMENT_UNSUPPORTED:{statement.kind}")
     return tuple(result)
+
+
+def _local_bindings(
+    plan: IdentifierPlan,
+    function_binding: IdentifierBinding,
+    function: Function,
+) -> tuple[IdentifierBinding, ...]:
+    matches = sorted(
+        (
+            binding
+            for binding in plan.bindings
+            if binding.role == "local" and binding.scope_id == function_binding.binding_id
+        ),
+        key=lambda binding: binding.ordinal,
+    )
+    locals_in_order = _local_bindings_in_order(function.body)
+    if len(matches) != len(locals_in_order):
+        raise RouteError("IDENTIFIER_LOCAL_BINDING_INCOMPLETE")
+    for ordinal, (binding, local) in enumerate(zip(matches, locals_in_order, strict=True)):
+        if (
+            binding.ordinal != ordinal
+            or binding.source_name != local.name
+            or binding.canonical_type != local.declared_type
+            or binding.signature_sha256 is not None
+        ):
+            raise RouteError("IDENTIFIER_LOCAL_BINDING_MISMATCH")
+    return tuple(matches)
 
 
 def _target_function_view_validated(
@@ -1139,10 +1274,17 @@ def _target_function_view_validated(
 ) -> Function:
     function_binding = _function_binding(plan, function_ordinal, function)
     parameter_bindings = _parameter_bindings(plan, function_binding, function)
+    local_bindings = _local_bindings(plan, function_binding, function)
     name_map = {
         parameter.name: binding.target_name
         for parameter, binding in zip(function.parameters, parameter_bindings, strict=True)
     }
+    name_map.update(
+        {
+            _LOCAL_BINDER_PREFIX + str(local.name): binding.target_name
+            for local, binding in zip(_local_bindings_in_order(function.body), local_bindings, strict=True)
+        }
+    )
     target = replace(
         function,
         name=function_binding.target_name,

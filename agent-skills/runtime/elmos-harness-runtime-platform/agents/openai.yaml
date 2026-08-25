@@ -1,0 +1,4 @@
+interface:
+  display_name: "elmos-harness-runtime-platform"
+  short_description: "Use this imported Elmos commercial blueprint"
+  default_prompt: "Use $elmos-harness-runtime-platform within its imported blueprint boundary; require real runtime and external evidence before completion claims."

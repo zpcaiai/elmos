@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-to-miniapp-vue3-wechat-v1",
+  "source_tuple": {
+    "stack": "vue3-sfc-fixture",
+    "versions": ["source-package-1.0.0-parser-3.5.39"],
+    "language": "typescript",
+    "language_versions": ["5.9.2"],
+    "runtime": "static-analysis-worker-nodejs",
+    "runtime_versions": ["26.0.0"],
+    "build_tool": "typescript-5.9.2-static-analysis",
+    "package_manager": "pnpm-10.12.4",
+    "router": ["vue-router-declared-minimum-4.0.0"],
+    "renderer": ["vue-sfc-compiler-3.5.39-static-only"],
+    "state": ["pinia-declared-minimum-2.0.0"],
+    "forms": ["vue-v-model-static-contract"],
+    "styling": ["vue-scoped-css-static-contract"],
+    "design_system": ["fixture-local-css"],
+    "api_client": [],
+    "identity": ["none-in-fixture"],
+    "i18n": ["literal-en-fixture-copy"],
+    "test_tools": ["batch32-ui-ir-validator-v1"],
+    "browsers": [],
+    "devices": []
+  },
+  "snapshot_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
+  "coverage": 1.0,
+  "routes": [{"path": "/", "source_ref": "src/router.ts", "discovery": "static"}],
+  "components": [
+    {"name": "App", "source_ref": "src/App.vue", "discovery": "vue-sfc-static"},
+    {"name": "HomeView", "source_ref": "src/views/HomeView.vue", "discovery": "vue-sfc-static"}
+  ],
+  "templates": ["src/App.vue#template", "src/views/HomeView.vue#template"],
+  "state_stores": [{"name": "todos", "source_ref": "src/stores/todo.ts", "provider": "pinia-declared"}],
+  "forms": [{"name": "todo-entry", "source_ref": "src/views/HomeView.vue", "binding": "v-model"}],
+  "api_clients": [],
+  "auth": [],
+  "i18n": [{"locale": "und-en", "mode": "literal-copy"}],
+  "design_assets": [{"name": "app-shell", "source_ref": "src/App.vue", "mode": "scoped-css"}],
+  "accessibility": [{"name": "todo-input-label", "source_ref": "src/views/HomeView.vue", "mode": "aria-label-static"}],
+  "runtime_evidence": [],
+  "evidence_refs": ["source-snapshots/manifest.json", "source-fingerprint/evidence.json", "certification/local-runtime-candidate-evidence.json"],
+  "critical_unknowns": [
+    "The fixture has no lockfile, so the resolved Vue, Vue Router and Pinia runtime versions are unknown.",
+    "The source application was not installed, built or launched."
+  ]
+}

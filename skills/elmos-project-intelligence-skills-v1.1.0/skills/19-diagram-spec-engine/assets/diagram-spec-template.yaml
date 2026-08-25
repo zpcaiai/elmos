@@ -1,0 +1,31 @@
+schema_version: 1
+diagram_id: diagram-example
+type: c4-container
+project_id: project-example
+revision_id: revision-example
+title: Example
+view:
+  filters: []
+  grouping: []
+nodes:
+  - id: node-web
+    kind: container
+    label: Web
+    semantic:
+      technology: Vue 3
+    evidence_refs: []
+    confidence: 1.0
+    lock:
+      semantic: false
+      layout: false
+edges:
+  - id: edge-web-api
+    source: node-web
+    target: node-api
+    kind: calls
+    label: HTTPS
+    evidence_refs: []
+    confidence: 0.9
+layout:
+  engine: elk
+  positions: {}

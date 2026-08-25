@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/cache/v1.2/provider-cache-profile.schema.json",
+  "title": "Provider Cache Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_id",
+    "provider",
+    "capabilities"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.2.0"
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider": {
+      "enum": [
+        "openai",
+        "anthropic",
+        "self_hosted",
+        "compatible_gateway"
+      ]
+    },
+    "api_or_sdk_version": {
+      "type": "string"
+    },
+    "model_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_prefix",
+        "usage_counters",
+        "routing_key"
+      ],
+      "properties": {
+        "exact_prefix": {
+          "type": "boolean"
+        },
+        "automatic_caching": {
+          "type": "boolean"
+        },
+        "explicit_breakpoints": {
+          "type": "boolean"
+        },
+        "routing_key": {
+          "type": "boolean"
+        },
+        "usage_counters": {
+          "type": "boolean"
+        },
+        "ttl_classes_seconds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "max_breakpoints": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "replica_affinity": {
+          "type": "boolean"
+        }
+      }
+    },
+    "compatibility_dimensions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "provider_account",
+          "region",
+          "model",
+          "model_snapshot",
+          "effort",
+          "tool_schema",
+          "stable_prefix",
+          "tokenizer",
+          "runtime_build"
+        ]
+      }
+    },
+    "status": {
+      "enum": [
+        "SUPPORTED",
+        "DEGRADED",
+        "DISABLED"
+      ]
+    },
+    "last_verified_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

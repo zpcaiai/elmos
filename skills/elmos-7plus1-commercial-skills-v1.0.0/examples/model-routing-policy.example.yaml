@@ -1,0 +1,32 @@
+policy_version: "1.0"
+defaults:
+  quality_floor: 0.85
+  allow_fallbacks: true
+  data_collection: deny
+  zdr: true
+  require_parameters: true
+hard_constraints:
+  confidential:
+    allowed_deployments: [private, byok-zdr]
+    preview_models: deny
+  restricted:
+    allowed_deployments: [private]
+roles:
+  discovery:
+    optimize: [context, quality, cost]
+  generator:
+    optimize: [coding_quality, test_pass, cost]
+  verifier:
+    optimize: [independence, reasoning_quality]
+  completeness_auditor:
+    optimize: [context, recall]
+  repair:
+    optimize: [historical_repair_success, cost]
+budgets:
+  max_project_usd: 500
+  warn_at_fraction: 0.75
+  safety_margin_fraction: 0.10
+fallback:
+  max_attempts: 3
+  circuit_breaker_error_rate: 0.30
+  hedging_allowed_for: [read_only_analysis]

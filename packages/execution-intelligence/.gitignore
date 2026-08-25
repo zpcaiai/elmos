@@ -1,0 +1,13 @@
+# Generated forecasts and local/real telemetry can contain session paths,
+# repository inventory and author aggregates. Keep them local by default;
+# promote only a separately reviewed, redacted evidence bundle.
+estimation/
+*.pyc
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.log

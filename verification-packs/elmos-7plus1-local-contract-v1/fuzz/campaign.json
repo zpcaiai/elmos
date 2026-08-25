@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "campaign_key": "fuzz.elmos-7plus1-archive-and-request-boundaries-v1",
+  "owner": "elmos-verification-engineering",
+  "targets": [
+    "zip-member-canonicalization",
+    "archive-budget-validation",
+    "strict-runtime-request-envelope",
+    "dependency-receipt-and-external-observation-validation"
+  ],
+  "seed_corpus": [
+    "corpus/development/manifest.json",
+    "corpus/negative/manifest.json"
+  ],
+  "coverage_signal": "NOT_CONFIGURED",
+  "budgets": {
+    "max_seconds": 0,
+    "max_cases": 0,
+    "max_memory_mb": 0,
+    "execution_status": "NOT_RUN"
+  },
+  "sanitizers": [],
+  "dictionary_refs": [],
+  "limitations": [
+    "No isolated fuzz runner, coverage trace, crash corpus, hang triage, or minimization evidence exists."
+  ]
+}

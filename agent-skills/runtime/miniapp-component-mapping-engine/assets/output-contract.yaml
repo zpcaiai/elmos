@@ -1,0 +1,28 @@
+skill: miniapp-component-mapping-engine
+version: 1.0.0
+task_ids:
+- MAPP-015
+- MAPP-016
+required_outputs:
+- path: component-mapping-plan.json
+  required: true
+- path: generated-component-specs.json
+  required: true
+- path: mapping-decisions.json
+  required: true
+gates:
+- name: 可见组件 100% 有映射结论
+  required: true
+- name: 关键交互组件有行为测试
+  required: true
+- name: 无空实现
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

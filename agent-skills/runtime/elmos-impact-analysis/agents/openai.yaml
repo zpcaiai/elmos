@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 变更影响与回归范围分析"
+  short_description: "Guide 变更影响与回归范围分析 with evidence controls"
+  default_prompt: "Use $elmos-impact-analysis as guidance for 变更影响与回归范围分析 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

@@ -147,10 +147,32 @@ def _toolchain_executable_dirs(toolchain: ExactToolchain) -> tuple[Path, ...]:
     Some pinned compiler launchers (notably pnpm's ``tsc`` wrapper) dispatch
     to another pinned executable.  Validation still uses a minimal subprocess
     environment, but both exact launchers must be reachable there.
+
+    Kotlin needs a third entry.  ``kotlinc`` and ``kotlin`` are shell scripts
+    that exec a JVM: with only their own ``bin`` on PATH they would resolve a
+    bare ``java`` from ``/usr/bin``, i.e. an *unpinned* interpreter running
+    inside a run this module reports as exactly-toolchained.  ``_kotlin``
+    records the JVM it verified as ``kotlin-jvm-home=`` precisely so it can be
+    put in front here; ``sanitized_subprocess_env`` places these directories
+    ahead of the system ones, so the pinned ``java`` wins.
     """
 
     paths = (toolchain.executable, toolchain.auxiliary)
-    return tuple(Path(path).resolve().parent for path in paths if path is not None)
+    directories = [Path(path).resolve().parent for path in paths if path is not None]
+    if toolchain.language == "kotlin":
+        directories.insert(0, _kotlin_jvm_bin(toolchain.profile))
+    return tuple(directories)
+
+
+def _kotlin_jvm_bin(toolchain_profile: tuple[str, ...]) -> Path:
+    prefix = "kotlin-jvm-home="
+    matches = [item[len(prefix) :] for item in toolchain_profile if item.startswith(prefix)]
+    if len(matches) != 1:
+        raise RouteError("EXACT_TOOLCHAIN_PROFILE_VALUE_REQUIRED:kotlin-jvm-home")
+    java_bin = Path(matches[0]) / "bin"
+    if not java_bin.is_dir() or not (java_bin / "java").is_file():
+        raise RouteError(f"EXACT_TOOLCHAIN_KOTLIN_JVM_INVALID:{java_bin}")
+    return java_bin
 
 
 def _argument(value: object, language: Language) -> str:
@@ -926,6 +948,222 @@ def _php_harness(function: Function, cases: list[dict[str, Any]], subject_relati
     )
 
 
+#: The declared JVM class name of every generated Kotlin harness, source side
+#: and target side alike.  One name and one rule beats two file-derived names.
+_KOTLIN_HARNESS_JVM_NAME = "ElmosHarness"
+
+_KOTLIN_PACKAGE_RE = re.compile(
+    r"(?m)^package\s+([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\s*;?\s*$"
+)
+
+
+#: Bit-exact float64 helpers, emitted only for a `number` return.  `toRawBits`
+#: and not `toBits`: the latter collapses every NaN payload onto the canonical
+#: quiet NaN, which is exactly the difference the evidence has to preserve.
+#: The hex digits are assembled by hand because `Long.toHexString` drops
+#: leading zeros -- `_native_typed_observation` requires `[0-9a-f]{16}` -- and
+#: `String.format("%016x", ...)` would make the observation depend on a locale.
+_KOTLIN_HARNESS_FP64 = (
+    "private fun elmosHarnessSameFP64(left: Double, right: Double): Boolean {\n"
+    "    return (left.isNaN() && right.isNaN()) || left.toRawBits() == right.toRawBits()\n"
+    "}\n"
+    "\n"
+    "private fun elmosHarnessFP64(value: Double): String {\n"
+    "    val bits = value.toRawBits()\n"
+    '    val digits = "0123456789abcdef"\n'
+    "    val encoded = StringBuilder(16)\n"
+    "    for (shift in 60 downTo 0 step 4) {\n"
+    "        encoded.append(digits[((bits ushr shift) and 0xfL).toInt()])\n"
+    "    }\n"
+    "    return encoded.toString()\n"
+    "}"
+)
+
+
+#: Emitted only for a `string` return.  `Byte` is signed in Kotlin, so the
+#: value has to be widened through `and 0xff` before it can index the table.
+_KOTLIN_HARNESS_HEX_UTF8 = (
+    "private fun elmosHarnessHexUTF8(value: String): String {\n"
+    '    val digits = "0123456789abcdef"\n'
+    "    val encoded = StringBuilder(value.length * 2)\n"
+    "    for (byte in value.toByteArray(Charsets.UTF_8)) {\n"
+    "        val unsigned = byte.toInt() and 0xff\n"
+    "        encoded.append(digits[unsigned ushr 4])\n"
+    "        encoded.append(digits[unsigned and 0x0f])\n"
+    "    }\n"
+    "    return encoded.toString()\n"
+    "}"
+)
+
+
+def _kotlin_literal(value: object, value_type: str) -> str:
+    """Render one behaviour-case value as a Kotlin literal of the canonical type.
+
+    Driven by the canonical type and never by the Python value's own type,
+    because Kotlin has no implicit `Long` -> `Double` widening: passing `1L`
+    where the subject declares `Double` is a compile error, not the silent
+    coercion Java and C# apply.  A `number` case whose JSON carried the integer
+    `1` therefore has to come out as `1.0`, exactly as `_python_literal` and
+    `_java_literal` already do for their own reasons.
+
+    Strings are built from their UTF-8 bytes rather than quoted, for one reason
+    beyond the transport-encoding argument `_php_literal` makes: a Kotlin
+    double-quoted string interpolates `$name` and `${expr}` (see
+    `emitter._string_literal`), so a quoted case value containing `$` would
+    compile into a different string or into a reference to a name that does not
+    exist.
+    """
+    if value_type == "integer":
+        if not isinstance(value, int) or isinstance(value, bool) or not -(2**63) <= value <= 2**63 - 1:
+            raise RouteError("KOTLIN_CASE_INTEGER_OUTSIDE_INT64")
+        # Unsuffixed literals are `Int`, and Kotlin has no negative literal, so
+        # -2^63 has no spelling at all; see emitter._integer_literal.
+        if value == -(2**63):
+            return "Long.MIN_VALUE"
+        if value == 2**63 - 1:
+            return "Long.MAX_VALUE"
+        return f"{value}L"
+    if value_type == "number":
+        if not isinstance(value, int | float) or isinstance(value, bool):
+            raise RouteError("KOTLIN_CASE_NUMBER_REQUIRED")
+        number = float(value)
+        if math.isnan(number):
+            return "Double.NaN"
+        if math.isinf(number):
+            return "Double.NEGATIVE_INFINITY" if number < 0 else "Double.POSITIVE_INFINITY"
+        if number == 0.0 and math.copysign(1.0, number) < 0:
+            return "-0.0"
+        rendered = repr(number)
+        # A Kotlin floating literal is a `Double` only when it carries a point
+        # or an exponent; a bare `5` would be an `Int`.
+        return rendered if "." in rendered or "e" in rendered.lower() else rendered + ".0"
+    if value_type == "boolean":
+        if not isinstance(value, bool):
+            raise RouteError("KOTLIN_CASE_BOOLEAN_REQUIRED")
+        return "true" if value else "false"
+    if value_type == "string":
+        if not isinstance(value, str):
+            raise RouteError("KOTLIN_CASE_STRING_REQUIRED")
+        data = value.encode("utf-8")
+        if not data:
+            return '""'
+        # `.toByte()` on each element because `byteArrayOf` takes `Byte` and an
+        # integer literal above 0x7f does not fit one.
+        items = ", ".join(f"0x{byte:02x}.toByte()" for byte in data)
+        return f"String(byteArrayOf({items}), Charsets.UTF_8)"
+    raise RouteError(f"KOTLIN_CASE_TYPE_UNSUPPORTED:{value_type}")
+
+
+def _kotlin_arguments(function: Function, case: dict[str, Any]) -> str:
+    values = case.get("args")
+    if not isinstance(values, list) or len(values) != len(function.parameters):
+        raise RouteError("KOTLIN_CASE_ARGUMENT_COUNT_INVALID")
+    return ", ".join(
+        _kotlin_literal(value, parameter.type)
+        for value, parameter in zip(values, function.parameters, strict=True)
+    )
+
+
+def _kotlin_package(text: str) -> str:
+    """The subject file's package directive, or the empty default package.
+
+    A top-level Kotlin function is visible unqualified only from inside its own
+    package, so the source-side harness has to be declared in the subject's
+    package -- the same thing `_go_source_harness` does with the Go package it
+    reads out of the source.  A miss here cannot produce a wrong answer: the
+    harness lands in the default package, the call does not resolve, and
+    kotlinc rejects the compilation.
+    """
+    match = _KOTLIN_PACKAGE_RE.search(text)
+    return "" if match is None else match.group(1)
+
+
+def _kotlin_harness(
+    function: Function,
+    cases: list[dict[str, Any]],
+    source_relative_path: str,
+    *,
+    package_name: str = "",
+) -> str:
+    """A standalone `main()` that calls the subject once per behaviour case.
+
+    Kotlin binds the subject by *co-compilation*, not by an import the way
+    Python and the ECMAScript targets do, so `source_relative_path` is not a
+    `require`: it names the file the dispatch site hands to the same `kotlinc`
+    invocation, and is recorded in the header so the generated artifact states
+    which subject it was compiled against.  `package_name` must be that file's
+    package directive; the emitted `migrated.kt` declares none (see
+    `emitter._emit`), so the target side leaves it empty.
+
+    The `number` comparison is bit-exact: `Double.toRawBits` keeps the NaN
+    payload and separates -0.0 from 0.0, both of which `==` erases.  That is the
+    same rule `_swift_harness` applies through `bitPattern` and `_php_harness`
+    through `pack('E', ...)`.
+    """
+    if "\n" in source_relative_path or "\r" in source_relative_path:
+        # The path is interpolated into a `//` comment, where a newline would
+        # end the comment and turn the remainder into Kotlin source.
+        raise RouteError("KOTLIN_HARNESS_SUBJECT_PATH_INVALID")
+    checks: list[str] = []
+    for index, case in enumerate(cases):
+        args = _kotlin_arguments(function, case)
+        expected = _kotlin_literal(_returned_case_value(case), function.return_type)
+        actual = f"actual{index}"
+        expected_name = f"expected{index}"
+        # `!=` on String is the structural comparison in Kotlin -- it compiles
+        # to `!equals` -- so unlike `_java_harness` the string arm needs no
+        # Objects.equals; `number` is the only arm `!=` cannot serve.
+        condition = (
+            f"!elmosHarnessSameFP64({actual}, {expected_name})"
+            if function.return_type == "number"
+            else f"{actual} != {expected_name}"
+        )
+        encoding, rendered = {
+            "integer": ("i64-dec", f"{actual}.toString()"),
+            "number": ("fp64-hex", f"elmosHarnessFP64({actual})"),
+            "boolean": ("bool", f'(if ({actual}) "true" else "false")'),
+            "string": ("hex-utf8", f"elmosHarnessHexUTF8({actual})"),
+        }[function.return_type]
+        checks.extend(
+            [
+                f"    val {actual} = {function.name}({args})",
+                f"    val {expected_name} = {expected}",
+                f'    if ({condition}) throw AssertionError("case {index}")',
+                # Concatenated, never a string template: `$` opens an
+                # interpolation in Kotlin and the observation line is parsed
+                # byte for byte by `_observations`.
+                f'    println("ELMOS_OBSERVATION\\t{index}\\t{encoding}\\t" + {rendered})',
+            ]
+        )
+    # Only the helpers this return type reaches are emitted.  An unused private
+    # top-level function is a Kotlin warning, and the dispatch sites compile
+    # with `-Werror`, so emitting the whole set unconditionally -- the C++
+    # harness's `[[maybe_unused]]` approach -- would fail the build instead.
+    helpers: tuple[str, ...]
+    if function.return_type == "number":
+        helpers = (_KOTLIN_HARNESS_FP64,)
+    elif function.return_type == "string":
+        helpers = (_KOTLIN_HARNESS_HEX_UTF8,)
+    else:
+        helpers = ()
+    return (
+        f"// Behaviour harness for `{function.name}`, compiled together with {source_relative_path}.\n"
+        # The JVM class name is DECLARED, not derived.  Kotlin names a file
+        # class after the file with only the first letter capitalised, so
+        # `route_harness.kt` becomes `Route_harnessKt` -- not the
+        # `RouteHarnessKt` that reading the rule as snake-to-Pascal suggests,
+        # which fails at run time with "could not find or load main class".
+        # Pinning it here means neither dispatch site depends on that rule.
+        + f'@file:JvmName("{_KOTLIN_HARNESS_JVM_NAME}")\n'
+        + (f"\npackage {package_name}\n" if package_name else "")
+        + "\n"
+        + "".join(f"{helper}\n\n" for helper in helpers)
+        + "fun main() {\n"
+        + "\n".join(checks)
+        + "\n}\n"
+    )
+
+
 def _go_case_literal(value: object, value_type: str, *, math_alias: str = "math") -> str:
     if value_type == "number":
         if not isinstance(value, int | float) or isinstance(value, bool) or not math.isfinite(float(value)):
@@ -1575,6 +1813,27 @@ def validate_source(
             _php_command(toolchain, "-l", "source_harness.php"),
             _php_command(toolchain, "source_harness.php"),
         ]
+    elif language == "kotlin":
+        package_name = _kotlin_package(source.read_text(encoding="utf-8"))
+        (output / "source_harness.kt").write_text(
+            _kotlin_harness(function, cases, source.name, package_name=package_name),
+            encoding="utf-8",
+        )
+        assert toolchain.auxiliary is not None
+        # `kotlinc` is the compiler and `kotlin` the launcher -- the reverse of
+        # the java/javac pairing above, where `executable` is the runtime.
+        # Classes go to a directory, not a jar, so `-include-runtime` does not
+        # apply (it is only legal with `-d <jar>`): the pinned `kotlin`
+        # launcher puts kotlin-stdlib on the run classpath itself.  A top-level
+        # `main` in `source_harness.kt` compiles to the class `SourceHarnessKt`,
+        # qualified by whatever package the subject declares.
+        entry_point = (
+            f"{package_name}.{_KOTLIN_HARNESS_JVM_NAME}" if package_name else _KOTLIN_HARNESS_JVM_NAME
+        )
+        commands = [
+            [toolchain.executable, "-Werror", "-d", "classes", source.name, "source_harness.kt"],
+            [toolchain.auxiliary, "-classpath", "classes", entry_point],
+        ]
     else:
         raise RouteError(f"SOURCE_RUNTIME_UNSUPPORTED:{language}")
     logs: list[dict[str, Any]] = []
@@ -1757,6 +2016,19 @@ def validate(
             _php_command(toolchain, "-l", emitted.relative_path),
             _php_command(toolchain, "-l", "route_harness.php"),
             _php_command(toolchain, "route_harness.php"),
+        ]
+    elif language == "kotlin":
+        (output / "route_harness.kt").write_text(
+            _kotlin_harness(function, cases, emitted.relative_path),
+            encoding="utf-8",
+        )
+        assert toolchain.auxiliary is not None
+        # `migrated.kt` carries no package declaration -- the placer adds one
+        # only when the file lands in a repository tree -- so the harness stays
+        # in the default package and its entry class is the bare declared name.
+        commands = [
+            [toolchain.executable, "-Werror", "-d", "classes", emitted.relative_path, "route_harness.kt"],
+            [toolchain.auxiliary, "-classpath", "classes", _KOTLIN_HARNESS_JVM_NAME],
         ]
     else:
         (output / "route_harness.ts").write_text(_typescript_harness(function, cases), encoding="utf-8")

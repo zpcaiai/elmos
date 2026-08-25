@@ -1,0 +1,197 @@
+{
+  "schema_version": "1.0",
+  "root_skill": {
+    "name": "elmos-7plus1-commercial-software-factory",
+    "operation": "root-route"
+  },
+  "packages": [
+    {
+      "package_id": "P00",
+      "name": "elmos-software-factory-master",
+      "dependencies": [],
+      "operation": "workflow",
+      "adapter_actions": ["certify-release", "poll-upstream", "publish-config"],
+      "skills": [
+        "elmos-repository-system-of-record",
+        "elmos-workflow-contract-compiler",
+        "elmos-package-dependency-governor",
+        "elmos-architecture-invariant-linter",
+        "elmos-commercial-control-plane",
+        "elmos-release-certification",
+        "elmos-documentation-gardener",
+        "elmos-upstream-change-monitor"
+      ]
+    },
+    {
+      "package_id": "P01",
+      "name": "elmos-harness-runtime-platform",
+      "dependencies": ["P00"],
+      "operation": "runtime-plan",
+      "adapter_actions": [
+        "append-session",
+        "execute-tool",
+        "invoke-lsp",
+        "launch-sandbox",
+        "resolve-task",
+        "resume-session",
+        "serve-api",
+        "spawn-agent",
+        "start-session"
+      ],
+      "skills": [
+        "elmos-harness-adapter-sdk",
+        "elmos-event-sourced-session-runtime",
+        "elmos-context-epoch-manager",
+        "elmos-tool-runtime",
+        "elmos-async-task-runtime",
+        "elmos-continuable-subagent-manager",
+        "elmos-permission-policy-engine",
+        "elmos-approval-gate",
+        "elmos-sandbox-runtime",
+        "elmos-lsp-capability-seam",
+        "elmos-compaction-and-resume",
+        "elmos-headless-runtime-api",
+        "elmos-readiness-dry-run"
+      ]
+    },
+    {
+      "package_id": "P02",
+      "name": "elmos-repository-intelligence-semantic-ir",
+      "dependencies": ["P00", "P01"],
+      "operation": "repository-intelligence",
+      "adapter_actions": ["ingest-runtime-trace", "invoke-lsp", "parse-ast", "scan-repository"],
+      "skills": [
+        "elmos-repository-inventory-scanner",
+        "elmos-language-framework-detector",
+        "elmos-ast-symbol-indexer",
+        "elmos-lsp-semantic-navigator",
+        "elmos-program-graph-builder",
+        "elmos-platform-graph-builder",
+        "elmos-runtime-trace-ingestor",
+        "elmos-semantic-ir-builder",
+        "elmos-capability-discovery-ledger",
+        "elmos-incremental-analysis-cache",
+        "elmos-provenance-confidence-engine",
+        "elmos-repository-query-service"
+      ]
+    },
+    {
+      "package_id": "P03",
+      "name": "elmos-project-generation-transformation-engine",
+      "dependencies": ["P00", "P01", "P02", "P05"],
+      "operation": "transformation-plan",
+      "adapter_actions": ["emit-source"],
+      "skills": [
+        "elmos-requirement-expander",
+        "elmos-project-archetype-engine",
+        "elmos-architecture-synthesizer",
+        "elmos-implementation-dag-planner",
+        "elmos-transformation-rule-engine",
+        "elmos-mutation-exception-engine",
+        "elmos-multi-language-emitter",
+        "elmos-framework-platform-adapter",
+        "elmos-data-integration-transformer",
+        "elmos-frontend-miniapp-transformer",
+        "elmos-infrastructure-operations-generator",
+        "elmos-migration-controller"
+      ]
+    },
+    {
+      "package_id": "P04",
+      "name": "elmos-agent-orchestration-software-factory",
+      "dependencies": ["P00", "P01", "P02", "P03", "P05", "P06"],
+      "operation": "orchestration",
+      "adapter_actions": [
+        "call-tracker",
+        "human-notify",
+        "mutate-worktree",
+        "review-sweep",
+        "spawn-agent",
+        "write-journal"
+      ],
+      "skills": [
+        "elmos-workflow-tracker-adapter",
+        "elmos-reconciliation-scheduler",
+        "elmos-task-dag-orchestrator",
+        "elmos-workspace-worktree-manager",
+        "elmos-specialized-agent-registry",
+        "elmos-continuable-collaboration-manager",
+        "elmos-admission-concurrency-controller",
+        "elmos-retry-stall-doomloop-controller",
+        "elmos-workpad-progress-journal",
+        "elmos-review-feedback-coordinator",
+        "elmos-proof-of-work-assembler",
+        "elmos-human-review-handoff"
+      ]
+    },
+    {
+      "package_id": "P05",
+      "name": "elmos-conversion-reliability-verification-harness",
+      "dependencies": ["P00", "P01", "P02"],
+      "operation": "evidence-gate",
+      "adapter_actions": [
+        "certify-external",
+        "invoke-compiler",
+        "run-browser",
+        "run-external-test",
+        "run-runtime"
+      ],
+      "skills": [
+        "elmos-requirement-coverage-ledger",
+        "elmos-capability-coverage-ledger",
+        "elmos-mechanical-completion-gate",
+        "elmos-verification-planner",
+        "elmos-compiler-static-pipeline",
+        "elmos-contract-integration-pipeline",
+        "elmos-differential-runtime",
+        "elmos-generative-testing",
+        "elmos-ui-multimodal-verifier",
+        "elmos-nonfunctional-verifier",
+        "elmos-diagnosis-repair-loop",
+        "elmos-evidence-certification-engine"
+      ]
+    },
+    {
+      "package_id": "P06",
+      "name": "elmos-intelligent-model-router",
+      "dependencies": ["P00", "P01", "P05"],
+      "operation": "model-route",
+      "adapter_actions": ["invoke-provider", "record-feedback", "refresh-catalog"],
+      "skills": [
+        "elmos-model-provider-catalog",
+        "elmos-task-classifier",
+        "elmos-route-constraint-engine",
+        "elmos-benchmark-availability-gate",
+        "elmos-historical-taskfit-scorer",
+        "elmos-multi-objective-router",
+        "elmos-fallback-circuitbreaker-hedging",
+        "elmos-long-context-completeness-auditor",
+        "elmos-multimodal-route",
+        "elmos-cost-token-eta-engine",
+        "elmos-privacy-data-policy-broker",
+        "elmos-route-observability"
+      ]
+    },
+    {
+      "package_id": "P07",
+      "name": "elmos-transformation-learning-evolution",
+      "dependencies": ["P00", "P02", "P03", "P05", "P06"],
+      "operation": "knowledge",
+      "adapter_actions": ["external-benchmark", "publish-global", "train-model"],
+      "skills": [
+        "elmos-transformation-knowledge-base",
+        "elmos-project-archetype-knowledge-base",
+        "elmos-failure-repair-corpus",
+        "elmos-rule-promotion-governance",
+        "elmos-benchmark-corpus",
+        "elmos-evidence-corpus",
+        "elmos-repair-retrieval-ranker",
+        "elmos-drift-regression-detector",
+        "elmos-active-learning-queue",
+        "elmos-specialized-model-training",
+        "elmos-tenant-ip-isolation",
+        "elmos-knowledge-quality-auditor"
+      ]
+    }
+  ]
+}

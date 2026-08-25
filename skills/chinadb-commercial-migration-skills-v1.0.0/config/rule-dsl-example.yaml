@@ -1,0 +1,19 @@
+version: 1
+rule:
+  id: ORA-SQL-NVL-001
+  stage: sql
+  source:
+    engine: oracle
+    ast_kind: function_call
+    predicate: "name == 'NVL' and arity == 2"
+  target:
+    strategy: target_adapter
+    semantic_operation: null_coalesce
+  risk: low
+  verify:
+    fixtures:
+      - null_left
+      - non_null_left
+      - implicit_numeric_conversion
+    differential: true
+  failure_policy: fail_closed

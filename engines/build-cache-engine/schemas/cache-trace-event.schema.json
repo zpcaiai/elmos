@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/cache-trace-event.schema.json",
+  "title": "ELMOS Cache Trace Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "timestamp_bucket",
+    "tier",
+    "key_hash",
+    "namespace_hash",
+    "size_bytes",
+    "access",
+    "stage_class",
+    "recompute_ms",
+    "restore_ms"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.1.0"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp_bucket": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tier": {
+      "enum": [
+        "L0_MEMORY",
+        "L1_LOCAL_CAS",
+        "L2_REMOTE_CAS",
+        "STAGING",
+        "CHECKPOINT",
+        "SEMANTIC_CANDIDATE"
+      ]
+    },
+    "key_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "namespace_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "access": {
+      "enum": [
+        "GET",
+        "PUT",
+        "PREFETCH",
+        "BYPASS",
+        "PROTECT",
+        "UNPROTECT",
+        "EVICT"
+      ]
+    },
+    "stage_class": {
+      "type": "string"
+    },
+    "validation_level": {
+      "enum": [
+        "UNVERIFIED",
+        "COMPILE_VERIFIED",
+        "TEST_VERIFIED",
+        "BEHAVIOR_VERIFIED",
+        "PRODUCTION_CERTIFIED"
+      ]
+    },
+    "recompute_ms": {
+      "type": "number",
+      "minimum": 0
+    },
+    "restore_ms": {
+      "type": "number",
+      "minimum": 0
+    },
+    "model_tokens": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "critical_path_weight": {
+      "type": "number",
+      "minimum": 0,
+      "default": 0
+    },
+    "dag_step": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "next_use_distance": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "hit": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "policy_epoch": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

@@ -1,0 +1,27 @@
+skill: douyin-miniapp-codegen
+version: 1.0.0
+task_ids:
+- MAPP-025
+required_outputs:
+- path: platforms/douyin/**
+  required: true
+- path: douyin-codegen-report.json
+  required: true
+- path: douyin-trace-map.json
+  required: true
+gates:
+- name: 官方工具链构建通过
+  required: true
+- name: 场景值测试通过
+  required: true
+- name: 关键媒体/内容能力有契约证据
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

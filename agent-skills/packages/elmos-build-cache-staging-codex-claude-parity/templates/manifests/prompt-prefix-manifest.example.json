@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.2.0",
+  "manifest_id": "ppm-example-001",
+  "provider_namespace": "tenant-hash/project-hash/openai/gpt-family",
+  "compatibility_group": "prompt-v1",
+  "provider": "openai",
+  "model": "example-model",
+  "effort": "high",
+  "tool_schema_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "stable_prefix_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "estimated_tokens": 14320,
+  "breakpoint_after_segment_ids": [
+    "repository_architecture"
+  ],
+  "segments": [
+    {
+      "segment_id": "system_policy",
+      "schema_version": "1",
+      "stability_class": "GLOBAL_STABLE",
+      "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "byte_length": 8400,
+      "estimated_tokens": 2100,
+      "sensitivity": "INTERNAL"
+    },
+    {
+      "segment_id": "tool_schemas",
+      "schema_version": "4",
+      "stability_class": "GLOBAL_STABLE",
+      "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "byte_length": 20800,
+      "estimated_tokens": 5200,
+      "sensitivity": "INTERNAL"
+    },
+    {
+      "segment_id": "repository_architecture",
+      "schema_version": "7",
+      "stability_class": "PROJECT_STABLE",
+      "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "byte_length": 28080,
+      "estimated_tokens": 7020,
+      "sensitivity": "CONFIDENTIAL"
+    }
+  ],
+  "change_reasons": []
+}

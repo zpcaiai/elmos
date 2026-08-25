@@ -1,0 +1,717 @@
+{
+  "checksum_exclusions": [
+    "**/*.pyc",
+    "**/__pycache__/**",
+    "MANIFEST.json",
+    "VALIDATION-REPORT.md"
+  ],
+  "checksums_sha256": {
+    "ARCHITECTURE.md": "57a65614ce930a3a361c64121889ea4732750a3cd3a29911da308ff8e083263d",
+    "CHANGELOG.md": "4f03df7b32c85f2e6ee543cc029e0b62c7b825f6173499c19226d1223c3d5179",
+    "INSTALL.md": "7cc8457fdf12dac773e25b2cf093fe680b4f18cca37e3efcaa646ab19f9b9661",
+    "README.md": "227defaab81e07da1bb40ffdb9190347f822ac8b3775e693a108f672c9769275",
+    "REFERENCES.md": "2c5b471afe278067cf503398ad868c2e367d68101f96c074b05776d94e69cbec",
+    "SKILL_INDEX.md": "5961b6604c32adb6b569683932ee3deb10123d592fcc2851264375f0902ec47e",
+    "TASKS.md": "b6b611cc9b1d820ba887ef990905a55fbe871640e549f061812e1e667541153b",
+    "catalog/architecture-patterns.json": "294633f868cab9423c9b7fad2a3aaaf0e7ab3458ff531215afaf57e53e6cb073",
+    "catalog/database-capabilities.json": "3691221ee8915dbd9b9c309719fd9148cda33b758441418b8e3f941991a8424b",
+    "catalog/project-templates.json": "c1b48596d7f63dc9b8761060a8b4ffef54025e83b82ea84ab17d9311ca560608",
+    "catalog/selection-rules.json": "c1444b1525c25b6f50fe01f64d2c967196b1fcb37d2fbe5586a6903f7b21dfd7",
+    "catalog/technology-adapters.json": "bbc9d81a72651bcc052d8ab1b2635ef22037fe2a97fab783b81fa771b23ebeed",
+    "examples/README.md": "11b91a0743358c613afca30287d5451150dcc25bd3a0961311cf541488954bb4",
+    "examples/iot-realtime/architecture-decision.json": "288e58c405385704388d5549744493286861ffb73cc69136281eb4ef541a663d",
+    "examples/iot-realtime/cost-and-eta.json": "9dd94bca8b86ee7af8c41063f8376ab9cb9799f6a973273f5fa5956f9ffb3d69",
+    "examples/iot-realtime/database-decision.json": "408b85390acd65e3ac539f4e2a5958d0a55e61713fed44b7c1445a200a259814",
+    "examples/iot-realtime/requirements.json": "66215074a61edebfb7c2caf43be4da441a599380169d14916c9ce0137b64e89c",
+    "examples/offline-lakehouse/architecture-decision.json": "08071e0f71e2cb5deb1b8f3763380cf61548f67021111c21c1ede0c81bd26424",
+    "examples/offline-lakehouse/cost-and-eta.json": "ef05ddf34e9c346561897d4748a5a5a3b2acb164942d501f2d13ccdc59e06fed",
+    "examples/offline-lakehouse/database-decision.json": "9a22735eef40a2931ccba8398408b3f1798931198ec3bce4a5d1023bb1fde0b9",
+    "examples/offline-lakehouse/requirements.json": "c5d5b29b477e591ea1eefeb2772849dd58037a58ef27ecbe38bc0a1986827028",
+    "examples/realtime-user-profile/architecture-decision.json": "d1833694ddd8f3d951ca61385f21e9c83bcf59bd8fdea33f014c13e665938acf",
+    "examples/realtime-user-profile/cost-and-eta.json": "6a750a116287021f9c026f000de87c83627d95ce821dfcd9ca2ae1c24ac07d8c",
+    "examples/realtime-user-profile/database-decision.json": "c080b56c41fa63d98e8bdda6c2671fb9635c409391129e98bd1137b7a31b761d",
+    "examples/realtime-user-profile/requirements.json": "0d775ed5b6f776e2522331007168fa9851f8a71e4f12e380783b2e78a3ad5b5d",
+    "profiles/architecture.json": "5db3ccb0b625c1b935879ded92619840e87ba2419f0a7506d971f4c214957d7f",
+    "profiles/artifacts.json": "acdd30d9a127d8dd53917b37f965fcdc0317017c07162e745a142c46655f59e8",
+    "profiles/bigdata-core.json": "64a95d6eb1067cc35b8559b5e894f3a4c77df6514cd052d021cef43d988356a7",
+    "profiles/bootstrap.json": "93e7930a035db720721f63f0dfb3b28ac2e8a7e021b43d42939e5010a5ae76cc",
+    "profiles/conversion.json": "6fb7c9b93c192b2cbf88d7da9c1e29fd9c17b9004769cd0a49e9c221b16be073",
+    "profiles/database.json": "ebb4a03bf8810b17a7f95a040bd130465a6021a65ee05425fd218fd65ed80779",
+    "profiles/enterprise.json": "f25078c2ce179af83ce5ca2e444713fcbb8ea7f72dc13814c54b9b416af5e380",
+    "profiles/full.json": "465f6f7944868c260bac6d48c6b139bbbadaf0c9cfd3b4f2c34a12512361caf3",
+    "profiles/reader.json": "90dc26e3c25b3e8fe51edc45c4cd8abf72ae6ebfddc79a95650ebc3f8d92d06e",
+    "profiles/templates.json": "927d4fb1adcab36e24c2a0daf7c58da987aee29e7e76785c482ad079b93a3053",
+    "requirements-validation.txt": "9984fa6ad6d35d2468011c4c278583e9bb4983d83be6bb3f5aabcef9c99b19b7",
+    "schemas/architecture-pattern-decision.schema.json": "b87ad48d9cd7bc00317b7071286420fea90f02d7adbab38d72db107f1ee6c562",
+    "schemas/cost-and-eta.schema.json": "6ef5bbf917987b7cfcb5a24322e4c28bc80868c8ad98ce3633a1a1d46bf7583a",
+    "schemas/data-project-ir.schema.json": "8842725c206e4ece092d687d0a14cb49377fff55eb7115ebea1cb13ce2529730",
+    "schemas/database-decision.schema.json": "0d782cebcd2d03b2efa0997d067f62c99fd4e2356179a6bc72a20daaca6b1f56",
+    "schemas/evidence-bundle.schema.json": "e959d62a0e0573926ecf1ec063da89fd055981fae0256db76069c0647bcd3e67",
+    "schemas/pipeline-contract.schema.json": "7577980c38b5b83496e839a182ab3aecfa246a68a9ea214e88a3ad75e46e3654",
+    "schemas/workload-requirements.schema.json": "dff1af45c9e22420e9c58d0c80c0894af39d7664b4da7490cbfc2966c772b49a",
+    "scripts/build_manifest.py": "c505353d2b0d9564996014268b1177399b7e03373bc706c7fb8b6d1d6eda3ef1",
+    "scripts/install_skillpack.py": "5188ab37e75b89a57a1c7f7931307b04295705dcb394becf75b0a77273721fbe",
+    "scripts/validate_skillpack.py": "d56c9453ee00e91abd0fb8704e3814cf3497fc333579c6b0713104396c4eb327",
+    "skills/elmos-batch-processing-generator/SKILL.md": "18f4f4ae09de8192ea164d9800d65583203de8effa7fb75cb2abe8bc174fffb8",
+    "skills/elmos-bigdata-api-dashboard/SKILL.md": "2ad9414663070ea221ddf89e8f5714d456f9ef1fcd5f1a7506f196833f3052dc",
+    "skills/elmos-bigdata-auto-repair/SKILL.md": "8b288354553d3863c7b3daee69acc294794e85d109a0f066b5e003047393da12",
+    "skills/elmos-bigdata-cost-autotuning/SKILL.md": "d4f68966a41d2927496707540cb51d5c834cb300ce28934646ddd776311c43cd",
+    "skills/elmos-bigdata-evidence-certification/SKILL.md": "22ae6d3d4ace4bd1deef4157c5a4738afb4ec368af799e9e81d568ea2e5f7323",
+    "skills/elmos-bigdata-infra-deployment/SKILL.md": "f3c9be5330d5c8a4bf008b9b95e8edb673d8b3ed4a7b47d307703c5736f5513f",
+    "skills/elmos-bigdata-pattern-selector/SKILL.md": "54241ebe4cd315868c6ee9dc92b2b3eedf35f9d5188f0aedc5bf92a99ed508da",
+    "skills/elmos-bigdata-performance-chaos/SKILL.md": "7d22c1b87d4a5cdf84168d866b7f7306b7eaf8544db368d9d41d79a0e2987b2f",
+    "skills/elmos-bigdata-project-classifier/SKILL.md": "87c6df69ff880b0aa1e8d04ea82c87fc2e022c1381d39ef5206c25ccd8442557",
+    "skills/elmos-bigdata-project-orchestrator/SKILL.md": "a281d0aaec9a98f65c869d6771c6cd51a3b66b22fe12a44567f642b84478c621",
+    "skills/elmos-bigdata-security-governance/SKILL.md": "d9d67c94e5da147b2c74af27f37438143db400eb9c07f276ad393891c8657e27",
+    "skills/elmos-bigdata-test-validation/SKILL.md": "c490931fe7dd0f6d168686872d51f3c8b541f518d56b05065aba779d8bd6f586",
+    "skills/elmos-cdc-event-backbone/SKILL.md": "79405915ea7ca8d17827b19060f7e9adfb0e34aedf7eaa628d6efc2a340823fc",
+    "skills/elmos-data-architecture-adr/SKILL.md": "ba40f442a2f17ece63aa3365f6f358b4213b689d957f3e8bff401b507e701be6",
+    "skills/elmos-data-modeling-semantic-layer/SKILL.md": "c60009cff9b6c02de2b4ba7a2f78a3f4b44d6839596aeeab923c1958099648b0",
+    "skills/elmos-data-quality-observability/SKILL.md": "ea1d48e38def3eba8b1dc2f43f111f08ebe27720298274665abf3fdf7e4c95e4",
+    "skills/elmos-data-requirement-intake/SKILL.md": "f055eb74a7e7b357b8cf80ff9da36a2c469ec8077e508e206c373ddc116f4556",
+    "skills/elmos-database-benchmark-harness/SKILL.md": "006f5a2299ba76b268493e45364f4bbe9b44d74b8357d59d8c1df3b4ab30a588",
+    "skills/elmos-database-capability-registry/SKILL.md": "46855d9bbce5e51fd486a3279362f0febe55a5904183efc3416d5e3cfdc8df3a",
+    "skills/elmos-database-constraint-filter/SKILL.md": "5a3c579f5cc8766bbb2bdbc4b2c429008968604a7ec3462896fa1a6ec2a0f4cb",
+    "skills/elmos-database-cost-capacity-planner/SKILL.md": "7bd51dbff0e019c702c3a9f3d5d73115cd94dfc8023522423c4e3e45db6e038f",
+    "skills/elmos-database-ha-dr/SKILL.md": "c8fee0eb1d6f790e98089bdae75f43c51ab382060e2e331b6155d0c58502e2e7",
+    "skills/elmos-database-mcda-ranker/SKILL.md": "a21371edb409bab19e54df83454cb67796356822d8ac08be0609c371032ed043",
+    "skills/elmos-database-migration-modernization/SKILL.md": "2a750c3da6cbd577f7eadb028c9ffe9eb0d13f73f02033c51d409915ca11e994",
+    "skills/elmos-database-schema-physical-design/SKILL.md": "c61cfcc2aebbf9efd98801b3cc911a42c95e9b0b5815f4bb253caced361fa744",
+    "skills/elmos-database-security-multitenancy/SKILL.md": "c00d6f2a8a91517238612c8928045f2fd3b4f630907cd97448dfe07f783caf25",
+    "skills/elmos-feature-store-ml-pipeline/SKILL.md": "de53d67aa759d96942251dbc6dafc675cd49171c8fc302bd3ebeaa0197af9efb",
+    "skills/elmos-federated-query-data-fabric/SKILL.md": "f6d547ed58262220ba13f0ffad1b0f3e43aabe105beb2ae72b0f3cbbec6bf571",
+    "skills/elmos-ingestion-connector-planner/SKILL.md": "8938752437b635b9e68a6a8dce4a3ad7c3086c9a622e9f515277251328e59cab",
+    "skills/elmos-lakehouse-generator/SKILL.md": "ffd2c45df8a7310839912e641954c20a2c854492fce20e5b2b6582873ce1b4be",
+    "skills/elmos-metadata-catalog-lineage/SKILL.md": "2c193fc329ee67217907af976f8e23330fdb7370d20a0256e47e65adbd84c704",
+    "skills/elmos-orchestration-backfill-replay/SKILL.md": "cec4527d136c15b581a2ea17e9daa46094ca16f36dec02636ebdbf8ee5c3ad37",
+    "skills/elmos-polyglot-persistence-planner/SKILL.md": "10df4ac7c88ff794101ead739a6681e75a340619302c5b6ab557072bf7173585",
+    "skills/elmos-stream-processing-generator/SKILL.md": "c09579a748bba1f4629c3b0431631157f8b2d0c0d1e4e0a8303fd6b346e17314",
+    "skills/elmos-template-cdc-migration-modernization/SKILL.md": "1233ca6800df5f3e0fcbf9b58b1537a741efa9abd225576337a46ede46e2b379",
+    "skills/elmos-template-data-governance-platform/SKILL.md": "0ff46d62cc3de994d182586acac3b3cca182122e7a578215e3888df8ecdb740e",
+    "skills/elmos-template-fraud-risk/SKILL.md": "139f55546c30ff58d128e403bf82ff57dc6cbca824a4b5da47210b51d9135746",
+    "skills/elmos-template-iot-timeseries/SKILL.md": "580187ac17f92c2081461b876cc531324942f8a6286b305abb199be74fa5b559",
+    "skills/elmos-template-log-observability/SKILL.md": "c7ca5cab14125a91d6ccd0d70e592a6e85968ff7b389c7734c8958ed3116f4f2",
+    "skills/elmos-template-offline-warehouse/SKILL.md": "b4dd5b602873b18c3d667b036cb10e8a83788a5d32f6b368bca9a6b2eeffd0ee",
+    "skills/elmos-template-realtime-analytics/SKILL.md": "700d33c262c7eb5a46b2813e29594a5dd59ba8feb5158048828104e85f37d529",
+    "skills/elmos-template-realtime-user-profile/SKILL.md": "d5cbd084897de82e627f11a031f92591e0c0817856ebcd5825b0bb9896cc2a09",
+    "skills/elmos-template-recommendation-system/SKILL.md": "13b3f1df7259a8b0b2837c0e66a4b3aab76bc02342b4f23f5daa7669e3b65e8b",
+    "skills/elmos-template-vector-knowledge-analytics/SKILL.md": "78cae274aacd0fc3e8d6c3f3a78b53883e8bed25239f8c952b88b1de4d0eea2c",
+    "skills/elmos-warehouse-olap-serving/SKILL.md": "b1f7aefbd7a6cbf5739b5b6fb932663a6170292a6d61e8d919e75b764b5f9a29",
+    "skills/elmos-workload-profiler/SKILL.md": "72e6c76e90d2f5b7b7e0ba50618986d32d5e4bf6f53025e0f3f9587953bd98b9",
+    "tests/test_package.py": "77c58f8afbdfba2734b93fa8909c282486b2518cfbd0209723fe5eb70d0c300c",
+    "tools/architecture_selector.py": "2b37fffc6e104a7fc0ebcebe978e4fb2c2c2cafa59a7f71f867a248077370e30",
+    "tools/database_selector.py": "65283ac1aadc84ca67d3dcb172711974201342b6c8a2d58d21cbbb0e02f64b52",
+    "tools/plan_estimator.py": "98931bb20f8ccba5f32564433ee74a398d68c778b79c593d99583c26bd642df5"
+  },
+  "description": "Database intelligence and production-grade big-data project generation skills for Elmos, Codex and Claude Code.",
+  "generated_on": "2026-08-19",
+  "group_counts": {
+    "bigdata-core": 22,
+    "bigdata-templates": 10,
+    "database-intelligence": 13,
+    "orchestration": 1
+  },
+  "manifest_schema_version": 1,
+  "package": "elmos-database-bigdata-skills",
+  "package_version": "1.0.0",
+  "profile_count": 10,
+  "profiles": {
+    "architecture": {
+      "declared_skill_count": 18,
+      "path": "profiles/architecture.json"
+    },
+    "artifacts": {
+      "declared_skill_count": 3,
+      "path": "profiles/artifacts.json"
+    },
+    "bigdata-core": {
+      "declared_skill_count": 23,
+      "path": "profiles/bigdata-core.json"
+    },
+    "bootstrap": {
+      "declared_skill_count": 4,
+      "path": "profiles/bootstrap.json"
+    },
+    "conversion": {
+      "declared_skill_count": 3,
+      "path": "profiles/conversion.json"
+    },
+    "database": {
+      "declared_skill_count": 13,
+      "path": "profiles/database.json"
+    },
+    "enterprise": {
+      "declared_skill_count": 36,
+      "path": "profiles/enterprise.json"
+    },
+    "full": {
+      "declared_skill_count": 46,
+      "path": "profiles/full.json"
+    },
+    "reader": {
+      "declared_skill_count": 4,
+      "path": "profiles/reader.json"
+    },
+    "templates": {
+      "declared_skill_count": 10,
+      "path": "profiles/templates.json"
+    }
+  },
+  "skill_count": 46,
+  "skills": [
+    {
+      "dependencies": [
+        "elmos-bigdata-pattern-selector",
+        "elmos-ingestion-connector-planner",
+        "elmos-database-schema-physical-design"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-batch-processing-generator",
+      "path": "skills/elmos-batch-processing-generator",
+      "sha256": "a88ce0ee7e3998d5bc4f33e70a97b2a125afb598849f7eea37bff17eddf8aed5",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-warehouse-olap-serving",
+        "elmos-data-modeling-semantic-layer"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-bigdata-api-dashboard",
+      "path": "skills/elmos-bigdata-api-dashboard",
+      "sha256": "fc95f98159214c186e2c9decac02fcfa9742b6e7c5c25cbe8571b2e1b37d533d",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-data-quality-observability",
+        "elmos-orchestration-backfill-replay",
+        "elmos-bigdata-test-validation",
+        "elmos-bigdata-performance-chaos",
+        "elmos-bigdata-cost-autotuning"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-bigdata-auto-repair",
+      "path": "skills/elmos-bigdata-auto-repair",
+      "sha256": "74457d0123220de9f4e3132b5cf7ffc1fe5e0ccf4b767e9299ccdd51f67afcac",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-database-cost-capacity-planner",
+        "elmos-data-quality-observability",
+        "elmos-bigdata-performance-chaos"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-bigdata-cost-autotuning",
+      "path": "skills/elmos-bigdata-cost-autotuning",
+      "sha256": "5c521adab5305299586dca3072bcb21ab7a5a689cc74380991bd0e6d283ddfc2",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-data-architecture-adr",
+        "elmos-bigdata-security-governance",
+        "elmos-bigdata-test-validation",
+        "elmos-bigdata-performance-chaos",
+        "elmos-bigdata-cost-autotuning",
+        "elmos-bigdata-auto-repair"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-bigdata-evidence-certification",
+      "path": "skills/elmos-bigdata-evidence-certification",
+      "sha256": "322ad5660941d8a189988baa21b52f6df706a1edbdfcac4165ec1afcaf627235",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-pattern-selector",
+        "elmos-ingestion-connector-planner",
+        "elmos-cdc-event-backbone",
+        "elmos-batch-processing-generator",
+        "elmos-stream-processing-generator",
+        "elmos-lakehouse-generator",
+        "elmos-warehouse-olap-serving",
+        "elmos-orchestration-backfill-replay"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-bigdata-infra-deployment",
+      "path": "skills/elmos-bigdata-infra-deployment",
+      "sha256": "2251f7865b2decac73971e1ecaf95ac493717dfbb61e62fb8e7b0a95970c95bf",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-project-classifier",
+        "elmos-database-capability-registry",
+        "elmos-database-mcda-ranker"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-bigdata-pattern-selector",
+      "path": "skills/elmos-bigdata-pattern-selector",
+      "sha256": "991a7b2ece6b0c1fa4e029d773f76a8ed84fe051f594f4e7a5574402543fb030",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-database-benchmark-harness",
+        "elmos-database-cost-capacity-planner",
+        "elmos-bigdata-infra-deployment",
+        "elmos-bigdata-test-validation"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-bigdata-performance-chaos",
+      "path": "skills/elmos-bigdata-performance-chaos",
+      "sha256": "2df490094f6a910e4c58968c226adfd59c3bc7c0e71d08d4c72692f9ce408d9b",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-data-requirement-intake",
+        "elmos-workload-profiler"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-bigdata-project-classifier",
+      "path": "skills/elmos-bigdata-project-classifier",
+      "sha256": "953f4f34fe89fe588ac101dca5f199b3a0deecb8d8df948f20b23e5fa28ffeb0",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-data-requirement-intake",
+        "elmos-workload-profiler",
+        "elmos-database-capability-registry",
+        "elmos-database-constraint-filter",
+        "elmos-database-mcda-ranker",
+        "elmos-polyglot-persistence-planner",
+        "elmos-data-architecture-adr",
+        "elmos-bigdata-project-classifier",
+        "elmos-bigdata-pattern-selector",
+        "elmos-ingestion-connector-planner",
+        "elmos-cdc-event-backbone",
+        "elmos-batch-processing-generator",
+        "elmos-stream-processing-generator",
+        "elmos-lakehouse-generator",
+        "elmos-warehouse-olap-serving",
+        "elmos-federated-query-data-fabric",
+        "elmos-data-modeling-semantic-layer",
+        "elmos-metadata-catalog-lineage",
+        "elmos-data-quality-observability",
+        "elmos-orchestration-backfill-replay",
+        "elmos-feature-store-ml-pipeline",
+        "elmos-bigdata-api-dashboard",
+        "elmos-bigdata-infra-deployment",
+        "elmos-bigdata-security-governance",
+        "elmos-bigdata-test-validation",
+        "elmos-bigdata-performance-chaos",
+        "elmos-bigdata-cost-autotuning",
+        "elmos-bigdata-auto-repair",
+        "elmos-bigdata-evidence-certification"
+      ],
+      "group": "orchestration",
+      "name": "elmos-bigdata-project-orchestrator",
+      "path": "skills/elmos-bigdata-project-orchestrator",
+      "sha256": "8dd228a889a4c432fae345102c3e63548cf82fbd97daf29e0b9ec6506a732fe8",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-database-security-multitenancy",
+        "elmos-metadata-catalog-lineage",
+        "elmos-bigdata-infra-deployment"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-bigdata-security-governance",
+      "path": "skills/elmos-bigdata-security-governance",
+      "sha256": "209f9b789902726d45794ce1dabe68350f8940ab309302898432020ab8e31113",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-batch-processing-generator",
+        "elmos-stream-processing-generator",
+        "elmos-lakehouse-generator",
+        "elmos-warehouse-olap-serving",
+        "elmos-data-quality-observability",
+        "elmos-bigdata-infra-deployment",
+        "elmos-bigdata-security-governance"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-bigdata-test-validation",
+      "path": "skills/elmos-bigdata-test-validation",
+      "sha256": "4e004fdf24df8f7d2e7a68abb102f817925638139d9dbdf93f3576002fc66a19",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-ingestion-connector-planner",
+        "elmos-database-security-multitenancy"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-cdc-event-backbone",
+      "path": "skills/elmos-cdc-event-backbone",
+      "sha256": "eadf6428b8dde0ac3d8329efac7d929b0af815c424b0133efdec174a98d7e4db",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-polyglot-persistence-planner"
+      ],
+      "group": "database-intelligence",
+      "name": "elmos-data-architecture-adr",
+      "path": "skills/elmos-data-architecture-adr",
+      "sha256": "7f1e908523f6140ddff074828005a3c06f4ee3019f6430afdc03a8d3a752503e",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-pattern-selector",
+        "elmos-database-schema-physical-design",
+        "elmos-lakehouse-generator",
+        "elmos-warehouse-olap-serving"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-data-modeling-semantic-layer",
+      "path": "skills/elmos-data-modeling-semantic-layer",
+      "sha256": "de68c99eb296d3db468b7345ae0867dbf74fa11ca2520c40cd618933baabce85",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-data-modeling-semantic-layer",
+        "elmos-metadata-catalog-lineage"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-data-quality-observability",
+      "path": "skills/elmos-data-quality-observability",
+      "sha256": "35a7f4565151e8497416e11e6e74167b3a35c4dbea0585f789025d26c9f9b9eb",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [],
+      "group": "database-intelligence",
+      "name": "elmos-data-requirement-intake",
+      "path": "skills/elmos-data-requirement-intake",
+      "sha256": "8e824e122566822077a4eb2650f4ad5c601c19b2541d8fcd4b0d46941980aba6",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-workload-profiler",
+        "elmos-database-capability-registry"
+      ],
+      "group": "database-intelligence",
+      "name": "elmos-database-benchmark-harness",
+      "path": "skills/elmos-database-benchmark-harness",
+      "sha256": "875c88cf53e7d7c374605613d34753b62416faefb11128098c59e3c87d5888c9",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [],
+      "group": "database-intelligence",
+      "name": "elmos-database-capability-registry",
+      "path": "skills/elmos-database-capability-registry",
+      "sha256": "3c6cd3f0c0e5f3b0504679980273e75042dd2f44eb3345719f896c6cbf786d57",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-data-requirement-intake",
+        "elmos-workload-profiler",
+        "elmos-database-capability-registry"
+      ],
+      "group": "database-intelligence",
+      "name": "elmos-database-constraint-filter",
+      "path": "skills/elmos-database-constraint-filter",
+      "sha256": "47bb2745db7234af1628fe79f7bcc828d9f69dec30ad3236afa00c0d569d7c20",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-database-mcda-ranker",
+        "elmos-database-benchmark-harness"
+      ],
+      "group": "database-intelligence",
+      "name": "elmos-database-cost-capacity-planner",
+      "path": "skills/elmos-database-cost-capacity-planner",
+      "sha256": "2a8f9b5402d21b1ec3319ba29152e03f3d0224e462be16a7af7c50c71f700f38",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-polyglot-persistence-planner"
+      ],
+      "group": "database-intelligence",
+      "name": "elmos-database-ha-dr",
+      "path": "skills/elmos-database-ha-dr",
+      "sha256": "1341258ca71154f75b86d38ee9ff5749bc9694167fdb97ec3af112ab6d6c9721",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-database-constraint-filter"
+      ],
+      "group": "database-intelligence",
+      "name": "elmos-database-mcda-ranker",
+      "path": "skills/elmos-database-mcda-ranker",
+      "sha256": "8133043f90d4df6e465aa884e34dde1efe6c840bece6cf23bcd7f18ad248a779",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-polyglot-persistence-planner",
+        "elmos-database-schema-physical-design",
+        "elmos-database-ha-dr",
+        "elmos-database-security-multitenancy"
+      ],
+      "group": "database-intelligence",
+      "name": "elmos-database-migration-modernization",
+      "path": "skills/elmos-database-migration-modernization",
+      "sha256": "106fe9c905828bf3149329848f281a0f2a26fabef586167cd030a0c5682ef200",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-polyglot-persistence-planner"
+      ],
+      "group": "database-intelligence",
+      "name": "elmos-database-schema-physical-design",
+      "path": "skills/elmos-database-schema-physical-design",
+      "sha256": "40be356c181887e0b5bd2ef3dd604636beaf9df51dc17fe7a2229c82a480a500",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-data-requirement-intake",
+        "elmos-polyglot-persistence-planner"
+      ],
+      "group": "database-intelligence",
+      "name": "elmos-database-security-multitenancy",
+      "path": "skills/elmos-database-security-multitenancy",
+      "sha256": "fe14d0944bda2d20fc6d613104e0c5c32412d4a962c7e1f6bf4731dd4aade92c",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-data-modeling-semantic-layer",
+        "elmos-orchestration-backfill-replay"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-feature-store-ml-pipeline",
+      "path": "skills/elmos-feature-store-ml-pipeline",
+      "sha256": "1b14b718c4ff7405d82c37a20cbc105e123eae5f423f72845a27f935983de375",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-pattern-selector",
+        "elmos-polyglot-persistence-planner",
+        "elmos-database-capability-registry"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-federated-query-data-fabric",
+      "path": "skills/elmos-federated-query-data-fabric",
+      "sha256": "be260a686fc61462add3c48d114549718a146769a313f7aa1ac3549e15a430a7",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-pattern-selector"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-ingestion-connector-planner",
+      "path": "skills/elmos-ingestion-connector-planner",
+      "sha256": "69cf8687356599b4e30d6cc0dd0c69137ab9ea67133283d656b8aaf6cb61d373",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-pattern-selector",
+        "elmos-ingestion-connector-planner",
+        "elmos-batch-processing-generator",
+        "elmos-stream-processing-generator"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-lakehouse-generator",
+      "path": "skills/elmos-lakehouse-generator",
+      "sha256": "3eb93a31b4e7d67a3b90f8562a79dbdd814ae3eaa0243cc9aeabcaaafd321e6c",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-data-modeling-semantic-layer"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-metadata-catalog-lineage",
+      "path": "skills/elmos-metadata-catalog-lineage",
+      "sha256": "cd184f79bf2c9a4f241f9bc087e154366a373ea16c94d267c742ae4766b8010e",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-ingestion-connector-planner",
+        "elmos-batch-processing-generator",
+        "elmos-stream-processing-generator",
+        "elmos-data-quality-observability"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-orchestration-backfill-replay",
+      "path": "skills/elmos-orchestration-backfill-replay",
+      "sha256": "a3f677b7ba53b7d92ab2b8d342c2e450de40281673a5b1b1f736000d755c52e9",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-database-mcda-ranker"
+      ],
+      "group": "database-intelligence",
+      "name": "elmos-polyglot-persistence-planner",
+      "path": "skills/elmos-polyglot-persistence-planner",
+      "sha256": "711c7e3bf9971bb36e3b7f4db01963843c97149f8763e895eab337a58dfe0c5f",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-pattern-selector",
+        "elmos-cdc-event-backbone",
+        "elmos-database-schema-physical-design"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-stream-processing-generator",
+      "path": "skills/elmos-stream-processing-generator",
+      "sha256": "b7f08740af6ba18b4036cb5aabceecc45ea5c2afcbae1e7694615ed0b2bb7597",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-project-orchestrator",
+        "elmos-database-migration-modernization"
+      ],
+      "group": "bigdata-templates",
+      "name": "elmos-template-cdc-migration-modernization",
+      "path": "skills/elmos-template-cdc-migration-modernization",
+      "sha256": "69a935f559ef5d2c47aa1c6b252166f3255ed1c618ae30824f3244c19fa761c7",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-project-orchestrator"
+      ],
+      "group": "bigdata-templates",
+      "name": "elmos-template-data-governance-platform",
+      "path": "skills/elmos-template-data-governance-platform",
+      "sha256": "65e04efea9c937adcf5bf9166b9a461c38705214dd2cf2804bac0e28334502de",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-project-orchestrator",
+        "elmos-feature-store-ml-pipeline"
+      ],
+      "group": "bigdata-templates",
+      "name": "elmos-template-fraud-risk",
+      "path": "skills/elmos-template-fraud-risk",
+      "sha256": "cecef35ccbfa80a6cbe0c80fa7ddbf75608520feddc2cca05dd473b85a619299",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-project-orchestrator"
+      ],
+      "group": "bigdata-templates",
+      "name": "elmos-template-iot-timeseries",
+      "path": "skills/elmos-template-iot-timeseries",
+      "sha256": "46f776c7b701f04b7dc24506fa0261c5f099ebbc31cb333747b520d92c8ac2f9",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-project-orchestrator"
+      ],
+      "group": "bigdata-templates",
+      "name": "elmos-template-log-observability",
+      "path": "skills/elmos-template-log-observability",
+      "sha256": "b3104c663b8f85d645a432ecaa9e892ebce1dafe2ebc41ed7fe854b4398cfba4",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-project-orchestrator"
+      ],
+      "group": "bigdata-templates",
+      "name": "elmos-template-offline-warehouse",
+      "path": "skills/elmos-template-offline-warehouse",
+      "sha256": "8042137e16108e39a6ec293298fcf240a708c3411012bcf03f8c7568c3907c4b",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-project-orchestrator"
+      ],
+      "group": "bigdata-templates",
+      "name": "elmos-template-realtime-analytics",
+      "path": "skills/elmos-template-realtime-analytics",
+      "sha256": "34427c424e680a8a5319dfca58eab4cf56e76f4bc7ecf95a78f67e2935d8f722",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-project-orchestrator",
+        "elmos-feature-store-ml-pipeline"
+      ],
+      "group": "bigdata-templates",
+      "name": "elmos-template-realtime-user-profile",
+      "path": "skills/elmos-template-realtime-user-profile",
+      "sha256": "91db462adc537c454b149f0dd07bbbc8368b0477f308c6521a008cabce8fed49",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-project-orchestrator",
+        "elmos-feature-store-ml-pipeline"
+      ],
+      "group": "bigdata-templates",
+      "name": "elmos-template-recommendation-system",
+      "path": "skills/elmos-template-recommendation-system",
+      "sha256": "c3fd91037f5752e0c5c9a70019d36ccbc4802791e10f2241f3b3e32f302f9be7",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-project-orchestrator"
+      ],
+      "group": "bigdata-templates",
+      "name": "elmos-template-vector-knowledge-analytics",
+      "path": "skills/elmos-template-vector-knowledge-analytics",
+      "sha256": "f5277f28be4d386f1e1baa1383d9bfdec69b05d8d9160f8bf540f0fa9209b15c",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-bigdata-pattern-selector",
+        "elmos-lakehouse-generator",
+        "elmos-polyglot-persistence-planner"
+      ],
+      "group": "bigdata-core",
+      "name": "elmos-warehouse-olap-serving",
+      "path": "skills/elmos-warehouse-olap-serving",
+      "sha256": "b7221a0f1bd5d114469b70cd9a47d8f27ea934025d95a9863eb612c366c2f3fd",
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [
+        "elmos-data-requirement-intake"
+      ],
+      "group": "database-intelligence",
+      "name": "elmos-workload-profiler",
+      "path": "skills/elmos-workload-profiler",
+      "sha256": "03e377837063964e59b33d282aefbf5898e90ad0cdb413c0ca2d46978429ec9c",
+      "version": "1.0.0"
+    }
+  ],
+  "trust_boundary": {
+    "catalog_entry_does_not_equal_verified_adapter": true,
+    "catalog_is_seed_evidence": true,
+    "production_requires_repository_specific_tests": true
+  }
+}

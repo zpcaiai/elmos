@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "corpus_key": "elmos-7plus1-representative-workloads-v1",
+  "status": "not-run",
+  "source_digest": "sha256:89c1a63927a6a316ebcfeeac260e836225eeccf5701805314f91346e703166fd",
+  "dataset_digest": "sha256:e93d7041db7daa13559ccaa9250bfcdfa6f91762aad3a1901ff545bc23329e88",
+  "evidence_refs": [],
+  "separation": "reserved for authorized production-derived representative workloads",
+  "limitations": [
+    "No representative project, provider, compiler, device, deployment, production, or customer workload was supplied or authorized."
+  ]
+}

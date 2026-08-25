@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from elmos_polyglot_route.engine import migrate
-from elmos_polyglot_route.models import ANALYZABLE_LANGUAGES, SUPPORTED_LANGUAGES, Language, RouteError
+from elmos_polyglot_route.models import REPOSITORY_SURFACE_LANGUAGES, Language, RouteError
 from elmos_polyglot_route.native import analyze
 from elmos_polyglot_route.repository import plan_repository
 
@@ -38,7 +38,7 @@ FILES = {
 }
 
 
-@pytest.mark.parametrize("language", ANALYZABLE_LANGUAGES)
+@pytest.mark.parametrize("language", REPOSITORY_SURFACE_LANGUAGES)
 def test_native_analyzers_emit_the_same_typed_semantic_slice(language: Language) -> None:
     source = ROOT / "fixtures" / language / f"{FILES[language]}.{EXTENSIONS[language]}"
     semantic = analyze(source, language, "calculate")
@@ -53,8 +53,8 @@ def test_native_analyzers_emit_the_same_typed_semantic_slice(language: Language)
     ("source_language", "target_language"),
     [
         (source, target)
-        for source in ANALYZABLE_LANGUAGES
-        for target in SUPPORTED_LANGUAGES
+        for source in REPOSITORY_SURFACE_LANGUAGES
+        for target in REPOSITORY_SURFACE_LANGUAGES
         if source != target and {source, target} != {"javascript", "typescript"}
     ],
 )
@@ -94,8 +94,8 @@ def test_every_repository_direction_compiles_and_matches_behavior(
     ("source_language", "target_language"),
     [
         (source, target)
-        for source in ANALYZABLE_LANGUAGES
-        for target in SUPPORTED_LANGUAGES
+        for source in REPOSITORY_SURFACE_LANGUAGES
+        for target in REPOSITORY_SURFACE_LANGUAGES
         if source != target and {source, target} != {"javascript", "typescript"}
     ],
 )

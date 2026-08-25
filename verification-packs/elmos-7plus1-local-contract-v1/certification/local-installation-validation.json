@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-7plus1-local-contract-v1",
+  "executed_on": "2026-08-24",
+  "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "source_artifact_digest": "sha256:89c1a63927a6a316ebcfeeac260e836225eeccf5701805314f91346e703166fd",
+  "target_artifact_digest": "sha256:4620844c7d549cde507a28a131a11d5b42fa770bab514e36ad4649d167767819",
+  "target_manifest_digest": "sha256:b25c38f1a0d4fc7082511597140ff186b4613584c810979a1b2abb008cfbc8c5",
+  "compiled_manifest": {
+    "path": "docs/elmos-7plus1-commercial-skills/compiled-manifest.json",
+    "sha256": "sha256:452438cf9d06d10211c2e4f9a98238eea33f0e1d74d494369e45b1d3a3ff82cc"
+  },
+  "installed_manifest": {
+    "path": "docs/elmos-7plus1-commercial-skills/installed-manifest.json",
+    "sha256": "sha256:13727100a92ba3b639ff5c9ee333f93bac8be6378d63677d32fb9fe1ac171138"
+  },
+  "install_observation": {
+    "status": "LOCAL_INSTALLED_SELF_ATTESTED",
+    "source": "digest-bound installed manifest and materialized repository paths",
+    "raw_evidence_ref": "certification/raw/install-summary.txt",
+    "raw_evidence_digest": "sha256:34798cce0df87c2134e29a7a7abbf7f9cf9ccbfb1a3b4e7c1b033a188f59769a"
+  },
+  "read_only_check": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_elmos_7plus1_skills.py --check",
+    "exit_code": 0,
+    "decision": "INSTALLATION_VERIFIED",
+    "raw_evidence_ref": "certification/raw/install-check.txt",
+    "raw_evidence_digest": "sha256:a0814b7fdc27988dac8de06f5dca7e9c0949d1ef99224c80449080e33c852311"
+  },
+  "skill_creator_validation": {
+    "validator": "/Users/stephen/.codex/skills/.system/skill-creator/scripts/quick_validate.py::validate_skill",
+    "environment": "/opt/homebrew/bin/uv run --quiet --with pyyaml==6.0.2 python",
+    "validated_per_root": 102,
+    "root_count": 2,
+    "total_validated": 204,
+    "failures": 0,
+    "decision": "PASSED",
+    "raw_evidence_ref": "certification/raw/skill-creator-validation.txt",
+    "raw_evidence_digest": "sha256:9e7e977b1c0ea62d7210484635e240f1b2bf0e34eaf676518f7c783ea69625de"
+  },
+  "cross_layer_counts": {
+    "source_archives": 8,
+    "canonical_source_files": 252,
+    "neutralized_instruction_paths": 102,
+    "source_skills": 101,
+    "installed_skills_per_root": 102,
+    "runtime_bound_skills": 102,
+    "public_methods": 50,
+    "collision_safe_aliases": 2
+  },
+  "safety_states": {
+    "dual_root_byte_identical": true,
+    "archive_content_executed": false,
+    "source_scripts_executed": false,
+    "runtime_evidence_status": "NOT_RUN",
+    "external_evidence_status": "NOT_RUN",
+    "certification_status": "NOT_CERTIFIED"
+  },
+  "limitations": [
+    "Install and check observations are local and self-attested; executor and verifier are not independent.",
+    "Skill Creator quick validation checks structural Skill requirements and does not prove runtime behavior.",
+    "The installed manifests transitively bind canonical and dual-root bytes, but no external signature, independent attestation, provider execution, production workload, or certification exists.",
+    "The earlier missing-PyYAML validator attempt is excluded; only the successful pinned PyYAML execution is recorded.",
+    "The existing 40-test runtime/importer result remains bound to its original 23-file pre-install target scope and is not rewritten as installed-state execution evidence."
+  ],
+  "certification_decision": "NOT_CERTIFIED"
+}

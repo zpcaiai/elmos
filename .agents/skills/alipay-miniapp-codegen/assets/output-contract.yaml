@@ -1,0 +1,27 @@
+skill: alipay-miniapp-codegen
+version: 1.0.0
+task_ids:
+- MAPP-024
+required_outputs:
+- path: platforms/alipay/**
+  required: true
+- path: alipay-codegen-report.json
+  required: true
+- path: alipay-trace-map.json
+  required: true
+gates:
+- name: 官方 CLI/IDE 构建通过
+  required: true
+- name: 配置与页面注册一致
+  required: true
+- name: 关键授权/交易契约通过
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

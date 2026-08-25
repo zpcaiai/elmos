@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · Project Intelligence Studio 总编排
+  short_description: 规划、实施或验收 Elmos Project Intelligence Studio 全链路能力。用于跨多个子系统的复杂任务、批次推进、依赖协调和最终生产认证；不要用于只修改单个局部组件。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-insight-orchestrator 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

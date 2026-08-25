@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/cache/v1.2/cache-slo-policy.schema.json",
+  "title": "Cache SLO Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "policy_id",
+    "targets",
+    "error_budgets",
+    "rollback"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.2.0"
+    },
+    "policy_id": {
+      "type": "string"
+    },
+    "targets": {
+      "type": "object",
+      "required": [
+        "stable_turn_cached_token_reuse_min",
+        "unexpected_full_prefix_miss_max",
+        "exact_rerun_weighted_reuse_min",
+        "small_edit_weighted_reuse_min",
+        "environment_snapshot_hit_min",
+        "restart_artifact_reuse_min",
+        "false_hits_max"
+      ],
+      "properties": {
+        "stable_turn_cached_token_reuse_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "unexpected_full_prefix_miss_max": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "exact_rerun_weighted_reuse_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "small_edit_weighted_reuse_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "unnecessary_invalidation_max": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "environment_snapshot_hit_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "warm_start_p95_reduction_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "restart_artifact_reuse_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "stable_followup_wall_clock_saved_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "model_input_cost_saved_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "false_hits_max": {
+          "const": 0
+        }
+      }
+    },
+    "error_budgets": {
+      "type": "object"
+    },
+    "cohort_floors": {
+      "type": "object"
+    },
+    "rollback": {
+      "type": "object",
+      "required": [
+        "automatic",
+        "safe_baseline_id"
+      ],
+      "properties": {
+        "automatic": {
+          "type": "boolean"
+        },
+        "safe_baseline_id": {
+          "type": "string"
+        },
+        "detection_window_seconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}

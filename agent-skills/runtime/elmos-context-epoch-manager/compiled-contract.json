@@ -1,0 +1,63 @@
+{
+  "archive_content_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "dependencies": [
+    "elmos-harness-runtime-platform"
+  ],
+  "external_evidence_status": "NOT_RUN",
+  "implementation_state": "BLUEPRINT_IMPORTED",
+  "installed_name_resolution": {
+    "installed_name": "elmos-context-epoch-manager",
+    "reason": "SOURCE_NAME_PRESERVED",
+    "source_name": "elmos-context-epoch-manager"
+  },
+  "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
+  "kind": "archive-source-skill-wrapper",
+  "name": "elmos-context-epoch-manager",
+  "namespace": "elmos-7plus1-commercial-v1",
+  "repository_handler_state": "LOCAL_IMPLEMENTED_BOUNDED",
+  "runtime_binding": {
+    "action": "resume-session",
+    "capability_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/capability_registry.json",
+      "sha256": "sha256:a374f9b6d89b9e8c999f54b876f10b202576213a974190457cc8aaf1ad037ac7"
+    },
+    "mode": "requires_adapter",
+    "module": "elmos_software_factory",
+    "operation": "runtime-plan",
+    "package_id": "P01",
+    "public_method_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/public_method_registry.json",
+      "sha256": "sha256:0171c8c6d4c5ee8b4cb1850ebd916ba485eead5f1984dd718386607be4fe029f"
+    },
+    "required_inputs": [
+      "session_id"
+    ],
+    "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+    "skill_name": "elmos-context-epoch-manager",
+    "skill_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
+      "sha256": "sha256:c54404d806e3ced3f217c16f53bb2f36b5237d4aeb0558b3ea15c9d6dfa1d8f2"
+    },
+    "state": "BOUND_NOT_EXECUTED"
+  },
+  "runtime_evidence_status": "NOT_RUN",
+  "schema_version": "elmos.7plus1.compiled-skill-contract.v1",
+  "side_effects_authorized": false,
+  "source": {
+    "archive": "skills/subskills/archives/01-elmos-harness-runtime-platform-v1.0.0.zip",
+    "key": "P01:context-epoch-manager",
+    "logical_path": "01-elmos-harness-runtime-platform/skills/context-epoch-manager/SKILL.md",
+    "materialized_path": "01-elmos-harness-runtime-platform/skills/context-epoch-manager/SKILL.md.source-data",
+    "name": "elmos-context-epoch-manager",
+    "package_id": "P01",
+    "package_name": "elmos-harness-runtime-platform",
+    "path": "skills/elmos-7plus1-commercial-skills-v1.0.0/01-elmos-harness-runtime-platform/skills/context-epoch-manager/SKILL.md.source-data",
+    "role": "child",
+    "sha256": "sha256:f15541e1c37ba1954bcad2056e544ca64f27f79b01e0d1a9de9e7e692fb2fce1"
+  },
+  "source_dependencies": [
+    "elmos-harness-runtime-platform"
+  ],
+  "source_implementation_state": "BLUEPRINT_IMPORTED"
+}

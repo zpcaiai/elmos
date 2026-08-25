@@ -232,6 +232,7 @@ def _output(
     command: list[str],
     *,
     executable_dirs: tuple[Path, ...] = (),
+    include_stderr: bool = True,
 ) -> str:
     try:
         with tempfile.TemporaryDirectory(prefix="elmos-toolchain-env-") as temporary:
@@ -256,7 +257,7 @@ def _output(
         raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}") from error
     if completed.returncode != 0:
         raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}")
-    return (completed.stdout + completed.stderr).strip()
+    return (completed.stdout + (completed.stderr if include_stderr else "")).strip()
 
 
 _EXPECTED_JAVA_HOME = Path("/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home")
@@ -3011,9 +3012,17 @@ def _apple_profile(language: Language) -> tuple[str, ...]:
     xcrun = Path("/usr/bin/xcrun")
     if not xcodebuild.is_file() or not xcrun.is_file():
         raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:xcodebuild/xcrun")
-    observed_xcode = _output([str(xcodebuild), "-version"])
-    sdk_version = _output([str(xcrun), "--sdk", "macosx", "--show-sdk-version"])
-    sdk_path = Path(_output([str(xcrun), "--sdk", "macosx", "--show-sdk-path"]))
+    observed_xcode = _output([str(xcodebuild), "-version"], include_stderr=False)
+    sdk_version = _output(
+        [str(xcrun), "--sdk", "macosx", "--show-sdk-version"],
+        include_stderr=False,
+    )
+    sdk_path = Path(
+        _output(
+            [str(xcrun), "--sdk", "macosx", "--show-sdk-path"],
+            include_stderr=False,
+        )
+    )
     if observed_xcode != _EXPECTED_XCODE or sdk_version != _EXPECTED_MACOS_SDK:
         raise RouteError(
             f"EXACT_TOOLCHAIN_APPLE_PROFILE_MISMATCH:{language}:"
@@ -3546,6 +3555,374 @@ def _php() -> ExactToolchain:
     )
 
 
+# ---------------------------------------------------------------------------
+# Kotlin
+#
+# Pinned as a plain versioned tree the way Go is -- a fixed root, a whole-tree
+# manifest of it, file records for the parts a human would need named, and a
+# before/after sandwich around the one subprocess the probe runs. Three things
+# make it not simply Go with different constants:
+#
+#   * The tree is walked with `php_tree_identity`, not `_qualified_tree_manifest`.
+#     Go and Rust are extracted tarballs of plain files, so the symlink-free
+#     contract fits them; a Kotlin distribution laid down by Homebrew or npm
+#     links its `bin` entries and sometimes a jar at a versioned sibling, and a
+#     rule no real install satisfies is not a strict rule but an unusable one.
+#     Links are therefore recorded into the identity rather than refused, and
+#     repointing one is drift even when no file's content changed.
+#   * An escaping link under `lib/`, or to anything named `*.jar`, is refused
+#     outright. `php_tree_identity` refuses an escaping link only when it lands
+#     on a `.so`/`.dylib`/`.bundle`, which is the whole rule for a C interpreter
+#     and half of it for a JVM one: a jar on the compiler classpath is loadable
+#     code exactly as much as a dylib is, and everything under `lib/` is on that
+#     classpath by construction. `tools/pin_kotlin_toolchain.py` refuses to emit
+#     a pin for such a tree, and the gate has to refuse to accept one, or the
+#     pinning script would be stricter than the check it feeds -- meaning a pin
+#     hand-edited or carried over from another host could pass a gate its own
+#     generator would have rejected.
+#   * The JVM is bound explicitly. `bin/kotlinc` and `bin/kotlin` are shell
+#     scripts whose entire job is to exec a `java` they locate at run time --
+#     `$JAVA_HOME/bin/java` if that is set, otherwise whatever `java` PATH
+#     resolves to. Every digest in this block describes bytes that are *input*
+#     to that JVM; none of them describes the JVM. Leave it unbound and an
+#     "exact toolchain" claim reduces to "these jars, run by some Java" -- and
+#     the JVM is not a neutral carrier for those jars. It fixes the bytecode
+#     verifier, the class-file versions accepted, `strictfp`/FMA behaviour, the
+#     default charset used to read sources, and the `java.*` implementations the
+#     stdlib delegates to; a route's recorded evidence would then be reproducible
+#     on paper and not on any second machine. This engine already pins a JDK for
+#     `_java`, so the honest binding is that same one, reused rather than
+#     re-derived: `_kotlin_jvm_binding` calls `_java()` and takes the home and
+#     the `release` digest out of the toolchain `_java` returns, so the JDK
+#     behind Kotlin is the JDK the Java route already verified -- digests of
+#     `java`, `javac`, `lib/modules`, `lib/server/libjvm.dylib` and `release`,
+#     plus the bundle's codesign identity -- and it cannot drift apart from it.
+#     Both facts are surfaced in the profile (`kotlin-jvm-home`,
+#     `kotlin-jvm-release-sha256`) so a route's evidence names the pair.
+#
+# The `_EXPECTED_KOTLIN_*` constants below are machine-specific, the same way
+# `_EXPECTED_PHP_TREE_SHA256` and `_EXPECTED_GO_TREE_SHA256` are. Run
+# `tools/pin_kotlin_toolchain.py` on the pinning host and paste its output here;
+# the script emits exactly this block, with these names and these types. Until
+# they are pinned the probe fails closed with EXACT_TOOLCHAIN_KOTLIN_NOT_PINNED
+# rather than accepting whatever `kotlinc` happens to be on PATH.
+_KOTLIN_VERSION_VARIABLE = "ELMOS_KOTLIN_VERSION"
+_EXPECTED_KOTLIN_VERSION = ''
+#: Empty until pinned. `Path('')` is `Path('.')`, which is not a Kotlin install
+#: on any host -- deliberately so, because the placeholder must not accidentally
+#: name something real. Nothing below dereferences it: the not-pinned guard in
+#: `_kotlin` runs before the first filesystem touch.
+_EXPECTED_KOTLIN_ROOT = Path('')
+_EXPECTED_KOTLIN_ANCHOR = Path('')
+_EXPECTED_KOTLINC_EXECUTABLE = _EXPECTED_KOTLIN_ROOT / "bin" / "kotlinc"
+_EXPECTED_KOTLINC_EXECUTABLE_SHA256 = ''
+_EXPECTED_KOTLINC_EXECUTABLE_BYTES = 0
+_EXPECTED_KOTLIN_COMPILER_JAR = _EXPECTED_KOTLIN_ROOT / "lib" / "kotlin-compiler.jar"
+_EXPECTED_KOTLIN_COMPILER_JAR_SHA256 = ''
+_EXPECTED_KOTLIN_COMPILER_JAR_BYTES = 0
+_EXPECTED_KOTLIN_STDLIB_JAR = _EXPECTED_KOTLIN_ROOT / "lib" / "kotlin-stdlib.jar"
+_EXPECTED_KOTLIN_STDLIB_JAR_SHA256 = ''
+_EXPECTED_KOTLIN_STDLIB_JAR_BYTES = 0
+_EXPECTED_KOTLIN_TREE_SHA256 = ''
+_EXPECTED_KOTLIN_TREE_RECORD_COUNT = 0
+_EXPECTED_KOTLIN_TREE_FILE_COUNT = 0
+_EXPECTED_KOTLIN_TREE_DIRECTORY_COUNT = 0
+_EXPECTED_KOTLIN_TREE_BYTES = 0
+#: Symlinks whose target resolves *inside* the install root, as name -> raw link
+#: text. Part of the tree's identity for the same reason PHP's are: the link is
+#: what the distribution ships, and repointing one is drift.
+_EXPECTED_KOTLIN_TREE_SYMLINKS: dict[str, str] = {}
+#: Symlinks whose target resolves *outside* the install root. Their content is
+#: NOT bound by this pin, which is why they are recorded separately instead of
+#: folded in and implied otherwise. Pinning the exact set is what keeps the
+#: admission honest: if a future distribution adds an escaping link, the set
+#: changes and the probe fails rather than quietly widening what is unbound.
+#: `_kotlin_classpath_binding` additionally refuses any entry here that is under
+#: `lib/` or names a jar -- those are not merely unbound, they are unbindable.
+_EXPECTED_KOTLIN_TREE_UNBOUND_SYMLINKS: dict[str, str] = {}
+#: Contents of `build.txt`: Kotlin's own build identity, and the one field that
+#: separates two distributions reporting the same marketing version.
+_EXPECTED_KOTLIN_BUILD_NUMBER = ''
+#: `bin/kotlin`, the runtime launcher, reported as the toolchain's auxiliary
+#: executable. It gets no digest constant of its own because the pin script
+#: emits none: its bytes are covered by the tree manifest like every other file
+#: under the root, and a second digest pinned in two places is a second thing to
+#: keep in sync. `auxiliary_sha256` is therefore left unset rather than filled
+#: from an observed read, which would look like a pin without being one.
+_EXPECTED_KOTLIN_LAUNCHER = _EXPECTED_KOTLIN_ROOT / "bin" / "kotlin"
+
+
+def _kotlin_classpath_binding() -> None:
+    """Refuse a pin whose compiler classpath leaves the tree.
+
+    Exactly the rule `tools/pin_kotlin_toolchain.py::_unbound_classpath_links`
+    applies before it will emit a block, restated here because the generator and
+    the gate must not be able to disagree: a pin produced elsewhere, or edited by
+    hand, must fail the same way the generator would have refused to produce it.
+
+    Distinct code from the tree mismatch on purpose. "The set of unbound links
+    changed" and "a jar the compiler loads is not covered by this pin at all" are
+    different problems with different fixes, and collapsing them would make the
+    second read as ordinary drift.
+    """
+    escaping = sorted(
+        (name, target)
+        for name, target in _EXPECTED_KOTLIN_TREE_UNBOUND_SYMLINKS.items()
+        if name.startswith("lib/") or name.endswith(".jar")
+    )
+    if escaping:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_KOTLIN_CLASSPATH_UNBOUND:"
+            + ",".join(f"{name}->{target}" for name, target in escaping)
+        )
+
+
+def _kotlin_tree_identity() -> dict[str, object]:
+    identity = php_tree_identity(
+        _EXPECTED_KOTLIN_ROOT,
+        _EXPECTED_KOTLIN_ANCHOR,
+        "EXACT_TOOLCHAIN_KOTLIN_TREE_UNSAFE",
+    )
+    expected = {
+        "root": str(_EXPECTED_KOTLIN_ROOT),
+        "sha256": _EXPECTED_KOTLIN_TREE_SHA256,
+        "record_count": _EXPECTED_KOTLIN_TREE_RECORD_COUNT,
+        "file_count": _EXPECTED_KOTLIN_TREE_FILE_COUNT,
+        "directory_count": _EXPECTED_KOTLIN_TREE_DIRECTORY_COUNT,
+        "bytes": _EXPECTED_KOTLIN_TREE_BYTES,
+        "symlinks": _EXPECTED_KOTLIN_TREE_SYMLINKS,
+        "unbound_symlinks": _EXPECTED_KOTLIN_TREE_UNBOUND_SYMLINKS,
+    }
+    if identity != expected:
+        raise RouteError("EXACT_TOOLCHAIN_KOTLIN_TREE_MISMATCH")
+    return identity
+
+
+def _kotlin_file_records() -> tuple[dict[str, str | int], ...]:
+    """Records for the launcher, the compiler jar and the stdlib jar.
+
+    All three are inside the tree digest already. They are read again by name so
+    that a swapped `lib/kotlin-compiler.jar` fails with that path in the error
+    rather than as one changed record out of several thousand, and so that the
+    before/after sandwich has something cheap to re-read around the subprocess
+    without walking the whole tree twice for the parts that matter most.
+    """
+    return (
+        _qualified_file_record(
+            _EXPECTED_KOTLINC_EXECUTABLE,
+            _EXPECTED_KOTLIN_ROOT,
+            "EXACT_TOOLCHAIN_KOTLIN_EXECUTABLE_UNSAFE",
+        ),
+        _qualified_file_record(
+            _EXPECTED_KOTLIN_COMPILER_JAR,
+            _EXPECTED_KOTLIN_ROOT,
+            "EXACT_TOOLCHAIN_KOTLIN_COMPILER_JAR_UNSAFE",
+        ),
+        _qualified_file_record(
+            _EXPECTED_KOTLIN_STDLIB_JAR,
+            _EXPECTED_KOTLIN_ROOT,
+            "EXACT_TOOLCHAIN_KOTLIN_STDLIB_JAR_UNSAFE",
+        ),
+    )
+
+
+def _kotlin_build_number() -> str:
+    """`build.txt`, checked against the pin.
+
+    Read after the tree manifest so the bytes quoted into the profile are bytes
+    the tree digest already covers, rather than a second unbound read of the same
+    path. The value is the distribution's own build identity: two Kotlin releases
+    can print the same `kotlinc -version` banner and carry different build
+    numbers, so this is checked by value in addition to being inside the digest.
+    """
+    try:
+        observed = (_EXPECTED_KOTLIN_ROOT / "build.txt").read_text(encoding="utf-8").strip()
+    except (OSError, UnicodeDecodeError) as error:
+        raise RouteError("EXACT_TOOLCHAIN_KOTLIN_BUILD_NUMBER_UNREADABLE") from error
+    if observed != _EXPECTED_KOTLIN_BUILD_NUMBER:
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_KOTLIN_BUILD_NUMBER_MISMATCH:"
+            f"expected={_EXPECTED_KOTLIN_BUILD_NUMBER}:observed={observed}"
+        )
+    return observed
+
+
+def _kotlin_jvm_binding() -> tuple[Path, str]:
+    """The JDK `kotlinc` will run under, taken from the JDK this engine already pins.
+
+    `_java()` is called rather than `_EXPECTED_JAVA_HOME` being re-read here, and
+    the difference is not stylistic. `_java` verifies the home resolves, that any
+    declared `ELMOS_JAVA21_HOME` agrees with it, the digests of `java`, `javac`,
+    `lib/modules`, `lib/server/libjvm.dylib` and `release`, both version banners
+    and the bundle's codesign identity. Re-deriving the path here would bind the
+    *location* of a JDK while inheriting none of that, and would let the Java
+    route and the Kotlin route drift onto different JVMs while both still claimed
+    to be exact.
+
+    Returns the home and the `release` digest. `release` is the file that names
+    the build -- version, build number, target platform, source revision -- so its
+    digest is the shortest honest way for a Kotlin route's evidence to identify
+    which JVM produced it.
+    """
+    try:
+        jdk = _java()
+    except RouteError as error:
+        raise RouteError(f"EXACT_TOOLCHAIN_KOTLIN_JVM_UNPINNED:{error}") from error
+
+    def profile_value(prefix: str) -> str:
+        matches = [item[len(prefix):] for item in jdk.profile if item.startswith(prefix)]
+        if len(matches) != 1:
+            raise RouteError(f"EXACT_TOOLCHAIN_KOTLIN_JVM_UNPINNED:{prefix}")
+        return matches[0]
+
+    home = Path(profile_value("jdk-home="))
+    release_digest = profile_value("release-sha256=")
+    # The home is the parent of the launcher `_java` itself verified; if those two
+    # ever disagree the profile is describing a different JDK from the one whose
+    # digests were checked, and neither is then trustworthy.
+    if Path(jdk.executable) != home / "bin" / "java" or not release_digest:
+        raise RouteError(f"EXACT_TOOLCHAIN_KOTLIN_JVM_UNPINNED:{home}")
+    return home, release_digest
+
+
+def _kotlin_version_banner(jvm_home: Path) -> str:
+    """The `kotlinc -version` banner, run against the pinned JDK.
+
+    Not `_output`, for three reasons that are all specific to this launcher.
+
+    `kotlinc` prints its banner on *stderr* with an `info: ` prefix, and exits
+    non-zero on builds that treat "no source files" as an error -- so the exit
+    code is not the signal and `_output`'s "non-zero means unavailable" rule would
+    reject a perfectly good compiler. The banner line's presence is the signal;
+    its absence is the failure, and the exit code is reported with it because
+    "no banner, exit 1" and "no banner, exit 0" are different faults.
+
+    stdin is closed. A `kotlinc` that fails to parse its arguments falls through
+    to the REPL, which on an inherited terminal would block until the 30-second
+    `_output` timeout instead of failing.
+
+    The JDK is bound two ways, deliberately redundantly, because the launcher
+    picks its JVM with `${JAVA_HOME}/bin/java` if that is set and a bare `java`
+    otherwise: `JAVA_HOME` is set to the pinned home, and the pinned home's `bin`
+    is put first on PATH so even a launcher that ignores `JAVA_HOME` cannot reach
+    `/usr/bin/java`. `sanitized_subprocess_env` drops the ambient environment
+    entirely, so this is additive, not an override of the caller's intent.
+
+    The timeout matches the pin script's rather than `_output`'s 30 seconds: a
+    cold JVM loading a ~60MB compiler jar is not fast, and a gate that timed out
+    where the generator did not would refuse pins it had just produced.
+    """
+    command = [str(_EXPECTED_KOTLINC_EXECUTABLE), "-version"]
+    try:
+        with tempfile.TemporaryDirectory(prefix="elmos-toolchain-env-") as temporary:
+            root = Path(temporary)
+            home = root / "home"
+            scratch = root / "tmp"
+            home.mkdir(mode=0o700)
+            scratch.mkdir(mode=0o700)
+            environment = sanitized_subprocess_env(
+                home=home,
+                temp_dir=scratch,
+                executable_dirs=(jvm_home / "bin", _EXPECTED_KOTLINC_EXECUTABLE.parent),
+            )
+            environment["JAVA_HOME"] = str(jvm_home)
+            completed = subprocess.run(
+                command,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=300,
+                stdin=subprocess.DEVNULL,
+                env=environment,
+            )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}") from error
+    printed = f"{completed.stderr}{completed.stdout}"
+    for line in printed.splitlines():
+        candidate = line.strip().removeprefix("info:").strip()
+        if candidate.startswith("kotlinc"):
+            return candidate
+    raise RouteError(f"EXACT_TOOLCHAIN_KOTLIN_VERSION_BANNER_MISSING:returncode={completed.returncode}")
+
+
+def _kotlin() -> ExactToolchain:
+    if platform.system() != "Darwin" or platform.machine() != "arm64":
+        raise RouteError(
+            "EXACT_TOOLCHAIN_PLATFORM_MISMATCH:kotlin:expected=Darwin/arm64:"
+            f"observed={platform.system()}/{platform.machine()}"
+        )
+    if not (
+        _EXPECTED_KOTLIN_VERSION
+        and _EXPECTED_KOTLINC_EXECUTABLE_SHA256
+        and _EXPECTED_KOTLIN_COMPILER_JAR_SHA256
+        and _EXPECTED_KOTLIN_STDLIB_JAR_SHA256
+        and _EXPECTED_KOTLIN_TREE_SHA256
+        and _EXPECTED_KOTLIN_BUILD_NUMBER
+    ):
+        # An unpinned digest must never degrade to "trust whatever is there".
+        raise RouteError(
+            "EXACT_TOOLCHAIN_KOTLIN_NOT_PINNED:run tools/pin_kotlin_toolchain.py on the pinning host"
+        )
+    expected_version = _pinned(_KOTLIN_VERSION_VARIABLE, "kotlin", _EXPECTED_KOTLIN_VERSION)
+    _kotlin_classpath_binding()
+    jvm_home, jvm_release_digest = _kotlin_jvm_binding()
+    tree_before = _kotlin_tree_identity()
+    records_before = _kotlin_file_records()
+    build_number = _kotlin_build_number()
+    observed = _kotlin_version_banner(jvm_home)
+    records_after = _kotlin_file_records()
+    tree_after = _kotlin_tree_identity()
+    executable_after, compiler_after, stdlib_after = records_after
+    if (
+        observed != expected_version
+        or records_before != records_after
+        or executable_after.get("sha256") != _EXPECTED_KOTLINC_EXECUTABLE_SHA256
+        or executable_after.get("bytes") != _EXPECTED_KOTLINC_EXECUTABLE_BYTES
+        or compiler_after.get("sha256") != _EXPECTED_KOTLIN_COMPILER_JAR_SHA256
+        or compiler_after.get("bytes") != _EXPECTED_KOTLIN_COMPILER_JAR_BYTES
+        or stdlib_after.get("sha256") != _EXPECTED_KOTLIN_STDLIB_JAR_SHA256
+        or stdlib_after.get("bytes") != _EXPECTED_KOTLIN_STDLIB_JAR_BYTES
+        or tree_before != tree_after
+    ):
+        raise RouteError(f"EXACT_TOOLCHAIN_MISMATCH:kotlin:expected={expected_version}:observed={observed}")
+    return ExactToolchain(
+        "kotlin",
+        observed,
+        str(_EXPECTED_KOTLINC_EXECUTABLE),
+        str(_EXPECTED_KOTLIN_LAUNCHER),
+        profile=(
+            "kotlin-toolchain-closure-schema=v1",
+            "platform=Darwin/arm64",
+            f"kotlin-root={_EXPECTED_KOTLIN_ROOT}",
+            f"kotlin-tree-sha256={tree_after['sha256']}",
+            f"kotlin-tree-record-count={tree_after['record_count']}",
+            f"kotlin-tree-file-count={tree_after['file_count']}",
+            f"kotlin-tree-directory-count={tree_after['directory_count']}",
+            f"kotlin-tree-bytes={tree_after['bytes']}",
+            f"kotlin-tree-symlink-count={len(_EXPECTED_KOTLIN_TREE_SYMLINKS)}",
+            f"kotlin-tree-unbound-symlink-count={len(_EXPECTED_KOTLIN_TREE_UNBOUND_SYMLINKS)}",
+            *(
+                f"kotlin-tree-unbound-symlink={name}->{target}"
+                for name, target in sorted(_EXPECTED_KOTLIN_TREE_UNBOUND_SYMLINKS.items())
+            ),
+            f"kotlin-build-number={build_number}",
+            f"kotlinc-sha256={executable_after['sha256']}",
+            f"kotlin-compiler-jar-sha256={compiler_after['sha256']}",
+            f"kotlin-stdlib-jar-sha256={stdlib_after['sha256']}",
+            # The JVM the launcher will exec, and which build it is. Without these
+            # two the rest of this profile describes bytes fed to an unnamed
+            # interpreter, and `_toolchain_executable_dirs` has nothing to read to
+            # put that JVM on PATH for the emit-time runs.
+            f"kotlin-jvm-home={jvm_home}",
+            f"kotlin-jvm-release-sha256={jvm_release_digest}",
+            "integer=int64",
+            "number=binary64",
+            "kotlin-runtime-semantic-soundness=NOT_RUN",
+        ),
+        executable_sha256=_EXPECTED_KOTLINC_EXECUTABLE_SHA256,
+    )
+
+
 def _toolchain_fingerprint() -> tuple[str, ...]:
     tsc = REPOSITORY_ROOT / "engines" / "frontend-client-engine" / "node_modules" / ".bin" / "tsc"
     try:
@@ -3568,7 +3945,7 @@ def _cached_exact_toolchain(
     language: Language,
     _fingerprint: tuple[str, ...],
 ) -> ExactToolchain:
-    return {
+    selectors = {
         "java": _java,
         "python": _python,
         "csharp": _csharp,
@@ -3580,7 +3957,13 @@ def _cached_exact_toolchain(
         "objc": _objc,
         "swift": _swift,
         "php": _php,
-    }[language]()
+        "kotlin": _kotlin,
+    }
+    try:
+        selector = selectors[language]
+    except KeyError as error:
+        raise RouteError(f"EXACT_TOOLCHAIN_UNREGISTERED:{language}") from error
+    return selector()
 
 
 def clear_exact_toolchain_cache() -> None:
@@ -3588,4 +3971,14 @@ def clear_exact_toolchain_cache() -> None:
 
 
 def exact_toolchain(language: Language) -> ExactToolchain:
+    """Resolve one language's pinned toolchain, or fail with a code.
+
+    A language absent from this table has no pinned toolchain at all, which
+    is a property of the engine rather than of the machine asking: it cannot
+    be a source anywhere. Letting the bare `KeyError` escape made that read
+    as an internal fault at every call site -- and it is the one dict lookup
+    in this package that did not convert. `emitter._type`,
+    `identifier_hygiene.policy_for_language` and the pipeline's own lookup
+    all raise a coded `RouteError` here.
+    """
     return _cached_exact_toolchain(language, _toolchain_fingerprint())

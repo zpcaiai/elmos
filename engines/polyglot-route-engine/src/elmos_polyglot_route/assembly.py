@@ -37,6 +37,7 @@ import json
 import math
 import os
 import re
+import signal
 import shutil
 import stat
 import struct
@@ -56,9 +57,22 @@ from .identifier_hygiene import (
     target_function_view,
     validate_identifier_plan,
 )
-from .models import Language, RouteError, SemanticIR
-from .toolchains import exact_toolchain, sanitized_subprocess_env
-from .validation import _bounded_process_diagnostic, safe_output
+from .models import (
+    REPOSITORY_LANGUAGE_LIFECYCLE_ACTIVE,
+    REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
+    Language,
+    RouteError,
+    SemanticIR,
+    repository_language_lifecycle,
+)
+from .react_analyzer import validate_react_runtime_receipt, verify_react_runtime_import
+from .toolchains import (
+    exact_toolchain,
+    flutter_build_command,
+    sanitized_subprocess_env,
+    verify_flutter_build_toolchain,
+)
+from .validation import _bounded_process_diagnostic, _kotlin_jvm_bin, safe_output
 
 SCHEMA_VERSION = "1.0.0"
 MANIFEST_NAME = "assembly-manifest.json"
@@ -77,6 +91,31 @@ _EVIDENCE_ROLE_ORDER = {
     "emitted-target": 4,
     "source-javascript-esm-descriptor": 5,
 }
+
+
+def _exact_toolchain_identity(toolchain: Any) -> dict[str, Any]:
+    """Canonical record used to bind Kotlin unit and assembly evidence."""
+
+    return {
+        "language": toolchain.language,
+        "version": toolchain.version,
+        "executable": toolchain.executable,
+        "executable_sha256": toolchain.executable_sha256,
+        "auxiliary": toolchain.auxiliary,
+        "auxiliary_sha256": toolchain.auxiliary_sha256,
+        "profile": list(toolchain.profile),
+    }
+
+
+def _exact_toolchain_identity_sha256(identity: Mapping[str, Any]) -> str:
+    return "sha256:" + hashlib.sha256(
+        json.dumps(
+            identity,
+            ensure_ascii=True,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("ascii")
+    ).hexdigest()
 
 _EXPECTED_CMAKE_PREFIX = Path("/opt/homebrew/Cellar/cmake/4.4.0")
 _EXPECTED_CMAKE_EXECUTABLE = Path("/opt/homebrew/Cellar/cmake/4.4.0/bin/cmake")
@@ -177,6 +216,7 @@ _BUILD_FILES: dict[Language, tuple[str, ...]] = {
     "csharp": ("polyglot-migrated-library.csproj",),
     "python": ("pyproject.toml",),
     "typescript": ("package.json", "tsconfig.json"),
+    "react": ("package.json", "tsconfig.json"),
     "javascript": ("package.json",),
     "go": ("go.mod",),
     "rust": ("Cargo.toml", "src/lib.rs"),
@@ -184,6 +224,12 @@ _BUILD_FILES: dict[Language, tuple[str, ...]] = {
     "objc": ("CMakeLists.txt",),
     "swift": ("Package.swift",),
     "php": ("composer.json",),
+    "kotlin": ("kotlinc.args",),
+    "flutter": (
+        "pubspec.yaml",
+        "analysis_options.yaml",
+        ".dart_tool/package_config.json",
+    ),
 }
 
 _SOURCE_LAYOUTS: dict[Language, tuple[str, str, frozenset[str]]] = {
@@ -191,6 +237,7 @@ _SOURCE_LAYOUTS: dict[Language, tuple[str, str, frozenset[str]]] = {
     "csharp": ("src/Units", ".cs", frozenset()),
     "python": ("src/elmos_generated", ".py", frozenset({"src/elmos_generated/__init__.py"})),
     "typescript": ("src/generated", ".ts", frozenset()),
+    "react": ("src/generated", ".tsx", frozenset()),
     "javascript": ("src/generated", ".mjs", frozenset()),
     "go": ("units", ".go", frozenset()),
     "rust": ("src", ".rs", frozenset({"src/lib.rs"})),
@@ -198,6 +245,8 @@ _SOURCE_LAYOUTS: dict[Language, tuple[str, str, frozenset[str]]] = {
     "objc": ("src", ".m", frozenset()),
     "swift": ("Sources", ".swift", frozenset()),
     "php": ("src", ".php", frozenset()),
+    "kotlin": ("src/main/kotlin", ".kt", frozenset()),
+    "flutter": ("lib", ".dart", frozenset({"lib/main.dart"})),
 }
 
 # These generated source files participate in the whole-project compiler input
@@ -205,6 +254,7 @@ _SOURCE_LAYOUTS: dict[Language, tuple[str, str, frozenset[str]]] = {
 # ``_BUILD_FILES`` because Cargo.toml names it as the library entry point.
 _AUXILIARY_BUILD_INPUTS: dict[Language, tuple[str, ...]] = {
     "python": ("src/elmos_generated/__init__.py",),
+    "flutter": ("lib/main.dart",),
 }
 
 
@@ -843,6 +893,19 @@ def _read_verified_unit_evidence(
     identifier_hygiene = evidence.get("identifier_hygiene")
     source_validation = evidence.get("source_validation")
     target_validation = evidence.get("validation")
+    kotlin_toolchain_closed = True
+    if source_language == "kotlin":
+        try:
+            expected_kotlin_toolchain = _exact_toolchain_identity(
+                exact_toolchain("kotlin")
+            )
+        except RouteError as error:
+            raise RouteError(
+                f"ASSEMBLY_UNIT_KOTLIN_TOOLCHAIN_UNAVAILABLE:{unit_id}"
+            ) from error
+        kotlin_toolchain_closed = (
+            evidence.get("toolchain") == expected_kotlin_toolchain
+        )
     if (
         evidence.get("status") not in {"PASSED", "PASSED_LOCAL_UNCERTIFIED"}
         or evidence.get("repository_execution_mode") is not True
@@ -874,6 +937,7 @@ def _read_verified_unit_evidence(
         or not isinstance(target_validation, Mapping)
         or target_validation.get("status") != "PASSED"
         or target_validation.get("case_count") != case_count
+        or not kotlin_toolchain_closed
     ):
         raise RouteError(f"ASSEMBLY_UNIT_EVIDENCE_NOT_CLOSED:{unit_id}")
 
@@ -972,9 +1036,28 @@ def _read_verified_unit_evidence(
     )
 
 
-def _validate_batch_report_closure(batch_report: dict[str, Any]) -> None:
+def _validate_batch_report_closure(
+    batch_report: dict[str, Any],
+    *,
+    allow_deprecated_replay: bool,
+) -> None:
     units = batch_report.get("units")
     snapshot_sha256 = batch_report.get("snapshot_sha256")
+    source_language = batch_report.get("source_language")
+    target_language = batch_report.get("target_language")
+    lifecycle = repository_language_lifecycle(source_language, target_language)
+    if lifecycle is None or batch_report.get("language_lifecycle") != lifecycle:
+        raise RouteError("ASSEMBLY_BATCH_LANGUAGE_LIFECYCLE_INVALID")
+    if (
+        lifecycle == REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
+        and not allow_deprecated_replay
+    ):
+        raise RouteError("ASSEMBLY_DEPRECATED_REPLAY_EXPLICIT_AUTHORITY_REQUIRED")
+    if lifecycle not in {
+        REPOSITORY_LANGUAGE_LIFECYCLE_ACTIVE,
+        REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
+    }:
+        raise RouteError("ASSEMBLY_BATCH_LANGUAGE_LIFECYCLE_INVALID")
     if (
         not isinstance(units, list)
         or not units
@@ -1043,6 +1126,14 @@ def _place_typescript(destination: Path, namespace: str, content: str) -> str:
     return relative
 
 
+def _place_react(destination: Path, namespace: str, content: str) -> str:
+    relative = f"src/generated/{namespace}.tsx"
+    target = destination / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(content, encoding="utf-8")
+    return relative
+
+
 def _place_javascript(destination: Path, namespace: str, content: str) -> str:
     relative = f"src/generated/{namespace}.mjs"
     target = destination / relative
@@ -1085,6 +1176,30 @@ def _place_objc(destination: Path, namespace: str, content: str) -> str:
     return relative
 
 
+def _place_kotlin(destination: Path, namespace: str, content: str) -> str:
+    """Place one emitted Kotlin unit, giving it its own package.
+
+    Same division of labour as Java, C# and PHP: the emitted file carries no
+    package declaration and the placer adds the one that matches where the file
+    lands.  For Kotlin this is load-bearing rather than cosmetic.  A top-level
+    `fun` compiles into a static method on a synthetic `MigratedKt` file class,
+    and that class name is derived from the file name alone -- so two units
+    both emitted as `migrated.kt` would produce two `MigratedKt` classes with
+    the same JVM binary name, and the second one silently wins at link time.
+    The package is what keeps their binary names distinct.
+
+    The declaration must be the first statement in the file, before the
+    helpers, which is why it is prepended rather than inserted.
+    """
+    relative = f"src/main/kotlin/elmos/generated/{namespace}/migrated.kt"
+    target = destination / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if content.lstrip().startswith("package "):
+        raise RouteError("ASSEMBLY_KOTLIN_PACKAGE_ALREADY_DECLARED")
+    target.write_text(f"package elmos.generated.{namespace}\n\n{content}", encoding="utf-8")
+    return relative
+
+
 def _place_php(destination: Path, namespace: str, content: str) -> str:
     """Place one emitted PHP unit, giving it its own namespace.
 
@@ -1117,6 +1232,18 @@ def _place_php(destination: Path, namespace: str, content: str) -> str:
     return relative
 
 
+def _place_flutter(destination: Path, namespace: str, content: str) -> str:
+    """Place one import-free pure-Dart unit in a separate library."""
+
+    if re.search(r"(?m)^\s*(?:library|part|import|export)\b", content):
+        raise RouteError("ASSEMBLY_FLUTTER_DIRECTIVE_OUTSIDE_PURE_MODULE")
+    relative = f"lib/generated/{namespace}/migrated.dart"
+    target = destination / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(content, encoding="utf-8")
+    return relative
+
+
 def _place_swift(destination: Path, namespace: str, content: str) -> str:
     module = namespace.capitalize()
     relative = f"Sources/{module}/migrated.swift"
@@ -1131,6 +1258,7 @@ _PLACERS = {
     "csharp": _place_csharp,
     "python": _place_python,
     "typescript": _place_typescript,
+    "react": _place_react,
     "javascript": _place_javascript,
     "go": _place_go,
     "rust": _place_rust,
@@ -1138,6 +1266,8 @@ _PLACERS = {
     "objc": _place_objc,
     "swift": _place_swift,
     "php": _place_php,
+    "kotlin": _place_kotlin,
+    "flutter": _place_flutter,
 }
 
 
@@ -1147,6 +1277,7 @@ def _expected_assembled_path(target_language: Language, namespace: str) -> str:
         "csharp": f"src/Units/{namespace}/Migrated.cs",
         "python": f"src/elmos_generated/{namespace}.py",
         "typescript": f"src/generated/{namespace}.ts",
+        "react": f"src/generated/{namespace}.tsx",
         "javascript": f"src/generated/{namespace}.mjs",
         "go": f"units/{namespace}/migrated.go",
         "rust": f"src/{namespace}.rs",
@@ -1154,6 +1285,8 @@ def _expected_assembled_path(target_language: Language, namespace: str) -> str:
         "objc": f"src/{namespace}/migrated.m",
         "swift": f"Sources/{namespace.capitalize()}/migrated.swift",
         "php": f"src/{namespace}/migrated.php",
+        "kotlin": f"src/main/kotlin/elmos/generated/{namespace}/migrated.kt",
+        "flutter": f"lib/generated/{namespace}/migrated.dart",
     }
     return paths[target_language]
 
@@ -1361,6 +1494,7 @@ def _validate_bound_evidence_contents(
 def _validate_build_verification(
     manifest: Mapping[str, Any],
     target_language: Language,
+    destination: Path | None,
     *,
     require_build_passed: bool,
 ) -> None:
@@ -1383,6 +1517,20 @@ def _validate_build_verification(
         or not commands
     ):
         raise RouteError("ASSEMBLY_BUILD_VERIFICATION_INVALID")
+    try:
+        current_toolchain = exact_toolchain(target_language)
+    except RouteError as error:
+        raise RouteError("ASSEMBLY_BUILD_TOOLCHAIN_UNAVAILABLE") from error
+    if verification.get("toolchain_version") != current_toolchain.version:
+        raise RouteError("ASSEMBLY_BUILD_TOOLCHAIN_VERSION_DRIFT")
+    if target_language == "kotlin":
+        expected_identity = _exact_toolchain_identity(current_toolchain)
+        if (
+            verification.get("kotlin_exact_toolchain") != expected_identity
+            or verification.get("kotlin_exact_toolchain_sha256")
+            != _exact_toolchain_identity_sha256(expected_identity)
+        ):
+            raise RouteError("ASSEMBLY_KOTLIN_BUILD_TOOLCHAIN_IDENTITY_DRIFT")
     for record in commands:
         if (
             not isinstance(record, Mapping)
@@ -1394,6 +1542,82 @@ def _validate_build_verification(
         ):
             raise RouteError("ASSEMBLY_BUILD_VERIFICATION_INVALID")
     cmake_runtime = verification.get("cmake_runtime")
+    if target_language == "react":
+        runtime_receipt = verification.get("react_runtime_receipt")
+        if not isinstance(runtime_receipt, dict):
+            raise RouteError("ASSEMBLY_REACT_RUNTIME_RECEIPT_INVALID")
+        try:
+            validate_react_runtime_receipt(exact_toolchain("react"), runtime_receipt)
+        except RouteError as error:
+            raise RouteError("ASSEMBLY_REACT_RUNTIME_RECEIPT_INVALID") from error
+    if target_language == "flutter":
+        build_receipt = verification.get("flutter_build_toolchain_receipt")
+        if not isinstance(build_receipt, dict):
+            raise RouteError("ASSEMBLY_FLUTTER_BUILD_TOOLCHAIN_RECEIPT_INVALID")
+        dart = str(current_toolchain.auxiliary or "")
+        package_config = ".dart_tool/package_config.json"
+        expected_commands = [
+            [
+                dart,
+                "--suppress-analytics",
+                "analyze",
+                "--format=json",
+                "--fatal-infos",
+                "--fatal-warnings",
+                f"--packages={package_config}",
+                "--sdk-path=" + str(Path(dart).resolve().parent.parent),
+                "lib",
+            ],
+            [
+                dart,
+                "--suppress-analytics",
+                "compile",
+                "kernel",
+                f"--packages={package_config}",
+                "--verbosity=error",
+                "--link-platform",
+                "--no-embed-sources",
+                "--output=build/elmos_repository.dill",
+                "lib/main.dart",
+            ],
+            [
+                dart,
+                f"--packages={package_config}",
+                "build/elmos_repository.dill",
+            ],
+        ]
+        if [record["command"] for record in commands] != expected_commands:
+            raise RouteError("ASSEMBLY_FLUTTER_BUILD_COMMAND_INVALID")
+        try:
+            observed_build_receipt = verify_flutter_build_toolchain(
+                exact_toolchain("flutter")
+            )
+        except RouteError as error:
+            raise RouteError(
+                "ASSEMBLY_FLUTTER_BUILD_TOOLCHAIN_RECEIPT_INVALID"
+            ) from error
+        if build_receipt != observed_build_receipt:
+            raise RouteError("ASSEMBLY_FLUTTER_BUILD_TOOLCHAIN_RECEIPT_INVALID")
+        artifact = verification.get("flutter_compiled_artifact")
+        if (
+            not isinstance(artifact, Mapping)
+            or artifact.get("path") != "build/elmos_repository.dill"
+            or type(artifact.get("bytes")) is not int
+            or int(artifact["bytes"]) <= 0
+            or not isinstance(artifact.get("sha256"), str)
+            or re.fullmatch(r"sha256:[0-9a-f]{64}", str(artifact["sha256"])) is None
+        ):
+            raise RouteError("ASSEMBLY_FLUTTER_COMPILED_ARTIFACT_INVALID")
+        if destination is not None:
+            compiled = _confined_regular_file(
+                destination,
+                str(artifact["path"]),
+                "ASSEMBLY_FLUTTER_COMPILED_ARTIFACT_INVALID",
+            )
+            if _stable_file_binding(
+                compiled, "ASSEMBLY_FLUTTER_COMPILED_ARTIFACT_CHANGED"
+            ) != (artifact["bytes"], artifact["sha256"]):
+                raise RouteError("ASSEMBLY_FLUTTER_COMPILED_ARTIFACT_CHANGED")
     if target_language in {"cpp", "objc"}:
         if (
             not isinstance(cmake_runtime, Mapping)
@@ -1414,6 +1638,7 @@ def _validate_build_verification(
 def _manifest_owned_bindings(
     manifest: Mapping[str, Any],
     target_language: Language,
+    destination: Path | None,
     *,
     require_build_passed: bool,
 ) -> tuple[
@@ -1428,6 +1653,8 @@ def _manifest_owned_bindings(
     build_inputs = manifest.get("build_inputs")
     evidence_artifacts = manifest.get("verified_evidence_artifacts")
     repository_snapshot_sha256 = manifest.get("snapshot_sha256")
+    source_language = manifest.get("source_language")
+    lifecycle = repository_language_lifecycle(source_language, target_language)
     if (
         manifest.get("schema_version") != SCHEMA_VERSION
         or manifest.get("kind") != "elmos.repository-assembly-report"
@@ -1436,6 +1663,8 @@ def _manifest_owned_bindings(
         or target_language not in _PLACERS
         or manifest.get("source_language") not in _PLACERS
         or manifest.get("source_language") == target_language
+        or lifecycle is None
+        or manifest.get("language_lifecycle") != lifecycle
         or not isinstance(repository_snapshot_sha256, str)
         or _RAW_SHA256_PATTERN.fullmatch(repository_snapshot_sha256) is None
         or not isinstance(included, list)
@@ -1672,6 +1901,7 @@ def _manifest_owned_bindings(
     _validate_build_verification(
         manifest,
         target_language,
+        destination,
         require_build_passed=require_build_passed,
     )
     return included_bindings, owned_bindings, evidence_bindings
@@ -1689,6 +1919,7 @@ def _validate_assembly_manifest(
     included_bindings, owned_bindings, evidence_bindings = _manifest_owned_bindings(
         manifest,
         target_language,
+        destination,
         require_build_passed=require_build_passed,
     )
     for relative, (unit_id, expected_bytes, expected_sha256) in included_bindings.items():
@@ -1793,9 +2024,23 @@ def verify_archived_assembly_closure(
     included_bindings, owned_bindings, evidence_bindings = _manifest_owned_bindings(
         manifest,
         target_language,
+        None,
         require_build_passed=True,
     )
     names = set(archive_paths)
+    if target_language == "flutter":
+        verification = manifest["build_verification"]
+        assert isinstance(verification, Mapping)
+        artifact = verification["flutter_compiled_artifact"]
+        assert isinstance(artifact, Mapping)
+        relative = str(artifact["path"])
+        archived_path = f"{root_prefix}{relative}"
+        if archived_path not in names:
+            raise RouteError("ASSEMBLY_ARCHIVE_FLUTTER_COMPILED_ARTIFACT_MISSING")
+        content = read_bytes(archived_path)
+        observed = "sha256:" + hashlib.sha256(content).hexdigest()
+        if len(content) != artifact["bytes"] or observed != artifact["sha256"]:
+            raise RouteError("ASSEMBLY_ARCHIVE_FLUTTER_COMPILED_ARTIFACT_DRIFTED")
     if _archived_source_paths(names, target_language, root_prefix) != set(included_bindings):
         raise RouteError("ASSEMBLY_ARCHIVE_SOURCE_SET_MISMATCH")
     for relative, (expected_bytes, expected_sha256) in owned_bindings.items():
@@ -1966,6 +2211,53 @@ def _write_build_files(
             + "\n",
             encoding="utf-8",
         )
+    elif target_language == "react":
+        (destination / "package.json").write_text(
+            json.dumps(
+                {
+                    "name": "elmos-polyglot-migrated-react-library",
+                    "version": "0.0.0-experimental",
+                    "private": True,
+                    "type": "module",
+                    "dependencies": {
+                        "react": "19.2.7",
+                        "react-dom": "19.2.7",
+                    },
+                    "devDependencies": {
+                        "@types/react": "19.1.10",
+                        "@types/react-dom": "19.1.7",
+                        "typescript": "5.9.2",
+                    },
+                    "engines": {"node": "26.0.0"},
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        (destination / "tsconfig.json").write_text(
+            json.dumps(
+                {
+                    "compilerOptions": {
+                        "target": "ES2022",
+                        "module": "NodeNext",
+                        "moduleResolution": "NodeNext",
+                        "strict": True,
+                        "jsx": "react-jsx",
+                        "types": [],
+                        "declaration": True,
+                        "outDir": "dist",
+                        "rootDir": "src",
+                    },
+                    "include": ["src/**/*.tsx"],
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
     elif target_language == "javascript":
         (destination / "package.json").write_text(
             json.dumps(
@@ -2054,7 +2346,7 @@ def _write_build_files(
             '    "type": "library",\n'
             '    "license": "proprietary",\n'
             '    "require": {\n'
-            '        "php": ">=8.4"\n'
+            '        "php": "8.5.9"\n'
             "    },\n"
             '    "autoload": {\n'
             '        "files": [\n'
@@ -2065,6 +2357,110 @@ def _write_build_files(
             '        "optimize-autoloader": true\n'
             "    }\n"
             "}\n",
+            encoding="utf-8",
+        )
+    elif target_language == "kotlin":
+        # A standalone compiler argfile is the complete build descriptor for
+        # this dependency-free generated project.  It stays replayable with the
+        # exact Kotlin route compiler and does not introduce a Gradle plugin or
+        # network-resolved dependency into a route that does not need either.
+        sources = sorted(str(unit["assembled_path"]) for unit in included_units)
+        if not sources or any(
+            re.fullmatch(r"src/main/kotlin/elmos/generated/wu[0-9a-z]+/migrated\.kt", source)
+            is None
+            for source in sources
+        ):
+            raise RouteError("ASSEMBLY_KOTLIN_SOURCE_SET_INVALID")
+        arguments = [
+            "-Werror",
+            "-language-version",
+            "2.2",
+            "-api-version",
+            "2.2",
+            "-jvm-target",
+            "21",
+            "-d",
+            "build/classes",
+            *sources,
+        ]
+        (destination / "kotlinc.args").write_text(
+            "\n".join(arguments) + "\n",
+            encoding="utf-8",
+        )
+    elif target_language == "flutter":
+        ordered = sorted(included_units, key=lambda unit: str(unit["assembled_path"]))
+        imports: list[str] = []
+        entrypoints: list[str] = []
+        for unit in ordered:
+            namespace = str(unit.get("namespace", ""))
+            relative = str(unit.get("assembled_path", ""))
+            function_name = str(unit.get("target_function_name", ""))
+            if (
+                re.fullmatch(r"wu[0-9a-z]+", namespace) is None
+                or relative != f"lib/generated/{namespace}/migrated.dart"
+                or re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", function_name) is None
+            ):
+                raise RouteError("ASSEMBLY_FLUTTER_SOURCE_SET_INVALID")
+            imports.append(
+                f"import 'generated/{namespace}/migrated.dart' as {namespace};"
+            )
+            entrypoints.append(f"  {namespace}.{function_name},")
+        if not imports:
+            raise RouteError("ASSEMBLY_FLUTTER_SOURCE_SET_INVALID")
+        (destination / "lib").mkdir(parents=True, exist_ok=True)
+        (destination / "lib" / "main.dart").write_text(
+            "\n".join(imports)
+            + "\n\nfinal List<Object> _elmosGeneratedEntrypoints = <Object>[\n"
+            + "\n".join(entrypoints)
+            + "\n];\n\n"
+            "void main() {\n"
+            "  if (_elmosGeneratedEntrypoints.isEmpty) {\n"
+            "    throw StateError('ELMOS_GENERATED_ENTRYPOINTS_EMPTY');\n"
+            "  }\n"
+            "  print('ELMOS_FLUTTER_DART_REPOSITORY_OK:${_elmosGeneratedEntrypoints.length}');\n"
+            "}\n",
+            encoding="utf-8",
+        )
+        (destination / "pubspec.yaml").write_text(
+            "name: elmos_polyglot_migrated_flutter\n"
+            "version: 0.0.0\n"
+            "publish_to: none\n"
+            "environment:\n"
+            "  sdk: '>=3.12.1 <3.13.0'\n"
+            # The bounded Flutter route emits an import-free pure-Dart module.
+            # Keeping this package dependency-free lets the bundled Dart SDK
+            # analyze, link and execute it without consulting an ambient pub
+            # cache or invoking Flutter's mutable cache updater.
+            "dependencies: {}\n",
+            encoding="utf-8",
+        )
+        (destination / "analysis_options.yaml").write_text(
+            "analyzer:\n"
+            "  language:\n"
+            "    strict-casts: true\n"
+            "    strict-inference: true\n"
+            "    strict-raw-types: true\n",
+            encoding="utf-8",
+        )
+        package_directory = destination / ".dart_tool"
+        package_directory.mkdir(parents=True, exist_ok=True)
+        (package_directory / "package_config.json").write_text(
+            json.dumps(
+                {
+                    "configVersion": 2,
+                    "packages": [
+                        {
+                            "name": "elmos_polyglot_migrated_flutter",
+                            "rootUri": "../",
+                            "packageUri": "lib/",
+                            "languageVersion": "3.12",
+                        }
+                    ],
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
             encoding="utf-8",
         )
     else:
@@ -2124,6 +2520,8 @@ def assemble_project(
     batch_report: dict[str, Any],
     batch_output: Path,
     destination: Path,
+    *,
+    allow_deprecated_replay: bool = False,
 ) -> dict[str, Any]:
     """Assemble a batch report's PASSED units into one buildable project skeleton.
 
@@ -2132,7 +2530,10 @@ def assemble_project(
     """
     if batch_report.get("kind") != "elmos.repository-batch-report":
         raise RouteError("ASSEMBLY_BATCH_REPORT_KIND_INVALID")
-    _validate_batch_report_closure(batch_report)
+    _validate_batch_report_closure(
+        batch_report,
+        allow_deprecated_replay=allow_deprecated_replay,
+    )
     target_language = batch_report.get("target_language")
     source_language = batch_report.get("source_language")
     repository_snapshot_sha256 = batch_report.get("snapshot_sha256")
@@ -2230,6 +2631,7 @@ def assemble_project(
         "route_id": batch_report.get("route_id"),
         "source_language": batch_report.get("source_language"),
         "target_language": target_language,
+        "language_lifecycle": batch_report.get("language_lifecycle"),
         "batch_status": batch_report.get("status"),
         "build_files": list(_BUILD_FILES[target_language]),
         "build_input_count": len(build_inputs),
@@ -2316,6 +2718,7 @@ def _run(
 ) -> subprocess.CompletedProcess[str]:
     executable = Path(command[0])
     executable = executable if executable.is_absolute() else (cwd / executable)
+    process: subprocess.Popen[str] | None = None
     try:
         with tempfile.TemporaryDirectory(prefix="elmos-assembly-process-") as temporary:
             root = Path(temporary)
@@ -2325,21 +2728,59 @@ def _run(
             home.mkdir(mode=0o700)
             scratch.mkdir(mode=0o700)
             cache.mkdir(mode=0o700)
-            completed = subprocess.run(
+            process = subprocess.Popen(
                 command,
                 cwd=cwd,
-                check=False,
-                capture_output=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                stdin=subprocess.DEVNULL,
                 text=True,
-                timeout=timeout,
+                start_new_session=os.name == "posix",
                 env=sanitized_subprocess_env(
                     home=home,
                     temp_dir=scratch,
                     executable_dirs=(executable.resolve().parent, *executable_dirs),
                 ),
             )
-    except subprocess.TimeoutExpired as error:
-        raise RouteError(f"ASSEMBLY_BUILD_TIMEOUT:{command[0]}") from error
+            try:
+                stdout, stderr = process.communicate(timeout=timeout)
+            except subprocess.TimeoutExpired as error:
+                if os.name == "posix":
+                    try:
+                        os.killpg(process.pid, signal.SIGTERM)
+                    except ProcessLookupError:
+                        pass
+                else:
+                    process.terminate()
+                try:
+                    process.communicate(timeout=2)
+                except subprocess.TimeoutExpired:
+                    if os.name == "posix":
+                        try:
+                            os.killpg(process.pid, signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+                    else:
+                        process.kill()
+                    process.communicate()
+                raise RouteError(
+                    f"ASSEMBLY_BUILD_VERIFICATION_FAILED:{Path(command[0]).name}:process"
+                ) from error
+            finally:
+                # A compiler/analyzer must not leave a detached helper behind.
+                # Every invocation owns a fresh session, so any surviving member
+                # after the direct command exits is outside the bounded build.
+                if os.name == "posix" and process is not None:
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+            completed = subprocess.CompletedProcess(
+                command,
+                process.returncode,
+                stdout,
+                stderr,
+            )
     except OSError as error:
         raise RouteError(
             f"ASSEMBLY_BUILD_VERIFICATION_FAILED:{Path(command[0]).name}:process"
@@ -2679,18 +3120,50 @@ def _verify_cmake_bundle(bundle: _CMakeRuntimeBundle) -> None:
         prefix_metadata = bundle.prefix.lstat()
     except OSError as error:
         raise RouteError("EXACT_TOOLCHAIN_CMAKE_BUNDLE_UNAVAILABLE") from error
-    if (
-        not stat.S_ISDIR(prefix_metadata.st_mode)
-        or stat.S_IMODE(prefix_metadata.st_mode) != 0o700
-        or prefix_metadata.st_uid != os.getuid()
-        or prefix_metadata.st_gid != os.getgid()
-        or bundle.prefix.resolve(strict=True) != bundle.prefix
-        or bundle.executable != bundle.prefix / "bin" / "cmake"
-        or len(bundle.manifest_bytes) != _EXPECTED_CMAKE_RUNTIME_MANIFEST_BYTES
-        or bundle.manifest_sha256 != _EXPECTED_CMAKE_RUNTIME_MANIFEST_SHA256
-        or hashlib.sha256(bundle.manifest_bytes).hexdigest() != bundle.manifest_sha256
-    ):
-        raise RouteError("EXACT_TOOLCHAIN_CMAKE_BUNDLE_ROOT_UNSAFE")
+    # NO GROUP-OWNERSHIP CHECK.
+    #
+    # This used to also require `st_gid == os.getgid()`, and that assertion was
+    # wrong on the platform this engine is pinned to. macOS follows BSD group
+    # semantics: a newly created directory inherits the *parent's* group, not
+    # the creating process's effective gid. `/private/tmp` is group `wheel`
+    # (gid 0), so every bundle built there came out gid 0 while `os.getgid()`
+    # was 20, and the gate refused a bundle it had just created itself --
+    # reproduced directly: "新建目录 gid = 0, 进程 getgid() = 20".
+    #
+    # It only ever passed because an interactive login shell exports TMPDIR
+    # under `/var/folders/...`, which *is* owned by the user's group. Anything
+    # without that -- cron, launchd, CI, a non-login shell -- got
+    # EXACT_TOOLCHAIN_CMAKE_BUNDLE_ROOT_UNSAFE and no way to tell why.
+    #
+    # Dropping it costs nothing, because the property that matters is already
+    # asserted one line above: the mode must be exactly 0o700, so the group has
+    # no permission at all. Which group nominally owns a directory that grants
+    # its group nothing cannot make it more or less tamperable. Ownership is
+    # still pinned -- by uid, which is the half that decides who may write.
+    reasons: list[str] = []
+    if not stat.S_ISDIR(prefix_metadata.st_mode):
+        reasons.append("not-a-directory")
+    if stat.S_IMODE(prefix_metadata.st_mode) != 0o700:
+        reasons.append(f"mode-{stat.S_IMODE(prefix_metadata.st_mode):04o}")
+    if prefix_metadata.st_uid != os.getuid():
+        reasons.append("foreign-owner")
+    if bundle.prefix.resolve(strict=True) != bundle.prefix:
+        reasons.append("prefix-not-self-resolving")
+    if bundle.executable != bundle.prefix / "bin" / "cmake":
+        reasons.append("executable-outside-prefix")
+    if len(bundle.manifest_bytes) != _EXPECTED_CMAKE_RUNTIME_MANIFEST_BYTES:
+        reasons.append("manifest-size")
+    if bundle.manifest_sha256 != _EXPECTED_CMAKE_RUNTIME_MANIFEST_SHA256:
+        reasons.append("manifest-pin")
+    if hashlib.sha256(bundle.manifest_bytes).hexdigest() != bundle.manifest_sha256:
+        reasons.append("manifest-self-inconsistent")
+    if reasons:
+        # The code stays the same so existing matchers keep working; the reason
+        # is appended because one code covering eight conditions is a code that
+        # tells the reader nothing. Diagnosing the gid case above required
+        # re-implementing this gate in a scratch script to find out which of the
+        # eight had fired.
+        raise RouteError("EXACT_TOOLCHAIN_CMAKE_BUNDLE_ROOT_UNSAFE:" + ",".join(reasons))
     expected = _expected_cmake_bundle_paths(bundle)
     observed: dict[str, Path] = {}
     for current, raw_directories, raw_files in os.walk(bundle.prefix, topdown=True, followlinks=False):
@@ -2857,6 +3330,10 @@ def verify_assembled_project(target_language: Language, destination: Path) -> di
             Path(path).resolve().parent for path in (toolchain.executable, toolchain.auxiliary) if path is not None
         )
     )
+    if target_language == "kotlin":
+        toolchain_dirs = tuple(
+            dict.fromkeys((_kotlin_jvm_bin(toolchain.profile), *toolchain_dirs))
+        )
 
     if target_language == "java":
         sources = sorted(str(path) for path in destination.glob("src/main/java/**/*.java"))
@@ -2868,6 +3345,116 @@ def verify_assembled_project(target_language: Language, destination: Path) -> di
         command = [toolchain.auxiliary, "-d", str(build_directory), *sources]
         completed = _run(command, destination, executable_dirs=toolchain_dirs)
         commands.append({"command": command, "stdout": completed.stdout[-2_000:], "stderr": completed.stderr[-2_000:]})
+    elif target_language == "kotlin":
+        sources = sorted(destination.glob("src/main/kotlin/**/*.kt"))
+        if not sources:
+            raise RouteError("ASSEMBLY_NO_KOTLIN_SOURCES_FOUND")
+        build_directory = destination / "build" / "classes"
+        build_directory.mkdir(parents=True, exist_ok=True)
+        command = [toolchain.executable, "@kotlinc.args"]
+        completed = _run(
+            command,
+            destination,
+            timeout=900,
+            executable_dirs=toolchain_dirs,
+        )
+        if not any(
+            path.is_file() and not path.is_symlink()
+            for path in build_directory.rglob("*.class")
+        ):
+            raise RouteError("ASSEMBLY_KOTLIN_CLASS_OUTPUT_MISSING")
+        commands.append(
+            {
+                "command": command,
+                "stdout": completed.stdout[-2_000:],
+                "stderr": completed.stderr[-2_000:],
+            }
+        )
+    elif target_language == "flutter":
+        sources = sorted(destination.glob("lib/generated/**/*.dart"))
+        if not sources or not (destination / "lib" / "main.dart").is_file():
+            raise RouteError("ASSEMBLY_NO_FLUTTER_SOURCES_FOUND")
+        (destination / "build").mkdir(parents=True, exist_ok=True)
+        flutter_build_receipt = verify_flutter_build_toolchain(toolchain)
+        assert toolchain.auxiliary is not None
+        package_config = ".dart_tool/package_config.json"
+        flutter_commands = [
+            flutter_build_command(
+                toolchain,
+                "--suppress-analytics",
+                "analyze",
+                "--format=json",
+                "--fatal-infos",
+                "--fatal-warnings",
+                f"--packages={package_config}",
+                "--sdk-path=" + str(Path(toolchain.auxiliary).resolve().parent.parent),
+                "lib",
+            ),
+            flutter_build_command(
+                toolchain,
+                "--suppress-analytics",
+                "compile",
+                "kernel",
+                f"--packages={package_config}",
+                "--verbosity=error",
+                "--link-platform",
+                "--no-embed-sources",
+                "--output=build/elmos_repository.dill",
+                "lib/main.dart",
+            ),
+            flutter_build_command(
+                toolchain,
+                f"--packages={package_config}",
+                "build/elmos_repository.dill",
+            ),
+        ]
+        for index, command in enumerate(flutter_commands):
+            completed = _run(
+                command,
+                destination,
+                timeout=900,
+                executable_dirs=toolchain_dirs,
+            )
+            commands.append(
+                {
+                    "command": command,
+                    "stdout": completed.stdout[-2_000:],
+                    "stderr": completed.stderr[-2_000:],
+                }
+            )
+            if index == 0:
+                try:
+                    analyzer_result = json.loads(completed.stdout)
+                except (UnicodeDecodeError, json.JSONDecodeError) as error:
+                    raise RouteError("ASSEMBLY_FLUTTER_ANALYZER_OUTPUT_INVALID") from error
+                if (
+                    not isinstance(analyzer_result, dict)
+                    or analyzer_result.get("version") != 1
+                    or analyzer_result.get("diagnostics") != []
+                ):
+                    raise RouteError("ASSEMBLY_FLUTTER_ANALYZER_DIAGNOSTICS")
+            if index == 2 and completed.stdout.strip() != (
+                f"ELMOS_FLUTTER_DART_REPOSITORY_OK:{len(sources)}"
+            ):
+                raise RouteError("ASSEMBLY_FLUTTER_RUNTIME_SENTINEL_INVALID")
+        kernel = _confined_regular_file(
+            destination,
+            "build/elmos_repository.dill",
+            "ASSEMBLY_FLUTTER_KERNEL_BUNDLE_MISSING",
+        )
+        kernel_bytes, kernel_sha256 = _stable_file_binding(
+            kernel, "ASSEMBLY_FLUTTER_KERNEL_BUNDLE_CHANGED"
+        )
+        if kernel_bytes <= 0:
+            raise RouteError("ASSEMBLY_FLUTTER_KERNEL_BUNDLE_MISSING")
+        flutter_compiled_artifact = {
+            "path": "build/elmos_repository.dill",
+            "bytes": kernel_bytes,
+            "sha256": kernel_sha256,
+        }
+        flutter_build_receipt_after = verify_flutter_build_toolchain(toolchain)
+        if flutter_build_receipt_after != flutter_build_receipt:
+            raise RouteError("ASSEMBLY_FLUTTER_BUILD_TOOLCHAIN_CHANGED")
     elif target_language == "python":
         source_directory = destination / "src"
         command = [toolchain.executable, "-m", "compileall", "-q", str(source_directory)]
@@ -2882,6 +3469,48 @@ def verify_assembled_project(target_language: Language, destination: Path) -> di
         command = [toolchain.auxiliary, "-p", "tsconfig.json"]
         completed = _run(command, destination, executable_dirs=toolchain_dirs)
         commands.append({"command": command, "stdout": completed.stdout[-2_000:], "stderr": completed.stderr[-2_000:]})
+    elif target_language == "react":
+        assert toolchain.auxiliary is not None
+        runtime_receipt = verify_react_runtime_import(toolchain)
+        commands.append(
+            {
+                "command": runtime_receipt["command"],
+                "stdout": runtime_receipt["stdout"],
+                "stderr": runtime_receipt["stderr"],
+            }
+        )
+        command = [toolchain.auxiliary, "-p", "tsconfig.json", "--pretty", "false"]
+        completed = _run(command, destination, executable_dirs=toolchain_dirs)
+        commands.append(
+            {
+                "command": command,
+                "stdout": completed.stdout[-2_000:],
+                "stderr": completed.stderr[-2_000:],
+            }
+        )
+        included = manifest.get("included_units")
+        if not isinstance(included, list) or not included:
+            raise RouteError("ASSEMBLY_NO_REACT_SOURCES_FOUND")
+        compiled_paths = sorted(
+            f"dist/generated/{Path(str(unit.get('assembled_path'))).stem}.js"
+            for unit in included
+            if isinstance(unit, Mapping)
+        )
+        if len(compiled_paths) != len(included):
+            raise RouteError("ASSEMBLY_REACT_SOURCE_SET_INVALID")
+        for relative in compiled_paths:
+            compiled = destination / relative
+            if compiled.is_symlink() or not compiled.is_file() or compiled.stat().st_size <= 0:
+                raise RouteError(f"ASSEMBLY_REACT_COMPILED_OUTPUT_MISSING:{relative}")
+            runtime_command = [toolchain.executable, relative]
+            runtime = _run(runtime_command, destination, executable_dirs=toolchain_dirs)
+            commands.append(
+                {
+                    "command": runtime_command,
+                    "stdout": runtime.stdout[-2_000:],
+                    "stderr": runtime.stderr[-2_000:],
+                }
+            )
     elif target_language == "javascript":
         included = manifest.get("included_units")
         if not isinstance(included, list) or not included:
@@ -3006,6 +3635,23 @@ def verify_assembled_project(target_language: Language, destination: Path) -> di
         "toolchain_version": toolchain.version,
         "commands": commands,
     }
+    if target_language == "kotlin":
+        kotlin_identity = _exact_toolchain_identity(toolchain)
+        manifest["build_verification"]["kotlin_exact_toolchain"] = (
+            kotlin_identity
+        )
+        manifest["build_verification"]["kotlin_exact_toolchain_sha256"] = (
+            _exact_toolchain_identity_sha256(kotlin_identity)
+        )
+    if target_language == "react":
+        manifest["build_verification"]["react_runtime_receipt"] = runtime_receipt
+    if target_language == "flutter":
+        manifest["build_verification"][
+            "flutter_build_toolchain_receipt"
+        ] = flutter_build_receipt_after
+        manifest["build_verification"][
+            "flutter_compiled_artifact"
+        ] = flutter_compiled_artifact
     if target_language in {"cpp", "objc"}:
         manifest["build_verification"]["cmake_runtime"] = {
             "kind": "private-content-addressed-cmake-runtime-v1",

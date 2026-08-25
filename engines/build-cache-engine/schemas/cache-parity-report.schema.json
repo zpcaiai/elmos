@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/cache/v1.2/cache-parity-report.schema.json",
+  "title": "Cache Parity Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "report_id",
+    "subject",
+    "thresholds",
+    "metrics",
+    "scenario_results",
+    "mandatory_pass",
+    "false_hits"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.2.0"
+    },
+    "report_id": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "object",
+      "required": [
+        "source_digest",
+        "config_digest",
+        "corpus_digest"
+      ],
+      "properties": {
+        "source_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "config_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "corpus_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "provider_profile_digests": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        },
+        "platform_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "thresholds": {
+      "type": "object"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "scenario_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "passed",
+          "metrics"
+        ],
+        "properties": {
+          "scenario_id": {
+            "type": "string"
+          },
+          "cohort": {
+            "type": "string"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "metrics": {
+            "type": "object"
+          },
+          "failures": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "mandatory_pass": {
+      "type": "boolean"
+    },
+    "false_hits": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "cross_tenant_hits": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "corrupt_executions": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

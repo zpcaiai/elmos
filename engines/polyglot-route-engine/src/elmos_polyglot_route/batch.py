@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Any
 
 from .engine import migrate
-from .models import SUPPORTED_LANGUAGES, RouteError
+from .models import REPOSITORY_SURFACE_LANGUAGES, RouteError
 
 SCHEMA_VERSION = "1.0.0"
 CHECKPOINT_NAME = "batch-checkpoint.jsonl"
@@ -299,7 +299,7 @@ def run_batch(
         raise RouteError("DISCOVERY_REPORT_KIND_INVALID")
     source_language = discovery.get("source_language")
     target_language = discovery.get("target_language")
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+    if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")

@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "artifact_set": "elmos-7plus1-local-contract-runtime-v1.0.0",
+  "aggregate_algorithm": "SHA-256 over UTF-8 lines '<sha256>\\t<size_bytes>\\t<repository_relative_path>\\n' in LC_ALL=C path order",
+  "aggregate_sha256": "4620844c7d549cde507a28a131a11d5b42fa770bab514e36ad4649d167767819",
+  "file_count": 25,
+  "total_size_bytes": 1074287,
+  "scope": [
+    "repository-owned safe importer",
+    "standard-library runtime and CLI",
+    "three machine-readable registries",
+    "four runtime JSON schemas",
+    "focused importer and runtime tests",
+    "repository integration documentation",
+    "compiled and installed manifests that transitively bind the canonical source tree and both 102-Skill install roots"
+  ],
+  "generated_install_manifests": {
+    "status": "LOCAL_INSTALLED_AND_CHECKED_SELF_ATTESTED",
+    "compiled_manifest": {
+      "path": "docs/elmos-7plus1-commercial-skills/compiled-manifest.json",
+      "sha256": "452438cf9d06d10211c2e4f9a98238eea33f0e1d74d494369e45b1d3a3ff82cc"
+    },
+    "installed_manifest": {
+      "path": "docs/elmos-7plus1-commercial-skills/installed-manifest.json",
+      "sha256": "13727100a92ba3b639ff5c9ee333f93bac8be6378d63677d32fb9fe1ac171138"
+    },
+    "transitive_scope": [
+      "skills/elmos-7plus1-commercial-skills-v1.0.0",
+      ".agents/skills/<102 manifest-owned installed names>",
+      "agent-skills/runtime/<102 manifest-owned installed names>"
+    ],
+    "limitations": [
+      "Manifest and local check evidence is self-attested engineering evidence, not independent verification or certification."
+    ]
+  },
+  "files": [
+    {
+      "path": "docs/elmos-7plus1-commercial-skills/README.md",
+      "size_bytes": 2718,
+      "sha256": "f53cf68b52f36b0ab6996eaac80539cdd45f2fafe64b9ea7937caff7a07a5ad7"
+    },
+    {
+      "path": "docs/elmos-7plus1-commercial-skills/compiled-manifest.json",
+      "size_bytes": 375153,
+      "sha256": "452438cf9d06d10211c2e4f9a98238eea33f0e1d74d494369e45b1d3a3ff82cc"
+    },
+    {
+      "path": "docs/elmos-7plus1-commercial-skills/installed-manifest.json",
+      "size_bytes": 312491,
+      "sha256": "13727100a92ba3b639ff5c9ee333f93bac8be6378d63677d32fb9fe1ac171138"
+    },
+    {
+      "path": "engines/software-factory-engine/README.md",
+      "size_bytes": 3602,
+      "sha256": "ee326de9c68c3db240823b3caf65cbad4b438ebc532e04a8a4615e3f8cb324c5"
+    },
+    {
+      "path": "engines/software-factory-engine/pyproject.toml",
+      "size_bytes": 793,
+      "sha256": "36c67289293d66bf0f5424f354a75a635eb1bd336306d1b15dac0fd27fa82e96"
+    },
+    {
+      "path": "engines/software-factory-engine/schemas/dependency-receipt.schema.json",
+      "size_bytes": 1243,
+      "sha256": "698e1eb09bbce33ad4ba4834e1a0bcd1f5365ba2e2126998405bf065472c1ce8"
+    },
+    {
+      "path": "engines/software-factory-engine/schemas/external-observation.schema.json",
+      "size_bytes": 1546,
+      "sha256": "7b09d1ec898555899af8b952b6e2a41a67154965b52daa1a47a2e7b06e286308"
+    },
+    {
+      "path": "engines/software-factory-engine/schemas/request.schema.json",
+      "size_bytes": 2463,
+      "sha256": "d8d09088f7aecba96518886920d5c5e8c3c3bf80d04969f1a1361f9b00d7ba18"
+    },
+    {
+      "path": "engines/software-factory-engine/schemas/result.schema.json",
+      "size_bytes": 2766,
+      "sha256": "197c2dc389bb4f062bcd1e7f60b5dc4ef8bef545ac7eeef11035741fb5e503d2"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/__init__.py",
+      "size_bytes": 1624,
+      "sha256": "6e4c59e0b24d76dbc548602e3dc04d67e058d854b1a479e3245ab78396f9f049"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/__main__.py",
+      "size_bytes": 49,
+      "sha256": "0f7d54f3fbb1f79a85eb8110f11793db99da6f3c61ee979de5abe9a1b5f3fdb3"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/canonical.py",
+      "size_bytes": 3011,
+      "sha256": "3ffdb587fc9e8e978279d0a92f746f55114690eb281e6c0e5dd8bc13ba9e7c6a"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/capabilities.py",
+      "size_bytes": 4561,
+      "sha256": "eb0cc604672c823d4137eb21a8722c4d4a72046e53eb75cb8b83b2ef92b85ede"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/capability_registry.json",
+      "size_bytes": 19625,
+      "sha256": "a374f9b6d89b9e8c999f54b876f10b202576213a974190457cc8aaf1ad037ac7"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/cli.py",
+      "size_bytes": 5730,
+      "sha256": "e6b202e9ba2202f293d700ee82394d54c1ea178e19f0bd486c8bb1101c363d9d"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/handlers.py",
+      "size_bytes": 38422,
+      "sha256": "edb7cdc23599bb5a1439004db51f3ae8d9627aaaaa98377b3d044d0e4f5683ef"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/models.py",
+      "size_bytes": 24410,
+      "sha256": "ebb2aa5daf9fa684179e65b51a838dfab72d766e85c30513496fce3a364b6921"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/public_method_registry.json",
+      "size_bytes": 40054,
+      "sha256": "0171c8c6d4c5ee8b4cb1850ebd916ba485eead5f1984dd718386607be4fe029f"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/public_methods.py",
+      "size_bytes": 7212,
+      "sha256": "ea116dc02c646642986b0a725cd17bc4bddee7526e07c14f3e5597ea7ea2e67c"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/registry.py",
+      "size_bytes": 9265,
+      "sha256": "e7d4be4354f20b91fbf1146dd9c21d51ed8fc869fe1f69e583cbb28ac27839de"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/runtime.py",
+      "size_bytes": 25187,
+      "sha256": "fb6f6bc0f7b1d4aa80c4c887242c3cd520c936197799c4448911cf1f0feb069a"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
+      "size_bytes": 6637,
+      "sha256": "c54404d806e3ced3f217c16f53bb2f36b5237d4aeb0558b3ea15c9d6dfa1d8f2"
+    },
+    {
+      "path": "engines/software-factory-engine/tests/test_runtime.py",
+      "size_bytes": 35699,
+      "sha256": "a009a5f60a7206e68f1d60f76da5dc775544d4367b0aca4b3e456cc4e24fd8f9"
+    },
+    {
+      "path": "tests/elmos-7plus1-commercial-skills/test_integration.py",
+      "size_bytes": 37592,
+      "sha256": "7dd4a8ce36b5f345cc1d21a471d1c3563b2c8a659b9b6f9ae747050ab609d7c1"
+    },
+    {
+      "path": "tooling/integrate_elmos_7plus1_skills.py",
+      "size_bytes": 112434,
+      "sha256": "bc3838ab6c1301361615cb3bf6a28b1794fc0ce20e8855f6462d657bad080c5b"
+    }
+  ]
+}

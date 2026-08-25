@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "vue3-todo-source-package-1.0.0",
+  "source_root": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source",
+  "aggregate_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
+  "file_count": 6,
+  "files": [
+    {"path": "package.json", "bytes": 175, "sha256": "sha256:7e8a65afb5eb6171c7c34d1e44b90654eaf275c705107ea8317ea9fbc7139301"},
+    {"path": "src/App.vue", "bytes": 263, "sha256": "sha256:f051f1065b6ff315cf9c8d0e8f2e0d86d69ef0c8c02c2935d7017120d30bbe9c"},
+    {"path": "src/main.ts", "bytes": 196, "sha256": "sha256:459212bdd373406bce624931836e0e759dfef13e43aa18143ae5cc5e3758c236"},
+    {"path": "src/router.ts", "bytes": 241, "sha256": "sha256:1b40f66376ec1849e3d8bbc34beff969d93a45ec375a11368126af3048f3e18d"},
+    {"path": "src/stores/todo.ts", "bytes": 260, "sha256": "sha256:e623881dd8339f2edceed221d922a72ba3b537b9abbab5823847c6cdde1d8962"},
+    {"path": "src/views/HomeView.vue", "bytes": 504, "sha256": "sha256:ae19e4143890c99b4cba6f350f41ff8eef37f2244c98b354d3fe3b0f4c120c3f"}
+  ],
+  "privacy": "public synthetic fixture; no credentials or personal data",
+  "source_scripts_executed": false
+}

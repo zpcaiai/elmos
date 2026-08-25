@@ -249,10 +249,15 @@ from elmos_polyglot_route.native import (  # noqa: E402
     swift_analyzer_build_receipt,
 )
 from route_sets import (  # noqa: E402
+    ALL_DECLARED_ROUTE_KEYS,
     COMPLETE_ROUTE_KEYS,
     COMPLETION_ROUTE_KEYS,
     CORE_LANGUAGES,
     CORE_ROUTE_KEYS,
+    DEPRECATED_ROUTE_KEYS,
+    DEPRECATED_ROUTE_LANGUAGES,
+    ELEVEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
+    ELEVEN_LANGUAGE_MATRIX_LANGUAGES,
     EVIDENCED_ROUTE_KEYS,
     EXACT_ROUTE_SETS,
     MODULE_EQUIVALENCE_ROUTE_KEYS,
@@ -265,6 +270,8 @@ from route_sets import (  # noqa: E402
     SUPPORTED_ROUTE_LANGUAGES,
     TEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
     TEN_LANGUAGE_MATRIX_LANGUAGES,
+    V3_EXACT_ROUTE_KEYS,
+    V3_LANGUAGES,
     nodejs_negative_case_ids,
     provenance_route_set,
     split_route_key,
@@ -481,6 +488,12 @@ VERSIONS = {
         "ext/tokenizer Zend token stream",
         "strict_types=1",
     ],
+    # Declared matrix members with no pinned toolchain yet.  These strings are
+    # deliberately not plausible version numbers: an inventory that reported
+    # "Kotlin 2.x" here would claim a pin that does not exist.
+    "kotlin": ["PENDING_ANALYZER"],
+    "react": ["PENDING_ANALYZER"],
+    "flutter": ["PENDING_ANALYZER"],
 }
 ENGINE_PATHS = {
     "java": "engines/polyglot-route-engine/native/java/Analyzer.java",
@@ -494,6 +507,9 @@ ENGINE_PATHS = {
     "objc": "engines/polyglot-route-engine/src/elmos_polyglot_route/clang_analyzer.py",
     "swift": "engines/polyglot-route-engine/native/swift/Sources/ElmosSwiftAnalyzer/main.swift",
     "php": "engines/polyglot-route-engine/native/php/analyzer.php",
+    "kotlin": None,
+    "react": None,
+    "flutter": None,
 }
 SHORT_VERSIONS = {
     "java": "21.0.11",
@@ -507,6 +523,9 @@ SHORT_VERSIONS = {
     "objc": "Objective-C / Apple clang 21.0.0 / arm64-apple-darwin25.6.0",
     "swift": "Swift 6.3.3 / arm64-apple-macosx26.0",
     "php": "PHP 8.5.9 (NTS) / ext/tokenizer",
+    "kotlin": "PENDING_ANALYZER",
+    "react": "PENDING_ANALYZER",
+    "flutter": "PENDING_ANALYZER",
 }
 EXTENSIONS = {
     "java": "java",
@@ -520,6 +539,9 @@ EXTENSIONS = {
     "objc": "m",
     "swift": "swift",
     "php": "php",
+    "kotlin": "kt",
+    "react": "tsx",
+    "flutter": "dart",
 }
 CORPORA = {
     "development": ("", "Pricing", "pricing", "calculate", "behavior-cases.json"),
@@ -4977,19 +4999,26 @@ def write_inventory(repo: Path) -> None:
             "schema_version": "1.4.0",
             "route_policy": {
                 "mode": "complete-directed-matrix",
-                "cartesian_expansion": "EXPLICIT_ELEVEN_LANGUAGE_MATRIX",
-                "complete_route_set": "eleven-language-complete-110",
+                "cartesian_expansion": "EXPLICIT_THIRTEEN_LANGUAGE_MATRIX",
+                "complete_route_set": "thirteen-language-complete-156",
                 "legacy_route_set": "legacy-complete-30",
                 "specialized_route_set": "cpp-objc-swift-java-exact-8",
                 "completion_route_set": "nine-language-completion-34",
                 "nodejs_route_set": "javascript-node26-completion-18",
                 "php_route_set": "php-php85-completion-20",
+                "v3_route_set": "kotlin-react-flutter-completion-66",
+                "deprecated_route_set": "javascript-node26-completion-18",
                 "preserved_nine_language_route_set": "nine-language-complete-72",
                 "preserved_ten_language_route_set": "ten-language-complete-90",
+                "preserved_eleven_language_route_set": "eleven-language-complete-110",
             },
             "route_provenance_partition": {
                 "policy": "exact-disjoint-authority-partition",
-                "route_count": len(COMPLETE_ROUTE_KEYS),
+                # Covers active AND deprecated directions: a partition owns
+                # filed evidence, and deprecating javascript did not unfile it.
+                "route_count": len(ALL_DECLARED_ROUTE_KEYS),
+                "active_route_count": len(COMPLETE_ROUTE_KEYS),
+                "deprecated_route_count": len(DEPRECATED_ROUTE_KEYS),
                 "sets": {
                     name: list(route_keys)
                     for name, route_keys in ROUTE_PROVENANCE_PARTITIONS.items()
@@ -5011,6 +5040,10 @@ def write_inventory(repo: Path) -> None:
                 },
                 "php-php85-completion-20": {
                     "policy": "current-versioned-route-evidence",
+                    "native_reexecution_status": "NOT_RUN",
+                },
+                "kotlin-react-flutter-completion-66": {
+                    "policy": "declared-ahead-of-analyzer",
                     "native_reexecution_status": "NOT_RUN",
                 },
             },
@@ -5058,12 +5091,30 @@ def write_inventory(repo: Path) -> None:
                 },
                 "php-php85-completion-20": {
                     "policy": "exact-matrix-completion-set",
-                    "languages": list(SUPPORTED_ROUTE_LANGUAGES),
+                    # Repointed off SUPPORTED_ROUTE_LANGUAGES: this set's 20
+                    # keys are an eleven-language fact and must not follow the
+                    # active language tuple.
+                    "languages": list(ELEVEN_LANGUAGE_MATRIX_LANGUAGES),
                     "route_count": len(PHP_EXACT_ROUTE_KEYS),
                     "route_keys": list(PHP_EXACT_ROUTE_KEYS),
                     "runtime_profile": "PHP 8.5.9 (cli) (NTS) / strict_types=1",
                 },
                 "eleven-language-complete-110": {
+                    "policy": "complete-directed-permutation",
+                    "languages": list(ELEVEN_LANGUAGE_MATRIX_LANGUAGES),
+                    "route_count": len(ELEVEN_LANGUAGE_COMPLETE_ROUTE_KEYS),
+                    "route_keys": list(ELEVEN_LANGUAGE_COMPLETE_ROUTE_KEYS),
+                    "deprecated_route_keys": list(DEPRECATED_ROUTE_KEYS),
+                },
+                "kotlin-react-flutter-completion-66": {
+                    "policy": "exact-matrix-completion-set",
+                    "languages": list(SUPPORTED_ROUTE_LANGUAGES),
+                    "route_count": len(V3_EXACT_ROUTE_KEYS),
+                    "route_keys": list(V3_EXACT_ROUTE_KEYS),
+                    "analyzer_status": "PENDING_ANALYZER",
+                    "pending_analyzer_languages": list(V3_LANGUAGES),
+                },
+                "thirteen-language-complete-156": {
                     "policy": "complete-directed-permutation",
                     "languages": list(SUPPORTED_ROUTE_LANGUAGES),
                     "route_count": len(COMPLETE_ROUTE_KEYS),
@@ -5082,12 +5133,28 @@ def write_inventory(repo: Path) -> None:
             "semantic_profile": "typed-pure-function-v1",
             "module_profile": "typed-pure-module-v1",
             "console_exposed_languages": list(SUPPORTED_ROUTE_LANGUAGES),
+            "deprecated_languages": list(DEPRECATED_ROUTE_LANGUAGES),
+            "pending_analyzer_languages": list(V3_LANGUAGES),
             "languages": {
                 language: {
                     "version": SHORT_VERSIONS[language],
                     "engine_path": ENGINE_PATHS[language],
+                    **(
+                        {"analyzer_status": "PENDING_ANALYZER"}
+                        if language in V3_LANGUAGES
+                        else {}
+                    ),
                 }
                 for language in SUPPORTED_ROUTE_LANGUAGES
+            },
+            "deprecated_language_details": {
+                language: {
+                    "version": SHORT_VERSIONS[language],
+                    "engine_path": ENGINE_PATHS[language],
+                    "status": "DEPRECATED",
+                    "retained_route_set": "javascript-node26-completion-18",
+                }
+                for language in DEPRECATED_ROUTE_LANGUAGES
             },
             "routes": routes,
         },

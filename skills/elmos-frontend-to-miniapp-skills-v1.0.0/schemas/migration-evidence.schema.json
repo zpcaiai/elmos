@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/migration-evidence.schema.json",
+  "title": "MiniApp Migration Evidence Bundle",
+  "type": "object",
+  "required": [
+    "evidence_id",
+    "request_id",
+    "source_revision",
+    "artifacts",
+    "claims",
+    "gates",
+    "approvals",
+    "cost",
+    "release_status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "evidence_id": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "source_revision": {
+      "type": "string"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "path",
+          "sha256",
+          "producer",
+          "status"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "producer": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "failed",
+              "blocked",
+              "unknown"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "claim_id",
+          "type",
+          "subject",
+          "status",
+          "evidence_refs"
+        ],
+        "properties": {
+          "claim_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "build",
+              "semantic-parity",
+              "visual-parity",
+              "privacy",
+              "security",
+              "release"
+            ]
+          },
+          "subject": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "failed",
+              "blocked",
+              "unknown"
+            ]
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "gate",
+          "status",
+          "evidence_refs"
+        ],
+        "properties": {
+          "gate": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "failed",
+              "blocked",
+              "unknown",
+              "skipped"
+            ]
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "action",
+          "status"
+        ],
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "not-required",
+              "pending",
+              "approved",
+              "rejected"
+            ]
+          },
+          "approver_ref": {
+            "type": "string"
+          },
+          "approved_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "cost": {
+      "type": "object",
+      "required": [
+        "currency",
+        "total",
+        "system_wall_clock_ms"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "total": {
+          "type": "number",
+          "minimum": 0
+        },
+        "system_wall_clock_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "breakdown": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "release_status": {
+      "type": "string",
+      "enum": [
+        "not-ready",
+        "ready",
+        "previewed",
+        "uploaded",
+        "under-review",
+        "released",
+        "rolled-back"
+      ]
+    }
+  }
+}

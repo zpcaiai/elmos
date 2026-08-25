@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "artifact_set": "elmos-7plus1-source-archives-v1.0.0",
+  "identity_semantics": "Each digest binds only the named ZIP bytes. No archive content is executed and no provenance, license, signature, SBOM, behavior, or certification is inferred.",
+  "archives": [
+    {
+      "path": "skills/subskills/archives/00-elmos-software-factory-master-v1.0.0.zip",
+      "size_bytes": 80258,
+      "sha256": "d3627374db28487e5f385986d762d267099e4107627a02358fddccb1352182b4"
+    },
+    {
+      "path": "skills/subskills/archives/01-elmos-harness-runtime-platform-v1.0.0.zip",
+      "size_bytes": 89168,
+      "sha256": "1f26520d1146b22f872782d1dbb892690e45900997a4f3c0b72b96bc0f6f6295"
+    },
+    {
+      "path": "skills/subskills/archives/02-elmos-repository-intelligence-semantic-ir-v1.0.0.zip",
+      "size_bytes": 87739,
+      "sha256": "5bbb33e3dcfe152dfe3075dd98a0600dab8da369f81ee7386180c4431c7330e4"
+    },
+    {
+      "path": "skills/subskills/archives/03-elmos-project-generation-transformation-engine-v1.0.0.zip",
+      "size_bytes": 88251,
+      "sha256": "e5950802a42970891536d3483d71c2680327da0525efd2a13be3299d1265103b"
+    },
+    {
+      "path": "skills/subskills/archives/04-elmos-agent-orchestration-software-factory-v1.0.0.zip",
+      "size_bytes": 88426,
+      "sha256": "8ec202fa50b4087e1489f57c6601178b6584192077833d97367662b0ca246aea"
+    },
+    {
+      "path": "skills/subskills/archives/05-elmos-conversion-reliability-verification-harness-v1.0.0.zip",
+      "size_bytes": 88118,
+      "sha256": "086a04bf4f6b741b5eb6d9f1e978f539a6a4d6e89fc7a72e72c95209246fd8fb"
+    },
+    {
+      "path": "skills/subskills/archives/06-elmos-intelligent-model-router-v1.0.0.zip",
+      "size_bytes": 87432,
+      "sha256": "1431512d09f180806c32f1df53d7d199fc21ea1b6ddda3f88870440d8830a28a"
+    },
+    {
+      "path": "skills/subskills/archives/07-elmos-transformation-learning-evolution-v1.0.0.zip",
+      "size_bytes": 87690,
+      "sha256": "ccef5c4a673c4ee8182304df327ec8b709d392ac1850c6a785bd79490990404d"
+    }
+  ]
+}

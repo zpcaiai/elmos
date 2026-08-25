@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 调试适配器网关与能力协商
+  short_description: 建设统一调试适配器网关，规范化 DAP、浏览器调试协议和各语言原生调试器差异。用于会话代理、能力协商、断点/栈/变量事件转换、连接恢复和适配器合规测试。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-debug-adapter-gateway 按模块规格实施、测试并提供可复现证据。
+policy:
+  allow_implicit_invocation: true

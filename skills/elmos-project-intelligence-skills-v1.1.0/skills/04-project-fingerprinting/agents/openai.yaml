@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 项目指纹与技术栈识别
+  short_description: 识别项目语言、框架、构建系统、入口、数据库、消息、部署和生成代码。用于分析规划、解析器选择和机器 ETA 估算。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-project-fingerprinting 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

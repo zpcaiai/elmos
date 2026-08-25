@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/architecture-pattern-decision.schema.json",
+  "type": "object",
+  "required": [
+    "primary_pattern",
+    "secondary_patterns",
+    "overlays",
+    "rationale",
+    "risks",
+    "validation"
+  ],
+  "properties": {
+    "primary_pattern": {
+      "type": "string"
+    },
+    "secondary_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "overlays": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rationale": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "validation": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reconsider_when": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

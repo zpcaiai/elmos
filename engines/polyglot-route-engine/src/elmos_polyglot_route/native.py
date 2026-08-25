@@ -24,7 +24,14 @@ from typing import Any, Final, cast
 
 from .clang_analyzer import analyze_clang, inventory_clang_module
 from .emitter import _CPP_HELPERS, _OBJC_HELPERS, _PHP_HELPERS, _SWIFT_HELPERS
-from .models import ROUTED_LANGUAGES, Language, RouteError, SemanticIR
+from .models import (
+    DEPRECATED_LANGUAGES,
+    PENDING_ANALYZER_LANGUAGES,
+    ROUTED_LANGUAGES,
+    Language,
+    RouteError,
+    SemanticIR,
+)
 from .python_analyzer import analyze_python
 from .repository import javascript_esm_descriptor
 from .toolchains import (
@@ -82,8 +89,8 @@ _TYPESCRIPT_ANALYZER_SHA256 = "482d2875c625f21fa13e02741ea4350e5ad43f0a168257a74
 _TYPESCRIPT_ANALYZER_BYTES = 31_436
 _TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _PHP_ANALYZER = ENGINE_ROOT / "native" / "php" / "analyzer.php"
-_PHP_ANALYZER_SHA256 = "8419309ee77f60b881bcad26da1f3ea139dac934cd76d4305d17b353bcf9a7ff"
-_PHP_ANALYZER_BYTES = 44089
+_PHP_ANALYZER_SHA256 = "624dcfca3d60052aed151c07716b58a40ec73c48337f2424c66d005f8aad497d"
+_PHP_ANALYZER_BYTES = 63489
 _PHP_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 #: Every PHP invocation the engine makes. `-n` drops php.ini so the analyzer's
 #: behaviour is the build's, not the machine's, and the four `-d` overrides pin
@@ -136,11 +143,11 @@ _APPLE_GIT_VERSION = "git version 2.50.1 (Apple Git-155)"
 _APPLE_GIT_SHA256 = "10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"
 _APPLE_GIT_BYTES = 3_704_880
 _SANDBOX_EXEC = Path("/usr/bin/sandbox-exec")
-_SANDBOX_EXEC_SHA256 = "e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"
-_SANDBOX_EXEC_CDHASH_FULL = "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"
+_SANDBOX_EXEC_SHA256 = "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+_SANDBOX_EXEC_CDHASH_FULL = "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625"
 _SANDBOX_EXEC_BYTES = 102_368
 _CODESIGN = Path("/usr/bin/codesign")
-_CODESIGN_SHA256 = "6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"
+_CODESIGN_SHA256 = "844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"
 _CODESIGN_BYTES = 458_576
 _SANDBOX_EXEC_POLICY = "(version 1)\n(allow default)\n(deny network*)\n"
 _SANDBOX_NETWORK_PROBE_SOURCE = r"""#include <arpa/inet.h>
@@ -5082,11 +5089,18 @@ def _toolchain_build_cache(kind: str, key: str, names: Sequence[str]) -> tuple[P
         )
         base.mkdir(mode=0o700, parents=True, exist_ok=True)
         root = base / key
+        root.mkdir(mode=0o700, parents=True, exist_ok=True)
         directories = []
         for name in names:
             directory = root / name
             directory.mkdir(mode=0o700, parents=True, exist_ok=True)
             directories.append(directory)
+        for directory in (root, *directories):
+            with tempfile.TemporaryFile(
+                prefix=".elmos-cache-write-probe-",
+                dir=directory,
+            ):
+                pass
     except OSError:
         return None
     return tuple(directories)
@@ -7077,6 +7091,64 @@ def _run_csharp_semantic_cli(
     return _bind_csharp_analyzer_identity(value, receipt), receipt
 
 
+_PHP_PROFILE_PREAMBLE = b"declare(strict_types=1);"
+
+
+def _partition_php_profile_preamble(
+    subjects: list[dict[str, Any]],
+    source: Path,
+    source_bytes: bytes,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Keep PHP's exact strict-types contract as byte-bound prelude evidence.
+
+    The declaration is a prerequisite of the typed PHP profile, not a symbol
+    that a target generator must translate.  Every other ``declare`` remains a
+    normal module obligation and therefore continues to block repository
+    completion.
+    """
+
+    profile_subjects = [
+        subject
+        for subject in subjects
+        if subject.get("declaration_kind") == "php-profile-preamble"
+    ]
+    if len(profile_subjects) > 1:
+        raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+    if not profile_subjects:
+        return subjects, []
+
+    subject = profile_subjects[0]
+    span = subject.get("source_span")
+    signature = subject.get("signature")
+    if (
+        subject.get("name") != "<strict-types>"
+        or subject.get("qualified_name") != "<strict-types>"
+        or subject.get("analyzable") is not False
+        or subject.get("occurrence") != 1
+        or signature != {"directive": "strict_types", "value": 1}
+        or not isinstance(span, dict)
+        or span.get("file") != source.name
+    ):
+        raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+    start = span.get("start_byte")
+    end = span.get("end_byte")
+    if not isinstance(start, int) or not isinstance(end, int):
+        raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+    raw = source_bytes[start:end]
+    if raw != _PHP_PROFILE_PREAMBLE:
+        raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+    remaining = [subject for subject in subjects if subject is not profile_subjects[0]]
+    return remaining, [
+        {
+            "order": 0,
+            "kind": "declare",
+            "value": "strict_types=1",
+            "source_span": span,
+            "sha256": "sha256:" + hashlib.sha256(raw).hexdigest(),
+        }
+    ]
+
+
 def _validated_module_inventory(
     value: dict[str, Any],
     language: Language,
@@ -7171,11 +7243,20 @@ def _validated_module_inventory(
                 "occurrence": occurrence,
             }
         )
+    directives = _scan_preprocessor_directives(source, language, source_bytes)
+    if language == "php":
+        if directives:
+            raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+        normalized_subjects, directives = _partition_php_profile_preamble(
+            normalized_subjects,
+            source,
+            source_bytes,
+        )
     return {
         **value,
         "source_artifact_sha256": "sha256:" + hashlib.sha256(source_bytes).hexdigest(),
         "source_artifact_bytes": len(source_bytes),
-        "directives": _scan_preprocessor_directives(source, language, source_bytes),
+        "directives": directives,
         "subjects": normalized_subjects,
         "diagnostics": [str(item) for item in diagnostics],
     }
@@ -7261,6 +7342,13 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
                 allowed_domain_errors=frozenset(),
             ),
             analyzer_build_receipt,
+        )
+    elif language == "php":
+        value = _run_trusted_php_analyzer(
+            toolchain,
+            source,
+            "--inventory",
+            emitted_target=False,
         )
     else:
         raise RouteError(f"MODULE_INVENTORY_UNSUPPORTED:{language}")
@@ -7483,6 +7571,414 @@ def _external_semantic_ir(value: dict[str, Any]) -> SemanticIR:
     return semantic
 
 
+#: The Kotlin analyzer is one file and it is the only Kotlin the engine
+#: compiles.  The cap is the same order as the Java one: large enough that a
+#: real edit fits, small enough that a substituted tree is refused.
+_KOTLIN_ANALYZER_SOURCE_MAX_BYTES = 512_000
+_KOTLIN_ANALYZER_CLASS_RECEIPT = "kotlin-analyzer-classes.json"
+
+#: Rejections the analyzer raises about the *source it was asked to lift*,
+#: which the caller is entitled to see as a typed domain verdict rather than a
+#: crash.  Deliberately as narrow as the Java set and for the same reason: a
+#: code that means "this engine is broken" must never be promotable into "your
+#: source is unsupported", because that turns an outage into a wrong answer
+#: about someone's code.  `KOTLIN_UNSUPPORTED_TYPE:Int` is the exact analogue of
+#: `JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int` -- a 32-bit integer in a
+#: matrix whose canonical integer is 64-bit.
+_KOTLIN_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
+    {
+        "KOTLIN_UNSUPPORTED_TYPE:Int",
+        "KOTLIN_GENERIC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+    }
+)
+
+
+def _kotlin_analyzer_source_snapshot(helper: Path) -> tuple[dict[str, object], bytes]:
+    expected = ENGINE_ROOT / "native" / "kotlin" / "analyzer.kt"
+    if not helper.is_absolute() or helper != expected:
+        raise RouteError("KOTLIN_ANALYZER_SOURCE_UNSAFE")
+    guarded_content = _read_csharp_bound_file(
+        helper,
+        ENGINE_ROOT,
+        failure="KOTLIN_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_KOTLIN_ANALYZER_SOURCE_MAX_BYTES,
+    )
+    content = _stable_read_regular_file(
+        helper,
+        failure="KOTLIN_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_KOTLIN_ANALYZER_SOURCE_MAX_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+    )
+    final_content = _read_csharp_bound_file(
+        helper,
+        ENGINE_ROOT,
+        failure="KOTLIN_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_KOTLIN_ANALYZER_SOURCE_MAX_BYTES,
+    )
+    if content != guarded_content or content != final_content:
+        raise RouteError("KOTLIN_ANALYZER_SOURCE_UNSAFE_CHANGED")
+    binding: dict[str, object] = {
+        "path": str(helper),
+        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+        "bytes": len(content),
+    }
+    return binding, content
+
+
+def _kotlin_analyzer_source_binding(helper: Path) -> dict[str, object]:
+    binding, _ = _kotlin_analyzer_source_snapshot(helper)
+    return binding
+
+
+def _kotlin_analyzer_snapshot_binding(snapshot: Path, root: Path) -> dict[str, object]:
+    try:
+        root_metadata = root.lstat()
+        resolved_root = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_UNSAFE") from error
+    if (
+        root != resolved_root
+        or root.is_symlink()
+        or not stat.S_ISDIR(root_metadata.st_mode)
+        or root_metadata.st_uid != os.getuid()
+        or stat.S_IMODE(root_metadata.st_mode) != 0o700
+        or snapshot.parent != root
+        or snapshot.name != "analyzer.kt"
+    ):
+        raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_UNSAFE")
+    content = _stable_read_regular_file(
+        snapshot,
+        failure="KOTLIN_ANALYZER_SNAPSHOT_UNSAFE",
+        maximum_bytes=_KOTLIN_ANALYZER_SOURCE_MAX_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+    )
+    try:
+        metadata = snapshot.lstat()
+    except OSError as error:
+        raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_UNSAFE") from error
+    if stat.S_IMODE(metadata.st_mode) != 0o600:
+        raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_UNSAFE")
+    return {
+        "path": str(snapshot),
+        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+        "bytes": len(content),
+    }
+
+
+def _write_kotlin_analyzer_snapshot(root: Path, content: bytes) -> tuple[Path, dict[str, object]]:
+    snapshot = root / "analyzer.kt"
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(snapshot, flags, 0o600)
+        try:
+            written = 0
+            while written < len(content):
+                chunk_bytes = os.write(descriptor, content[written:])
+                if chunk_bytes <= 0:
+                    raise OSError("zero-byte Kotlin analyzer snapshot write")
+                written += chunk_bytes
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    except OSError as error:
+        raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_CREATE_FAILED") from error
+    binding = _kotlin_analyzer_snapshot_binding(snapshot, root)
+    if binding["sha256"] != "sha256:" + hashlib.sha256(content).hexdigest() or binding["bytes"] != len(content):
+        raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_CONTENT_MISMATCH")
+    return snapshot, binding
+
+
+def _kotlin_analyzer_arguments(arguments: list[str]) -> None:
+    if (
+        len(arguments) not in {2, 3}
+        or any(not isinstance(argument, str) or not argument for argument in arguments)
+        or any("\n" in argument or "\r" in argument or "\x00" in argument for argument in arguments)
+        or (len(arguments) == 3 and arguments[2] != "--emitted-target")
+        or arguments[1] in {"--inventory", "--emitted-target"}
+    ):
+        raise RouteError("KOTLIN_ANALYZER_COMMAND_SHAPE_INVALID")
+    source = Path(arguments[0])
+    if not source.is_absolute() or source.is_symlink() or not source.is_file():
+        raise RouteError("KOTLIN_ANALYZER_COMMAND_SHAPE_INVALID")
+
+
+def _verify_trusted_kotlin_toolchain(expected: ExactToolchain) -> None:
+    """Re-assert the pin around every analyzer run, as the Java path does.
+
+    The probe already ran once; this is the cheap re-check that the *identity*
+    the caller is holding is still the Kotlin identity, so a swapped
+    ``ExactToolchain`` cannot smuggle a different compiler into a run that has
+    already passed its source checks.
+    """
+    digest = re.compile(r"[0-9a-f]{64}").fullmatch
+    if (
+        expected.language != "kotlin"
+        or not Path(expected.executable).is_absolute()
+        or expected.auxiliary is None
+        or not Path(expected.auxiliary).is_absolute()
+        or expected.executable_sha256 is None
+        or digest(expected.executable_sha256) is None
+    ):
+        raise RouteError("KOTLIN_ANALYZER_TOOLCHAIN_UNTRUSTED")
+
+
+def _kotlin_runtime_paths(toolchain: ExactToolchain) -> tuple[Path, Path, Path]:
+    """The pinned `java`, and the two jars the analyzer needs on its classpath.
+
+    Derived from ``kotlin-root=`` and re-checked against the digests the probe
+    recorded, rather than taken on faith from the filesystem: the jars are the
+    parser this frontend *is*, so a swapped ``kotlin-compiler.jar`` is a swapped
+    definition of the Kotlin language, not a swapped dependency.
+    """
+    root = Path(_toolchain_profile_value(toolchain.profile, "kotlin-root"))
+    jvm_home = Path(_toolchain_profile_value(toolchain.profile, "kotlin-jvm-home"))
+    java = jvm_home / "bin" / "java"
+    compiler_jar = root / "lib" / "kotlin-compiler.jar"
+    stdlib_jar = root / "lib" / "kotlin-stdlib.jar"
+    for path in (java, compiler_jar, stdlib_jar):
+        if not path.is_absolute() or path.is_symlink() or not path.is_file():
+            raise RouteError(f"KOTLIN_ANALYZER_RUNTIME_UNAVAILABLE:{path.name}")
+    expected_compiler = _toolchain_profile_value(toolchain.profile, "kotlin-compiler-jar-sha256")
+    expected_stdlib = _toolchain_profile_value(toolchain.profile, "kotlin-stdlib-jar-sha256")
+    if _sha256_file(compiler_jar) != expected_compiler or _sha256_file(stdlib_jar) != expected_stdlib:
+        raise RouteError("KOTLIN_ANALYZER_RUNTIME_CHANGED")
+    return java, compiler_jar, stdlib_jar
+
+
+def _verify_kotlin_analyzer_classes(classes: Path, receipt: Mapping[str, Any]) -> None:
+    """Refuse to execute bytecode that is not the bytecode we recorded."""
+    recorded = receipt.get("classes")
+    if not isinstance(recorded, dict) or not recorded:
+        raise RouteError("KOTLIN_ANALYZER_CLASS_RECEIPT_INVALID")
+    observed = {
+        path.relative_to(classes).as_posix(): path
+        for path in classes.rglob("*.class")
+        if path.is_file() and not path.is_symlink()
+    }
+    if set(observed) != set(recorded):
+        raise RouteError("KOTLIN_ANALYZER_CLASS_SET_CHANGED")
+    for relative, class_digest in sorted(recorded.items()):
+        if _sha256_file(observed[relative]) != class_digest:
+            raise RouteError("KOTLIN_ANALYZER_CLASS_CHANGED")
+
+
+def _kotlin_analyzer_classes(
+    helper: Path,
+    toolchain: ExactToolchain,
+    compiler_jar: Path,
+    staging_root: Path,
+) -> tuple[Path, dict[str, Any]] | None:
+    """Compile the Kotlin analyzer and bind the bytecode to its source.
+
+    Unlike Java there is no source-launcher to fall back to: Kotlin has no
+    equivalent of JEP 330, so *something* always has to compile this file before
+    it can run.  That makes the cache load-bearing rather than an optimisation
+    -- a cold `kotlinc` is a JVM start plus a ~60MB compiler jar, measured in
+    seconds, and the analyzer runs once per candidate function.  When the cache
+    is unavailable the caller compiles into the private snapshot directory
+    instead, which is slower but produces the same binding.
+
+    The cache key covers the compiler binary, the analyzer source and the
+    compiler jar, because all three decide what bytecode comes out; a receipt
+    records the digest of every class file, re-checked before every run, so
+    "what executed" stays provably derived from "what we hashed".
+    """
+    compiler = Path(toolchain.executable)
+    if not compiler.is_file():
+        return None
+    try:
+        key = _toolchain_build_cache_key(
+            "kotlin",
+            compiler,
+            files=(helper, compiler_jar),
+            salt=(f"kotlin-build={_toolchain_profile_value(toolchain.profile, 'kotlin-build-number')}",),
+        )
+    except (OSError, RouteError):
+        return None
+    directories = _toolchain_build_cache("kotlin", key, ("classes",))
+    if directories is None:
+        return None
+    (classes,) = directories
+    receipt_path = classes.parent / _KOTLIN_ANALYZER_CLASS_RECEIPT
+
+    if receipt_path.is_file():
+        try:
+            receipt = json.loads(receipt_path.read_text())
+            _verify_kotlin_analyzer_classes(classes, receipt)
+            return classes, receipt
+        except (OSError, ValueError, RouteError):
+            # A damaged or tampered cache entry is rebuilt, never trusted.
+            shutil.rmtree(classes, ignore_errors=True)
+            classes.mkdir(mode=0o700, parents=True, exist_ok=True)
+
+    staging = classes.parent / f".staging-{os.getpid()}"
+    shutil.rmtree(staging, ignore_errors=True)
+    try:
+        staging.mkdir(mode=0o700, parents=True)
+        if not _compile_kotlin_analyzer(
+            toolchain, compiler_jar, staging_root / helper.name, staging, staging.parent
+        ):
+            shutil.rmtree(staging, ignore_errors=True)
+            return None
+        produced = sorted(path for path in staging.rglob("*.class") if path.is_file())
+        if not produced:
+            shutil.rmtree(staging, ignore_errors=True)
+            return None
+        receipt = {
+            "cache_schema": _TOOLCHAIN_BUILD_CACHE_SCHEMA,
+            "cache_key": key,
+            "cache_scope": "content-addressed-persistent",
+            "analyzer_source_sha256": _sha256_file(helper),
+            "compiler_sha256": _sha256_file(compiler),
+            "compiler_jar_sha256": _sha256_file(compiler_jar),
+            "classes": {path.relative_to(staging).as_posix(): _sha256_file(path) for path in produced},
+        }
+        # Publish atomically, so a concurrent reader never observes a partial
+        # class set.  Two writers derived the same key from the same inputs, so
+        # whichever lands is equivalent by construction.
+        shutil.rmtree(classes, ignore_errors=True)
+        staging.rename(classes)
+        receipt_path.write_text(json.dumps(receipt, sort_keys=True))
+    except (OSError, subprocess.SubprocessError):
+        shutil.rmtree(staging, ignore_errors=True)
+        return None
+    return classes, receipt
+
+
+def _compile_kotlin_analyzer(
+    toolchain: ExactToolchain,
+    compiler_jar: Path,
+    source: Path,
+    destination: Path,
+    scratch: Path,
+) -> bool:
+    """Run `kotlinc` on the snapshot.  Returns whether it produced classes.
+
+    `kotlinc` is a shell script that execs a JVM, so the pinned JDK has to be
+    both on PATH and named in JAVA_HOME -- the launcher prefers the variable and
+    silently falls back to a bare `java` from PATH.  Setting only one of them
+    leaves an "exact toolchain" claim resting on whatever JVM the host happens
+    to have.
+
+    `scratch` gives the compiler a private HOME and TMPDIR.  Kotlin's daemon and
+    the JVM both write there when left to their own devices, and pointing them
+    at the real home would let one route's build observe another's leftovers.
+    """
+    jvm_home = Path(_toolchain_profile_value(toolchain.profile, "kotlin-jvm-home"))
+    home = scratch / "home"
+    temporary = scratch / "tmp"
+    for directory in (home, temporary):
+        directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+    environment = sanitized_subprocess_env(
+        home=home,
+        temp_dir=temporary,
+        executable_dirs=(jvm_home / "bin", Path(toolchain.executable).resolve().parent),
+    )
+    environment["JAVA_HOME"] = str(jvm_home)
+    completed = subprocess.run(
+        [
+            str(toolchain.executable),
+            "-nowarn",
+            "-classpath",
+            str(compiler_jar),
+            "-d",
+            str(destination),
+            str(source),
+        ],
+        capture_output=True,
+        text=True,
+        stdin=subprocess.DEVNULL,
+        timeout=900,
+        check=False,
+        env=environment,
+    )
+    return completed.returncode == 0
+
+
+def _run_trusted_kotlin_analyzer(
+    toolchain: ExactToolchain,
+    helper: Path,
+    arguments: list[str],
+    *,
+    allowed_domain_errors: frozenset[str],
+) -> dict[str, Any]:
+    """Run the exact source-file Kotlin analyzer with fail-closed error promotion."""
+
+    if allowed_domain_errors != _KOTLIN_ANALYZE_PROMOTABLE_DOMAIN_ERRORS:
+        raise RouteError("KOTLIN_ANALYZER_DOMAIN_ERROR_POLICY_INVALID")
+    _kotlin_analyzer_arguments(arguments)
+    expected_helper, helper_content = _kotlin_analyzer_source_snapshot(helper)
+    java, compiler_jar, stdlib_jar = _kotlin_runtime_paths(toolchain)
+    with tempfile.TemporaryDirectory(prefix="elmos-kotlin-analyzer-") as temporary:
+        root = Path(temporary).resolve(strict=True)
+        root.chmod(0o700)
+        snapshot, expected_snapshot = _write_kotlin_analyzer_snapshot(root, helper_content)
+        try:
+            current_helper = _kotlin_analyzer_source_binding(helper)
+        except RouteError as error:
+            raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_BEFORE_EXECUTION") from error
+        if current_helper != expected_helper:
+            raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_BEFORE_EXECUTION")
+        _verify_trusted_kotlin_toolchain(toolchain)
+        # Prefer the cached bytecode, whose digests were just re-verified
+        # against the receipt built from this exact source; otherwise compile
+        # the snapshot in place, so behaviour is identical either way and only
+        # the compile cost differs.
+        cached_classes = _kotlin_analyzer_classes(helper, toolchain, compiler_jar, root)
+        if cached_classes is not None:
+            classes, _class_receipt = cached_classes
+        else:
+            classes = root / "classes"
+            classes.mkdir(mode=0o700)
+            if not _compile_kotlin_analyzer(toolchain, compiler_jar, snapshot, classes, root):
+                raise RouteError("KOTLIN_ANALYZER_COMPILE_FAILED")
+        # The pinned `java` directly, not `bin/kotlin`: one less shell script
+        # between the pin and the process, and the launcher would only rebuild
+        # the same classpath from the same two jars.
+        command = [
+            str(java),
+            "-cp",
+            os.pathsep.join([str(classes), str(compiler_jar), str(stdlib_jar)]),
+            "AnalyzerKt",
+            *arguments,
+        ]
+        try:
+            value = _run(command, cwd=root)
+        except RouteError as error:
+            try:
+                current_snapshot = _kotlin_analyzer_snapshot_binding(snapshot, root)
+            except RouteError as verification_error:
+                raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from verification_error
+            if current_snapshot != expected_snapshot:
+                raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+            try:
+                current_helper = _kotlin_analyzer_source_binding(helper)
+            except RouteError as verification_error:
+                raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION") from verification_error
+            if current_helper != expected_helper:
+                raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION") from error
+            _verify_trusted_kotlin_toolchain(toolchain)
+            wrapped = str(error)
+            for reason in allowed_domain_errors:
+                if wrapped == f"NATIVE_ANALYZER_FAILED:{java}:{reason}":
+                    raise RouteError(reason) from error
+            raise
+        try:
+            current_snapshot = _kotlin_analyzer_snapshot_binding(snapshot, root)
+        except RouteError as error:
+            raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+        if current_snapshot != expected_snapshot:
+            raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+        try:
+            current_helper = _kotlin_analyzer_source_binding(helper)
+        except RouteError as error:
+            raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION") from error
+        if current_helper != expected_helper:
+            raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION")
+        _verify_trusted_kotlin_toolchain(toolchain)
+        return value
+
+
 def analyze(
     source: Path,
     language: Language,
@@ -7496,7 +7992,38 @@ def analyze(
     source = raw_source.resolve()
     if not source.is_file() or source.stat().st_size > 2_000_000:
         raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
-    if emitted_target and language not in ROUTED_LANGUAGES and language not in NATIVE_RELIFTABLE_LANGUAGES:
+    if language in PENDING_ANALYZER_LANGUAGES:
+        # A matrix member declared ahead of its analyzer cannot be lifted, in
+        # either direction and whether or not the file is emitted output.
+        # Without this line the first thing to fail was `exact_toolchain`, and
+        # for kotlin it failed with EXACT_TOOLCHAIN_KOTLIN_NOT_PINNED -- an
+        # error that names a fix ("run tools/pin_kotlin_toolchain.py") which
+        # would not have helped, because the missing piece is the analyzer, not
+        # the pin.  `SemanticIR.from_mapping` already refuses these languages
+        # under this exact name; saying it here just moves the refusal to the
+        # boundary the caller actually crossed.  The kotlin toolchain stays
+        # reachable through the *target* path, where pinning is the real
+        # prerequisite.
+        raise RouteError(f"SOURCE_ANALYZER_NOT_IMPLEMENTED:{language}")
+    # A backstop, and deliberately unreachable today: `ROUTED_LANGUAGES` and
+    # `DEPRECATED_LANGUAGES` together cover every member of `Language`, and the
+    # test for this gate asserts that they do.  It fires only if someone adds a
+    # language to the `Language` literal without placing it in either set --
+    # the one arrangement in which this module would otherwise fall through to
+    # a dispatch chain that has no branch for it and return `value` unbound.
+    #
+    # Route membership is not the question it asks.  A deprecated language
+    # keeps the analyzer, emitter and filed evidence it always had (see
+    # `DEPRECATED_LANGUAGES`), so relifting its archived output has to keep
+    # working; javascript's deprecation left it out of the admitted set and
+    # silently took relift away from a language whose evidence the deprecation
+    # had promised to preserve.
+    if (
+        emitted_target
+        and language not in ROUTED_LANGUAGES
+        and language not in DEPRECATED_LANGUAGES
+        and language not in NATIVE_RELIFTABLE_LANGUAGES
+    ):
         raise RouteError(f"EMITTED_TARGET_REANALYSIS_UNSUPPORTED:{language}")
     if emitted_target:
         _verify_emitted_helper_sources(source, language)
@@ -7599,6 +8126,17 @@ def analyze(
             source,
             function_name,
             emitted_target=emitted_target,
+        )
+    elif language == "kotlin":
+        helper = ENGINE_ROOT / "native" / "kotlin" / "analyzer.kt"
+        arguments = [str(source), function_name]
+        if emitted_target:
+            arguments.append("--emitted-target")
+        value = _run_trusted_kotlin_analyzer(
+            toolchain,
+            helper,
+            arguments,
+            allowed_domain_errors=_KOTLIN_ANALYZE_PROMOTABLE_DOMAIN_ERRORS,
         )
     else:
         raise RouteError(f"NATIVE_ANALYZER_UNSUPPORTED:{language}")

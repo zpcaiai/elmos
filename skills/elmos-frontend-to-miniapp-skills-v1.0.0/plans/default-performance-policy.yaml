@@ -1,0 +1,31 @@
+policy_version: "1.0"
+comparison:
+  source_baseline_required: true
+  incomparable_environment_status: unknown
+metrics:
+  cold_start:
+    percentile: p95
+    max_relative_regression: 0.20
+  first_render:
+    percentile: p95
+    max_relative_regression: 0.20
+  page_navigation:
+    percentile: p95
+    max_relative_regression: 0.20
+  long_list:
+    min_target_fps: project-defined
+  memory:
+    max_growth: project-defined
+  package_size:
+    max: platform-profile
+samples:
+  warmup_runs: 3
+  measured_runs: 20
+environment:
+  devices: project-defined
+  network_profiles:
+    - normal
+    - weak
+failure_policy:
+  missing_comparable_baseline: unknown
+  significant_regression: failed

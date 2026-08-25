@@ -1,0 +1,22 @@
+// Source adapter template. Replace placeholders and keep target-platform details out.
+export interface SourceAdapter<Input, Facts> {
+  readonly id: string;
+  readonly version: string;
+  canAnalyze(input: Input): Promise<{ confidence: number; evidence: string[] }>;
+  analyze(input: Input, context: Readonly<AnalysisContext>): Promise<Facts>;
+}
+
+export type AnalysisContext = {
+  runId: string;
+  sourceRevision: string;
+  workspace: string;
+  signal: AbortSignal;
+  emitArtifact(path: string, value: unknown, schema: string): Promise<ArtifactRef>;
+};
+
+export type ArtifactRef = {
+  artifactId: string;
+  path: string;
+  sha256: string;
+  schema: string;
+};

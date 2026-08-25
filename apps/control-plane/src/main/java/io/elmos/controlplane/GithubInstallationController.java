@@ -24,6 +24,8 @@ final class GithubInstallationController {
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestBody(required = false) ConnectRequest request
     ) {
+        ControlPlanePrincipal.requireDatabaseBound(
+                organizationId, "repository:write");
         return service.begin(organizationId, request == null ? null : request.connectionId());
     }
 

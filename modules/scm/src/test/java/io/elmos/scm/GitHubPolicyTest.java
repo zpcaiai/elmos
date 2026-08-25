@@ -18,12 +18,20 @@ class GitHubPolicyTest {
         Map<Long, GitHubInstallationLifecycleService.Installation> installations = new HashMap<>();
         var store = new GitHubInstallationLifecycleService.Store() {
             public boolean bindIfUnclaimed(GitHubInstallationLifecycleService.Installation value) { return installations.putIfAbsent(value.githubInstallationId(), value) == null; }
-            public GitHubInstallationLifecycleService.Installation findByExternalId(long id) { return installations.get(id); }
-            public void updateStatus(long id, GitHubInstallationLifecycleService.Status status, Instant changed) {
-                var old = installations.get(id); installations.put(id, new GitHubInstallationLifecycleService.Installation(old.installationId(), old.connectionId(), old.organizationId(),
+            public GitHubInstallationLifecycleService.Installation findByExternalId(String organization, long id) {
+                var installation = installations.get(id);
+                return installation != null && installation.organizationId().equals(organization)
+                        ? installation : null;
+            }
+            public void updateStatus(String organization, long id,
+                                     GitHubInstallationLifecycleService.Status status, Instant changed) {
+                var old = findByExternalId(organization, id);
+                if (old == null) throw new SecurityException("installation is not tenant-owned");
+                installations.put(id, new GitHubInstallationLifecycleService.Installation(old.installationId(), old.connectionId(), old.organizationId(),
                         old.githubInstallationId(), old.accountExternalId(), old.accountLogin(), old.targetType(), old.repositorySelection(), old.permissions(), status, old.installedAt(), changed));
             }
-            public void replaceAuthorizedRepositories(long id, Set<GitHubInstallationLifecycleService.Repository> repositories, Instant at) {}
+            public void replaceAuthorizedRepositories(String organization, long id,
+                    Set<GitHubInstallationLifecycleService.Repository> repositories, Instant at) {}
         };
         var service = new GitHubInstallationLifecycleService(store); Instant now = Instant.parse("2026-07-20T00:00:00Z");
         Map<String,String> permissions = Map.of("metadata","read","contents","read");
@@ -32,6 +40,9 @@ class GitHubPolicyTest {
         assertThrows(SecurityException.class, () -> service.bind(new GitHubInstallationLifecycleService.Installation(
                 "i3","c3","org1",10,1,"example","Organization","selected",
                 Map.of("metadata","read"), GitHubInstallationLifecycleService.Status.ACTIVE,now,now)));
-        service.suspend(9, now.plusSeconds(1)); assertThrows(SecurityException.class, () -> service.requireActive(9));
+        service.suspend("org1", 9, now.plusSeconds(1));
+        assertThrows(SecurityException.class, () -> service.requireActive("org1", 9));
+        assertThrows(SecurityException.class,
+                () -> service.suspend("org2", 9, now.plusSeconds(2)));
     }
 }

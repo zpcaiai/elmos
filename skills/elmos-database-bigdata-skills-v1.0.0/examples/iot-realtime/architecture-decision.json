@@ -1,0 +1,27 @@
+{
+  "selector_version": "1.0.0",
+  "project_id": "demo-iot-realtime",
+  "primary_pattern": "streaming-kappa",
+  "secondary_patterns": [
+    "lakehouse"
+  ],
+  "overlays": [],
+  "rationale": [
+    "Realtime processing dominates and at least one durable replay-capable source is present.",
+    "Historical volume/retention/variety favors an open, governed lakehouse layer."
+  ],
+  "risks": [],
+  "validation": [
+    "retention versus replay duration",
+    "state recovery",
+    "idempotent sinks",
+    "table-format engine compatibility",
+    "file layout and maintenance"
+  ],
+  "reconsider_when": [
+    "freshness or throughput changes by more than 2x",
+    "a source becomes non-replayable or retention is reduced",
+    "team operations maturity or deployment policy changes",
+    "representative benchmark contradicts the heuristic decision"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "corpus_key": "elmos-7plus1-negative-v1",
+  "data_classification": "synthetic-public",
+  "case_families": [
+    "archive-digest-size-and-name-drift",
+    "path-traversal-absolute-backslash-and-reserved-members",
+    "unicode-and-casefold-collisions",
+    "symlink-special-encrypted-and-budget-exhaustion-members",
+    "conflicting-shared-members-and-manifest-dag-drift",
+    "embedded-script-execution-sentinel",
+    "missing-tenant-project-correlation-policy-or-source-binding",
+    "unbound-unknown-and-unsupported-skill-or-public-method",
+    "caller-asserted-external-evidence",
+    "adapter-and-external-result-promotion-attempt"
+  ],
+  "execution_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "tuning_allowed": true
+}

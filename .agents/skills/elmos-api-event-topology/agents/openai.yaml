@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS API、消息与集成拓扑"
+  short_description: "Guide API、消息与集成拓扑 with evidence controls"
+  default_prompt: "Use $elmos-api-event-topology as guidance for API、消息与集成拓扑 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

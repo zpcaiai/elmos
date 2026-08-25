@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 调试学习 Copilot 与互动实验
+  short_description: 把在线调试转化为项目学习过程。用于观察、引导、挑战、自由和对照模式，生成调试任务、逐层提示、变量来源讲解、预测题、测验、知识卡与学习进度。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-debug-learning-copilot 按模块规格实施、测试并提供可复现证据。
+policy:
+  allow_implicit_invocation: true

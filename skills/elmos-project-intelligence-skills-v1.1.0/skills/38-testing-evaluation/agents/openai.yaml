@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 测试、评测与数据质量
+  short_description: 设计单元、契约、集成、E2E、性能、安全、故障恢复和 AI 质量评测。用于验证解析、图谱、解释、图表、文档和问答是否可信。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-testing-evaluation 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/estimate.schema.json",
+  "title": "Elmos Machine Runtime and Cost Estimate",
+  "type": "object",
+  "required": [
+    "estimate_id",
+    "as_of",
+    "project_revision_id",
+    "system_wall_clock_eta",
+    "stages",
+    "human_review_effort",
+    "assumptions"
+  ],
+  "properties": {
+    "estimate_id": {
+      "type": "string"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "project_revision_id": {
+      "type": "string"
+    },
+    "pipeline": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "system_wall_clock_eta": {
+      "type": "object",
+      "required": [
+        "p50_seconds",
+        "p90_seconds",
+        "confidence"
+      ],
+      "properties": {
+        "p50_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "p90_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "p50_seconds",
+          "p90_seconds"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "p50_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "p90_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "queue_seconds": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "tokens": {
+      "type": "object"
+    },
+    "resources": {
+      "type": "object"
+    },
+    "costs": {
+      "type": "object"
+    },
+    "human_review_effort": {
+      "type": "object",
+      "required": [
+        "p50_hours",
+        "p90_hours"
+      ],
+      "properties": {
+        "p50_hours": {
+          "type": "number",
+          "minimum": 0
+        },
+        "p90_hours": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}
