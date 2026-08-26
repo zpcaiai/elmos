@@ -43,7 +43,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
 
-import sqlglot
 from sqlglot import exp
 
 from .advanced import (
@@ -57,11 +56,13 @@ from .advanced import (
 )
 from .models import Dialect, DialectError
 from .parser import (
+    _parse_source_statements,
     parse_alter_table,
     parse_create_index,
     parse_create_schema,
     parse_create_table,
     parse_drop_table,
+    parse_insert,
 )
 from .routine import parse_create_routine
 from .statement_splitter import split_statements
@@ -115,7 +116,23 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     ),
     "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": (
         "statement-kind",
-        "a statement no certified profile covers -- CREATE VIEW, GRANT/REVOKE and DML still land here",
+        "a statement no certified profile covers -- query DML and procedural control flow still land here",
+    ),
+    "CERTIFIED_INSERT_UNSUPPORTED_SOURCE": (
+        "statement-kind",
+        "the INSERT source is not a fixed VALUES row set (for example INSERT ... SELECT)",
+    ),
+    "CERTIFIED_INSERT_UNSUPPORTED_MODIFIER": (
+        "statement-kind",
+        "an INSERT conflict, rerun, hint or other modifier needs its own target semantic route",
+    ),
+    "CERTIFIED_INSERT_UNSUPPORTED_EXPRESSION": (
+        "types",
+        "an INSERT value is an expression or typed literal outside the portable literal seed profile",
+    ),
+    "CERTIFIED_INSERT_UNSUPPORTED_TARGET": (
+        "identifiers",
+        "the INSERT target is not one plain table with an explicit column list",
     ),
     "CERTIFIED_ROUTINE_PROCEDURE_UNSUPPORTED": (
         "statement-kind",
@@ -583,6 +600,8 @@ def _classify(
             parse_alter_table(statement, dialect)
         elif isinstance(statement, exp.Drop):
             parse_drop_table(statement, dialect)
+        elif isinstance(statement, exp.Insert):
+            parse_insert(raw_sql or statement, dialect, namespace_map)
         else:
             # Not covered by any certified DDL profile. This is the single
             # most important number in the report, so it is produced by the
@@ -635,7 +654,7 @@ def _recover_statements(
             )
             continue
         try:
-            parsed = [s for s in sqlglot.parse(raw.text, read=source_dialect.value) if s is not None]
+            parsed = _parse_source_statements(raw.text, source_dialect)
         except Exception as exc:  # noqa: BLE001 - sqlglot raises several types
             findings.append(
                 ScanFinding(
@@ -722,7 +741,7 @@ def scan_repository(
         # file containing a semicolon inside a string literal, a $$-quoted
         # body, or a BEGIN ... END block.
         try:
-            statements = sqlglot.parse(text, read=source_dialect.value)
+            statements = _parse_source_statements(text, source_dialect)
         except Exception:  # noqa: BLE001 - sqlglot raises several types
             # ONE construct the parser cannot read must not discard the file.
             # Measured, five files lost 750 KB of real schema this way, and

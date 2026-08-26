@@ -66,6 +66,17 @@ def test_mysql_table_comment_uses_alter_table_metadata_syntax() -> None:
     assert report["emitted"] == "ALTER TABLE tenant.users COMMENT = 'user table'"
 
 
+def test_postgres_adjacent_comment_literals_are_lexically_coalesced() -> None:
+    report = translate_ddl(
+        "COMMENT ON TABLE users IS 'user ' 'table'",
+        "postgres",
+        "mysql",
+        statement_kind="COMMENT",
+    )
+    assert report["status"] == "PASSED", report
+    assert report["emitted"] == "ALTER TABLE users COMMENT = 'user table'"
+
+
 def test_mysql_column_comment_requires_a_complete_column_catalogue() -> None:
     report = translate_ddl(
         "COMMENT ON COLUMN users.id IS 'identifier'",

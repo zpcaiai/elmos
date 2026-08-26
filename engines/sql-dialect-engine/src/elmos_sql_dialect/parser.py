@@ -51,6 +51,8 @@ from .models import (
     ForeignKey,
     Index,
     IndexColumn,
+    InsertLiteral,
+    InsertStatement,
     ReferentialAction,
     RenameColumn,
     Schema,
@@ -58,6 +60,7 @@ from .models import (
 )
 
 _IDENTIFIER_RE = re.compile(f"^{IDENTIFIER_PATTERN}$")
+_NUMERIC_LITERAL_RE = re.compile(r"-?(?:0|[0-9]+)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$")
 
 _TYPE_MAP: dict[DataType.Type, CanonicalType] = {  # type: ignore[valid-type]
     DataType.Type.BOOLEAN: CanonicalType.BOOLEAN,
@@ -145,6 +148,126 @@ def _require(condition: bool, code: str, message: str) -> None:
         raise DialectError(code, message)
 
 
+def _quoted_literal_end(sql: str, start: int) -> int | None:
+    """Return the end of one ordinary SQL string literal, if present.
+
+    This is a lexical helper for PostgreSQL's legal ``'a' 'b'`` literal
+    concatenation. It does not interpret SQL expressions or decide whether a
+    statement is safe; the normalized text still goes through sqlglot and the
+    typed parsers below.
+    """
+    if start >= len(sql) or sql[start] != "'":
+        return None
+    index = start + 1
+    while index < len(sql):
+        if sql[index] != "'":
+            index += 1
+            continue
+        if index + 1 < len(sql) and sql[index + 1] == "'":
+            index += 2
+            continue
+        return index + 1
+    return None
+
+
+def _dollar_quote_end(sql: str, start: int) -> int | None:
+    """Return the end of a PostgreSQL dollar-quoted block, if present."""
+    if start >= len(sql) or sql[start] != "$":
+        return None
+    index = start + 1
+    while index < len(sql) and (sql[index].isalnum() or sql[index] == "_"):
+        index += 1
+    if index >= len(sql) or sql[index] != "$":
+        return None
+    delimiter = sql[start : index + 1]
+    closing = sql.find(delimiter, index + 1)
+    return len(sql) if closing < 0 else closing + len(delimiter)
+
+
+def _coalesce_adjacent_string_literals(sql: str) -> str:
+    """Normalize only ordinary adjacent string literals.
+
+    PostgreSQL concatenates string literals separated by whitespace. sqlglot's
+    PostgreSQL frontend rejects that otherwise valid spelling in several
+    COMMENT statements. Keep comments, quoted identifiers, and dollar-quoted
+    routine bodies opaque; only ``'left' whitespace 'right'`` is joined.
+    """
+    output: list[str] = []
+    index = 0
+    while index < len(sql):
+        if sql.startswith("--", index):
+            newline = sql.find("\n", index)
+            end = len(sql) if newline < 0 else newline
+            output.append(sql[index:end])
+            index = end
+            continue
+        if sql.startswith("/*", index):
+            closing = sql.find("*/", index + 2)
+            end = len(sql) if closing < 0 else closing + 2
+            output.append(sql[index:end])
+            index = end
+            continue
+        dollar_end = _dollar_quote_end(sql, index)
+        if dollar_end is not None:
+            output.append(sql[index:dollar_end])
+            index = dollar_end
+            continue
+        if sql[index] == '"':
+            end = index + 1
+            while end < len(sql):
+                if sql[end] == '"':
+                    if end + 1 < len(sql) and sql[end + 1] == '"':
+                        end += 2
+                        continue
+                    end += 1
+                    break
+                end += 1
+            output.append(sql[index:end])
+            index = end
+            continue
+        if sql[index] == "'":
+            first_end = _quoted_literal_end(sql, index)
+            if first_end is not None:
+                next_literal = first_end
+                while next_literal < len(sql) and sql[next_literal].isspace():
+                    next_literal += 1
+                second_end = _quoted_literal_end(sql, next_literal) if next_literal < len(sql) else None
+                if second_end is not None:
+                    output.append(sql[index : first_end - 1])
+                    output.append(sql[next_literal + 1 : second_end - 1])
+                    end = second_end
+                    while True:
+                        next_literal = end
+                        while next_literal < len(sql) and sql[next_literal].isspace():
+                            next_literal += 1
+                        next_end = _quoted_literal_end(sql, next_literal) if next_literal < len(sql) else None
+                        if next_end is None:
+                            break
+                        output.append(sql[next_literal + 1 : next_end - 1])
+                        end = next_end
+                    output.append("'")
+                    index = end
+                    continue
+                output.append(sql[index:first_end])
+                index = first_end
+                continue
+        output.append(sql[index])
+        index += 1
+    return "".join(output)
+
+
+def _parse_source_statements(sql: str, source_dialect: Dialect) -> list[exp.Expression]:
+    try:
+        return [s for s in sqlglot.parse(sql, read=source_dialect.value) if s is not None]  # type: ignore[misc]
+    except sqlglot.errors.SqlglotError:
+        if source_dialect is not Dialect.POSTGRES:
+            raise
+        normalized = _coalesce_adjacent_string_literals(sql)
+        if normalized == sql:
+            raise
+        return [s for s in sqlglot.parse(normalized, read=source_dialect.value) if s is not None]  # type: ignore[misc]
+
+
 def _plain_identifier(node: exp.Expression | None, what: str) -> str:
     _require(node is not None, "CERTIFIED_DDL_MISSING_IDENTIFIER", f"{what} is missing")
     ident = node
@@ -224,7 +347,7 @@ def _mapped_table_name(
 
 def _require_single_statement(sql: str, source_dialect: Dialect) -> exp.Expression:
     try:
-        statements = [s for s in sqlglot.parse(sql, read=source_dialect.value) if s is not None]
+        statements = _parse_source_statements(sql, source_dialect)
     except sqlglot.errors.SqlglotError as exc:
         raise DialectError(
             "CERTIFIED_DDL_PARSE_FAILED", f"{source_dialect.value} parser rejected input: {exc}"
@@ -234,7 +357,7 @@ def _require_single_statement(sql: str, source_dialect: Dialect) -> exp.Expressi
         "CERTIFIED_DDL_MULTIPLE_STATEMENTS",
         f"certified-ddl-v1 accepts exactly one statement per call, found {len(statements)}",
     )
-    return statements[0]  # type: ignore[return-value]  # sqlglot's stub uses an internal "Expr" alias here
+    return statements[0]
 
 
 def _statement(sql: str | exp.Expression, source_dialect: Dialect) -> exp.Expression:
@@ -1185,6 +1308,118 @@ def parse_create_schema(
         name=schema_name,
         if_not_exists=bool(statement.args.get("exists")),
     )
+
+
+def _parse_insert_literal(node: exp.Expression) -> InsertLiteral:
+    if isinstance(node, exp.Null):
+        return InsertLiteral(is_null=True)
+    if isinstance(node, exp.Boolean):
+        return InsertLiteral(value="true" if bool(node.this) else "false", is_boolean=True)
+    if isinstance(node, exp.Literal):
+        value = str(node.this)
+        if node.is_string:
+            return InsertLiteral(value=value, is_string=True)
+        _require(
+            bool(_NUMERIC_LITERAL_RE.fullmatch(value)),
+            "CERTIFIED_INSERT_UNSUPPORTED_EXPRESSION",
+            f"numeric INSERT literal {value!r} is not a portable decimal/scientific literal",
+        )
+        return InsertLiteral(value=value)
+    if isinstance(node, exp.Neg):
+        inner = node.this
+        _require(
+            isinstance(inner, exp.Literal) and not inner.is_string,
+            "CERTIFIED_INSERT_UNSUPPORTED_EXPRESSION",
+            "unary negative INSERT values must apply directly to a numeric literal",
+        )
+        assert isinstance(inner, exp.Literal)
+        value = "-" + str(inner.this)
+        _require(
+            bool(_NUMERIC_LITERAL_RE.fullmatch(value)),
+            "CERTIFIED_INSERT_UNSUPPORTED_EXPRESSION",
+            f"numeric INSERT literal {value!r} is not portable",
+        )
+        return InsertLiteral(value=value)
+    raise DialectError(
+        "CERTIFIED_INSERT_UNSUPPORTED_EXPRESSION",
+        f"INSERT VALUES expression {type(node).__name__} is outside the literal-only route",
+    )
+
+
+def parse_insert(
+    sql: str | exp.Expression,
+    source_dialect: Dialect,
+    namespace_map: Mapping[str, str] | None = None,
+) -> InsertStatement:
+    """Parse a fixed-column, literal-only INSERT seed into typed IR.
+
+    The route intentionally rejects query sources and conflict policies. Both
+    change which rows are written or what a rerun does, and neither can be
+    recovered from a list of VALUES literals.
+    """
+    statement = _statement(sql, source_dialect)
+    _require(
+        isinstance(statement, exp.Insert),
+        "CERTIFIED_INSERT_UNSUPPORTED_STATEMENT",
+        "certified-insert-v1 only accepts one INSERT statement",
+    )
+    assert isinstance(statement, exp.Insert)
+    for flag in (
+        "hint",
+        "is_function",
+        "stored",
+        "by_name",
+        "exists",
+        "where",
+        "partition",
+        "settings",
+        "default",
+        "conflict",
+        "returning",
+        "overwrite",
+        "alternative",
+        "ignore",
+        "source",
+    ):
+        _require(
+            not statement.args.get(flag),
+            "CERTIFIED_INSERT_UNSUPPORTED_MODIFIER",
+            f"INSERT modifier {flag!r} is outside certified-insert-v1",
+        )
+
+    target = statement.this
+    _require(
+        isinstance(target, exp.Schema) and isinstance(target.this, exp.Table),
+        "CERTIFIED_INSERT_UNSUPPORTED_TARGET",
+        "INSERT target must be one plain table with an explicit column list",
+    )
+    assert isinstance(target, exp.Schema)
+    assert isinstance(target.this, exp.Table)
+    table_schema, table = _mapped_table_name(target.this, "INSERT target table", namespace_map)
+    columns = tuple(_plain_identifier(item, "INSERT target column") for item in target.expressions)
+    _require(
+        bool(columns),
+        "CERTIFIED_INSERT_COLUMN_LIST_REQUIRED",
+        "literal INSERT requires an explicit target column list",
+    )
+
+    values = statement.expression
+    _require(
+        isinstance(values, exp.Values),
+        "CERTIFIED_INSERT_UNSUPPORTED_SOURCE",
+        "INSERT source must be a VALUES clause; INSERT ... SELECT is outside the route",
+    )
+    assert isinstance(values, exp.Values)
+    rows: list[tuple[InsertLiteral, ...]] = []
+    for row in values.expressions:
+        _require(
+            isinstance(row, exp.Tuple),
+            "CERTIFIED_INSERT_UNSUPPORTED_SOURCE",
+            "INSERT VALUES must contain explicit row tuples",
+        )
+        assert isinstance(row, exp.Tuple)
+        rows.append(tuple(_parse_insert_literal(item) for item in row.expressions))
+    return InsertStatement(table=table, columns=columns, rows=tuple(rows), schema=table_schema)
 
 
 def _alter_table_name(

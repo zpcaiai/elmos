@@ -20,7 +20,6 @@ from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
-import sqlglot
 from sqlglot import exp
 
 from elmos_sql_dialect import emitter, parser
@@ -48,11 +47,12 @@ from elmos_sql_dialect.models import (
     RenameColumn,
     Table,
 )
+from elmos_sql_dialect.parser import _parse_source_statements
 from elmos_sql_dialect.routine import emit_create_function, parse_create_routine
 from elmos_sql_dialect.scan import _classify, discover_sql_files
 from elmos_sql_dialect.statement_splitter import split_statements
 
-DDL_TYPES = ("Create", "Alter", "Drop", "Index", "Comment", "Grant", "Revoke", "Truncate")
+DDL_TYPES = ("Create", "Alter", "Drop", "Index", "Comment", "Grant", "Revoke", "Insert", "Truncate")
 ALL_DIALECTS = (Dialect.POSTGRES, Dialect.MYSQL, Dialect.ORACLE, Dialect.TSQL)
 
 
@@ -112,9 +112,7 @@ class ReachabilityCommentCatalog:
 def statements_of(path: Path, dialect: Dialect):
     text = path.read_text(encoding="utf-8")
     try:
-        for statement in sqlglot.parse(text, read=dialect.value):
-            if statement is not None:
-                yield statement
+        yield from _parse_source_statements(text, dialect)
         return
     except Exception:  # noqa: S110 - bounded parser fallback for mixed-dialect corpus files
         pass
@@ -123,7 +121,7 @@ def statements_of(path: Path, dialect: Dialect):
             continue
         try:
             parsed = [
-                s for s in sqlglot.parse(raw.text, read=dialect.value) if s is not None
+                s for s in _parse_source_statements(raw.text, dialect) if s is not None
             ]
         except Exception:  # noqa: S112 - one malformed recovered chunk must not hide later units
             continue
@@ -174,6 +172,8 @@ def emit_to(
         return emitter.emit_drop_table(
             parser.parse_drop_table(statement, source, namespace_map), target
         )
+    if isinstance(statement, exp.Insert):
+        return emitter.emit_insert(parser.parse_insert(statement, source, namespace_map), target)
     if isinstance(statement, exp.Comment):
         return emit_comment(parse_comment(statement, source, namespace_map), target, comment_catalog)
     if isinstance(statement, exp.Grant | exp.Revoke):

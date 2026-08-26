@@ -36,6 +36,8 @@ from .models import (
     DropTable,
     ForeignKey,
     Index,
+    InsertLiteral,
+    InsertStatement,
     RenameColumn,
     Schema,
     Table,
@@ -511,6 +513,25 @@ def emit_create_schema(schema: Schema, dialect: Dialect) -> str:
         supported=_IF_NOT_EXISTS_SCHEMA_SUPPORT,
     )
     return f"CREATE SCHEMA{existence} {schema.name}"
+
+
+def _render_insert_literal(value: InsertLiteral, dialect: Dialect) -> str:
+    if value.is_null:
+        return "NULL"
+    assert value.value is not None
+    if value.is_boolean:
+        return _render_boolean(value.value, dialect)
+    return _render_literal(value.value, value.is_string)
+
+
+def emit_insert(insert: InsertStatement, dialect: Dialect) -> str:
+    """Emit a fixed-column literal seed without changing its row set."""
+    columns = ", ".join(insert.columns)
+    rows = ",\n    ".join(
+        "(" + ", ".join(_render_insert_literal(value, dialect) for value in row) + ")"
+        for row in insert.rows
+    )
+    return f"INSERT INTO {_object_name(insert.schema, insert.table)} ({columns}) VALUES {rows}"  # noqa: S608
 
 
 def _render_check_clause(check: CheckConstraint, dialect: Dialect) -> str:

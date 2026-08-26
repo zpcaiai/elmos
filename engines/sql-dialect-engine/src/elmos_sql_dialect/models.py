@@ -643,6 +643,68 @@ class Schema:
 
 
 # ---------------------------------------------------------------------------
+# certified-insert-v1
+#
+# This is deliberately a literal-seed profile, not a general DML translator.
+# A row made only of typed SQL literals has no source query plan, conflict
+# policy, trigger interaction, or target-side expression to reinterpret.  The
+# model therefore carries the literal kind explicitly. INSERT ... SELECT,
+# DEFAULT VALUES, generated expressions, conflict/upsert clauses and hints
+# remain outside the route until they have their own semantic IR.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class InsertLiteral:
+    """One literal value in a portable seed row."""
+
+    value: str | None = None
+    is_string: bool = False
+    is_boolean: bool = False
+    is_null: bool = False
+
+    def __post_init__(self) -> None:
+        kinds = sum((self.is_string, self.is_boolean, self.is_null))
+        if kinds > 1:
+            raise DialectError(
+                "CERTIFIED_INSERT_INVALID_LITERAL",
+                "an INSERT literal cannot be string, boolean and NULL at the same time",
+            )
+        if self.is_null:
+            if self.value is not None:
+                raise DialectError("CERTIFIED_INSERT_INVALID_LITERAL", "NULL carries no literal payload")
+        elif self.value is None:
+            raise DialectError("CERTIFIED_INSERT_INVALID_LITERAL", "non-NULL INSERT literals need a payload")
+
+
+@dataclass(frozen=True)
+class InsertStatement:
+    """A fixed-column, literal-only INSERT statement."""
+
+    table: str
+    columns: tuple[str, ...]
+    rows: tuple[tuple[InsertLiteral, ...], ...]
+    schema: str | None = None
+
+    def __post_init__(self) -> None:
+        if not self.columns:
+            raise DialectError(
+                "CERTIFIED_INSERT_COLUMN_LIST_REQUIRED",
+                "literal INSERT requires an explicit target column list",
+            )
+        if not self.rows:
+            raise DialectError("CERTIFIED_INSERT_EMPTY_VALUES", "literal INSERT requires at least one VALUES row")
+        if len(set(self.columns)) != len(self.columns):
+            raise DialectError("CERTIFIED_INSERT_DUPLICATE_COLUMN", "INSERT target columns must be unique")
+        for row in self.rows:
+            if len(row) != len(self.columns):
+                raise DialectError(
+                    "CERTIFIED_INSERT_ARITY_MISMATCH",
+                    "every INSERT VALUES row must match the target column list",
+                )
+
+
+# ---------------------------------------------------------------------------
 # certified-routine-v1
 #
 # This is deliberately a small typed IR, not a text/template representation
@@ -653,8 +715,9 @@ class Schema:
 # though the portable emitter rejects them unless an exact target mapping is
 # added. That distinction prevents metadata from disappearing during a
 # translation and turning a blocked security boundary into a false success.
-# Procedures, trigger functions, DML, table reads, control flow, exceptions,
-# dynamic SQL, and dialect-specific routine languages stay outside this IR.
+# Procedures, trigger functions, query DML, table reads, control flow,
+# exceptions, dynamic SQL, and dialect-specific routine languages stay outside
+# this IR. Literal seed INSERTs have their own certified-insert-v1 model above.
 # ---------------------------------------------------------------------------
 
 
