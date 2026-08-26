@@ -13,6 +13,12 @@ This directory records the safe repository import of `elmos-spring-golden-route-
 
 The ZIP remains the canonical source. The importer reads it directly and does not create a mutable extracted source tree under `skills/`. Each installed Skill retains its source package, version, source path and digest, and references its corresponding `contracts/<name>.json` contract through `references/contract.json`. The aggregate compiled-contract index binds the same exact inventory.
 
+The source-task coverage ledger at
+[`source-task-coverage-ledger.json`](/Users/stephen/DevProjects/AIProjects/elmos/docs/spring-golden-route-commercial-skills/source-task-coverage-ledger.json)
+tracks all 4,368 checklist tasks with stable source-bound IDs and digests. It
+is an inventory of specification work, not a production implementation: every
+task remains `NOT_RUN` and blocked by the absence of an authorized runtime.
+
 The pinned digest proves byte identity only. The ZIP contains no
 `LICENSE`/`COPYING`/`NOTICE`, SBOM, package signature, or independent provenance
 attestation. Its three package-authored `SOURCE_PROVENANCE` records are retained
@@ -86,5 +92,12 @@ side_effects_authorized     false
 `SPECIFICATION_IMPORTED` means the immutable archive, inventory, contracts, Schemas, installed interfaces, and DAG are structurally consistent with the repository import. It does not mean the described Spring Golden Route product has been implemented.
 
 No Spring domain handler, source/target build, startup, migration, database/RLS deployment, provider integration, sandbox execution, benchmark, customer pilot, paid acceptance, rollback drill, or independent external review is supplied or executed by this import. Those states remain `NOT_RUN`; the bounded local control plane, absent evidence, or package-authored proof cannot raise them.
+
+For avoidance of doubt, the ZIP's 4,368 source tasks have not become production
+implementations. Real target-repository Spring/JVM build, startup, migration,
+equivalence, and security evidence, together with customer and independent
+external evidence, remains `NOT_RUN`; certification remains `NOT_CERTIFIED`.
+The separate repository-owned fixture probe is self-attested engineering
+evidence only and cannot change these package or external states.
 
 This integration also does not certify a Batch 30 framework route. Any concrete Spring modernization remains directional and version-specific, must extract active source behavior into FCM, use real source and target builds and startup, preserve security/data/transaction/test behavior, collect independent evidence, and pass the conservative Batch 30 validation and certification gate before support or certification status can change. Package consistency, product implementation, customer acceptance, external evidence, and Batch 30 certification are separate decisions.

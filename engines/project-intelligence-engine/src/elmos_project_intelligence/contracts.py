@@ -494,11 +494,13 @@ class EvidenceInput:
             require_identifier(self.artifact_id, field_name="artifact_id")
         if self.verifier is not None:
             require_identifier(self.verifier, field_name="verifier")
+            raise ValueError(
+                "repository-local evidence cannot name an independent verifier"
+            )
         if self.state in {EvidenceState.VERIFIED, EvidenceState.REJECTED}:
-            if self.verifier is None:
-                raise ValueError("verified or rejected evidence requires a verifier")
-        if self.state is EvidenceState.NOT_RUN and self.verifier is not None:
-            raise ValueError("NOT_RUN evidence cannot name a verifier")
+            raise ValueError(
+                "repository-local evidence cannot claim VERIFIED or REJECTED"
+            )
         object.__setattr__(self, "details", _freeze_json(self.details))
 
 

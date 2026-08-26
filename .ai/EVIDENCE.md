@@ -377,9 +377,10 @@ Current code adds the following bounded engineering capabilities:
   archiver applies no-follow identity and node/file bounds.
 
 The validation boundary for this current delta is intentionally narrow: pre-V9 `py_compile` plus
-unittest **18/18 PASS**, and targeted `javac` for the Tiered/Compatible slices **PASS**. Current-delta
-Maven/JUnit, live PostgreSQL and MinIO validation are **NOT_RUN** and await this task's focused
-reverification. The 2026-08-24 results above cannot be reused to close that gap.
+unittest **18/18 PASS**, targeted `javac` for the Tiered/Compatible slices **PASS**, and the
+JDK-21 control-plane `ActionCacheExecutionJobDispatcherTest` **33/33 PASS**. Current-delta live
+PostgreSQL, MinIO and provider validation remain **NOT_RUN**; the 2026-08-24 results above cannot
+be reused to close that gap.
 
 Supported status therefore remains exactly:
 
@@ -397,10 +398,10 @@ The workspace/control-plane set passed 63/63, and the pre-V9 bootstrap unittest 
 
 This source now has a local repository resource-lifecycle protocol: epoch-bound ACTIVE -> RETIRING
 -> RETIRED transitions, durable root-to-resource edges, a retirement write fence, exact-generation
-root release, and batch binding release only after all mapped and legacy roots are inactive. It is
-an API/protocol result, not a production deletion result: no control-plane, webhook or repository
-deletion caller invokes repository retirement. Production resource reclamation therefore remains
-blocked.
+root release, and batch binding release only after all mapped and legacy roots are inactive. A
+tenant-bound deletion webhook sink and explicit control-plane begin/finalize caller now invoke the
+retirement fence, but this remains an API/protocol result, not a production deletion result:
+global scheduler, lease reconciliation and external provider evidence remain absent.
 
 V76 adds atomic deletion tombstones and lifecycle fences, including one tenant -> resource ->
 sorted-object -> logical-root lock order. Its live PostgreSQL test did not run: the persistence
@@ -416,3 +417,20 @@ or cross-host materialization was executed.
 
 The final status remains exactly CAS `SINGLE_HOST / NOT_CERTIFIED`, Execution Intelligence
 `BLOCK / NOT_CERTIFIED`, and ArkUI/Harmony `NOT_RUN / NOT_CERTIFIED`.
+
+### 2026-08-26 execution/repository caller delta
+
+The current source adds a tenant-scoped authoritative `ExecutionJobPort` idempotency lookup backed
+by JDBC `execution_jobs` metadata. The asynchronous dispatcher compares the persisted request
+digest before acknowledging a replay, retries only after an authoritative miss, and keeps lookup
+failure or digest mismatch as `UNKNOWN_RECONCILIATION_REQUIRED`. Its focused JUnit suite passed
+33/33 under JDK 21; CAS KMS/ActionCache/signature/S3/tiering tests passed 93/93, and snapshot
+lease/reconciliation/archive tests passed 35/37 with two explicit filesystem-assumption skips.
+The control-plane module compiled independently against the updated workflow, SCM and persistence
+artifacts.
+
+Signed, tenant-bound repository deletion deliveries now invoke a single idempotent lifecycle sink
+that begins CAS retirement after durable webhook recording. An explicit control-plane begin/finalize
+endpoint validates the tenant, repository binding, permission and epoch-bound lifecycle token.
+These local callers do not supply real GitHub App traffic, production scheduler election, KMS/HSM,
+multi-host shared-tier or independent trust evidence; certification remains unchanged.

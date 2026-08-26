@@ -432,13 +432,13 @@ receipt 改动不能复用这些结果作为当前回归证据。
 1. **真实多主机** shared tier、故障切换和并发跨实例压力；现有 MinIO 是同主机两个 JVM。
 2. 生产 KMS/HSM、密钥创建/托管/轮换/吊销和灾备；本地 provider 测试不替代它。
 3. 外部且独立治理的 ActionCache/EI trust、key revocation 与 verifier；本地 key registry/loopback authority 不独立。
-4. ActionCache 的真实生产 tenant-API 与 runner completion write-back：本轮新增默认关闭的
-   durable async hit-or-enqueue dispatcher，且 deployment 必须提供 identity-bound authorization
-   grant、typed payload policy、current-trust revalidator 与唯一 `ExecutionJobPort`；仓库仍没有真实
-   生产 authorizer/payload-policy 实现，tenant API 也尚未构造 ActionKey，runner completion 合同缺
-   signed ActionResult/output/provenance，因此不能写回缓存。`ExecutionJobPort` 也没有按 idempotency
-   key 的权威查询；enqueue ack-loss、冲突或无效返回保持 `UNKNOWN_RECONCILIATION_REQUIRED`，
-   不能用盲目重试伪造成成功 reconciliation。
+4. ActionCache 的真实生产 tenant-API 与 runner completion write-back：本轮默认关闭的
+   durable async hit-or-enqueue dispatcher 已接入 tenant-scoped `ExecutionJobPort` 幂等查询，
+   先按持久 request digest 做权威 reconciliation，再允许同 key 重试；查询不可用或摘要不匹配
+   仍 fail closed。deployment 仍必须提供 identity-bound authorization grant、typed payload policy
+   与 current-trust revalidator；仓库仍没有真实生产 authorizer/payload-policy 实现，tenant API
+   也尚未构造 ActionKey，runner completion 合同缺 signed ActionResult/output/provenance，因此
+   不能写回缓存。
 5. snapshot materialization lease 与全租户 scheduler 的生产部署、稳定 holder/election、archive/GC
    worker 协调，以及生产 KMS/shared tier、legal-hold/object-delete 原子边界、跨主机 Docker 和
    大规模/跨平台/对抗 archive 证据；本地 PostgreSQL 和静态代码检查不替代它们。
@@ -449,7 +449,8 @@ receipt 改动不能复用这些结果作为当前回归证据。
    继续 unknown，只有确认 rollback 才能写 `BLOCKED`。`py_compile` 与 focused unittest **18/18
    PASS**，但尚未对真实历史 PostgreSQL 执行 assess/apply/reconciliation，不能用本地单元测试替代。
 7. V69/V70/V72 大表 backfill/FK/索引/队列的在线 rollout、锁/WAL 容量与维护窗口证据。
-8. 真实 GitHub App installation/webhook/redelivery/revocation 与 provider outage reconciliation；本地 17-test harness 不替代它。
+8. 真实 GitHub App installation/webhook/redelivery/revocation 与 provider outage reconciliation；
+   本地已验签、租户绑定的删除 webhook sink 和显式 begin/finalize retirement API 不替代真实外部流量。
 9. ArkUI/Harmony 真实设备；`hdc` 3.2.0b 已安装但 inventory 为 `[Empty]`，继续 `NOT_RUN`。
 10. portfolio cache 的生产授权与规模证据：本轮已把 key→digest 映射改成 durable
     `CasCatalog` ACTION_CACHE logical root，支持仅凭完整 InputManifest 的跨实例 lookup、精确索引
@@ -463,9 +464,10 @@ receipt 改动不能复用这些结果作为当前回归证据。
     queue envelope。由于 v1 存在碰撞且持久行没有可安全自动迁移的原始身份，禁止兼容 fallback；
     上线前必须 quiesce mixed-version caller，并按租户受控 invalidate/expire 旧 ActionCache 行。
 
-当前源码增量的验证边界固定为：pre-V9 `py_compile` + unittest **18/18 PASS**，以及
-Tiered/Compatible targeted `javac` **PASS**。其余当前增量 Maven/JUnit、live PostgreSQL 与 MinIO
-均为 **NOT_RUN / 待本任务 focused 复验**；不得把 2026-08-24 历史通过数改写成当前源码通过。
+当前源码增量的验证边界固定为：pre-V9 `py_compile` + unittest **18/18 PASS**，CAS 窄测
+**93/93 PASS**，snapshot lease/reconciliation/archive **35/37 PASS + 2 filesystem skips**，
+控制面 dispatcher **33/33 PASS**，以及 Tiered/Compatible targeted `javac` **PASS**。V76/live
+PostgreSQL、MinIO、真实多主机与外部 provider 证据仍为 **NOT_RUN**；不得把历史通过数改写成当前源码通过。
 
 当前判定固定为 CAS `SINGLE_HOST / NOT_CERTIFIED`、EI `BLOCK / NOT_CERTIFIED`。
 日期绑定的本地 72-migration PostgreSQL、双进程 MinIO 和 focused pass 只能减少当时代码级 backlog，
@@ -488,14 +490,15 @@ Tiered/Compatible targeted `javac` **PASS**。其余当前增量 Maven/JUnit、l
 
 仍是生产 blocker、不得从 backlog 移出：
 
-1. repository retirement 目前只有 protocol/API 和测试；control-plane/webhook/repository deletion 无 caller，
-   因此生产 bindings 不会自动进入 fence/release。
+1. repository deletion 已由签名且租户绑定的 webhook sink、以及显式 control-plane begin/finalize API
+   接入 CAS retirement fence；仍缺生产级 scheduler/reconciliation 对 root 释放、租约和最终 binding release
+   的全局驱动，因此生产 bindings 不能宣称自动完成清理。
 2. authoritative fenced source adapter 与 durable lease provenance schema 未提供；control-plane 当前安全地
    阻断新 capture 和旧行 reuse。
 3. V76 的真实 Flyway/PostgreSQL、线上 rollout、锁/WAL/恢复验证未执行。
-4. 真实多主机 shared tier、生产 KMS/HSM、外部 trust/revocation、ActionCache tenant API 与 signed
-   completion write-back、生产 snapshot election/reconciliation/archive-GC、真实 GitHub App/webhook、
-   Docker 跨主机与 ArkUI 设备证据继续缺失。
+4. 真实多主机 shared tier、生产 KMS/HSM、外部 trust/revocation、部署侧 ActionCache
+   authorizer/trust 与 signed completion write-back、生产 snapshot election/reconciliation/archive-GC、
+   真实 GitHub App/webhook、Docker 跨主机与 ArkUI 设备证据继续缺失。
 
 状态固定为 CAS `SINGLE_HOST / NOT_CERTIFIED`、EI `BLOCK / NOT_CERTIFIED`、ArkUI
 `NOT_RUN / NOT_CERTIFIED`。

@@ -103,6 +103,25 @@ public interface ExecutionJobPort {
             long stateVersion
     ) {}
 
+    /**
+     * Minimal authoritative result for reconciling an enqueue whose acknowledgement was lost.
+     * The request digest is kept separate from {@link JobView} so existing management callers do
+     * not accidentally expose the canonical dispatch subject in list responses.
+     */
+    record IdempotencyLookup(
+            String jobId,
+            String requestDigest,
+            Status status
+    ) {
+        public IdempotencyLookup {
+            if (jobId == null || jobId.isBlank()
+                    || requestDigest == null || !requestDigest.matches("[0-9a-f]{64}")
+                    || status == null) {
+                throw new IllegalArgumentException("invalid execution idempotency lookup");
+            }
+        }
+    }
+
     record LeaseGrant(
             String jobId,
             String organizationId,
@@ -157,6 +176,30 @@ public interface ExecutionJobPort {
 
     Optional<JobView> find(AuthenticatedContext context, String jobId);
 
+    /**
+     * Authoritative tenant/account-scoped lookup used after an uncertain enqueue acknowledgement.
+     * Implementations must return the persisted request digest so a reconciler can distinguish
+     * the original side effect from a material-drifted retry.
+     */
+    default Optional<IdempotencyLookup> findByIdempotencyKey(
+            AuthenticatedContext context,
+            String idempotencyKey
+    ) {
+        throw new ExecutionStateException("ELMOS_EXECUTION_IDEMPOTENCY_LOOKUP_UNAVAILABLE");
+    }
+
+    /**
+     * Legacy compatibility shape for callers that have not yet supplied an account-bound
+     * identity context. Implementations must keep this fail-closed while adapters migrate.
+     */
+    @Deprecated
+    default Optional<IdempotencyLookup> findByIdempotencyKey(
+            String organizationId,
+            String idempotencyKey
+    ) {
+        throw new ExecutionStateException("ELMOS_EXECUTION_IDEMPOTENCY_LOOKUP_UNAVAILABLE");
+    }
+
     List<JobView> list(
             AuthenticatedContext context,
             BusinessLine businessLine,
@@ -164,11 +207,34 @@ public interface ExecutionJobPort {
             int offset
     );
 
+    /** Fail-closed compatibility shape for pre-context management adapters. */
+    @Deprecated
+    default Optional<JobView> find(String organizationId, String jobId) {
+        throw new ExecutionStateException("ELMOS_EXECUTION_IDENTITY_CONTEXT_REQUIRED");
+    }
+
+    /** Fail-closed compatibility shape for pre-context management adapters. */
+    @Deprecated
+    default List<JobView> list(
+            String organizationId,
+            BusinessLine businessLine,
+            int limit,
+            int offset
+    ) {
+        throw new ExecutionStateException("ELMOS_EXECUTION_IDENTITY_CONTEXT_REQUIRED");
+    }
+
     /**
      * Records the intent to cancel. The runner observes it on its next heartbeat and
      * terminates its own container; the control plane never kills a workload directly.
      */
     Status requestCancel(AuthenticatedContext context, String jobId);
+
+    /** Fail-closed compatibility shape for pre-context management adapters. */
+    @Deprecated
+    default Status requestCancel(String organizationId, String jobId, String actorId) {
+        throw new ExecutionStateException("ELMOS_EXECUTION_IDENTITY_CONTEXT_REQUIRED");
+    }
 
     // ---- runner facing -----------------------------------------------------
 

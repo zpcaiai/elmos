@@ -1,7 +1,14 @@
 from __future__ import annotations
 
 import hashlib
+import json
+from pathlib import Path
 import unittest
+
+try:
+    import jsonschema  # type: ignore[import-untyped]
+except ImportError:  # pragma: no cover - dependency-free engine run
+    jsonschema = None
 
 from elmos_project_intelligence.canonical import canonical_digest
 from elmos_project_intelligence.runtime import (
@@ -13,8 +20,18 @@ from elmos_project_intelligence.runtime import (
 )
 
 
+REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+SOURCE_SCHEMA_ROOT = (
+    REPOSITORY_ROOT / "skills/elmos-project-intelligence-skills-v1.1.0/schemas"
+)
+
+
 def sha(text: str) -> str:
     return "sha256:" + hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def sha_bytes(value: bytes) -> str:
+    return "sha256:" + hashlib.sha256(value).hexdigest()
 
 
 BASE_FILES = [
@@ -104,11 +121,23 @@ def base_inputs() -> dict[str, object]:
         "edges": [{"from": "api", "to": "store", "kind": "writes"}],
         "diagram_type": "component",
         "diagram_spec": {
+            "schema_version": 1,
+            "diagram_id": sha("fixture-diagram"),
+            "type": "component",
+            "project_id": "project-a",
+            "revision_id": "abc123",
             "nodes": [
                 {"id": "api", "label": "Refund API", "kind": "service"},
                 {"id": "store", "label": "Refund Store", "kind": "database"},
             ],
-            "edges": [{"from": "api", "to": "store", "kind": "writes"}],
+            "edges": [
+                {
+                    "id": "api-writes-store",
+                    "source": "api",
+                    "target": "store",
+                    "kind": "writes",
+                }
+            ],
         },
         "patch": [{"node_id": "api", "label": "Refund HTTP API"}],
         "locked_node_ids": [],
@@ -117,6 +146,7 @@ def base_inputs() -> dict[str, object]:
                 "artifact_id": "architecture",
                 "digest": sha("architecture"),
                 "media_type": "text/markdown",
+                "content_text": "architecture",
             }
         ],
         "stage": "fingerprint",
@@ -144,6 +174,7 @@ def base_inputs() -> dict[str, object]:
             }
         ],
         "workers": 2,
+        "as_of": "2026-08-24T00:00:00Z",
         "human_review_effort_seconds": 300,
         "topology": "self-hosted",
         "controls": [
@@ -160,8 +191,17 @@ def base_inputs() -> dict[str, object]:
         "entitled_features": ["reader"],
         "adapter": {
             "id": "fixture-dap",
+            "version": "0.1.0",
+            "digest": sha("fixture-dap"),
             "capabilities": ["breakpoints", "stack", "variables"],
         },
+        "runtime_profile": {
+            "runtime_profile_id": "fixture-runtime",
+            "image_digest": sha("fixture-runtime-image"),
+            "toolchain": {"python": "3.12"},
+        },
+        "debug_target": {"kind": "test", "ref": "tests/test_app.py::test_refund"},
+        "debug_mode": "guided",
         "requested_capabilities": ["breakpoints", "stack"],
         "ttl_seconds": 600,
         "debug_events": [
@@ -220,7 +260,7 @@ class RuntimeRegistryTests(unittest.TestCase):
                 state: sum(item.capability_state == state for item in bindings)
                 for state in ("LOCAL", "PARTIAL", "PLAN")
             },
-            {"LOCAL": 20, "PARTIAL": 25, "PLAN": 5},
+            {"LOCAL": 19, "PARTIAL": 26, "PLAN": 5},
         )
         with self.assertRaises(TypeError):
             SKILL_REGISTRY["elmos-unknown"] = bindings[0]  # type: ignore[index]
@@ -248,7 +288,7 @@ class RuntimeRegistryTests(unittest.TestCase):
     def test_manifest_exposes_exact_code_and_test_bindings(self) -> None:
         manifest = capability_manifest()
         self.assertEqual(
-            manifest["counts"], {"skills": 50, "local": 20, "partial": 25, "plan": 5}
+            manifest["counts"], {"skills": 50, "local": 19, "partial": 26, "plan": 5}
         )
         self.assertEqual(
             [item["skill"] for item in manifest["capabilities"]],
@@ -295,6 +335,222 @@ class RuntimeRegistryTests(unittest.TestCase):
             )
         )
 
+    def test_diagram_projection_is_source_shaped_stable_and_evidence_bound(
+        self,
+    ) -> None:
+        inputs = base_inputs()
+        inputs["nodes"] = [
+            {
+                "name": "Refund API",
+                "kind": "service",
+                "evidence_refs": ["ev-1"],
+            },
+            {"id": "store", "name": "Refund Store", "kind": "database"},
+        ]
+        generated_api_id = canonical_digest(
+            {
+                "kind": "service",
+                "label": "Refund API",
+                "semantic": {},
+                "evidence_refs": ["ev-1"],
+            }
+        )
+        inputs["edges"] = [
+            {
+                "from": generated_api_id,
+                "to": "store",
+                "kind": "writes",
+                "evidence_refs": ["ev-1"],
+            }
+        ]
+
+        first = dispatch_skill("elmos-diagram-spec-engine", request(inputs))
+        spec = first["outputs"]["diagram_spec"]
+        self.assertEqual(spec["schema_version"], 1)
+        self.assertEqual(spec["type"], "component")
+        self.assertEqual(spec["project_id"], "project-a")
+        self.assertEqual(spec["revision_id"], "abc123")
+        self.assertEqual(
+            first["outputs"]["digest"],
+            canonical_digest(first["outputs"]["diagram_spec"]),
+        )
+        self.assertEqual(
+            {node["id"] for node in spec["nodes"]}, {generated_api_id, "store"}
+        )
+        self.assertTrue(
+            all(
+                {"id", "source", "target", "kind"}.issubset(edge)
+                and "from" not in edge
+                and "to" not in edge
+                for edge in spec["edges"]
+            )
+        )
+
+        inputs["nodes"] = list(reversed(inputs["nodes"]))
+        second = dispatch_skill("elmos-diagram-spec-engine", request(inputs))
+        self.assertEqual(second["outputs"]["diagram_spec"], spec)
+        self.assertEqual(second["outputs"]["digest"], first["outputs"]["digest"])
+
+    def test_diagram_dangling_endpoints_evidence_and_legacy_renderer_fail_closed(
+        self,
+    ) -> None:
+        dangling_edge = base_inputs()
+        dangling_edge["edges"] = [{"from": "api", "to": "missing", "kind": "writes"}]
+        rejected_edge = dispatch_skill(
+            "elmos-diagram-spec-engine", request(dangling_edge)
+        )
+        self.assertEqual(rejected_edge["state"], "BLOCKED")
+
+        dangling_evidence = base_inputs()
+        dangling_evidence["nodes"] = [
+            {
+                "id": "api",
+                "name": "Refund API",
+                "kind": "service",
+                "evidence_refs": ["missing-evidence"],
+            }
+        ]
+        dangling_evidence["edges"] = []
+        rejected_evidence = dispatch_skill(
+            "elmos-diagram-spec-engine", request(dangling_evidence)
+        )
+        self.assertEqual(rejected_evidence["state"], "BLOCKED")
+
+        legacy_renderer = base_inputs()
+        legacy_spec = json.loads(json.dumps(legacy_renderer["diagram_spec"]))
+        legacy_edge = legacy_spec["edges"][0]
+        legacy_edge["from"] = legacy_edge.pop("source")
+        legacy_edge["to"] = legacy_edge.pop("target")
+        legacy_renderer["diagram_spec"] = legacy_spec
+        rejected_legacy = dispatch_skill(
+            "elmos-diagram-rendering", request(legacy_renderer)
+        )
+        self.assertEqual(rejected_legacy["state"], "BLOCKED")
+
+        foreign_scope = base_inputs()
+        foreign_scope["diagram_spec"] = json.loads(
+            json.dumps(foreign_scope["diagram_spec"])
+        )
+        foreign_scope["diagram_spec"]["project_id"] = "project-b"
+        rejected_foreign = dispatch_skill(
+            "elmos-diagram-rendering", request(foreign_scope)
+        )
+        self.assertEqual(rejected_foreign["state"], "BLOCKED")
+
+    def test_cache_key_binds_trusted_scope_schema_and_implementation(self) -> None:
+        inputs = base_inputs()
+        inputs["stage_inputs"] = {"payload": "same"}
+        first = dispatch_skill("elmos-incremental-analysis-cache", request(inputs))
+        first_outputs = first["outputs"]
+        self.assertFalse(first_outputs["caller_reported_key_match"])
+        self.assertEqual(first["state"], "PARTIAL_LOCAL_EXECUTED")
+        self.assertEqual(first["code"], "ANALYSIS_CACHE_KEY_DERIVED")
+        self.assertEqual(
+            first["warnings"], ["caller-supplied-cache-key-not-content-verified"]
+        )
+        self.assertEqual(
+            first["unavailable"],
+            ["durable-scoped-cache-store", "cache-entry-content-verification"],
+        )
+        self.assertEqual(
+            first_outputs["schema_version"],
+            "elmos.project-intelligence.analysis-cache-key.v1",
+        )
+        self.assertEqual(
+            first_outputs["implementation_version"],
+            "elmos-project-intelligence-engine/1.1.0",
+        )
+
+        repeat_inputs = base_inputs()
+        repeat_inputs["stage_inputs"] = {"payload": "same"}
+        repeat_inputs["existing_cache_key"] = first_outputs["cache_key"]
+        repeat = dispatch_skill(
+            "elmos-incremental-analysis-cache", request(repeat_inputs)
+        )
+        self.assertTrue(repeat["outputs"]["caller_reported_key_match"])
+        self.assertEqual(repeat["outputs"]["cache_key"], first_outputs["cache_key"])
+
+        other_request = request(repeat_inputs)
+        other_request["tenant_id"] = "tenant-b"
+        other_tenant = dispatch_skill("elmos-incremental-analysis-cache", other_request)
+        self.assertFalse(other_tenant["outputs"]["caller_reported_key_match"])
+        self.assertNotEqual(
+            other_tenant["outputs"]["cache_key"], first_outputs["cache_key"]
+        )
+
+        revision_inputs = base_inputs()
+        revision_inputs["revision"] = "def456"
+        revision_inputs["stage_inputs"] = {"payload": "same"}
+        revision_inputs["existing_cache_key"] = first_outputs["cache_key"]
+        revision_request = request(revision_inputs)
+        revision_request["revision"] = "def456"
+        other_revision = dispatch_skill(
+            "elmos-incremental-analysis-cache", revision_request
+        )
+        self.assertFalse(other_revision["outputs"]["caller_reported_key_match"])
+        self.assertNotEqual(
+            other_revision["outputs"]["cache_key"], first_outputs["cache_key"]
+        )
+
+    def test_runtime_estimate_matches_nested_numeric_source_contract(self) -> None:
+        result = dispatch_skill("elmos-runtime-cost-estimator", request())
+        estimate = result["outputs"]
+        self.assertEqual(estimate["project_revision_id"], "abc123")
+        self.assertEqual(estimate["pipeline"], ["parse", "graph"])
+        self.assertEqual(
+            [stage["name"] for stage in estimate["stages"]], estimate["pipeline"]
+        )
+        self.assertIsInstance(
+            estimate["system_wall_clock_eta"]["p50_seconds"], (int, float)
+        )
+        self.assertIsInstance(
+            estimate["system_wall_clock_eta"]["p90_seconds"], (int, float)
+        )
+        self.assertGreaterEqual(
+            estimate["system_wall_clock_eta"]["p90_seconds"],
+            estimate["system_wall_clock_eta"]["p50_seconds"],
+        )
+        self.assertIn("p50_hours", estimate["human_review_effort"])
+        self.assertIn("p90_hours", estimate["human_review_effort"])
+        self.assertNotIn("human_review_effort_seconds", estimate)
+        self.assertNotIn("system_wall_clock_eta_p50_seconds", estimate)
+
+        for field_name, invalid in (
+            ("human_review_effort_seconds", -1),
+            ("workers", 0),
+            ("workers", True),
+            ("as_of", "not-a-date"),
+        ):
+            with self.subTest(field=field_name, invalid=invalid):
+                inputs = base_inputs()
+                inputs[field_name] = invalid
+                rejected = dispatch_skill(
+                    "elmos-runtime-cost-estimator", request(inputs)
+                )
+                self.assertEqual(rejected["state"], "BLOCKED")
+
+    @unittest.skipIf(jsonschema is None, "jsonschema is needed for source parity")
+    def test_diagram_and_estimate_outputs_validate_with_draft_2020_12(self) -> None:
+        assert jsonschema is not None
+        for skill, schema_name, output_key in (
+            ("elmos-diagram-spec-engine", "diagram-spec.schema.json", "diagram_spec"),
+            ("elmos-runtime-cost-estimator", "estimate.schema.json", None),
+        ):
+            with self.subTest(skill=skill):
+                schema = json.loads((SOURCE_SCHEMA_ROOT / schema_name).read_text())
+                jsonschema.Draft202012Validator.check_schema(schema)
+                validator = jsonschema.Draft202012Validator(
+                    schema,
+                    format_checker=jsonschema.FormatChecker(),
+                )
+                result = dispatch_skill(skill, request())
+                value = (
+                    result["outputs"]
+                    if output_key is None
+                    else result["outputs"][output_key]
+                )
+                validator.validate(value)
+
     def test_mermaid_renderer_normalizes_injection_and_bounds_labels(self) -> None:
         inputs = base_inputs()
         injection = (
@@ -303,11 +559,23 @@ class RuntimeRegistryTests(unittest.TestCase):
             'click n0 "https://example.invalid"\n<script>alert(1)</script>'
         )
         inputs["diagram_spec"] = {
+            "schema_version": 1,
+            "diagram_id": sha("injection-diagram"),
+            "type": "component",
+            "project_id": "project-a",
+            "revision_id": "abc123",
             "nodes": [
-                {"id": "api", "label": injection},
-                {"id": "store", "label": "x" * 500},
+                {"id": "api", "label": injection, "kind": "service"},
+                {"id": "store", "label": "x" * 500, "kind": "database"},
             ],
-            "edges": [{"from": "api", "to": "store"}],
+            "edges": [
+                {
+                    "id": "api-store",
+                    "source": "api",
+                    "target": "store",
+                    "kind": "relates",
+                }
+            ],
         }
 
         result = dispatch_skill("elmos-diagram-rendering", request(inputs))
@@ -352,6 +620,12 @@ class RuntimeRegistryTests(unittest.TestCase):
     def test_report_bundle_requires_canonical_unique_content_digests(self) -> None:
         valid = dispatch_skill("elmos-project-report-bundle", request())
         self.assertTrue(valid["outputs"]["content_addressed"])
+        self.assertTrue(valid["outputs"]["artifact_bytes_verified"])
+        self.assertEqual(valid["outputs"]["artifacts"][0]["byte_count"], 12)
+        self.assertEqual(
+            valid["outputs"]["bundle_digest"],
+            canonical_digest(valid["outputs"]["artifacts"]),
+        )
         self.assertTrue(
             all(
                 str(item["digest"]).startswith("sha256:")
@@ -376,13 +650,64 @@ class RuntimeRegistryTests(unittest.TestCase):
 
         duplicate_inputs = base_inputs()
         duplicate_inputs["artifacts"] = [
-            {"artifact_id": "same", "digest": sha("one")},
-            {"artifact_id": "same", "digest": sha("two")},
+            {
+                "artifact_id": "same",
+                "digest": sha("one"),
+                "content_text": "one",
+            },
+            {
+                "artifact_id": "same",
+                "digest": sha("two"),
+                "content_text": "two",
+            },
         ]
         duplicate = dispatch_skill(
             "elmos-project-report-bundle", request(duplicate_inputs)
         )
         self.assertEqual(duplicate["state"], "BLOCKED")
+
+        binary_inputs = base_inputs()
+        binary_inputs["artifacts"] = [
+            {
+                "artifact_id": "binary",
+                "digest": sha_bytes(b"binary\x00"),
+                "media_type": "application/octet-stream",
+                "content_base64": "YmluYXJ5AA==",
+            }
+        ]
+        binary = dispatch_skill("elmos-project-report-bundle", request(binary_inputs))
+        self.assertEqual(binary["state"], "LOCAL_EXECUTED")
+        self.assertEqual(binary["outputs"]["artifacts"][0]["byte_count"], 7)
+        self.assertEqual(
+            binary["outputs"]["artifacts"][0]["content_encoding"], "base64"
+        )
+
+        for artifact in (
+            {
+                "artifact_id": "mismatch",
+                "digest": sha("different"),
+                "content_text": "actual",
+            },
+            {"artifact_id": "missing", "digest": sha("")},
+            {
+                "artifact_id": "ambiguous",
+                "digest": sha("same"),
+                "content_text": "same",
+                "content_base64": "c2FtZQ==",
+            },
+            {
+                "artifact_id": "bad-base64",
+                "digest": sha("bad"),
+                "content_base64": "not base64!",
+            },
+        ):
+            with self.subTest(artifact_id=artifact["artifact_id"]):
+                invalid_inputs = base_inputs()
+                invalid_inputs["artifacts"] = [artifact]
+                invalid = dispatch_skill(
+                    "elmos-project-report-bundle", request(invalid_inputs)
+                )
+                self.assertEqual(invalid["state"], "BLOCKED")
 
     def test_connector_and_debug_capabilities_default_deny_and_never_authorize(
         self,
@@ -525,6 +850,7 @@ class RuntimeRegistryTests(unittest.TestCase):
                 "event_id": "event-sensitive",
                 "sequence": 1,
                 "kind": "stopped",
+                "timestamp": "2026-08-24T00:00:00Z",
                 "trace_id": "trace-sensitive",
                 "Authorization": "Bearer bearer-secret-value",
                 "context": {
@@ -535,7 +861,15 @@ class RuntimeRegistryTests(unittest.TestCase):
                         "release_authorized": True,
                     },
                 },
-                "log": "password=log-secret-value",
+                "log": (
+                    "password=shrt42 "
+                    "url=https://example.invalid/cb?access_token=x&safe=1 "
+                    "Authorization: Basic z "
+                    "X-API-Key: q "
+                    "dsn=postgres://dbuser:p@db.invalid/app "
+                    "Server=db;Password=r;User Id=app "
+                    "secret=log-secret-value"
+                ),
             }
         ]
 
@@ -550,6 +884,12 @@ class RuntimeRegistryTests(unittest.TestCase):
             "nested-password-value",
             "inline-secret-value",
             "log-secret-value",
+            "shrt42",
+            "access_token=x",
+            "Basic z",
+            "X-API-Key: q",
+            "dbuser:p",
+            "Password=r",
         ):
             self.assertNotIn(secret, serialized)
         self.assertGreater(
@@ -558,8 +898,21 @@ class RuntimeRegistryTests(unittest.TestCase):
         )
         correlated_event = correlation["outputs"]["timelines"][0]["events"][0]
         self.assertEqual(
-            set(correlated_event), {"event_id", "kind", "sequence", "trace_id"}
+            set(correlated_event),
+            {
+                "event_id",
+                "event_type",
+                "occurred_at",
+                "tenant_id",
+                "project_id",
+                "revision_id",
+                "debug_session_id",
+                "sequence",
+                "redaction_profile",
+                "payload",
+            },
         )
+        self.assertEqual(correlated_event["payload"]["trace_id"], "trace-sensitive")
 
         inputs["debug_events"] = [
             {"event_id": f"event-{index}", "sequence": index} for index in range(1_001)

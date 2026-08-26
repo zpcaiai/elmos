@@ -29,29 +29,58 @@ class QualificationError(RuntimeError):
     pass
 
 
+_IGNORED_ENGINE_GENERATED_PARTS = frozenset(
+    {".venv", "__pycache__", ".ruff_cache", ".pytest_cache"}
+)
+
+
+def _is_ignored_engine_generated_path(path: Path) -> bool:
+    """Ignore local tool environments and interpreter-generated metadata.
+
+    The qualification inventory describes repository-owned engine sources.  A
+    developer's ignored virtualenv, bytecode cache, or editable-install
+    ``*.egg-info`` directory is not source and may contain symlinks by design.
+    Keeping these paths out of both the ancestry check and receipt makes the
+    receipt deterministic without deleting or mutating the environment.
+    """
+
+    relative = path.relative_to(ENGINE)
+    return any(
+        part in _IGNORED_ENGINE_GENERATED_PARTS or part.endswith(".egg-info")
+        for part in relative.parts
+    )
+
+
 _EFFECT_GUARD_ACTIVE = False
 _DENIED_AUDIT_EVENTS = frozenset(
     {
+        "_thread.start_new_thread",
         "open",
         "os.chdir",
+        "os.chflags",
         "os.chmod",
         "os.chown",
         "os.exec",
         "os.fork",
+        "os.forkpty",
         "os.kill",
         "os.link",
         "os.listdir",
         "os.mkdir",
         "os.putenv",
+        "os.posix_spawn",
         "os.remove",
         "os.rename",
         "os.rmdir",
         "os.scandir",
+        "os.setxattr",
         "os.spawn",
         "os.symlink",
         "os.system",
         "os.truncate",
         "os.unsetenv",
+        "os.utime",
+        "os.removexattr",
         "shutil.copyfile",
         "shutil.copymode",
         "shutil.copystat",
@@ -90,6 +119,8 @@ def _validate_engine_ancestry() -> None:
     if not ENGINE.is_dir():
         raise QualificationError("engine root must be a real directory")
     for candidate in sorted(ENGINE.rglob("*")):
+        if _is_ignored_engine_generated_path(candidate):
+            continue
         if candidate.is_symlink():
             raise QualificationError(
                 f"engine tree contains a pre-import symlink: {candidate}"
@@ -152,6 +183,8 @@ def engine_inventory() -> list[dict[str, Any]]:
     values: list[dict[str, Any]] = []
     _validate_engine_ancestry()
     for path in sorted(ENGINE.rglob("*")):
+        if _is_ignored_engine_generated_path(path):
+            continue
         if path.is_symlink():
             raise QualificationError(f"engine tree contains a symlink: {path}")
         if path.is_dir():
@@ -181,7 +214,9 @@ def runtime_environment() -> dict[str, Any]:
     try:
         resolved = executable.resolve(strict=True)
     except OSError as exc:
-        raise QualificationError("cannot resolve the qualification interpreter") from exc
+        raise QualificationError(
+            "cannot resolve the qualification interpreter"
+        ) from exc
     if not resolved.is_file() or not stat.S_ISREG(resolved.stat().st_mode):
         raise QualificationError("qualification interpreter is not a regular file")
     version = sys.version_info
@@ -195,7 +230,7 @@ def runtime_environment() -> dict[str, Any]:
         "platform": sys.platform,
         "machine": platform.machine(),
         "byteorder": sys.byteorder,
-        "executable": executable.as_posix(),
+        "executable": resolved.as_posix(),
         "resolved_executable": resolved.as_posix(),
         "executable_sha256": sha256_file(resolved),
     }
@@ -285,13 +320,18 @@ def build_receipt() -> dict[str, Any]:
             "python3 tooling/qualify_project_intelligence_runtime.py --check"
         ),
         "executor": "repository-local-self-attested",
-        "effect_guard": "PYTHON_AUDIT_DENY_FILESYSTEM_PROCESS_NETWORK_DURING_DISPATCH",
+        "effect_guard": "PYTHON_AUDIT_BEST_EFFORT_EFFECT_GUARD_DURING_DISPATCH",
+        "effect_guard_limitations": (
+            "Python audit events are fail-closed when observed but are not an OS "
+            "sandbox and cannot account for effects through inherited descriptors, "
+            "native extensions, or events the interpreter does not emit."
+        ),
         "runtime_environment": runtime_environment(),
         "independent_verifier": None,
         "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
         "external_evidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
-        "counts": {"skills": 50, "local": 20, "partial": 25, "plan": 5},
+        "counts": {"skills": 50, "local": 19, "partial": 26, "plan": 5},
         "results": results,
     }
     receipt["receipt_digest"] = canonical_digest(receipt)
@@ -304,6 +344,14 @@ def serialized(value: Any) -> bytes:
     ).encode("utf-8")
 
 
+def _fsync_directory(path: Path) -> None:
+    descriptor = os.open(path, os.O_RDONLY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
 def write_receipt(value: dict[str, Any]) -> None:
     RECEIPT.parent.mkdir(parents=True, exist_ok=True)
     descriptor, temporary = tempfile.mkstemp(
@@ -312,10 +360,12 @@ def write_receipt(value: dict[str, Any]) -> None:
     temporary_path = Path(temporary)
     try:
         with os.fdopen(descriptor, "wb") as handle:
+            os.fchmod(handle.fileno(), 0o644)
             handle.write(serialized(value))
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary_path, RECEIPT)
+        _fsync_directory(RECEIPT.parent)
     except Exception:
         temporary_path.unlink(missing_ok=True)
         raise
@@ -331,8 +381,14 @@ def main(argv: list[str] | None = None) -> int:
         expected = build_receipt()
         if args.write:
             write_receipt(expected)
-        elif not RECEIPT.is_file() or RECEIPT.is_symlink():
+        elif (
+            not RECEIPT.is_file()
+            or RECEIPT.is_symlink()
+            or not stat.S_ISREG(RECEIPT.lstat().st_mode)
+        ):
             raise QualificationError("local qualification receipt is missing or unsafe")
+        elif stat.S_IMODE(RECEIPT.lstat().st_mode) != 0o644:
+            raise QualificationError("local qualification receipt mode must be 0644")
         elif RECEIPT.read_bytes() != serialized(expected):
             raise QualificationError(
                 "local qualification receipt drifted from engine bytes/results"
@@ -346,8 +402,8 @@ def main(argv: list[str] | None = None) -> int:
                 "status": "PASS",
                 "mode": "write" if args.write else "check",
                 "skills": 50,
-                "local": 20,
-                "partial": 25,
+                "local": 19,
+                "partial": 26,
                 "plan": 5,
                 "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
                 "external_evidence": "NOT_RUN",

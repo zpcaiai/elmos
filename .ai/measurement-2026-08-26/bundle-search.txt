@@ -1,0 +1,100 @@
+candidates: 1469   READY today: 1
+feature families: 60
+
+how many functions MENTION each family (not the same as payoff):
+   1039  CALL:user-function
+    933  STMT:Assign
+    777  CALL:object-or-module-method
+    744  TYPE:MISSING
+    497  EXPR:Attribute
+    465  STMT:Expr
+    449  EXPR:Subscript
+    439  EXPR:other-comparison(in/is/chained)
+    379  EXPR:Tuple
+    368  CALL:pure-builtin
+    367  TYPE:OTHER
+    345  EXPR:none-literal
+    329  EXPR:unary-op
+    309  STMT:For
+    249  CALL:str-method
+    244  EXPR:List
+    202  EXPR:other-binary-operator
+    185  STMT:Try
+    179  STMT:AugAssign
+    170  EXPR:f-string
+    166  TYPE:CONTAINER_OTHER
+    148  STMT:Raise
+    142  EXPR:Slice
+    130  STMT:FunctionDef
+    115  EXPR:GeneratorExp
+    104  STMT:While
+    100  EXPR:IfExp
+     90  EXPR:Dict
+     89  STMT:let-of-non-canonical-type
+     78  TYPE:OPTIONAL_OTHER
+     71  EXPR:Starred
+     70  EXPR:ListComp
+     69  TYPE:NONE_RETURN
+     65  STMT:Continue
+     62  TYPE:BYTES
+     59  STMT:Break
+     51  STMT:With
+     50  TYPE:CONTAINER_OF_CANONICAL
+     49  TYPE:OPTIONAL_CANONICAL
+     45  EXPR:Yield
+     42  TYPE:ANY
+     41  EXPR:Constant
+     40  STMT:Import
+     38  EXPR:Lambda
+     32  STMT:Assert
+     30  STMT:ImportFrom
+     30  STMT:Return
+     18  EXPR:NamedExpr
+     17  STMT:Global
+     17  CALL:other
+     16  EXPR:DictComp
+     16  EXPR:Set
+     14  EXPR:YieldFrom
+     12  STMT:ClassDef
+      8  STMT:Delete
+      6  STMT:Nonlocal
+      5  EXPR:SetComp
+      4  STMT:Pass
+      3  STMT:AnnAssign
+      1  STMT:AsyncFunctionDef
+
+functions needing <=4 families: 486; families involved: 46
+
+best bundles by size (exhaustive over the families that appear in <=4-family requirements):
+
+  --- size 1 ---
+    +  13 READY   TYPE:CONTAINER_OF_CANONICAL
+    +  11 READY   TYPE:MISSING
+    +   4 READY   CALL:str-method
+    +   4 READY   CALL:object-or-module-method
+    +   3 READY   EXPR:other-binary-operator
+    +   3 READY   CALL:user-function
+
+  --- size 2 ---
+    +  44 READY   CALL:user-function  +  TYPE:MISSING
+    +  24 READY   TYPE:CONTAINER_OF_CANONICAL  +  TYPE:MISSING
+    +  23 READY   CALL:object-or-module-method  +  TYPE:MISSING
+    +  18 READY   EXPR:other-binary-operator  +  TYPE:MISSING
+    +  17 READY   CALL:user-function  +  TYPE:OTHER
+    +  17 READY   CALL:str-method  +  TYPE:MISSING
+
+  --- size 3 ---
+    +  62 READY   CALL:object-or-module-method  +  CALL:user-function  +  TYPE:MISSING
+    +  58 READY   CALL:user-function  +  TYPE:MISSING  +  TYPE:OTHER
+    +  58 READY   CALL:user-function  +  EXPR:Subscript  +  TYPE:MISSING
+    +  57 READY   CALL:user-function  +  TYPE:CONTAINER_OF_CANONICAL  +  TYPE:MISSING
+    +  55 READY   CALL:user-function  +  STMT:Assign  +  TYPE:MISSING
+    +  54 READY   CALL:user-function  +  EXPR:other-binary-operator  +  TYPE:MISSING
+
+  --- size 4 ---
+    +  83 READY   CALL:user-function  +  EXPR:Tuple  +  STMT:Assign  +  TYPE:MISSING
+    +  82 READY   CALL:object-or-module-method  +  CALL:user-function  +  TYPE:MISSING  +  TYPE:OTHER
+    +  81 READY   CALL:object-or-module-method  +  CALL:user-function  +  STMT:Assign  +  TYPE:MISSING
+    +  80 READY   CALL:object-or-module-method  +  CALL:user-function  +  EXPR:Subscript  +  TYPE:MISSING
+    +  76 READY   CALL:object-or-module-method  +  CALL:user-function  +  TYPE:CONTAINER_OF_CANONICAL  +  TYPE:MISSING
+    +  76 READY   CALL:object-or-module-method  +  CALL:str-method  +  CALL:user-function  +  TYPE:MISSING

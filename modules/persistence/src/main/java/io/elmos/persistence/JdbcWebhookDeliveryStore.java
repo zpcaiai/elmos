@@ -7,21 +7,50 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.elmos.scm.WebhookIngestionService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.List;
 
 @Repository
 public class JdbcWebhookDeliveryStore implements WebhookIngestionService.DeliveryStore {
     private final JdbcClient jdbc;
     private final ObjectMapper objectMapper;
+    private final List<io.elmos.scm.RepositoryLifecycleSink> lifecycleSinks;
 
+    /** Compatibility constructor for narrow unit tests without CAS lifecycle wiring. */
     public JdbcWebhookDeliveryStore(JdbcClient jdbc, ObjectMapper objectMapper) {
+        this(jdbc, objectMapper, List.of());
+    }
+
+    @Autowired
+    public JdbcWebhookDeliveryStore(
+            JdbcClient jdbc,
+            ObjectMapper objectMapper,
+            ObjectProvider<io.elmos.scm.RepositoryLifecycleSink> lifecycleSinks
+    ) {
+        this(jdbc, objectMapper,
+                lifecycleSinks.orderedStream().toList());
+    }
+
+    private JdbcWebhookDeliveryStore(
+            JdbcClient jdbc,
+            ObjectMapper objectMapper,
+            List<io.elmos.scm.RepositoryLifecycleSink> lifecycleSinks
+    ) {
         this.jdbc = Objects.requireNonNull(jdbc, "jdbc");
         this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper");
+        this.lifecycleSinks = List.copyOf(
+                Objects.requireNonNull(lifecycleSinks, "lifecycleSinks"));
+        if (this.lifecycleSinks.size() > 1) {
+            throw new IllegalStateException(
+                    "exactly one repository lifecycle sink is permitted");
+        }
     }
 
     @Override
@@ -94,6 +123,14 @@ public class JdbcWebhookDeliveryStore implements WebhookIngestionService.Deliver
                     .param("occurred", offset(delivery.receivedAt()))
                     .param("attributes", attributes)
                     .update();
+            if ("repository".equals(delivery.eventType())
+                    && "deleted".equals(delivery.action())
+                    && !lifecycleSinks.isEmpty()) {
+                // Invoke the monotonic fence only after the signed, tenant-bound delivery is
+                // durably recorded. If the sink fails, this transaction rolls back and GitHub
+                // redelivery can retry the same lifecycle transition safely.
+                lifecycleSinks.get(0).onRepositoryDeleted(organizationId, delivery);
+            }
             return true;
         } catch (JsonProcessingException exception) {
             throw new IllegalStateException(

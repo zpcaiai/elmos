@@ -39,6 +39,7 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
 
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final int LEASE_TOKEN_BYTES = 32;
+    private static final int MAX_LIST_OFFSET = 10_000;
 
     private final JdbcClient jdbc;
     private final TransactionTemplate transactions;
@@ -111,6 +112,35 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     }
 
     @Override
+    public Optional<IdempotencyLookup> findByIdempotencyKey(
+            AuthenticatedContext context,
+            String idempotencyKey
+    ) {
+        requireContext(context);
+        if (idempotencyKey == null || idempotencyKey.isBlank()
+                || idempotencyKey.length() > 160) {
+            throw new ExecutionStateException("ELMOS_EXECUTION_IDEMPOTENCY_KEY_INVALID");
+        }
+        return inIdentityContext(context, () ->
+                jdbc.sql("""
+                        SELECT job_id, request_digest, status
+                          FROM execution_jobs
+                         WHERE organization_id = :organizationId
+                           AND account_id = :accountId
+                           AND idempotency_key = :idempotencyKey
+                           AND tenant_tombstoned_at IS NULL
+                        """)
+                        .param("organizationId", context.organizationId())
+                        .param("accountId", context.accountId())
+                        .param("idempotencyKey", idempotencyKey)
+                        .query((ResultSet rs, int row) -> new IdempotencyLookup(
+                                rs.getString("job_id"),
+                                rs.getString("request_digest"),
+                                Status.valueOf(rs.getString("status"))))
+                        .optional());
+    }
+
+    @Override
     public List<JobView> list(
             AuthenticatedContext context,
             BusinessLine businessLine,
@@ -118,7 +148,12 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
             int offset
     ) {
         requireContext(context);
-        int boundedLimit = Math.min(Math.max(limit, 1), 100);
+        if (limit < 1 || limit > 100) {
+            throw new ExecutionStateException("ELMOS_EXECUTION_LIMIT_INVALID");
+        }
+        if (offset < 0 || offset > MAX_LIST_OFFSET) {
+            throw new ExecutionStateException("ELMOS_EXECUTION_OFFSET_INVALID");
+        }
         return inIdentityContext(context, () ->
                 jdbc.sql("""
                         SELECT job.*,
@@ -135,8 +170,8 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
                         .param("organizationId", context.organizationId())
                         .param("accountId", context.accountId())
                         .param("businessLine", businessLine == null ? null : businessLine.name())
-                        .param("limit", boundedLimit)
-                        .param("offset", Math.max(offset, 0))
+                        .param("limit", limit)
+                        .param("offset", offset)
                         .query(this::readJob)
                         .list());
     }

@@ -1,0 +1,13 @@
+module-body statements in files that have top-level effects: 8008
+    3706  46.28%  module-level assignment
+    2935  36.65%  import
+     497   6.21%  other: Expr
+     295   3.68%  module docstring
+     262   3.27%  conditional (TYPE_CHECKING / version guard)
+     143   1.79%  module constant (__all__ etc.)
+      55   0.69%  other: For
+      51   0.64%  other: AugAssign
+      38   0.47%  try (optional import)
+      15   0.19%  other: With
+       5   0.06%  other: Assert
+       5   0.06%  other: Delete

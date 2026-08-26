@@ -7,7 +7,9 @@ import subprocess
 import sys
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
+from elmos_project_intelligence import cli as cli_module
 from elmos_project_intelligence.contracts import (
     CreateRunRequest,
     IdempotencyDisposition,
@@ -166,13 +168,92 @@ class CliBoundaryTests(unittest.TestCase):
         self.assertNotIn("request_id", json.dumps(result, sort_keys=True))
         self.assertFalse(result["external_effects_performed"])
 
+    def test_request_path_identity_swap_is_rejected_after_bounded_read(self) -> None:
+        with TemporaryDirectory() as temporary:
+            parent = Path(temporary).resolve()
+            request_path = parent / "request.json"
+            request_path.write_text(_canonical_line(_request()), encoding="utf-8")
+            replacement = parent / "replacement.json"
+            replacement.write_text(
+                _canonical_line({"secret": "must-not-be-read"}), encoding="utf-8"
+            )
+            original_verify = cli_module.verify_file_path_binding
+
+            def swap_then_verify(*args: object, **kwargs: object) -> None:
+                request_path.unlink()
+                request_path.symlink_to(replacement)
+                original_verify(*args, **kwargs)
+
+            with (
+                patch.object(
+                    cli_module,
+                    "verify_file_path_binding",
+                    side_effect=swap_then_verify,
+                ),
+                self.assertRaises(OSError),
+            ):
+                cli_module._read_request(str(request_path))
+
+    def test_request_path_rejects_a_preexisting_symlink(self) -> None:
+        with TemporaryDirectory() as temporary:
+            parent = Path(temporary).resolve()
+            target = parent / "target.json"
+            target.write_text(_canonical_line(_request()), encoding="utf-8")
+            link = parent / "request.json"
+            link.symlink_to(target)
+
+            with self.assertRaises(OSError):
+                cli_module._read_request(str(link))
+
+    def test_request_path_rejects_a_symlinked_ancestor(self) -> None:
+        with TemporaryDirectory() as temporary:
+            parent = Path(temporary).resolve()
+            actual_parent = parent / "actual"
+            actual_parent.mkdir()
+            request_path = actual_parent / "request.json"
+            request_path.write_text(_canonical_line(_request()), encoding="utf-8")
+            linked_parent = parent / "linked"
+            linked_parent.symlink_to(actual_parent, target_is_directory=True)
+
+            with self.assertRaises(OSError):
+                cli_module._read_request(str(linked_parent / "request.json"))
+
+    def test_request_parent_identity_swap_is_rejected(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            request_parent = root / "requests"
+            request_parent.mkdir()
+            request_path = request_parent / "request.json"
+            request_path.write_text(_canonical_line(_request()), encoding="utf-8")
+            moved_parent = root / "requests-original"
+            original_verify = cli_module.verify_file_path_binding
+
+            def swap_parent_then_verify(*args: object, **kwargs: object) -> None:
+                request_parent.rename(moved_parent)
+                request_parent.mkdir()
+                (request_parent / "request.json").write_text(
+                    _canonical_line({"secret": "must-not-be-read"}),
+                    encoding="utf-8",
+                )
+                original_verify(*args, **kwargs)
+
+            with (
+                patch.object(
+                    cli_module,
+                    "verify_file_path_binding",
+                    side_effect=swap_parent_then_verify,
+                ),
+                self.assertRaises(OSError),
+            ):
+                cli_module._read_request(str(request_path))
+
 
 class ServiceRestartBoundaryTests(unittest.TestCase):
     def test_idempotency_binding_and_events_survive_store_restart(self) -> None:
         # The current CLI is intentionally stateless. Persistence is exercised
         # at the SQLite-backed service boundary used by long-running callers.
         with TemporaryDirectory() as temporary:
-            database = Path(temporary) / "project-intelligence.sqlite3"
+            database = Path(temporary).resolve() / "project-intelligence.sqlite3"
             original = CreateRunRequest(
                 tenant_id="tenant-a",
                 project_id="project-a",

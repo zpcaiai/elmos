@@ -1,33 +1,37 @@
 {
-  "evidence_refs": [
-    "certification/local-reference-evidence.json",
-    "certification/local-product-journey-evidence.json",
-    "certification/public-reference-route-evidence.json",
-    "certification/local-product-surface-qualification-fbe840c8-20260809.json",
-    "certification/local-product-surface-qualification-7b385827-20260809.json"
-  ],
   "certification_decision": "NOT_CERTIFIED",
   "declared_scope": [
     "web",
     "configuration",
     "lifecycle"
   ],
+  "evidence_refs": [
+    "certification/local-reference-evidence.json",
+    "certification/local-product-journey-evidence.json",
+    "certification/public-reference-route-evidence.json",
+    "certification/local-product-surface-qualification-7b385827-20260809.json",
+    "certification/local-product-surface-qualification-fbe840c8-20260809.json"
+  ],
   "gate_results": {
     "authorized_customer_repository": "NOT_RUN",
-    "customer_holdout": "NOT_RUN",
     "customer_acceptance": "NOT_RUN",
+    "customer_holdout": "NOT_RUN",
     "development_fixture": "PASSED_LOCAL",
+    "external_certification": "NOT_RUN",
     "github_app_private_repository": "NOT_RUN",
     "independent_review": "NOT_RUN",
-    "external_certification": "NOT_RUN",
+    "public_holdout": "PASSED_LOCAL_ENGINEERING",
+    "public_representative": "PASSED_LOCAL_ENGINEERING",
     "rootless_runner": "NOT_RUN",
     "rootless_transformer": "NOT_RUN",
     "rootless_verifier": "NOT_RUN",
     "structural_validation": "PASSED",
-    "public_holdout": "PASSED_LOCAL_ENGINEERING",
-    "public_representative": "PASSED_LOCAL_ENGINEERING",
     "synthetic_holdout": "PASSED_LOCAL",
     "synthetic_representative": "PASSED_LOCAL"
+  },
+  "local_fixture_evidence": {
+    "build_startup_migration_equivalence_security": "PASSED_LOCAL",
+    "production_status": "NOT_RUN"
   },
   "metrics": {
     "build_green_rate": 1.0,
@@ -43,8 +47,9 @@
   "pack_version": "0.3.0",
   "residual_risks": [
     "The public representative exercises resilience/web behavior; the public holdout exercises security, persistence and validation startup/build behavior.",
+    "Security and validation probes added here are limited to the repository-owned synthetic fixture; provider-specific behavior remains conditional.",
     "Messaging, production databases and production transaction providers remain conditional.",
-    "GitHub App private execution, customer repository, customer holdout, rootless Runner and external independent review remain NOT_RUN."
+    "Customer repository, rootless execution and external independent review remain NOT_RUN."
   ],
   "schema_version": 1,
   "status": "limited"

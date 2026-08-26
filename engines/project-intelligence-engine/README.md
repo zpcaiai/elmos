@@ -4,8 +4,8 @@ This repository-owned, standard-library Python engine supplies bounded code-leve
 
 The implementation is intentionally narrower than the source package's complete product vision:
 
-- 21 Skills have deterministic local analysis or artifact handlers.
-- 24 Skills have real partial local handlers while named browser, compiler, provider, runtime, or device adapters remain unavailable.
+- 20 Skills have deterministic local analysis or artifact handlers.
+- 25 Skills have real partial local handlers while named browser, compiler, provider, runtime, or device adapters remain unavailable.
 - 5 Skills validate and persist plans only; they do not mutate Git, call connectors, deploy, certify, or start a debug sandbox.
 - Every result keeps external evidence `NOT_RUN` and certification `NOT_CERTIFIED`.
 
@@ -17,7 +17,7 @@ The runtime provides:
 - a private immutable content-addressed artifact store;
 - deterministic graph, reader, architecture, diagram, document, search, impact, rule, risk, cost, policy, and debug-event operations;
 - an exact 50-handler qualification contract that rejects result-schema, digest, unavailable-capability, and authority-field drift;
-- a qualification-time Python audit guard that denies filesystem, process, and network events during handler dispatch;
+- a qualification-time best-effort Python audit guard that blocks selected audited filesystem, process, and network events during handler dispatch;
 - planning-only boundaries for SCM, MCP/connectors, deployment, certification, and sandbox execution.
 
 Use the repository target for integration and local qualification:
@@ -27,3 +27,5 @@ make project-intelligence-skills
 ```
 
 Static validation and guarded local fixture execution are engineering evidence only. The audit guard is not an OS sandbox or independent verifier. These checks do not establish remote Git ingestion, native parsers for every language, browser/UI behavior, model quality, runtime trace collection, production topology, external verification, customer acceptance, E1-E5 certification, deployment, billing, or release authorization.
+
+Filesystem defenses reject symlinks, path rebinding, public state files, and hard-linked immutable objects at the local engine boundary. A malicious process running concurrently as the same operating-system user is outside this bounded engine's isolation model; production isolation requires a separate account or sandbox and an independently controlled storage boundary.

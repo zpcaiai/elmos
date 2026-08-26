@@ -20,6 +20,22 @@ recipeList:
       newVersion: 3.5.3
       allowVersionDowngrades: true
   - org.openrewrite.maven.ChangePropertyValue:
+      key: spring-boot.version
+      newValue: "3.5.3"
+      addIfMissing: false
+      trustParent: false
+  - org.openrewrite.java.dependencies.ChangeDependency:
+      oldGroupId: io.github.resilience4j
+      oldArtifactId: resilience4j-spring-boot2
+      newGroupId: io.github.resilience4j
+      newArtifactId: resilience4j-spring-boot3
+      newVersion: "2.4.0"
+      overrideManagedVersion: true
+  - org.openrewrite.yaml.DeleteKey:
+      keyPath: $.resilience4j.circuitbreaker.instances.default.baseConfig
+  - org.openrewrite.yaml.DeleteKey:
+      keyPath: $.resilience4j.retry.instances.default.baseConfig
+  - org.openrewrite.maven.ChangePropertyValue:
       key: java.version
       newValue: "21"
       addIfMissing: true

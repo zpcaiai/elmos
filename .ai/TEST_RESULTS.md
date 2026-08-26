@@ -1202,15 +1202,19 @@ Flyway history, preserves mutation/commit/rollback acknowledgement loss as unkno
 pre-V9 bootstrap py_compile                              PASS
 pre-V9 bootstrap unittest                                18/18 PASS
 Tiered/Compatible targeted javac                         PASS
-current-delta Maven/JUnit                                NOT_RUN; pending focused reverification
-current-delta live PostgreSQL/MinIO                      NOT_RUN; pending focused reverification
+current-delta CAS focused Maven                          93/93 PASS
+current-delta snapshot focused Maven                     35/37 PASS; 2 filesystem skips
+current-delta control-plane dispatcher                   33/33 PASS
+current-delta live PostgreSQL/MinIO                      NOT_RUN; external evidence pending
 ```
 
 The historical 197/197, 34/34, PostgreSQL and same-host MinIO results above must not be relabelled
 as validation of this current delta. True multi-host shared-tier/failover/concurrency, production
-KMS/HSM, independent trust/revocation, ActionCache tenant-API and signed completion write-back,
-production snapshot holder/election/archive-GC coordination, real historical pre-V9 PostgreSQL
-apply/reconciliation, real GitHub App traffic and ArkUI device execution all remain unexecuted.
+KMS/HSM, independent trust/revocation, deployment-owned ActionCache authorization/trust and signed
+completion write-back, production snapshot holder/election/archive-GC coordination, real historical
+pre-V9 PostgreSQL apply/reconciliation, real GitHub App traffic and ArkUI device execution all
+remain unexecuted. The tenant ActionCache HTTP seam is now present locally, but it remains opt-in
+and has no production provider evidence.
 
 Final posture is unchanged: CAS `SINGLE_HOST / NOT_CERTIFIED`, EI
 `BLOCK / NOT_CERTIFIED`, ArkUI `NOT_RUN / NOT_CERTIFIED`.
@@ -1245,9 +1249,27 @@ same unrelated persistence test-compile error prevents the V76 live PostgreSQL c
 so V76/Flyway/live-PG remains `NOT_RUN`.
 
 Local repository-lifecycle tests cover shared bindings across snapshots, RETIRING write fences,
-exact-generation release, batch binding release and stale-token replay rejection. No production
-repository-deletion caller invokes those APIs. Production snapshot capture also deliberately blocks
+exact-generation release, batch binding release and stale-token replay rejection. The current
+source also has a tenant-bound deletion webhook sink and explicit begin/finalize control-plane
+caller; no production GitHub delivery or scheduler deployment has invoked them. Production snapshot
+capture also deliberately blocks
 because JGit provides only `LOCAL_SELF_ATTESTED` source assurance and existing snapshot rows lack
 durable authoritative-lease provenance. These fail-closed outcomes preserve, rather than raise,
 the final status: CAS `SINGLE_HOST / NOT_CERTIFIED`, EI `BLOCK / NOT_CERTIFIED`, ArkUI
 `NOT_RUN / NOT_CERTIFIED`.
+
+### 2026-08-26 execution and repository lifecycle delta
+
+```text
+JDK 21 control-plane compile (updated workflow/SCM/persistence artifacts) PASS
+ActionCacheExecutionJobDispatcherTest                         33/33 PASS
+git diff --check                                               PASS
+commit/push                                                     4f71b156dd0b547e77cb98c2ef7a6798b6311fd5
+```
+
+The dispatcher now performs an authoritative tenant/idempotency-key lookup and request-digest
+comparison before acknowledging an uncertain replay. GitHub repository deletion deliveries are
+tenant-bound before invoking the CAS retirement fence, and operators have explicit begin/finalize
+endpoints with epoch-bound tokens. This is local engineering evidence only: production KMS/HSM,
+true multi-host shared storage, external trust/revocation, global scheduler deployment, real
+GitHub traffic, and ArkUI device execution remain `NOT_RUN`/`NOT_CERTIFIED`.

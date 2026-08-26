@@ -1,0 +1,5 @@
+NESTED_SYMBOL subjects: 4596
+    4128  89.82%  class method
+     383   8.33%  inner function / closure
+      57   1.24%  other nesting
+      28   0.61%  both-spellings-in-file

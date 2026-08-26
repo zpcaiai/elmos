@@ -47,7 +47,7 @@ def request(
 class ServiceTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="elmos-pi-service-")
-        root = Path(self.temporary.name)
+        root = Path(self.temporary.name).resolve()
         self.store = ProjectIntelligenceStore(root / "state.sqlite3")
         self.artifacts = ContentAddressedArtifactStore(root / "artifacts")
         self.service = ProjectIntelligenceService(self.store, self.artifacts)

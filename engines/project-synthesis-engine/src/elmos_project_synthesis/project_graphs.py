@@ -40,6 +40,10 @@ _SHARED_ROOT_KINDS = {
     "observability": "observability",
     "operations": "operations",
     "requirements": "requirements",
+    # scripts/projectctl.py is emitted for every request and is one of the
+    # four files cli.py requires an archive to contain; scripts/ was simply
+    # never classified, which failed every render_workspace closed.
+    "scripts": "operations",
     "security": "security",
 }
 _BUILD_MANIFESTS = {

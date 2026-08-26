@@ -130,7 +130,8 @@ class CasActionCacheConfigurationTest {
 
     @Test void executionCallerBindsOnlyWithExactTrustAuthorizationAndDurableJobPort() {
         new ApplicationContextRunner()
-                .withUserConfiguration(CasActionCacheConfiguration.class)
+                .withUserConfiguration(CasActionCacheConfiguration.class,
+                        ActionCacheExecutionController.class)
                 .withBean(DataSource.class, () -> mock(DataSource.class))
                 .withBean(Clock.class, Clock::systemUTC)
                 .withBean(TenantCasStore.class,
@@ -144,10 +145,11 @@ class CasActionCacheConfigurationTest {
                 .withBean(ExecutionJobPort.class, () -> mock(ExecutionJobPort.class))
                 .withPropertyValues(
                         "elmos.action-cache.enabled=true",
-                        "elmos.action-cache.execution-caller-enabled=true")
+                        "elmos.action-cache.execution-caller-enabled=true",
+                        "elmos.action-cache.data-residency=eu-west")
                 .run(context -> {
                     assertNotNull(context.getBean(ActionCacheExecutionJobDispatcher.class));
-                    assertEquals("OPT_IN_DURABLE_HIT_OR_ENQUEUE_NOT_BOUND_TO_TENANT_API",
+                    assertEquals("OPT_IN_DURABLE_HIT_OR_ENQUEUE_TENANT_API_BOUND",
                             context.getBean(CasActionCacheConfiguration.ActionCacheStatus.class)
                                     .executionCaller());
                     assertFalse(context.getBean(

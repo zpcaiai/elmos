@@ -38,15 +38,17 @@ import java.util.regex.Pattern;
  * key, trusted authorization grant, execution profile, immutable runner image, deployment-policy
  * sanitized payload and budget to the tenant-scoped idempotency key.</p>
  *
- * <p>This adapter intentionally does not publish runner completion into the ActionCache.
+ * <p>The HTTP tenant binding constructs the canonical ActionKey and passes it here; this adapter
+ * intentionally does not publish runner completion into the ActionCache.
  * {@link ExecutionJobPort.CompletionCommand} contains only terminal status and a failure code; it
  * has no signed {@link ActionResultRecord}, output manifest, producer context or attested writer.
  * Treating that completion as cacheable would manufacture trust. A future write-back path needs a
  * separate signed completion contract and durable persistence boundary.</p>
  *
  * <p>The queue payload carries the canonical request schema and SHA-256 plus a separately
- * auditable authorization decision ID. This class does not claim JDBC metadata read-back or
- * cross-instance payload-equivalence verification; those remain outside this adapter.</p>
+ * auditable authorization decision ID. Reconciliation uses the queue's authoritative
+ * tenant-scoped idempotency lookup and compares its persisted request digest before allowing a
+ * retry. It still does not claim cross-instance runner completion or external trust evidence.</p>
  */
 public final class ActionCacheExecutionJobDispatcher {
 
@@ -188,10 +190,43 @@ public final class ActionCacheExecutionJobDispatcher {
             String runnerImage,
             short priority,
             int budgetWallSeconds,
-            short maxAttempts
+            short maxAttempts,
+            String accountId,
+            String requestId,
+            String workloadClass,
+            int resourceUnits
     ) {
+        public DispatchSpec(
+                String actorId,
+                ExecutionJobPort.BusinessLine businessLine,
+                String jobKind,
+                String idempotencyKey,
+                Map<String, Object> payload,
+                String requiredCapability,
+                String runnerImage,
+                short priority,
+                int budgetWallSeconds,
+                short maxAttempts
+        ) {
+            this(actorId, businessLine, jobKind, idempotencyKey, payload,
+                    requiredCapability, runnerImage, priority, budgetWallSeconds,
+                    maxAttempts, "", "", defaultWorkloadClass(businessLine),
+                    defaultResourceUnits(businessLine));
+        }
+
         public DispatchSpec {
             actorId = boundedText(actorId, 128, "actorId");
+            accountId = optionalBoundedText(accountId, 96, "accountId");
+            requestId = optionalBoundedText(requestId, 160, "requestId");
+            workloadClass = boundedMachineCode(
+                    workloadClass == null || workloadClass.isBlank()
+                            ? "GENERATION" : workloadClass,
+                    32, "workloadClass");
+            if (!Set.of("PARSING", "GENERATION", "CONVERSION", "VALIDATION",
+                    "RENDERING", "MODEL_GPU").contains(workloadClass)
+                    || resourceUnits < 1 || resourceUnits > 64) {
+                throw new IllegalArgumentException("workload profile is invalid");
+            }
             Objects.requireNonNull(businessLine, "businessLine");
             jobKind = boundedText(jobKind, 64, "jobKind");
             idempotencyKey = boundedText(idempotencyKey, 160, "idempotencyKey");
@@ -214,6 +249,23 @@ public final class ActionCacheExecutionJobDispatcher {
                 throw new IllegalArgumentException(
                         "maxAttempts must be exactly 1 for ActionCache dispatch");
             }
+        }
+
+        private static String defaultWorkloadClass(ExecutionJobPort.BusinessLine line) {
+            return switch (Objects.requireNonNull(line, "businessLine")) {
+                case GENERATION -> "GENERATION";
+                case TRANSLATION, SPRING_UPGRADE -> "CONVERSION";
+                case REPOSITORY_WORKSPACE -> "PARSING";
+                case MODERNIZATION_PROOF -> "VALIDATION";
+            };
+        }
+
+        private static int defaultResourceUnits(ExecutionJobPort.BusinessLine line) {
+            return switch (Objects.requireNonNull(line, "businessLine")) {
+                case GENERATION, MODERNIZATION_PROOF -> 2;
+                case TRANSLATION, SPRING_UPGRADE -> 3;
+                case REPOSITORY_WORKSPACE -> 1;
+            };
         }
     }
 
@@ -471,6 +523,11 @@ public final class ActionCacheExecutionJobDispatcher {
                     executionAuthorizationFailure.orElseThrow(), cacheOutcome);
         }
         AuthorizationGrant grant = execution.grant().orElseThrow();
+        DispatchSpec spec = request.dispatch();
+        if (spec.accountId().isBlank() || spec.requestId().isBlank()) {
+            return reconciliation.blockedOrPending(
+                    "EXECUTION_IDENTITY_CONTEXT_REQUIRED", cacheOutcome);
+        }
 
         DispatchMaterial material;
         try {
@@ -490,21 +547,51 @@ public final class ActionCacheExecutionJobDispatcher {
                     cacheOutcome);
         }
         if (reconciliation.isPending()) {
-            // ExecutionJobPort has no read-by-idempotency-key operation. Calling enqueue again
-            // would create a new job when the first uncertain call did not commit, so it is not an
-            // authoritative lookup and cannot safely reconcile the first attempt. Fresh EXECUTE
-            // authorization and payload materialization above still fail closed before this point.
-            return reconciliation.pending(
-                    "RECONCILIATION_LOOKUP_REQUIRED_NO_QUEUE_RETRY", cacheOutcome);
+            Optional<ExecutionJobPort.IdempotencyLookup> existing;
+            try {
+                existing = Objects.requireNonNull(
+                        jobs.findByIdempotencyKey(
+                                new ExecutionJobPort.AuthenticatedContext(
+                                        grant.tenantId(), spec.accountId(), grant.actorId(),
+                                        spec.requestId()),
+                                spec.idempotencyKey()),
+                        "idempotency lookup result");
+            } catch (RuntimeException unavailable) {
+                return reconciliation.pending(
+                        "RECONCILIATION_IDEMPOTENCY_LOOKUP_UNAVAILABLE", cacheOutcome);
+            }
+            if (existing.isPresent()) {
+                ExecutionJobPort.IdempotencyLookup persisted = existing.orElseThrow();
+                if (!reconciliation.subject().hex().equals(persisted.requestDigest())) {
+                    return reconciliation.pending(
+                            "RECONCILIATION_PERSISTED_REQUEST_DIGEST_MISMATCH",
+                            cacheOutcome);
+                }
+                if (!DURABLE_JOB_ID.matcher(persisted.jobId()).matches()) {
+                    return reconciliation.pending(
+                            "RECONCILIATION_PERSISTED_JOB_ID_INVALID", cacheOutcome);
+                }
+                return new Outcome(
+                        OutcomeKind.DURABLE_JOB_ACCEPTED,
+                        "DURABLE_JOB_RECONCILED",
+                        Optional.empty(),
+                        Optional.of(persisted.jobId()),
+                        Optional.of(reconciliation.subject()),
+                        cacheOutcome,
+                        true);
+            }
+            // No row exists for the exact tenant/idempotency key at this authoritative read point.
+            // Reusing the same key and digest is safe: the database unique constraint makes a
+            // concurrent first commit return its original job instead of creating a duplicate.
         }
 
         String requestedJobId = "job-" + UUID.randomUUID();
-        DispatchSpec spec = request.dispatch();
         String persisted;
         try {
-            persisted = jobs.enqueue(new ExecutionJobPort.EnqueueCommand(
+                persisted = jobs.enqueue(new ExecutionJobPort.EnqueueCommand(
                     requestedJobId,
                     grant.tenantId(),
+                    spec.accountId(),
                     grant.actorId(),
                     spec.businessLine(),
                     spec.jobKind(),
@@ -515,7 +602,10 @@ public final class ActionCacheExecutionJobDispatcher {
                     spec.runnerImage(),
                     spec.priority(),
                     spec.budgetWallSeconds(),
-                    (short) 1));
+                    (short) 1,
+                    spec.requestId(),
+                    spec.workloadClass(),
+                    spec.resourceUnits()));
         } catch (ExecutionJobPort.ExecutionStateException rejected) {
             if ("ELMOS_EXECUTION_IDEMPOTENCY_CONFLICT".equals(rejected.code())) {
                 return reconciliation.uncertainQueueOutcome(
@@ -570,6 +660,10 @@ public final class ActionCacheExecutionJobDispatcher {
         cacheBinding.put("actionKeyDigest", request.key().digest().hex());
         cacheBinding.put("actionKeyTenantId", request.key().tenantId());
         cacheBinding.put("actionKeyProjectId", grant.projectId());
+        // Preserve the complete identity for a future signed completion write-back. The digest is
+        // sufficient for lookup, but a runner result must reconstruct and re-verify every
+        // canonical component before it can ever become cacheable.
+        cacheBinding.put("actionKeyComponents", request.key().components());
         cacheBinding.put("authorizationPolicyVersion", grant.policyVersion());
         cacheBinding.put("payloadPolicyId", sanitized.policyId());
         cacheBinding.put("payloadPolicyVersion", sanitized.policyVersion());
@@ -581,6 +675,7 @@ public final class ActionCacheExecutionJobDispatcher {
         Map<String, Object> digestSubject = new LinkedHashMap<>();
         digestSubject.put("schemaVersion", CANONICAL_REQUEST_SCHEMA);
         digestSubject.put("organizationId", grant.tenantId());
+        digestSubject.put("accountId", spec.accountId());
         digestSubject.put("actorId", grant.actorId());
         digestSubject.put("projectId", grant.projectId());
         digestSubject.put("authorizationPolicyVersion", grant.policyVersion());
@@ -755,6 +850,13 @@ public final class ActionCacheExecutionJobDispatcher {
             }
         }
         return candidate;
+    }
+
+    private static String optionalBoundedText(String value, int maximum, String field) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+        return boundedText(value, maximum, field);
     }
 
     private static String boundedMachineCode(String value, int maximum, String field) {

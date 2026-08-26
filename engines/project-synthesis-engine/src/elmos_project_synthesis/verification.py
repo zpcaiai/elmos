@@ -11,6 +11,7 @@ import socket
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -261,15 +262,75 @@ def _gradle_user_home() -> Path:
     return root.resolve(strict=True)
 
 
+#: The command timeout when neither the caller nor the environment sets one.
+_DEFAULT_COMMAND_TIMEOUT_SECONDS = 300
+
+#: One retry, and only for a fetch failure. See `_is_transient_dependency_fetch`.
+_MAX_TRANSIENT_DEPENDENCY_RETRIES = 1
+_TRANSIENT_DEPENDENCY_RETRY_BACKOFF_SECONDS = 2.0
+
+#: Matched case-insensitively against the failed attempt's combined output.
+#: Deliberately narrow: these are the tool saying it could not GET a package,
+#: which is the only failure re-running an identical locked resolution can fix.
+_TRANSIENT_DEPENDENCY_FETCH_MARKERS = (
+    "failed to fetch",
+    "failed to download",
+    "error sending request",
+    "connection reset by peer",
+    "temporary failure in name resolution",
+)
+
+
+def _configured_command_timeout_seconds() -> int:
+    """The default timeout, from the environment when it is set.
+
+    Only the DEFAULT. A caller that passes `timeout_seconds=` explicitly has
+    made a per-command decision and keeps it. The value is NOT range-checked
+    here -- `_run` holds the single 30..900 gate so a configured value and a
+    passed value fail closed identically.
+    """
+
+    configured = os.getenv("ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS", "").strip()
+    if not configured:
+        return _DEFAULT_COMMAND_TIMEOUT_SECONDS
+    try:
+        return int(configured)
+    except ValueError:
+        raise ValueError("COMMAND_TIMEOUT_NOT_AN_INTEGER") from None
+
+
+def _is_locked_dependency_sync(command: list[str]) -> bool:
+    """`uv sync --locked` and nothing else.
+
+    `--locked` means "resolve exactly the committed lockfile or fail"; running
+    it a second time cannot install anything different, which is what makes a
+    retry safe here and unsafe almost everywhere else.
+    """
+
+    return (
+        len(command) >= 3
+        and Path(command[0]).name in {"uv", "uv.exe"}
+        and command[1] == "sync"
+        and "--locked" in command
+    )
+
+
+def _is_transient_dependency_fetch(output: str) -> bool:
+    lowered = output.lower()
+    return any(marker in lowered for marker in _TRANSIENT_DEPENDENCY_FETCH_MARKERS)
+
+
 def _run(
     command: list[str],
     cwd: Path,
     *,
     language: str,
     kind: str = "build-analysis",
-    timeout_seconds: int = 300,
+    timeout_seconds: int | None = None,
     environment: dict[str, str] | None = None,
 ) -> dict[str, Any]:
+    if timeout_seconds is None:
+        timeout_seconds = _configured_command_timeout_seconds()
     if not 30 <= timeout_seconds <= 900:
         raise ValueError("COMMAND_TIMEOUT_OUT_OF_RANGE")
     effective_command = list(command)
@@ -303,15 +364,35 @@ def _run(
                 "all_proxy",
             ):
                 process_environment.pop(proxy_name, None)
-        completed = subprocess.run(  # noqa: S603
-            effective_command,
-            cwd=cwd,
-            env=process_environment,
-            text=True,
-            capture_output=True,
-            check=False,
-            timeout=timeout_seconds,
-        )
+        retry_notes: list[str] = []
+        attempt = 0
+        while True:
+            completed = subprocess.run(  # noqa: S603
+                effective_command,
+                cwd=cwd,
+                env=process_environment,
+                text=True,
+                capture_output=True,
+                check=False,
+                timeout=timeout_seconds,
+            )
+            attempt_output = completed.stdout + completed.stderr
+            if (
+                completed.returncode == 0
+                or attempt >= _MAX_TRANSIENT_DEPENDENCY_RETRIES
+                or language != "python"
+                or not _is_locked_dependency_sync(effective_command)
+                or not _is_transient_dependency_fetch(attempt_output)
+            ):
+                break
+            attempt += 1
+            # Kept in the output on purpose: a PASSED result that needed a
+            # retry must not look identical to one that succeeded first time.
+            retry_notes.append(
+                f"TRANSIENT_DEPENDENCY_FETCH_RETRY:{attempt}/"
+                f"{_MAX_TRANSIENT_DEPENDENCY_RETRIES}\n{attempt_output}"
+            )
+            time.sleep(_TRANSIENT_DEPENDENCY_RETRY_BACKOFF_SECONDS)
     except subprocess.TimeoutExpired as error:
         stdout = (
             error.stdout.decode("utf-8", errors="replace") if isinstance(error.stdout, bytes) else error.stdout or ""
@@ -327,7 +408,7 @@ def _run(
             exit_code=None,
             output=f"COMMAND_TIMEOUT:{timeout_seconds}s\n{stdout}{stderr}",
         )
-    output = completed.stdout + completed.stderr
+    output = "".join(retry_notes) + completed.stdout + completed.stderr
     return _result(
         language=language,
         kind=kind,
@@ -548,6 +629,31 @@ def _loopback_environment(environment: dict[str, str] | None = None) -> dict[str
     return result
 
 
+#: Same bound the probe has always reported; only *when* it is read changed.
+_PROBE_OUTPUT_TAIL_CHARACTERS = 6_000
+
+
+def _drain_tail(stream: Any, sink: list[str], limit: int) -> None:
+    """Read `stream` to EOF, keeping only its last `limit` characters.
+
+    Runs on a thread for the whole life of the probed process so the pipe
+    never fills. Appends exactly one element to `sink` when it is done.
+    """
+
+    tail = ""
+    try:
+        while True:
+            chunk = stream.read(4096)
+            if not chunk:
+                break
+            tail = (tail + chunk)[-limit:]
+    except (OSError, ValueError):
+        # The pipe was closed under us while shutting the process down; the
+        # tail collected so far is still the right thing to report.
+        pass
+    sink.append(tail)
+
+
 def _probe(
     command: list[str],
     cwd: Path,
@@ -576,6 +682,21 @@ def _probe(
         stderr=subprocess.STDOUT,
         start_new_session=True,
     )
+    # THE PIPE MUST BE DRAINED WHILE THE CHILD RUNS.
+    #
+    # An OS pipe holds about 64 KiB. Reading it only after the startup deadline
+    # means a service that logs more than that during startup blocks forever
+    # inside its own `write`, never reaches the point where it answers
+    # /health, and is then reported as a startup FAILURE -- a healthy service
+    # that this probe wedged. The reader keeps the same bounded tail the
+    # `finally` block used to take, so nothing downstream changes.
+    captured_tail: list[str] = []
+    reader = threading.Thread(
+        target=_drain_tail,
+        args=(process.stdout, captured_tail, _PROBE_OUTPUT_TAIL_CHARACTERS),
+        daemon=True,
+    )
+    reader.start()
     if not 5 <= startup_timeout_seconds <= 180:
         raise ValueError("STARTUP_TIMEOUT_OUT_OF_RANGE")
     deadline = time.monotonic() + startup_timeout_seconds
@@ -661,7 +782,10 @@ def _probe(
                     os.killpg(process.pid, signal.SIGKILL)
                 else:
                     process.kill()
-        output = process.stdout.read()[-6_000:] if process.stdout is not None else ""
+        # The child is gone, so the reader sees EOF and finishes. Bounded
+        # join: a wedged reader must not wedge the probe in turn.
+        reader.join(timeout=5)
+        output = captured_tail[0] if captured_tail else ""
         if process.stdout is not None:
             process.stdout.close()
     result = _result(
