@@ -192,6 +192,13 @@ def render_type(type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
             Dialect.TSQL: "BIGINT",
             Dialect.ORACLE: "NUMBER(19)",
         }[dialect]
+    if t == CanonicalType.FLOAT64:
+        return {
+            Dialect.POSTGRES: "DOUBLE PRECISION",
+            Dialect.MYSQL: "DOUBLE",
+            Dialect.ORACLE: "BINARY_DOUBLE",
+            Dialect.TSQL: "FLOAT(53)",
+        }[dialect]
     if t == CanonicalType.DECIMAL:
         # precision is mandatory in the canonical model: an unparameterised
         # DECIMAL is arbitrary-precision and is rejected at parse time rather
@@ -257,6 +264,55 @@ def render_type(type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
             Dialect.TSQL: "NVARCHAR(MAX)",
             Dialect.ORACLE: "CLOB",
         }[dialect]
+    if t == CanonicalType.JSON:
+        if type_ref.json_binary:
+            raise DialectError(
+                "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED",
+                "JSONB storage/index/operator semantics cannot be represented as a common JSON type",
+            )
+        if dialect in (Dialect.POSTGRES, Dialect.MYSQL):
+            return "JSON"
+        raise DialectError(
+            "CERTIFIED_DDL_JSON_TARGET_UNSUPPORTED",
+            f"{dialect.value} JSON mapping requires a versioned provider capability and is not inferred",
+        )
+    if t == CanonicalType.ARRAY:
+        raise DialectError(
+            "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED",
+            "array element/storage/operator semantics need a target-specific collection route; "
+            "the common profile will not serialize arrays as JSON",
+        )
+    if t == CanonicalType.BINARY:
+        if type_ref.length is None:
+            raise DialectError(
+                "CERTIFIED_DDL_UNBOUNDED_BINARY",
+                "binary length is required for a portable fixed/variable byte mapping",
+            )
+        length = type_ref.length
+        if dialect is Dialect.ORACLE and length > 2_000:
+            raise DialectError(
+                "CERTIFIED_DDL_LENGTH_EXCEEDS_TARGET",
+                f"RAW({length}) exceeds Oracle's 2000-byte SQL RAW limit",
+            )
+        if dialect is Dialect.MYSQL and length > 65_535:
+            raise DialectError(
+                "CERTIFIED_DDL_LENGTH_EXCEEDS_TARGET",
+                f"binary length {length} exceeds MySQL's limit",
+            )
+        if dialect is Dialect.TSQL and length > 8_000:
+            raise DialectError(
+                "CERTIFIED_DDL_LENGTH_EXCEEDS_TARGET",
+                f"binary length {length} exceeds SQL Server's VARBINARY limit",
+            )
+        if dialect is Dialect.POSTGRES:
+            raise DialectError(
+                "CERTIFIED_DDL_BINARY_LENGTH_ENFORCEMENT_UNSUPPORTED",
+                "PostgreSQL BYTEA does not enforce the source binary length; retain this column "
+                "for a target-specific route",
+            )
+        if dialect is Dialect.ORACLE:
+            return f"RAW({length})"
+        return f"{'BINARY' if type_ref.binary_fixed else 'VARBINARY'}({length})"
     if t == CanonicalType.DATE:
         return "DATE"
     if t == CanonicalType.TIMESTAMP:

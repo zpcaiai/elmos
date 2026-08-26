@@ -99,10 +99,32 @@ def test_counts_every_statement_in_subset_and_out(tmp_path: Path) -> None:
     root = _repo(tmp_path, {"V1.sql": f"{IN_SUBSET}\n{ALTER}\n{VIEW}\n"})
     report = scan_repository(root, Dialect.POSTGRES)
     assert report.totals["discovered"] == 3
-    assert report.totals["inSubset"] == 1
-    assert report.totals["outOfSubset"] == 2
+    assert report.totals["inSubset"] == 2
+    assert report.totals["outOfSubset"] == 1
     assert report.totals["scanErrors"] == 0
-    assert report.upper_bound_coverage == pytest.approx(1 / 3, abs=0.001)
+    assert report.upper_bound_coverage == pytest.approx(2 / 3, abs=0.001)
+
+
+def test_every_discovered_unit_has_a_disposition_even_when_translation_is_blocked(
+    tmp_path: Path,
+) -> None:
+    report = scan_repository(_repo(tmp_path, {"V1.sql": f"{IN_SUBSET}\n{ALTER}\n{VIEW}"}), Dialect.POSTGRES)
+    assert report.disposition_coverage == 1.0
+    assert report.totals["dispositionCovered"] == report.totals["dispositionUnits"] == 3
+    assert report.totals["dispositionUnknown"] == 0
+    assert report.disposition_counts == {
+        "AUTOMATED_TRANSLATION_CANDIDATE": 2,
+        "MANUAL_MIGRATION_REQUIRED": 1,
+    }
+
+
+def test_scan_profile_names_all_active_sql_profiles(tmp_path: Path) -> None:
+    report = scan_repository(_repo(tmp_path, {"V1.sql": IN_SUBSET}), Dialect.POSTGRES)
+    assert report.profile == (
+        "certified-ddl-v1 + certified-alter-v1 + certified-drop-v1 + certified-schema-v1 "
+        "+ certified-routine-v1 + certified-view-v1 + certified-comment-v1 + certified-privilege-v1 "
+        "+ certified-rls-v1"
+    )
 
 
 def test_statements_are_split_by_the_real_parser_not_by_semicolons(tmp_path: Path) -> None:
@@ -124,7 +146,7 @@ def test_migration_units_stay_in_the_denominator(tmp_path: Path) -> None:
     root = _repo(tmp_path, {"V1.sql": f"{ALTER}\n{VIEW}\n"})
     report = scan_repository(root, Dialect.POSTGRES)
     assert report.totals["discovered"] == 2
-    assert report.upper_bound_coverage == 0.0
+    assert report.upper_bound_coverage == pytest.approx(1 / 2, abs=0.001)
 
 
 def test_empty_schema_reports_zero_rather_than_dividing_by_zero(tmp_path: Path) -> None:
@@ -154,7 +176,7 @@ def test_distinguishes_occurrences_from_distinct_reasons(tmp_path: Path) -> None
     # idiom produced 340 of 342 occurrences of a single blocker; ranking by
     # occurrences alone would have pointed the next expansion at a problem
     # that is really one line of SQL repeated across a schema.
-    repeated = "CREATE TABLE t{i} (h VARCHAR(64) CHECK (h IS NULL OR h ~ '^[0-9a-f]+$'));"
+    repeated = "CREATE TABLE t{i} (h VARCHAR(64) CHECK (h IS NULL OR h LIKE 'a%'));"
     body = "\n".join(repeated.replace("{i}", str(i)) for i in range(6))
     report = scan_repository(_repo(tmp_path, {"V1.sql": body}), Dialect.POSTGRES)
     blocker = report.blockers[0]
@@ -238,9 +260,9 @@ def test_a_missing_repository_is_refused(tmp_path: Path) -> None:
 def test_markdown_carries_the_count_the_ranking_and_the_caveat(tmp_path: Path) -> None:
     root = _repo(tmp_path, {"V1.sql": f"{IN_SUBSET}\n{ALTER}\n{VIEW}\n"})
     markdown = render_markdown(scan_repository(root, Dialect.POSTGRES))
-    assert "1 of 3 statements are inside the certified subset" in markdown
-    assert "33.3%" in markdown
-    assert "CERTIFIED_DDL_UNSUPPORTED_STATEMENT" in markdown
+    assert "2 of 3 statements are inside the certified subset" in markdown
+    assert "66.7%" in markdown
+    assert "CERTIFIED_ALTER_UNSUPPORTED_ACTION" in markdown
     assert "UPPER BOUND" in markdown
 
 
@@ -262,5 +284,23 @@ def test_cli_exits_zero_only_when_everything_is_in_subset(
 ) -> None:
     root = _repo(tmp_path, {"V1.sql": IN_SUBSET})
     code = main(["scan", "--repository", str(root), "--source-dialect", "postgres"])
+    capsys.readouterr()
+    assert code == 0
+
+
+def test_cli_can_gate_100_percent_disposition_without_claiming_translation(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = _repo(tmp_path, {"V1.sql": f"{IN_SUBSET}\n{VIEW}"})
+    code = main(
+        [
+            "scan",
+            "--repository",
+            str(root),
+            "--source-dialect",
+            "postgres",
+            "--require-disposition-complete",
+        ]
+    )
     capsys.readouterr()
     assert code == 0

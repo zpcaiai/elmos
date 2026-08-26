@@ -215,6 +215,49 @@ def test_unsigned_bigint_fails_closed_because_no_target_can_hold_it() -> None:
 
 
 # --------------------------------------------------------------------------
+# 8. PostgreSQL SERIAL and binary64 floating point are typed mappings, not
+#    source-keyword passthrough.
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("source_type", "expected_target_type"),
+    [
+        ("SERIAL", {"mysql": "INT AUTO_INCREMENT", "oracle": "NUMBER(10) GENERATED", "tsql": "INT IDENTITY"}),
+        ("BIGSERIAL", {"mysql": "BIGINT AUTO_INCREMENT", "oracle": "NUMBER(19) GENERATED", "tsql": "BIGINT IDENTITY"}),
+    ],
+)
+def test_postgres_serial_types_become_target_native_identity_columns(
+    source_type: str, expected_target_type: dict[str, str]
+) -> None:
+    for target, expected in expected_target_type.items():
+        emitted = _emit(f"CREATE TABLE t (id {source_type} PRIMARY KEY)", "postgres", target)
+        assert expected in emitted
+        assert "SERIAL" not in emitted
+
+
+def test_serial_is_not_assumed_to_be_postgres_when_declared_by_another_source() -> None:
+    assert _blocked("CREATE TABLE t (id SERIAL)", "mysql", "postgres") == (
+        "CERTIFIED_DDL_UNSUPPORTED_TYPE"
+    )
+
+
+@pytest.mark.parametrize(
+    ("source", "target", "ddl", "expected"),
+    [
+        ("oracle", "postgres", "BINARY_DOUBLE", "DOUBLE PRECISION"),
+        ("postgres", "mysql", "DOUBLE PRECISION", "DOUBLE"),
+        ("postgres", "oracle", "DOUBLE PRECISION", "BINARY_DOUBLE"),
+        ("postgres", "tsql", "DOUBLE PRECISION", "FLOAT(53)"),
+    ],
+)
+def test_double_maps_to_binary64_without_narrowing(
+    source: str, target: str, ddl: str, expected: str
+) -> None:
+    assert expected in _emit(f"CREATE TABLE t (score {ddl})", source, target)
+
+
+# --------------------------------------------------------------------------
 # 8. MySQL rejects an AUTO_INCREMENT column that is not a key (errno 1075),
 #    where the other three dialects accept a non-key identity column. The
 #    syntax leg cannot see this: sqlglot parses the statement happily.

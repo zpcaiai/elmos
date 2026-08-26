@@ -1,0 +1,212 @@
+"""Execute the WHOLE admitted corpus on real servers, not just spot checks.
+
+The engine validates every emission by re-parsing it with sqlglot in the
+target's strict mode. That is a SYNTAX check by a third-party parser -- it is
+not the target database's own grammar, and it cannot see semantic refusals
+(a type that parses but is not creatable, a constraint the server rejects).
+
+This closes that gap for the two servers that can be run rootless: every
+statement the scanner admits is emitted and then really executed. Anything the
+server refuses is an emission defect the syntax leg cannot see.
+
+A migration corpus is a SEQUENCE, so the statements are applied IN ORDER and
+COMMITTED, in a fresh database per corpus -- which is what applying the
+migration actually means. Running each one in its own rolled-back transaction
+(the first design here) made every ALTER fail with "table doesn't exist" and
+reported a false 31%; that was a harness defect, not an engine defect.
+
+A statement the server refuses does not abort the run, so the report is the
+whole picture rather than everything up to the first failure. Refusals are then
+split into two very different things:
+
+  MISSING_OBJECT   a cascade -- the object was never created because an EARLIER
+                   statement was outside the subset. Not an emission defect;
+                   it is the cost of partial coverage, and it is the number
+                   that says whether a translated schema actually applies.
+  EMISSION_DEFECT  the server rejected SQL this engine produced. The syntax leg
+                   (a sqlglot re-parse) cannot see these.
+"""
+from __future__ import annotations
+
+import contextlib
+import io
+import json
+import os
+import sys
+from collections import Counter
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "engines/sql-dialect-engine/src"))
+
+import psycopg2  # noqa: E402
+import pymysql  # noqa: E402
+import sqlglot  # noqa: E402
+from sqlglot import exp  # noqa: E402
+
+from elmos_sql_dialect import emitter, parser  # noqa: E402
+from elmos_sql_dialect.models import Dialect, DialectError  # noqa: E402
+from elmos_sql_dialect.scan import _classify, discover_sql_files  # noqa: E402
+from elmos_sql_dialect.statement_splitter import split_statements  # noqa: E402
+
+DDL_TYPES = ("Create", "Alter", "Drop", "Index", "Comment", "Truncate")
+
+
+def statements_of(path: Path, dialect: Dialect):
+    text = path.read_text(encoding="utf-8")
+    try:
+        for statement in sqlglot.parse(text, read=dialect.value):
+            if statement is not None:
+                yield statement
+        return
+    except Exception:
+        pass
+    for raw in split_statements(text):
+        if raw.text.lstrip().startswith("\\"):
+            continue
+        try:
+            parsed = [s for s in sqlglot.parse(raw.text, read=dialect.value) if s is not None]
+        except Exception:
+            continue
+        if len(parsed) == 1:
+            yield parsed[0]
+
+
+def emit(statement: exp.Expression, source: Dialect, target: Dialect) -> str | None:
+    if isinstance(statement, exp.Create):
+        kind = str(statement.args.get("kind", "")).upper()
+        if kind == "TABLE":
+            return emitter.emit_create_table(parser.parse_create_table(statement, source), target)
+        if kind == "INDEX":
+            return emitter.emit_create_index(parser.parse_create_index(statement, source), target)
+    if isinstance(statement, exp.Alter):
+        return emitter.emit_alter_table(parser.parse_alter_table(statement, source), target)
+    if isinstance(statement, exp.Drop):
+        return emitter.emit_drop_table(parser.parse_drop_table(statement, source), target)
+    return None
+
+
+CORPORA = [
+    ("elmos-persistence", "modules/persistence/src/main/resources/db/migration", Dialect.POSTGRES),
+    ("elmos-build-cache", "engines/build-cache-engine/migrations/postgres", Dialect.POSTGRES),
+    ("elmos-p0", "docs/p0-implementation/sql", Dialect.POSTGRES),
+    ("ext-postgres", "corpus/ext-pg", Dialect.POSTGRES),
+    ("ext-mysql", "corpus/ext-mysql", Dialect.MYSQL),
+]
+
+def reset(key: str, conn, corpus: str) -> None:
+    """A fresh schema per (corpus, target): one corpus must not inherit another's tables."""
+    cursor = conn.cursor()
+    if key == "postgres":
+        cursor.execute("DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;")
+    else:
+        cursor.execute("DROP DATABASE IF EXISTS elmos_exec")
+        cursor.execute("CREATE DATABASE elmos_exec")
+        cursor.execute("USE elmos_exec")
+    conn.commit()
+    cursor.close()
+
+
+pg_conn = psycopg2.connect(host="/tmp", port=55432, user="postgres", dbname="postgres")
+pg_conn.autocommit = False
+my_conn = pymysql.connect(unix_socket="/tmp/mysqld/m.sock", user="root", database="elmos_exec",
+                          autocommit=False)
+
+stats = {"postgres": Counter(), "mysql": Counter()}
+failures: list[dict] = []
+emitted_total = 0
+#: Server messages that mean "an object an EARLIER statement should have
+#: created is absent" -- i.e. a cascade from partial coverage, not bad SQL.
+#: MySQL 1824 belongs here and is easy to miss: a foreign key pointing at a
+#: table that was never created reports as "Failed to open the referenced
+#: table", which reads like a defect but is the same gap.
+MISSING = (
+    "doesn't exist",
+    "does not exist",
+    "Unknown table",
+    "Unknown column",
+    "Failed to open the referenced table",
+)
+
+
+def is_cascade(message: str) -> bool:
+    return any(marker in message for marker in MISSING)
+
+
+for name, path, source in CORPORA:
+    root = Path(path).resolve(strict=True)
+    for target, conn, key in ((Dialect.POSTGRES, pg_conn, "postgres"),
+                              (Dialect.MYSQL, my_conn, "mysql")):
+        if target is source:
+            continue
+        reset(key, conn, name)
+        for file in sorted(discover_sql_files(root)):
+            for statement in statements_of(file, source):
+                if type(statement).__name__ not in DDL_TYPES:
+                    continue
+                with contextlib.redirect_stderr(io.StringIO()):
+                    status, _c, _r = _classify(statement, source)
+                if status != "IN_SUBSET":
+                    continue
+                try:
+                    with contextlib.redirect_stderr(io.StringIO()):
+                        sql = emit(statement, source, target)
+                except DialectError as refusal:
+                    stats[key][f"BLOCKED:{refusal.code}"] += 1
+                    continue
+                if sql is None:
+                    continue
+                emitted_total += 1
+                cursor = conn.cursor()
+                try:
+                    # `emit_alter_table` legitimately emits a multi-statement
+                    # SCRIPT for a multi-action ALTER, because the dialects
+                    # differ on whether one ALTER may carry several actions.
+                    # A driver executes one statement per call, so the script
+                    # is split here. Reporting the driver's refusal as an
+                    # engine defect would be exactly the misattribution this
+                    # evidence exists to avoid -- the first run of this script
+                    # did precisely that and showed a false 30%.
+                    for part in (s.strip() for s in sql.split(";\n")):
+                        if part:
+                            cursor.execute(part)
+                    conn.commit()
+                    stats[key]["EXECUTED"] += 1
+                except Exception as error:
+                    conn.rollback()
+                    message = str(error).splitlines()[0][:220]
+                    bucket = "MISSING_OBJECT" if is_cascade(message) else "EMISSION_DEFECT"
+                    stats[key][bucket] += 1
+                    if bucket == "EMISSION_DEFECT" and len(failures) < 200:
+                        failures.append({
+                            "corpus": name, "file": file.name, "target": key,
+                            "emitted": sql[:280], "server_error": message,
+                        })
+                finally:
+                    cursor.close()
+
+summary = {
+    "kind": "elmos.sql-dialect.corpus-execution-evidence",
+    "date": "2026-08-26",
+    "note": ("every admitted statement emitted and really executed, each in its own rolled-back "
+             "transaction; Oracle and SQL Server have no rootless local instance so they are "
+             "EXECUTION_NOT_AVAILABLE, not passing"),
+    "emissions_attempted": emitted_total,
+    "postgres": dict(stats["postgres"].most_common()),
+    "mysql": dict(stats["mysql"].most_common()),
+    "server_refusals": failures,
+}
+Path(os.environ.get("OUT", "corpus-execution-evidence.json")).write_text(
+    json.dumps(summary, indent=2), encoding="utf-8")
+
+for key in ("postgres", "mysql"):
+    executed = stats[key]["EXECUTED"]
+    cascade = stats[key]["MISSING_OBJECT"]
+    defect = stats[key]["EMISSION_DEFECT"]
+    total = executed + cascade + defect
+    rate = f"{executed / total:.2%}" if total else "n/a"
+    print(f"{key:9} executed {executed:>5} / {total:<5} ({rate})   "
+          f"cascade(missing object) {cascade:<5} EMISSION DEFECTS {defect}")
+print(f"\nemission defects recorded: {len(failures)}")
+for f in failures[:8]:
+    print(f"  [{f['target']}] {f['server_error'][:110]}")
+    print(f"           {f['emitted'][:110]}")
