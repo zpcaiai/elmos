@@ -10,6 +10,7 @@ from typing import Any, Final
 from .canonical import canonical_digest, canonical_value
 from .domain import (
     CapabilityOutcome,
+    TrustedRuntimeScope,
     analyze_impact,
     answer_project_query,
     apply_diagram_patch,
@@ -67,11 +68,13 @@ class SkillRuntimeError(ValueError):
     """Raised for an unknown Skill or malformed strict request."""
 
 
-CapabilityOperation = Callable[[Mapping[str, Any]], CapabilityOutcome]
+CapabilityOperation = Callable[..., CapabilityOutcome]
 
 _MAX_INPUT_DEPTH = 64
 _MAX_INPUT_NODES = 100_000
 _MAX_INPUT_UTF8_BYTES = 16 * 1024 * 1024
+REJECTION_SCHEMA_VERSION: Final = "elmos.project-intelligence.rejection.v1"
+REJECTION_CODE: Final = "REQUEST_OR_CAPABILITY_CONTRACT_REJECTED"
 
 
 def _validate_input_budget(value: Any) -> None:
@@ -120,9 +123,7 @@ _INERT_OUTPUT_PATHS: Final[Mapping[str, Mapping[tuple[str, ...], Any]]] = (
             "elmos-repository-ingestion": {("code_executed",): False},
             "elmos-code-explanation": {("narrative_model_used",): False},
             "elmos-architecture-discovery": {("runtime_verified",): False},
-            "elmos-data-architecture-lineage": {
-                ("runtime_lineage_verified",): False
-            },
+            "elmos-data-architecture-lineage": {("runtime_lineage_verified",): False},
             "elmos-api-event-topology": {("runtime_activity",): "NOT_RUN"},
             "elmos-runtime-trace-fusion": {("collector_executed",): False},
             "elmos-presentation-generation": {("pptx_generated",): False},
@@ -135,16 +136,12 @@ _INERT_OUTPUT_PATHS: Final[Mapping[str, Mapping[tuple[str, ...], Any]]] = (
                 ("git_mutated",): False,
                 ("push_performed",): False,
             },
-            "elmos-collaboration-governance": {
-                ("enforcement_authorized",): False
-            },
+            "elmos-collaboration-governance": {("enforcement_authorized",): False},
             "elmos-integrations-mcp": {
                 ("connector_called",): False,
                 ("enforcement_authorized",): False,
             },
-            "elmos-large-repository-scaling": {
-                ("distributed_execution",): False
-            },
+            "elmos-large-repository-scaling": {("distributed_execution",): False},
             "elmos-observability-slo": {("production_slo_claimed",): False},
             "elmos-testing-evaluation": {("external_evidence",): "NOT_RUN"},
             "elmos-conversion-integration": {("conversion_executed",): False},
@@ -167,9 +164,7 @@ _INERT_OUTPUT_PATHS: Final[Mapping[str, Mapping[tuple[str, ...], Any]]] = (
                 ("model_used",): False,
                 ("side_effects",): False,
             },
-            "elmos-debug-record-replay": {
-                ("bundle", "native_reverse_debug"): False
-            },
+            "elmos-debug-record-replay": {("bundle", "native_reverse_debug"): False},
             "elmos-distributed-debug-correlation": {
                 ("distributed_pause_performed",): False
             },
@@ -561,8 +556,8 @@ _SPECS: Final[tuple[tuple[str, str, str, str, CapabilityOperation], ...]] = (
     ),
     (
         "elmos-incremental-analysis-cache",
-        "LOCAL",
-        "ANALYSIS_CACHE_KEY_RESOLVED",
+        "PARTIAL",
+        "ANALYSIS_CACHE_KEY_DERIVED",
         "platform",
         cache_analysis_stage,
     ),
@@ -709,6 +704,95 @@ SKILL_REGISTRY: Final[Mapping[str, HandlerBinding]] = MappingProxyType(
     _build_registry()
 )
 
+_RUNTIME_SCOPED_OPERATIONS: Final[frozenset[CapabilityOperation]] = frozenset(
+    {
+        cache_analysis_stage,
+        compile_diagram_spec,
+        estimate_runtime_cost,
+        render_diagram,
+        plan_debug_session,
+        reduce_debug_view,
+        build_debug_mission,
+        build_replay_bundle,
+        correlate_debug_events,
+    }
+)
+
+
+def _invoke_operation(
+    binding: HandlerBinding, request: RuntimeRequest
+) -> CapabilityOutcome:
+    if binding.operation in _RUNTIME_SCOPED_OPERATIONS:
+        return binding.operation(
+            request.inputs,
+            TrustedRuntimeScope(
+                tenant_id=request.tenant_id,
+                project_id=request.project_id,
+                revision=request.revision,
+            ),
+        )
+    return binding.operation(request.inputs)
+
+
+def _validate_orchestrator_skill_references(inputs: Mapping[str, Any]) -> None:
+    """Reject orchestration references outside the exact installed catalog."""
+
+    requested = inputs.get("requested_skills", [])
+    if not isinstance(requested, list):
+        raise SkillRuntimeError("requested_skills must be a list")
+    if any(
+        not isinstance(item, str) or item not in SKILL_REGISTRY for item in requested
+    ):
+        raise SkillRuntimeError(
+            "requested_skills contains a Skill outside the exact installed catalog"
+        )
+
+    dependency_edges = inputs.get("dependency_edges", [])
+    if not isinstance(dependency_edges, list):
+        raise SkillRuntimeError("dependency_edges must be a list")
+    for edge in dependency_edges:
+        if not isinstance(edge, Mapping):
+            raise SkillRuntimeError("dependency_edges entries must be objects")
+        for field_name in ("dependency", "skill"):
+            endpoint = edge.get(field_name)
+            if not isinstance(endpoint, str) or endpoint not in SKILL_REGISTRY:
+                raise SkillRuntimeError(
+                    "dependency_edges contains a Skill outside the exact "
+                    "installed catalog"
+                )
+
+
+def _rejection_result(binding: HandlerBinding) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "schema_version": REJECTION_SCHEMA_VERSION,
+        "skill": binding.skill,
+        "handler_id": binding.handler_id,
+        "capability_state": binding.capability_state,
+        "state": "BLOCKED",
+        "code": REJECTION_CODE,
+        "outputs": {},
+        "unavailable": ["contract-valid-local-execution"],
+        "warnings": [],
+        "error": {
+            "type": "CONTRACT_REJECTED",
+            "message": "request or capability contract rejected",
+        },
+        "external_effects_performed": False,
+        "external_evidence": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
+    }
+    result["result_digest"] = canonical_digest(result)
+    return result
+
+
+def is_dispatch_rejection(value: Mapping[str, Any]) -> bool:
+    """Return whether a dispatch result is the fail-closed rejection envelope."""
+
+    return (
+        value.get("schema_version") == REJECTION_SCHEMA_VERSION
+        or value.get("code") == REJECTION_CODE
+    )
+
 
 def validate_skill_registry(expected_names: Sequence[str] | None = None) -> None:
     bindings = list(SKILL_REGISTRY.values())
@@ -724,7 +808,7 @@ def validate_skill_registry(expected_names: Sequence[str] | None = None) -> None
         state: sum(binding.capability_state == state for binding in bindings)
         for state in ("LOCAL", "PARTIAL", "PLAN")
     }
-    if counts != {"LOCAL": 20, "PARTIAL": 25, "PLAN": 5}:
+    if counts != {"LOCAL": 19, "PARTIAL": 26, "PLAN": 5}:
         raise SkillRuntimeError(f"unexpected capability-state counts: {counts}")
     if expected_names is not None and list(SKILL_REGISTRY) != list(expected_names):
         raise SkillRuntimeError(
@@ -738,24 +822,12 @@ def dispatch_skill(skill: str, value: Mapping[str, Any]) -> dict[str, Any]:
         raise SkillRuntimeError(f"unknown Project Intelligence Skill: {skill}")
     try:
         request = RuntimeRequest.parse(value)
-        outcome = binding.operation(request.inputs)
+        if skill == "elmos-insight-orchestrator":
+            _validate_orchestrator_skill_references(request.inputs)
+        outcome = _invoke_operation(binding, request)
         _validate_output_authority(binding.skill, outcome.outputs)
-    except (TypeError, ValueError, KeyError, RecursionError):
-        return {
-            "schema_version": "elmos.project-intelligence.result.v1",
-            "skill": skill,
-            "handler_id": binding.handler_id,
-            "state": "BLOCKED",
-            "code": "REQUEST_OR_CAPABILITY_CONTRACT_REJECTED",
-            "outputs": {},
-            "error": {
-                "type": "CONTRACT_REJECTED",
-                "message": "request or capability contract rejected",
-            },
-            "external_effects_performed": False,
-            "external_evidence": "NOT_RUN",
-            "certification": "NOT_CERTIFIED",
-        }
+    except (ArithmeticError, TypeError, ValueError, KeyError, RecursionError):
+        return _rejection_result(binding)
     result = {
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": skill,
@@ -777,7 +849,7 @@ def capability_manifest() -> dict[str, Any]:
         "schema_version": "elmos.project-intelligence.capabilities.v1",
         "source_package": "elmos-project-intelligence-skills",
         "source_version": "1.1.0",
-        "counts": {"skills": 50, "local": 20, "partial": 25, "plan": 5},
+        "counts": {"skills": 50, "local": 19, "partial": 26, "plan": 5},
         "external_evidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
         "capabilities": [
@@ -799,10 +871,13 @@ def capability_manifest() -> dict[str, Any]:
 
 __all__ = [
     "HandlerBinding",
+    "REJECTION_CODE",
+    "REJECTION_SCHEMA_VERSION",
     "RuntimeRequest",
     "SKILL_REGISTRY",
     "SkillRuntimeError",
     "capability_manifest",
     "dispatch_skill",
+    "is_dispatch_rejection",
     "validate_skill_registry",
 ]

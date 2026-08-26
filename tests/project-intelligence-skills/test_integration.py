@@ -1,14 +1,19 @@
 from __future__ import annotations
 
+import base64
 from collections import Counter
 import importlib.util
+import io
 import json
+import lzma
 from pathlib import Path
 import shutil
 import stat
 import sys
+import tarfile
 import tempfile
 import unittest
+from unittest.mock import patch
 import zipfile
 
 import yaml
@@ -331,6 +336,14 @@ class ProjectIntelligenceIntegrationTests(unittest.TestCase):
             {"LOCAL": 20, "PARTIAL": 25, "PLAN": 5},
         )
         self.assertEqual(
+            matrix["summary"]["qualification_effect_guard"],
+            integration.EXPECTED_QUALIFICATION_EFFECT_GUARD,
+        )
+        self.assertEqual(
+            matrix["summary"]["qualification_effect_guard_limitations"],
+            integration.EXPECTED_QUALIFICATION_EFFECT_GUARD_LIMITATIONS,
+        )
+        self.assertEqual(
             matrix["summary"]["source_acceptance_execution_status"],
             "NOT_RUN",
         )
@@ -375,7 +388,16 @@ class ProjectIntelligenceIntegrationTests(unittest.TestCase):
             self.assertTrue(item["code_paths"])
             self.assertTrue(item["test_paths"])
 
-        payload = integration.result_payload(integration.build_expected(ROOT), "check")
+        expected = integration.build_expected(ROOT)
+        self.assertEqual(
+            expected["manifest"]["local_qualification_effect_guard"],
+            integration.EXPECTED_QUALIFICATION_EFFECT_GUARD,
+        )
+        self.assertEqual(
+            expected["manifest"]["local_qualification_effect_guard_limitations"],
+            integration.EXPECTED_QUALIFICATION_EFFECT_GUARD_LIMITATIONS,
+        )
+        payload = integration.result_payload(expected, "check")
         self.assertEqual(payload["exact_runtime_bindings"], 50)
         self.assertEqual(
             payload["implementation"],
@@ -435,6 +457,572 @@ class ProjectIntelligenceIntegrationTests(unittest.TestCase):
             len(list((repository / integration.RUNTIME_RELATIVE).iterdir())),
             50,
         )
+
+    def test_owned_generator_evolution_requires_explicit_verified_refresh(
+        self,
+    ) -> None:
+        temporary, repository = self._temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        integration.write_integration(repository)
+        original_render_skill = integration.render_skill
+        marker = b"\n<!-- owned-refresh-fixture -->\n"
+
+        def evolved_render_skill(skill: object, binding: object) -> bytes:
+            return original_render_skill(skill, binding) + marker
+
+        first_name = sorted(integration.build_expected(repository)["trees"])[0]
+        runtime_skill = (
+            repository / integration.RUNTIME_RELATIVE / first_name / "SKILL.md"
+        )
+        original_bytes = runtime_skill.read_bytes()
+        previous_manifest_digest = integration.digest(
+            (
+                repository
+                / integration.DOC_RELATIVE
+                / integration.INSTALLED_MANIFEST_NAME
+            ).read_bytes()
+        )
+        with (
+            patch.object(
+                integration,
+                "TRUSTED_PREVIOUS_OWNED_MANIFEST_SHA256S",
+                frozenset({previous_manifest_digest}),
+            ),
+            patch.object(integration, "render_skill", evolved_render_skill),
+        ):
+            with self.assertRaisesRegex(
+                integration.IntegrationError,
+                "requires --refresh-owned",
+            ):
+                integration.write_integration(repository)
+            self.assertEqual(runtime_skill.read_bytes(), original_bytes)
+
+            integration.write_integration(repository, refresh_owned=True)
+            integration.check_integration(repository)
+            for relative_root in (
+                integration.RUNTIME_RELATIVE,
+                integration.WORKSPACE_RELATIVE,
+            ):
+                self.assertTrue(
+                    (repository / relative_root / first_name / "SKILL.md")
+                    .read_bytes()
+                    .endswith(marker)
+                )
+
+    def test_owned_refresh_rejects_tampering_before_any_write(self) -> None:
+        for label in ("tree", "documentation", "manifest"):
+            with self.subTest(label=label):
+                temporary, repository = self._temporary_repository()
+                self.addCleanup(temporary.cleanup)
+                integration.write_integration(repository)
+                expected = integration.build_expected(repository)
+                first_name = sorted(expected["trees"])[0]
+                untouched = (
+                    repository
+                    / integration.WORKSPACE_RELATIVE
+                    / first_name
+                    / "SKILL.md"
+                )
+                untouched_bytes = untouched.read_bytes()
+                if label == "tree":
+                    tampered = (
+                        repository
+                        / integration.RUNTIME_RELATIVE
+                        / first_name
+                        / "SKILL.md"
+                    )
+                    tampered.write_bytes(tampered.read_bytes() + b"\ntampered\n")
+                    error = "owned runtime Skill drifted"
+                elif label == "documentation":
+                    tampered = (
+                        repository / integration.DOC_RELATIVE / integration.README_NAME
+                    )
+                    tampered.write_bytes(tampered.read_bytes() + b"\ntampered\n")
+                    error = "documentation drifted"
+                else:
+                    tampered = (
+                        repository
+                        / integration.DOC_RELATIVE
+                        / integration.INSTALLED_MANIFEST_NAME
+                    )
+                    previous = json.loads(tampered.read_text(encoding="utf-8"))
+                    previous["skills"][-1] = dict(previous["skills"][0])
+                    tampered.write_bytes(integration.json_bytes(previous))
+                    error = "not authenticated by a trusted"
+                tampered_bytes = tampered.read_bytes()
+                with self.assertRaisesRegex(integration.IntegrationError, error):
+                    integration.write_integration(repository, refresh_owned=True)
+                self.assertEqual(tampered.read_bytes(), tampered_bytes)
+                self.assertEqual(untouched.read_bytes(), untouched_bytes)
+
+    def test_self_rewritten_manifest_cannot_authenticate_tree_tampering(self) -> None:
+        temporary, repository = self._temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        integration.write_integration(repository)
+        expected = integration.build_expected(repository)
+        name = sorted(expected["trees"])[0]
+        destination = repository / integration.RUNTIME_RELATIVE / name
+        tampered = destination / "SKILL.md"
+        tampered.write_bytes(tampered.read_bytes() + b"\nself-blessed tamper\n")
+
+        manifest_path = (
+            repository / integration.DOC_RELATIVE / integration.INSTALLED_MANIFEST_NAME
+        )
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        record = next(item for item in manifest["skills"] if item["name"] == name)
+        record["installed_tree_sha256"] = integration.tree_digest(
+            {name: integration.read_tree(destination)}
+        )
+        manifest_path.write_bytes(integration.json_bytes(manifest))
+        tampered_manifest = manifest_path.read_bytes()
+
+        with self.assertRaisesRegex(
+            integration.IntegrationError,
+            "not authenticated by a trusted repository-owned digest",
+        ):
+            integration.write_integration(repository, refresh_owned=True)
+        self.assertEqual(manifest_path.read_bytes(), tampered_manifest)
+        self.assertTrue(tampered.read_bytes().endswith(b"self-blessed tamper\n"))
+
+    def test_missing_owned_outputs_require_explicit_refresh(self) -> None:
+        temporary, repository = self._temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        integration.write_integration(repository)
+        expected = integration.build_expected(repository)
+        name = sorted(expected["trees"])[0]
+        missing_tree = repository / integration.RUNTIME_RELATIVE / name
+        missing_readme = repository / integration.DOC_RELATIVE / integration.README_NAME
+        shutil.rmtree(missing_tree)
+        missing_readme.unlink()
+
+        with self.assertRaisesRegex(
+            integration.IntegrationError,
+            "missing owned generated Skill requires --refresh-owned",
+        ):
+            integration.write_integration(repository)
+        self.assertFalse(missing_tree.exists())
+        self.assertFalse(missing_readme.exists())
+
+        integration.write_integration(repository, refresh_owned=True)
+        self.assertEqual(integration.read_tree(missing_tree), expected["trees"][name])
+        self.assertEqual(missing_readme.read_bytes(), expected["readme_bytes"])
+
+    def test_generated_modes_and_empty_directories_fail_closed_and_repair(self) -> None:
+        temporary, repository = self._temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        integration.write_integration(repository)
+        expected = integration.build_expected(repository)
+        name = sorted(expected["trees"])[0]
+        skill_file = repository / integration.RUNTIME_RELATIVE / name / "SKILL.md"
+        readme = repository / integration.DOC_RELATIVE / integration.README_NAME
+        skill_file.chmod(0o600)
+        readme.chmod(0o600)
+
+        with self.assertRaisesRegex(
+            integration.IntegrationError,
+            "mode drifted|requires --refresh-owned",
+        ):
+            integration.check_integration(repository)
+        with self.assertRaisesRegex(
+            integration.IntegrationError,
+            "requires --refresh-owned",
+        ):
+            integration.write_integration(repository)
+        integration.write_integration(repository, refresh_owned=True)
+        self.assertEqual(stat.S_IMODE(skill_file.stat().st_mode), 0o644)
+        self.assertEqual(stat.S_IMODE(readme.stat().st_mode), 0o644)
+
+        empty = repository / integration.RUNTIME_RELATIVE / name / "unexpected-empty"
+        empty.mkdir(mode=0o755)
+        with self.assertRaisesRegex(
+            integration.IntegrationError,
+            "unexpected empty directories",
+        ):
+            integration.check_integration(repository)
+
+    def test_symlinked_output_ancestor_is_rejected_before_extraction(self) -> None:
+        temporary, repository = self._temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        outside = repository.parent / f"{repository.name}-outside"
+        outside.mkdir()
+        self.addCleanup(lambda: shutil.rmtree(outside, ignore_errors=True))
+        (repository / ".agents").symlink_to(outside, target_is_directory=True)
+
+        with self.assertRaisesRegex(
+            integration.IntegrationError,
+            "symbolic-link ancestor",
+        ):
+            integration.write_integration(repository)
+        self.assertEqual(list(outside.iterdir()), [])
+        self.assertFalse((repository / integration.SOURCE_RELATIVE).exists())
+
+    def test_package_lock_covers_the_complete_operation(self) -> None:
+        temporary, repository = self._temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        archive = repository / integration.ARCHIVE_RELATIVE
+        with archive.open("rb") as handle:
+            integration.fcntl.flock(handle.fileno(), integration.fcntl.LOCK_EX)
+            try:
+                with self.assertRaisesRegex(
+                    integration.IntegrationError,
+                    "already locked",
+                ):
+                    integration.write_integration(repository)
+            finally:
+                integration.fcntl.flock(handle.fileno(), integration.fcntl.LOCK_UN)
+        self.assertFalse((repository / integration.SOURCE_RELATIVE).exists())
+
+    def test_archive_mutation_before_manifest_publication_leaves_manifest_absent(
+        self,
+    ) -> None:
+        temporary, repository = self._temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        archive = repository / integration.ARCHIVE_RELATIVE
+        original_validate = integration._validate_pre_manifest_outputs
+
+        def validate_then_mutate(*args: object, **kwargs: object) -> None:
+            original_validate(*args, **kwargs)
+            with archive.open("r+b") as handle:
+                handle.seek(integration.EXPECTED_ARCHIVE_BYTES // 2)
+                value = handle.read(1)
+                handle.seek(integration.EXPECTED_ARCHIVE_BYTES // 2)
+                handle.write(bytes([value[0] ^ 0x01]))
+                handle.flush()
+
+        with patch.object(
+            integration,
+            "_validate_pre_manifest_outputs",
+            side_effect=validate_then_mutate,
+        ):
+            with self.assertRaisesRegex(
+                integration.IntegrationError,
+                "archive bytes changed",
+            ):
+                integration.write_integration(repository)
+        self.assertFalse(
+            (
+                repository
+                / integration.DOC_RELATIVE
+                / integration.INSTALLED_MANIFEST_NAME
+            ).exists()
+        )
+
+    def test_archive_mutation_before_owned_manifest_refresh_preserves_old_marker(
+        self,
+    ) -> None:
+        temporary, repository = self._temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        integration.write_integration(repository)
+        archive = repository / integration.ARCHIVE_RELATIVE
+        manifest = (
+            repository / integration.DOC_RELATIVE / integration.INSTALLED_MANIFEST_NAME
+        )
+        original_manifest = manifest.read_bytes()
+        original_render = integration.render_skill
+        original_validate = integration._validate_pre_manifest_outputs
+
+        def evolved_render(skill: object, binding: object) -> bytes:
+            return original_render(skill, binding) + b"\n<!-- archive-race -->\n"
+
+        def validate_then_mutate(*args: object, **kwargs: object) -> None:
+            original_validate(*args, **kwargs)
+            with archive.open("r+b") as handle:
+                handle.seek(integration.EXPECTED_ARCHIVE_BYTES // 2)
+                value = handle.read(1)
+                handle.seek(integration.EXPECTED_ARCHIVE_BYTES // 2)
+                handle.write(bytes([value[0] ^ 0x01]))
+                handle.flush()
+
+        with (
+            patch.object(
+                integration,
+                "TRUSTED_PREVIOUS_OWNED_MANIFEST_SHA256S",
+                frozenset({integration.digest(original_manifest)}),
+            ),
+            patch.object(integration, "render_skill", evolved_render),
+            patch.object(
+                integration,
+                "_validate_pre_manifest_outputs",
+                side_effect=validate_then_mutate,
+            ),
+        ):
+            with self.assertRaisesRegex(
+                integration.IntegrationError,
+                "archive bytes changed",
+            ):
+                integration.write_integration(repository, refresh_owned=True)
+        self.assertEqual(manifest.read_bytes(), original_manifest)
+
+    def test_exact_install_artifacts_reconcile_and_ambiguous_ones_fail(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="elmos-pi-install-artifacts-") as value:
+            root = Path(value)
+            expected_tree = {"SKILL.md": b"expected\n"}
+            destination = root / "skill-a"
+            exact_tree = root / f".skill-a.install.{'1' * 32}"
+            integration._populate_staged_tree(exact_tree, expected_tree)
+            integration._reconcile_tree_install_artifact(
+                destination,
+                expected_tree,
+            )
+            self.assertFalse(exact_tree.exists())
+
+            tampered_tree = root / f".skill-a.install.{'2' * 32}"
+            integration._populate_staged_tree(
+                tampered_tree,
+                {"SKILL.md": b"tampered\n"},
+            )
+            with self.assertRaisesRegex(
+                integration.IntegrationError,
+                "install artifact is not exact",
+            ):
+                integration._reconcile_tree_install_artifact(
+                    destination,
+                    expected_tree,
+                )
+            self.assertTrue(tampered_tree.exists())
+            shutil.rmtree(tampered_tree)
+
+            first_tree = root / f".skill-a.install.{'8' * 32}"
+            second_tree = root / f".skill-a.install.{'9' * 32}"
+            integration._populate_staged_tree(first_tree, expected_tree)
+            integration._populate_staged_tree(second_tree, expected_tree)
+            with self.assertRaisesRegex(
+                integration.IntegrationError,
+                "multiple owned-refresh artifacts",
+            ):
+                integration._reconcile_tree_install_artifact(
+                    destination,
+                    expected_tree,
+                )
+            shutil.rmtree(first_tree)
+            shutil.rmtree(second_tree)
+
+            doc = root / "README.md"
+            exact_file = root / f".README.md.install.{'3' * 32}"
+            integration._write_new_file(exact_file, b"expected\n")
+            integration._reconcile_file_install_artifact(doc, b"expected\n")
+            self.assertFalse(exact_file.exists())
+
+            tampered_file = root / f".README.md.install.{'a' * 32}"
+            integration._write_new_file(tampered_file, b"tampered\n")
+            with self.assertRaisesRegex(
+                integration.IntegrationError,
+                "install artifact is not exact",
+            ):
+                integration._reconcile_file_install_artifact(doc, b"expected\n")
+            tampered_file.unlink()
+
+            first = root / f".README.md.install.{'4' * 32}"
+            second = root / f".README.md.install.{'5' * 32}"
+            integration._write_new_file(first, b"expected\n")
+            integration._write_new_file(second, b"expected\n")
+            with self.assertRaisesRegex(
+                integration.IntegrationError,
+                "multiple generated-file install artifacts",
+            ):
+                integration._reconcile_file_install_artifact(doc, b"expected\n")
+            self.assertTrue(first.exists())
+            self.assertTrue(second.exists())
+
+    def test_atomic_file_mode_fsync_and_tampered_temp_preservation(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="elmos-pi-atomic-file-") as value:
+            root = Path(value)
+            published = root / "README.md"
+            with patch.object(
+                integration.os,
+                "fsync",
+                wraps=integration.os.fsync,
+            ) as fsync:
+                integration._write_file_atomic(published, b"expected\n")
+            self.assertEqual(published.read_bytes(), b"expected\n")
+            self.assertEqual(stat.S_IMODE(published.stat().st_mode), 0o644)
+            self.assertGreaterEqual(fsync.call_count, 2)
+
+            target = root / "implementation-matrix.json"
+
+            def tamper_then_fail(source: object, destination: object) -> None:
+                del destination
+                Path(source).write_bytes(b"tampered\n")
+                raise OSError("injected publication failure")
+
+            with patch.object(
+                integration.os,
+                "replace",
+                side_effect=tamper_then_fail,
+            ):
+                with self.assertRaisesRegex(
+                    integration.IntegrationError,
+                    "refusing to remove non-exact failed generated-file installation",
+                ):
+                    integration._write_file_atomic(target, b"expected\n")
+            candidates = list(root.glob(".implementation-matrix.json.install.*"))
+            self.assertEqual(len(candidates), 1)
+            self.assertEqual(candidates[0].read_bytes(), b"tampered\n")
+
+    def test_missing_destination_backup_and_failed_candidate_recover(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="elmos-pi-failed-recovery-") as value:
+            root = Path(value)
+            destination = root / "skill-a"
+            old = {"SKILL.md": b"old\n"}
+            new = {"SKILL.md": b"new\n"}
+            backup = root / f".skill-a.backup.{'6' * 32}"
+            failed = root / f".skill-a.failed.{'7' * 32}"
+            integration._populate_staged_tree(backup, old)
+            integration._populate_staged_tree(failed, new)
+
+            integration._reconcile_tree_refresh_artifacts(
+                destination,
+                new,
+                integration.tree_digest({"skill-a": old}),
+                integration.INSTALLED_TREE_DIGEST_SCHEMA,
+            )
+            self.assertEqual(integration.read_tree(destination), old)
+            self.assertFalse(backup.exists())
+            self.assertFalse(failed.exists())
+
+    def test_preflight_creation_plan_rejects_disappearing_owned_paths(self) -> None:
+        for label in ("tree", "doc"):
+            with self.subTest(label=label):
+                temporary, repository = self._temporary_repository()
+                self.addCleanup(temporary.cleanup)
+                integration.write_integration(repository)
+                manifest = (
+                    repository
+                    / integration.DOC_RELATIVE
+                    / integration.INSTALLED_MANIFEST_NAME
+                )
+                original_manifest = manifest.read_bytes()
+                expected = integration.build_expected(repository)
+                name = sorted(expected["trees"])[0]
+                target = (
+                    repository / integration.RUNTIME_RELATIVE / name
+                    if label == "tree"
+                    else repository / integration.DOC_RELATIVE / integration.README_NAME
+                )
+                original_preflight = integration._preflight_write
+
+                def preflight_then_remove(*args: object, **kwargs: object) -> object:
+                    plan = original_preflight(*args, **kwargs)
+                    if target.is_dir():
+                        shutil.rmtree(target)
+                    else:
+                        target.unlink()
+                    return plan
+
+                with patch.object(
+                    integration,
+                    "_preflight_write",
+                    side_effect=preflight_then_remove,
+                ):
+                    with self.assertRaisesRegex(
+                        integration.IntegrationError,
+                        "disappeared after preflight",
+                    ):
+                        integration.write_integration(repository)
+                self.assertFalse(target.exists())
+                self.assertEqual(manifest.read_bytes(), original_manifest)
+
+    def test_crashed_document_refresh_temp_is_exact_or_fails_closed(self) -> None:
+        for label, content, should_pass in (
+            ("exact", None, True),
+            ("tampered", b"not the generated document\n", False),
+        ):
+            with self.subTest(label=label):
+                temporary, repository = self._temporary_repository()
+                self.addCleanup(temporary.cleanup)
+                integration.write_integration(repository)
+                expected = integration.build_expected(repository)
+                readme = repository / integration.DOC_RELATIVE / integration.README_NAME
+                crashed = readme.parent / (
+                    f".{readme.name}.refresh.{'a' if should_pass else 'b'}" + ("0" * 31)
+                )
+                integration._write_new_file(
+                    crashed,
+                    expected["readme_bytes"] if content is None else content,
+                )
+                if should_pass:
+                    integration.write_integration(repository, refresh_owned=True)
+                    self.assertFalse(crashed.exists())
+                    self.assertEqual(readme.read_bytes(), expected["readme_bytes"])
+                else:
+                    with self.assertRaisesRegex(
+                        integration.IntegrationError,
+                        "refresh artifact is not exact",
+                    ):
+                        integration.write_integration(repository, refresh_owned=True)
+                    self.assertTrue(crashed.exists())
+
+    def test_interrupted_owned_refresh_restores_then_resumes(self) -> None:
+        temporary, repository = self._temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        integration.write_integration(repository)
+        original_render_skill = integration.render_skill
+        marker = b"\n<!-- interrupted-owned-refresh -->\n"
+
+        def evolved_render_skill(skill: object, binding: object) -> bytes:
+            return original_render_skill(skill, binding) + marker
+
+        names = sorted(integration.build_expected(repository)["trees"])
+        first_destination = repository / integration.RUNTIME_RELATIVE / names[0]
+        second_destination = repository / integration.RUNTIME_RELATIVE / names[1]
+        first_original = (first_destination / "SKILL.md").read_bytes()
+        second_original = (second_destination / "SKILL.md").read_bytes()
+        original_replace = integration.os.replace
+        previous_manifest_digest = integration.digest(
+            (
+                repository
+                / integration.DOC_RELATIVE
+                / integration.INSTALLED_MANIFEST_NAME
+            ).read_bytes()
+        )
+
+        def fail_second_publish(source: object, destination: object) -> None:
+            source_path = Path(source)
+            destination_path = Path(destination)
+            if (
+                source_path.name.startswith(f".{names[1]}.refresh.")
+                and destination_path == second_destination
+            ):
+                raise OSError("injected second tree publication failure")
+            original_replace(source, destination)
+
+        with (
+            patch.object(
+                integration,
+                "TRUSTED_PREVIOUS_OWNED_MANIFEST_SHA256S",
+                frozenset({previous_manifest_digest}),
+            ),
+            patch.object(integration, "render_skill", evolved_render_skill),
+        ):
+            with patch.object(
+                integration.os,
+                "replace",
+                side_effect=fail_second_publish,
+            ):
+                with self.assertRaisesRegex(
+                    OSError,
+                    "injected second tree publication failure",
+                ):
+                    integration.write_integration(repository, refresh_owned=True)
+            self.assertTrue(
+                (first_destination / "SKILL.md").read_bytes().endswith(marker)
+            )
+            self.assertNotEqual(
+                (first_destination / "SKILL.md").read_bytes(),
+                first_original,
+            )
+            self.assertEqual(
+                (second_destination / "SKILL.md").read_bytes(),
+                second_original,
+            )
+            self.assertFalse(
+                any(
+                    path.name.startswith(f".{names[1]}.backup.")
+                    for path in second_destination.parent.iterdir()
+                )
+            )
+            integration.write_integration(repository, refresh_owned=True)
+            integration.check_integration(repository)
 
     def test_interrupted_first_install_resumes_only_exact_generated_outputs(
         self,
@@ -553,6 +1141,45 @@ class ProjectIntelligenceIntegrationTests(unittest.TestCase):
             "scope or evidence boundary changed",
         ):
             integration.build_expected(repository)
+
+    def test_effect_guard_label_and_limitations_are_exact(self) -> None:
+        temporary, repository = self._temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        integration.extract_canonical_source(repository)
+        receipt_path = repository / integration.QUALIFICATION_RELATIVE
+        original = receipt_path.read_bytes()
+
+        for field, replacement in (
+            ("effect_guard", "PYTHON_AUDIT_OS_SANDBOX"),
+            ("effect_guard_limitations", "No limitations."),
+        ):
+            with self.subTest(field=field):
+                receipt = json.loads(original)
+                receipt[field] = replacement
+                receipt["receipt_digest"] = integration.canonical_digest_value(
+                    {
+                        key: value
+                        for key, value in receipt.items()
+                        if key != "receipt_digest"
+                    }
+                )
+                receipt_path.write_bytes(integration.json_bytes(receipt))
+                with self.assertRaisesRegex(
+                    integration.IntegrationError,
+                    "scope or evidence boundary changed",
+                ):
+                    integration.build_expected(repository)
+
+        receipt_path.write_bytes(original)
+        receipt = json.loads(original)
+        self.assertEqual(
+            receipt["effect_guard"],
+            integration.EXPECTED_QUALIFICATION_EFFECT_GUARD,
+        )
+        self.assertEqual(
+            receipt["effect_guard_limitations"],
+            integration.EXPECTED_QUALIFICATION_EFFECT_GUARD_LIMITATIONS,
+        )
 
     def test_digest_valid_runtime_environment_forgery_is_rejected(self) -> None:
         temporary, repository = self._temporary_repository()
@@ -693,9 +1320,7 @@ class ProjectIntelligenceIntegrationTests(unittest.TestCase):
             (
                 "policy",
                 "elmos-collaboration-governance",
-                lambda raw: raw["outputs"].__setitem__(
-                    "enforcement_authorized", True
-                ),
+                lambda raw: raw["outputs"].__setitem__("enforcement_authorized", True),
                 "qualification result drifted",
             ),
         )

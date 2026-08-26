@@ -9,7 +9,10 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+from datetime import datetime
 import hmac
+import math
+import re
 from types import MappingProxyType
 from typing import Any, Final
 
@@ -136,6 +139,7 @@ _OUTPUT_KEYS = {
     "elmos-architecture-documentation": ("content", "digest", "media_type"),
     "elmos-presentation-generation": ("digest", "pptx_generated", "slides"),
     "elmos-project-report-bundle": (
+        "artifact_bytes_verified",
         "artifacts",
         "bundle_digest",
         "content_addressed",
@@ -156,8 +160,10 @@ _OUTPUT_KEYS = {
     ),
     "elmos-incremental-analysis-cache": (
         "cache_key",
-        "hit",
+        "caller_reported_key_match",
+        "implementation_version",
         "input_digest",
+        "schema_version",
         "stage",
     ),
     "elmos-artifact-versioning-human-lock": (
@@ -213,11 +219,14 @@ _OUTPUT_KEYS = {
         "mapping_count",
     ),
     "elmos-runtime-cost-estimator": (
-        "currency_cost",
-        "human_review_effort_seconds",
-        "model_version",
-        "system_wall_clock_eta_p50_seconds",
-        "system_wall_clock_eta_p90_seconds",
+        "as_of",
+        "assumptions",
+        "estimate_id",
+        "human_review_effort",
+        "pipeline",
+        "project_revision_id",
+        "stages",
+        "system_wall_clock_eta",
     ),
     "elmos-deployment-private-cloud": (
         "deployment_performed",
@@ -246,7 +255,10 @@ _OUTPUT_KEYS = {
         "negotiated",
         "unsupported",
     ),
-    "elmos-debug-sandbox-orchestration": ("policy", "sandbox_started"),
+    "elmos-debug-sandbox-orchestration": (
+        "debug_session",
+        "sandbox_started",
+    ),
     "elmos-online-debug-workbench": ("event_count", "threads", "ui_rendered"),
     "elmos-debug-learning-copilot": ("mission", "model_used", "side_effects"),
     "elmos-debug-record-replay": ("bundle", "digest"),
@@ -318,6 +330,13 @@ _EXPECTED_STATE: Final[Mapping[str, str]] = MappingProxyType(
     }
 )
 
+_CACHE_KEY_SCHEMA_VERSION = "elmos.project-intelligence.analysis-cache-key.v1"
+_CACHE_IMPLEMENTATION_VERSION = "elmos-project-intelligence-engine/1.1.0"
+_RFC3339_DATE_TIME = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
+    r"(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$"
+)
+
 
 _AUTHORITY_NAME_MARKERS: Final[tuple[str, ...]] = (
     "authoriz",
@@ -369,6 +388,11 @@ def _literal_false(value: Any, *, path: str) -> None:
         raise QualificationContractError(f"{path} must be the literal boolean false")
 
 
+def _literal_true(value: Any, *, path: str) -> None:
+    if type(value) is not bool or value is not True:
+        raise QualificationContractError(f"{path} must be the literal boolean true")
+
+
 def _nested_value(outputs: dict[str, Any], path: tuple[str, ...]) -> Any:
     value: Any = outputs
     traversed: list[str] = ["outputs"]
@@ -409,6 +433,333 @@ def _validate_string_list(value: Any, *, field_name: str) -> list[str]:
     if len(value) != len(set(value)):
         raise QualificationContractError(f"{field_name} cannot contain duplicates")
     return value
+
+
+def _canonical_digest_field(value: Any, *, field_name: str) -> str:
+    if type(value) is not str:
+        raise QualificationContractError(f"{field_name} must be a string")
+    try:
+        normalized = validate_digest(value)
+    except (TypeError, ValueError) as exc:
+        raise QualificationContractError(
+            f"{field_name} must be a canonical sha256 digest"
+        ) from exc
+    if value != normalized:
+        raise QualificationContractError(
+            f"{field_name} must use canonical lowercase sha256 form"
+        )
+    return value
+
+
+def _validate_diagram_output(
+    outputs: dict[str, Any], expected_scope: ExpectedRequestScope
+) -> None:
+    spec = outputs["diagram_spec"]
+    if type(spec) is not dict:
+        raise QualificationContractError("outputs.diagram_spec must be an object")
+    required = {
+        "schema_version",
+        "diagram_id",
+        "type",
+        "project_id",
+        "revision_id",
+        "nodes",
+        "edges",
+    }
+    if not required.issubset(spec):
+        raise QualificationContractError(
+            "outputs.diagram_spec is missing source-schema required fields"
+        )
+    if type(spec["schema_version"]) is not int or spec["schema_version"] != 1:
+        raise QualificationContractError(
+            "outputs.diagram_spec.schema_version must be integer 1"
+        )
+    _canonical_digest_field(
+        spec["diagram_id"], field_name="outputs.diagram_spec.diagram_id"
+    )
+    if not isinstance(spec["type"], str) or not spec["type"]:
+        raise QualificationContractError(
+            "outputs.diagram_spec.type must be a non-empty string"
+        )
+    if spec["project_id"] != expected_scope.project_id:
+        raise QualificationContractError(
+            "outputs.diagram_spec.project_id must match the expected scope"
+        )
+    if spec["revision_id"] != expected_scope.revision:
+        raise QualificationContractError(
+            "outputs.diagram_spec.revision_id must match the expected scope"
+        )
+    if type(spec["nodes"]) is not list or type(spec["edges"]) is not list:
+        raise QualificationContractError(
+            "outputs.diagram_spec nodes and edges must be lists"
+        )
+    node_ids: set[str] = set()
+    for node in spec["nodes"]:
+        if type(node) is not dict or not {"id", "kind", "label"}.issubset(node):
+            raise QualificationContractError(
+                "outputs.diagram_spec contains an invalid node"
+            )
+        for field_name in ("id", "kind", "label"):
+            if not isinstance(node[field_name], str) or not node[field_name]:
+                raise QualificationContractError(
+                    "outputs.diagram_spec node identifiers and labels must be non-empty"
+                )
+        if node["id"] in node_ids:
+            raise QualificationContractError(
+                "outputs.diagram_spec contains duplicate node IDs"
+            )
+        node_ids.add(node["id"])
+        if "evidence_refs" in node:
+            _validate_string_list(
+                node["evidence_refs"],
+                field_name="outputs.diagram_spec.node.evidence_refs",
+            )
+        if "confidence" in node:
+            confidence = _nonnegative_number(
+                node["confidence"],
+                field_name="outputs.diagram_spec.node.confidence",
+            )
+            if confidence > 1:
+                raise QualificationContractError(
+                    "outputs.diagram_spec node confidence cannot exceed 1"
+                )
+    edge_ids: set[str] = set()
+    for edge in spec["edges"]:
+        if (
+            type(edge) is not dict
+            or not {"id", "source", "target", "kind"}.issubset(edge)
+            or "from" in edge
+            or "to" in edge
+        ):
+            raise QualificationContractError(
+                "outputs.diagram_spec edges must use the source-schema contract"
+            )
+        for field_name in ("id", "source", "target", "kind"):
+            if not isinstance(edge[field_name], str) or not edge[field_name]:
+                raise QualificationContractError(
+                    "outputs.diagram_spec edge fields must be non-empty strings"
+                )
+        if edge["id"] in edge_ids:
+            raise QualificationContractError(
+                "outputs.diagram_spec contains duplicate edge IDs"
+            )
+        edge_ids.add(edge["id"])
+        if edge["source"] not in node_ids or edge["target"] not in node_ids:
+            raise QualificationContractError(
+                "outputs.diagram_spec contains a dangling edge endpoint"
+            )
+        if "evidence_refs" in edge:
+            _validate_string_list(
+                edge["evidence_refs"],
+                field_name="outputs.diagram_spec.edge.evidence_refs",
+            )
+        if "confidence" in edge:
+            confidence = _nonnegative_number(
+                edge["confidence"],
+                field_name="outputs.diagram_spec.edge.confidence",
+            )
+            if confidence > 1:
+                raise QualificationContractError(
+                    "outputs.diagram_spec edge confidence cannot exceed 1"
+                )
+    _canonical_digest_field(outputs["digest"], field_name="outputs.digest")
+    if outputs["digest"] != canonical_digest(spec):
+        raise QualificationContractError(
+            "outputs.digest does not bind outputs.diagram_spec"
+        )
+
+
+def _validate_cache_output(
+    outputs: dict[str, Any], expected_scope: ExpectedRequestScope
+) -> None:
+    if outputs["schema_version"] != _CACHE_KEY_SCHEMA_VERSION:
+        raise QualificationContractError("cache schema version drifted")
+    if outputs["implementation_version"] != _CACHE_IMPLEMENTATION_VERSION:
+        raise QualificationContractError("cache implementation version drifted")
+    if not isinstance(outputs["stage"], str) or not outputs["stage"]:
+        raise QualificationContractError("outputs.stage must be a non-empty string")
+    input_digest = _canonical_digest_field(
+        outputs["input_digest"], field_name="outputs.input_digest"
+    )
+    cache_key = _canonical_digest_field(
+        outputs["cache_key"], field_name="outputs.cache_key"
+    )
+    if type(outputs["caller_reported_key_match"]) is not bool:
+        raise QualificationContractError(
+            "outputs.caller_reported_key_match must be a boolean"
+        )
+    expected_key = canonical_digest(
+        {
+            "schema_version": _CACHE_KEY_SCHEMA_VERSION,
+            "implementation_version": _CACHE_IMPLEMENTATION_VERSION,
+            "tenant_id": expected_scope.tenant_id,
+            "project_id": expected_scope.project_id,
+            "revision": expected_scope.revision,
+            "stage": outputs["stage"],
+            "input_digest": input_digest,
+        }
+    )
+    if not hmac.compare_digest(cache_key, expected_key):
+        raise QualificationContractError(
+            "outputs.cache_key is not bound to the exact trusted request scope"
+        )
+
+
+def _validate_bundle_output(outputs: dict[str, Any]) -> None:
+    _literal_true(
+        outputs["artifact_bytes_verified"],
+        path="outputs.artifact_bytes_verified",
+    )
+    _literal_true(outputs["content_addressed"], path="outputs.content_addressed")
+    artifacts = outputs["artifacts"]
+    if type(artifacts) is not list:
+        raise QualificationContractError("outputs.artifacts must be a list")
+    artifact_ids: list[str] = []
+    for artifact in artifacts:
+        if type(artifact) is not dict or set(artifact) != {
+            "artifact_id",
+            "digest",
+            "media_type",
+            "byte_count",
+            "content_encoding",
+        }:
+            raise QualificationContractError(
+                "outputs.artifacts entry does not match the verified byte contract"
+            )
+        for field_name in ("artifact_id", "media_type"):
+            if not isinstance(artifact[field_name], str) or not artifact[field_name]:
+                raise QualificationContractError(
+                    f"artifact {field_name} must be a non-empty string"
+                )
+        artifact_ids.append(artifact["artifact_id"])
+        _canonical_digest_field(
+            artifact["digest"], field_name="outputs.artifacts.digest"
+        )
+        if type(artifact["byte_count"]) is not int or artifact["byte_count"] < 0:
+            raise QualificationContractError(
+                "artifact byte_count must be a non-negative integer"
+            )
+        if artifact["content_encoding"] not in {"utf-8", "base64"}:
+            raise QualificationContractError(
+                "artifact content_encoding must be utf-8 or base64"
+            )
+    if artifact_ids != sorted(artifact_ids) or len(artifact_ids) != len(
+        set(artifact_ids)
+    ):
+        raise QualificationContractError(
+            "outputs.artifacts must have unique sorted artifact IDs"
+        )
+    bundle_digest = _canonical_digest_field(
+        outputs["bundle_digest"], field_name="outputs.bundle_digest"
+    )
+    if bundle_digest != canonical_digest(artifacts):
+        raise QualificationContractError(
+            "outputs.bundle_digest does not bind the verified artifact index"
+        )
+
+
+def _nonnegative_number(value: Any, *, field_name: str) -> float | int:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise QualificationContractError(f"{field_name} must be a number")
+    if not math.isfinite(value) or value < 0:
+        raise QualificationContractError(
+            f"{field_name} must be a finite non-negative number"
+        )
+    return value
+
+
+def _validate_estimate_output(
+    outputs: dict[str, Any], expected_scope: ExpectedRequestScope
+) -> None:
+    _canonical_digest_field(outputs["estimate_id"], field_name="outputs.estimate_id")
+    as_of = outputs["as_of"]
+    if not isinstance(as_of, str) or not _RFC3339_DATE_TIME.fullmatch(as_of):
+        raise QualificationContractError("outputs.as_of must be an RFC 3339 date-time")
+    try:
+        parsed = datetime.fromisoformat(
+            as_of[:-1] + "+00:00" if as_of.endswith("Z") else as_of
+        )
+    except ValueError as exc:
+        raise QualificationContractError(
+            "outputs.as_of must be a valid RFC 3339 date-time"
+        ) from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise QualificationContractError("outputs.as_of must include a UTC offset")
+    if outputs["project_revision_id"] != expected_scope.revision:
+        raise QualificationContractError(
+            "outputs.project_revision_id must match the expected revision"
+        )
+    pipeline = _validate_string_list(outputs["pipeline"], field_name="outputs.pipeline")
+    assumptions = _validate_string_list(
+        outputs["assumptions"], field_name="outputs.assumptions"
+    )
+    if not assumptions:
+        raise QualificationContractError("outputs.assumptions cannot be empty")
+    eta = outputs["system_wall_clock_eta"]
+    if type(eta) is not dict or set(eta) != {
+        "p50_seconds",
+        "p90_seconds",
+        "confidence",
+    }:
+        raise QualificationContractError(
+            "outputs.system_wall_clock_eta does not match estimate.schema.json"
+        )
+    eta_p50 = _nonnegative_number(
+        eta["p50_seconds"], field_name="outputs.system_wall_clock_eta.p50_seconds"
+    )
+    eta_p90 = _nonnegative_number(
+        eta["p90_seconds"], field_name="outputs.system_wall_clock_eta.p90_seconds"
+    )
+    confidence = _nonnegative_number(
+        eta["confidence"], field_name="outputs.system_wall_clock_eta.confidence"
+    )
+    if eta_p90 < eta_p50 or confidence > 1:
+        raise QualificationContractError(
+            "outputs.system_wall_clock_eta has an invalid interval or confidence"
+        )
+    stages = outputs["stages"]
+    if type(stages) is not list or not stages:
+        raise QualificationContractError("outputs.stages must be a non-empty list")
+    stage_names: list[str] = []
+    for stage in stages:
+        if type(stage) is not dict or set(stage) != {
+            "name",
+            "p50_seconds",
+            "p90_seconds",
+            "queue_seconds",
+        }:
+            raise QualificationContractError(
+                "outputs.stages entries do not match estimate.schema.json"
+            )
+        if not isinstance(stage["name"], str) or not stage["name"]:
+            raise QualificationContractError("stage names must be non-empty strings")
+        stage_names.append(stage["name"])
+        stage_p50 = _nonnegative_number(
+            stage["p50_seconds"], field_name="stage.p50_seconds"
+        )
+        stage_p90 = _nonnegative_number(
+            stage["p90_seconds"], field_name="stage.p90_seconds"
+        )
+        _nonnegative_number(stage["queue_seconds"], field_name="stage.queue_seconds")
+        if stage_p90 < stage_p50:
+            raise QualificationContractError("stage P90 cannot be less than P50")
+    if pipeline != stage_names:
+        raise QualificationContractError(
+            "outputs.pipeline must match the ordered estimate stages"
+        )
+    review = outputs["human_review_effort"]
+    if type(review) is not dict or set(review) != {"p50_hours", "p90_hours"}:
+        raise QualificationContractError(
+            "outputs.human_review_effort does not match estimate.schema.json"
+        )
+    review_p50 = _nonnegative_number(
+        review["p50_hours"], field_name="outputs.human_review_effort.p50_hours"
+    )
+    review_p90 = _nonnegative_number(
+        review["p90_hours"], field_name="outputs.human_review_effort.p90_hours"
+    )
+    if review_p90 < review_p50:
+        raise QualificationContractError("human review P90 cannot be less than P50")
 
 
 def validate_qualification_result(
@@ -490,6 +841,15 @@ def validate_qualification_result(
         raise QualificationContractError(
             f"output-key tuple mismatch for {binding.skill}"
         )
+
+    if binding.skill == "elmos-diagram-spec-engine":
+        _validate_diagram_output(outputs, expected_scope)
+    elif binding.skill == "elmos-project-report-bundle":
+        _validate_bundle_output(outputs)
+    elif binding.skill == "elmos-incremental-analysis-cache":
+        _validate_cache_output(outputs, expected_scope)
+    elif binding.skill == "elmos-runtime-cost-estimator":
+        _validate_estimate_output(outputs, expected_scope)
 
     expected_authority_paths = set(_AUTHORITY_FALSE_PATHS.get(binding.skill, ()))
     observed_authority_paths = _authority_paths(outputs)

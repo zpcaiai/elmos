@@ -1,18 +1,19 @@
 {
   "certification": "NOT_CERTIFIED",
   "counts": {
-    "local": 21,
-    "partial": 24,
+    "local": 19,
+    "partial": 26,
     "plan": 5,
     "skills": 50
   },
-  "effect_guard": "PYTHON_AUDIT_DENY_FILESYSTEM_PROCESS_NETWORK_DURING_DISPATCH",
+  "effect_guard": "PYTHON_AUDIT_BEST_EFFORT_EFFECT_GUARD_DURING_DISPATCH",
+  "effect_guard_limitations": "Python audit events are fail-closed when observed but are not an OS sandbox and cannot account for effects through inherited descriptors, native extensions, or events the interpreter does not emit.",
   "engine_files": [
     {
-      "bytes": 2101,
+      "bytes": 2503,
       "mode": "0644",
       "path": "README.md",
-      "sha256": "sha256:a007cf5bd54a66a8d399e5c825c44bb8dea565fd769bae22df69714a6bb931ea"
+      "sha256": "sha256:4309bf575daad542185d341dcecaa05e358bb3158a8e9048b5b78782eed9500d"
     },
     {
       "bytes": 544,
@@ -27,10 +28,10 @@
       "sha256": "sha256:b62634f90fe636f4067eae6cbd0f66ceac58ca7826132cea7f13a2750d9e77ab"
     },
     {
-      "bytes": 4748,
+      "bytes": 14627,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/artifacts.py",
-      "sha256": "sha256:e0f6d06501dcb083d86afad5908f7b828eb4408246eedf3ac48543c5129ce125"
+      "sha256": "sha256:5fb45f72fcf7c932cf86d9d1aa9282664d3cd9162f012b6e9db948432bc03cd2"
     },
     {
       "bytes": 6625,
@@ -39,96 +40,144 @@
       "sha256": "sha256:9d1403bbe34d88ffb1faff98e24a11c74085b634edd5a1a37d406a34b7afe57e"
     },
     {
-      "bytes": 3064,
+      "bytes": 4726,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/cli.py",
-      "sha256": "sha256:a0a28f5894e84cfdb120d3c509e37328fe087e307f1ec529cac01651962da02c"
+      "sha256": "sha256:d95a175373fe048f452ce04f59b53a57b1ecc4136d1a760af73c8905fdcafde6"
     },
     {
-      "bytes": 18629,
+      "bytes": 18601,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/contracts.py",
-      "sha256": "sha256:10807430511facc0f17ea4b32be89857bb08aa04b199e0b747a7ead5c5024986"
+      "sha256": "sha256:d7e00ffc2ba6b44fcb335afe9a181dbb12468a7baa489edc39ec8f668931fcbc"
     },
     {
-      "bytes": 54542,
+      "bytes": 103034,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/domain.py",
-      "sha256": "sha256:7653439d65e5f8034ba64dc668daeabf6921ea6bb6f9450d8a54de9ef3c164f1"
+      "sha256": "sha256:1fd9cf9f2584db04a8a112724fe989e88fde08831bda4915f6eb14eee18b38cc"
     },
     {
-      "bytes": 18277,
+      "bytes": 14206,
+      "mode": "0600",
+      "path": "src/elmos_project_intelligence/flowgraph.py",
+      "sha256": "sha256:8b96551a20df1d6b6bb935cac6a60870855bee2ad0f2f436ad7f2026f1d10ff9"
+    },
+    {
+      "bytes": 6031,
+      "mode": "0600",
+      "path": "src/elmos_project_intelligence/python_structure.py",
+      "sha256": "sha256:cc8d19773417a369fc8006c2e6e5771d5c3bfc43829ccf21b79f7690ad6ab7e5"
+    },
+    {
+      "bytes": 35603,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/qualification_contract.py",
-      "sha256": "sha256:4d329b5d283c8c11df20fdcad6009b83b9815e4dec25b4d5b6f90adbf53a7e4f"
+      "sha256": "sha256:0214be66b453725873a610ad01dedbf560436164c74ce5ccb51fd41b8c87350e"
     },
     {
-      "bytes": 16830,
+      "bytes": 28238,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/runtime.py",
-      "sha256": "sha256:5119b650b748ba377169a7c930dc43c61279fa5b2203773b6dc98aba5ff8ac81"
+      "sha256": "sha256:480b9253f24315fbf4c6052aac7b3b6ac2e5f4a18d3573b59fcb19f3201c073e"
     },
     {
-      "bytes": 5470,
+      "bytes": 5615,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/safe_paths.py",
+      "sha256": "sha256:5ff2b3c05caa042ebcc83b91420ecce2aa039ca0a12bb850c5e8123d9038d5bd"
+    },
+    {
+      "bytes": 12885,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/service.py",
-      "sha256": "sha256:0d970b07e1b85df190b7fb6793f2cd2c67616923fb0c3ecf43efe178385f4bb4"
+      "sha256": "sha256:37173623fd29493c6c4751fadae0c1841c9c00338ee205cacaf6c66308e4a63b"
     },
     {
-      "bytes": 19754,
+      "bytes": 20762,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/snapshot.py",
-      "sha256": "sha256:256d522b9a76407dd2a3591e5ffe147c976c88d75f520ea5da09d10d362fe405"
+      "sha256": "sha256:8d9c58d735dca4e638224907659fc928cd02e1a9614f4dd89e54304d58ebe173"
     },
     {
-      "bytes": 40979,
+      "bytes": 53537,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/source_schema_projections.py",
+      "sha256": "sha256:98a9d31a136fd023fd93fa2b4a96ae4f109e1f6700218e2a17097aeccb89b643"
+    },
+    {
+      "bytes": 51290,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/store.py",
-      "sha256": "sha256:3614f9cde1aa713d41a4b32441db37797146e9fe30a36128f61a8a2cb5d162d0"
+      "sha256": "sha256:eb48a52a6c7c1b69059f4d108480b2dd47aa7e4263aac79684d1d15f3d3abb1a"
     },
     {
-      "bytes": 8509,
+      "bytes": 12113,
       "mode": "0644",
       "path": "tests/test_cli.py",
-      "sha256": "sha256:155fa100e15beb7d78a953c0ff7014e3845b38e727a4406e2ce160492ceecd5b"
+      "sha256": "sha256:608f5305a70cbdae2936baa715ccecf8075d196a0b66f21bda907cd9bf88cea8"
     },
     {
-      "bytes": 14568,
+      "bytes": 30781,
       "mode": "0644",
       "path": "tests/test_core.py",
-      "sha256": "sha256:df0ffb83a6b0365f2ff7cc39d970dbb5ba643b8675ea7a16ff06986d37adcd37"
+      "sha256": "sha256:b038b6082c07b44aed4d1fc8bf771a239cb8759de2f7e2a3d22b112913905396"
     },
     {
-      "bytes": 3897,
+      "bytes": 20468,
+      "mode": "0600",
+      "path": "tests/test_flowgraph.py",
+      "sha256": "sha256:fa6d3cb9a944654e0ae66e4e76fcd47827328fe07a82d2fe0e87b3bf5009eb02"
+    },
+    {
+      "bytes": 8981,
       "mode": "0644",
       "path": "tests/test_qualification_contract.py",
-      "sha256": "sha256:54e9ad2b260e39f02b4bcf4e734ef744b002b2d5af1161af398b51dfd6246fc4"
+      "sha256": "sha256:0430f12c9d67ba1d4fcc23e0a557953ab118c8ff1864ee5a1db7c7cd10d777bf"
     },
     {
-      "bytes": 12168,
+      "bytes": 38446,
       "mode": "0644",
       "path": "tests/test_runtime.py",
-      "sha256": "sha256:2201e0e01a687c9a289b86657d453055fd9ea1a2b68704b85ac83ce209b6270c"
+      "sha256": "sha256:6d1261a79d1579284cd55cf69f54b6ed98f23ea0dd1d912b0172f3b6dff0a73c"
     },
     {
-      "bytes": 4297,
+      "bytes": 2042,
+      "mode": "0644",
+      "path": "tests/test_runtime_boundaries.py",
+      "sha256": "sha256:19a43ca311b07f0bbb369b5545e40b0627315a4f5e653d2b620126347a1de5cf"
+    },
+    {
+      "bytes": 14691,
       "mode": "0644",
       "path": "tests/test_service.py",
-      "sha256": "sha256:7805b1b1dac9c960114d2275b4c2ffc83c8d9d2500141786150229a7d15fd18b"
+      "sha256": "sha256:ea1ddf1ae3ab03a30d5f7526608d5c46fadc3482cf63b647431f2f78accc5657"
+    },
+    {
+      "bytes": 5472,
+      "mode": "0644",
+      "path": "tests/test_source_schema_projections.py",
+      "sha256": "sha256:e2ec8f2f1d208ce79935f8435a691b55480aa8708bbe46fc06f983545cd4f221"
+    },
+    {
+      "bytes": 154,
+      "mode": "0644",
+      "path": "uv.lock",
+      "sha256": "sha256:2f5707153f6384f7d16ffcec51f2bda2ff84e47d5815ca35908ed2838b1853f5"
     }
   ],
-  "engine_tree_sha256": "sha256:ef62f19e8708a3935243a22b2ebdfc20cd97c6ac046f2ccd8dcd90cfd8b13811",
+  "engine_tree_sha256": "sha256:133c3c83246347d71eb0a8ae67b50074187432b32ac3746dd617390be179b71f",
   "executor": "repository-local-self-attested",
   "external_evidence": "NOT_RUN",
   "fixture_path": "engines/project-intelligence-engine/tests/test_runtime.py",
-  "fixture_sha256": "sha256:2201e0e01a687c9a289b86657d453055fd9ea1a2b68704b85ac83ce209b6270c",
+  "fixture_sha256": "sha256:6d1261a79d1579284cd55cf69f54b6ed98f23ea0dd1d912b0172f3b6dff0a73c",
   "independent_verifier": null,
   "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
   "qualification_scope": "bounded-local-fixture-handlers",
   "qualification_status": "PASSED",
   "qualifier_path": "tooling/qualify_project_intelligence_runtime.py",
-  "qualifier_sha256": "sha256:ad9691c34d77d4c065105b82396f06fb933097e5766788e0a7a0837e0ac09b61",
-  "receipt_digest": "sha256:45f61d8643717452553b8fe250e4c210543d6999bec81ac6573260bd20d9e2a6",
+  "qualifier_sha256": "sha256:d737818d48d863a95c4527025b5dea6d80c50f261ae9d64d034a280696720532",
+  "receipt_digest": "sha256:e394571d4061dfcc86b8e067b19d07374313926265a32ae3932d67064e622fd0",
   "replay_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 tooling/qualify_project_intelligence_runtime.py --check",
   "results": [
     {
@@ -255,6 +304,7 @@
               "from": "src/app.py",
               "kind": "imports",
               "line": 1,
+              "origin": "PARSED",
               "to": "src.store"
             }
           ],
@@ -284,7 +334,7 @@
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:0ae44641d557ff6a9ed8838f650e0e7c22354544ae5fca592c0f0749255f6356",
+        "result_digest": "sha256:9a36cf9fab8adfff68f36f32a11f653d45b3d2adb11222f93978e722eda42a0b",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-reference-architecture",
@@ -293,7 +343,7 @@
         "unavailable": [],
         "warnings": []
       },
-      "result_digest": "sha256:0ae44641d557ff6a9ed8838f650e0e7c22354544ae5fca592c0f0749255f6356",
+      "result_digest": "sha256:9a36cf9fab8adfff68f36f32a11f653d45b3d2adb11222f93978e722eda42a0b",
       "skill": "elmos-reference-architecture",
       "status": "PASSED"
     },
@@ -430,18 +480,41 @@
               "from": "src/app.py",
               "kind": "imports",
               "line": 1,
+              "origin": "PARSED",
               "to": "src.store"
             }
           ],
           "parsed_file_count": 6,
           "symbols": [
             {
+              "id": "sha256:9f203bb81452ebaa641d58c3f854b5ca7e18374d3bb8b7194387031df6ac2e17",
+              "kind": "module",
+              "language": "Python",
+              "line": 1,
+              "name": "src/api.py",
+              "origin": "PARSED",
+              "path": "src/api.py",
+              "qualified_name": "src/api.py"
+            },
+            {
               "id": "sha256:70e5ea5e3be7842bdb11ea72660e6fa40b24453463a5d06ba8923e1af5bd53fb",
               "kind": "function",
               "language": "Python",
               "line": 2,
               "name": "create_refund",
-              "path": "src/api.py"
+              "origin": "PARSED",
+              "path": "src/api.py",
+              "qualified_name": "create_refund"
+            },
+            {
+              "id": "sha256:92eb6f6ab9ce64fc4c208a53359a39a9f1ffa59f8006034e76a31125f2781673",
+              "kind": "module",
+              "language": "Python",
+              "line": 1,
+              "name": "src/app.py",
+              "origin": "PARSED",
+              "path": "src/app.py",
+              "qualified_name": "src/app.py"
             },
             {
               "id": "sha256:aee8e87241a8bb515c8b81a9f868b3e5bc4330c8372e54d41729111003dadd27",
@@ -449,7 +522,9 @@
               "language": "Python",
               "line": 2,
               "name": "App",
-              "path": "src/app.py"
+              "origin": "PARSED",
+              "path": "src/app.py",
+              "qualified_name": "App"
             },
             {
               "id": "sha256:086b96ef864c230890965bad7e45b8dee1927841b81dff45752264d77e85a4b0",
@@ -457,7 +532,19 @@
               "language": "Python",
               "line": 3,
               "name": "refund",
-              "path": "src/app.py"
+              "origin": "PARSED",
+              "path": "src/app.py",
+              "qualified_name": "App.refund"
+            },
+            {
+              "id": "sha256:7164971bbc031746bc0bd5c6ae7c4482427c4b849f70d9cfde6ac3de0183e17e",
+              "kind": "module",
+              "language": "Python",
+              "line": 1,
+              "name": "src/store.py",
+              "origin": "PARSED",
+              "path": "src/store.py",
+              "qualified_name": "src/store.py"
             },
             {
               "id": "sha256:622d3b420dae4da6308a8e5cc7d3b470dcaec7cedb7ba7a130e2a8d8e41b241a",
@@ -465,7 +552,9 @@
               "language": "Python",
               "line": 1,
               "name": "RefundStore",
-              "path": "src/store.py"
+              "origin": "PARSED",
+              "path": "src/store.py",
+              "qualified_name": "RefundStore"
             },
             {
               "id": "sha256:153c579dd514ad90a0edccd30abc7d258d9c47a1a977ba2e17e60e95df249353",
@@ -473,7 +562,19 @@
               "language": "Python",
               "line": 3,
               "name": "save",
-              "path": "src/store.py"
+              "origin": "PARSED",
+              "path": "src/store.py",
+              "qualified_name": "RefundStore.save"
+            },
+            {
+              "id": "sha256:c2945b252976025b4994ef0e5292275e2d7844d63bf4682854f65d88c1082bd1",
+              "kind": "module",
+              "language": "Python",
+              "line": 1,
+              "name": "tests/test_app.py",
+              "origin": "PARSED",
+              "path": "tests/test_app.py",
+              "qualified_name": "tests/test_app.py"
             },
             {
               "id": "sha256:8ea1fe677b992ae92149c5988f5d4591c1590c0cadd7c56ed71badd908589b24",
@@ -481,14 +582,16 @@
               "language": "Python",
               "line": 1,
               "name": "test_refund",
-              "path": "tests/test_app.py"
+              "origin": "PARSED",
+              "path": "tests/test_app.py",
+              "qualified_name": "test_refund"
             }
           ],
           "unsupported_paths": []
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:2a47364def6171dd6f7e00823df00f98a6d826479345838e3df7e8e4fae8f105",
+        "result_digest": "sha256:772d12244fb9db62b77c39af0660ce507c35ec14342a754808603c2d294ddbdd",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-multilanguage-parsing",
@@ -499,7 +602,7 @@
         ],
         "warnings": []
       },
-      "result_digest": "sha256:2a47364def6171dd6f7e00823df00f98a6d826479345838e3df7e8e4fae8f105",
+      "result_digest": "sha256:772d12244fb9db62b77c39af0660ce507c35ec14342a754808603c2d294ddbdd",
       "skill": "elmos-multilanguage-parsing",
       "status": "PASSED"
     },
@@ -524,10 +627,11 @@
               "from": "src/app.py",
               "kind": "imports",
               "line": 1,
+              "origin": "PARSED",
               "to": "src.store"
             }
           ],
-          "graph_digest": "sha256:0813af0053075a5334607eb934518f38f3a92db460969ee48b9473f24603eb8e",
+          "graph_digest": "sha256:a0f005c298db4e11e6d4d85dfcdf5174640051f816323c3d62ff72abb0a62b5d",
           "nodes": [
             {
               "evidence": "sha256:0cc99554a1a65dce432feca462af08169f9cdb34f6d9ef24d713a234547017a6",
@@ -578,12 +682,34 @@
               "path": "tests/test_app.py"
             },
             {
+              "id": "sha256:9f203bb81452ebaa641d58c3f854b5ca7e18374d3bb8b7194387031df6ac2e17",
+              "kind": "module",
+              "language": "Python",
+              "line": 1,
+              "name": "src/api.py",
+              "origin": "PARSED",
+              "path": "src/api.py",
+              "qualified_name": "src/api.py"
+            },
+            {
               "id": "sha256:70e5ea5e3be7842bdb11ea72660e6fa40b24453463a5d06ba8923e1af5bd53fb",
               "kind": "function",
               "language": "Python",
               "line": 2,
               "name": "create_refund",
-              "path": "src/api.py"
+              "origin": "PARSED",
+              "path": "src/api.py",
+              "qualified_name": "create_refund"
+            },
+            {
+              "id": "sha256:92eb6f6ab9ce64fc4c208a53359a39a9f1ffa59f8006034e76a31125f2781673",
+              "kind": "module",
+              "language": "Python",
+              "line": 1,
+              "name": "src/app.py",
+              "origin": "PARSED",
+              "path": "src/app.py",
+              "qualified_name": "src/app.py"
             },
             {
               "id": "sha256:aee8e87241a8bb515c8b81a9f868b3e5bc4330c8372e54d41729111003dadd27",
@@ -591,7 +717,9 @@
               "language": "Python",
               "line": 2,
               "name": "App",
-              "path": "src/app.py"
+              "origin": "PARSED",
+              "path": "src/app.py",
+              "qualified_name": "App"
             },
             {
               "id": "sha256:086b96ef864c230890965bad7e45b8dee1927841b81dff45752264d77e85a4b0",
@@ -599,7 +727,19 @@
               "language": "Python",
               "line": 3,
               "name": "refund",
-              "path": "src/app.py"
+              "origin": "PARSED",
+              "path": "src/app.py",
+              "qualified_name": "App.refund"
+            },
+            {
+              "id": "sha256:7164971bbc031746bc0bd5c6ae7c4482427c4b849f70d9cfde6ac3de0183e17e",
+              "kind": "module",
+              "language": "Python",
+              "line": 1,
+              "name": "src/store.py",
+              "origin": "PARSED",
+              "path": "src/store.py",
+              "qualified_name": "src/store.py"
             },
             {
               "id": "sha256:622d3b420dae4da6308a8e5cc7d3b470dcaec7cedb7ba7a130e2a8d8e41b241a",
@@ -607,7 +747,9 @@
               "language": "Python",
               "line": 1,
               "name": "RefundStore",
-              "path": "src/store.py"
+              "origin": "PARSED",
+              "path": "src/store.py",
+              "qualified_name": "RefundStore"
             },
             {
               "id": "sha256:153c579dd514ad90a0edccd30abc7d258d9c47a1a977ba2e17e60e95df249353",
@@ -615,7 +757,19 @@
               "language": "Python",
               "line": 3,
               "name": "save",
-              "path": "src/store.py"
+              "origin": "PARSED",
+              "path": "src/store.py",
+              "qualified_name": "RefundStore.save"
+            },
+            {
+              "id": "sha256:c2945b252976025b4994ef0e5292275e2d7844d63bf4682854f65d88c1082bd1",
+              "kind": "module",
+              "language": "Python",
+              "line": 1,
+              "name": "tests/test_app.py",
+              "origin": "PARSED",
+              "path": "tests/test_app.py",
+              "qualified_name": "tests/test_app.py"
             },
             {
               "id": "sha256:8ea1fe677b992ae92149c5988f5d4591c1590c0cadd7c56ed71badd908589b24",
@@ -623,13 +777,15 @@
               "language": "Python",
               "line": 1,
               "name": "test_refund",
-              "path": "tests/test_app.py"
+              "origin": "PARSED",
+              "path": "tests/test_app.py",
+              "qualified_name": "test_refund"
             }
           ]
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:bc8b3ba1189f13ae9ccd57d9aeb3dc4909f5692a223517b0e0d48f02237d4878",
+        "result_digest": "sha256:64f97244e5deb2a983f7eb8375557168800009897a157ac1a9d6e3cf0684eb4b",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-symbol-code-graph",
@@ -641,7 +797,7 @@
         ],
         "warnings": []
       },
-      "result_digest": "sha256:bc8b3ba1189f13ae9ccd57d9aeb3dc4909f5692a223517b0e0d48f02237d4878",
+      "result_digest": "sha256:64f97244e5deb2a983f7eb8375557168800009897a157ac1a9d6e3cf0684eb4b",
       "skill": "elmos-symbol-code-graph",
       "status": "PASSED"
     },
@@ -725,26 +881,29 @@
           "bindings": [
             {
               "claim_id": "claim-1",
-              "confidence": "CONFIRMED",
+              "confidence": "REFERENCED_UNVERIFIED",
               "evidence_refs": [
                 "ev-1"
-              ]
+              ],
+              "verification_state": "NOT_RUN"
             }
           ],
           "unbound_claim_count": 0
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:d652181dc923b5595e58f2625398eb1d587475cb133f8ef4b4a19020f0be876d",
+        "result_digest": "sha256:59f9f837f1dc6271f145d25eb57a7ebc78e063cacfee5c93ef6bf5eb82f9f921",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-evidence-provenance",
         "state": "LOCAL_EXECUTED",
         "tenant_id": "tenant-a",
         "unavailable": [],
-        "warnings": []
+        "warnings": [
+          "caller-supplied-evidence-references-unverified"
+        ]
       },
-      "result_digest": "sha256:d652181dc923b5595e58f2625398eb1d587475cb133f8ef4b4a19020f0be876d",
+      "result_digest": "sha256:59f9f837f1dc6271f145d25eb57a7ebc78e063cacfee5c93ef6bf5eb82f9f921",
       "skill": "elmos-evidence-provenance",
       "status": "PASSED"
     },
@@ -811,7 +970,7 @@
         "external_evidence": "NOT_RUN",
         "handler_id": "navigate_graph",
         "outputs": {
-          "confidence": "CONFIRMED",
+          "confidence": "INFERRED",
           "definitions": [
             {
               "id": "sha256:aee8e87241a8bb515c8b81a9f868b3e5bc4330c8372e54d41729111003dadd27",
@@ -819,7 +978,9 @@
               "language": "Python",
               "line": 2,
               "name": "App",
-              "path": "src/app.py"
+              "origin": "PARSED",
+              "path": "src/app.py",
+              "qualified_name": "App"
             }
           ],
           "references": [
@@ -836,16 +997,18 @@
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:8a92504d395c48aee5e2e1ee489ed29faa505e311acff88fa0c2ede2d9c64c84",
+        "result_digest": "sha256:01f9f5a0074b0a1a9b57419bffe59312ecf2744b50ca602ba798ca76b7da359a",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-semantic-navigation",
         "state": "LOCAL_EXECUTED",
         "tenant_id": "tenant-a",
         "unavailable": [],
-        "warnings": []
+        "warnings": [
+          "static-or-caller-supplied-symbols-unverified"
+        ]
       },
-      "result_digest": "sha256:8a92504d395c48aee5e2e1ee489ed29faa505e311acff88fa0c2ede2d9c64c84",
+      "result_digest": "sha256:01f9f5a0074b0a1a9b57419bffe59312ecf2744b50ca602ba798ca76b7da359a",
       "skill": "elmos-semantic-navigation",
       "status": "PASSED"
     },
@@ -875,6 +1038,7 @@
                 "from": "src/app.py",
                 "kind": "imports",
                 "line": 1,
+                "origin": "PARSED",
                 "to": "src.store"
               }
             ],
@@ -893,12 +1057,24 @@
             "path": "src/app.py",
             "symbols": [
               {
+                "id": "sha256:92eb6f6ab9ce64fc4c208a53359a39a9f1ffa59f8006034e76a31125f2781673",
+                "kind": "module",
+                "language": "Python",
+                "line": 1,
+                "name": "src/app.py",
+                "origin": "PARSED",
+                "path": "src/app.py",
+                "qualified_name": "src/app.py"
+              },
+              {
                 "id": "sha256:aee8e87241a8bb515c8b81a9f868b3e5bc4330c8372e54d41729111003dadd27",
                 "kind": "class",
                 "language": "Python",
                 "line": 2,
                 "name": "App",
-                "path": "src/app.py"
+                "origin": "PARSED",
+                "path": "src/app.py",
+                "qualified_name": "App"
               },
               {
                 "id": "sha256:086b96ef864c230890965bad7e45b8dee1927841b81dff45752264d77e85a4b0",
@@ -906,7 +1082,9 @@
                 "language": "Python",
                 "line": 3,
                 "name": "refund",
-                "path": "src/app.py"
+                "origin": "PARSED",
+                "path": "src/app.py",
+                "qualified_name": "App.refund"
               }
             ]
           },
@@ -914,7 +1092,7 @@
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:77f1ccfb82d57da53c2dc4fa6fe81bb8b62cba8dc47ab924372ba4387dcfef54",
+        "result_digest": "sha256:16865da1b4d917af49550dd244b203dd7bc38026c2e226b59a05d937d7cbe642",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-code-explanation",
@@ -925,7 +1103,7 @@
         ],
         "warnings": []
       },
-      "result_digest": "sha256:77f1ccfb82d57da53c2dc4fa6fe81bb8b62cba8dc47ab924372ba4387dcfef54",
+      "result_digest": "sha256:16865da1b4d917af49550dd244b203dd7bc38026c2e226b59a05d937d7cbe642",
       "skill": "elmos-code-explanation",
       "status": "PASSED"
     },
@@ -1220,6 +1398,8 @@
             {
               "confidence": "INFERRED",
               "from": "src/app.py",
+              "kind": "import",
+              "origin": "PARSED",
               "step": 1,
               "to": "src.store"
             }
@@ -1228,7 +1408,7 @@
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:29eca6c01ab618eda7d29b8afc71142bfc0e0200784dbf04ece98f8ecd9a06cc",
+        "result_digest": "sha256:c4f2015b3b85dba664eed75301310edb818ae24fd072805d11ec75a65bb442e9",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-flow-discovery",
@@ -1239,7 +1419,7 @@
         ],
         "warnings": []
       },
-      "result_digest": "sha256:29eca6c01ab618eda7d29b8afc71142bfc0e0200784dbf04ece98f8ecd9a06cc",
+      "result_digest": "sha256:c4f2015b3b85dba664eed75301310edb818ae24fd072805d11ec75a65bb442e9",
       "skill": "elmos-flow-discovery",
       "status": "PASSED"
     },
@@ -1404,12 +1584,13 @@
         "handler_id": "compile_diagram_spec",
         "outputs": {
           "diagram_spec": {
-            "diagram_type": "component",
+            "diagram_id": "sha256:e476e9f6f3af6c5945491f0d55948401030c9a98b33c8c28336405096e78fdc1",
             "edges": [
               {
-                "from": "api",
+                "id": "sha256:092bda255f18e64e6abbd94c98922398ac42aef12ab2ed7e978b90043bc2a446",
                 "kind": "writes",
-                "to": "store"
+                "source": "api",
+                "target": "store"
               }
             ],
             "nodes": [
@@ -1424,13 +1605,16 @@
                 "label": "refund-store"
               }
             ],
-            "schema_version": "elmos.diagram.v1"
+            "project_id": "project-a",
+            "revision_id": "abc123",
+            "schema_version": 1,
+            "type": "component"
           },
-          "digest": "sha256:0bc90bd3184bcd4df137d210320ae949bdd4ea96a6af5ea6687db8422478a09c"
+          "digest": "sha256:6ed80101cff72188aeb3c5f58a651fb0cd58787b566d17401f8bfbf37d28f7b1"
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:f85f2b3348d8545debdac15f82f81002f124626b9dc55e6426cb1341b6100830",
+        "result_digest": "sha256:1eb0f3264f0982251fed00e75d166e5557f9669832af860658d3da98db158391",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-diagram-spec-engine",
@@ -1439,7 +1623,7 @@
         "unavailable": [],
         "warnings": []
       },
-      "result_digest": "sha256:f85f2b3348d8545debdac15f82f81002f124626b9dc55e6426cb1341b6100830",
+      "result_digest": "sha256:1eb0f3264f0982251fed00e75d166e5557f9669832af860658d3da98db158391",
       "skill": "elmos-diagram-spec-engine",
       "status": "PASSED"
     },
@@ -1498,11 +1682,13 @@
         "handler_id": "apply_diagram_patch",
         "outputs": {
           "diagram_spec": {
+            "diagram_id": "sha256:a0d0acab5ad698a0eb3c5da12493aa7dbeec63e0b655db13c17d5e46edbb5b0d",
             "edges": [
               {
-                "from": "api",
+                "id": "api-writes-store",
                 "kind": "writes",
-                "to": "store"
+                "source": "api",
+                "target": "store"
               }
             ],
             "nodes": [
@@ -1516,14 +1702,18 @@
                 "kind": "database",
                 "label": "Refund Store"
               }
-            ]
+            ],
+            "project_id": "project-a",
+            "revision_id": "abc123",
+            "schema_version": 1,
+            "type": "component"
           },
           "locked_node_ids": [],
           "rejected_operations": []
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:43bfc7eac732d7779d11320280ed51c64f600398d1d5c479feb69326c230900d",
+        "result_digest": "sha256:38de70fcf696216949613d48d4db912fddac9d6c870ed66bfcddd8daf880d945",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-diagram-editor",
@@ -1534,7 +1724,7 @@
         ],
         "warnings": []
       },
-      "result_digest": "sha256:43bfc7eac732d7779d11320280ed51c64f600398d1d5c479feb69326c230900d",
+      "result_digest": "sha256:38de70fcf696216949613d48d4db912fddac9d6c870ed66bfcddd8daf880d945",
       "skill": "elmos-diagram-editor",
       "status": "PASSED"
     },
@@ -1554,13 +1744,13 @@
         "external_evidence": "NOT_RUN",
         "handler_id": "generate_document",
         "outputs": {
-          "content": "# Architecture Evidence Report\n\n## Components\n\n- `refund-api` (service)\n- `refund-store` (database)\n\n## Relationships\n\n- `api` -> `store` (writes)\n\n## Evidence Boundary\n\nRuntime and external evidence: NOT_RUN. Certification: NOT_CERTIFIED.\n",
-          "digest": "sha256:d75543a839541c63306888055efb369f4d562a78a97648d42a361fd498aa87fa",
+          "content": "# Architecture Evidence Report\n\n## Components\n\n- refund-api (service)\n- refund-store (database)\n\n## Relationships\n\n- api -> store (writes)\n\n## Evidence Boundary\n\nRuntime and external evidence: NOT_RUN. Certification: NOT_CERTIFIED.\n",
+          "digest": "sha256:290bf93b9638918abdf1884fd1c51344daffab6aeb8d79d3be9c3e3497ccbf8c",
           "media_type": "text/markdown"
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:5bbca557b856ed43d7c5a0cc6acb546dad36c9b514c439ccbfb421c7f9c3d0c9",
+        "result_digest": "sha256:207d787283364777799c8217a2003c2b8f60338ae6a18558a8d9bb1df66b47ec",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-architecture-documentation",
@@ -1569,7 +1759,7 @@
         "unavailable": [],
         "warnings": []
       },
-      "result_digest": "sha256:5bbca557b856ed43d7c5a0cc6acb546dad36c9b514c439ccbfb421c7f9c3d0c9",
+      "result_digest": "sha256:207d787283364777799c8217a2003c2b8f60338ae6a18558a8d9bb1df66b47ec",
       "skill": "elmos-architecture-documentation",
       "status": "PASSED"
     },
@@ -1649,19 +1839,22 @@
         "external_evidence": "NOT_RUN",
         "handler_id": "bundle_report",
         "outputs": {
+          "artifact_bytes_verified": true,
           "artifacts": [
             {
               "artifact_id": "architecture",
+              "byte_count": 12,
+              "content_encoding": "utf-8",
               "digest": "sha256:4ca303a3bf7ddf7be8652031ff027f351973a205cddafbffa580750f61bc93ce",
               "media_type": "text/markdown"
             }
           ],
-          "bundle_digest": "sha256:4ef53a93a6d68d3fad4d16be5aa158cf5a065099eefd99bc4effa1cd451a5247",
+          "bundle_digest": "sha256:efc072c6088144262035df5b1d9655b069641370eeca9587633ef864575da511",
           "content_addressed": true
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:e1753061fa618d7d5b12c210bfab8aeee82f756d6a19a46189bf74f41bf7fd49",
+        "result_digest": "sha256:d4a45d2ec876b8a74c90db0044443de1a30d690bf1a1ca74c9db545525a3f6ba",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-project-report-bundle",
@@ -1670,7 +1863,7 @@
         "unavailable": [],
         "warnings": []
       },
-      "result_digest": "sha256:e1753061fa618d7d5b12c210bfab8aeee82f756d6a19a46189bf74f41bf7fd49",
+      "result_digest": "sha256:d4a45d2ec876b8a74c90db0044443de1a30d690bf1a1ca74c9db545525a3f6ba",
       "skill": "elmos-project-report-bundle",
       "status": "PASSED"
     },
@@ -1691,7 +1884,7 @@
         "handler_id": "answer_project_query",
         "outputs": {
           "answer": "# Refund Service",
-          "confidence": "CONFIRMED",
+          "confidence": "LEXICAL_MATCH",
           "matches": [
             {
               "evidence": "sha256:0cc99554a1a65dce432feca462af08169f9cdb34f6d9ef24d713a234547017a6",
@@ -1789,7 +1982,7 @@
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:6eb17fe732b30d7fd4910245e46e4677594d06e470d04f323699d75235cfbc96",
+        "result_digest": "sha256:6e93440aed67f918483a2c17603eb7c36e832224b6ae643651c125e05c631e08",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-project-search-qa",
@@ -1799,9 +1992,11 @@
           "semantic-vector-provider",
           "model-answer-adapter"
         ],
-        "warnings": []
+        "warnings": [
+          "lexical-match-is-not-semantic-confirmation"
+        ]
       },
-      "result_digest": "sha256:6eb17fe732b30d7fd4910245e46e4677594d06e470d04f323699d75235cfbc96",
+      "result_digest": "sha256:6e93440aed67f918483a2c17603eb7c36e832224b6ae643651c125e05c631e08",
       "skill": "elmos-project-search-qa",
       "status": "PASSED"
     },
@@ -2040,74 +2235,88 @@
       "status": "PASSED"
     },
     {
-      "capability_state": "LOCAL",
-      "expected_code": "ANALYSIS_CACHE_KEY_RESOLVED",
-      "expected_state": "LOCAL_EXECUTED",
+      "capability_state": "PARTIAL",
+      "expected_code": "ANALYSIS_CACHE_KEY_DERIVED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
       "handler_id": "cache_analysis_stage",
-      "observed_code": "ANALYSIS_CACHE_KEY_RESOLVED",
-      "observed_state": "LOCAL_EXECUTED",
+      "observed_code": "ANALYSIS_CACHE_KEY_DERIVED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
       "ordinal": 31,
       "result": {
-        "capability_state": "LOCAL",
+        "capability_state": "PARTIAL",
         "certification": "NOT_CERTIFIED",
-        "code": "ANALYSIS_CACHE_KEY_RESOLVED",
+        "code": "ANALYSIS_CACHE_KEY_DERIVED",
         "external_effects_performed": false,
         "external_evidence": "NOT_RUN",
         "handler_id": "cache_analysis_stage",
         "outputs": {
-          "cache_key": "sha256:1c2ec55a4eb3943d3019a85dca403285dc887721df8b3fd8cc8910869f1b0556",
-          "hit": false,
+          "cache_key": "sha256:7bc0f161cbdb1d52210c0f9a0e6b663a39a40bdc086a2c5d10932d551697cde0",
+          "caller_reported_key_match": false,
+          "implementation_version": "elmos-project-intelligence-engine/1.1.0",
           "input_digest": "sha256:2a55e3c07660886834b043483337c2143e50ea57313aa7e16b746cca55422ade",
+          "schema_version": "elmos.project-intelligence.analysis-cache-key.v1",
           "stage": "fingerprint"
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:302df367b6075fef0b0b7b317f7d81671aec307989f3a5e484450efb94127acd",
+        "result_digest": "sha256:d042c41355df7a438932358f5cad8aecd50e4055e4e4fe292a04b2824aa961eb",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-incremental-analysis-cache",
-        "state": "LOCAL_EXECUTED",
+        "state": "PARTIAL_LOCAL_EXECUTED",
         "tenant_id": "tenant-a",
-        "unavailable": [],
-        "warnings": []
+        "unavailable": [
+          "durable-scoped-cache-store",
+          "cache-entry-content-verification"
+        ],
+        "warnings": [
+          "caller-supplied-cache-key-not-content-verified"
+        ]
       },
-      "result_digest": "sha256:302df367b6075fef0b0b7b317f7d81671aec307989f3a5e484450efb94127acd",
+      "result_digest": "sha256:d042c41355df7a438932358f5cad8aecd50e4055e4e4fe292a04b2824aa961eb",
       "skill": "elmos-incremental-analysis-cache",
       "status": "PASSED"
     },
     {
-      "capability_state": "LOCAL",
-      "expected_code": "ARTIFACT_VERSION_CREATED",
-      "expected_state": "LOCAL_EXECUTED",
-      "handler_id": "version_artifact",
-      "observed_code": "ARTIFACT_VERSION_CREATED",
-      "observed_state": "LOCAL_EXECUTED",
+      "capability_state": "PARTIAL",
+      "expected_code": "ARTIFACT_VERSION_PROPOSAL_VALIDATED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "validate_artifact_version_proposal",
+      "observed_code": "ARTIFACT_VERSION_PROPOSAL_VALIDATED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
       "ordinal": 32,
       "result": {
-        "capability_state": "LOCAL",
+        "capability_state": "PARTIAL",
         "certification": "NOT_CERTIFIED",
-        "code": "ARTIFACT_VERSION_CREATED",
+        "code": "ARTIFACT_VERSION_PROPOSAL_VALIDATED",
         "external_effects_performed": false,
         "external_evidence": "NOT_RUN",
-        "handler_id": "version_artifact",
+        "handler_id": "validate_artifact_version_proposal",
         "outputs": {
           "artifact_id": "architecture",
+          "authoritative_lock_verified": false,
+          "caller_reported_human_locked": false,
           "content_digest": "sha256:161078e42e8fef3ba4b9c984035baa2e431a50b31a18ac95614cc6820394af13",
-          "human_locked": false,
-          "version": 2
+          "proposed_version": 2,
+          "version_persisted": false
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:644e0be0bf478e23dc22bac287bb18a7259b06b49e2a7b54bec22253376d9ea6",
+        "result_digest": "sha256:587fafbcd55fb2af705f28e2feed90a1ec169fd6a0c6b4e09b76d9af9e1367b7",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-artifact-versioning-human-lock",
-        "state": "LOCAL_EXECUTED",
+        "state": "PARTIAL_LOCAL_EXECUTED",
         "tenant_id": "tenant-a",
-        "unavailable": [],
-        "warnings": []
+        "unavailable": [
+          "authoritative-human-lock-store",
+          "artifact-version-store"
+        ],
+        "warnings": [
+          "caller-supplied-lock-state-unverified"
+        ]
       },
-      "result_digest": "sha256:644e0be0bf478e23dc22bac287bb18a7259b06b49e2a7b54bec22253376d9ea6",
+      "result_digest": "sha256:587fafbcd55fb2af705f28e2feed90a1ec169fd6a0c6b4e09b76d9af9e1367b7",
       "skill": "elmos-artifact-versioning-human-lock",
       "status": "PASSED"
     },
@@ -2155,28 +2364,28 @@
     },
     {
       "capability_state": "PARTIAL",
-      "expected_code": "LOCAL_POLICY_ALLOWED",
+      "expected_code": "LOCAL_POLICY_SIMULATED",
       "expected_state": "PARTIAL_LOCAL_EXECUTED",
       "handler_id": "authorize_and_audit",
-      "observed_code": "LOCAL_POLICY_ALLOWED",
+      "observed_code": "LOCAL_POLICY_SIMULATED",
       "observed_state": "PARTIAL_LOCAL_EXECUTED",
       "ordinal": 34,
       "result": {
         "capability_state": "PARTIAL",
         "certification": "NOT_CERTIFIED",
-        "code": "LOCAL_POLICY_ALLOWED",
+        "code": "LOCAL_POLICY_SIMULATED",
         "external_effects_performed": false,
         "external_evidence": "NOT_RUN",
         "handler_id": "authorize_and_audit",
         "outputs": {
-          "allowed": true,
-          "audit_digest": "sha256:b48627309f893d8c031eeb1b41efded88c0314088df0f652c962d936160e048c",
-          "missing_roles": [],
-          "tenant_match": true
+          "audit_digest": "sha256:8aa3b32ef66f27d8dc3944b1232d1d6b7ab389ac7b0a68187fc0e7259a1f018a",
+          "enforcement_authorized": false,
+          "simulated_missing_roles": [],
+          "simulated_tenant_match": true
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:ebb796b6d20dc79b7e23faabc8f1cd1ee80d5f9ff3be43d4c6dc64a628ab4d2f",
+        "result_digest": "sha256:d04abb45eca9667fee8d81fe8aed3c84518dccd1d942c37c752f41696b20be4b",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-collaboration-governance",
@@ -2186,9 +2395,11 @@
           "enterprise-identity-provider",
           "scim-adapter"
         ],
-        "warnings": []
+        "warnings": [
+          "caller-supplied-identity-and-roles-not-enforcement-authority"
+        ]
       },
-      "result_digest": "sha256:ebb796b6d20dc79b7e23faabc8f1cd1ee80d5f9ff3be43d4c6dc64a628ab4d2f",
+      "result_digest": "sha256:d04abb45eca9667fee8d81fe8aed3c84518dccd1d942c37c752f41696b20be4b",
       "skill": "elmos-collaboration-governance",
       "status": "PASSED"
     },
@@ -2210,6 +2421,7 @@
         "outputs": {
           "connector_called": false,
           "connector_id": "local-mcp",
+          "enforcement_authorized": false,
           "forbidden_scopes": [],
           "scopes": [
             "read:project"
@@ -2217,7 +2429,7 @@
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:8175ae8876515fc3ca8816150cf0ee2bc086197452a3b1cb454151c9222337a5",
+        "result_digest": "sha256:042655e0b48681f2cebd5276ff01d0f4f4ddace40afd894d9e098c62531c9692",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-integrations-mcp",
@@ -2225,11 +2437,14 @@
         "tenant_id": "tenant-a",
         "unavailable": [
           "mcp-connector-runtime",
-          "oauth-broker"
+          "oauth-broker",
+          "scope-authority"
         ],
-        "warnings": []
+        "warnings": [
+          "caller-supplied-connector-descriptor-unverified"
+        ]
       },
-      "result_digest": "sha256:8175ae8876515fc3ca8816150cf0ee2bc086197452a3b1cb454151c9222337a5",
+      "result_digest": "sha256:042655e0b48681f2cebd5276ff01d0f4f4ddace40afd894d9e098c62531c9692",
       "skill": "elmos-integrations-mcp",
       "status": "PASSED"
     },
@@ -2250,6 +2465,7 @@
         "handler_id": "plan_repository_shards",
         "outputs": {
           "distributed_execution": false,
+          "oversized_paths": [],
           "shards": [
             {
               "bytes": 157,
@@ -2277,7 +2493,7 @@
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:731e6ff82a959ba8c31589c01d314d28a3b9d3e46c3592200283bb957a0dd266",
+        "result_digest": "sha256:72e2f7f28bd76025ee3b35faa8015301951406fa4b2da8348c15e0b520d553fa",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-large-repository-scaling",
@@ -2288,7 +2504,7 @@
         ],
         "warnings": []
       },
-      "result_digest": "sha256:731e6ff82a959ba8c31589c01d314d28a3b9d3e46c3592200283bb957a0dd266",
+      "result_digest": "sha256:72e2f7f28bd76025ee3b35faa8015301951406fa4b2da8348c15e0b520d553fa",
       "skill": "elmos-large-repository-scaling",
       "status": "PASSED"
     },
@@ -2418,15 +2634,45 @@
         "external_evidence": "NOT_RUN",
         "handler_id": "estimate_runtime_cost",
         "outputs": {
-          "currency_cost": null,
-          "human_review_effort_seconds": 300,
-          "model_version": "local-linear-v1",
-          "system_wall_clock_eta_p50_seconds": "0.007",
-          "system_wall_clock_eta_p90_seconds": "0.013"
+          "as_of": "2026-08-24T00:00:00Z",
+          "assumptions": [
+            "local linear model without historical calibration",
+            "queue delay and provider costs are not estimated",
+            "durations are rounded up to whole seconds and review hours"
+          ],
+          "estimate_id": "sha256:eb1fc6a599354155acc3c69c58a488278e4d806cf7955f24551f32ecef377c0c",
+          "human_review_effort": {
+            "p50_hours": 1,
+            "p90_hours": 1
+          },
+          "pipeline": [
+            "parse",
+            "graph"
+          ],
+          "project_revision_id": "abc123",
+          "stages": [
+            {
+              "name": "parse",
+              "p50_seconds": 1,
+              "p90_seconds": 1,
+              "queue_seconds": 0
+            },
+            {
+              "name": "graph",
+              "p50_seconds": 1,
+              "p90_seconds": 1,
+              "queue_seconds": 0
+            }
+          ],
+          "system_wall_clock_eta": {
+            "confidence": 0,
+            "p50_seconds": 1,
+            "p90_seconds": 1
+          }
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:fcaa5bdd6c7d0196867567eb8567a5f8882749e9790d7c0468da3059b287080b",
+        "result_digest": "sha256:038e32acd1746e332cedfeedce80f5c63100a9f691945fbb2dd55163b3faec14",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-runtime-cost-estimator",
@@ -2435,7 +2681,7 @@
         "unavailable": [],
         "warnings": []
       },
-      "result_digest": "sha256:fcaa5bdd6c7d0196867567eb8567a5f8882749e9790d7c0468da3059b287080b",
+      "result_digest": "sha256:038e32acd1746e332cedfeedce80f5c63100a9f691945fbb2dd55163b3faec14",
       "skill": "elmos-runtime-cost-estimator",
       "status": "PASSED"
     },
@@ -2481,28 +2727,28 @@
     },
     {
       "capability_state": "PLAN",
-      "expected_code": "RELEASE_READINESS_EVALUATED",
+      "expected_code": "RELEASE_READINESS_PLANNED",
       "expected_state": "PLANNING_ONLY",
       "handler_id": "evaluate_release_readiness",
-      "observed_code": "RELEASE_READINESS_EVALUATED",
+      "observed_code": "RELEASE_READINESS_PLANNED",
       "observed_state": "PLANNING_ONLY",
       "ordinal": 42,
       "result": {
         "capability_state": "PLAN",
         "certification": "NOT_CERTIFIED",
-        "code": "RELEASE_READINESS_EVALUATED",
+        "code": "RELEASE_READINESS_PLANNED",
         "external_effects_performed": false,
         "external_evidence": "NOT_RUN",
         "handler_id": "evaluate_release_readiness",
         "outputs": {
           "certified": false,
-          "decision": "READY_FOR_EXTERNAL_GATE",
+          "decision": "EXTERNAL_GATE_REQUIRED",
           "failing_gates": [],
           "release_authorized": false
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:7e8f91464d37476816c3ad17c661f43d563fc444c90f559b9b1f6ca7dd6609c9",
+        "result_digest": "sha256:ea4c61d8610731eb1915c2ae2c65bc89c063a6aecedd5285276f2a7dff248312",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-release-certification",
@@ -2512,9 +2758,11 @@
           "independent-certification-authority",
           "production-evidence"
         ],
-        "warnings": []
+        "warnings": [
+          "caller-supplied-gate-statuses-unverified"
+        ]
       },
-      "result_digest": "sha256:7e8f91464d37476816c3ad17c661f43d563fc444c90f559b9b1f6ca7dd6609c9",
+      "result_digest": "sha256:ea4c61d8610731eb1915c2ae2c65bc89c063a6aecedd5285276f2a7dff248312",
       "skill": "elmos-release-certification",
       "status": "PASSED"
     },
@@ -2534,17 +2782,21 @@
         "external_evidence": "NOT_RUN",
         "handler_id": "evaluate_entitlement_usage",
         "outputs": {
-          "allowed_features": [
+          "billing_performed": false,
+          "caller_reported_allowed_features": [
             "reader"
           ],
-          "billing_performed": false,
-          "denied_features": [],
+          "caller_reported_denied_features": [],
+          "caller_reported_entitled_features": [
+            "reader"
+          ],
           "edition": "enterprise",
-          "usage_record_digest": "sha256:b48627309f893d8c031eeb1b41efded88c0314088df0f652c962d936160e048c"
+          "enforcement_authorized": false,
+          "usage_record_digest": "sha256:8aa3b32ef66f27d8dc3944b1232d1d6b7ab389ac7b0a68187fc0e7259a1f018a"
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:f6c54e638a6cd28fdd6106dbe2b60944029ce468c4ad69c44ff31ce418d34378",
+        "result_digest": "sha256:e900d0f3689aa6fa48c47f046ba3f8b22f95b166daadcb995ad59ce0bef44946",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-commercial-packaging",
@@ -2554,9 +2806,11 @@
           "billing-provider",
           "license-authority"
         ],
-        "warnings": []
+        "warnings": [
+          "caller-supplied-entitlements-unverified"
+        ]
       },
-      "result_digest": "sha256:f6c54e638a6cd28fdd6106dbe2b60944029ce468c4ad69c44ff31ce418d34378",
+      "result_digest": "sha256:e900d0f3689aa6fa48c47f046ba3f8b22f95b166daadcb995ad59ce0bef44946",
       "skill": "elmos-commercial-packaging",
       "status": "PASSED"
     },
@@ -2577,6 +2831,7 @@
         "handler_id": "negotiate_debug_adapter",
         "outputs": {
           "adapter_started": false,
+          "enforcement_authorized": false,
           "forbidden": [],
           "negotiated": [
             "breakpoints",
@@ -2586,18 +2841,21 @@
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:cd8a144930fbd64103b15db693b60729ca304c4231006493f35fbaeb04c472b6",
+        "result_digest": "sha256:2eddd85fa32e26cd668b510baf6d9b0d147b2d374e7f441f0a0fd53da2087fd0",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-debug-adapter-gateway",
         "state": "PARTIAL_LOCAL_EXECUTED",
         "tenant_id": "tenant-a",
         "unavailable": [
-          "dap-process-adapter"
+          "dap-process-adapter",
+          "adapter-capability-attestation"
         ],
-        "warnings": []
+        "warnings": [
+          "caller-supplied-adapter-capabilities-unverified"
+        ]
       },
-      "result_digest": "sha256:cd8a144930fbd64103b15db693b60729ca304c4231006493f35fbaeb04c472b6",
+      "result_digest": "sha256:2eddd85fa32e26cd668b510baf6d9b0d147b2d374e7f441f0a0fd53da2087fd0",
       "skill": "elmos-debug-adapter-gateway",
       "status": "PASSED"
     },
@@ -2617,18 +2875,45 @@
         "external_evidence": "NOT_RUN",
         "handler_id": "plan_debug_session",
         "outputs": {
-          "policy": {
-            "evaluate": "side-effect-free-only",
-            "network": "deny",
-            "read_only_source": true,
-            "revision": "abc123",
+          "debug_session": {
+            "adapter": {
+              "adapter_id": "fixture-dap",
+              "digest": "sha256:20abf099ef9017ac8edd04f2047c6487b4827b3579da208764fd621ae193ca78",
+              "version": "0.1.0"
+            },
+            "capabilities": [
+              "breakpoints",
+              "stack"
+            ],
+            "debug_session_id": "sha256:8cb64249352dfab5e8ed8c7b9c0ec098133f5af0f8fd07406185408a10a29e99",
+            "mode": "guided",
+            "policy": {
+              "environment": "isolated-local-plan",
+              "evaluate_mode": "read_only",
+              "policy_id": "sha256:7d6583c8d51e16ebc2844ab0022d67716552f9e678fc6b39ce2c06adbe1c0bba"
+            },
+            "project_id": "project-a",
+            "revision_id": "abc123",
+            "runtime_profile": {
+              "image_digest": "sha256:0a6f0cda063e9eed838d651975be20880b48888bda677653e986cf571efbc72c",
+              "runtime_profile_id": "fixture-runtime",
+              "toolchain": {
+                "python": "3.12"
+              }
+            },
+            "state": "requested",
+            "target": {
+              "kind": "test",
+              "ref": "tests/test_app.py::test_refund"
+            },
+            "tenant_id": "tenant-a",
             "ttl_seconds": 600
           },
           "sandbox_started": false
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:91a8175a8c99266df787061b8dc5b641d0a9d8c12a4f72a750b721fd7d717094",
+        "result_digest": "sha256:503a4e06a0b7c6401a5cacdb36f9ba597fc2e1172be7c3eef69bc1d515caa995",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-debug-sandbox-orchestration",
@@ -2640,7 +2925,7 @@
         ],
         "warnings": []
       },
-      "result_digest": "sha256:91a8175a8c99266df787061b8dc5b641d0a9d8c12a4f72a750b721fd7d717094",
+      "result_digest": "sha256:503a4e06a0b7c6401a5cacdb36f9ba597fc2e1172be7c3eef69bc1d515caa995",
       "skill": "elmos-debug-sandbox-orchestration",
       "status": "PASSED"
     },
@@ -2672,7 +2957,7 @@
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:576777f0c22e086c17c9373c822a38504ca0f93f30205ec09496ca3ebe1539c0",
+        "result_digest": "sha256:21d83431db12c830e375f2fa8efb456d8916b6184eb39257350396f0d124d37d",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-online-debug-workbench",
@@ -2681,9 +2966,11 @@
         "unavailable": [
           "browser-debug-workbench"
         ],
-        "warnings": []
+        "warnings": [
+          "debug-data-redacted-by-field-policy"
+        ]
       },
-      "result_digest": "sha256:576777f0c22e086c17c9373c822a38504ca0f93f30205ec09496ca3ebe1539c0",
+      "result_digest": "sha256:21d83431db12c830e375f2fa8efb456d8916b6184eb39257350396f0d124d37d",
       "skill": "elmos-online-debug-workbench",
       "status": "PASSED"
     },
@@ -2703,20 +2990,46 @@
         "external_evidence": "NOT_RUN",
         "handler_id": "build_debug_mission",
         "outputs": {
-          "mission": [
-            {
-              "evidence_ref": "src/app.py:3",
-              "frame_id": "frame-1",
-              "prompt": "Inspect refund and cite its evidence.",
-              "step": 1
-            }
-          ],
+          "mission": {
+            "assessment": {
+              "pass_score": 1,
+              "type": "evidence-citation"
+            },
+            "difficulty": "beginner",
+            "entry": {
+              "kind": "test",
+              "ref": "tests/test_app.py::test_refund"
+            },
+            "learning_objectives": [
+              "Trace the supplied control-flow frame.",
+              "Cite the supplied evidence reference before completion."
+            ],
+            "mission_id": "sha256:891a831053de9ce5f41a32409e423e409d8d62ba763c7a8b358be56162faaa00",
+            "mode": "guided",
+            "project_id": "project-a",
+            "redaction_profile": "recursive-field-policy-v2",
+            "revision_id": "abc123",
+            "stale": false,
+            "steps": [
+              {
+                "breakpoint_ref": "frame-1",
+                "completion": "evidence-cited:src/app.py:3",
+                "hints": [
+                  "Use only the supplied frame and evidence reference."
+                ],
+                "prompt": "Inspect refund and cite src/app.py:3.",
+                "step_id": "sha256:2a93d0493f1f3ba77846a8ccfaa44536f70724814864e3c66325b0b80bbc079d"
+              }
+            ],
+            "tenant_id": "tenant-a",
+            "title": "Evidence-bound local debugging mission"
+          },
           "model_used": false,
           "side_effects": false
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:3d1efd91f85da426d5e7e6f3cc62ef1f05845c7f14dff51d7e64a1fd6d8c6d10",
+        "result_digest": "sha256:39e9d6c04a06c74de61bfb66d46ebc47d1ff3e1c105bf0d8457e10fc1a3eef79",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-debug-learning-copilot",
@@ -2728,7 +3041,7 @@
         ],
         "warnings": []
       },
-      "result_digest": "sha256:3d1efd91f85da426d5e7e6f3cc62ef1f05845c7f14dff51d7e64a1fd6d8c6d10",
+      "result_digest": "sha256:39e9d6c04a06c74de61bfb66d46ebc47d1ff3e1c105bf0d8457e10fc1a3eef79",
       "skill": "elmos-debug-learning-copilot",
       "status": "PASSED"
     },
@@ -2749,38 +3062,95 @@
         "handler_id": "build_replay_bundle",
         "outputs": {
           "bundle": {
-            "events": [
+            "chunks": [
               {
-                "event_digest": "sha256:58747f373cbcd13f0fef2ace84bf7580fcce9a59761ea59844e03296fb7f1ec7",
-                "event_id": "event-1",
-                "frame": "refund",
-                "kind": "stopped",
-                "previous_event_digest": null,
-                "sequence": 1,
-                "thread_id": "main",
-                "timestamp": "2026-08-24T00:00:00Z",
-                "trace_id": "trace-1"
+                "chunk_id": "sha256:c7380da6d6962c50fd74aecc984406b1b7e220944bdca519d735e5b907a929c9",
+                "event": {
+                  "debug_session_id": "sha256:8cb64249352dfab5e8ed8c7b9c0ec098133f5af0f8fd07406185408a10a29e99",
+                  "event_id": "event-1",
+                  "event_type": "stopped",
+                  "occurred_at": "2026-08-24T00:00:00Z",
+                  "payload": {
+                    "frame": "refund",
+                    "thread_id": "main",
+                    "trace_id": "trace-1"
+                  },
+                  "project_id": "project-a",
+                  "redaction_profile": "recursive-field-policy-v2",
+                  "revision_id": "abc123",
+                  "sequence": 1,
+                  "tenant_id": "tenant-a"
+                },
+                "kind": "debug-event",
+                "previous_sha256": null,
+                "sha256": "7aa9aa34c351ba63f024cc4fc00a8ca21e19a614723fc7eba9054202df0a8800",
+                "size_bytes": 376
               },
               {
-                "event_digest": "sha256:e04b27e07b18081dc204a865113673c2de8951a01b9bd829153436c2b8cc5e56",
-                "event_id": "event-2",
-                "kind": "continued",
-                "previous_event_digest": "sha256:58747f373cbcd13f0fef2ace84bf7580fcce9a59761ea59844e03296fb7f1ec7",
-                "sequence": 2,
-                "thread_id": "main",
-                "timestamp": "2026-08-24T00:00:01Z",
-                "trace_id": "trace-1"
+                "chunk_id": "sha256:df033686520e20e38f0ee2a915515e4ff8cb15b4d16b7a40370be608526a24e5",
+                "event": {
+                  "debug_session_id": "sha256:8cb64249352dfab5e8ed8c7b9c0ec098133f5af0f8fd07406185408a10a29e99",
+                  "event_id": "event-2",
+                  "event_type": "continued",
+                  "occurred_at": "2026-08-24T00:00:01Z",
+                  "payload": {
+                    "thread_id": "main",
+                    "trace_id": "trace-1"
+                  },
+                  "project_id": "project-a",
+                  "redaction_profile": "recursive-field-policy-v2",
+                  "revision_id": "abc123",
+                  "sequence": 2,
+                  "tenant_id": "tenant-a"
+                },
+                "kind": "debug-event",
+                "previous_sha256": "7aa9aa34c351ba63f024cc4fc00a8ca21e19a614723fc7eba9054202df0a8800",
+                "sha256": "48ba1a6a049dc13d45fe2898ed30bede4a2640aad4b79d50435a29df9fbd0d86",
+                "size_bytes": 361
               }
             ],
+            "integrity": {
+              "manifest_digest_scope": "bundle-without-integrity",
+              "manifest_sha256": "d63ec80e4aad808abd1f5da0ecead9600e8d696dbe186c0140ff7cdb3159dd3e",
+              "signature_ref": "NOT_RUN",
+              "signature_status": "NOT_RUN"
+            },
             "native_reverse_debug": false,
+            "project_id": "project-a",
+            "redaction": {
+              "inline_secret_values_redacted": 0,
+              "omitted_fields": [
+                "inline-credential-values",
+                "sensitive-keyed-fields"
+              ],
+              "profile": "recursive-field-policy-v2",
+              "scan_status": "review_required",
+              "sensitive_fields_omitted": 1,
+              "strings_truncated": 0
+            },
+            "replay_bundle_id": "sha256:e08bf0c9e0b6af35714ef688d40897d90bfe34b404ef5b11df8b08e210585b65",
             "replay_level": "R0",
-            "terminal_digest": "sha256:e04b27e07b18081dc204a865113673c2de8951a01b9bd829153436c2b8cc5e56"
+            "reproducibility": {
+              "event_order": "positive-unique-sequence",
+              "native_runtime_reexecution": "NOT_RUN",
+              "terminal_event_sha256": "48ba1a6a049dc13d45fe2898ed30bede4a2640aad4b79d50435a29df9fbd0d86"
+            },
+            "revision_id": "abc123",
+            "runtime_profile": {
+              "image_digest": "sha256:0a6f0cda063e9eed838d651975be20880b48888bda677653e986cf571efbc72c",
+              "runtime_profile_id": "fixture-runtime",
+              "toolchain": {
+                "python": "3.12"
+              }
+            },
+            "source_debug_session_id": "sha256:8cb64249352dfab5e8ed8c7b9c0ec098133f5af0f8fd07406185408a10a29e99",
+            "tenant_id": "tenant-a"
           },
-          "digest": "sha256:182cadedb7ce6635ae3279ce304be73a236138dcac95eb9fe2b1699dc4c6c6fb"
+          "digest": "sha256:1e9fae77d55d51ce0d9f9c274532c66c42c513c8bf8260a2449bee6c96b4cc35"
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:5e70544104652c0cc8ff11b646c229b92cfb9d4e376a322604cfd43fd231632e",
+        "result_digest": "sha256:fd5a3ee4e40721fca6413f0236840017101b5b1a775c21f20c78633e2dbcef12",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-debug-record-replay",
@@ -2789,11 +3159,16 @@
         "unavailable": [
           "r1-input-replay",
           "r2-checkpoint-replay",
-          "r3-native-reverse-debug"
+          "r3-native-reverse-debug",
+          "replay-bundle-signing",
+          "replay-bundle-encryption",
+          "replay-bundle-retention-policy"
         ],
-        "warnings": []
+        "warnings": [
+          "debug-data-redacted-by-field-policy"
+        ]
       },
-      "result_digest": "sha256:5e70544104652c0cc8ff11b646c229b92cfb9d4e376a322604cfd43fd231632e",
+      "result_digest": "sha256:fd5a3ee4e40721fca6413f0236840017101b5b1a775c21f20c78633e2dbcef12",
       "skill": "elmos-debug-record-replay",
       "status": "PASSED"
     },
@@ -2820,22 +3195,35 @@
               "correlation_id": "trace-1",
               "events": [
                 {
+                  "debug_session_id": "sha256:8cb64249352dfab5e8ed8c7b9c0ec098133f5af0f8fd07406185408a10a29e99",
                   "event_id": "event-1",
-                  "frame": "refund",
-                  "kind": "stopped",
-                  "secret": "must-not-leak",
+                  "event_type": "stopped",
+                  "occurred_at": "2026-08-24T00:00:00Z",
+                  "payload": {
+                    "frame": "refund",
+                    "thread_id": "main",
+                    "trace_id": "trace-1"
+                  },
+                  "project_id": "project-a",
+                  "redaction_profile": "recursive-field-policy-v2",
+                  "revision_id": "abc123",
                   "sequence": 1,
-                  "thread_id": "main",
-                  "timestamp": "2026-08-24T00:00:00Z",
-                  "trace_id": "trace-1"
+                  "tenant_id": "tenant-a"
                 },
                 {
+                  "debug_session_id": "sha256:8cb64249352dfab5e8ed8c7b9c0ec098133f5af0f8fd07406185408a10a29e99",
                   "event_id": "event-2",
-                  "kind": "continued",
+                  "event_type": "continued",
+                  "occurred_at": "2026-08-24T00:00:01Z",
+                  "payload": {
+                    "thread_id": "main",
+                    "trace_id": "trace-1"
+                  },
+                  "project_id": "project-a",
+                  "redaction_profile": "recursive-field-policy-v2",
+                  "revision_id": "abc123",
                   "sequence": 2,
-                  "thread_id": "main",
-                  "timestamp": "2026-08-24T00:00:01Z",
-                  "trace_id": "trace-1"
+                  "tenant_id": "tenant-a"
                 }
               ]
             }
@@ -2843,7 +3231,7 @@
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:a08981a0656b0abbb87ec2febadcd64e03be4751123485b34a7c39d72c045cc1",
+        "result_digest": "sha256:b7d7dee875a87df42829d2556f61ac5e5f810e2963cdcc48924aa770caa9f178",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-distributed-debug-correlation",
@@ -2853,14 +3241,30 @@
           "distributed-debug-controller",
           "dual-run-runtime"
         ],
-        "warnings": []
+        "warnings": [
+          "debug-data-redacted-by-field-policy"
+        ]
       },
-      "result_digest": "sha256:a08981a0656b0abbb87ec2febadcd64e03be4751123485b34a7c39d72c045cc1",
+      "result_digest": "sha256:b7d7dee875a87df42829d2556f61ac5e5f810e2963cdcc48924aa770caa9f178",
       "skill": "elmos-distributed-debug-correlation",
       "status": "PASSED"
     }
   ],
-  "schema_version": "elmos.project-intelligence.local-qualification.v1",
+  "runtime_environment": {
+    "byteorder": "little",
+    "cache_tag": "cpython-314",
+    "executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
+    "executable_sha256": "sha256:c015ab131972822e27ed108cf353582af6ca2fd7daf6296789576c7e7d1ad61a",
+    "hexversion": 51250672,
+    "implementation": "cpython",
+    "machine": "arm64",
+    "platform": "darwin",
+    "release_level": "final",
+    "resolved_executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
+    "serial": 0,
+    "version": "3.14.5"
+  },
+  "schema_version": "elmos.project-intelligence.local-qualification.v2",
   "source_package": "elmos-project-intelligence-skills",
   "source_version": "1.1.0"
 }

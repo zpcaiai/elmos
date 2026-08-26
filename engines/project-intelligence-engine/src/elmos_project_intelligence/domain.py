@@ -9,20 +9,46 @@ shared helpers only normalize immutable inputs.
 
 from __future__ import annotations
 
+import base64
+import binascii
 from collections import Counter, defaultdict, deque
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from decimal import Decimal, ROUND_HALF_UP
+from datetime import datetime
+from decimal import Decimal, InvalidOperation, ROUND_CEILING
 import hashlib
 import math
 from pathlib import PurePosixPath
 import re
 from typing import Any
 
-from .canonical import canonical_digest, validate_digest
+from .canonical import canonical_digest, canonical_json_bytes, validate_digest
+from .flowgraph import function_control_flow
+from .python_structure import (
+    ORIGIN_PARSED,
+    ORIGIN_REGEX,
+    is_python_path,
+    module_structure,
+)
 
 
 JsonObject = Mapping[str, Any]
+
+CACHE_KEY_SCHEMA_VERSION = "elmos.project-intelligence.analysis-cache-key.v1"
+CACHE_IMPLEMENTATION_VERSION = "elmos-project-intelligence-engine/1.1.0"
+
+
+@dataclass(frozen=True, slots=True)
+class TrustedRuntimeScope:
+    """Authenticated request scope passed by the dispatcher, never caller inputs."""
+
+    tenant_id: str
+    project_id: str
+    revision: str
+
+    def __post_init__(self) -> None:
+        for field_name in ("tenant_id", "project_id", "revision"):
+            _identifier(getattr(self, field_name), field_name)
 
 
 @dataclass(frozen=True, slots=True)
@@ -105,6 +131,23 @@ def _safe_path(value: Any) -> str:
 
 _MERMAID_LABEL_MAX_CHARACTERS = 160
 _MERMAID_LABEL_PUNCTUATION = frozenset(" _-.,()")
+
+#: Mermaid delimiters per node kind.  The opening token always ends with a
+#: double quote and the closing token always begins with one, so every label
+#: sits inside a quoted string.  ``_safe_mermaid_label`` strips the quote
+#: character itself, which is what makes the shape impossible to escape --
+#: adding a shape here therefore cannot widen the injection surface.
+_MERMAID_SHAPE_BY_KIND: dict[str, tuple[str, str]] = {
+    "start": ('(["', '"])'),
+    "end": ('(["', '"])'),
+    "decision": ('{"', '"}'),
+    "loop": ('[["', '"]]'),
+    "merge": ('(("', '"))'),
+}
+
+#: Every other kind, including every component-diagram kind, keeps the plain
+#: rectangle the renderer has always drawn.
+_MERMAID_DEFAULT_SHAPE: tuple[str, str] = ('["', '"]')
 _MARKDOWN_TEXT_MAX_CHARACTERS = 160
 _MARKDOWN_TEXT_PUNCTUATION = frozenset(" _-.,():@")
 
@@ -165,26 +208,51 @@ _DEBUG_SENSITIVE_KEY_MARKERS = (
     "approv",
     "certif",
 )
-_DEBUG_INLINE_SECRET = re.compile(
-    r"(?i)\b(api[_-]?key|access[_-]?token|auth[_-]?token|client[_-]?secret|"
-    r"password|passwd|secret|authorization)\b(\s*[:=]\s*)"
-    r"(?:bearer\s+)?(?:[\"'][^\"'\r\n]{1,4096}[\"']|[^\s,;}\]]{8,4096})"
+_DEBUG_INLINE_SECRET_KEYS = (
+    "access[_-]?key",
+    "access[_-]?token",
+    "api[_-]?key",
+    "auth[_-]?token",
+    "client[_-]?secret",
+    "cookie",
+    "credential",
+    "password",
+    "passwd",
+    "private[_-]?key",
+    "pwd",
+    "secret",
+    "set-cookie",
+    "token",
+    "x-api-key",
 )
-_DEBUG_BEARER_TOKEN = re.compile(r"(?i)\bbearer\s+[A-Za-z0-9._~+/=-]{8,4096}")
-_CORRELATION_EVENT_FIELDS = frozenset(
+_DEBUG_AUTHORIZATION_HEADER = re.compile(
+    r"(?i)(\bauthorization\s*[:=]\s*)(?:(?:basic|bearer|digest)\s+)?"
+    r"[^\s,;\r\n]+"
+)
+_DEBUG_INLINE_SECRET = re.compile(
+    r"(?i)\b(" + "|".join(_DEBUG_INLINE_SECRET_KEYS) + r")\b"
+    r"(\s*[:=]\s*)"
+    r"(?:[\"'][^\"'\r\n]+[\"']|[^\s,;&}\]\r\n]+)"
+)
+_DEBUG_BEARER_TOKEN = re.compile(r"(?i)\bbearer\s+[A-Za-z0-9._~+/=-]{1,4096}")
+_DEBUG_URI_USERINFO = re.compile(
+    r"(?i)(\b(?:[a-z][a-z0-9+.-]*:)?//)[^\s/:@]+:[^\s/@]+@"
+)
+_DEBUG_EVENT_STRUCTURAL_FIELDS = frozenset(
     {
         "event_id",
-        "sequence",
+        "event_type",
         "kind",
-        "thread_id",
-        "frame",
-        "trace_id",
-        "correlation_id",
+        "occurred_at",
         "timestamp",
-        "service",
-        "component",
-        "parent_id",
-        "span_id",
+        "tenant_id",
+        "project_id",
+        "revision_id",
+        "debug_session_id",
+        "sequence",
+        "traceparent",
+        "redaction_profile",
+        "payload",
     }
 )
 
@@ -284,7 +352,9 @@ def _sanitize_debug_value(
         if len(sanitized_text) > _DEBUG_MAX_STRING_CHARACTERS:
             sanitized_text = sanitized_text[:_DEBUG_MAX_STRING_CHARACTERS]
             stats["strings_truncated"] += 1
-        redacted_text = _DEBUG_INLINE_SECRET.sub(r"\1\2[REDACTED]", sanitized_text)
+        redacted_text = _DEBUG_URI_USERINFO.sub(r"\1[REDACTED]@", sanitized_text)
+        redacted_text = _DEBUG_AUTHORIZATION_HEADER.sub(r"\1[REDACTED]", redacted_text)
+        redacted_text = _DEBUG_INLINE_SECRET.sub(r"\1\2[REDACTED]", redacted_text)
         redacted_text = _DEBUG_BEARER_TOKEN.sub("Bearer [REDACTED]", redacted_text)
         if redacted_text != sanitized_text:
             stats["inline_secret_values_redacted"] += 1
@@ -297,25 +367,97 @@ def _sanitize_debug_value(
 def _sanitized_debug_events(
     inputs: JsonObject,
     *,
-    allowed_fields: frozenset[str] | None = None,
+    runtime_scope: TrustedRuntimeScope,
 ) -> tuple[list[dict[str, Any]], Counter[str]]:
     events = _records(inputs, "debug_events")
     if len(events) > _DEBUG_MAX_EVENTS:
         raise ValueError("debug event count exceeds the configured hard limit")
     stats: Counter[str] = Counter()
+    debug_session_id = _debug_session_id(inputs, runtime_scope)
     sanitized: list[dict[str, Any]] = []
-    for event in events:
-        selected = event
-        if allowed_fields is not None:
-            selected = {
-                key: value for key, value in event.items() if key in allowed_fields
-            }
-            stats["nonessential_fields_omitted"] += len(event) - len(selected)
-        clean = _sanitize_debug_value(selected, depth=0, stats=stats)
-        if not isinstance(clean, dict):
-            raise ValueError("sanitized debug event must remain an object")
-        sanitized.append(clean)
-    return sanitized, stats
+    event_ids: set[str] = set()
+    sequences: set[int] = set()
+    for index, event in enumerate(events):
+        event_id = _identifier(event.get("event_id"), f"debug_events[{index}].event_id")
+        if event_id in event_ids:
+            raise ValueError(f"duplicate debug event id: {event_id}")
+        event_ids.add(event_id)
+        sequence = event.get("sequence")
+        if type(sequence) is not int or sequence <= 0:
+            raise ValueError("debug event sequence must be a positive integer")
+        if sequence in sequences:
+            raise ValueError(f"duplicate debug event sequence: {sequence}")
+        sequences.add(sequence)
+
+        event_type_value = event.get("event_type", event.get("kind"))
+        if (
+            "event_type" in event
+            and "kind" in event
+            and event["event_type"] != event["kind"]
+        ):
+            raise ValueError("debug event_type and legacy kind disagree")
+        event_type = _identifier(
+            event_type_value, f"debug_events[{index}].event_type"
+        )
+        occurred_at_value = event.get("occurred_at", event.get("timestamp"))
+        if (
+            "occurred_at" in event
+            and "timestamp" in event
+            and event["occurred_at"] != event["timestamp"]
+        ):
+            raise ValueError("debug occurred_at and legacy timestamp disagree")
+        occurred_at = _validated_rfc3339(
+            occurred_at_value, f"debug_events[{index}].occurred_at"
+        )
+        for field_name, expected in (
+            ("tenant_id", runtime_scope.tenant_id),
+            ("project_id", runtime_scope.project_id),
+            ("revision_id", runtime_scope.revision),
+            ("debug_session_id", debug_session_id),
+        ):
+            if field_name in event and event[field_name] != expected:
+                raise ValueError(
+                    f"debug_events[{index}].{field_name} does not match trusted scope"
+                )
+        if event.get("redaction_profile", "recursive-field-policy-v2") != (
+            "recursive-field-policy-v2"
+        ):
+            raise ValueError("debug event redaction_profile is not supported")
+
+        raw_payload = event.get("payload", {})
+        if not isinstance(raw_payload, Mapping):
+            raise ValueError(f"debug_events[{index}].payload must be an object")
+        payload = dict(raw_payload)
+        for key, value in event.items():
+            if key in _DEBUG_EVENT_STRUCTURAL_FIELDS:
+                continue
+            if key in payload:
+                raise ValueError(
+                    f"debug_events[{index}] duplicates payload field {key}"
+                )
+            payload[key] = value
+        clean_payload = _sanitize_debug_value(payload, depth=0, stats=stats)
+        if not isinstance(clean_payload, dict):
+            raise ValueError("sanitized debug event payload must remain an object")
+        normalized: dict[str, Any] = {
+            "event_id": event_id,
+            "event_type": event_type,
+            "occurred_at": occurred_at,
+            "tenant_id": runtime_scope.tenant_id,
+            "project_id": runtime_scope.project_id,
+            "revision_id": runtime_scope.revision,
+            "debug_session_id": debug_session_id,
+            "sequence": sequence,
+            "redaction_profile": "recursive-field-policy-v2",
+            "payload": clean_payload,
+        }
+        traceparent = event.get("traceparent")
+        if traceparent is not None:
+            normalized["traceparent"] = _identifier(
+                traceparent, f"debug_events[{index}].traceparent"
+            )
+        sanitized.append(normalized)
+    return sorted(sanitized, key=lambda item: int(item["sequence"])), stats
 
 
 def _debug_sanitization_warnings(stats: Counter[str]) -> tuple[str, ...]:
@@ -417,7 +559,48 @@ def _language(path: str) -> str:
     return LANGUAGE_BY_EXTENSION.get(_extension(path), "Unknown")
 
 
-def _symbols(files: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
+def _symbol_node(
+    file: Mapping[str, Any],
+    *,
+    kind: str,
+    name: str,
+    line: int,
+    origin: str,
+    qualified_name: str | None = None,
+) -> dict[str, Any]:
+    """Build one declaration node.
+
+    The identity recipe is shared by both extraction paths on purpose: the
+    same declaration keeps the same id whether a parser or the regex scan
+    found it, so switching a file between the two does not churn the graph.
+    """
+
+    node = {
+        "id": canonical_digest(
+            {"path": file["path"], "kind": kind, "name": name, "line": line}
+        ),
+        "path": file["path"],
+        "line": line,
+        "kind": kind,
+        "name": name,
+        "language": _language(str(file["path"])),
+        "origin": origin,
+    }
+    if qualified_name is not None:
+        node["qualified_name"] = qualified_name
+    return node
+
+
+def _regex_symbols(file: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Scan one file's lines for declarations.
+
+    This is the original heuristic and stays the path for every language that
+    has no parser here.  It reads one physical line at a time, so it cannot
+    see nesting, cannot tell a declaration from the same words inside a
+    string, and stops at the first pattern that matches a line.  Facts it
+    produces are marked ``REGEX`` for exactly that reason.
+    """
+
     patterns = (
         ("class", re.compile(r"^\s*(?:export\s+)?class\s+([A-Za-z_$][\w$]*)")),
         (
@@ -437,35 +620,63 @@ def _symbols(files: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
         ("interface", re.compile(r"^\s*(?:export\s+)?interface\s+([A-Za-z_$][\w$]*)")),
     )
     values: list[dict[str, Any]] = []
-    for file in files:
-        for line_number, line in enumerate(str(file["text"]).splitlines(), 1):
-            for kind, pattern in patterns:
-                match = pattern.search(line)
-                if match:
-                    symbol = match.group(1)
-                    stable_id = canonical_digest(
-                        {
-                            "path": file["path"],
-                            "kind": kind,
-                            "name": symbol,
-                            "line": line_number,
-                        }
+    for line_number, line in enumerate(str(file["text"]).splitlines(), 1):
+        for kind, pattern in patterns:
+            match = pattern.search(line)
+            if match:
+                values.append(
+                    _symbol_node(
+                        file,
+                        kind=kind,
+                        name=match.group(1),
+                        line=line_number,
+                        origin=ORIGIN_REGEX,
                     )
-                    values.append(
-                        {
-                            "id": stable_id,
-                            "path": file["path"],
-                            "line": line_number,
-                            "kind": kind,
-                            "name": symbol,
-                            "language": _language(str(file["path"])),
-                        }
-                    )
-                    break
+                )
+                break
     return values
 
 
-def _imports(files: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
+def _parsed_python_structure(file: Mapping[str, Any]) -> dict[str, Any] | None:
+    """Return the parsed structure of a Python file, or ``None``.
+
+    ``None`` means either "not Python" or "Python that does not parse".  Both
+    send the caller to the regex fallback, and both are recorded, so a reader
+    is never left guessing which scan produced a given fact.
+    """
+
+    path = str(file["path"])
+    if not is_python_path(path):
+        return None
+    return module_structure(str(file["text"]), path)
+
+
+def _symbols(files: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    """Return declaration nodes, preferring a real parser over the regex scan."""
+
+    values: list[dict[str, Any]] = []
+    for file in files:
+        structure = _parsed_python_structure(file)
+        if structure is None:
+            values.extend(_regex_symbols(file))
+            continue
+        for symbol in structure["symbols"]:
+            values.append(
+                _symbol_node(
+                    file,
+                    kind=str(symbol["kind"]),
+                    name=str(symbol["name"]),
+                    line=int(symbol["line"]),
+                    origin=ORIGIN_PARSED,
+                    qualified_name=str(symbol["qualified_name"]),
+                )
+            )
+    return values
+
+
+def _regex_imports(file: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Scan one file's lines for imports; the fallback for every non-Python file."""
+
     patterns = (
         re.compile(r"^\s*from\s+([\w.]+)\s+import\s+"),
         re.compile(r"^\s*import\s+([\w.]+)"),
@@ -473,20 +684,47 @@ def _imports(files: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
         re.compile(r"^\s*use\s+([\w:]+)"),
     )
     edges: list[dict[str, Any]] = []
+    for line_number, line in enumerate(str(file["text"]).splitlines(), 1):
+        for pattern in patterns:
+            match = pattern.search(line)
+            if match:
+                edges.append(
+                    {
+                        "from": file["path"],
+                        "to": match.group(1),
+                        "kind": "imports",
+                        "line": line_number,
+                        "origin": ORIGIN_REGEX,
+                    }
+                )
+                break
+    return edges
+
+
+def _imports(files: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    """Return import edges, preferring a real parser over the regex scan.
+
+    The parser path also reports relative imports (``from . import x``), which
+    the regex never matched, and never mistakes the word ``import`` inside a
+    string or comment for a real one.
+    """
+
+    edges: list[dict[str, Any]] = []
     for file in files:
-        for line_number, line in enumerate(str(file["text"]).splitlines(), 1):
-            for pattern in patterns:
-                match = pattern.search(line)
-                if match:
-                    edges.append(
-                        {
-                            "from": file["path"],
-                            "to": match.group(1),
-                            "kind": "imports",
-                            "line": line_number,
-                        }
-                    )
-                    break
+        structure = _parsed_python_structure(file)
+        if structure is None:
+            edges.extend(_regex_imports(file))
+            continue
+        for imported in structure["imports"]:
+            edges.append(
+                {
+                    "from": file["path"],
+                    "to": str(imported["to"]),
+                    "kind": "imports",
+                    "line": int(imported["line"]),
+                    "origin": ORIGIN_PARSED,
+                }
+            )
     return edges
 
 
@@ -592,7 +830,13 @@ def orchestrate_analysis(inputs: JsonObject) -> CapabilityOutcome:
                 queue.append(child)
     if len(order) != len(nodes):
         return _outcome(
-            "BLOCKED", "DEPENDENCY_CYCLE_REJECTED", {"requested_skills": requested}
+            "BLOCKED",
+            "DEPENDENCY_CYCLE_REJECTED",
+            {
+                "execution_order": [],
+                "requested_skills": requested,
+                "automatic_effects": False,
+            },
         )
     return _outcome(
         "LOCAL_EXECUTED",
@@ -836,7 +1080,16 @@ def explain_from_evidence(inputs: JsonObject) -> CapabilityOutcome:
     target = _safe_path(inputs.get("path", files[0]["path"] if files else "unknown"))
     selected = next((file for file in files if file["path"] == target), None)
     if selected is None:
-        return _outcome("BLOCKED", "EXPLANATION_TARGET_NOT_FOUND", {"path": target})
+        return _outcome(
+            "BLOCKED",
+            "EXPLANATION_TARGET_NOT_FOUND",
+            {
+                "facts": {"path": target, "found": False},
+                "narrative_model_used": False,
+                "evidence_refs": [],
+            },
+            unavailable=("model-narrative-adapter",),
+        )
     facts = {
         "path": target,
         "language": _language(target),
@@ -924,17 +1177,85 @@ def map_capabilities(inputs: JsonObject) -> CapabilityOutcome:
 
 
 def discover_flows(inputs: JsonObject) -> CapabilityOutcome:
+    """Discover flow candidates between and, on request, inside modules.
+
+    Two kinds of flow live in the one ``flows`` list the capability contract
+    pins:
+
+    ``import``
+        The original module-to-module edges.  Still ``INFERRED`` -- an import
+        is not proof that control ever crosses it.
+
+    ``control-flow``
+        A drawable graph of one named function's branches, loops and merge
+        points, produced only when the caller names a function in
+        ``flow_function``.  These come from the parser, so they are not
+        guesses about what the source *says*.
+
+    What stays unknown either way is which paths actually execute.  That is
+    why ``unknown_runtime_branches`` remains true and the runtime observer
+    stays declared unavailable: seeing every branch is not the same as knowing
+    which one runs.
+    """
+
     files = _files(inputs)
     imports = _imports(files)
-    flows = [
+    flows: list[dict[str, Any]] = [
         {
             "step": index,
+            "kind": "import",
             "from": edge["from"],
             "to": edge["to"],
             "confidence": "INFERRED",
+            "origin": edge.get("origin", ORIGIN_REGEX),
         }
         for index, edge in enumerate(imports, 1)
     ]
+
+    function_name = inputs.get("flow_function")
+    if function_name is not None:
+        function_name = _identifier(function_name, "flow_function")
+        requested_path = inputs.get("path")
+        step = len(flows)
+        for file in files:
+            path = str(file["path"])
+            if not is_python_path(path):
+                continue
+            if requested_path is not None and path != str(requested_path):
+                continue
+            step += 1
+            graph = function_control_flow(str(file["text"]), function_name)
+            if graph is None:
+                # The file did not parse. Say so rather than emitting an empty
+                # graph, which would read as "this function has no branches".
+                flows.append(
+                    {
+                        "step": step,
+                        "kind": "control-flow",
+                        "path": path,
+                        "function": function_name,
+                        "origin": ORIGIN_REGEX,
+                        "parse_status": "FAILED",
+                        "nodes": [],
+                        "edges": [],
+                        "diagnostics": ["source did not parse"],
+                    }
+                )
+                continue
+            flows.append(
+                {
+                    "step": step,
+                    "kind": "control-flow",
+                    "path": path,
+                    "function": function_name,
+                    "origin": ORIGIN_PARSED,
+                    "parse_status": "PASSED",
+                    "nodes": graph["nodes"],
+                    "edges": graph["edges"],
+                    "diagnostics": graph["diagnostics"],
+                }
+            )
+
     return _outcome(
         "PARTIAL_LOCAL_EXECUTED",
         "STATIC_FLOW_CANDIDATES_DISCOVERED",
@@ -1016,28 +1337,255 @@ def fuse_runtime_observations(inputs: JsonObject) -> CapabilityOutcome:
     )
 
 
-def compile_diagram_spec(inputs: JsonObject) -> CapabilityOutcome:
-    nodes, edges = _graph(inputs)
+def _diagram_evidence_ids(inputs: JsonObject) -> set[str]:
+    evidence_ids: set[str] = set()
+    for index, evidence in enumerate(_records(inputs, "evidence")):
+        evidence_id = _identifier(evidence.get("id"), f"evidence[{index}].id")
+        if evidence_id in evidence_ids:
+            raise ValueError(f"duplicate evidence id: {evidence_id}")
+        evidence_ids.add(evidence_id)
+    return evidence_ids
+
+
+def _diagram_evidence_refs(
+    value: Any,
+    *,
+    field_name: str,
+    evidence_ids: set[str],
+) -> list[str]:
+    refs = [_identifier(item, field_name) for item in _sequence(value, field_name)]
+    if len(refs) != len(set(refs)):
+        raise ValueError(f"{field_name} cannot contain duplicate references")
+    unknown = sorted(set(refs) - evidence_ids)
+    if unknown:
+        raise ValueError(f"{field_name} contains dangling evidence references")
+    return sorted(refs)
+
+
+def _diagram_confidence(value: Any, field_name: str) -> float | int:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{field_name} must be a number between 0 and 1")
+    if not math.isfinite(value) or value < 0 or value > 1:
+        raise ValueError(f"{field_name} must be a finite number between 0 and 1")
+    return value
+
+
+def _validate_diagram_spec(
+    spec: Mapping[str, Any],
+    *,
+    runtime_scope: TrustedRuntimeScope,
+    evidence_ids: set[str],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    if type(spec.get("schema_version")) is not int or spec["schema_version"] != 1:
+        raise ValueError("diagram_spec.schema_version must be integer 1")
+    _identifier(spec.get("diagram_id"), "diagram_spec.diagram_id")
+    _identifier(spec.get("type"), "diagram_spec.type")
+    if spec.get("project_id") != runtime_scope.project_id:
+        raise ValueError("diagram_spec.project_id must match the trusted request scope")
+    if spec.get("revision_id") != runtime_scope.revision:
+        raise ValueError("diagram_spec.revision_id must match the trusted revision")
+    if "title" in spec and not isinstance(spec["title"], str):
+        raise ValueError("diagram_spec.title must be a string")
+    for field_name in ("view", "theme", "layout"):
+        if field_name in spec and not isinstance(spec[field_name], Mapping):
+            raise ValueError(f"diagram_spec.{field_name} must be an object")
+
+    nodes = _records(spec, "nodes")
+    node_ids: set[str] = set()
+    for index, node in enumerate(nodes):
+        node_id = _identifier(node.get("id"), f"diagram_spec.nodes[{index}].id")
+        _identifier(node.get("kind"), f"diagram_spec.nodes[{index}].kind")
+        if not isinstance(node.get("label"), str):
+            raise ValueError(f"diagram_spec.nodes[{index}].label must be a string")
+        if node_id in node_ids:
+            raise ValueError(f"duplicate diagram node id: {node_id}")
+        node_ids.add(node_id)
+        _diagram_evidence_refs(
+            node.get("evidence_refs"),
+            field_name=f"diagram_spec.nodes[{index}].evidence_refs",
+            evidence_ids=evidence_ids,
+        )
+        if "confidence" in node:
+            _diagram_confidence(
+                node["confidence"], f"diagram_spec.nodes[{index}].confidence"
+            )
+        if "group_id" in node and node["group_id"] is not None:
+            _identifier(node["group_id"], f"diagram_spec.nodes[{index}].group_id")
+        if "semantic" in node and not isinstance(node["semantic"], Mapping):
+            raise ValueError(f"diagram_spec.nodes[{index}].semantic must be an object")
+        if (
+            "position" in node
+            and node["position"] is not None
+            and not isinstance(node["position"], Mapping)
+        ):
+            raise ValueError(f"diagram_spec.nodes[{index}].position must be an object")
+        if "lock" in node:
+            lock = node["lock"]
+            if not isinstance(lock, Mapping) or any(
+                key not in {"semantic", "layout"} or type(value) is not bool
+                for key, value in lock.items()
+            ):
+                raise ValueError(f"diagram_spec.nodes[{index}].lock is invalid")
+
+    edges = _records(spec, "edges")
+    edge_ids: set[str] = set()
+    for index, edge in enumerate(edges):
+        if "from" in edge or "to" in edge:
+            raise ValueError(
+                "diagram_spec edges must use source/target, not legacy from/to"
+            )
+        edge_id = _identifier(edge.get("id"), f"diagram_spec.edges[{index}].id")
+        source = _identifier(edge.get("source"), f"diagram_spec.edges[{index}].source")
+        target = _identifier(edge.get("target"), f"diagram_spec.edges[{index}].target")
+        _identifier(edge.get("kind"), f"diagram_spec.edges[{index}].kind")
+        if "label" in edge and not isinstance(edge["label"], str):
+            raise ValueError(f"diagram_spec.edges[{index}].label must be a string")
+        if edge_id in edge_ids:
+            raise ValueError(f"duplicate diagram edge id: {edge_id}")
+        edge_ids.add(edge_id)
+        if source not in node_ids or target not in node_ids:
+            raise ValueError("diagram_spec contains a dangling edge endpoint")
+        _diagram_evidence_refs(
+            edge.get("evidence_refs"),
+            field_name=f"diagram_spec.edges[{index}].evidence_refs",
+            evidence_ids=evidence_ids,
+        )
+        if "confidence" in edge:
+            _diagram_confidence(
+                edge["confidence"], f"diagram_spec.edges[{index}].confidence"
+            )
+    return nodes, edges
+
+
+def compile_diagram_spec(
+    inputs: JsonObject, runtime_scope: TrustedRuntimeScope
+) -> CapabilityOutcome:
+    if "nodes" in inputs or "edges" in inputs:
+        nodes = _records(inputs, "nodes")
+        edges = _records(inputs, "edges")
+    else:
+        nodes, edges = _graph(inputs)
+    evidence_ids = _diagram_evidence_ids(inputs)
+    compiled_nodes: list[dict[str, Any]] = []
+    node_ids: set[str] = set()
+    for index, node in enumerate(nodes):
+        kind = _identifier(node.get("kind", "component"), f"nodes[{index}].kind")
+        label = _identifier(
+            node.get("label", node.get("name", node.get("id", "node"))),
+            f"nodes[{index}].label",
+        )
+        evidence_refs = _diagram_evidence_refs(
+            node.get("evidence_refs"),
+            field_name=f"nodes[{index}].evidence_refs",
+            evidence_ids=evidence_ids,
+        )
+        node_id_value = node.get("id")
+        node_id = (
+            _identifier(node_id_value, f"nodes[{index}].id")
+            if node_id_value is not None
+            else canonical_digest(
+                {
+                    "kind": kind,
+                    "label": label,
+                    "semantic": node.get("semantic", {}),
+                    "evidence_refs": evidence_refs,
+                }
+            )
+        )
+        if node_id in node_ids:
+            raise ValueError(f"duplicate diagram node id: {node_id}")
+        node_ids.add(node_id)
+        compiled_node: dict[str, Any] = {
+            "id": node_id,
+            "kind": kind,
+            "label": label,
+        }
+        if evidence_refs:
+            compiled_node["evidence_refs"] = evidence_refs
+        if "semantic" in node:
+            if not isinstance(node["semantic"], Mapping):
+                raise ValueError(f"nodes[{index}].semantic must be an object")
+            compiled_node["semantic"] = dict(node["semantic"])
+        if "confidence" in node:
+            compiled_node["confidence"] = _diagram_confidence(
+                node["confidence"], f"nodes[{index}].confidence"
+            )
+        compiled_nodes.append(compiled_node)
+
+    compiled_edges: list[dict[str, Any]] = []
+    edge_ids: set[str] = set()
+    for index, edge in enumerate(edges):
+        has_canonical_endpoints = "source" in edge or "target" in edge
+        has_legacy_endpoints = "from" in edge or "to" in edge
+        if has_canonical_endpoints and has_legacy_endpoints:
+            raise ValueError("edges cannot mix source/target with from/to")
+        source_key, target_key = (
+            ("source", "target") if has_canonical_endpoints else ("from", "to")
+        )
+        source = _identifier(edge.get(source_key), f"edges[{index}].{source_key}")
+        target = _identifier(edge.get(target_key), f"edges[{index}].{target_key}")
+        if source not in node_ids or target not in node_ids:
+            raise ValueError("diagram projection contains a dangling edge endpoint")
+        kind = _identifier(edge.get("kind", "relates"), f"edges[{index}].kind")
+        evidence_refs = _diagram_evidence_refs(
+            edge.get("evidence_refs"),
+            field_name=f"edges[{index}].evidence_refs",
+            evidence_ids=evidence_ids,
+        )
+        edge_id_value = edge.get("id")
+        edge_identity = {
+            "source": source,
+            "target": target,
+            "kind": kind,
+            "label": edge.get("label"),
+            "evidence_refs": evidence_refs,
+        }
+        edge_id = (
+            _identifier(edge_id_value, f"edges[{index}].id")
+            if edge_id_value is not None
+            else canonical_digest(edge_identity)
+        )
+        if edge_id in edge_ids:
+            raise ValueError(f"duplicate diagram edge id: {edge_id}")
+        edge_ids.add(edge_id)
+        compiled_edge: dict[str, Any] = {
+            "id": edge_id,
+            "source": source,
+            "target": target,
+            "kind": kind,
+        }
+        if "label" in edge:
+            compiled_edge["label"] = _identifier(edge["label"], f"edges[{index}].label")
+        if evidence_refs:
+            compiled_edge["evidence_refs"] = evidence_refs
+        if "confidence" in edge:
+            compiled_edge["confidence"] = _diagram_confidence(
+                edge["confidence"], f"edges[{index}].confidence"
+            )
+        compiled_edges.append(compiled_edge)
+
+    diagram_type = _identifier(inputs.get("diagram_type", "component"), "diagram_type")
+    diagram_key = _identifier(inputs.get("diagram_key", diagram_type), "diagram_key")
     spec = {
-        "schema_version": "elmos.diagram.v1",
-        "diagram_type": str(inputs.get("diagram_type", "component")),
-        "nodes": [
+        "schema_version": 1,
+        "diagram_id": canonical_digest(
             {
-                "id": str(node.get("id", canonical_digest(node))),
-                "label": str(node.get("name", node.get("id", "node"))),
-                "kind": str(node.get("kind", "component")),
+                "tenant_id": runtime_scope.tenant_id,
+                "project_id": runtime_scope.project_id,
+                "diagram_key": diagram_key,
             }
-            for node in nodes
-        ],
-        "edges": [
-            {
-                "from": str(edge.get("from")),
-                "to": str(edge.get("to")),
-                "kind": str(edge.get("kind", "relates")),
-            }
-            for edge in edges
-        ],
+        ),
+        "type": diagram_type,
+        "project_id": runtime_scope.project_id,
+        "revision_id": runtime_scope.revision,
+        "nodes": sorted(compiled_nodes, key=lambda item: str(item["id"])),
+        "edges": sorted(compiled_edges, key=lambda item: str(item["id"])),
     }
+    _validate_diagram_spec(
+        spec,
+        runtime_scope=runtime_scope,
+        evidence_ids=evidence_ids,
+    )
     return _outcome(
         "LOCAL_EXECUTED",
         "DIAGRAM_SPEC_COMPILED",
@@ -1045,13 +1593,17 @@ def compile_diagram_spec(inputs: JsonObject) -> CapabilityOutcome:
     )
 
 
-def render_diagram(inputs: JsonObject) -> CapabilityOutcome:
+def render_diagram(
+    inputs: JsonObject, runtime_scope: TrustedRuntimeScope
+) -> CapabilityOutcome:
     spec = inputs.get("diagram_spec")
     if not isinstance(spec, Mapping):
-        nodes, edges = _graph(inputs)
-    else:
-        nodes = _records(spec, "nodes")
-        edges = _records(spec, "edges")
+        raise ValueError("diagram_spec must be an object")
+    nodes, edges = _validate_diagram_spec(
+        spec,
+        runtime_scope=runtime_scope,
+        evidence_ids=_diagram_evidence_ids(inputs),
+    )
     ids: dict[str, str] = {}
     lines = ["flowchart TD"]
     labels_normalized = False
@@ -1063,12 +1615,22 @@ def render_diagram(inputs: JsonObject) -> CapabilityOutcome:
             node.get("label", node.get("name", original))
         )
         labels_normalized = labels_normalized or was_normalized
-        lines.append(f'  {identifier}["{label}"]')
+        open_token, close_token = _MERMAID_SHAPE_BY_KIND.get(
+            str(node.get("kind", "")), _MERMAID_DEFAULT_SHAPE
+        )
+        lines.append(f"  {identifier}{open_token}{label}{close_token}")
     for edge in edges:
-        source = ids.get(str(edge.get("from")))
-        target = ids.get(str(edge.get("to")))
-        if source and target:
+        source = ids[str(edge["source"])]
+        target = ids[str(edge["target"])]
+        if "label" not in edge:
             lines.append(f"  {source} --> {target}")
+            continue
+        # An edge label goes through the same allowlist as a node label. The
+        # allowlist has no pipe in it, so a label cannot close the |...|
+        # delimiter and start a new statement.
+        edge_label, edge_normalized = _safe_mermaid_label(edge["label"])
+        labels_normalized = labels_normalized or edge_normalized
+        lines.append(f"  {source} -->|{edge_label}| {target}")
     mermaid = "\n".join(lines) + "\n"
     return _outcome(
         "PARTIAL_LOCAL_EXECUTED",
@@ -1208,11 +1770,45 @@ def bundle_report(inputs: JsonObject) -> CapabilityOutcome:
         normalized_digest = validate_digest(supplied_digest)
         if supplied_digest != normalized_digest:
             raise ValueError("artifact digest must use canonical lowercase sha256 form")
+        has_text = "content_text" in item
+        has_base64 = "content_base64" in item
+        if has_text == has_base64:
+            raise ValueError(
+                "artifact must supply exactly one of content_text or content_base64"
+            )
+        if has_text:
+            content_text = item["content_text"]
+            if not isinstance(content_text, str):
+                raise ValueError("artifact content_text must be a string")
+            content_bytes = content_text.encode("utf-8", errors="strict")
+            content_encoding = "utf-8"
+        else:
+            content_base64 = item["content_base64"]
+            if not isinstance(content_base64, str):
+                raise ValueError("artifact content_base64 must be a string")
+            try:
+                encoded = content_base64.encode("ascii", errors="strict")
+                content_bytes = base64.b64decode(encoded, validate=True)
+            except (UnicodeEncodeError, binascii.Error, ValueError) as exc:
+                raise ValueError("artifact content_base64 must be strict base64") from exc
+            if base64.b64encode(content_bytes).decode("ascii") != content_base64:
+                raise ValueError("artifact content_base64 must use canonical encoding")
+            content_encoding = "base64"
+        observed_digest = (
+            "sha256:" + hashlib.sha256(content_bytes).hexdigest()
+        )
+        if observed_digest != normalized_digest:
+            raise ValueError("artifact digest does not bind the supplied content bytes")
+        media_type = item.get("media_type", "application/octet-stream")
+        if not isinstance(media_type, str) or not media_type:
+            raise ValueError("artifact media_type must be a non-empty string")
         index.append(
             {
                 "artifact_id": artifact_id,
                 "digest": normalized_digest,
-                "media_type": str(item.get("media_type", "application/octet-stream")),
+                "media_type": media_type,
+                "byte_count": len(content_bytes),
+                "content_encoding": content_encoding,
             }
         )
     index.sort(key=lambda item: item["artifact_id"])
@@ -1223,6 +1819,7 @@ def bundle_report(inputs: JsonObject) -> CapabilityOutcome:
             "artifacts": index,
             "bundle_digest": canonical_digest(index),
             "content_addressed": True,
+            "artifact_bytes_verified": True,
         },
     )
 
@@ -1400,22 +1997,40 @@ def build_threat_model(inputs: JsonObject) -> CapabilityOutcome:
     )
 
 
-def cache_analysis_stage(inputs: JsonObject) -> CapabilityOutcome:
+def cache_analysis_stage(
+    inputs: JsonObject, runtime_scope: TrustedRuntimeScope
+) -> CapabilityOutcome:
     stage = _identifier(inputs.get("stage", "analysis"), "stage")
     input_digest = canonical_digest(inputs.get("stage_inputs", {}))
     existing = inputs.get("existing_cache_key")
-    key = canonical_digest(
-        {"stage": stage, "inputs": input_digest, "engine": "project-intelligence-v1"}
-    )
+    if existing is not None:
+        existing = validate_digest(existing)
+    key_payload = {
+        "schema_version": CACHE_KEY_SCHEMA_VERSION,
+        "implementation_version": CACHE_IMPLEMENTATION_VERSION,
+        "tenant_id": runtime_scope.tenant_id,
+        "project_id": runtime_scope.project_id,
+        "revision": runtime_scope.revision,
+        "stage": stage,
+        "input_digest": input_digest,
+    }
+    key = canonical_digest(key_payload)
     return _outcome(
-        "LOCAL_EXECUTED",
-        "ANALYSIS_CACHE_KEY_RESOLVED",
+        "PARTIAL_LOCAL_EXECUTED",
+        "ANALYSIS_CACHE_KEY_DERIVED",
         {
             "cache_key": key,
-            "hit": existing == key,
+            "caller_reported_key_match": existing == key,
             "stage": stage,
             "input_digest": input_digest,
+            "schema_version": CACHE_KEY_SCHEMA_VERSION,
+            "implementation_version": CACHE_IMPLEMENTATION_VERSION,
         },
+        unavailable=(
+            "durable-scoped-cache-store",
+            "cache-entry-content-verification",
+        ),
+        warnings=("caller-supplied-cache-key-not-content-verified",),
     )
 
 
@@ -1427,25 +2042,30 @@ def validate_artifact_version_proposal(inputs: JsonObject) -> CapabilityOutcome:
     previous_version = inputs.get("previous_version", 0)
     if type(previous_version) is not int or previous_version < 0:
         raise ValueError("previous_version must be a non-negative integer")
+    version = previous_version + 1
+    content_digest = canonical_digest(proposed)
     if locked and proposed != content:
         return _outcome(
             "BLOCKED",
             "HUMAN_LOCK_PREVENTED_OVERWRITE",
             {
                 "artifact_id": artifact_id,
+                "proposed_version": version,
+                "content_digest": content_digest,
                 "caller_reported_human_locked": True,
                 "authoritative_lock_verified": False,
                 "version_persisted": False,
             },
+            unavailable=("authoritative-human-lock-store", "artifact-version-store"),
+            warnings=("caller-supplied-lock-state-unverified",),
         )
-    version = previous_version + 1
     return _outcome(
         "PARTIAL_LOCAL_EXECUTED",
         "ARTIFACT_VERSION_PROPOSAL_VALIDATED",
         {
             "artifact_id": artifact_id,
             "proposed_version": version,
-            "content_digest": canonical_digest(proposed),
+            "content_digest": content_digest,
             "caller_reported_human_locked": locked,
             "authoritative_lock_verified": False,
             "version_persisted": False,
@@ -1581,7 +2201,24 @@ def plan_repository_shards(inputs: JsonObject) -> CapabilityOutcome:
 
 def evaluate_slo(inputs: JsonObject) -> CapabilityOutcome:
     observations = _records(inputs, "observations")
-    target = Decimal(str(inputs.get("success_rate_target", "0.99")))
+    target_token = str(inputs.get("success_rate_target", "0.99"))
+    if len(target_token.encode("utf-8", errors="strict")) > 64:
+        raise ValueError("success_rate_target decimal token exceeds 64 UTF-8 bytes")
+    try:
+        target = Decimal(target_token)
+    except (InvalidOperation, ValueError) as exc:
+        raise ValueError(
+            "success_rate_target must be an exact decimal between 0 and 1"
+        ) from exc
+    if not target.is_finite() or target < Decimal("0") or target > Decimal("1"):
+        raise ValueError(
+            "success_rate_target must be a finite exact decimal between 0 and 1"
+        )
+    _sign, digits, exponent = target.as_tuple()
+    if len(digits) > 18 or exponent < -18 or exponent > 0:
+        raise ValueError(
+            "success_rate_target supports at most 18 significant and fractional digits"
+        )
     successes = sum(item.get("status") == "SUCCEEDED" for item in observations)
     rate = (
         Decimal(successes) / Decimal(len(observations))
@@ -1640,29 +2277,112 @@ def validate_conversion_mapping(inputs: JsonObject) -> CapabilityOutcome:
     )
 
 
-def estimate_runtime_cost(inputs: JsonObject) -> CapabilityOutcome:
+_RFC3339_DATE_TIME = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
+    r"(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$"
+)
+
+
+def _validated_rfc3339(value: Any, field_name: str) -> str:
+    if not isinstance(value, str) or not _RFC3339_DATE_TIME.fullmatch(value):
+        raise ValueError(
+            f"{field_name} must be an RFC 3339 date-time with an explicit offset"
+        )
+    try:
+        parsed = datetime.fromisoformat(
+            value[:-1] + "+00:00" if value.endswith("Z") else value
+        )
+    except ValueError as exc:
+        raise ValueError(f"{field_name} must be a valid RFC 3339 date-time") from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ValueError(f"{field_name} must include an explicit UTC offset")
+    return value
+
+
+def _estimate_number(value: Decimal) -> int:
+    """Return an exact JSON number accepted by the float-free canonical encoder."""
+
+    return int(value.to_integral_value(rounding=ROUND_CEILING))
+
+
+def estimate_runtime_cost(
+    inputs: JsonObject, runtime_scope: TrustedRuntimeScope
+) -> CapabilityOutcome:
     files = _files(inputs)
-    workers = max(1, min(int(inputs.get("workers", 1)), 128))
+    workers = inputs.get("workers", 1)
+    if type(workers) is not int or not 1 <= workers <= 128:
+        raise ValueError("workers must be an integer between 1 and 128")
+    review_seconds = inputs.get("human_review_effort_seconds", 0)
+    if (
+        type(review_seconds) is not int
+        or review_seconds < 0
+        or review_seconds > 315_576_000
+    ):
+        raise ValueError(
+            "human_review_effort_seconds must be an integer between 0 and 315576000"
+        )
+    as_of = _validated_rfc3339(inputs.get("as_of"), "as_of")
     total_bytes = sum(int(file["bytes"]) for file in files)
-    parse_seconds = Decimal(total_bytes) / Decimal(250_000)
-    graph_seconds = Decimal(len(files)) * Decimal("0.002")
-    p50 = (
-        (parse_seconds + graph_seconds) / Decimal(min(workers, max(len(files), 1)))
-    ).quantize(Decimal("0.001"), rounding=ROUND_HALF_UP)
-    p90 = max(p50, p50 * Decimal("1.8")).quantize(
-        Decimal("0.001"), rounding=ROUND_HALF_UP
+    effective_workers = Decimal(min(workers, max(len(files), 1)))
+    parse_p50 = Decimal(total_bytes) / Decimal(250_000) / effective_workers
+    graph_p50 = Decimal(len(files)) * Decimal("0.002") / effective_workers
+    parse_p90 = parse_p50 * Decimal("1.8")
+    graph_p90 = graph_p50 * Decimal("1.8")
+    p50 = parse_p50 + graph_p50
+    p90 = parse_p90 + graph_p90
+    review_p50_hours = Decimal(review_seconds) / Decimal(3_600)
+    review_p90_hours = review_p50_hours * Decimal("1.5")
+    stages = [
+        {
+            "name": "parse",
+            "p50_seconds": _estimate_number(parse_p50),
+            "p90_seconds": _estimate_number(parse_p90),
+            "queue_seconds": 0,
+        },
+        {
+            "name": "graph",
+            "p50_seconds": _estimate_number(graph_p50),
+            "p90_seconds": _estimate_number(graph_p90),
+            "queue_seconds": 0,
+        },
+    ]
+    estimate_id = canonical_digest(
+        {
+            "tenant_id": runtime_scope.tenant_id,
+            "project_id": runtime_scope.project_id,
+            "revision": runtime_scope.revision,
+            "as_of": as_of,
+            "workers": workers,
+            "files": [
+                {"path": file["path"], "sha256": file["sha256"]} for file in files
+            ],
+            "human_review_effort_seconds": review_seconds,
+            "model_version": "local-linear-v2",
+        }
     )
     return _outcome(
         "LOCAL_EXECUTED",
         "RUNTIME_COST_ESTIMATED",
         {
-            "system_wall_clock_eta_p50_seconds": format(p50, "f"),
-            "system_wall_clock_eta_p90_seconds": format(p90, "f"),
-            "human_review_effort_seconds": int(
-                inputs.get("human_review_effort_seconds", 0)
-            ),
-            "model_version": "local-linear-v1",
-            "currency_cost": None,
+            "estimate_id": estimate_id,
+            "as_of": as_of,
+            "project_revision_id": runtime_scope.revision,
+            "pipeline": ["parse", "graph"],
+            "system_wall_clock_eta": {
+                "p50_seconds": _estimate_number(p50),
+                "p90_seconds": _estimate_number(p90),
+                "confidence": 0,
+            },
+            "stages": stages,
+            "human_review_effort": {
+                "p50_hours": _estimate_number(review_p50_hours),
+                "p90_hours": _estimate_number(review_p90_hours),
+            },
+            "assumptions": [
+                "local linear model without historical calibration",
+                "queue delay and provider costs are not estimated",
+                "durations are rounded up to whole seconds and review hours",
+            ],
         },
     )
 
@@ -1779,60 +2499,212 @@ def negotiate_debug_adapter(inputs: JsonObject) -> CapabilityOutcome:
     )
 
 
-def plan_debug_session(inputs: JsonObject) -> CapabilityOutcome:
-    revision = _identifier(inputs.get("revision", "local-content"), "revision")
-    policy = {
-        "read_only_source": True,
-        "network": "deny",
-        "evaluate": "side-effect-free-only",
-        "ttl_seconds": min(int(inputs.get("ttl_seconds", 900)), 3600),
-        "revision": revision,
+_DEBUG_SESSION_MODES = frozenset({"observe", "guided", "challenge", "free", "compare"})
+_DEBUG_TARGET_KINDS = frozenset(
+    {"test", "main", "api", "cli", "cron", "consumer", "browser_scenario", "replay"}
+)
+_DEBUG_DIFFICULTIES = frozenset({"beginner", "intermediate", "advanced"})
+
+
+def _debug_runtime_profile(inputs: JsonObject) -> dict[str, Any]:
+    profile = inputs.get("runtime_profile")
+    if not isinstance(profile, Mapping):
+        raise ValueError("runtime_profile must be an object")
+    runtime_profile_id = _identifier(
+        profile.get("runtime_profile_id"), "runtime_profile.runtime_profile_id"
+    )
+    image_digest = validate_digest(profile.get("image_digest"))
+    if profile.get("image_digest") != image_digest:
+        raise ValueError("runtime_profile.image_digest must be canonical")
+    normalized: dict[str, Any] = {
+        "runtime_profile_id": runtime_profile_id,
+        "image_digest": image_digest,
+    }
+    if "toolchain" in profile:
+        if not isinstance(profile["toolchain"], Mapping):
+            raise ValueError("runtime_profile.toolchain must be an object")
+        normalized["toolchain"] = dict(profile["toolchain"])
+    return normalized
+
+
+def _debug_target(inputs: JsonObject) -> dict[str, str]:
+    target = inputs.get("debug_target")
+    if not isinstance(target, Mapping):
+        raise ValueError("debug_target must be an object")
+    kind = _identifier(target.get("kind"), "debug_target.kind")
+    if kind not in _DEBUG_TARGET_KINDS:
+        raise ValueError("debug_target.kind is not allowlisted")
+    return {"kind": kind, "ref": _identifier(target.get("ref"), "debug_target.ref")}
+
+
+def _debug_mode(inputs: JsonObject) -> str:
+    mode = _identifier(inputs.get("debug_mode", "guided"), "debug_mode")
+    if mode not in _DEBUG_SESSION_MODES:
+        raise ValueError("debug_mode is not allowlisted")
+    return mode
+
+
+def _debug_session_adapter(inputs: JsonObject) -> dict[str, str]:
+    adapter = inputs.get("adapter")
+    if not isinstance(adapter, Mapping):
+        raise ValueError("adapter must be an object")
+    adapter_id = _identifier(
+        adapter.get("adapter_id", adapter.get("id")), "adapter.adapter_id"
+    )
+    version = _identifier(adapter.get("version"), "adapter.version")
+    digest = validate_digest(adapter.get("digest"))
+    if adapter.get("digest") != digest:
+        raise ValueError("adapter.digest must be canonical")
+    return {"adapter_id": adapter_id, "version": version, "digest": digest}
+
+
+def _debug_session_id(
+    inputs: JsonObject, runtime_scope: TrustedRuntimeScope
+) -> str:
+    derived = canonical_digest(
+        {
+            "tenant_id": runtime_scope.tenant_id,
+            "project_id": runtime_scope.project_id,
+            "revision": runtime_scope.revision,
+            "runtime_profile": _debug_runtime_profile(inputs),
+            "target": _debug_target(inputs),
+            "mode": _debug_mode(inputs),
+        }
+    )
+    supplied = inputs.get("debug_session_id")
+    if supplied is not None and supplied != derived:
+        raise ValueError("debug_session_id does not match the bound session plan")
+    return derived
+
+
+def plan_debug_session(
+    inputs: JsonObject, runtime_scope: TrustedRuntimeScope
+) -> CapabilityOutcome:
+    ttl_seconds = inputs.get("ttl_seconds", 900)
+    if type(ttl_seconds) is not int or not 1 <= ttl_seconds <= 3_600:
+        raise ValueError("ttl_seconds must be an integer between 1 and 3600")
+    capabilities, forbidden = _canonical_allowlisted_values(
+        inputs.get("requested_capabilities"),
+        field_name="requested_capabilities",
+        allowlist=_DEBUG_CAPABILITY_ALLOWLIST,
+    )
+    if forbidden:
+        raise ValueError("requested_capabilities contains a forbidden capability")
+    session = {
+        "debug_session_id": _debug_session_id(inputs, runtime_scope),
+        "tenant_id": runtime_scope.tenant_id,
+        "project_id": runtime_scope.project_id,
+        "revision_id": runtime_scope.revision,
+        "runtime_profile": _debug_runtime_profile(inputs),
+        "target": _debug_target(inputs),
+        "mode": _debug_mode(inputs),
+        "state": "requested",
+        "adapter": _debug_session_adapter(inputs),
+        "capabilities": capabilities,
+        "policy": {
+            "policy_id": canonical_digest(
+                {
+                    "tenant_id": runtime_scope.tenant_id,
+                    "project_id": runtime_scope.project_id,
+                    "policy": "bounded-local-debug-plan-v1",
+                }
+            ),
+            "environment": "isolated-local-plan",
+            "evaluate_mode": "read_only",
+        },
+        "ttl_seconds": ttl_seconds,
     }
     return _outcome(
         "PLANNING_ONLY",
         "DEBUG_SANDBOX_SESSION_PLANNED",
-        {"policy": policy, "sandbox_started": False},
+        {"debug_session": session, "sandbox_started": False},
         unavailable=("container-or-microvm-runner", "debug-adapter-process"),
     )
 
 
-def reduce_debug_view(inputs: JsonObject) -> CapabilityOutcome:
+def reduce_debug_view(
+    inputs: JsonObject, runtime_scope: TrustedRuntimeScope
+) -> CapabilityOutcome:
     events, sanitization = _sanitized_debug_events(
-        inputs,
-        allowed_fields=_CORRELATION_EVENT_FIELDS,
-    )
-    ordered = sorted(
-        events,
-        key=lambda item: (int(item.get("sequence", 0)), str(item.get("event_id", ""))),
+        inputs, runtime_scope=runtime_scope
     )
     threads: dict[str, dict[str, Any]] = {}
-    for event in ordered:
-        thread = str(event.get("thread_id", "main"))
+    for event in events:
+        payload = event["payload"]
+        thread = str(payload.get("thread_id", "main"))
         threads[thread] = {
-            "last_event": event.get("kind"),
-            "sequence": event.get("sequence"),
-            "frame": event.get("frame"),
+            "last_event": event["event_type"],
+            "sequence": event["sequence"],
+            "frame": payload.get("frame"),
         }
     return _outcome(
         "PARTIAL_LOCAL_EXECUTED",
         "DEBUG_VIEW_STATE_REDUCED",
-        {"threads": threads, "event_count": len(ordered), "ui_rendered": False},
+        {"threads": threads, "event_count": len(events), "ui_rendered": False},
         unavailable=("browser-debug-workbench",),
         warnings=_debug_sanitization_warnings(sanitization),
     )
 
 
-def build_debug_mission(inputs: JsonObject) -> CapabilityOutcome:
+def build_debug_mission(
+    inputs: JsonObject, runtime_scope: TrustedRuntimeScope
+) -> CapabilityOutcome:
     frames = _records(inputs, "frames")
-    mission = [
-        {
-            "step": index,
-            "frame_id": frame.get("frame_id"),
-            "prompt": f"Inspect {frame.get('function', 'frame')} and cite its evidence.",
-            "evidence_ref": frame.get("evidence_ref"),
-        }
-        for index, frame in enumerate(frames, 1)
-    ]
+    if not frames:
+        raise ValueError("frames must contain at least one learning step")
+    difficulty = _identifier(
+        inputs.get("debug_difficulty", "beginner"), "debug_difficulty"
+    )
+    if difficulty not in _DEBUG_DIFFICULTIES:
+        raise ValueError("debug_difficulty is not allowlisted")
+    steps: list[dict[str, Any]] = []
+    for index, frame in enumerate(frames, 1):
+        frame_id = _identifier(frame.get("frame_id"), f"frames[{index - 1}].frame_id")
+        evidence_ref = _identifier(
+            frame.get("evidence_ref"), f"frames[{index - 1}].evidence_ref"
+        )
+        function_name, _ = _safe_markdown_text(frame.get("function", "frame"))
+        steps.append(
+            {
+                "step_id": canonical_digest(
+                    {
+                        "tenant_id": runtime_scope.tenant_id,
+                        "project_id": runtime_scope.project_id,
+                        "revision": runtime_scope.revision,
+                        "frame_id": frame_id,
+                        "ordinal": index,
+                    }
+                ),
+                "breakpoint_ref": frame_id,
+                "prompt": f"Inspect {function_name} and cite {evidence_ref}.",
+                "hints": ["Use only the supplied frame and evidence reference."],
+                "completion": f"evidence-cited:{evidence_ref}",
+            }
+        )
+    target = _debug_target(inputs)
+    mission = {
+        "mission_id": canonical_digest(
+            {
+                "debug_session_id": _debug_session_id(inputs, runtime_scope),
+                "steps": [step["step_id"] for step in steps],
+            }
+        ),
+        "tenant_id": runtime_scope.tenant_id,
+        "project_id": runtime_scope.project_id,
+        "revision_id": runtime_scope.revision,
+        "title": "Evidence-bound local debugging mission",
+        "mode": _debug_mode(inputs),
+        "difficulty": difficulty,
+        "entry": target,
+        "learning_objectives": [
+            "Trace the supplied control-flow frame.",
+            "Cite the supplied evidence reference before completion.",
+        ],
+        "steps": steps,
+        "assessment": {"type": "evidence-citation", "pass_score": 1},
+        "stale": False,
+        "redaction_profile": "recursive-field-policy-v2",
+    }
     return _outcome(
         "PARTIAL_LOCAL_EXECUTED",
         "DEBUG_LEARNING_MISSION_BUILT",
@@ -1841,28 +2713,80 @@ def build_debug_mission(inputs: JsonObject) -> CapabilityOutcome:
     )
 
 
-def build_replay_bundle(inputs: JsonObject) -> CapabilityOutcome:
-    events, sanitization = _sanitized_debug_events(inputs)
-    redacted: list[dict[str, Any]] = []
-    previous = None
-    for event in sorted(events, key=lambda item: int(item.get("sequence", 0))):
-        clean = dict(event)
-        clean["previous_event_digest"] = previous
-        clean["event_digest"] = canonical_digest(clean)
-        previous = clean["event_digest"]
-        redacted.append(clean)
-    bundle = {
+def build_replay_bundle(
+    inputs: JsonObject, runtime_scope: TrustedRuntimeScope
+) -> CapabilityOutcome:
+    events, sanitization = _sanitized_debug_events(
+        inputs, runtime_scope=runtime_scope
+    )
+    debug_session_id = _debug_session_id(inputs, runtime_scope)
+    chunks: list[dict[str, Any]] = []
+    previous_sha256: str | None = None
+    for event in events:
+        event_bytes = canonical_json_bytes(event)
+        event_sha256 = hashlib.sha256(event_bytes).hexdigest()
+        chunks.append(
+            {
+                "chunk_id": canonical_digest(
+                    {
+                        "debug_session_id": debug_session_id,
+                        "event_id": event["event_id"],
+                        "event_sha256": event_sha256,
+                    }
+                ),
+                "kind": "debug-event",
+                "sha256": event_sha256,
+                "size_bytes": len(event_bytes),
+                "previous_sha256": previous_sha256,
+                "event": event,
+            }
+        )
+        previous_sha256 = event_sha256
+    replay_bundle_id = canonical_digest(
+        {
+            "debug_session_id": debug_session_id,
+            "chunks": [chunk["sha256"] for chunk in chunks],
+            "replay_level": "R0",
+        }
+    )
+    manifest_body = {
+        "replay_bundle_id": replay_bundle_id,
+        "tenant_id": runtime_scope.tenant_id,
+        "project_id": runtime_scope.project_id,
+        "revision_id": runtime_scope.revision,
+        "source_debug_session_id": debug_session_id,
         "replay_level": "R0",
-        "events": redacted,
-        "terminal_digest": previous,
-        "native_reverse_debug": False,
+        "runtime_profile": _debug_runtime_profile(inputs),
+        "reproducibility": {
+            "event_order": "positive-unique-sequence",
+            "terminal_event_sha256": previous_sha256,
+            "native_runtime_reexecution": "NOT_RUN",
+        },
+        "chunks": chunks,
         "redaction": {
-            "policy": "recursive-field-policy-v1",
+            "profile": "recursive-field-policy-v2",
+            "scan_status": "review_required",
+            "omitted_fields": [
+                "inline-credential-values",
+                "sensitive-keyed-fields",
+            ],
             "sensitive_fields_omitted": sanitization["sensitive_fields_omitted"],
             "inline_secret_values_redacted": sanitization[
                 "inline_secret_values_redacted"
             ],
             "strings_truncated": sanitization["strings_truncated"],
+        },
+        "native_reverse_debug": False,
+    }
+    bundle = {
+        **manifest_body,
+        "integrity": {
+            "manifest_sha256": hashlib.sha256(
+                canonical_json_bytes(manifest_body)
+            ).hexdigest(),
+            "signature_ref": "NOT_RUN",
+            "signature_status": "NOT_RUN",
+            "manifest_digest_scope": "bundle-without-integrity",
         },
     }
     return _outcome(
@@ -1873,20 +2797,29 @@ def build_replay_bundle(inputs: JsonObject) -> CapabilityOutcome:
             "r1-input-replay",
             "r2-checkpoint-replay",
             "r3-native-reverse-debug",
+            "replay-bundle-signing",
+            "replay-bundle-encryption",
+            "replay-bundle-retention-policy",
         ),
         warnings=_debug_sanitization_warnings(sanitization),
     )
 
 
-def correlate_debug_events(inputs: JsonObject) -> CapabilityOutcome:
+def correlate_debug_events(
+    inputs: JsonObject, runtime_scope: TrustedRuntimeScope
+) -> CapabilityOutcome:
     events, sanitization = _sanitized_debug_events(
-        inputs,
-        allowed_fields=_CORRELATION_EVENT_FIELDS,
+        inputs, runtime_scope=runtime_scope
     )
     groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     gaps: list[dict[str, Any]] = []
     for event in events:
-        correlation = event.get("trace_id") or event.get("correlation_id")
+        payload = event["payload"]
+        correlation = (
+            payload.get("trace_id")
+            or payload.get("correlation_id")
+            or event.get("traceparent")
+        )
         if not correlation:
             gaps.append(
                 {"event_id": event.get("event_id"), "reason": "MISSING_CORRELATION_ID"}
@@ -1899,7 +2832,7 @@ def correlate_debug_events(inputs: JsonObject) -> CapabilityOutcome:
             "events": sorted(
                 value,
                 key=lambda item: (
-                    str(item.get("timestamp", "")),
+                    str(item["occurred_at"]),
                     int(item.get("sequence", 0)),
                 ),
             ),

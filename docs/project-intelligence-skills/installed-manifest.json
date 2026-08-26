@@ -3993,7 +3993,7 @@
       "external_evidence_status": "NOT_RUN",
       "id": "AC-31-01",
       "product_acceptance_status": "NOT_RUN",
-      "related_handler_capability_state": "LOCAL",
+      "related_handler_capability_state": "PARTIAL",
       "related_handler_id": "cache_analysis_stage",
       "related_local_fixture_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "requirement_id": "REQ-31-01",
@@ -4019,7 +4019,7 @@
       "external_evidence_status": "NOT_RUN",
       "id": "AC-31-02",
       "product_acceptance_status": "NOT_RUN",
-      "related_handler_capability_state": "LOCAL",
+      "related_handler_capability_state": "PARTIAL",
       "related_handler_id": "cache_analysis_stage",
       "related_local_fixture_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "requirement_id": "REQ-31-02",
@@ -4045,7 +4045,7 @@
       "external_evidence_status": "NOT_RUN",
       "id": "AC-31-03",
       "product_acceptance_status": "NOT_RUN",
-      "related_handler_capability_state": "LOCAL",
+      "related_handler_capability_state": "PARTIAL",
       "related_handler_id": "cache_analysis_stage",
       "related_local_fixture_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "requirement_id": "REQ-31-03",
@@ -4071,7 +4071,7 @@
       "external_evidence_status": "NOT_RUN",
       "id": "AC-31-04",
       "product_acceptance_status": "NOT_RUN",
-      "related_handler_capability_state": "LOCAL",
+      "related_handler_capability_state": "PARTIAL",
       "related_handler_id": "cache_analysis_stage",
       "related_local_fixture_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "requirement_id": "REQ-31-04",
@@ -4097,7 +4097,7 @@
       "external_evidence_status": "NOT_RUN",
       "id": "AC-31-05",
       "product_acceptance_status": "NOT_RUN",
-      "related_handler_capability_state": "LOCAL",
+      "related_handler_capability_state": "PARTIAL",
       "related_handler_id": "cache_analysis_stage",
       "related_local_fixture_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "requirement_id": "REQ-31-05",
@@ -4123,8 +4123,8 @@
       "external_evidence_status": "NOT_RUN",
       "id": "AC-32-01",
       "product_acceptance_status": "NOT_RUN",
-      "related_handler_capability_state": "LOCAL",
-      "related_handler_id": "version_artifact",
+      "related_handler_capability_state": "PARTIAL",
+      "related_handler_id": "validate_artifact_version_proposal",
       "related_local_fixture_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "requirement_id": "REQ-32-01",
       "skill": "elmos-artifact-versioning-human-lock",
@@ -4149,8 +4149,8 @@
       "external_evidence_status": "NOT_RUN",
       "id": "AC-32-02",
       "product_acceptance_status": "NOT_RUN",
-      "related_handler_capability_state": "LOCAL",
-      "related_handler_id": "version_artifact",
+      "related_handler_capability_state": "PARTIAL",
+      "related_handler_id": "validate_artifact_version_proposal",
       "related_local_fixture_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "requirement_id": "REQ-32-02",
       "skill": "elmos-artifact-versioning-human-lock",
@@ -4175,8 +4175,8 @@
       "external_evidence_status": "NOT_RUN",
       "id": "AC-32-03",
       "product_acceptance_status": "NOT_RUN",
-      "related_handler_capability_state": "LOCAL",
-      "related_handler_id": "version_artifact",
+      "related_handler_capability_state": "PARTIAL",
+      "related_handler_id": "validate_artifact_version_proposal",
       "related_local_fixture_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "requirement_id": "REQ-32-03",
       "skill": "elmos-artifact-versioning-human-lock",
@@ -4201,8 +4201,8 @@
       "external_evidence_status": "NOT_RUN",
       "id": "AC-32-04",
       "product_acceptance_status": "NOT_RUN",
-      "related_handler_capability_state": "LOCAL",
-      "related_handler_id": "version_artifact",
+      "related_handler_capability_state": "PARTIAL",
+      "related_handler_id": "validate_artifact_version_proposal",
       "related_local_fixture_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "requirement_id": "REQ-32-04",
       "skill": "elmos-artifact-versioning-human-lock",
@@ -4227,8 +4227,8 @@
       "external_evidence_status": "NOT_RUN",
       "id": "AC-32-05",
       "product_acceptance_status": "NOT_RUN",
-      "related_handler_capability_state": "LOCAL",
-      "related_handler_id": "version_artifact",
+      "related_handler_capability_state": "PARTIAL",
+      "related_handler_id": "validate_artifact_version_proposal",
       "related_local_fixture_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "requirement_id": "REQ-32-05",
       "skill": "elmos-artifact-versioning-human-lock",
@@ -6450,7 +6450,7 @@
     }
   ],
   "acceptance_implementation_catalog_count": 248,
-  "acceptance_implementation_catalog_sha256": "sha256:3a0922baf5d86e883088237bc0ba72a712a13e9539e5516b10b5032261306608",
+  "acceptance_implementation_catalog_sha256": "sha256:36dfe90ac4371a32d0c22ee216ccaa570309cec39f8f6ebf6cfa92e462ca19c1",
   "backlog": {
     "acceptance_scenarios": 248,
     "epics": 50,
@@ -8489,10 +8489,11 @@
   "exact_runtime_binding_count": 50,
   "external_evidence_status": "NOT_RUN",
   "implementation_matrix_path": "docs/project-intelligence-skills/implementation-matrix.json",
-  "implementation_matrix_sha256": "sha256:727a4fee68648152a2021eed624906cd651dd6b9bba923e713cda6f6bf48fef1",
+  "implementation_matrix_sha256": "sha256:24a2360be5bd93c2f51d0a8aa156f382fa4746816cf8a1770f1e1a1ba387dc59",
   "implementation_state": "BOUNDED_LOCAL_WITH_PARTIAL_AND_PLANNING_CAPABILITIES",
+  "installed_tree_digest_schema": "sha256-v2:name-path-mode-bytes",
   "integration_readme_path": "docs/project-intelligence-skills/README.md",
-  "integration_readme_sha256": "sha256:1cd0b25c1560054daf63bde02d3c9b41f82528b46e4b443044177ea64cf22a41",
+  "integration_readme_sha256": "sha256:2b0b4b8d1c8e42a7c458f9146a1f7b25783cdb26963f7d6e2a3343344189e554",
   "known_source_contract_findings": [
     "only the full source profile is dependency-closed",
     "docs/26-installation-profiles.md contains stale conversion, enterprise, and full counts and omits debug",
@@ -8519,10 +8520,25 @@
     }
   ],
   "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
-  "local_qualification_effect_guard": "PYTHON_AUDIT_DENY_FILESYSTEM_PROCESS_NETWORK_DURING_DISPATCH",
+  "local_qualification_effect_guard": "PYTHON_AUDIT_BEST_EFFORT_EFFECT_GUARD_DURING_DISPATCH",
+  "local_qualification_effect_guard_limitations": "Python audit events are fail-closed when observed but are not an OS sandbox and cannot account for effects through inherited descriptors, native extensions, or events the interpreter does not emit.",
   "local_qualification_independent_verifier": null,
-  "local_qualification_receipt_digest": "sha256:8896378afd7f04895d6525a58b2349dbf2341bccf56d88beadffaebb19427991",
+  "local_qualification_receipt_digest": "sha256:e394571d4061dfcc86b8e067b19d07374313926265a32ae3932d67064e622fd0",
   "local_qualification_receipt_path": "engines/project-intelligence-engine/qualification/local-qualification.json",
+  "local_qualification_runtime_environment": {
+    "byteorder": "little",
+    "cache_tag": "cpython-314",
+    "executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
+    "executable_sha256": "sha256:c015ab131972822e27ed108cf353582af6ca2fd7daf6296789576c7e7d1ad61a",
+    "hexversion": 51250672,
+    "implementation": "cpython",
+    "machine": "arm64",
+    "platform": "darwin",
+    "release_level": "final",
+    "resolved_executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
+    "serial": 0,
+    "version": "3.14.5"
+  },
   "maximum_local_claim": "BOUNDED_LOCAL_ENGINEERING_VALIDATED",
   "namespace": "elmos-project-intelligence-v1",
   "package_identity_status": "PINNED_VALIDATED",
@@ -9181,14 +9197,14 @@
     }
   ],
   "runtime_binding_state_counts": {
-    "LOCAL": 21,
-    "PARTIAL": 24,
+    "LOCAL": 19,
+    "PARTIAL": 26,
     "PLAN": 5
   },
   "runtime_engine_path": "engines/project-intelligence-engine",
-  "runtime_engine_tree_sha256": "sha256:44628cf03300c1ae2e831c237f5e14fe5daa2e38e1e57a058b6d1c9fda3abaee",
+  "runtime_engine_tree_sha256": "sha256:133c3c83246347d71eb0a8ae67b50074187432b32ac3746dd617390be179b71f",
   "runtime_root": "agent-skills/runtime",
-  "runtime_tree_sha256": "sha256:fb8cc90d203b6a6c0619c3e22c2e027392c1a5b45e5dd4db80b162ce309a6695",
+  "runtime_tree_sha256": "sha256:d6ad92b6a7350a6cc652b62cbc2b727d6edda474f1a4d9a497fc05dedac08bf2",
   "schema_version": "1.0",
   "skill_count": 50,
   "skill_interface_status": "INSTALLED",
@@ -9228,7 +9244,7 @@
         "技术约束与部署模式",
         "现有实现状态和测试结果"
       ],
-      "installed_tree_sha256": "sha256:da46f61876e0b2a1009e649b118d356267739e4ccb0f14fd0dc5d8e1923a5016",
+      "installed_tree_sha256": "sha256:c38b88e9c662aad1c946271a4cd8f6d3597b40c3c3cb9be4d7791ba9fc175f86",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-insight-orchestrator",
@@ -9245,7 +9261,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-insight-orchestrator/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:e47565f805d15e4c0c0b428d3314b8e9d29c4a3c16bf561c06ac5201811977fa",
       "runtime_skill_path": "agent-skills/runtime/elmos-insight-orchestrator/SKILL.md",
-      "runtime_skill_sha256": "sha256:473f660c96ab2364169f7a7983cc6854826d0bcd4ed2ebf798dfb524396c1042",
+      "runtime_skill_sha256": "sha256:1ffbae23614c30a10a8a37f708d10c5ff64db0ec9aa0f6177b23420f5fcde24e",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/00-insight-orchestrator/SKILL.md",
       "source_sha256": "sha256:3f8fe7223b777341234ecd7bdb6809c92aea762d21104508fcda2cba0decc2f0",
@@ -9258,7 +9274,7 @@
       ],
       "title_zh": "Project Intelligence Studio 总编排",
       "workspace_skill_path": ".agents/skills/elmos-insight-orchestrator/SKILL.md",
-      "workspace_skill_sha256": "sha256:473f660c96ab2364169f7a7983cc6854826d0bcd4ed2ebf798dfb524396c1042"
+      "workspace_skill_sha256": "sha256:1ffbae23614c30a10a8a37f708d10c5ff64db0ec9aa0f6177b23420f5fcde24e"
     },
     {
       "batch": "BATCH-00-product-and-reference-architecture",
@@ -9294,7 +9310,7 @@
         "现有 Elmos 能力",
         "商业与合规约束"
       ],
-      "installed_tree_sha256": "sha256:5f589dfc449439fa018f7254c1dfb7d48695e2dd82ea624d236679482005a28b",
+      "installed_tree_sha256": "sha256:bd3a6a67f03da62cc17f050b008d550e9b3448deecc89e009acf49e6194c569a",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-product-scope",
@@ -9311,7 +9327,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-product-scope/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:1481ce78673e9dbc6d0dd5a41030c0185343772c9e4624b59d6c9ca9c7ef5981",
       "runtime_skill_path": "agent-skills/runtime/elmos-product-scope/SKILL.md",
-      "runtime_skill_sha256": "sha256:2e8b30ea1a9bb80e0a7ee97fd9fbed3a1fedd8aa2c3cee9485e055425f4b34bf",
+      "runtime_skill_sha256": "sha256:b348179d7719628f7b4bb2ef8b7b563618a7b014a2c9c5ce4679cc564bf01ab5",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/01-product-scope/SKILL.md",
       "source_sha256": "sha256:2082b2e47d2fe1de463d0cb79073e2678a4706388b15c50cffb1f40c816aaf54",
@@ -9324,7 +9340,7 @@
       ],
       "title_zh": "产品范围与需求基线",
       "workspace_skill_path": ".agents/skills/elmos-product-scope/SKILL.md",
-      "workspace_skill_sha256": "sha256:2e8b30ea1a9bb80e0a7ee97fd9fbed3a1fedd8aa2c3cee9485e055425f4b34bf"
+      "workspace_skill_sha256": "sha256:b348179d7719628f7b4bb2ef8b7b563618a7b014a2c9c5ce4679cc564bf01ab5"
     },
     {
       "batch": "BATCH-00-product-and-reference-architecture",
@@ -9363,7 +9379,7 @@
         "目标吞吐与仓库规模",
         "部署环境"
       ],
-      "installed_tree_sha256": "sha256:43e9bbc5b0c6ca74f05c66263057d2b613c6c1e5685d4b63fa7093ec1a3576de",
+      "installed_tree_sha256": "sha256:3e467a4e6efd2bffa55934afbba4ba523828e2facc7781a2dfbf955676784b9e",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-reference-architecture",
@@ -9376,11 +9392,11 @@
         "ADR 与权衡"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:0ae44641d557ff6a9ed8838f650e0e7c22354544ae5fca592c0f0749255f6356",
+      "qualification_result_digest": "sha256:9a36cf9fab8adfff68f36f32a11f653d45b3d2adb11222f93978e722eda42a0b",
       "runtime_interface_path": "agent-skills/runtime/elmos-reference-architecture/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:e9520eab0e439a93e31f5b272d73171125c39d5f5dc0b9ee5ee867f190a3a462",
       "runtime_skill_path": "agent-skills/runtime/elmos-reference-architecture/SKILL.md",
-      "runtime_skill_sha256": "sha256:d0d3bb40959c485ad52c75e90fe78371fe5d756f11ae7987f5cbc8c11117ed01",
+      "runtime_skill_sha256": "sha256:321db51d59d0a939d61fbec04056f80c42827088b9bc8e64897d2f09e4e30f23",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/02-reference-architecture/SKILL.md",
       "source_sha256": "sha256:d50d43048ceb9ecba316d40b9cab0498224f6f15689b92f97eacd9e83a974708",
@@ -9393,7 +9409,7 @@
       ],
       "title_zh": "参考架构与服务边界",
       "workspace_skill_path": ".agents/skills/elmos-reference-architecture/SKILL.md",
-      "workspace_skill_sha256": "sha256:d0d3bb40959c485ad52c75e90fe78371fe5d756f11ae7987f5cbc8c11117ed01"
+      "workspace_skill_sha256": "sha256:321db51d59d0a939d61fbec04056f80c42827088b9bc8e64897d2f09e4e30f23"
     },
     {
       "batch": "BATCH-01-ingestion-and-parsing",
@@ -9431,7 +9447,7 @@
         "分支/Tag/Commit",
         "包含/排除规则"
       ],
-      "installed_tree_sha256": "sha256:38da7deb8a6c6a888a5beb275cb22c05c9fbf502da97301a690eeeab49c08899",
+      "installed_tree_sha256": "sha256:6e24a514351a3a9346a83e594de92cfc055e8476596d01afe84bc51bebadc2ef",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-repository-ingestion",
@@ -9447,7 +9463,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-repository-ingestion/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:7e660807318e70028a12130a0e04063bac01aac665c951d74bdf46870d2a6e8a",
       "runtime_skill_path": "agent-skills/runtime/elmos-repository-ingestion/SKILL.md",
-      "runtime_skill_sha256": "sha256:a4156ff15db0f2b7be885b2ad6a45b1e271cfe59a3ea717493d47af575a4e750",
+      "runtime_skill_sha256": "sha256:d407e97cb26166bbde6e035e09dba8452e24588a5b1c180757a652a74802957c",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/03-repository-ingestion/SKILL.md",
       "source_sha256": "sha256:daadd85a4fa7f6a0f07bf928f1bf5478bf3012b9391549964d31454215639fe1",
@@ -9460,7 +9476,7 @@
       ],
       "title_zh": "仓库接入与修订冻结",
       "workspace_skill_path": ".agents/skills/elmos-repository-ingestion/SKILL.md",
-      "workspace_skill_sha256": "sha256:a4156ff15db0f2b7be885b2ad6a45b1e271cfe59a3ea717493d47af575a4e750"
+      "workspace_skill_sha256": "sha256:d407e97cb26166bbde6e035e09dba8452e24588a5b1c180757a652a74802957c"
     },
     {
       "batch": "BATCH-01-ingestion-and-parsing",
@@ -9497,7 +9513,7 @@
         "构建/锁文件",
         "配置与容器文件"
       ],
-      "installed_tree_sha256": "sha256:d4dc946b591963b232852bb1bf8b473c95fb987b7494ab39f94e6b1c05941b69",
+      "installed_tree_sha256": "sha256:e93a04097c5b909a38a9a92824116bc98dc24b724b0bd151e718a97c4f87f7cd",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-project-fingerprinting",
@@ -9513,7 +9529,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-project-fingerprinting/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:4730a64dfb3256a3aeb5d84a963907a94442af79307245f767406286d3891330",
       "runtime_skill_path": "agent-skills/runtime/elmos-project-fingerprinting/SKILL.md",
-      "runtime_skill_sha256": "sha256:2aec420d46e52e8300dc8f1313b51fdcdd99c576e44e6061df6f999ffd65f54d",
+      "runtime_skill_sha256": "sha256:81af2a464bb4d8d4b6dbce42fcbfc93762e0865653aa1b085a7e37e9f7f7f352",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/04-project-fingerprinting/SKILL.md",
       "source_sha256": "sha256:9e191c7e1654d05dbf46f325adeb0ac3aa38e89d6ffccae052be377b8c2cd48d",
@@ -9526,7 +9542,7 @@
       ],
       "title_zh": "项目指纹与技术栈识别",
       "workspace_skill_path": ".agents/skills/elmos-project-fingerprinting/SKILL.md",
-      "workspace_skill_sha256": "sha256:2aec420d46e52e8300dc8f1313b51fdcdd99c576e44e6061df6f999ffd65f54d"
+      "workspace_skill_sha256": "sha256:81af2a464bb4d8d4b6dbce42fcbfc93762e0865653aa1b085a7e37e9f7f7f352"
     },
     {
       "batch": "BATCH-01-ingestion-and-parsing",
@@ -9564,7 +9580,7 @@
         "parser registry",
         "编译配置"
       ],
-      "installed_tree_sha256": "sha256:5626fbe3c44cd5aae682fad389bbc41781d19b547be57a0cf3c1b4247395ebe2",
+      "installed_tree_sha256": "sha256:546d57c115d6428076f7681dc30bb08769eed7202cabfb805d8b9fada814367f",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-multilanguage-parsing",
@@ -9576,11 +9592,11 @@
         "unsupported constructs"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:2a47364def6171dd6f7e00823df00f98a6d826479345838e3df7e8e4fae8f105",
+      "qualification_result_digest": "sha256:772d12244fb9db62b77c39af0660ce507c35ec14342a754808603c2d294ddbdd",
       "runtime_interface_path": "agent-skills/runtime/elmos-multilanguage-parsing/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:ef616977fd65a7f731a9a5a76c76b827bccd762d22f6414d8097dc2b57c02d91",
       "runtime_skill_path": "agent-skills/runtime/elmos-multilanguage-parsing/SKILL.md",
-      "runtime_skill_sha256": "sha256:45b6f375af212464350bf3339b77af4c320f9ac88877c4efcd36616bd204d9d3",
+      "runtime_skill_sha256": "sha256:baefd69b6f4412a6d7592ea05ca4119b61c6d97558f0d2ca42710c0c8c0b8894",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/05-multilanguage-parsing/SKILL.md",
       "source_sha256": "sha256:30fa3fe71f2466b930e44e38db8b9aefda2cc2cd17fc9afded9989172fdfffed",
@@ -9593,7 +9609,7 @@
       ],
       "title_zh": "多语言解析与标准化 Code IR",
       "workspace_skill_path": ".agents/skills/elmos-multilanguage-parsing/SKILL.md",
-      "workspace_skill_sha256": "sha256:45b6f375af212464350bf3339b77af4c320f9ac88877c4efcd36616bd204d9d3"
+      "workspace_skill_sha256": "sha256:baefd69b6f4412a6d7592ea05ca4119b61c6d97558f0d2ca42710c0c8c0b8894"
     },
     {
       "batch": "BATCH-02-graphs-and-evidence",
@@ -9631,7 +9647,7 @@
         "路由/API Schema",
         "语言解析诊断"
       ],
-      "installed_tree_sha256": "sha256:cee97e43dcdf3b3a9ceaa2f43c60de84613afeaf23a6d4016e1976945e8e6d8e",
+      "installed_tree_sha256": "sha256:27c45aacc56b3e6a86268713c69cb4a30788ba8ab813ea006a760d80f621ea17",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-symbol-code-graph",
@@ -9643,11 +9659,11 @@
         "unresolved edge report"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:bc8b3ba1189f13ae9ccd57d9aeb3dc4909f5692a223517b0e0d48f02237d4878",
+      "qualification_result_digest": "sha256:64f97244e5deb2a983f7eb8375557168800009897a157ac1a9d6e3cf0684eb4b",
       "runtime_interface_path": "agent-skills/runtime/elmos-symbol-code-graph/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:cd1b2ae83eb37a09ee8a6c2e0eac95da46184fce947246ccb71f0f4127688bad",
       "runtime_skill_path": "agent-skills/runtime/elmos-symbol-code-graph/SKILL.md",
-      "runtime_skill_sha256": "sha256:95f2c9ed0a2128cba3111c209dffaa010d74d0f21b83b165f08e19fec0d30989",
+      "runtime_skill_sha256": "sha256:31d3b5dc79c5d7eb4ccc62805f2b30fd8186b37f4d8692d6392453248fb57362",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/06-symbol-code-graph/SKILL.md",
       "source_sha256": "sha256:4393914074ccb0c6c1741a4105f429c2eb4e0eaed366ed18693560037f9b2b21",
@@ -9660,7 +9676,7 @@
       ],
       "title_zh": "符号、引用与调用图",
       "workspace_skill_path": ".agents/skills/elmos-symbol-code-graph/SKILL.md",
-      "workspace_skill_sha256": "sha256:95f2c9ed0a2128cba3111c209dffaa010d74d0f21b83b165f08e19fec0d30989"
+      "workspace_skill_sha256": "sha256:31d3b5dc79c5d7eb4ccc62805f2b30fd8186b37f4d8692d6392453248fb57362"
     },
     {
       "batch": "BATCH-02-graphs-and-evidence",
@@ -9699,7 +9715,7 @@
         "API/DB/事件 Schema",
         "测试与运行证据"
       ],
-      "installed_tree_sha256": "sha256:f584828c7aa89f64b255fc3a5fa65f108c59c23abd809cb523a69cddebbf253c",
+      "installed_tree_sha256": "sha256:aade884ccdaba34a4ec56a121cc45cfd25196d02c0e69696925925b6915f7785",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-project-intelligence-graph",
@@ -9715,7 +9731,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-project-intelligence-graph/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:067005242f6441ffbba3bcd960615e07d5a641ca79524a5f377fc4c02d54768d",
       "runtime_skill_path": "agent-skills/runtime/elmos-project-intelligence-graph/SKILL.md",
-      "runtime_skill_sha256": "sha256:fdfaf8dfa6025d1d43d7fa1a3aa3c93caf36001daf092faabe777e9ae71ee149",
+      "runtime_skill_sha256": "sha256:da13be936c4f5ac75149c5a1d0d41d5b095139442214f62d29d52867e3fbc460",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/07-project-intelligence-graph/SKILL.md",
       "source_sha256": "sha256:661744b252e012d3c6b8e2a2be8a83f7b8ac5e651dad71fde89fb2fbcbd5eb82",
@@ -9728,7 +9744,7 @@
       ],
       "title_zh": "统一 Project Intelligence Graph",
       "workspace_skill_path": ".agents/skills/elmos-project-intelligence-graph/SKILL.md",
-      "workspace_skill_sha256": "sha256:fdfaf8dfa6025d1d43d7fa1a3aa3c93caf36001daf092faabe777e9ae71ee149"
+      "workspace_skill_sha256": "sha256:da13be936c4f5ac75149c5a1d0d41d5b095139442214f62d29d52867e3fbc460"
     },
     {
       "batch": "BATCH-02-graphs-and-evidence",
@@ -9767,7 +9783,7 @@
         "Trace/日志",
         "模型推断"
       ],
-      "installed_tree_sha256": "sha256:971a0e26c5ccd748996df146a48c4517cb9c55a9f0b0f28f5663df8d47c378d2",
+      "installed_tree_sha256": "sha256:ae94a30055c485576988cb14b47eb16b70b1b5e87b268a59e9ab3444f4636379",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-evidence-provenance",
@@ -9779,11 +9795,11 @@
         "provenance links"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:d652181dc923b5595e58f2625398eb1d587475cb133f8ef4b4a19020f0be876d",
+      "qualification_result_digest": "sha256:59f9f837f1dc6271f145d25eb57a7ebc78e063cacfee5c93ef6bf5eb82f9f921",
       "runtime_interface_path": "agent-skills/runtime/elmos-evidence-provenance/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:35114d145f1e980adf256568b9540bc1e03b6532c231961e4c4ab599b20946d8",
       "runtime_skill_path": "agent-skills/runtime/elmos-evidence-provenance/SKILL.md",
-      "runtime_skill_sha256": "sha256:5635d0b6a949539d49d04e388718957bda50a542f2673da056fcbddc0a7c232d",
+      "runtime_skill_sha256": "sha256:bad18c691531271605efb9b9f4c73474a2fbea8745339bb50f69dc253582508e",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/08-evidence-provenance/SKILL.md",
       "source_sha256": "sha256:ef78748b1414e99bdc2f7f40c1ef6437b198ac29dee3f710b27619f5636b4d2e",
@@ -9796,7 +9812,7 @@
       ],
       "title_zh": "证据图、可信度与来源追踪",
       "workspace_skill_path": ".agents/skills/elmos-evidence-provenance/SKILL.md",
-      "workspace_skill_sha256": "sha256:5635d0b6a949539d49d04e388718957bda50a542f2673da056fcbddc0a7c232d"
+      "workspace_skill_sha256": "sha256:bad18c691531271605efb9b9f4c73474a2fbea8745339bb50f69dc253582508e"
     },
     {
       "batch": "BATCH-03-code-reader-and-explanation",
@@ -9835,7 +9851,7 @@
         "Code Graph",
         "用户权限与偏好"
       ],
-      "installed_tree_sha256": "sha256:c9f73b8fc396af3bfd5c0a3ecf4babeef6835b1ae438889f88e8cde46d85f80b",
+      "installed_tree_sha256": "sha256:49b71f34f7259ed31319a01069a658b3576888cef5b31ec09165e7e170fa73bd",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-online-code-reader",
@@ -9851,7 +9867,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-online-code-reader/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:199b9764ec5bf2dbbe583ec9e5ec09439bad37aca2e84997d44b11e0cf65353e",
       "runtime_skill_path": "agent-skills/runtime/elmos-online-code-reader/SKILL.md",
-      "runtime_skill_sha256": "sha256:1b6df44d3024678665c8d13a04274d7e034f087d5b66ab212454c0968194ccd2",
+      "runtime_skill_sha256": "sha256:72d873940e3da8225bf5dc57c52ea25f30c3d21b85b9c89064e451a09571acad",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/09-online-code-reader/SKILL.md",
       "source_sha256": "sha256:24fe40f689fddf0f10584116684dfebd5570cdfdaff195821ca46470c0003068",
@@ -9864,7 +9880,7 @@
       ],
       "title_zh": "在线代码阅读器",
       "workspace_skill_path": ".agents/skills/elmos-online-code-reader/SKILL.md",
-      "workspace_skill_sha256": "sha256:1b6df44d3024678665c8d13a04274d7e034f087d5b66ab212454c0968194ccd2"
+      "workspace_skill_sha256": "sha256:72d873940e3da8225bf5dc57c52ea25f30c3d21b85b9c89064e451a09571acad"
     },
     {
       "batch": "BATCH-03-code-reader-and-explanation",
@@ -9903,7 +9919,7 @@
         "当前 symbol/context",
         "权限"
       ],
-      "installed_tree_sha256": "sha256:761de271468cec75c352d24d7b568ae96a351d5c3a6afc3e628ed308cd3500e6",
+      "installed_tree_sha256": "sha256:1fb68bc5e7428ec950193d99fc1e6ae40171f98b7db4aa9410375766bf527094",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-semantic-navigation",
@@ -9915,11 +9931,11 @@
         "未解析候选"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:8a92504d395c48aee5e2e1ee489ed29faa505e311acff88fa0c2ede2d9c64c84",
+      "qualification_result_digest": "sha256:01f9f5a0074b0a1a9b57419bffe59312ecf2744b50ca602ba798ca76b7da359a",
       "runtime_interface_path": "agent-skills/runtime/elmos-semantic-navigation/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:c0986e0293d4386b7a0302e2f9bc3aaadc6f9c462bae303fca6d3820e203649b",
       "runtime_skill_path": "agent-skills/runtime/elmos-semantic-navigation/SKILL.md",
-      "runtime_skill_sha256": "sha256:2bd61b1a540e80422b0371a9e1695db84658fd2979bf5c4e509e2c336b042697",
+      "runtime_skill_sha256": "sha256:4d6c684d95e28f0e82c26a5fd1144a294e5098ada69bcbbaf4c994e13f2d0451",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/10-semantic-navigation/SKILL.md",
       "source_sha256": "sha256:9b0437aeb3621ba427f55297b8a86f5d1a7dbbb1ff7adecbc976bca27513ca03",
@@ -9932,7 +9948,7 @@
       ],
       "title_zh": "语义导航与跨层追踪",
       "workspace_skill_path": ".agents/skills/elmos-semantic-navigation/SKILL.md",
-      "workspace_skill_sha256": "sha256:2bd61b1a540e80422b0371a9e1695db84658fd2979bf5c4e509e2c336b042697"
+      "workspace_skill_sha256": "sha256:4d6c684d95e28f0e82c26a5fd1144a294e5098ada69bcbbaf4c994e13f2d0451"
     },
     {
       "batch": "BATCH-03-code-reader-and-explanation",
@@ -9971,7 +9987,7 @@
         "Evidence Graph",
         "受众与讲解深度"
       ],
-      "installed_tree_sha256": "sha256:e56015271a1045c08c19b26faa1db082755922c52b7987328d5f669c5c7ac145",
+      "installed_tree_sha256": "sha256:55498d050148d0da08c5c79dd9c6c530066a72dad8c0b038219339c24c7a7b62",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-code-explanation",
@@ -9984,11 +10000,11 @@
         "证据链接"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:77f1ccfb82d57da53c2dc4fa6fe81bb8b62cba8dc47ab924372ba4387dcfef54",
+      "qualification_result_digest": "sha256:16865da1b4d917af49550dd244b203dd7bc38026c2e226b59a05d937d7cbe642",
       "runtime_interface_path": "agent-skills/runtime/elmos-code-explanation/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:ed5fa2b91e325111b11e8b8d8dc77a6d8008895b18d55be6e61d6a00bf5505fd",
       "runtime_skill_path": "agent-skills/runtime/elmos-code-explanation/SKILL.md",
-      "runtime_skill_sha256": "sha256:9bf2891bcf316679e0af6f21d759e353a6c09f72dfcebd87ae4247552d02b578",
+      "runtime_skill_sha256": "sha256:251ac09feeac394dbf139c4619e3a7c8cd5e12325862cdc6543c4bd4adb3464b",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/11-code-explanation/SKILL.md",
       "source_sha256": "sha256:d3901ddfe8d3faae34b3b2ca9acb2964ebdb4579986a3fadc326b912c50ac61a",
@@ -10001,7 +10017,7 @@
       ],
       "title_zh": "证据化代码与模块讲解",
       "workspace_skill_path": ".agents/skills/elmos-code-explanation/SKILL.md",
-      "workspace_skill_sha256": "sha256:9bf2891bcf316679e0af6f21d759e353a6c09f72dfcebd87ae4247552d02b578"
+      "workspace_skill_sha256": "sha256:251ac09feeac394dbf139c4619e3a7c8cd5e12325862cdc6543c4bd4adb3464b"
     },
     {
       "batch": "BATCH-03-code-reader-and-explanation",
@@ -10040,7 +10056,7 @@
         "目标角色与经验",
         "可用时间/目标"
       ],
-      "installed_tree_sha256": "sha256:0c8654f67b66f3ed1606968f8f62037d2ba72c0ba6a8737d153f8d0ebb72b381",
+      "installed_tree_sha256": "sha256:5b58c97cf3ad7bcce952d012e5ca1d9f518f9e7669bd91b702487bed8f20d51a",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-onboarding-learning-path",
@@ -10057,7 +10073,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-onboarding-learning-path/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:210425984a72a2b58d9752ef2f35ea3e0e43045b002756b8358d9b2ea8705cf7",
       "runtime_skill_path": "agent-skills/runtime/elmos-onboarding-learning-path/SKILL.md",
-      "runtime_skill_sha256": "sha256:a3e1e31373211d1acd4895837c70df2c12327cc1b253ae1de37346f4882607b3",
+      "runtime_skill_sha256": "sha256:36e7401a65a5936d78002252e88705464a400f711bf04ff2d5fa76349bde171b",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/12-onboarding-learning-path/SKILL.md",
       "source_sha256": "sha256:22a5d486a8c679b3c551ac6c153e932189bccfe28b6c01bac4029868dc181bdb",
@@ -10070,7 +10086,7 @@
       ],
       "title_zh": "项目介绍与新人学习路径",
       "workspace_skill_path": ".agents/skills/elmos-onboarding-learning-path/SKILL.md",
-      "workspace_skill_sha256": "sha256:a3e1e31373211d1acd4895837c70df2c12327cc1b253ae1de37346f4882607b3"
+      "workspace_skill_sha256": "sha256:36e7401a65a5936d78002252e88705464a400f711bf04ff2d5fa76349bde171b"
     },
     {
       "batch": "BATCH-04-architecture-flow-data",
@@ -10110,7 +10126,7 @@
         "运行证据",
         "人工架构规则"
       ],
-      "installed_tree_sha256": "sha256:ce4158e8d1ce8c869334038a0919a6c9e8e285a6fb96a378373abb1446f84fbc",
+      "installed_tree_sha256": "sha256:20f4b403a63f19ff484f44324832d2b0792312916eb58e2037ea972025459552",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-architecture-discovery",
@@ -10126,7 +10142,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-architecture-discovery/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:4e0dd13b87c7b91bc1dd9b7c2b77c6e6a5fa81c1baa2fd8968eff1c2207cd81a",
       "runtime_skill_path": "agent-skills/runtime/elmos-architecture-discovery/SKILL.md",
-      "runtime_skill_sha256": "sha256:0c7945db3422d29ec4338719982344326c9a98e9564d8809ea77d81fdc200e72",
+      "runtime_skill_sha256": "sha256:efcf187dc3d09410aaf5472650bb3f57defaf07ad31331d5d8ccaeb1f201c7ae",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/13-architecture-discovery/SKILL.md",
       "source_sha256": "sha256:734c4c3e72b599f1ba51b71d51fe6a43b6a49d30d8a6fed5daafecb13c69208c",
@@ -10139,7 +10155,7 @@
       ],
       "title_zh": "架构自动发现与多视角讲解",
       "workspace_skill_path": ".agents/skills/elmos-architecture-discovery/SKILL.md",
-      "workspace_skill_sha256": "sha256:0c7945db3422d29ec4338719982344326c9a98e9564d8809ea77d81fdc200e72"
+      "workspace_skill_sha256": "sha256:efcf187dc3d09410aaf5472650bb3f57defaf07ad31331d5d8ccaeb1f201c7ae"
     },
     {
       "batch": "BATCH-04-architecture-flow-data",
@@ -10179,7 +10195,7 @@
         "API schemas",
         "需求/README/测试"
       ],
-      "installed_tree_sha256": "sha256:02e32082afefe5690d62a1c28a104048ad58c268a9f46588280db794f0a8d742",
+      "installed_tree_sha256": "sha256:042e30df47fcd40830a2a74f74bb8e4a9a0acd8ba0203553fc642f44ac2c7b19",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-business-capability-map",
@@ -10195,7 +10211,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-business-capability-map/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:fb76f4ec89d2e84cd0dcb9c58ea4befb4cc4f91452d1d6bb56157c1bbea27a58",
       "runtime_skill_path": "agent-skills/runtime/elmos-business-capability-map/SKILL.md",
-      "runtime_skill_sha256": "sha256:ebb8b44fd21b92fb0196a9b9de440361c7c7f2c6c64ebe94e8665b68b20ce4ca",
+      "runtime_skill_sha256": "sha256:ba2be1b41f034ab7710416c01453a6ad200824e9980ea104e1a73910f31e54ae",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/14-business-capability-map/SKILL.md",
       "source_sha256": "sha256:0dad19440288d8c27f700fcff0688e0004145b06a5d98f86e16b85287a62a153",
@@ -10208,7 +10224,7 @@
       ],
       "title_zh": "功能思维导图与业务能力地图",
       "workspace_skill_path": ".agents/skills/elmos-business-capability-map/SKILL.md",
-      "workspace_skill_sha256": "sha256:ebb8b44fd21b92fb0196a9b9de440361c7c7f2c6c64ebe94e8665b68b20ce4ca"
+      "workspace_skill_sha256": "sha256:ba2be1b41f034ab7710416c01453a6ad200824e9980ea104e1a73910f31e54ae"
     },
     {
       "batch": "BATCH-04-architecture-flow-data",
@@ -10248,7 +10264,7 @@
         "状态与事件",
         "Trace/测试"
       ],
-      "installed_tree_sha256": "sha256:634778abbdd1711f90be2d6823aea2a179ab84402f10aaaa2921332905b488b2",
+      "installed_tree_sha256": "sha256:0e0bf45cf7186fd7236a665791e2dcc0c2c64a75e4af3daafe62e587500a8680",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-flow-discovery",
@@ -10261,11 +10277,11 @@
         "流程质量报告"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:29eca6c01ab618eda7d29b8afc71142bfc0e0200784dbf04ece98f8ecd9a06cc",
+      "qualification_result_digest": "sha256:c4f2015b3b85dba664eed75301310edb818ae24fd072805d11ec75a65bb442e9",
       "runtime_interface_path": "agent-skills/runtime/elmos-flow-discovery/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:395fe3e2bf0b2b30f9abbdfa1571aeb7a4b372366c99cefa515ed7900f2ff035",
       "runtime_skill_path": "agent-skills/runtime/elmos-flow-discovery/SKILL.md",
-      "runtime_skill_sha256": "sha256:cbded049616f6116d6ad8fd3d844ea30efddb1591616c092696cf99d3a87beb9",
+      "runtime_skill_sha256": "sha256:c018610e27845b982d53be261a616673c7a0df1b747d7e87e1247771eee9864d",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/15-flow-discovery/SKILL.md",
       "source_sha256": "sha256:d30a1ac5c86774e723090e680ec7b59797783fdc962396cadd879358f5986154",
@@ -10278,7 +10294,7 @@
       ],
       "title_zh": "业务与技术流程发现",
       "workspace_skill_path": ".agents/skills/elmos-flow-discovery/SKILL.md",
-      "workspace_skill_sha256": "sha256:cbded049616f6116d6ad8fd3d844ea30efddb1591616c092696cf99d3a87beb9"
+      "workspace_skill_sha256": "sha256:c018610e27845b982d53be261a616673c7a0df1b747d7e87e1247771eee9864d"
     },
     {
       "batch": "BATCH-04-architecture-flow-data",
@@ -10319,7 +10335,7 @@
         "Code Graph",
         "运行查询/Trace（可选）"
       ],
-      "installed_tree_sha256": "sha256:19d06f343d144feb7b1c029f464917daa0cc49a324d10a427f3f1462dced7cd7",
+      "installed_tree_sha256": "sha256:6cc901527cc3a94d9397abc8e3604c1cb5b4ad2c6359430aaab5bd3225c0e29c",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-data-architecture-lineage",
@@ -10337,7 +10353,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-data-architecture-lineage/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:cfc6f96b50fdc47b3df5df24a8933a6be21b67c1fba62e018d92933f39d59cbd",
       "runtime_skill_path": "agent-skills/runtime/elmos-data-architecture-lineage/SKILL.md",
-      "runtime_skill_sha256": "sha256:558e5846de69df0a3e2d4e316c11f4606bd00cfcfbd43f1fda4332cf5d9b1319",
+      "runtime_skill_sha256": "sha256:1b8c58ed6c8d2b2de11ec28fdebe2bacb714cec41f12cf880d586e0dcd78a47e",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/16-data-architecture-lineage/SKILL.md",
       "source_sha256": "sha256:f2469259c39159f28073ec68e090bbff68a8268a35e2602d22058b1b491bfbb5",
@@ -10350,7 +10366,7 @@
       ],
       "title_zh": "数据架构、ER、DFD 与血缘",
       "workspace_skill_path": ".agents/skills/elmos-data-architecture-lineage/SKILL.md",
-      "workspace_skill_sha256": "sha256:558e5846de69df0a3e2d4e316c11f4606bd00cfcfbd43f1fda4332cf5d9b1319"
+      "workspace_skill_sha256": "sha256:1b8c58ed6c8d2b2de11ec28fdebe2bacb714cec41f12cf880d586e0dcd78a47e"
     },
     {
       "batch": "BATCH-04-architecture-flow-data",
@@ -10390,7 +10406,7 @@
         "消息 Schema",
         "配置与 Trace"
       ],
-      "installed_tree_sha256": "sha256:d735aded3e1995074e08abe47ab3478b053d32fdbcc73ef7fc8b084cc3ea0270",
+      "installed_tree_sha256": "sha256:42177a95e4fb5219ed3242760f9b353de3a800ec653fcd53a337d2c2c774b02b",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-api-event-topology",
@@ -10406,7 +10422,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-api-event-topology/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:27384e15c2b5ca1fbc233fc2b2e1ed8853b47d02f1adbeed8445c85ec73ed129",
       "runtime_skill_path": "agent-skills/runtime/elmos-api-event-topology/SKILL.md",
-      "runtime_skill_sha256": "sha256:1419b70af743a48fdf8872148d0b4f1ea2ba76645ff152c450b28cfd327b7c27",
+      "runtime_skill_sha256": "sha256:988c532d8d2710a9f565eb94bf9bbadf1de69e9ac2a87a650a047fad5e40b3b6",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/17-api-event-topology/SKILL.md",
       "source_sha256": "sha256:a544d564ea9ff082b0fa40db621ff06cd10b514a42951b39dd042e0279ceb724",
@@ -10419,7 +10435,7 @@
       ],
       "title_zh": "API、消息与集成拓扑",
       "workspace_skill_path": ".agents/skills/elmos-api-event-topology/SKILL.md",
-      "workspace_skill_sha256": "sha256:1419b70af743a48fdf8872148d0b4f1ea2ba76645ff152c450b28cfd327b7c27"
+      "workspace_skill_sha256": "sha256:988c532d8d2710a9f565eb94bf9bbadf1de69e9ac2a87a650a047fad5e40b3b6"
     },
     {
       "batch": "BATCH-04-architecture-flow-data",
@@ -10458,7 +10474,7 @@
         "environment/time window",
         "Code/Intelligence Graph"
       ],
-      "installed_tree_sha256": "sha256:0aa0ea1b74507054427ec2fb53405e08ef667b8f4e27d149c583639c33ff342c",
+      "installed_tree_sha256": "sha256:decc36753616a11a94a22c3599ae9c4f16066b769387cf2afc81bb9c4e26e9e6",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-runtime-trace-fusion",
@@ -10474,7 +10490,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-runtime-trace-fusion/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:32c46ceb81cebea372dfeccde01ce68f6954a60264750ec8ced8220450f40748",
       "runtime_skill_path": "agent-skills/runtime/elmos-runtime-trace-fusion/SKILL.md",
-      "runtime_skill_sha256": "sha256:9b25b66fd66070754859a2f3d397bacd929cffa1f1fb6981607c42a943ac8384",
+      "runtime_skill_sha256": "sha256:a563b27452c493fb0f83d321650e5fb79c419b22da9f3ae40126319ab4e56450",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/18-runtime-trace-fusion/SKILL.md",
       "source_sha256": "sha256:2adb7977059fb0aa2648ca69980c287f172dbc01521b40a4bd9d9d51cdf8b362",
@@ -10487,7 +10503,7 @@
       ],
       "title_zh": "运行时 Trace、日志与静态图谱融合",
       "workspace_skill_path": ".agents/skills/elmos-runtime-trace-fusion/SKILL.md",
-      "workspace_skill_sha256": "sha256:9b25b66fd66070754859a2f3d397bacd929cffa1f1fb6981607c42a943ac8384"
+      "workspace_skill_sha256": "sha256:a563b27452c493fb0f83d321650e5fb79c419b22da9f3ae40126319ab4e56450"
     },
     {
       "batch": "BATCH-05-diagram-platform",
@@ -10525,7 +10541,7 @@
         "过滤/折叠规则",
         "主题与受众"
       ],
-      "installed_tree_sha256": "sha256:c5da695bc5e85bae683cb63a1b1169fad35d364588b66f7239247baed8a194e3",
+      "installed_tree_sha256": "sha256:f52c374221ded2a08884235de154587edfbbf116650eb78f73d88e12b2c79eb9",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-diagram-spec-engine",
@@ -10537,11 +10553,11 @@
         "stable element IDs"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:f85f2b3348d8545debdac15f82f81002f124626b9dc55e6426cb1341b6100830",
+      "qualification_result_digest": "sha256:1eb0f3264f0982251fed00e75d166e5557f9669832af860658d3da98db158391",
       "runtime_interface_path": "agent-skills/runtime/elmos-diagram-spec-engine/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:9614357f2499efdcfcbd6150a22b8ba03d15db27d6fdb6e4b382d10d71f03208",
       "runtime_skill_path": "agent-skills/runtime/elmos-diagram-spec-engine/SKILL.md",
-      "runtime_skill_sha256": "sha256:3fdfb23ac62abd9a5e1465ed929f91830fa2168a81159c74f57a8dd5b88398df",
+      "runtime_skill_sha256": "sha256:03ed8ddf229dbeafc3a521e0bc5dda098548873e00ea2f8d79c8a06d447087e5",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/19-diagram-spec-engine/SKILL.md",
       "source_sha256": "sha256:362d903331f066505e9923dc3f61afa661f3e29a6beab20fb68d95a5a4f9a355",
@@ -10554,7 +10570,7 @@
       ],
       "title_zh": "统一图表语义规范",
       "workspace_skill_path": ".agents/skills/elmos-diagram-spec-engine/SKILL.md",
-      "workspace_skill_sha256": "sha256:3fdfb23ac62abd9a5e1465ed929f91830fa2168a81159c74f57a8dd5b88398df"
+      "workspace_skill_sha256": "sha256:03ed8ddf229dbeafc3a521e0bc5dda098548873e00ea2f8d79c8a06d447087e5"
     },
     {
       "batch": "BATCH-05-diagram-platform",
@@ -10592,7 +10608,7 @@
         "主题/尺寸",
         "export format"
       ],
-      "installed_tree_sha256": "sha256:0ba53e5f424ba558a9c93b28b109d7224febdf4c8cb4cbd3e1b4e691f15f507b",
+      "installed_tree_sha256": "sha256:43d8613bd1716c67c0691573a8f1b9711f1b2cca4a158dad1a7a333e58c9d433",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-diagram-rendering",
@@ -10608,7 +10624,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-diagram-rendering/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:abf78a6c05fe3440cec2e4ca8a0afcffd6788dfb3ed2e2eae8d44929d4bee16b",
       "runtime_skill_path": "agent-skills/runtime/elmos-diagram-rendering/SKILL.md",
-      "runtime_skill_sha256": "sha256:847ee79306c3814e2fd94cef361f344154ae8b4eefff46bc0e30fef940b2e91e",
+      "runtime_skill_sha256": "sha256:be00e3dacb9db6415e52c0cea3a8e31e2bde29ea2cbfcf887024fcbc1db02380",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/20-diagram-rendering/SKILL.md",
       "source_sha256": "sha256:1f8e24ca1b848a764054eddbcb7443578e280bd13dfc45eca3f3be5efdf61e5b",
@@ -10621,7 +10637,7 @@
       ],
       "title_zh": "多格式图表生成与渲染",
       "workspace_skill_path": ".agents/skills/elmos-diagram-rendering/SKILL.md",
-      "workspace_skill_sha256": "sha256:847ee79306c3814e2fd94cef361f344154ae8b4eefff46bc0e30fef940b2e91e"
+      "workspace_skill_sha256": "sha256:be00e3dacb9db6415e52c0cea3a8e31e2bde29ea2cbfcf887024fcbc1db02380"
     },
     {
       "batch": "BATCH-05-diagram-platform",
@@ -10660,7 +10676,7 @@
         "自动新版本",
         "主题/布局"
       ],
-      "installed_tree_sha256": "sha256:f82d12eb406d0135978ec14f067110655e673ce26aa6941b4f392e16f06690e4",
+      "installed_tree_sha256": "sha256:eb95869f146de332c66501b2d268b417bd8bd2ae32864ea54b97f51abb7ac964",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-diagram-editor",
@@ -10672,11 +10688,11 @@
         "review history"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:43bfc7eac732d7779d11320280ed51c64f600398d1d5c479feb69326c230900d",
+      "qualification_result_digest": "sha256:38de70fcf696216949613d48d4db912fddac9d6c870ed66bfcddd8daf880d945",
       "runtime_interface_path": "agent-skills/runtime/elmos-diagram-editor/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:ab2fe804bcb67e6c4f7be3471b9de1e5b1c2bfe6b564c3bbb8558df215e4772a",
       "runtime_skill_path": "agent-skills/runtime/elmos-diagram-editor/SKILL.md",
-      "runtime_skill_sha256": "sha256:68be15ef6645555d4bbeac2da752f7d391f7ad0aa302cf7fee7df66eaf2f7a48",
+      "runtime_skill_sha256": "sha256:45b3d1f1447603cd52940daaa4de63aecbf3e389b54c7b056e462f352c761ad0",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/21-diagram-editor/SKILL.md",
       "source_sha256": "sha256:4ab73cc25d060e0c9b1f2960340b29eafa343385913a82c093767998c6659363",
@@ -10689,7 +10705,7 @@
       ],
       "title_zh": "在线图表编辑与人工锁定",
       "workspace_skill_path": ".agents/skills/elmos-diagram-editor/SKILL.md",
-      "workspace_skill_sha256": "sha256:68be15ef6645555d4bbeac2da752f7d391f7ad0aa302cf7fee7df66eaf2f7a48"
+      "workspace_skill_sha256": "sha256:45b3d1f1447603cd52940daaa4de63aecbf3e389b54c7b056e462f352c761ad0"
     },
     {
       "batch": "BATCH-06-documents-presentations-reports",
@@ -10728,7 +10744,7 @@
         "模板/受众/语言",
         "已有文档与锁定内容"
       ],
-      "installed_tree_sha256": "sha256:e07d1d482d2748ebe095a29f1aed9c0cc5e2659a60a2f19e8e49d06747caeba3",
+      "installed_tree_sha256": "sha256:573306326629498e7ed88c8712259b60d0ecc50b2d593f319dd564f26eb389d3",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-architecture-documentation",
@@ -10740,11 +10756,11 @@
         "staleness report"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:5bbca557b856ed43d7c5a0cc6acb546dad36c9b514c439ccbfb421c7f9c3d0c9",
+      "qualification_result_digest": "sha256:207d787283364777799c8217a2003c2b8f60338ae6a18558a8d9bb1df66b47ec",
       "runtime_interface_path": "agent-skills/runtime/elmos-architecture-documentation/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:880b5091f83a4ac20f89db09a141be8c87954df4592f3d1b2ca848678ffab82e",
       "runtime_skill_path": "agent-skills/runtime/elmos-architecture-documentation/SKILL.md",
-      "runtime_skill_sha256": "sha256:38ffd74d085d3e5f4ed2d4ade74d7f588bd44209ea82b367f043c7f63eb97c1a",
+      "runtime_skill_sha256": "sha256:841c80be1605480f341301336440594d301c7de5133ba2f311e94c4b32a4b534",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/22-architecture-documentation/SKILL.md",
       "source_sha256": "sha256:90082aeed61783a6d5aac9b73d613dc96bdc7ea35bed935d6981098fb730d405",
@@ -10757,7 +10773,7 @@
       ],
       "title_zh": "架构与项目文档生成",
       "workspace_skill_path": ".agents/skills/elmos-architecture-documentation/SKILL.md",
-      "workspace_skill_sha256": "sha256:38ffd74d085d3e5f4ed2d4ade74d7f588bd44209ea82b367f043c7f63eb97c1a"
+      "workspace_skill_sha256": "sha256:841c80be1605480f341301336440594d301c7de5133ba2f311e94c4b32a4b534"
     },
     {
       "batch": "BATCH-06-documents-presentations-reports",
@@ -10797,7 +10813,7 @@
         "品牌模板",
         "页数/语言/保留页面"
       ],
-      "installed_tree_sha256": "sha256:b5048e774e1d7ee2c193410f1d604b266d89457d2125fee69e23549088f9f602",
+      "installed_tree_sha256": "sha256:c812b9ef9ed540efd34cfe0b491fc0256352eba565f8dacea614ea6e229df799",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-presentation-generation",
@@ -10814,7 +10830,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-presentation-generation/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:16dacdb5a0de9ab039311fade6ae4ea32eb00acb3c04963b6712137690b85a5c",
       "runtime_skill_path": "agent-skills/runtime/elmos-presentation-generation/SKILL.md",
-      "runtime_skill_sha256": "sha256:6df7e3f9d5fc898f1297298002c977ab06c7b2e0b76ce97f9ec6c97bd1f9bcb0",
+      "runtime_skill_sha256": "sha256:a12d8ec1d1b5d5984cf0aa8e599907338df553302d00edf7725ffc72a346be36",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/23-presentation-generation/SKILL.md",
       "source_sha256": "sha256:c2ac2755557d9ddbed786855b1cf4151a4187bad236ac7dde4836bd45c5c4211",
@@ -10827,7 +10843,7 @@
       ],
       "title_zh": "项目介绍与技术汇报 PPT 生成",
       "workspace_skill_path": ".agents/skills/elmos-presentation-generation/SKILL.md",
-      "workspace_skill_sha256": "sha256:6df7e3f9d5fc898f1297298002c977ab06c7b2e0b76ce97f9ec6c97bd1f9bcb0"
+      "workspace_skill_sha256": "sha256:a12d8ec1d1b5d5984cf0aa8e599907338df553302d00edf7725ffc72a346be36"
     },
     {
       "batch": "BATCH-06-documents-presentations-reports",
@@ -10867,7 +10883,7 @@
         "权限/脱敏策略",
         "签名配置"
       ],
-      "installed_tree_sha256": "sha256:6455debef034c542d5cc5c28a6888d643d558e5fb4f74741ec906d55c4fa2999",
+      "installed_tree_sha256": "sha256:903218531083e37cde1bd86db566134e0815d7f47a7919a9ec6d96ff336b4cdc",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-project-report-bundle",
@@ -10880,11 +10896,11 @@
         "哈希/签名 manifest"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:e1753061fa618d7d5b12c210bfab8aeee82f756d6a19a46189bf74f41bf7fd49",
+      "qualification_result_digest": "sha256:d4a45d2ec876b8a74c90db0044443de1a30d690bf1a1ca74c9db545525a3f6ba",
       "runtime_interface_path": "agent-skills/runtime/elmos-project-report-bundle/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:6e9c1cb1f763f33e366884d35c0a21020573ead74674e05300cd470d1f5b373f",
       "runtime_skill_path": "agent-skills/runtime/elmos-project-report-bundle/SKILL.md",
-      "runtime_skill_sha256": "sha256:afa599379d61f7ca0c06f105e348ab8bd60103a4452d6991c29305d19b0910dc",
+      "runtime_skill_sha256": "sha256:60dc32a48498152b541be55b21e54e42e9fa7e4e2f220f37bc2c15765b6fca3f",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/24-project-report-bundle/SKILL.md",
       "source_sha256": "sha256:3e479f9670011c2a47762d57895e710b78a7b95c7fb653972c33ea63e965a814",
@@ -10897,7 +10913,7 @@
       ],
       "title_zh": "项目全景报告与交付证据包",
       "workspace_skill_path": ".agents/skills/elmos-project-report-bundle/SKILL.md",
-      "workspace_skill_sha256": "sha256:afa599379d61f7ca0c06f105e348ab8bd60103a4452d6991c29305d19b0910dc"
+      "workspace_skill_sha256": "sha256:60dc32a48498152b541be55b21e54e42e9fa7e4e2f220f37bc2c15765b6fca3f"
     },
     {
       "batch": "BATCH-07-search-impact-governance-analysis",
@@ -10937,7 +10953,7 @@
         "索引",
         "权限与会话上下文"
       ],
-      "installed_tree_sha256": "sha256:5ef89b528e729eb25a2a4592d3087dd3a27c60f1dc16e23e4e582a2997bf577b",
+      "installed_tree_sha256": "sha256:0cf7842d1e0369c21043d1aa5a12cd25a80cc60d00eee7ded45e032d23b9c173",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-project-search-qa",
@@ -10950,11 +10966,11 @@
         "follow-up actions"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:6eb17fe732b30d7fd4910245e46e4677594d06e470d04f323699d75235cfbc96",
+      "qualification_result_digest": "sha256:6e93440aed67f918483a2c17603eb7c36e832224b6ae643651c125e05c631e08",
       "runtime_interface_path": "agent-skills/runtime/elmos-project-search-qa/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:2c4847253a7bd873adcfcade344f14fa9801f739ca6dfc446d5771552137ed4d",
       "runtime_skill_path": "agent-skills/runtime/elmos-project-search-qa/SKILL.md",
-      "runtime_skill_sha256": "sha256:fdd36b75b4302d4435b0d664d5d2762b2ecd515a0c46e9a5d37f570a6be90795",
+      "runtime_skill_sha256": "sha256:14d2ab06aaab5e1dcb8ec7a4cae37fdf2a1b3eadce70d099dd67cc23234b2a6f",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/25-project-search-qa/SKILL.md",
       "source_sha256": "sha256:97447e86d02d7bd65e804852984d94492f779ef62d40188f3366b05c28ecb93b",
@@ -10967,7 +10983,7 @@
       ],
       "title_zh": "项目全局搜索与证据化问答",
       "workspace_skill_path": ".agents/skills/elmos-project-search-qa/SKILL.md",
-      "workspace_skill_sha256": "sha256:fdd36b75b4302d4435b0d664d5d2762b2ecd515a0c46e9a5d37f570a6be90795"
+      "workspace_skill_sha256": "sha256:14d2ab06aaab5e1dcb8ec7a4cae37fdf2a1b3eadce70d099dd67cc23234b2a6f"
     },
     {
       "batch": "BATCH-07-search-impact-governance-analysis",
@@ -11006,7 +11022,7 @@
         "运行热度",
         "测试映射"
       ],
-      "installed_tree_sha256": "sha256:17739360fa9bf69f2b66f44cfd2cbe31629aab6c849c852e6e1d37d2ef8f3142",
+      "installed_tree_sha256": "sha256:a283b10a9745c655aaf0478ff9e8f0d5f78008985859a5b7517acaee99038618",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-impact-analysis",
@@ -11022,7 +11038,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-impact-analysis/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:dcb85a69020a97b757ca09f5e4e0dab2b89e3c09c112b20b20cb1a399d3cde0b",
       "runtime_skill_path": "agent-skills/runtime/elmos-impact-analysis/SKILL.md",
-      "runtime_skill_sha256": "sha256:e3fc371efe1d708bac503aa071d9c90a6d515a9b854358b28bc8c799595c554d",
+      "runtime_skill_sha256": "sha256:7562608872053ec5be8b98f304d9454fce0ec4ac137c2bbb484d6a230d93c882",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/26-impact-analysis/SKILL.md",
       "source_sha256": "sha256:a21ae64d30079ff24362487cf0c0f64be000149ffeeb0f9b3c1c6eaaa892cf9b",
@@ -11035,7 +11051,7 @@
       ],
       "title_zh": "变更影响与回归范围分析",
       "workspace_skill_path": ".agents/skills/elmos-impact-analysis/SKILL.md",
-      "workspace_skill_sha256": "sha256:e3fc371efe1d708bac503aa071d9c90a6d515a9b854358b28bc8c799595c554d"
+      "workspace_skill_sha256": "sha256:7562608872053ec5be8b98f304d9454fce0ec4ac137c2bbb484d6a230d93c882"
     },
     {
       "batch": "BATCH-07-search-impact-governance-analysis",
@@ -11073,7 +11089,7 @@
         "scope/revision",
         "waivers"
       ],
-      "installed_tree_sha256": "sha256:f44517fa89e60a4efcfd354ef07c979c2e675570a789ebaeaf1b8a47cfde68a8",
+      "installed_tree_sha256": "sha256:7602ee2cb94d663f91b12e2c82f0dbf2a40ed4e0525bb567faa9f2d8ed8f97ac",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-architecture-rules",
@@ -11089,7 +11105,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-architecture-rules/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:0b97101ff9b1209b814843612a72124f05cf0bf18e7eec1e552955cc1d0de920",
       "runtime_skill_path": "agent-skills/runtime/elmos-architecture-rules/SKILL.md",
-      "runtime_skill_sha256": "sha256:4a21437cf1103d68ee34ba0541b41d468da743254a6773ec7939766e40893d91",
+      "runtime_skill_sha256": "sha256:d1d70f5955b0801e79286fda1a2dac9cdd389fc11e01316674140933f658a88e",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/27-architecture-rules/SKILL.md",
       "source_sha256": "sha256:a75bb022019d19fce8f7a153910c845f4da0d2dba4e45bdb0ef0ad4523d367ed",
@@ -11102,7 +11118,7 @@
       ],
       "title_zh": "架构规则与策略引擎",
       "workspace_skill_path": ".agents/skills/elmos-architecture-rules/SKILL.md",
-      "workspace_skill_sha256": "sha256:4a21437cf1103d68ee34ba0541b41d468da743254a6773ec7939766e40893d91"
+      "workspace_skill_sha256": "sha256:d1d70f5955b0801e79286fda1a2dac9cdd389fc11e01316674140933f658a88e"
     },
     {
       "batch": "BATCH-07-search-impact-governance-analysis",
@@ -11142,7 +11158,7 @@
         "runtime graph",
         "architecture rules"
       ],
-      "installed_tree_sha256": "sha256:55c9effe12d9c3e575c9f5385ebaa9238c9883685c4408b19dd8a267ad3c8936",
+      "installed_tree_sha256": "sha256:1b48e9800f1650c45fb15063e60653aa44e11f7223326ad311cbfe916dd8eba6",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-architecture-drift",
@@ -11158,7 +11174,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-architecture-drift/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:b51df5af570e5c8da5c99dcaae61143106923a8895a5901220a33f335d1378ac",
       "runtime_skill_path": "agent-skills/runtime/elmos-architecture-drift/SKILL.md",
-      "runtime_skill_sha256": "sha256:d0b291556fecb88a43e558d00f947cb3fce7298269e79391c76f32afde039b2f",
+      "runtime_skill_sha256": "sha256:35ad236f05dc1007dc323f750b5206676d772e8c176026e954c8d4005571ccc0",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/28-architecture-drift/SKILL.md",
       "source_sha256": "sha256:de4d423c6c095dd1dba37071e15e92f75f9df46502c655c7b46ff7cfa9570d13",
@@ -11171,7 +11187,7 @@
       ],
       "title_zh": "设计—代码—运行架构漂移检测",
       "workspace_skill_path": ".agents/skills/elmos-architecture-drift/SKILL.md",
-      "workspace_skill_sha256": "sha256:d0b291556fecb88a43e558d00f947cb3fce7298269e79391c76f32afde039b2f"
+      "workspace_skill_sha256": "sha256:35ad236f05dc1007dc323f750b5206676d772e8c176026e954c8d4005571ccc0"
     },
     {
       "batch": "BATCH-07-search-impact-governance-analysis",
@@ -11211,7 +11227,7 @@
         "test coverage",
         "security/performance findings"
       ],
-      "installed_tree_sha256": "sha256:a8d5b0b8524a7ec6bbc99570af2232c41acab9016c2e0e21b14061ad6266e767",
+      "installed_tree_sha256": "sha256:1782cc38b3f513ac488f9e0497490f514604bf06d53df10b24569fade706f5db",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-risk-technical-debt",
@@ -11227,7 +11243,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-risk-technical-debt/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:7600e97c5dc70830acef35e2dc0fdcd710b889dd86a2ebaa15149a66765bf8e7",
       "runtime_skill_path": "agent-skills/runtime/elmos-risk-technical-debt/SKILL.md",
-      "runtime_skill_sha256": "sha256:2cea511e4c89156f8a60da1a9de81815ecb3ab45bc57f506122f550660168e6b",
+      "runtime_skill_sha256": "sha256:d6a80791ffe49239aba2ee383c152d05b8cce868ccfe08a527ef730f570c2e72",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/29-risk-technical-debt/SKILL.md",
       "source_sha256": "sha256:5010863aa22433a7894ea76dcea0a064b91bb61fc35d648aa29a7f7fe2253009",
@@ -11240,7 +11256,7 @@
       ],
       "title_zh": "风险、热点与技术债分析",
       "workspace_skill_path": ".agents/skills/elmos-risk-technical-debt/SKILL.md",
-      "workspace_skill_sha256": "sha256:2cea511e4c89156f8a60da1a9de81815ecb3ab45bc57f506122f550660168e6b"
+      "workspace_skill_sha256": "sha256:d6a80791ffe49239aba2ee383c152d05b8cce868ccfe08a527ef730f570c2e72"
     },
     {
       "batch": "BATCH-07-search-impact-governance-analysis",
@@ -11281,7 +11297,7 @@
         "dependencies/SBOM",
         "deployment/network config"
       ],
-      "installed_tree_sha256": "sha256:c31e27cef5e6dd80916d6c25cf0a03c56d59204c2db656ba81b52543f9946df9",
+      "installed_tree_sha256": "sha256:2056f9bc5c464d937e4aaa70d80adae883a1f041c73454a477307cfd46046ecc",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-security-threat-model",
@@ -11298,7 +11314,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-security-threat-model/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:1f2cfe2de263d8f4b4b37cd80125da5ace61fccdab35fceadec8db66eed0827c",
       "runtime_skill_path": "agent-skills/runtime/elmos-security-threat-model/SKILL.md",
-      "runtime_skill_sha256": "sha256:f987482b31e73173bb3a11f5535b15d1163fe30203216a25844dfc3776ca4e73",
+      "runtime_skill_sha256": "sha256:52e6c96ef8e374b0ed04e50c73bb2632bf15ebd57129a572b5cf77ccc0eb6494",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/30-security-threat-model/SKILL.md",
       "source_sha256": "sha256:d456076745331ab7afede7868edbeb9216baffefe7e3d8543afbd0d267e5a4c6",
@@ -11311,11 +11327,11 @@
       ],
       "title_zh": "代码与架构安全分析及威胁建模",
       "workspace_skill_path": ".agents/skills/elmos-security-threat-model/SKILL.md",
-      "workspace_skill_sha256": "sha256:f987482b31e73173bb3a11f5535b15d1163fe30203216a25844dfc3776ca4e73"
+      "workspace_skill_sha256": "sha256:52e6c96ef8e374b0ed04e50c73bb2632bf15ebd57129a572b5cf77ccc0eb6494"
     },
     {
       "batch": "BATCH-08-cache-versioning-git",
-      "capability_state": "LOCAL",
+      "capability_state": "PARTIAL",
       "category": "platform",
       "certification_status": "NOT_CERTIFIED",
       "code_paths": [
@@ -11341,19 +11357,19 @@
         "elmos-evidence-provenance"
       ],
       "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
-      "expected_success_code": "ANALYSIS_CACHE_KEY_RESOLVED",
+      "expected_success_code": "ANALYSIS_CACHE_KEY_DERIVED",
       "external_evidence_status": "NOT_RUN",
       "handler_id": "cache_analysis_stage",
-      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
       "inputs": [
         "revision diff",
         "task DAG",
         "artifact dependencies",
         "cache policy"
       ],
-      "installed_tree_sha256": "sha256:397cc40f7823243687a48dfdb29773878b27e151c534b816d27873b3e0080327",
+      "installed_tree_sha256": "sha256:df756b040f520df17ff7d7c8fd195bb5ea9fe2d6968d1cbe43324561a70179ba",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
-      "local_execution_state": "LOCAL_EXECUTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-incremental-analysis-cache",
       "ordinal": 31,
       "outputs": [
@@ -11364,11 +11380,11 @@
         "cache metrics"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:302df367b6075fef0b0b7b317f7d81671aec307989f3a5e484450efb94127acd",
+      "qualification_result_digest": "sha256:d042c41355df7a438932358f5cad8aecd50e4055e4e4fe292a04b2824aa961eb",
       "runtime_interface_path": "agent-skills/runtime/elmos-incremental-analysis-cache/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:dc0fed4b4f99a4656c140a28c3617b0875498efd7ff958a197748496331b7b11",
       "runtime_skill_path": "agent-skills/runtime/elmos-incremental-analysis-cache/SKILL.md",
-      "runtime_skill_sha256": "sha256:d2496c0791efb6ebe4463564376ad79ef103e021fc6842c49ee401575e7eadcb",
+      "runtime_skill_sha256": "sha256:d6f2953e679a19e46fd0c2ac4d8c8b25e03e02bc6d13544564520cbb36cf6f5f",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/31-incremental-analysis-cache/SKILL.md",
       "source_sha256": "sha256:038e149d725d01bdce52977b2d84e814debc0ed3b0f3a5b87d0ec871d7050db0",
@@ -11381,11 +11397,11 @@
       ],
       "title_zh": "增量分析、缓存与检查点",
       "workspace_skill_path": ".agents/skills/elmos-incremental-analysis-cache/SKILL.md",
-      "workspace_skill_sha256": "sha256:d2496c0791efb6ebe4463564376ad79ef103e021fc6842c49ee401575e7eadcb"
+      "workspace_skill_sha256": "sha256:d6f2953e679a19e46fd0c2ac4d8c8b25e03e02bc6d13544564520cbb36cf6f5f"
     },
     {
       "batch": "BATCH-05-diagram-platform",
-      "capability_state": "LOCAL",
+      "capability_state": "PARTIAL",
       "category": "platform",
       "certification_status": "NOT_CERTIFIED",
       "code_paths": [
@@ -11410,19 +11426,19 @@
         "elmos-evidence-provenance"
       ],
       "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
-      "expected_success_code": "ARTIFACT_VERSION_CREATED",
+      "expected_success_code": "ARTIFACT_VERSION_PROPOSAL_VALIDATED",
       "external_evidence_status": "NOT_RUN",
-      "handler_id": "version_artifact",
-      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "handler_id": "validate_artifact_version_proposal",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
       "inputs": [
         "generated artifact",
         "previous base",
         "human edits",
         "new generated version"
       ],
-      "installed_tree_sha256": "sha256:a8bbad40971f721b3cf354b24cfb298b5a0b89d062187ce3f989156ced367777",
+      "installed_tree_sha256": "sha256:c701cd5e9cea46a6746cbbfc0977134aa5b9585bf486dc31dcf11b55a5d031ec",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
-      "local_execution_state": "LOCAL_EXECUTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-artifact-versioning-human-lock",
       "ordinal": 32,
       "outputs": [
@@ -11432,11 +11448,11 @@
         "approval history"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:644e0be0bf478e23dc22bac287bb18a7259b06b49e2a7b54bec22253376d9ea6",
+      "qualification_result_digest": "sha256:587fafbcd55fb2af705f28e2feed90a1ec169fd6a0c6b4e09b76d9af9e1367b7",
       "runtime_interface_path": "agent-skills/runtime/elmos-artifact-versioning-human-lock/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:be2f4d48d55fc852bdc11ac37674d3664cc97286d0212c6e0cdbe625a31b1e71",
       "runtime_skill_path": "agent-skills/runtime/elmos-artifact-versioning-human-lock/SKILL.md",
-      "runtime_skill_sha256": "sha256:2d6be408d7c4bac0421f798d04920c3cc8071d3a71bb28989d51ec0f9ac19c67",
+      "runtime_skill_sha256": "sha256:c9bf927bc408d2b39851e0f663a5debfefb1e8baef2f68a1c39e3cc1bc9c91ea",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/32-artifact-versioning-human-lock/SKILL.md",
       "source_sha256": "sha256:2ece843c8aaaca65481205b772539996e9b9b9aa6e5c3301a4bbd7959e03bcf9",
@@ -11449,7 +11465,7 @@
       ],
       "title_zh": "Artifact 版本与人工内容保护",
       "workspace_skill_path": ".agents/skills/elmos-artifact-versioning-human-lock/SKILL.md",
-      "workspace_skill_sha256": "sha256:2d6be408d7c4bac0421f798d04920c3cc8071d3a71bb28989d51ec0f9ac19c67"
+      "workspace_skill_sha256": "sha256:c9bf927bc408d2b39851e0f663a5debfefb1e8baef2f68a1c39e3cc1bc9c91ea"
     },
     {
       "batch": "BATCH-08-cache-versioning-git",
@@ -11489,7 +11505,7 @@
         "branch policy",
         "reviewers"
       ],
-      "installed_tree_sha256": "sha256:9ae1e921ba2c5edede30e00cc65da0b6dba104fd56d26f58407194fb9d1f31ed",
+      "installed_tree_sha256": "sha256:8faa54a1d90b495a2c9b3c15c4d15d7c1002885b3f5c60d4bbe3ec889c136001",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PLANNING_ONLY",
       "name": "elmos-git-pr-automation",
@@ -11505,7 +11521,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-git-pr-automation/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:8c60cc58de8da326db269537d0f950eaf8c2d99fc00408d10a224d33de78fb6e",
       "runtime_skill_path": "agent-skills/runtime/elmos-git-pr-automation/SKILL.md",
-      "runtime_skill_sha256": "sha256:6e4b1ec3c9ef4aa1c6e38e7652232d53b16bccbb06e3849b8188f251cd1bd365",
+      "runtime_skill_sha256": "sha256:c2591b88be01adb4414064cfbb263af509756827ef92198c2e7bf6b37f48d7ab",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/33-git-pr-automation/SKILL.md",
       "source_sha256": "sha256:d529ffa65b841273e37c44de1a82b5c87df979b56223787d94863dcd30d96e02",
@@ -11518,7 +11534,7 @@
       ],
       "title_zh": "Git、文档 PR 与变更交付自动化",
       "workspace_skill_path": ".agents/skills/elmos-git-pr-automation/SKILL.md",
-      "workspace_skill_sha256": "sha256:6e4b1ec3c9ef4aa1c6e38e7652232d53b16bccbb06e3849b8188f251cd1bd365"
+      "workspace_skill_sha256": "sha256:c2591b88be01adb4414064cfbb263af509756827ef92198c2e7bf6b37f48d7ab"
     },
     {
       "batch": "BATCH-09-collaboration-and-connectors",
@@ -11548,7 +11564,7 @@
         "elmos-security-threat-model"
       ],
       "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
-      "expected_success_code": "LOCAL_POLICY_ALLOWED",
+      "expected_success_code": "LOCAL_POLICY_SIMULATED",
       "external_evidence_status": "NOT_RUN",
       "handler_id": "authorize_and_audit",
       "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
@@ -11558,7 +11574,7 @@
         "resource/action",
         "sharing/approval policy"
       ],
-      "installed_tree_sha256": "sha256:57de6544a7f7b4f118eeab94183ea95053fe517f5a1d1688a7aa823e1ccc2e8d",
+      "installed_tree_sha256": "sha256:9e7f3f2bb6e8fd338f78c385c24275820f057ebe9011acec4c3b13b97e729933",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-collaboration-governance",
@@ -11570,11 +11586,11 @@
         "audit events"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:ebb796b6d20dc79b7e23faabc8f1cd1ee80d5f9ff3be43d4c6dc64a628ab4d2f",
+      "qualification_result_digest": "sha256:d04abb45eca9667fee8d81fe8aed3c84518dccd1d942c37c752f41696b20be4b",
       "runtime_interface_path": "agent-skills/runtime/elmos-collaboration-governance/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:378aae84b41ea097a990057f99dae28399271192f5501bd8e1d68ebe0d92b1db",
       "runtime_skill_path": "agent-skills/runtime/elmos-collaboration-governance/SKILL.md",
-      "runtime_skill_sha256": "sha256:39df087fd682f400adb6ad2aefbab5de0b506e5f79042e821357e26dd580a93d",
+      "runtime_skill_sha256": "sha256:a88af5ca7e2a9ec189e126475c309cedbcdb17c54838c200c210dec95f609439",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/34-collaboration-governance/SKILL.md",
       "source_sha256": "sha256:ea9a71a832561a7fdc16c59dd469f2df829c5ab9194448b9fb64dac797a5885b",
@@ -11587,7 +11603,7 @@
       ],
       "title_zh": "协作、RBAC、审批与审计",
       "workspace_skill_path": ".agents/skills/elmos-collaboration-governance/SKILL.md",
-      "workspace_skill_sha256": "sha256:39df087fd682f400adb6ad2aefbab5de0b506e5f79042e821357e26dd580a93d"
+      "workspace_skill_sha256": "sha256:a88af5ca7e2a9ec189e126475c309cedbcdb17c54838c200c210dec95f609439"
     },
     {
       "batch": "BATCH-09-collaboration-and-connectors",
@@ -11627,7 +11643,7 @@
         "auth method",
         "tenant policy"
       ],
-      "installed_tree_sha256": "sha256:2dac5e81ddf47fba745975e8f193f3b62cea0f7f945ef85535b876ff6c893844",
+      "installed_tree_sha256": "sha256:ebbac05e452b61b929921861fac98d69cc9d47c20b193c3d127f93070d5e2d2c",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PLANNING_ONLY",
       "name": "elmos-integrations-mcp",
@@ -11639,11 +11655,11 @@
         "audit/health"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:8175ae8876515fc3ca8816150cf0ee2bc086197452a3b1cb454151c9222337a5",
+      "qualification_result_digest": "sha256:042655e0b48681f2cebd5276ff01d0f4f4ddace40afd894d9e098c62531c9692",
       "runtime_interface_path": "agent-skills/runtime/elmos-integrations-mcp/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:104c7db67f84c6553a5f962ec77fc64b409b072cf4a5c3999182c8613489da6e",
       "runtime_skill_path": "agent-skills/runtime/elmos-integrations-mcp/SKILL.md",
-      "runtime_skill_sha256": "sha256:6e6bdbac33b28d2417dda2998d1d7f20381b4090fb01942980c12fdd0199a596",
+      "runtime_skill_sha256": "sha256:cfe78d152bc84f049a3938e5af13b33b34b50740dd8af10915c11f9ebe9ea2dc",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/35-integrations-mcp/SKILL.md",
       "source_sha256": "sha256:bdf1d7ebbb21a86d2b5555efa77ebad9ef40dd9e7761c6313c06918c8f307f30",
@@ -11656,7 +11672,7 @@
       ],
       "title_zh": "外部系统、连接器与 MCP 集成",
       "workspace_skill_path": ".agents/skills/elmos-integrations-mcp/SKILL.md",
-      "workspace_skill_sha256": "sha256:6e6bdbac33b28d2417dda2998d1d7f20381b4090fb01942980c12fdd0199a596"
+      "workspace_skill_sha256": "sha256:cfe78d152bc84f049a3938e5af13b33b34b50740dd8af10915c11f9ebe9ea2dc"
     },
     {
       "batch": "BATCH-10-scale-and-observability",
@@ -11696,7 +11712,7 @@
         "resource quotas",
         "SLOs"
       ],
-      "installed_tree_sha256": "sha256:5b12ac31c78828dea9ff05471f9b0b1ee08be8e2afe612ef9376f57e889aeb75",
+      "installed_tree_sha256": "sha256:72732c8fbab3f92619ffa46e30bfe9ff1c83b5565e30b06f0f408294dafdfc94",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-large-repository-scaling",
@@ -11708,11 +11724,11 @@
         "load-test report"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:731e6ff82a959ba8c31589c01d314d28a3b9d3e46c3592200283bb957a0dd266",
+      "qualification_result_digest": "sha256:72e2f7f28bd76025ee3b35faa8015301951406fa4b2da8348c15e0b520d553fa",
       "runtime_interface_path": "agent-skills/runtime/elmos-large-repository-scaling/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:6bcf6e6fe1ee318b9840184891914959ed9166470f734f2ff2f65e75845abf78",
       "runtime_skill_path": "agent-skills/runtime/elmos-large-repository-scaling/SKILL.md",
-      "runtime_skill_sha256": "sha256:81d6dc94cdfb67f85701760f06a4f9e57f7cd32ad53fbd0b155e9429589a55a3",
+      "runtime_skill_sha256": "sha256:907edafca886d18aae0796e22d1ef17d1b4f7b31dad607e6314f4ae093a8a8ec",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/36-large-repository-scaling/SKILL.md",
       "source_sha256": "sha256:89303a46724d3467f0f1b3ec06f5bbbcda962f7bfd514e2a26ef0766cf489ccf",
@@ -11725,7 +11741,7 @@
       ],
       "title_zh": "大型仓库与多仓库系统扩展",
       "workspace_skill_path": ".agents/skills/elmos-large-repository-scaling/SKILL.md",
-      "workspace_skill_sha256": "sha256:81d6dc94cdfb67f85701760f06a4f9e57f7cd32ad53fbd0b155e9429589a55a3"
+      "workspace_skill_sha256": "sha256:907edafca886d18aae0796e22d1ef17d1b4f7b31dad607e6314f4ae093a8a8ec"
     },
     {
       "batch": "BATCH-10-scale-and-observability",
@@ -11764,7 +11780,7 @@
         "business KPIs",
         "error taxonomy"
       ],
-      "installed_tree_sha256": "sha256:0df95d7d116a8901edccf256edc9359aa409fc084d8a07090c8fd0232a92e1db",
+      "installed_tree_sha256": "sha256:ba2a698e9af56c057de8c36f3fe5dedd6cd2d690153b9454e797e67bbb7d3fb1",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-observability-slo",
@@ -11781,7 +11797,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-observability-slo/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:81a29bdcb5a83c51615b946b8c1d22980cc13d7fc1f72987511f3c081371c331",
       "runtime_skill_path": "agent-skills/runtime/elmos-observability-slo/SKILL.md",
-      "runtime_skill_sha256": "sha256:82ca4a7466e7880c5824dbf50b319b8eb198ad885073198df4425a9bdcc37ea2",
+      "runtime_skill_sha256": "sha256:0559583451d2c3a9e67a1cd2805cd6f7902648ca12c3e6df00f21fc4d568d82b",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/37-observability-slo/SKILL.md",
       "source_sha256": "sha256:1e37e1b8574185d66a2d668baec2cce9cd6a22b731458bbffa5ce3f0602c6a27",
@@ -11794,7 +11810,7 @@
       ],
       "title_zh": "可观测性、SLO 与运营指标",
       "workspace_skill_path": ".agents/skills/elmos-observability-slo/SKILL.md",
-      "workspace_skill_sha256": "sha256:82ca4a7466e7880c5824dbf50b319b8eb198ad885073198df4425a9bdcc37ea2"
+      "workspace_skill_sha256": "sha256:0559583451d2c3a9e67a1cd2805cd6f7902648ca12c3e6df00f21fc4d568d82b"
     },
     {
       "batch": "BATCH-11-testing-conversion-estimation",
@@ -11834,7 +11850,7 @@
         "golden repositories",
         "risk model"
       ],
-      "installed_tree_sha256": "sha256:11a98157d2785640168e15019fcf123e59c94779ae956dfe770f0f303cf958bf",
+      "installed_tree_sha256": "sha256:1d6ac67d69ed90d7d4a994187e826f8c1ba166675eb355fd0d2470d5457c8b1f",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-testing-evaluation",
@@ -11851,7 +11867,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-testing-evaluation/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:73f82f431afd5ef012717452d564a69a10d824e3f811a5be35552a0863c69545",
       "runtime_skill_path": "agent-skills/runtime/elmos-testing-evaluation/SKILL.md",
-      "runtime_skill_sha256": "sha256:76b56c6d4c75a0ea0e1a2fbd611c6ffb6123a1b9f4ca61032cbf84e4dc28a2fb",
+      "runtime_skill_sha256": "sha256:c1f6ef30a4311c25799e8dd987e652fd20e34583787300514e90db5751234160",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/38-testing-evaluation/SKILL.md",
       "source_sha256": "sha256:e30927b63b8ae063394ff60d8e1c3c5c504420e3ab751f7c3240b3a6012d0b7c",
@@ -11864,7 +11880,7 @@
       ],
       "title_zh": "测试、评测与数据质量",
       "workspace_skill_path": ".agents/skills/elmos-testing-evaluation/SKILL.md",
-      "workspace_skill_sha256": "sha256:76b56c6d4c75a0ea0e1a2fbd611c6ffb6123a1b9f4ca61032cbf84e4dc28a2fb"
+      "workspace_skill_sha256": "sha256:c1f6ef30a4311c25799e8dd987e652fd20e34583787300514e90db5751234160"
     },
     {
       "batch": "BATCH-11-testing-conversion-estimation",
@@ -11905,7 +11921,7 @@
         "Semantic IR",
         "rules/repairs/tests"
       ],
-      "installed_tree_sha256": "sha256:9b638b29cbd1ea81082174bb5984cf37e0932d06c3abb989f579e8b6b7105996",
+      "installed_tree_sha256": "sha256:6aeede9e58677312ff6198362f183ab31d4e81e36672f4b1bd944a7ab31f5ed4",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-conversion-integration",
@@ -11921,7 +11937,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-conversion-integration/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:b8725616e3252fb9d5759ac81e2a3d653123c343b95f785b81cfe8375bdc0eef",
       "runtime_skill_path": "agent-skills/runtime/elmos-conversion-integration/SKILL.md",
-      "runtime_skill_sha256": "sha256:25be8b2fe242d4e47e9376739f8d9ff5f94b92ff0473a670afc30f832b70da30",
+      "runtime_skill_sha256": "sha256:ccd289c5fd5af5260d4554d90878452f7a4c898cd65cb10376f15cd22f96a5e0",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/39-conversion-integration/SKILL.md",
       "source_sha256": "sha256:55b969fe33b3fe8db41aaafb56e060f9c5fe3ab1110e57b9b68925055d895d76",
@@ -11934,7 +11950,7 @@
       ],
       "title_zh": "与 Elmos 生成、转换、翻新引擎集成",
       "workspace_skill_path": ".agents/skills/elmos-conversion-integration/SKILL.md",
-      "workspace_skill_sha256": "sha256:25be8b2fe242d4e47e9376739f8d9ff5f94b92ff0473a670afc30f832b70da30"
+      "workspace_skill_sha256": "sha256:ccd289c5fd5af5260d4554d90878452f7a4c898cd65cb10376f15cd22f96a5e0"
     },
     {
       "batch": "BATCH-11-testing-conversion-estimation",
@@ -11976,7 +11992,7 @@
         "historical stage telemetry",
         "resource plan"
       ],
-      "installed_tree_sha256": "sha256:8bed652977f582bfe2f7b584808e9eaaba7e4b8036e54a9eee59841897de6756",
+      "installed_tree_sha256": "sha256:50b5a91a5dbbd1b1a49315948e29425c35a9aeee432f198d7977ac96a17ca55c",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "LOCAL_EXECUTED",
       "name": "elmos-runtime-cost-estimator",
@@ -11989,11 +12005,11 @@
         "human review effort"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:fcaa5bdd6c7d0196867567eb8567a5f8882749e9790d7c0468da3059b287080b",
+      "qualification_result_digest": "sha256:038e32acd1746e332cedfeedce80f5c63100a9f691945fbb2dd55163b3faec14",
       "runtime_interface_path": "agent-skills/runtime/elmos-runtime-cost-estimator/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:36b6be2eaa69f8c57b12488ef70792483ba50c779d11c213814dfb6840d8c794",
       "runtime_skill_path": "agent-skills/runtime/elmos-runtime-cost-estimator/SKILL.md",
-      "runtime_skill_sha256": "sha256:fddcc73c245ca87eadacb7cad2e3759fb19877d2fe8418ddf7361c0473f3af9d",
+      "runtime_skill_sha256": "sha256:1f48c99ab8677256e7dc60f01ad561c760e1e252d94f4e3213affb82b0893197",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/40-runtime-cost-estimator/SKILL.md",
       "source_sha256": "sha256:0c5af580feeef6d10c5eef30b72e2702ee804d6a67630d44ad61af6c49b1cea4",
@@ -12006,7 +12022,7 @@
       ],
       "title_zh": "系统运行 ETA、Token 与成本估算",
       "workspace_skill_path": ".agents/skills/elmos-runtime-cost-estimator/SKILL.md",
-      "workspace_skill_sha256": "sha256:fddcc73c245ca87eadacb7cad2e3759fb19877d2fe8418ddf7361c0473f3af9d"
+      "workspace_skill_sha256": "sha256:1f48c99ab8677256e7dc60f01ad561c760e1e252d94f4e3213affb82b0893197"
     },
     {
       "batch": "BATCH-12-deployment-and-certification",
@@ -12047,7 +12063,7 @@
         "identity/network/storage",
         "model access policy"
       ],
-      "installed_tree_sha256": "sha256:283c0ed078168e7f815466d595b2931375bc4038144574d85c91c569e4360154",
+      "installed_tree_sha256": "sha256:b815fda12f5ddc136378b3c8d8d88e9e869339bdcf04ae493c097df14c7e4e6d",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PLANNING_ONLY",
       "name": "elmos-deployment-private-cloud",
@@ -12063,7 +12079,7 @@
       "runtime_interface_path": "agent-skills/runtime/elmos-deployment-private-cloud/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:8c0a45495d5b8170b41bb49484873503ae17e8fa4ad375d8be8d1b9c34eb190a",
       "runtime_skill_path": "agent-skills/runtime/elmos-deployment-private-cloud/SKILL.md",
-      "runtime_skill_sha256": "sha256:f274b31fdbe8f349b3a87f3188a5e0cbe44c23579f878f00e94c16a7037a2c6f",
+      "runtime_skill_sha256": "sha256:4a0e809489f87218873dd450c362dcfee80e8f85bf71dca08ae9306d318f76a9",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/41-deployment-private-cloud/SKILL.md",
       "source_sha256": "sha256:3b8b43b162b5fefd6d462ebefcda613fbbee36eadf1f08de5e1fe5bb85a19b23",
@@ -12076,7 +12092,7 @@
       ],
       "title_zh": "SaaS、私有化与离线部署",
       "workspace_skill_path": ".agents/skills/elmos-deployment-private-cloud/SKILL.md",
-      "workspace_skill_sha256": "sha256:f274b31fdbe8f349b3a87f3188a5e0cbe44c23579f878f00e94c16a7037a2c6f"
+      "workspace_skill_sha256": "sha256:4a0e809489f87218873dd450c362dcfee80e8f85bf71dca08ae9306d318f76a9"
     },
     {
       "batch": "BATCH-12-deployment-and-certification",
@@ -12107,7 +12123,7 @@
         "elmos-deployment-private-cloud"
       ],
       "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
-      "expected_success_code": "RELEASE_READINESS_EVALUATED",
+      "expected_success_code": "RELEASE_READINESS_PLANNED",
       "external_evidence_status": "NOT_RUN",
       "handler_id": "evaluate_release_readiness",
       "implementation_state": "PLANNING_ONLY_IMPLEMENTED",
@@ -12117,7 +12133,7 @@
         "SLO/security/recovery evidence",
         "waivers"
       ],
-      "installed_tree_sha256": "sha256:a4ebb58b3c0ba9898ef2ec36b61a7e15cb974e74919c4bbf5205d931a36eeb83",
+      "installed_tree_sha256": "sha256:a129a36c96c718e4bdd749a1eb955be0e6986059e04aef75499e32dd1d291fc5",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PLANNING_ONLY",
       "name": "elmos-release-certification",
@@ -12129,11 +12145,11 @@
         "signed evidence bundle"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:7e8f91464d37476816c3ad17c661f43d563fc444c90f559b9b1f6ca7dd6609c9",
+      "qualification_result_digest": "sha256:ea4c61d8610731eb1915c2ae2c65bc89c063a6aecedd5285276f2a7dff248312",
       "runtime_interface_path": "agent-skills/runtime/elmos-release-certification/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:abc922e756b6c4278104bb820eb5795e0e4d871f8efe57fcd9648eae7e9f8a9d",
       "runtime_skill_path": "agent-skills/runtime/elmos-release-certification/SKILL.md",
-      "runtime_skill_sha256": "sha256:b1fe6107a2df5a47d8f1c4773f4105b41674b8cf25145ec2b1e8d1e1fb01c2db",
+      "runtime_skill_sha256": "sha256:379cd27883b552f018bda31cbbe20362cf5d703e3e66a16f8bd773eba73e0d62",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/42-release-certification/SKILL.md",
       "source_sha256": "sha256:a41776c43eacd2429950881182e36f4eb827239d3f612399d6d26dd9cf6de2c0",
@@ -12146,7 +12162,7 @@
       ],
       "title_zh": "生产验收与 E1–E5 认证",
       "workspace_skill_path": ".agents/skills/elmos-release-certification/SKILL.md",
-      "workspace_skill_sha256": "sha256:b1fe6107a2df5a47d8f1c4773f4105b41674b8cf25145ec2b1e8d1e1fb01c2db"
+      "workspace_skill_sha256": "sha256:379cd27883b552f018bda31cbbe20362cf5d703e3e66a16f8bd773eba73e0d62"
     },
     {
       "batch": "BATCH-13-commercialization",
@@ -12186,7 +12202,7 @@
         "capabilities",
         "deployment/support policy"
       ],
-      "installed_tree_sha256": "sha256:f2da092aba4a9fdb193297217ecb7e5798bd50c0418cfef2da90dbf672ff3192",
+      "installed_tree_sha256": "sha256:ecb00716fe3e3c4d7938cff3980ecfd825f6cc40caef59e05bfa980e78a4c95a",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-commercial-packaging",
@@ -12199,11 +12215,11 @@
         "sales enablement"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:f6c54e638a6cd28fdd6106dbe2b60944029ce468c4ad69c44ff31ce418d34378",
+      "qualification_result_digest": "sha256:e900d0f3689aa6fa48c47f046ba3f8b22f95b166daadcb995ad59ce0bef44946",
       "runtime_interface_path": "agent-skills/runtime/elmos-commercial-packaging/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:a96b8b2c0cf3c7917919ca062c2fc7bfff339c98d1e35302e8b884a903c45582",
       "runtime_skill_path": "agent-skills/runtime/elmos-commercial-packaging/SKILL.md",
-      "runtime_skill_sha256": "sha256:cbd0155076d91d72e26e2a3484fc55e82efea19e1a5cb83edb868153a4084c71",
+      "runtime_skill_sha256": "sha256:39e98148efef2f5e36bc4635d4827b8a30fd8a275495f196483e8235b25f41c3",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/43-commercial-packaging/SKILL.md",
       "source_sha256": "sha256:4a64aedfc353aef19f1c776af7e8c5cb7f58180ad8a6ee436f0cbe75c7cb9d3a",
@@ -12216,7 +12232,7 @@
       ],
       "title_zh": "商业版本、计量与交付套餐",
       "workspace_skill_path": ".agents/skills/elmos-commercial-packaging/SKILL.md",
-      "workspace_skill_sha256": "sha256:cbd0155076d91d72e26e2a3484fc55e82efea19e1a5cb83edb868153a4084c71"
+      "workspace_skill_sha256": "sha256:39e98148efef2f5e36bc4635d4827b8a30fd8a275495f196483e8235b25f41c3"
     },
     {
       "batch": "BATCH-14-online-debug-and-learning",
@@ -12257,7 +12273,7 @@
         "DAP/CDP/原生适配器配置",
         "用户权限与 Debug Policy"
       ],
-      "installed_tree_sha256": "sha256:b2d3c2b1135fb2885a98dae7c50001ad882a4875f12c79f8d4eebb8a5c750c8e",
+      "installed_tree_sha256": "sha256:a916d4abd5e9f6b89770485a54ef8817cf9a4a08a5497933184efca2cd5fc7da",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-debug-adapter-gateway",
@@ -12269,11 +12285,11 @@
         "适配器合规与兼容性报告"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:cd8a144930fbd64103b15db693b60729ca304c4231006493f35fbaeb04c472b6",
+      "qualification_result_digest": "sha256:2eddd85fa32e26cd668b510baf6d9b0d147b2d374e7f441f0a0fd53da2087fd0",
       "runtime_interface_path": "agent-skills/runtime/elmos-debug-adapter-gateway/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:47cef432d14d0ffe77ddd61e14b0cad10c73483e6c61a64ecfbc8bad08237c6c",
       "runtime_skill_path": "agent-skills/runtime/elmos-debug-adapter-gateway/SKILL.md",
-      "runtime_skill_sha256": "sha256:0b384d6bc0c39a490032f97ece6641195c04f5406b3a452e301fd324a85e7e3d",
+      "runtime_skill_sha256": "sha256:14cdc6e50c683729eef1ade80936d42c43b51cd317ce329a3cdbcc0f68a88c97",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/44-debug-adapter-gateway/SKILL.md",
       "source_sha256": "sha256:758ab6e0316cfcd67beb156d2bbed63852a9e040d14ce1f1485da42832dcd1a7",
@@ -12286,7 +12302,7 @@
       ],
       "title_zh": "调试适配器网关与能力协商",
       "workspace_skill_path": ".agents/skills/elmos-debug-adapter-gateway/SKILL.md",
-      "workspace_skill_sha256": "sha256:0b384d6bc0c39a490032f97ece6641195c04f5406b3a452e301fd324a85e7e3d"
+      "workspace_skill_sha256": "sha256:14cdc6e50c683729eef1ade80936d42c43b51cd317ce329a3cdbcc0f68a88c97"
     },
     {
       "batch": "BATCH-14-online-debug-and-learning",
@@ -12328,7 +12344,7 @@
         "Runtime Profile 与启动目标",
         "Debug Policy、数据集与 Secrets 引用"
       ],
-      "installed_tree_sha256": "sha256:dac6ddf2d1f28dc11aee1505fa17afe2951552a2ce73ff73867f146982bd34c6",
+      "installed_tree_sha256": "sha256:432d7f261d21998f7e9ba26b683c3fb245f5b78a8a34924c69533f327966e35e",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PLANNING_ONLY",
       "name": "elmos-debug-sandbox-orchestration",
@@ -12340,11 +12356,11 @@
         "清理与资源使用报告"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:91a8175a8c99266df787061b8dc5b641d0a9d8c12a4f72a750b721fd7d717094",
+      "qualification_result_digest": "sha256:503a4e06a0b7c6401a5cacdb36f9ba597fc2e1172be7c3eef69bc1d515caa995",
       "runtime_interface_path": "agent-skills/runtime/elmos-debug-sandbox-orchestration/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:682b03820f3774bb563bcd1b570903fdb99e16e956d3186feb0a28bb4f4269e2",
       "runtime_skill_path": "agent-skills/runtime/elmos-debug-sandbox-orchestration/SKILL.md",
-      "runtime_skill_sha256": "sha256:7f08e3bb98c81132caf3e5da0a89b3828b6cd0d7b54d180b39a9849b11c26053",
+      "runtime_skill_sha256": "sha256:b85fc59b14a780259af002909d1e98e8046dd31b2b11fc3de45b5fb5338ca4f9",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/45-debug-sandbox-orchestration/SKILL.md",
       "source_sha256": "sha256:558752e3bb14dfba41ccb40b040d47937713ce0f1574f60411ddd33f76e41e3a",
@@ -12357,7 +12373,7 @@
       ],
       "title_zh": "调试沙箱、运行环境与会话编排",
       "workspace_skill_path": ".agents/skills/elmos-debug-sandbox-orchestration/SKILL.md",
-      "workspace_skill_sha256": "sha256:7f08e3bb98c81132caf3e5da0a89b3828b6cd0d7b54d180b39a9849b11c26053"
+      "workspace_skill_sha256": "sha256:b85fc59b14a780259af002909d1e98e8046dd31b2b11fc3de45b5fb5338ca4f9"
     },
     {
       "batch": "BATCH-14-online-debug-and-learning",
@@ -12399,7 +12415,7 @@
         "Adapter Capabilities",
         "用户 Debug Policy 与学习模式"
       ],
-      "installed_tree_sha256": "sha256:6d03802dcb00407b6187e00b0b8888ded6fe47080f920bfcfab71f5e6bfeb17d",
+      "installed_tree_sha256": "sha256:8e80a43eaaea252a6c468a57fd09bd17a7665792dc22a45ae6a8a44fcaf4e66f",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-online-debug-workbench",
@@ -12411,11 +12427,11 @@
         "可分享的调试深链与会话摘要"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:576777f0c22e086c17c9373c822a38504ca0f93f30205ec09496ca3ebe1539c0",
+      "qualification_result_digest": "sha256:21d83431db12c830e375f2fa8efb456d8916b6184eb39257350396f0d124d37d",
       "runtime_interface_path": "agent-skills/runtime/elmos-online-debug-workbench/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:b3918b9d38878046725842dce8c52a9a3f61d7a7ee3ebfda19585cb33b4249f3",
       "runtime_skill_path": "agent-skills/runtime/elmos-online-debug-workbench/SKILL.md",
-      "runtime_skill_sha256": "sha256:f1cbc6e19b0dff66d2d9333613302675389eb4219dc3e2cc51566f09e621bb0e",
+      "runtime_skill_sha256": "sha256:347272e372d1d6664b860fc906cd9ff0a3dc6e50aeb3c6465746f3ff848e1e7e",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/46-online-debug-workbench/SKILL.md",
       "source_sha256": "sha256:34860a71f59a5401e44c8adc23b4f4be2850d2c57a2bdd45fd201b7f48d991de",
@@ -12428,7 +12444,7 @@
       ],
       "title_zh": "在线调试工作台",
       "workspace_skill_path": ".agents/skills/elmos-online-debug-workbench/SKILL.md",
-      "workspace_skill_sha256": "sha256:f1cbc6e19b0dff66d2d9333613302675389eb4219dc3e2cc51566f09e621bb0e"
+      "workspace_skill_sha256": "sha256:347272e372d1d6664b860fc906cd9ff0a3dc6e50aeb3c6465746f3ff848e1e7e"
     },
     {
       "batch": "BATCH-14-online-debug-and-learning",
@@ -12470,7 +12486,7 @@
         "学习者角色、水平和目标",
         "模块/流程/故障场景"
       ],
-      "installed_tree_sha256": "sha256:5b065c481af9f0ed76a0208803efbfe5cf687abeb4cc58d1cd4e9714891652d2",
+      "installed_tree_sha256": "sha256:ee38a0e87540566e6399ed25c22edf16e8ed54ac89c535b55dfdfecb75d8e248",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-debug-learning-copilot",
@@ -12482,11 +12498,11 @@
         "Learner Progress 与可复用 Debug Lab"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:3d1efd91f85da426d5e7e6f3cc62ef1f05845c7f14dff51d7e64a1fd6d8c6d10",
+      "qualification_result_digest": "sha256:39e9d6c04a06c74de61bfb66d46ebc47d1ff3e1c105bf0d8457e10fc1a3eef79",
       "runtime_interface_path": "agent-skills/runtime/elmos-debug-learning-copilot/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:d353fe53a51f6e20e7973151f6a3299f131785cca6c2c6dd144c8047951852c5",
       "runtime_skill_path": "agent-skills/runtime/elmos-debug-learning-copilot/SKILL.md",
-      "runtime_skill_sha256": "sha256:4b3af8d0e7d45050a3c2a34e0b1b5f36c3a3ce988ded3b444d7822e22ed2294a",
+      "runtime_skill_sha256": "sha256:1eeadba5a2828ab824c208caf5e1008075ad336158ad743063e970f6623478eb",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/47-debug-learning-copilot/SKILL.md",
       "source_sha256": "sha256:080dfd35a916ec44756e9de82edfc4af4eee7c070550d9ddf53bed928a434077",
@@ -12499,7 +12515,7 @@
       ],
       "title_zh": "调试学习 Copilot 与互动实验",
       "workspace_skill_path": ".agents/skills/elmos-debug-learning-copilot/SKILL.md",
-      "workspace_skill_sha256": "sha256:4b3af8d0e7d45050a3c2a34e0b1b5f36c3a3ce988ded3b444d7822e22ed2294a"
+      "workspace_skill_sha256": "sha256:1eeadba5a2828ab824c208caf5e1008075ad336158ad743063e970f6623478eb"
     },
     {
       "batch": "BATCH-14-online-debug-and-learning",
@@ -12541,7 +12557,7 @@
         "Adapter Replay Capabilities",
         "脱敏、保留和加密策略"
       ],
-      "installed_tree_sha256": "sha256:03934b4fde62ae7ff1bbe3f82df1340ea682dc764f5b013c891d42db0cb515c0",
+      "installed_tree_sha256": "sha256:23e15682963fefc9a2aedf57207d6e51d82a0266149a03a493b0a9ef616136d5",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-debug-record-replay",
@@ -12553,11 +12569,11 @@
         "重放与完整性报告"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:5e70544104652c0cc8ff11b646c229b92cfb9d4e376a322604cfd43fd231632e",
+      "qualification_result_digest": "sha256:fd5a3ee4e40721fca6413f0236840017101b5b1a775c21f20c78633e2dbcef12",
       "runtime_interface_path": "agent-skills/runtime/elmos-debug-record-replay/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:6f04cd581e7ef429efe225c1cff5ffc8e0e620f302db14ac6460272d1c38850a",
       "runtime_skill_path": "agent-skills/runtime/elmos-debug-record-replay/SKILL.md",
-      "runtime_skill_sha256": "sha256:5061c02939bbe7ff39e43ad3b285f682343c68964cb3670873bea38d1090fc2d",
+      "runtime_skill_sha256": "sha256:6831c921648bfdec290dcb77a6f93b18215088e527bb410079546abe5c9e1933",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/48-debug-record-replay/SKILL.md",
       "source_sha256": "sha256:88073bf5ca895f65be8cb8a5be0075c8ec77761abfec8e4bd4ee798cf20c9873",
@@ -12570,7 +12586,7 @@
       ],
       "title_zh": "调试记录、检查点与运行回放",
       "workspace_skill_path": ".agents/skills/elmos-debug-record-replay/SKILL.md",
-      "workspace_skill_sha256": "sha256:5061c02939bbe7ff39e43ad3b285f682343c68964cb3670873bea38d1090fc2d"
+      "workspace_skill_sha256": "sha256:6831c921648bfdec290dcb77a6f93b18215088e527bb410079546abe5c9e1933"
     },
     {
       "batch": "BATCH-14-online-debug-and-learning",
@@ -12613,7 +12629,7 @@
         "Correlation IDs 与测试场景",
         "Source/Target/IR Mapping"
       ],
-      "installed_tree_sha256": "sha256:6cc81a93edbb8285f20f92fb0c0bc0014b07687e342441c3fc2d936f282b55d5",
+      "installed_tree_sha256": "sha256:512f3ee4da66f95130d8c61af490f36af7192616bfdff7546ecb93f626582b98",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
       "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-distributed-debug-correlation",
@@ -12625,11 +12641,11 @@
         "Source/Target Semantic Divergence Report"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:a08981a0656b0abbb87ec2febadcd64e03be4751123485b34a7c39d72c045cc1",
+      "qualification_result_digest": "sha256:b7d7dee875a87df42829d2556f61ac5e5f810e2963cdcc48924aa770caa9f178",
       "runtime_interface_path": "agent-skills/runtime/elmos-distributed-debug-correlation/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:f46c7a88d47a2d274b0f45d7a3327dc7d984e0fa55d3a21e749696ad22c9732b",
       "runtime_skill_path": "agent-skills/runtime/elmos-distributed-debug-correlation/SKILL.md",
-      "runtime_skill_sha256": "sha256:eb119598f6ca6dca42b35132304af60afc849b39e97ee2d2dec2ec6f28e144b8",
+      "runtime_skill_sha256": "sha256:cbd8b080d925162770bf41d9f3472418beaf23a0e2a6d7396eef04232193d00e",
       "skill_interface_status": "INSTALLED",
       "source_path": "skills/elmos-project-intelligence-skills-v1.1.0/skills/49-distributed-debug-correlation/SKILL.md",
       "source_sha256": "sha256:988e9aab86bab0b94d99d32660b6f799673f5b94529251b6e4d657e7e89132ae",
@@ -12642,7 +12658,7 @@
       ],
       "title_zh": "分布式调试、异步因果与源目标对照",
       "workspace_skill_path": ".agents/skills/elmos-distributed-debug-correlation/SKILL.md",
-      "workspace_skill_sha256": "sha256:eb119598f6ca6dca42b35132304af60afc849b39e97ee2d2dec2ec6f28e144b8"
+      "workspace_skill_sha256": "sha256:cbd8b080d925162770bf41d9f3472418beaf23a0e2a6d7396eef04232193d00e"
     }
   ],
   "source_acceptance_execution_status": "NOT_RUN",
@@ -12662,5 +12678,5 @@
   "source_task_execution_status": "todo",
   "source_version": "1.1.0",
   "workspace_root": ".agents/skills",
-  "workspace_tree_sha256": "sha256:fb8cc90d203b6a6c0619c3e22c2e027392c1a5b45e5dd4db80b162ce309a6695"
+  "workspace_tree_sha256": "sha256:d6ad92b6a7350a6cc652b62cbc2b727d6edda474f1a4d9a497fc05dedac08bf2"
 }

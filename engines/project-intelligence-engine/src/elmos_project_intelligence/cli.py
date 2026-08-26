@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
+import stat
 import sys
 from typing import Any
 
 from .runtime import SkillRuntimeError, capability_manifest, dispatch_skill
+from .safe_paths import open_file_no_symlinks, verify_file_path_binding
 
 
 MAX_REQUEST_BYTES = 16 * 1024 * 1024
@@ -27,12 +30,54 @@ def _read_request(path_value: str) -> dict[str, Any]:
     if path_value == "-":
         raw = sys.stdin.buffer.read(MAX_REQUEST_BYTES + 1)
     else:
-        path = Path(path_value)
-        if not path.is_file() or path.is_symlink():
-            raise ValueError("request path must be a regular file")
-        if path.stat().st_size > MAX_REQUEST_BYTES:
-            raise ValueError("request exceeds 16 MiB")
-        raw = path.read_bytes()
+        if not hasattr(os, "O_NOFOLLOW"):
+            raise ValueError("request files require O_NOFOLLOW support")
+        path, parent_fd, descriptor = open_file_no_symlinks(
+            Path(path_value), os.O_RDONLY
+        )
+        try:
+            before = os.fstat(descriptor)
+            if not stat.S_ISREG(before.st_mode):
+                raise ValueError("request path must be a regular file")
+            if before.st_size > MAX_REQUEST_BYTES:
+                raise ValueError("request exceeds 16 MiB")
+            captured = bytearray()
+            while len(captured) <= MAX_REQUEST_BYTES:
+                chunk = os.read(
+                    descriptor,
+                    min(64 * 1024, MAX_REQUEST_BYTES + 1 - len(captured)),
+                )
+                if not chunk:
+                    break
+                captured.extend(chunk)
+            after = os.fstat(descriptor)
+            stable_before = (
+                before.st_dev,
+                before.st_ino,
+                before.st_mode,
+                before.st_size,
+                before.st_mtime_ns,
+                before.st_ctime_ns,
+            )
+            stable_after = (
+                after.st_dev,
+                after.st_ino,
+                after.st_mode,
+                after.st_size,
+                after.st_mtime_ns,
+                after.st_ctime_ns,
+            )
+            if stable_before != stable_after or len(captured) != before.st_size:
+                raise ValueError("request file changed while it was read")
+            verify_file_path_binding(
+                path,
+                parent_fd=parent_fd,
+                file_fd=descriptor,
+            )
+            raw = bytes(captured)
+        finally:
+            os.close(descriptor)
+            os.close(parent_fd)
     if len(raw) > MAX_REQUEST_BYTES:
         raise ValueError("request exceeds 16 MiB")
     value = json.loads(

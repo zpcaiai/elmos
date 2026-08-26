@@ -119,6 +119,79 @@ class QualificationContractTests(unittest.TestCase):
                 ):
                     validate_qualification_result(SKILL_REGISTRY[skill], forged, SCOPE)
 
+    def test_diagram_cache_and_estimate_nested_contracts_are_value_pinned(
+        self,
+    ) -> None:
+        diagram_skill = "elmos-diagram-spec-engine"
+        dangling = deepcopy(_result(diagram_skill))
+        dangling["outputs"]["diagram_spec"]["edges"][0]["target"] = "missing"
+        dangling["outputs"]["digest"] = canonical_digest(
+            dangling["outputs"]["diagram_spec"]
+        )
+        _redigest(dangling)
+        with self.assertRaisesRegex(QualificationContractError, "dangling"):
+            validate_qualification_result(
+                SKILL_REGISTRY[diagram_skill], dangling, SCOPE
+            )
+
+        cache_skill = "elmos-incremental-analysis-cache"
+        cross_tenant_key = deepcopy(_result(cache_skill))
+        cross_tenant_key["outputs"]["cache_key"] = canonical_digest(
+            {
+                "schema_version": cross_tenant_key["outputs"]["schema_version"],
+                "implementation_version": cross_tenant_key["outputs"][
+                    "implementation_version"
+                ],
+                "tenant_id": "tenant-b",
+                "project_id": SCOPE.project_id,
+                "revision": SCOPE.revision,
+                "stage": cross_tenant_key["outputs"]["stage"],
+                "input_digest": cross_tenant_key["outputs"]["input_digest"],
+            }
+        )
+        _redigest(cross_tenant_key)
+        with self.assertRaisesRegex(
+            QualificationContractError, "trusted request scope"
+        ):
+            validate_qualification_result(
+                SKILL_REGISTRY[cache_skill], cross_tenant_key, SCOPE
+            )
+
+        estimate_skill = "elmos-runtime-cost-estimator"
+        string_eta = deepcopy(_result(estimate_skill))
+        string_eta["outputs"]["system_wall_clock_eta"]["p50_seconds"] = "0.1"
+        _redigest(string_eta)
+        with self.assertRaisesRegex(QualificationContractError, "must be a number"):
+            validate_qualification_result(
+                SKILL_REGISTRY[estimate_skill], string_eta, SCOPE
+            )
+
+        reversed_interval = deepcopy(_result(estimate_skill))
+        reversed_interval["outputs"]["human_review_effort"]["p90_hours"] = 0
+        reversed_interval["outputs"]["human_review_effort"]["p50_hours"] = 1
+        _redigest(reversed_interval)
+        with self.assertRaisesRegex(QualificationContractError, "P90"):
+            validate_qualification_result(
+                SKILL_REGISTRY[estimate_skill], reversed_interval, SCOPE
+            )
+
+        bundle_skill = "elmos-project-report-bundle"
+        unverified_bundle = deepcopy(_result(bundle_skill))
+        unverified_bundle["outputs"]["artifact_bytes_verified"] = False
+        _redigest(unverified_bundle)
+        with self.assertRaisesRegex(QualificationContractError, "literal boolean true"):
+            validate_qualification_result(
+                SKILL_REGISTRY[bundle_skill], unverified_bundle, SCOPE
+            )
+
+        drifted_bundle = deepcopy(_result(bundle_skill))
+        drifted_bundle["outputs"]["artifacts"][0]["byte_count"] += 1
+        _redigest(drifted_bundle)
+        with self.assertRaisesRegex(QualificationContractError, "does not bind"):
+            validate_qualification_result(
+                SKILL_REGISTRY[bundle_skill], drifted_bundle, SCOPE
+            )
+
     def test_digest_drift_fails_closed(self) -> None:
         skill = "elmos-project-fingerprinting"
         drifted = deepcopy(_result(skill))

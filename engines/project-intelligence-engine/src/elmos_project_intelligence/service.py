@@ -17,7 +17,13 @@ from .contracts import (
     RunRecord,
     RunStatus,
 )
-from .runtime import SKILL_REGISTRY, RuntimeRequest, SkillRuntimeError, dispatch_skill
+from .runtime import (
+    SKILL_REGISTRY,
+    RuntimeRequest,
+    SkillRuntimeError,
+    dispatch_skill,
+    is_dispatch_rejection,
+)
 from .store import ProjectIntelligenceStore
 
 
@@ -100,6 +106,10 @@ class ProjectIntelligenceService:
 
             phase = "handler-dispatch"
             result = dispatch_skill(skill, request_value)
+            if is_dispatch_rejection(result):
+                raise SkillRuntimeError(
+                    "Project Intelligence request or capability contract rejected"
+                )
             phase = "result-canonicalization"
             result_bytes = canonical_json_bytes(result)
             phase = "artifact-write"

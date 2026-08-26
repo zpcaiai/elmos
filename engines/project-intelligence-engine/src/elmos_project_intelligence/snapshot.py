@@ -9,6 +9,7 @@ imported, evaluated, executed, or passed to a child process.
 from __future__ import annotations
 
 from collections import Counter
+import errno
 import fnmatch
 import os
 from pathlib import Path
@@ -110,6 +111,45 @@ def _same_object(left: os.stat_result, right: os.stat_result) -> bool:
     )
 
 
+def _open_directory_path_no_symlinks(path: Path) -> tuple[int, os.stat_result]:
+    """Open every absolute path component with ``O_NOFOLLOW``.
+
+    ``O_NOFOLLOW`` on a single absolute-path open protects only the final
+    component. Walking from the filesystem anchor prevents an authorized
+    lexical root from escaping through a symlinked ancestor.
+    """
+
+    absolute = path.absolute()
+    anchor = absolute.anchor
+    if not anchor:
+        raise UnsafeFilesystemEntry("repository root must be absolute")
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC | os.O_NOFOLLOW
+    descriptor = os.open(anchor, flags)
+    try:
+        for component in absolute.parts[1:]:
+            if component in {"", ".", ".."}:
+                raise UnsafeFilesystemEntry(
+                    "repository root contains an unsafe path component"
+                )
+            try:
+                child = os.open(component, flags, dir_fd=descriptor)
+            except OSError as exc:
+                if exc.errno in {errno.ELOOP, errno.ENOTDIR}:
+                    raise UnsafeFilesystemEntry(
+                        "repository root ancestry cannot contain symlinks"
+                    ) from exc
+                raise
+            os.close(descriptor)
+            descriptor = child
+        opened = os.fstat(descriptor)
+        if not stat.S_ISDIR(opened.st_mode):
+            raise UnsafeFilesystemEntry("repository root must be a directory")
+        return descriptor, opened
+    except BaseException:
+        os.close(descriptor)
+        raise
+
+
 def _entry_metadata_digest(
     *, kind: EntryKind, size: int, mode: int, mtime_ns: int
 ) -> str:
@@ -207,20 +247,8 @@ class RepositorySnapshotter:
         self._request = request
 
         root = Path(str(request.root)).absolute()
-        root_lstat = os.lstat(root)
-        if stat.S_ISLNK(root_lstat.st_mode):
-            raise UnsafeFilesystemEntry("repository root cannot be a symlink")
-        if not stat.S_ISDIR(root_lstat.st_mode):
-            raise UnsafeFilesystemEntry("repository root must be a directory")
-
-        root_fd = os.open(
-            root,
-            os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC | os.O_NOFOLLOW,
-        )
+        root_fd, root_fstat = _open_directory_path_no_symlinks(root)
         try:
-            root_fstat = os.fstat(root_fd)
-            if not _same_object(root_lstat, root_fstat):
-                raise SnapshotChanged("repository root changed before traversal")
             self._walk_directory(
                 directory_fd=root_fd,
                 relative_directory="",
@@ -228,12 +256,11 @@ class RepositorySnapshotter:
                 before=root_fstat,
             )
             root_after_fd = os.fstat(root_fd)
-            root_after_path = os.lstat(root)
-            if (
-                _stable_stat(root_fstat) != _stable_stat(root_after_fd)
-                or _stable_stat(root_lstat) != _stable_stat(root_after_path)
-                or not _same_object(root_after_fd, root_after_path)
-            ):
+            reopened_fd, root_after_path = _open_directory_path_no_symlinks(root)
+            os.close(reopened_fd)
+            if _stable_stat(root_fstat) != _stable_stat(
+                root_after_fd
+            ) or not _same_object(root_after_fd, root_after_path):
                 raise SnapshotChanged("repository root changed during traversal")
         finally:
             os.close(root_fd)

@@ -83,7 +83,7 @@
       "name": "elmos-reference-architecture",
       "ordinal": 2,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:0ae44641d557ff6a9ed8838f650e0e7c22354544ae5fca592c0f0749255f6356",
+      "qualification_result_digest": "sha256:9a36cf9fab8adfff68f36f32a11f653d45b3d2adb11222f93978e722eda42a0b",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -173,7 +173,7 @@
       "name": "elmos-multilanguage-parsing",
       "ordinal": 5,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:2a47364def6171dd6f7e00823df00f98a6d826479345838e3df7e8e4fae8f105",
+      "qualification_result_digest": "sha256:772d12244fb9db62b77c39af0660ce507c35ec14342a754808603c2d294ddbdd",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -203,7 +203,7 @@
       "name": "elmos-symbol-code-graph",
       "ordinal": 6,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:bc8b3ba1189f13ae9ccd57d9aeb3dc4909f5692a223517b0e0d48f02237d4878",
+      "qualification_result_digest": "sha256:64f97244e5deb2a983f7eb8375557168800009897a157ac1a9d6e3cf0684eb4b",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -263,7 +263,7 @@
       "name": "elmos-evidence-provenance",
       "ordinal": 8,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:d652181dc923b5595e58f2625398eb1d587475cb133f8ef4b4a19020f0be876d",
+      "qualification_result_digest": "sha256:59f9f837f1dc6271f145d25eb57a7ebc78e063cacfee5c93ef6bf5eb82f9f921",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -323,7 +323,7 @@
       "name": "elmos-semantic-navigation",
       "ordinal": 10,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:8a92504d395c48aee5e2e1ee489ed29faa505e311acff88fa0c2ede2d9c64c84",
+      "qualification_result_digest": "sha256:01f9f5a0074b0a1a9b57419bffe59312ecf2744b50ca602ba798ca76b7da359a",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -353,7 +353,7 @@
       "name": "elmos-code-explanation",
       "ordinal": 11,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:77f1ccfb82d57da53c2dc4fa6fe81bb8b62cba8dc47ab924372ba4387dcfef54",
+      "qualification_result_digest": "sha256:16865da1b4d917af49550dd244b203dd7bc38026c2e226b59a05d937d7cbe642",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -473,7 +473,7 @@
       "name": "elmos-flow-discovery",
       "ordinal": 15,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:29eca6c01ab618eda7d29b8afc71142bfc0e0200784dbf04ece98f8ecd9a06cc",
+      "qualification_result_digest": "sha256:c4f2015b3b85dba664eed75301310edb818ae24fd072805d11ec75a65bb442e9",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -593,7 +593,7 @@
       "name": "elmos-diagram-spec-engine",
       "ordinal": 19,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:f85f2b3348d8545debdac15f82f81002f124626b9dc55e6426cb1341b6100830",
+      "qualification_result_digest": "sha256:1eb0f3264f0982251fed00e75d166e5557f9669832af860658d3da98db158391",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -653,7 +653,7 @@
       "name": "elmos-diagram-editor",
       "ordinal": 21,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:43bfc7eac732d7779d11320280ed51c64f600398d1d5c479feb69326c230900d",
+      "qualification_result_digest": "sha256:38de70fcf696216949613d48d4db912fddac9d6c870ed66bfcddd8daf880d945",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -683,7 +683,7 @@
       "name": "elmos-architecture-documentation",
       "ordinal": 22,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:5bbca557b856ed43d7c5a0cc6acb546dad36c9b514c439ccbfb421c7f9c3d0c9",
+      "qualification_result_digest": "sha256:207d787283364777799c8217a2003c2b8f60338ae6a18558a8d9bb1df66b47ec",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -743,7 +743,7 @@
       "name": "elmos-project-report-bundle",
       "ordinal": 24,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:e1753061fa618d7d5b12c210bfab8aeee82f756d6a19a46189bf74f41bf7fd49",
+      "qualification_result_digest": "sha256:d4a45d2ec876b8a74c90db0044443de1a30d690bf1a1ca74c9db545525a3f6ba",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -773,7 +773,7 @@
       "name": "elmos-project-search-qa",
       "ordinal": 25,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:6eb17fe732b30d7fd4910245e46e4677594d06e470d04f323699d75235cfbc96",
+      "qualification_result_digest": "sha256:6e93440aed67f918483a2c17603eb7c36e832224b6ae643651c125e05c631e08",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -934,7 +934,7 @@
     },
     {
       "batch": "BATCH-08-cache-versioning-git",
-      "capability_state": "LOCAL",
+      "capability_state": "PARTIAL",
       "certification_status": "NOT_CERTIFIED",
       "code_paths": [
         "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
@@ -944,16 +944,16 @@
       ],
       "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
       "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
-      "expected_success_code": "ANALYSIS_CACHE_KEY_RESOLVED",
+      "expected_success_code": "ANALYSIS_CACHE_KEY_DERIVED",
       "external_evidence_status": "NOT_RUN",
       "handler_id": "cache_analysis_stage",
-      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
-      "local_execution_state": "LOCAL_EXECUTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-incremental-analysis-cache",
       "ordinal": 31,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:302df367b6075fef0b0b7b317f7d81671aec307989f3a5e484450efb94127acd",
+      "qualification_result_digest": "sha256:d042c41355df7a438932358f5cad8aecd50e4055e4e4fe292a04b2824aa961eb",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -964,7 +964,7 @@
     },
     {
       "batch": "BATCH-05-diagram-platform",
-      "capability_state": "LOCAL",
+      "capability_state": "PARTIAL",
       "certification_status": "NOT_CERTIFIED",
       "code_paths": [
         "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
@@ -974,16 +974,16 @@
       ],
       "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
       "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
-      "expected_success_code": "ARTIFACT_VERSION_CREATED",
+      "expected_success_code": "ARTIFACT_VERSION_PROPOSAL_VALIDATED",
       "external_evidence_status": "NOT_RUN",
-      "handler_id": "version_artifact",
-      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "handler_id": "validate_artifact_version_proposal",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
       "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
-      "local_execution_state": "LOCAL_EXECUTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
       "name": "elmos-artifact-versioning-human-lock",
       "ordinal": 32,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:644e0be0bf478e23dc22bac287bb18a7259b06b49e2a7b54bec22253376d9ea6",
+      "qualification_result_digest": "sha256:587fafbcd55fb2af705f28e2feed90a1ec169fd6a0c6b4e09b76d9af9e1367b7",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1034,7 +1034,7 @@
       ],
       "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
       "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
-      "expected_success_code": "LOCAL_POLICY_ALLOWED",
+      "expected_success_code": "LOCAL_POLICY_SIMULATED",
       "external_evidence_status": "NOT_RUN",
       "handler_id": "authorize_and_audit",
       "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
@@ -1043,7 +1043,7 @@
       "name": "elmos-collaboration-governance",
       "ordinal": 34,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:ebb796b6d20dc79b7e23faabc8f1cd1ee80d5f9ff3be43d4c6dc64a628ab4d2f",
+      "qualification_result_digest": "sha256:d04abb45eca9667fee8d81fe8aed3c84518dccd1d942c37c752f41696b20be4b",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1073,7 +1073,7 @@
       "name": "elmos-integrations-mcp",
       "ordinal": 35,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:8175ae8876515fc3ca8816150cf0ee2bc086197452a3b1cb454151c9222337a5",
+      "qualification_result_digest": "sha256:042655e0b48681f2cebd5276ff01d0f4f4ddace40afd894d9e098c62531c9692",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1103,7 +1103,7 @@
       "name": "elmos-large-repository-scaling",
       "ordinal": 36,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:731e6ff82a959ba8c31589c01d314d28a3b9d3e46c3592200283bb957a0dd266",
+      "qualification_result_digest": "sha256:72e2f7f28bd76025ee3b35faa8015301951406fa4b2da8348c15e0b520d553fa",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1223,7 +1223,7 @@
       "name": "elmos-runtime-cost-estimator",
       "ordinal": 40,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:fcaa5bdd6c7d0196867567eb8567a5f8882749e9790d7c0468da3059b287080b",
+      "qualification_result_digest": "sha256:038e32acd1746e332cedfeedce80f5c63100a9f691945fbb2dd55163b3faec14",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1274,7 +1274,7 @@
       ],
       "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
       "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
-      "expected_success_code": "RELEASE_READINESS_EVALUATED",
+      "expected_success_code": "RELEASE_READINESS_PLANNED",
       "external_evidence_status": "NOT_RUN",
       "handler_id": "evaluate_release_readiness",
       "implementation_state": "PLANNING_ONLY_IMPLEMENTED",
@@ -1283,7 +1283,7 @@
       "name": "elmos-release-certification",
       "ordinal": 42,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:7e8f91464d37476816c3ad17c661f43d563fc444c90f559b9b1f6ca7dd6609c9",
+      "qualification_result_digest": "sha256:ea4c61d8610731eb1915c2ae2c65bc89c063a6aecedd5285276f2a7dff248312",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1313,7 +1313,7 @@
       "name": "elmos-commercial-packaging",
       "ordinal": 43,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:f6c54e638a6cd28fdd6106dbe2b60944029ce468c4ad69c44ff31ce418d34378",
+      "qualification_result_digest": "sha256:e900d0f3689aa6fa48c47f046ba3f8b22f95b166daadcb995ad59ce0bef44946",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1343,7 +1343,7 @@
       "name": "elmos-debug-adapter-gateway",
       "ordinal": 44,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:cd8a144930fbd64103b15db693b60729ca304c4231006493f35fbaeb04c472b6",
+      "qualification_result_digest": "sha256:2eddd85fa32e26cd668b510baf6d9b0d147b2d374e7f441f0a0fd53da2087fd0",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1373,7 +1373,7 @@
       "name": "elmos-debug-sandbox-orchestration",
       "ordinal": 45,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:91a8175a8c99266df787061b8dc5b641d0a9d8c12a4f72a750b721fd7d717094",
+      "qualification_result_digest": "sha256:503a4e06a0b7c6401a5cacdb36f9ba597fc2e1172be7c3eef69bc1d515caa995",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1403,7 +1403,7 @@
       "name": "elmos-online-debug-workbench",
       "ordinal": 46,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:576777f0c22e086c17c9373c822a38504ca0f93f30205ec09496ca3ebe1539c0",
+      "qualification_result_digest": "sha256:21d83431db12c830e375f2fa8efb456d8916b6184eb39257350396f0d124d37d",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1433,7 +1433,7 @@
       "name": "elmos-debug-learning-copilot",
       "ordinal": 47,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:3d1efd91f85da426d5e7e6f3cc62ef1f05845c7f14dff51d7e64a1fd6d8c6d10",
+      "qualification_result_digest": "sha256:39e9d6c04a06c74de61bfb66d46ebc47d1ff3e1c105bf0d8457e10fc1a3eef79",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1463,7 +1463,7 @@
       "name": "elmos-debug-record-replay",
       "ordinal": 48,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:5e70544104652c0cc8ff11b646c229b92cfb9d4e376a322604cfd43fd231632e",
+      "qualification_result_digest": "sha256:fd5a3ee4e40721fca6413f0236840017101b5b1a775c21f20c78633e2dbcef12",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1493,7 +1493,7 @@
       "name": "elmos-distributed-debug-correlation",
       "ordinal": 49,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:a08981a0656b0abbb87ec2febadcd64e03be4751123485b34a7c39d72c045cc1",
+      "qualification_result_digest": "sha256:b7d7dee875a87df42829d2556f61ac5e5f810e2963cdcc48924aa770caa9f178",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1507,8 +1507,8 @@
   "source_version": "1.1.0",
   "summary": {
     "capability_state_counts": {
-      "LOCAL": 21,
-      "PARTIAL": 24,
+      "LOCAL": 19,
+      "PARTIAL": 26,
       "PLAN": 5
     },
     "certification_status": "NOT_CERTIFIED",
@@ -1517,6 +1517,22 @@
     "implemented_local_handlers": 50,
     "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
     "package_identity_status": "PINNED_VALIDATED",
+    "qualification_effect_guard": "PYTHON_AUDIT_BEST_EFFORT_EFFECT_GUARD_DURING_DISPATCH",
+    "qualification_effect_guard_limitations": "Python audit events are fail-closed when observed but are not an OS sandbox and cannot account for effects through inherited descriptors, native extensions, or events the interpreter does not emit.",
+    "qualification_runtime_environment": {
+      "byteorder": "little",
+      "cache_tag": "cpython-314",
+      "executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
+      "executable_sha256": "sha256:c015ab131972822e27ed108cf353582af6ca2fd7daf6296789576c7e7d1ad61a",
+      "hexversion": 51250672,
+      "implementation": "cpython",
+      "machine": "arm64",
+      "platform": "darwin",
+      "release_level": "final",
+      "resolved_executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
+      "serial": 0,
+      "version": "3.14.5"
+    },
     "skill_interface_status": "INSTALLED",
     "skills": 50,
     "source_acceptance_execution_status": "NOT_RUN",

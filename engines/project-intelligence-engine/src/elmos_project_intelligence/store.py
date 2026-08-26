@@ -11,11 +11,14 @@ from __future__ import annotations
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from datetime import datetime, timezone
+from functools import lru_cache
 import json
 import os
 from pathlib import Path
 import sqlite3
+import stat
 import threading
+from urllib.parse import quote
 
 from .canonical import (
     JsonValue,
@@ -41,6 +44,7 @@ from .contracts import (
     require_identifier,
     require_operation,
 )
+from .safe_paths import open_file_no_symlinks, verify_file_path_binding
 
 
 class StoreError(RuntimeError):
@@ -69,6 +73,22 @@ class StateTransitionError(RecordConflict):
 
 class CheckpointConflict(RecordConflict):
     pass
+
+
+_SQLITE_COMPANION_SUFFIXES = ("-wal", "-shm", "-journal")
+
+
+def _validate_private_sqlite_file(descriptor: int, label: str) -> os.stat_result:
+    metadata = os.fstat(descriptor)
+    if not stat.S_ISREG(metadata.st_mode):
+        raise StoreError(f"{label} must be a regular file")
+    if stat.S_IMODE(metadata.st_mode) != 0o600:
+        raise StoreError(f"{label} mode must be 0600")
+    if hasattr(os, "geteuid") and metadata.st_uid != os.geteuid():
+        raise StoreError(f"{label} must be owned by the current user")
+    if metadata.st_nlink != 1:
+        raise StoreError(f"{label} must have exactly one filesystem link")
+    return metadata
 
 
 _SCHEMA = """
@@ -144,7 +164,7 @@ CREATE TABLE IF NOT EXISTS evidence (
     kind TEXT NOT NULL,
     subject_digest TEXT NOT NULL,
     state TEXT NOT NULL CHECK (
-        state IN ('NOT_RUN', 'COLLECTED', 'VERIFIED', 'REJECTED', 'INCONCLUSIVE')
+        state IN ('NOT_RUN', 'COLLECTED', 'INCONCLUSIVE')
     ),
     details_json TEXT NOT NULL,
     details_digest TEXT NOT NULL,
@@ -158,11 +178,7 @@ CREATE TABLE IF NOT EXISTS evidence (
     FOREIGN KEY (tenant_id, project_id, run_id, artifact_id)
         REFERENCES artifacts (tenant_id, project_id, run_id, artifact_id)
         ON DELETE RESTRICT ON UPDATE RESTRICT,
-    CHECK (
-        (state IN ('VERIFIED', 'REJECTED') AND verifier IS NOT NULL)
-        OR (state NOT IN ('VERIFIED', 'REJECTED'))
-    ),
-    CHECK (state <> 'NOT_RUN' OR verifier IS NULL)
+    CHECK (verifier IS NULL)
 ) WITHOUT ROWID, STRICT;
 
 CREATE TABLE IF NOT EXISTS checkpoints (
@@ -244,6 +260,50 @@ END;
 """
 
 
+type SchemaObject = tuple[str, str, str, str]
+
+
+def _schema_objects(connection: sqlite3.Connection) -> tuple[SchemaObject, ...]:
+    """Return the exact repository-owned, non-internal SQLite schema."""
+
+    rows = connection.execute(
+        "SELECT type, name, tbl_name, sql FROM sqlite_schema "
+        "WHERE substr(name, 1, 7) <> 'sqlite_' "
+        "ORDER BY type, name, tbl_name"
+    ).fetchall()
+    objects: list[SchemaObject] = []
+    for row in rows:
+        values = tuple(row)
+        if len(values) != 4 or not all(isinstance(value, str) for value in values):
+            raise StoreError("project-intelligence schema contains an unsafe object")
+        objects.append((values[0], values[1], values[2], values[3]))
+    return tuple(objects)
+
+
+@lru_cache(maxsize=1)
+def _reference_schema_objects() -> tuple[SchemaObject, ...]:
+    """Compile the checked-in schema into an independent reference database."""
+
+    reference = sqlite3.connect(":memory:", isolation_level=None)
+    try:
+        reference.execute("PRAGMA trusted_schema = OFF")
+        reference.executescript(_SCHEMA)
+        return _schema_objects(reference)
+    finally:
+        reference.close()
+
+
+def _attest_schema(connection: sqlite3.Connection, *, allow_empty: bool) -> bool:
+    """Fail closed on altered, missing, or additional application schema objects."""
+
+    observed = _schema_objects(connection)
+    if not observed and allow_empty:
+        return False
+    if observed != _reference_schema_objects():
+        raise StoreError("project-intelligence SQLite schema attestation failed")
+    return True
+
+
 _RUN_TRANSITIONS: dict[RunStatus, frozenset[RunStatus]] = {
     RunStatus.PENDING: frozenset({RunStatus.RUNNING, RunStatus.FAILED}),
     RunStatus.RUNNING: frozenset({RunStatus.SUCCEEDED, RunStatus.FAILED}),
@@ -286,60 +346,203 @@ class ProjectIntelligenceStore:
         self._clock = clock
         self._lock = threading.RLock()
         self._closed = False
+        self._database_path: Path | None = None
+        self._database_parent_fd: int | None = None
+        self._database_fd: int | None = None
 
         database_text = os.fspath(database)
         if not isinstance(database_text, str) or not database_text:
             raise ValueError("database must be a non-empty filesystem path")
         is_memory = database_text == ":memory:"
-        existed = False
         if not is_memory:
-            path = Path(database_text).absolute()
-            if not path.parent.is_dir():
-                raise ValueError("database parent directory must already exist")
-            if path.is_symlink():
-                raise ValueError("database path cannot be a symlink")
-            existed = path.exists()
-            if existed and not path.is_file():
-                raise ValueError("database path must be a regular file")
-            database_text = str(path)
+            requested_path = Path(database_text)
+            created = False
+            try:
+                path, parent_fd, database_fd = open_file_no_symlinks(
+                    requested_path, os.O_RDWR
+                )
+            except FileNotFoundError:
+                try:
+                    path, parent_fd, database_fd = open_file_no_symlinks(
+                        requested_path,
+                        os.O_RDWR | os.O_CREAT | os.O_EXCL,
+                        mode=0o600,
+                    )
+                    created = True
+                except FileNotFoundError as exc:
+                    raise ValueError(
+                        "database parent directory must already exist"
+                    ) from exc
+                except FileExistsError:
+                    # A concurrent creator won the race. Re-open and validate
+                    # the exact final object instead of weakening O_EXCL.
+                    path, parent_fd, database_fd = open_file_no_symlinks(
+                        requested_path, os.O_RDWR
+                    )
+            except OSError as exc:
+                raise ValueError("database path cannot be opened safely") from exc
 
-        self._connection = sqlite3.connect(
-            database_text,
-            timeout=timeout_seconds,
-            isolation_level=None,
-            check_same_thread=False,
-        )
+            self._database_path = path
+            self._database_parent_fd = parent_fd
+            self._database_fd = database_fd
+            try:
+                if created:
+                    os.fchmod(database_fd, 0o600)
+                    os.fsync(database_fd)
+                    os.fsync(parent_fd)
+                _validate_private_sqlite_file(database_fd, "database file")
+                self._validate_sqlite_companion_files()
+                verify_file_path_binding(
+                    path,
+                    parent_fd=parent_fd,
+                    file_fd=database_fd,
+                    flags=os.O_RDWR,
+                )
+            except Exception:
+                os.close(database_fd)
+                os.close(parent_fd)
+                self._database_fd = None
+                self._database_parent_fd = None
+                self._database_path = None
+                raise
+            database_text = (
+                "file:" + quote(path.as_posix(), safe="/") + "?mode=rw&nofollow=1"
+            )
+
         try:
+            self._connection = sqlite3.connect(
+                database_text,
+                timeout=timeout_seconds,
+                isolation_level=None,
+                check_same_thread=False,
+                uri=not is_memory,
+            )
             self._connection.row_factory = sqlite3.Row
+            self._connection.execute("PRAGMA trusted_schema = OFF")
             self._connection.execute("PRAGMA foreign_keys = ON")
             self._connection.execute(
                 f"PRAGMA busy_timeout = {int(timeout_seconds * 1000)}"
             )
+            self._validate_storage_files()
+            fresh_database = is_memory or created
+            schema_exists = _attest_schema(
+                self._connection,
+                allow_empty=fresh_database,
+            )
+            if not schema_exists and not fresh_database:
+                raise StoreError(
+                    "pre-existing project-intelligence database cannot be empty"
+                )
+            if schema_exists:
+                existing_metadata = self._connection.execute(
+                    "SELECT schema_name, schema_version FROM schema_metadata "
+                    "ORDER BY schema_name"
+                ).fetchall()
+                if len(existing_metadata) != 1 or (
+                    existing_metadata[0]["schema_name"],
+                    existing_metadata[0]["schema_version"],
+                ) != ("project-intelligence-core", 2):
+                    raise StoreError("unsupported project-intelligence schema version")
             if not is_memory:
                 self._connection.execute("PRAGMA journal_mode = WAL").fetchone()
             self._connection.execute("PRAGMA synchronous = FULL")
-            self._connection.execute("PRAGMA trusted_schema = OFF")
-            self._connection.executescript(_SCHEMA)
-            with self._transaction() as cursor:
-                row = cursor.execute(
-                    "SELECT schema_version FROM schema_metadata WHERE schema_name = ?",
-                    ("project-intelligence-core",),
-                ).fetchone()
-                if row is None:
+            self._validate_storage_files()
+            if not schema_exists:
+                self._connection.executescript(_SCHEMA)
+            _attest_schema(self._connection, allow_empty=False)
+            cursor = self._connection.cursor()
+            cursor.execute("BEGIN IMMEDIATE")
+            try:
+                rows = cursor.execute(
+                    "SELECT schema_name, schema_version FROM schema_metadata "
+                    "ORDER BY schema_name"
+                ).fetchall()
+                if not rows:
                     cursor.execute(
                         "INSERT INTO schema_metadata (schema_name, schema_version) "
                         "VALUES (?, ?)",
-                        ("project-intelligence-core", 1),
+                        ("project-intelligence-core", 2),
                     )
-                elif row["schema_version"] != 1:
+                elif len(rows) != 1 or (
+                    rows[0]["schema_name"],
+                    rows[0]["schema_version"],
+                ) != ("project-intelligence-core", 2):
                     raise StoreError("unsupported project-intelligence schema version")
+            except BaseException:
+                self._connection.rollback()
+                raise
+            else:
+                self._connection.commit()
+            finally:
+                cursor.close()
+            self._validate_storage_files()
         except Exception:
-            self._connection.close()
+            connection = getattr(self, "_connection", None)
+            if connection is not None:
+                connection.close()
+            self._close_database_descriptors()
             self._closed = True
             raise
 
-        if not is_memory and not existed:
-            os.chmod(database_text, 0o600)
+    def _validate_sqlite_companion_files(self) -> None:
+        if self._database_path is None or self._database_parent_fd is None:
+            return
+        for suffix in _SQLITE_COMPANION_SUFFIXES:
+            try:
+                descriptor = os.open(
+                    self._database_path.name + suffix,
+                    os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW,
+                    dir_fd=self._database_parent_fd,
+                )
+            except FileNotFoundError:
+                continue
+            except OSError as exc:
+                raise StoreError(
+                    f"SQLite companion {suffix} cannot be opened safely"
+                ) from exc
+            try:
+                _validate_private_sqlite_file(descriptor, f"SQLite companion {suffix}")
+            finally:
+                os.close(descriptor)
+
+    def _validate_storage_files(self) -> None:
+        if (
+            self._database_path is None
+            or self._database_parent_fd is None
+            or self._database_fd is None
+        ):
+            return
+        _validate_private_sqlite_file(self._database_fd, "database file")
+        try:
+            verify_file_path_binding(
+                self._database_path,
+                parent_fd=self._database_parent_fd,
+                file_fd=self._database_fd,
+                flags=os.O_RDWR,
+            )
+        except OSError as exc:
+            raise StoreError("database path identity changed") from exc
+        self._validate_sqlite_companion_files()
+
+    def _close_database_descriptors(self) -> None:
+        if self._database_fd is not None:
+            os.close(self._database_fd)
+            self._database_fd = None
+        if self._database_parent_fd is not None:
+            os.close(self._database_parent_fd)
+            self._database_parent_fd = None
+
+    def _attest_live_schema(self) -> None:
+        _attest_schema(self._connection, allow_empty=False)
+        rows = self._connection.execute(
+            "SELECT schema_name, schema_version FROM schema_metadata "
+            "ORDER BY schema_name"
+        ).fetchall()
+        if len(rows) != 1 or (
+            rows[0]["schema_name"],
+            rows[0]["schema_version"],
+        ) != ("project-intelligence-core", 2):
+            raise StoreError("unsupported project-intelligence schema version")
 
     def __enter__(self) -> "ProjectIntelligenceStore":
         self._ensure_open()
@@ -351,8 +554,23 @@ class ProjectIntelligenceStore:
     def close(self) -> None:
         with self._lock:
             if not self._closed:
-                self._connection.close()
-                self._closed = True
+                pending_error: Exception | None = None
+                try:
+                    self._validate_storage_files()
+                except Exception as exc:
+                    pending_error = exc
+                try:
+                    self._connection.close()
+                    if pending_error is None:
+                        try:
+                            self._validate_storage_files()
+                        except Exception as exc:
+                            pending_error = exc
+                finally:
+                    self._close_database_descriptors()
+                    self._closed = True
+                if pending_error is not None:
+                    raise pending_error
 
     def _ensure_open(self) -> None:
         if self._closed:
@@ -362,27 +580,58 @@ class ProjectIntelligenceStore:
     def _transaction(self) -> Iterator[sqlite3.Cursor]:
         with self._lock:
             self._ensure_open()
+            self._validate_storage_files()
             cursor = self._connection.cursor()
             cursor.execute("BEGIN IMMEDIATE")
             try:
+                self._attest_live_schema()
                 yield cursor
             except BaseException:
                 self._connection.rollback()
                 raise
             else:
                 self._connection.commit()
+                self._validate_storage_files()
             finally:
                 cursor.close()
 
     def _read_one(self, sql: str, values: tuple[object, ...]) -> sqlite3.Row | None:
         with self._lock:
             self._ensure_open()
-            return self._connection.execute(sql, values).fetchone()
+            self._validate_storage_files()
+            cursor = self._connection.cursor()
+            cursor.execute("BEGIN")
+            try:
+                self._attest_live_schema()
+                row = cursor.execute(sql, values).fetchone()
+            except BaseException:
+                self._connection.rollback()
+                raise
+            else:
+                self._connection.commit()
+                self._validate_storage_files()
+                return row
+            finally:
+                cursor.close()
 
     def _read_all(self, sql: str, values: tuple[object, ...]) -> list[sqlite3.Row]:
         with self._lock:
             self._ensure_open()
-            return list(self._connection.execute(sql, values).fetchall())
+            self._validate_storage_files()
+            cursor = self._connection.cursor()
+            cursor.execute("BEGIN")
+            try:
+                self._attest_live_schema()
+                rows = list(cursor.execute(sql, values).fetchall())
+            except BaseException:
+                self._connection.rollback()
+                raise
+            else:
+                self._connection.commit()
+                self._validate_storage_files()
+                return rows
+            finally:
+                cursor.close()
 
     def register_project(
         self,
@@ -708,6 +957,14 @@ class ProjectIntelligenceStore:
         self._validate_scope(tenant_id, project_id, run_id)
         if not isinstance(evidence, EvidenceInput):
             raise TypeError("evidence must be EvidenceInput")
+        if evidence.verifier is not None:
+            raise ValueError(
+                "repository-local evidence cannot name an independent verifier"
+            )
+        if evidence.state in {EvidenceState.VERIFIED, EvidenceState.REJECTED}:
+            raise ValueError(
+                "repository-local evidence cannot claim VERIFIED or REJECTED"
+            )
         details_json = canonical_json(evidence.details)
         details_digest = canonical_digest(evidence.details)
         timestamp = self._clock()
@@ -995,6 +1252,8 @@ class ProjectIntelligenceStore:
     def _project_from_row(row: sqlite3.Row) -> ProjectRecord:
         metadata = _load_json(row["metadata_json"])
         assert metadata is not None
+        if canonical_digest(metadata) != validate_digest(row["metadata_digest"]):
+            raise StoreError("stored project metadata digest mismatch")
         return ProjectRecord(
             tenant_id=row["tenant_id"],
             project_id=row["project_id"],
