@@ -1285,8 +1285,14 @@ function parseFunctionComponent(
     }
     if (ts.isIfStatement(stmt)) {
       require_(stmt.elseStatement === undefined, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "an early JSX return may not have an else statement");
-      require_(ts.isReturnStatement(stmt.thenStatement), "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "an if statement must return JSX directly to be represented as a conditional node");
-      const earlyReturn = stmt.thenStatement as ts.ReturnStatement;
+      const branch = ts.isBlock(stmt.thenStatement)
+        ? (() => {
+          require_(stmt.thenStatement.statements.length === 1, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "an early-return block may contain only one return statement");
+          return stmt.thenStatement.statements[0]!;
+        })()
+        : stmt.thenStatement;
+      require_(ts.isReturnStatement(branch), "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "an if statement must return JSX directly to be represented as a conditional node");
+      const earlyReturn = branch as ts.ReturnStatement;
       require_(earlyReturn.expression !== undefined, "CERTIFIED_COMPONENT_MISSING_RETURN", "an early return must return JSX");
       earlyReturns.push({ condition: stmt.expression, statement: earlyReturn });
       continue;

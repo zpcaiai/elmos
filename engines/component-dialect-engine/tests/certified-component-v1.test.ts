@@ -270,7 +270,9 @@ describe("React parsing (real TypeScript Compiler API)", () => {
   it("normalizes a bounded early JSX return into a target-neutral conditional", () => {
     const ir = parseReactComponent(`
       function Guard({ ready }: { ready: boolean }) {
-        if (ready) return <strong>ready</strong>;
+        if (ready) {
+          return <strong>ready</strong>;
+        }
         return <em>waiting</em>;
       }
     `, "Guard.tsx");
