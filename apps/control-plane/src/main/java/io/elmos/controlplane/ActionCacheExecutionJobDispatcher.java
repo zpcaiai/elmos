@@ -552,8 +552,8 @@ public final class ActionCacheExecutionJobDispatcher {
                 existing = Objects.requireNonNull(
                         jobs.findByIdempotencyKey(
                                 new ExecutionJobPort.AuthenticatedContext(
-                                        grant.tenantId(), spec.accountId(), grant.actorId(),
-                                        spec.requestId()),
+                                        grant.tenantId(), spec.accountId(),
+                                        grant.actorId(), spec.requestId()),
                                 spec.idempotencyKey()),
                         "idempotency lookup result");
             } catch (RuntimeException unavailable) {
@@ -688,6 +688,8 @@ public final class ActionCacheExecutionJobDispatcher {
         digestSubject.put("priority", spec.priority());
         digestSubject.put("budgetWallSeconds", spec.budgetWallSeconds());
         digestSubject.put("maxAttempts", spec.maxAttempts());
+        digestSubject.put("workloadClass", spec.workloadClass());
+        digestSubject.put("resourceUnits", spec.resourceUnits());
         byte[] canonical = canonicalJsonBytes(digestSubject);
         if (canonical.length > MAX_PAYLOAD_BYTES) {
             throw new IllegalArgumentException(
