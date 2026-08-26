@@ -57,7 +57,30 @@ def _emitted_call(node: ast.Call) -> dict[str, Any] | None:
     return None
 
 
+def _signed_literal(node: ast.expr) -> ast.Constant | None:
+    """`-1` is not a literal in Python's grammar -- it is unary minus applied
+    to `1`. Fold the sign back in.
+
+    This is the ONLY unary form lifted here, and it is pure syntax: the result
+    is the literal the source obviously means. `bool` is excluded because it is
+    an `int` subclass in Python and `-True` is not a boolean.
+    """
+
+    if not isinstance(node, ast.UnaryOp) or not isinstance(node.op, ast.USub | ast.UAdd):
+        return None
+    operand = node.operand
+    if not isinstance(operand, ast.Constant):
+        return None
+    value = operand.value
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        return None
+    return ast.Constant(value=-value if isinstance(node.op, ast.USub) else +value)
+
+
 def _expression(node: ast.expr, *, emitted_target: bool = False) -> dict[str, Any]:
+    folded = _signed_literal(node)
+    if folded is not None:
+        node = folded
     if isinstance(node, ast.Name):
         return {"kind": "name", "value": node.id}
     if isinstance(node, ast.Constant) and isinstance(node.value, str | int | float | bool):
@@ -93,13 +116,51 @@ def _expression(node: ast.expr, *, emitted_target: bool = False) -> dict[str, An
                 "left": _expression(node.left, emitted_target=emitted_target),
                 "right": _expression(node.comparators[0], emitted_target=emitted_target),
             }
-    if isinstance(node, ast.BoolOp) and len(node.values) == 2:
+    if isinstance(node, ast.BoolOp) and len(node.values) >= 2:
+        # Python's parser FLATTENS `a and b and c` into one three-value node,
+        # so accepting only `len(values) == 2` refused a spelling while
+        # accepting `(a and b) and c`, which is the same program. Left-folding
+        # reproduces Python's own left-to-right grouping, and produces IR
+        # byte-identical to the parenthesized form (see the test).
+        #
+        # Short-circuiting survives the fold: canonical `&&`/`||` short-circuit
+        # (canonical.py `_expression`), so `(a && b) && c` stops exactly where
+        # `a and b and c` stops.
+        operator = "&&" if isinstance(node.op, ast.And) else "||"
+        folded = _expression(node.values[0], emitted_target=emitted_target)
+        for value in node.values[1:]:
+            folded = {
+                "kind": "binary",
+                "operator": operator,
+                "left": folded,
+                "right": _expression(value, emitted_target=emitted_target),
+            }
+        return folded
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+        # `not x` on a canonical boolean IS `x == False`. Nothing new enters
+        # the IR, the type checker, canonical.py or the z3 denotation.
+        #
+        # A non-boolean operand is Python truthiness -- `not ""`, `not 0`,
+        # `not []` -- which has no canonical meaning and no agreed spelling
+        # across the targets. It still fails closed, as
+        # `OPERAND_TYPE_MISMATCH:==:<type>:boolean` from `types.infer`.
         return {
             "kind": "binary",
-            "operator": "&&" if isinstance(node.op, ast.And) else "||",
-            "left": _expression(node.values[0], emitted_target=emitted_target),
-            "right": _expression(node.values[1], emitted_target=emitted_target),
+            "operator": "==",
+            "left": _expression(node.operand, emitted_target=emitted_target),
+            "right": {"kind": "literal", "value": False},
         }
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub | ast.UAdd):
+        # A signed LITERAL was folded at the top of this function; reaching
+        # here means the operand is an expression.
+        #
+        # Refused with a reason rather than the generic code: lowering `-x` to
+        # `0 - x` is exact for `integer` but NOT for `number`, because
+        # IEEE-754 makes `-(0.0)` negative zero while `0.0 - 0.0` is positive
+        # zero, and the sign of a returned zero is observable. Supporting it
+        # honestly needs a unary node in the IR, in canonical.py, in the z3
+        # denotation and in all 13 emitters.
+        raise RouteError("PYTHON_UNARY_SIGN_ON_EXPRESSION_OUTSIDE_CERTIFIED_SUBSET")
     if emitted_target and isinstance(node, ast.Call):
         lifted = _emitted_call(node)
         if lifted is not None:
