@@ -221,6 +221,9 @@ export interface MiniappSemanticIr {
 
 type SourceFiles = Readonly<Record<string, string>>;
 
+type FrameworkFactoryKind = "vue-app" | "pinia" | "router" | "router-history-web" | "router-history-hash" | "router-history-memory";
+type FrameworkBinding = { readonly kind: FrameworkFactoryKind; readonly instanceId: string };
+
 interface MutableAnalysis {
   components: MiniappAnalyzedComponent[];
   routes: MiniappAnalyzedRoute[];
@@ -239,6 +242,7 @@ interface MutableAnalysis {
   parserEvidence: Set<string>;
   nativeConfigFiles: Map<string, string>;
   nativeConfigInvalid: Set<string>;
+  frameworkExports: Map<string, FrameworkBinding>;
 }
 
 interface MarkupTag {
@@ -532,8 +536,6 @@ function analyzeTypeScript(
   const imports = new Map<string, { readonly module: string; readonly imported: string }>();
   const storeInstances = new Map<string, string>();
   const routeOwnerInstances = new Map<ts.ObjectLiteralExpression, string>();
-  type FrameworkFactoryKind = "vue-app" | "pinia" | "router" | "router-history-web" | "router-history-hash" | "router-history-memory";
-  type FrameworkBinding = { readonly kind: FrameworkFactoryKind; readonly instanceId: string };
   const frameworkBindings = new Map<string, FrameworkBinding>();
   const frameworkBindingsByDeclaration = new Map<ts.VariableDeclaration, FrameworkBinding>();
   const invalidFrameworkBindings = new Set<string>();
@@ -647,7 +649,25 @@ function analyzeTypeScript(
         current = current.parent;
       }
       const binding = frameworkBindings.get(value.text);
-      return binding && !invalidFrameworkBindings.has(value.text) ? binding : null;
+      if (binding && !invalidFrameworkBindings.has(value.text)) return binding;
+      const importBinding = imports.get(value.text);
+      if (importBinding?.module.startsWith(".")) {
+        const candidates = [...state.frameworkExports.entries()].filter(([key]) => {
+          const separator = key.lastIndexOf("#");
+          if (separator < 0 || key.slice(separator + 1) !== importBinding.imported) return false;
+          return moduleResolvesToSource(path, importBinding.module, key.slice(0, separator));
+        });
+        if (candidates.length === 1) return candidates[0]![1];
+      }
+      return null;
+    }
+    if (ts.isCallExpression(value) && ts.isPropertyAccessExpression(value.expression)) {
+      const method = value.expression.name.text;
+      const receiver = frameworkInstanceForExpression(value.expression.expression);
+      // Vue's use() returns the same app instance, so preserve identity through
+      // arbitrarily chained plugin installs before resolving mount(). Other
+      // fluent APIs are intentionally not treated as app-preserving.
+      if (method === "use" && receiver?.kind === "vue-app") return receiver;
     }
     if (ts.isCallExpression(value)) {
       const kind = frameworkFactoryKind(value);
@@ -2705,6 +2725,67 @@ function moduleResolvesToSource(callerPath: string, moduleSpecifier: string, tar
   return withoutSourceExtension(segments.join("/")) === withoutSourceExtension(targetPath);
 }
 
+function collectFrameworkExports(files: SourceFiles, state: MutableAnalysis): void {
+  for (const [path, source] of Object.entries(files)) {
+    if (!/\.(?:[cm]?[jt]sx?)$/u.test(path)) continue;
+    const file = ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true, scriptKind(path));
+    const imports = new Map<string, { readonly module: string; readonly imported: string }>();
+    const collectImports = (node: ts.Node): void => {
+      if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
+        const module = node.moduleSpecifier.text;
+        const clause = node.importClause;
+        if (clause?.name) imports.set(clause.name.text, { module, imported: "default" });
+        if (clause?.namedBindings && ts.isNamespaceImport(clause.namedBindings)) {
+          imports.set(clause.namedBindings.name.text, { module, imported: "*" });
+        }
+        for (const item of clause?.namedBindings && ts.isNamedImports(clause.namedBindings)
+          ? clause.namedBindings.elements : []) {
+          imports.set(item.name.text, { module, imported: item.propertyName?.text ?? item.name.text });
+        }
+      }
+      ts.forEachChild(node, collectImports);
+    };
+    collectImports(file);
+    const factoryKind = (expression: ts.Expression): FrameworkFactoryKind | null => {
+      let value = expression;
+      while (ts.isParenthesizedExpression(value) || ts.isAsExpression(value) || ts.isTypeAssertionExpression(value)) {
+        value = value.expression;
+      }
+      const binding = ts.isIdentifier(value)
+        ? imports.get(value.text)
+        : ts.isPropertyAccessExpression(value) && ts.isIdentifier(value.expression)
+          ? (() => {
+            const namespace = imports.get(value.expression.text);
+            return namespace?.imported === "*" ? { module: namespace.module, imported: value.name.text } : undefined;
+          })()
+          : undefined;
+      if (binding?.module === "vue" && binding.imported === "createApp") return "vue-app";
+      if (binding?.module === "pinia" && binding.imported === "createPinia") return "pinia";
+      if (binding?.module === "vue-router" && binding.imported === "createRouter") return "router";
+      if (binding?.module === "vue-router" && binding.imported === "createWebHistory") return "router-history-web";
+      if (binding?.module === "vue-router" && binding.imported === "createWebHashHistory") return "router-history-hash";
+      if (binding?.module === "vue-router" && binding.imported === "createMemoryHistory") return "router-history-memory";
+      return null;
+    };
+    const collectExports = (node: ts.Node): void => {
+      if (ts.isVariableStatement(node)
+        && node.modifiers?.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword)) {
+        for (const declaration of node.declarationList.declarations) {
+          if (!ts.isIdentifier(declaration.name) || !declaration.initializer || !ts.isCallExpression(declaration.initializer)) continue;
+          const kind = factoryKind(declaration.initializer.expression);
+          if (!kind) continue;
+          const key = `${path}#${declaration.name.text}`;
+          const binding = { kind, instanceId: stableId("framework-instance", path, `${kind}:${declaration.initializer.getStart()}`) };
+          if (state.frameworkExports.has(key)) state.frameworkExports.delete(key);
+          else state.frameworkExports.set(key, binding);
+        }
+      }
+      ts.forEachChild(node, collectExports);
+    };
+    collectExports(file);
+  }
+}
+
 function miniappRouteModulePath(routeSourcePath: string, moduleSpecifier: string): string | null {
   if (!moduleSpecifier) return null;
   const withoutSourceExtension = (value: string): string => value
@@ -2903,7 +2984,7 @@ function newMutableAnalysis(): MutableAnalysis {
   return {
     components: [], routes: [], states: [], effects: [], forms: [], styles: [], capabilities: [], actionFacts: [], stateInitialValues: new Map(),
     dependencies: new Set(), dependencyUsage: new Map(), findings: [], parsedFiles: new Set(), failedFiles: new Set(), parserEvidence: new Set(),
-    nativeConfigFiles: new Map(), nativeConfigInvalid: new Set(),
+    nativeConfigFiles: new Map(), nativeConfigInvalid: new Set(), frameworkExports: new Map(),
   };
 }
 
@@ -2915,6 +2996,7 @@ export function analyzeMiniappSource(
   const state = newMutableAnalysis();
   const applicableFiles = new Set<string>();
   for (const dependency of readDependencies(files)) state.dependencies.add(dependency);
+  collectFrameworkExports(files, state);
   const sourceLabel = request.source.sourceLabel;
   for (const [path, source] of Object.entries(files).sort(([a], [b]) => a.localeCompare(b, "en-US"))) {
     if (path.endsWith(".vue") && ["vue2", "vue3", "uni-app"].includes(sourceLabel)) {

@@ -17,7 +17,7 @@
     "source_scripts_executed": false
   },
   "runtime_implementation": {
-    "digest": "sha256:0112d694de7786a7ede195f0d3dc1b72ff143787d8debd6a53f2039faf2ea707",
+    "digest": "sha256:958a5a61c8f0aa861c72b2f9f47ce76ba14ed754f26cafd16a17266b96d67ac7",
     "file_count": 24,
     "node_version": "26.0.0",
     "typescript_version": "5.9.2",
@@ -62,10 +62,10 @@
   },
   "conversion": {
     "run_id": "miniapp-run-conv-vue3-todo-wechat-23e9d800789a1fb4",
-    "deterministic_digest": "sha256:9906cfbb76b3bbe4889a32a7c52d1185f71d2a2df79e233dcd9447ef3a351d4f",
-    "analysis_digest": "sha256:d4254fbc6969ae521c954c7029ad7faaf6e8a934c72cab07780f6445a0cf0c9c",
-    "semantic_ir_digest": "sha256:ec89062c63bec8859cd2ff467cc80ca91be7d1f48b331665a20c6eed6e3def8f",
-    "plan_digest": "sha256:05eb9b61dc4d9add23012bd8007776049b20352ee29fb5b89a28e554d4460437",
+    "deterministic_digest": "sha256:e698b8c5d256b32aa1e7d60af8adb25ce4b465b6b2b3963c5cfed5715a1fe005",
+    "analysis_digest": "sha256:b36e1283f8d45e67cd2ab67fa3df0d874f24b92ac343d4d0cb19ff0764fe67dc",
+    "semantic_ir_digest": "sha256:2f170e4deb0d2060e6bb976bd5948987cd68d90b2706575c8c0200826480109e",
+    "plan_digest": "sha256:fb778385eb3874fc947054c4d0a64b2d77f1b8fe01f7a375903bb365fc3a8d4f",
     "checkpoint_digest": "sha256:decdb60c1902b33133072c62c70a42776c5a50a65d8e25a7ed43ca8f7cfdc2b5"
   },
   "analysis": {
@@ -105,40 +105,6 @@
             "startColumn": 3,
             "endLine": 15,
             "endColumn": 12
-          }
-        ]
-      },
-      {
-        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
-        "severity": "warning",
-        "message": "createApp(App).use(createPinia()).use(router).mount is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model.",
-        "classification": "C",
-        "blocking": false,
-        "sourceRefs": [
-          {
-            "path": "src/main.ts",
-            "sha256": "sha256:459212bdd373406bce624931836e0e759dfef13e43aa18143ae5cc5e3758c236",
-            "startLine": 6,
-            "startColumn": 1,
-            "endLine": 6,
-            "endColumn": 60
-          }
-        ]
-      },
-      {
-        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
-        "severity": "warning",
-        "message": "createApp(App).use(createPinia()).use is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model.",
-        "classification": "C",
-        "blocking": false,
-        "sourceRefs": [
-          {
-            "path": "src/main.ts",
-            "sha256": "sha256:459212bdd373406bce624931836e0e759dfef13e43aa18143ae5cc5e3758c236",
-            "startLine": 6,
-            "startColumn": 1,
-            "endLine": 6,
-            "endColumn": 46
           }
         ]
       },
@@ -316,7 +282,7 @@
   },
   "semantic_ir": {
     "profile": "miniapp-ui-interaction-v1",
-    "node_count": 17,
+    "node_count": 19,
     "trace_coverage": 1,
     "batch32_pack_model": "ui-ir/model.json is a separate 20-node review model, not this runtime IR"
   },
@@ -324,8 +290,8 @@
     "summary": {
       "A": 8,
       "B": 0,
-      "C": 9,
-      "D": 13,
+      "C": 7,
+      "D": 12,
       "E": 0
     },
     "findings": [
@@ -335,20 +301,6 @@
         "classification": "D",
         "blocking": true,
         "message": "No explicit router was recovered and 2 independent render roots remain; a single application root cannot be inferred."
-      },
-      {
-        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
-        "platform": "all",
-        "classification": "C",
-        "blocking": true,
-        "message": "createApp(App).use(createPinia()).use is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model."
-      },
-      {
-        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
-        "platform": "all",
-        "classification": "C",
-        "blocking": true,
-        "message": "createApp(App).use(createPinia()).use(router).mount is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model."
       },
       {
         "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
@@ -467,13 +419,6 @@
         "platform": "wechat",
         "classification": "D",
         "blocking": true,
-        "message": "createApp has no matching app.mount effect."
-      },
-      {
-        "code": "MINIAPP_FRAMEWORK_BOOTSTRAP_UNRESOLVED",
-        "platform": "wechat",
-        "classification": "D",
-        "blocking": true,
         "message": "createRouter must reference the exact createWebHistory(\"/\") instance."
       },
       {
@@ -490,7 +435,7 @@
     "platform_version": "3.9.1",
     "toolchain_version": "1.06.2504010",
     "profile_version": "2026-08-20.1",
-    "deterministic_digest": "sha256:ece105b5a187a592021eaa775421b3e0e23fe1e1dfc03ef727915b697261d6a0",
+    "deterministic_digest": "sha256:6a79ddbfc221cc30a873b48affd65448fd964210047cdb0e5efea47f85a40ab3",
     "file_count": 7,
     "static_validation": "PASSED",
     "official_build": "NOT_RUN",
@@ -519,8 +464,8 @@
       },
       {
         "path": "migration-findings.json",
-        "sha256": "sha256:8b17b6f16463b330a0dedef4309ce460ae69c36dc24ecc1148fad7f0c078abc1",
-        "bytes": 3915
+        "sha256": "sha256:7ec7e2cd073b22a7d669da7a3faadae0a008e6095bb030f231d0c5291f8f1391",
+        "bytes": 3427
       },
       {
         "path": "project.config.json",
@@ -529,8 +474,8 @@
       },
       {
         "path": "trace-map.json",
-        "sha256": "sha256:66613d4ddb9419d69086fa4facfca3076be3a1c45b223866ccdbec18409bcbb5",
-        "bytes": 360
+        "sha256": "sha256:c234d1c6565c20aa559e6d5dbfeb3faf77a998ba3d75533dd9d2eaacaafe0074",
+        "bytes": 430
       }
     ]
   },
