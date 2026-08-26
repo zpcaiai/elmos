@@ -1,0 +1,127 @@
+==============================================================================
+A. The 27 functions whose ONLY blocker is a call
+==============================================================================
+  attrs-26.1.0/src/attr/_make.py::_default_init_alias_for  <- expr:Call:attr:name.lstrip
+  chardet-7.6.0/scripts/exclusions.py::_normalize  <- expr:Call:attr:<expr>.strip, expr:Call:attr:_WS_RUN.sub, expr:Call:attr:text.translate
+  chardet-7.6.0/scripts/exclusions.py::_hash  <- expr:Call:attr:<expr>.hexdigest, expr:Call:attr:hashlib.sha256, expr:Call:attr:text.encode
+  chardet-7.6.0/scripts/exclusions.py::_weight  <- expr:Call:attr:text.encode, expr:Call:free:len
+  chardet-7.6.0/scripts/exclusions.py::content_hash  <- expr:Call:free:_hash, expr:Call:free:_normalize
+  chardet-7.6.0/scripts/substitutions.py::collapse_whitespace_runs  <- expr:Call:attr:_WHITESPACE_RUN_RE.sub
+  click-8.4.2/src/click/_compat.py::strip_ansi  <- expr:Call:attr:_ansi_re.sub
+  click-8.4.2/src/click/_compat.py::term_len  <- expr:Call:free:len, expr:Call:free:strip_ansi
+  click-8.4.2/src/click/termui.py::unstyle  <- expr:Call:free:strip_ansi
+  click-8.4.2/src/click/utils.py::_posixify  <- expr:Call:attr:<expr>.join, expr:Call:attr:<expr>.lower, expr:Call:attr:name.split
+  humanize-4.16.0/src/humanize/i18n.py::_gettext  <- expr:Call:attr:<expr>.gettext, expr:Call:free:get_translation
+  humanize-4.16.0/src/humanize/i18n.py::_pgettext  <- expr:Call:attr:<expr>.pgettext, expr:Call:free:get_translation
+  humanize-4.16.0/src/humanize/i18n.py::_ngettext  <- expr:Call:attr:<expr>.ngettext, expr:Call:free:get_translation
+  jinja2-3.1.6/src/jinja2/filters.py::do_upper  <- expr:Call:attr:<expr>.upper, expr:Call:free:soft_str
+  jinja2-3.1.6/src/jinja2/filters.py::do_lower  <- expr:Call:attr:<expr>.lower, expr:Call:free:soft_str
+  jinja2-3.1.6/src/jinja2/filters.py::do_capitalize  <- expr:Call:attr:<expr>.capitalize, expr:Call:free:soft_str
+  jinja2-3.1.6/src/jinja2/filters.py::do_wordcount  <- expr:Call:attr:_word_re.findall, expr:Call:free:len, expr:Call:free:soft_str
+  jinja2-3.1.6/src/jinja2/filters.py::do_mark_unsafe  <- expr:Call:free:str
+  jinja2-3.1.6/src/jinja2/lexer.py::count_newlines  <- expr:Call:attr:newline_re.findall, expr:Call:free:len
+  jinja2-3.1.6/src/jinja2/tests.py::test_lower  <- expr:Call:attr:<expr>.islower, expr:Call:free:str
+  jinja2-3.1.6/src/jinja2/tests.py::test_upper  <- expr:Call:attr:<expr>.isupper, expr:Call:free:str
+  markdown-3.10.3/markdown/extensions/toc.py::slugify_unicode  <- expr:Call:free:slugify
+  markdown-3.10.3/markdown/util.py::nearing_recursion_limit  <- expr:Call:attr:sys.getrecursionlimit, expr:Call:free:_get_stack_depth
+  packaging-26.3/src/packaging/dependency_groups.py::_normalize_name  <- expr:Call:attr:<expr>.lower, expr:Call:attr:_NORMALIZE_PATTERN.sub
+  packaging-26.3/src/packaging/pylock.py::_toml_key  <- expr:Call:attr:key.replace
+  packaging-26.3/src/packaging/tags.py::_compute_32_bit_interpreter  <- expr:Call:attr:struct.calcsize
+  packaging-26.3/src/packaging/tags.py::_normalize_string  <- expr:Call:attr:<expr>.replace, expr:Call:attr:string.replace
+
+  callee frequency across those 27 functions:
+      4  expr:Call:free:len
+      4  expr:Call:free:soft_str
+      3  expr:Call:attr:<expr>.lower
+      3  expr:Call:free:get_translation
+      3  expr:Call:free:str
+      2  expr:Call:attr:text.encode
+      2  expr:Call:free:strip_ansi
+      1  expr:Call:attr:name.lstrip
+      1  expr:Call:attr:<expr>.strip
+      1  expr:Call:attr:_WS_RUN.sub
+      1  expr:Call:attr:text.translate
+      1  expr:Call:attr:<expr>.hexdigest
+      1  expr:Call:attr:hashlib.sha256
+      1  expr:Call:free:_hash
+      1  expr:Call:free:_normalize
+      1  expr:Call:attr:_WHITESPACE_RUN_RE.sub
+      1  expr:Call:attr:_ansi_re.sub
+      1  expr:Call:attr:<expr>.join
+      1  expr:Call:attr:name.split
+      1  expr:Call:attr:<expr>.gettext
+      1  expr:Call:attr:<expr>.pgettext
+      1  expr:Call:attr:<expr>.ngettext
+      1  expr:Call:attr:<expr>.upper
+      1  expr:Call:attr:<expr>.capitalize
+      1  expr:Call:attr:_word_re.findall
+      1  expr:Call:attr:newline_re.findall
+      1  expr:Call:attr:<expr>.islower
+      1  expr:Call:attr:<expr>.isupper
+      1  expr:Call:free:slugify
+      1  expr:Call:attr:sys.getrecursionlimit
+      1  expr:Call:free:_get_stack_depth
+      1  expr:Call:attr:_NORMALIZE_PATTERN.sub
+      1  expr:Call:attr:key.replace
+      1  expr:Call:attr:struct.calcsize
+      1  expr:Call:attr:<expr>.replace
+      1  expr:Call:attr:string.replace
+
+==============================================================================
+B. The 13 functions whose ONLY blocker is a container-of-canonical type
+==============================================================================
+  packaging-26.3/src/packaging/dependency_groups.py::__dir__  <- return:CONTAINER_OF_CANONICAL
+      def __dir__() -> list[str]:
+  packaging-26.3/src/packaging/direct_url.py::__dir__  <- return:CONTAINER_OF_CANONICAL
+      def __dir__() -> list[str]:
+  packaging-26.3/src/packaging/errors.py::__dir__  <- return:CONTAINER_OF_CANONICAL
+      def __dir__() -> list[str]:
+  packaging-26.3/src/packaging/licenses/__init__.py::__dir__  <- return:CONTAINER_OF_CANONICAL
+      def __dir__() -> list[str]:
+  packaging-26.3/src/packaging/markers.py::__dir__  <- return:CONTAINER_OF_CANONICAL
+      def __dir__() -> list[str]:
+  packaging-26.3/src/packaging/metadata.py::__dir__  <- return:CONTAINER_OF_CANONICAL
+      def __dir__() -> list[str]:
+  packaging-26.3/src/packaging/pylock.py::__dir__  <- return:CONTAINER_OF_CANONICAL
+      def __dir__() -> list[str]:
+  packaging-26.3/src/packaging/ranges.py::__dir__  <- return:CONTAINER_OF_CANONICAL
+      def __dir__() -> list[str]:
+  packaging-26.3/src/packaging/requirements.py::__dir__  <- return:CONTAINER_OF_CANONICAL
+      def __dir__() -> list[str]:
+  packaging-26.3/src/packaging/specifiers.py::__dir__  <- return:CONTAINER_OF_CANONICAL
+      def __dir__() -> list[str]:
+  packaging-26.3/src/packaging/tags.py::__dir__  <- return:CONTAINER_OF_CANONICAL
+      def __dir__() -> list[str]:
+  packaging-26.3/src/packaging/utils.py::__dir__  <- return:CONTAINER_OF_CANONICAL
+      def __dir__() -> list[str]:
+  packaging-26.3/src/packaging/version.py::__dir__  <- return:CONTAINER_OF_CANONICAL
+      def __dir__() -> list[str]:
+
+==============================================================================
+C. Would inferring a MISSING return type from a canonical body pay?
+==============================================================================
+     3  net new READY  <-  return:MISSING alone
+    11  net new READY  <-  return:MISSING + param:MISSING
+    35  net new READY  <-  calls + return:MISSING
+    41  net new READY  <-  calls + containers
+    29  net new READY  <-  calls + unannotated assign
+    31  net new READY  <-  calls + assign + subscript + attribute
+     1  net new READY  <-  string formatting (f-string) alone
+     0  net new READY  <-  None literal + is/is not
+     0  net new READY  <-  unary not/neg alone
+
+==============================================================================
+D. Bounded call whitelists -- what does each actually buy?
+==============================================================================
+  every call blocker in the whole candidate set, by class:
+     2623  user-function
+     2133  module-or-object-method
+      463  builtin
+      239  str-method
+       17  other
+
+     3  net new READY  <-  str methods on a str value ONLY
+     1  net new READY  <-  pure builtins ONLY (len/abs/min/max/...)
+     6  net new READY  <-  str methods + pure builtins
+    13  net new READY  <-  str methods + builtins + user functions (needs purity proof)
+    27  net new READY  <-  ALL calls incl. module/object methods (re, sys, struct, ...)
