@@ -53,6 +53,9 @@ function exprSource(expr: Expr, inClass: boolean): string {
     case "numericFunction": return inClass
       ? `Math.${expr.function}(${expr.args.map((arg) => exprSource(arg, inClass)).join(", ")})`
       : `__ccMath${expr.function.charAt(0).toUpperCase()}${expr.function.slice(1)}(${expr.args.map((arg) => exprSource(arg, inClass)).join(", ")})`;
+    case "numericPredicate": return inClass
+      ? `Number.${expr.predicate}(${exprSource(expr.operand, inClass)})`
+      : `__ccNumber${expr.predicate.charAt(0).toUpperCase()}${expr.predicate.slice(1)}(${exprSource(expr.operand, inClass)})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return inClass
       ? `new RegExp(${JSON.stringify(expr.pattern)}, ${JSON.stringify(expr.flags)}).test(${exprSource(expr.operand, inClass)})`
@@ -101,7 +104,7 @@ function usesRegexTest(component: ComponentDef): boolean {
 
 function usesNumericFunction(component: ComponentDef): boolean {
   const expression = (expr: Expr): boolean => {
-    if (expr.kind === "numericFunction") return true;
+    if (expr.kind === "numericFunction" || expr.kind === "numericPredicate") return true;
     if (expr.kind === "binary") return expression(expr.left) || expression(expr.right);
     if (expr.kind === "unaryNot" || expr.kind === "arrayLength") return expression(expr.operand);
     if (expr.kind === "stringMethod") return expression(expr.receiver) || expr.args.some(expression);
@@ -260,6 +263,7 @@ export function emitAngular(component: ComponentDef): string {
     lines.push(`  private __ccMathFloor(value: number): number { return Math.floor(value); }`);
     lines.push(`  private __ccMathCeil(value: number): number { return Math.ceil(value); }`);
     lines.push(`  private __ccMathAbs(value: number): number { return Math.abs(value); }`);
+    lines.push(`  private __ccNumberIsFinite(value: number): boolean { return Number.isFinite(value); }`);
   }
   lines.push(`}`);
   return lines.join("\n") + "\n";

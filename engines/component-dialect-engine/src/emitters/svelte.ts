@@ -47,6 +47,7 @@ function exprSource(expr: Expr): string {
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(exprSource).join(", ")})`;
     case "numericFunction": return `Math.${expr.function}(${expr.args.map(exprSource).join(", ")})`;
+    case "numericPredicate": return `Number.${expr.predicate}(${exprSource(expr.operand)})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;

@@ -7,7 +7,7 @@
  * components with react-dom/server and @vue/server-renderer and compare
  * the resulting DOM.
  */
-import { parseReactComponent } from "../src/parsers/react";
+import { parseReactComponent, parseReactComponentResults } from "../src/parsers/react";
 import { parseVue3Component } from "../src/parsers/vue3";
 import { emitReact } from "../src/emitters/react";
 import { emitVue3 } from "../src/emitters/vue3";
@@ -201,6 +201,40 @@ describe("React parsing (real TypeScript Compiler API)", () => {
     });
     expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
     expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("inlines same-file pure primitive helpers and preserves finite checks", () => {
+    const result = parseReactComponentResults(`
+      function finiteCount(value: number): number {
+        return Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
+      }
+      function Bounded({ value }: { value: number }) {
+        return <p>{finiteCount(value)}</p>;
+      }
+    `, "Bounded.tsx").find((candidate) => candidate.name === "Bounded");
+    expect(result?.error).toBeNull();
+    const ir = result?.component;
+    expect(ir).not.toBeNull();
+    if (ir === null || ir === undefined) throw new Error("BOUNDED_COMPONENT_NOT_PARSED");
+    const value = ir.root.kind === "element" ? ir.root.children[0] : undefined;
+    expect(value).toEqual({
+      kind: "text",
+      value: {
+        kind: "ternary",
+        condition: {
+          kind: "binary",
+          operator: "&&",
+          left: { kind: "numericPredicate", predicate: "isFinite", operand: { kind: "ident", name: "value" } },
+          right: { kind: "binary", operator: ">", left: { kind: "ident", name: "value" }, right: { kind: "literal", literal: { type: "number", value: 0 } } },
+        },
+        then: { kind: "numericFunction", function: "floor", args: [{ kind: "ident", name: "value" }] },
+        else: { kind: "literal", literal: { type: "number", value: 0 } },
+      },
+    });
+    expect(emitReact(ir)).toContain("Number.isFinite(value)");
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
   });
 });
 

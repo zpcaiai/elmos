@@ -11,7 +11,7 @@
  * certified-component-v1 allowlist raises DialectError.
  */
 import * as ts from "typescript";
-import { at, BinaryOperator, Expr, fail, Literal, NumericFunction, requireDefined, require_, Stmt, StringMethod } from "../models";
+import { at, BinaryOperator, Expr, fail, Literal, NumericFunction, NumericPredicate, requireDefined, require_, Stmt, StringMethod } from "../models";
 
 const BINARY_TOKEN_MAP: Record<number, BinaryOperator> = {
   [ts.SyntaxKind.PlusToken]: "+",
@@ -118,6 +118,10 @@ export function parseExprNode(node: ts.Expression): Expr {
       const variadic = methodName === "min" || methodName === "max";
       require_(variadic ? node.arguments.length >= 1 && node.arguments.length <= 8 : node.arguments.length === 1, "CERTIFIED_COMPONENT_NUMERIC_FUNCTION_ARITY", `${methodName} expects ${variadic ? "between 1 and 8" : "exactly 1"} argument(s)`);
       return { kind: "numericFunction", function: methodName as NumericFunction, args: node.arguments.map(parseExprNode) };
+    }
+    if (ts.isIdentifier(node.expression.expression) && node.expression.expression.text === "Number" && methodName === "isFinite") {
+      require_(node.arguments.length === 1, "CERTIFIED_COMPONENT_NUMERIC_PREDICATE_ARITY", "isFinite expects exactly one argument");
+      return { kind: "numericPredicate", predicate: "isFinite" as NumericPredicate, operand: parseExprNode(at(node.arguments, 0, "CERTIFIED_COMPONENT_NUMERIC_PREDICATE_ARITY", "isFinite is missing its argument")) };
     }
     if (methodName === "test") {
       const regex = regexParts(node.expression.expression);

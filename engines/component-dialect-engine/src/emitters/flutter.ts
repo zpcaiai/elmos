@@ -115,6 +115,7 @@ function exprSource(expr: Expr, scope: Scope): string {
       if (expr.function === "floor" || expr.function === "ceil") return `${wrap(expr.args[0]!)}.${expr.function}()`;
       return `math.${expr.function}(${args})`;
     }
+    case "numericPredicate": return `${wrap(expr.operand)}.${expr.predicate}`;
     case "cssModuleClass": return dartString(expr.className);
     case "regexTest": return `RegExp(${dartString(expr.pattern)}, caseSensitive: ${!expr.flags.includes("i")}, multiLine: ${expr.flags.includes("m")}, dotAll: ${expr.flags.includes("s")}).hasMatch(${exprSource(expr.operand, scope)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
@@ -130,6 +131,7 @@ function collectReads(expr: Expr, into: Set<string>): void {
   else if (expr.kind === "unaryNot") collectReads(expr.operand, into);
   else if (expr.kind === "stringMethod") { collectReads(expr.receiver, into); expr.args.forEach((arg) => collectReads(arg, into)); }
   else if (expr.kind === "numericFunction") expr.args.forEach((arg) => collectReads(arg, into));
+  else if (expr.kind === "numericPredicate") collectReads(expr.operand, into);
   else if (expr.kind === "regexTest") collectReads(expr.operand, into);
   else if (expr.kind === "arrayLength") collectReads(expr.operand, into);
   else if (expr.kind === "ternary") { collectReads(expr.condition, into); collectReads(expr.then, into); collectReads(expr.else, into); }

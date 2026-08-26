@@ -75,6 +75,7 @@ function exprSource(expr: Expr): string {
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(exprSource).join(", ")})`;
     case "numericFunction": return `Math.${expr.function}(${expr.args.map(exprSource).join(", ")})`;
+    case "numericPredicate": return `Number.${expr.predicate}(${exprSource(expr.operand)})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
@@ -96,6 +97,7 @@ function handlerBody(body: Stmt[], indent: string): string[] {
     else if (e.kind === "unaryNot") collect(e.operand);
     else if (e.kind === "stringMethod") { collect(e.receiver); e.args.forEach(collect); }
     else if (e.kind === "numericFunction") e.args.forEach(collect);
+    else if (e.kind === "numericPredicate") collect(e.operand);
     else if (e.kind === "regexTest") collect(e.operand);
     else if (e.kind === "arrayLength") collect(e.operand);
     else if (e.kind === "ternary") { collect(e.condition); collect(e.then); collect(e.else); }
@@ -111,6 +113,7 @@ function handlerBody(body: Stmt[], indent: string): string[] {
     if (e.kind === "unaryNot") return `!${rewrite(e.operand)}`;
     if (e.kind === "stringMethod") return `${rewrite(e.receiver)}.${e.method}(${e.args.map(rewrite).join(", ")})`;
     if (e.kind === "numericFunction") return `Math.${e.function}(${e.args.map(rewrite).join(", ")})`;
+    if (e.kind === "numericPredicate") return `Number.${e.predicate}(${rewrite(e.operand)})`;
     if (e.kind === "cssModuleClass") return JSON.stringify(e.className);
     if (e.kind === "regexTest") return `/${e.pattern}/${e.flags}.test(${rewrite(e.operand)})`;
     if (e.kind === "arrayLength") return `${rewrite(e.operand)}.length`;

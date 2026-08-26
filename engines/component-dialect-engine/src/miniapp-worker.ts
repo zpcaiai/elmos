@@ -1717,6 +1717,8 @@ function inferCanonicalExpressionType(
       return expression.args.length > 0 && expression.args.every((arg) => inferCanonicalExpressionType(arg, values, scope) === "number")
         ? "number"
         : null;
+    case "numericPredicate":
+      return inferCanonicalExpressionType(expression.operand, values, scope) === "number" ? "boolean" : null;
     case "cssModuleClass":
       return "string";
     case "eventValue":

@@ -23,7 +23,7 @@ import * as path from "path";
 import {
   at, AttrBinding, AttrName, ATTR_NAMES, BinaryOperator, CallbackPropDef, ComponentDef, DataPropDef, DialectError,
   EventBinding, EventName, Expr, fail, HtmlTag, HTML_TAGS, ListElementShape, ListPropDef, Literal, Node as CNode,
-  NumericFunction, PrimitiveType, PropDef, requireDefined, StateDef, Stmt, StringMethod, checkIdentifier, require_, validateComponent, ComponentArg,
+  NumericFunction, NumericPredicate, PrimitiveType, PropDef, requireDefined, StateDef, Stmt, StringMethod, checkIdentifier, require_, validateComponent, ComponentArg,
   ValueShape } from "../models";
 
 function primitiveTypeFromNode(node: ts.TypeNode | undefined, what: string): PrimitiveType {
@@ -52,7 +52,12 @@ interface StaticRegexDefinition {
 interface StaticCssModuleDefinition {
   readonly kind: "css-module";
 }
-type StaticDefinition = ReadonlyMap<string, StaticStringMapValue> | StaticRegexDefinition | StaticCssModuleDefinition;
+interface StaticPureFunctionDefinition {
+  readonly kind: "pure-function";
+  readonly parameters: readonly string[];
+  readonly body: ts.Expression;
+}
+type StaticDefinition = ReadonlyMap<string, StaticStringMapValue> | StaticRegexDefinition | StaticCssModuleDefinition | StaticPureFunctionDefinition;
 type StaticStringMaps = ReadonlyMap<string, StaticDefinition>;
 
 function isStaticRegexDefinition(value: StaticDefinition): value is StaticRegexDefinition {
@@ -63,8 +68,26 @@ function isStaticCssModuleDefinition(value: StaticDefinition): value is StaticCs
   return typeof value === "object" && value !== null && "kind" in value && value.kind === "css-module";
 }
 
+function isStaticPureFunctionDefinition(value: StaticDefinition): value is StaticPureFunctionDefinition {
+  return typeof value === "object" && value !== null && "kind" in value && value.kind === "pure-function";
+}
+
 function isStaticStringMapDefinition(value: StaticDefinition): value is ReadonlyMap<string, StaticStringMapValue> {
-  return !isStaticRegexDefinition(value) && !isStaticCssModuleDefinition(value);
+  return !isStaticRegexDefinition(value) && !isStaticCssModuleDefinition(value) && !isStaticPureFunctionDefinition(value);
+}
+
+function pureFunctionDefinitionFromNode(fn: ts.FunctionDeclaration): StaticPureFunctionDefinition | null {
+  if (fn.name === undefined || fn.body === undefined || fn.asteriskToken !== undefined || fn.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.AsyncKeyword)) return null;
+  if (fn.type === undefined || !["string", "number", "boolean"].includes(fn.type.getText())) return null;
+  const parameters: string[] = [];
+  for (const parameter of fn.parameters) {
+    if (!ts.isIdentifier(parameter.name) || parameter.type === undefined || parameter.initializer !== undefined || parameter.dotDotDotToken !== undefined) return null;
+    if (!["string", "number", "boolean"].includes(parameter.type.getText())) return null;
+    parameters.push(parameter.name.text);
+  }
+  const statement = fn.body.statements.length === 1 ? fn.body.statements[0] : undefined;
+  if (statement === undefined || !ts.isReturnStatement(statement) || statement.expression === undefined) return null;
+  return { kind: "pure-function", parameters, body: statement.expression };
 }
 
 function regexDefinitionFromNode(node: ts.Expression): StaticRegexDefinition | null {
@@ -147,6 +170,11 @@ function collectStaticStringMaps(sourceFile: ts.SourceFile): StaticStringMaps {
       }
       if (complete && entries.size > 0) maps.set(declaration.name.text, entries);
     }
+  }
+  for (const statement of sourceFile.statements) {
+    if (!ts.isFunctionDeclaration(statement)) continue;
+    const definition = pureFunctionDefinitionFromNode(statement);
+    if (definition !== null && statement.name !== undefined) maps.set(statement.name.text, definition);
   }
   return maps;
 }
@@ -423,10 +451,35 @@ function isEventTargetValue(node: ts.Expression, eventParameter: string | undefi
     && node.expression.expression.text === eventParameter;
 }
 
-function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map(), eventParameter?: string): Expr {
-  if (ts.isParenthesizedExpression(node)) return parseExpr(node.expression, staticMaps, eventParameter);
+function substitutePureFunctionParameters(expr: Expr, substitutions: ReadonlyMap<string, Expr>): Expr {
+  if (expr.kind === "ident") return substitutions.get(expr.name) ?? expr;
+  if (expr.kind === "binary") return { kind: "binary", operator: expr.operator, left: substitutePureFunctionParameters(expr.left, substitutions), right: substitutePureFunctionParameters(expr.right, substitutions) };
+  if (expr.kind === "unaryNot") return { kind: "unaryNot", operand: substitutePureFunctionParameters(expr.operand, substitutions) };
+  if (expr.kind === "stringMethod") return { kind: "stringMethod", method: expr.method, receiver: substitutePureFunctionParameters(expr.receiver, substitutions), args: expr.args.map((arg) => substitutePureFunctionParameters(arg, substitutions)) };
+  if (expr.kind === "numericFunction") return { kind: "numericFunction", function: expr.function, args: expr.args.map((arg) => substitutePureFunctionParameters(arg, substitutions)) };
+  if (expr.kind === "numericPredicate") return { kind: "numericPredicate", predicate: expr.predicate, operand: substitutePureFunctionParameters(expr.operand, substitutions) };
+  if (expr.kind === "regexTest") return { kind: "regexTest", pattern: expr.pattern, flags: expr.flags, operand: substitutePureFunctionParameters(expr.operand, substitutions) };
+  if (expr.kind === "arrayLength") return { kind: "arrayLength", operand: substitutePureFunctionParameters(expr.operand, substitutions) };
+  if (expr.kind === "ternary") return { kind: "ternary", condition: substitutePureFunctionParameters(expr.condition, substitutions), then: substitutePureFunctionParameters(expr.then, substitutions), else: substitutePureFunctionParameters(expr.else, substitutions) };
+  return expr;
+}
+
+function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map(), eventParameter?: string, pureFunctionStack: readonly string[] = []): Expr {
+  if (ts.isParenthesizedExpression(node)) return parseExpr(node.expression, staticMaps, eventParameter, pureFunctionStack);
   if (isEventTargetValue(node, eventParameter)) return { kind: "eventValue" };
   if (ts.isIdentifier(node)) return { kind: "ident", name: node.text };
+  if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
+    const functionName = node.expression.text;
+    const definition = staticMaps.get(functionName);
+    if (definition !== undefined && isStaticPureFunctionDefinition(definition)) {
+      require_(!pureFunctionStack.includes(functionName), "CERTIFIED_COMPONENT_RECURSIVE_PURE_FUNCTION", `pure helper ${JSON.stringify(functionName)} is recursively defined`);
+      require_(node.arguments.length === definition.parameters.length, "CERTIFIED_COMPONENT_PURE_FUNCTION_ARITY", `${functionName} expects ${definition.parameters.length} argument(s)`);
+      const args = node.arguments.map((argument) => parseExpr(argument, staticMaps, eventParameter, pureFunctionStack));
+      const body = parseExpr(definition.body, staticMaps, eventParameter, [...pureFunctionStack, functionName]);
+      const substitutions = new Map(definition.parameters.map((parameter, index) => [parameter, at(args, index, "CERTIFIED_COMPONENT_PURE_FUNCTION_ARITY", `missing argument for ${functionName}`)]));
+      return substitutePureFunctionParameters(body, substitutions);
+    }
+  }
   if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
     const methodName = node.expression.name.text;
     if (ts.isIdentifier(node.expression.expression) && node.expression.expression.text === "Math" && ["min", "max", "floor", "ceil", "abs"].includes(methodName)) {
@@ -435,24 +488,28 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
       return {
         kind: "numericFunction",
         function: methodName as NumericFunction,
-        args: node.arguments.map((argument) => parseExpr(argument, staticMaps, eventParameter)),
+        args: node.arguments.map((argument) => parseExpr(argument, staticMaps, eventParameter, pureFunctionStack)),
       };
+    }
+    if (ts.isIdentifier(node.expression.expression) && node.expression.expression.text === "Number" && methodName === "isFinite") {
+      require_(node.arguments.length === 1, "CERTIFIED_COMPONENT_NUMERIC_PREDICATE_ARITY", "isFinite expects exactly one argument");
+      return { kind: "numericPredicate", predicate: "isFinite", operand: parseExpr(at(node.arguments, 0, "CERTIFIED_COMPONENT_NUMERIC_PREDICATE_ARITY", "isFinite is missing its argument"), staticMaps, eventParameter, pureFunctionStack) };
     }
     if (methodName === "test" && ts.isIdentifier(node.expression.expression)) {
       const definition = staticMaps.get(node.expression.expression.text);
       require_(definition !== undefined && isStaticRegexDefinition(definition), "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `regex test receiver ${node.expression.expression.text} is not a declared certified static regular expression`);
       const regex = definition;
       require_(node.arguments.length === 1, "CERTIFIED_COMPONENT_REGEX_TEST_ARITY", "regex test expects one argument");
-      return { kind: "regexTest", pattern: regex.pattern, flags: regex.flags, operand: parseExpr(at(node.arguments, 0, "CERTIFIED_COMPONENT_REGEX_TEST_ARITY", "regex test is missing its argument"), staticMaps, eventParameter) };
+      return { kind: "regexTest", pattern: regex.pattern, flags: regex.flags, operand: parseExpr(at(node.arguments, 0, "CERTIFIED_COMPONENT_REGEX_TEST_ARITY", "regex test is missing its argument"), staticMaps, eventParameter, pureFunctionStack) };
     }
     const method = methodName as StringMethod;
     require_(["toUpperCase", "toLowerCase", "trim", "replaceAll", "includes", "startsWith", "endsWith", "slice"].includes(method), "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `string method ${method} is outside certified-component-v1`);
-      const args = node.arguments.map((argument) => parseExpr(argument, staticMaps, eventParameter));
+      const args = node.arguments.map((argument) => parseExpr(argument, staticMaps, eventParameter, pureFunctionStack));
     const expectedArgs = method === "replaceAll" ? 2 : method === "includes" || method === "startsWith" || method === "endsWith" ? 1 : method === "slice" ? 1 : 0;
     require_(method === "slice" ? args.length <= 2 && args.length >= 1 : args.length === expectedArgs, "CERTIFIED_COMPONENT_STRING_METHOD_ARITY", `${method} expects ${method === "slice" ? "one or two" : expectedArgs} argument(s)`);
     const argumentType = method === "slice" ? "number" : "string";
     require_((method !== "replaceAll" && method !== "includes" && method !== "startsWith" && method !== "endsWith" && method !== "slice") || args.every((arg) => arg.kind === "literal" && arg.literal.type === argumentType), "CERTIFIED_COMPONENT_STRING_METHOD_ARGUMENT", `${method} arguments must be ${argumentType} literals`);
-    return { kind: "stringMethod", method, receiver: parseExpr(node.expression.expression, staticMaps, eventParameter), args };
+    return { kind: "stringMethod", method, receiver: parseExpr(node.expression.expression, staticMaps, eventParameter, pureFunctionStack), args };
   }
   if (ts.isPropertyAccessExpression(node) && ts.isElementAccessExpression(node.expression) && ts.isIdentifier(node.expression.expression)) {
     const table = staticMaps.get(node.expression.expression.text);
@@ -976,6 +1033,11 @@ function expandLocalExpression(expr: Expr, definitions: ReadonlyMap<string, Loca
       kind: "numericFunction",
       function: expr.function,
       args: expr.args.map((arg) => expandLocalExpression(arg, definitions, ownerOrder, stack)),
+    };
+    case "numericPredicate": return {
+      kind: "numericPredicate",
+      predicate: expr.predicate,
+      operand: expandLocalExpression(expr.operand, definitions, ownerOrder, stack),
     };
     case "cssModuleClass": return expr;
     case "eventValue": return expr;

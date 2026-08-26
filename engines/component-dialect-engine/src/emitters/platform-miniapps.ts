@@ -291,6 +291,7 @@ function templateExprSource(expr: Expr): string {
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(templateExprSource).join(", ")})`;
     case "numericFunction": return `Math.${expr.function}(${expr.args.map(templateExprSource).join(", ")})`;
+    case "numericPredicate": return `Number.${expr.predicate}(${templateExprSource(expr.operand)})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${templateExprSource(expr.operand)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
@@ -331,6 +332,7 @@ function jsExprSource(expr: Expr, context: JsExpressionContext): string {
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => jsExprSource(arg, context)).join(", ")})`;
     case "numericFunction": return `Math.${expr.function}(${expr.args.map((arg) => jsExprSource(arg, context)).join(", ")})`;
+    case "numericPredicate": return `Number.${expr.predicate}(${jsExprSource(expr.operand, context)})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${jsExprSource(expr.operand, context)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
@@ -363,6 +365,9 @@ function walkExpr(expr: Expr, visit: (candidate: Expr) => void): void {
       return;
     case "numericFunction":
       expr.args.forEach((arg) => walkExpr(arg, visit));
+      return;
+    case "numericPredicate":
+      walkExpr(expr.operand, visit);
       return;
     case "arrayLength":
       walkExpr(expr.operand, visit);

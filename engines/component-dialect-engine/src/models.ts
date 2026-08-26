@@ -217,6 +217,7 @@ export type BinaryOperator = "+" | "-" | "*" | "/" | "%" | "<" | "<=" | ">" | ">
 export const BINARY_OPERATORS: readonly BinaryOperator[] = ["+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "??"];
 export type StringMethod = "toUpperCase" | "toLowerCase" | "trim" | "replaceAll" | "includes" | "startsWith" | "endsWith" | "slice";
 export type NumericFunction = "min" | "max" | "floor" | "ceil" | "abs";
+export type NumericPredicate = "isFinite";
 
 export type Expr =
   | { kind: "ident"; name: string }
@@ -235,6 +236,8 @@ export type Expr =
   /** A bounded pure numeric aggregate. It mirrors Math.min/Math.max without
    * opening the expression subset to arbitrary global calls. */
   | { kind: "numericFunction"; function: NumericFunction; args: Expr[] }
+  /** A bounded numeric predicate with a target-native spelling. */
+  | { kind: "numericPredicate"; predicate: NumericPredicate; operand: Expr }
   /** A static class token imported from a CSS Module. */
   | { kind: "cssModuleClass"; className: string }
   /** The value supplied by an input/change event; its concrete spelling is
@@ -265,6 +268,7 @@ export function usesEventValue(expr: Expr): boolean {
     case "unaryNot": return usesEventValue(expr.operand);
     case "stringMethod": return usesEventValue(expr.receiver) || expr.args.some(usesEventValue);
     case "numericFunction": return expr.args.some(usesEventValue);
+    case "numericPredicate": return usesEventValue(expr.operand);
     case "cssModuleClass": return false;
     case "regexTest": return usesEventValue(expr.operand);
     case "arrayLength": return usesEventValue(expr.operand);
@@ -517,6 +521,10 @@ export function validateComponent(component: ComponentDef): void {
           require_(isNumberExpression(arg, scope), "CERTIFIED_COMPONENT_NUMERIC_FUNCTION_ARGUMENT", `${expr.function} arguments must be certified number expressions`);
         });
         return;
+      case "numericPredicate":
+        checkExpr(expr.operand, scope);
+        require_(isNumberExpression(expr.operand, scope), `${expr.predicate.toUpperCase()}_OPERAND`, `${expr.predicate} requires a certified number expression`);
+        return;
       case "cssModuleClass":
         checkIdentifier(expr.className, "CSS Module class name");
         return;
@@ -679,6 +687,7 @@ export function validateComponent(component: ComponentDef): void {
     if (expr.kind === "stringMethod") return { kind: "primitive", primitive: expr.method === "includes" ? "boolean" : "string" };
     if (expr.kind === "cssModuleClass") return { kind: "primitive", primitive: "string" };
     if (expr.kind === "regexTest") return { kind: "primitive", primitive: "boolean" };
+    if (expr.kind === "numericPredicate") return { kind: "primitive", primitive: "boolean" };
     if (expr.kind === "ternary") {
       const thenShape = expressionShape(expr.then, scope);
       const elseShape = expressionShape(expr.else, scope);
