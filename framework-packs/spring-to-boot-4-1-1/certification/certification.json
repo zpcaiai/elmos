@@ -3,7 +3,7 @@
   "pack_key": "spring-to-boot-4-1-1",
   "status": "experimental",
   "decision": "NOT_CERTIFIED",
-  "reason": "The exact 4.1.1 routes, feature catalog and target profile are declared, but source/target runtime, component contract, holdout, representative and independent verification evidence are NOT_RUN.",
+  "reason": "The exact 4.1.1 routes, feature catalog, target profile and verification plan are declared, but source/target build and startup, component/provider behavior, holdout, representative and independent verification evidence are NOT_RUN.",
   "certification_eligible": false,
   "external_evidence_status": "NOT_RUN",
   "next_review": "2026-11-09"

@@ -24,6 +24,7 @@ is NOT_RUN.
 Validate the structure with:
 
     python3 scripts/batch30/validate_framework_pack.py framework-packs/spring-to-boot-4-1-1
+    python3 scripts/operations/validate_spring_verification_plan.py framework-packs/spring-to-boot-4-1-1
 
 The pack does not authorize customer repository access, provider operations,
 deployment, signing, or certification.

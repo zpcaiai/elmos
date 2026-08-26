@@ -1,0 +1,303 @@
+{
+  "schema_version": 1,
+  "plan_key": "spring-to-boot-4-1-1-verification-plan",
+  "pack_key": "spring-to-boot-4-1-1",
+  "plan_status": "PREPARED_NOT_RUN",
+  "target": {
+    "profile_key": "spring-to-boot-4-1-1-java-21",
+    "framework": "spring-boot",
+    "version": "4.1.1",
+    "runtime": "java",
+    "runtime_version": "21",
+    "build_tools": ["maven-3.9.11", "gradle-8.14.3"],
+    "provider_versions": {
+      "spring-framework": "7.0.8",
+      "spring-security": "7.1.0",
+      "spring-grpc": "1.1.0",
+      "spring-graphql": "2.0.4",
+      "spring-hateoas": "3.1.0",
+      "spring-integration": "7.1.0",
+      "spring-kafka": "4.1.0",
+      "spring-amqp": "4.1.0",
+      "spring-ldap": "4.1.0",
+      "spring-session": "4.1.0",
+      "hibernate-orm": "7.4.1.Final",
+      "tomcat": "11.0.22"
+    }
+  },
+  "routes": {
+    "source_of_truth": "version-matrix.json",
+    "ids": [
+      "boot-1.5-maven-to-boot-4.1.1-java-21",
+      "boot-2.0-2.6-maven-to-boot-4.1.1-java-21",
+      "boot-2.7-maven-to-boot-4.1.1-java-21",
+      "boot-3.0-3.4-maven-to-boot-4.1.1-java-21",
+      "boot-3.5-maven-to-boot-4.1.1-java-21",
+      "boot-4.0-maven-to-boot-4.1.1-java-21",
+      "boot-1.5-gradle-to-boot-4.1.1-java-21",
+      "boot-2.x-gradle-to-boot-4.1.1-java-21",
+      "boot-3.x-gradle-to-boot-4.1.1-java-21",
+      "boot-4.0-gradle-to-boot-4.1.1-java-21",
+      "spring-mvc-3.2-7.0-maven-to-boot-4.1.1-java-21",
+      "spring-framework-3.2-7.0-maven-to-boot-4.1.1-java-21"
+    ]
+  },
+  "compatibility_boundary": {
+    "legacy_default_target": {
+      "spring_boot": "3.5.3",
+      "java": "21"
+    },
+    "new_target_requires_request_field": "targetSpringBoot",
+    "new_target_request_value": "4.1.1",
+    "legacy_default_must_remain_unchanged": true,
+    "target_selection_must_be_explicit": true
+  },
+  "corpora": {
+    "development": {
+      "path": "corpus/development",
+      "purpose": "local engineering fixtures and deterministic static/contract qualification"
+    },
+    "holdout": {
+      "path": "corpus/holdout",
+      "purpose": "independent source/target behavior corpus, not used to author mappings"
+    },
+    "representative_repository": {
+      "path": "corpus/real-repository",
+      "purpose": "authorized representative repository evidence, separate from development and holdout"
+    }
+  },
+  "feature_verification": {
+    "source_of_truth": "target-profile/feature-matrix.json",
+    "status_policy": {
+      "static_conversion": "STATIC_COVERED_NOT_RUNTIME_CERTIFIED",
+      "runtime_contract": "NOT_RUN",
+      "provider_behavior": "NOT_RUN",
+      "test_behavior": "NOT_RUN",
+      "unsupported": "NOT_RUN"
+    },
+    "static_conversion": [
+      "language-java",
+      "language-kotlin",
+      "language-groovy",
+      "language-configuration",
+      "core-bean-di",
+      "core-component-scan",
+      "core-profiles-conditions",
+      "core-configuration-properties",
+      "core-events",
+      "core-async",
+      "core-resilience",
+      "core-spel",
+      "core-resource-message",
+      "core-aop",
+      "boot-application-bootstrap",
+      "boot-autoconfiguration",
+      "boot-modular-starters",
+      "boot-config-data",
+      "boot-logging",
+      "boot-file-rotation",
+      "boot-graceful-shutdown",
+      "boot-aot-native",
+      "boot-null-safety",
+      "boot-jackson",
+      "mvc-annotated-endpoints",
+      "mvc-binding-validation",
+      "mvc-error-handling",
+      "mvc-filters-interceptors",
+      "mvc-view-resources",
+      "mvc-multipart-cors"
+    ],
+    "runtime_contract": [
+      "webflux-reactive-endpoints",
+      "web-client",
+      "web-rsocket",
+      "mvc-websocket-stomp"
+    ],
+    "provider_behavior": [
+      "boot-actuator",
+      "boot-observability",
+      "boot-grpc",
+      "web-graphql",
+      "web-hateoas",
+      "data-jpa",
+      "data-jdbc",
+      "data-r2dbc",
+      "data-redis",
+      "data-document",
+      "transactions",
+      "messaging-kafka",
+      "messaging-amqp",
+      "messaging-jms",
+      "messaging-integration",
+      "messaging-batch",
+      "integration-ldap-session",
+      "cache",
+      "scheduler",
+      "security-web",
+      "security-method-oauth2"
+    ],
+    "test_behavior": [
+      "testing-spring",
+      "testing-container",
+      "testing-spock-groovy"
+    ],
+    "unsupported": ["unmapped-spring-construct"]
+  },
+  "tracks": [
+    {
+      "id": "source-build",
+      "required": true,
+      "kind": "real-source-build",
+      "corpus_role": "development",
+      "scope": "every selected source route and exact source tuple",
+      "replay_command": "<route-build-tool> <source-build-command> --exact-source-tuple",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "required_evidence_roles": ["source-build-log", "source-artifact-digest", "source-toolchain-manifest"],
+      "evidence_slots": [
+        {"role": "source-build-log", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "source-artifact-digest", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "source-toolchain-manifest", "status": "NOT_RUN", "path": null, "sha256": null}
+      ]
+    },
+    {
+      "id": "target-build",
+      "required": true,
+      "kind": "real-target-build",
+      "corpus_role": "development",
+      "scope": "every selected route after transformation on Java 21",
+      "replay_command": "<route-build-tool> <target-build-command> --target-spring-boot=4.1.1 --java=21",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "required_evidence_roles": ["target-build-log", "target-artifact-digest", "target-toolchain-manifest"],
+      "evidence_slots": [
+        {"role": "target-build-log", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "target-artifact-digest", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "target-toolchain-manifest", "status": "NOT_RUN", "path": null, "sha256": null}
+      ]
+    },
+    {
+      "id": "source-startup",
+      "required": true,
+      "kind": "real-source-startup",
+      "corpus_role": "development",
+      "scope": "source application startup and health/lifecycle probes",
+      "replay_command": "<source-artifact> --server.address=127.0.0.1 --server.port=<ephemeral-port>",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "required_evidence_roles": ["source-startup-log", "source-health-probe", "source-shutdown-probe"],
+      "evidence_slots": [
+        {"role": "source-startup-log", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "source-health-probe", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "source-shutdown-probe", "status": "NOT_RUN", "path": null, "sha256": null}
+      ]
+    },
+    {
+      "id": "target-startup",
+      "required": true,
+      "kind": "real-target-startup",
+      "corpus_role": "development",
+      "scope": "Boot 4.1.1 application startup, health and graceful shutdown",
+      "replay_command": "<target-artifact> --server.address=127.0.0.1 --server.port=<ephemeral-port>",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "required_evidence_roles": ["target-startup-log", "target-health-probe", "target-shutdown-probe"],
+      "evidence_slots": [
+        {"role": "target-startup-log", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "target-health-probe", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "target-shutdown-probe", "status": "NOT_RUN", "path": null, "sha256": null}
+      ]
+    },
+    {
+      "id": "component-contracts",
+      "required": true,
+      "kind": "source-target-component-contract",
+      "corpus_role": "development",
+      "scope": "FCM obligations for beans, web, configuration, lifecycle and mapped language features",
+      "replay_command": "<contract-runner> --pack=spring-to-boot-4-1-1 --route=<route-id> --compare-source-target",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "required_evidence_roles": ["source-fcm", "target-fcm", "component-oracle"],
+      "evidence_slots": [
+        {"role": "source-fcm", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "target-fcm", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "component-oracle", "status": "NOT_RUN", "path": null, "sha256": null}
+      ]
+    },
+    {
+      "id": "provider-behavior",
+      "required": true,
+      "kind": "provider-runtime-behavior",
+      "corpus_role": "development",
+      "scope": "security, database, transactions, messaging, cache, scheduler and exact provider profiles",
+      "replay_command": "<provider-harness> --target-spring-boot=4.1.1 --profile=<exact-provider-profile> --isolated-runtime",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "required_evidence_roles": ["provider-runtime-log", "provider-version-lock", "behavioral-oracle", "negative-path-results"],
+      "evidence_slots": [
+        {"role": "provider-runtime-log", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "provider-version-lock", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "behavioral-oracle", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "negative-path-results", "status": "NOT_RUN", "path": null, "sha256": null}
+      ]
+    },
+    {
+      "id": "holdout",
+      "required": true,
+      "kind": "independent-holdout",
+      "corpus_role": "holdout",
+      "scope": "unseen repositories and workloads, independent from development mapping fixtures",
+      "replay_command": "<holdout-runner> --pack=spring-to-boot-4-1-1 --corpus=corpus/holdout --isolated",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "required_evidence_roles": ["holdout-corpus-binding", "holdout-source-target-results", "holdout-regression-summary"],
+      "evidence_slots": [
+        {"role": "holdout-corpus-binding", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "holdout-source-target-results", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "holdout-regression-summary", "status": "NOT_RUN", "path": null, "sha256": null}
+      ]
+    },
+    {
+      "id": "representative-repository",
+      "required": true,
+      "kind": "authorized-representative-repository",
+      "corpus_role": "representative_repository",
+      "scope": "authorized representative repository with source and target builds/startup",
+      "replay_command": "<representative-runner> --pack=spring-to-boot-4-1-1 --corpus=corpus/real-repository --isolated",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "required_evidence_roles": ["repository-authorization", "representative-source-target-results", "representative-regression-summary"],
+      "evidence_slots": [
+        {"role": "repository-authorization", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "representative-source-target-results", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "representative-regression-summary", "status": "NOT_RUN", "path": null, "sha256": null}
+      ]
+    },
+    {
+      "id": "independent-verification",
+      "required": true,
+      "kind": "independent-verifier-review",
+      "input_corpus_role": "holdout",
+      "evidence_destination": "certification/independent-verification",
+      "scope": "separate verifier replays immutable source/target evidence and checks the oracle",
+      "replay_command": "<independent-verifier> --pack=spring-to-boot-4-1-1 --input=<content-addressed-evidence>",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "required_evidence_roles": ["verifier-identity", "verifier-replay-log", "verifier-attestation"],
+      "evidence_slots": [
+        {"role": "verifier-identity", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "verifier-replay-log", "status": "NOT_RUN", "path": null, "sha256": null},
+        {"role": "verifier-attestation", "status": "NOT_RUN", "path": null, "sha256": null}
+      ]
+    }
+  ]
+}

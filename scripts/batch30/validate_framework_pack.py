@@ -7,6 +7,7 @@ import json
 import os
 import re
 import stat
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -536,6 +537,17 @@ def main() -> int:
             errors.append("pack and certification statuses must match")
     except Exception as exc:
         errors.append(str(exc))
+    if manifest.get("pack_key") == "spring-to-boot-4-1-1":
+        plan_validator = Path(__file__).parents[1] / "operations" / "validate_spring_verification_plan.py"
+        result = subprocess.run(
+            [sys.executable, str(plan_validator), str(pack)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode:
+            detail = (result.stdout + result.stderr).strip()
+            errors.append(f"Spring Boot 4.1.1 verification plan failed: {detail}")
     if errors:
         print("\n".join(f"ERROR: {item}" for item in errors), file=sys.stderr)
         return 1

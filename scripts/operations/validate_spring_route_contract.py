@@ -17,6 +17,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import re
+import subprocess
+import sys
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -34,6 +36,8 @@ CONSOLE_ROUTES = CONSOLE / "lib" / "springRoutes.ts"
 CONSOLE_STUDIO = CONSOLE / "spring" / "SpringModernizationStudio.tsx"
 SPRING_FEATURE_CATALOG = WORKER_JAVA / "SpringFeatureCatalog.java"
 SPRING_4_1_1_FEATURE_MATRIX = ROOT / "framework-packs" / "spring-to-boot-4-1-1" / "target-profile" / "feature-matrix.json"
+SPRING_4_1_1_PACK = ROOT / "framework-packs" / "spring-to-boot-4-1-1"
+SPRING_VERIFICATION_PLAN_VALIDATOR = ROOT / "scripts" / "operations" / "validate_spring_verification_plan.py"
 SPRING_4_1_VERSION_MATRIX = ROOT / "framework-packs" / "spring-to-boot-4-1-0" / "version-matrix.json"
 MVC_PACK = ROOT / "framework-packs" / "spring-framework-5-3-mvc-to-spring-boot-3-5-3"
 MVC_PACK_RECIPE = MVC_PACK / "recipes" / "spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml"
@@ -838,6 +842,20 @@ def check_feature_catalog() -> None:
     )
 
 
+def check_spring_verification_plan() -> None:
+    result = subprocess.run(
+        [sys.executable, str(SPRING_VERIFICATION_PLAN_VALIDATOR), str(SPRING_4_1_1_PACK)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    require(
+        result.returncode == 0,
+        "SPRING_VERIFICATION_PLAN_INVALID"
+        + (f": {result.stdout.strip()}" if result.stdout.strip() else ""),
+    )
+
+
 def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> None:
     port = EXECUTION_PORT.read_text(encoding="utf-8")
     # Route selection, recipe installation and the JDK registry must all be
@@ -1006,6 +1024,7 @@ def main() -> int:
     check_catalog_shape(routes, constants)
     check_boot_4_1_version_matrix(routes)
     check_feature_catalog()
+    check_spring_verification_plan()
     check_engine(routes, constants)
     check_console(routes, constants)
     recorded = [route for route in routes if route["evidence"] == "PASSED_LOCAL"]
