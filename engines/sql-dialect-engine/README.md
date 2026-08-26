@@ -1,12 +1,20 @@
 # ELMOS SQL Dialect Engine
 
-This engine translates DDL and a conservative SQL routine subset between four database dialects -- PostgreSQL,
+This engine translates DDL and a conservative SQL routine subset between four exact database dialects -- PostgreSQL,
 MySQL, Oracle, and SQL Server (T-SQL) -- under a fixed, precisely bounded
 profiles `certified-ddl-v1`, `certified-alter-v1`, `certified-drop-v1`,
 `certified-schema-v1`, `certified-insert-v1`, `certified-routine-v1`, `certified-view-v1`,
 `certified-comment-v1`, `certified-privilege-v1`, and `certified-rls-v1`.
 Every directed pair among the four
 dialects is independent, giving 12 supported translation routes.
+
+The scanner also includes the 13 exact ChinaDB commercial target identities:
+DM8, KingbaseES, openGauss, TiDB, GBase 8s/8c/8a, HighGo/HGDB, OceanBase
+Oracle/MySQL modes, GaussDB Oracle/M modes, and GoldenDB. They are represented
+as `SPEC_ONLY` provider targets with 78 planned source-family routes. A
+compatibility label is not treated as a verified dialect alias, so no target
+SQL is emitted for these targets until an exact versioned adapter, target
+parser, and independent evidence are present.
 
 ## What the 100% measurement means here
 
@@ -37,6 +45,15 @@ vendor-specific constructs with no proven common semantics. The engine raises
 `DialectError` and reports `status: "BLOCKED"` for those cases rather than
 guessing. External execution, independent verification, and certification
 remain separate evidence gates.
+
+For the domestic target ledger, the current scan expands every discovered
+source unit against all 13 ChinaDB targets: **19305/19305 = 100.0% route
+disposition coverage**. An admitted source unit receives
+`TARGET_ADAPTER_REVIEW_REQUIRED`; an already blocked source unit retains its
+manual or source-format disposition. This is complete, auditable route
+accounting, not 100% automatic ChinaDB conversion: automatic target emissions
+remain `0`, external execution remains `NOT_RUN`, and certification remains
+`NOT_CERTIFIED`.
 
 The source-side number is not the same as target reachability. Replaying every
 source-side candidate through all four target emitters gives **325/1128 = 28.8%**

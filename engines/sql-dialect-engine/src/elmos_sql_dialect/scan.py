@@ -41,7 +41,7 @@ from collections.abc import Iterable, Mapping
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Literal
+from typing import Literal, cast
 
 from sqlglot import exp
 
@@ -54,6 +54,7 @@ from .advanced import (
     parse_table_function,
     parse_trigger,
 )
+from .chinadb import CHINADB_TARGETS, chinadb_capabilities
 from .models import Dialect, DialectError
 from .parser import (
     _parse_source_statements,
@@ -499,6 +500,7 @@ class FeasibilityReport:
     families: list[FamilyGroup]
     findings: list[ScanFinding]
     caveats: list[str] = field(default_factory=list)
+    chinadb_coverage: dict[str, object] = field(default_factory=dict)
 
 
 def discover_sql_files(repository: str | os.PathLike[str]) -> list[Path]:
@@ -862,6 +864,66 @@ def _build_report(
         "procedure IS work the customer needs done, so excluding it would flatter the ratio by hiding "
         "exactly what this engine cannot do.",
     ]
+
+    # ChinaDB target renderers are not registered in this standalone engine.
+    # Still account for every source unit against every exact domestic target
+    # so the coverage ledger cannot silently omit that part of the migration.
+    # An admitted source statement is therefore an explicit target-adapter
+    # review, not an automatic conversion claim.
+    domestic_disposition_counts = {
+        "TARGET_ADAPTER_REVIEW_REQUIRED": disposition_counts.get(
+            "AUTOMATED_TRANSLATION_CANDIDATE", 0
+        ),
+        "MANUAL_MIGRATION_REQUIRED": disposition_counts.get("MANUAL_MIGRATION_REQUIRED", 0),
+        "SOURCE_FORMAT_REVIEW": disposition_counts.get("SOURCE_FORMAT_REVIEW", 0),
+        "ENGINE_DEFECT": disposition_counts.get("ENGINE_DEFECT", 0),
+    }
+    domestic_source_units = len(findings)
+    domestic_route_units = domestic_source_units * len(CHINADB_TARGETS)
+    domestic_source_route_covered = sum(domestic_disposition_counts.values())
+    domestic_route_covered = domestic_source_route_covered * len(CHINADB_TARGETS)
+    domestic_route_coverage = (
+        round(domestic_route_covered / domestic_route_units, 3) if domestic_route_units else 0.0
+    )
+    domestic_target_rows = [
+        {
+            "targetId": target.id,
+            "label": target.label,
+            "routeDispositionUnits": domestic_source_units,
+            "routeDispositionCovered": domestic_source_route_covered,
+            "routeDispositionUnknown": domestic_source_units - domestic_source_route_covered,
+            "routeDispositionCoverage": domestic_route_coverage,
+            "sourceAutomaticCandidates": in_subset,
+            "automaticTargetEmissions": 0,
+            "targetAdapterReviewRequired": in_subset,
+            "manualMigrationRequired": domestic_disposition_counts["MANUAL_MIGRATION_REQUIRED"],
+            "sourceFormatReview": domestic_disposition_counts["SOURCE_FORMAT_REVIEW"],
+            "engineDefects": domestic_disposition_counts["ENGINE_DEFECT"],
+            "targetSqlEmission": "PROHIBITED_UNTIL_EXACT_ADAPTER_AND_EVIDENCE",
+            "externalExecution": "NOT_RUN",
+            "certification": "NOT_CERTIFIED",
+        }
+        for target in CHINADB_TARGETS
+    ]
+    chinadb_coverage = chinadb_capabilities()
+    chinadb_coverage.update(
+        {
+            "sourceUnits": domestic_source_units,
+            "routeUnits": domestic_route_units,
+            "routeDispositionCovered": domestic_route_covered,
+            "routeDispositionUnknown": domestic_route_units - domestic_route_covered,
+            "routeDispositionCoverage": domestic_route_coverage,
+            "dispositionCounts": domestic_disposition_counts,
+            "automaticTargetEmissions": 0,
+            "targets": domestic_target_rows,
+        }
+    )
+    caveats.append(
+        "ChinaDB coverage is a route-disposition ledger: all exact domestic target identities are "
+        "counted, but no compatibility label is treated as an exact renderer. Admitted source units "
+        "remain TARGET_ADAPTER_REVIEW_REQUIRED until a versioned target adapter and independent "
+        "evidence exist."
+    )
     if scan_errors:
         caveats.insert(
             0,
@@ -897,6 +959,7 @@ def _build_report(
         families=families,
         findings=findings if include_all_findings else [f for f in findings if f.status != "IN_SUBSET"],
         caveats=caveats,
+        chinadb_coverage=chinadb_coverage,
     )
 
 
@@ -948,6 +1011,31 @@ def render_markdown(report: FeasibilityReport) -> str:
         f"| Disposition unknown | {totals['dispositionUnknown']} |",
         "",
     ]
+
+    china = report.chinadb_coverage
+    if china:
+        lines += [
+            "## ChinaDB domestic target coverage",
+            "",
+            f"**{china['routeDispositionCovered']} of {china['routeUnits']} domestic target-route "
+            f"units ({pct(cast(float, china['routeDispositionCoverage']))}) have an explicit disposition "
+            "across 13 exact target identities.**",
+            "",
+            "This is complete route accounting, not a claim that every unit emits target SQL. "
+            "The registry is `SPEC_ONLY`; unverified target adapters remain explicit review work.",
+            "",
+            "| | Count |",
+            "|---|---|",
+            f"| ChinaDB target identities | {china['targetCount']} |",
+            f"| Planned source-family routes | {china['plannedRouteCount']} |",
+            f"| Domestic route units | {china['routeUnits']} |",
+            f"| Domestic route dispositions covered | {china['routeDispositionCovered']} |",
+            f"| Domestic route dispositions unknown | {china['routeDispositionUnknown']} |",
+            f"| Automatic target emissions | {china['automaticTargetEmissions']} |",
+            "| External execution | `NOT_RUN` |",
+            "| Certification | `NOT_CERTIFIED` |",
+            "",
+        ]
 
     if report.blockers:
         lines += [

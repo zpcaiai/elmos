@@ -5,12 +5,13 @@ import json
 import sys
 from pathlib import Path
 
+from .chinadb import chinadb_capabilities
 from .engine import translate_ddl
 from .models import Dialect, RouteError
 from .scan import render_markdown, report_to_json, scan_repository
 from .toolchains import verify_toolchain
 
-SUBCOMMANDS = ("translate", "scan")
+SUBCOMMANDS = ("translate", "scan", "chinadb-capabilities")
 
 
 def _translate_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -138,11 +139,29 @@ def _run_scan(args: argparse.Namespace) -> int:
     return 0 if report.totals["outOfSubset"] == 0 and report.totals["scanErrors"] == 0 else 2
 
 
+def _chinadb_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    p = subparsers.add_parser(
+        "chinadb-capabilities",
+        help="show the fail-closed ChinaDB domestic target registry",
+    )
+    p.add_argument("--output", default=None, type=Path)
+
+
+def _run_chinadb_capabilities(args: argparse.Namespace) -> int:
+    payload = json.dumps(chinadb_capabilities(), indent=2, ensure_ascii=False) + "\n"
+    if args.output is not None:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(payload, encoding="utf-8")
+    print(payload, end="")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="elmos-sql-dialect")
     subparsers = parser.add_subparsers(dest="command", required=True)
     _translate_parser(subparsers)
     _scan_parser(subparsers)
+    _chinadb_parser(subparsers)
     return parser
 
 
@@ -153,6 +172,8 @@ def main(argv: list[str] | None = None) -> int:
             return _run_translate(args)
         if args.command == "scan":
             return _run_scan(args)
+        if args.command == "chinadb-capabilities":
+            return _run_chinadb_capabilities(args)
         raise RouteError(f"UNKNOWN_COMMAND: {args.command!r}")  # pragma: no cover
     except RouteError as exc:
         print(json.dumps({"status": "BLOCKED", "reason": str(exc)}, indent=2))
