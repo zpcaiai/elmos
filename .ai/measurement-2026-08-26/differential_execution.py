@@ -133,6 +133,11 @@ _ENGINE_TOOLCHAIN: dict[str, tuple[str, str]] = {
 }
 
 
+#: How each Apple target is told where the SDK is. `swiftc` takes a whole
+#: SDK with `-sdk`; the clang drivers take it as the sysroot.
+_APPLE_SDK_FLAG = {"cpp": "-isysroot", "objc": "-isysroot", "swift": "-sdk"}
+
+
 @dataclasses.dataclass(frozen=True)
 class Resolved:
     """One target's binary and how much is actually known about it."""
@@ -140,6 +145,23 @@ class Resolved:
     executable: str | None
     provenance: str
     auxiliary: str | None = None
+    profile: tuple[str, ...] = ()
+
+    def sdk_flags(self, language: str) -> list[str]:
+        """The SDK flags this target needs, or none.
+
+        Only for a binary the engine verified: the `/usr/bin` shims find their
+        own SDK, and pinning one onto an unverified compiler would dress a
+        PATH row up as pinned evidence.
+        """
+
+        flag = _APPLE_SDK_FLAG.get(language)
+        if flag is None or not self.provenance.startswith("EXACT:"):
+            return []
+        for entry in self.profile:
+            if entry.startswith("sdk-path="):
+                return [flag, entry[len("sdk-path="):]]
+        return []
 
 
 def resolve(language: str, exe: tuple[str, str, str]) -> Resolved:
@@ -176,6 +198,7 @@ def resolve(language: str, exe: tuple[str, str, str]) -> Resolved:
                     str(chosen),
                     f"EXACT:{engine_language}:{toolchain.version}:{chosen}",
                     str(toolchain.auxiliary) if toolchain.auxiliary else None,
+                    tuple(toolchain.profile),
                 )
             engine_note = (
                 f"EXACT_UNUSABLE:{engine_language}:{attribute}="
@@ -434,19 +457,27 @@ def run_target(language: str, out: Path, ir, cases: dict[str, list[list[int]]],
         java_runner = kotlin_java.executable
         provenance = f"{provenance} + java {kotlin_java.provenance}"
 
+    # Inserted after argv[0] rather than appended: `swiftc -sdk X -o drive
+    # drive.swift` is fine, but flags after the input file are read as inputs
+    # by some drivers. Recorded in the evidence so the SDK is never implicit.
+    sdk_flags = resolved.sdk_flags(language)
+    if sdk_flags:
+        provenance = f"{provenance} {' '.join(sdk_flags)}"
+
     for step in spec.build_cmd:
         cmd = [part.format(exe=executable, javac=javac, java=java_runner) for part in step]
+        cmd[1:1] = sdk_flags
         proc = subprocess.run(cmd, cwd=out / language, capture_output=True, text=True, timeout=1800)
         if proc.returncode != 0:
             tail = (proc.stderr or proc.stdout).strip().splitlines()
             return "NOT_RUN", {"reason": "build failed", "toolchain": provenance,
-                               "stderr": tail[-3:] if tail else []}
+                               "stderr": tail[-8:] if tail else []}
     cmd = [part.format(exe=executable, java=java_runner) for part in spec.run_cmd]
     proc = subprocess.run(cmd, cwd=out / language, capture_output=True, text=True, timeout=1800)
     if proc.returncode != 0:
         tail = (proc.stderr or proc.stdout).strip().splitlines()
         return "NOT_RUN", {"reason": "run failed", "toolchain": provenance,
-                           "stderr": tail[-3:] if tail else []}
+                           "stderr": tail[-8:] if tail else []}
 
     actual: dict[str, list[str]] = {name: [] for name in cases}
     for row in proc.stdout.splitlines():
