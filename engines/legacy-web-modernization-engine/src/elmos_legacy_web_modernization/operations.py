@@ -13,6 +13,7 @@ from .analysis import ForensicModel, build_forensic_model
 from .catalog import PACKAGE_DIRECTORY, validate_artifact_payload
 from .canonical import canonical_digest, finite_json, redact_json, redact_text
 from .contracts import ArtifactEnvelope, CapabilityResult, RuntimeRequest, utc_now
+from .external_evidence import not_run_external_status
 from .snapshot import RepositorySnapshot, capture_repository
 
 
@@ -291,8 +292,16 @@ def _certification(request: RuntimeRequest, profile: OperationProfile, model: Fo
         metrics = {}
     unknowns = list(model.unknowns) if model else []
     critical_unknowns = sum(item.get("severity") == "critical" for item in unknowns)
-    external = {"sourceTargetBuild": "NOT_RUN", "startup": "NOT_RUN", "differential": "NOT_RUN", "security": "NOT_RUN", "performance": "NOT_RUN", "rollback": "NOT_RUN", "independentVerifier": "NOT_RUN"}
-    payload = {"bundleVersion": "1.0.0", "jobId": request.job_id, "level": "E1" if model and critical_unknowns == 0 else "BLOCKED", "issuedAt": utc_now(), "policySnapshotHash": canonical_digest(request.policy), "repositorySnapshotId": snapshot.digest if snapshot else "NOT_RUN", "targetDigest": request.inputs.get("target_digest", "NOT_RUN"), "artifacts": [], "gates": [{"id": "E0", "status": "passed" if snapshot else "blocked"}, {"id": "E1", "status": "passed" if model and critical_unknowns == 0 else "blocked"}], "unknowns": unknowns, "risks": list(_risk_register(model).get("risks", [])) if model else [], "metrics": dict(metrics), "reproducibility": {"commands": ["make legacy-web-modernization-skills"], "environmentDigests": [canonical_digest({"python": "local", "engine": "1.0.0"})]}}
+    external = not_run_external_status()
+    external_gate = {
+        "id": "EXTERNAL_EVIDENCE",
+        "status": "blocked",
+        "evidenceStatus": external["evidence_status"],
+        "decision": external["decision"],
+        "requiredEvidenceTypes": external["required_evidence_types"],
+        "certification": external["certification"],
+    }
+    payload = {"bundleVersion": "1.0.0", "jobId": request.job_id, "level": "E1" if model and critical_unknowns == 0 else "BLOCKED", "issuedAt": utc_now(), "policySnapshotHash": canonical_digest(request.policy), "repositorySnapshotId": snapshot.digest if snapshot else "NOT_RUN", "targetDigest": request.inputs.get("target_digest", "NOT_RUN"), "artifacts": [], "gates": [{"id": "E0", "status": "passed" if snapshot else "blocked"}, {"id": "E1", "status": "passed" if model and critical_unknowns == 0 else "blocked"}, external_gate], "unknowns": unknowns, "risks": list(_risk_register(model).get("risks", [])) if model else [], "metrics": dict(metrics), "reproducibility": {"commands": ["make legacy-web-modernization-skills"], "environmentDigests": [canonical_digest({"python": "local", "engine": "1.0.0"})]}}
     return _success(request, profile, payload, evidence_refs=(f"ev:snapshot:{snapshot.digest}",) if snapshot else (), confidence=0.45)
 
 

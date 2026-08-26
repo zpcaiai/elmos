@@ -2,6 +2,7 @@
   "certification": "NOT_CERTIFIED",
   "engine": "engines/legacy-web-modernization-engine",
   "externalEvidence": "NOT_RUN",
+  "externalEvidenceGate": "IMPLEMENTED_FAIL_CLOSED",
   "handlers": 55,
   "implemented": "bounded exact local handlers",
   "limits": [
@@ -10,6 +11,7 @@
     "no provider/deployment/cutover effects",
     "no production certification"
   ],
+  "maximumLocalDecision": "READY_FOR_EXTERNAL_GATE_REVIEW",
   "package": "elmos.java-legacy-web.repository-modernization",
   "skills": 55,
   "version": "1.0.0"

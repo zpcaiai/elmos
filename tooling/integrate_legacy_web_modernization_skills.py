@@ -239,6 +239,8 @@ def write_interfaces(*, write: bool) -> None:
         "handlers": len(SKILL_REGISTRY),
         "engine": "engines/legacy-web-modernization-engine",
         "implemented": "bounded exact local handlers",
+        "externalEvidenceGate": "IMPLEMENTED_FAIL_CLOSED",
+        "maximumLocalDecision": "READY_FOR_EXTERNAL_GATE_REVIEW",
         "externalEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
         "limits": ["no repository code execution", "no Git mutation", "no provider/deployment/cutover effects", "no production certification"],

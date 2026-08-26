@@ -21,4 +21,20 @@ Useful commands from the repository root:
 ```sh
 make legacy-web-modernization-skills
 PYTHONPATH=engines/legacy-web-modernization-engine/src python3 -m elmos_legacy_web_modernization.cli validate
+
+# When separately authorized evidence exists, verify it without promoting
+# local state or issuing production certification:
+PYTHONPATH=engines/legacy-web-modernization-engine/src python3 -m elmos_legacy_web_modernization.cli external-preflight \
+  --intake /approved/evidence/legacy-web-intake.json \
+  --expected-binding /approved/evidence/legacy-web-binding.json \
+  --evidence-root /approved/evidence \
+  --trust-store /approved/evidence/trust-store.json
 ```
+
+The preflight requires content-addressed evidence and dedicated Ed25519 trust
+keys for every source/target build and runtime, behavioral, security,
+performance, operability, SBOM, rollback, independent-review, customer-
+acceptance, and external-certification role. A valid intake is reported as
+`READY_FOR_EXTERNAL_GATE_REVIEW`; this engine never changes the package state
+and never emits `CERTIFIED`. Until such an intake is supplied, the explicit
+state remains `NOT_RUN` / `NOT_CERTIFIED`.

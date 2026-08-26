@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
 from pathlib import Path
+import subprocess
 import sqlite3
 import tempfile
 import unittest
+from datetime import datetime, timezone
 
 from elmos_legacy_web_modernization import (
     CATALOG,
@@ -17,6 +21,15 @@ from elmos_legacy_web_modernization.snapshot import SnapshotError, capture_repos
 from elmos_legacy_web_modernization.contracts import RuntimeRequest
 from elmos_legacy_web_modernization.persistence import PersistenceError, StateStore
 from elmos_legacy_web_modernization.runtime import RuntimeErrorContract
+from elmos_legacy_web_modernization.external_evidence import (
+    CLAIMS,
+    EVIDENCE_ROLES,
+    EVIDENCE_TYPES,
+    ExternalEvidenceError,
+    not_run_external_status,
+    evaluate_external_intake,
+)
+from scripts.precision_migration.trust import canonical_bytes
 
 
 def fixture_root() -> tuple[tempfile.TemporaryDirectory[str], Path]:
@@ -299,6 +312,259 @@ class RuntimeTests(unittest.TestCase):
         finally:
             state_holder.cleanup()
             holder.cleanup()
+
+    def test_external_evidence_boundary_is_explicit_and_fail_closed(self) -> None:
+        status = not_run_external_status()
+        self.assertEqual(status["evidence_status"], "NOT_RUN")
+        self.assertEqual(status["externalEvidence"], "NOT_RUN")
+        self.assertEqual(status["certification"], "NOT_CERTIFIED")
+        self.assertEqual(len(status["required_evidence_types"]), 13)
+        with self.assertRaises(ExternalEvidenceError):
+            from elmos_legacy_web_modernization.external_evidence import evaluate_external_intake
+
+            evaluate_external_intake(
+                {"schema_version": 1, "namespace": "wrong"},
+                expected_binding={},
+                evidence_root=Path("/tmp"),
+                trust_store=Path("/tmp/missing-trust-store.json"),
+            )
+
+    def test_certification_artifact_exposes_external_gate_requirements(self) -> None:
+        holder, root = fixture_root()
+        try:
+            result = dispatch(request(root, "74-evidence-bundle-and-e0-e5-certification"))
+            payload = result["artifacts"][0]["payload"]
+            external_gate = next(item for item in payload["gates"] if item["id"] == "EXTERNAL_EVIDENCE")
+            self.assertEqual(external_gate["evidenceStatus"], "NOT_RUN")
+            self.assertEqual(external_gate["decision"], "BLOCKED_EXTERNAL_EVIDENCE_REQUIRED")
+            self.assertEqual(external_gate["certification"], "NOT_CERTIFIED")
+            self.assertIn("external_certification", external_gate["requiredEvidenceTypes"])
+        finally:
+            holder.cleanup()
+
+
+class ExternalEvidenceTests(unittest.TestCase):
+    """Exercise the real Ed25519/content-addressed admission path."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.temporary = tempfile.TemporaryDirectory(prefix="legacy-web-external-tests-")
+        cls.root = Path(cls.temporary.name)
+        cls.keys: dict[str, Path] = {}
+        records: list[dict[str, object]] = []
+        for index, evidence_type in enumerate(EVIDENCE_TYPES):
+            role = EVIDENCE_ROLES[evidence_type]
+            private = cls.root / f"key-{index}.private.pem"
+            public = cls.root / f"key-{index}.public.pem"
+            subprocess.run(
+                ["openssl", "genpkey", "-algorithm", "ed25519", "-out", str(private)],
+                check=True,
+                capture_output=True,
+            )
+            subprocess.run(
+                ["openssl", "pkey", "-in", str(private), "-pubout", "-out", str(public)],
+                check=True,
+                capture_output=True,
+            )
+            cls.keys[evidence_type] = private
+            records.append(
+                {
+                    "key_id": f"test-key-{index}",
+                    "actor_id": f"test-signer-{index}",
+                    "organization_id": {
+                        "producer": "org-producer",
+                        "rootless": "org-rootless",
+                        "independent": "org-independent",
+                        "customer": "org-customer",
+                        "certification": "org-certification",
+                    }[
+                        {
+                            "source_build": "producer",
+                            "target_build": "rootless",
+                            "source_startup": "producer",
+                            "target_startup": "rootless",
+                            "behavioral_equivalence": "rootless",
+                            "security": "independent",
+                            "performance": "independent",
+                            "operability": "independent",
+                            "sbom": "independent",
+                            "rollback": "independent",
+                            "independent_review": "independent",
+                            "customer_acceptance": "customer",
+                            "external_certification": "certification",
+                        }[evidence_type]
+                    ],
+                    "roles": [role],
+                    "public_key_path": public.name,
+                    "not_before": "2025-01-01T00:00:00Z",
+                    "not_after": "2030-01-01T00:00:00Z",
+                    "revoked": False,
+                }
+            )
+        cls.trust_store = cls.root / "trust-store.json"
+        cls.trust_store.write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "namespace": "elmos.legacy-web.external-certification",
+                    "keys": records,
+                    "revoked_record_ids": [],
+                },
+                sort_keys=True,
+            ),
+            encoding="utf-8",
+        )
+        cls.binding = {
+            "package": "elmos.java-legacy-web.repository-modernization",
+            "package_version": "1.0.0",
+            "archive_digest": CATALOG.archive_digest,
+            "source_snapshot_digest": "sha256:" + "b" * 64,
+            "target_artifact_digest": "sha256:" + "c" * 64,
+            "target_profile_digest": "sha256:" + "d" * 64,
+            "policy_snapshot_digest": "sha256:" + "e" * 64,
+        }
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.temporary.cleanup()
+
+    def signed_envelope(self, evidence_type: str, payload: dict[str, object]) -> dict[str, object]:
+        index = EVIDENCE_TYPES.index(evidence_type)
+        payload_path = self.root / f"payload-{index}.json"
+        signature_path = self.root / f"signature-{index}.bin"
+        payload_path.write_bytes(canonical_bytes(payload))
+        subprocess.run(
+            [
+                "openssl",
+                "pkeyutl",
+                "-sign",
+                "-inkey",
+                str(self.keys[evidence_type]),
+                "-rawin",
+                "-in",
+                str(payload_path),
+                "-out",
+                str(signature_path),
+            ],
+            check=True,
+            capture_output=True,
+        )
+        return {
+            "algorithm": "ed25519",
+            "key_id": f"test-key-{index}",
+            "payload": payload,
+            "signature": base64.b64encode(signature_path.read_bytes()).decode("ascii"),
+        }
+
+    def valid_intake(self) -> dict[str, object]:
+        organizations = {
+            "producer": "org-producer",
+            "customer": "org-customer",
+            "rootless": "org-rootless",
+            "independent": "org-independent",
+            "certification": "org-certification",
+        }
+        intake_id = "intake-test-001"
+        binding_digest = "sha256:" + hashlib.sha256(canonical_bytes(self.binding)).hexdigest()
+        evidence: dict[str, object] = {}
+        executors: dict[str, object] = {}
+        for index, evidence_type in enumerate(EVIDENCE_TYPES):
+            content_path = self.root / f"content-{index}.json"
+            content_path.write_text(
+                json.dumps({"evidence_type": evidence_type, "fixture": index}, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+            raw = content_path.read_bytes()
+            content = {
+                "path": content_path.name,
+                "sha256": "sha256:" + hashlib.sha256(raw).hexdigest(),
+                "size_bytes": len(raw),
+                "media_type": "application/json",
+            }
+            executor = {
+                "actor_id": f"test-executor-{index}",
+                "organization_id": f"org-executor-{index}",
+            }
+            executors[evidence_type] = executor
+            signer_org = {
+                "source_build": "org-producer",
+                "target_build": "org-rootless",
+                "source_startup": "org-producer",
+                "target_startup": "org-rootless",
+                "behavioral_equivalence": "org-rootless",
+                "security": "org-independent",
+                "performance": "org-independent",
+                "operability": "org-independent",
+                "sbom": "org-independent",
+                "rollback": "org-independent",
+                "independent_review": "org-independent",
+                "customer_acceptance": "org-customer",
+                "external_certification": "org-certification",
+            }[evidence_type]
+            payload = {
+                "record_id": f"record-{index}",
+                "issued_at": "2026-01-01T00:00:00Z",
+                "expires_at": "2029-01-01T00:00:00Z",
+                "actor_id": f"test-signer-{index}",
+                "organization_id": signer_org,
+                "role": EVIDENCE_ROLES[evidence_type],
+                "intake_id": intake_id,
+                "binding_digest": binding_digest,
+                "evidence_type": evidence_type,
+                "content_digest": content["sha256"],
+                "content_size_bytes": content["size_bytes"],
+                "executor_actor_id": executor["actor_id"],
+                "executor_organization_id": executor["organization_id"],
+                "outcome": "CERTIFIED" if evidence_type == "external_certification" else "ACCEPTED" if evidence_type == "customer_acceptance" else "PASS",
+                "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+                "synthetic": False,
+                "unknowns": [],
+                "not_run": [],
+                "claims": CLAIMS[evidence_type],
+            }
+            evidence[evidence_type] = {
+                "content": content,
+                "attestation": self.signed_envelope(evidence_type, payload),
+            }
+        return {
+            "schema_version": 1,
+            "namespace": "elmos.legacy-web.external-certification",
+            "intake_id": intake_id,
+            "organizations": organizations,
+            "binding": self.binding,
+            "evidence_executors": executors,
+            "evidence": evidence,
+        }
+
+    def test_valid_signed_intake_is_review_ready_but_not_certified(self) -> None:
+        result = evaluate_external_intake(
+            self.valid_intake(),
+            expected_binding=self.binding,
+            evidence_root=self.root,
+            trust_store=self.trust_store,
+            now=datetime(2026, 8, 27, tzinfo=timezone.utc),
+        )
+        self.assertEqual(result["evidence_status"], "VERIFIED_EXTERNAL_INTAKE")
+        self.assertEqual(result["externalEvidence"], "VERIFIED_EXTERNAL_INTAKE")
+        self.assertEqual(result["decision"], "READY_FOR_EXTERNAL_GATE_REVIEW")
+        self.assertEqual(result["certification"], "NOT_CERTIFIED")
+        self.assertFalse(result["certification_promoted"])
+        self.assertEqual(len(result["verified_evidence_types"]), 13)
+
+    def test_tampered_external_content_is_rejected(self) -> None:
+        intake = self.valid_intake()
+        first = intake["evidence"][EVIDENCE_TYPES[0]]
+        assert isinstance(first, dict)
+        path = self.root / first["content"]["path"]
+        path.write_text("tampered\n", encoding="utf-8")
+        with self.assertRaises(ExternalEvidenceError):
+            evaluate_external_intake(
+                intake,
+                expected_binding=self.binding,
+                evidence_root=self.root,
+                trust_store=self.trust_store,
+                now=datetime(2026, 8, 27, tzinfo=timezone.utc),
+            )
 
 
 if __name__ == "__main__":
