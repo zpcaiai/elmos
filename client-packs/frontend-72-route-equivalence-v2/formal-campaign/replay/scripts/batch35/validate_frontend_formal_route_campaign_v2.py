@@ -209,7 +209,7 @@ def validate_frontend_governance_v2(
         if registry != expected_oracle_registry(str(external_status)):
             raise ValueError("oracle registry exact closure drift")
         if assurance != expected_assurance_case(campaign):
-            raise ValueError("assurance fail-closed claim closure drift")
+            raise ValueError("assurance case exact fail-closed closure drift")
         if not (pack / PROVENANCE_RELATIVE).is_file():
             raise ValueError("oracle provenance evidence is missing")
     except Exception as exc:

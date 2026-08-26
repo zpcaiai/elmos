@@ -319,6 +319,61 @@ class FlywayMigrationTest {
                 10);
         assertEquals(1, readyFleet.size());
         assertTrue(readyFleet.getFirst().attestationVerified());
+
+        assertEquals(1, jdbc.sql("""
+                SELECT count(*)
+                  FROM pg_proc
+                 WHERE proname = 'elmos_claim_execution_jobs'
+                   AND pronargs = 7
+                """).query(Integer.class).single(),
+                "V74 must install the image-bound seven-argument claim function");
+        assertEquals(0, jdbc.sql("""
+                SELECT count(*)
+                  FROM pg_proc
+                 WHERE proname = 'elmos_claim_execution_jobs'
+                   AND pronargs = 6
+                """).query(Integer.class).single(),
+                "the legacy claim function must not bypass local-image placement");
+
+        var executionStore = new JdbcExecutionJobStore(
+                jdbc, transactions, new com.fasterxml.jackson.databind.ObjectMapper());
+        String availableImage = "registry.example.test/elmos/generation@sha256:" + "1".repeat(64);
+        String absentImage = "registry.example.test/elmos/generation@sha256:" + "2".repeat(64);
+        executionStore.enqueue(new io.elmos.workflow.ExecutionJobPort.EnqueueCommand(
+                "job-v74-image-local", organization, ownerActor,
+                io.elmos.workflow.ExecutionJobPort.BusinessLine.GENERATION,
+                "project-generation", "idem-v74-image-local", "3".repeat(64),
+                java.util.Map.of("target", "java"), "generation:multi", availableImage,
+                (short) 100, 600, (short) 3));
+        executionStore.enqueue(new io.elmos.workflow.ExecutionJobPort.EnqueueCommand(
+                "job-v74-image-absent", organization, ownerActor,
+                io.elmos.workflow.ExecutionJobPort.BusinessLine.GENERATION,
+                "project-generation", "idem-v74-image-absent", "4".repeat(64),
+                java.util.Map.of("target", "python"), "generation:multi", absentImage,
+                (short) 100, 600, (short) 3));
+
+        var imageBoundLeases = executionStore.claim(
+                "runner-test-1", java.util.List.of("generation:multi"),
+                java.util.List.of(availableImage), 2, 120);
+        assertEquals(1, imageBoundLeases.size());
+        assertEquals("job-v74-image-local", imageBoundLeases.getFirst().jobId());
+        assertEquals(io.elmos.workflow.ExecutionJobPort.Status.QUEUED,
+                executionStore.find(organization, "job-v74-image-absent").orElseThrow().status(),
+                "an image absent from the runner must remain queued and unleased");
+        assertEquals((short) 0,
+                executionStore.find(organization, "job-v74-image-absent").orElseThrow().attempt(),
+                "a rejected placement must not consume an attempt");
+        assertThrows(io.elmos.workflow.ExecutionJobPort.ExecutionStateException.class,
+                () -> executionStore.claim(
+                        "runner-test-1", java.util.List.of("generation:multi"),
+                        java.util.List.of(availableImage, availableImage), 1, 120),
+                "duplicate advertised images must fail closed before SQL");
+        assertThrows(io.elmos.workflow.ExecutionJobPort.ExecutionStateException.class,
+                () -> executionStore.claim(
+                        "runner-test-1", java.util.List.of("generation:multi"),
+                        java.util.List.of("registry.example.test/elmos/generation:latest"), 1, 120),
+                "mutable advertised images must fail closed before SQL");
+
         var crossTenantAttestation = assertThrows(
                 io.elmos.workflow.RunnerRegistrationPort.RunnerAuthenticationException.class,
                 () -> runnerStore.verifyAttestation(

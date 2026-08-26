@@ -140,11 +140,18 @@ public interface ExecutionJobPort {
     // ---- runner facing -----------------------------------------------------
 
     /**
-     * Leases up to {@code limit} jobs to an attested, heartbeating runner.
+     * Leases up to {@code limit} jobs to an attested, heartbeating runner, but
+     * only when the job image is in the runner's immediately preflighted local
+     * digest list.
      * Per-tenant concurrency comes from the CNY plan catalog, so a plan change moves
      * the limit without a second source of truth.
      */
-    List<LeaseGrant> claim(String runnerNodeId, List<String> capabilities, int limit, int leaseSeconds);
+    List<LeaseGrant> claim(
+            String runnerNodeId,
+            List<String> capabilities,
+            List<String> availableImages,
+            int limit,
+            int leaseSeconds);
 
     HeartbeatResult heartbeat(HeartbeatCommand command);
 

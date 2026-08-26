@@ -40,6 +40,7 @@ _SHARED_ROOT_KINDS = {
     "observability": "observability",
     "operations": "operations",
     "requirements": "requirements",
+    "scripts": "operations",
     "security": "security",
 }
 _BUILD_MANIFESTS = {

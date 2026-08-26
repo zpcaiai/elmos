@@ -63,7 +63,12 @@ public class RunnerFleetController {
             boolean networkDefaultDeny,
             String imageAllowlistVersion) {}
 
-    public record ClaimRequest(String runnerNodeId, List<String> capabilities, int limit, int leaseSeconds) {}
+    public record ClaimRequest(
+            String runnerNodeId,
+            List<String> capabilities,
+            List<String> availableImages,
+            int limit,
+            int leaseSeconds) {}
 
     public record HeartbeatRequest(
             String runnerNodeId, String stage, Short progress,
@@ -133,7 +138,8 @@ public class RunnerFleetController {
                                    @RequestHeader("X-Elmos-Runner-Token") String nodeToken) {
         fleet.authorizeNode(request.runnerNodeId(), nodeToken);
         List<LeaseGrant> grants = jobs.claim(
-                request.runnerNodeId(), request.capabilities(), request.limit(), request.leaseSeconds());
+                request.runnerNodeId(), request.capabilities(), request.availableImages(),
+                request.limit(), request.leaseSeconds());
         return ResponseEntity.ok(Map.of("leases", grants.stream().map(RunnerFleetController::toWire).toList()));
     }
 

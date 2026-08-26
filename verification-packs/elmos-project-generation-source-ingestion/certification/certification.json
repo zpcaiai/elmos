@@ -9,7 +9,7 @@
     "target_artifact_digest": "sha256:54aa5faddc9cc05390997c55af8ee90509c76cb7937fbe259db79e304f036563",
     "workload_key": "multi-format-source-ingestion-security",
     "risk_tier": "P0",
-    "environment_digest": "sha256:1f81006e3b1c78a02188cf2bd131b89a4a71d8eb266ed6d084e32c2f41dd8cf1",
+    "environment_digest": "sha256:8b08c9bbc3c8e7302217fb24f1c7c1d2eed653cc320b140d247e349a9478c87a",
     "validation_kind": "local-deterministic-parser-security-qualification",
     "source_target_migration_equivalence": "NOT_APPLICABLE",
     "external_solver_or_symbolic_execution": "NOT_RUN",
