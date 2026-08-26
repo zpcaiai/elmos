@@ -1,0 +1,604 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/local-postgres-qualification-receipt.schema.json",
+  "title": "ELMOS build-cache local PostgreSQL qualification receipt",
+  "description": "Self-attested local engineering evidence from the repository-owned disposable PostgreSQL qualification tool. It is never external evidence or certification.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "receipt_id",
+    "evidence_class",
+    "status",
+    "started_at",
+    "finished_at",
+    "source",
+    "environment",
+    "safety",
+    "test_runs",
+    "tests",
+    "database",
+    "raw_evidence",
+    "executor",
+    "independent_verifier",
+    "external_states",
+    "limitations",
+    "failure",
+    "teardown",
+    "exit_code",
+    "receipt_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "kind": {
+      "const": "elmos.build-cache.local-postgres-qualification-receipt/v1"
+    },
+    "receipt_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_class": {
+      "const": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    "status": {
+      "enum": [
+        "PASSED_LOCAL_METADATA_ONLY",
+        "PASSED_LOCAL_METADATA_AND_SLO",
+        "FAILED",
+        "BLOCKED_SOURCE_DRIFT",
+        "BLOCKED_INCOMPLETE_TEARDOWN",
+        "BLOCKED_TIMEOUT",
+        "BLOCKED_SOURCE_REVISION_MISMATCH",
+        "BLOCKED_INPUT",
+        "BLOCKED_PROVISIONING",
+        "BLOCKED_RUNTIME"
+      ]
+    },
+    "started_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "finished_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "revision_source",
+        "revision",
+        "expected_revision",
+        "dirty",
+        "manifest_sha256_before",
+        "manifest_sha256_after",
+        "stable"
+      ],
+      "properties": {
+        "revision_source": {
+          "const": "git-rev-parse-head"
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expected_revision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dirty": {
+          "type": "boolean"
+        },
+        "manifest_sha256_before": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "manifest_sha256_after": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "stable": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "environment": {
+      "type": "object",
+      "required": [
+        "os",
+        "os_release",
+        "architecture",
+        "python",
+        "uv",
+        "pytest",
+        "psycopg",
+        "postgres_server_binary",
+        "postgres_client",
+        "postgres_runtime_observed",
+        "server_version_num",
+        "server_version",
+        "server_encoding",
+        "lc_collate",
+        "lc_ctype",
+        "timezone",
+        "fsync",
+        "synchronous_commit",
+        "listen_addresses",
+        "extensions",
+        "socket_only",
+        "data_class",
+        "production_database"
+      ],
+      "properties": {
+        "os": {
+          "type": "string",
+          "minLength": 1
+        },
+        "os_release": {
+          "type": "string",
+          "minLength": 1
+        },
+        "architecture": {
+          "type": "string",
+          "minLength": 1
+        },
+        "python": {
+          "type": "string",
+          "minLength": 1
+        },
+        "uv": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pytest": {
+          "type": "string",
+          "minLength": 1
+        },
+        "psycopg": {
+          "type": "string",
+          "minLength": 1
+        },
+        "postgres_server_binary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "postgres_client": {
+          "type": "string",
+          "minLength": 1
+        },
+        "postgres_runtime_observed": {
+          "type": "boolean"
+        },
+        "server_version_num": {
+          "type": "string",
+          "pattern": "^(?:[0-9]+|NOT_OBSERVED)$"
+        },
+        "server_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "server_encoding": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lc_collate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lc_ctype": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fsync": {
+          "enum": [
+            "on",
+            "NOT_OBSERVED"
+          ]
+        },
+        "synchronous_commit": {
+          "enum": [
+            "on",
+            "NOT_OBSERVED"
+          ]
+        },
+        "listen_addresses": {
+          "enum": [
+            "",
+            "NOT_OBSERVED"
+          ]
+        },
+        "extensions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "socket_only": {
+          "const": true
+        },
+        "data_class": {
+          "const": "SYNTHETIC_TEST_FIXTURES"
+        },
+        "production_database": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "safety": {
+      "type": "object",
+      "required": [
+        "authorization_ref",
+        "disposable_confirmation",
+        "temp_root_kind",
+        "socket_only",
+        "external_dsn_accepted",
+        "dsn_recorded",
+        "secrets_recorded",
+        "production_database",
+        "production_writes",
+        "durability_weakened"
+      ],
+      "properties": {
+        "authorization_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "disposable_confirmation": {
+          "const": true
+        },
+        "temp_root_kind": {
+          "const": "mkdtemp-under-/tmp"
+        },
+        "socket_only": {
+          "const": true
+        },
+        "external_dsn_accepted": {
+          "const": false
+        },
+        "dsn_recorded": {
+          "const": false
+        },
+        "secrets_recorded": {
+          "const": false
+        },
+        "production_database": {
+          "const": false
+        },
+        "production_writes": {
+          "const": false
+        },
+        "durability_weakened": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "test_runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "selectors",
+          "argv",
+          "status",
+          "exit_code",
+          "counts",
+          "raw_log_role",
+          "raw_log_path"
+        ],
+        "properties": {
+          "name": {
+            "enum": [
+              "metadata-store",
+              "slo-service-live-postgres"
+            ]
+          },
+          "selectors": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "argv": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "status": {
+            "enum": [
+              "PASSED",
+              "FAILED",
+              "TIMED_OUT"
+            ]
+          },
+          "exit_code": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "counts": {
+            "type": "object",
+            "required": [
+              "passed",
+              "failed",
+              "errors",
+              "skipped",
+              "xfailed",
+              "xpassed",
+              "collected"
+            ],
+            "properties": {
+              "passed": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "errors": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "skipped": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "xfailed": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "xpassed": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "collected": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "raw_log_role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "raw_log_path": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "tests": {
+      "type": "object",
+      "required": [
+        "metadata_store_live_postgres",
+        "slo_service_live_postgres"
+      ],
+      "properties": {
+          "metadata_store_live_postgres": {
+            "enum": [
+              "PASSED",
+              "FAILED",
+              "TIMED_OUT",
+              "NOT_RUN"
+          ]
+        },
+        "slo_service_live_postgres": {
+          "enum": [
+              "PASSED",
+              "FAILED",
+              "TIMED_OUT",
+              "NOT_RUN"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "database": {
+      "type": "object",
+      "required": [
+        "migration_ledger_sha256",
+        "schema_introspection_sha256"
+      ],
+      "properties": {
+        "migration_ledger_sha256": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "schema_introspection_sha256": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "raw_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "role",
+          "path",
+          "media_type",
+          "size_bytes",
+          "sha256"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "media_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "executor": {
+      "type": "object",
+      "required": [
+        "identity",
+        "role"
+      ],
+      "properties": {
+        "identity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "const": "executor"
+        }
+      },
+      "additionalProperties": false
+    },
+    "independent_verifier": {
+      "type": "object",
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "state": {
+          "const": "NOT_RUN"
+        }
+      },
+      "additionalProperties": false
+    },
+    "external_states": {
+      "type": "object",
+      "required": [
+        "ci",
+        "production",
+        "independent_verification",
+        "certification"
+      ],
+      "properties": {
+        "ci": {
+          "const": "NOT_RUN"
+        },
+        "production": {
+          "const": "NOT_RUN"
+        },
+        "independent_verification": {
+          "const": "NOT_RUN"
+        },
+        "certification": {
+          "const": "NOT_CERTIFIED"
+        }
+      },
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "failure": {
+      "type": "object",
+      "required": [
+        "state",
+        "error_code"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "NOT_APPLICABLE",
+            "BLOCKED"
+          ]
+        },
+        "error_code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "teardown": {
+      "type": "object",
+      "required": [
+        "status",
+        "postgres_stopped",
+        "stop_exit_code",
+        "data_directory_removed",
+        "socket_directory_removed",
+        "temporary_home_removed"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "COMPLETE",
+            "INCOMPLETE"
+          ]
+        },
+        "postgres_stopped": {
+          "type": "boolean"
+        },
+        "stop_exit_code": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "data_directory_removed": {
+          "type": "boolean"
+        },
+        "socket_directory_removed": {
+          "type": "boolean"
+        },
+        "temporary_home_removed": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "exit_code": {
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
+    "receipt_sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

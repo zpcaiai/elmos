@@ -995,6 +995,11 @@ def test_a_composed_route_writes_the_outcome_graph_the_explain_endpoint_reads(
         "COORDINATOR",
     }
     assert all(document["outcome"] != "HIT" for document in stored)
+    graph = repository.get_cache_causal_graph(TENANT, PROJECT, "req-explain-1")
+    assert graph is not None
+    assert graph["request_id"] == "req-explain-1"
+    assert graph["events"]
+    assert graph["edges"]
 
     explained = plane.handle(
         Request(
@@ -1006,6 +1011,11 @@ def test_a_composed_route_writes_the_outcome_graph_the_explain_endpoint_reads(
     )
     assert explained.status == 200
     assert explained.json()["request_id"] == "req-explain-1"
+    assert explained.json()["causal_invalidation_graph"]["claim"] == "OBSERVED_AND_CAUSAL"
+    assert any(
+        edge["relation"] == "CAUSED_FALLBACK"
+        for edge in explained.json()["causal_invalidation_graph"]["edges"]
+    )
 
 
 # ---------------------------------------------------------------------------

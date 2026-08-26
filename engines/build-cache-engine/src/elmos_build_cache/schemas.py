@@ -34,6 +34,7 @@ SCHEMA_NAMES = {
     "context-ledger-event": "context-ledger-event.schema.json",
     "environment-snapshot": "environment-snapshot.schema.json",
     "file-tree-manifest": "file-tree-manifest.schema.json",
+    "local-postgres-qualification-receipt": "local-postgres-qualification-receipt.schema.json",
     "prompt-prefix-manifest": "prompt-prefix-manifest.schema.json",
     "provider-cache-profile": "provider-cache-profile.schema.json",
     "run-manifest": "run-manifest.schema.json",

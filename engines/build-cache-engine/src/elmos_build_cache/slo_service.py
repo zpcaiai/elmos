@@ -495,6 +495,13 @@ class CacheSloControlService:
         if required_windows < 1:
             raise ContractViolation("required rollout windows must be positive")
         self.required_windows = required_windows
+        # Each service instance carries the head it observed when it was
+        # composed.  Mutations use this token as an optimistic concurrency
+        # fence, so two independently composed writers cannot silently turn a
+        # single-head race into two serial transitions.  A successful append
+        # advances the token; a conflict leaves it stale and therefore
+        # fail-closed on every retry until the caller composes a fresh service.
+        self._observed_head_digest: str | None = None
 
         self._ensure_scope()
         events = self._events()
@@ -507,6 +514,10 @@ class CacheSloControlService:
         else:
             baseline_artifact = self._persist_config(self.baseline)
             self._ensure_initialized(baseline_artifact)
+            events = self._events()
+        if not events:
+            raise ContractViolation("SLO controller initialization did not create an event")
+        self._observed_head_digest = str(events[-1]["event_digest"])
 
     @property
     def scope_digest(self) -> str:
@@ -834,9 +845,16 @@ class CacheSloControlService:
     ) -> dict[str, Any]:
         with self.store.transaction():
             events = self._events()
-            if not events or events[-1]["event_digest"] != previous_event_digest:
+            if not events:
+                raise ConflictError("SLO controller head is missing")
+            if (
+                self._observed_head_digest is not None
+                and events[-1]["event_digest"] != self._observed_head_digest
+            ):
+                raise ConflictError("SLO controller head changed since this writer was composed")
+            if events[-1]["event_digest"] != previous_event_digest:
                 raise ConflictError("SLO controller head changed concurrently")
-            return self._insert_event(
+            document = self._insert_event(
                 sequence=len(events) + 1,
                 previous_event_digest=previous_event_digest,
                 action=action,
@@ -847,6 +865,8 @@ class CacheSloControlService:
                 evidence_state=evidence_state,
                 linked_artifacts=linked_artifacts,
             )
+            self._observed_head_digest = str(document["event_digest"])
+            return document
 
     def status(self) -> dict[str, Any]:
         events = self._events()
@@ -879,6 +899,21 @@ class CacheSloControlService:
             "external_evidence_state": evidence_status,
             "certified": False,
         }
+
+    def refresh_head(self) -> None:
+        """Refresh the optimistic fence after another instance has committed.
+
+        Direct callers retain stale-writer protection: a service object that
+        observed an old head still conflicts until explicitly refreshed.  The
+        trusted runtime registry calls this method at request composition time
+        so a long-lived API registration does not become permanently unusable
+        after a legitimate restart or scheduler writer commits a transition.
+        """
+
+        events = self._events()
+        if not events:
+            raise NotFound("SLO controller is not initialized")
+        self._observed_head_digest = str(events[-1]["event_digest"])
 
     def _verify_observation(
         self, trusted: TrustedTuningObservation
@@ -1254,6 +1289,60 @@ class CacheSloControlService:
         )
         return self.status()
 
+    def reconcile(self) -> dict[str, Any]:
+        """Reconcile durable rollout authority without consuming new evidence.
+
+        Reconciliation is intentionally narrower than :meth:`advance`: it is
+        safe for a restart job to call when no evidence window is available.
+        The installed candidate, proposal and approval are re-read from their
+        content-addressed registrations.  Any missing, expired, tampered or
+        scope-drifting approval is converted into one durable fail-closed
+        rollback.  A valid candidate is left exactly where it is; no rollout
+        phase is advanced and no evidence is marked as observed.
+        """
+
+        events = self._events()
+        if not events:
+            raise NotFound("SLO controller is not initialized")
+        head = events[-1]
+        current = _state(head["state"])
+        proposal_digest = head.get("proposal_digest")
+        if current.candidate_digest is None or not isinstance(proposal_digest, str):
+            return self.status()
+
+        try:
+            stored_proposal = self._proposal(proposal_digest)
+            approval = self._approval(stored_proposal.proposal)
+        except (
+            NotFound,
+            PermissionDenied,
+            ProvenanceInvalid,
+            ContractViolation,
+            ValueError,
+        ):
+            return self._rollback_from_head(
+                head,
+                current,
+                RollbackReason.APPROVAL_INVALID,
+                action="APPROVAL_INVALID_ROLLBACK",
+            )
+
+        # The journal is the authority for the installed candidate and the
+        # approval that authorized it.  A mismatch means durable state was
+        # tampered with or a controller was incorrectly rebound; never retain
+        # a candidate whose exact authority cannot be reconstructed.
+        if (
+            current.candidate_digest != stored_proposal.proposal.candidate.digest
+            or head.get("approval_digest") != approval.artifact_digest
+        ):
+            return self._rollback_from_head(
+                head,
+                current,
+                RollbackReason.CORRUPT_EXECUTION,
+                action="AUTHORITY_DRIFT_ROLLBACK",
+            )
+        return self.status()
+
     def rollback(self, reason: RollbackReason) -> dict[str, Any]:
         head = self._events()[-1]
         return self._rollback_from_head(
@@ -1341,6 +1430,7 @@ class CacheSloRuntimeRegistry:
             raise NotFound("SLO controller does not exist")
         if registration.service.principal_digest != principal:
             raise NotFound("SLO controller does not exist")
+        registration.service.refresh_head()
         return registration.service
 
 

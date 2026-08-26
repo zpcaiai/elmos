@@ -11,6 +11,7 @@ resurrects itself, an error that leaks existence) only exist at that layer.
 
 from __future__ import annotations
 
+import os
 import re
 import sqlite3
 import threading
@@ -24,7 +25,7 @@ import pytest
 from elmos_build_cache.canonical import digest_of, sha256_bytes
 from elmos_build_cache.cas import ContentAddressableStore
 from elmos_build_cache.clock import ManualClock
-from elmos_build_cache.db import SqliteMetadataStore
+from elmos_build_cache.db import PostgresMetadataStore, SqliteMetadataStore
 from elmos_build_cache.db import store as store_module
 from elmos_build_cache.enums import ArtifactStorageState
 from elmos_build_cache.errors import (
@@ -491,6 +492,175 @@ def _installed(
     return document, approval_digest
 
 
+def _live_postgres_harness(
+    tmp_path: Path, clock: ManualClock
+) -> tuple[Harness, PostgresMetadataStore]:
+    """Open a caller-authorized PostgreSQL profile for the live contract test.
+
+    The disposable qualification tool supplies the DSN through the test
+    environment.  Ordinary local runs skip loudly instead of falling back to
+    SQLite, so a green SQLite run can never masquerade as PostgreSQL evidence.
+    """
+
+    dsn = os.environ.get("ELMOS_TEST_POSTGRES_DSN")
+    if not dsn:
+        pytest.skip("ELMOS_TEST_POSTGRES_DSN is not set; PostgreSQL profile not run")
+    store = PostgresMetadataStore.open(dsn, clock, migrate=False)
+    store.reset()
+    store.migrate()
+    harness = Harness(
+        root=tmp_path / "live-slo",
+        clock=clock,
+        cas=ContentAddressableStore(tmp_path / "live-cas"),
+    )
+    harness.root.mkdir(parents=True, exist_ok=True)
+    with store.transaction():
+        store.ensure_project(harness.tenant_id, harness.project_id)
+    return harness, store
+
+
+def test_postgres_public_slo_lifecycle_recovers_durable_approval_after_reopen(
+    tmp_path: Path, clock: ManualClock
+) -> None:
+    harness, store = _live_postgres_harness(tmp_path, clock)
+    try:
+        service = harness.service(store)  # type: ignore[arg-type]
+        document, approval_digest = _installed(harness, store, service)  # type: ignore[arg-type]
+        before = service.status()
+        store.close()
+
+        reopened = PostgresMetadataStore.open(
+            str(os.environ["ELMOS_TEST_POSTGRES_DSN"]), clock, migrate=False
+        )
+        try:
+            recovered = harness.service(reopened)  # type: ignore[arg-type]
+            assert recovered.status() == before
+            assert recovered.status()["approval_digest"] == approval_digest
+            assert recovered.reconcile() == before
+            assert recovered.status()["proposal_digest"] == document["proposal_digest"]
+        finally:
+            reopened.close()
+    finally:
+        # ``store`` is already closed on the successful reopen path.  Closing
+        # a second time is harmless for psycopg and keeps failure cleanup safe.
+        store.close()
+
+
+def test_postgres_slo_constraints_and_triggers_fail_closed(
+    tmp_path: Path, clock: ManualClock
+) -> None:
+    import psycopg.errors
+
+    harness, store = _live_postgres_harness(tmp_path, clock)
+    try:
+        service = harness.service(store)  # type: ignore[arg-type]
+        initial = service.status()
+
+        with pytest.raises(
+            (
+                psycopg.errors.RaiseException,
+                psycopg.errors.ForeignKeyViolation,
+                psycopg.errors.ObjectNotInPrerequisiteState,
+            )
+        ), store.transaction():
+            store.execute(
+                "UPDATE cache_slo_control_events_v12 SET action=? "
+                "WHERE tenant_id=? AND project_id=? AND controller_id=?",
+                ("TAMPERED", harness.tenant_id, harness.project_id, harness.controller_id),
+            )
+        assert service.status() == initial
+
+        with store.transaction():
+            store.ensure_project(OTHER_TENANT, OTHER_PROJECT)
+        with pytest.raises(
+            (
+                psycopg.errors.RaiseException,
+                psycopg.errors.ForeignKeyViolation,
+                psycopg.errors.ObjectNotInPrerequisiteState,
+            )
+        ), store.transaction():
+            store.execute(
+                "INSERT INTO cache_slo_control_events_v12 "
+                "(tenant_id,project_id,controller_id,principal_digest,sequence,"
+                "previous_event_digest,event_digest,action,document,recorded_at) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?)",
+                (
+                    OTHER_TENANT,
+                    harness.project_id,
+                    "controller-smuggled",
+                    _principal("principal-b"),
+                    1,
+                    None,
+                    sha256_bytes(b"smuggled"),
+                    "INITIALIZED",
+                    "{}",
+                    "2026-08-26T00:00:00Z",
+                ),
+            )
+        assert service.status() == initial
+    finally:
+        store.close()
+
+
+def test_postgres_concurrent_writers_serialize_or_conflict_without_forking(
+    tmp_path: Path, clock: ManualClock
+) -> None:
+    harness, bootstrap = _live_postgres_harness(tmp_path, clock)
+    bootstrap.close()
+    dsn = os.environ["ELMOS_TEST_POSTGRES_DSN"]
+    first_store = PostgresMetadataStore.open(dsn, clock, migrate=False)
+    second_store = PostgresMetadataStore.open(dsn, clock, migrate=False)
+    try:
+        first = harness.service(first_store)  # type: ignore[arg-type]
+        second = harness.service(second_store)  # type: ignore[arg-type]
+        harness.stage_observation(first_store)  # type: ignore[arg-type]
+        document = first.propose()
+        harness.approve(first_store, document)  # type: ignore[arg-type]
+
+        barrier = threading.Barrier(2)
+        outcomes: list[tuple[str, object]] = []
+        lock = threading.Lock()
+
+        def install(service: CacheSloControlService) -> None:
+            barrier.wait()
+            try:
+                value = service.install(str(document["proposal_digest"]))
+                outcome: tuple[str, object] = ("ok", value)
+            except Exception as error:  # the contract accepts a conflict, never a fork
+                outcome = ("error", error)
+            with lock:
+                outcomes.append(outcome)
+
+        workers = [
+            threading.Thread(target=install, args=(first,)),
+            threading.Thread(target=install, args=(second,)),
+        ]
+        for worker in workers:
+            worker.start()
+        for worker in workers:
+            worker.join(timeout=30)
+            assert not worker.is_alive()
+
+        assert len(outcomes) == 2
+        assert sum(kind == "ok" for kind, _ in outcomes) >= 1
+        assert all(
+            kind == "ok" or isinstance(value, ConflictError)
+            for kind, value in outcomes
+        )
+        recovered = harness.service(first_store)  # type: ignore[arg-type]
+        final = recovered.status()
+        assert final["sequence"] == 2
+        assert final["last_action"] == "CANDIDATE_INSTALLED"
+        assert first_store.query_one(
+            "SELECT COUNT(*) FROM cache_slo_control_events_v12 "
+            "WHERE tenant_id=? AND project_id=? AND controller_id=?",
+            (harness.tenant_id, harness.project_id, harness.controller_id),
+        ) == (2,)
+    finally:
+        first_store.close()
+        second_store.close()
+
+
 # ==========================================================================
 # 1. state-machine transitions
 # ==========================================================================
@@ -862,6 +1032,35 @@ def test_an_expired_approval_rolls_the_candidate_back_instead_of_advancing(
     assert state.rollback_reason is RollbackReason.APPROVAL_INVALID
     assert state.candidate_digest is None
     assert state.serving_digest == harness.baseline.digest
+
+
+def test_reconcile_with_valid_authority_is_read_only(
+    service: CacheSloControlService, harness: Harness, store: SqliteMetadataStore
+) -> None:
+    _installed(harness, store, service)
+    before = service.status()
+
+    after = service.reconcile()
+
+    assert after == before
+    assert after["last_action"] == "CANDIDATE_INSTALLED"
+    assert after["external_evidence_state"] == "NOT_RUN"
+
+
+def test_reconcile_expired_approval_rolls_back_without_fetching_evidence(
+    service: CacheSloControlService, harness: Harness, store: SqliteMetadataStore
+) -> None:
+    _installed(harness, store, service)
+    harness.clock.advance(7_200)
+
+    status = service.reconcile()
+
+    assert status["last_action"] == "APPROVAL_INVALID_ROLLBACK"
+    state = _rollout_state(status)
+    assert state.rollback_reason is RollbackReason.APPROVAL_INVALID
+    assert state.candidate_digest is None
+    assert state.serving_digest == harness.baseline.digest
+    assert status["evidence_digest"] is None
 
 
 def test_a_rolled_back_candidate_can_be_installed_again_on_a_fresh_epoch(

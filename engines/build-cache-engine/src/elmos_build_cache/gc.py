@@ -32,6 +32,21 @@ ACTIVE_RUN_STATES = frozenset(
     {RunStatus.PENDING, RunStatus.RUNNING, RunStatus.PAUSED, RunStatus.RECOVERING, RunStatus.STALE}
 )
 
+_REFERENCE_EDGE_KINDS = (
+    "action_result",
+    "file_tree",
+    "checkpoint",
+    "run",
+    "staged_file",
+    "cache-slo-configuration",
+    "cache-slo-proposal",
+    "cache-slo-proposal-dependency",
+    "cache-slo-event",
+    "cache-parity-layer-manifest",
+    "cache-parity-local-job",
+    "cache-parity-local-job-dependency",
+)
+
 
 @dataclass(frozen=True)
 class RetentionPolicy:
@@ -208,6 +223,75 @@ class GarbageCollector:
                     if certificate and certificate["status"] == "VALID" and certificate["expires_at"] > now:
                         roots.append(RootReason(certificate["evidence_digest"], "certificate", certificate_id))
                         roots.append(RootReason(tree_digest, "certificate", certificate_id))
+        roots.extend(self._live_slo_roots())
+        roots.extend(self._live_parity_layer_roots())
+        roots.extend(self._live_parity_job_roots())
+        return roots
+
+    def _live_slo_roots(self) -> list[RootReason]:
+        """Retain durable SLO authority and its complete evidence graph."""
+
+        roots: list[RootReason] = []
+        try:
+            rows = self.store.query(
+                "SELECT project_id,controller_id,event_digest,proposal_digest,"
+                "approval_digest,evidence_digest FROM cache_slo_control_events_v12 "
+                "WHERE tenant_id=? ORDER BY project_id,controller_id,sequence",
+                (self.tenant_id,),
+            )
+        except Exception:
+            # Older stores may not have the v1.2 SLO migration.  GC remains
+            # usable for their existing roots rather than turning inspection
+            # into a write or a startup failure.
+            return roots
+        proposal_sources = {
+            str(row[0])
+            for row in self.store.query(
+                "SELECT DISTINCT source_id FROM artifact_refs WHERE tenant_id=? "
+                "AND source_kind='cache-slo-proposal' ORDER BY source_id",
+                (self.tenant_id,),
+            )
+        }
+        for project_id, controller_id, event_digest, proposal_digest, approval_digest, evidence_digest in rows:
+            event_source = f"{project_id}:{controller_id}:{event_digest}"
+            for digest in self.store.artifact_targets(
+                self.tenant_id, "cache-slo-event", str(event_digest)
+            ):
+                roots.append(RootReason(digest, "cache_slo_event", event_source))
+            for kind, digest in (
+                ("approval", approval_digest),
+                ("rollout_evidence", evidence_digest),
+            ):
+                if digest is not None:
+                    roots.append(RootReason(str(digest), f"cache_slo_{kind}", event_source))
+            if proposal_digest is not None:
+                proposal_sources.add(f"{project_id}:{controller_id}:{proposal_digest}")
+        for source_id in sorted(proposal_sources):
+            for source_kind in ("cache-slo-proposal", "cache-slo-proposal-dependency"):
+                for digest in self.store.artifact_targets(self.tenant_id, source_kind, source_id):
+                    roots.append(RootReason(digest, "cache_slo_proposal", source_id))
+        return roots
+
+    def _live_parity_layer_roots(self) -> list[RootReason]:
+        roots: list[RootReason] = []
+        rows = self.store.query(
+            "SELECT source_id,target_digest FROM artifact_refs WHERE tenant_id=? "
+            "AND source_kind='cache-parity-layer-binding' ORDER BY source_id,target_digest",
+            (self.tenant_id,),
+        )
+        for source_id, target_digest in rows:
+            roots.append(RootReason(str(target_digest), "cache_parity_layer_binding", str(source_id)))
+        return roots
+
+    def _live_parity_job_roots(self) -> list[RootReason]:
+        roots: list[RootReason] = []
+        rows = self.store.query(
+            "SELECT source_id,target_digest FROM artifact_refs WHERE tenant_id=? "
+            "AND source_kind='cache-parity-local-job' ORDER BY source_id,target_digest",
+            (self.tenant_id,),
+        )
+        for source_id, target_digest in rows:
+            roots.append(RootReason(str(target_digest), "cache_parity_local_job", str(source_id)))
         return roots
 
     def reachable(self, roots: Iterable[RootReason]) -> dict[str, RootReason]:
@@ -220,7 +304,7 @@ class GarbageCollector:
                 frontier.append(root)
         while frontier:
             current = frontier.pop()
-            for kind in ("action_result", "file_tree", "checkpoint", "run", "staged_file"):
+            for kind in _REFERENCE_EDGE_KINDS:
                 for digest in self.store.artifact_targets(self.tenant_id, kind, current.digest):
                     if digest not in found:
                         reason = RootReason(digest, current.kind, current.source_id)

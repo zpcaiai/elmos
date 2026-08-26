@@ -8,10 +8,12 @@ to skip execution.  Serving switches remain independent and default off.
 
 from __future__ import annotations
 
+import math
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict
 from datetime import UTC, datetime
+import math
 from typing import Any, Protocol
 
 from .canonical import digest_of
@@ -105,6 +107,8 @@ def serving_gate_statement(
         or isinstance(expires_at, bool)
         or not isinstance(issued_at, int | float)
         or not isinstance(expires_at, int | float)
+        or not math.isfinite(float(issued_at))
+        or not math.isfinite(float(expires_at))
         or expires_at <= issued_at
         or expires_at - issued_at > SERVING_GATE_MAX_TTL_SECONDS
     ):
@@ -429,6 +433,8 @@ class ParityRuntime:
             and not isinstance(expires_at, bool)
             and isinstance(issued_at, int | float)
             and isinstance(expires_at, int | float)
+            and math.isfinite(float(issued_at))
+            and math.isfinite(float(expires_at))
             and expires_at > issued_at
             and expires_at - issued_at <= SERVING_GATE_MAX_TTL_SECONDS
         )
