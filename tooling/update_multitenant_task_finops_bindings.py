@@ -56,12 +56,15 @@ PARTIAL = {
     "ELMOS-MTF-004-T04", "ELMOS-MTF-004-T05", "ELMOS-MTF-004-T06",
     "ELMOS-MTF-004-T08", "ELMOS-MTF-004-T09", "ELMOS-MTF-004-T11",
     "ELMOS-MTF-004-T03", "ELMOS-MTF-004-T10",
+    "ELMOS-MTF-004-T12",
     "ELMOS-MTF-005-T03", "ELMOS-MTF-005-T04", "ELMOS-MTF-005-T07",
     "ELMOS-MTF-005-T09", "ELMOS-MTF-005-T11",
+    "ELMOS-MTF-005-T10", "ELMOS-MTF-005-T12",
     "ELMOS-MTF-006-T06", "ELMOS-MTF-006-T07", "ELMOS-MTF-006-T08",
     "ELMOS-MTF-006-T09", "ELMOS-MTF-006-T10", "ELMOS-MTF-006-T12",
     "ELMOS-MTF-007-T01", "ELMOS-MTF-007-T07", "ELMOS-MTF-007-T08",
     "ELMOS-MTF-007-T09", "ELMOS-MTF-007-T11",
+    "ELMOS-MTF-007-T12",
     "ELMOS-MTF-008-T01", "ELMOS-MTF-008-T03", "ELMOS-MTF-008-T04",
     "ELMOS-MTF-008-T07", "ELMOS-MTF-008-T08", "ELMOS-MTF-008-T09",
     "ELMOS-MTF-008-T10", "ELMOS-MTF-008-T11", "ELMOS-MTF-008-T12",
@@ -76,13 +79,15 @@ PARTIAL = {
     "ELMOS-MTF-012-T01", "ELMOS-MTF-012-T02", "ELMOS-MTF-012-T03",
     "ELMOS-MTF-012-T08", "ELMOS-MTF-012-T09", "ELMOS-MTF-012-T10",
     "ELMOS-MTF-012-T12",
+    "ELMOS-MTF-012-T04", "ELMOS-MTF-012-T05", "ELMOS-MTF-012-T06",
+    "ELMOS-MTF-012-T07", "ELMOS-MTF-012-T11",
     "ELMOS-MTF-011-T06",
 }
 
 EXPECTED_IMPLEMENTATION_COUNTS = {
     "IMPLEMENTED": 63,
-    "NOT_STARTED": 9,
-    "PARTIAL": 72,
+    "NOT_STARTED": 0,
+    "PARTIAL": 81,
 }
 
 FILES_BY_SKILL = {
@@ -125,7 +130,9 @@ FILES_BY_SKILL = {
         "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
         "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsPolicy.java",
         "modules/workflow/src/main/java/io/elmos/workflow/WorkloadAwareScheduler.java",
+        "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsFairnessBenchmark.java",
         "modules/workflow/src/test/java/io/elmos/workflow/WorkloadAwareSchedulerTest.java",
+        "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsFairnessBenchmarkTest.java",
     ],
     "ELMOS-MTF-005": [
         "apps/runner-agent/src/main/java/io/elmos/runner/HeartbeatPump.java",
@@ -133,7 +140,9 @@ FILES_BY_SKILL = {
         "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
         "modules/workflow/src/main/java/io/elmos/workflow/ExecutionJobPort.java",
         "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsWorkflowStartPayload.java",
+        "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsWorkflowHistoryPolicy.java",
         "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsWorkflowStartPayloadTest.java",
+        "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsWorkflowHistoryPolicyTest.java",
     ],
     "ELMOS-MTF-006": [
         "apps/control-plane/src/main/java/io/elmos/controlplane/TaskFinopsController.java",
@@ -160,9 +169,11 @@ FILES_BY_SKILL = {
         "modules/persistence/src/test/java/io/elmos/persistence/MultitenantTaskFinopsRuntimeIntegrationTest.java",
         "modules/persistence/src/test/java/io/elmos/persistence/TaskFinopsOperationsMigrationContractTest.java",
         "modules/workflow/src/main/java/io/elmos/workflow/CheckpointForkPolicy.java",
+        "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsRecoveryCampaign.java",
         "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsOperationsPort.java",
         "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsPort.java",
         "modules/workflow/src/test/java/io/elmos/workflow/CheckpointForkPolicyTest.java",
+        "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsRecoveryCampaignTest.java",
     ],
     "ELMOS-MTF-008": [
         "modules/persistence/src/main/resources/db/migration/V58__artifact_object_storage_and_retention.sql",
@@ -228,6 +239,8 @@ FILES_BY_SKILL = {
         "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsAnalyticsTest.java",
         "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsFeatureRolloutTest.java",
         "modules/workflow/src/test/java/io/elmos/workflow/TenantLifecyclePolicyTest.java",
+        "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsQualificationGate.java",
+        "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsQualificationGateTest.java",
         "tests/multitenant-task-finops/test_runtime_validation.py",
         "tooling/validate_multitenant_task_finops_runtime.py",
     ],
@@ -254,6 +267,15 @@ PARTIAL_TASK_BLOCKERS = {
     "ELMOS-MTF-008-T10": "OBJECT_PROVIDER_EXPORT_DELETE_NOT_RUN",
     "ELMOS-MTF-010-T11": "PAYMENT_PROVIDER_ADAPTER_AND_SETTLEMENT_EVIDENCE_NOT_RUN",
     "ELMOS-MTF-011-T06": "MODEL_CACHE_SOURCE_RUNTIME_AND_EFFICIENCY_EVIDENCE_NOT_RUN",
+    "ELMOS-MTF-004-T12": "FAIRNESS_SATURATION_AND_NOISY_NEIGHBOR_BENCHMARK_RUNTIME_NOT_RUN",
+    "ELMOS-MTF-005-T10": "TEMPORAL_CONTINUE_AS_NEW_RUNTIME_NOT_RUN",
+    "ELMOS-MTF-005-T12": "TEMPORAL_REPLAY_AND_DUPLICATE_START_RUNTIME_NOT_RUN",
+    "ELMOS-MTF-007-T12": "CHECKPOINT_SIDE_EFFECT_CRASH_CAMPAIGN_RUNTIME_NOT_RUN",
+    "ELMOS-MTF-012-T04": "FAIRNESS_AND_NOISY_NEIGHBOR_LOAD_RUNTIME_NOT_RUN",
+    "ELMOS-MTF-012-T05": "WORKER_SATURATION_AND_RETRY_STORM_RUNTIME_NOT_RUN",
+    "ELMOS-MTF-012-T06": "WORKFLOW_START_DUAL_WRITE_FAILURE_RUNTIME_NOT_RUN",
+    "ELMOS-MTF-012-T07": "RUNNER_SIDE_EFFECT_CRASH_RUNTIME_NOT_RUN",
+    "ELMOS-MTF-012-T11": "SLO_AND_CAPACITY_MEASUREMENT_RUNTIME_NOT_RUN",
 }
 
 NOT_STARTED_BLOCKERS = {
@@ -347,10 +369,14 @@ def render() -> dict:
         item["blockers"] = blockers
         counts[state] += 1
         rendered.append(item)
-    if dict(sorted(counts.items())) != EXPECTED_IMPLEMENTATION_COUNTS:
+    normalized_counts = {
+        state: counts.get(state, 0)
+        for state in EXPECTED_IMPLEMENTATION_COUNTS
+    }
+    if normalized_counts != EXPECTED_IMPLEMENTATION_COUNTS:
         raise ValueError(
             "implementation state count drift: "
-            f"expected {EXPECTED_IMPLEMENTATION_COUNTS}, got {dict(sorted(counts.items()))}"
+            f"expected {EXPECTED_IMPLEMENTATION_COUNTS}, got {normalized_counts}"
         )
     document["tasks"] = rendered
     document["summary"] = {

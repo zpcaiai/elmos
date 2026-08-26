@@ -11,7 +11,7 @@ existing identity, task, artifact, usage, billing, and runner aggregates.
 | `V77`, `V77.1`, and `V77.2` migrations | repository-owned implementation artifacts | They extend existing ELMOS aggregates. Their presence does not prove that a database migration or workload was executed. |
 | Current V77 qualification | `NOT_RUN` | The historical 56/56 local V73 receipt predates the current code and does not qualify V77, V77.1, V77.2, or their new Java/test bindings. |
 | Packaged `V100`-`V102` SQL | `NOT_APPLIED` | The packaged SQL remains immutable reference material and was not copied or executed. |
-| Repository implementation mapping | 63 `IMPLEMENTED`; 69 `PARTIAL`; 12 `NOT_STARTED` | These are content-bound implementation states, not execution results. |
+| Repository implementation mapping | 63 `IMPLEMENTED`; 81 `PARTIAL`; 0 `NOT_STARTED` | These are content-bound implementation states, not execution results. |
 | Repository task results | 144 `NOT_RUN`; 144 evidence `NONE` | No source-catalog task has an exact result receipt. |
 | Exact dependency Skills | 4 `UNRESOLVED` | Local code with related behavior does not resolve an exact declared dependency. |
 | External evidence | `NOT_RUN` | No Temporal, object/payment provider, invoice, settlement, independent-verifier, or production evidence is bound. |

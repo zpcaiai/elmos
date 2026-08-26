@@ -77,6 +77,12 @@ Temporal or OpenTelemetry SDK. The profile and metric adapter are repository
 policy only; provider execution and representative queue telemetry remain
 `NOT_RUN`.
 
+`TaskFinopsFairnessBenchmark` evaluates a bounded ready set using the same
+weighted virtual-service policy, tenant dispatch cap, resource-unit bound,
+starvation check, and noisy-neighbor check. Its report is deterministic local
+planning output; fairness, saturation, and noisy-neighbor benchmark runtime
+evidence remains `NOT_RUN`.
+
 ## Feature rollout
 
 - `TaskFinopsFeatureRollout` defines an environment-specific, ordered state
@@ -107,6 +113,11 @@ policy only; provider execution and representative queue telemetry remain
   rejects non-terminal states and keeps external evidence `NOT_RUN`, provider
   outcome `UNKNOWN`, and production certification `NOT_CERTIFIED`; Temporal
   start/replay evidence remains unavailable.
+- `TaskFinopsWorkflowHistoryPolicy` adds bounded event/payload/attempt limits,
+  Continue-As-New decisions, and digest-bound duplicate-start handling. A
+  running or terminal duplicate is returned idempotently, while an unknown
+  start outcome requires reconciliation; no Temporal provider operation is
+  performed.
 - Pause and resume require authenticated context, a reason, an idempotency key,
   a digest-bound request, legal state, and an append-only audit event. Resuming
   returns a paused job to `WAITING_FOR_SLOT`; it does not bypass admission.
@@ -124,6 +135,12 @@ policy only; provider execution and representative queue telemetry remain
   transitions through `UNKNOWN_RESULT` and `RECONCILING`; absence of a receipt
   requires manual recovery. The current manual-reconciliation command records
   a pending request, not a fabricated outcome.
+- `TaskFinopsRecoveryCampaign` enumerates every checkpoint and side-effect fault
+  boundary and maps each to the existing compatibility/recovery policy. It
+  preserves manual recovery for unknown results without immutable receipts and
+  forks incompatible checkpoints without overwriting prior evidence. It does
+  not inject process crashes or provider failures, so campaign runtime evidence
+  remains `NOT_RUN`.
 
 ## Tenant export and deletion lifecycle
 
@@ -202,10 +219,15 @@ policy only; provider execution and representative queue telemetry remain
   observations and claimed cache hits without cache-read tokens. Provider
   cache billing, OTel collection, and representative efficiency workloads
   remain `NOT_RUN`, so `ELMOS-MTF-011-T06` is `PARTIAL`.
+- `TaskFinopsQualificationGate` composes bounded local checks fail-closed. It
+  can only block or prepare `READY_FOR_EXTERNAL_GATE`; it preserves external
+  evidence `NOT_RUN` and production certification `NOT_CERTIFIED`, and has no
+  signing or release authority. The remaining certification/load/SLO tasks are
+  therefore `PARTIAL` pending their named runtime campaigns.
 
 The related exact Skills `elmos-architecture-contract-governance`,
 `elmos-identity-tenant-security`, `elmos-observability-finops`, and
 `elmos-temporal-task-reliability` all remain `UNRESOLVED`. External evidence is
-`NOT_RUN`; the implementation mapping is 63 `IMPLEMENTED`, 72 `PARTIAL`, and
-9 `NOT_STARTED`; all 144 source task executions remain `NOT_RUN` with evidence
+`NOT_RUN`; the implementation mapping is 63 `IMPLEMENTED`, 81 `PARTIAL`, and
+0 `NOT_STARTED`; all 144 source task executions remain `NOT_RUN` with evidence
 `NONE`; and production is `NOT_CERTIFIED`.
