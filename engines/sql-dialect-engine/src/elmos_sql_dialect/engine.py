@@ -47,6 +47,7 @@ def translate_ddl(
     statement_kind: str = "TABLE",
     dsn: str | None = None,
     namespace_map: Mapping[str, str] | None = None,
+    catalog: emitter.ColumnCatalogLike | None = None,
 ) -> dict[str, Any]:
     """Translate one statement from `source_dialect` to `target_dialect`.
 
@@ -62,6 +63,11 @@ def translate_ddl(
 
     Returns a structured report; never raises for out-of-profile input --
     that is reported as `status: "BLOCKED"`.
+
+    ``catalog`` is optional source-schema context for standalone indexes and
+    constraints. It is consulted only for target rules that need a column type
+    (currently MySQL TEXT keys); absent context remains unknown rather than
+    being treated as evidence of safety.
     """
     source = _resolve_dialect(source_dialect)
     target = _resolve_dialect(target_dialect)
@@ -93,7 +99,9 @@ def translate_ddl(
         if statement_kind == "TABLE":
             emitted = emitter.emit_create_table(parser.parse_create_table(sql, source, namespace_map), target)
         elif statement_kind == "ALTER":
-            emitted = emitter.emit_alter_table(parser.parse_alter_table(sql, source, namespace_map), target)
+            emitted = emitter.emit_alter_table(
+                parser.parse_alter_table(sql, source, namespace_map), target, catalog
+            )
         elif statement_kind == "DROP":
             emitted = emitter.emit_drop_table(parser.parse_drop_table(sql, source, namespace_map), target)
         elif statement_kind == "SCHEMA":
@@ -133,7 +141,9 @@ def translate_ddl(
             parse_row_policy(sql, source)
             raise AssertionError("parse_row_policy is a permanent fail-closed route")  # pragma: no cover
         else:
-            emitted = emitter.emit_create_index(parser.parse_create_index(sql, source, namespace_map), target)
+            emitted = emitter.emit_create_index(
+                parser.parse_create_index(sql, source, namespace_map), target, catalog
+            )
     except DialectError as exc:
         return {
             "schemaVersion": "1.0",

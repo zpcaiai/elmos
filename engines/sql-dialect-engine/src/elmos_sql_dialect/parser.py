@@ -197,6 +197,14 @@ def _mapped_table_name(
     table_name = _plain_identifier(node.this, what)
     schema_node = node.args.get("db")
     if schema_node is None:
+        if namespace_map is not None and "" in namespace_map:
+            default_target_schema = namespace_map[""]
+            _require(
+                bool(_IDENTIFIER_RE.match(default_target_schema)),
+                "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+                f"mapped target default schema {default_target_schema!r} is not a plain identifier",
+            )
+            return default_target_schema, table_name
         return None, table_name
     source_schema = _plain_identifier(schema_node, f"{what} schema")
     target_schema = None if namespace_map is None else namespace_map.get(source_schema)

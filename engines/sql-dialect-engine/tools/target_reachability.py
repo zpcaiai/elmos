@@ -68,47 +68,52 @@ def statements_of(path: Path, dialect: Dialect):
             yield parsed[0]
 
 
-def emit_to(statement: exp.Expression, source: Dialect, target: Dialect) -> str | None:
+def emit_to(
+    statement: exp.Expression,
+    source: Dialect,
+    target: Dialect,
+    namespace_map: dict[str, str] | None = None,
+) -> str | None:
     """Emitted SQL, or None with the refusal recorded by the caller."""
     if isinstance(statement, exp.Create):
         kind = str(statement.args.get("kind", "")).upper()
         if kind == "TABLE":
             return emitter.emit_create_table(
-                parser.parse_create_table(statement, source), target
+                parser.parse_create_table(statement, source, namespace_map), target
             )
         if kind == "SCHEMA":
             return emitter.emit_create_schema(
-                parser.parse_create_schema(statement, source), target
+                parser.parse_create_schema(statement, source, namespace_map), target
             )
         if kind == "INDEX":
             return emitter.emit_create_index(
-                parser.parse_create_index(statement, source), target
+                parser.parse_create_index(statement, source, namespace_map), target
             )
         if kind == "VIEW":
-            return emit_view(parse_create_view(statement, source), target)
+            return emit_view(parse_create_view(statement, source, namespace_map), target)
         if kind == "FUNCTION":
             try:
-                return emit_table_function(parse_table_function(statement, source), target)
+                return emit_table_function(parse_table_function(statement, source, namespace_map), target)
             except DialectError as exc:
                 if exc.code != "CERTIFIED_ROUTINE_NOT_TABLE_FUNCTION":
                     raise
-                return emit_create_function(parse_create_routine(statement, source), target)
+                return emit_create_function(parse_create_routine(statement, source, namespace_map), target)
         if kind == "PROCEDURE":
-            return emit_procedure(parse_procedure(statement, source), target)
+            return emit_procedure(parse_procedure(statement, source, namespace_map), target)
         if kind == "TRIGGER":
-            return emit_trigger(parse_trigger(statement, source), target)
+            return emit_trigger(parse_trigger(statement, source, namespace_map), target)
     if isinstance(statement, exp.Alter):
         return emitter.emit_alter_table(
-            parser.parse_alter_table(statement, source), target
+            parser.parse_alter_table(statement, source, namespace_map), target
         )
     if isinstance(statement, exp.Drop):
         return emitter.emit_drop_table(
-            parser.parse_drop_table(statement, source), target
+            parser.parse_drop_table(statement, source, namespace_map), target
         )
     if isinstance(statement, exp.Comment):
-        return emit_comment(parse_comment(statement, source), target)
+        return emit_comment(parse_comment(statement, source, namespace_map), target)
     if isinstance(statement, exp.Grant | exp.Revoke):
-        return emit_privilege(parse_privilege(statement, source), target)
+        return emit_privilege(parse_privilege(statement, source, namespace_map), target)
     raise DialectError("UNROUTED", "no emitter for this statement kind")
 
 
@@ -116,7 +121,24 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--corpus", action="append", required=True)
     ap.add_argument("--output", type=Path, required=True)
+    ap.add_argument(
+        "--namespace-map",
+        default=None,
+        help="JSON object mapping source namespaces; use an empty key for the source default namespace",
+    )
     args = ap.parse_args()
+
+    namespace_map = None
+    if args.namespace_map is not None:
+        try:
+            raw_map = json.loads(args.namespace_map)
+        except json.JSONDecodeError as exc:
+            ap.error(f"--namespace-map must be a JSON object: {exc}")
+        if not isinstance(raw_map, dict) or not all(
+            isinstance(k, str) and isinstance(v, str) for k, v in raw_map.items()
+        ):
+            ap.error("--namespace-map must be a JSON object of string-to-string mappings")
+        namespace_map = raw_map
 
     admitted = 0
     reachable_per_target: Counter[str] = Counter()
@@ -134,7 +156,7 @@ def main() -> int:
                 if type(statement).__name__ not in DDL_TYPES:
                     continue
                 with contextlib.redirect_stderr(io.StringIO()):
-                    status, _code, _reason = _classify(statement, source)
+                    status, _code, _reason = _classify(statement, source, namespace_map=namespace_map)
                 if status != "IN_SUBSET":
                     continue
                 admitted += 1
@@ -145,7 +167,7 @@ def main() -> int:
                         continue
                     try:
                         with contextlib.redirect_stderr(io.StringIO()):
-                            emit_to(statement, source, target)
+                            emit_to(statement, source, target, namespace_map)
                         reachable_per_target[target.value] += 1
                     except DialectError as refusal:
                         refusals_per_target[target.value][refusal.code] += 1

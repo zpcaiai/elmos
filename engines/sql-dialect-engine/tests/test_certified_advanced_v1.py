@@ -37,12 +37,86 @@ def test_comment_on_column_keeps_the_table_scope() -> None:
     report = translate_ddl(
         "COMMENT ON COLUMN app.users.id IS 'identifier'",
         "postgres",
-        "mysql",
+        "oracle",
         statement_kind="COMMENT",
         namespace_map={"app": "tenant"},
     )
     assert report["status"] == "PASSED", report
     assert report["emitted"] == "COMMENT ON COLUMN tenant.users.id IS 'identifier'"
+
+
+def test_mysql_table_comment_uses_alter_table_metadata_syntax() -> None:
+    report = translate_ddl(
+        "COMMENT ON TABLE app.users IS 'user table'",
+        "postgres",
+        "mysql",
+        statement_kind="COMMENT",
+        namespace_map={"app": "tenant"},
+    )
+    assert report["status"] == "PASSED", report
+    assert report["emitted"] == "ALTER TABLE tenant.users COMMENT = 'user table'"
+
+
+def test_mysql_column_comment_requires_a_complete_column_catalogue() -> None:
+    report = translate_ddl(
+        "COMMENT ON COLUMN users.id IS 'identifier'",
+        "postgres",
+        "mysql",
+        statement_kind="COMMENT",
+    )
+    assert report["status"] == "BLOCKED", report
+    assert report["reasonCode"] == "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED"
+
+
+@pytest.mark.parametrize(
+    ("sql", "fragment"),
+    [
+        (
+            "COMMENT ON TABLE users IS 'user table'",
+            "@level1type = N'TABLE', @level1name = N'users'",
+        ),
+        (
+            "COMMENT ON COLUMN users.id IS 'identifier'",
+            "@level1type = N'TABLE', @level1name = N'users', @level2type = N'COLUMN', @level2name = N'id'",
+        ),
+    ],
+)
+def test_sql_server_comments_require_and_use_an_explicit_default_schema(sql: str, fragment: str) -> None:
+    report = translate_ddl(
+        sql,
+        "postgres",
+        "tsql",
+        statement_kind="COMMENT",
+        namespace_map={"": "dbo"},
+    )
+    assert report["status"] == "PASSED", report
+    assert report["emitted"].startswith("EXEC sys.sp_addextendedproperty")
+    assert fragment in report["emitted"]
+    assert "@level0name = N'dbo'" in report["emitted"]
+
+
+def test_sql_server_comments_without_a_default_schema_remain_blocked() -> None:
+    report = translate_ddl(
+        "COMMENT ON TABLE users IS 'user table'",
+        "postgres",
+        "tsql",
+        statement_kind="COMMENT",
+    )
+    assert report["status"] == "BLOCKED", report
+    assert report["reasonCode"] == "CERTIFIED_COMMENT_TARGET_SCHEMA_REQUIRED"
+
+
+def test_sql_server_comment_value_limit_is_fail_closed() -> None:
+    value = "x" * 3751
+    report = translate_ddl(
+        f"COMMENT ON TABLE users IS '{value}'",
+        "postgres",
+        "tsql",
+        statement_kind="COMMENT",
+        namespace_map={"": "dbo"},
+    )
+    assert report["status"] == "BLOCKED", report
+    assert report["reasonCode"] == "CERTIFIED_COMMENT_TARGET_VALUE_TOO_LARGE"
 
 
 @pytest.mark.parametrize("kind", ["GRANT", "REVOKE"])

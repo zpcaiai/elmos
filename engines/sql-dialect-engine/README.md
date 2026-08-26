@@ -37,12 +37,23 @@ vendor-specific constructs with no proven common semantics. The engine raises
 guessing. External execution, independent verification, and certification
 remain separate evidence gates.
 
+The source-side number is not the same as target reachability. Replaying every
+source-side candidate through all four target emitters gives **319/742 = 43.0%**
+with no target namespace profile, with per-target reachability of PostgreSQL
+742, MySQL 363, Oracle 376, and SQL Server 389. When the caller explicitly
+declares the source default namespace mapping `{"": "dbo"}`, SQL Server table
+and column comments can use extended properties, raising the profile-specific
+intersection to **345/742 = 46.5%** (SQL Server 440; MySQL column comments remain
+blocked without the complete target column definition). These are emitter
+reachability upper bounds, not live-database execution or certification.
+
 ## Certified SQL profile scope
 
 One statement per call: a single `CREATE TABLE`, `CREATE INDEX`, `ALTER TABLE`,
 portable `DROP TABLE`, minimal `CREATE SCHEMA`, routine, ordinary `CREATE VIEW`,
 table `GRANT`/`REVOKE`, or `COMMENT ON TABLE/COLUMN`. Qualified names are
 accepted only with an explicit `--namespace-map` source-to-target mapping;
+an empty source key maps unqualified objects to the target default schema.
 quoted/escaped identifiers remain outside the certified plain-identifier
 contract (`[A-Za-z_][A-Za-z0-9_]*`). RLS policies are intentionally exposed as
 `certified-rls-v1` blockers until a target policy model exists. Unsupported
@@ -144,8 +155,20 @@ unnamed, both AST shapes are handled. CHECK supports a typed boolean tree of
 `AND`/`OR`/`NOT`, null tests, boolean assertions, column-to-column comparisons,
 literal comparisons, `IN`/`BETWEEN`, a bounded timestamp interval, regex, and
 LIKE patterns whose result is independent of collation (`/%`, `%*%`).
+The SQL Server emitter lowers only a fixed bounded ASCII regex subset under a
+binary collation (`^[0-9a-f]{64}$`, SHA-256-prefixed hashes, bounded ASCII
+identifiers, and digits); other regex patterns remain blocked.
 Function calls, subqueries, collation-bearing LIKE, JSON operators and
 PostgreSQL `IS DISTINCT FROM` remain blocked rather than approximated.
+
+**Comments:** PostgreSQL and Oracle use the portable `COMMENT ON TABLE/COLUMN`
+spelling. MySQL table comments use `ALTER TABLE ... COMMENT = ...`; MySQL
+column comments need a complete `MODIFY`/`CHANGE` definition and therefore
+remain blocked in the one-statement profile without a column catalogue. SQL
+Server has no equivalent statement; with an explicit target schema it uses
+`sys.sp_addextendedproperty` at the schema, table, and optional column levels,
+and refuses values over 7,500 bytes. Without that schema mapping, the comment
+remains blocked because SQL Server's object-level metadata scope is ambiguous.
 
 **CREATE INDEX:** name, target table, plain column list with preserved
 `DESC` ordering, optional `UNIQUE`. PostgreSQL and SQL Server preserve typed
@@ -154,6 +177,11 @@ method is rendered in the target's correct position. Other access methods,
 unsupported target combinations, and `NULLS FIRST/LAST` remain blocked
 because their semantics or rerun behavior do not have one exact four-dialect
 profile.
+Standalone index and constraint statements do not carry the referenced column
+types. A context-aware caller may pass a source catalogue through
+`translate_ddl(..., catalog=...)`; known MySQL `TEXT` key columns then fail
+closed instead of emitting server-rejected DDL, while an unknown catalogue
+entry remains unknown and is never treated as proof of safety.
 
 Anything else -- generated/computed columns, JSONB/arrays without an exact
 target route, partitioning, storage options, unsupported trigger targets,
@@ -437,7 +465,7 @@ unless you opt into execution validation with `--dsn`.
 
 ## Status
 
-The certified profiles are `EXPERIMENTAL`. All 428 tests pass locally
+The certified profiles are `EXPERIMENTAL`. All 438 repository-owned tests pass locally
 (`uv run pytest`), `ruff check` and `mypy` are clean. Independent/external
 certification of this profile is `NOT_RUN`, consistent with how this
 repository reports certification status for its other engines.

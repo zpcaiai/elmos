@@ -280,7 +280,7 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     ),
     "CERTIFIED_DDL_REGEX_CHECK_UNREACHABLE_ON_TARGET": (
         "constraints",
-        "a regex CHECK has no equivalent predicate on SQL Server",
+        "SQL Server has no regex CHECK predicate; only a bounded ASCII subset has a proven binary-collation lowering",
     ),
     "CERTIFIED_DDL_MULTI_LEVEL_CHECK": (
         "constraints",
@@ -380,6 +380,18 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     "CERTIFIED_COMMENT_TARGET_UNSUPPORTED": (
         "statement-kind",
         "the target stores comments through a different ownership/property mechanism",
+    ),
+    "CERTIFIED_COMMENT_TARGET_SCHEMA_REQUIRED": (
+        "identifiers",
+        "SQL Server extended properties require an explicit target schema mapping",
+    ),
+    "CERTIFIED_COMMENT_TARGET_VALUE_TOO_LARGE": (
+        "statement-kind",
+        "the SQL Server extended-property value exceeds its 7,500-byte limit",
+    ),
+    "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED": (
+        "types",
+        "MySQL column comments require the complete target column definition, not only a comment statement",
     ),
     "CERTIFIED_PRIVILEGE_UNSUPPORTED_OBJECT": (
         "structure",

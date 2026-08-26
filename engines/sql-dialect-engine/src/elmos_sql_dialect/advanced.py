@@ -577,17 +577,54 @@ def emit_view(view: View, target_dialect: Dialect) -> str:
 
 
 def emit_comment(comment: Comment, target_dialect: Dialect) -> str:
+    def tsql_literal(value: str) -> str:
+        return "N'" + value.replace(chr(39), chr(39) * 2) + "'"
+
+    escaped = comment.text.replace(chr(39), chr(39) * 2)
+
+    if target_dialect is Dialect.MYSQL:
+        if comment.object_kind is CommentObjectKind.COLUMN:
+            raise DialectError(
+                "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED",
+                "MySQL column comments require a full MODIFY/CHANGE column definition; "
+                "the one-statement COMMENT profile has no type/nullability/default catalogue",
+            )
+        return f"ALTER TABLE {_object_name(comment.schema, comment.object_name)} COMMENT = '{escaped}'"
+
     if target_dialect is Dialect.TSQL:
-        raise DialectError(
-            "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
-            "SQL Server comments require extended-property ownership and schema identity",
-        )
+        if comment.schema is None:
+            raise DialectError(
+                "CERTIFIED_COMMENT_TARGET_SCHEMA_REQUIRED",
+                "SQL Server extended properties require an explicit target schema; supply a "
+                "namespace_map entry for the source default namespace",
+            )
+        if len(comment.text.encode("utf-16-le")) > 7500:
+            raise DialectError(
+                "CERTIFIED_COMMENT_TARGET_VALUE_TOO_LARGE",
+                "SQL Server extended-property values are limited to 7,500 bytes",
+            )
+        parts = [
+            "@name = N'MS_Description'",
+            f"@value = {tsql_literal(comment.text)}",
+            "@level0type = N'SCHEMA'",
+            f"@level0name = {tsql_literal(comment.schema)}",
+            "@level1type = N'TABLE'",
+            f"@level1name = {tsql_literal(comment.table_name or comment.object_name)}",
+        ]
+        if comment.object_kind is CommentObjectKind.COLUMN:
+            parts.extend(
+                [
+                    "@level2type = N'COLUMN'",
+                    f"@level2name = {tsql_literal(comment.object_name)}",
+                ]
+            )
+        return "EXEC sys.sp_addextendedproperty " + ", ".join(parts)
     target = (
         f"TABLE {_object_name(comment.schema, comment.object_name)}"
         if comment.object_kind is CommentObjectKind.TABLE
         else f"COLUMN {_object_name(comment.table_schema, comment.table_name or '')}.{comment.object_name}"
     )
-    return f"COMMENT ON {target} IS '{comment.text.replace(chr(39), chr(39) * 2)}'"
+    return f"COMMENT ON {target} IS '{escaped}'"
 
 
 def emit_privilege(privilege: Privilege, target_dialect: Dialect) -> str:

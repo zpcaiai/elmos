@@ -117,7 +117,30 @@ def test_the_genuinely_divergent_predicates_are_still_refused(label: str, sql: s
     assert report["emitted"] is None
 
 
-def test_regex_is_refused_only_when_the_target_has_no_equivalent() -> None:
+@pytest.mark.parametrize(
+    ("pattern", "fragment"),
+    [
+        ("^[0-9a-f]{64}$", "DATALENGTH(CONVERT(nvarchar(max), s)) = 128"),
+        ("^[0-9a-f]{40}$", "DATALENGTH(CONVERT(nvarchar(max), s)) = 80"),
+        ("^sha256:[0-9a-f]{64}$", "LEFT(CONVERT(nvarchar(max), s) COLLATE Latin1_General_100_BIN2, 7) = N'sha256:'"),
+        ("^[0-9]+$", "DATALENGTH(CONVERT(nvarchar(max), s)) >= 2"),
+    ],
+)
+def test_bounded_ascii_regexes_have_a_binary_collation_sql_server_lowering(
+    pattern: str, fragment: str
+) -> None:
+    report = translate_ddl(
+        f"CREATE TABLE t (s TEXT, CHECK (s ~ '{pattern}'))",
+        "postgres",
+        "tsql",
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report
+    assert fragment in report["emitted"]
+    assert "COLLATE Latin1_General_100_BIN2" in report["emitted"]
+
+
+def test_regex_is_refused_when_sql_server_has_no_proven_equivalent() -> None:
     report = translate_ddl(
         "CREATE TABLE t (s VARCHAR(8), CHECK (s ~ '^[a-f]+$'))",
         "postgres",

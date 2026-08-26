@@ -11,7 +11,8 @@ wholesale refusal never had to make explicit:
   2. case sensitivity is PINNED at emission, because MySQL's REGEXP follows the
      column collation and would otherwise silently accept more rows.
 
-SQL Server has no regex predicate at all and fails closed.
+SQL Server has no regex predicate, so only the emitter's explicitly bounded
+ASCII lowerings are reachable; every other pattern fails closed.
 """
 from __future__ import annotations
 
@@ -182,17 +183,27 @@ def test_the_function_form_pins_case_sensitivity_explicitly(target: str) -> None
     assert "REGEXP_LIKE(h, '^[0-9a-f]{64}$', 'c')" in report["emitted"]
 
 
-def test_sql_server_fails_closed_rather_than_degrading_to_like() -> None:
-    report = translate_ddl(HASH_CHECK, "postgres", "tsql", statement_kind="TABLE")
+def test_sql_server_fails_closed_for_an_unbounded_pattern() -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (h VARCHAR(64), CHECK (h ~ '^[a-f]+$'))",
+        "postgres",
+        "tsql",
+        statement_kind="TABLE",
+    )
     assert report["status"] == "BLOCKED"
     assert report["reasonCode"] == "CERTIFIED_DDL_REGEX_CHECK_UNREACHABLE_ON_TARGET"
     assert report["emitted"] is None
 
 
-def test_the_sql_server_refusal_says_why_like_is_not_a_substitute() -> None:
-    report = translate_ddl(HASH_CHECK, "postgres", "tsql", statement_kind="TABLE")
-    assert "LIKE" in report["reason"]
-    assert "bounded quantifier" in report["reason"]
+def test_the_sql_server_refusal_explains_the_bounded_lowering_boundary() -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (h VARCHAR(64), CHECK (h ~ '^[a-f]+$'))",
+        "postgres",
+        "tsql",
+        statement_kind="TABLE",
+    )
+    assert "regex CHECK" in report["reason"]
+    assert "bounded ASCII" in report["reason"]
 
 
 def test_a_non_portable_pattern_is_blocked_before_any_target_is_chosen() -> None:
