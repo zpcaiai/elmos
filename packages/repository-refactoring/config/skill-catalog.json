@@ -1,0 +1,292 @@
+{
+  "schema_version": "elmos.repository-refactoring.skill-catalog.v1",
+  "package": "elmos-repository-refactoring",
+  "package_version": "1.0.0",
+  "runtime_module": "elmos_repository_refactoring.runtime",
+  "runtime_callable": "dispatch",
+  "skills": [
+    {
+      "name": "repository-refactor-orchestrator",
+      "handler": "repository_refactor_orchestrator",
+      "canonical_owner": "canonical.elmos.durable-runtime",
+      "risk_class": "R3",
+      "mutating": false,
+      "minimum_adapter_level": "L0",
+      "depends_on": [],
+      "implemented": true
+    },
+    {
+      "name": "repository-discovery",
+      "handler": "repository_discovery",
+      "canonical_owner": "canonical.elmos.repository-snapshot",
+      "risk_class": "R0",
+      "mutating": false,
+      "minimum_adapter_level": "L0",
+      "depends_on": [],
+      "implemented": true
+    },
+    {
+      "name": "build-graph-and-environment",
+      "handler": "build_graph_and_environment",
+      "canonical_owner": "canonical.elmos.build-graph",
+      "risk_class": "R2",
+      "mutating": false,
+      "minimum_adapter_level": "L1",
+      "depends_on": [
+        "repository-discovery"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "semantic-index",
+      "handler": "semantic_index",
+      "canonical_owner": "canonical.elmos.semantic-index",
+      "risk_class": "R0",
+      "mutating": false,
+      "minimum_adapter_level": "L1",
+      "depends_on": [
+        "repository-discovery",
+        "build-graph-and-environment"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "refactor-intent-compiler",
+      "handler": "refactor_intent_compiler",
+      "canonical_owner": "canonical.elmos.intent-baseline",
+      "risk_class": "R0",
+      "mutating": false,
+      "minimum_adapter_level": "L0",
+      "depends_on": [
+        "semantic-index"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "change-impact-analysis",
+      "handler": "change_impact_analysis",
+      "canonical_owner": "canonical.elmos.impact-graph",
+      "risk_class": "R0",
+      "mutating": false,
+      "minimum_adapter_level": "L2",
+      "depends_on": [
+        "semantic-index",
+        "refactor-intent-compiler"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "recipe-synthesis",
+      "handler": "recipe_synthesis",
+      "canonical_owner": "canonical.elmos.recipe-registry",
+      "risk_class": "R2",
+      "mutating": false,
+      "minimum_adapter_level": "L2",
+      "depends_on": [
+        "refactor-intent-compiler",
+        "change-impact-analysis"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "deterministic-transform-executor",
+      "handler": "deterministic_transform_executor",
+      "canonical_owner": "canonical.elmos.transform-runtime",
+      "risk_class": "R3",
+      "mutating": true,
+      "minimum_adapter_level": "L2",
+      "depends_on": [
+        "recipe-synthesis"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "cross-language-contract-refactor",
+      "handler": "cross_language_contract_refactor",
+      "canonical_owner": "canonical.elmos.contract-registry",
+      "risk_class": "R3",
+      "mutating": true,
+      "minimum_adapter_level": "L3",
+      "depends_on": [
+        "change-impact-analysis",
+        "deterministic-transform-executor",
+        "api-compatibility"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "data-schema-refactor",
+      "handler": "data_schema_refactor",
+      "canonical_owner": "canonical.elmos.data-migration",
+      "risk_class": "R4",
+      "mutating": true,
+      "minimum_adapter_level": "L3",
+      "depends_on": [
+        "change-impact-analysis",
+        "human-approval-gate",
+        "rollback-and-recovery"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "distributed-system-refactor",
+      "handler": "distributed_system_refactor",
+      "canonical_owner": "canonical.elmos.service-topology",
+      "risk_class": "R4",
+      "mutating": true,
+      "minimum_adapter_level": "L3",
+      "depends_on": [
+        "cross-language-contract-refactor",
+        "data-schema-refactor",
+        "performance-preservation"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "test-and-verification",
+      "handler": "test_and_verification",
+      "canonical_owner": "canonical.elmos.verification",
+      "risk_class": "R3",
+      "mutating": false,
+      "minimum_adapter_level": "L2",
+      "depends_on": [
+        "deterministic-transform-executor"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "bounded-auto-repair",
+      "handler": "bounded_auto_repair",
+      "canonical_owner": "canonical.elmos.transform-runtime",
+      "risk_class": "R3",
+      "mutating": true,
+      "minimum_adapter_level": "L2",
+      "depends_on": [
+        "test-and-verification"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "canary-rollout",
+      "handler": "canary_rollout",
+      "canonical_owner": "canonical.elmos.release-control",
+      "risk_class": "R4",
+      "mutating": true,
+      "minimum_adapter_level": "L3",
+      "depends_on": [
+        "test-and-verification",
+        "human-approval-gate"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "rollback-and-recovery",
+      "handler": "rollback_and_recovery",
+      "canonical_owner": "canonical.elmos.durable-runtime",
+      "risk_class": "R4",
+      "mutating": true,
+      "minimum_adapter_level": "L1",
+      "depends_on": [
+        "repository-refactor-orchestrator"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "evidence-and-audit",
+      "handler": "evidence_and_audit",
+      "canonical_owner": "canonical.elmos.evidence-store",
+      "risk_class": "R0",
+      "mutating": false,
+      "minimum_adapter_level": "L0",
+      "depends_on": [],
+      "implemented": true
+    },
+    {
+      "name": "recipe-learning-registry",
+      "handler": "recipe_learning_registry",
+      "canonical_owner": "canonical.elmos.recipe-registry",
+      "risk_class": "R3",
+      "mutating": false,
+      "minimum_adapter_level": "L0",
+      "depends_on": [
+        "evidence-and-audit"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "human-approval-gate",
+      "handler": "human_approval_gate",
+      "canonical_owner": "canonical.elmos.identity-policy",
+      "risk_class": "R4",
+      "mutating": false,
+      "minimum_adapter_level": "L0",
+      "depends_on": [],
+      "implemented": true
+    },
+    {
+      "name": "performance-preservation",
+      "handler": "performance_preservation",
+      "canonical_owner": "canonical.elmos.verification",
+      "risk_class": "R3",
+      "mutating": false,
+      "minimum_adapter_level": "L2",
+      "depends_on": [
+        "build-graph-and-environment",
+        "test-and-verification"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "security-preservation",
+      "handler": "security_preservation",
+      "canonical_owner": "canonical.elmos.security-control",
+      "risk_class": "R4",
+      "mutating": false,
+      "minimum_adapter_level": "L2",
+      "depends_on": [
+        "test-and-verification"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "api-compatibility",
+      "handler": "api_compatibility",
+      "canonical_owner": "canonical.elmos.contract-registry",
+      "risk_class": "R3",
+      "mutating": false,
+      "minimum_adapter_level": "L2",
+      "depends_on": [
+        "semantic-index"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "multi-repository-refactor-program",
+      "handler": "multi_repository_refactor_program",
+      "canonical_owner": "canonical.elmos.durable-runtime",
+      "risk_class": "R4",
+      "mutating": false,
+      "minimum_adapter_level": "L3",
+      "depends_on": [
+        "repository-refactor-orchestrator",
+        "cross-language-contract-refactor",
+        "canary-rollout"
+      ],
+      "implemented": true
+    },
+    {
+      "name": "ui-and-client-refactor",
+      "handler": "ui_and_client_refactor",
+      "canonical_owner": "canonical.elmos.client-platform",
+      "risk_class": "R3",
+      "mutating": true,
+      "minimum_adapter_level": "L2",
+      "depends_on": [
+        "semantic-index",
+        "api-compatibility",
+        "test-and-verification"
+      ],
+      "implemented": true
+    }
+  ]
+}

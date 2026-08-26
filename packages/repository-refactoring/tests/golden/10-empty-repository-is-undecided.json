@@ -1,0 +1,38 @@
+{
+  "caseId": "10-empty-repository-is-undecided",
+  "description": "A repository with no code must report low coverage, not a confident empty index.",
+  "evidence": {
+    "indexDigest": "sha256:204a6ca11ed3c2bec52e088ce362f458aa166cff7c5e9e8dc44421ef88c7cc00",
+    "treeDigest": "sha256:1f2a342fefc53f52b457cd0a61da4428649d2ec15906db0f4c7a47d79f496e69"
+  },
+  "failureClass": null,
+  "inputDigest": "sha256:5a26e216ebaaadb54b20036174ef8d6a00f18b78d8366385bdfb7c47b8639743",
+  "outputDigest": "sha256:8b4ac4d67cd92fa4d4dabe912ec6937491d8aec4d84f3901d9ad442a41b8e7b5",
+  "projections": {
+    "output.coverage_metrics": {
+      "buildGraph": "0.0",
+      "dynamicFiles": 0,
+      "parsedFiles": 0,
+      "resolution": "0",
+      "testLink": "0.0000",
+      "totalFiles": 1,
+      "typeAttribution": "0.0000",
+      "unknownRiskWeight": "0.5500"
+    },
+    "output.unknown_region_report": {
+      "byReason": {
+        "no-extractor": [
+          "README.md"
+        ]
+      },
+      "dynamicReferences": [],
+      "totalUnknownPaths": 1,
+      "unknownRiskWeight": "0.5500"
+    }
+  },
+  "reasonCount": 1,
+  "riskClass": "R0",
+  "sideEffectsPerformed": false,
+  "skill": "semantic-index",
+  "status": "succeeded"
+}

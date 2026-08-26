@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/policy.schema.json",
+  "title": "RefactorPolicy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.dev/v1"
+    },
+    "kind": {
+      "const": "RefactorPolicy"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "digest": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "spec": {
+      "type": "object",
+      "properties": {
+        "allowedModes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "autonomy": {
+          "type": "object",
+          "properties": {
+            "maxRiskClass": {
+              "enum": [
+                "R0",
+                "R1",
+                "R2",
+                "R3",
+                "R4",
+                "R5"
+              ]
+            },
+            "minimumAdapterLevel": {
+              "enum": [
+                "L0",
+                "L1",
+                "L2",
+                "L3",
+                "L4"
+              ]
+            },
+            "minimumVerificationScore": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "approvals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "when",
+              "roles"
+            ],
+            "properties": {
+              "when": {
+                "type": "string"
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "minimumApprovers": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "sandbox": {
+          "type": "object",
+          "properties": {
+            "network": {
+              "enum": [
+                "deny",
+                "restore-only",
+                "allowlisted"
+              ]
+            },
+            "maxCpu": {
+              "type": "number"
+            },
+            "maxMemoryMiB": {
+              "type": "integer"
+            },
+            "maxDiskMiB": {
+              "type": "integer"
+            },
+            "maxProcesses": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": false
+        },
+        "qualityGates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "gate",
+              "blocking"
+            ],
+            "properties": {
+              "gate": {
+                "type": "string"
+              },
+              "blocking": {
+                "type": "boolean"
+              },
+              "when": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "forbiddenPatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "retention": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

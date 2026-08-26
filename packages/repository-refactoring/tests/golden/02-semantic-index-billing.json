@@ -1,0 +1,51 @@
+{
+  "caseId": "02-semantic-index-billing",
+  "description": "Exact Python extraction plus contract entities; coverage must account for what was not read.",
+  "evidence": {
+    "indexDigest": "sha256:aa3e83e0352691b8a2771e3a19ff716aab0cf75efb065093fb2be76b4eac6966",
+    "treeDigest": "sha256:aa2275886926d6c5c71860610583951379a8398ebf06fd87b040807463401989"
+  },
+  "failureClass": null,
+  "inputDigest": "sha256:164754ffc97bbac9f70ca6c1a24eddaa18e8d5b6e6bcc8cb84f22d126108ac98",
+  "outputDigest": "sha256:73c2847a5271dfb4a46f098d84fdc62c4a41f966027bc17456030e329a54ebee",
+  "projections": {
+    "output.coverage_metrics": {
+      "buildGraph": "1.0",
+      "dynamicFiles": 0,
+      "parsedFiles": 6,
+      "resolution": "0.2778",
+      "testLink": "1.0000",
+      "totalFiles": 9,
+      "typeAttribution": "0.5556",
+      "unknownRiskWeight": "0.1583"
+    },
+    "output.semantic_index_snapshot.coverage": {
+      "buildGraph": "1.0",
+      "dynamicFiles": 0,
+      "parsedFiles": 6,
+      "resolution": "0.2778",
+      "testLink": "1.0000",
+      "totalFiles": 9,
+      "typeAttribution": "0.5556",
+      "unknownRiskWeight": "0.1583"
+    },
+    "output.semantic_index_snapshot.snapshotId": "corpus@c0dec0dec0de",
+    "output.unknown_region_report": {
+      "byReason": {
+        "no-extractor": [
+          "CODEOWNERS",
+          "contracts/billing.proto",
+          "pyproject.toml"
+        ]
+      },
+      "dynamicReferences": [],
+      "totalUnknownPaths": 3,
+      "unknownRiskWeight": "0.1583"
+    }
+  },
+  "reasonCount": 2,
+  "riskClass": "R0",
+  "sideEffectsPerformed": false,
+  "skill": "semantic-index",
+  "status": "succeeded"
+}

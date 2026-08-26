@@ -1,0 +1,70 @@
+{
+  "caseId": "15-api-compatibility-removal",
+  "description": "Removing a public function is a break, and no in-repository silence makes it safe.",
+  "evidence": {
+    "apiDiffDigest": "sha256:a3dae3e71149d40e116eb00526915e42471fec3ffe999f9724897d7f14d30800",
+    "baselineSurfaceDigest": "sha256:1c63578d565454c91d76d74e43e9e0ee06a09f004406c7f10de88e0acc9ea88d"
+  },
+  "failureClass": "approval-required",
+  "inputDigest": "sha256:09bdf5f9d0d983124c4fe67e4cc90cd16f59ef166412f8d2d29bac99325bd302",
+  "outputDigest": "sha256:a08f343c4e0a1315d0d375f9648bc0ac3200e308723028c9d3455646e66f0c55",
+  "projections": {
+    "output.apiDiff.counts": {
+      "additive": 1,
+      "behaviorRisk": 0,
+      "binaryBreak": 0,
+      "sourceBreak": 1,
+      "wireBreak": 0
+    },
+    "output.compatibilityDecision": {
+      "allowed": false,
+      "policy": "backward-compatible",
+      "requiredMeasures": [],
+      "riskClass": "R3",
+      "violations": [
+        {
+          "after": "",
+          "before": "(customer_id: str, amount: Decimal, currency: str) -> str",
+          "change": "removed",
+          "detail": "public function removed; consumers outside this repository cannot be enumerated, so absence of in-repository usage is not evidence of safety",
+          "identity": "acme.ledger.post_entry",
+          "impact": "source-break",
+          "path": "src/acme/ledger.py"
+        }
+      ]
+    },
+    "output.deprecationPlan": [
+      {
+        "description": "add the replacement surface alongside the old one; both must work simultaneously",
+        "gate": "api-compatibility",
+        "phase": "expand"
+      },
+      {
+        "description": "mark the old surface deprecated with a removal version and a migration pointer",
+        "gate": "api-compatibility",
+        "phase": "annotate"
+      },
+      {
+        "description": "publish usage telemetry for the old surface until it reaches zero over a full release window",
+        "gate": "old-path-usage-zero",
+        "phase": "observe"
+      },
+      {
+        "description": "obtain sign-off bound to this exact API diff digest",
+        "gate": "human-approval",
+        "phase": "approve"
+      },
+      {
+        "description": "remove the old surface: acme.ledger.post_entry",
+        "gate": "api-compatibility",
+        "phase": "contract"
+      }
+    ],
+    "status": "blocked"
+  },
+  "reasonCount": 1,
+  "riskClass": "R3",
+  "sideEffectsPerformed": false,
+  "skill": "api-compatibility",
+  "status": "blocked"
+}
