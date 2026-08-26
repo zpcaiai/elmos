@@ -282,7 +282,7 @@ class SpringMvcExactLocalQualificationIT {
         assertEquals("classpath:/spring-mvc/target-profile/profile.json",
                 profiles.get(0).path("resource").asText());
         assertEquals(3731, profiles.get(0).path("bytes").asLong());
-        assertEquals("4856d1c012274be15fa9339a4a11524314994ca858e2b7856fcd367fb1de63a5",
+        assertEquals("8042f1bed7cde57d13e9794b7a694437d5b12d40f0eb4948c656d942a9297ee1",
                 profiles.get(0).path("sha256").asText());
         assertEquals("classpath:/spring-mvc/target-profile/scaffold-manifest.json",
                 profiles.get(1).path("resource").asText());

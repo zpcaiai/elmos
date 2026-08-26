@@ -57,7 +57,7 @@ final class SpringMvcExactTargetMaterializer {
             "/spring-mvc/target-profile/profile.json";
     private static final long TARGET_PROFILE_BYTES = 3731;
     private static final String TARGET_PROFILE_SHA256 =
-            "4856d1c012274be15fa9339a4a11524314994ca858e2b7856fcd367fb1de63a5";
+            "8042f1bed7cde57d13e9794b7a694437d5b12d40f0eb4948c656d942a9297ee1";
     private static final String TARGET_SCAFFOLD_MANIFEST_RESOURCE =
             "/spring-mvc/target-profile/scaffold-manifest.json";
     private static final long TARGET_SCAFFOLD_MANIFEST_BYTES = 1773;

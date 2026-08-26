@@ -18,7 +18,7 @@
   "execution_scope": "LOCAL_ENGINEERING_EXACT_FIXTURE_ONLY",
   "production_target_materializer": "io.elmos.worker.SpringMvcExactTargetMaterializer",
   "production_target_materializer_status": "PASSED_LOCAL",
-  "evidence_ref": "certification/local-execution/2026-08-26/evidence-index.json",
+  "evidence_ref": "certification/local-execution/2026-08-27/evidence-index.json",
   "manual_obligation_policy": "fail-closed",
   "blocked_automatic_operations": [
     "replace an existing corporate Maven parent",
