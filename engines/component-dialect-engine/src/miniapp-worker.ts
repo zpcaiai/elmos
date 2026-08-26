@@ -1711,7 +1711,7 @@ function inferCanonicalExpressionType(
       return "boolean";
     case "stringMethod":
       return inferCanonicalExpressionType(expression.receiver, values, scope) === "string"
-        ? expression.method === "includes" ? "boolean" : "string"
+        ? ["includes", "startsWith", "endsWith"].includes(expression.method) ? "boolean" : "string"
         : null;
     case "numericFunction":
       return expression.args.length > 0 && expression.args.every((arg) => inferCanonicalExpressionType(arg, values, scope) === "number")

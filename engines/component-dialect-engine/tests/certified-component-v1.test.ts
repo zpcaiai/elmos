@@ -180,6 +180,28 @@ describe("React parsing (real TypeScript Compiler API)", () => {
     expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
     expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
   });
+
+  it("keeps bounded numeric and string helpers typed across targets", () => {
+    const ir = parseReactComponent(`
+      function Helpers({ value, label }: { value: number; label: string }) {
+        return <p>{Math.floor(value)} / {Math.ceil(value)} / {Math.abs(value)} / {label.startsWith("A") ? label.slice(0, 2) : label.endsWith("!") ? label.slice(1) : label}</p>;
+      }
+    `, "Helpers.tsx");
+    expect(ir.root).toMatchObject({
+      kind: "element",
+      children: [
+        { kind: "text", value: { kind: "numericFunction", function: "floor" } },
+        { kind: "text", value: { kind: "literal", literal: { type: "string", value: "/" } } },
+        { kind: "text", value: { kind: "numericFunction", function: "ceil" } },
+        { kind: "text", value: { kind: "literal", literal: { type: "string", value: "/" } } },
+        { kind: "text", value: { kind: "numericFunction", function: "abs" } },
+        { kind: "text", value: { kind: "literal", literal: { type: "string", value: "/" } } },
+        { kind: "text", value: { kind: "ternary" } },
+      ],
+    });
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
 });
 
 describe("cross-framework round trip", () => {
@@ -271,7 +293,7 @@ describe("fail-closed behavior outside certified-component-v1", () => {
     ["unsupported tag", `function C() { return (<video>hi</video>); }`],
     ["unsupported attribute", `function C() { return (<div data-tracking="x">hi</div>); }`],
     ["spread props", `function C(props: { a: string }) { return (<div {...props}>hi</div>); }`],
-    ["unsupported method call in expression", `function C({ a }: { a: string }) { return (<div>{a.startsWith("x")}</div>); }`],
+    ["unsupported method call in expression", `function C({ a }: { a: string }) { return (<div>{a.charAt(0)}</div>); }`],
     ["two components in one file", `function A() { return (<div>a</div>); } function B() { return (<div>b</div>); }`],
     ["untyped props", `function C(props) { return (<div>hi</div>); }`],
     ["handler with a loop", `function C() { const [x, setX] = useState<number>(0); return (<button onClick={() => { for (;;) {} }}>go</button>); }`],

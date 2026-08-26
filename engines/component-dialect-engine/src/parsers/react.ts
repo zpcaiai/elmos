@@ -23,7 +23,7 @@ import * as path from "path";
 import {
   at, AttrBinding, AttrName, ATTR_NAMES, BinaryOperator, CallbackPropDef, ComponentDef, DataPropDef, DialectError,
   EventBinding, EventName, Expr, fail, HtmlTag, HTML_TAGS, ListElementShape, ListPropDef, Literal, Node as CNode,
-  PrimitiveType, PropDef, requireDefined, StateDef, Stmt, StringMethod, checkIdentifier, require_, validateComponent, ComponentArg,
+  NumericFunction, PrimitiveType, PropDef, requireDefined, StateDef, Stmt, StringMethod, checkIdentifier, require_, validateComponent, ComponentArg,
   ValueShape } from "../models";
 
 function primitiveTypeFromNode(node: ts.TypeNode | undefined, what: string): PrimitiveType {
@@ -429,11 +429,12 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
   if (ts.isIdentifier(node)) return { kind: "ident", name: node.text };
   if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
     const methodName = node.expression.name.text;
-    if (ts.isIdentifier(node.expression.expression) && node.expression.expression.text === "Math" && (methodName === "min" || methodName === "max")) {
-      require_(node.arguments.length >= 1 && node.arguments.length <= 8, "CERTIFIED_COMPONENT_NUMERIC_FUNCTION_ARITY", `${methodName} expects between 1 and 8 arguments`);
+    if (ts.isIdentifier(node.expression.expression) && node.expression.expression.text === "Math" && ["min", "max", "floor", "ceil", "abs"].includes(methodName)) {
+      const variadic = methodName === "min" || methodName === "max";
+      require_(variadic ? node.arguments.length >= 1 && node.arguments.length <= 8 : node.arguments.length === 1, "CERTIFIED_COMPONENT_NUMERIC_FUNCTION_ARITY", `${methodName} expects ${variadic ? "between 1 and 8" : "exactly 1"} argument(s)`);
       return {
         kind: "numericFunction",
-        function: methodName,
+        function: methodName as NumericFunction,
         args: node.arguments.map((argument) => parseExpr(argument, staticMaps, eventParameter)),
       };
     }
@@ -445,11 +446,12 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
       return { kind: "regexTest", pattern: regex.pattern, flags: regex.flags, operand: parseExpr(at(node.arguments, 0, "CERTIFIED_COMPONENT_REGEX_TEST_ARITY", "regex test is missing its argument"), staticMaps, eventParameter) };
     }
     const method = methodName as StringMethod;
-    require_(["toUpperCase", "toLowerCase", "trim", "replaceAll", "includes"].includes(method), "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `string method ${method} is outside certified-component-v1`);
+    require_(["toUpperCase", "toLowerCase", "trim", "replaceAll", "includes", "startsWith", "endsWith", "slice"].includes(method), "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `string method ${method} is outside certified-component-v1`);
       const args = node.arguments.map((argument) => parseExpr(argument, staticMaps, eventParameter));
-    const expectedArgs = method === "replaceAll" ? 2 : method === "includes" ? 1 : 0;
-    require_(args.length === expectedArgs, "CERTIFIED_COMPONENT_STRING_METHOD_ARITY", `${method} expects ${expectedArgs} argument(s)`);
-    require_((method !== "replaceAll" && method !== "includes") || args.every((arg) => arg.kind === "literal" && arg.literal.type === "string"), "CERTIFIED_COMPONENT_STRING_METHOD_ARGUMENT", `${method} arguments must be string literals`);
+    const expectedArgs = method === "replaceAll" ? 2 : method === "includes" || method === "startsWith" || method === "endsWith" ? 1 : method === "slice" ? 1 : 0;
+    require_(method === "slice" ? args.length <= 2 && args.length >= 1 : args.length === expectedArgs, "CERTIFIED_COMPONENT_STRING_METHOD_ARITY", `${method} expects ${method === "slice" ? "one or two" : expectedArgs} argument(s)`);
+    const argumentType = method === "slice" ? "number" : "string";
+    require_((method !== "replaceAll" && method !== "includes" && method !== "startsWith" && method !== "endsWith" && method !== "slice") || args.every((arg) => arg.kind === "literal" && arg.literal.type === argumentType), "CERTIFIED_COMPONENT_STRING_METHOD_ARGUMENT", `${method} arguments must be ${argumentType} literals`);
     return { kind: "stringMethod", method, receiver: parseExpr(node.expression.expression, staticMaps, eventParameter), args };
   }
   if (ts.isPropertyAccessExpression(node) && ts.isElementAccessExpression(node.expression) && ts.isIdentifier(node.expression.expression)) {

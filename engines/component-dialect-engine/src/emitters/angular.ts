@@ -52,7 +52,7 @@ function exprSource(expr: Expr, inClass: boolean): string {
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, inClass)).join(", ")})`;
     case "numericFunction": return inClass
       ? `Math.${expr.function}(${expr.args.map((arg) => exprSource(arg, inClass)).join(", ")})`
-      : `__ccMath${expr.function === "min" ? "Min" : "Max"}(${expr.args.map((arg) => exprSource(arg, inClass)).join(", ")})`;
+      : `__ccMath${expr.function.charAt(0).toUpperCase()}${expr.function.slice(1)}(${expr.args.map((arg) => exprSource(arg, inClass)).join(", ")})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return inClass
       ? `new RegExp(${JSON.stringify(expr.pattern)}, ${JSON.stringify(expr.flags)}).test(${exprSource(expr.operand, inClass)})`
@@ -257,6 +257,9 @@ export function emitAngular(component: ComponentDef): string {
   if (usesNumericFunction(component)) {
     lines.push(`  private __ccMathMin(...values: number[]): number { return Math.min(...values); }`);
     lines.push(`  private __ccMathMax(...values: number[]): number { return Math.max(...values); }`);
+    lines.push(`  private __ccMathFloor(value: number): number { return Math.floor(value); }`);
+    lines.push(`  private __ccMathCeil(value: number): number { return Math.ceil(value); }`);
+    lines.push(`  private __ccMathAbs(value: number): number { return Math.abs(value); }`);
   }
   lines.push(`}`);
   return lines.join("\n") + "\n";

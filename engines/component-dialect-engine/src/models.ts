@@ -215,8 +215,8 @@ export interface StateDef {
 
 export type BinaryOperator = "+" | "-" | "*" | "/" | "%" | "<" | "<=" | ">" | ">=" | "==" | "!=" | "&&" | "||" | "??";
 export const BINARY_OPERATORS: readonly BinaryOperator[] = ["+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "??"];
-export type StringMethod = "toUpperCase" | "toLowerCase" | "trim" | "replaceAll" | "includes";
-export type NumericFunction = "min" | "max";
+export type StringMethod = "toUpperCase" | "toLowerCase" | "trim" | "replaceAll" | "includes" | "startsWith" | "endsWith" | "slice";
+export type NumericFunction = "min" | "max" | "floor" | "ceil" | "abs";
 
 export type Expr =
   | { kind: "ident"; name: string }
@@ -502,11 +502,12 @@ export function validateComponent(component: ComponentDef): void {
       case "stringMethod":
         checkExpr(expr.receiver, scope);
         require_(isStringExpression(expr.receiver, scope), "CERTIFIED_COMPONENT_STRING_METHOD_RECEIVER", `${expr.method} requires a certified string expression`);
-        const expectedArgs = expr.method === "replaceAll" ? 2 : expr.method === "includes" ? 1 : 0;
-        require_(expr.args.length === expectedArgs, "CERTIFIED_COMPONENT_STRING_METHOD_ARITY", `${expr.method} expects ${expectedArgs} argument(s)`);
+        const expectedArgs = expr.method === "replaceAll" ? 2 : expr.method === "includes" || expr.method === "startsWith" || expr.method === "endsWith" ? 1 : expr.method === "slice" ? 1 : 0;
+        require_(expr.method === "slice" ? expr.args.length <= 2 && expr.args.length >= 1 : expr.args.length === expectedArgs, "CERTIFIED_COMPONENT_STRING_METHOD_ARITY", `${expr.method} expects ${expr.method === "slice" ? "one or two" : expectedArgs} argument(s)`);
         expr.args.forEach((arg) => {
           checkExpr(arg, scope);
-          require_(arg.kind === "literal" && arg.literal.type === "string", "CERTIFIED_COMPONENT_STRING_METHOD_ARGUMENT", `${expr.method} arguments must be string literals`);
+          const expectedType = expr.method === "slice" ? "number" : "string";
+          require_(arg.kind === "literal" && arg.literal.type === expectedType, "CERTIFIED_COMPONENT_STRING_METHOD_ARGUMENT", `${expr.method} arguments must be ${expectedType} literals`);
         });
         return;
       case "numericFunction":

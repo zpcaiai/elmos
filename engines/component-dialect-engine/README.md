@@ -87,8 +87,10 @@ destructured props object, `useState` state, and a single root element.
 - **State:** `useState` with a literal initial value (Vue: `ref()`).
 - **Expressions:** identifiers, literals, `! && || + - * / %`, comparisons,
   and ternaries, plus the bounded pure numeric functions `Math.min`/
-  `Math.max` (1–8 numeric arguments), the bounded pure string methods `trim`, `toUpperCase`,
-  `toLowerCase`, `replaceAll`, and `includes`. A stateless regular-expression
+  `Math.max` (1–8 numeric arguments) and unary `Math.floor`, `Math.ceil`,
+  `Math.abs`, the bounded pure string methods `trim`, `toUpperCase`,
+  `toLowerCase`, `replaceAll`, `includes`, `startsWith`, `endsWith`, and
+  literal-bound `slice`. A stateless regular-expression
   predicate is supported only as a literal or a module-scope static regex,
   with a 256-character pattern limit and `i/m/s/u` flags; global/sticky
   regexes remain blocked. No arbitrary function calls, no subscripts.

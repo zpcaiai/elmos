@@ -108,8 +108,13 @@ function exprSource(expr: Expr, scope: Scope): string {
       const op = expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
-    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method === "includes" ? "contains" : expr.method}(${expr.args.map((arg) => exprSource(arg, scope)).join(", ")})`;
-    case "numericFunction": return `math.${expr.function}(${expr.args.map((arg) => exprSource(arg, scope)).join(", ")})`;
+    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method === "includes" ? "contains" : expr.method === "slice" ? "substring" : expr.method}(${expr.args.map((arg) => exprSource(arg, scope)).join(", ")})`;
+    case "numericFunction": {
+      const args = expr.args.map((arg) => exprSource(arg, scope)).join(", ");
+      if (expr.function === "abs") return `${wrap(expr.args[0]!)}.abs()`;
+      if (expr.function === "floor" || expr.function === "ceil") return `${wrap(expr.args[0]!)}.${expr.function}()`;
+      return `math.${expr.function}(${args})`;
+    }
     case "cssModuleClass": return dartString(expr.className);
     case "regexTest": return `RegExp(${dartString(expr.pattern)}, caseSensitive: ${!expr.flags.includes("i")}, multiLine: ${expr.flags.includes("m")}, dotAll: ${expr.flags.includes("s")}).hasMatch(${exprSource(expr.operand, scope)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
