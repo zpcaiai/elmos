@@ -14,4 +14,7 @@ s.......................................FFF............................. [ 26%]
 ...............................................................FF....... [ 46%]
 FF.....................F................................................ [ 49%]
 .............FF.........FFFFFFFFFFFF.......F....FFFFFFFFFFFFFFFFFFFFFFFF [ 52%]
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 55%]
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.......F....FFFFFFFFFFFF [ 59%]
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 62%]
 FFFFFFFF

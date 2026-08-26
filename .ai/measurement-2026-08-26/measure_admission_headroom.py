@@ -62,6 +62,7 @@ SKIP_DIR_PARTS = {
 
 BIN_OPS = {ast.Add: "+", ast.Sub: "-", ast.Mult: "*", ast.Div: "/", ast.Mod: "%"}
 CMP_OPS = {ast.Lt, ast.LtE, ast.Gt, ast.GtE, ast.Eq, ast.NotEq}
+ORDERING_OPS = {ast.Lt, ast.LtE, ast.Gt, ast.GtE}
 
 # ---------------------------------------------------------------- Wall A ----
 
@@ -155,8 +156,16 @@ def _infer(node: ast.expr, env: dict[str, str]) -> str:
     return ""
 
 
-def expression_blockers(node: ast.expr, out: Counter[str], env: dict[str, str]) -> None:
+def expression_blockers(
+    node: ast.expr, out: Counter[str], env: dict[str, str], bound: set[str] | None = None
+) -> None:
     if isinstance(node, ast.Name):
+        # A name that is neither a parameter nor a `let` is a FREE VARIABLE --
+        # a module-level global. `types.infer` refuses it as `UNDECLARED_NAME`,
+        # and the mirror used to accept it silently, which is how it reported
+        # 11 functions as "one annotation away" when the analyzer accepts 5.
+        if bound is not None and node.id not in bound:
+            out[f"expr:Name:free-variable:{node.id}"] += 1
         return
     if isinstance(node, ast.Constant):
         if isinstance(node.value, str | int | float | bool):
@@ -168,36 +177,48 @@ def expression_blockers(node: ast.expr, out: Counter[str], env: dict[str, str]) 
             # `_reject_python_only_arithmetic`: `%` never survives lifting
             # (Python follows the sign of the divisor, the C family truncates),
             # and `/` on two integers is true division in Python only.
+            left_type, right_type = _infer(node.left, env), _infer(node.right, env)
+            if "str" in (left_type, right_type) and not (
+                isinstance(node.op, ast.Add) and left_type == right_type == "str"
+            ):
+                # `types.infer`: only `+` on two strings is defined. `"-" * n`
+                # is `OPERAND_TYPE_MISMATCH:*:string:...`, not a supported
+                # operator. The mirror used to wave every arithmetic operator
+                # through without looking at the operand types.
+                out[f"expr:BinOp:{type(node.op).__name__}:non-numeric-operand"] += 1
             if isinstance(node.op, ast.Mod):
                 out["expr:BinOp:Mod:python-floored"] += 1
-            elif isinstance(node.op, ast.Div) and (
-                _infer(node.left, env) == "int" and _infer(node.right, env) == "int"
-            ):
+            elif isinstance(node.op, ast.Div) and left_type == right_type == "int":
                 out["expr:BinOp:Div:python-true-division"] += 1
-            expression_blockers(node.left, out, env)
-            expression_blockers(node.right, out, env)
+            expression_blockers(node.left, out, env, bound)
+            expression_blockers(node.right, out, env, bound)
             return
         out[f"expr:BinOp:{type(node.op).__name__}"] += 1
-        expression_blockers(node.left, out, env)
-        expression_blockers(node.right, out, env)
+        expression_blockers(node.left, out, env, bound)
+        expression_blockers(node.right, out, env, bound)
         return
     if isinstance(node, ast.Compare):
         if len(node.ops) == 1 and len(node.comparators) == 1 and type(node.ops[0]) in CMP_OPS:
-            expression_blockers(node.left, out, env)
-            expression_blockers(node.comparators[0], out, env)
+            if type(node.ops[0]) in ORDERING_OPS and "str" in (
+                _infer(node.left, env), _infer(node.comparators[0], env)
+            ):
+                # Java orders strings by UTF-16 code unit, Python by code point.
+                out["expr:Compare:string-ordering"] += 1
+            expression_blockers(node.left, out, env, bound)
+            expression_blockers(node.comparators[0], out, env, bound)
             return
         if len(node.ops) != 1:
             out["expr:Compare:chained"] += 1
         else:
             out[f"expr:Compare:{type(node.ops[0]).__name__}"] += 1
-        expression_blockers(node.left, out, env)
+        expression_blockers(node.left, out, env, bound)
         for comparator in node.comparators:
-            expression_blockers(comparator, out, env)
+            expression_blockers(comparator, out, env, bound)
         return
     if isinstance(node, ast.BoolOp):
         # 2026-08-26: any arity is lifted by a left fold.
         for value in node.values:
-            expression_blockers(value, out, env)
+            expression_blockers(value, out, env, bound)
         return
     if isinstance(node, ast.UnaryOp):
         # 2026-08-26: a signed numeric literal folds into the literal, and
@@ -210,17 +231,17 @@ def expression_blockers(node: ast.expr, out: Counter[str], env: dict[str, str]) 
                     and isinstance(operand.value, int | float)):
                 return
             out["expr:UnaryOp:sign-on-expression"] += 1
-            expression_blockers(operand, out, env)
+            expression_blockers(operand, out, env, bound)
             return
         if isinstance(node.op, ast.Not):
             if _infer(operand, env) != "bool":
                 # Python truthiness -- fails in the type checker as
                 # OPERAND_TYPE_MISMATCH:==
                 out["expr:UnaryOp:Not:non-boolean-operand"] += 1
-            expression_blockers(operand, out, env)
+            expression_blockers(operand, out, env, bound)
             return
         out[f"expr:UnaryOp:{type(node.op).__name__}"] += 1
-        expression_blockers(operand, out, env)
+        expression_blockers(operand, out, env, bound)
         return
     if isinstance(node, ast.Call):
         func = node.func
@@ -237,33 +258,35 @@ def expression_blockers(node: ast.expr, out: Counter[str], env: dict[str, str]) 
             # (The mirror-vs-analyzer assertion does not catch this: it only
             # validates functions with ZERO blockers, and a function with a
             # missed blocker still has the others.)
-            expression_blockers(func.value, out, env)
+            expression_blockers(func.value, out, env, bound)
         else:
             out["expr:Call:other"] += 1
-            expression_blockers(func, out, env)
+            expression_blockers(func, out, env, bound)
         for arg in node.args:
-            expression_blockers(arg, out, env)
+            expression_blockers(arg, out, env, bound)
         for keyword in node.keywords:
-            expression_blockers(keyword.value, out, env)
+            expression_blockers(keyword.value, out, env, bound)
         return
     out[f"expr:{type(node).__name__}"] += 1
     for child in ast.iter_child_nodes(node):
         if isinstance(child, ast.expr):
-            expression_blockers(child, out, env)
+            expression_blockers(child, out, env, bound)
 
 
-def statement_blockers(nodes: list[ast.stmt], out: Counter[str], env: dict[str, str]) -> None:
+def statement_blockers(
+    nodes: list[ast.stmt], out: Counter[str], env: dict[str, str], bound: set[str]
+) -> None:
     for node in nodes:
         if isinstance(node, ast.Return):
             if node.value is None:
                 out["stmt:Return:bare"] += 1
             else:
-                expression_blockers(node.value, out, env)
+                expression_blockers(node.value, out, env, bound)
         elif isinstance(node, ast.If):
-            expression_blockers(node.test, out, env)
+            expression_blockers(node.test, out, env, bound)
             # branches get a copy, matching `_check_statements`'s scope rule
-            statement_blockers(node.body, out, dict(env))
-            statement_blockers(node.orelse, out, dict(env))
+            statement_blockers(node.body, out, dict(env), set(bound))
+            statement_blockers(node.orelse, out, dict(env), set(bound))
         elif isinstance(node, ast.AnnAssign):
             if node.value is None:
                 out["stmt:AnnAssign:no-value"] += 1
@@ -273,23 +296,28 @@ def statement_blockers(nodes: list[ast.stmt], out: Counter[str], env: dict[str, 
             bucket, rendered = classify_annotation(node.annotation)
             if bucket != "CANONICAL":
                 out[f"stmt:AnnAssign:type:{bucket}"] += 1
-            expression_blockers(node.value, out, env)
+            expression_blockers(node.value, out, env, bound)
             # bind AFTER the initializer, never before -- same as the analyzer
-            if bucket == "CANONICAL" and isinstance(node.target, ast.Name):
-                env[node.target.id] = rendered
+            if isinstance(node.target, ast.Name):
+                bound.add(node.target.id)
+                if bucket == "CANONICAL":
+                    env[node.target.id] = rendered
         elif isinstance(node, ast.Assign):
             out["stmt:Assign:unannotated"] += 1
-            expression_blockers(node.value, out, env)
+            expression_blockers(node.value, out, env, bound)
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    bound.add(target.id)
         elif isinstance(node, ast.Expr):
             out["stmt:Expr"] += 1
-            expression_blockers(node.value, out, env)
+            expression_blockers(node.value, out, env, bound)
         else:
             out[f"stmt:{type(node).__name__}"] += 1
             for child in ast.iter_child_nodes(node):
                 if isinstance(child, ast.expr):
-                    expression_blockers(child, out, env)
+                    expression_blockers(child, out, env, bound)
                 elif isinstance(child, ast.stmt):
-                    statement_blockers([child], out, env)
+                    statement_blockers([child], out, env, bound)
 
 
 def strip_docstring(body: list[ast.stmt]) -> list[ast.stmt]:
@@ -366,8 +394,12 @@ def main() -> int:
                     if isinstance(arg.annotation, ast.Name)
                     and arg.annotation.id in CANONICAL_TYPES
                 }
+                bound = {
+                    arg.arg
+                    for arg in [*fn.args.posonlyargs, *fn.args.args, *fn.args.kwonlyargs]
+                }
                 try:
-                    statement_blockers(strip_docstring(fn.body), body, env)
+                    statement_blockers(strip_docstring(fn.body), body, env, bound)
                 except RecursionError:
                     body["stmt:ANALYZER_RECURSION"] += 1
 

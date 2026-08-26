@@ -156,6 +156,26 @@ def literal(value: int, kind: str, style: str) -> str:
     return str(value)
 
 
+def _dotnet_target_framework(executable: str) -> str:
+    """Target the SDK that is actually installed, not a hard-wired TFM.
+
+    A pinned `net8.0` fails on a machine that only has .NET 10 with
+    "To install missing framework ... framework_version=8.0.0", which says
+    nothing about the emitted C# and everything about this harness. The
+    emitted unit is plain static methods over long/double/bool, so any
+    modern TFM is equally valid -- pick the one that is present.
+    """
+
+    try:
+        proc = subprocess.run(
+            [executable, "--version"], capture_output=True, text=True, timeout=120
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return "net8.0"
+    major = proc.stdout.strip().split(".")[0]
+    return f"net{major}.0" if major.isdigit() else "net8.0"
+
+
 @dataclasses.dataclass(frozen=True)
 class Target:
     style: str
@@ -193,9 +213,15 @@ TARGETS: dict[str, Target] = {
                   ("#include <iostream>", "int main() {"), ("    return 0;", "}"), "drive.cpp", True,
                   (("{exe}", "-std=c++17", "-o", "drive", "drive.cpp"),), ("./drive",),
                   ("cpp", "bin/g++", "g++")),
+    # `-framework Foundation` is REQUIRED: the emitted unit raises
+    # `[NSException raise:...]` for the R1 overflow guard, so dropping the
+    # framework compiles and then fails at LINK time with
+    # "symbol(s) not found for architecture arm64". (It was dropped once to
+    # get past a Linux container that has no Foundation at all -- that fixed
+    # the wrong end. On Linux this target is NOT_RUN either way.)
     "objc": Target("objc", '    printf("{n}|{i}|%s\\n", elmos_render({call}));',
                    ("#include <stdio.h>", "int main() {"), ("    return 0;", "}"), "drive.m", True,
-                   (("{exe}", "-o", "drive", "drive.m"),), ("./drive",),
+                   (("{exe}", "-framework", "Foundation", "-o", "drive", "drive.m"),), ("./drive",),
                    ("objc", "bin/clang", "clang")),
     "swift": Target("swift", '    print("{n}|{i}|\\({call})")',
                     ("func elmosMain() {",), ("}", "elmosMain()"), "drive.swift", True,
@@ -253,9 +279,11 @@ def run_target(language: str, out: Path, ir, cases: dict[str, list[list[int]]],
     lines += list(spec.footer)
     (out / language / spec.filename).write_text("\n".join(lines) + "\n", encoding="utf-8")
     if language == "csharp":
+        target_framework = _dotnet_target_framework(executable)
         (out / language / "drive.csproj").write_text(
             "<Project Sdk=\"Microsoft.NET.Sdk\"><PropertyGroup>"
-            "<OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework>"
+            "<OutputType>Exe</OutputType>"
+            f"<TargetFramework>{target_framework}</TargetFramework>"
             "<Nullable>disable</Nullable><StartupObject>Drive</StartupObject>"
             "</PropertyGroup></Project>\n", encoding="utf-8")
 
