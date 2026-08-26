@@ -114,6 +114,29 @@ class SpringExternalReadinessTests(unittest.TestCase):
         run.assert_called_once()
         sleep.assert_not_called()
 
+    def test_rootless_preflight_bounds_transient_engine_retries(self) -> None:
+        unavailable = subprocess.CompletedProcess(
+            args=[],
+            returncode=2,
+            stdout=json.dumps({"reason": "CONTAINER_ENGINE_UNAVAILABLE"}),
+            stderr="",
+        )
+        with tempfile.TemporaryDirectory(prefix="spring-readiness-engine-") as directory:
+            engine = Path(directory) / "podman"
+            engine.touch()
+            with patch.object(
+                READINESS.subprocess, "run", return_value=unavailable
+            ) as run, patch.object(READINESS.time, "sleep") as sleep:
+                result = READINESS.rootless_preflight(engine)
+
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["reason"], "CONTAINER_ENGINE_UNAVAILABLE")
+        self.assertEqual(result["attempts"], READINESS.PREFLIGHT_MAX_ATTEMPTS)
+        self.assertEqual(run.call_count, READINESS.PREFLIGHT_MAX_ATTEMPTS)
+        self.assertEqual(
+            sleep.call_count, READINESS.PREFLIGHT_MAX_ATTEMPTS - 1
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
