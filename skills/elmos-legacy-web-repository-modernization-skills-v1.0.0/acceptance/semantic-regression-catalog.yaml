@@ -1,0 +1,777 @@
+catalogVersion: 1.0.0
+requiredForE4: all critical cases applicable to the repository plus generated repository-specific cases
+cases:
+- id: S1-PIPE-001
+  name: Struts1 RequestProcessor custom preprocess short-circuit
+  domain: struts1
+  severity: critical
+  observables:
+  - pipeline
+  - response
+  - effects
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S1-FORM-001
+  name: request-scope ActionForm reset-populate-validate
+  domain: struts1
+  severity: critical
+  observables:
+  - binding
+  - validation
+  - navigation
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S1-FORM-002
+  name: session-scope checkbox reset to false when missing
+  domain: struts1
+  severity: critical
+  observables:
+  - session
+  - binding
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S1-FORM-003
+  name: DynaActionForm typed array and initial value
+  domain: struts1
+  severity: high
+  observables:
+  - binding
+  - session
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S1-DISP-001
+  name: DispatchAction method selected by parameter
+  domain: struts1
+  severity: critical
+  observables:
+  - route
+  - handler
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S1-DISP-002
+  name: LookupDispatchAction locale message-key mapping
+  domain: struts1
+  severity: high
+  observables:
+  - i18n
+  - handler
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S1-NAV-001
+  name: ActionForward module-relative forward
+  domain: struts1
+  severity: critical
+  observables:
+  - dispatch
+  - request-state
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S1-NAV-002
+  name: ActionForward context-relative redirect with encoded URL
+  domain: struts1
+  severity: critical
+  observables:
+  - status
+  - location
+  - session-id
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S1-EX-001
+  name: local exception mapping overrides global mapping
+  domain: struts1
+  severity: critical
+  observables:
+  - exception
+  - transaction
+  - navigation
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S1-MSG-001
+  name: session ActionMessages consumed once after access
+  domain: struts1
+  severity: high
+  observables:
+  - session
+  - view
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S1-UP-001
+  name: multipart finish and rollback lifecycle
+  domain: struts1
+  severity: critical
+  observables:
+  - upload
+  - effects
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S1-CONC-001
+  name: shared Action mutable field under parallel requests
+  domain: struts1
+  severity: critical
+  observables:
+  - concurrency
+  - state
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-INT-001
+  name: interceptor before/action/after unwind order
+  domain: struts2
+  severity: critical
+  observables:
+  - pipeline
+  - trace
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-INT-002
+  name: validation interceptor short-circuits action
+  domain: struts2
+  severity: critical
+  observables:
+  - validation
+  - effects
+  - result
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-INT-003
+  name: custom interceptor catches exception and changes result
+  domain: struts2
+  severity: critical
+  observables:
+  - exception
+  - result
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-INT-004
+  name: interceptor-ref parameter overrides stack default
+  domain: struts2
+  severity: high
+  observables:
+  - config
+  - pipeline
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-PREP-001
+  name: prepare/model-driven/params ordering
+  domain: struts2
+  severity: critical
+  observables:
+  - binding
+  - pipeline
+  - model
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-OGNL-001
+  name: ValueStack resolution with nested model/action
+  domain: struts2
+  severity: critical
+  observables:
+  - view-model
+  - binding
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-CONV-001
+  name: custom type converter and conversion error message
+  domain: struts2
+  severity: high
+  observables:
+  - binding
+  - validation
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-TOKEN-001
+  name: duplicate submission blocked without repeated DB write
+  domain: struts2
+  severity: critical
+  observables:
+  - security
+  - session
+  - database
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-ROLE-001
+  name: role interceptor denial result
+  domain: struts2
+  severity: critical
+  observables:
+  - security
+  - result
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-RES-001
+  name: wildcard result fallback
+  domain: struts2
+  severity: high
+  observables:
+  - result
+  - navigation
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-RES-002
+  name: redirectAction namespace and parameter propagation
+  domain: struts2
+  severity: critical
+  observables:
+  - redirect
+  - params
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-CHAIN-001
+  name: action chain reaches final non-chain result
+  domain: struts2
+  severity: critical
+  observables:
+  - pipeline
+  - state
+  - result
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-STREAM-001
+  name: stream result content type/length/checksum
+  domain: struts2
+  severity: critical
+  observables:
+  - streaming
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: S2-ASYNC-001
+  name: async action context and exception result
+  domain: struts2
+  severity: critical
+  observables:
+  - async
+  - context
+  - result
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-MAP-001
+  name: exact/path/extension/default servlet mapping precedence
+  domain: servlet
+  severity: critical
+  observables:
+  - route
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-FILTER-001
+  name: filter order across REQUEST/FORWARD/ERROR
+  domain: servlet
+  severity: critical
+  observables:
+  - filter
+  - dispatch
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-FILTER-002
+  name: filter mapped by servlet-name and URL pattern
+  domain: servlet
+  severity: high
+  observables:
+  - filter
+  - route
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-LIFE-001
+  name: servlet/filter/listener init-destroy order
+  domain: servlet
+  severity: high
+  observables:
+  - lifecycle
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-FWD-001
+  name: forward preserves attributes and resets buffer
+  domain: servlet
+  severity: critical
+  observables:
+  - dispatch
+  - response
+  - request-state
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-INC-001
+  name: include cannot change committed headers as legacy
+  domain: servlet
+  severity: critical
+  observables:
+  - dispatch
+  - response
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-ERR-001
+  name: error page receives status/exception/request URI/query attributes
+  domain: servlet
+  severity: critical
+  observables:
+  - error-dispatch
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-ASYNC-001
+  name: async timeout/error/complete listener sequence
+  domain: servlet
+  severity: critical
+  observables:
+  - async
+  - lifecycle
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-STREAM-001
+  name: writer/outputstream mutual-exclusion and encoding
+  domain: servlet
+  severity: critical
+  observables:
+  - streaming
+  - encoding
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-SESS-001
+  name: session timeout/cookie/path/tracking mode
+  domain: servlet
+  severity: critical
+  observables:
+  - session
+  - cookie
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-SEC-001
+  name: security-constraint HTTP-method/role/transport guarantee
+  domain: servlet
+  severity: critical
+  observables:
+  - security
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-FRAG-001
+  name: web.xml/web-fragment merge and conflict failure
+  domain: servlet
+  severity: critical
+  observables:
+  - deployment
+  - route
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-JNDI-001
+  name: resource-ref lookup type and container binding
+  domain: servlet
+  severity: critical
+  observables:
+  - resource
+  - deployment
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SV-CL-001
+  name: WEB-INF/shared library classloader behavior
+  domain: servlet
+  severity: high
+  observables:
+  - classloader
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: VIEW-JSP-001
+  name: JSP request/session/application scope lookup
+  domain: view
+  severity: high
+  observables:
+  - view-model
+  - state
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: VIEW-TAG-001
+  name: custom tag lifecycle/body and side effect
+  domain: view
+  severity: critical
+  observables:
+  - view
+  - effects
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: VIEW-TILES-001
+  name: Tiles definition inheritance and dynamic attribute
+  domain: view
+  severity: high
+  observables:
+  - view
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: VIEW-I18N-001
+  name: message bundle fallback and parameter interpolation
+  domain: view
+  severity: high
+  observables:
+  - i18n
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: VIEW-ERR-001
+  name: JSP errorPage/isErrorPage exception access
+  domain: view
+  severity: high
+  observables:
+  - error
+  - view
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: TX-001
+  name: checked/unchecked exception rollback parity
+  domain: cross-cutting
+  severity: critical
+  observables:
+  - transaction
+  - database
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: TX-002
+  name: nested/manual commit partial write parity
+  domain: cross-cutting
+  severity: critical
+  observables:
+  - transaction
+  - database
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: EFFECT-001
+  name: DB+JMS effect order and commit visibility
+  domain: cross-cutting
+  severity: critical
+  observables:
+  - database
+  - message
+  - transaction
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: EFFECT-002
+  name: external HTTP retry/idempotency key parity
+  domain: cross-cutting
+  severity: critical
+  observables:
+  - http-effect
+  - retry
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: SEC-001
+  name: login success/failure/expired session/anonymous matrix
+  domain: cross-cutting
+  severity: critical
+  observables:
+  - security
+  - session
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: BIND-001
+  name: mass-assignment forbidden property remains unbound
+  domain: cross-cutting
+  severity: critical
+  observables:
+  - binding
+  - security
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: ENC-001
+  name: non-ASCII request/response and redirect encoding
+  domain: cross-cutting
+  severity: critical
+  observables:
+  - encoding
+  - protocol
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: CONC-001
+  name: same-session parallel request state update
+  domain: cross-cutting
+  severity: critical
+  observables:
+  - concurrency
+  - session
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: FAULT-001
+  name: client disconnect during stream/write
+  domain: cross-cutting
+  severity: high
+  observables:
+  - fault
+  - transaction
+  - stream
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified
+- id: DEPLOY-001
+  name: context path/welcome/error/static/MIME parity
+  domain: deployment
+  severity: critical
+  observables:
+  - deployment
+  - protocol
+  requiredArtifacts:
+  - behavior-contract
+  - legacy-observation
+  - target-observation
+  - equivalence-result
+  - evidenceRefs
+  pass: no unapproved semantic mismatch; all critical observables verified

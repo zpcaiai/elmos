@@ -1,0 +1,120 @@
+mappingVersion: 1.0.0
+effectiveMergeOrder:
+- web.xml metadata-complete decision
+- annotation processing
+- web-fragment discovery/order
+- web.xml overrides/merge
+- programmatic registration
+- container-specific descriptor/runtime overrides
+elements:
+- element: servlet/servlet-mapping
+  target:
+  - '@RequestMapping'
+  - ServletRegistrationBean
+  mustPreserve:
+  - name
+  - class
+  - init-param
+  - load-on-startup
+  - async-supported
+  - url patterns
+- element: filter/filter-mapping
+  target:
+  - FilterRegistrationBean
+  mustPreserve:
+  - order
+  - url/servlet-name
+  - dispatcher
+  - async-supported
+- element: listener
+  target:
+  - Jakarta listener
+  - Spring lifecycle/event
+  mustPreserve:
+  - callback semantics
+  - order
+- element: context-param
+  target:
+  - ConfigurationProperties
+  - ServletContextInitializer
+  mustPreserve:
+  - effective value
+  - scope
+- element: session-config
+  target:
+  - server.servlet.session
+  - Spring Session/container customizer
+  mustPreserve:
+  - timeout
+  - cookie
+  - tracking modes
+- element: error-page
+  target:
+  - ErrorController
+  - ExceptionResolver
+  - container page
+  mustPreserve:
+  - code/exception precedence
+  - attributes
+  - status
+- element: security-constraint
+  target:
+  - SecurityFilterChain
+  mustPreserve:
+  - patterns
+  - methods
+  - roles
+  - transport guarantee
+- element: login-config
+  target:
+  - Spring Security auth entry point
+  mustPreserve:
+  - auth method
+  - realm
+  - form pages
+- element: security-role
+  target:
+  - authority catalog
+  mustPreserve:
+  - role names
+- element: welcome-file-list
+  target:
+  - resource/controller mappings
+  mustPreserve:
+  - order
+  - partial/exact mapping behavior
+- element: mime-mapping
+  target:
+  - container/WebMvcConfigurer
+  mustPreserve:
+  - extension
+  - mime
+- element: jsp-config
+  target:
+  - JSP/container config
+  mustPreserve:
+  - property groups
+  - taglibs
+  - EL/scripting/encoding
+- element: resource-ref/env-entry
+  target:
+  - Spring beans/config/JNDI bridge
+  mustPreserve:
+  - name
+  - type
+  - auth
+  - sharing scope
+  - injection targets
+- element: distributable
+  target:
+  - session serialization/cluster policy
+  mustPreserve:
+  - replication requirements
+- element: absolute-ordering/ordering
+  target:
+  - effective descriptor compiler
+  mustPreserve:
+  - fragment order
+  - excluded fragments
+conflicts: Any conflict that would make the legacy application fail deployment must not be silently resolved in
+  target generation.

@@ -1,0 +1,97 @@
+policyVersion: 1.0.0
+dimensions:
+- id: businessCriticality
+  weight: 0.2
+  levels:
+    low: 1
+    medium: 2
+    high: 4
+    critical: 5
+- id: statefulness
+  weight: 0.14
+  levels:
+    stateless: 0
+    request: 1
+    session: 3
+    cross-system: 5
+- id: sideEffects
+  weight: 0.16
+  levels:
+    none: 0
+    read: 1
+    single-write: 3
+    distributed-write: 5
+- id: security
+  weight: 0.14
+  levels:
+    public: 1
+    authenticated: 2
+    role-sensitive: 4
+    privileged: 5
+- id: concurrency
+  weight: 0.1
+  levels:
+    none: 0
+    shared-read: 1
+    shared-write: 4
+    async-distributed: 5
+- id: evidenceGap
+  weight: 0.12
+  levels:
+    confirmed: 0
+    partial: 2
+    inferred: 4
+    unknown: 5
+- id: migrationComplexity
+  weight: 0.08
+  levels:
+    direct: 1
+    adapter: 2
+    custom-pipeline: 4
+    dynamic: 5
+- id: rollbackCost
+  weight: 0.06
+  levels:
+    route-only: 1
+    app-deploy: 2
+    data: 4
+    irreversible-external: 5
+thresholds:
+  low:
+  - 0
+  - 1.5
+  medium:
+  - 1.5
+  - 2.5
+  high:
+  - 2.5
+  - 3.8
+  critical:
+  - 3.8
+  - 5.0
+consequences:
+  low:
+    differentialSample: 0.25
+    autoRepair: standard
+    cutover: batch
+  medium:
+    differentialSample: 0.75
+    autoRepair: bounded
+    cutover: canary
+  high:
+    differentialSample: 1.0
+    autoRepair: restricted
+    cutover: shadow+canary
+  critical:
+    differentialSample: 1.0
+    autoRepair: approval-required
+    cutover: shadow+manual-gate+canary
+automaticCriticalSignals:
+- payment/financial write
+- authorization decision
+- PII/secret handling
+- distributed transaction
+- irreversible external effect
+- session identity
+- custom classloader/native code
+- critical unknown

@@ -1,0 +1,47 @@
+{
+  "mapVersion": "1.0.0",
+  "repositorySnapshotId": "snapshot-demo-001",
+  "targetDigest": "sha256:target",
+  "mappings": [
+    {
+      "id": "map:orders-create",
+      "legacyEvidenceRefs": [
+        "route:orders-create",
+        "symbol:CreateOrderAction",
+        "ev:form-reset"
+      ],
+      "irNodeRefs": [
+        "endpoint:orders-create",
+        "pipeline:orders-create",
+        "binding:customerId"
+      ],
+      "decisionRefs": [
+        "decision:preserve-forward",
+        "decision:form-lifecycle-shim"
+      ],
+      "targetLocations": [
+        {
+          "uri": "git://target@def/src/main/java/com/acme/orders/CreateOrderController.java",
+          "lineStart": 20,
+          "lineEnd": 85
+        },
+        {
+          "uri": "git://target@def/src/main/java/com/acme/legacycompat/OrderFormBinder.java",
+          "lineStart": 1,
+          "lineEnd": 120
+        }
+      ],
+      "testRefs": [
+        "scenario:create-order-success"
+      ],
+      "verificationRefs": [
+        "report:equiv-demo"
+      ],
+      "recipe": {
+        "id": "org.elmos.legacyweb.Struts1ActionToController",
+        "version": "1.0.0"
+      },
+      "modelGeneration": null
+    }
+  ]
+}

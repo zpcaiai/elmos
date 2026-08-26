@@ -129,6 +129,11 @@ project-intelligence-skills:
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/qualify_project_intelligence_runtime.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_project_intelligence_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/project-intelligence-skills -p 'test_*.py'
+.PHONY: legacy-web-modernization-skills
+legacy-web-modernization-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_legacy_web_modernization_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/legacy-web-modernization-engine/src python3 -m unittest discover -s engines/legacy-web-modernization-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/legacy-web-modernization-engine/src python3 -m elmos_legacy_web_modernization.cli validate
 .PHONY: autonomous-qa-self-healing-skills
 autonomous-qa-self-healing-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_autonomous_qa_self_healing_skills.py --check

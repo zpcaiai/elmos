@@ -1,0 +1,50 @@
+policyVersion: 1.0.0
+default: deny
+profiles:
+  scan-readonly:
+    filesystem: repository-read
+    network: deny-except-dependency-metadata
+    database: none
+    secrets: none
+    commands: parser-only
+  build-sandbox:
+    filesystem: workspace-rw
+    network: allowlisted-artifact-repositories
+    database: test-only
+    secrets: test-ref-only
+    commands: build-tool-allowlist
+  test-sandbox:
+    filesystem: workspace-rw
+    network: stub/allowlist
+    database: isolated-clone
+    secrets: test-ref-only
+    commands: test-tool-allowlist
+  transform:
+    filesystem: workspace-rw
+    network: deny
+    database: none
+    secrets: none
+    commands: rewrite/format
+  production-cutover:
+    filesystem: artifact-read
+    network: deployment-target
+    database: migration-scoped
+    secrets: deployment-ref
+    commands: signed-runbook
+    approval: required
+ownership:
+  bindTo: Environment/Attachment
+  captureSnapshotAtPublish: true
+  refreshDoesNotWidenExistingOwner: true
+  unresolvedAuthority: fail-closed
+  fencingRequiredForWrites: true
+audit:
+- jobId
+- stepId
+- attemptId
+- ownerEnvironmentId
+- permissionProfileHash
+- tool
+- argumentsDigest
+- resultDigest
+- timestamp

@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/behavior-contract.schema.json",
+  "title": "Behavior Contract",
+  "type": "object",
+  "required": [
+    "contractVersion",
+    "scenarios"
+  ],
+  "properties": {
+    "contractVersion": {
+      "type": "string"
+    },
+    "repositorySnapshotId": {
+      "type": "string"
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "risk",
+          "steps",
+          "assertions",
+          "evidenceRefs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "risk": {
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "preconditions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "request"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "request": {
+                  "type": "object"
+                },
+                "clock": {
+                  "type": "string"
+                },
+                "identity": {
+                  "type": "object"
+                },
+                "expectedState": {
+                  "type": "object"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "assertions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "normalizers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
