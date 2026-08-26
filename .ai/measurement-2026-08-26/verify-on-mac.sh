@@ -87,9 +87,18 @@ cat <<'NOTE'
                             refusing is CORRECT. They must AGREE on `safe_integer`.
     DIVERGES                a real defect -- report it, do not average it away
     NOT_RUN                 never counts as a pass; the reason is in the JSON
-  Every row records which binary was used (PINNED:/PATH:/ENV:) and its version.
-  If a row says PATH: where you expected PINNED:, the pinned toolchain did not
-  resolve and that row is Mac-runtime evidence, not pinned-toolchain evidence.
+  Every row records which binary was used and its version, GRADED:
+    EXACT:   the engine's own exact_toolchain() accepted it -- version AND
+             sha256 checked against the repository pin (Xcode+SDK too, for
+             cpp/objc/swift). This is pinned-toolchain evidence.
+    PINNED:  exactly one version directory under the toolchain root. The path
+             is named; nothing about its contents was verified.
+    PATH:    whatever `which` found. Mac-runtime evidence only.
+    ENV:     you named it yourself via ELMOS_DIFF_<LANG>. Asserts nothing.
+  A weaker grade ALWAYS carries the reason EXACT was unavailable in parentheses
+  -- e.g. `PATH:/usr/bin/clang++ (EXACT_REFUSED:EXACT_TOOLCHAIN_APPLE_PROFILE_
+  MISMATCH:cpp:...)`. If you see that, the row ran on a binary the repository
+  does not pin, and the code tells you exactly which pin failed.
 NOTE
 
 printf '\n'

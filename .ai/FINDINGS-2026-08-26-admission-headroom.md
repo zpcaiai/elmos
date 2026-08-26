@@ -274,16 +274,51 @@ Objective-C(`LLONG_MIN`) 四套补偿——**目标侧一直在支持一个源�
 
 ### 执行证据（`canonical.evaluate` 是参照，不是某个目标）
 
-45 组参数向量 × 13 个目标：
+在 Mac 上跑满 13 个目标（云端只到 7 个——csharp / objc / swift / kotlin / flutter
+在任何 Linux 容器里都没有工具链）：
 
 ```
-java  python  go  rust  cpp  php     AGREES_WITH_CANONICAL   45/45
-typescript, react                    EMISSION_REFUSED  INTEGER_LITERAL_UNSAFE_*
-csharp, objc, swift, kotlin, flutter NOT_RUN（本容器无工具链）
+full 套件（45 向量）
+  java python csharp go rust cpp objc swift php kotlin flutter   AGREES 45/45  (11)
+  typescript, react                    EMISSION_REFUSED:INTEGER_LITERAL_UNSAFE_*
+
+safe_integer 套件（44 向量）
+  上面 11 个 + typescript                                        AGREES 44/44  (12)
+  react                                无可执行驱动，发射结果即其证据
 ```
 
-TypeScript/React 的**拒绝本身就是证据**：`-9223372036854775808` 超出
-`Number.MAX_SAFE_INTEGER`，发射器拒绝给出一个错的常量。这条 R 规则以前永远走不到。
+TypeScript/React 在 `full` 上的**拒绝本身就是证据**：`-9223372036854775808` 超出
+`Number.MAX_SAFE_INTEGER`，发射器拒绝给出一个错的常量而不是给个近似值。
+**这条 R 规则以前永远走不到**——源侧根本产不出负字面量。它们在 `safe_integer`
+上 44/44，证明拒绝是针对那一个值的，不是整套都不行。
+
+### 证据分两级，不能混着报
+
+| | 目标 | 说明 |
+|---|---|---|
+| **`PINNED:` 钉死工具链** | go 1.25.0、rust 1.89.0、php 8.4.12、kotlin 2.2.20 | 从 `~/.local/share/elmos/toolchains/<lang>/<版本>/` 解析出来的 |
+| **`PATH:` Mac 运行时** | java(sdkman 21.0.11-tem)、python(引擎 venv)、csharp/flutter(Homebrew)、typescript(Homebrew node)、cpp/objc/swift(Xcode 自带) | **不等于**仓库钉的那份 |
+
+`toolchains.py` 钉的 dart 是 Flutter 3.44.1 捆绑的 Dart 3.12.1、node 是 Homebrew
+node 26.0.0——和 PATH 上那个大概率不是同一个。每行用的二进制路径与 `--version`
+都记在证据 JSON 里，要升级成钉死证据用 `ELMOS_DIFF_<LANG>=<绝对路径>` 重跑即可。
+
+### 两个 DIVERGES 都是差分器自己的 bug，不是引擎
+
+说过 `DIVERGES` 当场查、不平均掉。查完两条都是我的驱动：
+
+- **csharp**：csproj 写死 `net8.0`，在只装了 .NET 10 的机器上报
+  `framework_version=8.0.0` 缺失。改成 `dotnet --version` 取主版本。
+- **objc**：只有一个 `elmos_render(long long)`，把布尔打成 `0/1`，
+  并在传参时把 `-2.5` 隐式截成 `-2`。45 − 27 = 18，正好是它报的 `18/45`——
+  **算术对得上，诊断才站得住**。改成按函数**声明的返回类型**选
+  `elmos_render_i/_d/_b`；遇到没有渲染器的返回类型直接 `NOT_RUN` 并写明
+  「拒绝打印而不是错误地打印」。
+
+Objective-C 那条还有一段来回：为了让 Linux 容器编过，我先把
+`-framework Foundation` 拿掉了——而发射出的单元用 `[NSException raise:]` 做 R1
+溢出保护，于是 Mac 上变成链接期失败。**修了错的那一头。**
+在 Linux 上这个目标本来就是 NOT_RUN，根本不该为它改。
 
 ### 准入率：**1/16046 → 1/16046，没有变**
 
