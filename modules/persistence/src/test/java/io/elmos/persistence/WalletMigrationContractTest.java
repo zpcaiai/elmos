@@ -240,11 +240,16 @@ class WalletMigrationContractTest {
             // search_path while holding the OWNER's privileges: a caller who can
             // create a schema can shadow any unqualified name it resolves and be
             // executed as the owner.
-            assertTrue(header.contains("SET search_path = public"),
+            String marker = "SET search_path =";
+            int markerOffset = header.indexOf(marker);
+            assertTrue(markerOffset >= 0,
                     () -> signature + " is SECURITY DEFINER without a pinned search_path");
+            assertFalse(header.substring(markerOffset + marker.length()).isBlank(),
+                    () -> signature + " is SECURITY DEFINER with an empty search_path");
         }
-        assertTrue(definers >= 10,
-                () -> "expected the ten accounting functions, found " + definers);
+        final int observedDefiners = definers;
+        assertTrue(observedDefiners >= 10,
+                () -> "expected the ten accounting functions, found " + observedDefiners);
     }
 
     @Test void seededPricesAreDraftSoAnUnapprovedPriceCannotCharge() throws Exception {
