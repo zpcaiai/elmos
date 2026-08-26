@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "passed",
-  "executed_at": "2026-08-25T17:18:05Z",
+  "executed_at": "2026-08-26T04:39:56Z",
   "executor": "local-codex-session",
   "environment": {
     "node": "v26.0.0",
@@ -9,14 +9,14 @@
     "playwright": "1.61.1",
     "browser_project": "chromium"
   },
-  "command": "ELMOS_E2E_PORT=4462 ELMOS_E2E_GITHUB_PORT=4562 ELMOS_E2E_OUTPUT_DIR=/private/tmp/elmos-b35-source-output ELMOS_E2E_REPORT_DIR=/private/tmp/elmos-b35-source-report pnpm --dir apps/web-console exec playwright test --project=chromium --workers=1 e2e/generation-source-ingestion.spec.ts",
+  "command": "ELMOS_E2E_PORT=5482 ELMOS_E2E_GITHUB_PORT=5582 ELMOS_E2E_OUTPUT_DIR=/private/tmp/elmos-b35-source-output-20260826a ELMOS_E2E_REPORT_DIR=/private/tmp/elmos-b35-source-report-20260826a ELMOS_E2E_RUNNER_ROOT=/private/tmp/elmos-web-console-e2e-5482 pnpm --dir apps/web-console exec playwright test --project=chromium --workers=1 e2e/generation-source-ingestion.spec.ts",
   "tests": 10,
   "passed": 10,
   "failed": 0,
-  "duration_seconds": 137,
+  "duration_seconds": 126,
   "source_digest": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
   "test_digest": "sha256:54aa5faddc9cc05390997c55af8ee90509c76cb7937fbe259db79e304f036563",
-  "environment_digest": "sha256:8b08c9bbc3c8e7302217fb24f1c7c1d2eed653cc320b140d247e349a9478c87a",
+  "environment_digest": "sha256:88a6ed4ecf503a53a38d09b7ce6655872c60c6465306c699d00b02d559490efd",
   "repository_bindings": [
     {
       "role": "source",
@@ -34,7 +34,7 @@
       "role": "environment",
       "path": "apps/web-console/package.json",
       "byte_size": 3113,
-      "sha256": "sha256:8b08c9bbc3c8e7302217fb24f1c7c1d2eed653cc320b140d247e349a9478c87a"
+      "sha256": "sha256:88a6ed4ecf503a53a38d09b7ce6655872c60c6465306c699d00b02d559490efd"
     }
   ],
   "coverage": {
