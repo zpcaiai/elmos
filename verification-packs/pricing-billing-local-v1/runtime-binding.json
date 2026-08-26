@@ -3937,7 +3937,7 @@
   "taskOwnedTrees": {
     "runtime": {
       "algorithm": "sha256-path-size-content-v1",
-      "byteCount": 682226,
+      "byteCount": 682225,
       "exclusions": [
         "*.pyc",
         "*.pyo",
@@ -3955,8 +3955,8 @@
       "files": [
         {
           "path": "engines/pricing-billing-engine/pyproject.toml",
-          "sha256": "3e84c66b1d9657b6c5cdec1d872375999a24da27036de3fcfabcbce18ccf0250",
-          "size": 829
+          "sha256": "f0f6fc9c0fb3bbc43ceeaba4b904f9af1c00a0b3c6ecc01b391377b1874741c6",
+          "size": 828
         },
         {
           "path": "engines/pricing-billing-engine/src/elmos_pricing_billing/__init__.py",
@@ -4077,7 +4077,7 @@
         "modules/commercial-operations/src/main/java/io/elmos/commercial/PricingBillingFinancialRuntime.java",
         "modules/persistence/src/main/resources/db/migration/V65__pricing_billing_financial_core.sql"
       ],
-      "sha256": "fe7e6a4ce13f1e69e5bb9460cd04b20aba968a119bb89c7ba65b41d19c96b316"
+      "sha256": "4aaa0c08f56e4874e723c8d9c2f7e07ace01d2c4ae6487b6c8e95c1e64926c8c"
     },
     "tests": {
       "algorithm": "sha256-path-size-content-v1",
