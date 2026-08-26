@@ -1,0 +1,242 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot1_5ToBoot4_1_0Java21
+displayName: Spring Boot 1.5 to 4.1.0 on Java 21
+recipeList:
+  - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_0
+  - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.maven.UpgradeParentVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      newVersion: 4.1.0
+  - org.openrewrite.java.dependencies.UpgradeDependencyVersion:
+      groupId: org.springframework.boot
+      artifactId: "*"
+      newVersion: 4.1.0
+      overrideManagedVersion: true
+  - org.openrewrite.maven.UpgradePluginVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-maven-plugin
+      newVersion: 4.1.0
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: spring-boot.version
+      newValue: "4.1.0"
+      addIfMissing: false
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "21"
+      addIfMissing: true
+      trustParent: false
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot4_1_0Java21
+displayName: Spring Boot 2.0-2.6 to 4.1.0 on Java 21
+recipeList:
+  - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.maven.UpgradeParentVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      newVersion: 4.1.0
+  - org.openrewrite.java.dependencies.UpgradeDependencyVersion:
+      groupId: org.springframework.boot
+      artifactId: "*"
+      newVersion: 4.1.0
+      overrideManagedVersion: true
+  - org.openrewrite.maven.UpgradePluginVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-maven-plugin
+      newVersion: 4.1.0
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: spring-boot.version
+      newValue: "4.1.0"
+      addIfMissing: false
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "21"
+      addIfMissing: true
+      trustParent: false
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot2_7ToBoot4_1_0Java21
+displayName: Spring Boot 2.7 to 4.1.0 on Java 21
+recipeList:
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.maven.UpgradeParentVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      newVersion: 4.1.0
+  - org.openrewrite.java.dependencies.UpgradeDependencyVersion:
+      groupId: org.springframework.boot
+      artifactId: "*"
+      newVersion: 4.1.0
+      overrideManagedVersion: true
+  - org.openrewrite.maven.UpgradePluginVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-maven-plugin
+      newVersion: 4.1.0
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: spring-boot.version
+      newValue: "4.1.0"
+      addIfMissing: false
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "21"
+      addIfMissing: true
+      trustParent: false
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot3_0To3_4ToBoot4_1_0Java21
+displayName: Spring Boot 3.0-3.4 to 4.1.0 on Java 21
+recipeList:
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.maven.UpgradeParentVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      newVersion: 4.1.0
+  - org.openrewrite.java.dependencies.UpgradeDependencyVersion:
+      groupId: org.springframework.boot
+      artifactId: "*"
+      newVersion: 4.1.0
+      overrideManagedVersion: true
+  - org.openrewrite.maven.UpgradePluginVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-maven-plugin
+      newVersion: 4.1.0
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: spring-boot.version
+      newValue: "4.1.0"
+      addIfMissing: false
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "21"
+      addIfMissing: true
+      trustParent: false
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_0Java21
+displayName: Spring Boot 3.5 to 4.1.0 on Java 21
+recipeList:
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.maven.UpgradeParentVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      newVersion: 4.1.0
+  - org.openrewrite.java.dependencies.UpgradeDependencyVersion:
+      groupId: org.springframework.boot
+      artifactId: "*"
+      newVersion: 4.1.0
+      overrideManagedVersion: true
+  - org.openrewrite.maven.UpgradePluginVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-maven-plugin
+      newVersion: 4.1.0
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: spring-boot.version
+      newValue: "4.1.0"
+      addIfMissing: false
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "21"
+      addIfMissing: true
+      trustParent: false
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot4_0ToBoot4_1_0Java21
+displayName: Spring Boot 4.0 to 4.1.0 on Java 21
+recipeList:
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.maven.UpgradeParentVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      newVersion: 4.1.0
+  - org.openrewrite.java.dependencies.UpgradeDependencyVersion:
+      groupId: org.springframework.boot
+      artifactId: "*"
+      newVersion: 4.1.0
+      overrideManagedVersion: true
+  - org.openrewrite.maven.UpgradePluginVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-maven-plugin
+      newVersion: 4.1.0
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: spring-boot.version
+      newValue: "4.1.0"
+      addIfMissing: false
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "21"
+      addIfMissing: true
+      trustParent: false
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot1_5GradleToBoot4_1_0Java21
+displayName: Spring Boot 1.5 Gradle to 4.1.0 on Java 21
+recipeList:
+  - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_0
+  - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.gradle.plugins.ChangePluginVersion:
+      pluginIdPattern: org.springframework.boot
+      newVersion: 4.1.0
+  - org.openrewrite.java.migrate.UpgradeToJava21
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot2xGradleToBoot4_1_0Java21
+displayName: Spring Boot 2.x Gradle to 4.1.0 on Java 21
+recipeList:
+  - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.gradle.plugins.ChangePluginVersion:
+      pluginIdPattern: org.springframework.boot
+      newVersion: 4.1.0
+  - org.openrewrite.java.migrate.UpgradeToJava21
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot3xGradleToBoot4_1_0Java21
+displayName: Spring Boot 3.x Gradle to 4.1.0 on Java 21
+recipeList:
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.gradle.plugins.ChangePluginVersion:
+      pluginIdPattern: org.springframework.boot
+      newVersion: 4.1.0
+  - org.openrewrite.java.migrate.UpgradeToJava21
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot4_0GradleToBoot4_1_0Java21
+displayName: Spring Boot 4.0 Gradle to 4.1.0 on Java 21
+recipeList:
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.gradle.plugins.ChangePluginVersion:
+      pluginIdPattern: org.springframework.boot
+      newVersion: 4.1.0
+  - org.openrewrite.java.migrate.UpgradeToJava21

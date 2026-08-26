@@ -38,7 +38,71 @@ MVC_EXECUTABLE_ROUTE_ID = "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21"
 MVC_INVENTORY_ROUTE_ID = "spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21"
 CURRENT_TARGET_INVENTORY = {
     "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21": ("3.5.16", "21"),
-    "boot-1.5-4.0-maven-to-boot-4.1.0-java-21": ("4.1.0", "21"),
+}
+BOOT_4_1_ROUTE_COMPOSITIONS = {
+    "boot-1.5-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_0",
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7",
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-2.0-2.6-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7",
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-2.7-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-3.0-3.4-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-3.5-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-4.0-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-1.5-gradle-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_0",
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7",
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-2.x-gradle-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7",
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-3.x-gradle-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-4.0-gradle-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta",
+        "org.openrewrite.java.spring.framework.UpgradeSpringFramework_7_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "spring-framework-3.2-7.0-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta",
+        "org.openrewrite.java.spring.framework.UpgradeSpringFramework_7_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
 }
 REQUIRED_BOOT_3_2_COMPOSITIONS = {
     "boot-1.5-java-8-maven-to-boot-3.2.12-java-17": (
@@ -178,7 +242,7 @@ def parse_catalog() -> list[dict[str, object]]:
         require(source_family is not None, f"CATALOG_ROUTE_SOURCE_FAMILY_MISSING:{route_id}")
         assert source_family is not None
         require(
-            source_family.group(1) in {"SPRING_BOOT", "SPRING_MVC"},
+            source_family.group(1) in {"SPRING_BOOT", "SPRING_MVC", "SPRING_FRAMEWORK"},
             f"CATALOG_ROUTE_SOURCE_FAMILY_INVALID:{route_id}:{source_family.group(1)}",
         )
         exact_source = re.search(
@@ -196,6 +260,7 @@ def parse_catalog() -> list[dict[str, object]]:
             "source_family_contract": {
                 "SPRING_BOOT": "spring-boot",
                 "SPRING_MVC": "spring-mvc",
+                "SPRING_FRAMEWORK": "spring-framework",
             }[source_family.group(1)],
             "build_tool": build_tools[directed_fields.group(1)],
             "target_boot": constant_or_string(directed_fields.group(2), route_id, "target_boot"),
@@ -483,6 +548,7 @@ def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> 
     for needle in (
         "SpringRouteCatalog.select(",
         "SpringRouteCatalog.selectSpringMvc(",
+        "SpringRouteCatalog.selectSpringFramework(",
         "selectRoute(fingerprint, request)",
         "request.targetSpringBoot()",
         "request.targetJava()",
@@ -504,6 +570,7 @@ def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> 
         "request.targetSpringBoot()",
         "request.targetJava()",
         "SpringRouteCatalog.selectSpringMvc(",
+        "SpringRouteCatalog.selectSpringFramework(",
     ):
         require(needle in service, f"RUN_SERVICE_NOT_DIRECTED_MATRIX_BOUND:{needle}")
 

@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-0",
+  "enabled": false,
+  "reason": "Direct cutover is not authorized by this pack; coexistence requires an application-specific compatibility contract.",
+  "status": "NOT_RUN"
+}

@@ -274,6 +274,36 @@ class SpringCapabilityFingerprintTest {
         assertTrue(enriched.activeCapabilities().contains("spring-mvc"));
     }
 
+
+    @Test void plainSpringFrameworkUsesItsOwnFamilyWhenBeanBehaviorIsObserved() throws Exception {
+        String pom = """
+                <project>
+                  <dependencies>
+                    <dependency>
+                      <groupId>org.springframework</groupId>
+                      <artifactId>spring-context</artifactId>
+                      <version>6.2.8</version>
+                    </dependency>
+                  </dependencies>
+                </project>
+                """;
+        Files.writeString(temporaryDirectory.resolve("pom.xml"), pom);
+        write("src/main/java/example/AppConfig.java", """
+                package example;
+                @Configuration
+                class AppConfig {
+                    @Bean Object value() { return new Object(); }
+                }
+                """);
+
+        SpringCapabilityFingerprint.Analysis analysis =
+                SpringCapabilityFingerprint.analyze(temporaryDirectory, pom, "pom.xml");
+
+        assertEquals("spring-framework",
+                LocalSpringUpgradeExecutionPort.sourceFrameworkFamily("", analysis, true));
+        assertTrue(analysis.activeCapabilities().contains("spring-framework"));
+    }
+
     private void write(String relative, String content) throws Exception {
         Path target = temporaryDirectory.resolve(relative);
         Files.createDirectories(target.getParent());

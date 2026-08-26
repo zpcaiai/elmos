@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-0",
+  "decision": "NOT_CERTIFIED",
+  "capabilities": [
+    {"id": "boot-major-upgrade", "status": "experimental", "strategy": "ordered-versioned-openrewrite-chain", "reason": "The route driver is implemented, but no Boot 4.1.0 source/target build or startup evidence is recorded."},
+    {"id": "spring-mvc-to-boot-bootstrap", "status": "conditional", "strategy": "fcm-required-non-boot-bootstrap", "reason": "A deterministic preparation recipe exists; XML, web.xml, servlet registration, views and context ownership require source-specific FCM and a target emitter."},
+    {"id": "spring-framework-core-to-boot-bootstrap", "status": "conditional", "strategy": "fcm-required-non-web-bootstrap", "reason": "A deterministic preparation recipe exists; bean graph, context lifecycle, resources, transactions and provider behavior require source-specific FCM and a source runtime adapter."},
+    {"id": "security", "status": "blocked", "strategy": "exact-security-profile-required", "reason": "Spring Security 7.1.0 compatibility and authorization parity are not run for arbitrary source applications."},
+    {"id": "persistence-and-transactions", "status": "blocked", "strategy": "exact-provider-profile-required", "reason": "Hibernate ORM 7.4.1.Final, database, transaction and migration behavior are source/provider specific and NOT_RUN."},
+    {"id": "messaging-cache-scheduler", "status": "blocked", "strategy": "exact-provider-profile-required", "reason": "Provider delivery, invalidation, overlap and retry semantics are NOT_RUN."},
+    {"id": "target-runtime", "status": "experimental", "strategy": "real-build-startup-and-holdout-required", "reason": "Target coordinates are exact, but runtime and independent holdout evidence are absent."}
+  ]
+}

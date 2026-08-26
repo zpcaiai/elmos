@@ -558,6 +558,11 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             return new SpringMvcWarRuntime().runSource(
                     source, runRoot, sourceJavaHome, buildTool, springMvcWarRuntime, control);
         }
+        if ("spring-framework".equals(fingerprint.sourceFrameworkFamily())) {
+            throw blocked("SPRING_FRAMEWORK_SOURCE_RUNTIME_REQUIRED",
+                    "A non-web Spring Framework source requires an exact source runtime adapter; "
+                            + "the generic Boot jar launcher cannot infer the source application entry point.");
+        }
         Path jar = bootJar(source, buildTool);
         int port = reservePort();
         Path log = runRoot.resolve("evidence/source-startup.log");
@@ -706,10 +711,10 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         if (Files.exists(root.resolve(".gitmodules"))) unknowns.add("submodules-present");
         SpringCapabilityFingerprint.Analysis analysis =
                 SpringCapabilityFingerprint.analyze(root, pomText, modelName);
-        String sourceFamily = sourceFrameworkFamily(boot, analysis);
         Set<String> frameworkVersions = exactAuthorities(
                 reactor, model -> springFrameworkVersion(model.document()));
-        if ("spring-mvc".equals(sourceFamily) && frameworkVersions.size() > 1) {
+        String sourceFamily = sourceFrameworkFamily(boot, analysis, !frameworkVersions.isEmpty());
+        if (isNonBootSpringFamily(sourceFamily) && frameworkVersions.size() > 1) {
             throw blocked("MAVEN_REACTOR_SPRING_FRAMEWORK_VERSION_CONFLICT",
                     "Maven modules declare multiple exact Spring Framework versions: "
                             + String.join(", ", frameworkVersions)
@@ -717,7 +722,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         }
         String sourceFrameworkVersion = "spring-boot".equals(sourceFamily)
                 ? boot : frameworkVersions.stream().findFirst().orElse("");
-        if ("spring-mvc".equals(sourceFamily) && blank(sourceFrameworkVersion)) {
+        if (isNonBootSpringFamily(sourceFamily) && blank(sourceFrameworkVersion)) {
             unknowns.add("spring-framework-version-unresolved");
             sourceFrameworkVersion = "UNKNOWN";
         }
@@ -832,10 +837,10 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         if (Files.exists(root.resolve(".gitmodules"))) unknowns.add("submodules-present");
         SpringCapabilityFingerprint.Analysis analysis =
                 SpringCapabilityFingerprint.analyze(root, model, modelName);
-        String sourceFamily = sourceFrameworkFamily(boot, analysis);
-        String sourceFrameworkVersion = "spring-boot".equals(sourceFamily)
-                ? boot : springFrameworkVersion(model);
-        if ("spring-mvc".equals(sourceFamily) && blank(sourceFrameworkVersion)) {
+        String sourceFrameworkVersion = springFrameworkVersion(model);
+        String sourceFamily = sourceFrameworkFamily(boot, analysis, !blank(sourceFrameworkVersion));
+        if ("spring-boot".equals(sourceFamily)) sourceFrameworkVersion = boot;
+        if (isNonBootSpringFamily(sourceFamily) && blank(sourceFrameworkVersion)) {
             unknowns.add("spring-framework-version-unresolved");
             sourceFrameworkVersion = "UNKNOWN";
         }
@@ -918,6 +923,16 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                                 + "declared spring-webmvc dependency alone is not active behavior evidence.");
             }
             sourceDescription = "Spring Framework " + fingerprint.sourceFrameworkVersion();
+        } else if (SpringRouteCatalog.SourceFamily.SPRING_FRAMEWORK.contractValue().equals(sourceFamily)) {
+            selection = SpringRouteCatalog.selectSpringFramework(
+                    fingerprint.sourceFrameworkVersion(), fingerprint.javaVersion(),
+                    fingerprint.buildTool(), targetSpringBoot, targetJava);
+            if (!fingerprint.activeCapabilities().contains("spring-framework")) {
+                throw blocked("SPRING_FRAMEWORK_RUNTIME_EVIDENCE_REQUIRED",
+                        "The source exposes a Spring Framework version but no observed Spring bean/context "
+                                + "behavior; a declared dependency alone is not active source evidence.");
+            }
+            sourceDescription = "Spring Framework " + fingerprint.sourceFrameworkVersion();
         } else if (SpringRouteCatalog.SourceFamily.SPRING_BOOT.contractValue().equals(sourceFamily)) {
             selection = SpringRouteCatalog.select(
                     fingerprint.springBootVersion(), fingerprint.javaVersion(), fingerprint.buildTool(),
@@ -932,7 +947,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             sourceDescription = "Spring Boot " + fingerprint.springBootVersion();
         } else {
             throw blocked("SPRING_SOURCE_FAMILY_UNRESOLVED",
-                    "The source repository did not expose an exact Spring Boot or Spring MVC framework family.");
+                    "The source repository did not expose an exact Spring Boot, Spring MVC, or Spring Framework family.");
         }
         if (selection.requiresExperimentalOptIn() && !experimentalRoutesEnabled) {
             throw blocked("SPRING_ROUTE_EVIDENCE_NOT_RUN",
@@ -1400,7 +1415,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         model.put("source_framework", Map.of(
                 "family", fingerprint.sourceFrameworkFamily(),
                 "version", fingerprint.sourceFrameworkVersion()));
-        String detectedSourceVersion = SpringRouteCatalog.SourceFamily.SPRING_MVC.contractValue()
+        String detectedSourceVersion = SpringRouteCatalog.SourceFamily.SPRING_BOOT.contractValue()
                 .equals(fingerprint.sourceFrameworkFamily())
                 ? fingerprint.sourceFrameworkVersion() : fingerprint.springBootVersion();
         model.put("exact_tuple", route.tuple(
@@ -2081,13 +2096,27 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             String springBootVersion,
             SpringCapabilityFingerprint.Analysis analysis
     ) {
+        return sourceFrameworkFamily(springBootVersion, analysis, false);
+    }
+
+    static String sourceFrameworkFamily(
+            String springBootVersion,
+            SpringCapabilityFingerprint.Analysis analysis,
+            boolean springFrameworkDeclared
+    ) {
         if (!blank(springBootVersion)) return "spring-boot";
         if (analysis.sourceTraces().containsKey("spring-mvc")
                 || analysis.sourceTraces().containsKey("spring-mvc-xml")
                 || analysis.sourceTraces().containsKey("servlet-initializer")) {
             return "spring-mvc";
         }
+        if (springFrameworkDeclared) return "spring-framework";
         return "unknown";
+    }
+
+    private static boolean isNonBootSpringFamily(String sourceFamily) {
+        return SpringRouteCatalog.SourceFamily.SPRING_MVC.contractValue().equals(sourceFamily)
+                || SpringRouteCatalog.SourceFamily.SPRING_FRAMEWORK.contractValue().equals(sourceFamily);
     }
 
     /**

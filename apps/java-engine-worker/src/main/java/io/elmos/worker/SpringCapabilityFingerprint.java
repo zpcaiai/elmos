@@ -276,6 +276,14 @@ final class SpringCapabilityFingerprint {
                             "spring\\.(?:task\\.scheduling|quartz)\\.", "scheduler properties"),
                     "preserve-cron-fixed-rate-delay-and-time-zone", "preserve-concurrency-and-overlap-policy",
                     "preserve-misfire-startup-and-shutdown-semantics", "preserve-transaction-and-security-context"),
+            rule("spring-framework", "framework",
+                    builds("spring-core", "spring-context", "spring-beans", "spring-expression", "spring-aop"),
+                    sources(
+                            "@(?:Configuration|Component|Service|Repository|Bean)\\b", "Spring bean declaration",
+                            "\\b(?:ApplicationContext|AnnotationConfigApplicationContext|BeanFactory)\\b", "Spring context API",
+                            "\\b(?:Import|ComponentScan|Profile|Qualifier|Primary)\\b", "Spring configuration contract"),
+                    "preserve-bean-graph-and-context-ownership", "preserve-component-scan-and-profile-conditions",
+                    "preserve-bean-lifecycle-and-proxy-boundaries", "require-source-runtime-entry-point"),
             rule("spring-mvc", "web",
                     builds("spring-webmvc", "spring-boot-starter-web"),
                     sources(
