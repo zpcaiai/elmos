@@ -3,6 +3,7 @@ import { posix } from "node:path";
 
 import type {
   MiniappConversionRun,
+  MiniappGateState,
   MiniappSkillName,
   MiniappTaskId,
 } from "./miniapp-skill-runtime.js";
@@ -648,6 +649,12 @@ function localEngineeringState(run: MiniappConversionRun): MiniappDeclaredOutput
   return run.localEngineering === "PASSED" ? "PASSED_LOCAL" : "BLOCKED";
 }
 
+function localValidationState(
+  state: "PASSED_LOCAL" | "FAILED_LOCAL" | "BLOCKED" | "NOT_RUN",
+): MiniappDeclaredOutputState {
+  return state === "PASSED_LOCAL" ? "PASSED_LOCAL" : state === "NOT_RUN" ? "NOT_RUN" : "BLOCKED";
+}
+
 function outputState(
   run: MiniappConversionRun,
   ownerSkill: MiniappSkillName,
@@ -701,11 +708,22 @@ function outputState(
   ) {
     return "BLOCKED";
   }
+  if (ownerSkill === "miniapp-differential-testing") {
+    return localValidationState(run.localValidation.differential.state);
+  }
+  if (ownerSkill === "miniapp-visual-regression-testing") {
+    return declaredPattern === "screenshots/**"
+      ? "NOT_RUN"
+      : localValidationState(run.localValidation.visual.state);
+  }
   if (EXTERNAL_NOT_RUN_SKILLS.has(ownerSkill)) {
     return "NOT_RUN";
   }
   if (ownerSkill === "miniapp-auto-repair-loop") {
-    return "NOT_RUN";
+    if (declaredPattern === "patches/**" || declaredPattern === "post-repair-validation.json") {
+      return "NOT_RUN";
+    }
+    return run.localValidation.repair.state === "NOT_RUN" ? "NOT_RUN" : "BLOCKED";
   }
   if (
     ownerSkill === "miniapp-third-party-dependency-migrator" &&
@@ -740,8 +758,6 @@ function outputState(
       return run.privacy.some((audit) => audit.verdict === "failed" || audit.verdict === "blocked")
         ? "BLOCKED"
         : "PASSED_LOCAL";
-    case "miniapp-differential-testing":
-    case "miniapp-visual-regression-testing":
     case "miniapp-ci-build-release":
       return "NOT_RUN";
     default: {
@@ -751,22 +767,24 @@ function outputState(
 }
 
 function sourceTracePayload(run: MiniappConversionRun): unknown {
+  const refs = (
+    items: readonly { readonly id: string; readonly sourceRefs: readonly unknown[] }[],
+  ) => items.map((item) => ({ id: item.id, sourceRefs: item.sourceRefs }));
   return {
-    components: run.analysis.components.map((component) => ({
-      id: component.id,
-      sourceRefs: component.sourceRefs,
-    })),
-    effects: run.analysis.effects.map((effect) => ({
-      id: effect.id,
-      sourceRefs: effect.sourceRefs,
-    })),
-    routes: run.analysis.routes.map((route) => ({
-      id: route.id,
-      sourceRefs: route.sourceRefs,
-    })),
-    state: run.analysis.states.map((state) => ({
-      id: state.id,
-      sourceRefs: state.sourceRefs,
+    components: refs(run.analysis.components),
+    effects: refs(run.analysis.effects),
+    routes: refs(run.analysis.routes),
+    // Preserve the package's historical singular key while exposing the
+    // normalized plural spelling used by the IR inventory.
+    state: refs(run.analysis.states),
+    states: refs(run.analysis.states),
+    forms: refs(run.analysis.forms),
+    styles: refs(run.analysis.styles),
+    capabilities: refs(run.analysis.capabilities),
+    interactions: refs(run.analysis.interactions),
+    dependencies: run.analysis.dependencies.map((dependency) => ({
+      id: dependency,
+      sourceRefs: run.analysis.dependencyUsage[dependency] ?? [],
     })),
   };
 }
@@ -1783,6 +1801,29 @@ function dependencyPlanSchemaBody(run: MiniappConversionRun): unknown {
 
 function differentialResultSchemaBody(run: MiniappConversionRun): unknown {
   const platform = run.request.targets[0]!.platform;
+  const comparisons = run.localValidation.differential.comparisons;
+  if (comparisons.length > 0) {
+    const first = comparisons[0]!;
+    const aggregate = comparisons.length > 1;
+    return {
+      result_id: `differential-${run.request.requestId}-${aggregate ? "all" : platform}-${aggregate ? "flows" : first.flowId}`,
+      flow_id: aggregate ? "all-flows" : first.flowId,
+      platform,
+      verdict: comparisons.some((comparison) => comparison.verdict === "failed") ? "failed" : "passed",
+      // The canonical schema is intentionally single-result shaped.  An
+      // aggregate result retains every requested platform/flow trace rather
+      // than silently selecting the first comparison.
+      source_trace: comparisons.flatMap((comparison) => comparison.sourceTrace),
+      target_trace: comparisons.flatMap((comparison) => comparison.targetTrace),
+      diffs: comparisons.flatMap((comparison) => comparison.diffs.map((diff) => ({
+        kind: diff.kind,
+        message: aggregate
+          ? `[${comparison.platform}/${comparison.flowId}] ${diff.message}`
+          : diff.message,
+        severity: diff.severity,
+      }))),
+    };
+  }
   const messages = [
     "NOT_RUN: source and target runtime traces were not captured",
     `requested platforms: ${run.request.targets.map((target) => target.platform).join(",")}`,
@@ -1805,52 +1846,44 @@ function differentialResultSchemaBody(run: MiniappConversionRun): unknown {
 
 function privacyReportSchemaBody(run: MiniappConversionRun): unknown {
   const audit = run.privacy[0]!;
-  const additionalAudits = run.privacy.slice(1);
+  const audits = run.privacy;
+  const verdict = audits.some((item) => item.verdict === "failed")
+    ? "failed"
+    : audits.some((item) => item.verdict === "blocked")
+      ? "blocked"
+      : audits.some((item) => item.verdict === "passed")
+        ? "passed"
+        : "unknown";
   return {
-    report_id: `privacy-${run.request.requestId}-${audit.platform}`,
+    report_id: `privacy-${run.request.requestId}-all-platforms`,
     platform: audit.platform,
-    verdict: audit.verdict,
-    data_flows: audit.dataFlows.map((flow) => ({
+    verdict,
+    data_flows: audits.flatMap((item) => item.dataFlows.map((flow) => ({
       consent: flow.consentRequired ? "required-missing" : "not-required",
       data_type: flow.capability,
       destination: flow.destination,
       purpose: flow.capability,
       sensitive: flow.sensitive,
-      source: "source-capability",
-    })),
-    permissions: audit.permissions.map((permission) => ({
+      source: `${item.platform}:source-capability`,
+    }))),
+    permissions: audits.flatMap((item) => item.permissions.map((permission) => ({
       permission: permission.permission,
       purpose: permission.purpose,
       status: permission.declared ? "valid" : "invalid",
-      trigger: "runtime-not-run",
-    })),
-    secret_findings: audit.secretFindings.map((finding) => ({
-      fingerprint: bodyDigestHex(finding),
+      trigger: `${item.platform}:runtime-not-run`,
+    }))),
+    secret_findings: audits.flatMap((item) => item.secretFindings.map((finding) => ({
+      fingerprint: bodyDigestHex({ platform: item.platform, finding }),
       kind: finding,
-      path: "not-disclosed",
+      path: finding,
       severity: "high",
-    })),
-    findings: [
-      ...audit.findings.map((finding, index) => ({
-        blocking: audit.verdict === "blocked" || audit.verdict === "failed",
-        finding_id: `privacy-finding-${index}`,
-        message: finding,
-        severity: "high",
-      })),
-      ...additionalAudits.map((additionalAudit) => ({
-        blocking:
-          additionalAudit.verdict === "blocked" || additionalAudit.verdict === "failed",
-        finding_id: `additional-platform-${additionalAudit.platform}`,
-        message: canonicalize({
-          note: "additional platform audit retained in aggregate report finding",
-          report: additionalAudit,
-        }),
-        severity:
-          additionalAudit.verdict === "failed" || additionalAudit.verdict === "blocked"
-            ? "high"
-            : "low",
-      })),
-    ],
+    }))),
+    findings: audits.flatMap((item) => item.findings.map((finding, index) => ({
+      blocking: item.verdict === "blocked" || item.verdict === "failed",
+      finding_id: `privacy-${item.platform}-finding-${index}`,
+      message: `[${item.platform}] ${finding}`,
+      severity: "high",
+    }))),
   };
 }
 
@@ -1885,37 +1918,59 @@ function repairActionSchemaBody(run: MiniappConversionRun): unknown {
 }
 
 function migrationEvidenceSchemaBody(run: MiniappConversionRun): unknown {
+  const statusForState = (state: MiniappGateState): "passed" | "failed" | "blocked" | "unknown" =>
+    state === "PASSED" ? "passed" : state === "FAILED" ? "failed" : state === "BLOCKED" ? "blocked" : "unknown";
+  const evidenceArtifacts = run.evidenceGraph.map((node) => ({
+    artifact_id: node.id,
+    path: `runs/${run.runId}/evidence/${node.id}.json`,
+    sha256: digestHex(node.digest),
+    producer: node.producer,
+    status: statusForState(node.state),
+  }));
+  const evidenceIdsByDigest = new Map(run.evidenceGraph.map((node) => [node.digest, node.id]));
+  const referencesFor = (digests: readonly string[]): readonly string[] =>
+    digests.flatMap((digest) => {
+      const id = evidenceIdsByDigest.get(digest);
+      return id === undefined ? [] : [id];
+    });
+  const projectReferences = (platform: MiniappPlatform): readonly string[] => [
+    `project-${platform}`,
+    "static-executable-trace",
+  ].filter((id) => evidenceArtifacts.some((artifact) => artifact.artifact_id === id));
+  const localValidationReferences = evidenceArtifacts.some((artifact) => artifact.artifact_id === "local-validation-candidate")
+    ? ["local-validation-candidate"]
+    : [];
   return {
     evidence_id: `migration-evidence-${run.request.requestId}`,
     request_id: run.request.requestId,
     source_revision: run.request.source.revision,
-    artifacts: [],
+    artifacts: evidenceArtifacts,
     claims: [
       ...run.request.targets.map((target) => ({
         claim_id: `build-${target.platform}`,
-        evidence_refs: [],
+        evidence_refs: projectReferences(target.platform),
         status: "unknown",
         subject: target.platform,
         type: "build",
       })),
       {
         claim_id: "semantic-parity",
-        evidence_refs: [],
+        evidence_refs: ["semantic-ir", "static-executable-trace"],
         status: "unknown",
         subject: "all-requested-targets",
         type: "semantic-parity",
       },
       {
         claim_id: "visual-parity",
-        evidence_refs: [],
+        evidence_refs: localValidationReferences,
         status: "unknown",
         subject: "all-requested-targets",
         type: "visual-parity",
       },
       ...run.privacy.map((audit) => ({
         claim_id: `privacy-${audit.platform}`,
-        evidence_refs: [],
-        status: "unknown",
+        evidence_refs: ["analysis", "conversion-plan"],
+        status: audit.verdict === "failed" ? "failed" : audit.verdict === "blocked" ? "blocked" : "unknown",
         subject: audit.platform,
         type: "privacy",
       })),
@@ -1928,14 +1983,9 @@ function migrationEvidenceSchemaBody(run: MiniappConversionRun): unknown {
       },
     ],
     gates: run.gates.map((gate) => ({
-      evidence_refs: [],
+      evidence_refs: referencesFor(gate.evidenceDigests),
       gate: gate.gate,
-      status:
-        gate.state === "FAILED"
-          ? "failed"
-          : gate.state === "BLOCKED"
-            ? "blocked"
-            : "unknown",
+      status: statusForState(gate.state),
     })),
     approvals: [
       {
@@ -2002,6 +2052,7 @@ function reporterPayload(run: MiniappConversionRun, declaredPattern: string): un
       checkpoint: run.checkpoint,
       evidenceGraph: run.evidenceGraph,
       gates: run.gates,
+      localValidation: run.localValidation,
       taskRecords: run.taskRecords,
     };
   }
@@ -2014,6 +2065,12 @@ function reporterPayload(run: MiniappConversionRun, declaredPattern: string): un
         staticValidation: project.staticValidation,
       })),
       differential: run.differential,
+      localValidation: {
+        differential: run.localValidation.differential,
+        evidenceBoundary: run.localValidation.evidenceBoundary,
+        inputDigest: run.localValidation.inputDigest,
+        visual: run.localValidation.visual,
+      },
       visual: run.visual,
     };
   }
@@ -2021,6 +2078,7 @@ function reporterPayload(run: MiniappConversionRun, declaredPattern: string): un
     return {
       gates: run.gates,
       localEngineering: run.localEngineering,
+      localValidation: run.localValidation,
       officialBuilds: run.generatedProjects.map((project) => ({
         officialBuild: project.officialBuild,
         platform: project.platform,
@@ -2270,36 +2328,38 @@ function outputPayload(
     case "miniapp-differential-testing":
       return {
         authoritativeExecution: "NOT_RUN",
-        differential: run.differential,
-        semanticParity: "NOT_ESTABLISHED",
+        differential: run.localValidation.differential,
+        external: run.differential,
+        semanticParity: run.localValidation.differential.semanticParity,
       };
     case "miniapp-visual-regression-testing":
       return {
         authoritativeExecution: "NOT_RUN",
-        visual: run.visual,
+        visual: run.localValidation.visual,
+        external: run.visual,
       };
     case "miniapp-auto-repair-loop":
       if (declaredPattern === "repair-action.json") {
-        return run.repair;
+        return run.localValidation.repair.state === "NOT_RUN" ? run.repair : run.localValidation.repair;
       }
       if (declaredPattern === "patches/**") {
         return {
-          appliedIterations: run.repair.appliedIterations,
+          appliedIterations: run.localValidation.repair.appliedIterations,
           execution: "NOT_RUN",
-          mode: run.repair.state,
+          mode: run.localValidation.repair.state,
         };
       }
       if (declaredPattern === "repair-history.json") {
         return {
-          appliedIterations: run.repair.appliedIterations,
-          candidates: run.repair.candidates,
-          mode: run.repair.state,
+          appliedIterations: run.localValidation.repair.appliedIterations,
+          candidates: run.localValidation.repair.actions,
+          mode: run.localValidation.repair.state,
         };
       }
       return {
-        differentialRuntime: run.differential.targetRuntimeCapture,
+        differentialRuntime: run.localValidation.differential.authoritativeExecution,
         execution: "NOT_RUN",
-        visualExecution: run.visual.targetScreenshots,
+        visualExecution: run.localValidation.visual.targetScreenshots,
       };
     case "miniapp-ci-build-release":
       return {

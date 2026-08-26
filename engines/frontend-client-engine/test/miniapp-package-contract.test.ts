@@ -71,7 +71,7 @@ const vueFiles: readonly MiniappInventoryInputFile[] = [
     path: "apps/client/src/App.vue",
     content: '<template><div aria-label="Package contract">Package contract</div></template>',
   },
-  { path: "apps/client/src/main.ts", content: 'import { createApp } from "vue"; import App from "./App.vue"; createApp(App);' },
+  { path: "apps/client/src/main.ts", content: 'import { createApp } from "vue"; import App from "./App.vue"; createApp(App).mount("#app");' },
 ];
 
 const selectedVueFiles: readonly MiniappInventoryInputFile[] = vueFiles.map(file => ({

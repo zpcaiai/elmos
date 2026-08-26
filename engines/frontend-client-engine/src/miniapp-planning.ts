@@ -1009,13 +1009,83 @@ export function planMiniappConversion(
     }
     return [];
   }));
-  const effectFindings = request.targets.flatMap(target => ir.effects.map(effect => ({
-    code: "MINIAPP_EFFECT_NOT_WIRED",
-    platform: target.platform,
-    classification: "C" as const,
-    blocking: true,
-    message: `${effect.name}/${effect.trigger} is represented in the plan but has no generated lifecycle implementation.`,
-  })));
+  const structuralFrameworkEffects = new Set([
+    "vue.create-app",
+    "vue.app.mount",
+    "vue.app.use.router",
+    "vue.app.use.pinia",
+    "pinia.create",
+    "vue-router.create-router",
+    "vue-router.history.web-root",
+  ]);
+  const structuralEffects = ir.effects.filter(effect => structuralFrameworkEffects.has(effect.name));
+  const structuralFrameworkFindings: readonly {
+    readonly code: string;
+    readonly platform: MiniappPlatform | "all";
+    readonly classification: MiniappCompatibilityClass;
+    readonly blocking: boolean;
+    readonly message: string;
+  }[] = (() => {
+    const findings: Array<{
+      readonly code: string;
+      readonly platform: MiniappPlatform | "all";
+      readonly classification: MiniappCompatibilityClass;
+      readonly blocking: boolean;
+      readonly message: string;
+    }> = [];
+    const add = (message: string): void => {
+      findings.push({
+        code: "MINIAPP_FRAMEWORK_BOOTSTRAP_UNRESOLVED",
+        platform: "all",
+        classification: "D",
+        blocking: true,
+        message,
+      });
+    };
+    const byName = (name: string) => structuralEffects.filter(effect => effect.name === name);
+    const unique = (name: string) => {
+      const matches = byName(name);
+      if (matches.length > 1) add(`${name} must have exactly one trace-bound structural effect; found ${matches.length}.`);
+      return matches[0];
+    };
+    for (const effect of structuralEffects) {
+      const validTrigger = effect.name === "vue.create-app" && effect.trigger === "application-bootstrap"
+        || effect.name === "vue.app.mount" && effect.trigger === "native-application-entry"
+        || effect.name === "vue.app.use.router" && effect.trigger === "application-plugin-install"
+        || effect.name === "vue.app.use.pinia" && effect.trigger === "application-plugin-install"
+        || effect.name === "pinia.create" && effect.trigger === "application-state-provider"
+        || effect.name === "vue-router.create-router" && effect.trigger === "application-router"
+        || effect.name === "vue-router.history.web-root" && effect.trigger === "native-page-stack";
+      if (!validTrigger || !effect.instanceId) add(`${effect.name} is missing its exact synchronous trigger or instance binding.`);
+      if (effect.asynchronous) add(`${effect.name} cannot be asynchronous in the application bootstrap contract.`);
+    }
+    const app = unique("vue.create-app");
+    const mount = unique("vue.app.mount");
+    if (app && !mount) add("createApp has no matching app.mount effect.");
+    if (mount && !app) add("app.mount has no matching createApp effect.");
+    if (app && mount && app.instanceId !== mount.instanceId) add("createApp and app.mount do not reference the same app instance.");
+    const router = unique("vue-router.create-router");
+    const history = unique("vue-router.history.web-root");
+    if (router && (!history || router.relatedInstanceId !== history.instanceId)) add("createRouter must reference the exact createWebHistory(\"/\") instance.");
+    if (history && !router) add("createWebHistory(\"/\") is not consumed by one createRouter effect.");
+    const pinia = unique("pinia.create");
+    const useRouter = unique("vue.app.use.router");
+    const usePinia = unique("vue.app.use.pinia");
+    if (useRouter && (!router || useRouter.relatedInstanceId !== router.instanceId)) add("app.use(router) must reference the exact createRouter instance.");
+    if (usePinia && (!pinia || usePinia.relatedInstanceId !== pinia.instanceId)) add("app.use(pinia) must reference the exact createPinia instance.");
+    if ((pinia && !usePinia) || (usePinia && !pinia)) add("createPinia and app.use(pinia) must form one complete application-state-provider trace.");
+    return findings;
+  })();
+  const effectFindings = request.targets.flatMap(target => [
+    ...ir.effects.filter(effect => !structuralFrameworkEffects.has(effect.name)).map(effect => ({
+      code: "MINIAPP_EFFECT_NOT_WIRED",
+      platform: target.platform,
+      classification: "C" as const,
+      blocking: true,
+      message: `${effect.name}/${effect.trigger} is represented in the plan but has no generated lifecycle implementation.`,
+    })),
+    ...structuralFrameworkFindings.map(finding => ({ ...finding, platform: target.platform })),
+  ]);
   const unmaterializedAssetPaths = [...new Set([
     ...(inventory?.assets ?? []),
     ...(inventory?.files.filter(file => file.status === "binary").map(file => file.path) ?? []),
@@ -1176,6 +1246,15 @@ export function planMiniappConversion(
     }
     return [];
   }));
+  const emptyRouteFindings = ir.routes.length === 0
+    ? request.targets.map(target => ({
+      code: "MINIAPP_ROUTE_MANIFEST_EMPTY",
+      platform: target.platform,
+      classification: "D" as const,
+      blocking: true,
+      message: "No source route or uniquely traceable application root was recovered; an empty native page manifest cannot be treated as a generated candidate.",
+    }))
+    : [];
   const shellAmbiguity = applicationShellAmbiguity(ir);
   const findings = [
     ...ir.unknowns.map(item => ({
@@ -1201,6 +1280,7 @@ export function planMiniappConversion(
     ...assetFindings,
     ...versionFindings,
     ...routePathFindings,
+    ...emptyRouteFindings,
     ...(shellAmbiguity ? request.targets.map(target => ({
       code: "MINIAPP_APPLICATION_SHELL_AMBIGUOUS",
       platform: target.platform,

@@ -1,6 +1,6 @@
 {
   "schema_version": "elmos.frontend-to-miniapp.local-runtime-evidence.v1",
-  "implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+  "implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
   "state": "DECLARED",
   "scope": "bounded-local-engineering",
   "receipt": {
@@ -18,7 +18,8 @@
       "id": "component-tests",
       "command": "cd engines/component-dialect-engine && ./node_modules/.bin/jest tests/platform-miniapps.test.ts tests/miniapp-worker.test.ts --runInBand",
       "state": "NOT_RUN",
-      "claim": "canonical component worker and four direct IR emitters"
+      "claim": "canonical component worker and four direct IR emitters",
+      "expected_test_count": 63
     },
     {
       "id": "frontend-build",
@@ -28,15 +29,17 @@
     },
     {
       "id": "frontend-tests",
-      "command": "cd engines/frontend-client-engine && node --test --test-concurrency=1 dist/test/miniapp-contract-validation.test.js dist/test/miniapp-inventory.test.js dist/test/miniapp-semantic-ir.test.js dist/test/miniapp-four-platform-generation.test.js dist/test/miniapp-skill-runtime.test.js dist/test/miniapp-package-contract.test.js dist/test/miniapp-output-contracts.test.js",
+      "command": "cd engines/frontend-client-engine && node --test --test-concurrency=1 dist/test/miniapp-contract-validation.test.js dist/test/miniapp-inventory.test.js dist/test/miniapp-semantic-ir.test.js dist/test/miniapp-four-platform-generation.test.js dist/test/miniapp-skill-runtime.test.js dist/test/miniapp-validation.test.js dist/test/miniapp-package-contract.test.js dist/test/miniapp-output-contracts.test.js",
       "state": "NOT_RUN",
-      "claim": "contracts, inventory, semantic IR, source labels, target generators, Skill handlers, checkpoints and evidence gates"
+      "claim": "contracts, inventory, semantic IR, source labels, target generators, Skill handlers, checkpoints and evidence gates",
+      "expected_test_count": 58
     },
     {
       "id": "integration-tests",
-      "command": "python tests/frontend-to-miniapp/test_integration.py",
+      "command": "uv run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tests/frontend-to-miniapp/test_integration.py",
       "state": "NOT_RUN",
-      "claim": "archive, package, DAG, compiled contract and dual-root integration"
+      "claim": "archive, package, DAG, compiled contract and dual-root integration",
+      "expected_test_count": 15
     }
   ],
   "local_claims": {

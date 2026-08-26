@@ -74,9 +74,11 @@ const implementationPaths = [
   "src/miniapp-types.ts", "src/miniapp-contract-validation.ts", "src/miniapp-inventory.ts",
   "src/miniapp-semantic-ir.ts", "src/miniapp-planning.ts", "src/miniapp-target-generation.ts",
   "src/miniapp-package-contract.ts", "src/miniapp-output-contracts.ts", "src/miniapp-skill-runtime.ts",
+  "src/miniapp-validation.ts",
   "dist/src/miniapp-types.js", "dist/src/miniapp-contract-validation.js", "dist/src/miniapp-inventory.js",
   "dist/src/miniapp-semantic-ir.js", "dist/src/miniapp-planning.js", "dist/src/miniapp-target-generation.js",
   "dist/src/miniapp-package-contract.js", "dist/src/miniapp-output-contracts.js", "dist/src/miniapp-skill-runtime.js",
+  "dist/src/miniapp-validation.js",
 ];
 const engineImplementationEntries = implementationPaths.map(path => {
   const candidate = resolve(engineRoot, path);

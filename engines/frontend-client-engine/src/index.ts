@@ -36,6 +36,7 @@ export * from "./miniapp-target-generation.js";
 export * from "./miniapp-skill-runtime.js";
 export * from "./miniapp-package-contract.js";
 export * from "./miniapp-output-contracts.js";
+export * from "./miniapp-validation.js";
 export * from "./vue3-react-route.js";
 export { frtCatalog } from "./frt-catalog.generated.js";
 export { frtHandlerRegistry } from "./frt-handler-registry.generated.js";

@@ -400,17 +400,21 @@ test("Schema-bound bodies are exact payloads and provenance lives in independent
   assert.ok(migrationEvidence);
   assert.equal(migrationEvidence.state, "BLOCKED");
   const migrationBody = decodedObject(migrationEvidence);
-  assert.deepEqual(migrationBody.artifacts, []);
+  const evidenceArtifacts = migrationBody.artifacts as readonly Readonly<Record<string, unknown>>[];
+  assert.ok(evidenceArtifacts.length > 0);
+  const evidenceIds = new Set(evidenceArtifacts.map((artifact) => artifact.artifact_id));
+  assert.ok(evidenceIds.has("request"));
+  assert.ok(evidenceIds.has("conversion-plan"));
   for (const claim of migrationBody.claims as readonly Readonly<
     Record<string, unknown>
   >[]) {
-    assert.deepEqual(claim.evidence_refs, []);
+    assert.ok((claim.evidence_refs as readonly string[]).every((reference) => evidenceIds.has(reference)));
   }
   for (const gate of migrationBody.gates as readonly Readonly<
     Record<string, unknown>
   >[]) {
-    assert.deepEqual(gate.evidence_refs, []);
-    assert.notEqual(gate.status, "passed");
+    assert.ok((gate.evidence_refs as readonly string[]).every((reference) => evidenceIds.has(reference)));
+    if (gate.status === "passed") assert.ok((gate.evidence_refs as readonly string[]).length > 0);
   }
 });
 

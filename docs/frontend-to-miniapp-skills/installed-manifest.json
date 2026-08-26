@@ -1404,13 +1404,13 @@
   },
   "runtime_root": "agent-skills/runtime",
   "workspace_root": ".agents/skills",
-  "runtime_tree_sha256": "sha256:8f98f229ff28064144e0cc3aa12a5403d712339cf54d81d5931f73e0babfdaf8",
-  "workspace_tree_sha256": "sha256:8f98f229ff28064144e0cc3aa12a5403d712339cf54d81d5931f73e0babfdaf8",
+  "runtime_tree_sha256": "sha256:a032b309766f677e0c6d27b1c7d8c9ace0f3da9c8e1ad4c3397be6d9d97fea30",
+  "workspace_tree_sha256": "sha256:a032b309766f677e0c6d27b1c7d8c9ace0f3da9c8e1ad4c3397be6d9d97fea30",
   "dual_root_byte_identical": true,
   "compiled_contracts_path": "docs/frontend-to-miniapp-skills/compiled-contracts.json",
-  "compiled_contracts_sha256": "sha256:20a053f6f2b6a141515684399a51b8d8dc96239217ff3224954d65d6b390ec90",
+  "compiled_contracts_sha256": "sha256:c258f2ebff7d01a533de7d647be0042c45dee33b610df9cedf4a9d3634715d96",
   "local_runtime_evidence_path": "docs/frontend-to-miniapp-skills/local-runtime-evidence.json",
-  "local_runtime_evidence_sha256": "sha256:e1b5ea0c6bcc81c36c586df514731e66ca45113b2fcbbbce1c65fd0aa9e9e5bd",
+  "local_runtime_evidence_sha256": "sha256:3ecbf9c5ca67a99cebdedae48943337a90df8c41ca402357f44549784a141223",
   "local_runtime_receipt_path": "artifacts/frontend-to-miniapp/local-runtime-receipt-v1/receipt.json",
   "local_runtime_receipt_state": "ABSENT",
   "integration_readme_path": "docs/frontend-to-miniapp-skills/README.md",
@@ -1419,19 +1419,19 @@
   "contract_state": "HANDLER_IMPLEMENTED",
   "runtime_implementation": {
     "state": "HANDLER_IMPLEMENTED",
-    "implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+    "implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
     "files": [
       {
         "path": "tooling/integrate_frontend_to_miniapp_skills.py",
-        "bytes": 175611,
+        "bytes": 176157,
         "mode": "0755",
-        "sha256": "sha256:f711fb5d0341c51114af7be9bff69f9039b57ecdd07acf15bca53af322952404"
+        "sha256": "sha256:df907a5760025cc7aa76f98502b5eec947c67c13503f46b3e286e3f09b5c8e14"
       },
       {
         "path": "tests/frontend-to-miniapp/test_integration.py",
-        "bytes": 63428,
+        "bytes": 63718,
         "mode": "0644",
-        "sha256": "sha256:2341aa16f7271e0f7980de5235e6c1996b1d6a32066b59eda41fad6bf3f25b24"
+        "sha256": "sha256:abd9600d3ddca4a82672d04279674e2f80e32a8586edbc7b86b9e4be2e759c53"
       },
       {
         "path": "engines/frontend-client-engine/package.json",
@@ -1453,9 +1453,9 @@
       },
       {
         "path": "engines/frontend-client-engine/src/index.ts",
-        "bytes": 1693,
-        "mode": "0600",
-        "sha256": "sha256:8de86e19e6268c4a971bb2aaca86f2e8a7f884f11592912cdd3c0f067f678367"
+        "bytes": 1734,
+        "mode": "0644",
+        "sha256": "sha256:a0cb2d244ad9c4a44b0a01b689945c9e56effa45c4326821103820f42e971537"
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-types.ts",
@@ -1477,27 +1477,33 @@
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-semantic-ir.ts",
-        "bytes": 121577,
+        "bytes": 147452,
         "mode": "0644",
-        "sha256": "sha256:3c787a7bb2a6d80e2693d45ed9be46ef9222b424ccf7e36bfd6895bb41f8be53"
+        "sha256": "sha256:c3ced046055a22322baade5b92b97dfc1b846c95cc22c3e2f4e056a243adc1c4"
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-planning.ts",
-        "bytes": 56941,
+        "bytes": 61321,
         "mode": "0644",
-        "sha256": "sha256:fb50e7db15789f4eb7566c5a5e362cb201a28c5076f4f5b64f3bacfa21b51824"
+        "sha256": "sha256:8d76057f5e792b0318c5b18437200352eab28698455e9cf65f6dd66ea6ebc0d1"
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-target-generation.ts",
-        "bytes": 34767,
+        "bytes": 36237,
         "mode": "0644",
-        "sha256": "sha256:a0a8a37df67ef356da0c53b232aa64ebc92fcd0f675ab0c1e9f471394960347f"
+        "sha256": "sha256:9a6dd98252d3668a7daff0832c26af1685422c21756fa69f1140928548218fcb"
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-skill-runtime.ts",
-        "bytes": 39327,
+        "bytes": 42586,
         "mode": "0644",
-        "sha256": "sha256:c054a5a5d4ffbb9463c7d93f49f86f197ace93617859aee982c7c5eed941261c"
+        "sha256": "sha256:15af94b507882ce25fe95cd37fc88ba9d78a90d1cd20cddc91d7e149c7adb39b"
+      },
+      {
+        "path": "engines/frontend-client-engine/src/miniapp-validation.ts",
+        "bytes": 48502,
+        "mode": "0644",
+        "sha256": "sha256:2a3b2b1abc580b756415539a60e640fe96fd994c0913d090ab2cfe55d2606eed"
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-cli.ts",
@@ -1513,9 +1519,9 @@
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-output-contracts.ts",
-        "bytes": 91094,
+        "bytes": 95108,
         "mode": "0644",
-        "sha256": "sha256:d6a7bf9f25034a0cfb98bf9f48bc7707ee019c2a8cddd4c21f5ea31caf451e0d"
+        "sha256": "sha256:40689fe840db4ebf19a0ccfed6e86198f44d2c4274f4ed4f611a2187a3905741"
       },
       {
         "path": "engines/frontend-client-engine/test/miniapp-contract-validation.test.ts",
@@ -1548,22 +1554,28 @@
         "sha256": "sha256:121236b9f8896e712fb86a93a111244633fac0b3681aa12b7120abca954fdbec"
       },
       {
-        "path": "engines/frontend-client-engine/test/miniapp-package-contract.test.ts",
-        "bytes": 34345,
+        "path": "engines/frontend-client-engine/test/miniapp-validation.test.ts",
+        "bytes": 19302,
         "mode": "0644",
-        "sha256": "sha256:71feb23a48162492de687088321ad8b09e7ee03da90b5c33747b0548ec7db52b"
+        "sha256": "sha256:874bf2e16b4aadbb6de199ff2275748c2b6ef0902cd5466fba81fe4d4b33d51d"
+      },
+      {
+        "path": "engines/frontend-client-engine/test/miniapp-package-contract.test.ts",
+        "bytes": 34359,
+        "mode": "0644",
+        "sha256": "sha256:250d27e52f6f5ddaddaebe2881b7fe7456b8736879c6db6f3882925b38458a74"
       },
       {
         "path": "engines/frontend-client-engine/test/miniapp-output-contracts.test.ts",
-        "bytes": 32008,
+        "bytes": 32460,
         "mode": "0644",
-        "sha256": "sha256:557bc9f12e428993aeb3f87572396193594346d420625a3d0475a69f5089ea96"
+        "sha256": "sha256:96f1feffaef96fc7575b7e480b37e9265acfe5a987a489ff97fb39a8f5a0aa10"
       },
       {
         "path": "engines/frontend-client-engine/test/miniapp-test-fixture.ts",
-        "bytes": 4696,
+        "bytes": 4731,
         "mode": "0644",
-        "sha256": "sha256:2ffc4af9298b65ec97549a0903d26470dd6c4ded7616e53a1dd49dda0bf0e49a"
+        "sha256": "sha256:fa6b965bf73ba54724b0f01104ca7f958a5e5c2b681b7201cb7e69c22854a941"
       },
       {
         "path": "engines/component-dialect-engine/package.json",
@@ -1739,10 +1751,10 @@
       "compiled_contract_path": "agent-skills/runtime/frontend-to-miniapp-orchestrator/compiled-contract.json",
       "installed_skill_sha256": "sha256:a6d399fc304e74175a4989ca7895f8c4a9ece4638e74ede8dbef624e4c0253e0",
       "interface_sha256": "sha256:b39f600e1ab7c5fad02e7130d4a1d39f916a035e3cd9a25b8cd4b7d7046447a5",
-      "compiled_contract_sha256": "sha256:e2c45b4a6afd400f039bc1b8df165cb2f300c797f9e8ae49c4a321ef18edfdca",
-      "installed_tree_sha256": "sha256:d42720781276ba8ff6e4b5a2aeaf5a24357fa1a54808247887e9968d50250548",
+      "compiled_contract_sha256": "sha256:2a2d55c6790248d1b39ca36e1d9c510f1ad8208a35fe3c76e42ae2f3cedcf052",
+      "installed_tree_sha256": "sha256:801228cb341314d492a1107ecfb01f18bb17584d53ab09ef5d28755bff6fc13b",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1762,10 +1774,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-source-framework-detector/compiled-contract.json",
       "installed_skill_sha256": "sha256:afc1ead50f8831e8a4ba5337e8d7b3762240426ff8372e03d7c55729defe1927",
       "interface_sha256": "sha256:5298828d4333b34530cca91f2e4cb4083482d1124ac805c043aa9c02d3f6c866",
-      "compiled_contract_sha256": "sha256:54f5c1c43d62c5c3e93202b6b8ef07d83102fb72c09e5c394a7e14e5cf83a048",
-      "installed_tree_sha256": "sha256:e09e9a36ccfcd39743256238b5c15a9e56f7be8d558d4cc310af193d589f4f09",
+      "compiled_contract_sha256": "sha256:a57b8d8dafb7f06c8c1c380123367be9bcdf31f9c5363324203f82b0ca683aaa",
+      "installed_tree_sha256": "sha256:523891ab881659ffc0ba482aa267888b6f8fd7f2ce943368fcc698c5794c9beb",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1787,10 +1799,10 @@
       "compiled_contract_path": "agent-skills/runtime/vue-to-miniapp-analyzer/compiled-contract.json",
       "installed_skill_sha256": "sha256:5ddbd246dbf5a1e9364d7c8128f7bf988753169f46a6e31aa1ec32262bc1ce58",
       "interface_sha256": "sha256:a294319a90227254ebde88129cebedc087269ec88817d14033a57c7f82a34bc9",
-      "compiled_contract_sha256": "sha256:0ecfae91c7d433944bf912706c67b01933ac2c2b10272172dc1c5c1286c6acfc",
-      "installed_tree_sha256": "sha256:de952a430241a04f70192c9208ed5307b007ce46a2d5e3c4eb247db8bf1bdb9a",
+      "compiled_contract_sha256": "sha256:99a66c49875ffb62806ea000b26ff0a17c74e1a71519fc7232faa287c129b592",
+      "installed_tree_sha256": "sha256:da5ffab49e1f338892be61850ec2030e8cbadb4dcf01e5b31b6fe18511cf3988",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1812,10 +1824,10 @@
       "compiled_contract_path": "agent-skills/runtime/react-to-miniapp-analyzer/compiled-contract.json",
       "installed_skill_sha256": "sha256:af5bd32b5b98dac8b3ba2b02d9f3f2125555f5c1c0f897953e4e6b58fffe08c7",
       "interface_sha256": "sha256:657376760c528e21ebe56d4dcae9b446d52e98d1b717efcacd86c9d10f548ac7",
-      "compiled_contract_sha256": "sha256:342dce8baf2ae8803ca1bb182c7499a609f032b30ef6e39db13787238e29c0d3",
-      "installed_tree_sha256": "sha256:26b9f59ec05d03931b0020dbc4c9736cc8d4276f52d74e5b0d2bd9228cfa8424",
+      "compiled_contract_sha256": "sha256:db052e98c91a6b92daeddff080e48f15e6c456ea575fbba6ec91d439a7d924cd",
+      "installed_tree_sha256": "sha256:6bc35f6c832836a4d2a79fcb70f25e477a137ba1899b580b39334dcc418ec123",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1837,10 +1849,10 @@
       "compiled_contract_path": "agent-skills/runtime/flutter-widget-semantic-reconstructor/compiled-contract.json",
       "installed_skill_sha256": "sha256:75e66d83e27f7dceefe31341b507e2fa29a9e5d44418af9a31182ca4adf38e9d",
       "interface_sha256": "sha256:e8faae82bcbf35bc042a63982620af2913b6669927510c47e9637e56734f1c28",
-      "compiled_contract_sha256": "sha256:0817a02736c11eded2ddce960274b2b1f94788ae6f46bf1a313985931c4ae098",
-      "installed_tree_sha256": "sha256:eba4458759465b03a34677b7497e86766efbb7a886933b02710fe896592b1dd0",
+      "compiled_contract_sha256": "sha256:7ddd23684798a514f6921ae21f1ec9f856b12e57bba709fd979575299c7d3428",
+      "installed_tree_sha256": "sha256:fe077e8cc1df5a44dd0a8b8917000843f553e02bb763f8ca4e8cfcf9a0ad1031",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1864,10 +1876,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-semantic-ir/compiled-contract.json",
       "installed_skill_sha256": "sha256:8b897c2c73d44096aff389f044f96615a8481b4b834e9d3494cbdab8180f5ffe",
       "interface_sha256": "sha256:754888eebb1c1c2a76f063d0f4c6b492363e8b9dfb94631d9b9f4d42c5be54c3",
-      "compiled_contract_sha256": "sha256:11efaf4aaf157a92e888fe3bff37a29f2e870d3eadbc1a7830c1f6d32f120b1d",
-      "installed_tree_sha256": "sha256:4807f70e1f02b3f4b7c9c567486f6693623e9075be060b613cb38fa4f65b8baa",
+      "compiled_contract_sha256": "sha256:c7fd922a09af318f156b662837064754e4e287ffa515b556ba63e10302b913ec",
+      "installed_tree_sha256": "sha256:993d163266eb37fab2d8fe38e77cfe2aea43d5b4b4267e41684ba79679c00021",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1889,10 +1901,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-capability-registry/compiled-contract.json",
       "installed_skill_sha256": "sha256:fe7ba17120561cfecd2a7ededc685beef9b52f8aa6e3e5752b2f74db4dc7b688",
       "interface_sha256": "sha256:e6a78dc027678c841a633b59c1a03eb13e633b2d6b9ca8a5b34f79cfa67ef9d4",
-      "compiled_contract_sha256": "sha256:84853f5da091fc07ec1b473f44aa2e0df218ba0111089d090f9cfc1fdd0cd05c",
-      "installed_tree_sha256": "sha256:409906a1d6f6aac719df980f4e24854d222678dda538ecdf0018ac0797991048",
+      "compiled_contract_sha256": "sha256:7a7eedce373631e8195913e0a10f4c8ce3991e752859b8fc54071381e02482cd",
+      "installed_tree_sha256": "sha256:0fa30c916b38ef8813bc7734df45a00acd04c47e0c2bcc0b423bafef4f553ed1",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1915,10 +1927,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-component-mapping-engine/compiled-contract.json",
       "installed_skill_sha256": "sha256:be02444766d300c2a6a62be4016d71e41a9837a7151f4c6d06afa3930d4ff857",
       "interface_sha256": "sha256:47cc198dd08299e4abec42f9c520acf635c16c1db548be33f64b0aa753c8255d",
-      "compiled_contract_sha256": "sha256:bd0d8e1cc54ddc9fec09e67aee68c6e110a46e9a14143eaecd791aeedb6b8233",
-      "installed_tree_sha256": "sha256:fea273563562e695c7b83157d8736e95d0f3fdb3d5bec85d6e322f531f7a7b36",
+      "compiled_contract_sha256": "sha256:8096e3a82ebf45e60a9668c7a87769d4242e93e305143d156e7ecf8fe0119582",
+      "installed_tree_sha256": "sha256:1b66d29cf6bce426552d8d282201b51595f30c512d27634a02c72d6c1cb9c456",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1941,10 +1953,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-state-event-lifecycle-converter/compiled-contract.json",
       "installed_skill_sha256": "sha256:fd31e43f7c40dd00d8d9e1cab57a205a079e2dfc4dcdf06c434f8e71d4b54e51",
       "interface_sha256": "sha256:b691e209d4961797e868ff424e0968c7e4a1eb9cc4756a022bd60d812a4fd412",
-      "compiled_contract_sha256": "sha256:85f1a17431828828da3ceab9a43664b583728e73a3da8a27c4d8c2fae57b42a5",
-      "installed_tree_sha256": "sha256:7f17bd09ce7de63315c8164e3a9e28425566ac904d31206980077f75b598d175",
+      "compiled_contract_sha256": "sha256:9aa088a82d6d8f0ba19a7de99df02a92e0c8c38efe7214cad445589811be6391",
+      "installed_tree_sha256": "sha256:68e547cb3472a2890b75d2eef9a7ef1be71137ede1f0471924b416d56975ed0f",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1967,10 +1979,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-style-layout-converter/compiled-contract.json",
       "installed_skill_sha256": "sha256:d4d1774b2ffb6018783a5be33dc9b3d59b4e073747d7c217935d2a7e4475e0ee",
       "interface_sha256": "sha256:b21e4cca3aa6dd54d3ac9548776a66b09c3a84115d07e1894b28e65b0f9be5e4",
-      "compiled_contract_sha256": "sha256:4c96d3c390917cb92b88ab8a12f2e6ab39e550ca51feaf3afd9324f6020e9166",
-      "installed_tree_sha256": "sha256:2846b2af8a282cc5d60196412c127685f89da4e4f4e6f09da2a4bdc887c8ab0d",
+      "compiled_contract_sha256": "sha256:9b81857271f83c4f4a164c21f76be6712d85829979c486f240fcff5ed6589901",
+      "installed_tree_sha256": "sha256:99c35405ed51ffd1fc4f1d9fecee6bc53f88090f3a50a99b56f9f2180e71103c",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1993,10 +2005,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-third-party-dependency-migrator/compiled-contract.json",
       "installed_skill_sha256": "sha256:11d3718bd2b0cac52472be923d8a5e4ca894311e080bbae09b50169817815428",
       "interface_sha256": "sha256:3feb24e8c74b8d58008ab8e69dd8634ec858d04aa7048968a83b4aa08f4dae52",
-      "compiled_contract_sha256": "sha256:943f516fb26b80ba74ea2715105b10e7772fe735d6c82673ea1dfa2a03881d60",
-      "installed_tree_sha256": "sha256:6a27947225545084c4a527f8769b85d24830548994c437d76c1601f0f997399b",
+      "compiled_contract_sha256": "sha256:4417de1d8a8d7a0b51c9430d44255487cb17823574c75b508541f3c54cfeb5d2",
+      "installed_tree_sha256": "sha256:f2a563197f08a46555048f983884f5464260781e96ffc5a4230b0271bf84ad9a",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -2020,10 +2032,10 @@
       "compiled_contract_path": "agent-skills/runtime/wechat-miniapp-codegen/compiled-contract.json",
       "installed_skill_sha256": "sha256:a75b1ada3f604d146395ef7597a9b6d8a0f4e408d20744b5a227a2f3d889ec45",
       "interface_sha256": "sha256:9a4bd421c607a9ac29463056df6b9a0cfae86b33afe99a73bccc303967cee69d",
-      "compiled_contract_sha256": "sha256:79e296e6f6ae3169b78de4b6549a999ff93dddce7cd57fe55907fa8d20df6c98",
-      "installed_tree_sha256": "sha256:cffe17912987994234b3330edf54cf4e3993bfc699372b30b497a91e45da53ca",
+      "compiled_contract_sha256": "sha256:c5d3bf4f37f725d80bd60d9d7f2942a29de2850d43f0ba6602ab954816c86c07",
+      "installed_tree_sha256": "sha256:12d2a120a5951aa0e5aa9ca40fc8552f31d01e3cb9b990d2c003ad915767afb6",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -2047,10 +2059,10 @@
       "compiled_contract_path": "agent-skills/runtime/alipay-miniapp-codegen/compiled-contract.json",
       "installed_skill_sha256": "sha256:a23a7b2b4e2ff3162bc66d3e3137ece0a0defe0381c6d83ce18a4a15091d12ce",
       "interface_sha256": "sha256:da8dc4b9a7805e00f31dc072ebf13d20ffae55df8f618afb837164cd49ed9506",
-      "compiled_contract_sha256": "sha256:a0fec0ae96e5364372a3481683ddb804de262bb8c728c6f07bbf45f1cc75b08b",
-      "installed_tree_sha256": "sha256:6bad9ad08a9665f517f267bf82a2ae58d39bf62282fddb8d0049d91b857e04d4",
+      "compiled_contract_sha256": "sha256:e49af97ee28b149f7734bb1936dce849dc3b054f0aebf8713be66ed43d03b80b",
+      "installed_tree_sha256": "sha256:bf6b23b3b1039b78350a034d4d43a833263a705624618e0ed7ba6898ebde6ad2",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -2074,10 +2086,10 @@
       "compiled_contract_path": "agent-skills/runtime/douyin-miniapp-codegen/compiled-contract.json",
       "installed_skill_sha256": "sha256:d163f6f721b715b6bfcc9dceffe0a2cf57be23e3294593646ecfba93790d11aa",
       "interface_sha256": "sha256:c560523db82851a9cb4f4d3a45c971fac24a381d2b02295338f0dd8395e54368",
-      "compiled_contract_sha256": "sha256:bf1861b347e62945a4981e5502e5a2d36dd5a349ba795c373472f456c1bca17d",
-      "installed_tree_sha256": "sha256:eff8d56fad11bdba9089df76cbfdd8c427d295def2526f6c50507bab7544f7ce",
+      "compiled_contract_sha256": "sha256:f7237a503afb520fd48578dd0a05ef77cd1a7c9173b449d9c93c28cbd72508c2",
+      "installed_tree_sha256": "sha256:c0e24962417e1499c388022caeb919aa11c0b11bfdd4fadeb54ad925d130aa57",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -2101,10 +2113,10 @@
       "compiled_contract_path": "agent-skills/runtime/xiaohongshu-miniapp-codegen/compiled-contract.json",
       "installed_skill_sha256": "sha256:d6362f7ae8d5ecdbb186f92153e9607681641cf182e003ae6e6fe8b1d8d74b90",
       "interface_sha256": "sha256:fd9c8740f176f83179f9dfb0ec9881ec37ace20c5023819f8efbd5840466a126",
-      "compiled_contract_sha256": "sha256:79e170b04a107488c6df7b0b7641f14b10dabdb1aec280e4d9742992a9cb6ce3",
-      "installed_tree_sha256": "sha256:27d5a4e6c1813cecf125e3e2212e2e4bc38885449409177c0d8376541ec633e6",
+      "compiled_contract_sha256": "sha256:a674669823fe15d84b80a07024dab2df2806d45ad1ce8406ae051b0270c75888",
+      "installed_tree_sha256": "sha256:8414af85eefc51a40a816e6f39fc4d653bdb92f9098d4c24ba446060f5f723e2",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -2126,10 +2138,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-commerce-social-adapter/compiled-contract.json",
       "installed_skill_sha256": "sha256:d7ad0c689b6556a2bc84be74e4555943c662b1706b9a0622a22e37310e334ec9",
       "interface_sha256": "sha256:a9091520e8f48b72d12d209ac64c4ef024bbf6c9cc5c85d4f7936122743d32be",
-      "compiled_contract_sha256": "sha256:83eacec559fb0ece890a0d2c583776f3f9d499a4d509af195b3d9e3a7b23f324",
-      "installed_tree_sha256": "sha256:d2c8dbab85cafe7d0b898a6833fcb253be672b79334ee74ef24e8390abf6a5dd",
+      "compiled_contract_sha256": "sha256:ec344d339caace2c718a801d9e4fe2668991f97da24d80abbbd760a4004cc9e3",
+      "installed_tree_sha256": "sha256:c6e1987967868fa211e3426c971796b3072c7c5a6b60d043295fc8b1f789e2c9",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -2156,10 +2168,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-privacy-permission-auditor/compiled-contract.json",
       "installed_skill_sha256": "sha256:1ae2b703e4fcc8efc298da1ced6bd9e3ef3c44a6bc08990991232eb5d7e957bc",
       "interface_sha256": "sha256:9a0098528c33c05b55fcfd5b105f1b17598d7f2ec8efe54d5ceff9247112fd21",
-      "compiled_contract_sha256": "sha256:d850dec12305d081aa7069816a5698ef82c18149d6c4daa77abb9c784fe5f0cc",
-      "installed_tree_sha256": "sha256:56dd95fb02b5718f7038acabab799edcb733d1ad4b25753fe0b94f5c82614f7e",
+      "compiled_contract_sha256": "sha256:d8d731edb1389ca38e5a4bb6c1c0066f88dd53cceee83e60e60cc49519a1880b",
+      "installed_tree_sha256": "sha256:383f31aaac132a551a28a197a29c03fa1dc81e9e0841d27b3badb5e5278ba8cd",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -2184,10 +2196,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-differential-testing/compiled-contract.json",
       "installed_skill_sha256": "sha256:15e828acda980dfa24c25db479bf1d24c0706d5589db305cf52642435afe69b7",
       "interface_sha256": "sha256:4cc858eed58c35e785e60b36c36e909f00ed14f9de96b2a0d006aa93987983b1",
-      "compiled_contract_sha256": "sha256:09356a9166838248c39c0bdf4eb527cad463302ac2d4a1423330222f9f7de5b4",
-      "installed_tree_sha256": "sha256:22e1eee1641b2ae256dd7fec1f156df6c7a6821d297ac9cd5a282a87201495eb",
+      "compiled_contract_sha256": "sha256:4f9d3cc1f1d92432069d4840a1a1c7d06e07f11f61f31175c04f3fbb6d063a64",
+      "installed_tree_sha256": "sha256:3b6dc02d46f68e4e61a24b08a67e648e0d07f43567dab94981f01bb4d7335e48",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -2210,10 +2222,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-visual-regression-testing/compiled-contract.json",
       "installed_skill_sha256": "sha256:c7c846b011fbee8c473eec1c63757d131d450d2784e2fa14430bb69d4bc12fb1",
       "interface_sha256": "sha256:b195ff05de0ab4ca1361fe246ebb35d068e8ea18c9d3c3332fc2624921981b68",
-      "compiled_contract_sha256": "sha256:c3e3a84d0b99b6a56408071be535b9400d076dcaf974afdd4f70f70ac776e9ef",
-      "installed_tree_sha256": "sha256:fd9719051fd20bdfda229cd81a126a4b8a1ef8a7e514b1faaf8f2bea97c4cb9e",
+      "compiled_contract_sha256": "sha256:40dac448872e93675718d49b396e80d25221f358d30ac54afc6c4de34f8e153c",
+      "installed_tree_sha256": "sha256:4fe615f23c92f85bfac7341ed45bb4cf264ceebdfc5f3e6791ba8ba6c80c40a6",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -2237,10 +2249,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-auto-repair-loop/compiled-contract.json",
       "installed_skill_sha256": "sha256:27f15b2dd461bd1fc83e331c9b91031ed462672f474bb3a5b0248b0e9f363b47",
       "interface_sha256": "sha256:369b736af77309f6d21416c1fbed98fbab38541501e897d883d30a55ae6c5f97",
-      "compiled_contract_sha256": "sha256:1f0496815beac302fc095bf103bfb2eec728298a730fc3767c1b58898dd8d59e",
-      "installed_tree_sha256": "sha256:a3667d3a5bb89378e15081691d522a6184fc7227c2cae3e221ca4e9df75f5162",
+      "compiled_contract_sha256": "sha256:aa7de1bd0c18454f5c591c76fbac87072ea21f71de863773b0c79b9bad832a38",
+      "installed_tree_sha256": "sha256:842e6382dd6b96c454b0135dabe397521ee6ca1e3872749505858be5d6578ed2",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -2263,10 +2275,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-ci-build-release/compiled-contract.json",
       "installed_skill_sha256": "sha256:53e154f7ffac6a4f216b49a51ae968985090fc762d10144d30a4f4daaf61b23b",
       "interface_sha256": "sha256:877eb9e0e129885758c5025ed442dd939232a2a8d36fafbdf4c0f782574bcbd4",
-      "compiled_contract_sha256": "sha256:e3940010cab0b989a9d488d51043f49503c5068e967ee3d21c9f872fa4618a88",
-      "installed_tree_sha256": "sha256:a6d0937e368657fb1c4380b44e6c8c282534fd0319909dd77f963e4e112e62ce",
+      "compiled_contract_sha256": "sha256:3b926d89ae6a3a4b70da84374d50607bf9d01d94578c513391a8ca13637933df",
+      "installed_tree_sha256": "sha256:839f1c55bf9638197c7ed866ef2012398634ba9f34b5e07358d4a911f001a511",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -2291,10 +2303,10 @@
       "compiled_contract_path": "agent-skills/runtime/miniapp-migration-evidence-reporter/compiled-contract.json",
       "installed_skill_sha256": "sha256:4c769d0f9548cdcb8b74700692b131bf61efe924f89e49935915966f6464aab5",
       "interface_sha256": "sha256:b59a1971e913e53fe419856e1411b00dccd1b4472a2ad26ce55b328646899832",
-      "compiled_contract_sha256": "sha256:c99b8c91de41ecc21bc896bf5fff8c008bd36a9b5036da9e7e7ebdbec14346fe",
-      "installed_tree_sha256": "sha256:899db1d2071ad334bf1163537393adb63ef21cf24567751e97699b244043dfd3",
+      "compiled_contract_sha256": "sha256:6b8cd6c050ac6415c1a0034caf0ff9bbe90070465a9f85406b355f28b5e618b6",
+      "installed_tree_sha256": "sha256:e08511a9365756b915613516ae11644ef3fbfbf44155a65a7a646d80234eabfb",
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
