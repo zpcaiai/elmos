@@ -1,0 +1,77 @@
+{
+  "capabilities" : [ {
+    "activation_conditions" : [ ],
+    "confidence" : "medium-static-source",
+    "domain" : "web",
+    "id" : "servlet-initializer",
+    "obligations" : [ "target-build", "target-startup", "source-target-behavior-comparison", "conditional-activation-reconciliation", "preserve-root-and-servlet-context-hierarchy", "preserve-servlet-mapping-and-load-on-startup", "preserve-filter-listener-and-initializer-order", "preserve-async-and-multipart-registration" ],
+    "runtime_confirmation" : false,
+    "source_traces" : [ "observed|source|src/main/webapp/WEB-INF/web.xml:38|dispatcher servlet registration", "observed|source|src/main/webapp/WEB-INF/web.xml:38|web.xml dispatcher servlet" ],
+    "status" : "observed"
+  }, {
+    "activation_conditions" : [ ],
+    "confidence" : "medium-static-source",
+    "domain" : "web",
+    "id" : "spring-mvc",
+    "obligations" : [ "target-build", "target-startup", "source-target-behavior-comparison", "conditional-activation-reconciliation", "preserve-route-method-media-and-parameter-contract", "preserve-binding-validation-and-error-contract", "preserve-interceptor-exception-and-view-resolution-order", "preserve-session-async-and-multipart-semantics" ],
+    "runtime_confirmation" : false,
+    "source_traces" : [ "declared-only|build-model|pom.xml:30|spring-webmvc", "observed|source|src/main/java/io/elmos/legacy/web/ApiExceptionHandler.java:11|Spring MVC controller", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:18|Spring MVC controller", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:19|Spring MVC route", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:27|Spring MVC route", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:33|Spring MVC route", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:43|Spring MVC route", "observed|source|src/main/java/io/elmos/legacy/web/RequestAuditInterceptor.java:7|Spring MVC extension", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:11|Spring MVC XML namespace", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:12|Spring MVC XML namespace", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:14|Spring MVC XML namespace", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:22|Spring MVC view resolver" ],
+    "status" : "observed"
+  }, {
+    "activation_conditions" : [ ],
+    "confidence" : "medium-static-source",
+    "domain" : "web",
+    "id" : "spring-mvc-xml",
+    "obligations" : [ "target-build", "target-startup", "source-target-behavior-comparison", "conditional-activation-reconciliation", "preserve-bean-ids-aliases-and-reference-integrity", "preserve-context-hierarchy-and-load-order", "preserve-namespace-handler-defaults", "preserve-component-scan-includes-and-excludes" ],
+    "runtime_confirmation" : false,
+    "source_traces" : [ "observed|source|src/main/resources/WEB-INF/spring/root-context.xml:10|XML component scan", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:10|XML component scan", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:11|Spring MVC XML namespace", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:12|Spring MVC XML namespace", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:14|Spring MVC XML namespace", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:22|XML MVC component", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:22|XML MVC strategy bean", "observed|source|src/main/webapp/WEB-INF/web.xml:38|XML MVC component" ],
+    "status" : "observed"
+  }, {
+    "activation_conditions" : [ ],
+    "confidence" : "medium-static-source",
+    "domain" : "validation",
+    "id" : "validation",
+    "obligations" : [ "target-build", "target-startup", "source-target-behavior-comparison", "conditional-activation-reconciliation", "preserve-validation-groups-and-order", "preserve-cascade-and-container-element-validation", "preserve-message-interpolation-and-locale", "preserve-binding-error-shape-and-timing" ],
+    "runtime_confirmation" : false,
+    "source_traces" : [ "declared-only|build-model|pom.xml:19|validation-api", "declared-only|build-model|pom.xml:20|hibernate-validator", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:35|validation boundary", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:21|validation provider configuration", "test-only|source|src/test/java/io/elmos/legacy/web/LegacyOrderControllerTest.java:21|validation provider configuration", "test-only|source|src/test/java/io/elmos/legacy/web/LegacyOrderControllerTest.java:26|validation provider configuration" ],
+    "status" : "observed"
+  }, {
+    "activation_conditions" : [ ],
+    "confidence" : "medium-static-source",
+    "domain" : "web",
+    "id" : "web",
+    "obligations" : [ "target-build", "target-startup", "source-target-behavior-comparison", "conditional-activation-reconciliation", "preserve-cross-capability-ordering", "verify-provider-specific-defaults" ],
+    "runtime_confirmation" : false,
+    "source_traces" : [ "declared-only|build-model|pom.xml:30|spring-webmvc|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/ApiExceptionHandler.java:11|Spring MVC controller|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:18|Spring MVC controller|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:19|Spring MVC route|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:27|Spring MVC route|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:33|Spring MVC route|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:43|Spring MVC route|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/RequestAuditInterceptor.java:7|Spring MVC extension|derived-from=spring-mvc", "observed|source|src/main/resources/WEB-INF/spring/root-context.xml:10|XML component scan|derived-from=spring-mvc-xml", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:10|XML component scan|derived-from=spring-mvc-xml", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:11|Spring MVC XML namespace|derived-from=spring-mvc", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:11|Spring MVC XML namespace|derived-from=spring-mvc-xml", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:12|Spring MVC XML namespace|derived-from=spring-mvc", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:12|Spring MVC XML namespace|derived-from=spring-mvc-xml", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:14|Spring MVC XML namespace|derived-from=spring-mvc", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:14|Spring MVC XML namespace|derived-from=spring-mvc-xml", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:22|Spring MVC view resolver|derived-from=spring-mvc", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:22|XML MVC component|derived-from=spring-mvc-xml", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:22|XML MVC strategy bean|derived-from=spring-mvc-xml", "observed|source|src/main/webapp/WEB-INF/web.xml:38|XML MVC component|derived-from=spring-mvc-xml", "observed|source|src/main/webapp/WEB-INF/web.xml:38|dispatcher servlet registration|derived-from=servlet-initializer", "observed|source|src/main/webapp/WEB-INF/web.xml:38|web.xml dispatcher servlet|derived-from=servlet-initializer" ],
+    "status" : "observed"
+  } ],
+  "exact_tuple" : {
+    "sourceSpringBoot" : null,
+    "sourceJava" : "11",
+    "sourceBuildTool" : "maven-3.9.11",
+    "targetSpringBoot" : "3.5.3",
+    "targetJava" : "21",
+    "targetBuildTool" : "maven-3.9.11",
+    "rewriteSpring" : "6.35.0",
+    "rewriteMavenPlugin" : "6.44.0",
+    "sourceFrameworkFamily" : "spring-mvc",
+    "sourceFrameworkVersion" : "5.3.39"
+  },
+  "extraction_status" : "STATIC_AND_SOURCE_BASELINE",
+  "ordering_and_defaults" : {
+    "configuration_precedence" : "preserve-and-verify",
+    "security_filter_order" : "preserve-and-verify",
+    "transaction_defaults" : "preserve-and-verify"
+  },
+  "pack_key" : "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "route_evidence" : "PASSED_LOCAL",
+  "route_id" : "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21",
+  "schema_version" : "1.0",
+  "source_commit" : "edd4027d3cb980e5baf066f608e0e2f93b59905a",
+  "source_framework" : {
+    "family" : "spring-mvc",
+    "version" : "5.3.39"
+  },
+  "source_snapshot_sha256" : "68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581",
+  "unknowns" : [ ]
+}

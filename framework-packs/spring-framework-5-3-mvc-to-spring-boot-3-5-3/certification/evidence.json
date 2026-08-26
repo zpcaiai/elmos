@@ -5,10 +5,10 @@
   "evidence_class": "LOCAL_ENGINEERING_EXACT_FIXTURE",
   "runs": [
     {
-      "id": "spring-mvc-5.3.39-to-boot-3.5.3-local-2026-08-11",
+      "id": "spring-mvc-5.3.39-to-boot-3.5.3-local-2026-08-26",
       "status": "PASSED_LOCAL",
       "scope": "LOCAL_ENGINEERING_EXACT_FIXTURE_ONLY",
-      "evidence_index": "certification/local-execution/2026-08-11/evidence-index.json"
+      "evidence_index": "certification/local-execution/2026-08-26/evidence-index.json"
     }
   ],
   "metrics": {
@@ -23,7 +23,7 @@
   },
   "metric_status": "NOT_EVALUATED_BEYOND_EXACT_FIXTURE",
   "static_validation": {
-    "executed_at": "2026-08-11",
+    "executed_at": "2026-08-26",
     "status": "PASSED_LOCAL_STATIC",
     "certification_eligible": false,
     "checks": [

@@ -37,7 +37,7 @@
       "target_emitter": "target-profile/scaffold/materialize_target.py",
       "execution_status": "PASSED_LOCAL",
       "execution_scope": "LOCAL_ENGINEERING_EXACT_FIXTURE_ONLY",
-      "evidence_ref": "certification/local-execution/2026-08-11/evidence-index.json"
+      "evidence_ref": "certification/local-execution/2026-08-26/evidence-index.json"
     }
   ]
 }

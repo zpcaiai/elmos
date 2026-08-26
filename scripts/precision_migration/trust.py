@@ -272,7 +272,22 @@ class TrustStore:
             max_bytes=1024 * 1024,
             label="trust store",
         )
-        return cls.from_bytes(resolved_store, store_bytes)
+        store = cls.from_bytes(resolved_store, store_bytes)
+        current_store_stat = os.stat(supplied_store, follow_symlinks=False)
+        if (
+            current_store_stat.st_dev,
+            current_store_stat.st_ino,
+            current_store_stat.st_size,
+            current_store_stat.st_mtime_ns,
+        ) != (
+            store_stat.st_dev,
+            store_stat.st_ino,
+            store_stat.st_size,
+            store_stat.st_mtime_ns,
+        ):
+            raise ValueError("trust store changed while its snapshot was loaded")
+        document = json.loads(store_bytes.decode("utf-8"))
+        return store, document
 
     @classmethod
     def from_bytes(cls, path: Path, store_bytes: bytes) -> "TrustStore":
@@ -361,19 +376,6 @@ class TrustStore:
             not isinstance(item, str) or not item for item in revoked
         ):
             raise ValueError("trust store revoked_record_ids must be a string array")
-        current_store_stat = os.stat(supplied_store, follow_symlinks=False)
-        if (
-            current_store_stat.st_dev,
-            current_store_stat.st_ino,
-            current_store_stat.st_size,
-            current_store_stat.st_mtime_ns,
-        ) != (
-            store_stat.st_dev,
-            store_stat.st_ino,
-            store_stat.st_size,
-            store_stat.st_mtime_ns,
-        ):
-            raise ValueError("trust store changed while its snapshot was loaded")
         for key_path, expected_stat in key_path_stats.items():
             current_key_stat = os.stat(key_path, follow_symlinks=False)
             if (
@@ -401,7 +403,7 @@ class TrustStore:
                 }
             ),
         )
-        return store, payload
+        return store
 
     def verify_envelope(
         self,

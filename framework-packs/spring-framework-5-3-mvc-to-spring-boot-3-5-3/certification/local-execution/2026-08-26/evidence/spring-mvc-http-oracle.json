@@ -1,0 +1,90 @@
+{
+  "comparisons" : [ {
+    "case" : {
+      "body_mode" : "JSP_UTF8_LINE_ENDINGS",
+      "expected_statuses" : [ 200 ],
+      "id" : "jsp-order-list",
+      "method" : "GET",
+      "path" : "/orders",
+      "readiness" : false,
+      "request_body_bytes" : 0,
+      "request_body_sha256" : "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_header_names" : [ "accept" ]
+    },
+    "compared_headers" : [ "content-language", "set-cookie", "content-type" ],
+    "equal" : true,
+    "source" : {
+      "body_bytes" : 142,
+      "body_sha256" : "7c972e56e323ba7372ffb204c18ffac6fdd5dd5f49d9602db13d22fa7b20f4b4",
+      "header_names" : [ "content-language", "content-length", "content-type", "date", "set-cookie" ],
+      "status" : 200
+    },
+    "target" : {
+      "body_bytes" : 142,
+      "body_sha256" : "7c972e56e323ba7372ffb204c18ffac6fdd5dd5f49d9602db13d22fa7b20f4b4",
+      "header_names" : [ "content-language", "content-length", "content-type", "date", "set-cookie" ],
+      "status" : 200
+    }
+  }, {
+    "case" : {
+      "body_mode" : "EXACT_BYTES",
+      "expected_statuses" : [ 200 ],
+      "id" : "odd-order-review",
+      "method" : "GET",
+      "path" : "/api/orders/7",
+      "readiness" : false,
+      "request_body_bytes" : 0,
+      "request_body_sha256" : "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_header_names" : [ "accept" ]
+    },
+    "compared_headers" : [ "x-legacy-audit", "content-type" ],
+    "equal" : true,
+    "source" : {
+      "body_bytes" : 61,
+      "body_sha256" : "06999b17cc1ebccad19cbd3fc491a733b9da740dcbc2d29404226fa816d076e2",
+      "header_names" : [ "content-type", "date", "transfer-encoding", "x-legacy-audit" ],
+      "status" : 200
+    },
+    "target" : {
+      "body_bytes" : 61,
+      "body_sha256" : "06999b17cc1ebccad19cbd3fc491a733b9da740dcbc2d29404226fa816d076e2",
+      "header_names" : [ "content-type", "date", "transfer-encoding", "x-legacy-audit" ],
+      "status" : 200
+    }
+  } ],
+  "schema_version" : "1.0",
+  "source_readiness" : {
+    "case" : {
+      "body_mode" : "EXACT_BYTES",
+      "expected_statuses" : [ 200 ],
+      "id" : "source-readiness-order-42",
+      "method" : "GET",
+      "path" : "/api/orders/42",
+      "readiness" : true,
+      "request_body_bytes" : 0,
+      "request_body_sha256" : "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_header_names" : [ "accept" ]
+    },
+    "response" : {
+      "body_bytes" : 62,
+      "body_sha256" : "c0697d9710a80a397c61f8cc347feed45107335979b54fc5a6818a6382f95727",
+      "header_names" : [ "content-type", "date", "transfer-encoding", "x-legacy-audit" ],
+      "status" : 200
+    }
+  },
+  "source_runtime" : "apache-tomcat-9.0.120:540f8b3855dc3d963f6872f5fb10a156985ee9bf8ffc78a9f859eda5675309dd:manifest:bf6e25983335bc1e3ac471195f4f5d09b65c8b57abdce636a087c6fb6c9c0fcd",
+  "status" : "PASS_LOCAL_ENGINEERING",
+  "target_only_actuator" : {
+    "id" : "target-actuator-health",
+    "method" : "GET",
+    "path" : "/actuator/health",
+    "response" : {
+      "body_bytes" : 15,
+      "body_sha256" : "647a83cca85203d6d4eb07eea84ef6eb91d5c6482eaff2ac8bb65a342b9f2946",
+      "header_names" : [ "content-type", "date", "transfer-encoding" ],
+      "status" : 200
+    }
+  },
+  "target_runtime" : "org.springframework.boot.loader.launch.WarLauncher",
+  "volatile_headers_excluded" : [ "connection", "content-length", "date", "keep-alive", "server", "transfer-encoding" ]
+}

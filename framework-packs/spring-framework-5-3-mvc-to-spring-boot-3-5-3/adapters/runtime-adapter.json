@@ -17,7 +17,7 @@
   "disabled_by_default": false,
   "execution_status": "PASSED_LOCAL",
   "claim_scope": "LOCAL_ENGINEERING_EXACT_FIXTURE_ONLY",
-  "evidence_ref": "certification/local-execution/2026-08-11/evidence-index.json",
+  "evidence_ref": "certification/local-execution/2026-08-26/evidence-index.json",
   "required_attestations": [
     "exact Java 11 and Maven 3.9.11 source baseline",
     "exact Java 21 and Maven 3.9.11 target build",

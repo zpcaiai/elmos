@@ -75,7 +75,7 @@ class SpringMvcExactTargetMaterializerTest {
         assertEquals("classpath:/spring-mvc/target-profile/profile.json",
                 controlledProfiles.get(0).path("resource").asText());
         assertEquals(3731, controlledProfiles.get(0).path("bytes").asLong());
-        assertEquals("e343284913ec4c95837eb997292ce862ccb4fb23265de58cb27924d1233b39d5",
+        assertEquals("4856d1c012274be15fa9339a4a11524314994ca858e2b7856fcd367fb1de63a5",
                 controlledProfiles.get(0).path("sha256").asText());
         assertEquals("classpath:/spring-mvc/target-profile/scaffold-manifest.json",
                 controlledProfiles.get(1).path("resource").asText());
