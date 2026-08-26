@@ -1,5 +1,7 @@
 # Spring Boot reference gate
 
+- Local fixture migration, equivalence and security probes: PASSED_LOCAL (self-attested only)
+- Target-repository/production Spring-JVM evidence: NOT_RUN
 - Pack status: `limited`
 - Declared supported scope: `web`, `configuration`, `lifecycle`
 - Spring Boot 2.7.18 / Java 17 build and startup: `PASSED_LOCAL`

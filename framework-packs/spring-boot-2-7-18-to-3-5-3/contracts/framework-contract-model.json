@@ -32,6 +32,29 @@
         "application.properties"
       ],
       "status": "captured"
+    },
+    {
+      "id": "validation-contract",
+      "obligations": [
+        "POST /api/orders with blank customerId returns HTTP 400",
+        "POST /api/orders with a non-blank customerId returns HTTP 200"
+      ],
+      "source_traces": [
+        "OrderController.java"
+      ],
+      "status": "captured"
+    },
+    {
+      "id": "security-contract",
+      "obligations": [
+        "GET /api/orders/{id} without HTTP Basic credentials returns HTTP 401",
+        "GET /api/orders/{id} with fixture operator credentials returns HTTP 200",
+        "the actuator health endpoint remains publicly readable"
+      ],
+      "source_traces": [
+        "SecurityConfiguration.java"
+      ],
+      "status": "captured"
     }
   ],
   "exact_tuple": {
@@ -48,6 +71,6 @@
   "pack_key": "spring-boot-2-7-18-to-3-5-3",
   "schema_version": "1.0",
   "source_commit": "0000000000000000000000000000000000000000",
-  "source_snapshot_sha256": "04988843c45e107f98fe042ddf435061dcbdf7c4ff571e952e124171c9783f0a",
+  "source_snapshot_sha256": "3109207b53612874a2d3a3ead38e82eff8df6d2dad9243fe8b6fe9e1d5050dbc",
   "unknowns": []
 }

@@ -534,3 +534,8 @@ uir-j2p-gate: uir-j2p-test uir-j2p-mutation
 multitenant-task-finops-skills:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_multitenant_task_finops_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/multitenant-task-finops -p 'test_*.py'
+
+.PHONY: spring-golden-route-commercial-task-inventory
+spring-golden-route-commercial-task-inventory:
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_spring_golden_route_source_task_coverage.py --check
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests/spring-golden-route-commercial/test_source_task_coverage.py

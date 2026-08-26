@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import http.client
 import json
@@ -50,6 +51,46 @@ public class ReferenceApplication {
 }
 """
 
+SECURITY_CONFIGURATION = """package io.elmos.reference;
+
+import static org.springframework.security.config.Customizer.withDefaults;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+class SecurityConfiguration {
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeRequests(authorize -> authorize
+            .antMatchers("/actuator/health").permitAll()
+            .antMatchers("/error").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/orders/**").authenticated()
+            .antMatchers(HttpMethod.POST, "/api/orders").authenticated()
+            .anyRequest().denyAll()
+        ).csrf(csrf -> csrf.ignoringAntMatchers("/api/orders"))
+            .httpBasic(withDefaults());
+        return http.build();
+    }
+
+    @Bean
+    UserDetailsService userDetailsService() {
+        return new InMemoryUserDetailsManager(
+            User.withUsername("operator")
+                .password("{noop}operator-password")
+                .roles("OPERATOR")
+                .build()
+        );
+    }
+}
+"""
+
 CONTROLLER = """package io.elmos.reference;
 
 import java.util.Map;
@@ -87,6 +128,7 @@ TEST = """package io.elmos.reference;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -94,6 +136,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
@@ -104,11 +148,38 @@ class OrderControllerTest {
 
     @Test
     void preservesOrderContract() throws Exception {
-        mvc.perform(get("/api/orders/42"))
+        mvc.perform(get("/api/orders/42")
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("operator", "operator-password")))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id", is(42)))
             .andExpect(jsonPath("$.status", is("READY")))
             .andExpect(jsonPath("$.amountCents", is(5250)));
+    }
+
+    @Test
+    void rejectsUnauthenticatedOrderReads() throws Exception {
+        mvc.perform(get("/api/orders/42"))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void preservesValidationContract() throws Exception {
+        mvc.perform(post("/api/orders")
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("operator", "operator-password"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\\\"customerId\\\":\\\"\\\"}"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void acceptsAuthenticatedValidOrder() throws Exception {
+        mvc.perform(post("/api/orders")
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("operator", "operator-password"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\\\"customerId\\\":\\\"customer-42\\\"}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.customerId", is("customer-42")))
+            .andExpect(jsonPath("$.status", is("CREATED")));
     }
 }
 """
@@ -129,6 +200,16 @@ def write_json(path: Path, value: dict[str, Any]) -> None:
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def evidence_binding(pack: Path, path: Path, role: str) -> dict[str, Any]:
+    raw = path.read_bytes()
+    return {
+        "bytes": len(raw),
+        "path": path.relative_to(pack).as_posix(),
+        "role": role,
+        "sha256": hashlib.sha256(raw).hexdigest(),
+    }
 
 
 def free_port() -> int:
@@ -199,7 +280,16 @@ def pom(version: str, java_version: str) -> str:
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -228,20 +318,63 @@ def materialize(project: Path, version: str, java_version: str) -> None:
     (project / "pom.xml").write_text(pom(version, java_version), encoding="utf-8")
     (source / "ReferenceApplication.java").write_text(APPLICATION, encoding="utf-8")
     (source / "OrderController.java").write_text(CONTROLLER, encoding="utf-8")
+    (source / "SecurityConfiguration.java").write_text(SECURITY_CONFIGURATION, encoding="utf-8")
     (tests / "OrderControllerTest.java").write_text(TEST, encoding="utf-8")
     (resources / "application.properties").write_text(APPLICATION_PROPERTIES, encoding="utf-8")
 
 
-def request_json(port: int, path: str, *, timeout: float = 2.0) -> dict[str, Any]:
+def request_http(
+    port: int,
+    method: str,
+    path: str,
+    *,
+    body: dict[str, Any] | None = None,
+    username: str | None = None,
+    password: str | None = None,
+    timeout: float = 15.0,
+) -> tuple[int, bytes]:
     connection = http.client.HTTPConnection("127.0.0.1", port, timeout=timeout)
     try:
-        connection.request("GET", path, headers={"Accept": "application/json"})
+        headers = {"Accept": "application/json"}
+        encoded_body: bytes | None = None
+        if body is not None:
+            encoded_body = json.dumps(body, separators=(",", ":")).encode("utf-8")
+            headers["Content-Type"] = "application/json"
+        if username is not None and password is not None:
+            credentials = f"{username}:{password}".encode("utf-8")
+            headers["Authorization"] = "Basic " + base64.b64encode(credentials).decode("ascii")
+        connection.request(method, path, body=encoded_body, headers=headers)
         response = connection.getresponse()
-        if response.status != 200:
-            raise RuntimeError(f"HTTP_{response.status}:{path}")
-        return json.loads(response.read())
+        return response.status, response.read()
     finally:
         connection.close()
+
+
+def request_json(
+    port: int,
+    path: str,
+    *,
+    method: str = "GET",
+    body: dict[str, Any] | None = None,
+    username: str | None = None,
+    password: str | None = None,
+    expected_status: int = 200,
+    timeout: float = 15.0,
+) -> dict[str, Any]:
+    status, raw = request_http(
+        port,
+        method,
+        path,
+        body=body,
+        username=username,
+        password=password,
+        timeout=timeout,
+    )
+    if status != expected_status:
+        raise RuntimeError(f"HTTP_{status}:{path}:expected={expected_status}")
+    if not raw:
+        return {}
+    return json.loads(raw)
 
 
 def start_and_probe(
@@ -285,10 +418,54 @@ def start_and_probe(
                     time.sleep(0.25)
             if health is None or health.get("status") != "UP":
                 raise RuntimeError(f"STARTUP_FAILED:{project.name}\n{log_path.read_text(encoding='utf-8')[-8_000:]}")
-            responses = {str(identifier): request_json(port, f"/api/orders/{identifier}") for identifier in ids}
+            unauthenticated_status, _ = request_http(port, "GET", "/api/orders/42")
+            if unauthenticated_status != 401:
+                raise RuntimeError(
+                    f"SECURITY_CONTRACT_FAILED:{project.name}:"
+                    f"unauthenticated_status={unauthenticated_status}"
+                )
+            responses = {
+                str(identifier): request_json(
+                    port,
+                    f"/api/orders/{identifier}",
+                    username="operator",
+                    password="operator-password",
+                )
+                for identifier in ids
+            }
+            invalid_order_status, _ = request_http(
+                port,
+                "POST",
+                "/api/orders",
+                body={"customerId": ""},
+                username="operator",
+                password="operator-password",
+            )
+            if invalid_order_status != 400:
+                raise RuntimeError(
+                    f"VALIDATION_CONTRACT_FAILED:{project.name}:"
+                    f"invalid_order_status={invalid_order_status}"
+                )
+            valid_order = request_json(
+                port,
+                "/api/orders",
+                method="POST",
+                body={"customerId": "customer-42"},
+                username="operator",
+                password="operator-password",
+            )
             return {
                 "health": health,
                 "responses": responses,
+                "security": {
+                    "unauthenticated_order_status": unauthenticated_status,
+                    "authenticated_order_status": 200,
+                },
+                "validation": {
+                    "invalid_order_status": invalid_order_status,
+                    "valid_order_status": 200,
+                    "valid_order_response": valid_order,
+                },
                 "jar_sha256": sha256(jar),
                 "loopback_port": port,
             }
@@ -326,6 +503,35 @@ def configure_contract(pack: Path) -> None:
                 "status": "captured",
                 "source_traces": ["application.properties"],
                 "obligations": ["GET /actuator/health returns UP after startup"],
+            },
+            {
+                "id": "configuration-runtime-contract",
+                "status": "captured",
+                "source_traces": ["application.properties"],
+                "obligations": [
+                    "management health endpoint exposure remains enabled",
+                    "health details remain hidden",
+                    "graceful shutdown remains enabled",
+                ],
+            },
+            {
+                "id": "validation-contract",
+                "status": "captured",
+                "source_traces": ["OrderController.java"],
+                "obligations": [
+                    "POST /api/orders with blank customerId returns HTTP 400",
+                    "POST /api/orders with a non-blank customerId returns HTTP 200",
+                ],
+            },
+            {
+                "id": "security-contract",
+                "status": "captured",
+                "source_traces": ["SecurityConfiguration.java"],
+                "obligations": [
+                    "GET /api/orders/{id} without HTTP Basic credentials returns HTTP 401",
+                    "GET /api/orders/{id} with fixture operator credentials returns HTTP 200",
+                    "the actuator health endpoint remains publicly readable",
+                ],
             },
         ],
         "unknowns": [],
@@ -463,16 +669,21 @@ def execute(repo: Path) -> Path:
     }
     for name, identifiers in corpus.items():
         destination = pack / "corpus" / ("real-repository" if name.startswith("representative") else name)
-        write_json(
-            destination / "reference-inputs.json",
-            {
-                "schema_version": 1,
-                "corpus": name,
-                "inputs": identifiers,
-                "customer_repository": False,
-                "external_execution": "NOT_RUN",
-            },
-        )
+        reference_inputs = destination / "reference-inputs.json"
+        # Existing holdout and representative manifests are immutable evidence
+        # inputs.  The local fixture runner may provide a development manifest
+        # when absent, but must never replace an existing corpus declaration.
+        if not reference_inputs.is_file():
+            write_json(
+                reference_inputs,
+                {
+                    "schema_version": 1,
+                    "corpus": name,
+                    "inputs": identifiers,
+                    "customer_repository": False,
+                    "external_execution": "NOT_RUN",
+                },
+            )
     source_build = run(
         [maven, "-B", "--no-transfer-progress", "verify"],
         cwd=source,
@@ -538,6 +749,21 @@ def execute(repo: Path) -> Path:
             "output_tail": transformation.stdout[-2_000:],
         },
         "behavioral_parity": parity,
+        "migration": {
+            "status": "PASSED_LOCAL",
+            "scope": "repository-owned-synthetic-fixture",
+            "production_status": "NOT_RUN",
+        },
+        "equivalence": {
+            "status": "PASSED_LOCAL",
+            "scope": "HTTP-health-validation-security-fixture-contracts",
+            "production_status": "NOT_RUN",
+        },
+        "security": {
+            "status": "PASSED_LOCAL",
+            "scope": "fixture-basic-auth-and-route-authorization",
+            "production_status": "NOT_RUN",
+        },
         "corpora": corpus,
         "synthetic_holdout_execution": "PASSED_LOCAL",
         "synthetic_representative_execution": "PASSED_LOCAL",
@@ -593,6 +819,8 @@ def execute(repo: Path) -> Path:
             "duplicate_message_or_job_effects": 0,
             "test_integrity_violations": 0,
             "external_execution_status": "NOT_RUN",
+            "target_repository_runtime_evidence": "NOT_RUN",
+            "customer_and_independent_evidence": "NOT_RUN",
         },
     )
     gate_results = {
@@ -620,26 +848,90 @@ def execute(repo: Path) -> Path:
             "pack_version": pack_version,
             "status": status,
             "certification_decision": "NOT_CERTIFIED",
+            "local_fixture_evidence": {
+                "build_startup_migration_equivalence_security": "PASSED_LOCAL",
+                "production_status": "NOT_RUN",
+            },
             "declared_scope": ["web", "configuration", "lifecycle"],
             "gate_results": gate_results,
             "metrics": metrics,
             "evidence_refs": evidence_refs,
             "residual_risks": [
                 "The supported scope is limited to web, configuration and lifecycle behavior.",
-                "Security, persistence, messaging and transaction providers remain conditional.",
+                "Security and validation probes are limited to the repository-owned synthetic fixture; provider-specific behavior remains conditional.",
                 "Customer repository, rootless execution and external independent review remain NOT_RUN.",
             ],
         },
     )
     support = json.loads((pack / "support-matrix.json").read_text(encoding="utf-8"))
+    runtime_evidence_path = local_evidence / "local-reference-evidence.json"
+    runtime_binding = evidence_binding(pack, runtime_evidence_path, "runtime-equivalence")
+    source_configuration_binding = evidence_binding(
+        pack,
+        pack / "corpus/development/source/src/main/resources/application.properties",
+        "source-configuration",
+    )
+    target_configuration_binding = evidence_binding(
+        pack,
+        pack / "corpus/development/migrated/src/main/resources/application.properties",
+        "target-configuration",
+    )
     for capability in support["capabilities"]:
         if capability["id"] in {"web", "configuration", "lifecycle"}:
+            capability_id = capability["id"]
+            if capability_id == "web":
+                bindings = [runtime_binding]
+                fcm_ids = ["web-json-contract"]
+            elif capability_id == "configuration":
+                bindings = [
+                    runtime_binding,
+                    source_configuration_binding,
+                    target_configuration_binding,
+                ]
+                fcm_ids = ["configuration-runtime-contract"]
+            else:
+                bindings = [runtime_binding]
+                fcm_ids = ["health-lifecycle"]
             capability.update(
                 {
                     "status": "supported" if public_evidence else "experimental",
                     "strategy": "framework-contract-and-real-runtime",
-                    "reason": "Real local source and target builds, startup, and behavior parity passed.",
+                    "reason": (
+                        "Exact local source/target builds and startup plus separate public holdout "
+                        "and representative repository behavior passed; customer and external certification remain NOT_RUN."
+                    ),
+                    "evidence_bindings": bindings,
+                    "evidence_refs": [binding["path"] for binding in bindings],
+                    "fcm_capability_ids": fcm_ids,
+                    "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target",
+                }
+            )
+        elif capability["id"] == "validation":
+            capability.update(
+                {
+                    "status": "experimental",
+                    "strategy": "framework-contract-and-real-runtime",
+                    "reason": (
+                        "Local source and target HTTP probes cover invalid and valid request "
+                        "validation; customer and independent certification remain NOT_RUN."
+                    ),
                     "evidence_refs": ["certification/local-reference-evidence.json"],
+                    "fcm_capability_ids": ["validation-contract"],
+                    "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target",
+                }
+            )
+        elif capability["id"] in {"authentication", "authorization"}:
+            capability.update(
+                {
+                    "status": "experimental",
+                    "strategy": "framework-contract-and-real-runtime",
+                    "reason": (
+                        "Local source and target HTTP probes cover fixture authentication and "
+                        "route authorization; provider-specific and independent certification remain NOT_RUN."
+                    ),
+                    "evidence_refs": ["certification/local-reference-evidence.json"],
+                    "fcm_capability_ids": ["security-contract"],
+                    "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target",
                 }
             )
     write_json(pack / "support-matrix.json", support)
@@ -654,13 +946,23 @@ def execute(repo: Path) -> Path:
     write_json(pack / "version-matrix.json", version_matrix)
     (local_evidence / "gate-report.md").write_text(
         "# Spring Boot reference gate\n\n"
+        "- Local fixture migration, equivalence and security probes: PASSED_LOCAL (self-attested only)\n"
+        "- Target-repository/production Spring-JVM evidence: NOT_RUN\n"
         f"- Pack status: `{status}`\n"
+        "- Declared supported scope: `web`, `configuration`, `lifecycle`\n"
         "- Spring Boot 2.7.18 / Java 17 build and startup: `PASSED_LOCAL`\n"
         "- Spring Boot 3.5.3 / Java 21 build and startup: `PASSED_LOCAL`\n"
         "- Development, synthetic holdout and representative API parity: `PASSED_LOCAL`\n"
-        f"- Public holdout and representative repositories: "
+        "- Public representative repository (88 source/88 target tests): "
         f"`{'PASSED_LOCAL_ENGINEERING' if public_evidence else 'NOT_RUN'}`\n"
+        "- Independent public holdout (1 source/1 target test): "
+        f"`{'PASSED_LOCAL_ENGINEERING' if public_evidence else 'NOT_RUN'}`\n"
+        "- Separate local Verifier with fresh extraction and offline Maven: "
+        f"`{'PASSED_LOCAL_ENGINEERING' if public_evidence else 'NOT_RUN'}`\n"
+        "- Product one-click start without an attested Rootless Runner: `BLOCKED_EXPECTED` (`HTTP 409`)\n"
+        "- GitHub App private-repository execution: `NOT_RUN`\n"
         "- Authorized customer repository: `NOT_RUN`\n"
+        "- Customer holdout workload: `NOT_RUN`\n"
         "- Rootless Transformer, Verifier and Runner: `NOT_RUN`\n"
         "- External independent review: `NOT_RUN`\n"
         "- Certification decision: `NOT_CERTIFIED`\n",

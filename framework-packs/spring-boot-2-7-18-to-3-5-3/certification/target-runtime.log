@@ -8,18 +8,20 @@
 
  :: Spring Boot ::                (v3.5.3)
 
-2026-07-26T22:01:59.041+08:00  INFO 46381 --- [           main] i.elmos.reference.ReferenceApplication   : Starting ReferenceApplication v1.0.0 using Java 21.0.11 with PID 46381 (/Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/target/spring-reference-2-7-18-1.0.0.jar started by stephen in /Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated)
-2026-07-26T22:01:59.043+08:00  INFO 46381 --- [           main] i.elmos.reference.ReferenceApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-07-26T22:02:00.107+08:00  INFO 46381 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 56717 (http)
-2026-07-26T22:02:00.121+08:00  INFO 46381 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-07-26T22:02:00.121+08:00  INFO 46381 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
-2026-07-26T22:02:00.143+08:00  INFO 46381 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-07-26T22:02:00.144+08:00  INFO 46381 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1053 ms
-2026-07-26T22:02:00.711+08:00  INFO 46381 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
-2026-07-26T22:02:00.777+08:00  INFO 46381 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 56717 (http) with context path '/'
-2026-07-26T22:02:00.796+08:00  INFO 46381 --- [           main] i.elmos.reference.ReferenceApplication   : Started ReferenceApplication in 2.077 seconds (process running for 2.43)
-2026-07-26T22:02:00.940+08:00  INFO 46381 --- [.1-56717-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-07-26T22:02:00.941+08:00  INFO 46381 --- [.1-56717-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2026-07-26T22:02:00.943+08:00  INFO 46381 --- [.1-56717-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
-2026-07-26T22:02:01.057+08:00  INFO 46381 --- [ionShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
-2026-07-26T22:02:01.064+08:00  INFO 46381 --- [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2026-08-26T13:23:23.532+08:00  INFO 38196 --- [           main] i.elmos.reference.ReferenceApplication   : Starting ReferenceApplication v1.0.0 using Java 21.0.11 with PID 38196 (/Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/target/spring-reference-2-7-18-1.0.0.jar started by stephen in /Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated)
+2026-08-26T13:23:23.537+08:00  INFO 38196 --- [           main] i.elmos.reference.ReferenceApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-08-26T13:23:29.163+08:00  INFO 38196 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 51868 (http)
+2026-08-26T13:23:29.247+08:00  INFO 38196 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-08-26T13:23:29.248+08:00  INFO 38196 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
+2026-08-26T13:23:30.359+08:00  INFO 38196 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-08-26T13:23:30.362+08:00  INFO 38196 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 6611 ms
+2026-08-26T13:23:32.965+08:00  INFO 38196 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+2026-08-26T13:23:34.063+08:00  INFO 38196 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-08-26T13:23:35.076+08:00  INFO 38196 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 51868 (http) with context path '/'
+2026-08-26T13:23:35.129+08:00  INFO 38196 --- [           main] i.elmos.reference.ReferenceApplication   : Started ReferenceApplication in 13.842 seconds (process running for 14.969)
+2026-08-26T13:23:35.388+08:00  INFO 38196 --- [.1-51868-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-26T13:23:35.388+08:00  INFO 38196 --- [.1-51868-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-08-26T13:23:35.391+08:00  INFO 38196 --- [.1-51868-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-08-26T13:23:38.225+08:00  WARN 38196 --- [.1-51868-exec-9] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in java.util.Map<java.lang.String, java.lang.String> io.elmos.reference.OrderController.create(io.elmos.reference.OrderController$CreateOrder): [Field error in object 'createOrder' on field 'customerId': rejected value []; codes [NotBlank.createOrder.customerId,NotBlank.customerId,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [createOrder.customerId,customerId]; arguments []; default message [customerId]]; default message [must not be blank]] ]
+2026-08-26T13:23:38.593+08:00  INFO 38196 --- [ionShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2026-08-26T13:23:38.618+08:00  INFO 38196 --- [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete

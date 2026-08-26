@@ -12,22 +12,43 @@
       1001
     ]
   },
+  "customer_acceptance": "NOT_RUN",
+  "customer_holdout": "NOT_RUN",
+  "equivalence": {
+    "production_status": "NOT_RUN",
+    "scope": "HTTP-health-validation-security-fixture-contracts",
+    "status": "PASSED_LOCAL"
+  },
   "execution_status": "PASSED_LOCAL",
+  "external_certification": "NOT_RUN",
+  "independent_review": "NOT_RUN",
   "independent_verification": "NOT_RUN",
+  "migration": {
+    "production_status": "NOT_RUN",
+    "scope": "repository-owned-synthetic-fixture",
+    "status": "PASSED_LOCAL"
+  },
   "pack_key": "spring-boot-2-7-18-to-3-5-3",
   "rootless_runner": "NOT_RUN",
+  "rootless_transformer": "NOT_RUN",
+  "rootless_verifier": "NOT_RUN",
   "schema_version": 1,
+  "security": {
+    "production_status": "NOT_RUN",
+    "scope": "fixture-basic-auth-and-route-authorization",
+    "status": "PASSED_LOCAL"
+  },
   "source": {
     "build": "PASSED",
-    "build_tail": "h PID 46192 (started by stephen in /Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/source)\n2026-07-26 22:00:31.805  INFO 46192 --- [           main] io.elmos.reference.OrderControllerTest   : No active profile set, falling back to 1 default profile: \"default\"\n2026-07-26 22:00:33.300  INFO 46192 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''\n2026-07-26 22:00:33.300  INFO 46192 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''\n2026-07-26 22:00:33.306  INFO 46192 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'\n2026-07-26 22:00:33.321  INFO 46192 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 21 ms\n2026-07-26 22:00:33.354  INFO 46192 --- [           main] io.elmos.reference.OrderControllerTest   : Started OrderControllerTest in 1.798 seconds (JVM running for 2.69)\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.657 s - in io.elmos.reference.OrderControllerTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jar:3.2.2:jar (default-jar) @ spring-reference-2-7-18 ---\n[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/source/target/spring-reference-2-7-18-1.0.0.jar\n[INFO] \n[INFO] --- spring-boot:2.7.18:repackage (repackage) @ spring-reference-2-7-18 ---\n[INFO] Replacing main artifact with repackaged archive\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  6.702 s\n[INFO] Finished at: 2026-07-26T22:00:34+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "build_tail": "uator'\n2026-08-26 13:20:10.472  INFO 34854 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 43 ms\n2026-08-26 13:20:10.543  INFO 34854 --- [           main] io.elmos.reference.OrderControllerTest   : Started OrderControllerTest in 12.68 seconds (JVM running for 15.875)\n2026-08-26 13:20:14.471  WARN 34854 --- [           main] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in java.util.Map<java.lang.String, java.lang.String> io.elmos.reference.OrderController.create(io.elmos.reference.OrderController$CreateOrder): [Field error in object 'createOrder' on field 'customerId': rejected value []; codes [NotBlank.createOrder.customerId,NotBlank.customerId,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [createOrder.customerId,customerId]; arguments []; default message [customerId]]; default message [must not be blank]] ]\n[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.904 s - in io.elmos.reference.OrderControllerTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jar:3.2.2:jar (default-jar) @ spring-reference-2-7-18 ---\n[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/source/target/spring-reference-2-7-18-1.0.0.jar\n[INFO] \n[INFO] --- spring-boot:2.7.18:repackage (repackage) @ spring-reference-2-7-18 ---\n[INFO] Replacing main artifact with repackaged archive\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  35.674 s\n[INFO] Finished at: 2026-08-26T13:20:18+08:00\n[INFO] ------------------------------------------------------------------------\n",
     "framework": "spring-boot",
     "java": "java version \"17.0.11\" 2024-04-16 LTS",
     "runtime": {
       "health": {
         "status": "UP"
       },
-      "jar_sha256": "12b378ab0a5b616074d57cdc7fa03c3ef64c076be1c648b495c588e5c72868c7",
-      "loopback_port": 56694,
+      "jar_sha256": "255022963b34a68119457a16bf7d3b6e12850cdfc961b3314122256d0e17a111",
+      "loopback_port": 51766,
       "responses": {
         "1001": {
           "amountCents": 125125,
@@ -44,6 +65,18 @@
           "id": 7,
           "status": "REVIEW"
         }
+      },
+      "security": {
+        "authenticated_order_status": 200,
+        "unauthenticated_order_status": 401
+      },
+      "validation": {
+        "invalid_order_status": 400,
+        "valid_order_response": {
+          "customerId": "customer-42",
+          "status": "CREATED"
+        },
+        "valid_order_status": 200
       }
     },
     "version": "2.7.18"
@@ -52,15 +85,15 @@
   "synthetic_representative_execution": "PASSED_LOCAL",
   "target": {
     "build": "PASSED",
-    "build_tail": "estDispatcherServlet ''\n2026-07-26T22:01:53.205+08:00  INFO 46351 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''\n2026-07-26T22:01:53.210+08:00  INFO 46351 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'\n2026-07-26T22:01:53.215+08:00  INFO 46351 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 9 ms\n2026-07-26T22:01:53.254+08:00  INFO 46351 --- [           main] io.elmos.reference.OrderControllerTest   : Started OrderControllerTest in 0.852 seconds (process running for 1.253)\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.502 s -- in io.elmos.reference.OrderControllerTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jar:3.4.2:jar (default-jar) @ spring-reference-2-7-18 ---\n[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/target/spring-reference-2-7-18-1.0.0.jar\n[INFO] \n[INFO] --- spring-boot:3.5.3:repackage (repackage) @ spring-reference-2-7-18 ---\n[INFO] Replacing main artifact /Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/target/spring-reference-2-7-18-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.\n[INFO] The original artifact has been renamed to /Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/target/spring-reference-2-7-18-1.0.0.jar.original\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  3.324 s\n[INFO] Finished at: 2026-07-26T22:01:54+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "build_tail": "esolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in java.util.Map<java.lang.String, java.lang.String> io.elmos.reference.OrderController.create(io.elmos.reference.OrderController$CreateOrder): [Field error in object 'createOrder' on field 'customerId': rejected value []; codes [NotBlank.createOrder.customerId,NotBlank.customerId,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [createOrder.customerId,customerId]; arguments []; default message [customerId]]; default message [must not be blank]] ]\n[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 21.38 s -- in io.elmos.reference.OrderControllerTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jar:3.4.2:jar (default-jar) @ spring-reference-2-7-18 ---\n[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/target/spring-reference-2-7-18-1.0.0.jar\n[INFO] \n[INFO] --- spring-boot:3.5.3:repackage (repackage) @ spring-reference-2-7-18 ---\n[INFO] Replacing main artifact /Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/target/spring-reference-2-7-18-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.\n[INFO] The original artifact has been renamed to /Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/target/spring-reference-2-7-18-1.0.0.jar.original\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  43.754 s\n[INFO] Finished at: 2026-08-26T13:23:07+08:00\n[INFO] ------------------------------------------------------------------------\n",
     "framework": "spring-boot",
     "java": "openjdk version \"21.0.11\" 2026-04-21",
     "runtime": {
       "health": {
         "status": "UP"
       },
-      "jar_sha256": "a3c187e9925f6b8dbba8864b4ce44869401350c46876d6eb963468f34fea17d0",
-      "loopback_port": 56717,
+      "jar_sha256": "c2ca86ce4edb99cd8332f89e92ca5220947bedea82a74b576ba95839670fb3be",
+      "loopback_port": 51868,
       "responses": {
         "1001": {
           "amountCents": 125125,
@@ -77,6 +110,18 @@
           "id": 7,
           "status": "REVIEW"
         }
+      },
+      "security": {
+        "authenticated_order_status": 200,
+        "unauthenticated_order_status": 401
+      },
+      "validation": {
+        "invalid_order_status": 400,
+        "valid_order_response": {
+          "customerId": "customer-42",
+          "status": "CREATED"
+        },
+        "valid_order_status": 200
       }
     },
     "version": "3.5.3"
@@ -84,9 +129,9 @@
   "transformation": {
     "engine": "OpenRewrite",
     "maven": "Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)",
-    "output_tail": "ldGroupId=org.springframework.boot, newGroupId=org.springframework.boot, oldArtifactId=spring-boot-starter-parent, newArtifactId=spring-boot-starter-parent, newVersion=3.5.3, allowVersionDowngrades=true}\n[WARNING] Changes have been made to framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/src/main/java/io/elmos/reference/OrderController.java by:\n[WARNING]     org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5\n[WARNING]         org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4\n[WARNING]             org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3\n[WARNING]                 org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2\n[WARNING]                     org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_1\n[WARNING]                         org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0\n[WARNING]                             org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_0\n[WARNING]                                 org.openrewrite.java.migrate.jakarta.JakartaEE10\n[WARNING]                                     org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta\n[WARNING]                                         org.openrewrite.java.migrate.jakarta.JavaxValidationMigrationToJakartaValidation\n[WARNING]                                             org.openrewrite.java.ChangePackage\n[WARNING]         org.openrewrite.java.migrate.UpgradeToJava21\n[WARNING]             org.openrewrite.java.migrate.UpgradeBuildToJava21\n[WARNING]                 org.openrewrite.java.migrate.UpgradeJavaVersion\n[WARNING] Please review and commit the results.\n[WARNING] Estimate time saved: 25m\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  01:09 min\n[INFO] Finished at: 2026-07-26T22:01:46+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "output_tail": "\n[WARNING]                                             org.openrewrite.java.ChangePackage\n[WARNING]         org.openrewrite.java.migrate.UpgradeToJava21\n[WARNING]             org.openrewrite.java.migrate.UpgradeBuildToJava21\n[WARNING]                 org.openrewrite.java.migrate.UpgradeJavaVersion\n[WARNING] Changes have been made to framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/src/main/java/io/elmos/reference/SecurityConfiguration.java by:\n[WARNING]     org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5\n[WARNING]         org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4\n[WARNING]             org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3\n[WARNING]                 org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2\n[WARNING]                     org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_1\n[WARNING]                         org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0\n[WARNING]                             org.openrewrite.java.spring.security6.UpgradeSpringSecurity_6_0\n[WARNING]                                 org.openrewrite.java.spring.security5.UpgradeSpringSecurity_5_8\n[WARNING]                                     org.openrewrite.java.spring.security5.AuthorizeHttpRequests\n[WARNING]                                     org.openrewrite.java.spring.security5.UseNewRequestMatchers\n[WARNING]         org.openrewrite.java.migrate.UpgradeToJava21\n[WARNING]             org.openrewrite.java.migrate.UpgradeBuildToJava21\n[WARNING]                 org.openrewrite.java.migrate.UpgradeJavaVersion\n[WARNING] Please review and commit the results.\n[WARNING] Estimate time saved: 35m\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  01:52 min\n[INFO] Finished at: 2026-08-26T13:22:16+08:00\n[INFO] ------------------------------------------------------------------------\n",
     "recipe": "io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21",
-    "recipe_sha256": "15f34d9d3935245493b9e50c9f26c26a5e23e23784a6e760be8a141c4b5ea2b3",
+    "recipe_sha256": "4640b23ffb5fe35801e42b59ee21c0d36a33fcfcfab8b1508be138cec4189d7c",
     "result": "PASSED_LOCAL",
     "rewrite_maven_plugin": "6.44.0",
     "rewrite_spring": "6.35.0"
