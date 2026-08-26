@@ -9,6 +9,7 @@ from typing import Any
 import pytest
 
 import elmos_polyglot_route.native as native
+import elmos_polyglot_route.validation as validation
 from elmos_polyglot_route.emitter import (
     _CPP_HELPERS,
     _OBJC_HELPERS,
@@ -1040,6 +1041,46 @@ def test_failed_target_validation_with_no_output_is_reported_explicitly(tmp_path
     assert str(captured.value) == (
         'TARGET_VALIDATION_FAILED:noisy-build:returncode=3:stdout="<empty>":stderr="<empty>"'
     )
+
+
+def test_empty_host_signal_is_retried_once_but_not_promoted(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """A host-killed compiler gets one bounded retry, never a synthetic pass."""
+
+    outcomes = iter(
+        [
+            subprocess.CompletedProcess(["compiler"], -15, stdout="", stderr=""),
+            subprocess.CompletedProcess(["compiler"], 0, stdout="ok\n", stderr=""),
+        ]
+    )
+
+    def fake_run(*args: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        del args, kwargs
+        return next(outcomes)
+
+    monkeypatch.setattr(validation.subprocess, "run", fake_run)
+    completed = _run(["compiler"], tmp_path)
+
+    assert completed.returncode == 0
+
+
+def test_empty_host_signal_remains_failed_after_bounded_retry(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    outcomes = iter(
+        [
+            subprocess.CompletedProcess(["compiler"], -15, stdout="", stderr=""),
+            subprocess.CompletedProcess(["compiler"], -15, stdout="", stderr=""),
+        ]
+    )
+
+    def fake_run(*args: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        del args, kwargs
+        return next(outcomes)
+
+    monkeypatch.setattr(validation.subprocess, "run", fake_run)
+    with pytest.raises(RouteError, match=r"returncode=-15:stdout=\"<empty>\":stderr=\"<empty>\""):
+        _run(["compiler"], tmp_path)
 
 
 def test_failed_target_validation_bounds_each_stream_independently(tmp_path: Path) -> None:
