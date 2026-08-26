@@ -496,9 +496,9 @@ PostgreSQL、MinIO、真实多主机与外部 provider 证据仍为 **NOT_RUN**�
 2. authoritative fenced source adapter 与 durable lease provenance schema 未提供；control-plane 当前安全地
    阻断新 capture 和旧行 reuse。
 3. V76 的真实 Flyway/PostgreSQL、线上 rollout、锁/WAL/恢复验证未执行。
-4. 真实多主机 shared tier、生产 KMS/HSM、外部 trust/revocation、ActionCache tenant API 与 signed
-   completion write-back、生产 snapshot election/reconciliation/archive-GC、真实 GitHub App/webhook、
-   Docker 跨主机与 ArkUI 设备证据继续缺失。
+4. 真实多主机 shared tier、生产 KMS/HSM、外部 trust/revocation、部署侧 ActionCache
+   authorizer/trust 与 signed completion write-back、生产 snapshot election/reconciliation/archive-GC、
+   真实 GitHub App/webhook、Docker 跨主机与 ArkUI 设备证据继续缺失。
 
 状态固定为 CAS `SINGLE_HOST / NOT_CERTIFIED`、EI `BLOCK / NOT_CERTIFIED`、ArkUI
 `NOT_RUN / NOT_CERTIFIED`。

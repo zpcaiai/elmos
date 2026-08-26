@@ -1210,9 +1210,11 @@ current-delta live PostgreSQL/MinIO                      NOT_RUN; external evide
 
 The historical 197/197, 34/34, PostgreSQL and same-host MinIO results above must not be relabelled
 as validation of this current delta. True multi-host shared-tier/failover/concurrency, production
-KMS/HSM, independent trust/revocation, ActionCache tenant-API and signed completion write-back,
-production snapshot holder/election/archive-GC coordination, real historical pre-V9 PostgreSQL
-apply/reconciliation, real GitHub App traffic and ArkUI device execution all remain unexecuted.
+KMS/HSM, independent trust/revocation, deployment-owned ActionCache authorization/trust and signed
+completion write-back, production snapshot holder/election/archive-GC coordination, real historical
+pre-V9 PostgreSQL apply/reconciliation, real GitHub App traffic and ArkUI device execution all
+remain unexecuted. The tenant ActionCache HTTP seam is now present locally, but it remains opt-in
+and has no production provider evidence.
 
 Final posture is unchanged: CAS `SINGLE_HOST / NOT_CERTIFIED`, EI
 `BLOCK / NOT_CERTIFIED`, ArkUI `NOT_RUN / NOT_CERTIFIED`.

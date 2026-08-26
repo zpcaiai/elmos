@@ -114,15 +114,15 @@ These are real boundaries, not oversights. Do not read a green test run as cover
 - **Production certification.** The checked-in control-plane modes are single-host and explicitly
   `NOT_CERTIFIED`. Local tests do not prove multi-host object sharing, operator key custody,
   production PostgreSQL/RLS, recovery, scale, or independent verification.
-- **A tenant-API binding and trusted completion write-back for asynchronous execution.**
-  `ActionCacheExecutionJobDispatcher` now composes fresh `CACHE_READ`/`EXECUTE` authorization with
-  the durable `ExecutionJobPort`: a trusted hit avoids the queue, while an authorized miss is
-  enqueued with a canonical tenant/action/payload digest and an uncertain enqueue remains
-  reconciliation-required. The opt-in bean is still not invoked by a tenant API, and runner
-  completion carries no signed `ActionResultRecord`, output manifest or attested writer, so it
-  cannot be written back honestly. Actuator reports
-  `ASYNC_DISPATCHER_AVAILABLE_NOT_BOUND_TO_TENANT_API` and
-  `NOT_BOUND_RUNNER_COMPLETION_LACKS_SIGNED_ACTION_RESULT`.
+- **Trusted completion write-back for asynchronous execution.**
+  `ActionCacheExecutionJobDispatcher` composes fresh `CACHE_READ`/`EXECUTE` authorization with
+  the durable `ExecutionJobPort`, and the opt-in control-plane tenant endpoint now constructs the
+  canonical ActionKey and binds it to the authenticated database principal. A trusted hit avoids
+  the queue, while an authorized miss is enqueued with a canonical tenant/action/payload digest;
+  an uncertain enqueue is reconciled only through the tenant-scoped authoritative idempotency
+  lookup. Runner completion still carries no signed `ActionResultRecord`, output manifest,
+  provenance or attested writer, so completion write-back remains deliberately disabled until a
+  separate signed completion contract and independently governed trust provider are deployed.
 - **ActionKey v1-to-v2 rollout is fail-closed, not transparent.** The v2 builder fixes composite
   collisions and component order under the explicit `elmos-action-key/2` domain; the cache,
   in-memory/JDBC indexes and dispatcher reject v1 before lookup or mutation, and the dispatcher
