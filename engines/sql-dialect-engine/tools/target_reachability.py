@@ -52,7 +52,7 @@ from elmos_sql_dialect.routine import emit_create_function, parse_create_routine
 from elmos_sql_dialect.scan import _classify, discover_sql_files
 from elmos_sql_dialect.statement_splitter import split_statements
 
-DDL_TYPES = ("Create", "Alter", "Drop", "Index", "Comment", "Grant", "Revoke", "Insert", "Truncate")
+DDL_TYPES = ("Create", "Alter", "Drop", "Index", "Comment", "Grant", "Revoke", "Insert", "Update", "Truncate")
 ALL_DIALECTS = (Dialect.POSTGRES, Dialect.MYSQL, Dialect.ORACLE, Dialect.TSQL)
 
 
@@ -112,7 +112,20 @@ class ReachabilityCommentCatalog:
 def statements_of(path: Path, dialect: Dialect):
     text = path.read_text(encoding="utf-8")
     try:
-        yield from _parse_source_statements(text, dialect)
+        statements = list(_parse_source_statements(text, dialect))
+        raw_statements = list(split_statements(text))
+        if len(raw_statements) == len(statements):
+            for statement, raw in zip(statements, raw_statements, strict=True):
+                if isinstance(statement, exp.Command):
+                    try:
+                        recovered = _parse_source_statements(raw.text, dialect)
+                    except Exception:  # noqa: S112 - preserve the opaque blocker
+                        recovered = []
+                    if len(recovered) == 1 and not isinstance(recovered[0], exp.Command):
+                        statement = recovered[0]
+                yield statement
+        else:
+            yield from statements
         return
     except Exception:  # noqa: S110 - bounded parser fallback for mixed-dialect corpus files
         pass
@@ -173,7 +186,12 @@ def emit_to(
             parser.parse_drop_table(statement, source, namespace_map), target
         )
     if isinstance(statement, exp.Insert):
-        return emitter.emit_insert(parser.parse_insert(statement, source, namespace_map), target)
+        insert = parser.parse_insert_statement(statement, source, namespace_map)
+        if hasattr(insert, "rows"):
+            return emitter.emit_insert(insert, target)
+        return emitter.emit_insert_select(insert, target)
+    if isinstance(statement, exp.Update):
+        return emitter.emit_update(parser.parse_update(statement, source, namespace_map), target)
     if isinstance(statement, exp.Comment):
         return emit_comment(parse_comment(statement, source, namespace_map), target, comment_catalog)
     if isinstance(statement, exp.Grant | exp.Revoke):

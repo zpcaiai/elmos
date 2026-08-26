@@ -43,11 +43,12 @@ def test_literal_seed_insert_preserves_mapped_namespace() -> None:
 
 @pytest.mark.parametrize(
     ("sql", "code"),
-    [
-        (
-            "INSERT INTO seed_rows (id) SELECT id FROM source_rows",
-            "CERTIFIED_INSERT_UNSUPPORTED_SOURCE",
-        ),
+        [
+            (
+                "INSERT INTO seed_rows (id) SELECT source_rows.id FROM source_rows "
+                "JOIN other_rows ON other_rows.id = source_rows.id",
+                "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+            ),
         (
             "INSERT INTO seed_rows (id) VALUES (1) ON CONFLICT (id) DO NOTHING",
             "CERTIFIED_INSERT_UNSUPPORTED_MODIFIER",

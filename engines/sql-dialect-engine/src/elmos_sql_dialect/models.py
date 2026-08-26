@@ -223,6 +223,45 @@ class CheckLiteral:
     is_boolean: bool = False
 
 
+class CheckValueFunction(str, Enum):
+    """A scalar CHECK value function with one exact cross-dialect spelling."""
+
+    TRIM = "TRIM"
+
+
+class CheckValueOperator(str, Enum):
+    """A scalar CHECK value operator with one exact cross-dialect spelling."""
+
+    ADD = "+"
+
+
+@dataclass(frozen=True)
+class CheckValueExpression:
+    """Typed function applied to a single CHECK column."""
+
+    column: str
+    function: CheckValueFunction | None = None
+    operator: CheckValueOperator | None = None
+    right_column: str | None = None
+
+    def __post_init__(self) -> None:
+        if (self.function is None) == (self.operator is None):
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                "CHECK value expressions must declare exactly one function or operator",
+            )
+        if self.function is not None and self.right_column is not None:
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                "CHECK scalar functions cannot carry an operator operand",
+            )
+        if self.operator is not None and self.right_column is None:
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                "CHECK binary value operators require a right-hand column",
+            )
+
+
 class CheckIntervalUnit(str, Enum):
     SECOND = "SECOND"
     MINUTE = "MINUTE"
@@ -250,17 +289,37 @@ class CheckComparison:
     #: `literal`; both are preserved in the canonical IR rather than reducing
     #: the right side to text and risking a literal/identifier confusion.
     right_column: str | None = None
+    right_column_qualifier: str | None = None
+    #: Optional query-source qualifier used by typed DML predicates. Table
+    #: CHECK constraints intentionally leave this unset because their columns
+    #: are resolved in the table scope.
+    column_qualifier: str | None = None
     #: A bounded timestamp interval expression such as
     #: `issued_at + INTERVAL '15 minutes'`. It is typed so emitters can use
     #: DATEADD/DATE_ADD/interval syntax without textual substitution.
     right_interval_column: str | None = None
     right_interval_value: int | None = None
     right_interval_unit: CheckIntervalUnit | None = None
+    #: Optional typed wrapper around the left column. The base `column` stays
+    #: present for schema/type validation; the wrapper preserves a supported
+    #: scalar operation without falling back to raw SQL text.
+    left_expression: CheckValueExpression | None = None
     #: Operands for `IN` (one or more) and `BETWEEN` (exactly two, low then
     #: high). Empty for every other operator.
     literals: tuple[CheckLiteral, ...] = ()
 
     def __post_init__(self) -> None:
+        if self.right_column_qualifier is not None and self.right_column is None:
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                "a qualified CHECK right column requires a column comparison",
+            )
+        if self.left_expression is not None:
+            if self.left_expression.column != self.column or self.operator not in BINARY_CHECK_OPERATORS:
+                raise DialectError(
+                    "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                    "CHECK value functions are limited to binary comparisons on their source column",
+                )
         if self.operator is CheckOperator.MATCHES_REGEX:
             if not self.literal_is_string:
                 raise DialectError(
@@ -468,6 +527,30 @@ class Table:
                     raise DialectError(
                         "CERTIFIED_DDL_UNKNOWN_COLUMN", f"CHECK references unknown column {comparison.column!r}"
                     )
+                if comparison.left_expression is not None:
+                    right_value_column = comparison.left_expression.right_column
+                    if right_value_column is not None and right_value_column not in names:
+                        raise DialectError(
+                            "CERTIFIED_DDL_UNKNOWN_COLUMN",
+                            f"CHECK references unknown column {right_value_column!r}",
+                        )
+                    if comparison.left_expression.operator is CheckValueOperator.ADD:
+                        if (
+                            right_value_column is None
+                            or column_types[comparison.column] is not column_types[right_value_column]
+                            or column_types[comparison.column]
+                            not in {
+                                CanonicalType.INT16,
+                                CanonicalType.INT32,
+                                CanonicalType.INT64,
+                                CanonicalType.DECIMAL,
+                                CanonicalType.FLOAT64,
+                            }
+                        ):
+                            raise DialectError(
+                                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                                "typed CHECK addition requires two same-typed numeric columns",
+                            )
                 if comparison.right_column is not None and comparison.right_column not in names:
                     raise DialectError(
                         "CERTIFIED_DDL_UNKNOWN_COLUMN",
@@ -705,6 +788,168 @@ class InsertStatement:
 
 
 # ---------------------------------------------------------------------------
+# certified-dml-v1
+#
+# This is still a closed, typed DML profile.  It is not a generic SQL
+# expression escape hatch: source columns, literals, transaction-stable
+# CURRENT_TIMESTAMP, COALESCE, and MIN are the only values represented here.
+# Subqueries, conflict policies, vendor clock functions and arbitrary
+# expressions remain outside the route because their row-set or timing
+# semantics are not recoverable from a text substitution. A joined INSERT
+# SELECT is admitted only through the separate typed equi-join nodes below.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class DmlColumn:
+    name: str
+    qualifier: str | None = None
+
+
+@dataclass(frozen=True)
+class DmlLiteral:
+    value: InsertLiteral
+
+
+@dataclass(frozen=True)
+class DmlCurrentTimestamp:
+    """The SQL transaction timestamp, not a wall-clock vendor function."""
+
+
+@dataclass(frozen=True)
+class DmlCoalesce:
+    column: DmlColumn
+    fallback: DmlLiteral | DmlCurrentTimestamp
+
+
+class DmlAggregateFunction(str, Enum):
+    MIN = "MIN"
+
+
+@dataclass(frozen=True)
+class DmlAggregate:
+    function: DmlAggregateFunction
+    column: DmlColumn
+
+
+@dataclass(frozen=True)
+class DmlPredicate:
+    predicate: CheckExpression
+
+
+@dataclass(frozen=True)
+class DmlJoinCondition:
+    """One typed equi-join condition between two named query sources."""
+
+    left: DmlColumn
+    right: DmlColumn
+
+    def __post_init__(self) -> None:
+        if self.left.qualifier is None or self.right.qualifier is None:
+            raise DialectError(
+                "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+                "JOIN conditions require qualified columns on both sides",
+            )
+        if self.left.qualifier.casefold() == self.right.qualifier.casefold():
+            raise DialectError(
+                "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+                "JOIN conditions must relate two different query sources",
+            )
+
+
+@dataclass(frozen=True)
+class DmlJoin:
+    """A bounded INNER JOIN with one or more typed equality conditions."""
+
+    table: str
+    alias: str
+    conditions: tuple[DmlJoinCondition, ...]
+    schema: str | None = None
+
+    def __post_init__(self) -> None:
+        if not self.conditions:
+            raise DialectError(
+                "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+                "JOIN requires at least one equality condition",
+            )
+
+
+DmlExpression = DmlColumn | DmlLiteral | DmlCurrentTimestamp | DmlCoalesce | DmlAggregate | DmlPredicate
+
+
+@dataclass(frozen=True)
+class InsertSelectStatement:
+    """An INSERT ... SELECT with a bounded projection and optional INNER JOIN."""
+
+    table: str
+    columns: tuple[str, ...]
+    source_table: str
+    expressions: tuple[DmlExpression, ...]
+    predicate: CheckExpression | None = None
+    group_by: tuple[str, ...] = ()
+    schema: str | None = None
+    source_schema: str | None = None
+    source_alias: str | None = None
+    joins: tuple[DmlJoin, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.columns:
+            raise DialectError(
+                "CERTIFIED_INSERT_COLUMN_LIST_REQUIRED",
+                "INSERT SELECT requires an explicit target column list",
+            )
+        if len(set(self.columns)) != len(self.columns):
+            raise DialectError("CERTIFIED_INSERT_DUPLICATE_COLUMN", "INSERT target columns must be unique")
+        if len(self.columns) != len(self.expressions):
+            raise DialectError(
+                "CERTIFIED_INSERT_ARITY_MISMATCH",
+                "INSERT SELECT projection must match the target column list",
+            )
+        if self.group_by and not any(isinstance(item, DmlAggregate) for item in self.expressions):
+            raise DialectError(
+                "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+                "GROUP BY in the bounded INSERT SELECT route requires one typed aggregate",
+            )
+        if self.joins and self.source_alias is None:
+            raise DialectError(
+                "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+                "joined INSERT SELECT sources require a base-table alias",
+            )
+        aliases = {self.source_alias.casefold()} if self.source_alias is not None else set()
+        for join in self.joins:
+            alias = join.alias.casefold()
+            if alias in aliases:
+                raise DialectError(
+                    "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+                    f"duplicate INSERT SELECT query source alias {join.alias!r}",
+                )
+            aliases.add(alias)
+
+
+@dataclass(frozen=True)
+class UpdateAssignment:
+    target: str
+    value: DmlExpression
+
+
+@dataclass(frozen=True)
+class UpdateStatement:
+    """A single-table UPDATE without a FROM/derived-row source."""
+
+    table: str
+    assignments: tuple[UpdateAssignment, ...]
+    predicate: CheckExpression | None = None
+    schema: str | None = None
+
+    def __post_init__(self) -> None:
+        if not self.assignments:
+            raise DialectError("CERTIFIED_UPDATE_EMPTY", "UPDATE requires at least one assignment")
+        targets = tuple(item.target.casefold() for item in self.assignments)
+        if len(set(targets)) != len(targets):
+            raise DialectError("CERTIFIED_UPDATE_DUPLICATE_TARGET", "UPDATE assigns one column more than once")
+
+
+# ---------------------------------------------------------------------------
 # certified-routine-v1
 #
 # This is deliberately a small typed IR, not a text/template representation
@@ -917,6 +1162,8 @@ class View:
 class CommentObjectKind(str, Enum):
     TABLE = "TABLE"
     COLUMN = "COLUMN"
+    FUNCTION = "FUNCTION"
+    CONSTRAINT = "CONSTRAINT"
 
 
 @dataclass(frozen=True)
@@ -927,6 +1174,7 @@ class Comment:
     table_name: str | None = None
     schema: str | None = None
     table_schema: str | None = None
+    routine_argument_types: tuple[str, ...] = ()
 
 
 class PrivilegeAction(str, Enum):
@@ -943,6 +1191,7 @@ class Privilege:
     object_kind: str = "TABLE"
     schema: str | None = None
     grant_option: bool = False
+    routine_argument_types: tuple[str, ...] = ()
 
 
 class TriggerTiming(str, Enum):

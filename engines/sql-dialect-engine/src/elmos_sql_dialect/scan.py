@@ -43,6 +43,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal, cast
 
+import sqlglot
 from sqlglot import exp
 
 from .advanced import (
@@ -63,7 +64,8 @@ from .parser import (
     parse_create_schema,
     parse_create_table,
     parse_drop_table,
-    parse_insert,
+    parse_insert_statement,
+    parse_update,
 )
 from .routine import parse_create_routine
 from .statement_splitter import split_statements
@@ -121,7 +123,12 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     ),
     "CERTIFIED_INSERT_UNSUPPORTED_SOURCE": (
         "statement-kind",
-        "the INSERT source is not a fixed VALUES row set (for example INSERT ... SELECT)",
+        "the INSERT source is not a fixed VALUES row set or bounded single-source SELECT",
+    ),
+    "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY": (
+        "statement-kind",
+        "the INSERT SELECT query has joins, subqueries, ordering, limits, CTEs or another "
+        "shape outside the bounded single-source route",
     ),
     "CERTIFIED_INSERT_UNSUPPORTED_MODIFIER": (
         "statement-kind",
@@ -134,6 +141,35 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     "CERTIFIED_INSERT_UNSUPPORTED_TARGET": (
         "identifiers",
         "the INSERT target is not one plain table with an explicit column list",
+    ),
+    "CERTIFIED_DML_UNSUPPORTED_EXPRESSION": (
+        "structure",
+        "the DML value is outside the typed column/literal/timestamp/COALESCE/MIN expression core",
+    ),
+    "CERTIFIED_DML_UNSUPPORTED_PREDICATE": (
+        "structure",
+        "the DML predicate is outside the portable comparison and null-test core",
+    ),
+    "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE": (
+        "statement-kind",
+        "UPDATE ... FROM or another derived row source needs a target-specific route",
+    ),
+    "CERTIFIED_UPDATE_UNSUPPORTED_MODIFIER": (
+        "statement-kind",
+        "UPDATE ordering, limiting or CTE semantics are outside the bounded route",
+    ),
+    "CERTIFIED_UPDATE_UNSUPPORTED_ASSIGNMENT": (
+        "structure",
+        "UPDATE assignments must be plain target columns with typed values",
+    ),
+    "CERTIFIED_UPDATE_EMPTY": ("structure", "an UPDATE has no assignments"),
+    "CERTIFIED_UPDATE_DUPLICATE_TARGET": (
+        "structure",
+        "an UPDATE assigns the same target column more than once",
+    ),
+    "CERTIFIED_UPDATE_UNSUPPORTED_STATEMENT": (
+        "statement-kind",
+        "not a single UPDATE statement",
     ),
     "CERTIFIED_ROUTINE_PROCEDURE_UNSUPPORTED": (
         "statement-kind",
@@ -419,6 +455,11 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
         "structure",
         "the privilege or grant option requires a target-specific security policy",
     ),
+    "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED": (
+        "identifiers",
+        "a non-PostgreSQL target cannot safely erase a source routine signature without "
+        "a target routine-identity catalogue",
+    ),
     "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED": (
         "structure",
         "trigger action/timing/order semantics require a target-specific trigger route",
@@ -565,6 +606,17 @@ def _classify(
     # appears in annotations, which this module never evaluates.
     assert isinstance(statement, exp.Expression)
     try:
+        # A file-level parse can leave one unusual PostgreSQL ALTER as an
+        # opaque Command while the raw statement is still recoverable by the
+        # narrow multi-action compatibility path. Reparse only that raw unit;
+        # ordinary commands remain commands and therefore fail closed below.
+        if isinstance(statement, exp.Command) and raw_sql is not None:
+            try:
+                recovered = _parse_source_statements(raw_sql, dialect)
+            except sqlglot.errors.SqlglotError:
+                recovered = []
+            if len(recovered) == 1 and not isinstance(recovered[0], exp.Command):
+                statement = recovered[0]
         if isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "TABLE":
             parse_create_table(statement, dialect, namespace_map)
         elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "INDEX":
@@ -603,7 +655,9 @@ def _classify(
         elif isinstance(statement, exp.Drop):
             parse_drop_table(statement, dialect)
         elif isinstance(statement, exp.Insert):
-            parse_insert(raw_sql or statement, dialect, namespace_map)
+            parse_insert_statement(raw_sql or statement, dialect, namespace_map)
+        elif isinstance(statement, exp.Update):
+            parse_update(raw_sql or statement, dialect, namespace_map)
         else:
             # Not covered by any certified DDL profile. This is the single
             # most important number in the report, so it is produced by the
@@ -937,7 +991,7 @@ def _build_report(
         profile=(
             "certified-ddl-v1 + certified-alter-v1 + certified-drop-v1 + certified-schema-v1 "
             "+ certified-routine-v1 + certified-view-v1 + certified-comment-v1 "
-            "+ certified-privilege-v1 + certified-rls-v1"
+            "+ certified-privilege-v1 + certified-dml-v1 + certified-rls-v1"
         ),
         repository=str(root.resolve()),
         source_dialect=source_dialect.value,

@@ -28,7 +28,7 @@ from .advanced import (
     parse_table_function,
     parse_trigger,
 )
-from .models import Dialect, DialectError, RouteError
+from .models import Dialect, DialectError, InsertStatement, RouteError
 from .validator import validate
 
 
@@ -56,6 +56,8 @@ def translate_ddl(
 
       TABLE / INDEX -- certified-ddl-v1
       INSERT -- certified-insert-v1 (fixed-column literal seeds only)
+      INSERT -- certified-dml-v1 (bounded single-source SELECT seeds)
+      UPDATE -- certified-dml-v1 (single-table typed assignments)
       ALTER         -- certified-alter-v1
       DROP          -- certified-drop-v1
       SCHEMA        -- certified-schema-v1
@@ -81,15 +83,16 @@ def translate_ddl(
     if source == target:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER: translating a dialect to itself is not a supported route")
     if statement_kind not in (
-        "TABLE", "INDEX", "INSERT", "ALTER", "DROP", "SCHEMA", "FUNCTION", "PROCEDURE", "TRIGGER",
+        "TABLE", "INDEX", "INSERT", "UPDATE", "ALTER", "DROP", "SCHEMA", "FUNCTION", "PROCEDURE", "TRIGGER",
         "VIEW", "COMMENT", "GRANT", "REVOKE", "POLICY",
     ):
         raise RouteError(
             f"UNSUPPORTED_STATEMENT_KIND: {statement_kind!r} must be TABLE, INDEX, INSERT, ALTER, DROP, "
-            "SCHEMA, FUNCTION, PROCEDURE, TRIGGER, VIEW, COMMENT, GRANT, REVOKE or POLICY"
+            "UPDATE, SCHEMA, FUNCTION, PROCEDURE, TRIGGER, VIEW, COMMENT, GRANT, REVOKE or POLICY"
         )
     profile = {
-        "INSERT": "certified-insert-v1",
+        "INSERT": "certified-insert-v1 + certified-dml-v1",
+        "UPDATE": "certified-dml-v1",
         "ALTER": "certified-alter-v1",
         "DROP": "certified-drop-v1",
             "SCHEMA": "certified-schema-v1",
@@ -107,7 +110,13 @@ def translate_ddl(
         if statement_kind == "TABLE":
             emitted = emitter.emit_create_table(parser.parse_create_table(sql, source, namespace_map), target)
         elif statement_kind == "INSERT":
-            emitted = emitter.emit_insert(parser.parse_insert(sql, source, namespace_map), target)
+            insert = parser.parse_insert_statement(sql, source, namespace_map)
+            if isinstance(insert, InsertStatement):
+                emitted = emitter.emit_insert(insert, target)
+            else:
+                emitted = emitter.emit_insert_select(insert, target)
+        elif statement_kind == "UPDATE":
+            emitted = emitter.emit_update(parser.parse_update(sql, source, namespace_map), target)
         elif statement_kind == "ALTER":
             emitted = emitter.emit_alter_table(
                 parser.parse_alter_table(sql, source, namespace_map), target, catalog

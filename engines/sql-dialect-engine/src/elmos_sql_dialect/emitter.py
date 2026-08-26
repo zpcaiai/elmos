@@ -28,19 +28,30 @@ from .models import (
     CheckExpression,
     CheckNotExpression,
     CheckOperator,
+    CheckValueFunction,
+    CheckValueOperator,
     Column,
     Dialect,
     DialectError,
+    DmlAggregate,
+    DmlCoalesce,
+    DmlColumn,
+    DmlCurrentTimestamp,
+    DmlExpression,
+    DmlLiteral,
+    DmlPredicate,
     DropColumn,
     DropConstraint,
     DropTable,
     ForeignKey,
     Index,
     InsertLiteral,
+    InsertSelectStatement,
     InsertStatement,
     RenameColumn,
     Schema,
     Table,
+    UpdateStatement,
 )
 
 
@@ -134,32 +145,58 @@ def _render_tsql_regex_check(column: str, pattern: str) -> str:
 
 
 def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> str:
+    left = (
+        f"{comparison.column_qualifier}.{comparison.column}"
+        if comparison.column_qualifier is not None
+        else comparison.column
+    )
+    if comparison.left_expression is not None:
+        if comparison.left_expression.function is CheckValueFunction.TRIM:
+            left = f"TRIM({left})"
+        elif comparison.left_expression.operator is CheckValueOperator.ADD:
+            right = comparison.left_expression.right_column
+            assert right is not None
+            left = f"({left} + {right})"
+        else:  # pragma: no cover - closed enum, defensive for future extensions
+            function = comparison.left_expression.function
+            value_operator = comparison.left_expression.operator
+            value_name = (
+                function.value
+                if function is not None
+                else value_operator.value
+                if value_operator is not None
+                else "unknown"
+            )
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                f"unsupported CHECK value function {value_name}",
+            )
     operator = comparison.operator
     if operator is CheckOperator.IS_TRUE:
-        return f"{comparison.column} = {_render_boolean('true', dialect)}"
+        return f"{left} = {_render_boolean('true', dialect)}"
     if operator in NULLARY_CHECK_OPERATORS:
-        return f"{comparison.column} {operator.value}"
+        return f"{left} {operator.value}"
     if operator is CheckOperator.IN:
         members = ", ".join(
             (_render_boolean(item.value, dialect) if item.is_boolean else _render_literal(item.value, item.is_string))
             for item in comparison.literals
         )
-        return f"{comparison.column} IN ({members})"
+        return f"{left} IN ({members})"
     if operator is CheckOperator.LIKE:
-        return f"{comparison.column} LIKE {_render_literal(comparison.literal, True)}"
+        return f"{left} LIKE {_render_literal(comparison.literal, True)}"
     if operator is CheckOperator.BETWEEN:
         low, high = comparison.literals
         return (
-            f"{comparison.column} BETWEEN {_render_literal(low.value, low.is_string)}"
+            f"{left} BETWEEN {_render_literal(low.value, low.is_string)}"
             f" AND {_render_literal(high.value, high.is_string)}"
         )
     if operator is CheckOperator.MATCHES_REGEX:
         pattern = _render_literal(comparison.literal, True)
         if dialect is Dialect.TSQL:
-            return _render_tsql_regex_check(comparison.column, comparison.literal)
+            return _render_tsql_regex_check(left, comparison.literal)
         if dialect is Dialect.POSTGRES:
-            return f"{comparison.column} ~ {pattern}"
-        return f"REGEXP_LIKE({comparison.column}, {pattern}, 'c')"
+            return f"{left} ~ {pattern}"
+        return f"REGEXP_LIKE({left}, {pattern}, 'c')"
     if comparison.right_interval_column is not None:
         assert comparison.right_interval_value is not None
         assert comparison.right_interval_unit is not None
@@ -173,15 +210,20 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
             right = f"{comparison.right_interval_column} + INTERVAL '{value}' {unit}"
         else:
             right = f"DATEADD({unit}, {value}, {comparison.right_interval_column})"
-        return f"{comparison.column} {check_operator_sql(operator)} {right}"
+        return f"{left} {check_operator_sql(operator)} {right}"
     if comparison.right_column is not None:
-        return f"{comparison.column} {check_operator_sql(operator)} {comparison.right_column}"
+        right = (
+            f"{comparison.right_column_qualifier}.{comparison.right_column}"
+            if comparison.right_column_qualifier is not None
+            else comparison.right_column
+        )
+        return f"{left} {check_operator_sql(operator)} {right}"
     literal = (
         _render_boolean(comparison.literal, dialect)
         if comparison.literal_is_boolean
         else _render_literal(comparison.literal, comparison.literal_is_string)
     )
-    return f"{comparison.column} {check_operator_sql(comparison.operator)} {literal}"
+    return f"{left} {check_operator_sql(comparison.operator)} {literal}"
 
 
 def _render_column(column: Column, dialect: Dialect) -> str:
@@ -532,6 +574,60 @@ def emit_insert(insert: InsertStatement, dialect: Dialect) -> str:
         for row in insert.rows
     )
     return f"INSERT INTO {_object_name(insert.schema, insert.table)} ({columns}) VALUES {rows}"  # noqa: S608
+
+
+def _render_dml_expression(value: DmlExpression, dialect: Dialect) -> str:
+    if isinstance(value, DmlColumn):
+        return f"{value.qualifier}.{value.name}" if value.qualifier is not None else value.name
+    if isinstance(value, DmlLiteral):
+        return _render_insert_literal(value.value, dialect)
+    if isinstance(value, DmlCurrentTimestamp):
+        return "SYSDATETIME()" if dialect is Dialect.TSQL else "CURRENT_TIMESTAMP"
+    if isinstance(value, DmlCoalesce):
+        return f"COALESCE({value.column.name}, {_render_dml_expression(value.fallback, dialect)})"
+    if isinstance(value, DmlAggregate):
+        return f"{value.function.value}({value.column.name})"
+    if isinstance(value, DmlPredicate):
+        return _render_check_expression(value.predicate, dialect)
+    raise TypeError(f"unhandled DML IR node: {type(value).__name__}")  # pragma: no cover
+
+
+def emit_insert_select(insert: InsertSelectStatement, dialect: Dialect) -> str:
+    """Emit the bounded INSERT ... SELECT profile."""
+    columns = ", ".join(insert.columns)
+    expressions = ", ".join(_render_dml_expression(item, dialect) for item in insert.expressions)
+    source = _object_name(insert.source_schema, insert.source_table)
+    if insert.source_alias is not None:
+        source += f" {insert.source_alias}"
+    rendered = (
+        f"INSERT INTO {_object_name(insert.schema, insert.table)} ({columns}) "  # noqa: S608
+        f"SELECT {expressions} FROM {source}"  # noqa: S608
+    )
+    for join in insert.joins:
+        conditions = " AND ".join(
+            f"{_render_dml_expression(condition.left, dialect)} = "
+            f"{_render_dml_expression(condition.right, dialect)}"
+            for condition in join.conditions
+        )
+        rendered += (
+            f" INNER JOIN {_object_name(join.schema, join.table)} {join.alias} ON {conditions}"
+        )
+    if insert.predicate is not None:
+        rendered += f" WHERE {_render_check_expression(insert.predicate, dialect)}"
+    if insert.group_by:
+        rendered += f" GROUP BY {', '.join(insert.group_by)}"
+    return rendered  # noqa: S608
+
+
+def emit_update(update: UpdateStatement, dialect: Dialect) -> str:
+    """Emit a single-table UPDATE without inventing a target row source."""
+    assignments = ", ".join(
+        f"{item.target} = {_render_dml_expression(item.value, dialect)}" for item in update.assignments
+    )
+    rendered = f"UPDATE {_object_name(update.schema, update.table)} SET {assignments}"  # noqa: S608
+    if update.predicate is not None:
+        rendered += f" WHERE {_render_check_expression(update.predicate, dialect)}"
+    return rendered  # noqa: S608
 
 
 def _render_check_clause(check: CheckConstraint, dialect: Dialect) -> str:

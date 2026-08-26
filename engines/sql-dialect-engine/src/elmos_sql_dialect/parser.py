@@ -18,10 +18,12 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
+from typing import cast
 
 import sqlglot
 from sqlglot import exp
 from sqlglot.expressions import DataType
+from sqlglot.tokens import Tokenizer
 
 from .dialects import IDENTIFIER_PATTERN
 from .models import (
@@ -40,11 +42,24 @@ from .models import (
     CheckLiteral,
     CheckNotExpression,
     CheckOperator,
+    CheckValueExpression,
+    CheckValueFunction,
+    CheckValueOperator,
     Column,
     ColumnDefault,
     DefaultKind,
     Dialect,
     DialectError,
+    DmlAggregate,
+    DmlAggregateFunction,
+    DmlCoalesce,
+    DmlColumn,
+    DmlCurrentTimestamp,
+    DmlExpression,
+    DmlJoin,
+    DmlJoinCondition,
+    DmlLiteral,
+    DmlPredicate,
     DropColumn,
     DropConstraint,
     DropTable,
@@ -52,11 +67,14 @@ from .models import (
     Index,
     IndexColumn,
     InsertLiteral,
+    InsertSelectStatement,
     InsertStatement,
     ReferentialAction,
     RenameColumn,
     Schema,
     Table,
+    UpdateAssignment,
+    UpdateStatement,
 )
 
 _IDENTIFIER_RE = re.compile(f"^{IDENTIFIER_PATTERN}$")
@@ -256,16 +274,158 @@ def _coalesce_adjacent_string_literals(sql: str) -> str:
     return "".join(output)
 
 
+def _recover_multi_action_alter(
+    sql: str,
+    source_dialect: Dialect,
+) -> list[exp.Expression] | None:
+    """Recover a narrow, typed multi-action ALTER that sqlglot made opaque.
+
+    PostgreSQL permits several ALTER TABLE actions separated by top-level
+    commas. sqlglot parses some combinations as ``Command`` when one action
+    is less common, even though each individual action has a normal ALTER AST.
+    Split only at lexical top-level commas, parse every resulting action with
+    sqlglot, and rebuild one normal ALTER AST. No text is interpreted as a
+    column definition here; the existing typed ALTER parser remains the sole
+    semantic admission gate.
+    """
+    if source_dialect is not Dialect.POSTGRES:
+        return None
+    normalized = _coalesce_adjacent_string_literals(sql)
+    tokens = Tokenizer(dialect=source_dialect.value).tokenize(normalized)
+    if tokens and tokens[-1].token_type.name == "SEMICOLON":
+        tokens = tokens[:-1]
+    if len(tokens) < 5:
+        return None
+    if tokens[0].text.upper() != "ALTER" or tokens[1].text.upper() != "TABLE":
+        return None
+
+    depth = 0
+    action_index: int | None = None
+    top_level_commas = []
+    for index, token in enumerate(tokens[2:], start=2):
+        lexeme_type = token.token_type.name
+        if lexeme_type == "L_PAREN":
+            depth += 1
+        elif lexeme_type == "R_PAREN":
+            depth -= 1
+        elif depth == 0 and lexeme_type == "COMMA":
+            top_level_commas.append(token)
+        elif depth == 0 and token.text.upper() in {"ADD", "DROP", "RENAME", "ALTER"}:
+            if action_index is None:
+                action_index = index
+    if action_index is None or not top_level_commas:
+        return None
+
+    prefix = normalized[tokens[0].start : tokens[action_index].start]
+    spans: list[str] = []
+    start = tokens[action_index].start
+    for comma in top_level_commas:
+        spans.append(normalized[start : comma.start])
+        start = comma.end + 1
+    spans.append(normalized[start : tokens[-1].end + 1])
+
+    actions: list[exp.Expression] = []
+    table_node: exp.Expression | None = None
+    for span in spans:
+        try:
+            action_statement = sqlglot.parse_one(prefix + span, read=source_dialect.value)
+        except sqlglot.errors.SqlglotError:
+            return None
+        if not isinstance(action_statement, exp.Alter):
+            return None
+        statement_actions = action_statement.args.get("actions") or []
+        if len(statement_actions) != 1:
+            return None
+        action = statement_actions[0]
+        if isinstance(action, exp.Drop) and any(
+            action.args.get(flag) for flag in ("cascade", "restrict")
+        ):
+            return None
+        if isinstance(action, exp.ColumnDef) and action.args.get("exists"):
+            return None
+        # Keep the compatibility route narrower than the full ALTER model.
+        # The emitter may need to split actions for Oracle and SQL Server;
+        # splitting a DROP/RENAME/ALTER alongside an ADD could change the
+        # source statement's atomicity or dependency ordering. Such mixes
+        # remain explicit blockers even when every individual action parses.
+        if not isinstance(action, exp.ColumnDef | exp.AddConstraint):
+            return None
+        if table_node is None:
+            table_node = action_statement.this
+        elif action_statement.this != table_node:
+            return None
+        actions.append(action)
+    if table_node is None or not actions:
+        return None
+    return [exp.Alter(this=table_node, kind="TABLE", actions=actions)]
+
+
 def _parse_source_statements(sql: str, source_dialect: Dialect) -> list[exp.Expression]:
     try:
-        return [s for s in sqlglot.parse(sql, read=source_dialect.value) if s is not None]  # type: ignore[misc]
-    except sqlglot.errors.SqlglotError:
+        statements = cast(
+            list[exp.Expression],
+            [s for s in sqlglot.parse(sql, read=source_dialect.value) if s is not None],
+        )
+        if any(isinstance(statement, exp.Command) for statement in statements):
+            recovered = _recover_multi_action_alter(sql, source_dialect)
+            if recovered is not None:
+                return recovered
+        return statements
+    except sqlglot.errors.SqlglotError as parse_error:
         if source_dialect is not Dialect.POSTGRES:
             raise
         normalized = _coalesce_adjacent_string_literals(sql)
-        if normalized == sql:
-            raise
-        return [s for s in sqlglot.parse(normalized, read=source_dialect.value) if s is not None]  # type: ignore[misc]
+        if normalized != sql:
+            try:
+                statements = cast(
+                    list[exp.Expression],
+                    [s for s in sqlglot.parse(normalized, read=source_dialect.value) if s is not None],
+                )
+                if any(isinstance(statement, exp.Command) for statement in statements):
+                    recovered = _recover_multi_action_alter(normalized, source_dialect)
+                    if recovered is not None:
+                        return recovered
+                return statements
+            except sqlglot.errors.SqlglotError:
+                # The literal normalizer is also used for COMMENT statements;
+                # if the dialect grammar still cannot retain a constraint's
+                # table target, continue to the exact compatibility route.
+                pass
+
+        recovered = _recover_multi_action_alter(normalized, source_dialect)
+        if recovered is not None:
+            return recovered
+
+        # sqlglot 30.14.0 does not retain PostgreSQL's `ON <table>` portion
+        # when parsing COMMENT ON CONSTRAINT. Keep this compatibility path
+        # deliberately lexical and exact: only the eight-token, unqualified,
+        # single-string form is materialised into the normal typed Comment
+        # route. Anything more complex remains a source-format blocker.
+        fallback_sql = normalized
+        tokens = Tokenizer(dialect=source_dialect.value).tokenize(fallback_sql)
+        if tokens and tokens[-1].token_type.name == "SEMICOLON":
+            tokens = tokens[:-1]
+        if (
+            len(tokens) == 8
+            and [token.text.upper() for token in tokens[:3]] == ["COMMENT", "ON", "CONSTRAINT"]
+            and tokens[4].text.upper() == "ON"
+            and tokens[6].text.upper() == "IS"
+        ):
+            identifier_tokens = (tokens[3], tokens[5])
+            if (
+                all(token.token_type.name == "VAR" for token in identifier_tokens)
+                and tokens[7].token_type.name == "STRING"
+            ):
+                table = exp.Table(this=exp.Identifier(this=tokens[5].text, quoted=False))
+                table.set("constraint", exp.Identifier(this=tokens[3].text, quoted=False))
+                return [
+                    exp.Comment(
+                        this=table,
+                        kind="CONSTRAINT",
+                        expression=exp.Literal(this=tokens[7].text, is_string=True),
+                    )
+                ]
+        raise parse_error
 
 
 def _plain_identifier(node: exp.Expression | None, what: str) -> str:
@@ -585,7 +745,36 @@ def _check_literal(node: exp.Expression | None, what: str) -> CheckLiteral:
     return CheckLiteral(value=str(node.this), is_string=bool(node.is_string))
 
 
-def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> CheckComparison:
+def _parse_check_left_value(node: exp.Expression, what: str) -> tuple[str, CheckValueExpression | None]:
+    if isinstance(node, exp.Trim):
+        _require(
+            node.expression is None,
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "TRIM CHECK expressions must use the default space character",
+        )
+        column = _plain_identifier(node.this, what)
+        return column, CheckValueExpression(column=column, function=CheckValueFunction.TRIM)
+    if isinstance(node, exp.Anonymous) and str(node.this).upper() == "BTRIM":
+        arguments = list(node.expressions or [])
+        _require(
+            len(arguments) == 1,
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "BTRIM CHECK expressions must have one column argument",
+        )
+        column = _plain_identifier(arguments[0], what)
+        return column, CheckValueExpression(column=column, function=CheckValueFunction.TRIM)
+    if isinstance(node, exp.Add) and isinstance(node.this, exp.Column) and isinstance(node.expression, exp.Column):
+        column = _plain_identifier(node.this, what)
+        right_column = _plain_identifier(node.expression, "CHECK value right-hand column")
+        return column, CheckValueExpression(
+            column=column,
+            operator=CheckValueOperator.ADD,
+            right_column=right_column,
+        )
+    return _plain_identifier(node, what), None
+
+
+def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> CheckExpression:
     # --- `NOT (x IS NULL)`, which is how mysql/oracle/tsql spell IS NOT NULL --
     # The boolean-tree builder canonicalizes this one spelling difference. Any
     # other NOT is retained as a typed CheckNotExpression instead of being
@@ -721,6 +910,56 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
             literal_is_string=True,
         )
 
+    # Oracle has no SQL boolean type, so `(a IS NULL) = (b IS NULL)` cannot be
+    # emitted as a direct predicate comparison there. Expand equality of two
+    # null tests into its exact truth table instead. The operands are already
+    # total boolean predicates, so this is a semantic identity, not a
+    # three-valued-logic rewrite of arbitrary expressions.
+    left_is: exp.Expression | None = None
+    right_is: exp.Expression | None = None
+    if isinstance(node, exp.EQ):
+        left_is = _unwrap_check_parens(node.this)
+        right_is = _unwrap_check_parens(node.expression)
+        if not isinstance(left_is, exp.Is) or not isinstance(right_is, exp.Is):
+            left_is = None
+            right_is = None
+    if isinstance(left_is, exp.Is) and isinstance(right_is, exp.Is):
+        _require(
+            isinstance(left_is.expression, exp.Null) and isinstance(right_is.expression, exp.Null),
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "boolean CHECK equality is limited to IS NULL predicates",
+        )
+
+        def null_test(item: exp.Is) -> tuple[str, bool]:
+            return _plain_identifier(item.this, "CHECK null-test column"), not bool(item.args.get("negate"))
+
+        left_column, left_true_is_null = null_test(left_is)
+        right_column, right_true_is_null = null_test(right_is)
+
+        def test(column: str, true_is_null: bool, expected: bool) -> CheckComparison:
+            is_null = true_is_null if expected else not true_is_null
+            return CheckComparison(
+                column=column,
+                operator=CheckOperator.IS_NULL if is_null else CheckOperator.IS_NOT_NULL,
+            )
+
+        return CheckBooleanExpression(
+            connector=CheckConnector.OR,
+            operands=(
+                CheckBooleanExpression(
+                    connector=CheckConnector.AND,
+                    operands=(test(left_column, left_true_is_null, True), test(right_column, right_true_is_null, True)),
+                ),
+                CheckBooleanExpression(
+                    connector=CheckConnector.AND,
+                    operands=(
+                        test(left_column, left_true_is_null, False),
+                        test(right_column, right_true_is_null, False),
+                    ),
+                ),
+            ),
+        )
+
     # --- binary comparisons ----------------------------------------------
     binary_operator: CheckOperator | None = _CHECK_OPERATOR_MAP.get(type(node))
     _require(
@@ -729,13 +968,14 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
         f"CHECK comparison operator {type(node).__name__} is outside certified-ddl-v1",
     )
     assert binary_operator is not None  # narrows for mypy; _require already enforced this at runtime
-    column = _plain_identifier(node.this, "CHECK left-hand column")
+    column, left_expression = _parse_check_left_value(node.this, "CHECK left-hand column")
     literal = node.expression
     if isinstance(literal, exp.Column):
         return CheckComparison(
             column=column,
             operator=binary_operator,
             right_column=_plain_identifier(literal, "CHECK right-hand column"),
+            left_expression=left_expression,
         )
     if isinstance(literal, exp.Boolean):
         return CheckComparison(
@@ -777,7 +1017,11 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
         "CHECK right-hand side must be a plain literal",
     )
     return CheckComparison(
-        column=column, operator=binary_operator, literal=str(literal.this), literal_is_string=bool(literal.is_string)
+        column=column,
+        operator=binary_operator,
+        literal=str(literal.this),
+        literal_is_string=bool(literal.is_string),
+        left_expression=left_expression,
     )
 
 
@@ -1420,6 +1664,506 @@ def parse_insert(
         assert isinstance(row, exp.Tuple)
         rows.append(tuple(_parse_insert_literal(item) for item in row.expressions))
     return InsertStatement(table=table, columns=columns, rows=tuple(rows), schema=table_schema)
+
+
+_DML_PREDICATE_OPERATORS = frozenset(
+    {
+        CheckOperator.EQ,
+        CheckOperator.NE,
+        CheckOperator.LT,
+        CheckOperator.LE,
+        CheckOperator.GT,
+        CheckOperator.GE,
+        CheckOperator.IS_NULL,
+        CheckOperator.IS_NOT_NULL,
+    }
+)
+
+
+def _parse_dml_column(
+    node: exp.Expression,
+    what: str,
+    allowed_qualifiers: frozenset[str] = frozenset(),
+) -> DmlColumn:
+    _require(isinstance(node, exp.Column), "CERTIFIED_DML_UNSUPPORTED_PREDICATE", f"{what} must be a column")
+    assert isinstance(node, exp.Column)
+    qualifier_node = node.args.get("table")
+    qualifier = None if qualifier_node is None else _plain_identifier(qualifier_node, f"{what} qualifier")
+    if qualifier is not None:
+        _require(
+            qualifier.casefold() in allowed_qualifiers,
+            "CERTIFIED_DML_UNSUPPORTED_PREDICATE",
+            f"{what} qualifier {qualifier!r} is outside the joined source scope",
+        )
+    return DmlColumn(_plain_identifier(node.this, what), qualifier=qualifier)
+
+
+def _parse_join_predicate(
+    node: exp.Expression,
+    allowed_qualifiers: frozenset[str],
+) -> tuple[DmlJoinCondition, ...]:
+    if isinstance(node, exp.And):
+        left = node.this
+        right = node.expression
+        _require(
+            isinstance(left, exp.Expression) and isinstance(right, exp.Expression),
+            "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+            "JOIN equality predicate is incomplete",
+        )
+        return _parse_join_predicate(left, allowed_qualifiers) + _parse_join_predicate(right, allowed_qualifiers)
+    _require(
+        isinstance(node, exp.EQ),
+        "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+        "joined INSERT SELECT supports equality conditions only",
+    )
+    assert isinstance(node, exp.EQ)
+    left = _parse_dml_column(node.this, "JOIN left column", allowed_qualifiers)
+    right = _parse_dml_column(node.expression, "JOIN right column", allowed_qualifiers)
+    _require(
+        left.qualifier != right.qualifier,
+        "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+        "JOIN equality must relate two different query sources",
+    )
+    return (DmlJoinCondition(left, right),)
+
+
+def _parse_qualified_dml_predicate(
+    node: exp.Expression,
+    allowed_qualifiers: frozenset[str],
+) -> CheckExpression:
+    if isinstance(node, exp.And | exp.Or):
+        left = node.this
+        right = node.expression
+        _require(
+            isinstance(left, exp.Expression) and isinstance(right, exp.Expression),
+            "CERTIFIED_DML_UNSUPPORTED_PREDICATE",
+            "DML boolean predicate is incomplete",
+        )
+        return CheckBooleanExpression(
+            CheckConnector.AND if isinstance(node, exp.And) else CheckConnector.OR,
+            (
+                _parse_qualified_dml_predicate(left, allowed_qualifiers),
+                _parse_qualified_dml_predicate(right, allowed_qualifiers),
+            ),
+        )
+    if isinstance(node, exp.Not):
+        _require(
+            isinstance(node.this, exp.Expression),
+            "CERTIFIED_DML_UNSUPPORTED_PREDICATE",
+            "DML NOT predicate is incomplete",
+        )
+        operand = node.this
+        if isinstance(operand, exp.Column):
+            column = _parse_dml_column(operand, "DML boolean column", allowed_qualifiers)
+            return CheckNotExpression(
+                CheckComparison(column=column.name, column_qualifier=column.qualifier, operator=CheckOperator.IS_TRUE)
+            )
+        return CheckNotExpression(_parse_qualified_dml_predicate(operand, allowed_qualifiers))
+    if isinstance(node, exp.Is):
+        _require(
+            isinstance(node.expression, exp.Null),
+            "CERTIFIED_DML_UNSUPPORTED_PREDICATE",
+            "DML predicates support IS NULL and IS NOT NULL only",
+        )
+        column = _parse_dml_column(node.this, "DML null-test column", allowed_qualifiers)
+        return CheckComparison(
+            column=column.name,
+            column_qualifier=column.qualifier,
+            operator=CheckOperator.IS_NOT_NULL if node.args.get("negate") else CheckOperator.IS_NULL,
+        )
+    if isinstance(node, exp.Column):
+        column = _parse_dml_column(node, "DML boolean column", allowed_qualifiers)
+        return CheckComparison(column=column.name, column_qualifier=column.qualifier, operator=CheckOperator.IS_TRUE)
+    binary_operator = _CHECK_OPERATOR_MAP.get(type(node))
+    _require(
+        binary_operator in _DML_PREDICATE_OPERATORS,
+        "CERTIFIED_DML_UNSUPPORTED_PREDICATE",
+        f"DML predicate operator {type(node).__name__} is outside the bounded route",
+    )
+    assert binary_operator is not None
+    column = _parse_dml_column(node.this, "DML predicate column", allowed_qualifiers)
+    right = node.expression
+    if isinstance(right, exp.Column):
+        right_column = _parse_dml_column(right, "DML predicate right column", allowed_qualifiers)
+        return CheckComparison(
+            column=column.name,
+            column_qualifier=column.qualifier,
+            operator=binary_operator,
+            right_column=right_column.name,
+            right_column_qualifier=right_column.qualifier,
+        )
+    if isinstance(right, exp.Boolean):
+        return CheckComparison(
+            column=column.name,
+            column_qualifier=column.qualifier,
+            operator=binary_operator,
+            literal="true" if right.this else "false",
+            literal_is_boolean=True,
+        )
+    _require(
+        isinstance(right, exp.Literal),
+        "CERTIFIED_DML_UNSUPPORTED_PREDICATE",
+        "DML predicate right-hand side must be a literal or column",
+    )
+    assert isinstance(right, exp.Literal)
+    return CheckComparison(
+        column=column.name,
+        column_qualifier=column.qualifier,
+        operator=binary_operator,
+        literal=str(right.this),
+        literal_is_string=bool(right.is_string),
+    )
+
+
+def _parse_dml_predicate(
+    node: exp.Expression,
+    source_dialect: Dialect,
+    allowed_qualifiers: frozenset[str] = frozenset(),
+) -> CheckExpression:
+    if allowed_qualifiers:
+        return _parse_qualified_dml_predicate(node, allowed_qualifiers)
+    comparisons, connector, expression = _parse_check(node, source_dialect)
+    parsed: CheckExpression
+    if expression is not None:
+        parsed = expression
+    elif len(comparisons) == 1:
+        parsed = comparisons[0]
+    else:
+        parsed = CheckBooleanExpression(connector or CheckConnector.AND, tuple(comparisons))
+
+    def verify(item: CheckExpression) -> None:
+        if isinstance(item, CheckComparison):
+            _require(
+                item.operator in _DML_PREDICATE_OPERATORS,
+                "CERTIFIED_DML_UNSUPPORTED_PREDICATE",
+                f"DML predicate operator {item.operator.value!r} is outside the bounded route",
+            )
+        elif isinstance(item, CheckBooleanExpression):
+            for operand in item.operands:
+                verify(operand)
+        else:
+            verify(item.operand)
+
+    verify(parsed)
+    return parsed
+
+
+def _parse_dml_expression(
+    node: exp.Expression,
+    source_dialect: Dialect,
+    allowed_qualifiers: frozenset[str] = frozenset(),
+) -> DmlExpression:
+    if isinstance(node, exp.Column):
+        qualifier_node = node.args.get("table")
+        qualifier = None if qualifier_node is None else _plain_identifier(qualifier_node, "DML source column qualifier")
+        _require(
+            qualifier is None or qualifier.casefold() in allowed_qualifiers,
+            "CERTIFIED_DML_UNSUPPORTED_EXPRESSION",
+            "DML source column qualifier is outside the joined source scope",
+        )
+        return DmlColumn(_plain_identifier(node.this, "DML source column"), qualifier=qualifier)
+    if isinstance(node, exp.Null | exp.Boolean | exp.Literal | exp.Neg):
+        return DmlLiteral(_parse_insert_literal(node))
+    if isinstance(node, exp.CurrentTimestamp):
+        return DmlCurrentTimestamp()
+    if isinstance(node, exp.Coalesce):
+        values = [node.this, *(node.expressions or [])]
+        _require(
+            len(values) == 2 and isinstance(values[0], exp.Column),
+            "CERTIFIED_DML_UNSUPPORTED_EXPRESSION",
+            "DML COALESCE is limited to one source column and one typed fallback",
+        )
+        assert isinstance(values[0], exp.Column)
+        column = _parse_dml_expression(values[0], source_dialect, allowed_qualifiers)
+        _require(
+            isinstance(column, DmlColumn),
+            "CERTIFIED_DML_UNSUPPORTED_EXPRESSION",
+            "DML COALESCE must start with one source column",
+        )
+        assert isinstance(column, DmlColumn)
+        fallback = _parse_dml_expression(values[1], source_dialect, allowed_qualifiers)
+        _require(
+            isinstance(fallback, DmlLiteral | DmlCurrentTimestamp),
+            "CERTIFIED_DML_UNSUPPORTED_EXPRESSION",
+            "DML COALESCE fallback must be a literal or transaction timestamp",
+        )
+        assert isinstance(fallback, DmlLiteral | DmlCurrentTimestamp)
+        return DmlCoalesce(column, fallback)
+    if isinstance(node, exp.Min):
+        _require(
+            isinstance(node.this, exp.Column),
+            "CERTIFIED_DML_UNSUPPORTED_EXPRESSION",
+            "MIN in the bounded INSERT SELECT route must aggregate one source column",
+        )
+        assert isinstance(node.this, exp.Column)
+        column = _parse_dml_expression(node.this, source_dialect, allowed_qualifiers)
+        assert isinstance(column, DmlColumn)
+        return DmlAggregate(DmlAggregateFunction.MIN, column)
+    if isinstance(node, exp.EQ | exp.NEQ | exp.LT | exp.LTE | exp.GT | exp.GTE | exp.Is | exp.And | exp.Or):
+        return DmlPredicate(_parse_dml_predicate(node, source_dialect, allowed_qualifiers))
+    raise DialectError(
+        "CERTIFIED_DML_UNSUPPORTED_EXPRESSION",
+        f"DML expression node {type(node).__name__} is outside the typed portable route",
+    )
+
+
+def _parse_insert_target(
+    statement: exp.Insert,
+    namespace_map: Mapping[str, str] | None,
+) -> tuple[str | None, str, tuple[str, ...]]:
+    target = statement.this
+    _require(
+        isinstance(target, exp.Schema) and isinstance(target.this, exp.Table),
+        "CERTIFIED_INSERT_UNSUPPORTED_TARGET",
+        "INSERT target must be one plain table with an explicit column list",
+    )
+    assert isinstance(target, exp.Schema)
+    assert isinstance(target.this, exp.Table)
+    table_schema, table = _mapped_table_name(target.this, "INSERT target table", namespace_map)
+    columns = tuple(_plain_identifier(item, "INSERT target column") for item in target.expressions)
+    _require(
+        bool(columns),
+        "CERTIFIED_INSERT_COLUMN_LIST_REQUIRED",
+        "INSERT requires an explicit target column list",
+    )
+    return table_schema, table, columns
+
+
+def parse_insert_select(
+    sql: str | exp.Expression,
+    source_dialect: Dialect,
+    namespace_map: Mapping[str, str] | None = None,
+) -> InsertSelectStatement:
+    """Parse a bounded INSERT ... SELECT into typed IR.
+
+    The source query deliberately has no subqueries, ordering, limits, CTEs,
+    conflict policy, or vendor clock function. It may use a finite sequence of
+    INNER JOINs whose ON clause is only an AND of qualified equalities. These
+    restrictions preserve row-set and rerun semantics instead of treating a
+    SELECT as opaque source text.
+    """
+    statement = _statement(sql, source_dialect)
+    _require(
+        isinstance(statement, exp.Insert),
+        "CERTIFIED_INSERT_UNSUPPORTED_STATEMENT",
+        "certified-dml-v1 only accepts one INSERT statement",
+    )
+    assert isinstance(statement, exp.Insert)
+    for flag in (
+        "hint",
+        "is_function",
+        "stored",
+        "by_name",
+        "exists",
+        "partition",
+        "settings",
+        "default",
+        "conflict",
+        "returning",
+        "overwrite",
+        "alternative",
+        "ignore",
+    ):
+        _require(
+            not statement.args.get(flag),
+            "CERTIFIED_INSERT_UNSUPPORTED_MODIFIER",
+            f"INSERT modifier {flag!r} is outside certified-dml-v1",
+        )
+    source = statement.expression
+    _require(
+        isinstance(source, exp.Select),
+        "CERTIFIED_INSERT_UNSUPPORTED_SOURCE",
+        "INSERT source must be one SELECT in the bounded route",
+    )
+    assert isinstance(source, exp.Select)
+    _require(
+        not any(
+            source.args.get(flag)
+            for flag in ("distinct", "having", "qualify", "order", "limit", "offset", "with")
+        ),
+        "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+        "INSERT SELECT supports bounded INNER JOINs without ordering, limits or CTEs",
+    )
+    from_clause = source.args.get("from_")
+    _require(
+        isinstance(from_clause, exp.From) and isinstance(from_clause.this, exp.Table),
+        "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+        "INSERT SELECT needs exactly one source table",
+    )
+    assert isinstance(from_clause, exp.From)
+    assert isinstance(from_clause.this, exp.Table)
+    source_schema, source_table = _mapped_table_name(from_clause.this, "INSERT SELECT source table", namespace_map)
+    joins: list[DmlJoin] = []
+    source_alias_node = from_clause.this.args.get("alias")
+    source_alias: str | None = None
+    if source.args.get("joins"):
+        _require(
+            isinstance(source_alias_node, exp.TableAlias) and isinstance(source_alias_node.this, exp.Identifier),
+            "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+            "joined INSERT SELECT sources require a plain base-table alias",
+        )
+        assert isinstance(source_alias_node, exp.TableAlias)
+        assert isinstance(source_alias_node.this, exp.Identifier)
+        source_alias = _plain_identifier(source_alias_node.this, "INSERT SELECT source alias")
+    else:
+        _require(
+            source_alias_node is None,
+            "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+            "source table aliases need a joined query-scope route",
+        )
+    known_aliases = frozenset({source_alias.casefold()}) if source_alias is not None else frozenset()
+    for join in source.args.get("joins") or []:
+        _require(
+            isinstance(join, exp.Join)
+            and not join.args.get("side")
+            and not join.args.get("kind")
+            and not join.args.get("pivots"),
+            "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+            "only plain INNER JOIN is supported in the bounded INSERT SELECT route",
+        )
+        assert isinstance(join, exp.Join)
+        join_table = join.this
+        _require(
+            isinstance(join_table, exp.Table),
+            "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+            "JOIN source must be one plain table",
+        )
+        assert isinstance(join_table, exp.Table)
+        alias_node = join_table.args.get("alias")
+        _require(
+            isinstance(alias_node, exp.TableAlias) and isinstance(alias_node.this, exp.Identifier),
+            "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+            "JOIN sources require a plain alias",
+        )
+        assert isinstance(alias_node, exp.TableAlias)
+        assert isinstance(alias_node.this, exp.Identifier)
+        alias = _plain_identifier(alias_node.this, "INSERT SELECT JOIN alias")
+        _require(
+            alias.casefold() not in known_aliases,
+            "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+            f"duplicate INSERT SELECT query source alias {alias!r}",
+        )
+        join_schema, join_name = _mapped_table_name(join_table, "INSERT SELECT JOIN table", namespace_map)
+        _require(
+            join.args.get("on") is not None,
+            "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+            "JOIN requires an ON equality predicate",
+        )
+        assert isinstance(join.args.get("on"), exp.Expression)
+        aliases = frozenset((*known_aliases, alias.casefold()))
+        conditions = _parse_join_predicate(join.args["on"], aliases)
+        joins.append(DmlJoin(join_name, alias, conditions, schema=join_schema))
+        known_aliases = aliases
+    table_schema, table, columns = _parse_insert_target(statement, namespace_map)
+    expressions = tuple(
+        _parse_dml_expression(item, source_dialect, known_aliases) for item in source.expressions
+    )
+    _require(
+        len(columns) == len(expressions),
+        "CERTIFIED_INSERT_ARITY_MISMATCH",
+        "INSERT SELECT projection must match the target column list",
+    )
+    where = source.args.get("where")
+    predicate = None
+    if where is not None:
+        _require(
+            isinstance(where, exp.Where),
+            "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+            "INSERT SELECT WHERE clause is malformed",
+        )
+        predicate = _parse_dml_predicate(where.this, source_dialect, known_aliases)
+    group_by: tuple[str, ...] = ()
+    group = source.args.get("group")
+    if group is not None:
+        _require(
+            isinstance(group, exp.Group),
+            "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+            "INSERT SELECT GROUP BY clause is malformed",
+        )
+        group_by = tuple(_plain_identifier(item, "INSERT SELECT GROUP BY column") for item in group.expressions)
+        _require(
+            bool(group_by),
+            "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
+            "INSERT SELECT GROUP BY requires at least one column",
+        )
+    return InsertSelectStatement(
+        table=table,
+        columns=columns,
+        source_table=source_table,
+        expressions=expressions,
+        predicate=predicate,
+        group_by=group_by,
+        schema=table_schema,
+        source_schema=source_schema,
+        source_alias=source_alias,
+        joins=tuple(joins),
+    )
+
+
+def parse_insert_statement(
+    sql: str | exp.Expression,
+    source_dialect: Dialect,
+    namespace_map: Mapping[str, str] | None = None,
+) -> InsertStatement | InsertSelectStatement:
+    """Select the literal or bounded SELECT INSERT profile without widening either."""
+    try:
+        return parse_insert(sql, source_dialect, namespace_map)
+    except DialectError as exc:
+        if exc.code != "CERTIFIED_INSERT_UNSUPPORTED_SOURCE":
+            raise
+        return parse_insert_select(sql, source_dialect, namespace_map)
+
+
+def parse_update(
+    sql: str | exp.Expression,
+    source_dialect: Dialect,
+    namespace_map: Mapping[str, str] | None = None,
+) -> UpdateStatement:
+    """Parse a single-table UPDATE with typed values and predicates."""
+    statement = _statement(sql, source_dialect)
+    _require(
+        isinstance(statement, exp.Update),
+        "CERTIFIED_UPDATE_UNSUPPORTED_STATEMENT",
+        "certified-dml-v1 only accepts one UPDATE statement",
+    )
+    assert isinstance(statement, exp.Update)
+    _require(
+        statement.args.get("from_") is None,
+        "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+        "UPDATE ... FROM changes row-source semantics and needs a target-specific route",
+    )
+    _require(
+        not any(statement.args.get(flag) for flag in ("order", "limit", "with")),
+        "CERTIFIED_UPDATE_UNSUPPORTED_MODIFIER",
+        "UPDATE ORDER BY, LIMIT and CTE modifiers are outside certified-dml-v1",
+    )
+    schema, table = _mapped_table_name(statement.this, "UPDATE target table", namespace_map)
+    assignments: list[UpdateAssignment] = []
+    for item in statement.expressions:
+        _require(
+            isinstance(item, exp.EQ) and isinstance(item.this, exp.Column),
+            "CERTIFIED_UPDATE_UNSUPPORTED_ASSIGNMENT",
+            "UPDATE assignments must be plain column = typed expression pairs",
+        )
+        assert isinstance(item, exp.EQ)
+        assert isinstance(item.this, exp.Column)
+        _require(
+            item.this.args.get("table") is None,
+            "CERTIFIED_UPDATE_UNSUPPORTED_ASSIGNMENT",
+            "UPDATE assignment targets must be unqualified columns",
+        )
+        target = _plain_identifier(item.this.this, "UPDATE assignment target")
+        assignments.append(UpdateAssignment(target, _parse_dml_expression(item.expression, source_dialect)))
+    where = statement.args.get("where")
+    predicate = None
+    if where is not None:
+        _require(
+            isinstance(where, exp.Where),
+            "CERTIFIED_UPDATE_UNSUPPORTED_PREDICATE",
+            "UPDATE WHERE clause is malformed",
+        )
+        predicate = _parse_dml_predicate(where.this, source_dialect)
+    return UpdateStatement(table=table, assignments=tuple(assignments), predicate=predicate, schema=schema)
 
 
 def _alter_table_name(

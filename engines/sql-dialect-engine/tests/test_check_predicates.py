@@ -72,6 +72,50 @@ def test_predicates_compose_with_the_existing_binary_comparisons() -> None:
     assert _check_line(report) == "CHECK (a > 0 AND s IN ('A', 'B'))"
 
 
+@pytest.mark.parametrize("source", ["postgres", "mysql"])
+@pytest.mark.parametrize("target", ["postgres", "mysql", "oracle", "tsql"])
+def test_default_space_trim_is_a_typed_cross_dialect_check_value(
+    source: str, target: str
+) -> None:
+    if source == target:
+        pytest.skip("same-dialect translation is not a supported route")
+    spelling = "btrim" if source == "postgres" else "trim"
+    report = translate_ddl(
+        f"CREATE TABLE t (s VARCHAR(16), CHECK ({spelling}(s) <> ''))",
+        source,
+        target,
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    assert "TRIM(s) <> ''" in report["emitted"]
+
+
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+def test_null_test_equality_expands_to_an_exact_boolean_truth_table(target: str) -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (a VARCHAR(8), b VARCHAR(8), CHECK ((a IS NULL) = (b IS NULL)))",
+        "postgres",
+        target,
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    assert "a IS NULL AND b IS NULL" in report["emitted"]
+    assert "a IS NOT NULL AND b IS NOT NULL" in report["emitted"]
+
+
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+def test_same_typed_numeric_column_addition_is_preserved_in_checks(target: str) -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (a DECIMAL(30,0), b DECIMAL(30,0), limit_value DECIMAL(30,0), "
+        "CHECK (a + b <= limit_value))",
+        "postgres",
+        target,
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    assert "(a + b) <= limit_value" in report["emitted"]
+
+
 @pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
 def test_mixed_boolean_levels_are_emitted_with_their_source_parentheses(target: str) -> None:
     report = translate_ddl(

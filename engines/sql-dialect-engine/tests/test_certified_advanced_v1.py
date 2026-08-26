@@ -9,8 +9,9 @@ from __future__ import annotations
 
 import pytest
 
+from elmos_sql_dialect.advanced import emit_comment, emit_privilege, parse_comment, parse_privilege
 from elmos_sql_dialect.engine import translate_ddl
-from elmos_sql_dialect.models import Dialect
+from elmos_sql_dialect.models import CommentObjectKind, Dialect, DialectError
 from elmos_sql_dialect.parser import parse_create_table
 
 
@@ -64,6 +65,45 @@ def test_mysql_table_comment_uses_alter_table_metadata_syntax() -> None:
     )
     assert report["status"] == "PASSED", report
     assert report["emitted"] == "ALTER TABLE tenant.users COMMENT = 'user table'"
+
+
+def test_function_comment_keeps_the_callable_signature_typed() -> None:
+    comment = parse_comment(
+        "COMMENT ON FUNCTION elmos_wallet_open(varchar) IS 'opens a wallet'",
+        Dialect.POSTGRES,
+    )
+    assert comment.object_kind is CommentObjectKind.FUNCTION
+    assert comment.object_name == "elmos_wallet_open"
+    assert comment.routine_argument_types == ("varchar",)
+    assert emit_comment(comment, Dialect.POSTGRES) == (
+        "COMMENT ON FUNCTION elmos_wallet_open(varchar) IS 'opens a wallet'"
+    )
+
+
+def test_function_comment_does_not_fall_back_to_table_metadata_on_mysql() -> None:
+    comment = parse_comment(
+        "COMMENT ON FUNCTION elmos_wallet_open(varchar) IS 'opens a wallet'",
+        Dialect.POSTGRES,
+    )
+    with pytest.raises(DialectError) as exc:
+        emit_comment(comment, Dialect.MYSQL)
+    assert exc.value.code == "CERTIFIED_COMMENT_TARGET_UNSUPPORTED"
+
+
+def test_constraint_comment_uses_strict_postgres_compatibility_fallback() -> None:
+    comment = parse_comment(
+        "COMMENT ON CONSTRAINT runner_nodes_ready_requires_attestation "
+        "ON runner_nodes IS 'A node cannot reach READY without attestation'",
+        Dialect.POSTGRES,
+    )
+    assert comment.object_kind is CommentObjectKind.CONSTRAINT
+    assert comment.table_name == "runner_nodes"
+    assert emit_comment(comment, Dialect.POSTGRES) == (
+        "COMMENT ON CONSTRAINT runner_nodes_ready_requires_attestation "
+        "ON runner_nodes IS 'A node cannot reach READY without attestation'"
+    )
+    with pytest.raises(DialectError, match="CERTIFIED_COMMENT_TARGET_UNSUPPORTED"):
+        emit_comment(comment, Dialect.ORACLE)
 
 
 def test_postgres_adjacent_comment_literals_are_lexically_coalesced() -> None:
@@ -174,6 +214,31 @@ def test_table_privileges_are_typed_and_emitted(kind: str) -> None:
     )
     assert report["status"] == "PASSED", report
     assert report["emitted"] == f"{kind} SELECT, UPDATE ON users {direction} app_reader"
+
+
+def test_routine_privilege_keeps_the_postgres_signature() -> None:
+    privilege = parse_privilege(
+        "REVOKE EXECUTE ON FUNCTION public.elmos_expire_artifacts(varchar, integer) FROM PUBLIC",
+        Dialect.POSTGRES,
+        namespace_map={"public": "app"},
+    )
+    assert privilege.object_kind == "FUNCTION"
+    assert privilege.object_name == "elmos_expire_artifacts"
+    assert privilege.schema == "app"
+    assert privilege.routine_argument_types == ("varchar", "integer")
+    assert emit_privilege(privilege, Dialect.POSTGRES) == (
+        "REVOKE EXECUTE ON FUNCTION app.elmos_expire_artifacts(varchar, integer) FROM PUBLIC"
+    )
+
+
+def test_routine_privilege_refuses_signature_erasure_on_other_targets() -> None:
+    privilege = parse_privilege(
+        "REVOKE ALL ON FUNCTION elmos_expire_artifacts(varchar, integer) FROM PUBLIC",
+        Dialect.POSTGRES,
+    )
+    with pytest.raises(DialectError) as exc:
+        emit_privilege(privilege, Dialect.MYSQL)
+    assert exc.value.code == "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED"
 
 
 def test_view_is_translated_as_a_typed_query_not_a_text_replacement() -> None:

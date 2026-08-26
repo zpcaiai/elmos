@@ -162,9 +162,10 @@ def _validate_mysql(sql: str, dsn_json: str) -> tuple[str, tuple[str, ...]]:
     single DSN string convention as portable as libpq's), e.g.
     `{"host": "127.0.0.1", "port": 3306, "user": "root", "password": ""}`."""
     try:
+        import importlib
         import json
 
-        import pymysql  # type: ignore[import-untyped]
+        pymysql = importlib.import_module("pymysql")
     except ImportError:
         return "FAILED", ("PyMySQL is not installed; install the [execution] extra to run real MySQL validation",)
     try:

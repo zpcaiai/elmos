@@ -26,6 +26,7 @@ def _translate_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPa
             "TABLE",
             "INDEX",
             "INSERT",
+            "UPDATE",
             "ALTER",
             "DROP",
             "SCHEMA",

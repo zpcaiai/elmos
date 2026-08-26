@@ -150,3 +150,20 @@ def test_recovery_does_not_silently_upgrade_anything_to_in_subset(
     assert report["totals"]["inSubset"] == 1
     assert report["totals"]["outOfSubset"] == 2
     assert report["totals"]["scanErrors"] == 0
+
+
+def test_scan_reparses_an_opaque_multi_add_alter_from_the_raw_unit(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "schema.sql").write_text(
+        "ALTER TABLE mainframe_business_rules "
+        "ADD COLUMN confidence NUMERIC(5,4), "
+        "ADD COLUMN authority VARCHAR(32) NOT NULL DEFAULT 'CANDIDATE', "
+        "ADD CONSTRAINT mainframe_rule_authority CHECK "
+        "(authority IN ('CANDIDATE','BUSINESS_APPROVED','REJECTED'));\n",
+        encoding="utf-8",
+    )
+    report = report_to_dict(scan_repository(tmp_path, Dialect.POSTGRES, include_all_findings=True))
+    assert report["totals"]["inSubset"] == 1
+    assert report["totals"]["scanErrors"] == 0
+    assert report["findings"][0]["statement_kind"] == "Alter"

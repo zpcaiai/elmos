@@ -123,7 +123,7 @@ def test_scan_profile_names_all_active_sql_profiles(tmp_path: Path) -> None:
     assert report.profile == (
         "certified-ddl-v1 + certified-alter-v1 + certified-drop-v1 + certified-schema-v1 "
         "+ certified-routine-v1 + certified-view-v1 + certified-comment-v1 + certified-privilege-v1 "
-        "+ certified-rls-v1"
+        "+ certified-dml-v1 + certified-rls-v1"
     )
 
 
