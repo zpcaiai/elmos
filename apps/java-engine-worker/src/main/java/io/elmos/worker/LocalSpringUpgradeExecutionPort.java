@@ -1421,6 +1421,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         model.put("exact_tuple", route.tuple(
                 detectedSourceVersion, SpringRouteCatalog.normalizeJava(fingerprint.javaVersion())));
         model.put("capabilities", SpringCapabilityFingerprint.fcmCapabilities(fingerprint));
+        model.put("language_features", SpringFeatureCatalog.render(fingerprint.features()));
         model.put("unknowns", fingerprint.unknowns());
         model.put("ordering_and_defaults", Map.of(
                 "security_filter_order", "preserve-and-verify",

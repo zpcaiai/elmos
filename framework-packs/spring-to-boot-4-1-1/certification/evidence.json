@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-1",
+  "execution_status": "NOT_RUN",
+  "source_build": "NOT_RUN",
+  "target_build": "NOT_RUN",
+  "target_startup": "NOT_RUN",
+  "development_contracts": "NOT_RUN",
+  "independent_holdout": "NOT_RUN",
+  "representative_repository": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "required_before_promotion": [
+    "real-source-build",
+    "real-target-build",
+    "target-startup",
+    "component-contracts",
+    "independent-holdout",
+    "representative-repository",
+    "independent-verification"
+  ]
+}

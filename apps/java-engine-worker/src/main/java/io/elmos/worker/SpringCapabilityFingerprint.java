@@ -77,13 +77,24 @@ final class SpringCapabilityFingerprint {
             List<String> activeCapabilities,
             List<String> unknowns,
             Map<String, List<String>> sourceTraces,
-            List<CapabilityFact> facts
+            List<CapabilityFact> facts,
+            List<SpringUpgradeModels.FeatureObservation> features
     ) {
         Analysis {
             activeCapabilities = List.copyOf(activeCapabilities);
             unknowns = List.copyOf(unknowns);
             sourceTraces = Map.copyOf(sourceTraces);
             facts = List.copyOf(facts);
+            features = features == null ? List.of() : List.copyOf(features);
+        }
+
+        Analysis(
+                List<String> activeCapabilities,
+                List<String> unknowns,
+                Map<String, List<String>> sourceTraces,
+                List<CapabilityFact> facts
+        ) {
+            this(activeCapabilities, unknowns, sourceTraces, facts, List.of());
         }
     }
 
@@ -345,6 +356,7 @@ final class SpringCapabilityFingerprint {
         String safeBuildName = buildModelName == null || buildModelName.isBlank()
                 ? "build-model" : buildModelName;
         Map<String, MutableFact> facts = new TreeMap<>();
+        List<SpringUpgradeModels.FeatureObservation> features = new ArrayList<>();
         for (Rule rule : RULES) facts.put(rule.id(), new MutableFact(rule));
 
         for (Rule rule : RULES) {
@@ -368,6 +380,7 @@ final class SpringCapabilityFingerprint {
             String relative = normalizedRelative(root, file);
             List<String> fileConditions = conditions(file, relative, content);
             EvidenceState baseState = evidenceState(relative, fileConditions);
+            features.addAll(SpringFeatureCatalog.observe(file, relative, content, baseState, fileConditions));
             for (Rule rule : RULES) {
                 for (SourcePattern sourcePattern : rule.sourcePatterns()) {
                     Matcher matcher = sourcePattern.expression().matcher(content);
@@ -441,7 +454,8 @@ final class SpringCapabilityFingerprint {
         if (containsTrace(traces, "transactions", "multi-resource transaction manager")) {
             unknowns.add("multi-resource-transaction-semantics-require-provider-contract");
         }
-        return new Analysis(active, unknowns.stream().toList(), traces, immutableFacts);
+        return new Analysis(active, unknowns.stream().toList(), traces, immutableFacts,
+                SpringFeatureCatalog.merge(List.of(), features));
     }
 
     static Fingerprint enrich(Fingerprint base, Analysis analysis) {
@@ -458,6 +472,8 @@ final class SpringCapabilityFingerprint {
             merged.addAll(values);
             traces.put(id, merged.stream().distinct().sorted().limit(MAX_TRACES_PER_CAPABILITY).toList());
         });
+        List<SpringUpgradeModels.FeatureObservation> features = SpringFeatureCatalog.merge(
+                base.features(), analysis.features());
         return new Fingerprint(
                 base.springBootVersion(),
                 base.javaVersion(),
@@ -467,7 +483,8 @@ final class SpringCapabilityFingerprint {
                 unknowns.stream().toList(),
                 traces,
                 base.sourceFrameworkFamily(),
-                base.sourceFrameworkVersion());
+                base.sourceFrameworkVersion(),
+                features);
     }
 
     static List<Map<String, Object>> fcmCapabilities(Fingerprint fingerprint) {

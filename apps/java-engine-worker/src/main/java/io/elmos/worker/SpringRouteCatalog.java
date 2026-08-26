@@ -35,6 +35,8 @@ final class SpringRouteCatalog {
     static final String TARGET_BOOT_3_2 = "3.2.12";
     static final String TARGET_BOOT_3_5_16 = "3.5.16";
     static final String TARGET_BOOT_4_1 = "4.1.0";
+    /** Latest stable Spring Boot line at the time this catalog was updated. */
+    static final String TARGET_BOOT_4_1_1 = "4.1.1";
     static final String TARGET_JAVA_17 = "17";
     static final String REWRITE_SPRING = "6.35.0";
     static final String REWRITE_MAVEN_PLUGIN = "6.44.0";
@@ -573,6 +575,160 @@ final class SpringRouteCatalog {
                             + "resource lifecycle, transactions and provider behavior require FCM. "
                             + "A generic source runtime/target emitter is not inferred.",
                     SourceFamily.SPRING_FRAMEWORK),
+            new SpringRoute(
+                    "boot-1.5-maven-to-boot-4.1.1-java-21",
+                    "spring-to-boot-4-1-1",
+                    "Spring Boot 1.5.x / Java 8 / Maven → Spring Boot 4.1.1 / Java 21",
+                    "1.5.0", "2.0.0", Set.of("8"), MAVEN_BUILD_TOOL,
+                    TARGET_BOOT_4_1_1, TARGET_JAVA,
+                    "/rewrite/spring-to-boot-4.1.1.yml",
+                    "io.elmos.openrewrite.SpringBoot1_5ToBoot4_1_1Java21",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Ordered Boot 2.0, 2.7, 3.5 and 4.0 modernization followed by an exact "
+                            + "Boot 4.1.1 / Java 21 pin. Source, target, provider and startup "
+                            + "evidence remain NOT_RUN.",
+                    SourceFamily.SPRING_BOOT),
+            new SpringRoute(
+                    "boot-2.0-2.6-maven-to-boot-4.1.1-java-21",
+                    "spring-to-boot-4-1-1",
+                    "Spring Boot 2.0–2.6 / Java 8, 11, 17 / Maven → Spring Boot 4.1.1 / Java 21",
+                    "2.0.0", "2.7.0", Set.of("8", "11", "17"), MAVEN_BUILD_TOOL,
+                    TARGET_BOOT_4_1_1, TARGET_JAVA,
+                    "/rewrite/spring-to-boot-4.1.1.yml",
+                    "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot4_1_1Java21",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Ordered Boot 2.7, 3.5 and 4.0 modernization followed by the exact "
+                            + "Boot 4.1.1 target; complex capability behavior requires FCM evidence.",
+                    SourceFamily.SPRING_BOOT),
+            new SpringRoute(
+                    "boot-2.7-maven-to-boot-4.1.1-java-21",
+                    "spring-to-boot-4-1-1",
+                    "Spring Boot 2.7.x / Java 8, 11, 17 / Maven → Spring Boot 4.1.1 / Java 21",
+                    "2.7.0", "3.0.0", Set.of("8", "11", "17"), MAVEN_BUILD_TOOL,
+                    TARGET_BOOT_4_1_1, TARGET_JAVA,
+                    "/rewrite/spring-to-boot-4.1.1.yml",
+                    "io.elmos.openrewrite.SpringBoot2_7ToBoot4_1_1Java21",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Ordered Boot 3.5 and 4.0 modernization to Boot 4.1.1 / Java 21. "
+                            + "Security, persistence, messaging and lifecycle parity are explicit obligations.",
+                    SourceFamily.SPRING_BOOT),
+            new SpringRoute(
+                    "boot-3.0-3.4-maven-to-boot-4.1.1-java-21",
+                    "spring-to-boot-4-1-1",
+                    "Spring Boot 3.0–3.4 / Java 17, 21 / Maven → Spring Boot 4.1.1 / Java 21",
+                    "3.0.0", "3.5.0", Set.of("17", "21"), MAVEN_BUILD_TOOL,
+                    TARGET_BOOT_4_1_1, TARGET_JAVA,
+                    "/rewrite/spring-to-boot-4.1.1.yml",
+                    "io.elmos.openrewrite.SpringBoot3_0To3_4ToBoot4_1_1Java21",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Ordered Boot 3.5 and 4.0 modernization to Boot 4.1.1 / Java 21; "
+                            + "provider-specific defaults cannot be inferred from syntax.",
+                    SourceFamily.SPRING_BOOT),
+            new SpringRoute(
+                    "boot-3.5-maven-to-boot-4.1.1-java-21",
+                    "spring-to-boot-4-1-1",
+                    "Spring Boot 3.5.x / Java 17, 21 / Maven → Spring Boot 4.1.1 / Java 21",
+                    "3.5.0", "4.0.0", Set.of("17", "21"), MAVEN_BUILD_TOOL,
+                    TARGET_BOOT_4_1_1, TARGET_JAVA,
+                    "/rewrite/spring-to-boot-4.1.1.yml",
+                    "io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_1Java21",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Boot 4.0 semantic upgrade plus exact 4.1.1 dependency pin. "
+                            + "The 4.1.1 feature inventory is exposed through the FCM and remains unverified.",
+                    SourceFamily.SPRING_BOOT),
+            new SpringRoute(
+                    "boot-4.0-maven-to-boot-4.1.1-java-21",
+                    "spring-to-boot-4-1-1",
+                    "Spring Boot 4.0–4.1.0 / Java 17, 21 / Maven → Spring Boot 4.1.1 / Java 21",
+                    "4.0.0", "4.1.1", Set.of("17", "21"), MAVEN_BUILD_TOOL,
+                    TARGET_BOOT_4_1_1, TARGET_JAVA,
+                    "/rewrite/spring-to-boot-4.1.1.yml",
+                    "io.elmos.openrewrite.SpringBoot4_0ToBoot4_1_1Java21",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Exact maintenance upgrade from Boot 4.0.x to the latest stable Boot 4.1.1; "
+                            + "4.1.1 source/target runtime evidence is NOT_RUN.",
+                    SourceFamily.SPRING_BOOT),
+            new SpringRoute(
+                    "boot-1.5-gradle-to-boot-4.1.1-java-21",
+                    "spring-to-boot-4-1-1",
+                    "Spring Boot 1.5.x / Java 8 / Gradle → Spring Boot 4.1.1 / Java 21",
+                    "1.5.0", "2.0.0", Set.of("8"), GRADLE_BUILD_TOOL,
+                    TARGET_BOOT_4_1_1, TARGET_JAVA,
+                    "/rewrite/spring-to-boot-4.1.1.yml",
+                    "io.elmos.openrewrite.SpringBoot1_5GradleToBoot4_1_1Java21",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Ordered Gradle modernization to exact Boot 4.1.1 / Java 21; "
+                            + "the real Gradle source and target toolchains remain NOT_RUN.",
+                    SourceFamily.SPRING_BOOT),
+            new SpringRoute(
+                    "boot-2.x-gradle-to-boot-4.1.1-java-21",
+                    "spring-to-boot-4-1-1",
+                    "Spring Boot 2.x / Java 8, 11, 17 / Gradle → Spring Boot 4.1.1 / Java 21",
+                    "2.0.0", "3.0.0", Set.of("8", "11", "17"), GRADLE_BUILD_TOOL,
+                    TARGET_BOOT_4_1_1, TARGET_JAVA,
+                    "/rewrite/spring-to-boot-4.1.1.yml",
+                    "io.elmos.openrewrite.SpringBoot2xGradleToBoot4_1_1Java21",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Ordered Gradle modernization to exact Boot 4.1.1; provider and runtime parity remain NOT_RUN.",
+                    SourceFamily.SPRING_BOOT),
+            new SpringRoute(
+                    "boot-3.x-gradle-to-boot-4.1.1-java-21",
+                    "spring-to-boot-4-1-1",
+                    "Spring Boot 3.x / Java 17, 21 / Gradle → Spring Boot 4.1.1 / Java 21",
+                    "3.0.0", "4.0.0", Set.of("17", "21"), GRADLE_BUILD_TOOL,
+                    TARGET_BOOT_4_1_1, TARGET_JAVA,
+                    "/rewrite/spring-to-boot-4.1.1.yml",
+                    "io.elmos.openrewrite.SpringBoot3xGradleToBoot4_1_1Java21",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Ordered Gradle modernization to exact Boot 4.1.1; source build and startup remain NOT_RUN.",
+                    SourceFamily.SPRING_BOOT),
+            new SpringRoute(
+                    "boot-4.0-gradle-to-boot-4.1.1-java-21",
+                    "spring-to-boot-4-1-1",
+                    "Spring Boot 4.0–4.1.0 / Java 17, 21 / Gradle → Spring Boot 4.1.1 / Java 21",
+                    "4.0.0", "4.1.1", Set.of("17", "21"), GRADLE_BUILD_TOOL,
+                    TARGET_BOOT_4_1_1, TARGET_JAVA,
+                    "/rewrite/spring-to-boot-4.1.1.yml",
+                    "io.elmos.openrewrite.SpringBoot4_0GradleToBoot4_1_1Java21",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Exact Gradle maintenance upgrade to Boot 4.1.1; source and target Gradle evidence remain NOT_RUN.",
+                    SourceFamily.SPRING_BOOT),
+            new SpringRoute(
+                    "spring-mvc-3.2-7.0-maven-to-boot-4.1.1-java-21",
+                    "spring-to-boot-4-1-1",
+                    "Spring Framework / Spring MVC 3.2–7.0.8 / Java 8, 11, 17, 21 / Maven → Spring Boot 4.1.1 / Java 21",
+                    "3.2.0", "7.0.9", Set.of("8", "11", "17", "21"), MAVEN_BUILD_TOOL,
+                    TARGET_BOOT_4_1_1, TARGET_JAVA,
+                    "/rewrite/spring-framework-mvc-to-boot-4.1.1.yml",
+                    "io.elmos.openrewrite.SpringFrameworkMvcToSpringBoot4_1_1Java21",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Deterministic Jakarta/Framework 7 preparation and Boot 4.1.1 dependency pin; "
+                            + "XML, servlet, view, security, data and transaction contracts require FCM emitters.",
+                    SourceFamily.SPRING_MVC),
+            new SpringRoute(
+                    "spring-framework-3.2-7.0-maven-to-boot-4.1.1-java-21",
+                    "spring-to-boot-4-1-1",
+                    "Spring Framework Core / Context 3.2–7.0.8 / Java 8, 11, 17, 21 / Maven → Spring Boot 4.1.1 / Java 21",
+                    "3.2.0", "7.0.9", Set.of("8", "11", "17", "21"), MAVEN_BUILD_TOOL,
+                    TARGET_BOOT_4_1_1, TARGET_JAVA,
+                    "/rewrite/spring-framework-mvc-to-boot-4.1.1.yml",
+                    "io.elmos.openrewrite.SpringFrameworkCoreToSpringBoot4_1_1Java21",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Deterministic Core/Context preparation and Boot 4.1.1 pin; bean graph, "
+                            + "context ownership, lifecycle and provider semantics require FCM evidence.",
+                    SourceFamily.SPRING_FRAMEWORK)
     );
 
     static List<SpringRoute> routes() {

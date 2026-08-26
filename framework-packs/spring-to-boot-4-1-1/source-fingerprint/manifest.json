@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-1",
+  "fingerprint_kind": "source-framework-fingerprint",
+  "required_fields": ["source_family", "exact_framework_version", "source_java", "build_tool", "dependency_authority", "source_languages"],
+  "allowed_source_families": ["spring", "spring-boot", "spring-mvc", "spring-framework"],
+  "allowed_source_languages": ["java", "kotlin", "groovy", "configuration"],
+  "unknown_policy": "fail-closed",
+  "version_policy": "resolve-one-exact-version-before-route-selection",
+  "route_selection_authority": "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringRouteCatalog.java",
+  "feature_authority": "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringFeatureCatalog.java"
+}
