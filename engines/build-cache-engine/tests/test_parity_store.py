@@ -91,6 +91,64 @@ def outcome(event_id: str = "event-1", request_id: str = "request-1") -> dict[st
     }
 
 
+def causal_graph(request_id: str = "request-graph") -> dict[str, object]:
+    events: list[dict[str, object]] = [
+        {
+            "event_id": "pending",
+            "request_id": request_id,
+            "binding_digest": DIGEST_B,
+            "phase": "REQUEST",
+            "status": "SUCCESS",
+            "reason_code": "BOUND_SCOPE_ACCEPTED",
+            "layer": None,
+            "material_digest": None,
+            "receipt_digest": None,
+        },
+        {
+            "event_id": "pending",
+            "request_id": request_id,
+            "binding_digest": DIGEST_B,
+            "phase": "FALLBACK",
+            "status": "SUCCESS",
+            "reason_code": "EXECUTION_REQUIRED",
+            "layer": None,
+            "material_digest": None,
+            "receipt_digest": None,
+        },
+    ]
+    for ordinal, event in enumerate(events):
+        event["event_id"] = digest_of(
+            {
+                "request_id": request_id,
+                "binding_digest": event["binding_digest"],
+                "ordinal": ordinal,
+                "phase": event["phase"],
+                "status": event["status"],
+                "reason_code": event["reason_code"],
+                "layer": event["layer"],
+                "material_digest": event["material_digest"],
+                "receipt_digest": event["receipt_digest"],
+            }
+        )
+    edges = [
+        {
+            "source_event_id": events[0]["event_id"],
+            "target_event_id": events[1]["event_id"],
+            "relation": "REQUESTED",
+        }
+    ]
+    body: dict[str, object] = {
+        "schema_version": "1.2.0",
+        "kind": "elmos.cache-causal-graph/v1.2",
+        "tenant_id": TENANT,
+        "project_id": PROJECT,
+        "request_id": request_id,
+        "events": events,
+        "edges": edges,
+    }
+    return {**body, "graph_digest": digest_of(body)}
+
+
 def affinity_decision() -> dict[str, object]:
     return {
         "schema_version": "1.2.0",
@@ -502,6 +560,92 @@ def test_outcome_list_rejects_document_to_index_binding_tamper(
 
     with pytest.raises(CorruptObject):
         repository.list_cache_outcomes(TENANT, PROJECT, "request-1")
+
+
+def test_causal_graph_is_durable_idempotent_and_digest_bound(
+    repository: ParityMetadataRepository,
+    store: MetadataStore,
+) -> None:
+    document = causal_graph()
+    events = document["events"]
+    edges = document["edges"]
+    assert isinstance(events, list)
+    assert isinstance(edges, list)
+    assert repository.put_cache_causal_graph(
+        TENANT, PROJECT, "request-graph", events, edges
+    ) == document
+    assert repository.put_cache_causal_graph(
+        TENANT, PROJECT, "request-graph", events, edges
+    ) == document
+    assert repository.get_cache_causal_graph(TENANT, PROJECT, "request-graph") == document
+
+    tampered = dict(document)
+    tampered["edges"] = []
+    payload = canonical_json_text(tampered)
+    event_id = "causal_" + digest_of(
+        {"tenant_id": TENANT, "project_id": PROJECT, "request_id": "request-graph"}
+    ).removeprefix("sha256:")
+    with store.transaction():
+        store.execute(
+            "UPDATE cache_events SET payload=?, payload_digest=? WHERE event_id=?",
+            (payload, digest_of(tampered), event_id),
+        )
+    with pytest.raises(ContractViolation):
+        repository.get_cache_causal_graph(TENANT, PROJECT, "request-graph")
+
+
+def test_causal_graph_rejects_rebound_event_ids_and_request_drift(
+    repository: ParityMetadataRepository,
+) -> None:
+    document = causal_graph("request-graph-binding")
+    events = list(document["events"])
+    edges = list(document["edges"])
+    assert isinstance(events[0], dict)
+    events[0] = {**events[0], "reason_code": "DIFFERENT_REASON"}
+    with pytest.raises(ContractViolation, match="event ID"):
+        repository.put_cache_causal_graph(
+            TENANT, PROJECT, "request-graph-binding", events, edges
+        )
+
+
+def test_causal_graph_is_unique_per_request(
+    repository: ParityMetadataRepository,
+) -> None:
+    first = causal_graph("request-graph-unique")
+    repository.put_cache_causal_graph(
+        TENANT, PROJECT, "request-graph-unique", first["events"], first["edges"]
+    )
+    changed = causal_graph("request-graph-unique")
+    changed_events = list(changed["events"])
+    assert isinstance(changed_events[1], dict)
+    changed_events[1] = {**changed_events[1], "status": "MISS"}
+    for ordinal, event in enumerate(changed_events):
+        assert isinstance(event, dict)
+        event["event_id"] = digest_of(
+            {
+                "request_id": "request-graph-unique",
+                "binding_digest": event["binding_digest"],
+                "ordinal": ordinal,
+                "phase": event["phase"],
+                "status": event["status"],
+                "reason_code": event["reason_code"],
+                "layer": event["layer"],
+                "material_digest": event["material_digest"],
+                "receipt_digest": event["receipt_digest"],
+            }
+        )
+    changed_edges = [
+        {
+            **edge,
+            "source_event_id": changed_events[0]["event_id"],
+            "target_event_id": changed_events[1]["event_id"],
+        }
+        for edge in changed["edges"]
+    ]
+    with pytest.raises(IdempotencyConflict):
+        repository.put_cache_causal_graph(
+            TENANT, PROJECT, "request-graph-unique", changed_events, changed_edges
+        )
 
 
 def test_affinity_and_both_parity_report_contracts_are_durable(

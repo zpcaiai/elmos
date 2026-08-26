@@ -64,9 +64,16 @@ from .parity_composition_wiring import (
     ServingCompositionWiring,
 )
 from .parity_evidence import CasParityEvidenceVerifier, ParityEvidenceTrustVerifier
+from .parity_jobs import (
+    ParityHarnessJobRequest,
+    ParityJobService,
+    SloReconcileJobRequest,
+)
 from .parity_runtime import SERVING_LAYERS, ServingAuthorizer
 from .prompt_cache import PromptCacheController
 from .publish import TreePublisher
+from .slo_autotune import RollbackReason
+from .slo_service import CacheSloControlService, CacheSloRuntimeRegistry
 from .staging import Workspace
 
 SCHEMA_VERSION = "1.2.0"
@@ -176,6 +183,24 @@ BODY_PROJECT_SCOPED_HANDLERS = frozenset(
     }
 )
 
+SLO_HANDLERS = frozenset(
+    {
+        "get_cache_slo_status",
+        "propose_cache_slo_policy",
+        "install_cache_slo_proposal",
+        "advance_cache_slo_rollout",
+        "reconcile_cache_slo_rollout",
+        "rollback_cache_slo_rollout",
+    }
+)
+
+PARITY_JOB_HANDLERS = frozenset(
+    {
+        "run_local_parity_harness_job",
+        "reconcile_local_slo_job",
+    }
+)
+
 
 class CacheControlPlane:
     """Routing, idempotency, pagination and error mapping."""
@@ -199,6 +224,8 @@ class CacheControlPlane:
         parity_evidence_trust_verifier: ParityEvidenceTrustVerifier | None = None,
         prompt_cache_controller: PromptCacheController | None = None,
         serving_composition: ServingCompositionWiring | None = None,
+        slo_runtime_registry: CacheSloRuntimeRegistry | None = None,
+        parity_job_service: ParityJobService | None = None,
     ) -> None:
         self.store = store
         self.cas = cas
@@ -222,6 +249,8 @@ class CacheControlPlane:
         # composed path is built only when the boundary, the rollback latch and
         # the outcome repository are all present.
         self.serving_composition = serving_composition
+        self.slo_runtime_registry = slo_runtime_registry
+        self.parity_job_service = parity_job_service
         resolved_parity_repository = parity_repository
         try:
             from .parity_store import ParityMetadataRepository
@@ -315,6 +344,46 @@ class CacheControlPlane:
         self.route(
             "GET", "/cache/parity/reports/{reportId}", self.get_cache_parity_report
         )
+        self.route(
+            "GET",
+            "/cache/slo/projects/{projectId}/controllers/{controllerId}",
+            self.get_cache_slo_status,
+        )
+        self.route(
+            "POST",
+            "/cache/slo/projects/{projectId}/controllers/{controllerId}/proposals",
+            self.propose_cache_slo_policy,
+        )
+        self.route(
+            "POST",
+            "/cache/slo/projects/{projectId}/controllers/{controllerId}/install",
+            self.install_cache_slo_proposal,
+        )
+        self.route(
+            "POST",
+            "/cache/slo/projects/{projectId}/controllers/{controllerId}/advance",
+            self.advance_cache_slo_rollout,
+        )
+        self.route(
+            "POST",
+            "/cache/slo/projects/{projectId}/controllers/{controllerId}/reconcile",
+            self.reconcile_cache_slo_rollout,
+        )
+        self.route(
+            "POST",
+            "/cache/slo/projects/{projectId}/controllers/{controllerId}/rollback",
+            self.rollback_cache_slo_rollout,
+        )
+        self.route(
+            "POST",
+            "/cache/parity/projects/{projectId}/jobs/{jobId}/harness",
+            self.run_local_parity_harness_job,
+        )
+        self.route(
+            "POST",
+            "/cache/slo/projects/{projectId}/controllers/{controllerId}/jobs/{jobId}/reconcile",
+            self.reconcile_local_slo_job,
+        )
         self.route("GET", "/status", self.status)
 
     def handle(self, request: Request) -> Response:
@@ -356,7 +425,22 @@ class CacheControlPlane:
                         self._idempotency_operation(request),
                         request_fingerprint,
                     )
-            except (IdempotencyConflict, IdempotencyOutcomeUnknown) as exc:
+            except IdempotencyOutcomeUnknown as exc:
+                reconciled = (
+                    self._reconcile_pending_parity_job(
+                        handler,
+                        request,
+                        params,
+                        idempotency_key,
+                        request_fingerprint,
+                    )
+                    if request_fingerprint is not None
+                    else None
+                )
+                if reconciled is not None:
+                    return reconciled
+                return _error(exc.http_status, exc.code, exc.message, exc.details)
+            except IdempotencyConflict as exc:
                 return _error(exc.http_status, exc.code, exc.message, exc.details)
             if claim.replayed:
                 try:
@@ -371,6 +455,17 @@ class CacheControlPlane:
         except ElmosCacheError as exc:
             self.store.rollback()
             response = _error(exc.http_status, exc.code, exc.message, exc.details)
+        except (KeyError, TypeError, ValueError) as exc:
+            self.store.rollback()
+            if handler.__name__ in SLO_HANDLERS | PARITY_JOB_HANDLERS:
+                response = _error(
+                    422,
+                    "CONTRACT_VIOLATION",
+                    "request violates the closed cache contract",
+                    {"failure": type(exc).__name__},
+                )
+            else:
+                return _error(500, "INTERNAL", type(exc).__name__)
         except Exception as exc:  # noqa: BLE001 - never leak a traceback
             self.store.rollback()
             return _error(500, "INTERNAL", type(exc).__name__)
@@ -409,6 +504,80 @@ class CacheControlPlane:
 
     def _idempotency_operation(self, request: Request) -> str:
         return f"{request.method.upper()} {request.path}"
+
+    def _reconcile_pending_parity_job(
+        self,
+        handler: Handler,
+        request: Request,
+        params: Mapping[str, str],
+        idempotency_key: str,
+        request_fingerprint: Mapping[str, Any],
+    ) -> Response | None:
+        """Recover an outer HTTP claim from a verified inner job receipt.
+
+        A process can commit the job's durable receipt and crash before the
+        transport-level idempotency record is completed.  The inner job claim
+        is the authoritative local receipt, so replaying the job service is a
+        read-only reconciliation; a still-pending inner claim remains
+        ``OUTCOME_UNKNOWN`` and is never guessed successful.
+        """
+
+        service = self.parity_job_service
+        principal = request.authenticated_principal_digest
+        if service is None or principal is None:
+            return None
+        try:
+            payload = self._validate_parity_job_body(handler.__name__, request)
+            if handler.__name__ == "run_local_parity_harness_job":
+                result = service.run_harness_once(
+                    ParityHarnessJobRequest(
+                        self.tenant_id,
+                        str(params["projectId"]),
+                        str(params["jobId"]),
+                        str(payload["runner_id"]),
+                        str(payload["report_id"]),
+                    ),
+                    authenticated_principal_digest=principal,
+                )
+            elif handler.__name__ == "reconcile_local_slo_job":
+                result = service.reconcile_slo_once(
+                    SloReconcileJobRequest(
+                        self.tenant_id,
+                        str(params["projectId"]),
+                        str(params["jobId"]),
+                        str(params["controllerId"]),
+                    ),
+                    authenticated_principal_digest=principal,
+                )
+            else:
+                return None
+        except IdempotencyOutcomeUnknown:
+            return None
+        except ElmosCacheError as exc:
+            return _error(exc.http_status, exc.code, exc.message, exc.details)
+        except Exception:
+            return None
+
+        response = Response(200, result.to_dict()).with_headers(
+            **{"X-Elmos-Api-Version": API_VERSION}
+        )
+        try:
+            with self.store.transaction():
+                completed = self.store.reconcile_idempotent(
+                    self.tenant_id,
+                    idempotency_key,
+                    self._idempotency_operation(request),
+                    dict(request_fingerprint),
+                    _idempotency_response(response),
+                    reconciler_identity="cache-parity-job-reconciler",
+                )
+            return _response_from_idempotency(completed).with_headers(
+                **{"Idempotent-Replay": "true"}
+            )
+        except NotFound:
+            return None
+        except ElmosCacheError as exc:
+            return _error(exc.http_status, exc.code, exc.message, exc.details)
 
     def _idempotency_before_complete(self, request: Request, response: Response) -> None:
         """Fault-injection seam for a crash after the handler side effect."""
@@ -498,6 +667,21 @@ class CacheControlPlane:
                     "project-scoped cache operations require project_id"
                 )
             self._owned_project(project_id)
+        if handler.__name__ in SLO_HANDLERS:
+            project_id = params.get("projectId")
+            if not isinstance(project_id, str) or not project_id:
+                raise ContractViolation("SLO operations require a projectId path parameter")
+            self._owned_project(project_id)
+            if handler.__name__ != "get_cache_slo_status":
+                self._validate_slo_body(handler.__name__, request)
+        if handler.__name__ in PARITY_JOB_HANDLERS:
+            project_id = params.get("projectId")
+            if not isinstance(project_id, str) or not project_id:
+                raise ContractViolation("parity jobs require a projectId path parameter")
+            self._owned_project(project_id)
+            if request.authenticated_principal_digest is None:
+                raise PermissionDenied("parity jobs require an authenticated principal")
+            self._validate_parity_job_body(handler.__name__, request)
         if handler.__name__ == "seal_staged_file":
             payload = request.body if isinstance(request.body, dict) else {}
             content = payload.get("content_digest")
@@ -915,6 +1099,7 @@ class CacheControlPlane:
         *,
         work: Mapping[str, Any],
         probes: Mapping[CompositionLayer, LayerProbeFn],
+        requested_project_id: str | None = None,
     ) -> CompositionRunner | None:
         """Build one composed request scope, or ``None`` when not wired.
 
@@ -939,6 +1124,11 @@ class CacheControlPlane:
         # The project scope is the signed receipt's, never the request's: a
         # request cannot nominate the scope it is authorized against.
         project_id = wiring.serving_boundary.project_id
+        if requested_project_id is not None and requested_project_id != project_id:
+            raise PermissionDenied(
+                "cache parity composition project does not match the signed boundary",
+                project_id=requested_project_id,
+            )
         return CompositionRunner(
             wiring,
             tenant_id=self.tenant_id,
@@ -983,6 +1173,7 @@ class CacheControlPlane:
             # which latches ``SERVING_PATH_SKIPPED_EXECUTION`` and raises. That
             # guard is the load-bearing part, not this empty mapping.
             probes={},
+            requested_project_id=project_id,
         )
         if runner is None:
             return self._direct_serving_call(operation)
@@ -1141,6 +1332,168 @@ class CacheControlPlane:
         return self._parity_response(
             self.parity_api.get_parity_report(params["reportId"], dict(request.query))
         )
+
+    # -- cache SLO control plane -----------------------------------------
+    def _slo_service(self, request: Request, params: Mapping[str, str]) -> Any:
+        registry = self.slo_runtime_registry
+        if registry is None:
+            raise RemoteUnavailable(
+                "cache SLO runtime registry is not wired",
+                state="NOT_WIRED",
+            )
+        principal = request.authenticated_principal_digest
+        if principal is None:
+            raise PermissionDenied("cache SLO operations require an authenticated principal")
+        service = registry.service(
+            self.tenant_id,
+            params["projectId"],
+            params["controllerId"],
+            principal,
+        )
+        if not isinstance(service, CacheSloControlService):
+            raise ContractViolation("cache SLO runtime registry returned an invalid service")
+        if (
+            service.tenant_id != self.tenant_id
+            or service.project_id != params["projectId"]
+            or service.controller_id != params["controllerId"]
+            or service.principal_digest != principal
+        ):
+            raise ContractViolation("cache SLO runtime registry returned a scope-drifting service")
+        return service
+
+    @staticmethod
+    def _strict_json_object(request: Request) -> dict[str, Any]:
+        body = request.body
+        if isinstance(body, dict):
+            return body
+        if isinstance(body, bytes):
+            try:
+                decoded = json.loads(body.decode("utf-8"))
+            except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+                raise ContractViolation("request body must be a JSON object") from exc
+            if isinstance(decoded, dict):
+                return decoded
+        raise ContractViolation("request body must be a JSON object")
+
+    def _validate_slo_body(self, handler_name: str, request: Request) -> dict[str, Any]:
+        payload = self._strict_json_object(request)
+        if handler_name in {
+            "propose_cache_slo_policy",
+            "advance_cache_slo_rollout",
+            "reconcile_cache_slo_rollout",
+        }:
+            if payload:
+                raise ContractViolation("this SLO operation accepts an empty JSON object")
+        elif handler_name == "install_cache_slo_proposal":
+            if set(payload) != {"proposal_digest"}:
+                raise ContractViolation("install requires exactly proposal_digest")
+            require_digest(str(payload["proposal_digest"]))
+        elif handler_name == "rollback_cache_slo_rollout":
+            if set(payload) != {"reason"}:
+                raise ContractViolation("rollback requires exactly reason")
+            try:
+                RollbackReason(str(payload["reason"]))
+            except ValueError as exc:
+                raise ContractViolation("rollback reason is outside the closed vocabulary") from exc
+        return payload
+
+    @staticmethod
+    def _slo_status_body(status: Mapping[str, Any]) -> dict[str, Any]:
+        body = dict(status)
+        state = body.get("state")
+        to_dict = getattr(state, "to_dict", None)
+        if callable(to_dict):
+            body["state"] = to_dict()
+        return body
+
+    def get_cache_slo_status(self, request: Request, params: dict[str, str]) -> Response:
+        service = self._slo_service(request, params)
+        return Response(200, self._slo_status_body(service.status()))
+
+    def propose_cache_slo_policy(self, request: Request, params: dict[str, str]) -> Response:
+        service = self._slo_service(request, params)
+        return Response(201, service.propose())
+
+    def install_cache_slo_proposal(self, request: Request, params: dict[str, str]) -> Response:
+        service = self._slo_service(request, params)
+        payload = self._validate_slo_body("install_cache_slo_proposal", request)
+        return Response(200, self._slo_status_body(service.install(str(payload["proposal_digest"]))))
+
+    def advance_cache_slo_rollout(self, request: Request, params: dict[str, str]) -> Response:
+        service = self._slo_service(request, params)
+        return Response(200, self._slo_status_body(service.advance()))
+
+    def reconcile_cache_slo_rollout(self, request: Request, params: dict[str, str]) -> Response:
+        service = self._slo_service(request, params)
+        return Response(200, self._slo_status_body(service.reconcile()))
+
+    def rollback_cache_slo_rollout(self, request: Request, params: dict[str, str]) -> Response:
+        service = self._slo_service(request, params)
+        payload = self._validate_slo_body("rollback_cache_slo_rollout", request)
+        return Response(
+            200,
+            self._slo_status_body(service.rollback(RollbackReason(str(payload["reason"])))),
+        )
+
+    @staticmethod
+    def _validate_parity_job_body(handler_name: str, request: Request) -> dict[str, Any]:
+        payload = CacheControlPlane._strict_json_object(request)
+        if handler_name == "run_local_parity_harness_job":
+            if set(payload) != {"runner_id", "report_id"}:
+                raise ContractViolation("harness job requires exactly runner_id and report_id")
+            for name in ("runner_id", "report_id"):
+                value = payload.get(name)
+                if not isinstance(value, str) or not _HTTP_TENANT_IDENTIFIER.fullmatch(value):
+                    raise ContractViolation(f"{name} must be a bounded identifier")
+        elif payload:
+            raise ContractViolation("SLO reconcile jobs accept an empty JSON object")
+        return payload
+
+    def _parity_job_service(self) -> ParityJobService:
+        service = self.parity_job_service
+        if service is None:
+            raise RemoteUnavailable(
+                "local parity job service is not wired",
+                state="NOT_WIRED",
+            )
+        return service
+
+    def run_local_parity_harness_job(
+        self, request: Request, params: dict[str, str]
+    ) -> Response:
+        payload = self._validate_parity_job_body("run_local_parity_harness_job", request)
+        principal = request.authenticated_principal_digest
+        if principal is None:
+            raise PermissionDenied("parity jobs require an authenticated principal")
+        result = self._parity_job_service().run_harness_once(
+            ParityHarnessJobRequest(
+                self.tenant_id,
+                params["projectId"],
+                params["jobId"],
+                str(payload["runner_id"]),
+                str(payload["report_id"]),
+            ),
+            authenticated_principal_digest=principal,
+        )
+        return Response(200, result.to_dict())
+
+    def reconcile_local_slo_job(
+        self, request: Request, params: dict[str, str]
+    ) -> Response:
+        self._validate_parity_job_body("reconcile_local_slo_job", request)
+        principal = request.authenticated_principal_digest
+        if principal is None:
+            raise PermissionDenied("parity jobs require an authenticated principal")
+        result = self._parity_job_service().reconcile_slo_once(
+            SloReconcileJobRequest(
+                self.tenant_id,
+                params["projectId"],
+                params["jobId"],
+                params["controllerId"],
+            ),
+            authenticated_principal_digest=principal,
+        )
+        return Response(200, result.to_dict())
 
     # -- status -----------------------------------------------------------
     def status(self, request: Request, params: dict[str, str]) -> Response:

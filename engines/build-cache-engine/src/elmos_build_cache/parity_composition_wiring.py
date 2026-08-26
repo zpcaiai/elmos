@@ -92,6 +92,15 @@ class CompositionOutcomeWriter(Protocol):
         document: Mapping[str, Any],
     ) -> dict[str, Any]: ...
 
+    def put_cache_causal_graph(
+        self,
+        tenant_id: str,
+        project_id: str,
+        request_id: str,
+        events: tuple[Mapping[str, Any], ...],
+        edges: tuple[Mapping[str, Any], ...],
+    ) -> dict[str, Any]: ...
+
 
 @dataclass(frozen=True)
 class LayerProbe:
@@ -409,7 +418,15 @@ class ParityCompositionOutcomeSink:
         events: tuple[CompositionOutcomeEvent, ...],
         edges: tuple[MissCausalEdge, ...],
     ) -> None:
-        del edges
+        # The packaged cache-outcome schema is intentionally closed and has no
+        # causal-edge field.  Write the canonical external outcome rows first;
+        # the graph is a derived claim.  If graph persistence fails after the
+        # outcome rows commit, explain remains safely OBSERVED_ONLY instead of
+        # exposing an orphan causal graph.  A writer without graph capability
+        # is rejected rather than silently dropping the diagnostic lineage.
+        persist_graph = getattr(self._writer, "put_cache_causal_graph", None)
+        if not callable(persist_graph):
+            raise ContractViolation("causal graph persistence is not wired")
         occurred_at = datetime.fromtimestamp(self._now(), tz=UTC).isoformat()
         for event in events:
             outcome, reason = _external_outcome(event)
@@ -436,6 +453,13 @@ class ParityCompositionOutcomeSink:
                 event.event_id,
                 document,
             )
+        persist_graph(
+            self._tenant_id,
+            self._project_id,
+            request.request_id,
+            tuple(event.to_dict() for event in events),
+            tuple(edge.to_dict() for edge in edges),
+        )
 
 
 @dataclass(frozen=True)

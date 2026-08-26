@@ -82,7 +82,7 @@ MAX_PROMPT_SEGMENTS = 256
 MAX_PROMPT_SEGMENT_BYTES = 1 * 1024 * 1024
 MAX_PROMPT_TOTAL_BYTES = 4 * 1024 * 1024
 
-_IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/+@-]{0,127}$")
+_IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/+@-]{0,255}$")
 _COHORT = re.compile(r"^[a-z][a-z0-9_-]{0,31}$")
 _SENSITIVE_MARKERS = (
     "api_key",
@@ -117,8 +117,25 @@ _ENVIRONMENT_QUERY_FIELDS = frozenset(
         "maximumRestoreRatio",
     }
 )
-
 _TEnum = TypeVar("_TEnum", bound=Enum)
+
+_CAUSAL_GRAPH_FIELDS = frozenset(
+    {"schema_version", "kind", "tenant_id", "project_id", "request_id", "events", "edges", "graph_digest"}
+)
+_CAUSAL_EVENT_FIELDS = frozenset(
+    {
+        "event_id",
+        "request_id",
+        "binding_digest",
+        "phase",
+        "status",
+        "reason_code",
+        "layer",
+        "material_digest",
+        "receipt_digest",
+    }
+)
+_CAUSAL_EDGE_FIELDS = frozenset({"source_event_id", "target_event_id", "relation"})
 
 
 class ParityRepository(Protocol):
@@ -157,6 +174,15 @@ class ParityRepository(Protocol):
         document: Mapping[str, Any],
     ) -> dict[str, Any]: ...
 
+    def put_cache_causal_graph(
+        self,
+        tenant_id: str,
+        project_id: str,
+        request_id: str,
+        events: Sequence[Mapping[str, Any]],
+        edges: Sequence[Mapping[str, Any]],
+    ) -> dict[str, Any]: ...
+
     def get_environment_snapshot(
         self, tenant_id: str, project_id: str, snapshot_key: str
     ) -> dict[str, Any] | None: ...
@@ -177,6 +203,10 @@ class ParityRepository(Protocol):
     def list_cache_outcomes(
         self, tenant_id: str, project_id: str, request_id: str
     ) -> tuple[dict[str, Any], ...]: ...
+
+    def get_cache_causal_graph(
+        self, tenant_id: str, project_id: str, request_id: str
+    ) -> dict[str, Any] | None: ...
 
     def put_parity_report(
         self,
@@ -1750,6 +1780,60 @@ class ParityApiService:
             edges.append(
                 {"from": normalized_request, "to": event_id, "relation": "OBSERVED_OUTCOME"}
             )
+        claim = "OBSERVED_ONLY"
+        graph_reader = getattr(self._repository(), "get_cache_causal_graph", None)
+        if callable(graph_reader):
+            graph = graph_reader(self.tenant_id, project_id, normalized_request)
+            if graph is not None:
+                if not isinstance(graph, Mapping):
+                    raise CorruptObject("stored cache causal graph is not an object")
+                if set(graph) != _CAUSAL_GRAPH_FIELDS or (
+                    graph.get("schema_version") != PARITY_API_SCHEMA_VERSION
+                    or graph.get("kind") != "elmos.cache-causal-graph/v1.2"
+                    or graph.get("tenant_id") != self.tenant_id
+                    or graph.get("project_id") != project_id
+                    or graph.get("request_id") != normalized_request
+                ):
+                    raise CorruptObject("stored cache causal graph scope is invalid")
+                raw_events = graph.get("events")
+                raw_edges = graph.get("edges")
+                if not isinstance(raw_events, list) or not isinstance(raw_edges, list):
+                    raise CorruptObject("stored cache causal graph has an invalid shape")
+                graph_nodes: list[dict[str, str]] = []
+                graph_event_ids: set[str] = set()
+                binding_digests: set[str] = set()
+                for raw_event in raw_events:
+                    if not isinstance(raw_event, Mapping) or set(raw_event) != _CAUSAL_EVENT_FIELDS:
+                        raise CorruptObject("stored cache causal graph event is not an object")
+                    if raw_event.get("request_id") != normalized_request:
+                        raise CorruptObject("stored cache causal graph event scope is invalid")
+                    event_id = _digest(raw_event.get("event_id"), "event_id")
+                    if event_id in graph_event_ids:
+                        raise CorruptObject("stored cache causal graph has duplicate events")
+                    graph_event_ids.add(event_id)
+                    binding_digests.add(_digest(raw_event.get("binding_digest"), "binding_digest"))
+                    reason = _identifier(raw_event.get("reason_code"), "reason_code")
+                    graph_nodes.append({"id": event_id, "reason": reason})
+                graph_edges: list[dict[str, str]] = []
+                seen_edges: set[tuple[str, str, str]] = set()
+                for raw_edge in raw_edges:
+                    if not isinstance(raw_edge, Mapping) or set(raw_edge) != _CAUSAL_EDGE_FIELDS:
+                        raise CorruptObject("stored cache causal graph edge is not an object")
+                    source = _digest(raw_edge.get("source_event_id"), "source_event_id")
+                    target = _digest(raw_edge.get("target_event_id"), "target_event_id")
+                    relation = _identifier(raw_edge.get("relation"), "relation")
+                    edge_key = (source, target, relation)
+                    if source not in graph_event_ids or target not in graph_event_ids or edge_key in seen_edges:
+                        raise CorruptObject("stored cache causal graph edge is invalid")
+                    seen_edges.add(edge_key)
+                    graph_edges.append({"from": source, "to": target, "relation": relation})
+                if graph_event_ids != {item["event_id"] for item in documents}:
+                    raise CorruptObject("causal graph events do not match durable outcomes")
+                if len(binding_digests) != 1:
+                    raise CorruptObject("causal graph events do not share one binding")
+                nodes = graph_nodes
+                edges.extend(graph_edges)
+                claim = "OBSERVED_AND_CAUSAL"
         return ServiceResult(
             200,
             {
@@ -1761,7 +1845,7 @@ class ParityApiService:
                     "root": normalized_request,
                     "nodes": nodes,
                     "edges": edges,
-                    "claim": "OBSERVED_ONLY",
+                    "claim": claim,
                 },
                 "remediation_codes": sorted(remediations),
             },

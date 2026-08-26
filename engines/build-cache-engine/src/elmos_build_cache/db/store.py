@@ -2035,6 +2035,7 @@ class PostgresMetadataStore(MetadataStore):
         """Drop every table this schema owns. Used by contract tests only."""
         tables = [
             "schema_migrations",
+            "cache_slo_control_events_v12",
             "cache_parity_reports_v12",
             "cache_affinity_decisions_v12",
             "cache_outcome_events_v12",

@@ -23,6 +23,7 @@ from dataclasses import dataclass
 from typing import Any, cast
 
 from .canonical import canonical_json_text, digest_of, require_digest
+from .clock import iso
 from .db.store import MetadataStore
 from .errors import (
     ConflictError,
@@ -190,6 +191,50 @@ _OUTCOME = _RecordSpec(
     "event_digest",
     bound_columns=("request_id", "layer", "outcome", "reason_code", "eligible"),
 )
+_CAUSAL_GRAPH_EVENT_TYPE = "CACHE_CAUSAL_GRAPH_V12"
+_CAUSAL_GRAPH_ACTOR = "cache-composition"
+_CAUSAL_GRAPH_KIND = "elmos.cache-causal-graph/v1.2"
+_CAUSAL_GRAPH_FIELDS = frozenset(
+    {
+        "schema_version",
+        "kind",
+        "tenant_id",
+        "project_id",
+        "request_id",
+        "events",
+        "edges",
+        "graph_digest",
+    }
+)
+_CAUSAL_EVENT_FIELDS = frozenset(
+    {
+        "event_id",
+        "request_id",
+        "binding_digest",
+        "phase",
+        "status",
+        "reason_code",
+        "layer",
+        "material_digest",
+        "receipt_digest",
+    }
+)
+_CAUSAL_EDGE_FIELDS = frozenset(
+    {"source_event_id", "target_event_id", "relation"}
+)
+_CAUSAL_PHASES = frozenset({"REQUEST", "LOOKUP", "RESTORE", "FALLBACK", "POPULATE", "COMPLETE"})
+_CAUSAL_STATUSES = frozenset({"SUCCESS", "MISS", "BYPASS", "ERROR", "SKIPPED"})
+_CAUSAL_LAYERS = frozenset({"PROMPT", "CONTEXT", "ACTION", "ENVIRONMENT", "AFFINITY"})
+_CAUSAL_RELATIONS = frozenset(
+    {
+        "REQUESTED",
+        "RESTORED_FROM",
+        "CAUSED_FALLBACK",
+        "SUPPLIED_LAYER_WORK",
+        "POPULATED_AFTER",
+        "COMPLETED_BY",
+    }
+)
 _AFFINITY = _RecordSpec(
     "cache_affinity_decisions_v12",
     "decision_id",
@@ -208,6 +253,121 @@ def _identifier(value: str, field: str) -> str:
     if not isinstance(value, str) or not _IDENTIFIER.fullmatch(value):
         raise ContractViolation(f"{field} must be a bounded identifier", field=field)
     return value
+
+
+def _validated_causal_graph(
+    document: Mapping[str, Any], *, tenant_id: str, project_id: str, request_id: str
+) -> dict[str, Any]:
+    """Validate the internal causal graph stored in the generic event journal.
+
+    The public ``cache-outcome-event`` schema is deliberately closed and cannot
+    be widened with composition-only fields.  Causal graphs therefore use a
+    separate, content-free journal event whose digest and exact shape are
+    checked on every read and idempotent write.
+    """
+
+    prepared = _canonical_document(document)
+    if set(prepared) != _CAUSAL_GRAPH_FIELDS:
+        raise ContractViolation("causal graph has an open or incomplete shape")
+    if (
+        prepared["schema_version"] != "1.2.0"
+        or prepared["kind"] != _CAUSAL_GRAPH_KIND
+        or prepared["tenant_id"] != tenant_id
+        or prepared["project_id"] != project_id
+        or prepared["request_id"] != request_id
+    ):
+        raise ContractViolation("causal graph scope or schema is invalid")
+    events = prepared["events"]
+    edges = prepared["edges"]
+    if not isinstance(events, list) or not events:
+        raise ContractViolation("causal graph must contain at least one event")
+    if not isinstance(edges, list):
+        raise ContractViolation("causal graph edges must be an array")
+    event_ids: set[str] = set()
+    binding_digest: str | None = None
+    for ordinal, event in enumerate(events):
+        if not isinstance(event, Mapping) or set(event) != _CAUSAL_EVENT_FIELDS:
+            raise ContractViolation("causal graph event has an invalid shape")
+        event_id = require_digest(str(event["event_id"]))
+        if event_id in event_ids:
+            raise ContractViolation("causal graph contains duplicate event IDs")
+        event_ids.add(event_id)
+        if event["request_id"] != request_id:
+            raise ContractViolation("causal graph event is bound to another request")
+        event_binding = require_digest(str(event["binding_digest"]))
+        if binding_digest is None:
+            binding_digest = event_binding
+        elif event_binding != binding_digest:
+            raise ContractViolation("causal graph events do not share one binding digest")
+        if event["phase"] not in _CAUSAL_PHASES or event["status"] not in _CAUSAL_STATUSES:
+            raise ContractViolation("causal graph event phase or status is invalid")
+        reason_code = _identifier(str(event["reason_code"]), "reason_code")
+        layer = event["layer"]
+        if layer is not None and layer not in _CAUSAL_LAYERS:
+            raise ContractViolation("causal graph event layer is invalid")
+        for field in ("material_digest", "receipt_digest"):
+            value = event[field]
+            if value is not None:
+                require_digest(str(value))
+        expected_event_id = digest_of(
+            {
+                "request_id": request_id,
+                "binding_digest": event_binding,
+                "ordinal": ordinal,
+                "phase": event["phase"],
+                "status": event["status"],
+                "reason_code": reason_code,
+                "layer": layer,
+                "material_digest": event["material_digest"],
+                "receipt_digest": event["receipt_digest"],
+            }
+        )
+        if event_id != expected_event_id:
+            raise ContractViolation("causal graph event ID is not bound to its content")
+    if events[0]["phase"] != "REQUEST":
+        raise ContractViolation("causal graph must begin with a REQUEST event")
+    seen_edges: set[tuple[str, str, str]] = set()
+    adjacency: dict[str, list[str]] = {event_id: [] for event_id in event_ids}
+    for edge in edges:
+        if not isinstance(edge, Mapping) or set(edge) != _CAUSAL_EDGE_FIELDS:
+            raise ContractViolation("causal graph edge has an invalid shape")
+        source = require_digest(str(edge["source_event_id"]))
+        target = require_digest(str(edge["target_event_id"]))
+        if source not in event_ids or target not in event_ids:
+            raise ContractViolation("causal graph edge references an unknown event")
+        if edge["relation"] not in _CAUSAL_RELATIONS:
+            raise ContractViolation("causal graph relation is invalid")
+        if source == target:
+            raise ContractViolation("causal graph cannot contain a self edge")
+        edge_key = (source, target, str(edge["relation"]))
+        if edge_key in seen_edges:
+            raise ContractViolation("causal graph contains duplicate edges")
+        seen_edges.add(edge_key)
+        adjacency[source].append(target)
+    # The composition emits a causal DAG.  Reject cycles and disconnected
+    # islands instead of allowing an explanation to attach unrelated events.
+    visiting: set[str] = set()
+    visited: set[str] = set()
+
+    def visit(node: str) -> None:
+        if node in visiting:
+            raise ContractViolation("causal graph contains a cycle")
+        if node in visited:
+            return
+        visiting.add(node)
+        for child in adjacency[node]:
+            visit(child)
+        visiting.remove(node)
+        visited.add(node)
+
+    visit(str(events[0]["event_id"]))
+    if visited != event_ids:
+        raise ContractViolation("causal graph contains a disconnected event")
+    body = {key: value for key, value in prepared.items() if key != "graph_digest"}
+    if require_digest(str(prepared["graph_digest"])) != digest_of(body):
+        raise ContractViolation("causal graph digest does not match its bytes")
+    _assert_content_free(prepared, "causal graph")
+    return prepared
 
 
 def _assert_content_free(value: Any, path: str = "$") -> None:
@@ -827,7 +987,7 @@ class ParityMetadataRepository:
                     document_digest,
                     *extra_values,
                     canonical_json_text(document),
-                    self.store.now(),
+                    iso(self.store.now()),
                 ),
             )
             if cursor.rowcount != 1:
@@ -1296,6 +1456,133 @@ class ParityMetadataRepository:
             )
             for row in rows
         )
+
+    def put_cache_causal_graph(
+        self,
+        tenant_id: str,
+        project_id: str,
+        request_id: str,
+        events: Sequence[Mapping[str, Any]],
+        edges: Sequence[Mapping[str, Any]],
+    ) -> dict[str, Any]:
+        """Persist one composition graph in the append-only event journal.
+
+        ``cache-outcome-event`` is a package-owned closed schema, so causal
+        edges cannot be smuggled into those rows.  The generic journal already
+        provides durable, tenant-scoped, digest-bound immutable events; using
+        a deterministic event ID here gives the graph the same exact-replay
+        semantics as the typed parity tables without a schema fork.
+        """
+
+        tenant = _identifier(tenant_id, "tenant_id")
+        project = _identifier(project_id, "project_id")
+        request = _identifier(request_id, "request_id")
+        body: dict[str, Any] = {
+            "schema_version": "1.2.0",
+            "kind": _CAUSAL_GRAPH_KIND,
+            "tenant_id": tenant,
+            "project_id": project,
+            "request_id": request,
+            "events": [dict(item) for item in events],
+            "edges": [dict(item) for item in edges],
+        }
+        graph_digest = digest_of(body)
+        document = _validated_causal_graph(
+            {**body, "graph_digest": graph_digest},
+            tenant_id=tenant,
+            project_id=project,
+            request_id=request,
+        )
+        # Request scope, rather than graph bytes, is the durable uniqueness
+        # key.  A second graph for one request therefore collides in the
+        # database and can never be hidden behind an older row on reads.
+        event_id = "causal_" + digest_of(
+            {
+                "tenant_id": tenant,
+                "project_id": project,
+                "request_id": request,
+            }
+        ).removeprefix("sha256:")
+        payload = canonical_json_text(document)
+        payload_digest = digest_of(document)
+        with self.store.transaction():
+            self._ensure_scope(tenant, project)
+            cursor = self.store.execute(
+                "INSERT INTO cache_events (event_id, tenant_id, project_id, run_id, node_id, sequence,"
+                " event_type, actor, lease_epoch, payload, payload_digest, created_at)"
+                " VALUES (?, ?, ?, NULL, NULL, NULL, ?, ?, NULL, ?, ?, ?)"
+                " ON CONFLICT(event_id) DO NOTHING",
+                (
+                    event_id,
+                    tenant,
+                    project,
+                    _CAUSAL_GRAPH_EVENT_TYPE,
+                    _CAUSAL_GRAPH_ACTOR,
+                    payload,
+                    payload_digest,
+                    self.store.now(),
+                ),
+            )
+            if int(cursor.rowcount) != 1:
+                row = self.store.query_one(
+                    "SELECT tenant_id, project_id, event_type, payload, payload_digest"
+                    " FROM cache_events WHERE event_id=?",
+                    (event_id,),
+                )
+                if row is None:
+                    raise ConflictError("causal graph event disappeared during idempotent write")
+                if (
+                    str(row[0]) != tenant
+                    or str(row[1]) != project
+                    or str(row[2]) != _CAUSAL_GRAPH_EVENT_TYPE
+                    or str(row[4]) != payload_digest
+                    or str(row[3]) != payload
+                ):
+                    raise IdempotencyConflict(
+                        "causal graph event ID was reused for different bytes",
+                        request_id=request,
+                    )
+            return document
+
+    def get_cache_causal_graph(
+        self, tenant_id: str, project_id: str, request_id: str
+    ) -> dict[str, Any] | None:
+        """Read and integrity-check the graph for one exact request scope."""
+
+        tenant = _identifier(tenant_id, "tenant_id")
+        project = _identifier(project_id, "project_id")
+        request = _identifier(request_id, "request_id")
+        rows = self.store.query(
+            "SELECT payload, payload_digest FROM cache_events"
+            " WHERE tenant_id=? AND project_id=? AND event_type=?"
+            " ORDER BY created_at, event_id",
+            (tenant, project, _CAUSAL_GRAPH_EVENT_TYPE),
+        )
+        matched: dict[str, Any] | None = None
+        for row in rows:
+            raw_payload = row[0]
+            try:
+                payload = (
+                    raw_payload
+                    if isinstance(raw_payload, Mapping | list)
+                    else json.loads(str(raw_payload))
+                )
+            except (TypeError, ValueError) as exc:
+                raise CorruptObject("causal graph payload is not valid JSON") from exc
+            if not isinstance(payload, Mapping) or payload.get("request_id") != request:
+                continue
+            document = _validated_causal_graph(
+                payload,
+                tenant_id=tenant,
+                project_id=project,
+                request_id=request,
+            )
+            if str(row[1]) != digest_of(document):
+                raise CorruptObject("causal graph payload digest does not match its bytes")
+            if matched is not None and matched != document:
+                raise CorruptObject("multiple causal graphs exist for one request")
+            matched = document
+        return matched
 
     def put_affinity_decision(
         self,
