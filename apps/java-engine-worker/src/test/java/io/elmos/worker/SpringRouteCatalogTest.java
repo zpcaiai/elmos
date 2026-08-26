@@ -161,10 +161,21 @@ class SpringRouteCatalogTest {
             assertTrue(recipeIds.add(route.recipeId()), "recipe ids must be unique: " + route.recipeId());
             assertNotNull(SpringRouteCatalog.class.getResourceAsStream(route.recipeResource()),
                     "missing recipe resource for " + route.routeId());
-            assertTrue(Set.of("2.7.18/17", "3.2.12/17", "3.5.3/21", "4.1.0/21")
+            assertTrue(Set.of("2.7.18/17", "3.2.12/17", "3.5.3/21", "4.1.0/21", "4.1.1/21")
                             .contains(route.targetBoot() + "/" + route.targetJava()),
                     "unexpected target tuple for " + route.routeId());
         }
+    }
+
+    @Test void selectsLatestBootMaintenanceRoutesIncludingBoot410Source() {
+        var maven = SpringRouteCatalog.select("4.1.0", "21", "maven", "4.1.1", "21");
+        assertEquals("boot-4.0-maven-to-boot-4.1.1-java-21", maven.route().routeId());
+        assertEquals(EvidenceStatus.NOT_RUN, maven.evidence());
+        assertTrue(maven.requiresExperimentalOptIn());
+
+        var gradle = SpringRouteCatalog.select("4.1.0", "21", "gradle", "4.1.1", "21");
+        assertEquals("boot-4.0-gradle-to-boot-4.1.1-java-21", gradle.route().routeId());
+        assertEquals("4.1.1", gradle.route().targetBoot());
     }
 
     @Test void exactSelectionRejectsMissingUnsupportedAndDowngradeTargets() {
@@ -332,6 +343,16 @@ class SpringRouteCatalogTest {
         assertEquals("spring-framework", selection.route().sourceFamily().contractValue());
     }
 
+    @Test void bootFourSourceBoundaryAndNoOpAreRejected() {
+        assertEquals("SPRING_BOOT_TARGET_DOWNGRADE_REJECTED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select("4.1.1", "21", "maven", "4.1.0", "21"))
+                        .code());
+        assertEquals("SPRING_BOOT_TARGET_DOWNGRADE_REJECTED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select("4.0.6", "21", "maven", "4.0.6", "21"))
+                        .code());
+    }
 
     /**
      * Recorded evidence must be internally consistent.
