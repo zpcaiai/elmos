@@ -22,3 +22,17 @@ Security, data, transactions, messaging, cache, scheduler, XML/web.xml,
 JSP/view and custom auto-configuration behavior remain source-specific FCM
 obligations until a real target build, startup and independent holdout are
 recorded.
+
+To inspect the next external-gate prerequisites without changing certification
+state, run:
+
+```text
+python3 scripts/operations/assess_spring_boot_4_1_external_readiness.py \
+  --engine /absolute/path/to/rootless/docker-or-podman
+```
+
+This read-only audit reports `NOT_READY_FOR_EXTERNAL_GATE` until a protected
+rootless runner preflight, physically separate holdout and representative
+repository evidence, and a separate verifier receipt are available. A
+preflight observation never becomes external execution evidence, and the
+audit never writes certification evidence.
