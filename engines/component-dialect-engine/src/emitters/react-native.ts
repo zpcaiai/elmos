@@ -113,6 +113,10 @@ function attrSource(attr: AttrBinding, tag: HtmlTag, styles: string[], notes: st
 }
 
 function nodeSource(node: CNode, indent: string, usedStyles: Set<string>, notes: string[], lists: ReadonlyMap<string, ListPropDef>, keyAttr?: string): string {
+  if (node.kind === "fragment") {
+    const childSrc = node.children.map((child) => nodeSource(child, indent + "  ", usedStyles, notes, lists)).join("\n");
+    return `${indent}<>\n${childSrc}\n${indent}</>`;
+  }
   if (node.kind === "text") {
     if (node.value.kind === "literal" && node.value.literal.type === "string") return `${indent}${node.value.literal.value}`;
     return `${indent}{${exprSource(node.value)}}`;
@@ -216,6 +220,7 @@ export function emitReactNative(component: ComponentDef): ReactNativeEmission {
 
   const components = new Set<string>();
   const walk = (n: CNode): void => {
+    if (n.kind === "fragment") { n.children.forEach(walk); return; }
     if (n.kind === "element") {
       components.add(TAG_MAP[n.tag]);
       // Text-only children of a non-Text container get a <Text> wrapper
@@ -240,7 +245,16 @@ export function emitReactNative(component: ComponentDef): ReactNativeEmission {
   }
   if (component.state.length > 0) lines.push("");
   lines.push("  return (");
-  lines.push(tree);
+  if (component.root.kind === "conditional") {
+    const lists = listPropIndex(component);
+    const thenSrc = nodeSource(component.root.then, "      ", usedStyles, notes, lists);
+    const elseSrc = component.root.else === null
+      ? "null"
+      : ["(", nodeSource(component.root.else, "      ", usedStyles, notes, lists), "    )"].join("\n");
+    lines.push(`    (${exprSource(component.root.condition)}) ? (\n${thenSrc}\n    ) : ${elseSrc}`);
+  } else {
+    lines.push(tree);
+  }
   lines.push("  );");
   lines.push("}");
   lines.push("");

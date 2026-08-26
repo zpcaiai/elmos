@@ -195,6 +195,10 @@ function attrSource(attr: AttrBinding, tag: HtmlTag, extraClasses: string[]): st
 }
 
 function nodeSource(node: CNode, indent: string, handlers: EmittedHandler[], counter: { n: number }, lists: ReadonlyMap<string, ListPropDef>): string {
+  if (node.kind === "fragment") {
+    const childSrc = node.children.map((child) => nodeSource(child, indent + "  ", handlers, counter, lists)).join("\n");
+    return `${indent}<block>\n${childSrc}\n${indent}</block>`;
+  }
   if (node.kind === "text") {
     if (node.value.kind === "literal" && node.value.literal.type === "string") {
       return `${indent}${node.value.literal.value}`;

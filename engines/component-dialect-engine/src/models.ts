@@ -336,6 +336,8 @@ export interface EventBinding {
 
 export type Node =
   | { kind: "element"; tag: HtmlTag; attrs: AttrBinding[]; events: EventBinding[]; children: Node[] }
+  /** A JSX fragment is a transparent grouping with no rendered DOM node. */
+  | { kind: "fragment"; children: Node[] }
   | { kind: "text"; value: Expr }
   | { kind: "conditional"; condition: Expr; then: Node; else: Node | null }
   /**
@@ -699,6 +701,10 @@ export function validateComponent(component: ComponentDef): void {
   }
 
   function checkNode(node: Node, scope: Scope): void {
+    if (node.kind === "fragment") {
+      node.children.forEach((child) => checkNode(child, scope));
+      return;
+    }
     if (node.kind === "text") {
       checkExpr(node.value, scope);
       const shape = expressionShape(node.value, scope);

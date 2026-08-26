@@ -85,6 +85,10 @@ function attrSource(attr: AttrBinding): string {
 }
 
 function nodeSource(node: CNode, indent: string, lists: ReadonlyMap<string, ListPropDef>): string {
+  if (node.kind === "fragment") {
+    const childSrc = node.children.map((child) => nodeSource(child, indent + "  ", lists)).join("\n");
+    return `${indent}<template>\n${childSrc}\n${indent}</template>`;
+  }
   if (node.kind === "text") {
     if (node.value.kind === "literal" && node.value.literal.type === "string") return `${indent}${node.value.literal.value}`;
     return `${indent}{{ ${exprSource(node.value, false)} }}`;

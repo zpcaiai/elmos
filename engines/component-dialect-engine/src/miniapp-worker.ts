@@ -1576,6 +1576,9 @@ function visitCanonicalNodes(
 ): void {
   visit(node);
   switch (node.kind) {
+    case "fragment":
+      node.children.forEach((child) => visitCanonicalNodes(child, visit));
+      return;
     case "element":
       node.children.forEach((child) => visitCanonicalNodes(child, visit));
       return;
@@ -1837,6 +1840,10 @@ function validateSameRunInvocationContracts(
         return;
       }
       if (node.kind === "element") {
+        node.children.forEach((child) => visit(child, scope));
+        return;
+      }
+      if (node.kind === "fragment") {
         node.children.forEach((child) => visit(child, scope));
         return;
       }

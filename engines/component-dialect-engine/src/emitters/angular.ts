@@ -91,6 +91,7 @@ function usesRegexTest(component: ComponentDef): boolean {
     return false;
   };
   const node = (current: CNode): boolean => {
+    if (current.kind === "fragment") return current.children.some(node);
     if (current.kind === "text") return expression(current.value);
     if (current.kind === "conditional") return expression(current.condition) || node(current.then) || (current.else !== null && node(current.else));
     if (current.kind === "list") return node(current.body);
@@ -113,6 +114,7 @@ function usesNumericFunction(component: ComponentDef): boolean {
     return false;
   };
   const node = (current: CNode): boolean => {
+    if (current.kind === "fragment") return current.children.some(node);
     if (current.kind === "text") return expression(current.value);
     if (current.kind === "conditional") return expression(current.condition) || node(current.then) || (current.else !== null && node(current.else));
     if (current.kind === "list") return node(current.body);
@@ -138,6 +140,10 @@ interface TemplateContext {
 }
 
 function nodeSource(node: CNode, indent: string, ctx: TemplateContext): string {
+  if (node.kind === "fragment") {
+    const childSrc = node.children.map((child) => nodeSource(child, indent + "  ", ctx)).join("\n");
+    return `${indent}<ng-container>\n${childSrc}\n${indent}</ng-container>`;
+  }
   if (node.kind === "text") {
     if (node.value.kind === "literal" && node.value.literal.type === "string") return `${indent}${node.value.literal.value}`;
     return `${indent}{{ ${exprSource(node.value, false)} }}`;

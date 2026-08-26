@@ -181,6 +181,9 @@ function textArgument(children: CNode[], scope: Scope): string {
 }
 
 function nodeSource(node: CNode, scope: Scope, indent: string, lists: ReadonlyMap<string, ListPropDef>): string[] {
+  if (node.kind === "fragment") {
+    return node.children.flatMap((child) => nodeSource(child, scope, indent, lists));
+  }
   if (node.kind === "text") return [`${indent}Text(${textArgument([node], scope)}),`];
 
   if (node.kind === "component") {

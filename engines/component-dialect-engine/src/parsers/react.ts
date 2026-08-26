@@ -659,11 +659,11 @@ function parseJsxChildren(children: ts.NodeArray<ts.JsxChild>, staticMaps: Stati
       result.push({ kind: "text", value: parseExpr(expr, staticMaps) });
       continue;
     }
-    if (ts.isJsxElement(child) || ts.isJsxSelfClosingElement(child)) {
+    if (ts.isJsxElement(child) || ts.isJsxSelfClosingElement(child) || ts.isJsxFragment(child)) {
       result.push(parseJsxNode(child, staticMaps));
       continue;
     }
-    fail("CERTIFIED_COMPONENT_UNSUPPORTED_JSX_CHILD", `JSX child kind ${ts.SyntaxKind[child.kind]} is outside certified-component-v1`);
+    fail("CERTIFIED_COMPONENT_UNSUPPORTED_JSX_CHILD", `JSX child kind ${ts.SyntaxKind[(child as ts.Node).kind]} is outside certified-component-v1`);
   }
   return result;
 }
@@ -679,7 +679,7 @@ function unwrapParens(node: ts.Expression): ts.Expression {
 
 function isJsxLike(node: ts.Expression): boolean {
   const inner = unwrapParens(node);
-  return ts.isJsxElement(inner) || ts.isJsxSelfClosingElement(inner);
+  return ts.isJsxElement(inner) || ts.isJsxSelfClosingElement(inner) || ts.isJsxFragment(inner);
 }
 
 /**
@@ -737,6 +737,10 @@ function tryParseListExpression(expr: ts.Expression, staticMaps: StaticStringMap
 function applyExplicitListKeys(root: CNode, props: PropDef[]): void {
   const lists = new Map(props.filter((prop): prop is ListPropDef => prop.kind === "list").map((prop) => [prop.name, prop]));
   const visit = (node: CNode): void => {
+    if (node.kind === "fragment") {
+      node.children.forEach(visit);
+      return;
+    }
     if (node.kind === "list") {
       if (node.keyField !== undefined) {
         const list = lists.get(node.source);
@@ -763,6 +767,10 @@ function applyExplicitListKeys(root: CNode, props: PropDef[]): void {
 function materializeNestedLists(root: CNode, props: PropDef[]): ListPropDef[] {
   const derived = new Map<string, ListPropDef>();
   const visit = (node: CNode): void => {
+    if (node.kind === "fragment") {
+      node.children.forEach(visit);
+      return;
+    }
     if (node.kind === "list") {
       const sourceExpression = node.sourceExpression;
       if (sourceExpression?.kind === "member") {
@@ -796,6 +804,7 @@ function materializeNestedLists(root: CNode, props: PropDef[]): ListPropDef[] {
 
 function parseJsxNode(rawNode: ts.Expression, staticMaps: StaticStringMaps = new Map()): CNode {
   const node = unwrapParens(rawNode);
+  if (ts.isJsxFragment(node)) return { kind: "fragment", children: parseJsxChildren(node.children, staticMaps) };
   require_(ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node), "CERTIFIED_COMPONENT_UNSUPPORTED_JSX_NODE", `expected a JSX element, got ${ts.SyntaxKind[node.kind]}`);
   const opening = ts.isJsxElement(node) ? node.openingElement : node;
   const tagName = opening.tagName.getText();
@@ -864,6 +873,25 @@ function parseJsxNode(rawNode: ts.Expression, staticMaps: StaticStringMaps = new
 
   const children = ts.isJsxElement(node) ? parseJsxChildren(node.children, staticMaps) : [];
   return { kind: "element", tag, attrs, events, children };
+}
+
+/**
+ * A render return may be a JSX conditional expression.  It has the same
+ * target-independent meaning as the JSX child form, so normalize it into the
+ * canonical conditional node instead of treating the expression itself as a
+ * tag.  A non-JSX branch remains fail-closed in parseJsxNode.
+ */
+function parseRenderExpression(raw: ts.Expression, staticMaps: StaticStringMaps): CNode {
+  const node = unwrapParens(raw);
+  if (ts.isConditionalExpression(node) && (isJsxLike(node.whenTrue) || isJsxLike(node.whenFalse))) {
+    return {
+      kind: "conditional",
+      condition: parseExpr(node.condition, staticMaps),
+      then: parseJsxNode(node.whenTrue, staticMaps),
+      else: node.whenFalse.kind === ts.SyntaxKind.NullKeyword ? null : parseJsxNode(node.whenFalse, staticMaps),
+    };
+  }
+  return parseJsxNode(node, staticMaps);
 }
 
 /**
@@ -1082,6 +1110,7 @@ function staticObjectAliasFields(initializer: ts.Expression, staticMaps: StaticS
 }
 
 function expandLocalNode(node: CNode, definitions: ReadonlyMap<string, LocalExpressionDefinition>): CNode {
+  if (node.kind === "fragment") return { kind: "fragment", children: node.children.map((child) => expandLocalNode(child, definitions)) };
   if (node.kind === "text") return { kind: "text", value: expandLocalExpression(node.value, definitions) };
   if (node.kind === "conditional") return {
     kind: "conditional",
@@ -1211,6 +1240,7 @@ function parseFunctionComponent(
   const state: StateDef[] = [];
   const localDefinitions = new Map<string, LocalExpressionDefinition>();
   let returnStatement: ts.ReturnStatement | undefined;
+  const earlyReturns: { condition: ts.Expression; statement: ts.ReturnStatement }[] = [];
   for (const [statementOrder, stmt] of body.statements.entries()) {
     if (ts.isVariableStatement(stmt)) {
       require_(stmt.declarationList.declarations.length === 1, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "only one declaration per const statement is supported");
@@ -1253,6 +1283,14 @@ function parseFunctionComponent(
       state.push({ name: getterName, stateType, ...(nullable ? { nullable: true } : {}), initial });
       continue;
     }
+    if (ts.isIfStatement(stmt)) {
+      require_(stmt.elseStatement === undefined, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "an early JSX return may not have an else statement");
+      require_(ts.isReturnStatement(stmt.thenStatement), "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "an if statement must return JSX directly to be represented as a conditional node");
+      const earlyReturn = stmt.thenStatement as ts.ReturnStatement;
+      require_(earlyReturn.expression !== undefined, "CERTIFIED_COMPONENT_MISSING_RETURN", "an early return must return JSX");
+      earlyReturns.push({ condition: stmt.expression, statement: earlyReturn });
+      continue;
+    }
     if (ts.isReturnStatement(stmt)) {
       returnStatement = stmt;
       continue;
@@ -1262,7 +1300,17 @@ function parseFunctionComponent(
   const ret = requireDefined(returnStatement, "CERTIFIED_COMPONENT_MISSING_RETURN", "component must end with a `return <Jsx/>` statement");
   let returned = requireDefined(ret.expression, "CERTIFIED_COMPONENT_MISSING_RETURN", "component must return JSX");
   if (ts.isParenthesizedExpression(returned)) returned = returned.expression;
-  const root = expandLocalNode(parseJsxNode(returned, staticMaps), localDefinitions);
+  let root = parseRenderExpression(returned, staticMaps);
+  for (let index = earlyReturns.length - 1; index >= 0; index -= 1) {
+    const early = earlyReturns[index]!;
+    root = {
+      kind: "conditional",
+      condition: parseExpr(early.condition, staticMaps),
+      then: parseRenderExpression(requireDefined(early.statement.expression, "CERTIFIED_COMPONENT_MISSING_RETURN", "an early return must return JSX"), staticMaps),
+      else: root,
+    };
+  }
+  root = expandLocalNode(root, localDefinitions);
 
   const nestedLists = materializeNestedLists(root, props);
   const component: ComponentDef = { name, props, state, root, ...(nestedLists.length === 0 ? {} : { lists: nestedLists }) };

@@ -139,6 +139,10 @@ function attrSource(attr: AttrBinding): string {
 }
 
 function nodeSource(node: CNode, indent: string, lists: ReadonlyMap<string, ListPropDef>, keyAttr?: string): string {
+  if (node.kind === "fragment") {
+    const childSrc = node.children.map((child) => nodeSource(child, indent + "  ", lists)).join("\n");
+    return `${indent}<>\n${childSrc}\n${indent}</>`;
+  }
   if (node.kind === "text") {
     if (node.value.kind === "literal" && node.value.literal.type === "string") {
       return `${indent}${node.value.literal.value}`;
@@ -198,6 +202,7 @@ export function referencedComponents(component: ComponentDef): string[] {
   const found = new Set<string>();
   const walk = (node: CNode): void => {
     if (node.kind === "component") { found.add(node.name); return; }
+    if (node.kind === "fragment") { node.children.forEach(walk); return; }
     if (node.kind === "conditional") { walk(node.then); if (node.else) walk(node.else); return; }
     if (node.kind === "list") { walk(node.body); return; }
     if (node.kind === "element") node.children.forEach(walk);
@@ -230,7 +235,16 @@ export function emitReact(component: ComponentDef): string {
   }
   if (usesState) lines.push("");
   lines.push("  return (");
-  lines.push(nodeSource(component.root, "    ", listPropIndex(component)));
+  if (component.root.kind === "conditional") {
+    const lists = listPropIndex(component);
+    const thenSrc = nodeSource(component.root.then, "      ", lists);
+    const elseSrc = component.root.else === null
+      ? "null"
+      : ["(", nodeSource(component.root.else, "      ", lists), "    )"].join("\n");
+    lines.push(`    ${wrap(component.root.condition)} ? (\n${thenSrc}\n    ) : ${elseSrc}`);
+  } else {
+    lines.push(nodeSource(component.root, "    ", listPropIndex(component)));
+  }
   lines.push("  );");
   lines.push("}");
   return lines.join("\n") + "\n";

@@ -221,6 +221,9 @@ function assertTargetNameClosure(component: ComponentDef): void {
 
   const visit = (node: CNode): void => {
     switch (node.kind) {
+      case "fragment":
+        node.children.forEach(visit);
+        return;
       case "component":
         assertUniqueTargetNames(
           node.props.map((prop) => prop.name),
@@ -509,6 +512,10 @@ function classAttribute(node: Extract<CNode, { kind: "element" }>): { value: str
 }
 
 function nodeSource(node: CNode, indent: string, context: RenderContext, scope: RenderScope | null): string {
+  if (node.kind === "fragment") {
+    const childSrc = node.children.map((child) => nodeSource(child, indent + "  ", context, scope)).join("\n");
+    return `${indent}<block>\n${childSrc}\n${indent}</block>`;
+  }
   if (node.kind === "text") {
     if (node.value.kind === "literal" && node.value.literal.type === "string") {
       assertStaticTemplateLiteralSafe(node.value.literal.value, "static text");

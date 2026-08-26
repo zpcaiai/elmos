@@ -236,6 +236,54 @@ describe("React parsing (real TypeScript Compiler API)", () => {
     expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
     expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
   });
+
+  it("preserves transparent JSX fragments across the canonical tree and template targets", () => {
+    const ir = parseReactComponent(`
+      function Fragmented({ ready }: { ready: boolean }) {
+        return <section>{ready ? (
+          <>
+            <strong>ready</strong>
+            <span>details</span>
+          </>
+        ) : <em>waiting</em>}</section>;
+      }
+    `, "Fragmented.tsx");
+    expect(ir.root).toMatchObject({
+      kind: "element",
+      children: [{
+        kind: "conditional",
+        then: {
+          kind: "fragment",
+          children: [
+            { kind: "element", tag: "strong" },
+            { kind: "element", tag: "span" },
+          ],
+        },
+        else: { kind: "element", tag: "em" },
+      }],
+    });
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("normalizes a bounded early JSX return into a target-neutral conditional", () => {
+    const ir = parseReactComponent(`
+      function Guard({ ready }: { ready: boolean }) {
+        if (ready) return <strong>ready</strong>;
+        return <em>waiting</em>;
+      }
+    `, "Guard.tsx");
+    expect(ir.root).toEqual({
+      kind: "conditional",
+      condition: { kind: "ident", name: "ready" },
+      then: { kind: "element", tag: "strong", attrs: [], events: [], children: [{ kind: "text", value: { kind: "literal", literal: { type: "string", value: "ready" } } }] },
+      else: { kind: "element", tag: "em", attrs: [], events: [], children: [{ kind: "text", value: { kind: "literal", literal: { type: "string", value: "waiting" } } }] },
+    });
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
 });
 
 describe("cross-framework round trip", () => {
