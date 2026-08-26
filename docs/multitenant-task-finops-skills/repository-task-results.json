@@ -895,8 +895,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
-          "byte_size": 13408,
-          "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"
+          "byte_size": 14378,
+          "sha256": "sha256:2a961a7c69262c2f67ddaab4afb713e79a53adbda48a1d2e57071432f310b421"
         },
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java",
@@ -964,8 +964,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
-          "byte_size": 13408,
-          "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"
+          "byte_size": 14378,
+          "sha256": "sha256:2a961a7c69262c2f67ddaab4afb713e79a53adbda48a1d2e57071432f310b421"
         },
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java",
@@ -1033,8 +1033,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
-          "byte_size": 13408,
-          "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"
+          "byte_size": 14378,
+          "sha256": "sha256:2a961a7c69262c2f67ddaab4afb713e79a53adbda48a1d2e57071432f310b421"
         },
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java",
@@ -1102,8 +1102,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
-          "byte_size": 13408,
-          "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"
+          "byte_size": 14378,
+          "sha256": "sha256:2a961a7c69262c2f67ddaab4afb713e79a53adbda48a1d2e57071432f310b421"
         },
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java",
@@ -1171,8 +1171,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
-          "byte_size": 13408,
-          "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"
+          "byte_size": 14378,
+          "sha256": "sha256:2a961a7c69262c2f67ddaab4afb713e79a53adbda48a1d2e57071432f310b421"
         },
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java",
@@ -1240,8 +1240,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
-          "byte_size": 13408,
-          "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"
+          "byte_size": 14378,
+          "sha256": "sha256:2a961a7c69262c2f67ddaab4afb713e79a53adbda48a1d2e57071432f310b421"
         },
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java",
@@ -1309,8 +1309,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
-          "byte_size": 13408,
-          "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"
+          "byte_size": 14378,
+          "sha256": "sha256:2a961a7c69262c2f67ddaab4afb713e79a53adbda48a1d2e57071432f310b421"
         },
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java",
@@ -1378,8 +1378,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
-          "byte_size": 13408,
-          "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"
+          "byte_size": 14378,
+          "sha256": "sha256:2a961a7c69262c2f67ddaab4afb713e79a53adbda48a1d2e57071432f310b421"
         },
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java",
@@ -1449,8 +1449,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
-          "byte_size": 13408,
-          "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"
+          "byte_size": 14378,
+          "sha256": "sha256:2a961a7c69262c2f67ddaab4afb713e79a53adbda48a1d2e57071432f310b421"
         },
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java",
@@ -1520,8 +1520,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
-          "byte_size": 13408,
-          "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"
+          "byte_size": 14378,
+          "sha256": "sha256:2a961a7c69262c2f67ddaab4afb713e79a53adbda48a1d2e57071432f310b421"
         },
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java",
@@ -1591,8 +1591,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
-          "byte_size": 13408,
-          "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"
+          "byte_size": 14378,
+          "sha256": "sha256:2a961a7c69262c2f67ddaab4afb713e79a53adbda48a1d2e57071432f310b421"
         },
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java",
@@ -1660,8 +1660,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
-          "byte_size": 13408,
-          "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"
+          "byte_size": 14378,
+          "sha256": "sha256:2a961a7c69262c2f67ddaab4afb713e79a53adbda48a1d2e57071432f310b421"
         },
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java",
@@ -2265,8 +2265,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
-          "byte_size": 15693,
-          "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"
+          "byte_size": 16563,
+          "sha256": "sha256:80781c2971b3106781f2cc88b8d0acae93ba2d577191ab75656f6490f04e7577"
         },
         {
           "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
@@ -2314,8 +2314,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
-          "byte_size": 15693,
-          "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"
+          "byte_size": 16563,
+          "sha256": "sha256:80781c2971b3106781f2cc88b8d0acae93ba2d577191ab75656f6490f04e7577"
         },
         {
           "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
@@ -2363,8 +2363,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
-          "byte_size": 15693,
-          "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"
+          "byte_size": 16563,
+          "sha256": "sha256:80781c2971b3106781f2cc88b8d0acae93ba2d577191ab75656f6490f04e7577"
         },
         {
           "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
@@ -2414,8 +2414,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
-          "byte_size": 15693,
-          "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"
+          "byte_size": 16563,
+          "sha256": "sha256:80781c2971b3106781f2cc88b8d0acae93ba2d577191ab75656f6490f04e7577"
         },
         {
           "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
@@ -2465,8 +2465,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
-          "byte_size": 15693,
-          "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"
+          "byte_size": 16563,
+          "sha256": "sha256:80781c2971b3106781f2cc88b8d0acae93ba2d577191ab75656f6490f04e7577"
         },
         {
           "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
@@ -2516,8 +2516,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
-          "byte_size": 15693,
-          "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"
+          "byte_size": 16563,
+          "sha256": "sha256:80781c2971b3106781f2cc88b8d0acae93ba2d577191ab75656f6490f04e7577"
         },
         {
           "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
@@ -2567,8 +2567,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
-          "byte_size": 15693,
-          "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"
+          "byte_size": 16563,
+          "sha256": "sha256:80781c2971b3106781f2cc88b8d0acae93ba2d577191ab75656f6490f04e7577"
         },
         {
           "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
@@ -2616,8 +2616,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
-          "byte_size": 15693,
-          "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"
+          "byte_size": 16563,
+          "sha256": "sha256:80781c2971b3106781f2cc88b8d0acae93ba2d577191ab75656f6490f04e7577"
         },
         {
           "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
@@ -2667,8 +2667,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
-          "byte_size": 15693,
-          "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"
+          "byte_size": 16563,
+          "sha256": "sha256:80781c2971b3106781f2cc88b8d0acae93ba2d577191ab75656f6490f04e7577"
         },
         {
           "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
@@ -2718,8 +2718,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
-          "byte_size": 15693,
-          "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"
+          "byte_size": 16563,
+          "sha256": "sha256:80781c2971b3106781f2cc88b8d0acae93ba2d577191ab75656f6490f04e7577"
         },
         {
           "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
@@ -2769,8 +2769,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
-          "byte_size": 15693,
-          "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"
+          "byte_size": 16563,
+          "sha256": "sha256:80781c2971b3106781f2cc88b8d0acae93ba2d577191ab75656f6490f04e7577"
         },
         {
           "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
@@ -2820,8 +2820,8 @@
       "implementation_bindings": [
         {
           "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
-          "byte_size": 15693,
-          "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"
+          "byte_size": 16563,
+          "sha256": "sha256:80781c2971b3106781f2cc88b8d0acae93ba2d577191ab75656f6490f04e7577"
         },
         {
           "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
