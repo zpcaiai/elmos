@@ -73,6 +73,13 @@ exact pure contracts for Skills 38 and 39. Direct service calls are a trusted
 in-process boundary; an untrusted transport must call through `QaApi` with a
 transport-derived `TrustedIdentity`, never construct authorization context from
 request JSON.
+`elmos_autonomous_qa.release_boundary` exports the local-only
+`prepare_external_execution`, `prepare_independent_verification`, and
+`prepare_certification_review` contracts. They bind tenant/project, immutable
+digests, authorization references, idempotency keys, and executor/verifier
+fences, but never invoke a provider, runner, verifier, signer, network, or
+subprocess. A trusted service may consume their plans and attach independently
+verified receipts out of process.
 The authenticated Skill 37 binder permits sidecar output only. Embedded or
 combined worktree mutation requires a separately authorized adapter. The
 lower-level trusted service can model those modes for controlled integrations,
@@ -97,6 +104,11 @@ All Skill results keep external evidence at `NOT_RUN` and certification at
 `NOT_CERTIFIED`. Commands that require a real runner, SCM, CI, signer, or
 external verifier return a typed external-adapter requirement instead of
 executing caller-supplied commands.
+
+The release-boundary plans expose `READY_FOR_EXTERNAL_GATE` only after local
+structural validation. They include required evidence roles and replay/fence
+digests; they do not manufacture durable receipts, signatures, independent
+verification, production effects, or certification.
 
 Lifecycle collection owns only the immutable managed publication copy. Its
 result names that exact deletion scope, reports private staging as retained,

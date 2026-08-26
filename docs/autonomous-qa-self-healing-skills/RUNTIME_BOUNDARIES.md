@@ -78,6 +78,16 @@ Each requires a typed, allowlisted adapter, exact tenant/project binding,
 idempotency, explicit authorization, and fresh raw evidence. A missing adapter or
 attestation yields `BLOCKED` or `NOT_RUN`.
 
+The repository-owned `release_boundary` layer makes this boundary explicit. Its
+external-runner contract derives a canonical argv plan and binds it to source,
+artifact, provider-attestation, authorization, idempotency, and concurrency-fence
+digests. It returns `NOT_RUN` when no trusted provider is registered and never
+calls the provider itself. Its independent-verification contract requires a
+different verifier identity and an independent-corpus digest, but leaves the
+verifier receipt `NOT_RUN`. Its certification-review contract accepts only a
+locally `READY_FOR_EXTERNAL_GATE` decision and always returns
+`production_certification: NOT_CERTIFIED`.
+
 The local CLI derives its local actor identity from the operating-system
 principal, refuses mutating Skill dispatch without a trusted tenant/project
 scope binder, and does not expose approval or evidence-receipt mutation. The
