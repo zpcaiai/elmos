@@ -176,6 +176,15 @@ def _dotnet_target_framework(executable: str) -> str:
     return f"net{major}.0" if major.isdigit() else "net8.0"
 
 
+#: Objective-C has no generic print. Picking the renderer by the function's
+#: DECLARED return type keeps the harness from deciding what a value is.
+_OBJC_RENDERERS = {
+    "integer": "elmos_render_i",
+    "number": "elmos_render_d",
+    "boolean": "elmos_render_b",
+}
+
+
 @dataclasses.dataclass(frozen=True)
 class Target:
     style: str
@@ -219,7 +228,7 @@ TARGETS: dict[str, Target] = {
     # "symbol(s) not found for architecture arm64". (It was dropped once to
     # get past a Linux container that has no Foundation at all -- that fixed
     # the wrong end. On Linux this target is NOT_RUN either way.)
-    "objc": Target("objc", '    printf("{n}|{i}|%s\\n", elmos_render({call}));',
+    "objc": Target("objc", '    printf("{n}|{i}|%s\\n", {render}({call}));',
                    ("#include <stdio.h>", "int main() {"), ("    return 0;", "}"), "drive.m", True,
                    (("{exe}", "-framework", "Foundation", "-o", "drive", "drive.m"),), ("./drive",),
                    ("objc", "bin/clang", "clang")),
@@ -266,8 +275,16 @@ def run_target(language: str, out: Path, ir, cases: dict[str, list[list[int]]],
     if spec.prepend_emitted:
         lines = [(out / language / emitted_name).read_text(encoding="utf-8"), *lines]
     if language == "objc":
-        lines.insert(1, 'static const char *elmos_render(long long v){static char b[32];'
+        # ONE renderer taking `long long` printed booleans as 0/1 and
+        # truncated doubles (-2.5 -> -2) at the implicit conversion in the
+        # call. Both looked like the engine DIVERGING from canonical when the
+        # only thing diverging was this printf. One renderer per canonical
+        # type, chosen from the function's declared return type.
+        lines.insert(1, 'static const char *elmos_render_i(long long v){static char b[40];'
                         'snprintf(b,sizeof b,"%lld",v);return b;}')
+        lines.insert(2, 'static const char *elmos_render_d(double v){static char b[40];'
+                        'snprintf(b,sizeof b,"%.17g",v);return b;}')
+        lines.insert(3, 'static const char *elmos_render_b(int v){return v ? "true" : "false";}')
     for name, vectors in cases.items():
         fn = by_name[name]
         for index, vector in enumerate(vectors):
@@ -275,7 +292,15 @@ def run_target(language: str, out: Path, ir, cases: dict[str, list[list[int]]],
                 literal(v, p.type, spec.style) for p, v in zip(fn.parameters, vector, strict=True)
             )
             call = f"{spec.call_prefix}{target_name[name]}({arguments})"
-            lines.append(spec.line.format(n=name, i=index, call=call))
+            render = _OBJC_RENDERERS.get(fn.return_type)
+            if language == "objc" and render is None:
+                return "NOT_RUN", {
+                    "reason": f"no objc renderer for return type {fn.return_type!r} -- "
+                              "refusing to print it rather than mis-render it",
+                    "toolchain": provenance,
+                }
+            # Targets whose line has no {render} placeholder ignore the kwarg.
+            lines.append(spec.line.format(n=name, i=index, call=call, render=render))
     lines += list(spec.footer)
     (out / language / spec.filename).write_text("\n".join(lines) + "\n", encoding="utf-8")
     if language == "csharp":
