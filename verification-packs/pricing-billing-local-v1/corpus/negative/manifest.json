@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "corpus_key": "pricing-billing-money-conservation-negative-v1",
+  "classification": "repository-authored-seeded-defects",
+  "source_digest": "sha256:9f7440b69a82a52172a1f62da915d96cfa4e0326dc04a305603c76001c8e88bc",
+  "dataset_digest": "sha256:74133cc8c2487b42ebafea0531c9c87bb4991f247fc857e76ecd542ff81987db",
+  "case_count": 5,
+  "status": "passed",
+  "execution_state": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "expected_detection_count": 5,
+  "observed_detection_count": 5,
+  "evidence_refs": [
+    "corpus/negative/cases.json",
+    "counterexamples/replay-result.json",
+    "certification/local-test-result.json"
+  ],
+  "limitations": [
+    "Seeded defects are intentionally invalid and do not establish real workload correctness.",
+    "Executor and verifier are not independent."
+  ]
+}

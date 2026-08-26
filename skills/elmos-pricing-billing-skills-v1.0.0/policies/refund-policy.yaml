@@ -1,0 +1,27 @@
+apiVersion: elmos.billing/v1
+kind: RefundPolicy
+metadata:
+  version: 1
+  status: draft
+responsibility_classes:
+  platform:
+    no_customer_value: full_refund_or_no_charge
+    partial_customer_value: partial_refund_review
+  model_in_budget:
+    normal_auto_repair: included_in_authorized_budget
+  user:
+    completed_value: billable
+    unused_authorization: release
+  third_party:
+    rule: contract_and_evidence_review
+  scope_change:
+    rule: create_change_order_before_new_work
+  acceptance_failure:
+    fixed_project: continue_fix_partial_refund_expert_or_terminate
+controls:
+  delete_original_transaction: forbidden
+  refund_expression: linked_reversal_transaction
+  cumulative_refund_ceiling: original_refundable_basis
+  manual_adjustment_requires_reason: true
+  large_refund_requires_maker_checker: true
+  provider_and_wallet_compensation: saga

@@ -1,0 +1,35 @@
+{
+  "name": "elmos-pricing-billing-skills",
+  "version": "1.0.0",
+  "release_date": "2026-08-19",
+  "language": "zh-CN with English identifiers",
+  "format": "Open Agent Skills",
+  "hosts": [
+    "OpenAI Codex",
+    "Claude Code"
+  ],
+  "counts": {
+    "skills": 18,
+    "batches": 54,
+    "requirements": 180,
+    "test_scenarios": 50
+  },
+  "commercial_model": [
+    "subscription",
+    "prepaid-execution-credits-and-usage",
+    "capped-or-fixed-price-projects",
+    "enterprise-annual-contracts-and-byok"
+  ],
+  "default_implementation_principles": [
+    "preserve-existing-repository-stack",
+    "double-entry-append-only-ledger",
+    "immutable-idempotent-usage",
+    "estimate-quote-authorize-run-meter-settle",
+    "hard-budget-stop-before-overspend",
+    "versioned-prices-contracts-and-policies",
+    "requirement-to-runtime-evidence"
+  ],
+  "entry_skill": "elmos-billing-orchestrator",
+  "validation_command": "./validate.sh",
+  "installation_command": "./install.sh --target /path/to/elmos --host both"
+}

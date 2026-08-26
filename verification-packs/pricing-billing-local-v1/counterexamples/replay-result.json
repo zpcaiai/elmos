@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "replay_key": "pricing-billing-money-seeded-replay-v1",
+  "status": "passed",
+  "execution_state": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "case_count": 5,
+  "reproduced_count": 5,
+  "failed_count": 0,
+  "fingerprint_match_count": 5,
+  "command": "cd engines/pricing-billing-engine && PYTHONDONTWRITEBYTECODE=1 .venv/bin/pytest -p no:cacheprovider tests/test_money_invariants.py",
+  "test_result_ref": "certification/local-test-result.json",
+  "independent_verification": "NOT_RUN",
+  "external_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

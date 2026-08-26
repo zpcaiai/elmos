@@ -1,0 +1,37 @@
+{
+  "invoice_id": "inv_example_2026_08",
+  "tenant_id": "ten_example",
+  "status": "open",
+  "currency": "CNY",
+  "period": {
+    "start": "2026-08-01T00:00:00+08:00",
+    "end": "2026-09-01T00:00:00+08:00"
+  },
+  "lines": [
+    {
+      "type": "plan",
+      "description": "Builder monthly plan",
+      "amount_minor": 99900
+    },
+    {
+      "type": "usage",
+      "description": "Execution usage above included credits",
+      "amount_minor": 38600
+    },
+    {
+      "type": "service_credit",
+      "description": "Verified SLA service credit",
+      "amount_minor": -5000
+    }
+  ],
+  "subtotal_minor": 133500,
+  "tax_minor": 0,
+  "total_minor": 133500,
+  "amount_paid_minor": 0,
+  "amount_due_minor": 133500,
+  "snapshot": {
+    "price_book_id": "pb_starter_cny_v1_draft",
+    "plan_version": "builder-v1",
+    "tax_policy_version": "tax-draft-v1"
+  }
+}

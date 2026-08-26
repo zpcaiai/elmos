@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "corpus_key": "pricing-billing-money-conservation-negative-v1",
+  "cases": [
+    {
+      "case_id": "NEG-LEDGER-001",
+      "expected_codes": ["LEDGER_UNBALANCED"],
+      "expected_fingerprint": "sha256:6f79dc51393538dc461fe4b22afa1e690bd8f23eac578c07b82e9de2a5405f91",
+      "observation": {
+        "ledger_postings": [
+          {
+            "tenant_id": "tenant-a",
+            "transaction_id": "txn-unbalanced",
+            "posting_id": "posting-debit",
+            "currency": "USD",
+            "side": "DEBIT",
+            "amount": "10.000000"
+          },
+          {
+            "tenant_id": "tenant-a",
+            "transaction_id": "txn-unbalanced",
+            "posting_id": "posting-credit",
+            "currency": "USD",
+            "side": "CREDIT",
+            "amount": "9.990000"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "NEG-ALLOCATION-001",
+      "expected_codes": ["ALLOCATION_LEAKAGE"],
+      "expected_fingerprint": "sha256:96b0b970cc624abe0be3b860d36461e485ec4916d04a6b8f492cbe38cfab996d",
+      "observation": {
+        "allocation_pools": [
+          {
+            "tenant_id": "tenant-a",
+            "source_id": "cost-leak",
+            "currency": "USD",
+            "source_amount": "100.000000",
+            "allocations": ["40.000000", "59.000000"]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "NEG-REFUND-001",
+      "expected_codes": ["REFUND_EXCEEDS_PAYMENT"],
+      "expected_fingerprint": "sha256:b852ee1fa069bb739a967c0dc97e3dbb255c150296904ffac4d83f3ca5eb7456",
+      "observation": {
+        "payment_refunds": [
+          {
+            "tenant_id": "tenant-a",
+            "payment_id": "payment-over-refund",
+            "currency": "USD",
+            "charged_amount": "20.000000",
+            "refund_amounts": ["12.000000", "9.000000"]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "NEG-IDEMPOTENCY-001",
+      "expected_codes": ["DUPLICATE_IDEMPOTENCY_EFFECT"],
+      "expected_fingerprint": "sha256:94d6733a10d55129c917a3f6d69a1bf29486aa4a73e087fa293c992e89207607",
+      "observation": {
+        "idempotent_effects": [
+          {
+            "tenant_id": "tenant-a",
+            "operation": "capture",
+            "idempotency_key": "idem-duplicate",
+            "effect_id": "effect-1",
+            "payload_digest": "sha256:payload-a"
+          },
+          {
+            "tenant_id": "tenant-a",
+            "operation": "capture",
+            "idempotency_key": "idem-duplicate",
+            "effect_id": "effect-2",
+            "payload_digest": "sha256:payload-a"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "NEG-INVOICE-001",
+      "expected_codes": ["INVOICE_TOTAL_MISMATCH"],
+      "expected_fingerprint": "sha256:b6d1fa00005b356c33d7b4e05274cc1910cb462f82da5d8004d9fe01675ee656",
+      "observation": {
+        "invoices": [
+          {
+            "tenant_id": "tenant-a",
+            "invoice_id": "invoice-mismatch",
+            "currency": "USD",
+            "line_amounts": ["10.000000", "5.000000"],
+            "declared_subtotal": "14.000000",
+            "tax_amount": "1.500000",
+            "declared_total": "15.500000"
+          }
+        ]
+      }
+    }
+  ]
+}

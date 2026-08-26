@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "spec_key": "pricing-billing-money-conservation-v1",
+  "version": 1,
+  "risk_tier": "P0",
+  "owner": "ELMOS pricing-billing engineering",
+  "arithmetic": {
+    "representation": "decimal-string",
+    "maximum_fractional_digits": 6,
+    "rounding": "none-inside-invariants",
+    "float_inputs": "REJECT",
+    "non_finite_inputs": "REJECT",
+    "currency_scope": "ISO-4217-style-three-letter-ASCII",
+    "unknown_or_missing": "BLOCK"
+  },
+  "observation_contract_ref": "contracts/observation-contract-v1.json",
+  "canonical_query_contract_ref": "queries/canonical-reconciliation-v1.json",
+  "artifact_bindings": [
+    {
+      "role": "untrusted-source-archive",
+      "path": "skills/subskills/elmos-pricing-billing-skills-v1.0.0.zip",
+      "sha256": "sha256:9f7440b69a82a52172a1f62da915d96cfa4e0326dc04a305603c76001c8e88bc"
+    },
+    {
+      "role": "local-invariant-harness",
+      "path": "engines/pricing-billing-engine/src/elmos_pricing_billing/money_invariants.py",
+      "sha256": "sha256:23f843db97539132114f11eec6503040e3e94c5cb40eb1b28797bb54d90e6c68"
+    },
+    {
+      "role": "local-focused-tests",
+      "path": "engines/pricing-billing-engine/tests/test_money_invariants.py",
+      "sha256": "sha256:9adb450b64c86c6610dfea7957c534e7f210b549d58dcca8aa9690cfb72b181a"
+    }
+  ],
+  "invariants": [
+    {
+      "invariant_id": "INV-MONEY-LEDGER-001",
+      "claim_id": "claim.ledger-conservation",
+      "grain": ["tenant_id", "transaction_id", "currency"],
+      "relationship": "sum(DEBIT.amount) == sum(CREDIT.amount)",
+      "uniqueness": ["tenant_id", "posting_id"],
+      "violation_codes": ["LEDGER_UNBALANCED", "DUPLICATE_LEDGER_POSTING_ID"],
+      "detail_before_aggregate": true
+    },
+    {
+      "invariant_id": "INV-MONEY-ALLOCATION-001",
+      "claim_id": "claim.allocation-conservation",
+      "grain": ["tenant_id", "source_id", "currency"],
+      "relationship": "sum(allocation.amount) == source_amount",
+      "violation_codes": ["ALLOCATION_LEAKAGE"],
+      "detail_before_aggregate": true
+    },
+    {
+      "invariant_id": "INV-MONEY-REFUND-001",
+      "claim_id": "claim.refund-ceiling",
+      "grain": ["tenant_id", "payment_id", "currency"],
+      "relationship": "sum(refund.amount) <= charged_amount",
+      "violation_codes": ["REFUND_EXCEEDS_PAYMENT"],
+      "unknown_provider_result": "BLOCK"
+    },
+    {
+      "invariant_id": "INV-MONEY-IDEMPOTENCY-001",
+      "claim_id": "claim.idempotent-effect-uniqueness",
+      "grain": ["tenant_id", "operation", "idempotency_key"],
+      "relationship": "count(durable_effect) <= 1",
+      "violation_codes": ["DUPLICATE_IDEMPOTENCY_EFFECT"]
+    },
+    {
+      "invariant_id": "INV-MONEY-INVOICE-001",
+      "claim_id": "claim.invoice-detail-reconciliation",
+      "grain": ["tenant_id", "invoice_id", "currency"],
+      "relationship": "declared_subtotal == sum(line.amount) AND declared_total == sum(line.amount) + tax_amount",
+      "violation_codes": ["INVOICE_TOTAL_MISMATCH"],
+      "detail_before_aggregate": true
+    }
+  ],
+  "execution": {
+    "local_harness": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "focused_tests": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "holdout": "NOT_RUN",
+    "representative_workloads": "NOT_RUN",
+    "provider_runtime": "NOT_RUN",
+    "postgresql_runtime": "NOT_RUN",
+    "production_runtime": "NOT_RUN",
+    "independent_review": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  }
+}

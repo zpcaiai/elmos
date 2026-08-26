@@ -25,6 +25,8 @@ RUNTIME_STATUS_OUTPUT ?= .elmos/toolchains/runtime-status.json
 
 .PHONY: frt-g01-g30-skills frt-g01-g30-check
 
+.PHONY: pricing-billing-skills pricing-billing-engine pricing-billing-java pricing-billing-runtime-binding pricing-billing-verification pricing-billing-gate
+
 verify: business-line-contracts backend dotnet python frontend sql-transpiler sql-dialect component-dialect web
 business-line-contracts: model-catalog-check makefile-portability-check chinadb-commercial-migration-skills
 	python3 scripts/operations/validate_spring_route_contract.py
@@ -91,6 +93,26 @@ large-repository-database-design-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 python -m unittest discover -s tests/large-repository-database-design -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 python3 skills/elmos-large-repository-database-design-v1.0.0/scripts/validate_database_design.py
 	bash -n scripts/large_repository_database_design/run_postgres_validation.sh
+pricing-billing-engine:
+	$(UV) --directory engines/pricing-billing-engine run --locked --group dev pytest
+	$(UV) --directory engines/pricing-billing-engine run --locked --group dev ruff check src tests
+	$(UV) --directory engines/pricing-billing-engine run --locked --group dev mypy src
+	$(UV) --directory engines/pricing-billing-engine run --locked python -m elmos_pricing_billing.cli qualify
+pricing-billing-java:
+	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -ntp -pl modules/persistence -am -Dtest=PricingBillingFinancialRuntimeTest,PaymentRefundReconciliationRuntimeTest,PricingBillingFinancialCoreMigrationContractTest -Dsurefire.failIfNoSpecifiedTests=false test
+pricing-billing-runtime-binding:
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/build_pricing_billing_runtime_binding.py --repo-root . --check
+pricing-billing-verification:
+	$(UV) run --quiet --with jsonschema python scripts/batch35/validate_verification_pack.py verification-packs/pricing-billing-local-v1 --repository-root .
+	$(UV) run --quiet --with jsonschema python scripts/batch35/run_verification_gate.py verification-packs/pricing-billing-local-v1
+pricing-billing-skills: pricing-billing-engine pricing-billing-java pricing-billing-runtime-binding pricing-billing-verification
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_pricing_billing_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_pricing_billing_installed.py
+	$(UV) run --project engines/pricing-billing-engine --locked --group dev pytest tests/pricing-billing-skills
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/pricing-billing-gate -p 'test_*.py' -v
+	PYTHONDONTWRITEBYTECODE=1 python3 scripts/pricing-billing/run_pricing_billing_gate.py templates/pricing-billing/gate.example.json
+pricing-billing-gate:
+	PYTHONDONTWRITEBYTECODE=1 python3 scripts/pricing-billing/run_pricing_billing_gate.py templates/pricing-billing/gate.example.json --require-ready
 precision-migration-b01-44-skills:
 	python3 tooling/generate_precision_migration_handlers.py --check
 	python3 tooling/generate_precision_migration_external_profiles.py --check

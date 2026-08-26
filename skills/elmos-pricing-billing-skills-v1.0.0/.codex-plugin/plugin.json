@@ -1,0 +1,12 @@
+{
+  "name": "elmos-pricing-billing",
+  "version": "1.0.0",
+  "description": "Implementation-ready skills for Elmos hybrid pricing, metering, double-entry ledger, wallets, quotes, budget guards, projects, subscriptions, payments, enterprise BYOK, analytics, security, testing, and rollout.",
+  "author": {
+    "name": "Elmos"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "developerName": "Elmos"
+  }
+}

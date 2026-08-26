@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "property_id": "property.money-conservation-detail-first-v1",
+  "claim_id": "claim.ledger-conservation",
+  "owner": "ELMOS pricing-billing engineering",
+  "generator": {
+    "kind": "bounded-schema-aware-fixed-corpus",
+    "constraints": [
+      "decimal-strings-only",
+      "maximum-six-fractional-digits",
+      "tenant-and-currency-scoped",
+      "maximum-16-cases",
+      "no-network",
+      "no-database-write"
+    ],
+    "corpus_ref": "corpus/negative/cases.json",
+    "execution_state": "LOCAL_EXECUTED_SELF_ATTESTED"
+  },
+  "oracle_refs": [
+    "oracle.money-invariant-spec",
+    "oracle.local-negative-replay"
+  ],
+  "assertion": {
+    "kind": "detail-before-aggregate-money-conservation",
+    "invariant_spec_ref": "invariants/money-conservation-v1.json",
+    "required_detection_codes": [
+      "LEDGER_UNBALANCED",
+      "ALLOCATION_LEAKAGE",
+      "REFUND_EXCEEDS_PAYMENT",
+      "DUPLICATE_IDEMPOTENCY_EFFECT",
+      "INVOICE_TOTAL_MISMATCH"
+    ]
+  },
+  "shrinker": {
+    "kind": "fixed-minimized-seeded-observation",
+    "counterexample_ref": "counterexamples/sample.json"
+  },
+  "replay": {
+    "seed": "pricing-billing-negative-v1",
+    "command": "cd engines/pricing-billing-engine && PYTHONDONTWRITEBYTECODE=1 .venv/bin/pytest -p no:cacheprovider tests/test_money_invariants.py"
+  },
+  "limitations": [
+    "Finite fixed cases are not a proof of universal financial correctness.",
+    "Holdout and representative workloads are NOT_RUN."
+  ]
+}

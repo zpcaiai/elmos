@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/completion-report.v1.json",
+  "title": "Skill Completion Report v1",
+  "type": "object",
+  "required": [
+    "skill",
+    "version",
+    "repository",
+    "baseline_commit",
+    "overall_status",
+    "requirements",
+    "verification",
+    "residual_risks"
+  ],
+  "properties": {
+    "skill": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "repository": {
+      "type": "string"
+    },
+    "baseline_commit": {
+      "type": "string"
+    },
+    "final_commit": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "overall_status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "CONDITIONAL",
+        "FAIL"
+      ]
+    },
+    "production_ready": {
+      "type": "boolean"
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "requirement_id",
+          "status"
+        ],
+        "properties": {
+          "requirement_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "IMPLEMENTED",
+              "PARTIAL",
+              "STUB",
+              "MISSING",
+              "NOT VERIFIED"
+            ]
+          }
+        }
+      }
+    },
+    "verification": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "residual_risks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

@@ -1,0 +1,314 @@
+{
+  "schema_version": "1.0",
+  "namespace": "elmos.pricing-billing.v1",
+  "requirement_count": 60,
+  "implementation_state": "LOCAL_CODED_UNVERIFIED",
+  "authority": "LOCAL_REFERENCE_ONLY",
+  "source_path": "engines/pricing-billing-engine/src/elmos_pricing_billing/commercial_closure.py",
+  "test_path": "engines/pricing-billing-engine/tests/test_commercial_closure.py",
+  "test_execution": "LOCAL_EXECUTED",
+  "external_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED",
+  "requirements": [
+    {
+      "id": "elmos.pricing-billing.v1/EB02-001",
+      "source_symbol": "BillingRoute; PricingProductClosureService.resolve_route",
+      "test_symbol": "test_eb02_001_supports_six_explicit_commercial_routes"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB02-002",
+      "source_symbol": "PricePresentation; PricingProductClosureService.present_price",
+      "test_symbol": "test_eb02_002_presents_money_and_credits_with_tokens_as_detail_only"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB02-003",
+      "source_symbol": "PriceProductVersion; PricingProductClosureService.create_version; PricingProductClosureService.approve",
+      "test_symbol": "test_eb02_003_price_book_binds_currency_window_state_approval_and_version"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB02-004",
+      "source_symbol": "RateComponentKind; RateComponent; PricingProductClosureService.rate_component",
+      "test_symbol": "test_eb02_004_six_rate_components_are_independently_addressable"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB02-005",
+      "source_symbol": "ModelFunding; RateComponent; PricingProductClosureService.rate_component",
+      "test_symbol": "test_eb02_005_managed_and_byok_use_distinct_model_rate_composition"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB02-006",
+      "source_symbol": "TaskBillingRule; PricingProductClosureService.resolve_route",
+      "test_symbol": "test_eb02_006_task_kind_routes_deterministically"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB02-007",
+      "source_symbol": "ProjectSkuContract.validate_delivery",
+      "test_symbol": "test_eb02_007_project_sku_enforces_machine_verifiable_contract"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB02-008",
+      "source_symbol": "PricingProductClosureService.configure_experiment; PricingProductClosureService.assign_experiment; PricingProductClosureService.rollback_experiment",
+      "test_symbol": "test_eb02_008_price_experiment_is_stable_and_rollback_preserves_price_history"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB02-009",
+      "source_symbol": "PricingProductClosureService.approve",
+      "test_symbol": "test_eb02_009_example_price_requires_explicit_authorization"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB02-010",
+      "source_symbol": "CommercialAuditEvent; PricingProductClosureService._record_audit; PricingProductClosureService.audit_events",
+      "test_symbol": "test_eb02_010_price_changes_emit_digest_bound_impact_audit"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB03-001",
+      "source_symbol": "PlanTier; PlanDefinition; PlanEntitlementClosureService.publish_plan",
+      "test_symbol": "test_eb03_001_catalog_supports_all_configured_plan_tiers"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB03-002",
+      "source_symbol": "PlanDefinition; SubscriptionEntitlementSnapshot; PlanEntitlementClosureService._make_snapshot",
+      "test_symbol": "test_eb03_002_plan_snapshot_contains_all_operational_entitlements"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB03-003",
+      "source_symbol": "PlanDefinition; SubscriptionEntitlementSnapshot",
+      "test_symbol": "test_eb03_003_paid_and_promotional_credits_remain_separate"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB03-004",
+      "source_symbol": "PlanLifecycleState; PlanTransition; PlanEntitlementClosureService._transition_state; PlanEntitlementClosureService.transition",
+      "test_symbol": "test_eb03_004_subscription_transitions_use_an_explicit_state_machine"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB03-005",
+      "source_symbol": "EnterprisePlanOverride; PlanEntitlementAuditEvent; PlanEntitlementClosureService.set_enterprise_override",
+      "test_symbol": "test_eb03_005_enterprise_override_has_priority_and_audit"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB03-006",
+      "source_symbol": "EntitlementDecision; PlanEntitlementClosureService.entitlement",
+      "test_symbol": "test_eb03_006_unified_entitlement_api_fails_closed"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB03-007",
+      "source_symbol": "SubscriptionEntitlementSnapshot; PlanEntitlementClosureService.subscription_history",
+      "test_symbol": "test_eb03_007_entitlement_snapshots_bind_versions_and_replay_history"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB03-008",
+      "source_symbol": "PlanEntitlementClosureService.acquire_task_slot; PlanEntitlementClosureService.release_task_slot",
+      "test_symbol": "test_eb03_008_concurrent_task_limit_is_atomic"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB03-009",
+      "source_symbol": "PlanVersionEvent; PlanEntitlementClosureService.invalidate_from_version_event",
+      "test_symbol": "test_eb03_009_plan_version_event_invalidates_only_exact_cache_entries"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB03-010",
+      "source_symbol": "PlanEntitlementClosureService.activate; PlanEntitlementClosureService.transition",
+      "test_symbol": "test_eb03_010_idempotent_transition_does_not_duplicate_credits_or_history"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB06-001",
+      "source_symbol": "EstimateResourceKind; ResourceForecast; TaskEstimateInput; TaskCostEstimationClosureService.estimate",
+      "test_symbol": "test_eb06_001_preflight_estimate_covers_all_seven_resource_classes"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB06-002",
+      "source_symbol": "CostPercentiles; TaskCostEstimationClosureService.estimate",
+      "test_symbol": "test_eb06_002_estimate_outputs_monotonic_p50_p80_p90_range"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB06-003",
+      "source_symbol": "TaskCostEstimate.autonomous_machine_eta_seconds; TaskCostEstimationClosureService.estimate",
+      "test_symbol": "test_eb06_003_estimate_outputs_autonomous_machine_wall_clock_eta"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB06-004",
+      "source_symbol": "TaskCostEstimate.human_developer_seconds_comparison",
+      "test_symbol": "test_eb06_004_human_time_is_a_separate_comparison_field"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB06-005",
+      "source_symbol": "ExecutionModelStrategy; TaskCostEstimationClosureService.compare_strategies",
+      "test_symbol": "test_eb06_005_economy_balanced_and_best_quality_are_comparable"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB06-006",
+      "source_symbol": "TaskEstimateInput; TaskCostEstimate; TaskCostEstimationClosureService.estimate",
+      "test_symbol": "test_eb06_006_estimate_carries_risk_confidence_and_uncertainty"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB06-007",
+      "source_symbol": "EstimationMode; TaskCostEstimationClosureService.estimate",
+      "test_symbol": "test_eb06_007_low_sample_or_drift_uses_conservative_rule"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB06-008",
+      "source_symbol": "CalibrationObservation; TaskCostEstimationClosureService.record_actual; TaskCostEstimationClosureService.calibration_history",
+      "test_symbol": "test_eb06_008_calibration_history_is_tenant_bound_and_anonymized"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB06-009",
+      "source_symbol": "CalibrationObservation; TaskCostEstimationClosureService.record_actual",
+      "test_symbol": "test_eb06_009_completion_records_prediction_actual_variance_inputs"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB06-010",
+      "source_symbol": "TaskEstimateInput.digest; TaskCostEstimate.digest; TaskCostEstimationClosureService.estimate",
+      "test_symbol": "test_eb06_010_estimator_version_and_input_snapshot_are_immutable_and_replayable"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB07-001",
+      "source_symbol": "FrozenCommercialQuote; QuoteBudgetGuardClosureService.issue_quote",
+      "test_symbol": "test_eb07_001_quote_displays_range_budget_eta_human_comparison_and_confidence"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB07-002",
+      "source_symbol": "FrozenCommercialQuote.frozen_digest; QuoteBudgetGuardClosureService.issue_quote",
+      "test_symbol": "test_eb07_002_quote_freezes_price_estimate_strategy_and_scope_versions"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB07-003",
+      "source_symbol": "FundingAccountSnapshot; QuoteBudgetGuardClosureService.accept_and_reserve",
+      "test_symbol": "test_eb07_003_acceptance_atomically_reserves_maximum_or_credit"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB07-004",
+      "source_symbol": "BudgetPreflightDecision; QuoteBudgetGuardClosureService.preflight_billable; QuoteBudgetGuardClosureService.commit_billable",
+      "test_symbol": "test_eb07_004_configurable_budget_alerts_emit_once_at_crossing"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB07-005",
+      "source_symbol": "QuoteBudgetGuardClosureService.preflight_billable",
+      "test_symbol": "test_eb07_005_hard_cap_blocks_new_billable_execution_before_effect"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB07-006",
+      "source_symbol": "BudgetRemediation; QuoteBudgetGuardClosureService.apply_remediation",
+      "test_symbol": "test_eb07_006_all_five_budget_remediation_paths_are_explicit"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB07-007",
+      "source_symbol": "BudgetSettlement; QuoteBudgetGuardClosureService.settle",
+      "test_symbol": "test_eb07_007_settlement_captures_actual_and_releases_unused_reserve"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB07-008",
+      "source_symbol": "BudgetExecutionState; BudgetSettlement; QuoteBudgetAuditEvent; QuoteBudgetGuardClosureService.settle",
+      "test_symbol": "test_eb07_008_failure_and_cancel_use_responsibility_outcome_audit"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB07-009",
+      "source_symbol": "QuoteBudgetGuardClosureService.require_requote_for_scope_or_expiry",
+      "test_symbol": "test_eb07_009_expiry_or_scope_change_requires_requote"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB07-010",
+      "source_symbol": "BudgetRecoveryRecord; QuoteBudgetGuardClosureService.recovery_record; QuoteBudgetGuardClosureService.restore_recovery_record",
+      "test_symbol": "test_eb07_010_recovery_record_restores_consistent_budget_and_funding_state"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB08-001",
+      "source_symbol": "ProjectContractKind; ProjectCommercialContract; ProjectPricingContractClosureService.create_contract",
+      "test_symbol": "test_eb08_001_supports_discovery_capped_and_fixed_contracts"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB08-002",
+      "source_symbol": "FrozenProjectBaseline; ProjectCommercialContract",
+      "test_symbol": "test_eb08_002_contract_freezes_repo_requirements_scope_environment_and_acceptance"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB08-003",
+      "source_symbol": "ProjectCommercialContract.__post_init__",
+      "test_symbol": "test_eb08_003_fixed_price_covers_p90_margin_acceptance_support_and_risk"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB08-004",
+      "source_symbol": "ProjectCommercialContract",
+      "test_symbol": "test_eb08_004_contract_declares_revisions_exclusions_and_third_party_boundary"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB08-005",
+      "source_symbol": "ProjectChangeOrder; ProjectPricingContractClosureService.request_change_order; ProjectPricingContractClosureService.approve_change_order",
+      "test_symbol": "test_eb08_005_scope_change_is_isolated_until_maker_checker_approval"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB08-006",
+      "source_symbol": "MilestoneAcceptance; ProjectPricingContractClosureService.accept_milestone",
+      "test_symbol": "test_eb08_006_milestone_acceptance_binds_automated_test_and_approval_evidence"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB08-007",
+      "source_symbol": "ProjectPricingContractClosureService.settle_capped_project",
+      "test_symbol": "test_eb08_007_capped_project_settlement_never_exceeds_contract_cap"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB08-008",
+      "source_symbol": "FixedPriceFailurePath; FixedPriceFailureResolution; ProjectPricingContractClosureService.resolve_fixed_price_acceptance_failure",
+      "test_symbol": "test_eb08_008_fixed_acceptance_failure_has_four_explicit_paths"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB08-009",
+      "source_symbol": "ProjectFinancialReview; ProjectPricingContractClosureService.record_financial_review",
+      "test_symbol": "test_eb08_009_project_records_actual_cost_revenue_and_margin_review"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB08-010",
+      "source_symbol": "ProjectSkuContract.validate_delivery; ProjectPricingContractClosureService.validate_standard_sku",
+      "test_symbol": "test_eb08_010_standard_sku_has_machine_verifiable_input_and_output_limits"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB12-001",
+      "source_symbol": "EnterpriseFeeSchedule; EnterpriseContractVersion",
+      "test_symbol": "test_eb12_001_enterprise_fee_schedule_covers_all_six_commercial_components"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB12-002",
+      "source_symbol": "CommitmentSnapshot; EnterpriseByokClosureService.burn_commitment; EnterpriseByokClosureService.calculate_true_up; EnterpriseByokClosureService.renew_contract",
+      "test_symbol": "test_eb12_002_minimum_commit_burn_down_true_up_and_renewal_are_versioned"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB12-003",
+      "source_symbol": "SecretReference; ByokBinding; ByokUsageAuthorization; EnterpriseByokAuditEvent; EnterpriseByokClosureService.bind_byok; EnterpriseByokClosureService.authorize_byok_usage; EnterpriseByokClosureService.audit_events",
+      "test_symbol": "test_eb12_003_byok_persists_only_secret_reference_not_plaintext_key"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB12-004",
+      "source_symbol": "ByokChargeBreakdown; EnterpriseByokClosureService.calculate_byok_charge",
+      "test_symbol": "test_eb12_004_byok_excludes_customer_model_cost_but_bills_platform_and_infra"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB12-005",
+      "source_symbol": "EnterpriseContractVersion",
+      "test_symbol": "test_eb12_005_enterprise_contract_binds_credit_po_and_payment_terms"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB12-006",
+      "source_symbol": "CostCenterBudget; InternalChargeback; EnterpriseByokClosureService.register_cost_center; EnterpriseByokClosureService.approve_chargeback",
+      "test_symbol": "test_eb12_006_cost_center_budget_requires_approval_and_creates_chargeback"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB12-007",
+      "source_symbol": "EnterpriseContractVersion.override_priority; EnterpriseByokClosureService.resolve_contract_override; EnterpriseByokClosureService.history",
+      "test_symbol": "test_eb12_007_contract_overrides_are_versioned_with_deterministic_priority"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB12-008",
+      "source_symbol": "OfflineMeteringBatch; EnterpriseByokClosureService.accept_offline_metering_batch",
+      "test_symbol": "test_eb12_008_private_metering_enforces_trust_boundary_and_offline_chain"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB12-009",
+      "source_symbol": "ServiceCreditRule; ServiceCreditDecision; EnterpriseByokClosureService.calculate_service_credit",
+      "test_symbol": "test_eb12_009_sla_breach_uses_rule_bounded_service_credit"
+    },
+    {
+      "id": "elmos.pricing-billing.v1/EB12-010",
+      "source_symbol": "HistoricalSettlement; EnterpriseByokClosureService.record_historical_settlement",
+      "test_symbol": "test_eb12_010_contract_change_cannot_rewrite_historical_settlement"
+    }
+  ]
+}

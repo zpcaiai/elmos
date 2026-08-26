@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "pack_key": "pricing-billing-local-v1",
+  "oracles": [
+    {
+      "oracle_id": "oracle.money-invariant-spec",
+      "type": "invariant",
+      "owner": "ELMOS pricing-billing engineering",
+      "scope": [
+        "claim.ledger-conservation",
+        "claim.allocation-conservation",
+        "claim.refund-ceiling",
+        "claim.idempotent-effect-uniqueness",
+        "claim.invoice-detail-reconciliation"
+      ],
+      "independence": "dependent",
+      "trust_level": "strong",
+      "version": "1.0.0-local.1",
+      "evidence_refs": ["invariants/money-conservation-v1.json"],
+      "approval_state": "NOT_RUN"
+    },
+    {
+      "oracle_id": "oracle.local-negative-replay",
+      "type": "test",
+      "owner": "ELMOS pricing-billing engineering",
+      "scope": [
+        "claim.ledger-conservation",
+        "claim.allocation-conservation",
+        "claim.refund-ceiling",
+        "claim.idempotent-effect-uniqueness",
+        "claim.invoice-detail-reconciliation"
+      ],
+      "independence": "dependent",
+      "trust_level": "supporting",
+      "version": "1.0.0-local.1",
+      "evidence_refs": [
+        "counterexamples/replay-result.json",
+        "certification/local-test-result.json"
+      ],
+      "approval_state": "NOT_RUN"
+    }
+  ],
+  "precedence_rules": [
+    {
+      "claim_type": "data-money-conservation",
+      "ordered_oracles": ["oracle.money-invariant-spec", "oracle.local-negative-replay"],
+      "conflict_policy": "BLOCK_AND_REQUIRE_INDEPENDENT_REVIEW"
+    }
+  ],
+  "conflicts": [],
+  "approvals": [],
+  "independent_oracle_evidence_state": "NOT_RUN"
+}
