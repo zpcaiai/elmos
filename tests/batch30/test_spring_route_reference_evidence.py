@@ -3,6 +3,7 @@ import importlib.util
 import io
 import json
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -19,6 +20,7 @@ sys.modules[SPEC.name] = REFERENCE
 SPEC.loader.exec_module(REFERENCE)
 
 ROUTE_ID = "boot-2.7-maven-to-boot-3.5.3-java-21"
+ROUTE_CONTRACT_SCRIPT = ROOT / "scripts/operations/validate_spring_route_contract.py"
 
 
 class SpringRouteReferenceEvidenceTests(unittest.TestCase):
@@ -165,6 +167,41 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         self.assertFalse(
             REFERENCE.failure_attempt_destination(self.repo, self.route).exists()
         )
+
+    def test_boot_4_1_local_records_are_exact_and_contract_validated(self) -> None:
+        expected = {
+            "boot-2.7-maven-to-boot-4.1.0-java-21": ("2.7.18", "17"),
+            "boot-3.5-maven-to-boot-4.1.0-java-21": ("3.5.3", "21"),
+        }
+        for route_id, (source_boot, source_java) in expected.items():
+            record = json.loads(
+                (ROOT / "evidence/spring-routes" / f"{route_id}.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(record["execution_status"], "PASSED_LOCAL")
+            self.assertTrue(record["behavioral_parity"])
+            self.assertEqual(
+                record["recorded_tuple"],
+                {
+                    "source_boot": source_boot,
+                    "source_java": source_java,
+                    "target_boot": "4.1.0",
+                    "target_java": "21",
+                },
+            )
+            self.assertEqual(record["external_evidence_status"], "NOT_RUN")
+            self.assertEqual(record["independent_verification"], "NOT_RUN")
+            self.assertEqual(record["certification_status"], "NOT_CERTIFIED")
+
+        result = subprocess.run(
+            [sys.executable, str(ROUTE_CONTRACT_SCRIPT)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
 
 if __name__ == "__main__":

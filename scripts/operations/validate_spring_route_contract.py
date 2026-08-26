@@ -110,6 +110,18 @@ BOOT_4_1_1_ROUTE_COMPOSITIONS = {
     route_id.replace("4.1.0", "4.1.1"): steps
     for route_id, steps in BOOT_4_1_ROUTE_COMPOSITIONS.items()
 }
+BOOT_4_1_LOCAL_EVIDENCE = {
+    "boot-2.7-maven-to-boot-4.1.0-java-21": {
+        "source_boot": "2.7.18",
+        "source_java": "17",
+        "evidence_path": "evidence/spring-routes/boot-2.7-maven-to-boot-4.1.0-java-21.json",
+    },
+    "boot-3.5-maven-to-boot-4.1.0-java-21": {
+        "source_boot": "3.5.3",
+        "source_java": "21",
+        "evidence_path": "evidence/spring-routes/boot-3.5-maven-to-boot-4.1.0-java-21.json",
+    },
+}
 REQUIRED_BOOT_3_2_COMPOSITIONS = {
     "boot-1.5-java-8-maven-to-boot-3.2.12-java-17": (
         "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_0",
@@ -494,7 +506,6 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
             and edge["target_java"] == "21",
             f"BOOT_4_1_EDGE_TARGET_OR_PACK_DRIFT:{route_id}",
         )
-        require(edge["evidence"] == "NOT_RUN", f"BOOT_4_1_EDGE_EVIDENCE_DRIFT:{route_id}")
         require(
             edge["recipe_resource"] != "" and edge["recipe_id"] != "",
             f"BOOT_4_1_EDGE_MISSING_EXECUTION_RECIPE:{route_id}",
@@ -525,6 +536,71 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
                 "pluginIdPattern: org.springframework.boot" in recipe_block
                 and "newVersion: 4.1.0" in recipe_block,
                 f"BOOT_4_1_GRADLE_PIN_MISSING:{route_id}",
+            )
+
+        local_expectation = BOOT_4_1_LOCAL_EVIDENCE.get(route_id)
+        if local_expectation is None:
+            require(
+                edge["evidence"] == "NOT_RUN",
+                f"BOOT_4_1_EDGE_EVIDENCE_DRIFT:{route_id}",
+            )
+            require(
+                edge["verified_boot"] == "" and edge["verified_java"] == "",
+                f"BOOT_4_1_UNRUN_EDGE_DECLARES_TUPLE:{route_id}",
+            )
+            continue
+
+        require(
+            edge["evidence"] == "PASSED_LOCAL",
+            f"BOOT_4_1_LOCAL_EDGE_NOT_RECORDED:{route_id}",
+        )
+        require(
+            edge["verified_boot"] == local_expectation["source_boot"]
+            and edge["verified_java"] == local_expectation["source_java"],
+            f"BOOT_4_1_LOCAL_TUPLE_DRIFT:{route_id}",
+        )
+        evidence_path = ROOT / str(local_expectation["evidence_path"])
+        require(evidence_path.is_file(), f"BOOT_4_1_LOCAL_EVIDENCE_MISSING:{route_id}")
+        try:
+            evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise ContractError(f"BOOT_4_1_LOCAL_EVIDENCE_INVALID:{route_id}") from exc
+        require(
+            evidence.get("route_id") == route_id,
+            f"BOOT_4_1_LOCAL_EVIDENCE_ROUTE_DRIFT:{route_id}",
+        )
+        require(
+            evidence.get("execution_status") == "PASSED_LOCAL"
+            and evidence.get("behavioral_parity") is True,
+            f"BOOT_4_1_LOCAL_EVIDENCE_EXECUTION_DRIFT:{route_id}",
+        )
+        require(
+            evidence.get("recorded_tuple")
+            == {
+                "source_boot": local_expectation["source_boot"],
+                "source_java": local_expectation["source_java"],
+                "target_boot": "4.1.0",
+                "target_java": "21",
+            },
+            f"BOOT_4_1_LOCAL_EVIDENCE_TUPLE_DRIFT:{route_id}",
+        )
+        require(
+            evidence.get("certification_status") == "NOT_CERTIFIED"
+            and evidence.get("external_evidence_status") == "NOT_RUN"
+            and evidence.get("independent_verification") == "NOT_RUN"
+            and evidence.get("rootless_runner") == "NOT_RUN"
+            and evidence.get("authorized_customer_repository") == "NOT_RUN",
+            f"BOOT_4_1_LOCAL_EVIDENCE_BOUNDARY_DRIFT:{route_id}",
+        )
+        for side in ("source", "target"):
+            execution = evidence.get(side)
+            require(
+                isinstance(execution, dict)
+                and execution.get("boot")
+                == (local_expectation["source_boot"] if side == "source" else "4.1.0")
+                and execution.get("build") == "PASSED"
+                and execution.get("runtime", {}).get("health", {}).get("status") == "UP",
+                f"BOOT_4_1_LOCAL_{side.upper()}_EVIDENCE_INCOMPLETE:{route_id}",
             )
 
     for route_id, ordered_steps in BOOT_4_1_1_ROUTE_COMPOSITIONS.items():
