@@ -88,6 +88,8 @@ export interface MiniappAnalyzedRoute {
   readonly parameters: readonly string[];
   readonly guards: readonly string[];
   readonly sourceRefs: readonly MiniappSourceRef[];
+  /** The exact router instance that owns this route declaration, when bound. */
+  readonly ownerInstanceId?: string;
 }
 
 export interface MiniappAnalyzedState {
@@ -104,6 +106,8 @@ export interface MiniappAnalyzedEffect {
   readonly id: string;
   readonly name: string;
   readonly trigger: string;
+  readonly instanceId?: string;
+  readonly relatedInstanceId?: string;
   readonly asynchronous: boolean;
   readonly cleanup: "present" | "absent" | "not-applicable" | "unknown";
   readonly sourceRefs: readonly MiniappSourceRef[];
@@ -233,6 +237,8 @@ interface MutableAnalysis {
   parsedFiles: Set<string>;
   failedFiles: Set<string>;
   parserEvidence: Set<string>;
+  nativeConfigFiles: Map<string, string>;
+  nativeConfigInvalid: Set<string>;
 }
 
 interface MarkupTag {
@@ -387,6 +393,11 @@ function normalizeBindingExpression(value: string): string {
   return trimmed.startsWith("{{") && trimmed.endsWith("}}") ? trimmed.slice(2, -2).trim() : trimmed;
 }
 
+function exactCollectionItemInterpolation(value: string, itemAlias: string): string {
+  const match = /^\{\{\s*([A-Za-z_$][\w$]*)\s*\}\}$/u.exec(value.trim());
+  return match?.[1] === itemAlias ? itemAlias : "";
+}
+
 function eventBindingsFromAttributes(attributes: Readonly<Record<string, string>>): readonly MiniappEventBinding[] {
   return Object.entries(attributes).flatMap(([name, rawHandler]) => {
     const vue = /^(?:@|v-on:)([A-Za-z][A-Za-z0-9-]*)(?:\.(.+))?$/u.exec(name);
@@ -417,7 +428,7 @@ function collectionBindingFromAttributes(
       itemAlias,
       indexAlias: match[2] ?? null,
       keyExpression: attributes[":key"] ?? attributes["v-bind:key"] ?? null,
-      valueExpression: normalizeBindingExpression(textContent) || itemAlias,
+      valueExpression: exactCollectionItemInterpolation(textContent, itemAlias),
     };
   }
   const directive = Object.entries(attributes).find(([name]) => /^(?:wx|a|tt|xhs):for$/u.test(name));
@@ -429,7 +440,7 @@ function collectionBindingFromAttributes(
     itemAlias,
     indexAlias: attributes[`${namespace}:for-index`] || "index",
     keyExpression: attributes[`${namespace}:key`] ?? null,
-    valueExpression: normalizeBindingExpression(textContent) || itemAlias,
+    valueExpression: exactCollectionItemInterpolation(textContent, itemAlias),
   };
 }
 
@@ -510,8 +521,169 @@ function analyzeTypeScript(
   if (trace?.recordParsedFile !== false) state.parsedFiles.add(path);
   state.parserEvidence.add("typescript-compiler-api");
 
+  const unwrapExpression = (expression: ts.Expression): ts.Expression => {
+    let current = expression;
+    while (ts.isParenthesizedExpression(current) || ts.isAsExpression(current) || ts.isTypeAssertionExpression(current)) {
+      current = current.expression;
+    }
+    return current;
+  };
+
   const imports = new Map<string, { readonly module: string; readonly imported: string }>();
   const storeInstances = new Map<string, string>();
+  const routeOwnerInstances = new Map<ts.ObjectLiteralExpression, string>();
+  type FrameworkFactoryKind = "vue-app" | "pinia" | "router" | "router-history-web" | "router-history-hash" | "router-history-memory";
+  type FrameworkBinding = { readonly kind: FrameworkFactoryKind; readonly instanceId: string };
+  const frameworkBindings = new Map<string, FrameworkBinding>();
+  const frameworkBindingsByDeclaration = new Map<ts.VariableDeclaration, FrameworkBinding>();
+  const invalidFrameworkBindings = new Set<string>();
+  const shadowedNamesByFunction = new Map<ts.Node, Set<string>>();
+  const collectImportsAndShadows = (node: ts.Node): void => {
+    if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
+      const module = node.moduleSpecifier.text;
+      const clause = node.importClause;
+      if (clause?.name) imports.set(clause.name.text, { module, imported: "default" });
+      if (clause?.namedBindings && ts.isNamespaceImport(clause.namedBindings)) {
+        imports.set(clause.namedBindings.name.text, { module, imported: "*" });
+      }
+      for (const item of clause?.namedBindings && ts.isNamedImports(clause.namedBindings) ? clause.namedBindings.elements : []) {
+        imports.set(item.name.text, { module, imported: item.propertyName?.text ?? item.name.text });
+      }
+    }
+    if (ts.isFunctionLike(node)) {
+      const names = new Set<string>(node.parameters.flatMap(parameter => {
+        const name = parameter.name;
+        return ts.isIdentifier(name) ? [name.text] : [];
+      }));
+      const collectLocal = (child: ts.Node): void => {
+        if (child !== node && ts.isFunctionLike(child)) return;
+        if (ts.isVariableDeclaration(child) && ts.isIdentifier(child.name)) names.add(child.name.text);
+        if ((ts.isFunctionDeclaration(child) || ts.isClassDeclaration(child)) && child.name) names.add(child.name.text);
+        ts.forEachChild(child, collectLocal);
+      };
+      const body = (node as ts.FunctionLikeDeclaration).body;
+      collectLocal(body ?? node);
+      shadowedNamesByFunction.set(node, names);
+    }
+    ts.forEachChild(node, collectImportsAndShadows);
+  };
+  collectImportsAndShadows(file);
+  const frameworkKindForImport = (binding: { readonly module: string; readonly imported: string } | undefined): FrameworkFactoryKind | null => {
+    if (binding?.module === "vue" && binding.imported === "createApp") return "vue-app";
+    if (binding?.module === "pinia" && binding.imported === "createPinia") return "pinia";
+    if (binding?.module === "vue-router" && binding.imported === "createRouter") return "router";
+    if (binding?.module === "vue-router" && binding.imported === "createWebHistory") return "router-history-web";
+    if (binding?.module === "vue-router" && binding.imported === "createWebHashHistory") return "router-history-hash";
+    if (binding?.module === "vue-router" && binding.imported === "createMemoryHistory") return "router-history-memory";
+    return null;
+  };
+  const frameworkFactoryKind = (call: ts.CallExpression): FrameworkFactoryKind | null => {
+    const value = unwrapExpression(call.expression);
+    const binding = ts.isIdentifier(value)
+      ? imports.get(value.text)
+      : ts.isPropertyAccessExpression(value) && ts.isIdentifier(value.expression)
+        ? (() => {
+          const namespace = imports.get(value.expression.text);
+          return namespace?.imported === "*" ? { module: namespace.module, imported: value.name.text } : undefined;
+        })()
+        : undefined;
+    if (ts.isIdentifier(value)) {
+      for (const [fn, names] of shadowedNamesByFunction) {
+        if (names.has(value.text) && fn !== file && value.getSourceFile() === file) {
+          let current: ts.Node | undefined = value.parent;
+          while (current && current !== fn) current = current.parent;
+          if (current === fn) return null;
+        }
+      }
+    }
+    if (ts.isPropertyAccessExpression(value) && ts.isIdentifier(value.expression)) {
+      for (const [fn, names] of shadowedNamesByFunction) {
+        if (!names.has(value.expression.text)) continue;
+        let current: ts.Node | undefined = value.expression.parent;
+        while (current && current !== fn) current = current.parent;
+        if (current === fn) return null;
+      }
+    }
+    return frameworkKindForImport(binding);
+  };
+  const precollectFrameworkBindings = (node: ts.Node): void => {
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.initializer && ts.isCallExpression(node.initializer)) {
+      const kind = frameworkFactoryKind(node.initializer);
+      if (kind) {
+        const binding = {
+          kind,
+          instanceId: stableId("framework-instance", path, `${kind}:${absoluteStart(node.initializer)}`),
+        } as const;
+        frameworkBindings.set(node.name.text, binding);
+        frameworkBindingsByDeclaration.set(node, binding);
+      }
+    }
+    ts.forEachChild(node, precollectFrameworkBindings);
+  };
+  precollectFrameworkBindings(file);
+  const frameworkInstanceForExpression = (expression: ts.Expression): FrameworkBinding | null => {
+    const value = unwrapExpression(expression);
+    if (ts.isIdentifier(value)) {
+      let current: ts.Node | undefined = value.parent;
+      while (current) {
+        if (ts.isFunctionLike(current)) {
+          const functionScope = current;
+          const names = shadowedNamesByFunction.get(functionScope);
+          if (names?.has(value.text)) {
+            let localBinding: FrameworkBinding | null = null;
+            const findLocal = (child: ts.Node): void => {
+              if (localBinding || (child !== functionScope && ts.isFunctionLike(child))) return;
+              if (ts.isVariableDeclaration(child) && ts.isIdentifier(child.name)
+                && child.name.text === value.text) {
+                localBinding = frameworkBindingsByDeclaration.get(child) ?? null;
+              }
+              ts.forEachChild(child, findLocal);
+            };
+            const body = (functionScope as ts.FunctionLikeDeclaration).body;
+            if (body) findLocal(body);
+            return localBinding && !invalidFrameworkBindings.has(value.text) ? localBinding : null;
+          }
+        }
+        current = current.parent;
+      }
+      const binding = frameworkBindings.get(value.text);
+      return binding && !invalidFrameworkBindings.has(value.text) ? binding : null;
+    }
+    if (ts.isCallExpression(value)) {
+      const kind = frameworkFactoryKind(value);
+      if (!kind) return null;
+      return { kind, instanceId: stableId("framework-instance", path, `${kind}:${absoluteStart(value)}`) };
+    }
+    if (ts.isPropertyAccessExpression(value)) {
+      const receiver = frameworkInstanceForExpression(value.expression);
+      return receiver?.kind === "vue-app" ? receiver : null;
+    }
+    return null;
+  };
+  const recordFrameworkEffect = (
+    name: string,
+    trigger: string,
+    node: ts.Node,
+    instanceId: string,
+    relatedInstanceId?: string,
+  ): void => {
+    const id = stableId("effect", path, `${name}:${absoluteStart(node)}`);
+    if (state.effects.some(effect => effect.id === id)) return;
+    state.effects.push({
+      id,
+      name,
+      trigger,
+      instanceId,
+      ...(relatedInstanceId ? { relatedInstanceId } : {}),
+      asynchronous: false,
+      cleanup: name === "vue.app.unmount" ? "present" : "not-applicable",
+      sourceRefs: [nodeRef(node)],
+    });
+  };
+  const frameworkPluginForExpression = (expression: ts.Expression | undefined): FrameworkBinding | null => {
+    if (!expression) return null;
+    return frameworkInstanceForExpression(expression);
+  };
   const stateByName = new Map<string, MiniappAnalyzedState>();
   const componentNames = new Set<string>();
   let anonymousComponent = 0;
@@ -537,13 +709,6 @@ function analyzeTypeScript(
     if (exactInitial !== undefined) state.stateInitialValues.set(next.id, exactInitial);
   };
 
-  const unwrapExpression = (expression: ts.Expression): ts.Expression => {
-    let current = expression;
-    while (ts.isParenthesizedExpression(current) || ts.isAsExpression(current) || ts.isTypeAssertionExpression(current)) {
-      current = current.expression;
-    }
-    return current;
-  };
   const exactInitial = (expression: ts.Expression | undefined): { readonly type: MiniappAnalyzedState["stateType"]; readonly value?: string } => {
     if (!expression) return { type: "unknown" };
     const value = unwrapExpression(expression);
@@ -767,6 +932,132 @@ function analyzeTypeScript(
     });
   };
 
+  const validateRouterConfiguration = (
+    call: ts.CallExpression,
+    routerInstanceId: string,
+  ): string | null => {
+    const configuration = call.arguments.length === 1 ? unwrapExpression(call.arguments[0]!) : undefined;
+    if (!configuration || !ts.isObjectLiteralExpression(configuration)) {
+      state.findings.push(finding(
+        "MINIAPP_ROUTER_CONFIGURATION_UNRESOLVED",
+        "createRouter requires exactly one inline object-literal configuration for exact routes/history lowering.",
+        "D",
+        [nodeRef(call)],
+        "error",
+        true,
+      ));
+      return null;
+    }
+    const properties = configuration.properties;
+    const historyProperties = properties.filter(property => propertyName(property.name) === "history");
+    const routesProperties = properties.filter(property => propertyName(property.name) === "routes");
+    const unknownOptions = properties.filter(property => {
+      const name = ts.isSpreadAssignment(property) ? undefined : propertyName(property.name);
+      return name !== "history" && name !== "routes";
+    });
+    if (unknownOptions.length > 0 || historyProperties.length !== 1 || routesProperties.length !== 1) {
+      state.findings.push(finding(
+        "MINIAPP_ROUTER_OPTION_UNRESOLVED",
+        "Router configuration must contain exactly one history and routes property and no unmodeled options.",
+        "D",
+        [nodeRef(configuration)],
+        "error",
+        true,
+      ));
+    }
+    const historyProperty = historyProperties[0];
+    const historyInitializer = historyProperty && ts.isPropertyAssignment(historyProperty)
+      ? unwrapExpression(historyProperty.initializer)
+      : undefined;
+    let historyInstanceId: string | null = null;
+    let validRootHistory = false;
+    if (historyInitializer && ts.isCallExpression(historyInitializer)) {
+      const historyKind = frameworkFactoryKind(historyInitializer);
+      const historyBinding = frameworkBindings.get(
+        ts.isIdentifier(historyInitializer.expression) ? historyInitializer.expression.text : "",
+      );
+      if (historyKind === "router-history-web"
+        && historyInitializer.arguments.length === 1
+        && literalText(historyInitializer.arguments[0]) === "/") {
+        historyInstanceId = historyBinding?.instanceId
+          ?? stableId("framework-instance", path, `${historyKind}:${absoluteStart(historyInitializer)}`);
+        validRootHistory = true;
+      }
+    }
+    if (!validRootHistory) {
+      state.findings.push(finding(
+        "MINIAPP_ROUTER_HISTORY_BASE_UNRESOLVED",
+        "Router history must be one trace-bound createWebHistory(\"/\") call; null, hash, memory, dynamic and referenced history are not equivalent to the native root page stack.",
+        "D",
+        [nodeRef(historyProperty ?? configuration)],
+        "error",
+        true,
+      ));
+    }
+    const routesProperty = routesProperties[0];
+    const routeInitializer = routesProperty && ts.isPropertyAssignment(routesProperty)
+      ? unwrapExpression(routesProperty.initializer)
+      : undefined;
+    if (!routeInitializer || !ts.isArrayLiteralExpression(routeInitializer) || routeInitializer.elements.length === 0) {
+      state.findings.push(finding(
+        "MINIAPP_ROUTER_ROUTES_UNRESOLVED",
+        "Router routes must be one non-empty inline array literal of explicit path/component objects.",
+        "D",
+        [nodeRef(routesProperty ?? configuration)],
+        "error",
+        true,
+      ));
+      return historyInstanceId;
+    }
+    for (const element of routeInitializer.elements) {
+      const routeObject = unwrapExpression(element);
+      if (!ts.isObjectLiteralExpression(routeObject)) {
+        state.findings.push(finding(
+          "MINIAPP_ROUTER_ROUTES_UNRESOLVED",
+          "Spread, referenced and computed route entries require a resolved route graph before native page generation.",
+          "D",
+          [nodeRef(element)],
+          "error",
+          true,
+        ));
+        continue;
+      }
+      const names = routeObject.properties.map(property => ts.isSpreadAssignment(property) ? undefined : propertyName(property.name));
+      const pathProperty = routeObject.properties.find(property => ts.isPropertyAssignment(property)
+        && propertyName(property.name) === "path");
+      const componentProperty = routeObject.properties.find(property => ts.isPropertyAssignment(property)
+        && propertyName(property.name) === "component");
+      const routePath = pathProperty && ts.isPropertyAssignment(pathProperty)
+        ? literalText(pathProperty.initializer)
+        : undefined;
+      const componentInitializer = componentProperty && ts.isPropertyAssignment(componentProperty)
+        ? unwrapExpression(componentProperty.initializer)
+        : undefined;
+      const valid = names.length === 2
+        && names.filter(name => name === "path").length === 1
+        && names.filter(name => name === "component").length === 1
+        && routeObject.properties.every(property => ts.isPropertyAssignment(property)
+          && ["path", "component"].includes(propertyName(property.name) ?? ""))
+        && typeof routePath === "string"
+        && routePath.startsWith("/")
+        && Boolean(componentInitializer)
+        && componentInitializer?.kind !== ts.SyntaxKind.NullKeyword;
+      if (!valid) {
+        state.findings.push(finding(
+          "MINIAPP_ROUTE_OPTION_UNRESOLVED",
+          "Each route object must contain exactly path and component properties; aliases, guards, meta, props, children and spreads are not lowered.",
+          "D",
+          [nodeRef(routeObject)],
+          "error",
+          true,
+        ));
+        continue;
+      }
+      routeOwnerInstances.set(routeObject, routerInstanceId);
+    }
+    return historyInstanceId;
+  };
+
   const visit = (node: ts.Node): void => {
     const recordSecretReferenceFinding = (key: string, owner: ts.Node, surface: string): void => {
       state.findings.push(finding(
@@ -817,6 +1108,30 @@ function analyzeTypeScript(
       const assignmentKind = node.operatorToken.kind;
       const assignment = assignmentKind >= ts.SyntaxKind.FirstAssignment
         && assignmentKind <= ts.SyntaxKind.LastAssignment;
+      if (assignment && ts.isIdentifier(node.left) && frameworkBindings.has(node.left.text)) {
+        invalidFrameworkBindings.add(node.left.text);
+        state.findings.push(finding(
+          "MINIAPP_FRAMEWORK_INSTANCE_REASSIGNED",
+          `${node.left.text} reassigns a trace-bound framework instance; later operations cannot be attributed to one declaration.`,
+          "C",
+          [nodeRef(node)],
+          "error",
+          true,
+        ));
+      }
+      if (assignment && (ts.isPropertyAccessExpression(node.left) || ts.isElementAccessExpression(node.left))) {
+        const receiver = frameworkInstanceForExpression(node.left);
+        if (receiver?.kind === "vue-app") {
+          state.findings.push(finding(
+            "MINIAPP_VUE_APP_PROPERTY_WRITE_UNRESOLVED",
+            `${node.left.getText(file)} mutates the Vue application instance/configuration outside bounded bootstrap lowering.`,
+            "D",
+            [nodeRef(node)],
+            "error",
+            true,
+          ));
+        }
+      }
       if (assignment
         && ts.isElementAccessExpression(node.left)
         && (!node.left.argumentExpression || !ts.isStringLiteralLike(node.left.argumentExpression))) {
@@ -1029,6 +1344,127 @@ function analyzeTypeScript(
 
     if (ts.isCallExpression(node)) {
       const callee = node.expression.getText(file);
+      const frameworkKind = frameworkFactoryKind(node);
+      if (frameworkKind === "vue-app") {
+        const instanceId = frameworkBindings.get(
+          ts.isIdentifier(node.expression) ? node.expression.text : "",
+        )?.instanceId ?? stableId("framework-instance", path, `${frameworkKind}:${absoluteStart(node)}`);
+        recordFrameworkEffect("vue.create-app", "application-bootstrap", node, instanceId);
+        const rootExpression = node.arguments.length === 1 ? unwrapExpression(node.arguments[0]!) : undefined;
+        const rootBinding = rootExpression && ts.isIdentifier(rootExpression)
+          ? imports.get(rootExpression.text)
+          : undefined;
+        const rootIsTraceBound = Boolean(
+          rootExpression
+          && ts.isIdentifier(rootExpression)
+          && (
+            componentNames.has(rootExpression.text)
+            || (rootBinding?.module.startsWith(".") && rootBinding.imported === "default")
+          ),
+        );
+        if (node.arguments.length !== 1 || !rootExpression || !ts.isIdentifier(rootExpression) || !rootIsTraceBound) {
+          state.findings.push(finding(
+            node.arguments.length > 1 ? "MINIAPP_VUE_ROOT_PROPS_UNRESOLVED" : "MINIAPP_VUE_ROOT_COMPONENT_UNRESOLVED",
+            "createApp requires exactly one imported or locally declared trace-bound root component; root props and unknown roots are not lowered.",
+            "D",
+            [nodeRef(node)],
+            "error",
+            true,
+          ));
+        }
+      } else if (frameworkKind === "pinia") {
+        const instanceId = frameworkBindings.get(
+          ts.isIdentifier(node.expression) ? node.expression.text : "",
+        )?.instanceId ?? stableId("framework-instance", path, `${frameworkKind}:${absoluteStart(node)}`);
+        recordFrameworkEffect("pinia.create", "application-state-provider", node, instanceId);
+        if (node.arguments.length !== 0) state.findings.push(finding(
+          "MINIAPP_PINIA_FACTORY_ARGUMENTS_UNRESOLVED",
+          "createPinia must not receive source-controlled arguments.",
+          "D",
+          [nodeRef(node)],
+          "error",
+          true,
+        ));
+      } else if (frameworkKind === "router") {
+        state.parserEvidence.add("vue-router-ast");
+        const routerInstanceId = frameworkBindings.get(
+          ts.isVariableDeclaration(node.parent) && ts.isIdentifier(node.parent.name) ? node.parent.name.text : "",
+        )?.instanceId ?? stableId("framework-instance", path, `${frameworkKind}:${absoluteStart(node)}`);
+        const historyInstanceId = validateRouterConfiguration(node, routerInstanceId);
+        recordFrameworkEffect("vue-router.create-router", "application-router", node, routerInstanceId, historyInstanceId ?? undefined);
+      } else if (frameworkKind?.startsWith("router-history-")) {
+        const instanceId = frameworkBindings.get(
+          ts.isVariableDeclaration(node.parent) && ts.isIdentifier(node.parent.name) ? node.parent.name.text : "",
+        )?.instanceId ?? stableId("framework-instance", path, `${frameworkKind}:${absoluteStart(node)}`);
+        const exactRoot = frameworkKind === "router-history-web"
+          && node.arguments.length === 1
+          && literalText(node.arguments[0]) === "/";
+        recordFrameworkEffect(
+          exactRoot ? "vue-router.history.web-root" : "vue-router.history.unsupported",
+          exactRoot ? "native-page-stack" : "source-router-history",
+          node,
+          instanceId,
+        );
+        if (!exactRoot) state.findings.push(finding(
+          "MINIAPP_ROUTER_HISTORY_BASE_UNRESOLVED",
+          "Only createWebHistory(\"/\") is equivalent to the native root page stack; hash, memory, null, dynamic and non-root bases are blocked.",
+          "D",
+          [nodeRef(node)],
+          "error",
+          true,
+        ));
+      }
+      const frameworkPropertyCall = ts.isPropertyAccessExpression(node.expression) ? node.expression : undefined;
+      if (frameworkPropertyCall) {
+        const receiver = frameworkInstanceForExpression(frameworkPropertyCall.expression);
+        if (receiver?.kind === "vue-app") {
+          if (frameworkPropertyCall.name.text === "use" && node.arguments.length === 1) {
+            const plugin = frameworkPluginForExpression(node.arguments[0]);
+            if (plugin?.kind === "router" || plugin?.kind === "pinia") {
+              recordFrameworkEffect(`vue.app.use.${plugin.kind}`, "application-plugin-install", node, receiver.instanceId, plugin.instanceId);
+            } else {
+              state.findings.push(finding(
+                "MINIAPP_VUE_PLUGIN_INSTALL_UNRESOLVED",
+                "app.use requires one trace-bound Pinia or Vue Router instance; arbitrary plugin hooks are not silently dropped.",
+                "D",
+                [nodeRef(node)],
+                "error",
+                true,
+              ));
+            }
+          } else if (frameworkPropertyCall.name.text === "mount") {
+            if (node.arguments.length === 1 && literalText(node.arguments[0])?.trim()) {
+              recordFrameworkEffect("vue.app.mount", "native-application-entry", node, receiver.instanceId);
+            } else state.findings.push(finding(
+              "MINIAPP_VUE_MOUNT_TARGET_UNRESOLVED",
+              "Vue mount requires exactly one non-empty selector string.",
+              "D",
+              [nodeRef(node)],
+              "error",
+              true,
+            ));
+          } else if (frameworkPropertyCall.name.text === "unmount") {
+            recordFrameworkEffect("vue.app.unmount", "unsupported-application-lifecycle", node, receiver.instanceId);
+            state.findings.push(finding(
+              "MINIAPP_VUE_APP_UNMOUNT_UNRESOLVED",
+              "Vue app unmount lifecycle is not represented by the native MiniApp application contract.",
+              "D",
+              [nodeRef(node)],
+              "error",
+              true,
+            ));
+          } else if (frameworkPropertyCall.name.text !== "use" || node.arguments.length !== 1) {
+            state.findings.push(finding(
+              "MINIAPP_VUE_APP_PROPERTY_WRITE_UNRESOLVED",
+              `${callee} reads or mutates the Vue application instance outside bounded use/mount lowering.`,
+              "D",
+              [nodeRef(node)],
+              "error",
+              true,
+            ));
+          }
+        }
+      }
       if (callee === "Page" || callee === "Component") {
         state.findings.push(finding(
           "MINIAPP_NATIVE_PAGE_SEMANTICS_UNRESOLVED",
@@ -1118,7 +1554,12 @@ function analyzeTypeScript(
       const propertyMethod = propertyCall?.name.text;
       const propertyReceiverRoot = propertyCall?.expression.getText(file).split(".", 1)[0] ?? "";
       const modeledStoreCall = propertyMethod === "add" && storeInstances.has(propertyReceiverRoot);
+      const frameworkReceiver = propertyCall ? frameworkInstanceForExpression(propertyCall.expression) : null;
+      const knownFrameworkMethod = frameworkReceiver?.kind === "vue-app"
+        && (propertyMethod === "use" || propertyMethod === "mount");
       const knownCall = directlyModeledCalls.has(callee)
+        || frameworkKind !== null
+        || knownFrameworkMethod
         || (importBinding?.module.startsWith(".") ?? false)
         || directPlatformRoot
         || isTaroBinding
@@ -1167,6 +1608,17 @@ function analyzeTypeScript(
       const parent = node.parent;
       const routeLike = parent.properties.some(item => ts.isPropertyAssignment(item)
         && ["component", "element", "children", "loader", "redirect"].includes(propertyName(item.name) ?? ""));
+      const validatedRouteContainer = routeOwnerInstances.has(parent);
+      if (routePath && routeLike && !validatedRouteContainer) {
+        state.findings.push(finding(
+          "MINIAPP_ROUTE_DECLARATION_UNBOUND",
+          `Route-like object ${routePath} is not owned by a validated router route container and cannot be lowered as a native page.`,
+          "D",
+          [nodeRef(parent)],
+          "error",
+          true,
+        ));
+      }
       if (routePath && routeLike && !routePath.startsWith("/")) {
         state.findings.push(finding(
           "MINIAPP_NESTED_RELATIVE_ROUTE_UNRESOLVED",
@@ -1177,7 +1629,7 @@ function analyzeTypeScript(
           true,
         ));
       }
-      if (routePath?.startsWith("/")) {
+      if (routePath?.startsWith("/") && validatedRouteContainer) {
         const componentProperty = parent.properties.find(item => ts.isPropertyAssignment(item)
           && ["component", "element"].includes(propertyName(item.name) ?? ""));
         const componentInitializer = componentProperty && ts.isPropertyAssignment(componentProperty)
@@ -1209,6 +1661,9 @@ function analyzeTypeScript(
             .map(item => propertyName(item.name) ?? "guard")
             .sort(),
           sourceRefs: [nodeRef(parent)],
+          ...(routeOwnerInstances.has(parent)
+            ? { ownerInstanceId: routeOwnerInstances.get(parent)! }
+            : {}),
         });
       }
     }
@@ -1231,16 +1686,6 @@ function analyzeTypeScript(
       state.findings.push(finding(
         "MINIAPP_ROUTER_SCROLL_BEHAVIOR_UNRESOLVED",
         "Router scrollBehavior requires a target page-stack and scroll-container implementation.",
-        "C",
-        [nodeRef(node)],
-      ));
-    }
-
-    if (ts.isPropertyAssignment(node) && propertyName(node.name) === "history"
-      && node.initializer.kind !== ts.SyntaxKind.NullKeyword) {
-      state.findings.push(finding(
-        "MINIAPP_ROUTER_HISTORY_BASE_UNRESOLVED",
-        "Router history/base semantics are not represented by the generated native page manifest.",
         "C",
         [nodeRef(node)],
       ));
@@ -1552,7 +1997,7 @@ function analyzeMarkup(
       const attrs = Object.keys(tag.attributes).sort();
       const events = attrs.filter(name => /^(?:@|v-on:|on|bind|catch)/.test(name));
       const accessibility = attrs.filter(name => /^(?:aria-|role|tabindex)/i.test(name));
-      state.components.push({
+      const analyzedComponent: MiniappAnalyzedComponent = {
         id: componentIds[tagIndex]!,
         name: `${tag.name}@${tag.line}:${tag.column}`,
         semanticRole: tag.attributes["v-for"] || Object.keys(tag.attributes).some(name => /^(?:wx|a|tt|xhs):for$/u.test(name))
@@ -1565,7 +2010,19 @@ function analyzeMarkup(
         accessibility,
         ...analyzedComponentBindings(tag.name, tag.attributes, tag.textContent),
         sourceRefs: [ref(tag.line, tag.column)],
-      });
+      };
+      state.components.push(analyzedComponent);
+      if (analyzedComponent.collectionBinding
+        && analyzedComponent.collectionBinding.valueExpression !== analyzedComponent.collectionBinding.itemAlias) {
+        state.findings.push(finding(
+          "MINIAPP_LIST_ITEM_CONTENT_UNRESOLVED",
+          `${tag.name} collection item content is not one exact direct {{${analyzedComponent.collectionBinding.itemAlias}}} interpolation; nested or mixed list semantics are not lowered by the bounded generator.`,
+          "D",
+          [ref(tag.line, tag.column)],
+          "error",
+          true,
+        ));
+      }
       if (implicitHtmlSemanticTags.has(tag.name.toLowerCase())) {
         state.findings.push(finding(
           "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
@@ -2093,30 +2550,91 @@ function analyzeDart(path: string, source: string, state: MutableAnalysis): void
   }
 }
 
-function analyzeNativeConfig(path: string, source: string, state: MutableAnalysis): void {
+function analyzeNativeConfig(
+  path: string,
+  source: string,
+  state: MutableAnalysis,
+  sourceLabel: MiniappSourceLabel,
+): void {
+  const configName = path.split("/").at(-1) ?? path;
+  const previous = state.nativeConfigFiles.get(configName);
+  state.nativeConfigFiles.set(configName, path);
+  const configRef = lineRef(path, source, 1);
+  const invalid = (message: string): void => {
+    state.nativeConfigInvalid.add(path);
+    state.findings.push(finding(
+      "MINIAPP_NATIVE_CONFIG_INVALID",
+      message,
+      "D",
+      [configRef],
+      "error",
+      true,
+    ));
+  };
   try {
     const parsed = JSON.parse(source) as unknown;
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("configuration root must be an object");
-    const record = parsed as Readonly<Record<string, unknown>>;
-    if (Array.isArray(record.pages)) {
-      for (const item of record.pages) {
-        if (typeof item !== "string" || !item.trim()) continue;
-        const routePath = item.startsWith("/") ? item : `/${item}`;
-        state.routes.push({
-          id: stableId("route", path, routePath), path: routePath, component: item, componentModule: item, parameters: [], guards: [],
-          sourceRefs: [lineRef(path, source, 1)],
-        });
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      invalid("configuration root must be an object");
+    } else if (previous && previous !== path) {
+      invalid(`${configName} is declared more than once (${previous}, ${path}); one authoritative configuration is required.`);
+    } else {
+      const record = parsed as Readonly<Record<string, unknown>>;
+      const expectedSchema = sourceLabel === "uni-app" && configName === "pages.json"
+        ? "uni-pages"
+        : sourceLabel === "native-miniapp" && configName === "app.json"
+          ? "native-app"
+          : "unsupported";
+      const unknownKeys = Object.keys(record).filter(key => key !== "pages");
+      if (expectedSchema === "unsupported") {
+        invalid(`${configName} is not a supported source configuration for ${sourceLabel}; only native-miniapp/app.json or uni-app/pages.json are accepted.`);
+      } else if (unknownKeys.length > 0) {
+        invalid(`${configName} contains unmodeled configuration key(s): ${unknownKeys.sort().join(", ")}.`);
+      } else if (!Array.isArray(record.pages) || record.pages.length === 0) {
+        invalid(`${configName}.pages must be a non-empty array.`);
+      } else if (expectedSchema === "native-app") {
+        const pageItems = record.pages.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+        if (pageItems.length !== record.pages.length) {
+          invalid(`${configName}.pages entries must be non-empty strings.`);
+        } else {
+          for (const item of pageItems) {
+            const routePath = item.startsWith("/") ? item : `/${item}`;
+            state.routes.push({
+              id: stableId("route", path, routePath), path: routePath, component: item, componentModule: item, parameters: [], guards: [],
+              sourceRefs: [configRef],
+            });
+          }
+        }
+      } else {
+        const pageItems = record.pages.filter((item): item is Record<string, unknown> =>
+          Boolean(item) && typeof item === "object" && !Array.isArray(item));
+        const validPages = pageItems.length === record.pages.length
+          && pageItems.every(item => Object.keys(item).length === 1
+            && typeof item.path === "string"
+            && item.path.trim().length > 0
+            && !item.path.startsWith("/"));
+        if (!validPages) {
+          invalid(`${configName}.pages entries must be objects with exactly one non-empty relative path property.`);
+        } else {
+          for (const item of pageItems) {
+            const routePath = `/${item.path as string}`;
+            state.routes.push({
+              id: stableId("route", path, routePath), path: routePath, component: item.path as string, componentModule: item.path as string, parameters: [], guards: [],
+              sourceRefs: [configRef],
+            });
+          }
+        }
       }
     }
     state.parsedFiles.add(path);
     state.parserEvidence.add("json-parser");
   } catch (error) {
     state.failedFiles.add(path);
+    state.nativeConfigInvalid.add(path);
     state.findings.push(finding(
       "MINIAPP_NATIVE_CONFIG_INVALID",
       error instanceof Error ? error.message : String(error),
       "D",
-      [lineRef(path, source, 1)],
+      [configRef],
       "error",
       true,
     ));
@@ -2385,6 +2903,7 @@ function newMutableAnalysis(): MutableAnalysis {
   return {
     components: [], routes: [], states: [], effects: [], forms: [], styles: [], capabilities: [], actionFacts: [], stateInitialValues: new Map(),
     dependencies: new Set(), dependencyUsage: new Map(), findings: [], parsedFiles: new Set(), failedFiles: new Set(), parserEvidence: new Set(),
+    nativeConfigFiles: new Map(), nativeConfigInvalid: new Set(),
   };
 }
 
@@ -2426,12 +2945,29 @@ export function analyzeMiniappSource(
       } else {
         analyzeCss(path, source, state);
       }
-    } else if (/^(?:app|pages)\.json$/.test(path) || /(?:^|\/)app\.json$/.test(path)) {
+    } else if (path === "app.json" || path === "pages.json") {
       applicableFiles.add(path);
-      analyzeNativeConfig(path, source, state);
+      analyzeNativeConfig(path, source, state, sourceLabel);
     }
   }
-  if (state.routes.length === 0 && state.components.length > 0) {
+  const requiredNativeConfig = sourceLabel === "native-miniapp"
+    ? "app.json"
+    : sourceLabel === "uni-app"
+      ? "pages.json"
+      : undefined;
+  if (requiredNativeConfig && !state.nativeConfigFiles.has(requiredNativeConfig)) {
+    state.findings.push(finding(
+      "MINIAPP_NATIVE_CONFIG_MISSING",
+      `${requiredNativeConfig} is required for ${sourceLabel}; no fallback page manifest is synthesized.`,
+      "D",
+      [],
+      "error",
+      true,
+    ));
+  }
+  if (state.routes.length === 0 && state.components.length > 0
+    && state.nativeConfigFiles.size === 0
+    && state.nativeConfigInvalid.size === 0) {
     const renderable = state.components.filter(component => component.semanticRole !== "non-render-metadata");
     const childIds = new Set(renderable.flatMap(component => component.children));
     const roots = renderable.filter(component => !childIds.has(component.id));

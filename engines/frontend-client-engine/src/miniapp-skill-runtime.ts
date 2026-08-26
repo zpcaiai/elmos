@@ -38,6 +38,10 @@ import {
   generateAllMiniappTargets,
   type MiniappGeneratedProject,
 } from "./miniapp-target-generation.js";
+import {
+  evaluateMiniappLocalValidation,
+  type MiniappLocalValidationEvaluation,
+} from "./miniapp-validation.js";
 import type {
   MiniappConversionRequest,
   MiniappInventoryInputFile,
@@ -85,6 +89,7 @@ export interface MiniappConversionExecutionInput {
   readonly schemaVersion: "1.0";
   readonly request: unknown;
   readonly files: readonly MiniappInventoryInputFile[];
+  readonly localValidation?: unknown;
   readonly resumeFrom?: MiniappRunCheckpoint;
 }
 
@@ -93,6 +98,7 @@ export interface MiniappRunCheckpoint {
   readonly runId: string;
   readonly inputDigest: string;
   readonly idempotencyKey: string;
+  readonly localValidationDigest: string | "NOT_RUN";
   readonly completedTaskIds: readonly MiniappTaskId[];
   readonly blockedTaskIds: readonly MiniappTaskId[];
   readonly checkpointDigest: string;
@@ -101,7 +107,7 @@ export interface MiniappRunCheckpoint {
 export interface MiniappTaskRecord {
   readonly taskId: MiniappTaskId;
   readonly skill: MiniappSkillName;
-  readonly state: "EXECUTED_LOCAL" | "NOT_APPLICABLE" | "NOT_RUN_EXTERNAL" | "BLOCKED";
+  readonly state: "EXECUTED_LOCAL" | "EXECUTED_LOCAL_EXTERNAL_PENDING" | "NOT_APPLICABLE" | "NOT_RUN_EXTERNAL" | "BLOCKED";
   readonly reason: string;
   readonly artifactDigests: readonly string[];
 }
@@ -173,6 +179,7 @@ export interface MiniappConversionRun {
   readonly visual: MiniappVisualStatus;
   readonly repair: MiniappRepairStatus;
   readonly delivery: MiniappDeliveryStatus;
+  readonly localValidation: MiniappLocalValidationEvaluation;
   readonly taskRecords: readonly MiniappTaskRecord[];
   readonly gates: readonly MiniappGateDecision[];
   readonly evidenceGraph: readonly MiniappEvidenceNode[];
@@ -242,11 +249,13 @@ export type MiniappPackageConversionRun = Omit<MiniappConversionRun, "determinis
 
 interface MiniappRuntimeQualityPolicy {
   readonly visualSimilarityMin: number;
+  readonly criticalFlowPassRate: number;
   readonly maxAutoRepairIterations: number;
 }
 
 const DEFAULT_RUNTIME_QUALITY_POLICY: MiniappRuntimeQualityPolicy = {
   visualSimilarityMin: 0.95,
+  criticalFlowPassRate: 1,
   maxAutoRepairIterations: 3,
 };
 
@@ -263,7 +272,7 @@ function canonicalJson(value: unknown): string {
   if (value && typeof value === "object") {
     return `{${Object.entries(value as Readonly<Record<string, unknown>>)
       .filter(([, item]) => item !== undefined)
-      .sort(([left], [right]) => left.localeCompare(right, "en-US"))
+      .sort(([left], [right]) => left < right ? -1 : left > right ? 1 : 0)
       .map(([key, item]) => `${JSON.stringify(key)}:${canonicalJson(item)}`)
       .join(",")}}`;
   }
@@ -327,15 +336,27 @@ export function computeMiniappSourceFileSetDigest(files: readonly MiniappInvento
   return rawDigest(normalized.map(file => `${file.path}\u0000${file.digest}\u0000${file.byteCount}`).join("\n"));
 }
 
-function validateCheckpoint(value: MiniappRunCheckpoint, runId: string, inputDigest: string): void {
+function validateCheckpoint(
+  value: MiniappRunCheckpoint,
+  runId: string,
+  inputDigest: string,
+  localValidationDigest: string | "NOT_RUN",
+): void {
   if (!isPlainObject(value)) throw new Error("resumeFrom must be an object");
-  exactKeys(value as unknown as Record<string, unknown>, ["schemaVersion", "runId", "inputDigest", "idempotencyKey", "completedTaskIds", "blockedTaskIds", "checkpointDigest"], ["schemaVersion", "runId", "inputDigest", "idempotencyKey", "completedTaskIds", "blockedTaskIds", "checkpointDigest"], "resumeFrom");
+  exactKeys(value as unknown as Record<string, unknown>, ["schemaVersion", "runId", "inputDigest", "idempotencyKey", "localValidationDigest", "completedTaskIds", "blockedTaskIds", "checkpointDigest"], ["schemaVersion", "runId", "inputDigest", "idempotencyKey", "localValidationDigest", "completedTaskIds", "blockedTaskIds", "checkpointDigest"], "resumeFrom");
   if (value.schemaVersion !== "1.0" || value.runId !== runId || value.inputDigest !== inputDigest) throw new Error("resume checkpoint does not belong to this exact input");
+  if (value.localValidationDigest !== localValidationDigest) throw new Error("resume checkpoint does not belong to this exact local validation input");
   const { checkpointDigest: supplied, ...base } = value;
   if (checkpointDigest(base) !== supplied) throw new Error("resume checkpoint digest mismatch");
 }
 
-function artifactNode(id: string, kind: MiniappEvidenceNode["kind"], content: string, state: MiniappGateState): MiniappEvidenceNode {
+function artifactNode(
+  id: string,
+  kind: MiniappEvidenceNode["kind"],
+  content: string,
+  state: MiniappGateState,
+  synthetic = false,
+): MiniappEvidenceNode {
   return {
     id,
     kind,
@@ -344,7 +365,7 @@ function artifactNode(id: string, kind: MiniappEvidenceNode["kind"], content: st
     state,
     producer: "@elmos/frontend-client-engine",
     verifier: "local-deterministic-validator",
-    synthetic: false,
+    synthetic,
   };
 }
 
@@ -374,33 +395,61 @@ function differentialStatus(ir: MiniappSemanticIr, projects: readonly MiniappGen
   };
 }
 
-function taskState(taskId: MiniappTaskId, request: MiniappConversionRequest, localBlocked: boolean): MiniappTaskRecord["state"] {
+function taskState(
+  taskId: MiniappTaskId,
+  request: MiniappConversionRequest,
+  localBlocked: boolean,
+  localValidation: MiniappLocalValidationEvaluation,
+): MiniappTaskRecord["state"] {
   const target = TARGET_BY_TASK[taskId];
   if (target && !request.targets.some(item => item.platform === target)) return "NOT_APPLICABLE";
   if (["MAPP-005", "MAPP-006"].includes(taskId) && !["vue2", "vue3", "uni-app"].includes(request.source.sourceLabel)) return "NOT_APPLICABLE";
   if (["MAPP-007", "MAPP-008"].includes(taskId) && !["react", "typescript", "javascript", "h5", "taro"].includes(request.source.sourceLabel)) return "NOT_APPLICABLE";
   if (["MAPP-009", "MAPP-010"].includes(taskId) && request.source.sourceLabel !== "flutter") return "NOT_APPLICABLE";
   if (taskId === "MAPP-022") return "NOT_RUN_EXTERNAL";
-  if (["MAPP-031", "MAPP-032", "MAPP-033", "MAPP-034", "MAPP-035", "MAPP-036", "MAPP-037", "MAPP-038"].includes(taskId)) return "NOT_RUN_EXTERNAL";
+  if (["MAPP-031", "MAPP-032"].includes(taskId)) {
+    return localValidation.differential.state === "NOT_RUN" ? "NOT_RUN_EXTERNAL" : "EXECUTED_LOCAL_EXTERNAL_PENDING";
+  }
+  if (["MAPP-033", "MAPP-034"].includes(taskId)) {
+    return localValidation.visual.state === "NOT_RUN" ? "NOT_RUN_EXTERNAL" : "EXECUTED_LOCAL_EXTERNAL_PENDING";
+  }
+  if (["MAPP-035", "MAPP-036"].includes(taskId)) {
+    return localValidation.repair.state === "NOT_RUN" ? "NOT_RUN_EXTERNAL" : "EXECUTED_LOCAL_EXTERNAL_PENDING";
+  }
+  if (["MAPP-037", "MAPP-038"].includes(taskId)) return "NOT_RUN_EXTERNAL";
   return localBlocked ? "BLOCKED" : "EXECUTED_LOCAL";
 }
 
-function taskRecords(request: MiniappConversionRequest, localBlocked: boolean, artifacts: readonly MiniappEvidenceNode[]): readonly MiniappTaskRecord[] {
+function taskRecords(
+  request: MiniappConversionRequest,
+  localBlocked: boolean,
+  artifacts: readonly MiniappEvidenceNode[],
+  localValidation: MiniappLocalValidationEvaluation,
+): readonly MiniappTaskRecord[] {
   const digests = artifacts.map(item => item.digest);
   return MINIAPP_SKILL_CATALOG.flatMap(skill => skill.taskIds.map(taskId => {
-    const state = taskState(taskId, request, localBlocked);
+  const state = taskState(taskId, request, localBlocked, localValidation);
     const targetTask = Boolean(TARGET_BY_TASK[taskId]);
     return {
       taskId,
       skill: skill.name,
       state,
       reason: state === "EXECUTED_LOCAL" ? "Deterministic local handler executed and emitted content-addressed output."
+        : state === "EXECUTED_LOCAL_EXTERNAL_PENDING" ? "Bounded local candidate executed; official runtime/device/release evidence remains pending."
         : state === "NOT_APPLICABLE" ? targetTask
           ? "The exact request does not select this target platform."
           : `The exact source label ${request.source.sourceLabel} does not select this analyzer.`
           : state === "NOT_RUN_EXTERNAL" ? "Required official toolchain, runtime, screenshot or release-side evidence was not executed."
             : "A local fail-closed prerequisite is unresolved.",
-      artifactDigests: state === "EXECUTED_LOCAL" ? digests : [],
+      artifactDigests:
+        state === "EXECUTED_LOCAL"
+          ? digests
+          : state === "EXECUTED_LOCAL_EXTERNAL_PENDING"
+            ? [
+              ...digests,
+              ...(localValidation.inputDigest === "NOT_RUN" ? [] : [localValidation.inputDigest]),
+            ]
+            : [],
     };
   }));
 }
@@ -416,7 +465,10 @@ function gateDecisions(
   privacy: readonly MiniappPrivacyAudit[],
   evidence: readonly MiniappEvidenceNode[],
 ): readonly MiniappGateDecision[] {
-  const digests = evidence.map(item => item.digest);
+  // Self-attested local validation candidates are deliberately excluded from
+  // structural gate evidence; they can inform pending work but cannot satisfy
+  // an external or certification gate.
+  const digests = evidence.filter(item => !item.synthetic).map(item => item.digest);
   const g1 = inventory.coverage.ratio === 1 && inventory.findings.every(item => !item.blocking)
     && inventory.selectedSourceLabel === request.source.sourceLabel;
   const g2 = analysis.coverage === 1 && analysis.failedFiles.length === 0 && ir.coverage.tracedNodes === 1;
@@ -444,7 +496,7 @@ function executeMiniappConversion(
   qualityPolicy: MiniappRuntimeQualityPolicy,
 ): MiniappConversionRun {
   if (!isPlainObject(input)) throw new Error("conversion must be an object");
-  exactKeys(input as unknown as Record<string, unknown>, ["schemaVersion", "request", "files", "resumeFrom"], ["schemaVersion", "request", "files"], "conversion");
+  exactKeys(input as unknown as Record<string, unknown>, ["schemaVersion", "request", "files", "localValidation", "resumeFrom"], ["schemaVersion", "request", "files"], "conversion");
   if (input.schemaVersion !== "1.0" || !Array.isArray(input.files) || input.files.length === 0) throw new Error("conversion requires schemaVersion 1.0 and at least one file");
   const request = validateMiniappConversionRequest(input.request);
   const inventory = inventoryMiniappSource({
@@ -485,6 +537,19 @@ function executeMiniappConversion(
     })),
     rollback: "NO_MUTATION_PERFORMED",
   };
+  const localValidation = evaluateMiniappLocalValidation(input.localValidation, {
+    targets: generatedProjects.map(project => ({
+      platform: project.platform,
+      toolchainVersion: project.toolchainVersion,
+      // The local validation contract binds to the exact evidence-node digest,
+      // not merely the generator's internal project digest.
+      projectDigest: rawDigest(canonicalJson(project)),
+    })),
+    requestedSimilarity: qualityPolicy.visualSimilarityMin,
+    criticalFlowPassRate: qualityPolicy.criticalFlowPassRate,
+    maximumRepairIterations: qualityPolicy.maxAutoRepairIterations,
+    repairFindings: repair.candidates,
+  });
   const delivery: MiniappDeliveryStatus = {
     state: "NOT_RUN",
     profiles: request.targets.map(target => ({ platform: target.platform, toolchainVersion: target.toolchainVersion, build: "NOT_RUN", preview: "NOT_RUN", upload: "NOT_RUN", review: "NOT_RUN", release: "NOT_RUN" })),
@@ -496,9 +561,13 @@ function executeMiniappConversion(
   const irText = canonicalizeMiniappSemanticIr(semanticIr);
   const planText = canonicalJson(plan);
   const requestDigest = rawDigest(requestText);
-  const inputDigest = miniappIrDigest({ requestDigest, sourceFileSetDigest: inventory.fileSetDigest });
+  const inputDigest = miniappIrDigest({
+    requestDigest,
+    sourceFileSetDigest: inventory.fileSetDigest,
+    localValidationDigest: localValidation.inputDigest,
+  });
   const runId = `miniapp-run-${request.requestId}-${inputDigest.slice(-16)}`;
-  if (input.resumeFrom) validateCheckpoint(input.resumeFrom, runId, inputDigest);
+  if (input.resumeFrom) validateCheckpoint(input.resumeFrom, runId, inputDigest, localValidation.inputDigest);
   const evidence: MiniappEvidenceNode[] = [
     artifactNode("request", "input", requestText, "PASSED"),
     artifactNode("inventory", "inventory", inventoryText, inventory.findings.some(item => item.blocking) ? "BLOCKED" : "PASSED"),
@@ -516,9 +585,16 @@ function executeMiniappConversion(
       traceCoverageByPlatform: differential.traceCoverageByPlatform,
       findings: differential.findings,
     }), differential.staticTraceCheck === "PASSED" ? "PASSED" : "BLOCKED"),
+    artifactNode(
+      "local-validation-candidate",
+      "gate",
+      canonicalJson(localValidation),
+      localValidation.evidenceBoundary.localCandidate === "NOT_RUN" ? "NOT_RUN" : "BLOCKED",
+      true,
+    ),
   ];
-  const localBlocked = evidence.some(item => item.state === "BLOCKED" || item.state === "FAILED");
-  const records = taskRecords(request, localBlocked, evidence);
+  const localBlocked = evidence.some(item => !item.synthetic && (item.state === "BLOCKED" || item.state === "FAILED"));
+  const records = taskRecords(request, localBlocked, evidence.filter(item => !item.synthetic), localValidation);
   const gates = gateDecisions(request, inventory, analysis, semanticIr, plan, generatedProjects, differential, privacy, evidence);
   const completedTaskIds = records.filter(item => item.state === "EXECUTED_LOCAL" || item.state === "NOT_APPLICABLE").map(item => item.taskId);
   const blockedTaskIds = records.filter(item => item.state === "BLOCKED" || item.state === "NOT_RUN_EXTERNAL").map(item => item.taskId);
@@ -527,6 +603,7 @@ function executeMiniappConversion(
     runId,
     inputDigest,
     idempotencyKey: miniappIrDigest({ tenantId: request.tenantId, requestId: request.requestId, inputDigest }),
+    localValidationDigest: localValidation.inputDigest,
     completedTaskIds,
     blockedTaskIds,
   };
@@ -534,7 +611,7 @@ function executeMiniappConversion(
   const base = {
     schemaVersion: "1.0" as const,
     runId, request, requestDigest, sourceFileSetDigest: inventory.fileSetDigest, inputDigest,
-    inventory, analysis, semanticIr, plan, generatedProjects, privacy, differential, visual, repair, delivery,
+    inventory, analysis, semanticIr, plan, generatedProjects, privacy, differential, visual, repair, delivery, localValidation,
     taskRecords: records, gates, evidenceGraph: evidence, checkpoint, resumed: Boolean(input.resumeFrom),
     localEngineering: gates.slice(0, 4).every(gate => gate.state === "PASSED")
       && differential.staticTraceCheck === "PASSED"
@@ -574,6 +651,7 @@ export function runMiniappPackageConversion(value: unknown): MiniappPackageConve
   const compiled = compileMiniappPackageConversionInput(value);
   const run = executeMiniappConversion(compiled.executionInput, {
     visualSimilarityMin: compiled.policyBinding.quality.visualSimilarityMin,
+    criticalFlowPassRate: compiled.policyBinding.quality.criticalFlowPassRate,
     maxAutoRepairIterations: compiled.policyBinding.quality.maxAutoRepairIterations,
   });
   const { deterministicDigest: executionDeterministicDigest, ...execution } = run;
@@ -602,7 +680,7 @@ function payloadForSkill(skill: MiniappSkillName, run: MiniappConversionRun): un
   const platform = platformForSkill(skill);
   if (platform) return run.generatedProjects.find(item => item.platform === platform) ?? { state: "NOT_APPLICABLE", platform };
   switch (skill) {
-    case "frontend-to-miniapp-orchestrator": return { checkpoint: run.checkpoint, gates: run.gates, readiness: run.readiness };
+    case "frontend-to-miniapp-orchestrator": return { checkpoint: run.checkpoint, gates: run.gates, readiness: run.readiness, localValidation: run.localValidation };
     case "miniapp-source-framework-detector": return run.inventory;
     case "vue-to-miniapp-analyzer": return ["vue2", "vue3", "uni-app"].includes(run.request.source.sourceLabel) ? run.analysis : { state: "NOT_APPLICABLE", sourceLabel: run.request.source.sourceLabel };
     case "react-to-miniapp-analyzer": return ["react", "typescript", "javascript", "h5", "taro"].includes(run.request.source.sourceLabel) ? run.analysis : { state: "NOT_APPLICABLE", sourceLabel: run.request.source.sourceLabel };
@@ -615,9 +693,9 @@ function payloadForSkill(skill: MiniappSkillName, run: MiniappConversionRun): un
     case "miniapp-third-party-dependency-migrator": return run.plan.dependencies;
     case "miniapp-commerce-social-adapter": return run.plan.commerceSocial;
     case "miniapp-privacy-permission-auditor": return run.privacy;
-    case "miniapp-differential-testing": return run.differential;
-    case "miniapp-visual-regression-testing": return run.visual;
-    case "miniapp-auto-repair-loop": return run.repair;
+    case "miniapp-differential-testing": return { local: run.localValidation.differential, external: run.differential };
+    case "miniapp-visual-regression-testing": return { local: run.localValidation.visual, external: run.visual };
+    case "miniapp-auto-repair-loop": return { local: run.localValidation.repair, external: run.repair };
     case "miniapp-ci-build-release": return run.delivery;
     case "miniapp-migration-evidence-reporter": return { gates: run.gates, evidenceGraph: run.evidenceGraph, taskRecords: run.taskRecords, readiness: run.readiness, certification: run.certification };
   }

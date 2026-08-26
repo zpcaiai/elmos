@@ -179,6 +179,7 @@ RUNTIME_IMPLEMENTATION_FILES = (
     "engines/frontend-client-engine/src/miniapp-planning.ts",
     "engines/frontend-client-engine/src/miniapp-target-generation.ts",
     "engines/frontend-client-engine/src/miniapp-skill-runtime.ts",
+    "engines/frontend-client-engine/src/miniapp-validation.ts",
     "engines/frontend-client-engine/src/miniapp-cli.ts",
     "engines/frontend-client-engine/src/miniapp-package-contract.ts",
     "engines/frontend-client-engine/src/miniapp-output-contracts.ts",
@@ -187,6 +188,7 @@ RUNTIME_IMPLEMENTATION_FILES = (
     "engines/frontend-client-engine/test/miniapp-semantic-ir.test.ts",
     "engines/frontend-client-engine/test/miniapp-four-platform-generation.test.ts",
     "engines/frontend-client-engine/test/miniapp-skill-runtime.test.ts",
+    "engines/frontend-client-engine/test/miniapp-validation.test.ts",
     "engines/frontend-client-engine/test/miniapp-package-contract.test.ts",
     "engines/frontend-client-engine/test/miniapp-output-contracts.test.ts",
     "engines/frontend-client-engine/test/miniapp-test-fixture.ts",
@@ -380,16 +382,26 @@ LOCAL_QUALIFICATION_COMMANDS = (
             "Skill handlers, checkpoints and evidence gates"
         ),
         result_parser="node-test",
-        expected_test_count=49,
+        expected_test_count=58,
     ),
     QualificationCommand(
         command_id="integration-tests",
         relative_cwd=".",
         argv=(
-            sys.executable,
+            "uv",
+            "run",
+            "--quiet",
+            "--with",
+            "pyyaml==6.0.2",
+            "--with",
+            "jsonschema==4.25.1",
+            "python",
             "tests/frontend-to-miniapp/test_integration.py",
         ),
-        display="python tests/frontend-to-miniapp/test_integration.py",
+        display=(
+            "uv run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 "
+            "python tests/frontend-to-miniapp/test_integration.py"
+        ),
         claim="archive, package, DAG, compiled contract and dual-root integration",
         result_parser="unittest",
         expected_test_count=15,
@@ -874,8 +886,6 @@ def _qualification_suite_payload() -> list[dict[str, Any]]:
     payload: list[dict[str, Any]] = []
     for command in LOCAL_QUALIFICATION_COMMANDS:
         argv = list(command.argv)
-        if command.command_id == "integration-tests":
-            argv[0] = "python"
         payload.append({
             "id": command.command_id,
             "cwd": command.relative_cwd,
@@ -891,12 +901,9 @@ def _qualification_suite_payload() -> list[dict[str, Any]]:
 def _qualification_command_binding(
     command: QualificationCommand,
 ) -> dict[str, Any]:
-    argv = list(command.argv)
-    if command.command_id == "integration-tests":
-        argv[0] = "python"
     return {
         "cwd": command.relative_cwd,
-        "argv": argv,
+        "argv": list(command.argv),
         "command": command.display,
         "claim": command.claim,
     }
@@ -990,14 +997,22 @@ def _executable_binding(
         output = completed.stdout.decode("utf-8")
     except UnicodeError as exc:
         fail(f"local qualification executable version is not UTF-8: {name}: {exc}")
-    version_lines = [
-        line.strip()
-        for line in output.splitlines()
+    version_lines: list[str] = []
+    for raw_line in output.splitlines():
+        line = raw_line.strip()
+        if name == "uv":
+            match = re.fullmatch(
+                r"uv\s+(v?[0-9]+(?:\.[0-9A-Za-z+-]+)+)(?:\s+\([^)]*\))?",
+                line,
+            )
+            if match:
+                version_lines.append(match.group(1))
+            continue
         if re.fullmatch(
             r"(?:Python\s+|Version\s+)?v?[0-9]+(?:\.[0-9A-Za-z+-]+)+",
-            line.strip(),
-        )
-    ]
+            line,
+        ):
+            version_lines.append(line)
     if len(version_lines) != 1:
         fail(f"local qualification executable version is invalid: {name}")
     version = version_lines[0]
@@ -1033,9 +1048,7 @@ def _local_qualification_environment(
         "node": _executable_binding("node", "node", environment),
         "npm": _executable_binding("npm", "npm", environment),
         "pnpm": _executable_binding("pnpm", "pnpm", environment),
-        # uv gives each `uv run --with ...` process a fresh temporary symlink
-        # for sys.executable. Commands execute the resolved binary, so bind the
-        # stable canonical path instead of a process-local alias.
+        "uv": _executable_binding("uv", "uv", environment),
         "python": _executable_binding(
             "python", str(canonical_python), environment
         ),
@@ -1113,7 +1126,7 @@ def _qualification_execution_argv(
         "component-tests": "component_jest",
         "frontend-build": "frontend_tsc",
         "frontend-tests": "node",
-        "integration-tests": "python",
+        "integration-tests": "uv",
     }.get(command.command_id)
     if executable_name is None:
         executable = Path(command.argv[0])
@@ -1432,15 +1445,17 @@ def _local_runtime_evidence(
             "duration_ms": receipt["duration_ms"],
         }
     else:
-        commands = [
-            {
+        commands = []
+        for command in LOCAL_QUALIFICATION_COMMANDS:
+            record: dict[str, Any] = {
                 "id": command.command_id,
                 "command": command.display,
                 "state": "NOT_RUN",
                 "claim": command.claim,
             }
-            for command in LOCAL_QUALIFICATION_COMMANDS
-        ]
+            if command.expected_test_count is not None:
+                record["expected_test_count"] = command.expected_test_count
+            commands.append(record)
         receipt_binding = {
             "state": "ABSENT",
             "path": LOCAL_RECEIPT_RELATIVE.as_posix(),

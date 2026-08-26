@@ -43,7 +43,7 @@ export const vueTodoFiles: readonly MiniappInventoryInputFile[] = [
   },
   {
     path: "src/router.ts",
-    content: `import { createRouter } from "vue-router"; export default createRouter({ history: null, routes: [{ path: "/", component: "App" }] });`,
+    content: `import { createRouter, createWebHistory } from "vue-router"; export default createRouter({ history: createWebHistory("/"), routes: [{ path: "/", component: "App" }] });`,
   },
 ];
 

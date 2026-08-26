@@ -70,10 +70,15 @@ step "6/6  13-target execution differential (THE reason to run this on a Mac)"
 # canonical.evaluate is the reference -- not any target.
 # In the cloud 7 of 13 agreed; csharp / objc / swift / kotlin / flutter had no
 # toolchain there. Your Mac has all five pinned.
+# ABSOLUTE paths on purpose: `uv --directory X` changes the working
+# directory to X before running, so a repository-root-relative path here
+# resolves under engines/polyglot-route-engine/ and the script "does not
+# exist". Same trap as the `--locked` note in step 6 of the 08-21 script.
+REPO="$(pwd)"
 uv --directory engines/polyglot-route-engine run --locked python \
-  "${ART}/differential_execution.py" \
-  --out "${ART}/mac-${STAMP}/differential" \
-  --json "${ART}/mac-${STAMP}/execution-evidence.json" || FAILED=1
+  "${REPO}/${ART}/differential_execution.py" \
+  --out "${REPO}/${ART}/mac-${STAMP}/differential" \
+  --json "${REPO}/${ART}/mac-${STAMP}/execution-evidence.json" || FAILED=1
 cat <<'NOTE'
   Read it like this:
     AGREES_WITH_CANONICAL   the target computes what the specification says

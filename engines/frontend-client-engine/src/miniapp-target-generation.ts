@@ -113,7 +113,7 @@ function syntaxFor(platform: MiniappPlatform): TargetSyntax {
       styleExtension: profile.styleExtension,
       eventTap: "bindtap",
       eventInput: "bindinput",
-      loopOpen: (items, _item, key) => `<block xhs:for="{{${items}}}" xhs:key="${key}">`,
+      loopOpen: (items, item, key) => `<block xhs:for="{{${items}}}" xhs:for-item="${item}" xhs:key="${key}">`,
       loopClose: "</block>",
     };
   }
@@ -313,9 +313,14 @@ function pageMarkup(
       return [`${indent}<button ${attributes}${disabled} ${syntax.eventTap}="${binding.submitHandler}">${xml(label)}</button>`];
     }
     if (binding && component.id === binding.interaction.listComponentId) {
+      const collectionBinding = component.collectionBinding;
+      if (!collectionBinding || collectionBinding.valueExpression !== collectionBinding.itemAlias) {
+        const attributes = commonAttributes(component, "elmos-blocked");
+        return [`${indent}<view ${attributes} role="alert"><text>List item binding requires an exact source expression.</text></view>`];
+      }
       return [
         `${indent}${syntax.loopOpen(binding.renderCollectionKey, "item", "__elmosKey")}`,
-        `${indent}  <view class="elmos-list-item"><text>{{item.value}}</text></view>`,
+        `${indent}  <view ${commonAttributes(component, "elmos-list-item")}><text>{{item.value}}</text></view>`,
         `${indent}${syntax.loopClose}`,
       ];
     }
@@ -570,7 +575,11 @@ function buildFiles(
   const traceMap: Record<string, readonly string[]> = {};
   const findings = plan.findings.filter(item => item.platform === "all" || item.platform === platform)
     .map(item => `${item.classification}:${item.code}:${item.message}`);
-  const routeEntries = ir.routes.length > 0 ? ir.routes : [{ id: "route.missing", path: "/", component: "Missing", parameters: [], guards: [], sourceRefs: [] }];
+  // Never synthesize a root page when the source route/config contract did not
+  // produce one.  An empty page manifest is an explicit blocked candidate and
+  // keeps invalid or ambiguous source configuration from being silently
+  // converted into a plausible-looking route.
+  const routeEntries = ir.routes;
   const used = new Set<string>();
   const pages: string[] = [];
   const emittedStyleIds = plan.styles.find(item => item.platform === platform)?.rules.filter(item => item.unsupported.length === 0).map(item => item.styleId) ?? [];
@@ -618,10 +627,33 @@ function buildFiles(
     .filter(binding => binding.collectionScope === "application")
     .map(binding => binding.interaction.collectionStateId));
   traceMap["app.js"] = ir.states.filter(state => applicationInteractionStateIds.has(state.id)).map(state => state.id).sort();
-  traceMap["app.json"] = ir.routes.map(item => item.id);
+  const applicationEffectIds = ir.effects
+    .filter(effect => [
+      "vue.create-app",
+      "vue.app.mount",
+      "vue.app.use.router",
+      "vue.app.use.pinia",
+      "pinia.create",
+    ].includes(effect.name))
+    .map(effect => effect.id);
+  const routerEffectIds = ir.effects
+    .filter(effect => ["vue-router.create-router", "vue-router.history.web-root"].includes(effect.name))
+    .map(effect => effect.id);
+  traceMap["app.js"] = [...new Set([
+    ...traceMap["app.js"],
+    ...applicationEffectIds,
+    ...routerEffectIds,
+  ])].sort();
+  traceMap["app.json"] = [...new Set([
+    ...ir.routes.map(item => item.id),
+    ...routerEffectIds,
+  ])].sort();
   traceMap[`app${syntax.styleExtension}`] = emittedStyleIds;
   traceMap[profile.projectFile] = [];
-  traceMap["adapters/platform.js"] = [];
+  // Platform adapters are the executable boundary for capability nodes. Keep
+  // their source identities in the trace map so capability obligations cannot
+  // disappear merely because the adapter itself is generated code.
+  traceMap["adapters/platform.js"] = ir.capabilities.map(capability => capability.id).sort();
   traceMap["migration-findings.json"] = [];
   files["migration-findings.json"] = json({
     schemaVersion: "1.0",
