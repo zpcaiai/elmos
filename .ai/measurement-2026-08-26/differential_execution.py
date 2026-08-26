@@ -142,13 +142,17 @@ class Resolved:
     auxiliary: str | None = None
 
 
-def resolve(language: str, relative: str, path_name: str) -> Resolved:
+def resolve(language: str, exe: tuple[str, str, str]) -> Resolved:
     """The strongest grade the machine supports, and never a silent downgrade.
 
     `exact_toolchain` is the engine's own verifier: version plus sha256 against
     the repository pin. When it refuses, its code is carried into the weaker
     provenance string -- a `PATH:` row must state why it is not `EXACT:`.
     """
+    # `language` is the TARGET name (`csharp`), never the toolchain directory
+    # (`dotnet`). Reading the directory here is what made `ELMOS_DIFF_CSHARP`
+    # a documented override that silently did nothing.
+    directory, relative, path_name = exe
     override = os.environ.get(f"ELMOS_DIFF_{language.upper()}")
     if override:
         # An explicit operator instruction still wins, and is labelled as one:
@@ -178,13 +182,13 @@ def resolve(language: str, relative: str, path_name: str) -> Resolved:
                 f"{chosen!r} is missing or not executable"
             )
 
-    candidates = sorted((toolchain_root() / language).glob(f"*/{relative}"))
+    candidates = sorted((toolchain_root() / directory).glob(f"*/{relative}"))
     if len(candidates) == 1 and os.access(candidates[0], os.X_OK):
         return Resolved(str(candidates[0]), f"PINNED:{candidates[0]} ({engine_note})")
     if len(candidates) > 1:
         return Resolved(
             None,
-            f"AMBIGUOUS:{len(candidates)} versions under {toolchain_root() / language}"
+            f"AMBIGUOUS:{len(candidates)} versions under {toolchain_root() / directory}"
             f" ({engine_note})",
         )
     found = shutil.which(path_name)
@@ -333,6 +337,24 @@ TARGETS: dict[str, Target] = {
 }
 
 
+#: Every runnable target must have a pinned toolchain registered, or this
+#: module refuses to load. The alternative -- printing
+#: "no pinned toolchain registered" about a target that has one -- is a
+#: measurement instrument lying quietly, which is the failure mode this whole
+#: grading exercise exists to remove.
+_UNREGISTERED = sorted(set(TARGETS) - set(_ENGINE_TOOLCHAIN))
+if _UNREGISTERED:
+    raise SystemExit(
+        "differential_execution: these targets have a runnable driver but no "
+        f"pinned toolchain registered in _ENGINE_TOOLCHAIN: {_UNREGISTERED}"
+    )
+_UNKNOWN = sorted(set(_ENGINE_TOOLCHAIN) - set(TARGETS))
+if _UNKNOWN:
+    raise SystemExit(
+        f"differential_execution: _ENGINE_TOOLCHAIN names non-targets: {_UNKNOWN}"
+    )
+
+
 def run_target(language: str, out: Path, ir, cases: dict[str, list[list[int]]],
                emitted_name: str) -> tuple[str, object]:
     spec = TARGETS.get(language)
@@ -341,7 +363,7 @@ def run_target(language: str, out: Path, ir, cases: dict[str, list[list[int]]],
             "reason": "no runnable driver for this target -- its EMISSION result above is "
                       "the evidence this harness produces for it"
         }
-    resolved = resolve(*spec.exe)
+    resolved = resolve(language, spec.exe)
     executable, provenance = resolved.executable, resolved.provenance
     if executable is None:
         return "NOT_RUN", {"reason": f"toolchain not resolvable ({provenance})"}
@@ -403,7 +425,7 @@ def run_target(language: str, out: Path, ir, cases: dict[str, list[list[int]]],
     # binary the evidence never named. Resolve it through the same ladder.
     java_runner = "java"
     if language == "kotlin":
-        kotlin_java = resolve("java", "bin/java", "java")
+        kotlin_java = resolve("java", ("java", "bin/java", "java"))
         if kotlin_java.executable is None:
             return "NOT_RUN", {
                 "reason": f"kotlin needs a java runtime to run its jar ({kotlin_java.provenance})",
