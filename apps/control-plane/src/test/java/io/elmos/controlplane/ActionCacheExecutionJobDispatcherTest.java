@@ -393,7 +393,7 @@ class ActionCacheExecutionJobDispatcherTest {
         assertTrue(outcome.jobId().isEmpty());
     }
 
-    @Test void reconciliationRetryKeepsTheFirstDigestAcrossFreshDecisionIdsWithoutReenqueue() {
+    @Test void reconciliationRetryReusesTheFirstDigestAfterAuthoritativeAbsentLookup() {
         Fixture fixture = new Fixture(currentTrust());
         ExecutionJobPort jobs = mock(ExecutionJobPort.class);
         when(jobs.enqueue(any())).thenThrow(new IllegalStateException("connection reset"));
@@ -429,15 +429,72 @@ class ActionCacheExecutionJobDispatcherTest {
                 ActionCacheExecutionJobDispatcher.OutcomeKind.UNKNOWN_RECONCILIATION_REQUIRED,
                 second.kind());
         assertEquals(expected, second.requestDigest().orElseThrow());
-        assertEquals("RECONCILIATION_LOOKUP_REQUIRED_NO_QUEUE_RETRY", second.reason());
+        assertEquals("QUEUE_OUTCOME_UNKNOWN_RETRY_WITH_EXPECTED_PRIOR_REQUEST_DIGEST",
+                second.reason());
         assertEquals(2, executeDecisions[0],
                 "reconciliation must still obtain a fresh EXECUTE authorization");
         ArgumentCaptor<ExecutionJobPort.EnqueueCommand> command =
                 ArgumentCaptor.forClass(ExecutionJobPort.EnqueueCommand.class);
-        verify(jobs, times(1)).enqueue(command.capture());
-        Map<?, ?> firstAudit = (Map<?, ?>) command.getValue().requestPayload()
+        verify(jobs, times(2)).enqueue(command.capture());
+        Map<?, ?> firstAudit = (Map<?, ?>) command.getAllValues().get(0).requestPayload()
                 .get("_elmosAuthorizationAudit");
         assertEquals("decision-execute-1", firstAudit.get("decisionId"));
+    }
+
+    @Test void reconciliationReturnsThePersistedJobAfterDigestBoundLookup() {
+        Fixture fixture = new Fixture(currentTrust());
+        ExecutionJobPort jobs = mock(ExecutionJobPort.class);
+        when(jobs.enqueue(any())).thenThrow(new IllegalStateException("connection reset"));
+        ActionCacheExecutionJobDispatcher dispatcher = fixture.dispatcher(
+                jobs, ActionCacheExecutionJobDispatcherTest::allow);
+
+        ActionCacheExecutionJobDispatcher.Outcome first = dispatcher.dispatch(
+                fixture.request(fixture.reader("tenant-a"),
+                        ActionCacheExecutionJobDispatcher.Mode.CACHE_OR_ENQUEUE));
+        CasDigest expected = first.requestDigest().orElseThrow();
+        when(jobs.findByIdempotencyKey("tenant-a", "action-cache:test-1"))
+                .thenReturn(Optional.of(new ExecutionJobPort.IdempotencyLookup(
+                        "job-reconciled", expected.hex(), ExecutionJobPort.Status.QUEUED)));
+
+        ActionCacheExecutionJobDispatcher.Outcome reconciled = dispatcher.dispatch(
+                fixture.request(fixture.key, fixture.reader("tenant-a"),
+                        ActionCacheExecutionJobDispatcher.Mode.CACHE_OR_ENQUEUE,
+                        Map.of("sourceRef", SOURCE_REF), Optional.of(expected)));
+
+        assertEquals(ActionCacheExecutionJobDispatcher.OutcomeKind.DURABLE_JOB_ACCEPTED,
+                reconciled.kind());
+        assertEquals("DURABLE_JOB_RECONCILED", reconciled.reason());
+        assertEquals(Optional.of("job-reconciled"), reconciled.jobId());
+        assertEquals(Optional.of(expected), reconciled.requestDigest());
+        assertTrue(reconciled.idempotentReplay());
+        verify(jobs, times(1)).enqueue(any());
+    }
+
+    @Test void reconciliationRefusesAJobWhosePersistedDigestDiffers() {
+        Fixture fixture = new Fixture(currentTrust());
+        ExecutionJobPort jobs = mock(ExecutionJobPort.class);
+        when(jobs.enqueue(any())).thenThrow(new IllegalStateException("connection reset"));
+        ActionCacheExecutionJobDispatcher dispatcher = fixture.dispatcher(
+                jobs, ActionCacheExecutionJobDispatcherTest::allow);
+
+        ActionCacheExecutionJobDispatcher.Outcome first = dispatcher.dispatch(
+                fixture.request(fixture.reader("tenant-a"),
+                        ActionCacheExecutionJobDispatcher.Mode.CACHE_OR_ENQUEUE));
+        CasDigest expected = first.requestDigest().orElseThrow();
+        when(jobs.findByIdempotencyKey("tenant-a", "action-cache:test-1"))
+                .thenReturn(Optional.of(new ExecutionJobPort.IdempotencyLookup(
+                        "job-reconciled", digest("different-request").hex(),
+                        ExecutionJobPort.Status.QUEUED)));
+
+        ActionCacheExecutionJobDispatcher.Outcome reconciled = dispatcher.dispatch(
+                fixture.request(fixture.key, fixture.reader("tenant-a"),
+                        ActionCacheExecutionJobDispatcher.Mode.CACHE_OR_ENQUEUE,
+                        Map.of("sourceRef", SOURCE_REF), Optional.of(expected)));
+
+        assertReconciliationPending(reconciled, expected);
+        assertEquals("RECONCILIATION_PERSISTED_REQUEST_DIGEST_MISMATCH",
+                reconciled.reason());
+        verify(jobs, times(1)).enqueue(any());
     }
 
     @Test void reconciliationMaterialDriftRemainsUnknownAndDoesNotRetryTheQueue() {

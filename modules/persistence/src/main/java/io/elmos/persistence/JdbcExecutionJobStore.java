@@ -90,6 +90,32 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     }
 
     @Override
+    public Optional<IdempotencyLookup> findByIdempotencyKey(
+            String organizationId,
+            String idempotencyKey
+    ) {
+        requireIdentifier(organizationId, "organizationId");
+        if (idempotencyKey == null || idempotencyKey.isBlank()
+                || idempotencyKey.length() > 160) {
+            throw new ExecutionStateException("ELMOS_EXECUTION_IDEMPOTENCY_KEY_INVALID");
+        }
+        return inTenant(organizationId, () ->
+                jdbc.sql("""
+                        SELECT job_id, request_digest, status
+                          FROM execution_jobs
+                         WHERE organization_id = :organization
+                           AND idempotency_key = :idempotencyKey
+                        """)
+                        .param("organization", organizationId)
+                        .param("idempotencyKey", idempotencyKey)
+                        .query((ResultSet rs, int row) -> new IdempotencyLookup(
+                                rs.getString("job_id"),
+                                rs.getString("request_digest"),
+                                Status.valueOf(rs.getString("status"))))
+                        .optional());
+    }
+
+    @Override
     public List<JobView> list(String organizationId, BusinessLine businessLine, int limit, int offset) {
         requireIdentifier(organizationId, "organizationId");
         if (limit < 1 || limit > 100) {

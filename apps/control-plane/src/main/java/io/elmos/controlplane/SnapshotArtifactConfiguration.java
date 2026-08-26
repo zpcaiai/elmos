@@ -11,6 +11,9 @@ import io.elmos.cas.TenantEncryption;
 import io.elmos.integrations.CasBackedArtifactStore;
 import io.elmos.integrations.CompatibleSnapshotArtifactStore;
 import io.elmos.integrations.LocalContentAddressedArtifactStore;
+import io.elmos.persistence.JdbcGitHubRepositoryCatalog;
+import io.elmos.scm.RepositoryLifecycleSink;
+import io.elmos.snapshot.SnapshotPorts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -176,6 +179,35 @@ class SnapshotArtifactConfiguration {
         }
         return new CasBackedArtifactStore(store, catalog, dataResidency,
                 classification, maxArtifactBytes, clock::millis);
+    }
+
+    /**
+     * Binds verified GitHub repository deletion webhooks to the CAS lifecycle fence. The sink
+     * only begins retirement; finalization remains an explicit reconciled operation after all
+     * snapshot roots are released.
+     */
+    @Bean
+    @ConditionalOnProperty(name = "elmos.snapshot.cas.enabled", havingValue = "true")
+    RepositoryLifecycleSink githubRepositoryCasLifecycleSink(
+            @Qualifier("casSnapshotArtifactBackend") CasBackedArtifactStore cas,
+            JdbcGitHubRepositoryCatalog repositories
+    ) {
+        return (organizationId, delivery) -> {
+            if (!"repository".equals(delivery.eventType())
+                    || !"deleted".equals(delivery.action())
+                    || delivery.repositoryExternalId() == null
+                    || delivery.installationExternalId() == null) {
+                throw new SecurityException(
+                        "repository deletion webhook lacks an exact provider identity");
+            }
+            JdbcGitHubRepositoryCatalog.AuthorizedRepository repository =
+                    repositories.requireBoundByExternalIds(
+                            organizationId,
+                            delivery.repositoryExternalId(),
+                            delivery.installationExternalId());
+            cas.beginRepositoryRetirement(new SnapshotPorts.ArtifactResourceContext(
+                    organizationId, repository.repositoryId()));
+        };
     }
 
     @Bean

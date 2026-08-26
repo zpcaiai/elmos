@@ -488,8 +488,9 @@ Tiered/Compatible targeted `javac` **PASS**。其余当前增量 Maven/JUnit、l
 
 仍是生产 blocker、不得从 backlog 移出：
 
-1. repository retirement 目前只有 protocol/API 和测试；control-plane/webhook/repository deletion 无 caller，
-   因此生产 bindings 不会自动进入 fence/release。
+1. repository deletion 已由签名且租户绑定的 webhook sink、以及显式 control-plane begin/finalize API
+   接入 CAS retirement fence；仍缺生产级 scheduler/reconciliation 对 root 释放、租约和最终 binding release
+   的全局驱动，因此生产 bindings 不能宣称自动完成清理。
 2. authoritative fenced source adapter 与 durable lease provenance schema 未提供；control-plane 当前安全地
    阻断新 capture 和旧行 reuse。
 3. V76 的真实 Flyway/PostgreSQL、线上 rollout、锁/WAL/恢复验证未执行。

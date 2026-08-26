@@ -79,6 +79,25 @@ public interface ExecutionJobPort {
             long stateVersion
     ) {}
 
+    /**
+     * Minimal authoritative result for reconciling an enqueue whose acknowledgement was lost.
+     * The request digest is kept separate from {@link JobView} so existing management callers do
+     * not accidentally expose the canonical dispatch subject in list responses.
+     */
+    record IdempotencyLookup(
+            String jobId,
+            String requestDigest,
+            Status status
+    ) {
+        public IdempotencyLookup {
+            if (jobId == null || jobId.isBlank()
+                    || requestDigest == null || !requestDigest.matches("[0-9a-f]{64}")
+                    || status == null) {
+                throw new IllegalArgumentException("invalid execution idempotency lookup");
+            }
+        }
+    }
+
     record LeaseGrant(
             String jobId,
             String organizationId,
@@ -128,6 +147,18 @@ public interface ExecutionJobPort {
     String enqueue(EnqueueCommand command);
 
     Optional<JobView> find(String organizationId, String jobId);
+
+    /**
+     * Authoritative tenant-scoped lookup used after an uncertain enqueue acknowledgement.
+     * Implementations must return the persisted request digest so a reconciler can distinguish
+     * the original side effect from a material-drifted retry.
+     */
+    default Optional<IdempotencyLookup> findByIdempotencyKey(
+            String organizationId,
+            String idempotencyKey
+    ) {
+        throw new ExecutionStateException("ELMOS_EXECUTION_IDEMPOTENCY_LOOKUP_UNAVAILABLE");
+    }
 
     List<JobView> list(String organizationId, BusinessLine businessLine, int limit, int offset);
 

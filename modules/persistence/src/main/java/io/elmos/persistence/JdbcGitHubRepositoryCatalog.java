@@ -109,6 +109,100 @@ public class JdbcGitHubRepositoryCatalog {
                         new SecurityException("repository is not authorized for this organization"));
     }
 
+    /**
+     * Resolves a provider deletion event to the exact tenant repository binding. Status flags are
+     * intentionally not part of this lookup: a deletion webhook may arrive after the provider
+     * has already marked the installation or repository inactive, but the prior binding remains
+     * authoritative for fencing its CAS incarnation.
+     */
+    @Transactional(readOnly = true)
+    public AuthorizedRepository requireBoundByExternalIds(
+            String organizationId,
+            long repositoryExternalId,
+            long installationExternalId
+    ) {
+        requireOrganization(organizationId);
+        if (repositoryExternalId < 1 || installationExternalId < 1) {
+            throw new SecurityException("provider repository identity is invalid");
+        }
+        setTenant(organizationId);
+        return jdbc.sql("""
+                select sr.repository_id, sr.github_repository_id,
+                       gi.github_installation_id, sr.full_name,
+                       sr.default_branch, sr.visibility
+                  from scm_repositories sr
+                  join github_app_installations gi
+                    on gi.installation_id = sr.installation_id
+                  join scm_connections sc
+                    on sc.connection_id = gi.connection_id
+                  join repositories r
+                    on r.repository_id = sr.repository_id
+                 where sr.organization_id = :organization
+                   and gi.organization_id = :organization
+                   and sc.organization_id = :organization
+                   and r.organization_id = :organization
+                   and sr.github_repository_id = :repositoryExternalId
+                   and gi.github_installation_id = :installationExternalId
+                """)
+                .param("organization", organizationId)
+                .param("repositoryExternalId", repositoryExternalId)
+                .param("installationExternalId", installationExternalId)
+                .query((result, row) -> new AuthorizedRepository(
+                        result.getString("repository_id"),
+                        result.getLong("github_repository_id"),
+                        result.getLong("github_installation_id"),
+                        result.getString("full_name"),
+                        result.getString("default_branch"),
+                        result.getString("visibility")))
+                .optional()
+                .orElseThrow(() -> new SecurityException(
+                        "provider repository is not bound to this organization"));
+    }
+
+    /**
+     * Resolves an internal repository identity for lifecycle operations. This deliberately keeps
+     * inactive rows addressable so a retirement finalization cannot be bypassed after a provider
+     * deletion has already changed the live authorization flags.
+     */
+    @Transactional(readOnly = true)
+    public AuthorizedRepository requireKnown(String organizationId, String repositoryId) {
+        requireOrganization(organizationId);
+        if (repositoryId == null
+                || !repositoryId.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,63}")) {
+            throw new SecurityException("repository identity is invalid");
+        }
+        setTenant(organizationId);
+        return jdbc.sql("""
+                select sr.repository_id, sr.github_repository_id,
+                       gi.github_installation_id, sr.full_name,
+                       sr.default_branch, sr.visibility
+                  from scm_repositories sr
+                  join github_app_installations gi
+                    on gi.installation_id = sr.installation_id
+                  join scm_connections sc
+                    on sc.connection_id = gi.connection_id
+                  join repositories r
+                    on r.repository_id = sr.repository_id
+                 where sr.organization_id = :organization
+                   and gi.organization_id = :organization
+                   and sc.organization_id = :organization
+                   and r.organization_id = :organization
+                   and sr.repository_id = :repository
+                """)
+                .param("organization", organizationId)
+                .param("repository", repositoryId)
+                .query((result, row) -> new AuthorizedRepository(
+                        result.getString("repository_id"),
+                        result.getLong("github_repository_id"),
+                        result.getLong("github_installation_id"),
+                        result.getString("full_name"),
+                        result.getString("default_branch"),
+                        result.getString("visibility")))
+                .optional()
+                .orElseThrow(() -> new SecurityException(
+                        "repository is not known for this organization"));
+    }
+
     private static void requireOrganization(String organizationId) {
         if (organizationId == null
                 || !organizationId.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,63}")) {

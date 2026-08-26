@@ -45,8 +45,9 @@ import java.util.regex.Pattern;
  * separate signed completion contract and durable persistence boundary.</p>
  *
  * <p>The queue payload carries the canonical request schema and SHA-256 plus a separately
- * auditable authorization decision ID. This class does not claim JDBC metadata read-back or
- * cross-instance payload-equivalence verification; those remain outside this adapter.</p>
+ * auditable authorization decision ID. Reconciliation uses the queue's authoritative
+ * tenant-scoped idempotency lookup and compares its persisted request digest before allowing a
+ * retry. It still does not claim cross-instance runner completion or external trust evidence.</p>
  */
 public final class ActionCacheExecutionJobDispatcher {
 
@@ -471,6 +472,7 @@ public final class ActionCacheExecutionJobDispatcher {
                     executionAuthorizationFailure.orElseThrow(), cacheOutcome);
         }
         AuthorizationGrant grant = execution.grant().orElseThrow();
+        DispatchSpec spec = request.dispatch();
 
         DispatchMaterial material;
         try {
@@ -490,16 +492,42 @@ public final class ActionCacheExecutionJobDispatcher {
                     cacheOutcome);
         }
         if (reconciliation.isPending()) {
-            // ExecutionJobPort has no read-by-idempotency-key operation. Calling enqueue again
-            // would create a new job when the first uncertain call did not commit, so it is not an
-            // authoritative lookup and cannot safely reconcile the first attempt. Fresh EXECUTE
-            // authorization and payload materialization above still fail closed before this point.
-            return reconciliation.pending(
-                    "RECONCILIATION_LOOKUP_REQUIRED_NO_QUEUE_RETRY", cacheOutcome);
+            Optional<ExecutionJobPort.IdempotencyLookup> existing;
+            try {
+                existing = Objects.requireNonNull(
+                        jobs.findByIdempotencyKey(
+                                grant.tenantId(), spec.idempotencyKey()),
+                        "idempotency lookup result");
+            } catch (RuntimeException unavailable) {
+                return reconciliation.pending(
+                        "RECONCILIATION_IDEMPOTENCY_LOOKUP_UNAVAILABLE", cacheOutcome);
+            }
+            if (existing.isPresent()) {
+                ExecutionJobPort.IdempotencyLookup persisted = existing.orElseThrow();
+                if (!reconciliation.subject().hex().equals(persisted.requestDigest())) {
+                    return reconciliation.pending(
+                            "RECONCILIATION_PERSISTED_REQUEST_DIGEST_MISMATCH",
+                            cacheOutcome);
+                }
+                if (!DURABLE_JOB_ID.matcher(persisted.jobId()).matches()) {
+                    return reconciliation.pending(
+                            "RECONCILIATION_PERSISTED_JOB_ID_INVALID", cacheOutcome);
+                }
+                return new Outcome(
+                        OutcomeKind.DURABLE_JOB_ACCEPTED,
+                        "DURABLE_JOB_RECONCILED",
+                        Optional.empty(),
+                        Optional.of(persisted.jobId()),
+                        Optional.of(reconciliation.subject()),
+                        cacheOutcome,
+                        true);
+            }
+            // No row exists for the exact tenant/idempotency key at this authoritative read point.
+            // Reusing the same key and digest is safe: the database unique constraint makes a
+            // concurrent first commit return its original job instead of creating a duplicate.
         }
 
         String requestedJobId = "job-" + UUID.randomUUID();
-        DispatchSpec spec = request.dispatch();
         String persisted;
         try {
             persisted = jobs.enqueue(new ExecutionJobPort.EnqueueCommand(
