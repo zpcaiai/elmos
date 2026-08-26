@@ -174,6 +174,8 @@ class ProbeCommand:
     home_env: str | None = None
     allow_repository_executable: bool = False
     search_path: bool = True
+    environment: tuple[tuple[str, str], ...] = ()
+    timeout_seconds: float = 15.0
 
 
 PROBE_COMMANDS: dict[str, ProbeCommand] = {
@@ -295,6 +297,17 @@ PROBE_COMMANDS: dict[str, ProbeCommand] = {
         ("kotlinc",),
         ("{toolchain_root}/kotlin/2.2.20/bin/kotlinc",),
         executable_env="ELMOS_KOTLINC",
+        # The route contract binds Kotlin to the exact JDK 21 already used by
+        # the Java route.  A bare kotlinc launcher otherwise follows PATH and
+        # can silently run under a newer host JDK (or exceed the normal probe
+        # budget while selecting it).
+        environment=(
+            (
+                "JAVACMD",
+                "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+            ),
+        ),
+        timeout_seconds=45.0,
     ),
     "php": ProbeCommand(
         "php",
@@ -934,11 +947,14 @@ def _run_probe(
             completed = subprocess.run(  # noqa: S603
                 command,
                 cwd=ROOT,
-                env=_probe_environment(candidate, environ),
+                env={
+                    **_probe_environment(candidate, environ),
+                    **dict(spec.environment),
+                },
                 text=True,
                 capture_output=True,
                 check=False,
-                timeout=15,
+                timeout=spec.timeout_seconds,
             )
             output = (completed.stdout + completed.stderr).strip()[:16_384]
             matched = completed.returncode == 0 and re.search(pattern, output) is not None

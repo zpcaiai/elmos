@@ -322,6 +322,18 @@ def test_erlang_probe_finds_an_unlinked_homebrew_runtime() -> None:
     )
 
 
+def test_kotlin_probe_binds_the_route_jdk_and_allows_launcher_startup() -> None:
+    probe = runtime_environment.PROBE_COMMANDS["kotlinc"]
+
+    assert dict(probe.environment) == {
+        "JAVACMD": (
+            "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/"
+            "openjdk.jdk/Contents/Home/bin/java"
+        )
+    }
+    assert probe.timeout_seconds == 45.0
+
+
 def test_load_manifest_accepts_an_explicit_path(tmp_path: Path) -> None:
     payload = {"schema_version": "test", "profiles": {}, "runtimes": []}
     path = tmp_path / "manifest.json"
