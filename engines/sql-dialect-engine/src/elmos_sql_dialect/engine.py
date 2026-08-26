@@ -48,6 +48,7 @@ def translate_ddl(
     dsn: str | None = None,
     namespace_map: Mapping[str, str] | None = None,
     catalog: emitter.ColumnCatalogLike | None = None,
+    comment_catalog: emitter.CommentColumnCatalogLike | None = None,
 ) -> dict[str, Any]:
     """Translate one statement from `source_dialect` to `target_dialect`.
 
@@ -68,6 +69,11 @@ def translate_ddl(
     constraints. It is consulted only for target rules that need a column type
     (currently MySQL TEXT keys); absent context remains unknown rather than
     being treated as evidence of safety.
+
+    ``comment_catalog`` is optional full source-schema context for MySQL
+    column comments. MySQL's MODIFY COLUMN form must repeat the complete
+    type/nullability/default/identity definition; a type-only catalogue is
+    deliberately insufficient and remains blocked.
     """
     source = _resolve_dialect(source_dialect)
     target = _resolve_dialect(target_dialect)
@@ -134,7 +140,7 @@ def translate_ddl(
         elif statement_kind == "VIEW":
             emitted = emit_view(parse_create_view(sql, source, namespace_map), target)
         elif statement_kind == "COMMENT":
-            emitted = emit_comment(parse_comment(sql, source, namespace_map), target)
+            emitted = emit_comment(parse_comment(sql, source, namespace_map), target, comment_catalog)
         elif statement_kind in ("GRANT", "REVOKE"):
             emitted = emit_privilege(parse_privilege(sql, source, namespace_map), target)
         elif statement_kind == "POLICY":

@@ -96,6 +96,12 @@ class DefaultKind(str, Enum):
 class ColumnDefault:
     kind: DefaultKind
     literal: str | None = None  # unset for CURRENT_TIMESTAMP
+    #: The explicit source cast for typed literal defaults such as
+    #: PostgreSQL `'{}'::jsonb`.  Keeping the cast in the IR prevents a
+    #: renderer from silently turning a JSONB default into an untyped string.
+    #: It is intentionally optional and currently only admits the JSONB
+    #: literal profile in ``parser._parse_default``.
+    cast_type: CanonicalTypeRef | None = None
 
 
 @dataclass(frozen=True)

@@ -48,6 +48,12 @@ class ColumnCatalogLike(Protocol):
     def type_of(self, table: str, column: str) -> CanonicalType | None: ...
 
 
+class CommentColumnCatalogLike(Protocol):
+    """Full source column definition needed by MySQL column comments."""
+
+    def column_of(self, table_schema: str | None, table: str, column: str) -> Column | None: ...
+
+
 def _render_literal(value: str, is_string: bool) -> str:
     return f"'{value.replace(chr(39), chr(39) * 2)}'" if is_string else value
 

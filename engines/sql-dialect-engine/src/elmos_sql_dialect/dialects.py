@@ -360,6 +360,19 @@ def render_default(default: ColumnDefault, type_ref: CanonicalTypeRef, dialect: 
     if default.kind == DefaultKind.STRING:
         assert default.literal is not None
         escaped = default.literal.replace("'", "''")
+        if default.cast_type is not None:
+            if (
+                default.cast_type.canonical_type is CanonicalType.JSON
+                and default.cast_type.json_binary
+                and type_ref.canonical_type is CanonicalType.JSON
+                and type_ref.json_binary
+                and dialect is Dialect.POSTGRES
+            ):
+                return f"'{escaped}'::jsonb"
+            raise DialectError(
+                "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED",
+                "the typed JSONB default has no exact cross-dialect storage mapping",
+            )
         return f"'{escaped}'"
     if default.kind == DefaultKind.BOOLEAN:
         assert default.literal in ("true", "false")

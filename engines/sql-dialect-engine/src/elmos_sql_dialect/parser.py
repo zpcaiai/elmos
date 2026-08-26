@@ -405,6 +405,33 @@ def _parse_default(node: exp.Expression, type_ref: CanonicalTypeRef) -> ColumnDe
             "CURRENT_TIMESTAMP default is only supported on TIMESTAMP columns",
         )
         return ColumnDefault(kind=DefaultKind.CURRENT_TIMESTAMP)
+    if isinstance(node, exp.Cast):
+        # PostgreSQL migration DDL commonly spells JSONB defaults as either
+        # `'{}'::jsonb` or `CAST('{}' AS JSONB)`.  This is not an arbitrary
+        # expression: it is a string literal plus an explicit, typed cast.
+        # Preserve the cast in the canonical model so the source-side parser
+        # does not discard storage semantics.  Target emitters still reject
+        # json_binary where the target has no exact equivalent.
+        target = node.args.get("to")
+        literal = node.this
+        _require(
+            isinstance(target, exp.DataType)
+            and target.this == _JSONB_TYPE
+            and isinstance(literal, exp.Literal)
+            and literal.is_string,
+            "CERTIFIED_DDL_UNSUPPORTED_DEFAULT",
+            "typed defaults are limited to string literals explicitly cast to JSONB",
+        )
+        _require(
+            type_ref.canonical_type is CanonicalType.JSON and type_ref.json_binary,
+            "CERTIFIED_DDL_DEFAULT_TYPE_MISMATCH",
+            "a JSONB default requires a JSONB column",
+        )
+        return ColumnDefault(
+            kind=DefaultKind.STRING,
+            literal=str(literal.this),
+            cast_type=CanonicalTypeRef(canonical_type=CanonicalType.JSON, json_binary=True),
+        )
     if isinstance(node, exp.Boolean):
         return ColumnDefault(kind=DefaultKind.BOOLEAN, literal="true" if node.this else "false")
     if isinstance(node, exp.Literal):

@@ -16,7 +16,7 @@ import sqlglot
 from sqlglot import exp
 
 from .dialects import render_type
-from .emitter import _object_name, _render_check_expression
+from .emitter import CommentColumnCatalogLike, _object_name, _render_check_expression, _render_column
 from .models import (
     CheckBooleanExpression,
     CheckConnector,
@@ -576,7 +576,11 @@ def emit_view(view: View, target_dialect: Dialect) -> str:
     return rendered
 
 
-def emit_comment(comment: Comment, target_dialect: Dialect) -> str:
+def emit_comment(
+    comment: Comment,
+    target_dialect: Dialect,
+    catalog: CommentColumnCatalogLike | None = None,
+) -> str:
     def tsql_literal(value: str) -> str:
         return "N'" + value.replace(chr(39), chr(39) * 2) + "'"
 
@@ -584,10 +588,27 @@ def emit_comment(comment: Comment, target_dialect: Dialect) -> str:
 
     if target_dialect is Dialect.MYSQL:
         if comment.object_kind is CommentObjectKind.COLUMN:
-            raise DialectError(
-                "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED",
-                "MySQL column comments require a full MODIFY/CHANGE column definition; "
-                "the one-statement COMMENT profile has no type/nullability/default catalogue",
+            if catalog is None:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED",
+                    "MySQL column comments require a full MODIFY/CHANGE column definition; "
+                    "the one-statement COMMENT profile has no type/nullability/default catalogue",
+                )
+            column = catalog.column_of(
+                comment.table_schema or comment.schema,
+                comment.table_name or "",
+                comment.object_name,
+            )
+            if column is None:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED",
+                    f"source catalogue has no complete definition for "
+                    f"{comment.table_name or ''}.{comment.object_name}; "
+                    "MySQL MODIFY COLUMN cannot be emitted without the full definition",
+                )
+            return (
+                f"ALTER TABLE {_object_name(comment.schema, comment.table_name or '')} "
+                f"MODIFY COLUMN {_render_column(column, target_dialect)} COMMENT '{escaped}'"
             )
         return f"ALTER TABLE {_object_name(comment.schema, comment.object_name)} COMMENT = '{escaped}'"
 

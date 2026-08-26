@@ -14,6 +14,15 @@ from elmos_sql_dialect.models import Dialect
 from elmos_sql_dialect.parser import parse_create_table
 
 
+class _CommentCatalog:
+    def __init__(self, table_sql: str) -> None:
+        table = parse_create_table(table_sql, Dialect.POSTGRES)
+        self.columns = {(table.schema, table.name, column.name): column for column in table.columns}
+
+    def column_of(self, table_schema: str | None, table: str, column: str):
+        return self.columns.get((table_schema, table, column))
+
+
 def test_namespace_map_preserves_qualified_table_and_reference_names() -> None:
     report = translate_ddl(
         "CREATE TABLE app.users (id INT PRIMARY KEY, org_id INT, "
@@ -63,6 +72,30 @@ def test_mysql_column_comment_requires_a_complete_column_catalogue() -> None:
         "postgres",
         "mysql",
         statement_kind="COMMENT",
+    )
+    assert report["status"] == "BLOCKED", report
+    assert report["reasonCode"] == "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED"
+
+
+def test_mysql_column_comment_repeats_the_complete_catalogued_definition() -> None:
+    report = translate_ddl(
+        "COMMENT ON COLUMN users.id IS 'identifier'",
+        "postgres",
+        "mysql",
+        statement_kind="COMMENT",
+        comment_catalog=_CommentCatalog("CREATE TABLE users (id INT NOT NULL DEFAULT 0)"),
+    )
+    assert report["status"] == "PASSED", report
+    assert report["emitted"] == "ALTER TABLE users MODIFY COLUMN id INT NOT NULL DEFAULT 0 COMMENT 'identifier'"
+
+
+def test_mysql_column_comment_with_an_unseen_column_stays_fail_closed() -> None:
+    report = translate_ddl(
+        "COMMENT ON COLUMN users.missing IS 'identifier'",
+        "postgres",
+        "mysql",
+        statement_kind="COMMENT",
+        comment_catalog=_CommentCatalog("CREATE TABLE users (id INT NOT NULL DEFAULT 0)"),
     )
     assert report["status"] == "BLOCKED", report
     assert report["reasonCode"] == "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED"

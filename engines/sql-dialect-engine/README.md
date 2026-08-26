@@ -27,7 +27,7 @@ or an engine defect. This is the 100% completeness measure; it does not
 relabel manual work as translated.
 
 The separate automatic-translation measure remains an upper bound. On the
-current 76-file migration corpus it is **742/1485 = 50.0%**, after adding
+current 76-file migration corpus it is **1118/1485 = 75.3%**, after adding
 typed namespace mapping, views, comments, table privileges, bounded procedures,
 table-valued functions, trigger metadata, JSON/plain binary routes, and the
 existing DDL/ALTER/routine expansions. The remaining statements include
@@ -38,13 +38,14 @@ guessing. External execution, independent verification, and certification
 remain separate evidence gates.
 
 The source-side number is not the same as target reachability. Replaying every
-source-side candidate through all four target emitters gives **319/742 = 43.0%**
+source-side candidate through all four target emitters gives **319/1118 = 28.5%**
 with no target namespace profile, with per-target reachability of PostgreSQL
-742, MySQL 363, Oracle 376, and SQL Server 389. When the caller explicitly
+1118, MySQL 383, Oracle 376, and SQL Server 389. When the caller explicitly
 declares the source default namespace mapping `{"": "dbo"}`, SQL Server table
 and column comments can use extended properties, raising the profile-specific
-intersection to **345/742 = 46.5%** (SQL Server 440; MySQL column comments remain
-blocked without the complete target column definition). These are emitter
+intersection to **365/1118 = 32.6%** (SQL Server 440; MySQL column comments use
+the complete source column definition when a comment catalogue is supplied).
+These are emitter
 reachability upper bounds, not live-database execution or certification.
 
 ## Certified SQL profile scope
@@ -331,9 +332,9 @@ hiding exactly what this engine cannot do.
 ### What it says about real code
 
 Run against the current checkout's 76 migration files, the scan reports
-**742 of 1485 statements as automatic translation candidates (50.0% upper
+**1118 of 1485 statements as automatic translation candidates (75.3% upper
 bound)**, counting all active profiles. It also reports **1485 of 1485 (100.0%)
-with an explicit disposition**: 742 automatic candidates, 727 manual
+with an explicit disposition**: 1118 automatic candidates, 351 manual
 migrations, and 16 source-format reviews.
 
 The automatic candidate number is intentionally conservative. The blocker
@@ -341,10 +342,9 @@ ranking says why, while the disposition ledger ensures no unit disappears:
 
 | Blocker | Occurrences | Distinct | What it really is |
 |---|---|---|---|
-| `CERTIFIED_DDL_UNSUPPORTED_DEFAULT` | 381 | 2 | JSONB/array casts and other non-literal defaults still need exact target semantics |
 | `CERTIFIED_DDL_UNSUPPORTED_STATEMENT` | 167 | 1 | anonymous DO blocks and other statements have no common portable route |
 | `CERTIFIED_ROUTINE_UNSUPPORTED_LANGUAGE` | 47 | 1 | PL/pgSQL side effects/control flow cannot be lowered to the bounded routine IR |
-| `CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE` | 28 | 7 | expression indexes and computed/qualified CHECK operands remain typed blockers |
+| `CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE` | 31 | 7 | expression indexes and computed/qualified CHECK operands remain typed blockers |
 | `CERTIFIED_PRIVILEGE_UNSUPPORTED_OBJECT` | 18 | 1 | routine/role privileges need target-specific ownership and callable semantics |
 | `CERTIFIED_COMMENT_UNSUPPORTED_OBJECT` | 16 | 1 | function/role/constraint comments lack one exact four-target metadata route |
 | `CERTIFIED_DDL_PARSE_FAILED` | 16 | 16 | source-format/parser review remains required |
@@ -355,6 +355,9 @@ ranking says why, while the disposition ledger ensures no unit disappears:
 | `CERTIFIED_RLS_TARGET_ROUTE_REQUIRED` | 7 | 1 | RLS requires a target policy model; it is never weakened to an open policy |
 | `CERTIFIED_ROUTINE_UNSUPPORTED_PARAMETER` | 7 | 2 | unsupported parameter shapes need a target-specific callable contract |
 | `CERTIFIED_DDL_UNSUPPORTED_TYPE` | 5 | 1 | residual vendor-specific/return types remain outside the certified set |
+| `CERTIFIED_DDL_UNSUPPORTED_CHECK` | 2 | 1 | residual CHECK expression semantics are not in the typed predicate profile |
+| `CERTIFIED_DDL_UNBOUNDED_BINARY` | 1 | 1 | an unbounded binary column needs an explicit target LOB policy |
+| `CERTIFIED_DDL_UNSUPPORTED_DEFAULT` | 1 | 1 | array defaults remain outside the typed default profile |
 
 The first run of this scan reported **8.0%**, and reading it found a real
 defect rather than a subset limit: inline `b_id INTEGER REFERENCES b(id)`
@@ -369,8 +372,8 @@ The historical 64-file snapshot was 174/1015 = 17.1%. Subsequent typed
 expansions now cover schema-qualified objects with explicit mapping, safe
 OR REPLACE cases, view/query metadata, comments, table privileges, bounded
 procedures, table-valued functions, trigger metadata, JSON/plain binary
-routes, and the earlier CHECK/identity/precision work. The current checkout
-therefore measures **742/1485 = 50.0%** automatic candidates. The repository-
+routes, the typed JSONB literal-default profile, and the earlier CHECK/identity/precision work. The current checkout
+therefore measures **1118/1485 = 75.3%** automatic candidates. The repository-
 level headline remains **1485/1485 = 100.0% disposition coverage**: every
 blocker is explicit manual or source-review work, and none is silently
 converted.
