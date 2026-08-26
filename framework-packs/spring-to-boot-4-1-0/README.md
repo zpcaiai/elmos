@@ -12,8 +12,10 @@ final 4.1.0 pin. A source version is never guessed: the engine must resolve an
 exact dependency/BOM/plugin version and an exact source JDK before selecting a
 route.
 
-The pack is `experimental` and every route is `NOT_RUN`. It supplies a real
-execution recipe and fail-closed obligations, not a certification claim. The
+The pack remains `experimental`. Two exact Maven tuples have now passed local
+engineering execution: Boot 2.7.18 / Java 17 and Boot 3.5.3 / Java 21 to Boot
+4.1.0 / Java 21. Every other route and every unexecuted source version remains
+`NOT_RUN`. It supplies a real execution recipe and fail-closed obligations, not a certification claim. The
 target requires Spring Framework 7.0.8, Spring Security 7.1.0, Hibernate ORM
 7.4.1.Final, Tomcat 11.0.22, Java 21 and a compatible Maven or Gradle build.
 Security, data, transactions, messaging, cache, scheduler, XML/web.xml,

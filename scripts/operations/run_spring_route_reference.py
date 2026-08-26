@@ -303,6 +303,246 @@ class OrderControllerTest {
 }
 """
 
+_SECURITY_BOOT3 = """package io.elmos.reference;
+
+import static org.springframework.security.config.Customizer.withDefaults;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+class SecurityConfiguration {
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(authorize -> authorize
+            .requestMatchers("/actuator/health").permitAll()
+            .requestMatchers("/error").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/orders/**").authenticated()
+            .requestMatchers(HttpMethod.POST, "/api/orders").authenticated()
+            .requestMatchers("/api/persisted-orders/**").authenticated()
+            .anyRequest().denyAll()
+        ).csrf(csrf -> csrf.ignoringRequestMatchers("/api/orders", "/api/persisted-orders/**"))
+            .httpBasic(withDefaults());
+        return http.build();
+    }
+
+    @Bean
+    UserDetailsService userDetailsService() {
+        return new InMemoryUserDetailsManager(
+            User.withUsername("operator")
+                .password("{noop}operator-password")
+                .roles("OPERATOR")
+                .build()
+        );
+    }
+}
+"""
+
+_PERSISTENCE_ENTITY = """package io.elmos.reference;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "persisted_orders")
+class PersistedOrder {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String customerId;
+    private String status;
+
+    protected PersistedOrder() {}
+
+    PersistedOrder(String customerId, String status) {
+        this.customerId = customerId;
+        this.status = status;
+    }
+}
+"""
+
+_PERSISTENCE_REPOSITORY = """package io.elmos.reference;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+interface PersistedOrderRepository extends JpaRepository<PersistedOrder, Long> {}
+"""
+
+_PERSISTENCE_SERVICE = """package io.elmos.reference;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+class OrderTransactionService {
+    private final PersistedOrderRepository repository;
+
+    OrderTransactionService(PersistedOrderRepository repository) {
+        this.repository = repository;
+    }
+
+    @Transactional
+    void createThenRollback() {
+        repository.save(new PersistedOrder("rollback-customer", "PENDING"));
+        throw new IllegalStateException("expected transaction rollback");
+    }
+}
+"""
+
+_PERSISTENCE_CONTROLLER = """package io.elmos.reference;
+
+import java.util.Map;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/persisted-orders")
+class PersistenceController {
+    private final PersistedOrderRepository repository;
+    private final OrderTransactionService transactions;
+
+    PersistenceController(PersistedOrderRepository repository, OrderTransactionService transactions) {
+        this.repository = repository;
+        this.transactions = transactions;
+    }
+
+    @GetMapping("/count")
+    Map<String, Long> count() {
+        return Map.of("count", repository.count());
+    }
+
+    @PostMapping("/rollback")
+    ResponseEntity<Void> rollback() {
+        try {
+            transactions.createThenRollback();
+            return ResponseEntity.noContent().build();
+        } catch (IllegalStateException expected) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+}
+"""
+
+_TEST_SECURITY_JUNIT5 = """package io.elmos.reference;
+
+import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class OrderControllerSecurityTest {
+    @Autowired
+    private MockMvc mvc;
+
+    @Test
+    void rejectsUnauthenticatedOrderReads() throws Exception {
+        mvc.perform(get("/api/orders/42"))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void preservesAuthenticatedOrderContract() throws Exception {
+        mvc.perform(get("/api/orders/42").with(httpBasic("operator", "operator-password")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id", is(42)))
+            .andExpect(jsonPath("$.status", is("READY")))
+            .andExpect(jsonPath("$.amountCents", is(5250)));
+    }
+
+    @Test
+    void preservesAuthenticatedValidationContract() throws Exception {
+        mvc.perform(post("/api/orders")
+                .with(httpBasic("operator", "operator-password"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\\\"customerId\\\":\\\"\\\"}"))
+            .andExpect(status().isBadRequest());
+    }
+}
+"""
+
+_TEST_SECURITY_PERSISTENCE_JUNIT5 = """package io.elmos.reference;
+
+import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class OrderControllerSecurityTest {
+    @Autowired
+    private MockMvc mvc;
+
+    @Test
+    void rejectsUnauthenticatedOrderReads() throws Exception {
+        mvc.perform(get("/api/orders/42"))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void preservesAuthenticatedOrderContract() throws Exception {
+        mvc.perform(get("/api/orders/42").with(httpBasic("operator", "operator-password")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id", is(42)))
+            .andExpect(jsonPath("$.status", is("READY")))
+            .andExpect(jsonPath("$.amountCents", is(5250)));
+    }
+
+    @Test
+    void preservesAuthenticatedValidationContract() throws Exception {
+        mvc.perform(post("/api/orders")
+                .with(httpBasic("operator", "operator-password"))
+                .contentType("application/json")
+                .content("{\\\"customerId\\\":\\\"\\\"}"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void rollsBackTransactionalWrites() throws Exception {
+        mvc.perform(post("/api/persisted-orders/rollback")
+                .with(httpBasic("operator", "operator-password")))
+            .andExpect(status().is5xxServerError());
+
+        mvc.perform(get("/api/persisted-orders/count")
+                .with(httpBasic("operator", "operator-password")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.count", is(0)));
+    }
+}
+"""
+
 # Boot 1.5's actuator predates the /actuator prefix and the exposure property.
 _PROPERTIES_BOOT1 = """endpoints.health.sensitive=false
 endpoints.enabled=false
@@ -312,6 +552,12 @@ endpoints.health.enabled=true
 _PROPERTIES_BOOT2_PLUS = """management.endpoints.web.exposure.include=health
 management.endpoint.health.show-details=never
 server.shutdown=graceful
+"""
+
+_PROPERTIES_PERSISTENCE = _PROPERTIES_BOOT2_PLUS + """spring.datasource.url=jdbc:h2:mem:orders;DB_CLOSE_DELAY=-1
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.hibernate.ddl-auto=create-drop
 """
 
 
@@ -328,6 +574,14 @@ class Route:
     health_path: str
     # Boot 1.5 has no standalone validation starter; the validator ships with web.
     extra_starters: tuple[str, ...] = field(default=("validation",))
+    # Keep the target on the route instead of relying on one process-wide target.
+    # This lets the same evidence harness execute both the recorded 3.5.3 routes
+    # and the first exact Boot 4.1.0 route without changing the old tuples.
+    target_boot: str = TARGET_BOOT
+    # Optional P0 security contract for a route-specific fixture.
+    security: str = ""
+    # Optional exact-provider persistence/transaction contract for a route fixture.
+    persistence: str = ""
 
 
 ROUTES: dict[str, Route] = {
@@ -378,6 +632,33 @@ ROUTES: dict[str, Route] = {
         test=_TEST_JUNIT5,
         properties=_PROPERTIES_BOOT2_PLUS,
         health_path="/actuator/health",
+    ),
+    "boot-3.5-maven-to-boot-4.1.0-java-21": Route(
+        route_id="boot-3.5-maven-to-boot-4.1.0-java-21",
+        recipe_file="spring-to-boot-4.1.0.yml",
+        recipe_id="io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_0Java21",
+        source_boot="3.5.3",
+        source_java="21",
+        controller=_CONTROLLER_JAKARTA,
+        test=_TEST_SECURITY_PERSISTENCE_JUNIT5,
+        properties=_PROPERTIES_PERSISTENCE,
+        health_path="/actuator/health",
+        target_boot="4.1.0",
+        extra_starters=("validation", "security", "data-jpa"),
+        security=_SECURITY_BOOT3,
+        persistence=_PERSISTENCE_ENTITY,
+    ),
+    "boot-2.7-maven-to-boot-4.1.0-java-21": Route(
+        route_id="boot-2.7-maven-to-boot-4.1.0-java-21",
+        recipe_file="spring-to-boot-4.1.0.yml",
+        recipe_id="io.elmos.openrewrite.SpringBoot2_7ToBoot4_1_0Java21",
+        source_boot="2.7.18",
+        source_java="17",
+        controller=_CONTROLLER_JAVA11,
+        test=_TEST_JUNIT5,
+        properties=_PROPERTIES_BOOT2_PLUS,
+        health_path="/actuator/health",
+        target_boot="4.1.0",
     ),
 }
 
@@ -499,6 +780,18 @@ def pom(route: Route) -> str:
     </dependency>"""
         for name in ("web", "actuator", *route.extra_starters)
     )
+    security_test = """
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>""" if route.security else ""
+    persistence_dependencies = """
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>""" if route.persistence else ""
     artifact = "spring-reference-" + route.source_boot.replace(".", "-").lower()
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -523,7 +816,7 @@ def pom(route: Route) -> str:
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
-    </dependency>
+    </dependency>{security_test}{persistence_dependencies}
   </dependencies>
   <build>
     <plugins>
@@ -549,6 +842,13 @@ def materialize(project: Path, route: Route) -> None:
     (source / "ReferenceApplication.java").write_text(_APPLICATION, encoding="utf-8")
     (source / "OrderController.java").write_text(route.controller, encoding="utf-8")
     (tests / "OrderControllerTest.java").write_text(route.test, encoding="utf-8")
+    if route.security:
+        (source / "SecurityConfiguration.java").write_text(route.security, encoding="utf-8")
+    if route.persistence:
+        (source / "PersistedOrder.java").write_text(_PERSISTENCE_ENTITY, encoding="utf-8")
+        (source / "PersistedOrderRepository.java").write_text(_PERSISTENCE_REPOSITORY, encoding="utf-8")
+        (source / "OrderTransactionService.java").write_text(_PERSISTENCE_SERVICE, encoding="utf-8")
+        (source / "PersistenceController.java").write_text(_PERSISTENCE_CONTROLLER, encoding="utf-8")
     (resources / "application.properties").write_text(route.properties, encoding="utf-8")
 
 
@@ -558,20 +858,48 @@ def free_port() -> int:
         return int(handle.getsockname()[1])
 
 
-def request_json(port: int, path: str, *, timeout: float = 2.0) -> dict[str, Any]:
+def request_status(
+    port: int,
+    method: str,
+    path: str,
+    *,
+    headers: dict[str, str] | None = None,
+    body: str | None = None,
+    timeout: float = 2.0,
+) -> tuple[int, bytes]:
     connection = http.client.HTTPConnection("127.0.0.1", port, timeout=timeout)
     try:
-        connection.request("GET", path, headers={"Accept": "application/json"})
-        response = connection.getresponse()
-        if response.status != 200:
-            raise RunFailure(f"HTTP_{response.status}:{path}")
-        return json.loads(response.read())
+        request_headers = {"Accept": "application/json", **(headers or {})}
+        try:
+            connection.request(method, path, body=body, headers=request_headers)
+            response = connection.getresponse()
+            return response.status, response.read()
+        except (OSError, http.client.HTTPException) as exc:
+            raise RunFailure(f"HTTP_REQUEST_FAILED:{method} {path}:{exc}") from exc
     finally:
         connection.close()
 
 
+def request_json(
+    port: int,
+    path: str,
+    *,
+    headers: dict[str, str] | None = None,
+    timeout: float = 10.0,
+) -> dict[str, Any]:
+    status, body = request_status(port, "GET", path, headers=headers, timeout=timeout)
+    if status != 200:
+        raise RunFailure(f"HTTP_{status}:{path}")
+    try:
+        return json.loads(body)
+    except json.JSONDecodeError as exc:
+        raise RunFailure(f"HTTP_INVALID_JSON:{path}:{exc}") from exc
+
+
 def start_and_probe(
-    project: Path, *, home: Path, health_path: str, log_path: Path
+    project: Path, *, home: Path, health_path: str, log_path: Path,
+    security_enabled: bool = False,
+    persistence_enabled: bool = False,
 ) -> dict[str, Any]:
     jar = next(
         path for path in sorted((project / "target").glob("*.jar"))
@@ -603,14 +931,50 @@ def start_and_probe(
             if health is None or health.get("status") != "UP":
                 tail = log_path.read_text(encoding="utf-8", errors="replace")[-8_000:]
                 raise RunFailure(f"STARTUP_FAILED:{project.name}\n{tail}")
-            return {
+            auth_headers = {"Authorization": "Basic b3BlcmF0b3I6b3BlcmF0b3ItcGFzc3dvcmQ="}
+            responses = {
+                str(identifier): request_json(
+                    port, f"/api/orders/{identifier}", headers=auth_headers if security_enabled else None
+                )
+                for identifier in PROBE_IDS
+            }
+            result: dict[str, Any] = {
                 "health": health,
-                "responses": {
-                    str(identifier): request_json(port, f"/api/orders/{identifier}")
-                    for identifier in PROBE_IDS
-                },
+                "responses": responses,
                 "jar_sha256": hashlib.sha256(jar.read_bytes()).hexdigest(),
             }
+            if security_enabled:
+                unauthenticated_status, _ = request_status(port, "GET", "/api/orders/42")
+                authenticated_status, _ = request_status(
+                    port, "GET", "/api/orders/42", headers=auth_headers
+                )
+                result["security"] = {
+                    "unauthenticated_order_status": unauthenticated_status,
+                    "authenticated_order_status": authenticated_status,
+                }
+            if persistence_enabled:
+                persistence_headers = auth_headers if security_enabled else {}
+                rollback_status, _ = request_status(
+                    port, "POST", "/api/persisted-orders/rollback",
+                    headers={"Content-Type": "application/json", **persistence_headers},
+                    body="{}",
+                    timeout=10.0,
+                )
+                count_status, count_body = request_status(
+                    port, "GET", "/api/persisted-orders/count",
+                    headers=persistence_headers,
+                    timeout=10.0,
+                )
+                try:
+                    count_response: Any = json.loads(count_body)
+                except json.JSONDecodeError as exc:
+                    raise RunFailure(f"PERSISTENCE_INVALID_JSON:/api/persisted-orders/count:{exc}") from exc
+                result["persistence"] = {
+                    "rollback_status": rollback_status,
+                    "count_status": count_status,
+                    "count_response": count_response,
+                }
+            return result
         finally:
             process.terminate()
             try:
@@ -640,7 +1004,7 @@ def transform(source: Path, target: Path, recipe: Path, route: Route, maven: str
     if "Recipe validation error" in result.stdout + result.stderr:
         raise RunFailure("OPENREWRITE_RECIPE_VALIDATION_FAILED")
     text = (target / "pom.xml").read_text(encoding="utf-8")
-    if f"<version>{TARGET_BOOT}</version>" not in text:
+    if f"<version>{route.target_boot}</version>" not in text:
         raise RunFailure("OPENREWRITE_TARGET_BOOT_BINDING_FAILED")
     if f"<java.version>{TARGET_JAVA}</java.version>" not in text:
         raise RunFailure("OPENREWRITE_TARGET_JAVA_BINDING_FAILED")
@@ -698,16 +1062,28 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
 
     source_runtime = start_and_probe(
         source, home=source_home, health_path=route.health_path,
-        log_path=logs / "source-runtime.log")
+        log_path=logs / "source-runtime.log", security_enabled=bool(route.security),
+        persistence_enabled=bool(route.persistence))
     target_runtime = start_and_probe(
         target, home=target_home, health_path="/actuator/health",
-        log_path=logs / "target-runtime.log")
+        log_path=logs / "target-runtime.log", security_enabled=bool(route.security),
+        persistence_enabled=bool(route.persistence))
 
     if source_runtime["responses"] != target_runtime["responses"]:
         raise RunFailure(
             "FRAMEWORK_BEHAVIOR_DIFFERENCE\n"
             f"source={json.dumps(source_runtime['responses'], sort_keys=True)}\n"
             f"target={json.dumps(target_runtime['responses'], sort_keys=True)}")
+    if source_runtime.get("security") != target_runtime.get("security"):
+        raise RunFailure(
+            "SECURITY_BEHAVIOR_DIFFERENCE\n"
+            f"source={json.dumps(source_runtime.get('security'), sort_keys=True)}\n"
+            f"target={json.dumps(target_runtime.get('security'), sort_keys=True)}")
+    if source_runtime.get("persistence") != target_runtime.get("persistence"):
+        raise RunFailure(
+            "PERSISTENCE_BEHAVIOR_DIFFERENCE\n"
+            f"source={json.dumps(source_runtime.get('persistence'), sort_keys=True)}\n"
+            f"target={json.dumps(target_runtime.get('persistence'), sort_keys=True)}")
 
     return {
         "schema_version": 1,
@@ -716,7 +1092,7 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
         "recorded_tuple": {
             "source_boot": route.source_boot,
             "source_java": route.source_java,
-            "target_boot": TARGET_BOOT,
+            "target_boot": route.target_boot,
             "target_java": TARGET_JAVA,
         },
         "source": {
@@ -729,7 +1105,7 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
             "runtime": source_runtime,
         },
         "target": {
-            "boot": TARGET_BOOT,
+            "boot": route.target_boot,
             "java": run(["java", "-version"], cwd=target, home=target_home,
                         timeout=120).stderr.splitlines()[0],
             "health_path": "/actuator/health",
@@ -818,6 +1194,76 @@ def failure_attempt_destination(repo: Path, route: Route) -> Path:
     )
 
 
+def pack_local_reference_evidence(evidence: dict[str, Any], pack_key: str) -> dict[str, Any]:
+    """Project one successful route run into the Batch 30 local-reference shape.
+
+    The route record remains the canonical raw run. This derived record is only
+    the Pack binding used by the conservative validator; it carries the same
+    source/target runtime observations and explicitly keeps every external role
+    outside the local run boundary.
+    """
+    source = evidence["source"]
+    target = evidence["target"]
+    source_runtime = source["runtime"]
+    target_runtime = target["runtime"]
+    return {
+        "schema_version": 2,
+        "evidence_class": "LOCAL_REFERENCE_ROUTE_ENGINEERING",
+        "certification_eligible": False,
+        "pack_key": pack_key,
+        "route_id": evidence["route_id"],
+        "execution_status": evidence["execution_status"],
+        "behavioral_parity": evidence["behavioral_parity"],
+        "scope": ["web", "configuration", "lifecycle", "security", "persistence", "transactions"],
+        "source": {
+            "version": source["boot"],
+            "java": source["java"],
+            "build": source["build"],
+            "runtime": source_runtime,
+        },
+        "target": {
+            "version": target["boot"],
+            "java": target["java"],
+            "build": target["build"],
+            "runtime": target_runtime,
+        },
+        "migration": {
+            "status": "PASSED_LOCAL",
+            "production_status": "NOT_RUN",
+            "recipe_id": evidence["transformation"]["recipe_id"],
+            "recipe_sha256": evidence["transformation"]["recipe_sha256"],
+            "maven": evidence["transformation"]["maven"],
+        },
+        "equivalence": {
+            "status": "PASSED_LOCAL",
+            "production_status": "NOT_RUN",
+            "scope": "HTTP-health-web-validation-security-fixture-contracts",
+        },
+        "security": {
+            "status": "PASSED_LOCAL" if "security" in source_runtime else "NOT_RUN",
+            "production_status": "NOT_RUN",
+            "source": source_runtime.get("security", "NOT_RUN"),
+            "target": target_runtime.get("security", "NOT_RUN"),
+        },
+        "persistence": {
+            "status": "PASSED_LOCAL" if "persistence" in source_runtime else "NOT_RUN",
+            "production_status": "NOT_RUN",
+            "source": source_runtime.get("persistence", "NOT_RUN"),
+            "target": target_runtime.get("persistence", "NOT_RUN"),
+        },
+        "independent_verification": "NOT_RUN",
+        "external_execution_status": "NOT_RUN",
+        "authorized_customer_repository": "NOT_RUN",
+        "customer_holdout": "NOT_RUN",
+        "customer_acceptance": "NOT_RUN",
+        "rootless_runner": "NOT_RUN",
+        "rootless_transformer": "NOT_RUN",
+        "rootless_verifier": "NOT_RUN",
+        "independent_review": "NOT_RUN",
+        "external_certification": "NOT_RUN",
+    }
+
+
 def record_failure_attempt(
     repo: Path,
     route: Route,
@@ -864,6 +1310,8 @@ def main() -> int:
     parser.add_argument("--repo-root", default=".")
     parser.add_argument("--workspace",
                         help="where the fixtures are built (default: a temp dir)")
+    parser.add_argument("--pack-dir",
+                        help="optional Pack directory for the derived local reference evidence")
     args = parser.parse_args()
 
     if args.list:
@@ -901,6 +1349,19 @@ def main() -> int:
         return 1
 
     write_json_atomic(destination, evidence)
+    if args.pack_dir:
+        pack_dir = Path(args.pack_dir).resolve()
+        pack_key_path = pack_dir / "pack.json"
+        if not pack_key_path.is_file():
+            print(f"PACK_MANIFEST_MISSING:{pack_key_path}", file=sys.stderr)
+            return 1
+        pack_key = json.loads(pack_key_path.read_text(encoding="utf-8")).get("pack_key")
+        if not isinstance(pack_key, str) or not pack_key:
+            print(f"PACK_KEY_MISSING:{pack_key_path}", file=sys.stderr)
+            return 1
+        pack_evidence = pack_dir / "certification/local-reference-evidence.json"
+        write_json_atomic(pack_evidence, pack_local_reference_evidence(evidence, pack_key))
+        print(f"pack local evidence: {pack_evidence}")
 
     print(f"PASS: {route.route_id}")
     print(f"evidence: {destination}")

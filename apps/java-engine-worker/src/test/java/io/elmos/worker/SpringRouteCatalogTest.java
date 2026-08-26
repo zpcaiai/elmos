@@ -332,7 +332,11 @@ class SpringRouteCatalogTest {
         for (SpringRoute route : SpringRouteCatalog.routes()) {
             if (!route.targetBoot().equals("4.1.0")) continue;
             assertTrue(route.implemented(), route.routeId());
-            if (route.routeId().equals("boot-3.5-maven-to-boot-4.1.0-java-21")) {
+            if (route.routeId().equals("boot-2.7-maven-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("2.7.18", route.verifiedSourceBoot());
+                assertEquals("17", route.verifiedSourceJava());
+            } else if (route.routeId().equals("boot-3.5-maven-to-boot-4.1.0-java-21")) {
                 assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
                 assertEquals("3.5.3", route.verifiedSourceBoot());
                 assertEquals("21", route.verifiedSourceJava());
