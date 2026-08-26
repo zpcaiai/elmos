@@ -35,4 +35,16 @@ This read-only audit reports `NOT_READY_FOR_EXTERNAL_GATE` until a protected
 rootless runner preflight, physically separate holdout and representative
 repository evidence, and a separate verifier receipt are available. A
 preflight observation never becomes external execution evidence, and the
-audit never writes certification evidence.
+audit never writes certification evidence. The checked-in local execution
+receipt may change the protected-runner diagnostic to
+`PREFLIGHT_AND_LOCAL_ROOTLESS_EXECUTION_RECORDED_EXTERNAL_NOT_RUN`; it is a
+development reference fixture result only and does not change any external
+`NOT_RUN` boundary or certification state.
+
+The current local receipt records a real Boot 3.5.3 / Java 21 source build,
+OpenRewrite transformation, Boot 4.1.0 / Java 21 target build, source and
+target startup probes, and a rootless Podman target startup with cleanup. Its
+raw route and runner receipts are content-addressed beside the summary under
+`certification/local-execution/2026-08-27/`. This is local engineering
+evidence for the reference fixture, not a customer repository, independent
+holdout, representative corpus, independent verification, or certification.

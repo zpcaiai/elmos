@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "record_type": "SPRING_BOOT_4_1_LOCAL_ROOTLESS_EXECUTION",
+  "pack_key": "spring-to-boot-4-1-0",
+  "route_id": "boot-3.5-maven-to-boot-4.1.0-java-21",
+  "tuple": {
+    "source_spring_boot": "3.5.3",
+    "source_java": "21",
+    "target_spring_boot": "4.1.0",
+    "target_java": "21",
+    "build": "maven-3.9.11"
+  },
+  "evidence_class": "LOCAL_NON_CERTIFYING_ROOTLESS_EXECUTION",
+  "execution_scope": "LOCAL_DEVELOPMENT_REFERENCE_FIXTURE_ONLY",
+  "execution_status": "PASSED_LOCAL_ROOTLESS",
+  "certification_eligible": false,
+  "certification_status": "NOT_CERTIFIED",
+  "stages": {
+    "source_build": "PASSED",
+    "transformation": "PASSED",
+    "target_build": "PASSED",
+    "source_startup": "PASSED",
+    "target_startup": "PASSED",
+    "rootless_target_startup": "PASSED"
+  },
+  "source": {
+    "framework": "spring-boot",
+    "version": "3.5.3",
+    "java": "openjdk version \"21.0.11\" 2026-04-21",
+    "build": "PASSED",
+    "startup": "PASSED",
+    "jar_sha256": "67a0baaa19f5024146c52bffd93df91815e884ba9446d92978ff00b19e9912ba"
+  },
+  "transformation": {
+    "engine": "OpenRewrite",
+    "recipe_id": "io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_0Java21",
+    "recipe_sha256": "75faf8019a3a04fb6aa71e1577542b003ade11b596193b150d61fb813e16f629",
+    "maven": "Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)",
+    "rewrite_maven_plugin": "6.44.0",
+    "rewrite_spring": "6.35.0",
+    "status": "PASSED"
+  },
+  "target": {
+    "framework": "spring-boot",
+    "version": "4.1.0",
+    "java": "openjdk version \"21.0.11\" 2026-04-21",
+    "build": "PASSED",
+    "startup": "PASSED",
+    "jar_sha256": "77f5df21870472a1f2905035f94de86ebb19e0475d7f71ec6f9f9a70ea5f7f22"
+  },
+  "rootless_runtime": {
+    "status": "PASSED_LOCAL",
+    "executor": "ROOTLESS_CONTAINER",
+    "engine": "podman",
+    "rootless": true,
+    "build_network": "none",
+    "toolchain_cache": "CACHED",
+    "base_image": "docker.io/library/eclipse-temurin:21-jre@sha256:8cef5fc7bebe421363ab543a2f4db5caf7d119d8db67d56b0f56c485d2de4d55",
+    "start_status": "RUNNING",
+    "stop_status": "STOPPED",
+    "health": "loopback-identity-verified",
+    "application_health": "UP",
+    "network_policy": "internal-only-no-external-egress",
+    "read_only": true,
+    "network_internal_only": true,
+    "user": "501:20",
+    "target_jar_sha256": "77f5df21870472a1f2905035f94de86ebb19e0475d7f71ec6f9f9a70ea5f7f22",
+    "container_id": "66ad7768ee9b43ce46c8655a576be0d84bc8934a1393635f30e3f906d89003cd",
+    "health_probe": "http://127.0.0.1:44133/health",
+    "host_port": 44133,
+    "job_id": "123e4567-e89b-42d3-a456-426614174001",
+    "lease_id": "aa7c924ae85a5ea2c443b2019ad25c21"
+  },
+  "raw_evidence": [
+    {
+      "path": "route-reference-evidence.json",
+      "bytes": 9076,
+      "sha256": "bf07382c3e3bc75c278409fca231cc12611aab68bc1308259c2a8da14735b9de"
+    },
+    {
+      "path": "rootless-diagnose.json",
+      "bytes": 892,
+      "sha256": "9e4677ba97ab050533100bed1bd686eb0ee12cef4403fe8a3026f778e4fde34e"
+    },
+    {
+      "path": "rootless-start.json",
+      "bytes": 909,
+      "sha256": "f3ac14fd63744360aff30743859a343361b7fd5e4aeeef1617ef98eda2105469"
+    },
+    {
+      "path": "rootless-status.json",
+      "bytes": 167,
+      "sha256": "e1b803a725ef5d79caf0bc7038db77b74f688eeb3655a4b4ea29d7db73f8ed7e"
+    },
+    {
+      "path": "rootless-stop.json",
+      "bytes": 219,
+      "sha256": "c61cbbf318657dcd68f7d89af962d31427ef396a83e4de4e34fd3c38d602ad19"
+    }
+  ],
+  "independent_holdout": "NOT_RUN",
+  "representative_repository": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "external_evidence_boundary": {
+    "authorized_customer_repository": "NOT_RUN",
+    "customer_holdout": "NOT_RUN",
+    "customer_acceptance": "NOT_RUN",
+    "rootless_runner": "NOT_RUN",
+    "rootless_transformer": "NOT_RUN",
+    "rootless_verifier": "NOT_RUN",
+    "independent_review": "NOT_RUN",
+    "external_certification": "NOT_RUN"
+  }
+}

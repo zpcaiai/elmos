@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -38,6 +39,14 @@ class SpringExternalReadinessTests(unittest.TestCase):
             set(result["external_evidence_boundary"].values()), {"NOT_RUN"}
         )
         checks = {item["role"]: item for item in result["readiness_checks"]}
+        self.assertEqual(
+            checks["local_execution"]["status"],
+            "EXECUTED_LOCAL_NON_CERTIFYING",
+        )
+        self.assertNotIn(
+            "PREFLIGHT_ONLY_EXECUTION_NOT_RUN",
+            checks["protected_rootless_runner"]["reason"],
+        )
         self.assertEqual(checks["independent_holdout"]["status"], "NOT_RUN")
         self.assertEqual(checks["representative_repository"]["status"], "NOT_RUN")
         self.assertEqual(checks["independent_verifier"]["status"], "NOT_RUN")
@@ -46,6 +55,10 @@ class SpringExternalReadinessTests(unittest.TestCase):
         result = READINESS.assess(self.PACK, engine=Path("/usr/local/bin/docker"))
         checks = {item["role"]: item for item in result["readiness_checks"]}
         self.assertEqual(checks["protected_rootless_runner"]["status"], "BLOCKED")
+        self.assertEqual(
+            checks["protected_rootless_runner"]["reason"],
+            "ROOTLESS_CONTAINER_ENGINE_REQUIRED",
+        )
         self.assertEqual(
             result["external_evidence_boundary"]["rootless_runner"], "NOT_RUN"
         )
@@ -64,6 +77,37 @@ class SpringExternalReadinessTests(unittest.TestCase):
                 READINESS.corpus_readiness(corpus, "holdout")["status"],
                 "EVIDENCE_PENDING",
             )
+
+    def test_local_execution_receipt_cannot_be_read_outside_pack_boundary(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="spring-readiness-receipt-") as directory:
+            receipt = Path(directory) / "receipt.json"
+            receipt.write_text("{}", encoding="utf-8")
+            result = READINESS.local_execution_readiness(self.PACK, receipt)
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(
+            result["reason"],
+            "LOCAL_EXECUTION_RECEIPT_OUTSIDE_PACK_BOUNDARY",
+        )
+
+    def test_local_execution_receipt_rejects_tampered_raw_evidence(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="spring-readiness-pack-") as directory:
+            pack = Path(directory) / "pack"
+            source_dir = self.PACK / "certification/local-execution/2026-08-27"
+            receipt_dir = pack / "certification/local-execution/2026-08-27"
+            receipt_dir.parent.mkdir(parents=True)
+            shutil.copytree(source_dir, receipt_dir)
+            receipt = receipt_dir / "local-rootless-execution.json"
+            payload = json.loads(receipt.read_text(encoding="utf-8"))
+            payload["raw_evidence"][0]["sha256"] = "0" * 64
+            receipt.write_text(json.dumps(payload), encoding="utf-8")
+
+            result = READINESS.local_execution_readiness(pack, receipt)
+
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(
+            result["reason"],
+            "LOCAL_EXECUTION_RECEIPT_INVALID:raw_evidence digest mismatch: route-reference-evidence.json",
+        )
 
     def test_rootless_preflight_retries_transient_engine_unavailability(self) -> None:
         unavailable = subprocess.CompletedProcess(
