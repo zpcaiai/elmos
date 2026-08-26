@@ -67,12 +67,14 @@ function exprSource(expr: Expr): string {
     // type-invalid `item.build_analysis.total` expression.
     case "path": return expr.fields.reduce((source, field) => `${source}[${JSON.stringify(field)}]`, expr.object);
     case "literal": return literalSource(expr.literal);
+    case "eventValue": return "value";
     case "unaryNot": return `!${wrap(expr.operand)}`;
     case "binary": {
       const op = expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(exprSource).join(", ")})`;
+    case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
@@ -91,6 +93,7 @@ function handlerBody(body: Stmt[], indent: string): string[] {
     else if (e.kind === "binary") { collect(e.left); collect(e.right); }
     else if (e.kind === "unaryNot") collect(e.operand);
     else if (e.kind === "stringMethod") { collect(e.receiver); e.args.forEach(collect); }
+    else if (e.kind === "regexTest") collect(e.operand);
     else if (e.kind === "arrayLength") collect(e.operand);
     else if (e.kind === "ternary") { collect(e.condition); collect(e.then); collect(e.else); }
   };
@@ -104,6 +107,7 @@ function handlerBody(body: Stmt[], indent: string): string[] {
     if (e.kind === "binary") return `(${rewrite(e.left)} ${e.operator === "==" ? "===" : e.operator === "!=" ? "!==" : e.operator} ${rewrite(e.right)})`;
     if (e.kind === "unaryNot") return `!${rewrite(e.operand)}`;
     if (e.kind === "stringMethod") return `${rewrite(e.receiver)}.${e.method}(${e.args.map(rewrite).join(", ")})`;
+    if (e.kind === "regexTest") return `/${e.pattern}/${e.flags}.test(${rewrite(e.operand)})`;
     if (e.kind === "arrayLength") return `${rewrite(e.operand)}.length`;
     if (e.kind === "ternary") return `(${rewrite(e.condition)} ? ${rewrite(e.then)} : ${rewrite(e.else)})`;
     return exprSource(e);

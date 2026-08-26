@@ -44,16 +44,72 @@ export interface ReactParserOptions {
 }
 
 type StaticStringMapValue = string | ReadonlyMap<string, string>;
-type StaticStringMaps = ReadonlyMap<string, ReadonlyMap<string, StaticStringMapValue>>;
+interface StaticRegexDefinition {
+  readonly kind: "regex";
+  readonly pattern: string;
+  readonly flags: string;
+}
+type StaticDefinition = ReadonlyMap<string, StaticStringMapValue> | StaticRegexDefinition;
+type StaticStringMaps = ReadonlyMap<string, StaticDefinition>;
+
+function isStaticRegexDefinition(value: StaticDefinition): value is StaticRegexDefinition {
+  return !(
+    value instanceof Map
+    || (typeof value === "object" && value !== null && typeof (value as ReadonlyMap<string, unknown>).entries === "function")
+  );
+}
+
+function regexDefinitionFromNode(node: ts.Expression): StaticRegexDefinition | null {
+  if (!ts.isRegularExpressionLiteral(node)) return null;
+  const source = node.getText();
+  let escaped = false;
+  let inClass = false;
+  let closingSlash = -1;
+  for (let index = 1; index < source.length; index += 1) {
+    const char = source[index];
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (char === "\\") {
+      escaped = true;
+      continue;
+    }
+    if (char === "[") {
+      inClass = true;
+      continue;
+    }
+    if (char === "]") {
+      inClass = false;
+      continue;
+    }
+    if (char === "/" && !inClass) {
+      closingSlash = index;
+      break;
+    }
+  }
+  require_(closingSlash > 0, "CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL", `regular expression ${source} has no closing delimiter`);
+  const pattern = source.slice(1, closingSlash);
+  const flags = source.slice(closingSlash + 1);
+  require_(/^[imsu]*$/.test(flags) && new Set(flags).size === flags.length, "CERTIFIED_COMPONENT_REGEX_TEST_FLAGS", "regex literal flags must be unique and limited to i/m/s/u");
+  require_(pattern.length <= 256, "CERTIFIED_COMPONENT_REGEX_TEST_TOO_LONG", "regex pattern exceeds the 256-character certified bound");
+  return { kind: "regex", pattern, flags };
+}
 
 function collectStaticStringMaps(sourceFile: ts.SourceFile): StaticStringMaps {
-  const maps = new Map<string, ReadonlyMap<string, StaticStringMapValue>>();
+  const maps = new Map<string, StaticDefinition>();
   for (const statement of sourceFile.statements) {
     if (!ts.isVariableStatement(statement)) continue;
     for (const declaration of statement.declarationList.declarations) {
       let initializer = declaration.initializer;
       while (initializer !== undefined && (ts.isAsExpression(initializer) || ts.isTypeAssertionExpression(initializer))) initializer = initializer.expression;
-      if (!ts.isIdentifier(declaration.name) || initializer === undefined || !ts.isObjectLiteralExpression(initializer)) continue;
+      if (!ts.isIdentifier(declaration.name) || initializer === undefined) continue;
+      const regex = regexDefinitionFromNode(initializer);
+      if (regex !== null) {
+        maps.set(declaration.name.text, regex);
+        continue;
+      }
+      if (!ts.isObjectLiteralExpression(initializer)) continue;
       const entries = new Map<string, StaticStringMapValue>();
       let complete = true;
       for (const property of initializer.properties) {
@@ -343,22 +399,41 @@ const BINARY_TOKEN_MAP: Record<number, BinaryOperator> = {
   [ts.SyntaxKind.QuestionQuestionToken]: "??",
 };
 
-function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()): Expr {
-  if (ts.isParenthesizedExpression(node)) return parseExpr(node.expression, staticMaps);
+function isEventTargetValue(node: ts.Expression, eventParameter: string | undefined): boolean {
+  return eventParameter !== undefined
+    && ts.isPropertyAccessExpression(node)
+    && node.name.text === "value"
+    && ts.isPropertyAccessExpression(node.expression)
+    && node.expression.name.text === "target"
+    && ts.isIdentifier(node.expression.expression)
+    && node.expression.expression.text === eventParameter;
+}
+
+function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map(), eventParameter?: string): Expr {
+  if (ts.isParenthesizedExpression(node)) return parseExpr(node.expression, staticMaps, eventParameter);
+  if (isEventTargetValue(node, eventParameter)) return { kind: "eventValue" };
   if (ts.isIdentifier(node)) return { kind: "ident", name: node.text };
   if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
-    const method = node.expression.name.text as StringMethod;
-    require_(["toUpperCase", "toLowerCase", "trim", "replaceAll"].includes(method), "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `string method ${method} is outside certified-component-v1`);
-    const args = node.arguments.map((argument) => parseExpr(argument, staticMaps));
-    const expectedArgs = method === "replaceAll" ? 2 : 0;
+    const methodName = node.expression.name.text;
+    if (methodName === "test" && ts.isIdentifier(node.expression.expression)) {
+      const definition = staticMaps.get(node.expression.expression.text);
+      require_(definition !== undefined && isStaticRegexDefinition(definition), "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `regex test receiver ${node.expression.expression.text} is not a declared certified static regular expression`);
+      const regex = definition;
+      require_(node.arguments.length === 1, "CERTIFIED_COMPONENT_REGEX_TEST_ARITY", "regex test expects one argument");
+      return { kind: "regexTest", pattern: regex.pattern, flags: regex.flags, operand: parseExpr(at(node.arguments, 0, "CERTIFIED_COMPONENT_REGEX_TEST_ARITY", "regex test is missing its argument"), staticMaps, eventParameter) };
+    }
+    const method = methodName as StringMethod;
+    require_(["toUpperCase", "toLowerCase", "trim", "replaceAll", "includes"].includes(method), "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `string method ${method} is outside certified-component-v1`);
+      const args = node.arguments.map((argument) => parseExpr(argument, staticMaps, eventParameter));
+    const expectedArgs = method === "replaceAll" ? 2 : method === "includes" ? 1 : 0;
     require_(args.length === expectedArgs, "CERTIFIED_COMPONENT_STRING_METHOD_ARITY", `${method} expects ${expectedArgs} argument(s)`);
-    require_(method !== "replaceAll" || args.every((arg) => arg.kind === "literal" && arg.literal.type === "string"), "CERTIFIED_COMPONENT_STRING_METHOD_ARGUMENT", `${method} arguments must be string literals`);
-    return { kind: "stringMethod", method, receiver: parseExpr(node.expression.expression, staticMaps), args };
+    require_((method !== "replaceAll" && method !== "includes") || args.every((arg) => arg.kind === "literal" && arg.literal.type === "string"), "CERTIFIED_COMPONENT_STRING_METHOD_ARGUMENT", `${method} arguments must be string literals`);
+    return { kind: "stringMethod", method, receiver: parseExpr(node.expression.expression, staticMaps, eventParameter), args };
   }
   if (ts.isPropertyAccessExpression(node) && ts.isElementAccessExpression(node.expression) && ts.isIdentifier(node.expression.expression)) {
     const table = staticMaps.get(node.expression.expression.text);
-    require_(table !== undefined && node.expression.argumentExpression !== undefined, "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `computed access ${node.expression.getText()} is not a declared certified static string map`);
-    require_(table !== undefined, "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `computed access ${node.expression.getText()} is not a declared certified static string map`);
+    require_(table !== undefined && !isStaticRegexDefinition(table), "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `computed access ${node.expression.getText()} is not a declared certified static string map`);
+    require_(node.expression.argumentExpression !== undefined, "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `computed access ${node.expression.getText()} is missing its key`);
     const fieldTables = new Map<string, string>();
     for (const [key, entry] of table.entries()) {
       require_(typeof entry !== "string", "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `static map ${node.expression.expression.text} has no object field ${node.name.text}`);
@@ -369,7 +444,7 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
     return staticLookupExpression(fieldTables, parseExpr(node.expression.argumentExpression, staticMaps));
   }
   if (ts.isPropertyAccessExpression(node) && node.name.text === "length") {
-    return { kind: "arrayLength", operand: parseExpr(node.expression, staticMaps) };
+    return { kind: "arrayLength", operand: parseExpr(node.expression, staticMaps, eventParameter) };
   }
   if (ts.isPropertyAccessExpression(node)) {
     const fields: string[] = [];
@@ -391,30 +466,30 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
   if (ts.isTemplateExpression(node)) {
     let result: Expr = { kind: "literal", literal: { type: "string", value: node.head.text } };
     for (const span of node.templateSpans) {
-      result = { kind: "binary", operator: "+", left: result, right: parseExpr(span.expression, staticMaps) };
+      result = { kind: "binary", operator: "+", left: result, right: parseExpr(span.expression, staticMaps, eventParameter) };
       if (span.literal.text.length > 0) result = { kind: "binary", operator: "+", left: result, right: { kind: "literal", literal: { type: "string", value: span.literal.text } } };
     }
     return result;
   }
   if (ts.isElementAccessExpression(node) && ts.isIdentifier(node.expression) && node.argumentExpression !== undefined) {
     const table = staticMaps.get(node.expression.text);
-    require_(table !== undefined, "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `computed access ${node.expression.text}[...] is not a declared certified static string map`);
+    require_(table !== undefined && !isStaticRegexDefinition(table), "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `computed access ${node.expression.text}[...] is not a declared certified static string map`);
     const values = new Map<string, string>();
     for (const [key, entry] of table.entries()) {
       require_(typeof entry === "string", "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `static map ${node.expression.text} entry ${key} is an object and must select a field`);
       values.set(key, entry);
     }
-    return staticLookupExpression(values, parseExpr(node.argumentExpression, staticMaps));
+    return staticLookupExpression(values, parseExpr(node.argumentExpression, staticMaps, eventParameter));
   }
   if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.ExclamationToken) {
-    return { kind: "unaryNot", operand: parseExpr(node.operand, staticMaps) };
+    return { kind: "unaryNot", operand: parseExpr(node.operand, staticMaps, eventParameter) };
   }
   if (ts.isBinaryExpression(node)) {
     const op = requireDefined(BINARY_TOKEN_MAP[node.operatorToken.kind], "CERTIFIED_COMPONENT_UNSUPPORTED_OPERATOR", `operator ${ts.SyntaxKind[node.operatorToken.kind]} is outside certified-component-v1`);
-    return { kind: "binary", operator: op, left: parseExpr(node.left, staticMaps), right: parseExpr(node.right, staticMaps) };
+    return { kind: "binary", operator: op, left: parseExpr(node.left, staticMaps, eventParameter), right: parseExpr(node.right, staticMaps, eventParameter) };
   }
   if (ts.isConditionalExpression(node)) {
-    return { kind: "ternary", condition: parseExpr(node.condition, staticMaps), then: parseExpr(node.whenTrue, staticMaps), else: parseExpr(node.whenFalse, staticMaps) };
+    return { kind: "ternary", condition: parseExpr(node.condition, staticMaps, eventParameter), then: parseExpr(node.whenTrue, staticMaps, eventParameter), else: parseExpr(node.whenFalse, staticMaps, eventParameter) };
   }
   fail("CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `expression kind ${ts.SyntaxKind[node.kind]} is outside certified-component-v1`);
 }
@@ -424,6 +499,10 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
  * `(v) => onChange(v)` -- a single expression statement, or a block of
  * such statements, each either a setState call or a callback-prop call. */
 function parseHandlerBody(fn: ts.ArrowFunction, staticMaps: StaticStringMaps = new Map()): Stmt[] {
+  const parameterName = fn.parameters[0]?.name;
+  const eventParameter = fn.parameters.length === 1 && parameterName !== undefined && ts.isIdentifier(parameterName)
+    ? parameterName.text
+    : undefined;
   const exprToStmt = (expr: ts.Expression): Stmt => {
     require_(ts.isCallExpression(expr) && ts.isIdentifier(expr.expression), "CERTIFIED_COMPONENT_UNSUPPORTED_HANDLER_STATEMENT", "handler statement must be a single call expression");
     const call = expr as ts.CallExpression;
@@ -432,11 +511,11 @@ function parseHandlerBody(fn: ts.ArrowFunction, staticMaps: StaticStringMaps = n
     if (callee.startsWith("set") && fourth !== undefined && fourth === fourth.toUpperCase() && fourth !== fourth.toLowerCase()) {
       require_(call.arguments.length === 1, "CERTIFIED_COMPONENT_BAD_SETSTATE_ARITY", `${callee} must be called with exactly one argument`);
       const stateName = fourth.toLowerCase() + callee.slice(4);
-      return { kind: "setState", target: stateName, value: parseExpr(at(call.arguments, 0, "CERTIFIED_COMPONENT_BAD_SETSTATE_ARITY", `${callee} is missing its argument`), staticMaps) };
+      return { kind: "setState", target: stateName, value: parseExpr(at(call.arguments, 0, "CERTIFIED_COMPONENT_BAD_SETSTATE_ARITY", `${callee} is missing its argument`), staticMaps, eventParameter) };
     }
     require_(/^on[A-Z]/.test(callee), "CERTIFIED_COMPONENT_UNSUPPORTED_HANDLER_CALL", `handler call target ${JSON.stringify(callee)} is neither a setState-style call nor an on*-named callback prop`);
     require_(call.arguments.length <= 1, "CERTIFIED_COMPONENT_TOO_MANY_CALLBACK_ARGS", `${callee} is called with more than one argument`);
-    return { kind: "callProp", target: callee, args: call.arguments.map((argument) => parseExpr(argument, staticMaps)) };
+    return { kind: "callProp", target: callee, args: call.arguments.map((argument) => parseExpr(argument, staticMaps, eventParameter)) };
   };
   if (ts.isBlock(fn.body)) {
     return fn.body.statements.map((s) => {
@@ -863,6 +942,13 @@ function expandLocalExpression(expr: Expr, definitions: ReadonlyMap<string, Loca
       receiver: expandLocalExpression(expr.receiver, definitions, ownerOrder, stack),
       args: expr.args.map((arg) => expandLocalExpression(arg, definitions, ownerOrder, stack)),
     };
+    case "eventValue": return expr;
+    case "regexTest": return {
+      kind: "regexTest",
+      pattern: expr.pattern,
+      flags: expr.flags,
+      operand: expandLocalExpression(expr.operand, definitions, ownerOrder, stack),
+    };
     case "arrayLength": return { kind: "arrayLength", operand: expandLocalExpression(expr.operand, definitions, ownerOrder, stack) };
     case "ternary": return {
       kind: "ternary",
@@ -876,7 +962,7 @@ function expandLocalExpression(expr: Expr, definitions: ReadonlyMap<string, Loca
 function staticObjectAliasFields(initializer: ts.Expression, staticMaps: StaticStringMaps): ReadonlyMap<string, Expr> | null {
   if (!ts.isElementAccessExpression(initializer) || !ts.isIdentifier(initializer.expression) || initializer.argumentExpression === undefined) return null;
   const table = staticMaps.get(initializer.expression.text);
-  if (table === undefined) return null;
+  if (table === undefined || isStaticRegexDefinition(table)) return null;
   const key = parseExpr(initializer.argumentExpression, staticMaps);
   const fieldNames = new Set<string>();
   for (const entry of table.values()) {

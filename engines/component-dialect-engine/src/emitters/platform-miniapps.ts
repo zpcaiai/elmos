@@ -154,6 +154,7 @@ const SEMANTIC_CLASS: Readonly<Partial<Record<HtmlTag, string>>> = {
 
 const ATTR_MAP: Readonly<Partial<Record<AttrName, string>>> = {
   href: "url",
+  maxLength: "maxlength",
 };
 
 const SEMANTIC_STYLE = `.cc-h1 { font-size: 48rpx; font-weight: bold; display: block; }
@@ -281,6 +282,7 @@ function templateExprSource(expr: Expr): string {
     case "path": return `${expr.object}.${expr.fields.join(".")}`;
     case "literal":
       return literalSource(expr.literal);
+    case "eventValue": return "event.detail.value";
     case "unaryNot":
       return `!${wrap(expr.operand)}`;
     case "binary": {
@@ -288,6 +290,7 @@ function templateExprSource(expr: Expr): string {
       return `${wrap(expr.left)} ${operator} ${wrap(expr.right)}`;
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(templateExprSource).join(", ")})`;
+    case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${templateExprSource(expr.operand)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary":
       return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
@@ -317,6 +320,7 @@ function jsExprSource(expr: Expr, context: JsExpressionContext): string {
       fail("MINIAPP_UNBOUND_LOOP_VALUE", `loop-local value ${expr.object}.${expr.fields.join(".")} was not bound into the event dataset`);
     case "literal":
       return literalSource(expr.literal);
+    case "eventValue": return "event.detail.value";
     case "unaryNot":
       return `!${wrap(expr.operand)}`;
     case "binary": {
@@ -324,6 +328,7 @@ function jsExprSource(expr: Expr, context: JsExpressionContext): string {
       return `${wrap(expr.left)} ${operator} ${wrap(expr.right)}`;
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => jsExprSource(arg, context)).join(", ")})`;
+    case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${jsExprSource(expr.operand, context)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary":
       return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
@@ -348,6 +353,9 @@ function walkExpr(expr: Expr, visit: (candidate: Expr) => void): void {
     case "stringMethod":
       walkExpr(expr.receiver, visit);
       expr.args.forEach((arg) => walkExpr(arg, visit));
+      return;
+    case "regexTest":
+      walkExpr(expr.operand, visit);
       return;
     case "arrayLength":
       walkExpr(expr.operand, visit);

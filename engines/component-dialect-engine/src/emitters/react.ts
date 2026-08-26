@@ -9,7 +9,7 @@
  * `engines/sql-dialect-engine/src/elmos_sql_dialect/dialects.py`.
  */
 import {
-  AttrBinding, ComponentDef, DataPropDef, EventName, Expr, ListPropDef, Literal, Node as CNode, PropDef, Stmt, ValueShape,
+  AttrBinding, ComponentDef, DataPropDef, EventName, Expr, ListPropDef, Literal, Node as CNode, PropDef, Stmt, ValueShape, usesEventValueInStatements,
 } from "../models";
 
 /** The key expression for a list item: an object element uses its declared
@@ -71,9 +71,11 @@ export function exprSource(expr: Expr): string {
     case "member": return `${expr.object}.${expr.field}`;
     case "path": return `${expr.object}.${expr.fields.join(".")}`;
     case "literal": return literalSource(expr.literal);
+    case "eventValue": return "event.target.value";
     case "unaryNot": return `!${wrap(expr.operand)}`;
     case "binary": return `${wrap(expr.left)} ${expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator} ${wrap(expr.right)}`;
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(exprSource).join(", ")})`;
+    case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
@@ -122,8 +124,9 @@ function stmtSource(stmt: Stmt): string {
 }
 
 function handlerSource(body: Stmt[]): string {
-  if (body.length === 1) return `() => ${stmtSource(body[0]!)}`;
-  return `() => { ${body.map((s) => stmtSource(s) + ";").join(" ")} }`;
+  const parameter = usesEventValueInStatements(body) ? "event" : "";
+  if (body.length === 1) return `${parameter ? `${parameter} =>` : "() =>"} ${stmtSource(body[0]!)}`;
+  return `${parameter ? `${parameter} =>` : "() =>"} { ${body.map((s) => stmtSource(s) + ";").join(" ")} }`;
 }
 
 function attrSource(attr: AttrBinding): string {

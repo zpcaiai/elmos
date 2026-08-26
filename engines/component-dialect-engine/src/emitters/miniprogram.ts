@@ -63,6 +63,7 @@ const EVENT_MAP: Record<EventName, string> = {
 
 const ATTR_MAP: Partial<Record<AttrName, string>> = {
   href: "url", // <a href> -> <navigator url>
+  maxLength: "maxlength",
 };
 
 function literalSource(literal: Literal): string {
@@ -89,12 +90,14 @@ function exprSource(expr: Expr, inJs: boolean, snapshot: ReadonlySet<string> = n
     case "member": return `${expr.object}.${expr.field}`;
     case "path": return `${expr.object}.${expr.fields.join(".")}`;
     case "literal": return literalSource(expr.literal);
+    case "eventValue": return inJs ? "event.detail.value" : "event.detail.value";
     case "unaryNot": return `!${wrap(expr.operand)}`;
     case "binary": {
       const op = expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, inJs, snapshot)).join(", ")})`;
+    case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand, inJs, snapshot)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
@@ -122,6 +125,7 @@ function collectReads(expr: Expr, into: Set<string>): void {
     case "literal": return;
     case "unaryNot": collectReads(expr.operand, into); return;
     case "stringMethod": collectReads(expr.receiver, into); expr.args.forEach((arg) => collectReads(arg, into)); return;
+    case "regexTest": collectReads(expr.operand, into); return;
     case "binary": collectReads(expr.left, into); collectReads(expr.right, into); return;
     case "ternary": collectReads(expr.condition, into); collectReads(expr.then, into); collectReads(expr.else, into); return;
   }
@@ -291,7 +295,7 @@ function dataBlock(component: ComponentDef): string {
 
 function methodsBlock(handlers: EmittedHandler[]): string {
   if (handlers.length === 0) return "  methods: {},";
-  const entries = handlers.map((h) => `    ${h.methodName}() {\n${h.body.map((b) => "      " + b).join("\n")}\n    },`);
+  const entries = handlers.map((h) => `    ${h.methodName}(event) {\n${h.body.map((b) => "      " + b).join("\n")}\n    },`);
   return `  methods: {\n${entries.join("\n")}\n  },`;
 }
 

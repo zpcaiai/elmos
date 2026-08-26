@@ -29,12 +29,30 @@ function Counter({ label, step = 1, onDone }: { label: string; step?: number; on
 
 const TARGETS = ["vue3", "vue2", "angular", "svelte", "react-native", "miniprogram", "arkui", "flutter"] as const;
 
+const INPUT_VALIDATION = `
+const projectRefPattern = /^[a-z0-9][a-z0-9._/-]{2,180}$/i;
+function InputValidation() {
+  const [draft, setDraft] = useState<string>("");
+  const valid = projectRefPattern.test(draft.trim()) && !draft.includes("..");
+  return <div>
+    <input value={draft} maxLength={180} onChange={(event) => setDraft(event.target.value)} />
+    <button disabled={!valid} onClick={() => setDraft(draft.trim())}>load</button>
+  </div>;
+}
+`;
+
 describe("every certified target accepts a real component", () => {
   it.each(TARGETS)("react -> %s passes its own real compiler", async (target) => {
     const report = await translateComponent(COUNTER, "react", target, { fileName: "Counter.tsx", skipExecution: true });
     expect(report.status).toBe("PASSED");
     expect(report.validation?.syntaxStatus).toBe("PASSED");
     expect(report.emitted ?? report.emittedFiles).toBeTruthy();
+  });
+
+  it.each(TARGETS)("react -> %s preserves bounded input validation", async (target) => {
+    const report = await translateComponent(INPUT_VALIDATION, "react", target, { fileName: "InputValidation.tsx", skipExecution: true });
+    expect(report.status).toBe("PASSED");
+    expect(report.validation?.syntaxStatus).toBe("PASSED");
   });
 
   it("refuses a same-framework route", async () => {

@@ -62,6 +62,10 @@ function literalSource(literal: Literal): string {
   return literal.value ? "true" : "false";
 }
 
+function dartString(value: string): string {
+  return `'${value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
+}
+
 interface Scope {
   /** Names that are component state, read as bare fields in the State class. */
   stateNames: ReadonlySet<string>;
@@ -94,6 +98,7 @@ function exprSource(expr: Expr, scope: Scope): string {
         : `${expr.object}.${expr.fields.join(".")}`;
     case "literal":
       return literalSource(expr.literal);
+    case "eventValue": return "value";
     case "unaryNot":
       return `!${wrap(expr.operand)}`;
     case "binary": {
@@ -103,7 +108,8 @@ function exprSource(expr: Expr, scope: Scope): string {
       const op = expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
-    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, scope)).join(", ")})`;
+    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method === "includes" ? "contains" : expr.method}(${expr.args.map((arg) => exprSource(arg, scope)).join(", ")})`;
+    case "regexTest": return `RegExp(${dartString(expr.pattern)}, caseSensitive: ${!expr.flags.includes("i")}, multiLine: ${expr.flags.includes("m")}, dotAll: ${expr.flags.includes("s")}).hasMatch(${exprSource(expr.operand, scope)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary":
       return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
@@ -116,6 +122,7 @@ function collectReads(expr: Expr, into: Set<string>): void {
   else if (expr.kind === "binary") { collectReads(expr.left, into); collectReads(expr.right, into); }
   else if (expr.kind === "unaryNot") collectReads(expr.operand, into);
   else if (expr.kind === "stringMethod") { collectReads(expr.receiver, into); expr.args.forEach((arg) => collectReads(arg, into)); }
+  else if (expr.kind === "regexTest") collectReads(expr.operand, into);
   else if (expr.kind === "arrayLength") collectReads(expr.operand, into);
   else if (expr.kind === "ternary") { collectReads(expr.condition, into); collectReads(expr.then, into); collectReads(expr.else, into); }
 }

@@ -43,12 +43,16 @@ function exprSource(expr: Expr, inClass: boolean): string {
     case "member": return `${expr.object}.${expr.field}`;
     case "path": return `${expr.object}.${expr.fields.join(".")}`;
     case "literal": return literalSource(expr.literal);
+    case "eventValue": return "$event.target.value";
     case "unaryNot": return `!${wrap(expr.operand)}`;
     case "binary": {
       const op = expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, inClass)).join(", ")})`;
+    case "regexTest": return inClass
+      ? `new RegExp(${JSON.stringify(expr.pattern)}, ${JSON.stringify(expr.flags)}).test(${exprSource(expr.operand, inClass)})`
+      : `__ccRegexTest(${JSON.stringify(expr.pattern)}, ${JSON.stringify(expr.flags)}, ${exprSource(expr.operand, inClass)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
@@ -68,6 +72,27 @@ function stmtSource(stmt: Stmt): string {
 
 function handlerSource(body: Stmt[]): string {
   return body.map(stmtSource).join("; ").replace(/"/g, "&quot;");
+}
+
+function usesRegexTest(component: ComponentDef): boolean {
+  const expression = (expr: Expr): boolean => {
+    if (expr.kind === "regexTest") return true;
+    if (expr.kind === "binary") return expression(expr.left) || expression(expr.right);
+    if (expr.kind === "unaryNot" || expr.kind === "arrayLength") return expression(expr.operand);
+    if (expr.kind === "stringMethod") return expression(expr.receiver) || expr.args.some(expression);
+    if (expr.kind === "ternary") return expression(expr.condition) || expression(expr.then) || expression(expr.else);
+    return false;
+  };
+  const node = (current: CNode): boolean => {
+    if (current.kind === "text") return expression(current.value);
+    if (current.kind === "conditional") return expression(current.condition) || node(current.then) || (current.else !== null && node(current.else));
+    if (current.kind === "list") return node(current.body);
+    if (current.kind === "component") return current.props.some((prop) => expression(prop.value));
+    return current.attrs.some((attr) => attr.kind === "dynamic" && expression(attr.value))
+      || current.events.some((event) => event.body.some((statement) => statement.kind === "setState" ? expression(statement.value) : statement.args.some(expression)))
+      || current.children.some(node);
+  };
+  return node(component.root);
 }
 
 function attrSource(attr: AttrBinding): string {
@@ -129,6 +154,7 @@ function elementSource(node: Extract<CNode, { kind: "element" }>, extraDirective
     ...node.events.map((e) => `(${ANGULAR_EVENT[e.name]})="${handlerSource(e.body)}"`),
   ];
   const attrText = parts.length > 0 ? " " + parts.join(" ") : "";
+  if (node.tag === "input") return `${indent}<input${attrText} />`;
   if (node.children.length === 0) return `${indent}<${node.tag}${attrText}></${node.tag}>`;
   if (node.children.every((c) => c.kind === "text")) {
     const inline = node.children.map((c) => nodeSource(c, "", ctx).trim()).join("");
@@ -196,6 +222,11 @@ export function emitAngular(component: ComponentDef): string {
   }
   for (const s of component.state) {
     lines.push(`  ${s.name}: ${tsType(s.stateType)}${s.nullable ? " | null" : ""} = ${literalSource(s.initial)};`);
+  }
+  if (usesRegexTest(component)) {
+    lines.push(`  private __ccRegexTest(pattern: string, flags: string, value: string): boolean {`);
+    lines.push(`    return new RegExp(pattern, flags).test(value);`);
+    lines.push(`  }`);
   }
   lines.push(`}`);
   return lines.join("\n") + "\n";

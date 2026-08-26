@@ -86,9 +86,14 @@ destructured props object, `useState` state, and a single root element.
   does not know what that name means.
 - **State:** `useState` with a literal initial value (Vue: `ref()`).
 - **Expressions:** identifiers, literals, `! && || + - * / %`, comparisons,
-  and ternaries. No function calls, no member access, no subscripts.
+  and ternaries, plus the bounded pure string methods `trim`, `toUpperCase`,
+  `toLowerCase`, `replaceAll`, and `includes`. A stateless regular-expression
+  predicate is supported only as a literal or a module-scope static regex,
+  with a 256-character pattern limit and `i/m/s/u` flags; global/sticky
+  regexes remain blocked. No arbitrary function calls, no subscripts.
 - **Event handlers:** a flat list of state assignments and callback
-  invocations. No loops, conditionals, `async`, or arbitrary calls.
+  invocations, including the typed input-event value for `onChange`/`onInput`.
+  No loops, conditionals, `async`, or arbitrary calls.
 - **Elements:** `div span p button input label a h1–h6 ul ol li strong em i
   small code dl dt dd` plus the semantic containers `section article header
   footer nav main aside`. Still refused, because there is no honest equivalent on
@@ -97,7 +102,7 @@ destructured props object, `useState` state, and a single root element.
   (no submit event on RN, so `onSubmit` would be silently dropped), and
   `img`/`video` (need asset resolution, which is a feature not a tag).
 - **Attributes:** `class id href type placeholder value disabled name for
-  checked`, static or bound to a certified expression.
+  checked maxLength`, static or bound to a certified expression.
 - **Events:** `onClick onChange onInput onSubmit`.
 - **Structure:** nested elements, text, interpolation, a single flat
   conditional (ternary / `v-if`+`v-else` / `wx:if`+`wx:else`), and

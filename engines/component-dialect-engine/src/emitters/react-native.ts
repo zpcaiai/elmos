@@ -10,7 +10,7 @@
  * than failing at build time, so a shared emitter would produce code that
  * type-checks and then crashes on device.
  */
-import { AttrBinding, ComponentDef, EventName, Expr, HtmlTag, ListPropDef, Literal, Node as CNode, PropDef, Stmt } from "../models";
+import { AttrBinding, ComponentDef, EventName, Expr, HtmlTag, ListPropDef, Literal, Node as CNode, PropDef, Stmt, usesEventValueInStatements } from "../models";
 import { dataPropTypeSource, listElementTypeSource, listKeyExpression, listPropIndex, referencedComponents } from "./react";
 
 /** HTML tag -> React Native core component. Text-bearing tags all become
@@ -58,12 +58,14 @@ function exprSource(expr: Expr): string {
     case "member": return `${expr.object}.${expr.field}`;
     case "path": return `${expr.object}.${expr.fields.join(".")}`;
     case "literal": return literalSource(expr.literal);
+    case "eventValue": return "event";
     case "unaryNot": return `!${wrap(expr.operand)}`;
     case "binary": {
       const op = expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(exprSource).join(", ")})`;
+    case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
@@ -79,8 +81,9 @@ function stmtSource(stmt: Stmt): string {
 }
 
 function handlerSource(body: Stmt[]): string {
-  if (body.length === 1) return `() => ${stmtSource(body[0]!)}`;
-  return `() => { ${body.map((s) => stmtSource(s) + ";").join(" ")} }`;
+  const parameter = usesEventValueInStatements(body) ? "event" : "";
+  if (body.length === 1) return `${parameter ? `${parameter} =>` : "() =>"} ${stmtSource(body[0]!)}`;
+  return `${parameter ? `${parameter} =>` : "() =>"} { ${body.map((s) => stmtSource(s) + ";").join(" ")} }`;
 }
 
 /** Web attributes that have a real React Native equivalent. Everything
@@ -96,7 +99,7 @@ function attrSource(attr: AttrBinding, tag: HtmlTag, styles: string[], notes: st
     const value = attr.kind === "static" ? "{true}" : `{${exprSource(attr.value)}}`;
     return tag === "button" ? `disabled=${value}` : `editable={!(${attr.kind === "static" ? "true" : exprSource(attr.value)})}`;
   }
-  if (attr.name === "placeholder" || attr.name === "value") {
+  if (attr.name === "placeholder" || attr.name === "value" || attr.name === "maxLength") {
     return attr.kind === "static" ? `${attr.name}=${JSON.stringify(attr.value)}` : `${attr.name}={${exprSource(attr.value)}}`;
   }
   if (attr.name === "id") {
@@ -143,7 +146,7 @@ function nodeSource(node: CNode, indent: string, usedStyles: Set<string>, notes:
   }
   for (const cls of styleClasses) usedStyles.add(cls);
   if (styleClasses.length > 0) {
-    const refs = styleClasses.map((c) => `styles.${c}`).join(", ");
+    const refs = styleClasses.map((c) => /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(c) ? `styles.${c}` : `styles[${JSON.stringify(c)}]`).join(", ");
     attrParts.unshift(styleClasses.length === 1 ? `style={${refs}}` : `style={[${refs}]}`);
   }
 
@@ -239,13 +242,13 @@ export function emitReactNative(component: ComponentDef): ReactNativeEmission {
   lines.push("}");
   lines.push("");
 
-  const styleEntries = [...usedStyles].filter((s) => STYLE_RULES[s] !== undefined).map((s) => `  ${s}: ${STYLE_RULES[s]},`);
+  const styleEntries = [...usedStyles].filter((s) => STYLE_RULES[s] !== undefined).map((s) => `  ${JSON.stringify(s)}: ${STYLE_RULES[s]},`);
   const unknownStyles = [...usedStyles].filter((s) => STYLE_RULES[s] === undefined);
   for (const cls of unknownStyles) {
     // A class name coming from the source's `class="..."` has no CSS here.
     // It is emitted as an empty style entry so the reference resolves, and
     // recorded so nobody assumes the styling survived.
-    styleEntries.push(`  ${cls}: {}, // originally a CSS class; no stylesheet was translated`);
+    styleEntries.push(`  ${JSON.stringify(cls)}: {}, // originally a CSS class; no stylesheet was translated`);
     notes.push(`CSS class ${JSON.stringify(cls)} became an empty React Native style; styling was NOT translated`);
   }
   lines.push(`const styles = StyleSheet.create({\n${styleEntries.join("\n")}\n});`);

@@ -160,7 +160,7 @@ describe("composition fails closed outside the certified shape", () => {
     ["a spread of props", `function C({ t }: { t: string }) { return (<div><Child {...t} /></div>); }`],
     ["a duplicated prop", `function C({ t }: { t: string }) { return (<div><Child a={t} a={t} /></div>); }`],
     ["recursion", `function C({ t }: { t: string }) { return (<div><C t={t} /></div>); }`],
-    ["a prop bound to an unsupported call", `function C({ t }: { t: string }) { return (<div><Child a={t.includes("x")} /></div>); }`],
+    ["a prop bound to an unsupported call", `function C({ t }: { t: string }) { return (<div><Child a={t.startsWith("x")} /></div>); }`],
   ];
   it.each(cases)("blocks %s", (_name, source) => {
     expect(() => parseReactComponent(source, "C.tsx")).toThrow(DialectError);

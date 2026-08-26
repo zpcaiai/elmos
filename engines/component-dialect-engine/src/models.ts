@@ -215,7 +215,7 @@ export interface StateDef {
 
 export type BinaryOperator = "+" | "-" | "*" | "/" | "%" | "<" | "<=" | ">" | ">=" | "==" | "!=" | "&&" | "||" | "??";
 export const BINARY_OPERATORS: readonly BinaryOperator[] = ["+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "??"];
-export type StringMethod = "toUpperCase" | "toLowerCase" | "trim" | "replaceAll";
+export type StringMethod = "toUpperCase" | "toLowerCase" | "trim" | "replaceAll" | "includes";
 
 export type Expr =
   | { kind: "ident"; name: string }
@@ -231,6 +231,13 @@ export type Expr =
   | { kind: "binary"; operator: BinaryOperator; left: Expr; right: Expr }
   | { kind: "unaryNot"; operand: Expr }
   | { kind: "stringMethod"; method: StringMethod; receiver: Expr; args: Expr[] }
+  /** The value supplied by an input/change event; its concrete spelling is
+   * selected by each target emitter. */
+  | { kind: "eventValue" }
+  /** A bounded, stateless regular-expression predicate. Global/sticky flags
+   * are excluded because JavaScript's lastIndex makes them stateful across
+   * renders and therefore non-equivalent on several targets. */
+  | { kind: "regexTest"; pattern: string; flags: string; operand: Expr }
   | { kind: "arrayLength"; operand: Expr }
   | { kind: "ternary"; condition: Expr; then: Expr; else: Expr };
 
@@ -241,6 +248,28 @@ export type Expr =
 export type Stmt =
   | { kind: "setState"; target: string; value: Expr }
   | { kind: "callProp"; target: string; args: Expr[] };
+
+/** True when an event handler reads the platform-provided input value. This
+ * is kept in the canonical model so each emitter can bind the value using
+ * its own event convention instead of emitting an unbound `event` name. */
+export function usesEventValue(expr: Expr): boolean {
+  switch (expr.kind) {
+    case "eventValue": return true;
+    case "binary": return usesEventValue(expr.left) || usesEventValue(expr.right);
+    case "unaryNot": return usesEventValue(expr.operand);
+    case "stringMethod": return usesEventValue(expr.receiver) || expr.args.some(usesEventValue);
+    case "regexTest": return usesEventValue(expr.operand);
+    case "arrayLength": return usesEventValue(expr.operand);
+    case "ternary": return usesEventValue(expr.condition) || usesEventValue(expr.then) || usesEventValue(expr.else);
+    default: return false;
+  }
+}
+
+export function usesEventValueInStatements(statements: readonly Stmt[]): boolean {
+  return statements.some((statement) => statement.kind === "setState"
+    ? usesEventValue(statement.value)
+    : statement.args.some(usesEventValue));
+}
 
 /**
  * Bounded element allowlist. Extend only with a verified rendering rule on
@@ -275,6 +304,7 @@ export type HtmlTag = (typeof HTML_TAGS)[number];
 
 export const ATTR_NAMES = [
   "class", "id", "href", "type", "placeholder", "value", "disabled", "name", "for", "checked",
+  "maxLength",
   "role", "aria-hidden", "aria-label", "aria-labelledby", "aria-valuemin", "aria-valuemax", "aria-valuenow", "aria-valuetext",
   "data-label", "tabIndex", "style",
 ] as const;
@@ -464,12 +494,20 @@ export function validateComponent(component: ComponentDef): void {
       case "stringMethod":
         checkExpr(expr.receiver, scope);
         require_(isStringExpression(expr.receiver, scope), "CERTIFIED_COMPONENT_STRING_METHOD_RECEIVER", `${expr.method} requires a certified string expression`);
-        const expectedArgs = expr.method === "replaceAll" ? 2 : 0;
+        const expectedArgs = expr.method === "replaceAll" ? 2 : expr.method === "includes" ? 1 : 0;
         require_(expr.args.length === expectedArgs, "CERTIFIED_COMPONENT_STRING_METHOD_ARITY", `${expr.method} expects ${expectedArgs} argument(s)`);
         expr.args.forEach((arg) => {
           checkExpr(arg, scope);
           require_(arg.kind === "literal" && arg.literal.type === "string", "CERTIFIED_COMPONENT_STRING_METHOD_ARGUMENT", `${expr.method} arguments must be string literals`);
         });
+        return;
+      case "eventValue":
+        return;
+      case "regexTest":
+        checkExpr(expr.operand, scope);
+        require_(isStringExpression(expr.operand, scope), "CERTIFIED_COMPONENT_REGEX_TEST_OPERAND", "regex test requires a certified string expression");
+        require_(expr.pattern.length <= 256, "CERTIFIED_COMPONENT_REGEX_TEST_TOO_LONG", "regex pattern exceeds the 256-character certified bound");
+        require_(/^[imsu]*$/.test(expr.flags) && new Set(expr.flags).size === expr.flags.length, "CERTIFIED_COMPONENT_REGEX_TEST_FLAGS", "regex test flags must be unique and limited to i/m/s/u");
         return;
       case "arrayLength":
         checkExpr(expr.operand, scope);
@@ -485,7 +523,8 @@ export function validateComponent(component: ComponentDef): void {
 
   function isStringExpression(expr: Expr, scope: Scope): boolean {
     if (expr.kind === "literal") return expr.literal.type === "string";
-    if (expr.kind === "stringMethod") return true;
+    if (expr.kind === "eventValue") return true;
+    if (expr.kind === "stringMethod") return expr.method !== "includes";
     if (expr.kind === "ident") {
       const list = scope.get(expr.name);
       if (list !== undefined) return list.element.kind === "primitive" && list.element.primitive === "string";
@@ -579,8 +618,10 @@ export function validateComponent(component: ComponentDef): void {
       return data?.valueShape?.kind === "object" ? data.valueShape.fields[expr.field]?.shape ?? null : null;
     }
     if (expr.kind === "path") return resolvePathShape(expr.object, expr.fields, scope);
+    if (expr.kind === "eventValue") return { kind: "primitive", primitive: "string" };
     if (expr.kind === "arrayLength") return { kind: "primitive", primitive: "number" };
-    if (expr.kind === "stringMethod") return { kind: "primitive", primitive: "string" };
+    if (expr.kind === "stringMethod") return { kind: "primitive", primitive: expr.method === "includes" ? "boolean" : "string" };
+    if (expr.kind === "regexTest") return { kind: "primitive", primitive: "boolean" };
     if (expr.kind === "ternary") {
       const thenShape = expressionShape(expr.then, scope);
       const elseShape = expressionShape(expr.else, scope);

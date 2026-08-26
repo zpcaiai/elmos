@@ -118,6 +118,40 @@ describe("React parsing (real TypeScript Compiler API)", () => {
     ]);
     expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
   });
+
+  it("retains bounded regex validation, includes, and input event values", () => {
+    const ir = parseReactComponent(`
+      const projectRefPattern = /^[a-z0-9][a-z0-9._/-]{2,180}$/i;
+      function SmokeInput() {
+        const [draft, setDraft] = useState<string>("");
+        const valid = projectRefPattern.test(draft.trim()) && !draft.includes("..");
+        return <div>
+          <input value={draft} maxLength={180} onChange={(event) => setDraft(event.target.value)} />
+          <button disabled={!valid} onClick={() => setDraft(draft.trim())}>load</button>
+        </div>;
+      }
+    `, "SmokeInput.tsx");
+    expect(ir.root).toMatchObject({ kind: "element" });
+    const input = ir.root.kind === "element" ? ir.root.children[0] : undefined;
+    expect(input).toMatchObject({
+      kind: "element",
+      tag: "input",
+      attrs: [
+        { kind: "dynamic", name: "value", value: { kind: "ident", name: "draft" } },
+        { kind: "dynamic", name: "maxLength", value: { kind: "literal", literal: { type: "number", value: 180 } } },
+      ],
+      events: [{ name: "onChange", body: [{ kind: "setState", target: "draft", value: { kind: "eventValue" } }] }],
+    });
+    const button = ir.root.kind === "element" ? ir.root.children[1] : undefined;
+    expect(button).toMatchObject({
+      kind: "element",
+      events: [{ name: "onClick" }],
+    });
+    expect(emitReact(ir)).toContain("/^[a-z0-9][a-z0-9._/-]{2,180}$/i.test(draft.trim())");
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
 });
 
 describe("cross-framework round trip", () => {
@@ -209,7 +243,7 @@ describe("fail-closed behavior outside certified-component-v1", () => {
     ["unsupported tag", `function C() { return (<video>hi</video>); }`],
     ["unsupported attribute", `function C() { return (<div data-tracking="x">hi</div>); }`],
     ["spread props", `function C(props: { a: string }) { return (<div {...props}>hi</div>); }`],
-    ["unsupported method call in expression", `function C({ a }: { a: string }) { return (<div>{a.includes("x")}</div>); }`],
+    ["unsupported method call in expression", `function C({ a }: { a: string }) { return (<div>{a.startsWith("x")}</div>); }`],
     ["two components in one file", `function A() { return (<div>a</div>); } function B() { return (<div>b</div>); }`],
     ["untyped props", `function C(props) { return (<div>hi</div>); }`],
     ["handler with a loop", `function C() { const [x, setX] = useState<number>(0); return (<button onClick={() => { for (;;) {} }}>go</button>); }`],

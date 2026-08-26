@@ -1710,7 +1710,13 @@ function inferCanonicalExpressionType(
     case "unaryNot":
       return "boolean";
     case "stringMethod":
-      return inferCanonicalExpressionType(expression.receiver, values, scope) === "string" ? "string" : null;
+      return inferCanonicalExpressionType(expression.receiver, values, scope) === "string"
+        ? expression.method === "includes" ? "boolean" : "string"
+        : null;
+    case "eventValue":
+      return "string";
+    case "regexTest":
+      return inferCanonicalExpressionType(expression.operand, values, scope) === "string" ? "boolean" : null;
     case "arrayLength":
       return inferCanonicalExpressionType(expression.operand, values, scope) === null ? "number" : "number";
     case "ternary": {
