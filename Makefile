@@ -21,7 +21,7 @@ PNPM ?= pnpm dlx pnpm@$(PNPM_VERSION)
 
 .PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-packages product-roadmap production-readiness-check operations-scripts-test precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-certification-rehearsal test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis project-synthesis-toolchains frontend sql-dialect component-dialect web up down
 
-.PHONY: frt-g01-g30-skills frt-g01-g30-check
+.PHONY: frt-g01-g30-skills frt-g01-g30-check pricing-billing-skills pricing-billing-engine pricing-billing-java pricing-billing-runtime-binding pricing-billing-verification pricing-billing-gate
 
 verify: business-line-contracts backend dotnet python frontend sql-dialect component-dialect web
 business-line-contracts: model-catalog-check makefile-portability-check
@@ -83,6 +83,26 @@ migration-pack-admission:
 .PHONY: repository-migration-platform-skills
 repository-migration-platform-skills:
 	cd skills/repository-migration-platform-skills-batch1-38 && ./validate.sh
+pricing-billing-engine:
+	$(UV) --directory engines/pricing-billing-engine run --locked --group dev pytest
+	$(UV) --directory engines/pricing-billing-engine run --locked --group dev ruff check src tests
+	$(UV) --directory engines/pricing-billing-engine run --locked --group dev mypy src
+	$(UV) --directory engines/pricing-billing-engine run --locked python -m elmos_pricing_billing.cli qualify
+pricing-billing-java:
+	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -ntp -pl modules/persistence -am -Dtest=PricingBillingFinancialRuntimeTest,PaymentRefundReconciliationRuntimeTest,PricingBillingFinancialCoreMigrationContractTest -Dsurefire.failIfNoSpecifiedTests=false test
+pricing-billing-runtime-binding:
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/build_pricing_billing_runtime_binding.py --repo-root . --check
+pricing-billing-verification:
+	$(UV) run --quiet --with jsonschema python scripts/batch35/validate_verification_pack.py verification-packs/pricing-billing-local-v1 --repository-root .
+	$(UV) run --quiet --with jsonschema python scripts/batch35/run_verification_gate.py verification-packs/pricing-billing-local-v1
+pricing-billing-skills: pricing-billing-engine pricing-billing-java pricing-billing-runtime-binding pricing-billing-verification
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_pricing_billing_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_pricing_billing_installed.py
+	$(UV) run --project engines/pricing-billing-engine --locked --group dev pytest tests/pricing-billing-skills
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/pricing-billing-gate -p 'test_*.py' -v
+	PYTHONDONTWRITEBYTECODE=1 python3 scripts/pricing-billing/run_pricing_billing_gate.py templates/pricing-billing/gate.example.json
+pricing-billing-gate:
+	PYTHONDONTWRITEBYTECODE=1 python3 scripts/pricing-billing/run_pricing_billing_gate.py templates/pricing-billing/gate.example.json --require-ready
 precision-migration-b01-44-skills:
 	python3 tooling/generate_precision_migration_handlers.py --check
 	python3 tooling/generate_precision_migration_external_profiles.py --check

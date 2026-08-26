@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "query_contract_key": "pricing-billing-detail-reconciliation-v1",
+  "owner": "ELMOS pricing-billing engineering",
+  "dialect": "typed-logical-observation-contract",
+  "detail_before_aggregate": true,
+  "queries": [
+    {
+      "query_id": "Q-MONEY-LEDGER-BALANCE",
+      "grain": ["tenant_id", "transaction_id", "currency"],
+      "inputs": ["ledger_posting"],
+      "result": "exact_debit_total == exact_credit_total"
+    },
+    {
+      "query_id": "Q-MONEY-ALLOCATION-CONSERVATION",
+      "grain": ["tenant_id", "source_id", "currency"],
+      "inputs": ["allocation_pool"],
+      "result": "exact_allocation_total == exact_source_amount"
+    },
+    {
+      "query_id": "Q-MONEY-REFUND-CEILING",
+      "grain": ["tenant_id", "payment_id", "currency"],
+      "inputs": ["payment_refund"],
+      "result": "exact_refund_total <= exact_charged_amount"
+    },
+    {
+      "query_id": "Q-MONEY-INVOICE-DETAIL",
+      "grain": ["tenant_id", "invoice_id", "currency"],
+      "inputs": ["invoice"],
+      "result": "detail_sum == subtotal AND detail_sum + tax == total"
+    }
+  ],
+  "local_equivalent_path": "engines/pricing-billing-engine/src/elmos_pricing_billing/money_invariants.py",
+  "local_execution": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "sql_generation": "NOT_RUN",
+  "postgresql_execution": "NOT_RUN",
+  "source_target_equivalence": "NOT_RUN"
+}

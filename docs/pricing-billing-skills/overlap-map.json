@@ -1,0 +1,104 @@
+{
+  "activation_default": "guidance-only",
+  "external_evidence_status": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED",
+  "relationships": [
+    {
+      "authority_entry": "financial-billing-commercial-operations-orchestrator",
+      "authority_id": "product-b39-finance",
+      "authority_namespace": "Product Batch B39 Finance",
+      "authority_path": "docs/product-batches39-complete/skill-source-manifest.json",
+      "boundary": "Product B39 remains the repository authority for financial, billing, commercial, payment, reconciliation, finance analytics, and unit-economics contracts. The imported package-local Bxx guidance must not supersede it.",
+      "overlapping_source_skills": [
+        "elmos-billing-orchestrator",
+        "elmos-pricing-product-model",
+        "elmos-plan-catalog-entitlements",
+        "elmos-credit-wallet-ledger",
+        "elmos-usage-metering",
+        "elmos-task-cost-estimation",
+        "elmos-quote-budget-guard",
+        "elmos-project-pricing-contracts",
+        "elmos-subscription-invoicing",
+        "elmos-payments-reconciliation",
+        "elmos-refunds-disputes",
+        "elmos-enterprise-byok",
+        "elmos-cost-margin-analytics",
+        "elmos-billing-admin-ux",
+        "elmos-security-compliance",
+        "elmos-billing-observability-ops",
+        "elmos-billing-testing-certification",
+        "elmos-rollout-migration"
+      ],
+      "relationship": "semantic-overlap-reuse-authority"
+    },
+    {
+      "authority_entry": "Skills 1455-1474",
+      "authority_id": "product-b44-finops-economics",
+      "authority_namespace": "Product Batch B44 FinOps and migration economics",
+      "authority_path": "docs/batch44/AUTHORITY.md",
+      "boundary": "Product B44 remains authoritative for migration FinOps, metering, cost allocation, pricing, quoting, margin, budget, ROI, TCO, and economics. This identifier is not Precision Migration B44 or another B44 namespace.",
+      "overlapping_source_skills": [
+        "elmos-pricing-product-model",
+        "elmos-usage-metering",
+        "elmos-task-cost-estimation",
+        "elmos-quote-budget-guard",
+        "elmos-project-pricing-contracts",
+        "elmos-cost-margin-analytics"
+      ],
+      "relationship": "semantic-overlap-reuse-authority"
+    },
+    {
+      "authority_entry": "b56-commercial-product-edition-metering-billing-support-7d81f20f",
+      "authority_id": "product-batch56-reviewed-guidance",
+      "authority_namespace": "Product Batch 56 reviewed-guidance overlay",
+      "authority_path": "docs/product-closure-batch56/overlap-map.json",
+      "boundary": "Product Batch 56 remains inactive supplementary guidance and Product 56A remains readiness authority; this package cannot certify closure or GA.",
+      "overlapping_source_skills": [
+        "elmos-plan-catalog-entitlements",
+        "elmos-usage-metering",
+        "elmos-subscription-invoicing",
+        "elmos-billing-observability-ops",
+        "elmos-rollout-migration"
+      ],
+      "readiness_authority": "scripts/product-closure-batch56a/run_product_closure_gate.py",
+      "relationship": "semantic-overlap-supplementary-guidance"
+    },
+    {
+      "authority_id": "current-commercial-billing-runtime",
+      "authority_namespace": "ELMOS commercial implementation",
+      "authority_paths": [
+        "modules/commercial-operations/src/main/java/io/elmos/commercial/PricingPlanCatalog.java",
+        "apps/commercial-api/src/main/java/io/elmos/commercialapi/SelfServiceBillingController.java",
+        "modules/persistence/src/main/resources/db/migration/V49__self_service_billing_and_usage.sql",
+        "modules/persistence/src/test/java/io/elmos/persistence/SelfServiceBillingMigrationContractTest.java",
+        "docs/tasks/self-service-billing/ARCHITECTURE.md"
+      ],
+      "boundary": "Extend and validate the existing catalog, subscription, usage, payment, reconciliation, tenant, and persistence contracts in place. Do not create parallel ledgers, tenant authorities, payment state machines, or migration histories, and never rewrite applied V49 migration history.",
+      "overlapping_source_skills": [
+        "elmos-billing-orchestrator",
+        "elmos-pricing-product-model",
+        "elmos-plan-catalog-entitlements",
+        "elmos-credit-wallet-ledger",
+        "elmos-usage-metering",
+        "elmos-task-cost-estimation",
+        "elmos-quote-budget-guard",
+        "elmos-project-pricing-contracts",
+        "elmos-subscription-invoicing",
+        "elmos-payments-reconciliation",
+        "elmos-refunds-disputes",
+        "elmos-enterprise-byok",
+        "elmos-cost-margin-analytics",
+        "elmos-billing-admin-ux",
+        "elmos-security-compliance",
+        "elmos-billing-observability-ops",
+        "elmos-billing-testing-certification",
+        "elmos-rollout-migration"
+      ],
+      "relationship": "implementation-overlap-extend-in-place"
+    }
+  ],
+  "resolution_policy": "REUSE_EXISTING_AUTHORITIES_AND_AVOID_PARALLEL_SYSTEMS",
+  "schema_version": "elmos.pricing-billing.overlap-map.v1",
+  "source_batch_range": "B00-B53",
+  "source_namespace": "elmos.pricing-billing.v1"
+}

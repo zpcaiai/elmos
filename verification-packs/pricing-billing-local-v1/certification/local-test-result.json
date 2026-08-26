@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "result_key": "pricing-billing-money-invariants-local-test-v1",
+  "status": "passed",
+  "execution_state": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "tests": 9,
+  "passed": 9,
+  "failed": 0,
+  "seeded_defects": 5,
+  "seeded_defects_detected": 5,
+  "source_archive_digest": "sha256:9f7440b69a82a52172a1f62da915d96cfa4e0326dc04a305603c76001c8e88bc",
+  "harness_digest": "sha256:23f843db97539132114f11eec6503040e3e94c5cb40eb1b28797bb54d90e6c68",
+  "test_digest": "sha256:9adb450b64c86c6610dfea7957c534e7f210b549d58dcca8aa9690cfb72b181a",
+  "environment_digest": "sha256:2d2d1b613328e6d83809fce0903b7a15f1fd4bcd00a96c8360713e0b845e6354",
+  "commands": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/ruff check --no-cache src/elmos_pricing_billing/money_invariants.py tests/test_money_invariants.py",
+      "status": "passed"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/pytest -p no:cacheprovider tests/test_money_invariants.py",
+      "status": "passed",
+      "tests": 9
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/mypy --cache-dir <ephemeral> src/elmos_pricing_billing/money_invariants.py",
+      "status": "passed"
+    }
+  ],
+  "executor": "local repository agent",
+  "independent_verifier": null,
+  "holdout": "NOT_RUN",
+  "representative_workload": "NOT_RUN",
+  "provider_runtime": "NOT_RUN",
+  "postgresql_runtime": "NOT_RUN",
+  "production_runtime": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

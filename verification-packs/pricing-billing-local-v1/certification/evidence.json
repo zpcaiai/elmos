@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "pack_key": "pricing-billing-local-v1",
+  "metrics": {
+    "local_tests": 9,
+    "local_test_pass_rate": 1.0,
+    "local_seeded_defect_detection_rate": 1.0,
+    "local_declared_invariant_implementation_rate": 1.0
+  },
+  "zero_tolerance": {
+    "critical_unknown_obligations": 5,
+    "unresolved_oracle_conflicts": 0,
+    "unsupported_p0_claims": 5,
+    "test_integrity_violations": 0,
+    "unapproved_oracle_changes": 0,
+    "unapproved_tolerance_changes": 0,
+    "unreplayed_counterexamples": 0,
+    "money_invariant_violations": 0
+  },
+  "evidence_refs": [
+    "environment/local-python.json",
+    "contracts/observation-contract-v1.json",
+    "queries/canonical-reconciliation-v1.json",
+    "invariants/money-conservation-v1.json",
+    "certification/local-test-result.json",
+    "coverage/invariant-coverage.json",
+    "counterexamples/replay-manifest.json",
+    "counterexamples/replay-result.json",
+    "corpus/development/manifest.json",
+    "corpus/negative/manifest.json",
+    "corpus/holdout/manifest.json",
+    "corpus/representative-workloads/manifest.json"
+  ],
+  "artifact_bindings": [
+    {
+      "role": "source-archive",
+      "path": "skills/subskills/elmos-pricing-billing-skills-v1.0.0.zip",
+      "byte_size": 246184,
+      "sha256": "sha256:9f7440b69a82a52172a1f62da915d96cfa4e0326dc04a305603c76001c8e88bc"
+    },
+    {
+      "role": "invariant-harness",
+      "path": "engines/pricing-billing-engine/src/elmos_pricing_billing/money_invariants.py",
+      "byte_size": 12980,
+      "sha256": "sha256:23f843db97539132114f11eec6503040e3e94c5cb40eb1b28797bb54d90e6c68"
+    },
+    {
+      "role": "focused-tests",
+      "path": "engines/pricing-billing-engine/tests/test_money_invariants.py",
+      "byte_size": 4035,
+      "sha256": "sha256:9adb450b64c86c6610dfea7957c534e7f210b549d58dcca8aa9690cfb72b181a"
+    },
+    {
+      "role": "local-environment",
+      "path": "verification-packs/pricing-billing-local-v1/environment/local-python.json",
+      "byte_size": 474,
+      "sha256": "sha256:2d2d1b613328e6d83809fce0903b7a15f1fd4bcd00a96c8360713e0b845e6354"
+    }
+  ],
+  "repository_binding_records": [],
+  "integrity_manifest_state": "NOT_RUN",
+  "external_evidence": {
+    "independent_review": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "representative_workload": "NOT_RUN",
+    "provider_runtime": "NOT_RUN",
+    "postgresql_runtime": "NOT_RUN",
+    "production_runtime": "NOT_RUN"
+  },
+  "notes": [
+    "Local results are self-attested engineering evidence only.",
+    "The source archive digest proves byte identity, not correctness, provenance, or certification.",
+    "Critical external obligations remain unresolved and fail closed."
+  ]
+}

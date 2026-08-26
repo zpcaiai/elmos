@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "corpus_key": "pricing-billing-money-conservation-development-v1",
+  "classification": "repository-authored-synthetic",
+  "source_digest": "sha256:9f7440b69a82a52172a1f62da915d96cfa4e0326dc04a305603c76001c8e88bc",
+  "dataset_digest": "sha256:f17cf9ec4862e95dd3ce2b18edbefc381b03ec18ffbbe3f6eeaa9bee16d67ef2",
+  "case_count": 1,
+  "status": "passed",
+  "execution_state": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "evidence_refs": [
+    "corpus/development/cases.json",
+    "certification/local-test-result.json"
+  ],
+  "limitations": [
+    "Repository-authored development data is not independent evidence."
+  ]
+}

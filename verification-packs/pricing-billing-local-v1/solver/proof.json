@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "proof_id": "proof.pricing-billing-money-conservation-v1",
+  "property_id": "property.money-conservation-detail-first-v1",
+  "solver": {
+    "name": "NOT_CONFIGURED",
+    "version": "NOT_CONFIGURED",
+    "options": {},
+    "timeout_ms": 1000
+  },
+  "status": "unsupported",
+  "assumptions": [],
+  "input_digest": "sha256:23f843db97539132114f11eec6503040e3e94c5cb40eb1b28797bb54d90e6c68",
+  "evidence_refs": [],
+  "execution_state": "NOT_RUN",
+  "limitations": [
+    "No SMT or symbolic solver was configured or executed.",
+    "Finite local negative tests are not presented as a proof."
+  ]
+}

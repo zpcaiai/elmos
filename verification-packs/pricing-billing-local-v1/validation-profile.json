@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "profile_key": "pricing-billing-money-conservation-p0-v1",
+  "version": 1,
+  "risk_tier": "P0",
+  "claims": [
+    {
+      "claim_id": "claim.ledger-conservation",
+      "description": "Every tenant, transaction, and currency ledger slice has equal exact debit and credit totals and unique posting identifiers.",
+      "criticality": "P0",
+      "required_oracles": ["oracle.money-invariant-spec", "oracle.local-negative-replay"],
+      "required_techniques": ["property", "data-money-invariants", "counterexample-replay", "negative-traces", "holdout", "assurance-case"]
+    },
+    {
+      "claim_id": "claim.allocation-conservation",
+      "description": "Every allocation pool conserves its exact source amount within the tenant and currency boundary.",
+      "criticality": "P0",
+      "required_oracles": ["oracle.money-invariant-spec", "oracle.local-negative-replay"],
+      "required_techniques": ["property", "data-money-invariants", "counterexample-replay", "negative-traces", "holdout", "assurance-case"]
+    },
+    {
+      "claim_id": "claim.refund-ceiling",
+      "description": "Cumulative exact refunds never exceed the authoritative charged amount for a tenant payment and currency.",
+      "criticality": "P0",
+      "required_oracles": ["oracle.money-invariant-spec", "oracle.local-negative-replay"],
+      "required_techniques": ["property", "data-money-invariants", "counterexample-replay", "negative-traces", "holdout", "assurance-case"]
+    },
+    {
+      "claim_id": "claim.idempotent-effect-uniqueness",
+      "description": "One tenant, operation, and idempotency key produces at most one durable effect.",
+      "criticality": "P0",
+      "required_oracles": ["oracle.money-invariant-spec", "oracle.local-negative-replay"],
+      "required_techniques": ["property", "data-money-invariants", "counterexample-replay", "negative-traces", "holdout", "assurance-case"]
+    },
+    {
+      "claim_id": "claim.invoice-detail-reconciliation",
+      "description": "Invoice subtotal and total reconcile exactly to detail lines and tax for one tenant, invoice, and currency.",
+      "criticality": "P0",
+      "required_oracles": ["oracle.money-invariant-spec", "oracle.local-negative-replay"],
+      "required_techniques": ["property", "data-money-invariants", "counterexample-replay", "negative-traces", "holdout", "assurance-case"]
+    }
+  ],
+  "techniques": [
+    "property",
+    "data-money-invariants",
+    "counterexample-replay",
+    "negative-traces",
+    "holdout",
+    "assurance-case"
+  ],
+  "budgets": {
+    "max_wall_time_seconds": 30,
+    "max_memory_mb": 256,
+    "max_cases": 16,
+    "max_decimal_scale": 6,
+    "max_counterexamples": 8,
+    "network_calls": 0,
+    "provider_calls": 0,
+    "database_writes": 0
+  },
+  "stop_conditions": [
+    "any-p0-invariant-violation",
+    "unknown-or-missing-observation",
+    "oracle-conflict",
+    "unreplayed-critical-counterexample",
+    "holdout-or-representative-evidence-missing",
+    "resource-budget-exceeded"
+  ],
+  "approvals": [],
+  "approval_state": "NOT_RUN"
+}

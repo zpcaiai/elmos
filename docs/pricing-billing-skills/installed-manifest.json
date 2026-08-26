@@ -1,0 +1,1875 @@
+{
+  "batches": [
+    {
+      "owner_skill": "elmos-billing-orchestrator",
+      "qualified_dependencies": [],
+      "qualified_id": "elmos.pricing-billing.v1/B00",
+      "requirement_ids": [
+        "EB-01-001",
+        "EB-01-002",
+        "EB-01-003"
+      ],
+      "source_dependencies": [],
+      "source_id": "B00",
+      "title": "基线审计与状态模型"
+    },
+    {
+      "owner_skill": "elmos-billing-orchestrator",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B00"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B01",
+      "requirement_ids": [
+        "EB-01-004",
+        "EB-01-005",
+        "EB-01-006"
+      ],
+      "source_dependencies": [
+        "B00"
+      ],
+      "source_id": "B01",
+      "title": "依赖编排与证据链"
+    },
+    {
+      "owner_skill": "elmos-billing-orchestrator",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B01"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B02",
+      "requirement_ids": [
+        "EB-01-007",
+        "EB-01-008",
+        "EB-01-009",
+        "EB-01-010"
+      ],
+      "source_dependencies": [
+        "B01"
+      ],
+      "source_id": "B02",
+      "title": "生产认证与发布决策"
+    },
+    {
+      "owner_skill": "elmos-pricing-product-model",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B02"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B03",
+      "requirement_ids": [
+        "EB-02-001",
+        "EB-02-002",
+        "EB-02-003"
+      ],
+      "source_dependencies": [
+        "B02"
+      ],
+      "source_id": "B03",
+      "title": "商业模型与决策表"
+    },
+    {
+      "owner_skill": "elmos-pricing-product-model",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B03"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B04",
+      "requirement_ids": [
+        "EB-02-004",
+        "EB-02-005",
+        "EB-02-006"
+      ],
+      "source_dependencies": [
+        "B03"
+      ],
+      "source_id": "B04",
+      "title": "价格簿和费率契约"
+    },
+    {
+      "owner_skill": "elmos-pricing-product-model",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B04"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B05",
+      "requirement_ids": [
+        "EB-02-007",
+        "EB-02-008",
+        "EB-02-009",
+        "EB-02-010"
+      ],
+      "source_dependencies": [
+        "B04"
+      ],
+      "source_id": "B05",
+      "title": "审批、实验与版本治理"
+    },
+    {
+      "owner_skill": "elmos-plan-catalog-entitlements",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B05"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B06",
+      "requirement_ids": [
+        "EB-03-001",
+        "EB-03-002",
+        "EB-03-003"
+      ],
+      "source_dependencies": [
+        "B05"
+      ],
+      "source_id": "B06",
+      "title": "目录与权益建模"
+    },
+    {
+      "owner_skill": "elmos-plan-catalog-entitlements",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B06"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B07",
+      "requirement_ids": [
+        "EB-03-004",
+        "EB-03-005",
+        "EB-03-006"
+      ],
+      "source_dependencies": [
+        "B06"
+      ],
+      "source_id": "B07",
+      "title": "订阅席位与授权服务"
+    },
+    {
+      "owner_skill": "elmos-plan-catalog-entitlements",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B07"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B08",
+      "requirement_ids": [
+        "EB-03-007",
+        "EB-03-008",
+        "EB-03-009",
+        "EB-03-010"
+      ],
+      "source_dependencies": [
+        "B07"
+      ],
+      "source_id": "B08",
+      "title": "升级降级和竞争验证"
+    },
+    {
+      "owner_skill": "elmos-credit-wallet-ledger",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B08"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B09",
+      "requirement_ids": [
+        "EB-04-001",
+        "EB-04-002",
+        "EB-04-003"
+      ],
+      "source_dependencies": [
+        "B08"
+      ],
+      "source_id": "B09",
+      "title": "账本科目与数据库约束"
+    },
+    {
+      "owner_skill": "elmos-credit-wallet-ledger",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B09"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B10",
+      "requirement_ids": [
+        "EB-04-004",
+        "EB-04-005",
+        "EB-04-006"
+      ],
+      "source_dependencies": [
+        "B09"
+      ],
+      "source_id": "B10",
+      "title": "预留捕获释放和投影"
+    },
+    {
+      "owner_skill": "elmos-credit-wallet-ledger",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B10"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B11",
+      "requirement_ids": [
+        "EB-04-007",
+        "EB-04-008",
+        "EB-04-009",
+        "EB-04-010"
+      ],
+      "source_dependencies": [
+        "B10"
+      ],
+      "source_id": "B11",
+      "title": "并发重放与日终对账"
+    },
+    {
+      "owner_skill": "elmos-usage-metering",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B11"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B12",
+      "requirement_ids": [
+        "EB-05-001",
+        "EB-05-002",
+        "EB-05-003"
+      ],
+      "source_dependencies": [
+        "B11"
+      ],
+      "source_id": "B12",
+      "title": "事件契约与采集适配"
+    },
+    {
+      "owner_skill": "elmos-usage-metering",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B12"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B13",
+      "requirement_ids": [
+        "EB-05-004",
+        "EB-05-005",
+        "EB-05-006"
+      ],
+      "source_dependencies": [
+        "B12"
+      ],
+      "source_id": "B13",
+      "title": "评级聚合和封账"
+    },
+    {
+      "owner_skill": "elmos-usage-metering",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B13"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B14",
+      "requirement_ids": [
+        "EB-05-007",
+        "EB-05-008",
+        "EB-05-009",
+        "EB-05-010"
+      ],
+      "source_dependencies": [
+        "B13"
+      ],
+      "source_id": "B14",
+      "title": "供应商对账与异常恢复"
+    },
+    {
+      "owner_skill": "elmos-task-cost-estimation",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B14"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B15",
+      "requirement_ids": [
+        "EB-06-001",
+        "EB-06-002",
+        "EB-06-003"
+      ],
+      "source_dependencies": [
+        "B14"
+      ],
+      "source_id": "B15",
+      "title": "特征与历史样本基线"
+    },
+    {
+      "owner_skill": "elmos-task-cost-estimation",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B15"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B16",
+      "requirement_ids": [
+        "EB-06-004",
+        "EB-06-005",
+        "EB-06-006"
+      ],
+      "source_dependencies": [
+        "B15"
+      ],
+      "source_id": "B16",
+      "title": "区间成本和 ETA 引擎"
+    },
+    {
+      "owner_skill": "elmos-task-cost-estimation",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B16"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B17",
+      "requirement_ids": [
+        "EB-06-007",
+        "EB-06-008",
+        "EB-06-009",
+        "EB-06-010"
+      ],
+      "source_dependencies": [
+        "B16"
+      ],
+      "source_id": "B17",
+      "title": "校准、漂移与回退"
+    },
+    {
+      "owner_skill": "elmos-quote-budget-guard",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B17"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B18",
+      "requirement_ids": [
+        "EB-07-001",
+        "EB-07-002",
+        "EB-07-003"
+      ],
+      "source_dependencies": [
+        "B17"
+      ],
+      "source_id": "B18",
+      "title": "报价卡与授权模型"
+    },
+    {
+      "owner_skill": "elmos-quote-budget-guard",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B18"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B19",
+      "requirement_ids": [
+        "EB-07-004",
+        "EB-07-005",
+        "EB-07-006"
+      ],
+      "source_dependencies": [
+        "B18"
+      ],
+      "source_id": "B19",
+      "title": "运行中预算硬门禁"
+    },
+    {
+      "owner_skill": "elmos-quote-budget-guard",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B19"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B20",
+      "requirement_ids": [
+        "EB-07-007",
+        "EB-07-008",
+        "EB-07-009",
+        "EB-07-010"
+      ],
+      "source_dependencies": [
+        "B19"
+      ],
+      "source_id": "B20",
+      "title": "结算、恢复与误差反馈"
+    },
+    {
+      "owner_skill": "elmos-project-pricing-contracts",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B20"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B21",
+      "requirement_ids": [
+        "EB-08-001",
+        "EB-08-002",
+        "EB-08-003"
+      ],
+      "source_dependencies": [
+        "B20"
+      ],
+      "source_id": "B21",
+      "title": "项目范围与合同状态机"
+    },
+    {
+      "owner_skill": "elmos-project-pricing-contracts",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B21"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B22",
+      "requirement_ids": [
+        "EB-08-004",
+        "EB-08-005",
+        "EB-08-006"
+      ],
+      "source_dependencies": [
+        "B21"
+      ],
+      "source_id": "B22",
+      "title": "里程碑、变更单与执行控制"
+    },
+    {
+      "owner_skill": "elmos-project-pricing-contracts",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B22"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B23",
+      "requirement_ids": [
+        "EB-08-007",
+        "EB-08-008",
+        "EB-08-009",
+        "EB-08-010"
+      ],
+      "source_dependencies": [
+        "B22"
+      ],
+      "source_id": "B23",
+      "title": "验收、结算和毛利复盘"
+    },
+    {
+      "owner_skill": "elmos-subscription-invoicing",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B23"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B24",
+      "requirement_ids": [
+        "EB-09-001",
+        "EB-09-002",
+        "EB-09-003"
+      ],
+      "source_dependencies": [
+        "B23"
+      ],
+      "source_id": "B24",
+      "title": "订阅周期与按比例计费"
+    },
+    {
+      "owner_skill": "elmos-subscription-invoicing",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B24"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B25",
+      "requirement_ids": [
+        "EB-09-004",
+        "EB-09-005",
+        "EB-09-006"
+      ],
+      "source_dependencies": [
+        "B24"
+      ],
+      "source_id": "B25",
+      "title": "发票、税费和财务快照"
+    },
+    {
+      "owner_skill": "elmos-subscription-invoicing",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B25"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B26",
+      "requirement_ids": [
+        "EB-09-007",
+        "EB-09-008",
+        "EB-09-009",
+        "EB-09-010"
+      ],
+      "source_dependencies": [
+        "B25"
+      ],
+      "source_id": "B26",
+      "title": "续费、贷项和账期边界"
+    },
+    {
+      "owner_skill": "elmos-payments-reconciliation",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B26"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B27",
+      "requirement_ids": [
+        "EB-10-001",
+        "EB-10-002",
+        "EB-10-003"
+      ],
+      "source_dependencies": [
+        "B26"
+      ],
+      "source_id": "B27",
+      "title": "支付抽象与安全接入"
+    },
+    {
+      "owner_skill": "elmos-payments-reconciliation",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B27"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B28",
+      "requirement_ids": [
+        "EB-10-004",
+        "EB-10-005",
+        "EB-10-006"
+      ],
+      "source_dependencies": [
+        "B27"
+      ],
+      "source_id": "B28",
+      "title": "Webhook 幂等和业务入账"
+    },
+    {
+      "owner_skill": "elmos-payments-reconciliation",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B28"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B29",
+      "requirement_ids": [
+        "EB-10-007",
+        "EB-10-008",
+        "EB-10-009",
+        "EB-10-010"
+      ],
+      "source_dependencies": [
+        "B28"
+      ],
+      "source_id": "B29",
+      "title": "结算文件与三方对账"
+    },
+    {
+      "owner_skill": "elmos-refunds-disputes",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B29"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B30",
+      "requirement_ids": [
+        "EB-11-001",
+        "EB-11-002",
+        "EB-11-003"
+      ],
+      "source_dependencies": [
+        "B29"
+      ],
+      "source_id": "B30",
+      "title": "责任分类与退款策略"
+    },
+    {
+      "owner_skill": "elmos-refunds-disputes",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B30"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B31",
+      "requirement_ids": [
+        "EB-11-004",
+        "EB-11-005",
+        "EB-11-006"
+      ],
+      "source_dependencies": [
+        "B30"
+      ],
+      "source_id": "B31",
+      "title": "反向账务、退款 Saga 与争议"
+    },
+    {
+      "owner_skill": "elmos-refunds-disputes",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B31"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B32",
+      "requirement_ids": [
+        "EB-11-007",
+        "EB-11-008",
+        "EB-11-009",
+        "EB-11-010"
+      ],
+      "source_dependencies": [
+        "B31"
+      ],
+      "source_id": "B32",
+      "title": "审批、对账和失败补偿"
+    },
+    {
+      "owner_skill": "elmos-enterprise-byok",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B32"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B33",
+      "requirement_ids": [
+        "EB-12-001",
+        "EB-12-002",
+        "EB-12-003"
+      ],
+      "source_dependencies": [
+        "B32"
+      ],
+      "source_id": "B33",
+      "title": "合同、承诺用量和信用模型"
+    },
+    {
+      "owner_skill": "elmos-enterprise-byok",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B33"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B34",
+      "requirement_ids": [
+        "EB-12-004",
+        "EB-12-005",
+        "EB-12-006"
+      ],
+      "source_dependencies": [
+        "B33"
+      ],
+      "source_id": "B34",
+      "title": "BYOK 与私有部署计量"
+    },
+    {
+      "owner_skill": "elmos-enterprise-byok",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B34"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B35",
+      "requirement_ids": [
+        "EB-12-007",
+        "EB-12-008",
+        "EB-12-009",
+        "EB-12-010"
+      ],
+      "source_dependencies": [
+        "B34"
+      ],
+      "source_id": "B35",
+      "title": "成本中心、SLA 和 true-up"
+    },
+    {
+      "owner_skill": "elmos-cost-margin-analytics",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B35"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B36",
+      "requirement_ids": [
+        "EB-13-001",
+        "EB-13-002",
+        "EB-13-003"
+      ],
+      "source_dependencies": [
+        "B35"
+      ],
+      "source_id": "B36",
+      "title": "财务事实与指标口径"
+    },
+    {
+      "owner_skill": "elmos-cost-margin-analytics",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B36"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B37",
+      "requirement_ids": [
+        "EB-13-004",
+        "EB-13-005",
+        "EB-13-006"
+      ],
+      "source_dependencies": [
+        "B36"
+      ],
+      "source_id": "B37",
+      "title": "成本分摊、毛利和报价误差"
+    },
+    {
+      "owner_skill": "elmos-cost-margin-analytics",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B37"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B38",
+      "requirement_ids": [
+        "EB-13-007",
+        "EB-13-008",
+        "EB-13-009",
+        "EB-13-010"
+      ],
+      "source_dependencies": [
+        "B37"
+      ],
+      "source_id": "B38",
+      "title": "告警、优化建议与封账"
+    },
+    {
+      "owner_skill": "elmos-billing-admin-ux",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B38"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B39",
+      "requirement_ids": [
+        "EB-14-001",
+        "EB-14-002",
+        "EB-14-003"
+      ],
+      "source_dependencies": [
+        "B38"
+      ],
+      "source_id": "B39",
+      "title": "客户报价、钱包和账单体验"
+    },
+    {
+      "owner_skill": "elmos-billing-admin-ux",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B39"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B40",
+      "requirement_ids": [
+        "EB-14-004",
+        "EB-14-005",
+        "EB-14-006"
+      ],
+      "source_dependencies": [
+        "B39"
+      ],
+      "source_id": "B40",
+      "title": "项目、团队和管理员工作台"
+    },
+    {
+      "owner_skill": "elmos-billing-admin-ux",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B40"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B41",
+      "requirement_ids": [
+        "EB-14-007",
+        "EB-14-008",
+        "EB-14-009",
+        "EB-14-010"
+      ],
+      "source_dependencies": [
+        "B40"
+      ],
+      "source_id": "B41",
+      "title": "E2E、无障碍和故障体验"
+    },
+    {
+      "owner_skill": "elmos-security-compliance",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B41"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B42",
+      "requirement_ids": [
+        "EB-15-001",
+        "EB-15-002",
+        "EB-15-003"
+      ],
+      "source_dependencies": [
+        "B41"
+      ],
+      "source_id": "B42",
+      "title": "威胁模型、租户隔离和权限"
+    },
+    {
+      "owner_skill": "elmos-security-compliance",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B42"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B43",
+      "requirement_ids": [
+        "EB-15-004",
+        "EB-15-005",
+        "EB-15-006"
+      ],
+      "source_dependencies": [
+        "B42"
+      ],
+      "source_id": "B43",
+      "title": "密钥、审计、防欺诈与隐私"
+    },
+    {
+      "owner_skill": "elmos-security-compliance",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B43"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B44",
+      "requirement_ids": [
+        "EB-15-007",
+        "EB-15-008",
+        "EB-15-009",
+        "EB-15-010"
+      ],
+      "source_dependencies": [
+        "B43"
+      ],
+      "source_id": "B44",
+      "title": "红队、合规证据和发布门禁"
+    },
+    {
+      "owner_skill": "elmos-billing-observability-ops",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B44"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B45",
+      "requirement_ids": [
+        "EB-16-001",
+        "EB-16-002",
+        "EB-16-003"
+      ],
+      "source_dependencies": [
+        "B44"
+      ],
+      "source_id": "B45",
+      "title": "可观测性、SLO 和异常队列"
+    },
+    {
+      "owner_skill": "elmos-billing-observability-ops",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B45"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B46",
+      "requirement_ids": [
+        "EB-16-004",
+        "EB-16-005",
+        "EB-16-006"
+      ],
+      "source_dependencies": [
+        "B45"
+      ],
+      "source_id": "B46",
+      "title": "Kill switch、重放与对账运行手册"
+    },
+    {
+      "owner_skill": "elmos-billing-observability-ops",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B46"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B47",
+      "requirement_ids": [
+        "EB-16-007",
+        "EB-16-008",
+        "EB-16-009",
+        "EB-16-010"
+      ],
+      "source_dependencies": [
+        "B46"
+      ],
+      "source_id": "B47",
+      "title": "灾备演练和事故治理"
+    },
+    {
+      "owner_skill": "elmos-billing-testing-certification",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B47"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B48",
+      "requirement_ids": [
+        "EB-17-001",
+        "EB-17-002",
+        "EB-17-003"
+      ],
+      "source_dependencies": [
+        "B47"
+      ],
+      "source_id": "B48",
+      "title": "需求驱动测试与属性不变量"
+    },
+    {
+      "owner_skill": "elmos-billing-testing-certification",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B48"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B49",
+      "requirement_ids": [
+        "EB-17-004",
+        "EB-17-005",
+        "EB-17-006"
+      ],
+      "source_dependencies": [
+        "B48"
+      ],
+      "source_id": "B49",
+      "title": "集成、并发、混沌和安全"
+    },
+    {
+      "owner_skill": "elmos-billing-testing-certification",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B49"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B50",
+      "requirement_ids": [
+        "EB-17-007",
+        "EB-17-008",
+        "EB-17-009",
+        "EB-17-010"
+      ],
+      "source_dependencies": [
+        "B49"
+      ],
+      "source_id": "B50",
+      "title": "影子差分与 E1-E5 认证"
+    },
+    {
+      "owner_skill": "elmos-rollout-migration",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B50"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B51",
+      "requirement_ids": [
+        "EB-18-001",
+        "EB-18-002",
+        "EB-18-003"
+      ],
+      "source_dependencies": [
+        "B50"
+      ],
+      "source_id": "B51",
+      "title": "旧数据审计、映射和 opening balance"
+    },
+    {
+      "owner_skill": "elmos-rollout-migration",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B51"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B52",
+      "requirement_ids": [
+        "EB-18-004",
+        "EB-18-005",
+        "EB-18-006"
+      ],
+      "source_dependencies": [
+        "B51"
+      ],
+      "source_id": "B52",
+      "title": "影子、双写与波次金丝雀"
+    },
+    {
+      "owner_skill": "elmos-rollout-migration",
+      "qualified_dependencies": [
+        "elmos.pricing-billing.v1/B52"
+      ],
+      "qualified_id": "elmos.pricing-billing.v1/B53",
+      "requirement_ids": [
+        "EB-18-007",
+        "EB-18-008",
+        "EB-18-009",
+        "EB-18-010"
+      ],
+      "source_dependencies": [
+        "B52"
+      ],
+      "source_id": "B53",
+      "title": "切换、回滚和稳定期退役"
+    }
+  ],
+  "counts": {
+    "batches": 54,
+    "documented_scenarios": 50,
+    "executable_reference_tests": 4,
+    "initial_requirement_statuses": {
+      "MISSING": 180
+    },
+    "requirement_priorities": {
+      "P0": 108,
+      "P1": 72
+    },
+    "requirements": 180,
+    "scenario_priorities": {
+      "P0": 44,
+      "P1": 6
+    },
+    "skills": 18
+  },
+  "dual_root_parity": "BYTE_AND_MODE_IDENTICAL",
+  "explicit_non_claims": [
+    "The user-supplied pinned SHA-256 proves byte identity only; it does not establish authorship, signature, SBOM, or provenance attestation.",
+    "Source package validation was not used as runtime implementation evidence.",
+    "No bundled install, uninstall, validate, quote, test, CI, or SQL code was executed.",
+    "Draft prices, policies, schemas, and reference SQL were not activated.",
+    "No payment, accounting, tax, legal, privacy, production, customer, or certification evidence was run."
+  ],
+  "external_evidence_status": "NOT_RUN",
+  "install_roots": [
+    ".agents/skills",
+    "agent-skills/runtime"
+  ],
+  "namespace": {
+    "collision_boundary": "Package-local pricing/billing Bxx identifiers are never equivalent to Migration Packs, Product Batches, strict suites, or other repository namespaces.",
+    "name": "elmos.pricing-billing.v1",
+    "source_batch_range": "B00-B53"
+  },
+  "package": {
+    "archive_digest_scope": "BYTE_IDENTITY_ONLY",
+    "archive_entry_count": 130,
+    "archive_uncompressed_bytes": 513164,
+    "authorship_attestation": "NOT_PROVIDED",
+    "controlled_file_count": 128,
+    "internal_checksum_count": 129,
+    "provenance_attestation": "NOT_PROVIDED",
+    "sbom_attestation": "NOT_PROVIDED",
+    "signature_attestation": "NOT_PROVIDED",
+    "source_archive": "skills/subskills/elmos-pricing-billing-skills-v1.0.0.zip",
+    "source_archive_sha256": "sha256:9f7440b69a82a52172a1f62da915d96cfa4e0326dc04a305603c76001c8e88bc",
+    "source_name": "elmos-pricing-billing-skills",
+    "source_tree": "skills/elmos-pricing-billing-skills-v1.0.0",
+    "source_tree_sha256": "sha256:fd84af1834f6c91968c0384c01920a45078da187c6afb3590dbf7309c30abfe2",
+    "source_version": "1.0.0"
+  },
+  "production_certification": "NOT_CERTIFIED",
+  "requirement_count": 180,
+  "schema_version": "elmos.pricing-billing.installed-manifest.v1",
+  "skill_count": 18,
+  "skills": [
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:41b9ca4d900fcf3ca3814ebfbd5a2fc77b27136dcc82ddbdfc2151e2e0680bed",
+      "installed_name": "elmos-billing-orchestrator",
+      "installed_paths": [
+        ".agents/skills/elmos-billing-orchestrator",
+        "agent-skills/runtime/elmos-billing-orchestrator"
+      ],
+      "installed_skill_sha256": "sha256:7273f447e1f9b013234590c5ae90d82a0fec093b834a59f713c2b1c0ea4dfaa5",
+      "installed_tree_sha256": "sha256:f386ac4ab116b67a2e0f1522a5c425b2a347921907fa18eb34dea6aee0bc2487",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B00",
+        "elmos.pricing-billing.v1/B01",
+        "elmos.pricing-billing.v1/B02"
+      ],
+      "requirement_ids": [
+        "EB-01-001",
+        "EB-01-002",
+        "EB-01-003",
+        "EB-01-004",
+        "EB-01-005",
+        "EB-01-006",
+        "EB-01-007",
+        "EB-01-008",
+        "EB-01-009",
+        "EB-01-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B00",
+        "B01",
+        "B02"
+      ],
+      "source_dependencies": [],
+      "source_name": "elmos-billing-orchestrator",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-billing-orchestrator/SKILL.md",
+      "source_skill_sha256": "sha256:54e46e16d52d81e93d7b6a6bcdb777ca91149b22bfabe91a4c90882fa7b91ce3",
+      "source_tree_sha256": "sha256:b0287ff06eb9c60f7baa3ee6141294a0864246754379b315daf9a6aaf04e8ab1",
+      "title": "Elmos Billing Orchestrator"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:5129ef8719ccb421fd76030e5a76047f6f018ce2a15692c16912afdbca0fff6f",
+      "installed_name": "elmos-pricing-product-model",
+      "installed_paths": [
+        ".agents/skills/elmos-pricing-product-model",
+        "agent-skills/runtime/elmos-pricing-product-model"
+      ],
+      "installed_skill_sha256": "sha256:8886d30529ebfa32959982f122253c9ec9d940a7751306e84d1f5c9509ccc4ef",
+      "installed_tree_sha256": "sha256:54d3314a539e2b9007c63f6187739f91f9f8deaf3a0e37a3a8a542e4ff1c9fb5",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B03",
+        "elmos.pricing-billing.v1/B04",
+        "elmos.pricing-billing.v1/B05"
+      ],
+      "requirement_ids": [
+        "EB-02-001",
+        "EB-02-002",
+        "EB-02-003",
+        "EB-02-004",
+        "EB-02-005",
+        "EB-02-006",
+        "EB-02-007",
+        "EB-02-008",
+        "EB-02-009",
+        "EB-02-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B03",
+        "B04",
+        "B05"
+      ],
+      "source_dependencies": [
+        "elmos-billing-orchestrator"
+      ],
+      "source_name": "elmos-pricing-product-model",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-pricing-product-model/SKILL.md",
+      "source_skill_sha256": "sha256:e1cc373b714fa956f2b947642dd20ae031b88579288b18c5e54df79377b641b0",
+      "source_tree_sha256": "sha256:507bbbe56abaa7caa084299156b045d480c2060e412880cf0c889be7c8190ee1",
+      "title": "Pricing Product Model"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:eefc500970048eaae69dbc0fb8789d6c063778b8be498124e95fe53fd8a8b4df",
+      "installed_name": "elmos-plan-catalog-entitlements",
+      "installed_paths": [
+        ".agents/skills/elmos-plan-catalog-entitlements",
+        "agent-skills/runtime/elmos-plan-catalog-entitlements"
+      ],
+      "installed_skill_sha256": "sha256:f07a256c7a214b23ec0ddb168d6795822730f6e732c7476b38679ba127c90161",
+      "installed_tree_sha256": "sha256:f6b00a83a1ee9676ddf598867d58b039810758bada7b933f17add02b2d099199",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B06",
+        "elmos.pricing-billing.v1/B07",
+        "elmos.pricing-billing.v1/B08"
+      ],
+      "requirement_ids": [
+        "EB-03-001",
+        "EB-03-002",
+        "EB-03-003",
+        "EB-03-004",
+        "EB-03-005",
+        "EB-03-006",
+        "EB-03-007",
+        "EB-03-008",
+        "EB-03-009",
+        "EB-03-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B06",
+        "B07",
+        "B08"
+      ],
+      "source_dependencies": [
+        "elmos-pricing-product-model"
+      ],
+      "source_name": "elmos-plan-catalog-entitlements",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-plan-catalog-entitlements/SKILL.md",
+      "source_skill_sha256": "sha256:cbea7c3b98fc2fcd296064efd5898e1676c7a67432e1ded0ff2cccc49a807b9e",
+      "source_tree_sha256": "sha256:73e7a0486b764051d17cfce4a583917fed54d25972721987d4bc916651a31886",
+      "title": "Plan Catalog and Entitlements"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:f1daccc788b3478c4b71a3dc8595a2dcbc38478428dbb477539876ca71a88928",
+      "installed_name": "elmos-credit-wallet-ledger",
+      "installed_paths": [
+        ".agents/skills/elmos-credit-wallet-ledger",
+        "agent-skills/runtime/elmos-credit-wallet-ledger"
+      ],
+      "installed_skill_sha256": "sha256:59266a6384810acef361b3dca25ce188f22c823789b63227fd2992c5224a4be4",
+      "installed_tree_sha256": "sha256:875b9d6e40793d273c1582e1c148a3c2d42f866e859f3e2d8202007fa20e1474",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B09",
+        "elmos.pricing-billing.v1/B10",
+        "elmos.pricing-billing.v1/B11"
+      ],
+      "requirement_ids": [
+        "EB-04-001",
+        "EB-04-002",
+        "EB-04-003",
+        "EB-04-004",
+        "EB-04-005",
+        "EB-04-006",
+        "EB-04-007",
+        "EB-04-008",
+        "EB-04-009",
+        "EB-04-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B09",
+        "B10",
+        "B11"
+      ],
+      "source_dependencies": [
+        "elmos-pricing-product-model"
+      ],
+      "source_name": "elmos-credit-wallet-ledger",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-credit-wallet-ledger/SKILL.md",
+      "source_skill_sha256": "sha256:44b0d569056cd3ace3f5cd71ac696ab83854c7b47fb6a57e4af600550432688f",
+      "source_tree_sha256": "sha256:ae9bc0037840c7fee870509c234ec5161ce96cb2794e9716a4ac32ead6a07b84",
+      "title": "Credit Wallet and Double-Entry Ledger"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:f99756f0972bc1d2adb6c5e5c0edb0f14f870683eaa847f061985724cdc129c3",
+      "installed_name": "elmos-usage-metering",
+      "installed_paths": [
+        ".agents/skills/elmos-usage-metering",
+        "agent-skills/runtime/elmos-usage-metering"
+      ],
+      "installed_skill_sha256": "sha256:0b8ba42059d17c2bea4cdb4c9bd64e6c0541ef2d864b614026ae92cfb1a050e3",
+      "installed_tree_sha256": "sha256:75cd2e6038b0f98d6a9b849c5b831eb3bad562c935c80c480289af4874daf05a",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B12",
+        "elmos.pricing-billing.v1/B13",
+        "elmos.pricing-billing.v1/B14"
+      ],
+      "requirement_ids": [
+        "EB-05-001",
+        "EB-05-002",
+        "EB-05-003",
+        "EB-05-004",
+        "EB-05-005",
+        "EB-05-006",
+        "EB-05-007",
+        "EB-05-008",
+        "EB-05-009",
+        "EB-05-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B12",
+        "B13",
+        "B14"
+      ],
+      "source_dependencies": [
+        "elmos-pricing-product-model",
+        "elmos-credit-wallet-ledger"
+      ],
+      "source_name": "elmos-usage-metering",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-usage-metering/SKILL.md",
+      "source_skill_sha256": "sha256:35dc89f07c70bc15535394df55871ec8654670311972b826264ea03defd4038d",
+      "source_tree_sha256": "sha256:64ea4929948cc862ed6c352cc4fc4e7ccac1405a0bd1cdf5480b0bb18241e5e0",
+      "title": "Usage Metering and Cost Events"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:e1f583f26cdbb8971d01ccde3d14ab713b18e304dba199b7c335a9edecd37c28",
+      "installed_name": "elmos-task-cost-estimation",
+      "installed_paths": [
+        ".agents/skills/elmos-task-cost-estimation",
+        "agent-skills/runtime/elmos-task-cost-estimation"
+      ],
+      "installed_skill_sha256": "sha256:f0ff60a13d1b940352234a08d698135943c97328129a47cba3c3838701c909dd",
+      "installed_tree_sha256": "sha256:1b406a02bd6287a315c25e098fea8cac3cc4e5dc953e73c8f00e196043a2063d",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B15",
+        "elmos.pricing-billing.v1/B16",
+        "elmos.pricing-billing.v1/B17"
+      ],
+      "requirement_ids": [
+        "EB-06-001",
+        "EB-06-002",
+        "EB-06-003",
+        "EB-06-004",
+        "EB-06-005",
+        "EB-06-006",
+        "EB-06-007",
+        "EB-06-008",
+        "EB-06-009",
+        "EB-06-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B15",
+        "B16",
+        "B17"
+      ],
+      "source_dependencies": [
+        "elmos-usage-metering"
+      ],
+      "source_name": "elmos-task-cost-estimation",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-task-cost-estimation/SKILL.md",
+      "source_skill_sha256": "sha256:c42549809938f8ffa5f86a6f6ca945123c8962efa744d5bdba59a3882e6a6b55",
+      "source_tree_sha256": "sha256:d2836cc4c49a5f573d13d12d018e74bc81d3685410ab625620f509c6d4fdff1c",
+      "title": "Task Cost and Runtime Estimation"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:1d1ef7e925a6e73aacdc8dfc366450abd23f04039e51555d72d0af195c97b127",
+      "installed_name": "elmos-quote-budget-guard",
+      "installed_paths": [
+        ".agents/skills/elmos-quote-budget-guard",
+        "agent-skills/runtime/elmos-quote-budget-guard"
+      ],
+      "installed_skill_sha256": "sha256:a92e96d503a3b03e5ba16f45f230bc4f4995fecef728685da120a2c0754bc528",
+      "installed_tree_sha256": "sha256:c19b518cb7e7fc69e9ce16e2e5b069b4e176fdd3a0cc4ec469d91619b982523e",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B18",
+        "elmos.pricing-billing.v1/B19",
+        "elmos.pricing-billing.v1/B20"
+      ],
+      "requirement_ids": [
+        "EB-07-001",
+        "EB-07-002",
+        "EB-07-003",
+        "EB-07-004",
+        "EB-07-005",
+        "EB-07-006",
+        "EB-07-007",
+        "EB-07-008",
+        "EB-07-009",
+        "EB-07-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B18",
+        "B19",
+        "B20"
+      ],
+      "source_dependencies": [
+        "elmos-task-cost-estimation",
+        "elmos-credit-wallet-ledger"
+      ],
+      "source_name": "elmos-quote-budget-guard",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-quote-budget-guard/SKILL.md",
+      "source_skill_sha256": "sha256:d48e5f20fbed5ebbcf6d1871d4291e71f12341c1f064b48649826a69dc37b411",
+      "source_tree_sha256": "sha256:a3875c541c1a64329153b8c1bdc6a7966cb7f3e17bf37bc8a2b9ee18d3ce2721",
+      "title": "Quote and Budget Guard"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:afbbec69c29396ba962b81c2597f617bb6d6a9f27ef2850d7b549e807f7a68cc",
+      "installed_name": "elmos-project-pricing-contracts",
+      "installed_paths": [
+        ".agents/skills/elmos-project-pricing-contracts",
+        "agent-skills/runtime/elmos-project-pricing-contracts"
+      ],
+      "installed_skill_sha256": "sha256:ae040404b2e19d1de3e10e13a762884f44b7d575e68dac0722f77031e8ca891d",
+      "installed_tree_sha256": "sha256:139f2804500b9e4f958aa72233415472b13d09d81c59007c5f705320d54b55e4",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B21",
+        "elmos.pricing-billing.v1/B22",
+        "elmos.pricing-billing.v1/B23"
+      ],
+      "requirement_ids": [
+        "EB-08-001",
+        "EB-08-002",
+        "EB-08-003",
+        "EB-08-004",
+        "EB-08-005",
+        "EB-08-006",
+        "EB-08-007",
+        "EB-08-008",
+        "EB-08-009",
+        "EB-08-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B21",
+        "B22",
+        "B23"
+      ],
+      "source_dependencies": [
+        "elmos-quote-budget-guard"
+      ],
+      "source_name": "elmos-project-pricing-contracts",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-project-pricing-contracts/SKILL.md",
+      "source_skill_sha256": "sha256:1bffe2d1daa2e692a01ae7724dc4842165da4c47502502ea37ccef3c6c6fad32",
+      "source_tree_sha256": "sha256:29538ed6f3800d9c5fb8300fae80fab237cb841b4ae65622c8a4f19c6327ec75",
+      "title": "Capped and Fixed-Price Project Contracts"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:b6b65fbd27fc4c411a12c094eac62873d3c4b82085adaedaffecaa7a05c67da5",
+      "installed_name": "elmos-subscription-invoicing",
+      "installed_paths": [
+        ".agents/skills/elmos-subscription-invoicing",
+        "agent-skills/runtime/elmos-subscription-invoicing"
+      ],
+      "installed_skill_sha256": "sha256:ccf41d82c6c20a4ddb621c1bb1d9fb347405c8b75a0d2aca49b3f36057a01a56",
+      "installed_tree_sha256": "sha256:76624d30eb786b7b9f14c8a77f0bf2df2a28b0e22d6b95c3b4206af9b2c98647",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B24",
+        "elmos.pricing-billing.v1/B25",
+        "elmos.pricing-billing.v1/B26"
+      ],
+      "requirement_ids": [
+        "EB-09-001",
+        "EB-09-002",
+        "EB-09-003",
+        "EB-09-004",
+        "EB-09-005",
+        "EB-09-006",
+        "EB-09-007",
+        "EB-09-008",
+        "EB-09-009",
+        "EB-09-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B24",
+        "B25",
+        "B26"
+      ],
+      "source_dependencies": [
+        "elmos-plan-catalog-entitlements",
+        "elmos-credit-wallet-ledger"
+      ],
+      "source_name": "elmos-subscription-invoicing",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-subscription-invoicing/SKILL.md",
+      "source_skill_sha256": "sha256:d782897b265fec0364f4bc937553f5a6ba75f2bd3be14b701c337ce322e085a9",
+      "source_tree_sha256": "sha256:10f96dcd48b26328e30378dda6565b3e226dfb7cd672d48ec617062eaae4a9b8",
+      "title": "Subscriptions and Invoicing"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:8a25a04e131d0091a8952a0344b7b8fbff73093e57f011b79d087e3593d70e46",
+      "installed_name": "elmos-payments-reconciliation",
+      "installed_paths": [
+        ".agents/skills/elmos-payments-reconciliation",
+        "agent-skills/runtime/elmos-payments-reconciliation"
+      ],
+      "installed_skill_sha256": "sha256:6da1c2cf5b5717fa6b86f5cba4e7cd7cf086ca93540bc18a4771fbcf87eeb543",
+      "installed_tree_sha256": "sha256:5dc0c7e8d10092e6d22ff1ac7af4dabf6f238a3a1f41383e45dd7a4f3bc59bf3",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B27",
+        "elmos.pricing-billing.v1/B28",
+        "elmos.pricing-billing.v1/B29"
+      ],
+      "requirement_ids": [
+        "EB-10-001",
+        "EB-10-002",
+        "EB-10-003",
+        "EB-10-004",
+        "EB-10-005",
+        "EB-10-006",
+        "EB-10-007",
+        "EB-10-008",
+        "EB-10-009",
+        "EB-10-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B27",
+        "B28",
+        "B29"
+      ],
+      "source_dependencies": [
+        "elmos-subscription-invoicing",
+        "elmos-credit-wallet-ledger"
+      ],
+      "source_name": "elmos-payments-reconciliation",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-payments-reconciliation/SKILL.md",
+      "source_skill_sha256": "sha256:b5846ca4b6b6b2ed77804d4e3ec3d287869c67670eaf565fe588b1fa99bb807e",
+      "source_tree_sha256": "sha256:da3d495540619e1c417401176bcc457a4d0bf60a58156c5c48a816af2a6f6620",
+      "title": "Payments and Reconciliation"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:00c3e6ef38fc69affa0f231a8186429a89acc2110edcea4f4468f6add7f3cf7b",
+      "installed_name": "elmos-refunds-disputes",
+      "installed_paths": [
+        ".agents/skills/elmos-refunds-disputes",
+        "agent-skills/runtime/elmos-refunds-disputes"
+      ],
+      "installed_skill_sha256": "sha256:482e71ef1362a50bfef9e2ad15b67e4a0648e3530981cafc47ca594225282ac2",
+      "installed_tree_sha256": "sha256:b647a13458792bec2017577235a0f666a97787d55854da991a1f39f241fdc76f",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B30",
+        "elmos.pricing-billing.v1/B31",
+        "elmos.pricing-billing.v1/B32"
+      ],
+      "requirement_ids": [
+        "EB-11-001",
+        "EB-11-002",
+        "EB-11-003",
+        "EB-11-004",
+        "EB-11-005",
+        "EB-11-006",
+        "EB-11-007",
+        "EB-11-008",
+        "EB-11-009",
+        "EB-11-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B30",
+        "B31",
+        "B32"
+      ],
+      "source_dependencies": [
+        "elmos-payments-reconciliation",
+        "elmos-credit-wallet-ledger"
+      ],
+      "source_name": "elmos-refunds-disputes",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-refunds-disputes/SKILL.md",
+      "source_skill_sha256": "sha256:ffd065a425c75ecbd0c387c02c0e24ad0d18839e34290883e643b7d40f4f9dd5",
+      "source_tree_sha256": "sha256:1b1ccfbcb7b43573d680c2dd0afb4ef1a44b1d35ceb427fc3b8175a0de74c345",
+      "title": "Refunds, Adjustments, and Disputes"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:e13c71d13fcc9733c7562a93063da05ea5cea9aef07d324af49258b6654d18c9",
+      "installed_name": "elmos-enterprise-byok",
+      "installed_paths": [
+        ".agents/skills/elmos-enterprise-byok",
+        "agent-skills/runtime/elmos-enterprise-byok"
+      ],
+      "installed_skill_sha256": "sha256:7ddea7cc8f5030ea98030b2db7e96f1b739c2aba234297ac194a407c7c23d0b1",
+      "installed_tree_sha256": "sha256:92f537b500341ff5820eda8b87f6b2a5f33fb35e5b1adf9a285aefed6a4f6818",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B33",
+        "elmos.pricing-billing.v1/B34",
+        "elmos.pricing-billing.v1/B35"
+      ],
+      "requirement_ids": [
+        "EB-12-001",
+        "EB-12-002",
+        "EB-12-003",
+        "EB-12-004",
+        "EB-12-005",
+        "EB-12-006",
+        "EB-12-007",
+        "EB-12-008",
+        "EB-12-009",
+        "EB-12-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B33",
+        "B34",
+        "B35"
+      ],
+      "source_dependencies": [
+        "elmos-plan-catalog-entitlements",
+        "elmos-usage-metering",
+        "elmos-quote-budget-guard"
+      ],
+      "source_name": "elmos-enterprise-byok",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-enterprise-byok/SKILL.md",
+      "source_skill_sha256": "sha256:b5c051e7d3f3fb1dfb69163e14f6078800e7136e5c7ec4948acb961200e1b276",
+      "source_tree_sha256": "sha256:d1b48e2e604131264bdb952321a910f8c1677fcb03a4aba8663962a4dc4e78fb",
+      "title": "Enterprise Contracts and BYOK"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:902a4b2eebf13a1cadabba86e324f99aafda4155904c0f39f08854bbce1d6d84",
+      "installed_name": "elmos-cost-margin-analytics",
+      "installed_paths": [
+        ".agents/skills/elmos-cost-margin-analytics",
+        "agent-skills/runtime/elmos-cost-margin-analytics"
+      ],
+      "installed_skill_sha256": "sha256:6d44ff08f734af3bcfa69625664458e469774afe95e525e906305c8066a9312d",
+      "installed_tree_sha256": "sha256:7f8e8d5432b50980e582156855e0516b0183354d9c2accbf22bd7e940cbcbe00",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B36",
+        "elmos.pricing-billing.v1/B37",
+        "elmos.pricing-billing.v1/B38"
+      ],
+      "requirement_ids": [
+        "EB-13-001",
+        "EB-13-002",
+        "EB-13-003",
+        "EB-13-004",
+        "EB-13-005",
+        "EB-13-006",
+        "EB-13-007",
+        "EB-13-008",
+        "EB-13-009",
+        "EB-13-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B36",
+        "B37",
+        "B38"
+      ],
+      "source_dependencies": [
+        "elmos-usage-metering",
+        "elmos-subscription-invoicing",
+        "elmos-payments-reconciliation",
+        "elmos-project-pricing-contracts"
+      ],
+      "source_name": "elmos-cost-margin-analytics",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-cost-margin-analytics/SKILL.md",
+      "source_skill_sha256": "sha256:11dc962364c0cdc7fb03affc53666c3cf4464beddafa69dda1a33e18dcbcbe65",
+      "source_tree_sha256": "sha256:b2dff7938ed5b1fbf48292fbabbd863c6d5d312b5585447f2497aa522958b4df",
+      "title": "Cost Allocation and Margin Analytics"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:9a10954e39a6c9a23c873ef5e4c3508a5d86ced32abc3e76d4472dc223b6c739",
+      "installed_name": "elmos-billing-admin-ux",
+      "installed_paths": [
+        ".agents/skills/elmos-billing-admin-ux",
+        "agent-skills/runtime/elmos-billing-admin-ux"
+      ],
+      "installed_skill_sha256": "sha256:9dc93b6b1cbbaa3c07032d8448ca46e1c7f70009303476d795188fb5e1ea6f02",
+      "installed_tree_sha256": "sha256:fd9bbb3466e3a768eab0a1fa4cd168cb68af4151e18701d6af7c496f45209bc5",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B39",
+        "elmos.pricing-billing.v1/B40",
+        "elmos.pricing-billing.v1/B41"
+      ],
+      "requirement_ids": [
+        "EB-14-001",
+        "EB-14-002",
+        "EB-14-003",
+        "EB-14-004",
+        "EB-14-005",
+        "EB-14-006",
+        "EB-14-007",
+        "EB-14-008",
+        "EB-14-009",
+        "EB-14-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B39",
+        "B40",
+        "B41"
+      ],
+      "source_dependencies": [
+        "elmos-quote-budget-guard",
+        "elmos-subscription-invoicing",
+        "elmos-refunds-disputes",
+        "elmos-enterprise-byok"
+      ],
+      "source_name": "elmos-billing-admin-ux",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-billing-admin-ux/SKILL.md",
+      "source_skill_sha256": "sha256:2d8bbe1f4cafb45f07253f0bc6c2e000d110e67b3ba8e0f97f0bda570fea5d37",
+      "source_tree_sha256": "sha256:b40d34c8d476599f4e83a8df1ae0fd2d8e09ac15fd98ac489c37da063ebfcfec",
+      "title": "Billing Customer and Admin UX"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:24edd4dd4f1f5c611285b50853395db1d229c9c8202c252f6ce08a72ad03163e",
+      "installed_name": "elmos-security-compliance",
+      "installed_paths": [
+        ".agents/skills/elmos-security-compliance",
+        "agent-skills/runtime/elmos-security-compliance"
+      ],
+      "installed_skill_sha256": "sha256:a0f80284da0e287f02f179c98c8d081fdcf8e86dda811cb7f66c49d37c3bab44",
+      "installed_tree_sha256": "sha256:2c45978acd7085b525bbf295e02a7f218876c0085b8df4399f636ae73b55a239",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B42",
+        "elmos.pricing-billing.v1/B43",
+        "elmos.pricing-billing.v1/B44"
+      ],
+      "requirement_ids": [
+        "EB-15-001",
+        "EB-15-002",
+        "EB-15-003",
+        "EB-15-004",
+        "EB-15-005",
+        "EB-15-006",
+        "EB-15-007",
+        "EB-15-008",
+        "EB-15-009",
+        "EB-15-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B42",
+        "B43",
+        "B44"
+      ],
+      "source_dependencies": [
+        "elmos-credit-wallet-ledger",
+        "elmos-usage-metering",
+        "elmos-payments-reconciliation",
+        "elmos-enterprise-byok"
+      ],
+      "source_name": "elmos-security-compliance",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-security-compliance/SKILL.md",
+      "source_skill_sha256": "sha256:f2ef583299deeea1610976e685ee4fe562c722b9546f3874d304ff8e7f447973",
+      "source_tree_sha256": "sha256:6b2031684065afc0a4dc4ece04598ce84d75ffa46871437ac1c50d21576b4ead",
+      "title": "Billing Security and Compliance"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:6bfe7169afec81bdc5f1db36654303d0df7d546bd5a47a92c626a2990927eec1",
+      "installed_name": "elmos-billing-observability-ops",
+      "installed_paths": [
+        ".agents/skills/elmos-billing-observability-ops",
+        "agent-skills/runtime/elmos-billing-observability-ops"
+      ],
+      "installed_skill_sha256": "sha256:6df9d7015837462c53e492d6b6e812e408511e7ef9f2647560dfc271be3d65c0",
+      "installed_tree_sha256": "sha256:7874d311226aafe4815a940ea9a2d1ae58dc657e84bfedeb21a6f41b865d54f4",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B45",
+        "elmos.pricing-billing.v1/B46",
+        "elmos.pricing-billing.v1/B47"
+      ],
+      "requirement_ids": [
+        "EB-16-001",
+        "EB-16-002",
+        "EB-16-003",
+        "EB-16-004",
+        "EB-16-005",
+        "EB-16-006",
+        "EB-16-007",
+        "EB-16-008",
+        "EB-16-009",
+        "EB-16-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B45",
+        "B46",
+        "B47"
+      ],
+      "source_dependencies": [
+        "elmos-credit-wallet-ledger",
+        "elmos-usage-metering",
+        "elmos-quote-budget-guard",
+        "elmos-payments-reconciliation"
+      ],
+      "source_name": "elmos-billing-observability-ops",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-billing-observability-ops/SKILL.md",
+      "source_skill_sha256": "sha256:d4e2c0c808e15aa475ddf374b92f0cfd8fb605a27d24cfc03534bc67268e7ae4",
+      "source_tree_sha256": "sha256:356ab78b5fd6e68baa4a4c84f5c11136f6e7c7719c66ba842bd39d3de569d8a1",
+      "title": "Billing Observability and Operations"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:7f113746e11033bd64597a0e153dc8979b8f7ae75db77de7bc8d7e50b62b5491",
+      "installed_name": "elmos-billing-testing-certification",
+      "installed_paths": [
+        ".agents/skills/elmos-billing-testing-certification",
+        "agent-skills/runtime/elmos-billing-testing-certification"
+      ],
+      "installed_skill_sha256": "sha256:2d5ba25eff71c16e4a5c6ebcbce0937e9372d5edeca136b0a1039a3c2b5fd38f",
+      "installed_tree_sha256": "sha256:a59e56e30d04ca9fb2536e0c89e4d16d085a0c89fe30ec3cc590fec70dcff80c",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B48",
+        "elmos.pricing-billing.v1/B49",
+        "elmos.pricing-billing.v1/B50"
+      ],
+      "requirement_ids": [
+        "EB-17-001",
+        "EB-17-002",
+        "EB-17-003",
+        "EB-17-004",
+        "EB-17-005",
+        "EB-17-006",
+        "EB-17-007",
+        "EB-17-008",
+        "EB-17-009",
+        "EB-17-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B48",
+        "B49",
+        "B50"
+      ],
+      "source_dependencies": [
+        "elmos-security-compliance",
+        "elmos-billing-observability-ops",
+        "elmos-cost-margin-analytics"
+      ],
+      "source_name": "elmos-billing-testing-certification",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-billing-testing-certification/SKILL.md",
+      "source_skill_sha256": "sha256:9a401400c18bc6eb5f08116d797099e50aa4196c19f5bef878e598909527cafd",
+      "source_tree_sha256": "sha256:3aa7fe6a7d5e34b3dfcee27330e0a5c5c0a508c5786b9175b01f6104064e597f",
+      "title": "Billing Testing and Production Certification"
+    },
+    {
+      "certification": "NOT_CERTIFIED",
+      "external_evidence": "NOT_RUN",
+      "guidance_state": "GUIDANCE_IMPORTED",
+      "installation_state": "INSTALLED",
+      "installed_interface_sha256": "sha256:ec66b363b8aa017ee932d1e6120ad3c9d8879dcbb0fa51fa199d9e5d82a8d0f8",
+      "installed_name": "elmos-rollout-migration",
+      "installed_paths": [
+        ".agents/skills/elmos-rollout-migration",
+        "agent-skills/runtime/elmos-rollout-migration"
+      ],
+      "installed_skill_sha256": "sha256:e1defb417d348f6858b231267cf18ffd4dd77b403d94d0733f1f27b2d7f10609",
+      "installed_tree_sha256": "sha256:ca5cca5a584d8a5f3ee6a666700be84cc051f417925b8bbd6f8d32413f351d22",
+      "qualified_batches": [
+        "elmos.pricing-billing.v1/B51",
+        "elmos.pricing-billing.v1/B52",
+        "elmos.pricing-billing.v1/B53"
+      ],
+      "requirement_ids": [
+        "EB-18-001",
+        "EB-18-002",
+        "EB-18-003",
+        "EB-18-004",
+        "EB-18-005",
+        "EB-18-006",
+        "EB-18-007",
+        "EB-18-008",
+        "EB-18-009",
+        "EB-18-010"
+      ],
+      "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+      "runtime_evidence": "NOT_RUN",
+      "runtime_implementation": "LOCAL_REFERENCE_BOUND",
+      "source_batches": [
+        "B51",
+        "B52",
+        "B53"
+      ],
+      "source_dependencies": [
+        "elmos-billing-testing-certification"
+      ],
+      "source_name": "elmos-rollout-migration",
+      "source_path": "skills/elmos-pricing-billing-skills-v1.0.0/skills/elmos-rollout-migration/SKILL.md",
+      "source_skill_sha256": "sha256:d9b9ce4351942bde939928c77964026b82a09697eb46d2ad331d045dc94ac6cf",
+      "source_tree_sha256": "sha256:bb0671624669177bcb77c81034892e6b57ea0907f31182e31fed81185aab7ebd",
+      "title": "Billing Rollout and Migration"
+    }
+  ],
+  "source_archive_sha256": "9f7440b69a82a52172a1f62da915d96cfa4e0326dc04a305603c76001c8e88bc",
+  "source_scripts_executed_by_importer": false,
+  "status": {
+    "certification": "NOT_CERTIFIED",
+    "external_evidence": "NOT_RUN",
+    "guidance": "GUIDANCE_IMPORTED",
+    "installation": "INSTALLED",
+    "maximum_local_claim": "BOUNDED_LOCAL_REFERENCE_IMPLEMENTATION",
+    "production_ready": false,
+    "runtime_binding": "verification-packs/pricing-billing-local-v1/runtime-binding.json",
+    "runtime_evidence": "NOT_RUN",
+    "runtime_implementation": "LOCAL_REFERENCE_BOUND"
+  },
+  "support_root": ".elmos-billing-kit",
+  "support_tree_sha256": "sha256:bb26a244546ba79454f91b43b903b783be775d926d8ff24f2864a4ff2d021e4c"
+}

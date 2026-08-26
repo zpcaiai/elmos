@@ -1,0 +1,24 @@
+{
+  "event_id": "use_example_001",
+  "tenant_id": "ten_example",
+  "source_system": "model-gateway",
+  "source_event_id": "provider-request-9c72",
+  "task_id": "task_vue2_upgrade",
+  "run_id": "run_001",
+  "node_id": "node_analyze_routes",
+  "provider": "managed-provider",
+  "model": "coding-model-balanced",
+  "resource_code": "model_input_tokens",
+  "quantity": {
+    "value": "245000",
+    "unit": "token"
+  },
+  "occurred_at": "2026-08-19T10:05:00Z",
+  "billability": "customer",
+  "raw_payload_hash": "sha256:32f4f2fe2d3c8bfa09b2be35f3ae6d0a",
+  "correction_of_event_id": null,
+  "metadata": {
+    "cache_hit": true,
+    "quality_mode": "balanced"
+  }
+}

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Subscriptions and Invoicing"
+  short_description: "Apply imported Elmos billing guidance safely"
+  default_prompt: "Use $elmos-subscription-invoicing for the requested billing scope; treat Bxx IDs as elmos.pricing-billing.v1; use the repository runtime binding for local evidence and keep external evidence NOT_RUN until independently verified."
+policy:
+  allow_implicit_invocation: true
