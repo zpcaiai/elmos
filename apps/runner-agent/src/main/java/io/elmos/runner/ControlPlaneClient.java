@@ -72,6 +72,10 @@ public final class ControlPlaneClient {
             Map<String, Object> requestPayload) {
     }
 
+    /** Independent control signals returned by a lease heartbeat. */
+    public record HeartbeatSignals(boolean cancelRequested, boolean pauseRequested) {
+    }
+
     public record UploadTicket(
             String uploadUrl,
             String storageKey,
@@ -174,8 +178,13 @@ public final class ControlPlaneClient {
         return leases;
     }
 
-    /** @return true when the user has requested cancellation. */
-    public boolean heartbeat(Lease lease, String stage, int progress, Map<String, Object> checkpoint) {
+    /** @return the durable cancel and pause signals for this lease. */
+    public HeartbeatSignals heartbeat(
+            Lease lease,
+            String stage,
+            int progress,
+            Map<String, Object> checkpoint
+    ) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("runnerNodeId", config.runnerNodeId());
         body.put("stage", stage);
@@ -186,7 +195,9 @@ public final class ControlPlaneClient {
         Map<String, Object> response = post(
                 "/runner/v1/leases/" + lease.leaseId() + "/heartbeat",
                 body, leaseHeaders(lease), 10);
-        return Json.bool(response, "cancelRequested", false);
+        return new HeartbeatSignals(
+                Json.bool(response, "cancelRequested", false),
+                Json.bool(response, "pauseRequested", false));
     }
 
     public void complete(Lease lease, String status, String resultStatus, String failureCode) {

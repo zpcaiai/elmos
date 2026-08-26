@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "source_digest": "sha256:aa08e08a83dbfcef06119a8973b81be1af1bfa9c32cef6c94f0210ef62628d7b",
+  "dataset_digest": "sha256:188ef458f070d7fe1b8766f1928c94b5278722263fbfbfd1636af879a25d6a98",
+  "evidence_refs": [
+    "corpus/negative/seed.json",
+    "certification/local-test-result.json"
+  ],
+  "limitations": [
+    "Local synthetic identities and one disposable database only."
+  ]
+}

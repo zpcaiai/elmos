@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "kind": "elmos.multitenant-task-finops.local-environment",
+  "captured_at": "2026-08-24T15:42:00+08:00",
+  "operating_system": "macOS 26.6.2 / Darwin 25.6.0 arm64",
+  "maven": "3.9.10",
+  "maven_runtime_java": "Eclipse Adoptium 21.0.11",
+  "shell_java": "Homebrew OpenJDK 26.0.1",
+  "python": "3.11.15",
+  "docker_client": "29.4.0",
+  "docker_server": "29.4.0",
+  "postgres_image_tag": "postgres:17.5-alpine",
+  "postgres_image_id": "sha256:53e5e62266c67313f0d330b6b97c07982324bdf00027c47041c5cf1123560aca",
+  "postgres_image_digest": "sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa",
+  "external_provider_environment": "NOT_RUN",
+  "independent_verifier_environment": "NOT_RUN",
+  "production_environment": "NOT_RUN"
+}

@@ -7,12 +7,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Keeps one lease alive and carries two signals back to the job.
+ * Keeps one lease alive and carries control signals back to the job.
  *
  * <p><b>Cancellation</b> is pull-based on purpose. The control plane cannot open a
  * connection to a runner: runners sit behind NAT, inside customer VPCs, and scale
  * in and out. So a cancel is written to the job row and the runner discovers it on
  * its next heartbeat, within one interval.</p>
+ *
+ * <p><b>Pause</b> uses the same durable pull path. The heartbeat that returns the
+ * pause signal first persists the current checkpoint cursor, so the executor can
+ * stop safely and acknowledge {@code PAUSED/NOT_RUN} without discarding resume
+ * state.</p>
  *
  * <p><b>Self-fencing</b> is the more important half. If this pump cannot renew the
  * lease before it expires, the control plane will hand the job to another runner.
@@ -35,6 +40,7 @@ public final class HeartbeatPump implements AutoCloseable {
     private final AgentMetrics metrics;
 
     private final AtomicBoolean cancelRequested = new AtomicBoolean(false);
+    private final AtomicBoolean pauseRequested = new AtomicBoolean(false);
     private final AtomicReference<String> leaseLost = new AtomicReference<>(null);
     private final AtomicReference<String> stage = new AtomicReference<>("starting");
     private final AtomicReference<Integer> progress = new AtomicReference<>(0);
@@ -71,6 +77,10 @@ public final class HeartbeatPump implements AutoCloseable {
         return cancelRequested.get();
     }
 
+    public boolean pauseRequested() {
+        return pauseRequested.get();
+    }
+
     /** Non-null once the lease can no longer be trusted; the value is a stable code. */
     public String leaseLost() {
         return leaseLost.get();
@@ -93,10 +103,14 @@ public final class HeartbeatPump implements AutoCloseable {
 
     void beatOnce() {
         try {
-            boolean cancel = client.heartbeat(lease, stage.get(), progress.get(), checkpoint.get());
+            ControlPlaneClient.HeartbeatSignals signals =
+                    client.heartbeat(lease, stage.get(), progress.get(), checkpoint.get());
             lastSuccess = Instant.now();
-            if (cancel) {
+            if (signals.cancelRequested()) {
                 cancelRequested.set(true);
+            }
+            if (signals.pauseRequested()) {
+                pauseRequested.set(true);
             }
         } catch (ControlPlaneClient.LeaseLostException ex) {
             // Explicit: somebody else owns this job now. Stop immediately.

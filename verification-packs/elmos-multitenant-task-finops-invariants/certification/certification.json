@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-multitenant-task-finops-invariants",
+  "status": "experimental",
+  "owner": "elmos-verification-engineering",
+  "exact_scope": {
+    "migration_route": "postgresql-17-5-multitenant-task-finops-repository-runtime",
+    "source_artifact_digest": "sha256:aa08e08a83dbfcef06119a8973b81be1af1bfa9c32cef6c94f0210ef62628d7b",
+    "target_artifact_digest": "sha256:5fcee17ce79b733648a0da0585596646ec3e7c6918918971975df91a7a073aa5",
+    "workload_key": "account-isolated-task-finops-v1",
+    "risk_tier": "P0",
+    "environment_digest": "sha256:34e6b7d1079d9e1582b54988b9b2c3400a02ade50b2071a17b166809868cd405",
+    "validation_kind": "local-java-and-disposable-postgresql-rehearsal",
+    "source_reference_v100_v102": "NOT_APPLIED",
+    "product_task_execution": "NOT_RUN:144",
+    "external_dependencies": "UNRESOLVED:4",
+    "controlled_public_dns_rebinding_campaign": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "representative_production_workload": "NOT_RUN",
+    "production_certification": "NOT_CERTIFIED"
+  },
+  "metrics": {
+    "local_tests": 56,
+    "local_test_pass_rate": 1.0
+  },
+  "evidence_refs": [
+    "certification/local-test-result.json",
+    "certification/target-source-manifest.json",
+    "certification/local-environment.json"
+  ],
+  "limitations": [
+    "NOT_CERTIFIED",
+    "V100-V102 remain NOT_APPLIED",
+    "All 144 source product task executions remain NOT_RUN",
+    "Four exact external dependencies remain UNRESOLVED",
+    "Controlled public DNS rebinding campaign remains NOT_RUN",
+    "Independent holdout and representative workloads are NOT_RUN",
+    "Temporal, provider, invoice, payment, tax, signature and production evidence are NOT_RUN",
+    "No independent verifier approval"
+  ],
+  "approved_at": null
+}

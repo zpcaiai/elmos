@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "relation_id": "relation.replay-and-allocation-conservation",
+  "claim_id": "claim.exact-money-conservation",
+  "owner": "elmos-verification-engineering",
+  "preconditions": [
+    "same-idempotency-key",
+    "identical-governed-payload",
+    "same-currency-allocation"
+  ],
+  "transformation": {
+    "kind": "repeat-input-and-reorder-allocation-targets"
+  },
+  "expected_relation": {
+    "kind": "same-identity-and-exact-conserved-total"
+  },
+  "oracle_refs": [
+    "oracle.repository-contract",
+    "oracle.local-tests"
+  ],
+  "non_applicable": []
+}

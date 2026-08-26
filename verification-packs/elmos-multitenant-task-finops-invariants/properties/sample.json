@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "property_id": "property.account-slot-and-money-invariants",
+  "claim_id": "claim.exact-money-conservation",
+  "owner": "elmos-verification-engineering",
+  "generator": {
+    "kind": "schema-aware",
+    "constraints": [
+      "exact-decimal-domain",
+      "maximum-three-account-slots",
+      "deterministic-order"
+    ]
+  },
+  "oracle_refs": [
+    "oracle.repository-contract",
+    "oracle.local-tests"
+  ],
+  "assertion": {
+    "kind": "declared-invariant"
+  },
+  "shrinker": {
+    "kind": "bounded-domain-shrinker"
+  },
+  "replay": {
+    "seed": "72",
+    "command": "mvn -o -pl modules/workflow -am -Dtest=TaskFinopsPolicyTest,TaskFinopsPortTest -Dsurefire.failIfNoSpecifiedTests=false test"
+  }
+}
