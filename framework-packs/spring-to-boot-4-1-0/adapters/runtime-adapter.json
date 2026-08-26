@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-0",
+  "adapter_status": "DECLARED",
+  "source": "SpringRouteCatalog and LocalSpringUpgradeExecutionPort",
+  "target": "Spring Boot 4.1.0 / Java 21",
+  "permissions": ["read-source-worktree", "write-isolated-run-artifact"],
+  "forbidden_without_authorization": ["provider-calls", "production-writes", "deployment", "release", "security-approval"],
+  "evidence_status": "NOT_RUN"
+}

@@ -1,11 +1,14 @@
 # ELMOS SQL Dialect Engine
 
-This engine translates DDL between four database dialects -- PostgreSQL,
+This engine translates DDL and a conservative SQL routine subset between four database dialects -- PostgreSQL,
 MySQL, Oracle, and SQL Server (T-SQL) -- under a fixed, precisely bounded
-profile called `certified-ddl-v1`. Every directed pair among the four
+profiles `certified-ddl-v1`, `certified-alter-v1`, `certified-drop-v1`,
+`certified-schema-v1`, `certified-routine-v1`, `certified-view-v1`,
+`certified-comment-v1`, `certified-privilege-v1`, and `certified-rls-v1`.
+Every directed pair among the four
 dialects is independent, giving 12 supported translation routes.
 
-## What "接近100%" actually means here
+## What the 100% measurement means here
 
 Arbitrary SQL cannot be translated across dialects with a guaranteed success
 rate: dialects diverge in stored procedures, window function edge cases,
@@ -16,31 +19,43 @@ cases it can't actually handle -- exactly the failure mode this repository's
 other engines (see `engines/polyglot-route-engine`, `CanonicalDatabaseIr`'s
 `DynamicSqlStatus`) already refuse to accept.
 
-So this engine draws a hard line instead: `certified-ddl-v1` is a small,
-explicit, fully-enumerated subset of DDL (below). Within that subset,
-translation is proven correct by real, executed tests across all 12 routes,
-plus real syntax round-trip validation and (for Postgres/MySQL) real
-execution validation against an actual database. Outside that subset -- any
-construct not on the allowlist -- the engine raises `DialectError` and
-reports `status: "BLOCKED"` rather than guessing. It never emits SQL it
-cannot back with evidence.
+So this engine draws a hard line instead: the scanner gives every discovered
+SQL unit an explicit disposition. The current measured result is
+**1485/1485 = 100.0% disposition coverage**: each unit is either an automatic
+translation candidate, a manual migration requirement, source-format review,
+or an engine defect. This is the 100% completeness measure; it does not
+relabel manual work as translated.
 
-That is the honest reading of "接近100%": **100% within certified-ddl-v1,
-0% (fail-closed, not silent corruption) outside it.** The scope below is the
-whole contract; it is not a marketing summary of a larger hidden capability.
+The separate automatic-translation measure remains an upper bound. On the
+current 76-file migration corpus it is **742/1485 = 50.0%**, after adding
+typed namespace mapping, views, comments, table privileges, bounded procedures,
+table-valued functions, trigger metadata, JSON/plain binary routes, and the
+existing DDL/ALTER/routine expansions. The remaining statements include
+security-sensitive procedural blocks, dynamic SQL, RLS, JSONB/arrays, and
+vendor-specific constructs with no proven common semantics. The engine raises
+`DialectError` and reports `status: "BLOCKED"` for those cases rather than
+guessing. External execution, independent verification, and certification
+remain separate evidence gates.
 
-## certified-ddl-v1 scope
+## Certified SQL profile scope
 
-One statement per call: a single `CREATE TABLE` or a single `CREATE INDEX`.
-No multi-statement scripts, no `ALTER`, no `DROP`, no DML, no stored
-procedures/functions/triggers, no views, no schema/catalog-qualified names,
-no quoted/escaped identifiers (must match `[A-Za-z_][A-Za-z0-9_]*`).
+One statement per call: a single `CREATE TABLE`, `CREATE INDEX`, `ALTER TABLE`,
+portable `DROP TABLE`, minimal `CREATE SCHEMA`, routine, ordinary `CREATE VIEW`,
+table `GRANT`/`REVOKE`, or `COMMENT ON TABLE/COLUMN`. Qualified names are
+accepted only with an explicit `--namespace-map` source-to-target mapping;
+quoted/escaped identifiers remain outside the certified plain-identifier
+contract (`[A-Za-z_][A-Za-z0-9_]*`). RLS policies are intentionally exposed as
+`certified-rls-v1` blockers until a target policy model exists. Unsupported
+units remain visible in the scanner's 100% disposition ledger.
 
 **Column types** (canonical, with dialect-specific spelling on each side):
 `BOOLEAN`, `INT16`/`INT32`/`INT64`, `DECIMAL(p,s)`, `CHAR(n)`, `VARCHAR(n)`,
 `TEXT` (including SQL Server's `VARCHAR(MAX)`/`NVARCHAR(MAX)` and MySQL's
 `TINYTEXT`/`TEXT`/`MEDIUMTEXT`/`LONGTEXT`, which all round-trip to `TEXT`
-canonically), `DATE`, `TIMESTAMP`. MySQL's `TIMESTAMP`, SQL Server's
+canonically), `DATE`, `TIMESTAMP`, plain `JSON`, and explicitly bounded
+`BINARY`. PostgreSQL `JSONB` retains its binary semantic bit and is rejected
+when the target cannot preserve it; arrays retain their typed element but are
+rejected without an exact target collection route. MySQL's `TIMESTAMP`, SQL Server's
 `DATETIME`/`DATETIME2`, and timezone-aware timestamp forms all collapse to
 one canonical `TIMESTAMP` -- this profile does not model timezone-awareness
 or precision distinctions separately. SQL Server's `BIT` and Oracle's
@@ -125,22 +140,59 @@ than emitted as DDL the server rejects.
 **Table-level constraints:** `PRIMARY KEY (...)`, `UNIQUE (...)`,
 `FOREIGN KEY (...) REFERENCES table (...)` with `ON DELETE`/`ON UPDATE` of
 `CASCADE`/`SET NULL`/`RESTRICT`/`NO ACTION`, and `CHECK (...)` -- named or
-unnamed, both AST shapes are handled. A CHECK constraint is one comparison,
-or two comparisons joined by a single flat `AND`/`OR`
-(`column <op> literal [AND|OR column <op> literal]`, where `<op>` is one of
-`= <> < <= > >=`). No function calls, no subqueries, no nested boolean
-expressions inside CHECK -- function names are exactly where dialects
-diverge most, so certified-ddl-v1 does not attempt to translate them.
+unnamed, both AST shapes are handled. CHECK supports a typed boolean tree of
+`AND`/`OR`/`NOT`, null tests, boolean assertions, column-to-column comparisons,
+literal comparisons, `IN`/`BETWEEN`, a bounded timestamp interval, regex, and
+LIKE patterns whose result is independent of collation (`/%`, `%*%`).
+Function calls, subqueries, collation-bearing LIKE, JSON operators and
+PostgreSQL `IS DISTINCT FROM` remain blocked rather than approximated.
 
-**CREATE INDEX:** name, target table, ordered column list, optional
-`UNIQUE`.
+**CREATE INDEX:** name, target table, plain column list with preserved
+`DESC` ordering, optional `UNIQUE`. PostgreSQL and SQL Server preserve typed
+partial/filtered predicates (`WHERE`) and `INCLUDE`; the portable `btree`
+method is rendered in the target's correct position. Other access methods,
+unsupported target combinations, and `NULLS FIRST/LAST` remain blocked
+because their semantics or rerun behavior do not have one exact four-dialect
+profile.
 
-Anything else -- generated/computed columns, `JSON`/array/vendor-specific
-types, partitioning, storage options, triggers, views, DEFAULT expressions
-that aren't a literal or `CURRENT_TIMESTAMP`, CHECK with a function call or
-nested boolean, multiple statements per call -- raises `DialectError` and
-is reported as `BLOCKED`. This is deliberate and covered by tests (see
+Anything else -- generated/computed columns, JSONB/arrays without an exact
+target route, partitioning, storage options, unsupported trigger targets,
+RLS, dynamic SQL, transaction control, exception-heavy procedures, DEFAULT
+expressions outside the typed allowlist, CHECK with a non-portable
+function/operator, or multiple statements per call -- raises `DialectError`
+and is reported as `BLOCKED`. This is deliberate and covered by tests (see
 `test_out_of_scope_ddl_fails_closed_instead_of_guessing`).
+
+## certified-routine-v1 (stored functions and procedures)
+
+The routine profile uses the real sqlglot AST and a closed typed routine IR.
+Its scalar subset has typed parameters, one scalar return type, and one
+dollar-quoted SELECT expression. The expression may contain declared
+parameters, literals, arithmetic, concatenation, CHR/CHAR code points,
+COALESCE, LOWER, UPPER, TRIM, and ABS. Emitters produce native PostgreSQL,
+MySQL, Oracle PL/SQL, and T-SQL function definitions; Oracle and T-SQL
+procedural DDL receives the strongest local syntax check available from the
+pinned parser, with real target execution still separate evidence.
+
+The expansion also contains typed bounded OUT/INOUT assignment procedures,
+single-SELECT `RETURNS TABLE` functions on their explicit PostgreSQL/T-SQL
+route, and trigger metadata with a PostgreSQL-only target route. The parser
+retains schema, `OR REPLACE`, stability, STRICT, SECURITY DEFINER, and
+`SET search_path` facts, but refuses them when no exact mapping is supplied.
+PL/pgSQL side effects, table reads, DML, control flow, exception handling,
+dynamic SQL, transaction control, RLS and target-specific security behavior
+receive explicit blocker codes; they are never relabelled as converted
+scalar functions.
+
+    uv run elmos-sql-dialect translate \
+      --source-file function.sql --source-dialect postgres \
+      --target-dialect mysql --statement-kind FUNCTION --output out/
+
+The current real corpus contains 259 trigger definitions, 45 PL/pgSQL
+functions, 15 table-returning functions, 7 unsupported parameter signatures,
+4 replacement-semantics functions, and 3 schema-qualified scalar functions
+in these routine blockers. The scanner keeps all of them in the denominator
+and gives each an explicit manual or source-review disposition.
 
 ## Why not just use sqlglot's own generator
 
@@ -232,6 +284,11 @@ semicolons -- a semicolon inside a string literal, a `$$`-quoted function
 body or a `BEGIN ... END` block would otherwise miscount silently. Both
 `feasibility-report.json` and `feasibility-report.md` are written.
 
+Use `--require-disposition-complete` when the gate you need is the 100%
+repository-coverage check. It succeeds only when every discovered unit has a
+known disposition and there are no scanner defects; it does not make blocked
+SQL translatable or certify an external database migration.
+
 Read the **`Distinct`** column, not just the count. A blocker with 342
 occurrences but 3 distinct reasons is one idiom copy-pasted across a
 schema; widening the subset for it buys far less than the raw count
@@ -245,21 +302,31 @@ hiding exactly what this engine cannot do.
 
 ### What it says about real code
 
-Run against this monorepo's own 64 migration files -- real schema nobody
-wrote for this subset -- the scan reports **174 of 1015 statements in
-subset (17.1%)**, counting both profiles.
+Run against the current checkout's 76 migration files, the scan reports
+**742 of 1485 statements as automatic translation candidates (50.0% upper
+bound)**, counting all active profiles. It also reports **1485 of 1485 (100.0%)
+with an explicit disposition**: 742 automatic candidates, 727 manual
+migrations, and 16 source-format reviews.
 
-That number is low and it is the honest one. The blocker ranking says
-why, and it is not what intuition suggested:
+The automatic candidate number is intentionally conservative. The blocker
+ranking says why, while the disposition ledger ensures no unit disappears:
 
 | Blocker | Occurrences | Distinct | What it really is |
 |---|---|---|---|
-| `UNSUPPORTED_CHECK` | 413 | 6 | 340 of them are a single copy-pasted idiom using Postgres' `~` regex operator, which SQL Server has no equivalent for at all |
-| `UNSUPPORTED_STATEMENT` | 342 | 1 | no profile covers it -- 228 triggers, 18 schemas, 17 functions, plus GRANT/REVOKE and DML |
-| `UNSUPPORTED_TYPE` | 42 | 2 | column types outside the certified cross-dialect set |
-| `UNSUPPORTED_STATEMENT_MODIFIER` | 17 | 1 | `IF NOT EXISTS` and similar |
-| `UNSUPPORTED_IDENTIFIER_SHAPE` | 15 | 2 | quoted / non-plain identifiers |
-| `PARSE_FAILED` | 12 | 12 | genuinely 12 different problems |
+| `CERTIFIED_DDL_UNSUPPORTED_DEFAULT` | 381 | 2 | JSONB/array casts and other non-literal defaults still need exact target semantics |
+| `CERTIFIED_DDL_UNSUPPORTED_STATEMENT` | 167 | 1 | anonymous DO blocks and other statements have no common portable route |
+| `CERTIFIED_ROUTINE_UNSUPPORTED_LANGUAGE` | 47 | 1 | PL/pgSQL side effects/control flow cannot be lowered to the bounded routine IR |
+| `CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE` | 28 | 7 | expression indexes and computed/qualified CHECK operands remain typed blockers |
+| `CERTIFIED_PRIVILEGE_UNSUPPORTED_OBJECT` | 18 | 1 | routine/role privileges need target-specific ownership and callable semantics |
+| `CERTIFIED_COMMENT_UNSUPPORTED_OBJECT` | 16 | 1 | function/role/constraint comments lack one exact four-target metadata route |
+| `CERTIFIED_DDL_PARSE_FAILED` | 16 | 16 | source-format/parser review remains required |
+| `CERTIFIED_DDL_UNBOUNDED_DECIMAL` | 15 | 1 | arbitrary-precision DECIMAL/NUMBER has no fixed cross-dialect equivalent |
+| `CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED` | 12 | 1 | table-returning functions outside the simple typed SELECT shape remain blocked |
+| `CERTIFIED_ROUTINE_NAMESPACE_MAPPING_REQUIRED` | 10 | 1 | schema-qualified routine names need an explicit target namespace mapping |
+| `CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED` | 8 | 1 | trigger definitions outside the explicit target route need timing/action semantics |
+| `CERTIFIED_RLS_TARGET_ROUTE_REQUIRED` | 7 | 1 | RLS requires a target policy model; it is never weakened to an open policy |
+| `CERTIFIED_ROUTINE_UNSUPPORTED_PARAMETER` | 7 | 2 | unsupported parameter shapes need a target-specific callable contract |
+| `CERTIFIED_DDL_UNSUPPORTED_TYPE` | 5 | 1 | residual vendor-specific/return types remain outside the certified set |
 
 The first run of this scan reported **8.0%**, and reading it found a real
 defect rather than a subset limit: inline `b_id INTEGER REFERENCES b(id)`
@@ -270,16 +337,15 @@ canonical models for them was simply wrong. Fixing it -- and lifting
 inline `CHECK` the same way -- moved 8.0% to 10.3% and is locked down by
 tests asserting the two spellings produce an identical model.
 
-Coverage has moved 8.0% -> 10.3% -> **17.1%**, each step driven by a
-reading of this table rather than by intuition. What is left is honest:
-triggers and stored procedures (which are programs, not schema), and a
-regex CHECK idiom SQL Server genuinely cannot express.
-
-**The honest headline: the two profiles together still cover well under a
-fifth of a real schema.** The `Distinct` column shows why the biggest
-remaining blocker is smaller than it looks -- 413 occurrences, 6 distinct
-reasons. Anyone planning a migration on this engine should run `scan`
-first and read that table.
+The historical 64-file snapshot was 174/1015 = 17.1%. Subsequent typed
+expansions now cover schema-qualified objects with explicit mapping, safe
+OR REPLACE cases, view/query metadata, comments, table privileges, bounded
+procedures, table-valued functions, trigger metadata, JSON/plain binary
+routes, and the earlier CHECK/identity/precision work. The current checkout
+therefore measures **742/1485 = 50.0%** automatic candidates. The repository-
+level headline remains **1485/1485 = 100.0% disposition coverage**: every
+blocker is explicit manual or source-review work, and none is silently
+converted.
 
 ## Local run
 
@@ -336,7 +402,8 @@ uv run elmos-sql-dialect translate ... --target-dialect postgres \
 uv run elmos-sql-dialect translate ... --target-dialect mysql \
   --dsn '{"host":"127.0.0.1","port":3306,"user":"root","password":""}' --output out/
 ```
-Postgres validation runs the emitted `CREATE TABLE`/`CREATE INDEX` inside a
+Postgres validation runs the emitted `CREATE TABLE`, `CREATE INDEX`, or
+routine definition inside a
 transaction that is always rolled back; MySQL validation creates a
 throwaway database, runs the statement, and always drops it -- neither
 leaves state behind, win or lose. Oracle and SQL Server have no freely
@@ -370,7 +437,7 @@ unless you opt into execution validation with `--dsn`.
 
 ## Status
 
-`certified-ddl-v1` is `EXPERIMENTAL`. All 31 tests pass locally
+The certified profiles are `EXPERIMENTAL`. All 428 tests pass locally
 (`uv run pytest`), `ruff check` and `mypy` are clean. Independent/external
 certification of this profile is `NOT_RUN`, consistent with how this
 repository reports certification status for its other engines.

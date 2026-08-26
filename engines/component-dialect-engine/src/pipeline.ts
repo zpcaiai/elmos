@@ -28,6 +28,7 @@ import { Framework, RouteError } from "./models";
 import { translateComponent, translateFile, TranslationReport } from "./engine";
 import { referencedComponents } from "./emitters/react";
 import { parseComponents } from "./engine";
+import { createReactProjectContext } from "./parsers/react";
 import {
   HandoffAlert, HandoffCheck, HandoffSummary, checkPortedEntry, findEntry,
   loadManifest, summarize,
@@ -207,6 +208,9 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
   }
 
   const files = discoverComponents(repository, sourceFramework);
+  const reactProject = sourceFramework === "react" || sourceFramework === "typescript" || sourceFramework === "react-native"
+    ? createReactProjectContext(repository)
+    : undefined;
   const outcomes: FileOutcome[] = [];
   // Loaded before anything is written. A component a human has taken over
   // must be skipped on write, not written and then restored.
@@ -249,6 +253,10 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
     const outcomesForFile = await translateFile(source, sourceFramework, targetFramework, {
       fileName: path.basename(file),
       skipExecution: options.skipExecution,
+      reactOptions: reactProject === undefined ? {} : {
+        project: reactProject,
+        sourceFile: reactProject.program.getSourceFile(path.resolve(file)),
+      },
     });
     // A function that returns no JSX is a helper, not a component. Writing
     // a throwing placeholder for it would be wrong -- there is nothing to
@@ -276,7 +284,10 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
     // Record which children this file's components reference, so the run
     // can tell the customer whether those children actually resolved.
     try {
-      for (const parsed of parseComponents(source, sourceFramework, path.basename(file))) {
+      for (const parsed of parseComponents(source, sourceFramework, path.basename(file), reactProject === undefined ? {} : {
+        project: reactProject,
+        sourceFile: reactProject.program.getSourceFile(path.resolve(file)),
+      })) {
         for (const child of referencedComponents(parsed)) {
           const bucket = references.get(child) ?? [];
           bucket.push(parsed.name);

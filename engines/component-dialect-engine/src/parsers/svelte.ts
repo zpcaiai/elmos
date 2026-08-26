@@ -31,7 +31,7 @@ const ESTREE_BINARY: Record<string, BinaryOperator> = {
   "+": "+", "-": "-", "*": "*", "/": "/", "%": "%",
   "<": "<", "<=": "<=", ">": ">", ">=": ">=",
   "==": "==", "===": "==", "!=": "!=", "!==": "!=",
-  "&&": "&&", "||": "||",
+  "&&": "&&", "||": "||", "??": "??",
 };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -85,11 +85,11 @@ function esExpr(node: EsNode): Expr {
  * `elementType` on TSArrayType, matching TypeScript's own naming. */
 function esListElement(elementType: EsNode, what: string): ListElementShape {
   if (elementType.type === "TSTypeLiteral") {
-    const fields: Record<string, PrimitiveType> = {};
+    const fields: Record<string, { shape: { kind: "primitive"; primitive: PrimitiveType }; optional: boolean }> = {};
     for (const member of elementType.members) {
       require_(member.type === "TSPropertySignature" && member.key?.type === "Identifier", "CERTIFIED_COMPONENT_UNSUPPORTED_LIST_ELEMENT", `${what}: list element type must contain plain property signatures`);
-      require_(!member.optional, "CERTIFIED_COMPONENT_UNSUPPORTED_LIST_ELEMENT", `${what}: optional list element fields are outside certified-component-v1`);
-      fields[member.key.name] = esPrimitiveType(member.typeAnnotation, `${what} field`);
+      const primitive = esPrimitiveType(member.typeAnnotation, `${what} field`);
+      fields[member.key.name] = { shape: { kind: "primitive", primitive }, optional: member.optional === true };
     }
     return { kind: "object", fields };
   }
@@ -191,7 +191,7 @@ function parseInstanceScript(body: EsNode[]): ScriptInfo {
       require_(decl.id.type === "Identifier", "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "$state must be assigned to a plain name");
       require_((init.arguments ?? []).length === 1, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "$state() must be called with exactly one literal initial value");
       const initial = esLiteral(at<EsNode>(init.arguments, 0, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "missing $state argument"));
-      state.push({ name: decl.id.name, stateType: initial.type, initial });
+      state.push({ name: decl.id.name, stateType: initial.type === "null" ? "string" : initial.type, ...(initial.type === "null" ? { nullable: true } : {}), initial });
       continue;
     }
 

@@ -1094,6 +1094,14 @@ final class SpringUpgradeRunService {
                     request.targetSpringBoot(),
                     request.targetJava());
         }
+        if ("spring-framework".equals(fingerprint.sourceFrameworkFamily())) {
+            return SpringRouteCatalog.selectSpringFramework(
+                    fingerprint.sourceFrameworkVersion(),
+                    fingerprint.javaVersion(),
+                    fingerprint.buildTool(),
+                    request.targetSpringBoot(),
+                    request.targetJava());
+        }
         return SpringRouteCatalog.select(
                 fingerprint.springBootVersion(),
                 fingerprint.javaVersion(),

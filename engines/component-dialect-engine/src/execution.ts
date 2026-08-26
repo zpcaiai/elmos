@@ -91,7 +91,8 @@ function listSample(prop: ListPropDef, count = 2): unknown[] {
     const seed = index + 1;
     if (prop.element.kind === "primitive") return primitiveSample(prop.element.primitive, seed);
     const row: Record<string, string | number | boolean> = {};
-    for (const [field, type] of Object.entries(prop.element.fields)) {
+    for (const [field, definition] of Object.entries(prop.element.fields)) {
+      const type = definition.shape.kind === "primitive" ? definition.shape.primitive : "string";
       row[field] = field === prop.keyField && type === "number" ? seed : primitiveSample(type, seed);
     }
     return row;
@@ -99,6 +100,7 @@ function listSample(prop: ListPropDef, count = 2): unknown[] {
 }
 
 function literalValue(literal: Literal): string | number | boolean {
+  if (literal.type === "null") return "";
   return literal.value;
 }
 

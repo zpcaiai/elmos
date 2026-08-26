@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SpringUpgradeModelsTest {
     private final ObjectMapper json = new ObjectMapper().findAndRegisterModules();
@@ -49,5 +51,47 @@ class SpringUpgradeModelsTest {
         assertThrows(IllegalArgumentException.class, () -> new SpringUpgradeModels.ExactTuple(
                 "5.3.39", "11", "maven-3.9.11", "3.5.3", "21", "maven-3.9.11",
                 "6.35.0", "6.44.0", "spring-mvc", "5.3.39"));
+    }
+
+    @Test void startRequestNormalizesLegacyJavaAndTargetDefaults() {
+        SpringUpgradeModels.StartRequest request = new SpringUpgradeModels.StartRequest(
+                "org", SpringUpgradeModels.SourceMode.PUBLIC_GIT, "https://github.com/example/app",
+                "main", "a".repeat(40), null, null, false, "idem", "", "1.8");
+
+        assertEquals(SpringUpgradeModels.TARGET_BOOT, request.targetSpringBoot());
+        assertEquals("8", request.targetJava());
+        assertEquals("idem", request.idempotencyKey());
+    }
+
+    @Test void fingerprintInfersUnknownOnlyWhenNoSourceBootIdentityExists() {
+        SpringUpgradeModels.Fingerprint unknown = new SpringUpgradeModels.Fingerprint(
+                "UNKNOWN", "11", "maven", java.util.List.of(), java.util.List.of(),
+                java.util.List.of(), java.util.Map.of());
+        SpringUpgradeModels.Fingerprint boot = new SpringUpgradeModels.Fingerprint(
+                "2.7.18", "17", "maven", java.util.List.of(), java.util.List.of(),
+                java.util.List.of(), java.util.Map.of());
+
+        assertEquals("unknown", unknown.sourceFrameworkFamily());
+        assertEquals("UNKNOWN", unknown.sourceFrameworkVersion());
+        assertEquals("spring-boot", boot.sourceFrameworkFamily());
+        assertEquals("2.7.18", boot.sourceFrameworkVersion());
+    }
+
+    @Test void exactTupleBackfillsFrameworkIdentityButRejectsBootVersionDrift() {
+        SpringUpgradeModels.ExactTuple boot = new SpringUpgradeModels.ExactTuple(
+                null, "17", "maven-3.9.11", "3.5.3", "21", "maven-3.9.11",
+                "6.35.0", "6.44.0", "spring-boot", "2.7.18");
+        SpringUpgradeModels.ExactTuple framework = new SpringUpgradeModels.ExactTuple(
+                null, "11", "maven-3.9.11", "3.5.3", "21", "maven-3.9.11",
+                "6.35.0", "6.44.0", "spring-framework", "5.3.39");
+
+        assertEquals("2.7.18", boot.sourceSpringBoot());
+        assertEquals("spring-framework", framework.sourceFrameworkFamily());
+        assertNull(framework.sourceSpringBoot());
+        assertTrue(framework.sourceFrameworkVersion().startsWith("5."));
+        assertFalse(framework.sourceFrameworkVersion().isBlank());
+        assertThrows(IllegalArgumentException.class, () -> new SpringUpgradeModels.ExactTuple(
+                "2.7.18", "17", "maven-3.9.11", "3.5.3", "21", "maven-3.9.11",
+                "6.35.0", "6.44.0", "spring-boot", "3.2.12"));
     }
 }

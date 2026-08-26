@@ -20,6 +20,8 @@ import { emitVue2 } from "../src/emitters/vue2";
 import { emitSvelte } from "../src/emitters/svelte";
 import { emitAngular } from "../src/emitters/angular";
 import { emitMiniProgram } from "../src/emitters/miniprogram";
+import { emitFlutter } from "../src/emitters/flutter";
+import { emitArkUI } from "../src/emitters/arkui";
 import { compareRendered, defaultExecutionCases } from "../src/execution";
 import { ComponentDef, DialectError, Framework } from "../src/models";
 
@@ -39,12 +41,21 @@ function TagList({ title, tags, rows }: { title: string; tags: string[]; rows: {
 
 const IR: ComponentDef = parseReactComponent(TAG_LIST, "TagList.tsx");
 
+const NESTED_OBJECT_LIST = `
+function BehaviorRows({ behavior }: { behavior: { targets: { language: string; build_analysis: { total: number; status: string } }[] } }) {
+  return <ul>{behavior.targets.map((target) => <li key={target.language}>{target.language}: {target.build_analysis.total} / {target.build_analysis.status}</li>)}</ul>;
+}
+`;
+
 describe("list props are modelled, not flattened", () => {
   it("reads a primitive list and an object list with its key field", () => {
     expect(IR.props).toEqual([
       { kind: "data", name: "title", propType: "string", required: true, defaultValue: undefined },
       { kind: "list", name: "tags", element: { kind: "primitive", primitive: "string" }, keyField: undefined },
-      { kind: "list", name: "rows", element: { kind: "object", fields: { id: "number", label: "string" } }, keyField: "id" },
+      { kind: "list", name: "rows", element: { kind: "object", fields: {
+        id: { shape: { kind: "primitive", primitive: "number" }, optional: false },
+        label: { shape: { kind: "primitive", primitive: "string" }, optional: false },
+      } }, keyField: "id" },
     ]);
   });
 
@@ -52,6 +63,37 @@ describe("list props are modelled, not flattened", () => {
     if (IR.root.kind !== "element") throw new Error("expected an element root");
     const lists = IR.root.children.flatMap((c) => (c.kind === "element" ? c.children : [])).filter((c) => c.kind === "list");
     expect(lists).toHaveLength(2);
+  });
+
+  it("accepts an explicit stable key when the field name is not conventional", () => {
+    const ir = parseReactComponent(`
+      function Events({ events }: { events: { eventId: string; label: string }[] }) {
+        return (<ul>{events.map((event) => <li key={event.eventId}>{event.label}</li>)}</ul>);
+      }
+    `, "Events.tsx");
+    const list = ir.root.kind === "element" ? ir.root.children[0] : undefined;
+    expect(list?.kind).toBe("list");
+    expect(ir.props.find((prop) => prop.kind === "list")?.keyField).toBe("eventId");
+    expect(emitMiniProgram(ir)["wxml"]).toContain('wx:for="{{ events }}" wx:for-item="event" wx:key="eventId"');
+  });
+
+  it("retains a bounded nested object path across emitters", () => {
+    const ir = parseReactComponent(NESTED_OBJECT_LIST, "BehaviorRows.tsx");
+    const list = ir.lists?.find((prop) => prop.name === "behavior.targets");
+    expect(list?.kind).toBe("list");
+    if (list?.kind !== "list" || list.element.kind !== "object") throw new Error("expected nested object list");
+    const buildAnalysis = list.element.fields.build_analysis;
+    expect(buildAnalysis).toBeDefined();
+    expect(buildAnalysis?.shape).toEqual({
+      kind: "object",
+      fields: {
+        total: { shape: { kind: "primitive", primitive: "number" }, optional: false },
+        status: { shape: { kind: "primitive", primitive: "string" }, optional: false },
+      },
+    });
+    expect(emitReact(ir)).toContain("target.build_analysis.total");
+    expect(emitFlutter(ir)).toContain('target["build_analysis"]["total"]');
+    expect(emitArkUI(ir)).toContain('target["build_analysis"]["total"]');
   });
 });
 
@@ -131,7 +173,7 @@ describe("list rendering fails closed outside the certified shape", () => {
     ["mapping over a non-prop expression", `function C({ rows }: { rows: { id: number }[] }) { return (<ul>{rows.slice(0).map((row) => (<li>{row.id}</li>))}</ul>); }`],
     ["object elements with no identity field", `function C({ rows }: { rows: { label: string; note: string }[] }) { return (<ul>{rows.map((row) => (<li>{row.label}</li>))}</ul>); }`],
     ["a field not declared on the element", `function C({ rows }: { rows: { id: number; label: string }[] }) { return (<ul>{rows.map((row) => (<li>{row.missing}</li>))}</ul>); }`],
-    ["nested element types", `function C({ rows }: { rows: { id: number; inner: { x: number } }[] }) { return (<ul>{rows.map((row) => (<li>{row.id}</li>))}</ul>); }`],
+    ["array fields inside element types", `function C({ rows }: { rows: { id: number; inner: number[] }[] }) { return (<ul>{rows.map((row) => (<li>{row.id}</li>))}</ul>); }`],
     ["reading an object item without a field", `function C({ rows }: { rows: { id: number }[] }) { return (<ul>{rows.map((row) => (<li>{row}</li>))}</ul>); }`],
     ["interpolating a list prop directly", `function C({ rows }: { rows: { id: number }[] }) { return (<div>{rows}</div>); }`],
     ["a nested list", `function C({ a, b }: { a: { id: number }[]; b: { id: number }[] }) { return (<ul>{a.map((x) => (<li>{b.map((y) => (<span>{y.id}</span>))}</li>))}</ul>); }`],

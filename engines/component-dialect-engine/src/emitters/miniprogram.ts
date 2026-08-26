@@ -40,11 +40,11 @@ const TAG_MAP: Record<HtmlTag, string> = {
   div: "view", span: "text", p: "view", button: "button", input: "input",
   label: "label", a: "navigator", h1: "view", h2: "view", h3: "view",
   h4: "view", h5: "view", h6: "view", ul: "view", ol: "view", li: "view",
-  strong: "text", em: "text",
+  strong: "text", em: "text", i: "text",
   // The mini program component set has no landmark elements; every
   // semantic container is a `view`, which is what `div` already maps to.
   section: "view", article: "view", header: "view", footer: "view",
-  nav: "view", main: "view", aside: "view",
+  nav: "view", main: "view", aside: "view", dl: "view", dt: "text", dd: "text",
   small: "text", code: "text",
 };
 
@@ -54,7 +54,7 @@ const TAG_MAP: Record<HtmlTag, string> = {
 const SEMANTIC_CLASS: Partial<Record<HtmlTag, string>> = {
   h1: "cc-h1", h2: "cc-h2", h3: "cc-h3", h4: "cc-h4", h5: "cc-h5", h6: "cc-h6",
   strong: "cc-strong", em: "cc-em", ul: "cc-ul", ol: "cc-ol", li: "cc-li", p: "cc-p",
-  small: "cc-small", code: "cc-code",
+  small: "cc-small", code: "cc-code", dt: "cc-dt", dd: "cc-dd",
 };
 
 const EVENT_MAP: Record<EventName, string> = {
@@ -63,11 +63,13 @@ const EVENT_MAP: Record<EventName, string> = {
 
 const ATTR_MAP: Partial<Record<AttrName, string>> = {
   href: "url", // <a href> -> <navigator url>
+  maxLength: "maxlength",
 };
 
 function literalSource(literal: Literal): string {
   if (literal.type === "string") return JSON.stringify(literal.value);
   if (literal.type === "number") return String(literal.value);
+  if (literal.type === "null") return "null";
   return literal.value ? "true" : "false";
 }
 
@@ -86,12 +88,17 @@ function exprSource(expr: Expr, inJs: boolean, snapshot: ReadonlySet<string> = n
     // A wx:for-item binding is a template-local; `this.data.` would not
     // resolve it, and WXML has no JS scope to fall back on.
     case "member": return `${expr.object}.${expr.field}`;
+    case "path": return `${expr.object}.${expr.fields.join(".")}`;
     case "literal": return literalSource(expr.literal);
+    case "eventValue": return inJs ? "event.detail.value" : "event.detail.value";
     case "unaryNot": return `!${wrap(expr.operand)}`;
     case "binary": {
       const op = expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
+    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, inJs, snapshot)).join(", ")})`;
+    case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand, inJs, snapshot)})`;
+    case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
 }
@@ -117,6 +124,8 @@ function collectReads(expr: Expr, into: Set<string>): void {
     case "member": return;
     case "literal": return;
     case "unaryNot": collectReads(expr.operand, into); return;
+    case "stringMethod": collectReads(expr.receiver, into); expr.args.forEach((arg) => collectReads(arg, into)); return;
+    case "regexTest": collectReads(expr.operand, into); return;
     case "binary": collectReads(expr.left, into); collectReads(expr.right, into); return;
     case "ternary": collectReads(expr.condition, into); collectReads(expr.then, into); collectReads(expr.else, into); return;
   }
@@ -206,8 +215,9 @@ function nodeSource(node: CNode, indent: string, handlers: EmittedHandler[], cou
     // the sentinel `*this` for primitives -- getting this wrong silently
     // disables list diffing rather than erroring.
     const list = lists.get(node.source);
-    const key = list && list.keyField !== undefined ? list.keyField : "*this";
-    const directive = `wx:for="{{ ${node.source} }}" wx:for-item="${node.itemName}" wx:key="${key}"`;
+    const key = node.keyField ?? (list && list.keyField !== undefined ? list.keyField : "*this");
+    const source = node.sourceExpression === undefined ? node.source : exprSource(node.sourceExpression, false);
+    const directive = `wx:for="{{ ${source} }}" wx:for-item="${node.itemName}" wx:key="${key}"`;
     return branchSource(node.body, directive, indent, handlers, counter, lists);
   }
   return elementSource(node, [], indent, handlers, counter, lists);
@@ -267,8 +277,12 @@ function propertiesBlock(props: PropDef[]): string {
   const entries = dataProps.map((p) => {
     const value = p.defaultValue !== undefined
       ? literalSource(p.defaultValue)
-      : p.propType === "string" ? `""` : p.propType === "number" ? "0" : "false";
-    return `    ${p.name}: { type: ${propertyType(p.propType)}, value: ${value} },`;
+      : p.valueShape?.kind === "object" || p.valueShape?.kind === "slot" ? "{}"
+        : p.valueShape?.kind === "array" ? "[]"
+          : p.propType === "string" ? `""` : p.propType === "number" ? "0" : "false";
+    const type = p.valueShape?.kind === "object" || p.valueShape?.kind === "slot" ? "Object"
+      : p.valueShape?.kind === "array" ? "Array" : propertyType(p.propType);
+    return `    ${p.name}: { type: ${type}, value: ${value} },`;
   });
   return `  properties: {\n${[...entries, ...listEntries].join("\n")}\n  },`;
 }
@@ -281,7 +295,7 @@ function dataBlock(component: ComponentDef): string {
 
 function methodsBlock(handlers: EmittedHandler[]): string {
   if (handlers.length === 0) return "  methods: {},";
-  const entries = handlers.map((h) => `    ${h.methodName}() {\n${h.body.map((b) => "      " + b).join("\n")}\n    },`);
+  const entries = handlers.map((h) => `    ${h.methodName}(event) {\n${h.body.map((b) => "      " + b).join("\n")}\n    },`);
   return `  methods: {\n${entries.join("\n")}\n  },`;
 }
 
@@ -299,6 +313,8 @@ const SEMANTIC_WXSS = `.cc-h1 { font-size: 48rpx; font-weight: bold; display: bl
 .cc-li { display: block; }
 .cc-small { font-size: 24rpx; }
 .cc-code { font-family: monospace; }
+.cc-dt { font-weight: bold; display: block; }
+.cc-dd { display: block; margin-left: 24rpx; }
 `;
 
 /**

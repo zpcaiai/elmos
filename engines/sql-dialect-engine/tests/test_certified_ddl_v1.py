@@ -112,14 +112,14 @@ def test_unsupported_dialect_name_fails_closed_before_parsing() -> None:
     [
         ("multiple_statements", "CREATE TABLE t (id INT); CREATE TABLE t2 (id INT);"),
         ("alter_table_not_create_table", "ALTER TABLE t ADD COLUMN x INT"),
-        ("unsupported_json_type", "CREATE TABLE t (id INT PRIMARY KEY, payload JSON)"),
+        ("unsupported_json_binary_type", "CREATE TABLE t (id INT PRIMARY KEY, payload JSONB)"),
         ("generated_column", "CREATE TABLE t (id INT PRIMARY KEY, doubled INT GENERATED ALWAYS AS (id * 2) STORED)"),
         ("qualified_table_name", "CREATE TABLE myschema.t (id INT PRIMARY KEY)"),
         ("quoted_identifier", 'CREATE TABLE "My Table" (id INT PRIMARY KEY)'),
         ("check_with_function_call", "CREATE TABLE t (id INT PRIMARY KEY, name VARCHAR(10) CHECK (LENGTH(name) > 0))"),
         (
-            "check_with_nested_boolean",
-            "CREATE TABLE t (id INT PRIMARY KEY, a INT, b INT, CHECK ((a > 0 AND b > 0) OR a = b))",
+            "check_with_nonportable_leaf",
+            "CREATE TABLE t (id INT PRIMARY KEY, a INT, b INT, CHECK ((a > 0 AND b > 0) OR a LIKE 'x%'))",
         ),
         ("default_expression_not_literal", "CREATE TABLE t (id INT PRIMARY KEY, x INT DEFAULT (1 + 1))"),
         ("no_columns_impossible_but_defensive", "CREATE TABLE t ()"),
@@ -168,6 +168,66 @@ def test_create_index_translates_across_dialects() -> None:
         report = translate_ddl(ddl, "postgres", target, statement_kind="INDEX")
         assert report["status"] == "PASSED", (target, report)
         assert "UNIQUE INDEX idx_customers_email ON customers (email, org_id)" in report["emitted"]
+
+
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+@pytest.mark.parametrize("ddl", [
+    "CREATE INDEX idx_events_time ON events (occurred_at DESC)",
+    "CREATE INDEX idx_events_time ON events (occurred_at ASC)",
+])
+def test_index_column_order_is_preserved_or_explicit_defaulted(ddl: str, target: str) -> None:
+    report = translate_ddl(ddl, "postgres", target, statement_kind="INDEX")
+    assert report["status"] == "PASSED", report
+    if "DESC" in ddl:
+        assert "occurred_at DESC" in report["emitted"]
+    else:
+        assert "occurred_at DESC" not in report["emitted"]
+
+
+@pytest.mark.parametrize("ddl", [
+    "CREATE INDEX idx_events_time ON events (occurred_at) WHERE occurred_at IS NOT NULL",
+    "CREATE INDEX idx_events_time ON events (occurred_at) INCLUDE (event_id)",
+])
+def test_index_semantics_that_mysql_cannot_preserve_fail_closed(ddl: str) -> None:
+    report = translate_ddl(ddl, "postgres", "mysql", statement_kind="INDEX")
+    assert report["status"] == "BLOCKED", report
+    assert report["reasonCode"] in {
+        "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET",
+        "CERTIFIED_DDL_INDEX_INCLUDE_UNSUPPORTED_BY_TARGET",
+    }
+
+
+def test_btree_index_method_is_explicitly_preserved() -> None:
+    report = translate_ddl(
+        "CREATE INDEX idx_events_time ON events USING btree (occurred_at)",
+        "postgres",
+        "mysql",
+        statement_kind="INDEX",
+    )
+    assert report["status"] == "PASSED", report
+    assert "USING BTREE" in report["emitted"]
+
+
+def test_unsupported_index_method_still_fails_closed() -> None:
+    report = translate_ddl(
+        "CREATE INDEX idx_events_time ON events USING hash (occurred_at)",
+        "postgres",
+        "mysql",
+        statement_kind="INDEX",
+    )
+    assert report["status"] == "BLOCKED", report
+    assert report["reasonCode"] == "CERTIFIED_DDL_INDEX_METHOD_UNSUPPORTED"
+
+
+def test_index_null_ordering_still_fails_closed() -> None:
+    report = translate_ddl(
+        "CREATE INDEX idx_events_time ON events (occurred_at NULLS LAST)",
+        "postgres",
+        "mysql",
+        statement_kind="INDEX",
+    )
+    assert report["status"] == "BLOCKED", report
+    assert report["reasonCode"] == "CERTIFIED_DDL_UNSUPPORTED_INDEX_ORDER"
 
 
 def test_varchar_max_maps_to_canonical_text_and_back_to_varchar_max() -> None:

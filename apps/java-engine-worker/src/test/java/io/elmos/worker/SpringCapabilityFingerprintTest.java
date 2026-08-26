@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -272,6 +273,145 @@ class SpringCapabilityFingerprintTest {
         assertEquals("spring-mvc", enriched.sourceFrameworkFamily());
         assertEquals("5.3.39", enriched.sourceFrameworkVersion());
         assertTrue(enriched.activeCapabilities().contains("spring-mvc"));
+    }
+
+    @Test void fcmRendersEveryEvidenceStateAndUnknownCapabilitySafely() {
+        SpringUpgradeModels.Fingerprint fingerprint = new SpringUpgradeModels.Fingerprint(
+                "UNKNOWN", "11", "maven", List.of(), List.of("active-capability"), List.of(),
+                Map.of(
+                        "observed-capability", List.of("observed|source|A.java:1|observed"),
+                        "conditional-capability", List.of("conditional|source|B.java:1|conditional"),
+                        "generated-capability", List.of("generated|source|C.java:1|generated"),
+                        "test-capability", List.of("test-only|source|D.java:1|test"),
+                        "declared-capability", List.of("declared-only|build-model|pom.xml:1|declared"),
+                        "active-capability", List.of(),
+                        "unknown-capability", List.of()));
+
+        Map<String, Map<String, Object>> rendered = fcmById(fingerprint);
+
+        assertEquals("observed", rendered.get("observed-capability").get("status"));
+        assertEquals("conditional", rendered.get("conditional-capability").get("status"));
+        assertEquals("generated", rendered.get("generated-capability").get("status"));
+        assertEquals("test-only", rendered.get("test-capability").get("status"));
+        assertEquals("declared-only", rendered.get("declared-capability").get("status"));
+        assertEquals("observed", rendered.get("active-capability").get("status"));
+        assertEquals("unknown", rendered.get("unknown-capability").get("status"));
+        assertEquals("build-or-framework", rendered.get("unknown-capability").get("domain"));
+        assertEquals("insufficient", rendered.get("unknown-capability").get("confidence"));
+        assertTrue(list(rendered.get("observed-capability").get("obligations")).size() >= 4);
+    }
+
+    @Test void plainSpringFrameworkUsesItsOwnFamilyWhenBeanBehaviorIsObserved() throws Exception {
+        String pom = """
+                <project>
+                  <dependencies>
+                    <dependency>
+                      <groupId>org.springframework</groupId>
+                      <artifactId>spring-context</artifactId>
+                      <version>6.2.8</version>
+                    </dependency>
+                  </dependencies>
+                </project>
+                """;
+        Files.writeString(temporaryDirectory.resolve("pom.xml"), pom);
+        write("src/main/java/example/AppConfig.java", """
+                package example;
+                @Configuration
+                class AppConfig {
+                    @Bean Object value() { return new Object(); }
+                }
+                """);
+
+        SpringCapabilityFingerprint.Analysis analysis =
+                SpringCapabilityFingerprint.analyze(temporaryDirectory, pom, "pom.xml");
+
+        assertEquals("spring-framework",
+                LocalSpringUpgradeExecutionPort.sourceFrameworkFamily("", analysis, true));
+        assertTrue(analysis.activeCapabilities().contains("spring-framework"));
+    }
+
+    @Test void recordsLanguageAndComponentFeatureMappingsForBoot411Fcm() throws Exception {
+        Files.writeString(temporaryDirectory.resolve("pom.xml"), "<project/>");
+        write("src/main/java/example/App.java", """
+                package example;
+                @SpringBootApplication
+                @RestController
+                @Transactional
+                @GrpcService
+                class App {
+                    JsonMapperBuilderCustomizer jacksonCustomizer;
+                }
+                """);
+        write("src/main/kotlin/example/Worker.kt", """
+                package example
+                @Component
+                class Worker
+                """);
+        write("src/main/groovy/example/ViewController.groovy", """
+                package example
+                @Controller
+                class ViewController { }
+                """);
+        write("src/main/resources/application.yml", """
+                spring:
+                  config:
+                    import: optional:configtree:/run/secrets/
+                server:
+                  shutdown: graceful
+                """);
+        write("src/main/resources/web-context.xml", """
+                <beans xmlns:context="http://www.springframework.org/schema/context">
+                  <context:component-scan base-package="example"/>
+                </beans>
+                """);
+
+        SpringCapabilityFingerprint.Analysis analysis =
+                SpringCapabilityFingerprint.analyze(temporaryDirectory, "<project/>", "pom.xml");
+        Set<String> featureIds = analysis.features().stream()
+                .map(SpringUpgradeModels.FeatureObservation::id)
+                .collect(Collectors.toSet());
+
+        assertTrue(featureIds.containsAll(Set.of(
+                "language-java", "language-kotlin", "language-groovy", "language-configuration",
+                "core-bean-di", "boot-application-bootstrap", "mvc-annotated-endpoints",
+                "transactions", "boot-config-data", "boot-graceful-shutdown",
+                "core-component-scan", "boot-grpc", "boot-jackson")), featureIds.toString());
+        SpringUpgradeModels.FeatureObservation kotlin = analysis.features().stream()
+                .filter(feature -> feature.id().equals("language-kotlin"))
+                .findFirst().orElseThrow();
+        assertEquals("observed", kotlin.evidenceState());
+        assertEquals("kotlin-compiler-and-spring-kotlin-adapter", kotlin.targetStrategy());
+        assertTrue(kotlin.obligations().stream()
+                .anyMatch(obligation -> obligation.contains("Java 21") || obligation.contains("Kotlin")));
+
+        SpringUpgradeModels.Fingerprint enriched = SpringCapabilityFingerprint.enrich(
+                new SpringUpgradeModels.Fingerprint(
+                        "3.5.3", "21", "maven", List.of(), List.of(), List.of(), Map.of()),
+                analysis);
+        assertEquals("spring-boot-4.1.1", SpringFeatureCatalog.render(enriched.features()).get(0).get("target"));
+        assertTrue(enriched.features().stream()
+                .anyMatch(feature -> feature.id().equals("boot-config-data")
+                        && feature.targetStrategy().contains("config-data")));
+    }
+
+    @Test void unmappedSpringConstructsRemainExplicitlyBlocked() throws Exception {
+        Files.writeString(temporaryDirectory.resolve("pom.xml"), "<project/>");
+        write("src/main/java/example/UnknownSpringFeature.java", """
+                package example;
+                import org.springframework.unknown.NewContract;
+                final class UnknownSpringFeature { NewContract contract; }
+                """);
+
+        SpringCapabilityFingerprint.Analysis analysis =
+                SpringCapabilityFingerprint.analyze(temporaryDirectory, "<project/>", "pom.xml");
+
+        SpringUpgradeModels.FeatureObservation unknown = analysis.features().stream()
+                .filter(feature -> feature.id().equals("unmapped-spring-construct"))
+                .findFirst().orElseThrow();
+        assertEquals("unknown", unknown.evidenceState());
+        assertEquals("unsupported-preserve-and-report", unknown.targetStrategy());
+        assertTrue(unknown.obligations().stream()
+                .anyMatch(obligation -> obligation.contains("human-or-provider-specific")));
     }
 
     private void write(String relative, String content) throws Exception {

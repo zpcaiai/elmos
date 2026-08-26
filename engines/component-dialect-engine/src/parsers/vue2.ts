@@ -152,7 +152,7 @@ function parseScript(code: string, emittedEvents: Set<string>): ScriptInfo {
       for (const field of (returned as ts.ObjectLiteralExpression).properties) {
         require_(ts.isPropertyAssignment(field) && ts.isIdentifier(field.name), "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "data fields must be plain property assignments");
         const initial = literalFromNode(field.initializer);
-        state.push({ name: (field.name as ts.Identifier).text, stateType: initial.type, initial });
+        state.push({ name: (field.name as ts.Identifier).text, stateType: initial.type === "null" ? "string" : initial.type, ...(initial.type === "null" ? { nullable: true } : {}), initial });
       }
       continue;
     }

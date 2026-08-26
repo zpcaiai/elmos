@@ -13,8 +13,8 @@
  *    attribute directive.
  *  - Callback props are just function props called directly.
  */
-import { AttrBinding, ComponentDef, EventName, Expr, ListPropDef, Literal, Node as CNode, PropDef, Stmt } from "../models";
-import { listElementTypeSource, listKeyExpression, listPropIndex, referencedComponents } from "./react";
+import { AttrBinding, ComponentDef, EventName, Expr, ListPropDef, Literal, Node as CNode, PropDef, Stmt, usesEventValueInStatements } from "../models";
+import { dataPropTypeSource, listElementTypeSource, listKeyExpression, listPropIndex, referencedComponents } from "./react";
 
 const SVELTE_EVENT: Record<EventName, string> = {
   onClick: "onclick", onChange: "onchange", onInput: "oninput", onSubmit: "onsubmit",
@@ -25,6 +25,7 @@ function tsType(t: "string" | "number" | "boolean"): string { return t; }
 function literalSource(literal: Literal): string {
   if (literal.type === "string") return JSON.stringify(literal.value);
   if (literal.type === "number") return String(literal.value);
+  if (literal.type === "null") return "null";
   return literal.value ? "true" : "false";
 }
 
@@ -36,12 +37,17 @@ function exprSource(expr: Expr): string {
   switch (expr.kind) {
     case "ident": return expr.name;
     case "member": return `${expr.object}.${expr.field}`;
+    case "path": return `${expr.object}.${expr.fields.join(".")}`;
     case "literal": return literalSource(expr.literal);
+    case "eventValue": return "event.target.value";
     case "unaryNot": return `!${wrap(expr.operand)}`;
     case "binary": {
       const op = expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
+    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(exprSource).join(", ")})`;
+    case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand)})`;
+    case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
 }
@@ -53,8 +59,9 @@ function stmtSource(stmt: Stmt): string {
 }
 
 function handlerSource(body: Stmt[]): string {
-  if (body.length === 1) return `() => ${stmtSource(body[0] as Stmt)}`;
-  return `() => { ${body.map((s) => stmtSource(s) + ";").join(" ")} }`;
+  const parameter = usesEventValueInStatements(body) ? "event" : "";
+  if (body.length === 1) return `${parameter ? `${parameter} =>` : "() =>"} ${stmtSource(body[0] as Stmt)}`;
+  return `${parameter ? `${parameter} =>` : "() =>"} { ${body.map((s) => stmtSource(s) + ";").join(" ")} }`;
 }
 
 function attrSource(attr: AttrBinding): string {
@@ -84,9 +91,10 @@ function nodeSource(node: CNode, indent: string, lists: ReadonlyMap<string, List
     // Svelte's keyed-each syntax puts the identity in parentheses after the
     // binding, which is why the key is not an attribute on the body here.
     const list = lists.get(node.source);
-    const key = list ? listKeyExpression(list, node.itemName) : node.itemName;
+    const key = node.keyField !== undefined ? `${node.itemName}.${node.keyField}` : list ? listKeyExpression(list, node.itemName) : node.itemName;
+    const source = node.sourceExpression === undefined ? node.source : exprSource(node.sourceExpression);
     return [
-      `${indent}{#each ${node.source} as ${node.itemName} (${key})}`,
+      `${indent}{#each ${source} as ${node.itemName} (${key})}`,
       nodeSource(node.body, indent + "  ", lists),
       `${indent}{/each}`,
     ].join("\n");
@@ -114,7 +122,7 @@ function propsSource(props: PropDef[]): string[] {
   const fields = props.map((p) => {
     if (p.kind === "callback") return `    ${p.name}: (${p.paramType ? `value: ${tsType(p.paramType)}` : ""}) => void;`;
     if (p.kind === "list") return `    ${p.name}: ${listElementTypeSource(p)}[];`;
-    return `    ${p.name}${p.required ? "" : "?"}: ${tsType(p.propType)};`;
+    return `    ${p.name}${p.required ? "" : "?"}: ${dataPropTypeSource(p, "unknown")};`;
   });
   return [`  let { ${names.join(", ")} }: {`, ...fields, `  } = $props();`];
 }
@@ -126,7 +134,7 @@ export function emitSvelte(component: ComponentDef): string {
   }
   lines.push(...propsSource(component.props));
   for (const s of component.state) {
-    lines.push(`  let ${s.name} = $state<${tsType(s.stateType)}>(${literalSource(s.initial)});`);
+    lines.push(`  let ${s.name} = $state<${tsType(s.stateType)}${s.nullable ? " | null" : ""}>(${literalSource(s.initial)});`);
   }
   lines.push(`</script>`);
   lines.push("");

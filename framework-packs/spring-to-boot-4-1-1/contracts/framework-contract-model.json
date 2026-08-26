@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "pack_key": "spring-to-boot-4-1-1",
+  "model_status": "DECLARED_NOT_RUN",
+  "source_resolution": {
+    "source_family": "required-exact",
+    "source_framework_version": "required-exact",
+    "source_java_version": "required-exact",
+    "build_tool": "required-exact",
+    "source_language": "java-kotlin-groovy-or-configuration"
+  },
+  "target_tuple": {
+    "framework": "spring-boot",
+    "version": "4.1.1",
+    "spring_framework": "7.0.8",
+    "spring_grpc": "1.1.0",
+    "providers": {
+      "spring-graphql": "2.0.4",
+      "spring-hateoas": "3.1.0",
+      "spring-integration": "7.1.0",
+      "spring-kafka": "4.1.0",
+      "spring-amqp": "4.1.0",
+      "spring-ldap": "4.1.0",
+      "spring-session": "4.1.0"
+    },
+    "java": "21",
+    "servlet_namespace": "jakarta.servlet",
+    "container": "tomcat-11.0.22"
+  },
+  "capabilities": [
+    {
+      "id": "component-feature-language-matrix",
+      "domain": "framework",
+      "status": "declared",
+      "source_traces": ["source-fingerprint/manifest.json", "target-profile/feature-matrix.json"],
+      "obligations": [
+        "preserve source language and configuration provenance",
+        "map every observed feature to an exact Boot 4.1.1 target strategy",
+        "retain conditional, unsupported and unknown behavior as explicit obligations"
+      ]
+    },
+    {
+      "id": "web-di-configuration-runtime",
+      "domain": "runtime",
+      "status": "conditional",
+      "source_traces": ["SpringFeatureCatalog.java", "SpringCapabilityFingerprint.java"],
+      "obligations": [
+        "preserve route, bean graph, configuration precedence, validation and lifecycle behavior",
+        "run source and target builds/startup and independent holdout contracts"
+      ]
+    },
+    {
+      "id": "security-data-side-effects",
+      "domain": "security-data-runtime",
+      "status": "blocked",
+      "source_traces": ["target-profile/feature-matrix.json"],
+      "obligations": [
+        "require exact provider profiles",
+        "preserve authorization, transaction, persistence and delivery semantics",
+        "do not manufacture provider or production evidence"
+      ]
+    }
+  ],
+  "execution_status": "NOT_RUN",
+  "independent_verification_status": "NOT_RUN"
+}

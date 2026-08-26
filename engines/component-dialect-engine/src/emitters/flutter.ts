@@ -34,7 +34,7 @@ function snake(name: string): string {
 
 const CONTAINER_TAGS: ReadonlySet<HtmlTag> = new Set<HtmlTag>([
   "div", "ul", "ol", "p",
-  "section", "article", "header", "footer", "nav", "main", "aside",
+  "section", "article", "header", "footer", "nav", "main", "aside", "dl",
 ]);
 
 const TEXT_STYLE: Partial<Record<HtmlTag, string>> = {
@@ -48,6 +48,7 @@ const TEXT_STYLE: Partial<Record<HtmlTag, string>> = {
   em: "const TextStyle(fontStyle: FontStyle.italic)",
   small: "const TextStyle(fontSize: 12)",
   code: "const TextStyle(fontFamily: 'monospace')",
+  dt: "const TextStyle(fontWeight: FontWeight.bold)",
 };
 
 function dartType(t: "string" | "number" | "boolean"): string {
@@ -57,7 +58,12 @@ function dartType(t: "string" | "number" | "boolean"): string {
 function literalSource(literal: Literal): string {
   if (literal.type === "string") return `'${literal.value.replace(/'/g, "\\'")}'`;
   if (literal.type === "number") return String(literal.value);
+  if (literal.type === "null") return "null";
   return literal.value ? "true" : "false";
+}
+
+function dartString(value: string): string {
+  return `'${value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
 }
 
 interface Scope {
@@ -67,6 +73,8 @@ interface Scope {
   snapshot: ReadonlySet<string>;
   /** Loop variables in scope; locals, so never `widget.`-prefixed. */
   loopVars: ReadonlySet<string>;
+  /** Object-valued loop variables are represented by Dart maps. */
+  objectLoopVars: ReadonlySet<string>;
 }
 
 function exprSource(expr: Expr, scope: Scope): string {
@@ -83,9 +91,14 @@ function exprSource(expr: Expr, scope: Scope): string {
       // State lives on the State class; props live on the widget.
       return scope.stateNames.has(expr.name) ? expr.name : `widget.${expr.name}`;
     case "member":
-      return `${expr.object}.${expr.field}`;
+      return scope.objectLoopVars.has(expr.object) ? `${expr.object}[${JSON.stringify(expr.field)}]` : `${expr.object}.${expr.field}`;
+    case "path":
+      return scope.objectLoopVars.has(expr.object)
+        ? expr.fields.reduce((source, field) => `${source}[${JSON.stringify(field)}]`, expr.object)
+        : `${expr.object}.${expr.fields.join(".")}`;
     case "literal":
       return literalSource(expr.literal);
+    case "eventValue": return "value";
     case "unaryNot":
       return `!${wrap(expr.operand)}`;
     case "binary": {
@@ -95,6 +108,9 @@ function exprSource(expr: Expr, scope: Scope): string {
       const op = expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
+    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method === "includes" ? "contains" : expr.method}(${expr.args.map((arg) => exprSource(arg, scope)).join(", ")})`;
+    case "regexTest": return `RegExp(${dartString(expr.pattern)}, caseSensitive: ${!expr.flags.includes("i")}, multiLine: ${expr.flags.includes("m")}, dotAll: ${expr.flags.includes("s")}).hasMatch(${exprSource(expr.operand, scope)})`;
+    case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary":
       return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
@@ -105,6 +121,9 @@ function collectReads(expr: Expr, into: Set<string>): void {
   if (expr.kind === "ident") into.add(expr.name);
   else if (expr.kind === "binary") { collectReads(expr.left, into); collectReads(expr.right, into); }
   else if (expr.kind === "unaryNot") collectReads(expr.operand, into);
+  else if (expr.kind === "stringMethod") { collectReads(expr.receiver, into); expr.args.forEach((arg) => collectReads(arg, into)); }
+  else if (expr.kind === "regexTest") collectReads(expr.operand, into);
+  else if (expr.kind === "arrayLength") collectReads(expr.operand, into);
   else if (expr.kind === "ternary") { collectReads(expr.condition, into); collectReads(expr.then, into); collectReads(expr.else, into); }
 }
 
@@ -116,8 +135,8 @@ function handlerBody(body: Stmt[], stateNames: ReadonlySet<string>, indent: stri
     else stmt.args.forEach((a) => collectReads(a, reads));
   }
   const snapshot = new Set([...reads].filter((n) => writes.has(n)));
-  const scope: Scope = { stateNames, snapshot, loopVars: new Set() };
-  const bare: Scope = { stateNames, snapshot: new Set(), loopVars: new Set() };
+  const scope: Scope = { stateNames, snapshot, loopVars: new Set(), objectLoopVars: new Set() };
+  const bare: Scope = { stateNames, snapshot: new Set(), loopVars: new Set(), objectLoopVars: new Set() };
 
   const lines = [...snapshot].map((n) => `${indent}final ${n}\$0 = ${stateNames.has(n) ? n : `widget.${n}`};`);
   const setStateStmts = body.filter((s): s is Extract<Stmt, { kind: "setState" }> => s.kind === "setState");
@@ -163,10 +182,17 @@ function nodeSource(node: CNode, scope: Scope, indent: string, lists: ReadonlyMa
     // Dart has no list-diff key concept in a plain Column, so identity is
     // positional here; the canonical keyField is preserved in the model but
     // has no Flutter counterpart without a keyed widget strategy.
-    const inner: Scope = { ...scope, loopVars: new Set([...scope.loopVars, node.itemName]) };
+    const inner: Scope = {
+      ...scope,
+      loopVars: new Set([...scope.loopVars, node.itemName]),
+      objectLoopVars: new Set([
+        ...scope.objectLoopVars,
+        ...(lists.get(node.source)?.element.kind === "object" ? [node.itemName] : []),
+      ]),
+    };
     const body = nodeSource(node.body, inner, indent + "    ", lists).join("\n");
     return [
-      `${indent}...widget.${node.source}.map((${node.itemName}) =>`,
+      `${indent}...${node.sourceExpression === undefined ? `widget.${node.source}` : exprSource(node.sourceExpression, scope)}.map((${node.itemName}) =>`,
       body.replace(/,$/, ""),
       `${indent}),`,
     ];
@@ -260,7 +286,7 @@ function fieldDeclarations(props: PropDef[]): string[] {
 export function emitFlutter(component: ComponentDef): string {
   const stateNames = new Set(component.state.map((s) => s.name));
   const lists = listPropIndex(component);
-  const scope: Scope = { stateNames, snapshot: new Set(), loopVars: new Set() };
+  const scope: Scope = { stateNames, snapshot: new Set(), loopVars: new Set(), objectLoopVars: new Set() };
   const name = component.name;
   const lines: string[] = [];
 
@@ -287,7 +313,7 @@ export function emitFlutter(component: ComponentDef): string {
     lines.push("");
     lines.push(`  @override`);
     lines.push(`  Widget build(BuildContext context) {`);
-    lines.push(`    return `.concat(nodeSource(component.root, { stateNames, snapshot: new Set(), loopVars: new Set() }, "      ", lists).join("\n").trimStart().replace(/,$/, ";")));
+    lines.push(`    return `.concat(nodeSource(component.root, { stateNames, snapshot: new Set(), loopVars: new Set(), objectLoopVars: new Set() }, "      ", lists).join("\n").trimStart().replace(/,$/, ";")));
     lines.push(`  }`);
     lines.push(`}`);
     return lines.join("\n") + "\n";
@@ -307,7 +333,7 @@ export function emitFlutter(component: ComponentDef): string {
   lines.push("");
   lines.push(`class _${name}State extends State<${name}> {`);
   for (const s of component.state) {
-    lines.push(`  ${dartType(s.stateType)} ${s.name} = ${literalSource(s.initial)};`);
+    lines.push(`  ${dartType(s.stateType)}${s.nullable ? "?" : ""} ${s.name} = ${literalSource(s.initial)};`);
   }
   lines.push("");
   lines.push(`  @override`);

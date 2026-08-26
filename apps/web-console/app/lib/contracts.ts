@@ -590,7 +590,7 @@ export type SpringRouteDescriptor = {
   routeId: string;
   packKey: string;
   label: string;
-  sourceFrameworkFamily: "spring-boot" | "spring-mvc";
+  sourceFrameworkFamily: "spring-boot" | "spring-mvc" | "spring-framework";
   buildTool: string;
   sourceBootMinInclusive: string;
   sourceBootMaxExclusive: string;

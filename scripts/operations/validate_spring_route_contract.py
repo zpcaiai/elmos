@@ -32,13 +32,83 @@ CONSOLE_PROXY = CONSOLE / "api" / "spring-upgrades" / "[...path]" / "route.ts"
 CONSOLE_GUIDANCE = CONSOLE / "lib" / "deploymentGuidance.ts"
 CONSOLE_ROUTES = CONSOLE / "lib" / "springRoutes.ts"
 CONSOLE_STUDIO = CONSOLE / "spring" / "SpringModernizationStudio.tsx"
+SPRING_FEATURE_CATALOG = WORKER_JAVA / "SpringFeatureCatalog.java"
+SPRING_4_1_1_FEATURE_MATRIX = ROOT / "framework-packs" / "spring-to-boot-4-1-1" / "target-profile" / "feature-matrix.json"
 MVC_PACK = ROOT / "framework-packs" / "spring-framework-5-3-mvc-to-spring-boot-3-5-3"
 MVC_PACK_RECIPE = MVC_PACK / "recipes" / "spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml"
 MVC_EXECUTABLE_ROUTE_ID = "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21"
 MVC_INVENTORY_ROUTE_ID = "spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21"
 CURRENT_TARGET_INVENTORY = {
     "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21": ("3.5.16", "21"),
-    "boot-1.5-4.0-maven-to-boot-4.1.0-java-21": ("4.1.0", "21"),
+}
+BOOT_4_1_ROUTE_COMPOSITIONS = {
+    "boot-1.5-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_0",
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7",
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-2.0-2.6-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7",
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-2.7-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-3.0-3.4-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-3.5-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-4.0-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-1.5-gradle-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_0",
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7",
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-2.x-gradle-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7",
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-3.x-gradle-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "boot-4.0-gradle-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta",
+        "org.openrewrite.java.spring.framework.UpgradeSpringFramework_7_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+    "spring-framework-3.2-7.0-maven-to-boot-4.1.0-java-21": (
+        "org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta",
+        "org.openrewrite.java.spring.framework.UpgradeSpringFramework_7_0",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+}
+BOOT_4_1_1_ROUTE_COMPOSITIONS = {
+    route_id.replace("4.1.0", "4.1.1"): steps
+    for route_id, steps in BOOT_4_1_ROUTE_COMPOSITIONS.items()
 }
 REQUIRED_BOOT_3_2_COMPOSITIONS = {
     "boot-1.5-java-8-maven-to-boot-3.2.12-java-17": (
@@ -108,6 +178,7 @@ def catalog_constants() -> dict[str, str]:
         "TARGET_BOOT_3_2",
         "TARGET_BOOT_3_5_16",
         "TARGET_BOOT_4_1",
+        "TARGET_BOOT_4_1_1",
         "TARGET_JAVA_17",
         "REWRITE_SPRING",
         "REWRITE_MAVEN_PLUGIN",
@@ -178,7 +249,7 @@ def parse_catalog() -> list[dict[str, object]]:
         require(source_family is not None, f"CATALOG_ROUTE_SOURCE_FAMILY_MISSING:{route_id}")
         assert source_family is not None
         require(
-            source_family.group(1) in {"SPRING_BOOT", "SPRING_MVC"},
+            source_family.group(1) in {"SPRING_BOOT", "SPRING_MVC", "SPRING_FRAMEWORK"},
             f"CATALOG_ROUTE_SOURCE_FAMILY_INVALID:{route_id}:{source_family.group(1)}",
         )
         exact_source = re.search(
@@ -196,6 +267,7 @@ def parse_catalog() -> list[dict[str, object]]:
             "source_family_contract": {
                 "SPRING_BOOT": "spring-boot",
                 "SPRING_MVC": "spring-mvc",
+                "SPRING_FRAMEWORK": "spring-framework",
             }[source_family.group(1)],
             "build_tool": build_tools[directed_fields.group(1)],
             "target_boot": constant_or_string(directed_fields.group(2), route_id, "target_boot"),
@@ -412,6 +484,92 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
             f"CURRENT_TARGET_INVENTORY_DECLARES_EVIDENCE:{route_id}",
         )
 
+    for route_id, ordered_steps in BOOT_4_1_ROUTE_COMPOSITIONS.items():
+        edge = next((route for route in routes if route["route_id"] == route_id), None)
+        require(edge is not None, f"REQUIRED_BOOT_4_1_EDGE_MISSING:{route_id}")
+        assert edge is not None
+        require(
+            edge["pack_key"] == "spring-to-boot-4-1-0"
+            and edge["target_boot"] == "4.1.0"
+            and edge["target_java"] == "21",
+            f"BOOT_4_1_EDGE_TARGET_OR_PACK_DRIFT:{route_id}",
+        )
+        require(edge["evidence"] == "NOT_RUN", f"BOOT_4_1_EDGE_EVIDENCE_DRIFT:{route_id}")
+        require(
+            edge["recipe_resource"] != "" and edge["recipe_id"] != "",
+            f"BOOT_4_1_EDGE_MISSING_EXECUTION_RECIPE:{route_id}",
+        )
+        recipe = (
+            WORKER / "resources" / str(edge["recipe_resource"]).lstrip("/")
+        ).read_text(encoding="utf-8")
+        recipe_start = recipe.find(f"name: {edge['recipe_id']}")
+        require(recipe_start >= 0, f"BOOT_4_1_RECIPE_NAME_MISSING:{route_id}")
+        recipe_end = recipe.find("\n---", recipe_start)
+        recipe_block = recipe[recipe_start:] if recipe_end < 0 else recipe[recipe_start:recipe_end]
+        positions = []
+        for step in ordered_steps:
+            position = recipe_block.find(f"  - {step}")
+            require(position >= 0, f"BOOT_4_1_COMPOSITION_STEP_MISSING:{route_id}:{step}")
+            positions.append(position)
+        require(
+            positions == sorted(positions),
+            f"BOOT_4_1_COMPOSITION_ORDER_DRIFT:{route_id}",
+        )
+        if edge["build_tool"] == "maven":
+            require(
+                "newVersion: 4.1.0" in recipe_block,
+                f"BOOT_4_1_MAVEN_PIN_MISSING:{route_id}",
+            )
+        else:
+            require(
+                "pluginIdPattern: org.springframework.boot" in recipe_block
+                and "newVersion: 4.1.0" in recipe_block,
+                f"BOOT_4_1_GRADLE_PIN_MISSING:{route_id}",
+            )
+
+    for route_id, ordered_steps in BOOT_4_1_1_ROUTE_COMPOSITIONS.items():
+        edge = next((route for route in routes if route["route_id"] == route_id), None)
+        require(edge is not None, f"REQUIRED_BOOT_4_1_1_EDGE_MISSING:{route_id}")
+        assert edge is not None
+        require(
+            edge["pack_key"] == "spring-to-boot-4-1-1"
+            and edge["target_boot"] == "4.1.1"
+            and edge["target_java"] == "21",
+            f"BOOT_4_1_1_EDGE_TARGET_OR_PACK_DRIFT:{route_id}",
+        )
+        require(edge["evidence"] == "NOT_RUN", f"BOOT_4_1_1_EDGE_EVIDENCE_DRIFT:{route_id}")
+        require(
+            edge["recipe_resource"] != "" and edge["recipe_id"] != "",
+            f"BOOT_4_1_1_EDGE_MISSING_EXECUTION_RECIPE:{route_id}",
+        )
+        recipe = (
+            WORKER / "resources" / str(edge["recipe_resource"]).lstrip("/")
+        ).read_text(encoding="utf-8")
+        recipe_start = recipe.find(f"name: {edge['recipe_id']}")
+        require(recipe_start >= 0, f"BOOT_4_1_1_RECIPE_NAME_MISSING:{route_id}")
+        recipe_end = recipe.find("\n---", recipe_start)
+        recipe_block = recipe[recipe_start:] if recipe_end < 0 else recipe[recipe_start:recipe_end]
+        positions = []
+        for step in ordered_steps:
+            position = recipe_block.find(f"  - {step}")
+            require(position >= 0, f"BOOT_4_1_1_COMPOSITION_STEP_MISSING:{route_id}:{step}")
+            positions.append(position)
+        require(
+            positions == sorted(positions),
+            f"BOOT_4_1_1_COMPOSITION_ORDER_DRIFT:{route_id}",
+        )
+        if edge["build_tool"] == "maven":
+            require(
+                "newVersion: 4.1.1" in recipe_block,
+                f"BOOT_4_1_1_MAVEN_PIN_MISSING:{route_id}",
+            )
+        else:
+            require(
+                "pluginIdPattern: org.springframework.boot" in recipe_block
+                and "newVersion: 4.1.1" in recipe_block,
+                f"BOOT_4_1_1_GRADLE_PIN_MISSING:{route_id}",
+            )
+
     mvc = next((route for route in routes if route["route_id"] == MVC_EXECUTABLE_ROUTE_ID), None)
     require(mvc is not None, f"MVC_PACK_ROUTE_MISSING:{MVC_EXECUTABLE_ROUTE_ID}")
     assert mvc is not None
@@ -476,6 +634,33 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
         require(needle in models, f"MODELS_TARGET_REQUEST_MISSING:{needle}")
 
 
+def check_feature_catalog() -> None:
+    catalog = SPRING_FEATURE_CATALOG.read_text(encoding="utf-8")
+    declared = set(re.findall(r'feature\("([^"]+)"', catalog))
+    require(declared, "SPRING_FEATURE_CATALOG_EMPTY")
+    require(
+        'SpringRouteCatalog.TARGET_BOOT_4_1_1' in catalog,
+        "SPRING_FEATURE_CATALOG_TARGET_NOT_BOUND",
+    )
+    matrix = json.loads(SPRING_4_1_1_FEATURE_MATRIX.read_text(encoding="utf-8"))
+    languages = {
+        f"language-{item['id']}"
+        for item in matrix.get("source_languages", [])
+        if isinstance(item, dict) and isinstance(item.get("id"), str)
+    }
+    components = {
+        feature_id
+        for component in matrix.get("components", [])
+        if isinstance(component, dict)
+        for feature_id in component.get("features", [])
+        if isinstance(feature_id, str)
+    }
+    require(
+        declared == languages | components,
+        "SPRING_FEATURE_CATALOG_MATRIX_DRIFT",
+    )
+
+
 def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> None:
     port = EXECUTION_PORT.read_text(encoding="utf-8")
     # Route selection, recipe installation and the JDK registry must all be
@@ -483,6 +668,7 @@ def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> 
     for needle in (
         "SpringRouteCatalog.select(",
         "SpringRouteCatalog.selectSpringMvc(",
+        "SpringRouteCatalog.selectSpringFramework(",
         "selectRoute(fingerprint, request)",
         "request.targetSpringBoot()",
         "request.targetJava()",
@@ -504,6 +690,7 @@ def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> 
         "request.targetSpringBoot()",
         "request.targetJava()",
         "SpringRouteCatalog.selectSpringMvc(",
+        "SpringRouteCatalog.selectSpringFramework(",
     ):
         require(needle in service, f"RUN_SERVICE_NOT_DIRECTED_MATRIX_BOUND:{needle}")
 
@@ -640,6 +827,7 @@ def main() -> int:
     constants = catalog_constants()
     routes = parse_catalog()
     check_catalog_shape(routes, constants)
+    check_feature_catalog()
     check_engine(routes, constants)
     check_console(routes, constants)
     recorded = [route for route in routes if route["evidence"] == "PASSED_LOCAL"]

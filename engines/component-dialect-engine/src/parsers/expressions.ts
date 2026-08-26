@@ -11,7 +11,7 @@
  * certified-component-v1 allowlist raises DialectError.
  */
 import * as ts from "typescript";
-import { at, BinaryOperator, Expr, fail, Literal, requireDefined, require_, Stmt } from "../models";
+import { at, BinaryOperator, Expr, fail, Literal, requireDefined, require_, Stmt, StringMethod } from "../models";
 
 const BINARY_TOKEN_MAP: Record<number, BinaryOperator> = {
   [ts.SyntaxKind.PlusToken]: "+",
@@ -29,17 +29,41 @@ const BINARY_TOKEN_MAP: Record<number, BinaryOperator> = {
   [ts.SyntaxKind.ExclamationEqualsEqualsToken]: "!=",
   [ts.SyntaxKind.AmpersandAmpersandToken]: "&&",
   [ts.SyntaxKind.BarBarToken]: "||",
+  [ts.SyntaxKind.QuestionQuestionToken]: "??",
 };
 
 export function literalFromNode(node: ts.Expression): Literal {
   if (ts.isStringLiteral(node)) return { type: "string", value: node.text };
   if (ts.isNumericLiteral(node)) return { type: "number", value: Number(node.text) };
+  if (node.kind === ts.SyntaxKind.NullKeyword) return { type: "null" };
   if (node.kind === ts.SyntaxKind.TrueKeyword) return { type: "boolean", value: true };
   if (node.kind === ts.SyntaxKind.FalseKeyword) return { type: "boolean", value: false };
   if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.MinusToken && ts.isNumericLiteral(node.operand)) {
     return { type: "number", value: -Number(node.operand.text) };
   }
   fail("CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL", `expression of kind ${ts.SyntaxKind[node.kind]} is not a plain literal`);
+}
+
+function regexParts(node: ts.Expression): { pattern: string; flags: string } | null {
+  if (!ts.isRegularExpressionLiteral(node)) return null;
+  const source = node.getText();
+  let escaped = false;
+  let inClass = false;
+  let closingSlash = -1;
+  for (let index = 1; index < source.length; index += 1) {
+    const char = source[index];
+    if (escaped) { escaped = false; continue; }
+    if (char === "\\") { escaped = true; continue; }
+    if (char === "[") { inClass = true; continue; }
+    if (char === "]") { inClass = false; continue; }
+    if (char === "/" && !inClass) { closingSlash = index; break; }
+  }
+  require_(closingSlash > 0, "CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL", `regular expression ${source} has no closing delimiter`);
+  const pattern = source.slice(1, closingSlash);
+  const flags = source.slice(closingSlash + 1);
+  require_(/^[imsu]*$/.test(flags) && new Set(flags).size === flags.length, "CERTIFIED_COMPONENT_REGEX_TEST_FLAGS", "regex literal flags must be unique and limited to i/m/s/u");
+  require_(pattern.length <= 256, "CERTIFIED_COMPONENT_REGEX_TEST_TOO_LONG", "regex pattern exceeds the 256-character certified bound");
+  return { pattern, flags };
 }
 
 /**
@@ -74,10 +98,39 @@ function unwrapMemberAccess(node: ts.PropertyAccessExpression): string | null {
   return null;
 }
 
+function isTemplateEventValue(node: ts.Expression): boolean {
+  return ts.isPropertyAccessExpression(node)
+    && node.name.text === "value"
+    && ts.isPropertyAccessExpression(node.expression)
+    && node.expression.name.text === "target"
+    && ts.isIdentifier(node.expression.expression)
+    && node.expression.expression.text === "$event";
+}
+
 export function parseExprNode(node: ts.Expression): Expr {
   if (ts.isParenthesizedExpression(node)) return parseExprNode(node.expression);
   if (ts.isIdentifier(node)) return { kind: "ident", name: node.text };
+  if (isTemplateEventValue(node)) return { kind: "eventValue" };
   if (ts.isNonNullExpression(node)) return parseExprNode(node.expression);
+  if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
+    const methodName = node.expression.name.text;
+    if (methodName === "test") {
+      const regex = regexParts(node.expression.expression);
+      require_(regex !== null, "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", "regex test receiver must be a literal regular expression");
+      require_(node.arguments.length === 1, "CERTIFIED_COMPONENT_REGEX_TEST_ARITY", "regex test expects one argument");
+      return { kind: "regexTest", pattern: regex.pattern, flags: regex.flags, operand: parseExprNode(at(node.arguments, 0, "CERTIFIED_COMPONENT_REGEX_TEST_ARITY", "regex test is missing its argument")) };
+    }
+    const method = methodName as StringMethod;
+    require_(["toUpperCase", "toLowerCase", "trim", "replaceAll", "includes"].includes(method), "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `string method ${method} is outside certified-component-v1`);
+    const args = node.arguments.map(parseExprNode);
+    const expectedArgs = method === "replaceAll" ? 2 : method === "includes" ? 1 : 0;
+    require_(args.length === expectedArgs, "CERTIFIED_COMPONENT_STRING_METHOD_ARITY", `${method} expects ${expectedArgs} argument(s)`);
+    require_((method !== "replaceAll" && method !== "includes") || args.every((arg) => arg.kind === "literal" && arg.literal.type === "string"), "CERTIFIED_COMPONENT_STRING_METHOD_ARGUMENT", `${method} arguments must be string literals`);
+    return { kind: "stringMethod", method, receiver: parseExprNode(node.expression.expression), args };
+  }
+  if (ts.isPropertyAccessExpression(node) && node.name.text === "length") {
+    return { kind: "arrayLength", operand: parseExprNode(node.expression) };
+  }
   if (ts.isPropertyAccessExpression(node)) {
     const unwrapped = unwrapMemberAccess(node);
     if (unwrapped !== null) return { kind: "ident", name: unwrapped };
@@ -85,12 +138,13 @@ export function parseExprNode(node: ts.Expression): Expr {
     // read -- `row.label` off a list's loop variable. `validateComponent`
     // proves the object really is a loop variable in scope and the field is
     // declared on its element shape; anything deeper stays rejected.
-    if (ts.isIdentifier(node.expression)) {
-      return { kind: "member", object: node.expression.text, field: node.name.text };
-    }
+    const base = parseExprNode(node.expression);
+    if (base.kind === "ident") return { kind: "member", object: base.name, field: node.name.text };
+    if (base.kind === "member") return { kind: "path", object: base.object, fields: [base.field, node.name.text] };
+    if (base.kind === "path") return { kind: "path", object: base.object, fields: [...base.fields, node.name.text] };
     fail("CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `property access ${node.getText()} is outside certified-component-v1 (only plain props/state reads and single-level list-item fields are supported)`);
   }
-  if (ts.isStringLiteral(node) || ts.isNumericLiteral(node) || node.kind === ts.SyntaxKind.TrueKeyword || node.kind === ts.SyntaxKind.FalseKeyword) {
+  if (ts.isStringLiteral(node) || ts.isNumericLiteral(node) || node.kind === ts.SyntaxKind.TrueKeyword || node.kind === ts.SyntaxKind.FalseKeyword || node.kind === ts.SyntaxKind.NullKeyword) {
     return { kind: "literal", literal: literalFromNode(node) };
   }
   if (ts.isPrefixUnaryExpression(node)) {

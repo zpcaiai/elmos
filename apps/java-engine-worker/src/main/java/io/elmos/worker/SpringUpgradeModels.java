@@ -154,13 +154,15 @@ final class SpringUpgradeModels {
             List<String> unknowns,
             Map<String, List<String>> sourceTraces,
             String sourceFrameworkFamily,
-            String sourceFrameworkVersion
+            String sourceFrameworkVersion,
+            List<FeatureObservation> features
     ) {
         Fingerprint {
             modules = List.copyOf(modules);
             activeCapabilities = List.copyOf(activeCapabilities);
             unknowns = List.copyOf(unknowns);
             sourceTraces = Map.copyOf(sourceTraces);
+            features = features == null ? List.of() : List.copyOf(features);
             sourceFrameworkFamily = sourceFrameworkFamily == null || sourceFrameworkFamily.isBlank()
                     ? inferredFamily(springBootVersion) : sourceFrameworkFamily.trim();
             sourceFrameworkVersion = sourceFrameworkVersion == null || sourceFrameworkVersion.isBlank()
@@ -177,13 +179,58 @@ final class SpringUpgradeModels {
                 Map<String, List<String>> sourceTraces
         ) {
             this(springBootVersion, javaVersion, buildTool, modules, activeCapabilities,
-                    unknowns, sourceTraces, inferredFamily(springBootVersion), springBootVersion);
+                    unknowns, sourceTraces, inferredFamily(springBootVersion), springBootVersion, List.of());
+        }
+
+        Fingerprint(
+                String springBootVersion,
+                String javaVersion,
+                String buildTool,
+                List<String> modules,
+                List<String> activeCapabilities,
+                List<String> unknowns,
+                Map<String, List<String>> sourceTraces,
+                String sourceFrameworkFamily,
+                String sourceFrameworkVersion
+        ) {
+            this(springBootVersion, javaVersion, buildTool, modules, activeCapabilities,
+                    unknowns, sourceTraces, sourceFrameworkFamily, sourceFrameworkVersion, List.of());
         }
 
         private static String inferredFamily(String springBootVersion) {
             return springBootVersion == null || springBootVersion.isBlank()
                     || "UNKNOWN".equalsIgnoreCase(springBootVersion)
                     ? "unknown" : "spring-boot";
+        }
+    }
+
+    /**
+     * A source-language/framework feature observed during fingerprinting.
+     * This is deliberately separate from the neutral FCM capability id: it
+     * carries the source syntax family and the exact target strategy selected
+     * for Spring Boot 4.1.1, so a generator cannot silently treat a Kotlin,
+     * Groovy, XML, or provider-specific construct as ordinary Java.
+     */
+    record FeatureObservation(
+            String id,
+            String component,
+            String domain,
+            String evidenceState,
+            List<String> sourceLanguages,
+            List<String> sourceTraces,
+            List<String> targetApis,
+            String targetStrategy,
+            List<String> obligations
+    ) {
+        FeatureObservation {
+            sourceLanguages = sourceLanguages == null ? List.of() : List.copyOf(sourceLanguages);
+            sourceTraces = sourceTraces == null ? List.of() : List.copyOf(sourceTraces);
+            targetApis = targetApis == null ? List.of() : List.copyOf(targetApis);
+            obligations = obligations == null ? List.of() : List.copyOf(obligations);
+            evidenceState = evidenceState == null || evidenceState.isBlank()
+                    ? "unknown" : evidenceState;
+            targetStrategy = targetStrategy == null || targetStrategy.isBlank()
+                    ? "fcm-required" : targetStrategy;
         }
     }
 

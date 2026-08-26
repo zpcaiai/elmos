@@ -82,8 +82,13 @@ function normalizeSnapshots(expr: Expr): Expr {
   switch (expr.kind) {
     case "ident": return { kind: "ident", name: stripSnapshotSuffix(expr.name) };
     case "member": return expr;
+    case "path": return expr;
     case "literal": return expr;
+    case "eventValue": return expr;
     case "unaryNot": return { kind: "unaryNot", operand: normalizeSnapshots(expr.operand) };
+    case "stringMethod": return { kind: "stringMethod", method: expr.method, receiver: normalizeSnapshots(expr.receiver), args: expr.args.map(normalizeSnapshots) };
+    case "regexTest": return { kind: "regexTest", pattern: expr.pattern, flags: expr.flags, operand: normalizeSnapshots(expr.operand) };
+    case "arrayLength": return { kind: "arrayLength", operand: normalizeSnapshots(expr.operand) };
     case "binary": return { kind: "binary", operator: expr.operator, left: normalizeSnapshots(expr.left), right: normalizeSnapshots(expr.right) };
     case "ternary": return { kind: "ternary", condition: normalizeSnapshots(expr.condition), then: normalizeSnapshots(expr.then), else: normalizeSnapshots(expr.else) };
   }
@@ -187,7 +192,7 @@ function parseComponentJs(code: string): JsInfo {
       for (const field of (value as ts.ObjectLiteralExpression).properties) {
         require_(ts.isPropertyAssignment(field) && ts.isIdentifier(field.name), "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "data fields must be plain assignments");
         const initial = literalFromNode(field.initializer);
-        state.push({ name: (field.name as ts.Identifier).text, stateType: initial.type, initial });
+        state.push({ name: (field.name as ts.Identifier).text, stateType: initial.type === "null" ? "string" : initial.type, ...(initial.type === "null" ? { nullable: true } : {}), initial });
       }
       continue;
     }

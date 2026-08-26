@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-0",
+  "status": "NOT_RUN",
+  "evidence": [],
+  "required_before_promotion": ["real-source-build", "real-target-build", "target-startup", "development-tests", "independent-holdout", "representative-repository", "independent-verification"]
+}

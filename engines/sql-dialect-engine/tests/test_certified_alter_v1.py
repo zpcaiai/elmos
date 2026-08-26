@@ -145,7 +145,7 @@ def test_an_inline_reference_on_an_added_column_is_preserved() -> None:
         ("ALTER TABLE t ADD COLUMN c INTEGER PRIMARY KEY", "CERTIFIED_ALTER_UNSUPPORTED_COLUMN_CONSTRAINT"),
         ("ALTER TABLE t ADD COLUMN c INTEGER UNIQUE", "CERTIFIED_ALTER_UNSUPPORTED_COLUMN_CONSTRAINT"),
         # Structural refusals.
-        ("ALTER TABLE app.t ADD COLUMN c INTEGER", "CERTIFIED_DDL_QUALIFIED_TABLE_NAME"),
+        ("ALTER TABLE app.t ADD COLUMN c INTEGER", "CERTIFIED_DDL_NAMESPACE_MAPPING_REQUIRED"),
         ("ALTER TABLE IF EXISTS t ADD COLUMN c INTEGER", "CERTIFIED_ALTER_UNSUPPORTED_STATEMENT_MODIFIER"),
         ("CREATE TABLE t (id INTEGER)", "CERTIFIED_ALTER_UNSUPPORTED_STATEMENT"),
     ],
@@ -170,7 +170,7 @@ def test_a_blocked_alter_is_reported_not_raised() -> None:
 
 def test_an_unknown_statement_kind_is_a_caller_mistake() -> None:
     with pytest.raises(RouteError):
-        translate_ddl(ADD_COLUMN, "postgres", "mysql", statement_kind="PROCEDURE")
+        translate_ddl(ADD_COLUMN, "postgres", "mysql", statement_kind="UNKNOWN")
 
 
 # --------------------------------------------------------------------------

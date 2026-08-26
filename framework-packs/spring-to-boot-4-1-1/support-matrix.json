@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-1",
+  "decision": "NOT_CERTIFIED",
+  "capabilities": [
+    {
+      "id": "spring-framework-component-feature-mapping",
+      "status": "experimental",
+      "strategy": "typed-feature-catalog-fcm-bound",
+      "reason": "Spring Core, Context, AOP, validation, lifecycle and resource features are discovered with source-language provenance and mapped to explicit FCM obligations; real target execution is NOT_RUN."
+    },
+    {
+      "id": "spring-mvc-component-feature-mapping",
+      "status": "experimental",
+      "strategy": "typed-mvc-fcm-emitter",
+      "reason": "Annotated MVC, XML/web.xml, filters, interceptors, views, multipart, CORS, WebSocket and error contracts are represented, but arbitrary source behavior has no runtime evidence."
+    },
+    {
+      "id": "spring-boot-4.1.1-upgrade",
+      "status": "experimental",
+      "strategy": "ordered-openrewrite-chain-plus-4-1-1-profile",
+      "reason": "Maven and Gradle routes are executable and pin Boot 4.1.1 / Java 21, but exact source/target builds, startup, holdout and independent verification are NOT_RUN."
+    },
+    {
+      "id": "security",
+      "status": "blocked",
+      "strategy": "exact-security-profile-required",
+      "reason": "Security filter, method authorization, OAuth2/OIDC and provider parity cannot be inferred from source markers."
+    },
+    {
+      "id": "persistence-and-transactions",
+      "status": "blocked",
+      "strategy": "exact-provider-profile-required",
+      "reason": "JPA/JDBC/R2DBC/document/Redis providers, database behavior and transaction semantics require real provider execution."
+    },
+    {
+      "id": "messaging-cache-scheduler",
+      "status": "blocked",
+      "strategy": "exact-provider-profile-required",
+      "reason": "Kafka, AMQP, JMS, Integration, Batch, cache and scheduler delivery/duplicate/overlap semantics are NOT_RUN."
+    },
+    {
+      "id": "spring-boot-4.1.1-native-features",
+      "status": "conditional",
+      "strategy": "target-profile-required",
+      "reason": "gRPC, Jackson 3 configuration, HTTP-client SSRF protection, Log4j rotation and observability are inventoried; provider and target runtime evidence are NOT_RUN."
+    }
+  ]
+}

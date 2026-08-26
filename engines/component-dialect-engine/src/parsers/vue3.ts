@@ -137,7 +137,7 @@ function parseScriptSetup(code: string): ScriptInfo {
       const call = initializer as ts.CallExpression;
       require_(call.arguments.length === 1, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "ref() must be called with exactly one literal initial value");
       const initial = literalFromNode(at(call.arguments, 0, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "missing ref argument"));
-      state.push({ name: (decl.name as ts.Identifier).text, stateType: initial.type, initial });
+      state.push({ name: (decl.name as ts.Identifier).text, stateType: initial.type === "null" ? "string" : initial.type, ...(initial.type === "null" ? { nullable: true } : {}), initial });
       continue;
     }
     fail("CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", `<script setup> statement kind ${ts.SyntaxKind[stmt.kind]} is outside certified-component-v1`);

@@ -72,6 +72,18 @@ def test_predicates_compose_with_the_existing_binary_comparisons() -> None:
     assert _check_line(report) == "CHECK (a > 0 AND s IN ('A', 'B'))"
 
 
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+def test_mixed_boolean_levels_are_emitted_with_their_source_parentheses(target: str) -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (a INT, b INT, c INT, CHECK ((a > 0 AND b > 0) OR c = 3))",
+        "postgres",
+        target,
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    assert "CHECK ((a > 0 AND b > 0) OR c = 3)" in report["emitted"]
+
+
 def test_string_members_are_quoted_and_embedded_quotes_doubled() -> None:
     report = translate_ddl(
         "CREATE TABLE t (s VARCHAR(8), CHECK (s IN ('o''brien', 'b')))",
@@ -86,8 +98,6 @@ def test_string_members_are_quoted_and_embedded_quotes_doubled() -> None:
 @pytest.mark.parametrize(
     ("label", "sql"),
     [
-        # `~` / REGEXP / REGEXP_LIKE / nothing at all in T-SQL.
-        ("regex", "CREATE TABLE t (s VARCHAR(8), CHECK (s ~ '^[a-f]+$'))"),
         # MySQL's default collation is case-insensitive, so the same predicate
         # accepts different rows on different targets.
         ("like", "CREATE TABLE t (s VARCHAR(8), CHECK (s LIKE 'a%'))"),
@@ -95,8 +105,6 @@ def test_string_members_are_quoted_and_embedded_quotes_doubled() -> None:
         ("is-true", "CREATE TABLE t (b BOOLEAN, CHECK (b IS TRUE))"),
         # PostgreSQL-only.
         ("between-symmetric", "CREATE TABLE t (a INT, CHECK (a BETWEEN SYMMETRIC 9 AND 1))"),
-        # Not present in the measured corpus; left out rather than shipped untested.
-        ("not-in", "CREATE TABLE t (a INT, CHECK (a NOT IN (1, 2)))"),
         # A subquery is the other half of the original narrowing rationale.
         ("in-subquery", "CREATE TABLE t (a INT, CHECK (a IN (SELECT x FROM u)))"),
         # Still a function call.
@@ -109,14 +117,93 @@ def test_the_genuinely_divergent_predicates_are_still_refused(label: str, sql: s
     assert report["emitted"] is None
 
 
-def test_a_doubly_negated_null_test_is_refused() -> None:
+def test_regex_is_refused_only_when_the_target_has_no_equivalent() -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (s VARCHAR(8), CHECK (s ~ '^[a-f]+$'))",
+        "postgres",
+        "tsql",
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "BLOCKED"
+    assert report["reasonCode"] == "CERTIFIED_DDL_REGEX_CHECK_UNREACHABLE_ON_TARGET"
+
+
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+@pytest.mark.parametrize("pattern", ["/%", "%*%"])
+def test_non_collation_bearing_like_patterns_are_portable(target: str, pattern: str) -> None:
+    report = translate_ddl(
+        f"CREATE TABLE t (s TEXT, CHECK (s LIKE '{pattern}'))",
+        "postgres",
+        target,
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    assert f"s LIKE '{pattern}'" in report["emitted"]
+
+
+def test_like_with_letters_remains_fail_closed_for_collation_drift() -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (s TEXT, CHECK (s LIKE 'a%'))",
+        "postgres",
+        "mysql",
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "BLOCKED"
+    assert report["reasonCode"] == "CERTIFIED_DDL_UNSUPPORTED_CHECK_PATTERN"
+
+
+def test_nested_not_preserves_a_doubly_negated_null_test() -> None:
     report = translate_ddl(
         "CREATE TABLE t (a INT, CHECK (NOT (a IS NOT NULL)))",
         "mysql",
         "postgres",
         statement_kind="TABLE",
     )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    assert "NOT (a IS NOT NULL)" in report["emitted"]
+
+
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+def test_timestamp_interval_checks_use_target_native_typed_arithmetic(target: str) -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (issued_at TIMESTAMP, expires_at TIMESTAMP, "
+        "CHECK (expires_at <= issued_at + interval '15 minutes'))",
+        "postgres",
+        target,
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    expected = {
+        "mysql": "DATE_ADD(issued_at, INTERVAL 15 MINUTE)",
+        "oracle": "issued_at + INTERVAL '15' MINUTE",
+        "tsql": "DATEADD(MINUTE, 15, issued_at)",
+    }[target]
+    assert expected in report["emitted"]
+
+
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+def test_column_to_column_and_boolean_checks_render_without_literal_coercion(target: str) -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (enabled BOOLEAN, created_at TIMESTAMP, updated_at TIMESTAMP, "
+        "CHECK (enabled AND updated_at >= created_at AND enabled = true))",
+        "postgres",
+        target,
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    assert "updated_at >= created_at" in report["emitted"]
+    assert ("enabled = 1" if target in {"oracle", "tsql"} else "enabled = TRUE") in report["emitted"]
+
+
+def test_boolean_checks_are_type_checked_in_the_canonical_model() -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (count INT, CHECK (count = true))",
+        "postgres",
+        "mysql",
+        statement_kind="TABLE",
+    )
     assert report["status"] == "BLOCKED"
+    assert report["reasonCode"] == "CERTIFIED_DDL_UNSUPPORTED_CHECK"
 
 
 @pytest.mark.parametrize(("source", "target"), [("postgres", "mysql"), ("mysql", "oracle")])

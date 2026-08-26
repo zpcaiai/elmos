@@ -379,7 +379,7 @@ class LegacySpringMvcPackTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             copied = Path(temporary) / PACK.name
             shutil.copytree(PACK, copied)
-            summary = copied / "certification/local-execution/2026-08-11/evidence/target-test-summary.json"
+            summary = copied / "certification/local-execution/2026-08-26/evidence/target-test-summary.json"
             summary.write_bytes(summary.read_bytes() + b"\n")
 
             completed = self.run_validator(copied)
@@ -409,7 +409,7 @@ class LegacySpringMvcPackTests(unittest.TestCase):
             shutil.copytree(PACK, copied)
             executed_war = (
                 copied
-                / "certification/local-execution/2026-08-11/artifacts/"
+                / "certification/local-execution/2026-08-26/artifacts/"
                 "executed-spring-boot-3.5.3.war"
             )
             executed_war.write_bytes(executed_war.read_bytes() + b"tamper")
@@ -426,7 +426,7 @@ class LegacySpringMvcPackTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             copied = Path(temporary) / PACK.name
             shutil.copytree(PACK, copied)
-            evidence_root = copied / "certification/local-execution/2026-08-11"
+            evidence_root = copied / "certification/local-execution/2026-08-26"
             receipt_path = evidence_root / "local-qualification.json"
             receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
             receipt["target"]["executed_war"]["manifest"]["Start-Class"] = "example.Forged"

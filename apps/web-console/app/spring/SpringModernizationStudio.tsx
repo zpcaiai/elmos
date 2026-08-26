@@ -58,7 +58,7 @@ type Run = {
   snapshotDigest?: string | null;
   exactTuple: {
     sourceSpringBoot: string | null;
-    sourceFrameworkFamily: "spring-boot" | "spring-mvc" | "unknown";
+    sourceFrameworkFamily: "spring-boot" | "spring-mvc" | "spring-framework" | "unknown";
     sourceFrameworkVersion: string;
     sourceJava: string;
     sourceBuildTool: string;
@@ -158,9 +158,9 @@ function buildStageCards(
 }
 
 function routeSourceFamilyLabel(route: SpringRouteDescriptor) {
-  return route.sourceFrameworkFamily === "spring-mvc"
-    ? "Spring Framework MVC"
-    : "Spring Boot";
+  if (route.sourceFrameworkFamily === "spring-mvc") return "Spring Framework MVC";
+  if (route.sourceFrameworkFamily === "spring-framework") return "Spring Framework";
+  return "Spring Boot";
 }
 
 function routeSourceConstraintLabel(route: SpringRouteDescriptor) {
@@ -185,6 +185,8 @@ function fingerprintSourceLabel(fingerprint: NonNullable<Run["fingerprint"]>) {
     || "UNKNOWN";
   return fingerprint.sourceFrameworkFamily === "spring-mvc"
     ? `Spring Framework MVC ${version}`
+    : fingerprint.sourceFrameworkFamily === "spring-framework"
+      ? `Spring Framework ${version}`
     : `Spring Boot ${version}`;
 }
 

@@ -20,7 +20,7 @@ Properties that make the number trustworthy:
     actually parsed.
 
   - **An UPPER BOUND, and it says so.** Parsing proves a statement is
-    inside `certified-ddl-v1` from the SOURCE side; emission is still
+    inside one of the active certified profiles from the SOURCE side; emission is still
     re-validated by the target dialect's strict parser during a real run.
 
 One deliberate difference from the component scanner. There, a function
@@ -37,7 +37,7 @@ from __future__ import annotations
 
 import json
 import os
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -46,17 +46,48 @@ from typing import Literal
 import sqlglot
 from sqlglot import exp
 
+from .advanced import (
+    parse_comment,
+    parse_create_view,
+    parse_privilege,
+    parse_procedure,
+    parse_row_policy,
+    parse_table_function,
+    parse_trigger,
+)
 from .models import Dialect, DialectError
-from .parser import parse_alter_table, parse_create_index, parse_create_table
+from .parser import (
+    parse_alter_table,
+    parse_create_index,
+    parse_create_schema,
+    parse_create_table,
+    parse_drop_table,
+)
+from .routine import parse_create_routine
 from .statement_splitter import split_statements
 
 FindingStatus = Literal["IN_SUBSET", "OUT_OF_SUBSET", "SCAN_ERROR"]
+CoverageDisposition = Literal[
+    "AUTOMATED_TRANSLATION_CANDIDATE",
+    "MANUAL_MIGRATION_REQUIRED",
+    "SOURCE_FORMAT_REVIEW",
+    "ENGINE_DEFECT",
+]
 
 #: Directories never worth walking into.
 IGNORED_DIRECTORIES = frozenset(
     {
-        ".git", "node_modules", "target", "build", "dist", "out",
-        "__pycache__", ".venv", "venv", ".mypy_cache", ".pytest_cache",
+        ".git",
+        "node_modules",
+        "target",
+        "build",
+        "dist",
+        "out",
+        "__pycache__",
+        ".venv",
+        "venv",
+        ".mypy_cache",
+        ".pytest_cache",
     }
 )
 
@@ -84,8 +115,70 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     ),
     "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": (
         "statement-kind",
-        "a statement no certified profile covers -- CREATE VIEW, stored procedures, "
-        "triggers, GRANT/REVOKE and DML all land here",
+        "a statement no certified profile covers -- CREATE VIEW, GRANT/REVOKE and DML still land here",
+    ),
+    "CERTIFIED_ROUTINE_PROCEDURE_UNSUPPORTED": (
+        "statement-kind",
+        "a stored procedure needs an exact target/version/transaction/side-effect route; "
+        "it is not converted as a scalar function",
+    ),
+    "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED": (
+        "statement-kind",
+        "a trigger needs target-specific timing, row/statement and transition-value semantics",
+    ),
+    "CERTIFIED_ROUTINE_UNSUPPORTED_LANGUAGE": (
+        "structure",
+        "only a table-free SQL expression function is in the portable routine profile; "
+        "PL/pgSQL and other routine languages remain explicit blockers",
+    ),
+    "CERTIFIED_ROUTINE_UNSUPPORTED_BODY": (
+        "structure",
+        "the function body is not one table-free SELECT expression in the typed routine IR",
+    ),
+    "CERTIFIED_ROUTINE_UNSUPPORTED_FUNCTION": (
+        "structure",
+        "a function call or code point form is outside the portable routine expression allowlist",
+    ),
+    "CERTIFIED_ROUTINE_UNSUPPORTED_PARAMETER": (
+        "structure",
+        "routine parameters must have one plain name, one typed input value and no default/mode/constraint",
+    ),
+    "CERTIFIED_ROUTINE_UNSUPPORTED_OPERATOR": (
+        "structure",
+        "routine arithmetic or concatenation uses operands whose canonical types are not portable",
+    ),
+    "CERTIFIED_ROUTINE_RETURN_TYPE_MISMATCH": (
+        "types",
+        "the typed routine body result does not match the declared canonical return type",
+    ),
+    "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED": (
+        "structure",
+        "RETURNS TABLE needs a typed row-shape IR and is not a scalar routine",
+    ),
+    "CERTIFIED_ROUTINE_NAMESPACE_MAPPING_REQUIRED": (
+        "identifiers",
+        "a qualified routine name needs an explicit target namespace mapping",
+    ),
+    "CERTIFIED_ROUTINE_REPLACE_UNSUPPORTED_BY_TARGET": (
+        "statement-kind",
+        "CREATE OR REPLACE rerun and ownership semantics have no one exact spelling across targets",
+    ),
+    "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED": (
+        "statement-kind",
+        "row-level security needs a target policy model and execution evidence; "
+        "it is never lowered to a permissive policy",
+    ),
+    "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED": (
+        "structure",
+        "SECURITY DEFINER or SET search_path changes execution identity/name resolution and needs an exact mapping",
+    ),
+    "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": (
+        "structure",
+        "STRICT null short-circuiting is routine metadata and is not silently approximated",
+    ),
+    "CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET": (
+        "structure",
+        "routine volatility/stability has no one exact cross-dialect mapping in this profile",
     ),
     "CERTIFIED_ALTER_UNSUPPORTED_STATEMENT": (
         "statement-kind",
@@ -171,11 +264,27 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     ),
     "CERTIFIED_DDL_UNSUPPORTED_CHECK": (
         "constraints",
-        "a CHECK expression outside simple column-to-literal comparisons",
+        "a CHECK expression outside the typed portable boolean, comparison, interval, regex and LIKE core",
+    ),
+    "CERTIFIED_DDL_UNSUPPORTED_CHECK_PATTERN": (
+        "constraints",
+        "a regex CHECK pattern outside the portable cross-dialect regex core",
+    ),
+    "CERTIFIED_DDL_COLLATION_DEPENDENT_REGEX": (
+        "constraints",
+        "a MySQL regex predicate whose case sensitivity is inherited from collation",
+    ),
+    "CERTIFIED_DDL_UNSUPPORTED_CHECK_MATCH_PARAMETER": (
+        "constraints",
+        "a regex match parameter whose flags cannot be preserved across targets",
+    ),
+    "CERTIFIED_DDL_REGEX_CHECK_UNREACHABLE_ON_TARGET": (
+        "constraints",
+        "a regex CHECK has no equivalent predicate on SQL Server",
     ),
     "CERTIFIED_DDL_MULTI_LEVEL_CHECK": (
         "constraints",
-        "a CHECK with nested or mixed AND/OR levels",
+        "a CHECK boolean tree deeper than the bounded canonical form",
     ),
     "CERTIFIED_DDL_EMPTY_CHECK": ("constraints", "a CHECK with no comparison in it"),
     "CERTIFIED_DDL_MISSING_CONNECTOR": (
@@ -219,6 +328,14 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     "CERTIFIED_DDL_DUPLICATE_COLUMN": ("structure", "the same column declared twice"),
     "CERTIFIED_DDL_EMPTY_TABLE": ("structure", "a CREATE TABLE with no columns"),
     "CERTIFIED_DDL_EMPTY_INDEX": ("structure", "a CREATE INDEX with no columns"),
+    "CERTIFIED_DDL_UNSUPPORTED_INDEX_MODIFIER": (
+        "structure",
+        "a CREATE INDEX modifier such as WHERE, INCLUDE or USING has no common exact spelling",
+    ),
+    "CERTIFIED_DDL_UNSUPPORTED_INDEX_ORDER": (
+        "structure",
+        "an index NULLS placement cannot be preserved across the four target dialects",
+    ),
     "CERTIFIED_DDL_UNSUPPORTED_TABLE_ITEM": (
         "structure",
         "an item inside CREATE TABLE that is neither a column nor a certified constraint",
@@ -227,6 +344,66 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
         "source-format",
         "sqlglot rejected the statement under the declared source dialect -- a syntax "
         "error, or dialect-specific syntax the reader does not accept",
+    ),
+    "CERTIFIED_DROP_UNSUPPORTED_STATEMENT": (
+        "statement-kind",
+        "not a single DROP TABLE statement",
+    ),
+    "CERTIFIED_DROP_UNSUPPORTED_MODIFIER": (
+        "statement-kind",
+        "DROP TABLE carries dependency or temporary-object semantics outside the portable profile",
+    ),
+    "CERTIFIED_DROP_IF_EXISTS_UNSUPPORTED_BY_TARGET": (
+        "statement-kind",
+        "DROP TABLE IF EXISTS cannot be represented with the target's exact rerun semantics",
+    ),
+    "CERTIFIED_SCHEMA_UNSUPPORTED_STATEMENT": (
+        "statement-kind",
+        "not a single minimal CREATE SCHEMA statement",
+    ),
+    "CERTIFIED_SCHEMA_UNSUPPORTED_MODIFIER": (
+        "statement-kind",
+        "CREATE SCHEMA carries options outside the portable profile",
+    ),
+    "CERTIFIED_SCHEMA_QUALIFIED_NAME": (
+        "identifiers",
+        "a schema declaration with more than one namespace component",
+    ),
+    "CERTIFIED_VIEW_UNSUPPORTED_QUERY": (
+        "statement-kind",
+        "the view needs a typed query route beyond the single-table bounded SELECT profile",
+    ),
+    "CERTIFIED_VIEW_REPLACE_UNSUPPORTED_BY_TARGET": (
+        "statement-kind",
+        "CREATE OR REPLACE VIEW requires a target/version-specific rerun policy",
+    ),
+    "CERTIFIED_COMMENT_TARGET_UNSUPPORTED": (
+        "statement-kind",
+        "the target stores comments through a different ownership/property mechanism",
+    ),
+    "CERTIFIED_PRIVILEGE_UNSUPPORTED_OBJECT": (
+        "structure",
+        "the privilege target is not a table in the bounded privilege route",
+    ),
+    "CERTIFIED_PRIVILEGE_UNSUPPORTED_KIND": (
+        "structure",
+        "the privilege or grant option requires a target-specific security policy",
+    ),
+    "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED": (
+        "structure",
+        "trigger action/timing/order semantics require a target-specific trigger route",
+    ),
+    "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED": (
+        "types",
+        "JSONB storage, operator, indexing, and ordering semantics cannot be downgraded to plain JSON",
+    ),
+    "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED": (
+        "types",
+        "array storage and element semantics require a target-specific collection mapping",
+    ),
+    "CERTIFIED_DDL_BINARY_LENGTH_ENFORCEMENT_UNSUPPORTED": (
+        "types",
+        "the target binary type does not enforce the source length contract",
     ),
 }
 
@@ -244,6 +421,10 @@ class ScanFinding:
     family: str | None
     #: First line of the statement, trimmed -- enough to recognise it.
     excerpt: str
+    #: Every discovered unit receives one explicit disposition. This is the
+    #: 100% repository-coverage measure; it is deliberately separate from
+    #: `IN_SUBSET`, which is only an upper bound for automatic translation.
+    disposition: CoverageDisposition
 
 
 @dataclass(frozen=True)
@@ -283,6 +464,8 @@ class FeasibilityReport:
     scanned_at: str
     totals: dict[str, int]
     upper_bound_coverage: float
+    disposition_coverage: float
+    disposition_counts: dict[str, int]
     blockers: list[BlockerGroup]
     families: list[FamilyGroup]
     findings: list[ScanFinding]
@@ -306,7 +489,34 @@ def _excerpt(statement: exp.Expr) -> str:
     return text[:110] + ("..." if len(text) > 110 else "")
 
 
-def _classify(statement: exp.Expr, dialect: Dialect) -> tuple[FindingStatus, str | None, str | None]:
+def _disposition(status: FindingStatus, reason_code: str | None) -> CoverageDisposition:
+    """Map every scanner outcome to an auditable next action.
+
+    A blocker is not silently treated as converted: it remains an explicit
+    manual migration requirement. Parser/file issues are source-format work,
+    and unexpected scanner exceptions remain engine defects. Only statements
+    admitted by the certified parser are automatic-translation candidates.
+    """
+    if status == "IN_SUBSET":
+        return "AUTOMATED_TRANSLATION_CANDIDATE"
+    if reason_code in {
+        "CERTIFIED_DDL_CLIENT_DIRECTIVE",
+        "CERTIFIED_DDL_PARSE_FAILED",
+        "CERTIFIED_DDL_MULTIPLE_STATEMENTS",
+        "FILE_UNREADABLE",
+    }:
+        return "SOURCE_FORMAT_REVIEW"
+    if status == "SCAN_ERROR":
+        return "ENGINE_DEFECT"
+    return "MANUAL_MIGRATION_REQUIRED"
+
+
+def _classify(
+    statement: exp.Expr,
+    dialect: Dialect,
+    raw_sql: str | None = None,
+    namespace_map: Mapping[str, str] | None = None,
+) -> tuple[FindingStatus, str | None, str | None]:
     """Parse one statement through the real certified parser.
 
     Returns ``(status, reason_code, reason)``. A `DialectError` is a subset
@@ -325,15 +535,44 @@ def _classify(statement: exp.Expr, dialect: Dialect) -> tuple[FindingStatus, str
     assert isinstance(statement, exp.Expression)
     try:
         if isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "TABLE":
-            parse_create_table(statement, dialect)
+            parse_create_table(statement, dialect, namespace_map)
         elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "INDEX":
-            parse_create_index(statement, dialect)
+            parse_create_index(raw_sql or statement, dialect, namespace_map)
+        elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "SCHEMA":
+            parse_create_schema(statement, dialect, namespace_map)
+        elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "VIEW":
+            parse_create_view(raw_sql or statement, dialect, namespace_map)
+        elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() in {
+            "FUNCTION",
+            "PROCEDURE",
+        }:
+            if str(statement.args.get("kind", "")).upper() == "PROCEDURE":
+                parse_procedure(raw_sql or statement, dialect, namespace_map)
+            else:
+                try:
+                    parse_table_function(raw_sql or statement, dialect, namespace_map)
+                except DialectError as exc:
+                    if exc.code != "CERTIFIED_ROUTINE_NOT_TABLE_FUNCTION":
+                        raise
+                    parse_create_routine(raw_sql or statement, dialect, namespace_map)
+        elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "TRIGGER":
+            parse_trigger(raw_sql or statement, dialect, namespace_map)
+        elif isinstance(statement, exp.Comment):
+            parse_comment(raw_sql or statement, dialect, namespace_map)
+        elif isinstance(statement, exp.Grant | exp.Revoke):
+            parse_privilege(raw_sql or statement, dialect, namespace_map)
+        elif (
+            isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "POLICY"
+        ) or (raw_sql is not None and raw_sql.lstrip().upper().startswith("CREATE POLICY")):
+            parse_row_policy(raw_sql or statement, dialect)
         elif isinstance(statement, exp.Alter):
             # certified-alter-v1. Routed here so the coverage number tracks
             # what the engine can really do rather than one profile of it.
             parse_alter_table(statement, dialect)
+        elif isinstance(statement, exp.Drop):
+            parse_drop_table(statement, dialect)
         else:
-            # Not a CREATE TABLE / CREATE INDEX at all. This is the single
+            # Not covered by any certified DDL profile. This is the single
             # most important number in the report, so it is produced by the
             # same fail-closed path as everything else rather than by a
             # special case that could drift from the parser.
@@ -351,6 +590,7 @@ def _recover_statements(
     text: str,
     relative: str,
     source_dialect: Dialect,
+    namespace_map: Mapping[str, str] | None = None,
 ) -> list[ScanFinding]:
     """Classify a file the parser refused as a whole, statement by statement.
 
@@ -370,10 +610,15 @@ def _recover_statements(
         if raw.text.lstrip().startswith("\\"):
             findings.append(
                 ScanFinding(
-                    relative, index, "OUT_OF_SUBSET", None,
+                    relative,
+                    index,
+                    "OUT_OF_SUBSET",
+                    None,
                     "CERTIFIED_DDL_CLIENT_DIRECTIVE",
                     f"line {raw.start_line}: psql client directive, not a SQL statement",
-                    "source-format", excerpt,
+                    "source-format",
+                    excerpt,
+                    "SOURCE_FORMAT_REVIEW",
                 )
             )
             continue
@@ -382,30 +627,47 @@ def _recover_statements(
         except Exception as exc:  # noqa: BLE001 - sqlglot raises several types
             findings.append(
                 ScanFinding(
-                    relative, index, "OUT_OF_SUBSET", None,
+                    relative,
+                    index,
+                    "OUT_OF_SUBSET",
+                    None,
                     "CERTIFIED_DDL_PARSE_FAILED",
                     f"line {raw.start_line}: {source_dialect.value} parser rejected the statement: {exc}",
-                    "source-format", excerpt,
+                    "source-format",
+                    excerpt,
+                    "SOURCE_FORMAT_REVIEW",
                 )
             )
             continue
         if len(parsed) != 1:
             findings.append(
                 ScanFinding(
-                    relative, index, "OUT_OF_SUBSET", None,
+                    relative,
+                    index,
+                    "OUT_OF_SUBSET",
+                    None,
                     "CERTIFIED_DDL_MULTIPLE_STATEMENTS",
                     f"line {raw.start_line}: recovered chunk holds {len(parsed)} statements",
-                    "structure", excerpt,
+                    "structure",
+                    excerpt,
+                    "SOURCE_FORMAT_REVIEW",
                 )
             )
             continue
         statement = parsed[0]
-        status, code, reason = _classify(statement, source_dialect)
+        status, code, reason = _classify(statement, source_dialect, raw.text, namespace_map)
         family = BLOCKER_CATALOG.get(code or "", (None, ""))[0] if code else None
         findings.append(
             ScanFinding(
-                relative, index, status, type(statement).__name__,
-                code, reason, family, _excerpt(statement),
+                relative,
+                index,
+                status,
+                type(statement).__name__,
+                code,
+                reason,
+                family,
+                _excerpt(statement),
+                _disposition(status, code),
             )
         )
     return findings
@@ -416,6 +678,7 @@ def scan_repository(
     source_dialect: Dialect,
     examples_per_blocker: int = 5,
     include_all_findings: bool = False,
+    namespace_map: Mapping[str, str] | None = None,
 ) -> FeasibilityReport:
     """Parse every statement in every `.sql` file and report subset membership."""
     root = Path(repository)
@@ -429,7 +692,17 @@ def scan_repository(
             text = path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError) as exc:
             findings.append(
-                ScanFinding(relative, 0, "SCAN_ERROR", None, "FILE_UNREADABLE", str(exc), None, "")
+                ScanFinding(
+                    relative,
+                    0,
+                    "SCAN_ERROR",
+                    None,
+                    "FILE_UNREADABLE",
+                    str(exc),
+                    None,
+                    "",
+                    _disposition("SCAN_ERROR", "FILE_UNREADABLE"),
+                )
             )
             continue
 
@@ -444,20 +717,30 @@ def scan_repository(
             # each of the five had exactly one offending statement -- while
             # every coverage ratio was flattered, because those files
             # contributed 1 to the denominator instead of hundreds.
-            findings.extend(_recover_statements(text, relative, source_dialect))
+            findings.extend(_recover_statements(text, relative, source_dialect, namespace_map))
             continue
 
         index = 0
+        raw_statements = list(split_statements(text))
+        raw_by_index = raw_statements if len(raw_statements) == len(statements) else []
         for statement in statements:
             if statement is None:
                 continue  # a comment or trailing separator, not a statement
             index += 1
-            status, code, reason = _classify(statement, source_dialect)
+            raw_sql = raw_by_index[index - 1].text if raw_by_index else None
+            status, code, reason = _classify(statement, source_dialect, raw_sql, namespace_map)
             family = BLOCKER_CATALOG.get(code or "", (None, ""))[0] if code else None
             findings.append(
                 ScanFinding(
-                    relative, index, status, type(statement).__name__,
-                    code, reason, family, _excerpt(statement),
+                    relative,
+                    index,
+                    status,
+                    type(statement).__name__,
+                    code,
+                    reason,
+                    family,
+                    _excerpt(statement),
+                    _disposition(status, code),
                 )
             )
 
@@ -489,6 +772,12 @@ def _build_report(
     blocked = [f for f in findings if f.status == "OUT_OF_SUBSET"]
     scan_errors = sum(1 for f in findings if f.status == "SCAN_ERROR")
     denominator = in_subset + len(blocked)
+    disposition_counts: dict[str, int] = {}
+    for finding in findings:
+        disposition_counts[finding.disposition] = disposition_counts.get(finding.disposition, 0) + 1
+    disposition_units = len(findings)
+    disposition_covered = sum(disposition_counts.values())
+    disposition_coverage = round(disposition_covered / disposition_units, 3) if disposition_units else 0.0
 
     by_code: dict[str, list[ScanFinding]] = {}
     for finding in blocked:
@@ -528,6 +817,10 @@ def _build_report(
         "statement can still be reported BLOCKED there.",
         "Counts are exact -- every statement was really parsed by sqlglot and by this engine's certified "
         "parser. Nothing is sampled or extrapolated.",
+        f"Disposition coverage is {disposition_covered}/{disposition_units} ({disposition_coverage:.1%}): "
+        "every discovered unit has an explicit next action. This is not a claim that every unit is "
+        "automatically translatable; the automatic-translation candidate ratio remains the separate "
+        "upper-bound metric above.",
         "Read the `Distinct` column, not just the count. A blocker with 342 occurrences but 3 distinct "
         "reasons is one idiom repeated across a schema; widening the subset for it buys far less than the "
         "raw count suggests, and ranking by occurrences alone would misdirect the roadmap.",
@@ -548,7 +841,11 @@ def _build_report(
     return FeasibilityReport(
         schema_version="1.0",
         kind="elmos.sql-dialect-feasibility-scan",
-        profile="certified-ddl-v1 + certified-alter-v1",
+        profile=(
+            "certified-ddl-v1 + certified-alter-v1 + certified-drop-v1 + certified-schema-v1 "
+            "+ certified-routine-v1 + certified-view-v1 + certified-comment-v1 "
+            "+ certified-privilege-v1 + certified-rls-v1"
+        ),
         repository=str(root.resolve()),
         source_dialect=source_dialect.value,
         scanned_at=datetime.now(UTC).isoformat(),
@@ -558,8 +855,13 @@ def _build_report(
             "outOfSubset": len(blocked),
             "scanErrors": scan_errors,
             "files": len({f.source_path for f in findings}),
+            "dispositionUnits": disposition_units,
+            "dispositionCovered": disposition_covered,
+            "dispositionUnknown": disposition_units - disposition_covered,
         },
         upper_bound_coverage=round(in_subset / denominator, 3) if denominator else 0.0,
+        disposition_coverage=disposition_coverage,
+        disposition_counts=dict(sorted(disposition_counts.items())),
         blockers=blockers,
         families=families,
         findings=findings if include_all_findings else [f for f in findings if f.status != "IN_SUBSET"],
@@ -599,6 +901,10 @@ def render_markdown(report: FeasibilityReport) -> str:
         f"**{totals['inSubset']} of {totals['discovered']} statements are inside the certified "
         f"subset ({pct(report.upper_bound_coverage)}, upper bound), across {totals['files']} files.**",
         "",
+        f"**Disposition coverage: {totals['dispositionCovered']} of {totals['dispositionUnits']} "
+        f"discovered units ({pct(report.disposition_coverage)}).** Every unit has an explicit "
+        "automatic-candidate, manual-migration, source-review, or engine-defect disposition.",
+        "",
         "| | Count |",
         "|---|---|",
         f"| SQL files | {totals['files']} |",
@@ -606,6 +912,9 @@ def render_markdown(report: FeasibilityReport) -> str:
         f"| In subset (upper bound) | {totals['inSubset']} |",
         f"| Out of subset | {totals['outOfSubset']} |",
         f"| Scan errors (engine defects) | {totals['scanErrors']} |",
+        f"| Disposition units | {totals['dispositionUnits']} |",
+        f"| Disposition covered | {totals['dispositionCovered']} |",
+        f"| Disposition unknown | {totals['dispositionUnknown']} |",
         "",
     ]
 
@@ -632,7 +941,7 @@ def render_markdown(report: FeasibilityReport) -> str:
         if len(report.blockers) > 1:
             lines += [
                 f"Removing the single largest blocker (`{top.reason_code}`) would move at most "
-                f"{top.count} statement(s) -- \"at most\" because a statement can be blocked by more "
+                f'{top.count} statement(s) -- "at most" because a statement can be blocked by more '
                 "than one construct and only the first one encountered is reported here.",
                 "",
             ]

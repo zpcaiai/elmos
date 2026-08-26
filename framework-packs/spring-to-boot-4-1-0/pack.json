@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-0",
+  "version": "0.1.0",
+  "mode": "modernization",
+  "status": "experimental",
+  "owner": "ELMOS Java Modernization Team",
+  "maintenance_owner": "ELMOS Framework Pack Maintainers",
+  "review_date": "2026-11-09",
+  "source": {
+    "framework": "spring-and-spring-mvc",
+    "framework_versions": ["1.5.0..7.0.8"],
+    "runtime": "java",
+    "runtime_versions": ["8", "11", "17", "21"],
+    "build_tools": ["maven-3.9.11", "gradle-8.14.3"],
+    "source_families": ["spring-boot", "spring-mvc", "spring-framework"],
+    "resolution_policy": "exact-version-required-from-source-fingerprint"
+  },
+  "target": {
+    "framework": "spring-boot",
+    "framework_versions": ["4.1.0"],
+    "runtime": "java",
+    "runtime_versions": ["21"],
+    "build_tools": ["maven-3.9.11", "gradle-8.14.3"],
+    "provider_versions": {
+      "spring-framework": "7.0.8",
+      "spring-security": "7.1.0",
+      "hibernate-orm": "7.4.1.Final",
+      "tomcat": "11.0.22"
+    }
+  },
+  "paths": {
+    "support_matrix": "support-matrix.json",
+    "source_fingerprint": "source-fingerprint",
+    "contracts": "contracts",
+    "target_profile": "target-profile/profile.json",
+    "corpus": "corpus",
+    "certification": "certification",
+    "local_execution_evidence": "certification/evidence.json"
+  },
+  "gates": {
+    "real_source_runtime": true,
+    "real_target_runtime": true,
+    "startup_required": true,
+    "holdout_required": true,
+    "representative_repository_required": true,
+    "critical_unknowns_allowed": 0,
+    "critical_security_regressions_allowed": 0,
+    "critical_transaction_regressions_allowed": 0,
+    "critical_data_regressions_allowed": 0
+  }
+}

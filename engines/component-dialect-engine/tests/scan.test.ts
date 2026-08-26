@@ -220,6 +220,26 @@ describe("engine defects are never laundered into the coverage number", () => {
 });
 
 describe("scanning refuses what it cannot honestly answer", () => {
+  it("resolves an imported props alias through the real TypeScript project checker", () => {
+    const repo = fs.mkdtempSync(path.join(os.tmpdir(), "elmos-scan-imported-type-"));
+    fs.writeFileSync(path.join(repo, "tsconfig.json"), JSON.stringify({
+      compilerOptions: { target: "ES2022", module: "CommonJS", jsx: "react", strict: true, skipLibCheck: true },
+      include: ["**/*.ts", "**/*.tsx"],
+    }));
+    fs.writeFileSync(path.join(repo, "types.ts"), "export interface CardProps { title: string }\n");
+    fs.writeFileSync(path.join(repo, "Card.tsx"), "import type { CardProps } from './types';\nfunction Card({ title }: CardProps) { return <p>{title}</p>; }\n");
+    const report = scanRepository({ repository: repo, sourceFramework: "react" });
+    expect(report.totals).toMatchObject({ discovered: 1, inSubset: 1, outOfSubset: 0, scanErrors: 0 });
+  });
+
+  it("allows a declared object prop only through a declared field", () => {
+    const repo = makeRepo({
+      "Profile.tsx": "function Profile({ user }: { user: { name: string } }) { return <p>{user.name}</p>; }",
+    });
+    const report = scanRepository({ repository: repo, sourceFramework: "react" });
+    expect(report.totals.inSubset).toBe(1);
+  });
+
   it("rejects emit-only frameworks as a scan source", () => {
     expect(() => scanRepository({ repository: REPO(), sourceFramework: "flutter" })).toThrow(/FRAMEWORK_NOT_PARSEABLE/);
     expect(() => scanRepository({ repository: REPO(), sourceFramework: "arkui" })).toThrow(RouteError);
