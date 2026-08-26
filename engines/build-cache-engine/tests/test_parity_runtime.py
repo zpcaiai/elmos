@@ -4,9 +4,12 @@ from collections.abc import Mapping
 from dataclasses import replace
 from typing import Any
 
+import pytest
+
 from elmos_build_cache.clock import ManualClock
 from elmos_build_cache.config import CacheParityConfig, PromptCacheConfig
 from elmos_build_cache.enums import MissReason
+from elmos_build_cache.errors import ContractViolation
 from elmos_build_cache.parity_runtime import (
     SERVING_GATE_KIND,
     ParityRuntime,
@@ -154,6 +157,18 @@ def test_serving_flags_are_independent_and_safe_by_default() -> None:
     assert report["serving_gate_receipt"]["status"] == "MISSING"
     assert report["rollback"]["latched"] is True
     assert report["serving"]["environment_snapshot"] is False
+
+
+def test_serving_gate_rejects_non_finite_time_bounds() -> None:
+    with pytest.raises(ContractViolation, match="time bounds"):
+        serving_gate_statement(
+            CacheParityConfig(),
+            "tenant-a",
+            "project-a",
+            ("provider_prompt",),
+            issued_at=float("nan"),
+            expires_at=1_000.0,
+        )
 
 
 def test_serving_requires_valid_asymmetric_receipt_and_executable_wiring(

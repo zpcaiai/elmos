@@ -602,6 +602,8 @@ public final class ActionCacheExecutionJobDispatcher {
         // Preserve the complete identity for a future signed completion write-back. The digest is
         // sufficient for lookup, but a runner result must reconstruct and re-verify every
         // canonical component before it can ever become cacheable.
+        // Components are copied into the immutable canonical payload below; callers cannot
+        // mutate the queued identity.
         cacheBinding.put("actionKeyComponents", request.key().components());
         cacheBinding.put("authorizationPolicyVersion", grant.policyVersion());
         cacheBinding.put("payloadPolicyId", sanitized.policyId());

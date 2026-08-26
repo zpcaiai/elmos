@@ -23,7 +23,8 @@ elmos:
   action-cache:
     enabled: ${ELMOS_ACTION_CACHE_ENABLED:false}
     execution-caller-enabled: ${ELMOS_ACTION_CACHE_EXECUTION_CALLER_ENABLED:false}
-    # Required by the tenant ActionCache endpoint; both values are deployment-owned policy facts.
+    # Required by the tenant ActionCache execution endpoint. The endpoint never derives
+    # residency or clearance from caller input; both are deployment-owned policy facts.
     data-residency: ${ELMOS_ACTION_CACHE_DATA_RESIDENCY:}
     security-tier: ${ELMOS_ACTION_CACHE_SECURITY_TIER:CONFIDENTIAL}
     sample-recompute-one-in-n: ${ELMOS_ACTION_CACHE_SAMPLE_RECOMPUTE_ONE_IN_N:0}

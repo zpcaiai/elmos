@@ -22,14 +22,25 @@
       "status": "captured"
     },
     {
-      "id": "configuration-runtime-contract",
+      "id": "validation-contract",
       "obligations": [
-        "management health endpoint exposure remains enabled",
-        "health details remain hidden",
-        "graceful shutdown remains enabled"
+        "POST /api/orders with blank customerId returns HTTP 400",
+        "POST /api/orders with a non-blank customerId returns HTTP 200"
       ],
       "source_traces": [
-        "application.properties"
+        "OrderController.java"
+      ],
+      "status": "captured"
+    },
+    {
+      "id": "security-contract",
+      "obligations": [
+        "GET /api/orders/{id} without HTTP Basic credentials returns HTTP 401",
+        "GET /api/orders/{id} with fixture operator credentials returns HTTP 200",
+        "the actuator health endpoint remains publicly readable"
+      ],
+      "source_traces": [
+        "SecurityConfiguration.java"
       ],
       "status": "captured"
     },

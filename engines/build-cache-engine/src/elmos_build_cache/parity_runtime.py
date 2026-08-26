@@ -13,6 +13,7 @@ from collections import Counter
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict
 from datetime import UTC, datetime
+import math
 from typing import Any, Protocol
 
 from .canonical import digest_of

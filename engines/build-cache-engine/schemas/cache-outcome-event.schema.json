@@ -71,6 +71,28 @@
         "null"
       ]
     },
+    "causal_edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_event_id", "target_event_id", "relation"],
+        "properties": {
+          "source_event_id": {"type": "string", "minLength": 1},
+          "target_event_id": {"type": "string", "minLength": 1},
+          "relation": {
+            "enum": [
+              "REQUESTED",
+              "RESTORED_FROM",
+              "CAUSED_FALLBACK",
+              "SUPPLIED_LAYER_WORK",
+              "POPULATED_AFTER",
+              "COMPLETED_BY"
+            ]
+          }
+        }
+      }
+    },
     "avoided_or_lost_value": {
       "type": "object",
       "properties": {

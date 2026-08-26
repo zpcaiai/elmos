@@ -117,6 +117,16 @@ _ENVIRONMENT_QUERY_FIELDS = frozenset(
         "maximumRestoreRatio",
     }
 )
+_COMPOSITION_CAUSAL_RELATIONS = frozenset(
+    {
+        "REQUESTED",
+        "RESTORED_FROM",
+        "CAUSED_FALLBACK",
+        "SUPPLIED_LAYER_WORK",
+        "POPULATED_AFTER",
+        "COMPLETED_BY",
+    }
+)
 _TEnum = TypeVar("_TEnum", bound=Enum)
 
 _CAUSAL_GRAPH_FIELDS = frozenset(
@@ -1759,6 +1769,7 @@ class ParityApiService:
         first_differences: list[dict[str, str]] = []
         nodes: list[dict[str, str]] = []
         edges: list[dict[str, str]] = []
+        causal_edge_keys: set[tuple[str, str, str]] = set()
         for document in documents:
             _assert_content_free(document, "cache outcome")
             event = _validated_outcome(document)
@@ -1834,6 +1845,31 @@ class ParityApiService:
                 nodes = graph_nodes
                 edges.extend(graph_edges)
                 claim = "OBSERVED_AND_CAUSAL"
+        # Older composition writers embedded causal edges in each outcome.  Keep
+        # that representation readable when no canonical graph was persisted;
+        # newly written outcomes use the separately bound graph above.
+        if claim == "OBSERVED_ONLY":
+            for document in documents:
+                raw_causal_edges = document.get("causal_edges", [])
+                if not isinstance(raw_causal_edges, list):
+                    raise CorruptObject("stored cache outcome causal_edges is not an array")
+                for raw_edge in raw_causal_edges:
+                    if not isinstance(raw_edge, Mapping):
+                        raise CorruptObject("stored cache outcome causal edge is not an object")
+                    source = _digest(raw_edge.get("source_event_id"), "source_event_id")
+                    target = _digest(raw_edge.get("target_event_id"), "target_event_id")
+                    relation = raw_edge.get("relation")
+                    if relation not in _COMPOSITION_CAUSAL_RELATIONS:
+                        raise CorruptObject("stored cache outcome causal relation is unknown")
+                    causal_edge_keys.add((source, target, relation))
+            edges.extend(
+                {
+                    "from": source,
+                    "to": target,
+                    "relation": relation,
+                }
+                for source, target, relation in sorted(causal_edge_keys)
+            )
         return ServiceResult(
             200,
             {
