@@ -892,6 +892,9 @@ TRUSTED_PREVIOUS_OWNED_MANIFEST_SHA256S = frozenset(
         # The reviewed 19/26 bounded-runtime refresh is a valid predecessor
         # when a subsequent receipt-only update regenerates the manifest.
         "sha256:1556cb500c05639d835ccb6a4c303d0d91631f27421bb1bfec48e9bd7425a53f",
+        # The graph-analysis modules are now part of the owned engine tree;
+        # preserve the prior generated marker for the receipt refresh.
+        "sha256:fc872f534af894096c35b2af2713e7a8b1152751fae37af402d8fac0bcba5f00",
     }
 )
 INSTALLED_TREE_DIGEST_SCHEMA = "sha256-v2:name-path-mode-bytes"

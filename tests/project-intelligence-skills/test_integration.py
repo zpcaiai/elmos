@@ -333,7 +333,7 @@ class ProjectIntelligenceIntegrationTests(unittest.TestCase):
         self.assertEqual(matrix["summary"]["implemented_local_handlers"], 50)
         self.assertEqual(
             matrix["summary"]["capability_state_counts"],
-            {"LOCAL": 20, "PARTIAL": 25, "PLAN": 5},
+            {"LOCAL": 19, "PARTIAL": 26, "PLAN": 5},
         )
         self.assertEqual(
             matrix["summary"]["qualification_effect_guard"],
@@ -350,7 +350,7 @@ class ProjectIntelligenceIntegrationTests(unittest.TestCase):
         self.assertEqual(len(matrix["skills"]), 50)
         self.assertEqual(
             Counter(item["capability_state"] for item in matrix["skills"]),
-            {"LOCAL": 20, "PARTIAL": 25, "PLAN": 5},
+            {"LOCAL": 19, "PARTIAL": 26, "PLAN": 5},
         )
         self.assertEqual(len({item["handler_id"] for item in matrix["skills"]}), 50)
         self.assertEqual(
@@ -679,9 +679,14 @@ class ProjectIntelligenceIntegrationTests(unittest.TestCase):
         self.addCleanup(temporary.cleanup)
         archive = repository / integration.ARCHIVE_RELATIVE
         original_validate = integration._validate_pre_manifest_outputs
+        mutated = False
 
         def validate_then_mutate(*args: object, **kwargs: object) -> None:
+            nonlocal mutated
             original_validate(*args, **kwargs)
+            if mutated:
+                return
+            mutated = True
             with archive.open("r+b") as handle:
                 handle.seek(integration.EXPECTED_ARCHIVE_BYTES // 2)
                 value = handle.read(1)
@@ -720,12 +725,17 @@ class ProjectIntelligenceIntegrationTests(unittest.TestCase):
         original_manifest = manifest.read_bytes()
         original_render = integration.render_skill
         original_validate = integration._validate_pre_manifest_outputs
+        mutated = False
 
         def evolved_render(skill: object, binding: object) -> bytes:
             return original_render(skill, binding) + b"\n<!-- archive-race -->\n"
 
         def validate_then_mutate(*args: object, **kwargs: object) -> None:
+            nonlocal mutated
             original_validate(*args, **kwargs)
+            if mutated:
+                return
+            mutated = True
             with archive.open("r+b") as handle:
                 handle.seek(integration.EXPECTED_ARCHIVE_BYTES // 2)
                 value = handle.read(1)
@@ -967,7 +977,7 @@ class ProjectIntelligenceIntegrationTests(unittest.TestCase):
         second_destination = repository / integration.RUNTIME_RELATIVE / names[1]
         first_original = (first_destination / "SKILL.md").read_bytes()
         second_original = (second_destination / "SKILL.md").read_bytes()
-        original_replace = integration.os.replace
+        original_rename_noreplace = integration._rename_noreplace_at
         previous_manifest_digest = integration.digest(
             (
                 repository
@@ -976,15 +986,23 @@ class ProjectIntelligenceIntegrationTests(unittest.TestCase):
             ).read_bytes()
         )
 
-        def fail_second_publish(source: object, destination: object) -> None:
-            source_path = Path(source)
-            destination_path = Path(destination)
+        def fail_second_publish(
+            source_fd: int,
+            source: object,
+            destination_fd: int,
+            destination: object,
+        ) -> None:
             if (
-                source_path.name.startswith(f".{names[1]}.refresh.")
-                and destination_path == second_destination
+                str(source).startswith(f".{names[1]}.refresh.")
+                and destination == names[1]
             ):
                 raise OSError("injected second tree publication failure")
-            original_replace(source, destination)
+            original_rename_noreplace(
+                source_fd,
+                str(source),
+                destination_fd,
+                str(destination),
+            )
 
         with (
             patch.object(
@@ -995,8 +1013,8 @@ class ProjectIntelligenceIntegrationTests(unittest.TestCase):
             patch.object(integration, "render_skill", evolved_render_skill),
         ):
             with patch.object(
-                integration.os,
-                "replace",
+                integration,
+                "_rename_noreplace_at",
                 side_effect=fail_second_publish,
             ):
                 with self.assertRaisesRegex(
