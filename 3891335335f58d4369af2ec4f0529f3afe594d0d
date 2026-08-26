@@ -1,0 +1,32 @@
+chore: 固化五块并行在途改动（build-cache / wallet / commercial-api / route-engine lint / 合并文档）
+
+这条提交是 `git add -A` 扫出来的：当时工作区里同时压着五块互不相干的在途工作，
+被一起固化成了一条。它**不是**一次有主题的变更 —— 写清楚构成，免得后来的人
+从 39 个文件的 diff 里反推意图。
+
+- build-cache engine：`api.py` / `native_adapters.py` / `parity_store.py` 三处实现改动，
+  连同 9 个测试文件的扩充（cas、checkpoint、coordinator、e2e、native_adapters、
+  native_toolchains、observability、overlay、parity_api）。
+  背景见 `.ai/FINDINGS-2026-08-25-build-cache-bc13-bc16.md` 与 `.ai/BUILD_CACHE_PROGRESS.md`。
+
+- wallet（预付余额与充值）：`V73__wallet_prepaid_balance_and_topup.sql` 大幅扩写，
+  外加 `WalletLedgerLiveTest`、`WalletMigrationContractTest`、`wallet_behaviour_test.sql`。
+  背景见 `.ai/EVIDENCE-2026-08-25-wallet-p1.md`。
+
+- commercial-api：支付回调与计费数据源的五个 Java 文件
+  （`BillingDatabaseConfiguration`、`JdbcOrderPorts`、`PaymentCallbackPipeline`、
+  `PaymentCallbackPorts`、`PaymentCallbackConfiguration`）。
+
+- polyglot-route-engine：**纯 lint 收尾，零语义变化**。main 侧既有的 18 条 ruff
+  （I001×4 / E501×5 / B009×7 / UP035 / S108）与合并带进来的 1 条 I001 一起修掉；
+  `_toolchain_receipt` 的参数注解由 `object` 改为 `ExactToolchain` —— B009 那种改法
+  （`getattr(x,"y")` → `x.y`）会让 mypy strict 多报 7 条，注解才是真问题。
+  实测：`ruff check src tests` = 0；`mypy src` = 5，与 `git archive HEAD` 的 main 独跑
+  逐条相同；全套 pytest 与改前逐条相同（1175 failed / 874 passed / 80 skipped / 25 errors）。
+  手工改的四处用 `ast.dump(ast.parse(...))` 比过，AST 完全一致。
+  详见 `MERGE_NOTES_perf_into_main.md` 的「第八轮」与两条补记。
+
+- 门禁与文档：新增 `gate-triage.sh`（跑 14 条门禁并把失败分成
+  MERGE / PRE-EXIST / ENV / UNKNOWN 四类，`--baseline-ref` 会取一份基线做差）、
+  `.gitignore`、`MERGE_NOTES_perf_into_main.md` 与三份 `.ai/` 记录。
+  注：`gate-triage.sh` 是临时产物，本不该被跟踪 —— 见后续的 `git rm --cached`。
