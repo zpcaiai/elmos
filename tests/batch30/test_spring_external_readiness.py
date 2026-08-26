@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -62,6 +64,55 @@ class SpringExternalReadinessTests(unittest.TestCase):
                 READINESS.corpus_readiness(corpus, "holdout")["status"],
                 "EVIDENCE_PENDING",
             )
+
+    def test_rootless_preflight_retries_transient_engine_unavailability(self) -> None:
+        unavailable = subprocess.CompletedProcess(
+            args=[],
+            returncode=2,
+            stdout=json.dumps({"reason": "CONTAINER_ENGINE_UNAVAILABLE"}),
+            stderr="",
+        )
+        ready = subprocess.CompletedProcess(
+            args=[],
+            returncode=0,
+            stdout=json.dumps({"status": "READY"}),
+            stderr="",
+        )
+        with tempfile.TemporaryDirectory(prefix="spring-readiness-engine-") as directory:
+            engine = Path(directory) / "podman"
+            engine.touch()
+            with patch.object(
+                READINESS.subprocess,
+                "run",
+                side_effect=[unavailable, ready],
+            ) as run, patch.object(READINESS.time, "sleep") as sleep:
+                result = READINESS.rootless_preflight(engine)
+
+        self.assertEqual(result["status"], "PREFLIGHT_READY")
+        self.assertEqual(result["attempts"], 2)
+        self.assertEqual(run.call_count, 2)
+        sleep.assert_called_once_with(READINESS.PREFLIGHT_RETRY_DELAY_SECONDS)
+
+    def test_rootless_preflight_does_not_retry_policy_failure(self) -> None:
+        blocked = subprocess.CompletedProcess(
+            args=[],
+            returncode=2,
+            stdout=json.dumps({"reason": "ROOTLESS_CONTAINER_ENGINE_REQUIRED"}),
+            stderr="",
+        )
+        with tempfile.TemporaryDirectory(prefix="spring-readiness-engine-") as directory:
+            engine = Path(directory) / "docker"
+            engine.touch()
+            with patch.object(
+                READINESS.subprocess, "run", return_value=blocked
+            ) as run, patch.object(READINESS.time, "sleep") as sleep:
+                result = READINESS.rootless_preflight(engine)
+
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["reason"], "ROOTLESS_CONTAINER_ENGINE_REQUIRED")
+        self.assertEqual(result["attempts"], 1)
+        run.assert_called_once()
+        sleep.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -13,6 +13,7 @@ import argparse
 import json
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +21,11 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PACK = ROOT / "framework-packs" / "spring-to-boot-4-1-0"
 ROOTLESS_RUNNER = ROOT / "scripts" / "operations" / "rootless_project_runner.py"
+# A Podman machine can briefly reject `info` while its VM or API socket is
+# coming up. Retry only that transport-level condition; policy failures such
+# as a non-rootless engine must remain immediate and explicit.
+PREFLIGHT_MAX_ATTEMPTS = 3
+PREFLIGHT_RETRY_DELAY_SECONDS = 0.5
 EXTERNAL_EVIDENCE_BOUNDARY = {
     "authorized_customer_repository": "NOT_RUN",
     "customer_holdout": "NOT_RUN",
@@ -87,41 +93,58 @@ def rootless_preflight(engine: Path | None) -> dict[str, Any]:
             "engine": str(engine),
             "reason": "CONTAINER_ENGINE_INVALID",
         }
-    try:
-        result = subprocess.run(
-            [sys.executable, str(ROOTLESS_RUNNER), "preflight", "--engine", str(engine)],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            timeout=30,
-            check=False,
-        )
-    except (OSError, subprocess.SubprocessError) as exc:
-        return {
-            "role": "protected_rootless_runner",
-            "status": "BLOCKED",
-            "engine": str(engine),
-            "reason": f"PREFLIGHT_EXECUTION_FAILED:{type(exc).__name__}",
-        }
-    try:
-        payload = json.loads(result.stdout)
-    except json.JSONDecodeError:
-        payload = {}
-    if not isinstance(payload, dict):
-        payload = {}
-    if result.returncode == 0 and payload.get("status") == "READY":
-        status = "PREFLIGHT_READY"
-        reason = "PREFLIGHT_ONLY_EXECUTION_NOT_RUN"
-    else:
-        status = "BLOCKED"
+    command = [
+        sys.executable,
+        str(ROOTLESS_RUNNER),
+        "preflight",
+        "--engine",
+        str(engine),
+    ]
+    for attempt in range(1, PREFLIGHT_MAX_ATTEMPTS + 1):
+        try:
+            result = subprocess.run(
+                command,
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=False,
+            )
+        except (OSError, subprocess.SubprocessError) as exc:
+            return {
+                "role": "protected_rootless_runner",
+                "status": "BLOCKED",
+                "engine": str(engine),
+                "reason": f"PREFLIGHT_EXECUTION_FAILED:{type(exc).__name__}",
+                "attempts": attempt,
+            }
+        try:
+            payload = json.loads(result.stdout)
+        except json.JSONDecodeError:
+            payload = {}
+        if not isinstance(payload, dict):
+            payload = {}
+        if result.returncode == 0 and payload.get("status") == "READY":
+            return {
+                "role": "protected_rootless_runner",
+                "status": "PREFLIGHT_READY",
+                "engine": str(engine),
+                "reason": "PREFLIGHT_ONLY_EXECUTION_NOT_RUN",
+                "exit_code": result.returncode,
+                "attempts": attempt,
+            }
         reason = str(payload.get("reason") or "PREFLIGHT_FAILED")
-    return {
-        "role": "protected_rootless_runner",
-        "status": status,
-        "engine": str(engine),
-        "reason": reason,
-        "exit_code": result.returncode,
-    }
+        if reason != "CONTAINER_ENGINE_UNAVAILABLE" or attempt == PREFLIGHT_MAX_ATTEMPTS:
+            return {
+                "role": "protected_rootless_runner",
+                "status": "BLOCKED",
+                "engine": str(engine),
+                "reason": reason,
+                "exit_code": result.returncode,
+                "attempts": attempt,
+            }
+        time.sleep(PREFLIGHT_RETRY_DELAY_SECONDS)
+    raise AssertionError("preflight retry loop exhausted unexpectedly")
 
 
 def assess(pack: Path, *, engine: Path | None = None) -> dict[str, Any]:
