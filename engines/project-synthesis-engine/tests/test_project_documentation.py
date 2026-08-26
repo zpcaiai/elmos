@@ -165,4 +165,10 @@ def test_markdown_document_pack_is_in_the_download_archive(tmp_path: Path) -> No
     assert result["status"] == "ARCHIVED"
     with zipfile.ZipFile(archive) as bundle:
         archived = set(bundle.namelist())
-    assert {f"generated-task/{path}" for path in DOCUMENT_SOURCE_REFS} <= archived
+    # The archive root is the PROJECT name, not the output directory name:
+    # `cli._archive_workspace` reads it from the blueprint and validates it
+    # against an identity pattern (`ARCHIVE_PROJECT_IDENTITY_INVALID`), and
+    # `test_archive_includes_verified_lockfiles` pins the same rule from a
+    # directory called `workspace`. An unzipped deliverable is named after the
+    # project, not after the scratch directory that produced it.
+    assert {f"notes-docs-service/{path}" for path in DOCUMENT_SOURCE_REFS} <= archived
