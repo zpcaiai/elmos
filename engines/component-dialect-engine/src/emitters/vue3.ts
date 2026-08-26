@@ -51,6 +51,8 @@ function exprSource(expr: Expr, stateNames: ReadonlySet<string>, inScript: boole
     }
     case "stringMethod":
       return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, stateNames, inScript)).join(", ")})`;
+    case "numericFunction": return `Math.${expr.function}(${expr.args.map((arg) => exprSource(arg, stateNames, inScript)).join(", ")})`;
+    case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand, stateNames, inScript)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary":

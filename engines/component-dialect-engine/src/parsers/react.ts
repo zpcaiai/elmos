@@ -49,14 +49,22 @@ interface StaticRegexDefinition {
   readonly pattern: string;
   readonly flags: string;
 }
-type StaticDefinition = ReadonlyMap<string, StaticStringMapValue> | StaticRegexDefinition;
+interface StaticCssModuleDefinition {
+  readonly kind: "css-module";
+}
+type StaticDefinition = ReadonlyMap<string, StaticStringMapValue> | StaticRegexDefinition | StaticCssModuleDefinition;
 type StaticStringMaps = ReadonlyMap<string, StaticDefinition>;
 
 function isStaticRegexDefinition(value: StaticDefinition): value is StaticRegexDefinition {
-  return !(
-    value instanceof Map
-    || (typeof value === "object" && value !== null && typeof (value as ReadonlyMap<string, unknown>).entries === "function")
-  );
+  return typeof value === "object" && value !== null && "kind" in value && value.kind === "regex";
+}
+
+function isStaticCssModuleDefinition(value: StaticDefinition): value is StaticCssModuleDefinition {
+  return typeof value === "object" && value !== null && "kind" in value && value.kind === "css-module";
+}
+
+function isStaticStringMapDefinition(value: StaticDefinition): value is ReadonlyMap<string, StaticStringMapValue> {
+  return !isStaticRegexDefinition(value) && !isStaticCssModuleDefinition(value);
 }
 
 function regexDefinitionFromNode(node: ts.Expression): StaticRegexDefinition | null {
@@ -98,6 +106,12 @@ function regexDefinitionFromNode(node: ts.Expression): StaticRegexDefinition | n
 
 function collectStaticStringMaps(sourceFile: ts.SourceFile): StaticStringMaps {
   const maps = new Map<string, StaticDefinition>();
+  for (const statement of sourceFile.statements) {
+    if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) continue;
+    if (!/\.module\.css$/u.test(statement.moduleSpecifier.text)) continue;
+    const defaultImport = statement.importClause?.name;
+    if (defaultImport !== undefined) maps.set(defaultImport.text, { kind: "css-module" });
+  }
   for (const statement of sourceFile.statements) {
     if (!ts.isVariableStatement(statement)) continue;
     for (const declaration of statement.declarationList.declarations) {
@@ -415,6 +429,14 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
   if (ts.isIdentifier(node)) return { kind: "ident", name: node.text };
   if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
     const methodName = node.expression.name.text;
+    if (ts.isIdentifier(node.expression.expression) && node.expression.expression.text === "Math" && (methodName === "min" || methodName === "max")) {
+      require_(node.arguments.length >= 1 && node.arguments.length <= 8, "CERTIFIED_COMPONENT_NUMERIC_FUNCTION_ARITY", `${methodName} expects between 1 and 8 arguments`);
+      return {
+        kind: "numericFunction",
+        function: methodName,
+        args: node.arguments.map((argument) => parseExpr(argument, staticMaps, eventParameter)),
+      };
+    }
     if (methodName === "test" && ts.isIdentifier(node.expression.expression)) {
       const definition = staticMaps.get(node.expression.expression.text);
       require_(definition !== undefined && isStaticRegexDefinition(definition), "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `regex test receiver ${node.expression.expression.text} is not a declared certified static regular expression`);
@@ -432,7 +454,7 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
   }
   if (ts.isPropertyAccessExpression(node) && ts.isElementAccessExpression(node.expression) && ts.isIdentifier(node.expression.expression)) {
     const table = staticMaps.get(node.expression.expression.text);
-    require_(table !== undefined && !isStaticRegexDefinition(table), "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `computed access ${node.expression.getText()} is not a declared certified static string map`);
+    require_(table !== undefined && isStaticStringMapDefinition(table), "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `computed access ${node.expression.getText()} is not a declared certified static string map`);
     require_(node.expression.argumentExpression !== undefined, "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `computed access ${node.expression.getText()} is missing its key`);
     const fieldTables = new Map<string, string>();
     for (const [key, entry] of table.entries()) {
@@ -442,6 +464,12 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
       fieldTables.set(key, field);
     }
     return staticLookupExpression(fieldTables, parseExpr(node.expression.argumentExpression, staticMaps));
+  }
+  if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression)) {
+    const definition = staticMaps.get(node.expression.text);
+    if (definition !== undefined && isStaticCssModuleDefinition(definition)) {
+      return { kind: "cssModuleClass", className: node.name.text };
+    }
   }
   if (ts.isPropertyAccessExpression(node) && node.name.text === "length") {
     return { kind: "arrayLength", operand: parseExpr(node.expression, staticMaps, eventParameter) };
@@ -473,7 +501,7 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
   }
   if (ts.isElementAccessExpression(node) && ts.isIdentifier(node.expression) && node.argumentExpression !== undefined) {
     const table = staticMaps.get(node.expression.text);
-    require_(table !== undefined && !isStaticRegexDefinition(table), "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `computed access ${node.expression.text}[...] is not a declared certified static string map`);
+    require_(table !== undefined && isStaticStringMapDefinition(table), "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `computed access ${node.expression.text}[...] is not a declared certified static string map`);
     const values = new Map<string, string>();
     for (const [key, entry] of table.entries()) {
       require_(typeof entry === "string", "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `static map ${node.expression.text} entry ${key} is an object and must select a field`);
@@ -942,6 +970,12 @@ function expandLocalExpression(expr: Expr, definitions: ReadonlyMap<string, Loca
       receiver: expandLocalExpression(expr.receiver, definitions, ownerOrder, stack),
       args: expr.args.map((arg) => expandLocalExpression(arg, definitions, ownerOrder, stack)),
     };
+    case "numericFunction": return {
+      kind: "numericFunction",
+      function: expr.function,
+      args: expr.args.map((arg) => expandLocalExpression(arg, definitions, ownerOrder, stack)),
+    };
+    case "cssModuleClass": return expr;
     case "eventValue": return expr;
     case "regexTest": return {
       kind: "regexTest",
@@ -962,7 +996,7 @@ function expandLocalExpression(expr: Expr, definitions: ReadonlyMap<string, Loca
 function staticObjectAliasFields(initializer: ts.Expression, staticMaps: StaticStringMaps): ReadonlyMap<string, Expr> | null {
   if (!ts.isElementAccessExpression(initializer) || !ts.isIdentifier(initializer.expression) || initializer.argumentExpression === undefined) return null;
   const table = staticMaps.get(initializer.expression.text);
-  if (table === undefined || isStaticRegexDefinition(table)) return null;
+  if (table === undefined || !isStaticStringMapDefinition(table)) return null;
   const key = parseExpr(initializer.argumentExpression, staticMaps);
   const fieldNames = new Set<string>();
   for (const entry of table.values()) {

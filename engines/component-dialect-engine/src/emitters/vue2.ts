@@ -54,6 +54,8 @@ function exprSource(expr: Expr, inScript: boolean): string {
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, inScript)).join(", ")})`;
+    case "numericFunction": return `Math.${expr.function}(${expr.args.map((arg) => exprSource(arg, inScript)).join(", ")})`;
+    case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand, inScript)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;

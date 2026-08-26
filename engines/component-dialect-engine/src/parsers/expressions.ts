@@ -114,6 +114,10 @@ export function parseExprNode(node: ts.Expression): Expr {
   if (ts.isNonNullExpression(node)) return parseExprNode(node.expression);
   if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
     const methodName = node.expression.name.text;
+    if (ts.isIdentifier(node.expression.expression) && node.expression.expression.text === "Math" && (methodName === "min" || methodName === "max")) {
+      require_(node.arguments.length >= 1 && node.arguments.length <= 8, "CERTIFIED_COMPONENT_NUMERIC_FUNCTION_ARITY", `${methodName} expects between 1 and 8 arguments`);
+      return { kind: "numericFunction", function: methodName, args: node.arguments.map(parseExprNode) };
+    }
     if (methodName === "test") {
       const regex = regexParts(node.expression.expression);
       require_(regex !== null, "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", "regex test receiver must be a literal regular expression");

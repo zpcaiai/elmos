@@ -152,6 +152,34 @@ describe("React parsing (real TypeScript Compiler API)", () => {
     expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
     expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
   });
+
+  it("accepts only static Math bounds and CSS Module class tokens", () => {
+    const ir = parseReactComponent(`
+      import styles from "./Empty.module.css";
+      function Empty({ count }: { count: number }) {
+        return <div className={styles.empty}>{Math.min(100, Math.max(0, count))}</div>;
+      }
+    `, "Empty.tsx");
+    expect(ir.root).toMatchObject({
+      kind: "element",
+      attrs: [{ kind: "dynamic", name: "class", value: { kind: "cssModuleClass", className: "empty" } }],
+      children: [{
+        kind: "text",
+        value: {
+          kind: "numericFunction",
+          function: "min",
+          args: [{ kind: "literal", literal: { type: "number", value: 100 } }, {
+            kind: "numericFunction",
+            function: "max",
+          }],
+        },
+      }],
+    });
+    expect(emitReact(ir)).toContain('className={"empty"}');
+    expect(emitReact(ir)).toContain("Math.min(100, Math.max(0, count))");
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
 });
 
 describe("cross-framework round trip", () => {

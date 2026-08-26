@@ -86,7 +86,8 @@ destructured props object, `useState` state, and a single root element.
   does not know what that name means.
 - **State:** `useState` with a literal initial value (Vue: `ref()`).
 - **Expressions:** identifiers, literals, `! && || + - * / %`, comparisons,
-  and ternaries, plus the bounded pure string methods `trim`, `toUpperCase`,
+  and ternaries, plus the bounded pure numeric functions `Math.min`/
+  `Math.max` (1–8 numeric arguments), the bounded pure string methods `trim`, `toUpperCase`,
   `toLowerCase`, `replaceAll`, and `includes`. A stateless regular-expression
   predicate is supported only as a literal or a module-scope static regex,
   with a 256-character pattern limit and `i/m/s/u` flags; global/sticky
@@ -102,7 +103,10 @@ destructured props object, `useState` state, and a single root element.
   (no submit event on RN, so `onSubmit` would be silently dropped), and
   `img`/`video` (need asset resolution, which is a feature not a tag).
 - **Attributes:** `class id href type placeholder value disabled name for
-  checked maxLength`, static or bound to a certified expression.
+  checked maxLength`, static or bound to a certified expression. A default
+  import from `*.module.css` may provide a static class token such as
+  `styles.empty`; the token is preserved, but the source stylesheet is not
+  copied or certified by this engine.
 - **Events:** `onClick onChange onInput onSubmit`.
 - **Structure:** nested elements, text, interpolation, a single flat
   conditional (ternary / `v-if`+`v-else` / `wx:if`+`wx:else`), and
