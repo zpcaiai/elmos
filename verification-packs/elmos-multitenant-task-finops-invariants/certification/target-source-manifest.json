@@ -3,34 +3,250 @@
   "kind": "elmos.multitenant-task-finops.target-source-manifest",
   "source_archive_digest": "sha256:aa08e08a83dbfcef06119a8973b81be1af1bfa9c32cef6c94f0210ef62628d7b",
   "files": [
-    {"path": "Makefile", "byte_size": 26929, "sha256": "sha256:716637d65f40f3f5599a31b43b98a8f6ea5df7d8e2e209de5109e02e6aa5c2b8"},
-    {"path": "apps/control-plane/src/main/java/io/elmos/controlplane/ArtifactController.java", "byte_size": 11362, "sha256": "sha256:03a95715849169f2716429e3eb512d8705e43691fc3cc882ba784d4769b2bfdb"},
-    {"path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java", "byte_size": 13408, "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"},
-    {"path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java", "byte_size": 15693, "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"},
-    {"path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java", "byte_size": 4566, "sha256": "sha256:72b23661891d38209e6d1531e2ee2cf6bcb6a6f09cadc84afa83389072e50185"},
-    {"path": "apps/control-plane/src/main/java/io/elmos/controlplane/RunnerFleetController.java", "byte_size": 15254, "sha256": "sha256:39baac33077e3025563b741b22f24e3f4d9020f8d952ad1ca1c090947dabd8fc"},
-    {"path": "apps/control-plane/src/main/java/io/elmos/controlplane/TaskFinopsConfiguration.java", "byte_size": 742, "sha256": "sha256:22653d7c996fb04db74cd31ef820872e1c7c2179385a02391aa0257b8e069143"},
-    {"path": "apps/control-plane/src/main/java/io/elmos/controlplane/TaskFinopsController.java", "byte_size": 7828, "sha256": "sha256:a6f6f39316425b8606ea49e6cdb03f95a037d0c91e164532a80cac0301cf350f"},
-    {"path": "apps/control-plane/src/test/java/io/elmos/controlplane/ControlPlanePrincipalTest.java", "byte_size": 8571, "sha256": "sha256:db9905bdfed13b43d71f3eaf1d045b14f43f2675218e7825848fb9b4034a2cd2"},
-    {"path": "apps/control-plane/src/test/java/io/elmos/controlplane/ExecutionJobControllerModernizationProofTest.java", "byte_size": 9361, "sha256": "sha256:b3c849eb24d5b1ee6652671ca3d69838d1a40eaf02beb1614c77b0ff86a0769a"},
-    {"path": "apps/control-plane/src/test/java/io/elmos/controlplane/TaskFinopsControllerTest.java", "byte_size": 3633, "sha256": "sha256:f8706e142191991f9663462a39785536891f3a00517cc855b3ef57cfeeec1004"},
-    {"path": "apps/runner-agent/src/main/java/io/elmos/runner/ControlPlaneClient.java", "byte_size": 18902, "sha256": "sha256:8679cb47080f5b4a80b2305dc3557c75c0fb4b8be0a1e05fe3873a26e2c64526"},
-    {"path": "apps/runner-agent/src/main/java/io/elmos/runner/HeartbeatPump.java", "byte_size": 5484, "sha256": "sha256:e5329ededf7612ce78c8de62957672878f288cea879655c150f3a454f46b2a40"},
-    {"path": "apps/runner-agent/src/main/java/io/elmos/runner/JobExecutor.java", "byte_size": 10095, "sha256": "sha256:e594c70f29fd2e67dd407290452060664dcc499a41532d145ab253e7b14e4c91"},
-    {"path": "apps/runner-agent/src/test/java/io/elmos/runner/AgentSelfTest.java", "byte_size": 31152, "sha256": "sha256:d3c36db54fbe96fc9e9565611c63827b9aa5f2343a50070d4404e58a3b196a8f"},
-    {"path": "apps/runner-agent/src/test/java/io/elmos/runner/FakeControlPlane.java", "byte_size": 8969, "sha256": "sha256:52bddae6113b5fedcb90ab1e239517df303f74c19c4cd38791d0a0b728c6d32f"},
-    {"path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcExecutionJobStore.java", "byte_size": 21399, "sha256": "sha256:db4248fee34886badcf184036d3db5c80d5fc3f29343ed26cd89c7cf2b398fee"},
-    {"path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcTaskFinopsStore.java", "byte_size": 26131, "sha256": "sha256:fcfbaef21a78c928ab7da4f1a2af547b67451e1aa13775c9777cf5fdca8336ed"},
-    {"path": "modules/persistence/src/main/resources/db/migration/V73__account_task_control_and_finops_runtime.sql", "byte_size": 144014, "sha256": "sha256:2295158db327cacd270e8212eda3377a43062a2a5176cac2fd28fa3f4cbe98e0"},
-    {"path": "modules/persistence/src/test/java/io/elmos/persistence/MultitenantTaskFinopsRuntimeIntegrationTest.java", "byte_size": 21570, "sha256": "sha256:d6d4502048cfb6eb8a38796490ea6bdd4e6267ba71019890af3a1b3ac1f3b3be"},
-    {"path": "modules/persistence/src/test/java/io/elmos/persistence/TaskFinopsFinancialSemanticsContractTest.java", "byte_size": 17298, "sha256": "sha256:9f6c54181c53250899ac0567debed7db3006a08768735b50a72cf079ff95b5ed"},
-    {"path": "modules/workflow/src/main/java/io/elmos/workflow/ExecutionJobPort.java", "byte_size": 6197, "sha256": "sha256:b14954d0a3acd3809dc593d9f2f7ea448c636c51bc20a7371aaf4144a0e10eb3"},
-    {"path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsPolicy.java", "byte_size": 16099, "sha256": "sha256:321aa4f85d32c985a193f94f9f20ea3ecdd4f7b62f60ead9dac69ed87c84427e"},
-    {"path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsPort.java", "byte_size": 29236, "sha256": "sha256:ae7218919cbba2fcdf96e4c96b46898a6000255859360664cd45258639a0de2d"},
-    {"path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsPolicyTest.java", "byte_size": 6712, "sha256": "sha256:cab647ab59c2bcb591a3ba44d22456b03cbc465609e96b868078c61c02e12abc"},
-    {"path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsPortTest.java", "byte_size": 7586, "sha256": "sha256:0b10e2cd528783f80ac1d02d90119eadf53359b0eb286bd99a2fcd0e55b2960c"},
-    {"path": "tests/multitenant-task-finops/test_runtime_validation.py", "byte_size": 5974, "sha256": "sha256:1c1ec3ac98a17c01a4530ef7e3482a58f1169d1b93ae69580477aaabcf5dbc26"},
-    {"path": "tooling/update_multitenant_task_finops_bindings.py", "byte_size": 14610, "sha256": "sha256:ca59ec34b2b72bfa37be29f63fe624e1b2fd339708e6555e1a97f50b626bd821"},
-    {"path": "tooling/validate_multitenant_task_finops_runtime.py", "byte_size": 29879, "sha256": "sha256:5c87d813f2965253c97d27c26f18e62fc2b2175f4682a6c2a980edf47857fcfa"}
+    {
+      "path": "Makefile",
+      "byte_size": 26929,
+      "sha256": "sha256:716637d65f40f3f5599a31b43b98a8f6ea5df7d8e2e209de5109e02e6aa5c2b8"
+    },
+    {
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ArtifactController.java",
+      "byte_size": 11362,
+      "sha256": "sha256:03a95715849169f2716429e3eb512d8705e43691fc3cc882ba784d4769b2bfdb"
+    },
+    {
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
+      "byte_size": 13408,
+      "sha256": "sha256:0cdc8e647b3256e03510bc4eb355f53cda5f30486a839d20ebe3276d1762223e"
+    },
+    {
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
+      "byte_size": 15693,
+      "sha256": "sha256:65e2c5ef3d43974578c45892af0d0b7f3000977c3cd1479b6c92d278ae9891ac"
+    },
+    {
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/OidcTenantMembershipFilter.java",
+      "byte_size": 4566,
+      "sha256": "sha256:72b23661891d38209e6d1531e2ee2cf6bcb6a6f09cadc84afa83389072e50185"
+    },
+    {
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/RunnerFleetController.java",
+      "byte_size": 15254,
+      "sha256": "sha256:6850756f4448a6955616a675884d45d96a9c29fdb3ba3c42600e18bb946436c9"
+    },
+    {
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/TaskFinopsConfiguration.java",
+      "byte_size": 1471,
+      "sha256": "sha256:e467b62cbd3549d4d4dbc609526720f99ea32236677713754ed3fce6ee2fd700"
+    },
+    {
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/TaskFinopsController.java",
+      "byte_size": 7828,
+      "sha256": "sha256:a6f6f39316425b8606ea49e6cdb03f95a037d0c91e164532a80cac0301cf350f"
+    },
+    {
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/TaskFinopsOperationsController.java",
+      "byte_size": 15341,
+      "sha256": "sha256:4d2a9e2c4a345c9c6949f3bb00999fc5d7c890a55977172b36db0f765dc8faee"
+    },
+    {
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/ControlPlanePrincipalTest.java",
+      "byte_size": 8571,
+      "sha256": "sha256:db9905bdfed13b43d71f3eaf1d045b14f43f2675218e7825848fb9b4034a2cd2"
+    },
+    {
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/ExecutionJobControllerModernizationProofTest.java",
+      "byte_size": 9361,
+      "sha256": "sha256:b3c849eb24d5b1ee6652671ca3d69838d1a40eaf02beb1614c77b0ff86a0769a"
+    },
+    {
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/TaskFinopsControllerTest.java",
+      "byte_size": 3633,
+      "sha256": "sha256:f8706e142191991f9663462a39785536891f3a00517cc855b3ef57cfeeec1004"
+    },
+    {
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/TaskFinopsOperationsControllerTest.java",
+      "byte_size": 9994,
+      "sha256": "sha256:96fe5da00127c9618c39250d77946c7d62633d7574adb9f40563e290d328104c"
+    },
+    {
+      "path": "apps/runner-agent/src/main/java/io/elmos/runner/ControlPlaneClient.java",
+      "byte_size": 18902,
+      "sha256": "sha256:8679cb47080f5b4a80b2305dc3557c75c0fb4b8be0a1e05fe3873a26e2c64526"
+    },
+    {
+      "path": "apps/runner-agent/src/main/java/io/elmos/runner/HeartbeatPump.java",
+      "byte_size": 5484,
+      "sha256": "sha256:e5329ededf7612ce78c8de62957672878f288cea879655c150f3a454f46b2a40"
+    },
+    {
+      "path": "apps/runner-agent/src/main/java/io/elmos/runner/JobExecutor.java",
+      "byte_size": 10095,
+      "sha256": "sha256:e594c70f29fd2e67dd407290452060664dcc499a41532d145ab253e7b14e4c91"
+    },
+    {
+      "path": "apps/runner-agent/src/test/java/io/elmos/runner/AgentSelfTest.java",
+      "byte_size": 31152,
+      "sha256": "sha256:d3c36db54fbe96fc9e9565611c63827b9aa5f2343a50070d4404e58a3b196a8f"
+    },
+    {
+      "path": "apps/runner-agent/src/test/java/io/elmos/runner/FakeControlPlane.java",
+      "byte_size": 8969,
+      "sha256": "sha256:52bddae6113b5fedcb90ab1e239517df303f74c19c4cd38791d0a0b728c6d32f"
+    },
+    {
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcExecutionJobStore.java",
+      "byte_size": 21587,
+      "sha256": "sha256:9ce243bc5cc7ac29219eb0fded10df52268d308bc011e8e42e981d6cf34562c5"
+    },
+    {
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcTaskFinopsOperationsStore.java",
+      "byte_size": 41344,
+      "sha256": "sha256:e3259b56e1f97d857c750bb2e9642100cfefbb4551ff9f2cdc3e48f2628490fb"
+    },
+    {
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcTaskFinopsStore.java",
+      "byte_size": 26131,
+      "sha256": "sha256:825f53e64997ce2cfcea1c59b7f27a6340de603bcdbd6ccb117745b187b9102a"
+    },
+    {
+      "path": "modules/persistence/src/main/resources/db/migration/V77_1__task_finops_recovery_lifecycle_and_settlement.sql",
+      "byte_size": 87964,
+      "sha256": "sha256:84b7796fc98df85b157047707eb9167e521545dd32bbd2ddcb7dec47c62021a0"
+    },
+    {
+      "path": "modules/persistence/src/main/resources/db/migration/V77_2__task_finops_analytics_rebuild_and_exports.sql",
+      "byte_size": 29670,
+      "sha256": "sha256:3276ea119b8a30e60780b291f14f2ad229c44fa63362ff1f328f51280efa1c5a"
+    },
+    {
+      "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
+      "byte_size": 157198,
+      "sha256": "sha256:b58da09ec98a24ee18990729dd0728f7fdd6ed99050ea125b2c4d540b404d3bb"
+    },
+    {
+      "path": "modules/persistence/src/test/java/io/elmos/persistence/MultitenantTaskFinopsRuntimeIntegrationTest.java",
+      "byte_size": 26030,
+      "sha256": "sha256:6d24b0760ad53fdcfea3edfa0863bdea93f17394ab0367f2924aa9c86a5ac19f"
+    },
+    {
+      "path": "modules/persistence/src/test/java/io/elmos/persistence/TaskFinopsFinancialSemanticsContractTest.java",
+      "byte_size": 20258,
+      "sha256": "sha256:3f613bd67141852b3d7b836a8f85c2a5cb7b2f602900ab7082739fb0e368f07f"
+    },
+    {
+      "path": "modules/persistence/src/test/java/io/elmos/persistence/TaskFinopsOperationsMigrationContractTest.java",
+      "byte_size": 21291,
+      "sha256": "sha256:d93dfe2787fbdda00c32eff2ab9518795b665904b676c61c7c9987933b88135d"
+    },
+    {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/CheckpointForkPolicy.java",
+      "byte_size": 11272,
+      "sha256": "sha256:90e6617587901221de9d8816453e50756b4fa94e24caf052f78f3b7794eae317"
+    },
+    {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/ExecutionJobPort.java",
+      "byte_size": 6197,
+      "sha256": "sha256:135ad8da059166962bcdf5399b8ed640a3dfd642c0f6d72390dec0bf9fa8bb16"
+    },
+    {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/PaymentSettlementReconciler.java",
+      "byte_size": 12754,
+      "sha256": "sha256:760de7587bb390b8dfe76ccece3df02cf77b764deaaca66ddb43d32d8c440abe"
+    },
+    {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsAnalytics.java",
+      "byte_size": 45646,
+      "sha256": "sha256:9792abf0867bec1803800a68db40b23d93c52e5e09ca70345826dffcff0f2acf"
+    },
+    {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsAnalyticsService.java",
+      "byte_size": 4379,
+      "sha256": "sha256:7a9e56e160b209bf15634a7659731bd3d9530c785d6621944ec2001f2ab24567"
+    },
+    {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsFeatureRollout.java",
+      "byte_size": 9505,
+      "sha256": "sha256:681672a902b6d3c0b84a23c33cc4cea85181b4fddafb77506dec589c6133eb74"
+    },
+    {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsOperationsPort.java",
+      "byte_size": 26728,
+      "sha256": "sha256:d4f02e4f516d09ebab826ec533c4357a5b0bc3ddcbc7971a823786dc1d7c1e25"
+    },
+    {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsPolicy.java",
+      "byte_size": 16099,
+      "sha256": "sha256:321aa4f85d32c985a193f94f9f20ea3ecdd4f7b62f60ead9dac69ed87c84427e"
+    },
+    {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsPort.java",
+      "byte_size": 29236,
+      "sha256": "sha256:b655ba020e28317ba5e7d915196673a3e7b4fd5d90c46e3c92ce79dd24dd4770"
+    },
+    {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/TenantLifecyclePolicy.java",
+      "byte_size": 28268,
+      "sha256": "sha256:6e75a81ee8849d5143451631e6cb9ffc9a1a6f696b24ad9b0ae7794a2cb0c0c1"
+    },
+    {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/CheckpointForkPolicyTest.java",
+      "byte_size": 6316,
+      "sha256": "sha256:77b7c938dac950b1da205aa28b31f8b4234b6f8bdd186274945fa9772c523138"
+    },
+    {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/PaymentSettlementReconcilerTest.java",
+      "byte_size": 10399,
+      "sha256": "sha256:a13327821977c16e5c74c30d4701a95f2e793b8cca372137d5f797da69dfbc2b"
+    },
+    {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsAnalyticsExportTest.java",
+      "byte_size": 12099,
+      "sha256": "sha256:02518301b1c90c6b72ebedfc7a6d078e8d1cbd491436b3d68e19004a67db5452"
+    },
+    {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsAnalyticsServiceTest.java",
+      "byte_size": 8396,
+      "sha256": "sha256:3a799c99aa15ab421a63e2bed19fb2df421ba7902810ba687af7249679c03a6c"
+    },
+    {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsAnalyticsTest.java",
+      "byte_size": 9307,
+      "sha256": "sha256:e176eab799d9ba708525ece7a7501de9b1316f96ccc786c2646c3b9cd50db424"
+    },
+    {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsFeatureRolloutTest.java",
+      "byte_size": 7601,
+      "sha256": "sha256:ac36223e057adf55911489b34bc83e11a0ca881c92b0c6eadd0c339ea4ba11d8"
+    },
+    {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsPolicyTest.java",
+      "byte_size": 6712,
+      "sha256": "sha256:cab647ab59c2bcb591a3ba44d22456b03cbc465609e96b868078c61c02e12abc"
+    },
+    {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsPortTest.java",
+      "byte_size": 7586,
+      "sha256": "sha256:0b10e2cd528783f80ac1d02d90119eadf53359b0eb286bd99a2fcd0e55b2960c"
+    },
+    {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/TenantLifecyclePolicyTest.java",
+      "byte_size": 15788,
+      "sha256": "sha256:3aa56104716b61bbd34dfd5d4e24f5d59e29126a343a162f4839ab5934eae916"
+    },
+    {
+      "path": "tests/multitenant-task-finops/test_runtime_validation.py",
+      "byte_size": 5974,
+      "sha256": "sha256:1c1ec3ac98a17c01a4530ef7e3482a58f1169d1b93ae69580477aaabcf5dbc26"
+    },
+    {
+      "path": "tooling/update_multitenant_task_finops_bindings.py",
+      "byte_size": 21389,
+      "sha256": "sha256:360c10fec346bf24f1b36ed62a4a15a112b30fc115d7db8f609e5d0e0585f6e5"
+    },
+    {
+      "path": "tooling/validate_multitenant_task_finops_runtime.py",
+      "byte_size": 29879,
+      "sha256": "sha256:5c87d813f2965253c97d27c26f18e62fc2b2175f4682a6c2a980edf47857fcfa"
+    }
   ]
 }

@@ -381,7 +381,7 @@ public interface TaskFinopsPort {
     }
 
     /**
-     * Signed allocation. V73 rejects over-allocation; a partial allocation is
+     * Signed allocation. V77 rejects over-allocation; a partial allocation is
      * retained as an unreconciled financial-summary item until conservation is
      * complete.
      */

@@ -1,4 +1,4 @@
--- ELMOS V73: repository-owned multi-tenant task control and FinOps runtime.
+-- ELMOS V77: repository-owned multi-tenant task control and FinOps runtime.
 --
 -- This migration is intentionally not derived from the supplied V100-V102
 -- reference SQL. It reconciles the requested behavior with the authoritative
@@ -70,6 +70,8 @@ ALTER TABLE execution_jobs
     ADD COLUMN monetary_budget_minor numeric(30,6),
     ADD COLUMN monetary_budget_currency char(3),
     ADD COLUMN request_id varchar(160),
+    ADD COLUMN tenant_tombstoned_at timestamptz,
+    ADD COLUMN tenant_lifecycle_job_id varchar(96),
     ADD CONSTRAINT execution_jobs_account_scope_uq
         UNIQUE (job_id, organization_id, account_id),
     ADD CONSTRAINT execution_jobs_mtf_shape CHECK (
@@ -110,6 +112,10 @@ ALTER TABLE execution_jobs
             monetary_budget_minor >= 0
             AND monetary_budget_currency ~ '^[A-Z]{3}$'
         )
+    ),
+    ADD CONSTRAINT execution_jobs_tenant_tombstone_shape CHECK (
+        (tenant_tombstoned_at IS NULL AND tenant_lifecycle_job_id IS NULL)
+        OR (tenant_tombstoned_at IS NOT NULL AND tenant_lifecycle_job_id IS NOT NULL)
     );
 
 -- Backfill only an unambiguous canonical actor/account mapping. Rows that used
@@ -859,11 +865,130 @@ CREATE UNIQUE INDEX invoice_lines_provider_line_uq
 -- 6. RLS and direct-access boundary
 -- ---------------------------------------------------------------------------
 
+-- Custom GUCs are routing hints, not authority: an ordinary PostgreSQL login
+-- can SET an arbitrary custom key.  Bind the authenticated identity to the
+-- exact backend transaction in a table that capability roles cannot mutate,
+-- and make every MTF RLS policy consult this trusted row plus live membership.
+CREATE TABLE task_finops_bound_contexts (
+    backend_pid integer NOT NULL,
+    transaction_id bigint NOT NULL,
+    session_role name NOT NULL,
+    organization_id varchar(96) NOT NULL,
+    account_id varchar(96) NOT NULL,
+    actor_id varchar(128) NOT NULL,
+    request_id varchar(160) NOT NULL,
+    bound_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+    PRIMARY KEY (backend_pid, transaction_id, session_role)
+);
+REVOKE ALL ON task_finops_bound_contexts FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION elmos_mtf_context_matches(
+    p_organization_id varchar,
+    p_account_id varchar
+) RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+SET row_security = on
+AS $$
+    SELECT EXISTS (
+        SELECT 1
+          FROM task_finops_bound_contexts bound
+          JOIN accounts account
+            ON account.account_id = bound.account_id
+           AND account.status = 'ACTIVE'
+          JOIN organization_memberships membership
+            ON membership.organization_id = bound.organization_id
+           AND membership.account_ref = bound.account_id
+           AND membership.member_state = 'ACTIVE'
+          JOIN user_identities identity
+            ON identity.organization_id = bound.organization_id
+           AND identity.account_ref = bound.account_id
+           AND identity.actor_id = bound.actor_id
+           AND identity.deprovisioned_at IS NULL
+         WHERE bound.backend_pid = pg_backend_pid()
+           AND bound.transaction_id = txid_current()
+           AND bound.session_role = session_user
+           AND bound.organization_id = p_organization_id
+           AND bound.account_id = p_account_id
+    )
+$$;
+
+CREATE OR REPLACE FUNCTION elmos_mtf_account_context_matches(p_account_id varchar)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+SET row_security = on
+AS $$
+    SELECT EXISTS (
+        SELECT 1 FROM task_finops_bound_contexts bound
+         WHERE bound.backend_pid = pg_backend_pid()
+           AND bound.transaction_id = txid_current()
+           AND bound.session_role = session_user
+           AND bound.account_id = p_account_id
+           AND elmos_mtf_context_matches(bound.organization_id, bound.account_id)
+    )
+$$;
+
+CREATE OR REPLACE FUNCTION elmos_mtf_organization_context_matches(
+    p_organization_id varchar
+) RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+SET row_security = on
+AS $$
+    SELECT EXISTS (
+        SELECT 1 FROM task_finops_bound_contexts bound
+         WHERE bound.backend_pid = pg_backend_pid()
+           AND bound.transaction_id = txid_current()
+           AND bound.session_role = session_user
+           AND bound.organization_id = p_organization_id
+           AND elmos_mtf_context_matches(bound.organization_id, bound.account_id)
+    )
+$$;
+
+CREATE OR REPLACE FUNCTION elmos_mtf_bound_organization_id()
+RETURNS varchar
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+SET row_security = on
+AS $$
+    SELECT bound.organization_id
+      FROM task_finops_bound_contexts bound
+     WHERE bound.backend_pid = pg_backend_pid()
+       AND bound.transaction_id = txid_current()
+       AND bound.session_role = session_user
+       AND elmos_mtf_context_matches(bound.organization_id, bound.account_id)
+$$;
+
+CREATE OR REPLACE FUNCTION elmos_mtf_bound_account_id()
+RETURNS varchar
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+SET row_security = on
+AS $$
+    SELECT bound.account_id
+      FROM task_finops_bound_contexts bound
+     WHERE bound.backend_pid = pg_backend_pid()
+       AND bound.transaction_id = txid_current()
+       AND bound.session_role = session_user
+       AND elmos_mtf_context_matches(bound.organization_id, bound.account_id)
+$$;
+
 ALTER TABLE execution_account_slots ENABLE ROW LEVEL SECURITY;
 ALTER TABLE execution_account_slots FORCE ROW LEVEL SECURITY;
 CREATE POLICY account_owner_isolation ON execution_account_slots
-    USING (account_id = nullif(current_setting('app.account_id', true), ''))
-    WITH CHECK (account_id = nullif(current_setting('app.account_id', true), ''));
+    USING (elmos_mtf_account_context_matches(account_id))
+    WITH CHECK (elmos_mtf_account_context_matches(account_id));
 
 DO $$
 DECLARE table_name text;
@@ -883,10 +1008,8 @@ BEGIN
         EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY', table_name);
         EXECUTE format(
             'CREATE POLICY tenant_account_isolation ON %I ' ||
-            'USING (organization_id = nullif(current_setting(''app.organization_id'', true), '''') ' ||
-            'AND account_id = nullif(current_setting(''app.account_id'', true), '''')) ' ||
-            'WITH CHECK (organization_id = nullif(current_setting(''app.organization_id'', true), '''') ' ||
-            'AND account_id = nullif(current_setting(''app.account_id'', true), ''''))',
+            'USING (elmos_mtf_context_matches(organization_id, account_id)) ' ||
+            'WITH CHECK (elmos_mtf_context_matches(organization_id, account_id))',
             table_name
         );
     END LOOP;
@@ -897,8 +1020,8 @@ $$;
 ALTER TABLE task_finops_fx_snapshots ENABLE ROW LEVEL SECURITY;
 ALTER TABLE task_finops_fx_snapshots FORCE ROW LEVEL SECURITY;
 CREATE POLICY tenant_isolation ON task_finops_fx_snapshots
-    USING (organization_id = nullif(current_setting('app.organization_id', true), ''))
-    WITH CHECK (organization_id = nullif(current_setting('app.organization_id', true), ''));
+    USING (elmos_mtf_organization_context_matches(organization_id))
+    WITH CHECK (elmos_mtf_organization_context_matches(organization_id));
 
 REVOKE ALL ON execution_account_slots FROM PUBLIC;
 REVOKE ALL ON task_workflow_start_outbox FROM PUBLIC;
@@ -928,10 +1051,25 @@ DECLARE
     v_actor_id varchar(128) := nullif(current_setting('app.actor_id', true), '');
     v_request_id varchar(160) := nullif(current_setting('app.request_id', true), '');
     v_matches integer;
+    v_bound boolean;
 BEGIN
     IF v_organization_id IS NULL OR v_account_id IS NULL
        OR v_actor_id IS NULL OR v_request_id IS NULL THEN
         RAISE EXCEPTION 'ELMOS_MTF_IDENTITY_CONTEXT_MISSING';
+    END IF;
+
+    SELECT EXISTS (
+        SELECT 1 FROM task_finops_bound_contexts bound
+         WHERE bound.backend_pid = pg_backend_pid()
+           AND bound.transaction_id = txid_current()
+           AND bound.session_role = session_user
+           AND bound.organization_id = v_organization_id
+           AND bound.account_id = v_account_id
+           AND bound.actor_id = v_actor_id
+           AND bound.request_id = v_request_id
+    ) INTO v_bound;
+    IF NOT v_bound THEN
+        RAISE EXCEPTION 'ELMOS_MTF_IDENTITY_CONTEXT_UNBOUND';
     END IF;
 
     SELECT count(*) INTO v_matches
@@ -978,6 +1116,21 @@ BEGIN
     PERFORM set_config('app.account_id', p_account_id, true);
     PERFORM set_config('app.actor_id', p_actor_id, true);
     PERFORM set_config('app.request_id', p_request_id, true);
+    DELETE FROM task_finops_bound_contexts
+     WHERE backend_pid = pg_backend_pid()
+       AND transaction_id <> txid_current();
+    INSERT INTO task_finops_bound_contexts (
+        backend_pid, transaction_id, session_role, organization_id,
+        account_id, actor_id, request_id
+    ) VALUES (
+        pg_backend_pid(), txid_current(), session_user, p_organization_id,
+        p_account_id, p_actor_id, p_request_id
+    ) ON CONFLICT (backend_pid, transaction_id, session_role)
+      DO UPDATE SET organization_id = excluded.organization_id,
+                    account_id = excluded.account_id,
+                    actor_id = excluded.actor_id,
+                    request_id = excluded.request_id,
+                    bound_at = clock_timestamp();
     PERFORM elmos_mtf_assert_bound_context();
 
     INSERT INTO execution_account_slots(account_id, slot_number)
@@ -1056,6 +1209,9 @@ BEGIN
        AND account_id = current_setting('app.account_id')
      FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_MTF_TASK_UNKNOWN'; END IF;
+    IF v_job.tenant_tombstoned_at IS NOT NULL THEN
+        RAISE EXCEPTION 'ELMOS_MTF_TENANT_RESOURCE_TOMBSTONED';
+    END IF;
 
     SELECT * INTO v_existing
       FROM execution_job_events
@@ -1093,6 +1249,9 @@ CREATE OR REPLACE FUNCTION elmos_guard_execution_job_transition()
 RETURNS trigger
 LANGUAGE plpgsql AS $$
 BEGIN
+    IF OLD.tenant_tombstoned_at IS NOT NULL AND NEW IS DISTINCT FROM OLD THEN
+        RAISE EXCEPTION 'ELMOS_MTF_TENANT_RESOURCE_TOMBSTONED';
+    END IF;
     IF OLD.status IN (
         'SUCCEEDED', 'PARTIAL', 'FAILED', 'CANCELLED', 'LOST'
     ) AND NEW.status IS DISTINCT FROM OLD.status THEN
@@ -1199,6 +1358,9 @@ BEGIN
        OR v_job.request_digest IS DISTINCT FROM p_request_digest
        OR (v_job.account_id IS NOT NULL AND v_job.account_id <> p_account_id) THEN
         RAISE EXCEPTION 'ELMOS_MTF_TASK_IDEMPOTENCY_CONFLICT';
+    END IF;
+    IF v_job.tenant_tombstoned_at IS NOT NULL THEN
+        RAISE EXCEPTION 'ELMOS_MTF_TENANT_RESOURCE_TOMBSTONED';
     END IF;
 
     IF v_job.account_id IS NULL THEN
@@ -1329,6 +1491,7 @@ BEGIN
             ON counter.organization_id = d.organization_id
          WHERE d.dispatch_state = 'READY'
            AND d.visible_at <= now()
+           AND d.organization_id = v_runner_organization_id
            AND d.account_id IS NOT NULL
            AND d.required_capability = ANY (v_node.capabilities)
          ORDER BY coalesce(counter.leased_count, 0) ASC,
@@ -1817,14 +1980,20 @@ BEGIN
        AND account_id = current_setting('app.account_id')
        AND action = 'PAUSE_TASK' AND idempotency_key = p_idempotency_key;
     IF FOUND THEN
-        IF v_audit.target_digest IS DISTINCT FROM p_request_digest::char(64) THEN
+        IF v_audit.job_id IS DISTINCT FROM p_task_id
+           OR v_audit.target_digest IS DISTINCT FROM p_request_digest::char(64) THEN
             RAISE EXCEPTION 'ELMOS_MTF_CONTROL_IDEMPOTENCY_CONFLICT';
         END IF;
         SELECT CASE
             WHEN status = 'PAUSED' THEN 'PAUSED'
             ELSE control_state
         END INTO v_return_state
-          FROM execution_jobs WHERE job_id = p_task_id;
+          FROM execution_jobs
+         WHERE job_id = p_task_id
+           AND organization_id = current_setting('app.organization_id')
+           AND account_id = current_setting('app.account_id')
+           AND tenant_tombstoned_at IS NULL;
+        IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_MTF_TASK_UNKNOWN'; END IF;
         RETURN v_return_state;
     END IF;
 
@@ -1832,6 +2001,7 @@ BEGIN
      WHERE job_id = p_task_id
        AND organization_id = current_setting('app.organization_id')
        AND account_id = current_setting('app.account_id')
+       AND tenant_tombstoned_at IS NULL
      FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_MTF_TASK_UNKNOWN'; END IF;
     IF v_job.status IN ('SUCCEEDED', 'PARTIAL', 'FAILED', 'CANCELLED', 'LOST') THEN
@@ -1901,14 +2071,20 @@ BEGIN
        AND account_id = current_setting('app.account_id')
        AND action = 'RESUME_TASK' AND idempotency_key = p_idempotency_key;
     IF FOUND THEN
-        IF v_audit.target_digest IS DISTINCT FROM p_request_digest::char(64) THEN
+        IF v_audit.job_id IS DISTINCT FROM p_task_id
+           OR v_audit.target_digest IS DISTINCT FROM p_request_digest::char(64) THEN
             RAISE EXCEPTION 'ELMOS_MTF_CONTROL_IDEMPOTENCY_CONFLICT';
         END IF;
         SELECT CASE
             WHEN status = 'QUEUED' THEN 'WAITING_FOR_SLOT'
             ELSE control_state
         END INTO v_return_state
-          FROM execution_jobs WHERE job_id = p_task_id;
+          FROM execution_jobs
+         WHERE job_id = p_task_id
+           AND organization_id = current_setting('app.organization_id')
+           AND account_id = current_setting('app.account_id')
+           AND tenant_tombstoned_at IS NULL;
+        IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_MTF_TASK_UNKNOWN'; END IF;
         RETURN v_return_state;
     END IF;
 
@@ -1916,6 +2092,7 @@ BEGIN
      WHERE job_id = p_task_id
        AND organization_id = current_setting('app.organization_id')
        AND account_id = current_setting('app.account_id')
+       AND tenant_tombstoned_at IS NULL
      FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_MTF_TASK_UNKNOWN'; END IF;
 
@@ -1987,6 +2164,7 @@ BEGIN
      WHERE job_id = p_job_id
        AND organization_id = p_organization_id
        AND account_id = p_account_id
+       AND tenant_tombstoned_at IS NULL
      FOR UPDATE;
     IF NOT FOUND THEN
         RAISE EXCEPTION 'ELMOS_MTF_TASK_UNKNOWN';
@@ -2203,6 +2381,7 @@ BEGIN
      WHERE job_id = p_task_id
        AND organization_id = current_setting('app.organization_id')
        AND account_id = current_setting('app.account_id')
+       AND tenant_tombstoned_at IS NULL
      FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_MTF_TASK_UNKNOWN'; END IF;
     IF v_job.status NOT IN ('UNKNOWN_RESULT', 'RECONCILING') THEN
@@ -2476,14 +2655,54 @@ DECLARE
     v_cost_class varchar(32);
 BEGIN
     PERFORM elmos_mtf_assert_bound_context();
-    IF length(p_usage_entry_id) NOT BETWEEN 1 AND 96
-       OR p_run_id !~ '^[1-9][0-9]*$'
+    IF p_usage_entry_id IS NULL OR length(p_usage_entry_id) NOT BETWEEN 1 AND 96
+       OR p_task_id IS NULL OR length(p_task_id) NOT BETWEEN 1 AND 96
+       OR p_run_id IS NULL OR p_run_id !~ '^[1-9][0-9]{0,9}$'
+       OR p_provider IS NULL OR length(p_provider) NOT BETWEEN 1 AND 64
+       OR p_provider_sku IS NULL OR length(p_provider_sku) NOT BETWEEN 1 AND 128
+       OR p_usage_unit IS NULL OR p_usage_unit NOT IN (
+            'TOKEN', 'IMAGE', 'AUDIO_SECOND', 'CPU_SECOND', 'MEMORY_GIB_SECOND',
+            'GPU_SECOND', 'SANDBOX_SECOND', 'RUNNER_SECOND', 'STORAGE_BYTE_HOUR',
+            'EGRESS_BYTE', 'API_CALL', 'RENDER_SECOND', 'HUMAN_REVIEW_MINUTE')
+       OR p_quantity IS NULL OR p_unit_price_minor IS NULL OR p_fx_rate IS NULL
+       OR p_source_cost_minor IS NULL OR p_base_cost_minor IS NULL
        OR p_quantity <= 0 OR p_unit_price_minor < 0 OR p_fx_rate <= 0
+       OR scale(p_quantity) > 9
+       OR scale(p_unit_price_minor) > 9
+       OR scale(p_fx_rate) > 12
+       OR scale(p_source_cost_minor) > 6
+       OR scale(p_base_cost_minor) > 6
+       OR abs(p_quantity) >= power(10::numeric, 21)
+       OR abs(p_unit_price_minor) >= power(10::numeric, 21)
+       OR abs(p_fx_rate) >= power(10::numeric, 18)
+       OR abs(p_source_cost_minor) >= power(10::numeric, 24)
+       OR abs(p_base_cost_minor) >= power(10::numeric, 24)
+       OR p_price_book_id IS NULL OR length(p_price_book_id) NOT BETWEEN 1 AND 96
+       OR p_price_book_version IS NULL
+       OR length(p_price_book_version) NOT BETWEEN 1 AND 96
+       OR p_price_effective_at IS NULL
+       OR p_source_currency IS NULL OR p_source_currency !~ '^[A-Z]{3}$'
+       OR p_fx_snapshot_id IS NULL OR length(p_fx_snapshot_id) NOT BETWEEN 1 AND 96
+       OR p_base_currency IS NULL OR p_base_currency !~ '^[A-Z]{3}$'
+       OR p_cost_state IS NULL OR p_cost_state NOT IN (
+            'ESTIMATED', 'RESERVED', 'POSTED', 'FINAL',
+            'REVERSED', 'DISPUTED', 'UNRECONCILED')
+       OR p_reconciliation_status IS NULL OR p_reconciliation_status NOT IN (
+            'PENDING', 'RECONCILED', 'REJECTED', 'UNKNOWN', 'INCONCLUSIVE')
+       OR (p_cost_state = 'FINAL' AND p_reconciliation_status <> 'RECONCILED')
+       OR (p_provider_receipt_ref IS NOT NULL
+           AND length(p_provider_receipt_ref) NOT BETWEEN 1 AND 255)
+       OR p_period_start IS NULL OR p_period_end IS NULL OR p_occurred_at IS NULL
        OR p_period_end <= p_period_start
        OR p_occurred_at < p_period_start OR p_occurred_at > p_period_end
+       OR p_idempotency_key IS NULL
+       OR length(p_idempotency_key) NOT BETWEEN 1 AND 160
        OR p_correction_of_usage_entry_id IS NOT NULL THEN
         -- Corrections require a separate independently approved command that is
         -- intentionally unavailable while the exact dependency is unresolved.
+        RAISE EXCEPTION 'ELMOS_MTF_USAGE_ENTRY_INVALID_OR_CORRECTION_UNAPPROVED';
+    END IF;
+    IF p_run_id::bigint > 2147483647 THEN
         RAISE EXCEPTION 'ELMOS_MTF_USAGE_ENTRY_INVALID_OR_CORRECTION_UNAPPROVED';
     END IF;
     IF p_reconciliation_status = 'RECONCILED' AND p_provider_receipt_ref IS NULL THEN
@@ -2494,9 +2713,10 @@ BEGIN
      WHERE job_id = p_task_id
        AND organization_id = current_setting('app.organization_id')
        AND account_id = current_setting('app.account_id')
+       AND tenant_tombstoned_at IS NULL
      FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_MTF_TASK_UNKNOWN'; END IF;
-    IF p_run_id::integer <> v_job.workflow_run_number THEN
+    IF p_run_id::bigint <> v_job.workflow_run_number THEN
         RAISE EXCEPTION 'ELMOS_MTF_USAGE_RUN_MISMATCH';
     END IF;
     PERFORM pg_advisory_xact_lock(hashtextextended(jsonb_build_array(
@@ -2679,12 +2899,54 @@ DECLARE
     v_existing task_revenue_ledger_entries%ROWTYPE;
 BEGIN
     PERFORM elmos_mtf_require_finance_authority();
-    IF length(p_revenue_entry_id) NOT BETWEEN 1 AND 96
+    IF p_revenue_entry_id IS NULL
+       OR length(p_revenue_entry_id) NOT BETWEEN 1 AND 96
+       OR p_task_id IS NULL OR length(p_task_id) NOT BETWEEN 1 AND 96
+       OR (p_project_id IS NOT NULL AND length(p_project_id) NOT BETWEEN 1 AND 96)
+       OR p_legal_entity_id IS NULL
+       OR length(p_legal_entity_id) NOT BETWEEN 1 AND 96
+       OR p_entry_kind IS NULL OR p_entry_kind NOT IN (
+            'CHARGE', 'CREDIT', 'REFUND', 'CASH_RECEIPT',
+            'REVENUE_RECOGNITION', 'TAX', 'PAYMENT_FEE',
+            'CORRECTION', 'REVERSAL')
+       OR p_entry_state IS NULL OR p_entry_state NOT IN (
+            'RECORDED', 'POSTED', 'RECOGNIZED', 'COLLECTED',
+            'REFUNDED', 'REVERSED', 'DISPUTED', 'UNRECONCILED')
+       OR p_currency IS NULL OR p_currency !~ '^[A-Z]{3}$'
+       OR p_amount_minor IS NULL
+       OR scale(p_amount_minor) > 6
+       OR abs(p_amount_minor) >= power(10::numeric, 24)
        OR elmos_mtf_round_half_even(p_amount_minor, 6) = 0
+       OR (p_entry_kind IN ('CHARGE', 'CASH_RECEIPT', 'REVENUE_RECOGNITION')
+           AND p_amount_minor <= 0)
+       OR (p_entry_kind IN (
+            'CREDIT', 'REFUND', 'TAX', 'PAYMENT_FEE', 'REVERSAL')
+           AND p_amount_minor >= 0)
+       OR p_entry_kind = 'CORRECTION'
+       OR (p_entry_kind = 'CASH_RECEIPT'
+           AND p_entry_state NOT IN ('COLLECTED', 'UNRECONCILED'))
+       OR (p_entry_kind = 'REFUND'
+           AND p_entry_state NOT IN ('REFUNDED', 'UNRECONCILED'))
+       OR (p_entry_kind IN ('TAX', 'PAYMENT_FEE')
+           AND p_entry_state NOT IN ('RECORDED', 'POSTED', 'UNRECONCILED'))
+       OR p_effective_at IS NULL OR p_period_start IS NULL OR p_period_end IS NULL
        OR p_period_end <= p_period_start
        OR p_effective_at < p_period_start OR p_effective_at > p_period_end
+       OR p_source_type IS NULL OR length(p_source_type) NOT BETWEEN 1 AND 96
+       OR p_source_reference IS NULL
+       OR length(p_source_reference) NOT BETWEEN 1 AND 512
        OR p_correction_of_revenue_entry_id IS NOT NULL
-       OR upper(p_source_type) = 'MANUAL' THEN
+       OR upper(p_source_type) = 'MANUAL'
+       OR p_reconciliation_status IS NULL OR p_reconciliation_status NOT IN (
+            'PENDING', 'RECONCILED', 'REJECTED', 'UNKNOWN', 'INCONCLUSIVE')
+       OR p_signature_algorithm IS NULL
+       OR length(p_signature_algorithm) NOT BETWEEN 1 AND 64
+       OR p_signing_key_id IS NULL
+       OR length(p_signing_key_id) NOT BETWEEN 1 AND 255
+       OR p_signed_digest IS NULL OR p_signed_digest !~ '^[0-9a-f]{64}$'
+       OR p_signature IS NULL OR length(p_signature) NOT BETWEEN 1 AND 4096
+       OR p_idempotency_key IS NULL
+       OR length(p_idempotency_key) NOT BETWEEN 1 AND 160 THEN
         -- Manual and correction entries remain unavailable until an exact,
         -- independent approval/SoD dependency is bound and exercised.
         RAISE EXCEPTION 'ELMOS_MTF_REVENUE_ENTRY_INVALID_OR_APPROVAL_UNRESOLVED';
@@ -2693,6 +2955,7 @@ BEGIN
      WHERE job_id = p_task_id
        AND organization_id = current_setting('app.organization_id')
        AND account_id = current_setting('app.account_id')
+       AND tenant_tombstoned_at IS NULL
      FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_MTF_TASK_UNKNOWN'; END IF;
     PERFORM pg_advisory_xact_lock(hashtextextended(jsonb_build_array(
@@ -2791,8 +3054,29 @@ DECLARE
     v_allocated numeric(30,6);
 BEGIN
     PERFORM elmos_mtf_require_finance_authority();
-    IF length(p_allocation_id) NOT BETWEEN 1 AND 96
+    IF p_allocation_id IS NULL OR length(p_allocation_id) NOT BETWEEN 1 AND 96
+       OR p_revenue_entry_id IS NULL
+       OR length(p_revenue_entry_id) NOT BETWEEN 1 AND 96
+       OR p_task_id IS NULL OR length(p_task_id) NOT BETWEEN 1 AND 96
+       OR (p_project_id IS NOT NULL AND length(p_project_id) NOT BETWEEN 1 AND 96)
+       OR p_allocation_basis IS NULL OR p_allocation_basis NOT IN (
+            'DIRECT_TASK', 'DIRECT_PROJECT', 'MILESTONE', 'USAGE',
+            'SUBSCRIPTION_POLICY', 'MANUAL_APPROVED')
+       OR p_policy_version IS NULL OR length(p_policy_version) NOT BETWEEN 1 AND 64
+       OR p_currency IS NULL OR p_currency !~ '^[A-Z]{3}$'
+       OR p_amount_minor IS NULL
+       OR scale(p_amount_minor) > 6
+       OR abs(p_amount_minor) >= power(10::numeric, 24)
        OR elmos_mtf_round_half_even(p_amount_minor, 6) = 0
+       OR p_effective_at IS NULL
+       OR p_signature_algorithm IS NULL
+       OR length(p_signature_algorithm) NOT BETWEEN 1 AND 64
+       OR p_signing_key_id IS NULL
+       OR length(p_signing_key_id) NOT BETWEEN 1 AND 255
+       OR p_signed_digest IS NULL OR p_signed_digest !~ '^[0-9a-f]{64}$'
+       OR p_signature IS NULL OR length(p_signature) NOT BETWEEN 1 AND 4096
+       OR p_idempotency_key IS NULL
+       OR length(p_idempotency_key) NOT BETWEEN 1 AND 160
        OR p_allocation_basis = 'MANUAL_APPROVED' THEN
         RAISE EXCEPTION 'ELMOS_MTF_ALLOCATION_INVALID_OR_APPROVAL_UNRESOLVED';
     END IF;
@@ -2800,6 +3084,7 @@ BEGIN
      WHERE job_id = p_task_id
        AND organization_id = current_setting('app.organization_id')
        AND account_id = current_setting('app.account_id')
+       AND tenant_tombstoned_at IS NULL
      FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_MTF_TASK_UNKNOWN'; END IF;
     PERFORM pg_advisory_xact_lock(hashtextextended(jsonb_build_array(
@@ -2812,9 +3097,13 @@ BEGIN
        AND account_id = v_job.account_id
      FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_MTF_REVENUE_SOURCE_UNKNOWN'; END IF;
-    IF v_source.currency <> p_currency
+    IF v_source.job_id <> v_job.job_id
+       OR v_source.run_number <> v_job.workflow_run_number
+       OR v_source.currency <> p_currency
+       OR p_effective_at < v_source.period_start
+       OR p_effective_at > v_source.period_end
        OR sign(v_source.amount_minor) <> sign(p_amount_minor) THEN
-        RAISE EXCEPTION 'ELMOS_MTF_ALLOCATION_CURRENCY_OR_SIGN_MISMATCH';
+        RAISE EXCEPTION 'ELMOS_MTF_ALLOCATION_SOURCE_SCOPE_OR_AMOUNT_MISMATCH';
     END IF;
 
     SELECT * INTO v_existing FROM task_revenue_allocations
@@ -2901,7 +3190,8 @@ BEGIN
     SELECT * INTO v_job FROM execution_jobs
      WHERE job_id = p_job_id
        AND organization_id = current_setting('app.organization_id')
-       AND account_id = current_setting('app.account_id');
+       AND account_id = current_setting('app.account_id')
+       AND tenant_tombstoned_at IS NULL;
     IF NOT FOUND THEN RETURN NULL; END IF;
     SELECT * INTO v_dispatch FROM execution_job_dispatch
      WHERE job_id = p_job_id
@@ -2930,15 +3220,16 @@ $$;
 
 CREATE VIEW mtf_account_concurrency_status AS
 SELECT
-    current_setting('app.organization_id')::varchar AS organization_id,
+    elmos_mtf_bound_organization_id() AS organization_id,
     slot.account_id,
     3::integer AS root_task_limit,
     count(*) FILTER (WHERE slot.slot_state IN ('ACTIVE', 'RECONCILING'))::integer
         AS active_root_tasks,
     (SELECT count(*)::integer
        FROM execution_jobs waiting
-      WHERE waiting.organization_id = current_setting('app.organization_id')
+      WHERE elmos_mtf_context_matches(waiting.organization_id, waiting.account_id)
         AND waiting.account_id = slot.account_id
+        AND waiting.tenant_tombstoned_at IS NULL
         AND waiting.status = 'QUEUED'
         AND waiting.admission_state = 'WAITING_FOR_SLOT') AS waiting_root_tasks,
     count(*) FILTER (WHERE slot.slot_state = 'FREE')::integer AS available_root_slots,
@@ -2946,7 +3237,7 @@ SELECT
     CASE WHEN bool_or(slot.slot_state = 'RECONCILING')
          THEN 'UNKNOWN' ELSE 'RECONCILED' END::varchar AS reconciliation_status
 FROM execution_account_slots slot
-WHERE slot.account_id = nullif(current_setting('app.account_id', true), '')
+WHERE elmos_mtf_account_context_matches(slot.account_id)
 GROUP BY slot.account_id;
 
 CREATE VIEW mtf_task_events AS
@@ -2986,8 +3277,8 @@ SELECT
     event.payload_digest::varchar AS evidence_digest
 FROM execution_job_events event
 JOIN execution_jobs job ON job.job_id = event.job_id
-WHERE event.account_id = nullif(current_setting('app.account_id', true), '')
-  AND event.organization_id = nullif(current_setting('app.organization_id', true), '');
+WHERE elmos_mtf_context_matches(event.organization_id, event.account_id)
+  AND job.tenant_tombstoned_at IS NULL;
 
 CREATE VIEW mtf_task_progress AS
 SELECT
@@ -3015,8 +3306,8 @@ SELECT
     END::varchar AS reconciliation_status
 FROM execution_jobs job
 LEFT JOIN execution_job_events event ON event.job_id = job.job_id
-WHERE job.organization_id = nullif(current_setting('app.organization_id', true), '')
-  AND job.account_id = nullif(current_setting('app.account_id', true), '')
+WHERE elmos_mtf_context_matches(job.organization_id, job.account_id)
+  AND job.tenant_tombstoned_at IS NULL
 GROUP BY job.job_id;
 
 CREATE VIEW mtf_task_financial_summary AS
@@ -3037,8 +3328,7 @@ WITH usage_totals AS (
         max(occurred_at) AS usage_watermark
       FROM usage_events
      WHERE job_id IS NOT NULL
-       AND organization_id = nullif(current_setting('app.organization_id', true), '')
-       AND account_id = nullif(current_setting('app.account_id', true), '')
+       AND elmos_mtf_context_matches(organization_id, account_id)
      GROUP BY organization_id, account_id, job_id, base_currency
 ), allocation_totals AS (
     SELECT revenue_entry_id, coalesce(sum(allocated_amount_minor), 0)::numeric(30,6)
@@ -3071,8 +3361,7 @@ WITH usage_totals AS (
       FROM task_revenue_ledger_entries revenue
       LEFT JOIN allocation_totals allocation
         ON allocation.revenue_entry_id = revenue.revenue_entry_id
-     WHERE revenue.organization_id = nullif(current_setting('app.organization_id', true), '')
-       AND revenue.account_id = nullif(current_setting('app.account_id', true), '')
+     WHERE elmos_mtf_context_matches(revenue.organization_id, revenue.account_id)
      GROUP BY revenue.organization_id, revenue.account_id, revenue.job_id, revenue.currency
 ), currencies AS (
     SELECT organization_id, account_id, job_id, currency FROM usage_totals
@@ -3117,6 +3406,7 @@ SELECT
          ELSE 'CURRENT' END::varchar AS qualification
 FROM currencies currency_scope
 JOIN execution_jobs job ON job.job_id = currency_scope.job_id
+    AND job.tenant_tombstoned_at IS NULL
 LEFT JOIN usage_totals usage
   ON usage.organization_id = currency_scope.organization_id
  AND usage.account_id = currency_scope.account_id
@@ -3157,6 +3447,13 @@ $$;
 
 GRANT EXECUTE ON FUNCTION elmos_mtf_bind_identity(varchar, varchar, varchar, varchar)
     TO elmos_mtf_application, elmos_mtf_workflow, elmos_mtf_analytics;
+GRANT EXECUTE ON FUNCTION elmos_mtf_context_matches(varchar, varchar),
+    elmos_mtf_account_context_matches(varchar),
+    elmos_mtf_organization_context_matches(varchar),
+    elmos_mtf_bound_organization_id(), elmos_mtf_bound_account_id()
+    TO elmos_mtf_application, elmos_mtf_workflow, elmos_mtf_analytics;
+REVOKE ALL ON task_finops_bound_contexts
+    FROM elmos_mtf_application, elmos_mtf_workflow, elmos_mtf_analytics;
 GRANT EXECUTE ON FUNCTION elmos_mtf_enqueue_execution_job(
     varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar,
     jsonb, varchar, varchar, smallint, integer, smallint, varchar, varchar, integer

@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 /**
  * PostgreSQL 17 adapter for {@link ExecutionJobPort}.
  *
- * <p>Every state transition delegates to the repository-owned Flyway V73
+ * <p>Every state transition delegates to the repository-owned Flyway V77
  * compatibility wrappers. That is
  * deliberate: the claim is a {@code FOR UPDATE ... SKIP LOCKED} loop with
  * per-tenant fairness, and expressing it in Java would either need a table lock
@@ -101,6 +101,7 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
                          WHERE job.organization_id = :organizationId
                            AND job.account_id = :accountId
                            AND job.job_id = :jobId
+                           AND job.tenant_tombstoned_at IS NULL
                         """)
                         .param("organizationId", context.organizationId())
                         .param("accountId", context.accountId())
@@ -125,6 +126,7 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
                           FROM execution_jobs job
                          WHERE job.organization_id = :organizationId
                            AND job.account_id = :accountId
+                           AND job.tenant_tombstoned_at IS NULL
                            AND (cast(:businessLine AS varchar) IS NULL
                                 OR job.business_line = cast(:businessLine AS varchar))
                          ORDER BY job.created_at DESC
@@ -150,6 +152,7 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
                      WHERE job.organization_id = :organizationId
                        AND job.account_id = :accountId
                        AND job.job_id = :jobId
+                       AND job.tenant_tombstoned_at IS NULL
                      FOR UPDATE
                     """)
                     .param("organizationId", context.organizationId())
@@ -347,7 +350,7 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     }
 
     /**
-     * Translates the {@code ELMOS_*} exceptions raised by the V73 wrappers into a
+     * Translates the {@code ELMOS_*} exceptions raised by the V77 wrappers into a
      * typed domain failure. The raw PostgreSQL message never leaves this method, so
      * a public API response cannot leak schema or query text.
      */

@@ -2,6 +2,12 @@
   "schema_version": 1,
   "pack_key": "postgresql-17-5-multitenant-task-finops",
   "status": "experimental",
+  "qualification_scope": {
+    "historical_migration": "V73",
+    "historical_receipt": "56/56_LOCAL_SELF_ATTESTED",
+    "current_migration_family": ["V77", "V77.1", "V77.2"],
+    "current_state": "NOT_RUN"
+  },
   "owner": "ELMOS Database Platform",
   "external_certification": "NOT_RUN",
   "production_certification": "NOT_CERTIFIED",
@@ -14,6 +20,7 @@
   },
   "evidence_refs": [],
   "limitations": [
+    "The recorded local migration pass rate is historical V73 evidence and does not qualify V77/V77.1/V77.2 or their current Java/test bindings.",
     "V100-V102 reference SQL remains NOT_APPLIED.",
     "All 144 source product task execution states remain NOT_RUN.",
     "Four exact dependencies remain UNRESOLVED.",

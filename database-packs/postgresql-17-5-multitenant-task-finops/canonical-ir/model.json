@@ -120,6 +120,164 @@
         "gross_profit": "recognized_revenue_minus_final_or_posted_cost",
         "unknown_is_non_success": true
       }
+    },
+    {
+      "id": "table:task_finops_feature_rollouts",
+      "kind": "versioned-state-table",
+      "logical_name": "task_finops_feature_rollouts",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:execution_jobs"],
+      "semantics": {
+        "tenant_keys": ["organization_id", "account_id"],
+        "ordered_stage_transition": true,
+        "optimistic_version": true,
+        "idempotent": true
+      }
+    },
+    {
+      "id": "table:task_checkpoint_compatibility_decisions",
+      "kind": "append-only-table",
+      "logical_name": "task_checkpoint_compatibility_decisions",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_checkpoint_manifests"],
+      "semantics": {
+        "typed_fingerprint": true,
+        "typed_reason_codes": true,
+        "unknown_is_non_success": true
+      }
+    },
+    {
+      "id": "table:task_recovery_forks",
+      "kind": "append-only-table",
+      "logical_name": "task_recovery_forks",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:execution_jobs", "table:task_checkpoint_compatibility_decisions"],
+      "semantics": {
+        "parent_child_scope_fk": true,
+        "new_run_for_incompatible_checkpoint": true,
+        "idempotent": true
+      }
+    },
+    {
+      "id": "table:task_tenant_lifecycle_jobs",
+      "kind": "versioned-state-table",
+      "logical_name": "task_tenant_lifecycle_jobs",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:execution_jobs"],
+      "semantics": {
+        "operations": ["EXPORT", "DELETE"],
+        "unknown_and_blocked_non_success": true,
+        "provider_completion_required": true
+      }
+    },
+    {
+      "id": "table:task_tenant_export_pages",
+      "kind": "append-only-table",
+      "logical_name": "task_tenant_export_pages",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_tenant_lifecycle_jobs"],
+      "semantics": {
+        "cursor_bound": true,
+        "count_bound": true,
+        "digest_chain": true,
+        "terminal_manifest": true
+      }
+    },
+    {
+      "id": "table:task_tenant_task_creation_fences",
+      "kind": "append-only-table",
+      "logical_name": "task_tenant_task_creation_fences",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_tenant_lifecycle_jobs", "table:execution_jobs"],
+      "semantics": {
+        "account_scoped": true,
+        "permanent_after_tombstone": true,
+        "enqueue_race_serialized": true
+      }
+    },
+    {
+      "id": "table:task_tenant_lifecycle_events",
+      "kind": "append-only-table",
+      "logical_name": "task_tenant_lifecycle_events",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_tenant_lifecycle_jobs"],
+      "semantics": {"ordered": true, "idempotent": true, "provider_state_explicit": true}
+    },
+    {
+      "id": "table:task_tenant_resource_tombstones",
+      "kind": "append-only-table",
+      "logical_name": "task_tenant_resource_tombstones",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_tenant_lifecycle_jobs"],
+      "semantics": {"logical_delete_first": true, "tenant_scope_exact": true}
+    },
+    {
+      "id": "table:task_tenant_purge_items",
+      "kind": "versioned-state-table",
+      "logical_name": "task_tenant_purge_items",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_tenant_resource_tombstones"],
+      "semantics": {"provider_outcome_explicit": true, "unknown_is_non_success": true}
+    },
+    {
+      "id": "table:task_tenant_purge_receipts",
+      "kind": "append-only-table",
+      "logical_name": "task_tenant_purge_receipts",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_tenant_purge_items"],
+      "semantics": {"request_payload_bound": true, "idempotent": true, "external_evidence_not_run": true}
+    },
+    {
+      "id": "table:task_settlement_reconciliations",
+      "kind": "append-only-table",
+      "logical_name": "task_settlement_reconciliations",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_revenue_ledger_entries"],
+      "semantics": {
+        "money_type": "numeric(30,6)",
+        "currency_and_period_exact": true,
+        "segregation_of_duties": true,
+        "unknown_and_unreconciled_non_success": true
+      }
+    },
+    {
+      "id": "table:task_finops_projection_rebuilds",
+      "kind": "append-only-table",
+      "logical_name": "task_finops_projection_rebuilds",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:execution_jobs", "table:usage_events", "table:task_revenue_ledger_entries"],
+      "semantics": {
+        "continuity_required_to_publish": "COMPLETE",
+        "payload_counts_and_digests_bound": true,
+        "generation_step": 1,
+        "external_evidence": "NOT_RUN",
+        "provider_outcome": "UNKNOWN",
+        "production_certification": "NOT_CERTIFIED"
+      }
+    },
+    {
+      "id": "table:task_finops_run_projections",
+      "kind": "append-only-table",
+      "logical_name": "task_finops_run_projections",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_finops_projection_rebuilds"],
+      "semantics": {"grain": "task-run-generation", "event_count_conserved": true}
+    },
+    {
+      "id": "table:task_finops_aggregate_buckets",
+      "kind": "append-only-table",
+      "logical_name": "task_finops_aggregate_buckets",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_finops_projection_rebuilds"],
+      "semantics": {"grains": ["HOUR", "DAY"], "money_scale": 6, "fact_count_conserved": true}
+    },
+    {
+      "id": "table:task_finops_projection_heads",
+      "kind": "versioned-head-table",
+      "logical_name": "task_finops_projection_heads",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_finops_projection_rebuilds"],
+      "semantics": {"exact_generation_fk": true, "account_lock_serialized": true}
     }
   ],
   "queries": [
@@ -154,6 +312,70 @@
       "source_ref": "source-snapshots/catalog.json",
       "dependencies": ["table:task_revenue_ledger_entries", "table:task_revenue_allocations"],
       "semantics": {"currency_conservation": true, "over_allocation_forbidden": true, "signed": true}
+    },
+    {
+      "id": "query:set-feature-rollout",
+      "kind": "transactional-function",
+      "logical_name": "elmos_mtf_set_feature_rollout",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_finops_feature_rollouts"],
+      "semantics": {"ordered": true, "optimistic_version": true, "idempotent": true}
+    },
+    {
+      "id": "query:fork-incompatible-recovery",
+      "kind": "transactional-function",
+      "logical_name": "elmos_mtf_fork_incompatible_recovery",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_checkpoint_compatibility_decisions", "table:task_recovery_forks"],
+      "semantics": {"incompatible_only": true, "parent_child_scope_exact": true, "idempotent": true}
+    },
+    {
+      "id": "query:request-tenant-lifecycle",
+      "kind": "transactional-function",
+      "logical_name": "elmos_mtf_request_tenant_lifecycle",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_tenant_lifecycle_jobs"],
+      "semantics": {"trusted_context": true, "retention_and_hold_fail_closed": true, "idempotent": true}
+    },
+    {
+      "id": "query:checkpoint-tenant-export-page",
+      "kind": "transactional-function",
+      "logical_name": "elmos_mtf_checkpoint_tenant_export_page",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_tenant_lifecycle_jobs", "table:task_tenant_export_pages"],
+      "semantics": {"page_ordered": true, "digest_chain": true, "counts_exact": true, "optimistic_version": true}
+    },
+    {
+      "id": "query:advance-tenant-lifecycle",
+      "kind": "transactional-function",
+      "logical_name": "elmos_mtf_advance_tenant_lifecycle",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_tenant_lifecycle_jobs", "table:task_tenant_lifecycle_events", "table:task_tenant_resource_tombstones"],
+      "semantics": {"unknown_and_blocked_fail_closed": true, "terminal_manifest_exact": true, "provider_confirmation_required": true}
+    },
+    {
+      "id": "query:record-settlement-reconciliation",
+      "kind": "transactional-function",
+      "logical_name": "elmos_mtf_record_settlement_reconciliation",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_settlement_reconciliations"],
+      "semantics": {"exact_decimal": true, "currency_and_period_exact": true, "independent_verifier_required_for_match": true, "idempotent": true}
+    },
+    {
+      "id": "query:record-tenant-purge-result",
+      "kind": "transactional-function",
+      "logical_name": "elmos_mtf_record_tenant_purge_result",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_tenant_purge_items", "table:task_tenant_purge_receipts"],
+      "semantics": {"full_payload_replay_match": true, "lock_before_idempotency_lookup": true, "unknown_is_non_success": true, "external_provider": "NOT_RUN"}
+    },
+    {
+      "id": "query:publish-analytics-projection",
+      "kind": "transactional-function",
+      "logical_name": "elmos_mtf_publish_analytics_projection",
+      "source_ref": "source-snapshots/catalog.json",
+      "dependencies": ["table:task_finops_projection_rebuilds", "table:task_finops_run_projections", "table:task_finops_aggregate_buckets", "table:task_finops_projection_heads"],
+      "semantics": {"complete_continuity_only": true, "lock_before_idempotency_lookup": true, "payload_counts_and_digests_exact": true, "generation_compare_and_swap": true}
     }
   ],
   "pipelines": [
@@ -162,8 +384,27 @@
       "kind": "transactional-outbox-pipeline",
       "logical_name": "task-control-finops",
       "source_ref": "source-snapshots/catalog.json",
-      "dependencies": ["query:bind-authenticated-identity", "query:claim-execution-job", "query:record-usage", "query:allocate-revenue"],
-      "semantics": {"external_publish": "NOT_RUN", "temporal_adapter": "UNRESOLVED", "production": "NOT_CERTIFIED"}
+      "dependencies": [
+        "query:bind-authenticated-identity",
+        "query:claim-execution-job",
+        "query:record-usage",
+        "query:allocate-revenue",
+        "query:set-feature-rollout",
+        "query:fork-incompatible-recovery",
+        "query:request-tenant-lifecycle",
+        "query:checkpoint-tenant-export-page",
+        "query:advance-tenant-lifecycle",
+        "query:record-tenant-purge-result",
+        "query:record-settlement-reconciliation",
+        "query:publish-analytics-projection"
+      ],
+      "semantics": {
+        "external_publish": "NOT_RUN",
+        "object_provider": "NOT_RUN",
+        "payment_provider": "NOT_RUN",
+        "temporal_adapter": "UNRESOLVED",
+        "production": "NOT_CERTIFIED"
+      }
     }
   ],
   "unsupported_extensions": [

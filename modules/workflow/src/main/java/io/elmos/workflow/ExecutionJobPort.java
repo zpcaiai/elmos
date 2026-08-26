@@ -80,13 +80,13 @@ public interface ExecutionJobPort {
     record JobView(
             String jobId,
             String organizationId,
-            /** Null only for a pre-V73 row whose canonical account is unresolved. */
+            /** Null only for a pre-V77 row whose canonical account is unresolved. */
             String accountId,
             String actorId,
             BusinessLine businessLine,
             String jobKind,
             Status status,
-            /** Null only for a pre-V73 row not admitted through the account queue. */
+            /** Null only for a pre-V77 row not admitted through the account queue. */
             String admissionState,
             /** One-based queue position, or null when the row is not waiting. */
             Integer queuePosition,

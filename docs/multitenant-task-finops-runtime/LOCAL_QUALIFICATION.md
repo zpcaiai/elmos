@@ -4,11 +4,16 @@
 
 The repository result register remains authoritative:
 
+- implementation mapping is 63 `IMPLEMENTED`, 69 `PARTIAL`, and 12
+  `NOT_STARTED`;
 - all 144 source task executions are `NOT_RUN`;
 - all 144 task evidence states are `NONE`;
 - all four exact dependency Skills are `UNRESOLVED`;
 - external evidence is `NOT_RUN`; and
 - production certification is `NOT_CERTIFIED`.
+
+Current V77/V77.1/V77.2 qualification is `NOT_RUN`. The historical V73 local
+receipt does not cover the current migration bytes, Java bindings, or tests.
 
 These documents and source files are implementation artifacts. A successful
 local command is engineering evidence only and must not silently rewrite those
@@ -27,8 +32,9 @@ Focused Java policy and API checks, when the Maven dependency graph is already
 available, are:
 
 ```sh
-mvn -B -ntp -pl modules/workflow -am -Dtest=TaskFinopsPolicyTest,TaskFinopsPortTest -Dsurefire.failIfNoSpecifiedTests=false test
-mvn -B -ntp -pl apps/control-plane -am -Dtest=TaskFinopsControllerTest -Dsurefire.failIfNoSpecifiedTests=false test
+mvn -B -ntp -pl modules/workflow -am -Dtest=TaskFinopsPolicyTest,TaskFinopsPortTest,CheckpointForkPolicyTest,TenantLifecyclePolicyTest,TaskFinopsFeatureRolloutTest,PaymentSettlementReconcilerTest,TaskFinopsAnalyticsTest,TaskFinopsAnalyticsServiceTest,TaskFinopsAnalyticsExportTest -Dsurefire.failIfNoSpecifiedTests=false test
+mvn -B -ntp -pl modules/persistence -am -Dtest=TaskFinopsOperationsMigrationContractTest -Dsurefire.failIfNoSpecifiedTests=false test
+mvn -B -ntp -pl apps/control-plane -am -Dtest=TaskFinopsControllerTest,TaskFinopsOperationsControllerTest -Dsurefire.failIfNoSpecifiedTests=false test
 ```
 
 The finance semantics source contract and the dedicated disposable PostgreSQL
@@ -39,17 +45,18 @@ mvn -o -pl modules/persistence -am -Dtest=TaskFinopsFinancialSemanticsContractTe
 mvn -o -pl modules/persistence -am -Dtest=MultitenantTaskFinopsRuntimeIntegrationTest -Dsurefire.failIfNoSpecifiedTests=false test
 ```
 
-The integration fixture uses exact image tag `postgres:17.5-alpine`, applies the
-complete Flyway estate through V73, and exercises canonical identity binding,
-the account-wide three-slot limit, generation fencing, DB-authoritative runner
+The integration fixture uses exact image tag `postgres:17.5-alpine`. A current
+rerun would have to apply the complete Flyway estate through V77.2 and exercise
+the V77/V77.1/V77.2 boundaries in addition to canonical identity binding, the
+account-wide three-slot limit, generation fencing, DB-authoritative runner
 capabilities, progress/ETA monotonicity, pause completion, slot release, and
 same-organization cross-account negatives. It must report zero skipped tests;
-otherwise it is not local runtime evidence.
+otherwise it is not current local runtime evidence.
 
-## Observed bounded result
+## Historical bounded result
 
-On 2026-08-24, the task-scoped local qualification completed with 56 passing
-tests and zero failures, errors, or required skips:
+On 2026-08-24, the V73 task-scoped local qualification completed with 56
+passing tests and zero failures, errors, or required skips:
 
 - 31 focused Java workflow, persistence-contract, principal, and controller
   tests;
@@ -57,10 +64,13 @@ tests and zero failures, errors, or required skips:
   65 discovered migrations through V73; and
 - 24 Python runtime/inventory/boundary validation tests.
 
-This is digest-bound, self-attested local engineering evidence only. It does
-not execute any of the 144 product task declarations, apply V100-V102, resolve
-the four external dependency Skills, supply independent holdout or
-representative-workload evidence, or change production certification.
+That receipt is retained as historical, digest-bound, self-attested local
+engineering evidence only. It does not cover the current V77, V77.1, or V77.2
+migrations, their new Java/SQL tests, or the current implementation bindings.
+Current V77 qualification is `NOT_RUN`. The old receipt also does not execute
+any of the 144 product task declarations, apply V100-V102, resolve the four
+external dependency Skills, supply independent holdout or representative-
+workload evidence, or change production certification.
 
 The existing PostgreSQL/Testcontainers aggregate check can apply all discovered
 Flyway migrations to disposable PostgreSQL:

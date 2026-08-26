@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Focused source contract for the V73 finance rules; no database or provider is started. */
+/** Focused source contract for the V77 finance rules; no database or provider is started. */
 class TaskFinopsFinancialSemanticsContractTest {
     private static String migration;
 
@@ -18,7 +18,7 @@ class TaskFinopsFinancialSemanticsContractTest {
         Path path = Path.of(
                 System.getProperty("basedir"),
                 "src", "main", "resources", "db", "migration",
-                "V73__account_task_control_and_finops_runtime.sql");
+                "V77__account_task_control_and_finops_runtime.sql");
         migration = normalize(Files.readString(path));
     }
 
@@ -106,6 +106,52 @@ class TaskFinopsFinancialSemanticsContractTest {
                 "v_existing.amount_minor IS DISTINCT FROM " +
                         "elmos_mtf_round_half_even(p_amount_minor, 6)"));
         assertFalse(financeWrites.contains("round(p_amount_minor, 6)"));
+    }
+
+    @Test
+    void governedSqlWritesRejectExcessDecimalScaleAndPrecisionBeforeRounding() {
+        String usage = section(
+                "CREATE OR REPLACE FUNCTION elmos_mtf_record_usage(",
+                "CREATE OR REPLACE FUNCTION elmos_mtf_record_revenue(");
+        String revenue = section(
+                "CREATE OR REPLACE FUNCTION elmos_mtf_record_revenue(",
+                "CREATE OR REPLACE FUNCTION elmos_mtf_allocate_revenue(");
+        String allocation = section(
+                "CREATE OR REPLACE FUNCTION elmos_mtf_allocate_revenue(",
+                "-- 12. Account-safe read projections and metric definitions");
+
+        assertContainsAll(usage,
+                "LANGUAGE plpgsql SECURITY DEFINER",
+                "scale(p_quantity) > 9",
+                "scale(p_unit_price_minor) > 9",
+                "scale(p_fx_rate) > 12",
+                "scale(p_source_cost_minor) > 6",
+                "scale(p_base_cost_minor) > 6",
+                "abs(p_quantity) >= power(10::numeric, 21)",
+                "abs(p_unit_price_minor) >= power(10::numeric, 21)",
+                "abs(p_fx_rate) >= power(10::numeric, 18)",
+                "abs(p_source_cost_minor) >= power(10::numeric, 24)",
+                "abs(p_base_cost_minor) >= power(10::numeric, 24)",
+                "ELMOS_MTF_USAGE_ENTRY_INVALID_OR_CORRECTION_UNAPPROVED");
+        assertContainsAll(revenue,
+                "LANGUAGE plpgsql SECURITY DEFINER",
+                "scale(p_amount_minor) > 6",
+                "abs(p_amount_minor) >= power(10::numeric, 24)",
+                "ELMOS_MTF_REVENUE_ENTRY_INVALID_OR_APPROVAL_UNRESOLVED");
+        assertContainsAll(allocation,
+                "LANGUAGE plpgsql SECURITY DEFINER",
+                "scale(p_amount_minor) > 6",
+                "abs(p_amount_minor) >= power(10::numeric, 24)",
+                "ELMOS_MTF_ALLOCATION_INVALID_OR_APPROVAL_UNRESOLVED");
+        assertOrdered(usage, "scale(p_quantity) > 9", "SELECT * INTO v_job");
+        assertOrdered(revenue, "scale(p_amount_minor) > 6", "SELECT * INTO v_job");
+        assertOrdered(allocation, "scale(p_amount_minor) > 6", "SELECT * INTO v_job");
+        assertTrue(migration.contains(
+                "REVOKE ALL ON task_revenue_ledger_entries FROM PUBLIC"));
+        assertTrue(migration.contains(
+                "REVOKE ALL ON task_revenue_allocations FROM PUBLIC"));
+        assertFalse(migration.contains("GRANT INSERT ON task_revenue_ledger_entries"));
+        assertFalse(migration.contains("GRANT INSERT ON task_revenue_allocations"));
     }
 
     @Test
@@ -278,7 +324,7 @@ class TaskFinopsFinancialSemanticsContractTest {
         int startIndex = migration.indexOf(start);
         int endIndex = migration.indexOf(end, startIndex);
         if (startIndex < 0 || endIndex < 0) {
-            throw new AssertionError("V73 section markers missing: " + start + " / " + end);
+            throw new AssertionError("V77 section markers missing: " + start + " / " + end);
         }
         return migration.substring(startIndex, endIndex);
     }
@@ -287,6 +333,14 @@ class TaskFinopsFinancialSemanticsContractTest {
         for (String fragment : fragments) {
             assertTrue(section.contains(fragment), () -> "Missing replay guard: " + fragment);
         }
+    }
+
+    private static void assertOrdered(String source, String first, String second) {
+        int firstIndex = source.indexOf(first);
+        int secondIndex = source.indexOf(second);
+        assertTrue(firstIndex >= 0, () -> "Missing ordered SQL contract: " + first);
+        assertTrue(secondIndex > firstIndex, () ->
+                "SQL contract out of order: " + first + " before " + second);
     }
 
     private static String normalize(String value) {

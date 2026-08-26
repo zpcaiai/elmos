@@ -129,7 +129,7 @@ public class RunnerFleetController {
      * for your capabilities right now" - the agent backs off and retries.
      *
      * <p>{@code capabilities} remains on the wire for older agents, but it is only
-     * a compatibility hint. The V73 claim wrapper binds scheduling to the
+     * a compatibility hint. The V77 claim wrapper binds scheduling to the
      * independently registered runner capabilities for {@code runnerNodeId}; it
      * never grants work from this self-declared request field.</p>
      */

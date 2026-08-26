@@ -3,8 +3,13 @@ package io.elmos.persistence;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.elmos.commercial.SelfServiceBillingPort;
 import io.elmos.workflow.ExecutionJobPort;
+import io.elmos.workflow.TaskFinopsAnalytics;
+import io.elmos.workflow.TaskFinopsAnalyticsService;
+import io.elmos.workflow.TaskFinopsFeatureRollout;
+import io.elmos.workflow.TaskFinopsOperationsPort;
 import io.elmos.workflow.TaskFinopsPolicy;
 import io.elmos.workflow.TaskFinopsPort;
+import io.elmos.workflow.TenantLifecyclePolicy;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -32,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Real PostgreSQL coverage for the V73 account-wide scheduler and task-control
+ * Real PostgreSQL coverage for the V77 account-wide scheduler and task-control
  * contract. All identities, provider references, payloads and credentials in
  * this fixture are synthetic and the container database is disposable.
  */
@@ -95,6 +100,8 @@ class MultitenantTaskFinopsRuntimeIntegrationTest {
 
         var jobs = new JdbcExecutionJobStore(jdbc, transactions, new ObjectMapper());
         var finops = new JdbcTaskFinopsStore(jdbc, transactions);
+        var operations = new JdbcTaskFinopsOperationsStore(
+                jdbc, transactions, new ObjectMapper());
         var ownerContext = new TaskFinopsPort.AuthenticatedContext(
                 ORGANIZATION, OWNER_ACCOUNT, ownerGrant.actorId(), "request-owner-read");
         var memberContext = new TaskFinopsPort.AuthenticatedContext(
@@ -103,6 +110,28 @@ class MultitenantTaskFinopsRuntimeIntegrationTest {
                 ORGANIZATION, OWNER_ACCOUNT, ownerGrant.actorId(), "request-owner-execution-read");
         var memberExecutionContext = new ExecutionJobPort.AuthenticatedContext(
                 ORGANIZATION, MEMBER_ACCOUNT, memberGrant.actorId(), "request-member-execution-read");
+
+        Boolean forgedGucAccepted = transactions.execute(status -> {
+            jdbc.sql("""
+                    select set_config('app.organization_id', :organization, true),
+                           set_config('app.account_id', :account, true),
+                           set_config('app.actor_id', :actor, true),
+                           set_config('app.request_id', :request, true)
+                    """)
+                    .param("organization", ORGANIZATION)
+                    .param("account", OWNER_ACCOUNT)
+                    .param("actor", ownerGrant.actorId())
+                    .param("request", "forged-guc-only")
+                    .query().singleRow();
+            return jdbc.sql("""
+                    select elmos_mtf_context_matches(:organization, :account)
+                    """)
+                    .param("organization", ORGANIZATION)
+                    .param("account", OWNER_ACCOUNT)
+                    .query(Boolean.class).single();
+        });
+        assertFalse(Boolean.TRUE.equals(forgedGucAccepted),
+                "custom GUC values alone must never establish tenant authority");
 
         var rawSubjectRejected = assertThrows(
                 ExecutionJobPort.ExecutionStateException.class,
@@ -124,9 +153,9 @@ class MultitenantTaskFinopsRuntimeIntegrationTest {
         assertEquals(ownerGrant.actorId(), canonicalJob.actorId());
         assertEquals(4, jobs.list(ownerExecutionContext, null, 100, 0).size());
 
-        // The request deliberately advertises a different capability. V73 keeps
+        // The request deliberately advertises a different capability. V77 keeps
         // that argument only for compatibility and schedules from the DB-registered
-        // runner capabilities instead. V73 owns this repository compatibility
+        // runner capabilities instead. V77 owns this repository compatibility
         // boundary; the packaged V100-V102 references remain NOT_APPLIED.
         var firstClaims = jobs.claim(
                 RUNNER, List.of("translation:multi"), 4, 120);
@@ -270,6 +299,59 @@ class MultitenantTaskFinopsRuntimeIntegrationTest {
         assertEquals(3, memberConcurrency.availableRootSlots());
         assertTrue(finops.progress(ownerContext, controlledLease.jobId()).isPresent(),
                 "the owning account must retain access to its paused task");
+
+        assertEquals(1L, operations.setFeatureRollout(
+                new TaskFinopsOperationsPort.FeatureRolloutCommand(
+                        ownerContext,
+                        TaskFinopsFeatureRollout.Environment.DEVELOPMENT,
+                        TaskFinopsFeatureRollout.Feature
+                                .AUTHENTICATED_ACCOUNT_BINDING.name(),
+                        TaskFinopsFeatureRollout.Stage.SHADOW,
+                        0,
+                        0,
+                        "rollout-idempotency-1",
+                        sha256("rollout:authenticated-account-binding:shadow"))));
+
+        Instant lifecycleCutoff = Instant.now().minus(1, ChronoUnit.DAYS);
+        assertEquals("lifecycle-mtf-delete-1", operations.requestLifecycle(
+                new TaskFinopsOperationsPort.LifecycleRequestCommand(
+                        ownerContext,
+                        "lifecycle-mtf-delete-1",
+                        TenantLifecyclePolicy.Operation.DELETE,
+                        TenantLifecyclePolicy.ExportFormat.JSON,
+                        lifecycleCutoff,
+                        "lifecycle-idempotency-1",
+                        sha256("lifecycle:delete:1"))));
+        var lifecycle = operations.lifecycleStatus(
+                ownerContext, "lifecycle-mtf-delete-1").orElseThrow();
+        assertEquals("REQUESTED", lifecycle.state());
+        assertEquals(TenantLifecyclePolicy.ProviderResult.NOT_RUN,
+                lifecycle.providerResult());
+        assertTrue(operations.lifecycleStatus(
+                memberContext, "lifecycle-mtf-delete-1").isEmpty(),
+                "lifecycle jobs must remain account isolated");
+
+        Instant analyticsEnd = Instant.now().plusSeconds(60);
+        var analyticsReceipt = new TaskFinopsAnalyticsService(operations).rebuild(
+                new TaskFinopsAnalyticsService.RebuildCommand(
+                        new TaskFinopsPort.AuthenticatedContext(
+                                ORGANIZATION, OWNER_ACCOUNT, ownerGrant.actorId(),
+                                "request-owner-analytics"),
+                        "rebuild-mtf-1",
+                        analyticsEnd.minus(1, ChronoUnit.DAYS),
+                        analyticsEnd,
+                        0,
+                        "analytics-idempotency-1",
+                        sha256("analytics:rebuild:1")));
+        assertEquals(1, analyticsReceipt.generation());
+        assertEquals(TaskFinopsAnalytics.ExternalEvidenceState.NOT_RUN,
+                analyticsReceipt.externalEvidence());
+        assertEquals(TaskFinopsAnalytics.ProviderOutcome.UNKNOWN,
+                analyticsReceipt.providerOutcome());
+        assertEquals(TaskFinopsAnalytics.ProductionCertification.NOT_CERTIFIED,
+                analyticsReceipt.productionCertification());
+        assertEquals(0L, operations.currentProjectionGeneration(memberContext),
+                "another account must not observe the projection head");
     }
 
     private static void bindIdentity(

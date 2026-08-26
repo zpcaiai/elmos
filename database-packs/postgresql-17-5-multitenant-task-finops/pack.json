@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "postgresql-17-5-multitenant-task-finops",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "mode": "modernization",
   "status": "experimental",
   "owner": "ELMOS Task FinOps Runtime",
@@ -41,7 +41,22 @@
       "task_finops_fx_snapshots",
       "usage_events",
       "task_revenue_ledger_entries",
-      "task_revenue_allocations"
+      "task_revenue_allocations",
+      "task_finops_feature_rollouts",
+      "task_checkpoint_compatibility_decisions",
+      "task_recovery_forks",
+      "task_tenant_lifecycle_jobs",
+      "task_tenant_task_creation_fences",
+      "task_tenant_export_pages",
+      "task_tenant_lifecycle_events",
+      "task_tenant_resource_tombstones",
+      "task_tenant_purge_items",
+      "task_tenant_purge_receipts",
+      "task_settlement_reconciliations",
+      "task_finops_projection_rebuilds",
+      "task_finops_run_projections",
+      "task_finops_aggregate_buckets",
+      "task_finops_projection_heads"
     ],
     "workload_classes": [
       "canonical-identity",
@@ -49,7 +64,11 @@
       "generation-fenced-lease",
       "append-only-progress",
       "exact-decimal-finops",
-      "tenant-rls-negative"
+      "tenant-rls-negative",
+      "checkpoint-fork-recovery",
+      "tenant-export-deletion-lifecycle",
+      "payment-settlement-reconciliation",
+      "generation-bound-analytics"
     ]
   },
   "paths": {
@@ -58,6 +77,13 @@
     "fingerprint": "source-fingerprint",
     "migration_plan": "migration/data-migration-plan.json",
     "target_profile": "target-profile/profile.json"
+  },
+  "qualification": {
+    "migration_family": ["V77", "V77.1", "V77.2"],
+    "current_state": "NOT_RUN",
+    "historical_v73_receipt": "HISTORICAL_ONLY_NOT_CURRENT_COVERAGE",
+    "external_evidence": "NOT_RUN",
+    "production_certification": "NOT_CERTIFIED"
   },
   "gates": {
     "canonical_ir_coverage": 0.95,

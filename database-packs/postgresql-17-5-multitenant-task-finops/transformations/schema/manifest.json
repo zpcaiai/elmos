@@ -1,8 +1,27 @@
 {
   "schema_version": 1,
   "kind": "repository-owned-forward-migration",
-  "target_path": "modules/persistence/src/main/resources/db/migration/V73__account_task_control_and_finops_runtime.sql",
-  "target_sha256": "sha256:2295158db327cacd270e8212eda3377a43062a2a5176cac2fd28fa3f4cbe98e0",
+  "target_path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
+  "target_sha256": "sha256:b58da09ec98a24ee18990729dd0728f7fdd6ed99050ea125b2c4d540b404d3bb",
+  "target_migrations": [
+    {
+      "version": "V77",
+      "path": "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
+      "sha256": "sha256:b58da09ec98a24ee18990729dd0728f7fdd6ed99050ea125b2c4d540b404d3bb"
+    },
+    {
+      "version": "V77.1",
+      "path": "modules/persistence/src/main/resources/db/migration/V77_1__task_finops_recovery_lifecycle_and_settlement.sql",
+      "sha256": "sha256:84b7796fc98df85b157047707eb9167e521545dd32bbd2ddcb7dec47c62021a0"
+    },
+    {
+      "version": "V77.2",
+      "path": "modules/persistence/src/main/resources/db/migration/V77_2__task_finops_analytics_rebuild_and_exports.sql",
+      "sha256": "sha256:3276ea119b8a30e60780b291f14f2ad229c44fa63362ff1f328f51280efa1c5a"
+    }
+  ],
+  "current_qualification": "NOT_RUN",
+  "historical_v73_receipt": "HISTORICAL_ONLY_NOT_CURRENT_COVERAGE",
   "source_reference_application_status": "NOT_APPLIED",
   "source_reference_versions": ["V100", "V101", "V102"]
 }

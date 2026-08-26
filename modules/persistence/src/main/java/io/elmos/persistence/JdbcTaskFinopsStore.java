@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  *
  * <p>Identity is transaction-local and is bound before every read or write.
  * Reads additionally constrain both organization and account; this is deliberate
- * defense in depth over V73's forced RLS policies.  Mutations only use the
+ * defense in depth over V77's forced RLS policies.  Mutations only use the
  * repository-owned {@code elmos_mtf_*} functions, which own idempotency, locking,
  * append-only journal rules, and segregation-of-duties checks.</p>
  */

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "profile_key": "postgresql-17-5-local-testcontainers-mtf",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "owner": "ELMOS Database Platform",
   "engine": "postgresql",
   "versions": ["17.5"],
@@ -18,13 +18,18 @@
     "external_status": "NOT_RUN"
   },
   "health_check": {"query": "SELECT 1"},
+  "qualification": {
+    "migration_family": ["V77", "V77.1", "V77.2"],
+    "current_state": "NOT_RUN",
+    "historical_v73_receipt": "HISTORICAL_ONLY_NOT_CURRENT_COVERAGE"
+  },
   "security": {
     "credential_mode": "ephemeral-testcontainers",
     "tls": "NOT_RUN",
     "production_roles": "NOT_RUN"
   },
   "migration": {
-    "ddl_strategy": "forward-only-flyway-v73",
+    "ddl_strategy": "forward-only-flyway-v77-v77_1-v77_2",
     "data_strategy": "unambiguous-identity-backfill-only",
     "source_reference_sql": "NOT_APPLIED"
   }
