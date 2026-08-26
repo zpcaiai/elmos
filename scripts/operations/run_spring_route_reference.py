@@ -31,7 +31,9 @@ evidence about nothing.
 This script records. It does not promote: on success it prints the exact
 ``verifiedSourceBoot`` / ``verifiedSourceJava`` pair to write into
 ``SpringRouteCatalog``, and leaves that edit to a human. A script that flipped
-its own evidence flag would be the executor certifying itself.
+its own evidence flag would be the executor certifying itself. The two
+Boot 4.1.0 routes currently recorded by this harness remain local engineering
+evidence; every external, holdout and independent role stays unrun.
 
 Usage:
     python3 scripts/operations/run_spring_route_reference.py --route boot-1.5-java-8-maven-to-boot-3.5.3-java-21
