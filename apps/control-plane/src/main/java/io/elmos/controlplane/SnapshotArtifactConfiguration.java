@@ -14,6 +14,7 @@ import io.elmos.integrations.LocalContentAddressedArtifactStore;
 import io.elmos.persistence.JdbcGitHubRepositoryCatalog;
 import io.elmos.scm.RepositoryLifecycleSink;
 import io.elmos.snapshot.SnapshotPorts;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -190,7 +191,7 @@ class SnapshotArtifactConfiguration {
     @ConditionalOnProperty(name = "elmos.snapshot.cas.enabled", havingValue = "true")
     RepositoryLifecycleSink githubRepositoryCasLifecycleSink(
             @Qualifier("casSnapshotArtifactBackend") CasBackedArtifactStore cas,
-            JdbcGitHubRepositoryCatalog repositories
+            ObjectProvider<JdbcGitHubRepositoryCatalog> repositories
     ) {
         return (organizationId, delivery) -> {
             if (!"repository".equals(delivery.eventType())
@@ -200,8 +201,13 @@ class SnapshotArtifactConfiguration {
                 throw new SecurityException(
                         "repository deletion webhook lacks an exact provider identity");
             }
+            JdbcGitHubRepositoryCatalog catalog = repositories.getIfAvailable();
+            if (catalog == null) {
+                throw new IllegalStateException(
+                        "snapshot repository catalog is required for lifecycle retirement");
+            }
             JdbcGitHubRepositoryCatalog.AuthorizedRepository repository =
-                    repositories.requireBoundByExternalIds(
+                    catalog.requireBoundByExternalIds(
                             organizationId,
                             delivery.repositoryExternalId(),
                             delivery.installationExternalId());

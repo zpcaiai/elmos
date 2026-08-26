@@ -111,6 +111,7 @@ class ActionCacheExecutionJobDispatcherTest {
         assertEquals(fixture.key.digest().hex(), binding.get("actionKeyDigest"));
         assertEquals("tenant-a", binding.get("actionKeyTenantId"));
         assertEquals("project-a", binding.get("actionKeyProjectId"));
+        assertEquals(fixture.key.components(), binding.get("actionKeyComponents"));
         assertFalse(binding.containsKey("authorizationDecisionId"));
         assertEquals("policy-v1", binding.get("authorizationPolicyVersion"));
         assertEquals("TEST_SOURCE_REF_ALLOWLIST", binding.get("payloadPolicyId"));

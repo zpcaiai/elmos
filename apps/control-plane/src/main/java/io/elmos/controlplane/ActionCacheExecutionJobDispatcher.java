@@ -38,7 +38,8 @@ import java.util.regex.Pattern;
  * key, trusted authorization grant, execution profile, immutable runner image, deployment-policy
  * sanitized payload and budget to the tenant-scoped idempotency key.</p>
  *
- * <p>This adapter intentionally does not publish runner completion into the ActionCache.
+ * <p>The HTTP tenant binding constructs the canonical ActionKey and passes it here; this adapter
+ * intentionally does not publish runner completion into the ActionCache.
  * {@link ExecutionJobPort.CompletionCommand} contains only terminal status and a failure code; it
  * has no signed {@link ActionResultRecord}, output manifest, producer context or attested writer.
  * Treating that completion as cacheable would manufacture trust. A future write-back path needs a
@@ -598,6 +599,10 @@ public final class ActionCacheExecutionJobDispatcher {
         cacheBinding.put("actionKeyDigest", request.key().digest().hex());
         cacheBinding.put("actionKeyTenantId", request.key().tenantId());
         cacheBinding.put("actionKeyProjectId", grant.projectId());
+        // Preserve the complete identity for a future signed completion write-back. The digest is
+        // sufficient for lookup, but a runner result must reconstruct and re-verify every
+        // canonical component before it can ever become cacheable.
+        cacheBinding.put("actionKeyComponents", request.key().components());
         cacheBinding.put("authorizationPolicyVersion", grant.policyVersion());
         cacheBinding.put("payloadPolicyId", sanitized.policyId());
         cacheBinding.put("payloadPolicyVersion", sanitized.policyVersion());

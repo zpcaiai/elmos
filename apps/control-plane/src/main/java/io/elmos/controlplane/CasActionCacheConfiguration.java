@@ -25,9 +25,10 @@ import java.util.Map;
  * <p>The dispatcher is deliberately absent unless the deployment explicitly enables it and
  * supplies exactly one current-trust provider, authorizer, typed payload policy and durable job
  * port. This prevents a partially configured cache from silently becoming an execution
- * authority or persisting unsanitized caller payload. The tenant API does not yet construct
- * ActionKeys, and runner completion does not carry a signed ActionResult, so neither API binding
- * nor completion write-back is claimed here.</p>
+ * authority or persisting unsanitized caller payload. The tenant API binding is enabled only
+ * alongside that dispatcher and still requires deployment-owned data residency configuration.
+ * Runner completion does not carry a signed ActionResult, so completion write-back is deliberately
+ * not claimed here.</p>
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(name = "elmos.action-cache.enabled", havingValue = "true")
@@ -84,7 +85,8 @@ class CasActionCacheConfiguration {
     @Bean
     ActionCacheStatus actionCacheStatus(TenantCasStore store,
                                         ObjectProvider<ActionCache.TrustRevalidator> trustProviders,
-                                        ObjectProvider<ActionCacheExecutionJobDispatcher> callers) {
+                                        ObjectProvider<ActionCacheExecutionJobDispatcher> callers,
+                                        ObjectProvider<ActionCacheExecutionController> bindings) {
         ActionCache.TrustRevalidator trustRevalidator =
                 resolveTrustRevalidator(trustProviders);
         java.util.List<ActionCacheExecutionJobDispatcher> configuredCallers =
@@ -93,11 +95,22 @@ class CasActionCacheConfiguration {
             throw new IllegalStateException(
                     "exactly one ActionCache execution caller is permitted");
         }
+        java.util.List<ActionCacheExecutionController> configuredBindings =
+                bindings.orderedStream().toList();
+        if (configuredBindings.size() > 1) {
+            throw new IllegalStateException(
+                    "exactly one ActionCache tenant execution binding is permitted");
+        }
         return new ActionCacheStatus(
                 "JDBC_POSTGRESQL", "JDBC_INDEX_CONFIGURED_OBJECT_TIER_DEPENDENT",
                 configuredCallers.isEmpty()
                         ? "ASYNC_DISPATCHER_AVAILABLE_NOT_BOUND_TO_TENANT_API"
-                        : "OPT_IN_DURABLE_HIT_OR_ENQUEUE_NOT_BOUND_TO_TENANT_API",
+                        : configuredBindings.isEmpty()
+                                ? "OPT_IN_DURABLE_HIT_OR_ENQUEUE_NOT_BOUND_TO_TENANT_API"
+                                : configuredBindings.get(0).deploymentPolicyConfigured()
+                                        ? "OPT_IN_DURABLE_HIT_OR_ENQUEUE_TENANT_API_BOUND"
+                                        : "OPT_IN_DURABLE_HIT_OR_ENQUEUE_TENANT_API_BOUND_"
+                                                + "CONFIGURATION_REQUIRED",
                 trustRevalidator.mode(),
                 "NOT_BOUND_RUNNER_COMPLETION_LACKS_SIGNED_ACTION_RESULT",
                 store.physicalNamespace(), store.atRestProtection(), false);
