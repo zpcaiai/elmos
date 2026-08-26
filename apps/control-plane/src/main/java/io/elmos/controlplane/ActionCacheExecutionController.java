@@ -258,22 +258,6 @@ public class ActionCacheExecutionController {
 
     private static int resourceUnitsFor(ExecutionJobPort.BusinessLine line) {
         return switch (line) {
-            case GENERATION, TRANSLATION, SPRING_UPGRADE,
-                    REPOSITORY_WORKSPACE, MODERNIZATION_PROOF -> 1;
-        };
-    }
-
-    private static String workloadClassFor(ExecutionJobPort.BusinessLine line) {
-        return switch (line) {
-            case GENERATION -> "GENERATION";
-            case TRANSLATION, SPRING_UPGRADE -> "CONVERSION";
-            case REPOSITORY_WORKSPACE -> "PARSING";
-            case MODERNIZATION_PROOF -> "VALIDATION";
-        };
-    }
-
-    private static int resourceUnitsFor(ExecutionJobPort.BusinessLine line) {
-        return switch (line) {
             case GENERATION, MODERNIZATION_PROOF -> 2;
             case TRANSLATION, SPRING_UPGRADE -> 3;
             case REPOSITORY_WORKSPACE -> 1;
