@@ -127,15 +127,18 @@ def _expression(node: ast.expr, *, emitted_target: bool = False) -> dict[str, An
         # (canonical.py `_expression`), so `(a && b) && c` stops exactly where
         # `a and b and c` stops.
         operator = "&&" if isinstance(node.op, ast.And) else "||"
-        folded = _expression(node.values[0], emitted_target=emitted_target)
+        # NOT named `folded`: that name already holds the signed-literal fold
+        # at the top of this function, and reusing it makes mypy read the two
+        # as one variable of two incompatible types.
+        chain = _expression(node.values[0], emitted_target=emitted_target)
         for value in node.values[1:]:
-            folded = {
+            chain = {
                 "kind": "binary",
                 "operator": operator,
-                "left": folded,
+                "left": chain,
                 "right": _expression(value, emitted_target=emitted_target),
             }
-        return folded
+        return chain
     if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
         # `not x` on a canonical boolean IS `x == False`. Nothing new enters
         # the IR, the type checker, canonical.py or the z3 denotation.
