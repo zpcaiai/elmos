@@ -177,13 +177,15 @@ public final class TaskFinopsAnalytics {
                 throw new IllegalArgumentException(
                         "ELMOS_MTF_ANALYTICS_EVENT_COUNT_INVALID", exception);
             }
+            String normalizedOrganizationId = organizationId;
+            String normalizedAccountId = accountId;
             if (replayedEvents != eventCount
                     || (eventCount == 0) != runs.isEmpty()
                     || (eventCount == 0)
                     != (inputContinuity == InputContinuity.UNKNOWN)
                     || runs.stream().anyMatch(run ->
-                    !run.organizationId().equals(organizationId)
-                            || !run.accountId().equals(accountId))) {
+                    !run.organizationId().equals(normalizedOrganizationId)
+                            || !run.accountId().equals(normalizedAccountId))) {
                 throw new IllegalArgumentException(
                         "ELMOS_MTF_ANALYTICS_REBUILD_CONTINUITY_INVALID");
             }
@@ -218,7 +220,7 @@ public final class TaskFinopsAnalytics {
                 throw new IllegalArgumentException("ELMOS_MTF_ANALYTICS_RUN_INVALID");
             }
             Objects.requireNonNull(workloadClass, "workloadClass");
-            currency = currency(currency);
+            currency = TaskFinopsAnalytics.currency(currency);
             Objects.requireNonNull(allocationBasis, "allocationBasis");
             costDeltaMinor = exactMoney(costDeltaMinor, "COST_DELTA");
             revenueDeltaMinor = exactMoney(revenueDeltaMinor, "REVENUE_DELTA");
@@ -269,10 +271,10 @@ public final class TaskFinopsAnalytics {
             Objects.requireNonNull(grain, "grain");
             Objects.requireNonNull(bucketStart, "bucketStart");
             Objects.requireNonNull(bucketEnd, "bucketEnd");
-            if (!bucketEnd.equals(bucketEnd(bucketStart, grain))) {
+            if (!bucketEnd.equals(TaskFinopsAnalytics.bucketEnd(bucketStart, grain))) {
                 throw new IllegalArgumentException("ELMOS_MTF_ANALYTICS_BUCKET_WINDOW_INVALID");
             }
-            currency = currency(currency);
+            currency = TaskFinopsAnalytics.currency(currency);
             Objects.requireNonNull(allocationBasis, "allocationBasis");
             costDeltaMinor = exactMoney(costDeltaMinor, "BUCKET_COST");
             revenueDeltaMinor = exactMoney(revenueDeltaMinor, "BUCKET_REVENUE");
@@ -314,11 +316,14 @@ public final class TaskFinopsAnalytics {
                 throw new IllegalArgumentException(
                         "ELMOS_MTF_ANALYTICS_FACT_COUNT_INVALID", exception);
             }
+            String normalizedOrganizationId = organizationId;
+            String normalizedAccountId = accountId;
+            Grain normalizedGrain = grain;
             if (aggregatedFacts != factCount
                     || (factCount == 0) != rows.isEmpty()
-                    || rows.stream().anyMatch(row -> row.grain() != grain
-                    || !row.organizationId().equals(organizationId)
-                    || !row.accountId().equals(accountId))) {
+                    || rows.stream().anyMatch(row -> row.grain() != normalizedGrain
+                    || !row.organizationId().equals(normalizedOrganizationId)
+                    || !row.accountId().equals(normalizedAccountId))) {
                 throw new IllegalArgumentException(
                         "ELMOS_MTF_ANALYTICS_AGGREGATION_SHAPE_INVALID");
             }

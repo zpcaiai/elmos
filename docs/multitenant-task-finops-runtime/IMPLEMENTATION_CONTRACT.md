@@ -53,6 +53,11 @@ execution receipt.
   retain a reconciling slot until their side effect is resolved.
 - A fourth root job remains durable as `QUEUED` / `WAITING_FOR_SLOT`; it is not
   silently dropped or admitted by a process-local counter.
+- `TaskFinopsAdmissionPolicy` evaluates authenticated tenant/account demand
+  against active-root, queued-root, resource-unit, and platform quotas with
+  explicit `ADMIT`/`DELAY` reasons. Unknown or mismatched quota snapshots delay
+  fail closed; multi-replica contention and provider quota evidence remain
+  `NOT_RUN`.
 - Workload profiles are exact for `PARSING`, `GENERATION`, `CONVERSION`,
   `VALIDATION`, `RENDERING`, and `MODEL_GPU`, with versioned queue names,
   resource units, bounded worker concurrency, and autoscale bounds.
@@ -64,6 +69,13 @@ execution receipt.
 Queue names and a workflow-start outbox do not establish Temporal operation.
 No Temporal server, worker, history replay, nondeterminism, outage, or upgrade
 receipt is bound, so `elmos-temporal-task-reliability` remains `UNRESOLVED`.
+
+`WorkloadAwareScheduler` now exposes the six versioned queue profiles and a
+provider-neutral metric sink. It emits account-bound queue depth, age,
+saturation, throttling, and estimated-start projections without importing a
+Temporal or OpenTelemetry SDK. The profile and metric adapter are repository
+policy only; provider execution and representative queue telemetry remain
+`NOT_RUN`.
 
 ## Feature rollout
 
@@ -82,9 +94,19 @@ receipt is bound, so `elmos-temporal-task-reliability` remains `UNRESOLVED`.
   policy and the database transition guard.
 - Progress and elapsed time are monotonic. Non-success states are capped at
   99%; only `SUCCEEDED` may expose 100%. ETA P90 cannot be lower than ETA P50.
+- `TaskFinopsProgressBatch` provides a bounded, contiguous heartbeat/progress
+  accumulator with account-bound scope, monotonic checks, deterministic batch
+  digests, and explicit `NOT_RUN` delivery state. Event bus, SSE, object-store,
+  and database delivery are adapter effects and remain unexecuted.
 - Ordered events use per-job sequence numbers and idempotency keys. Progress,
   stage, lease, elapsed time, ETA, actor, and optional digest remain separate
   fields rather than being inferred from logs.
+- `TaskFinopsWorkflowStartPayload` binds a typed workload payload, version,
+  deterministic workflow ID, authenticated search attributes, and canonical
+  payload digest to the transactional start intent. Its terminal projection
+  rejects non-terminal states and keeps external evidence `NOT_RUN`, provider
+  outcome `UNKNOWN`, and production certification `NOT_CERTIFIED`; Temporal
+  start/replay evidence remains unavailable.
 - Pause and resume require authenticated context, a reason, an idempotency key,
   a digest-bound request, legal state, and an append-only audit event. Resuming
   returns a paused job to `WAITING_FOR_SLOT`; it does not bypass admission.
@@ -174,10 +196,16 @@ receipt is bound, so `elmos-temporal-task-reliability` remains `UNRESOLVED`.
 - Local rebuild/export bytes do not establish delivery to an object provider,
   dashboard behavior, representative workload execution, or external
   qualification.
+- `TaskFinopsModelCacheAnalytics` adds a tenant/account-bound pure projection
+  for model/provider observations, cache-hit ratio, token counters, exact
+  cost-per-output-token, and reconciliation completeness. It rejects duplicate
+  observations and claimed cache hits without cache-read tokens. Provider
+  cache billing, OTel collection, and representative efficiency workloads
+  remain `NOT_RUN`, so `ELMOS-MTF-011-T06` is `PARTIAL`.
 
 The related exact Skills `elmos-architecture-contract-governance`,
 `elmos-identity-tenant-security`, `elmos-observability-finops`, and
 `elmos-temporal-task-reliability` all remain `UNRESOLVED`. External evidence is
-`NOT_RUN`; the implementation mapping is 63 `IMPLEMENTED`, 69 `PARTIAL`, and
-12 `NOT_STARTED`; all 144 source task executions remain `NOT_RUN` with evidence
+`NOT_RUN`; the implementation mapping is 63 `IMPLEMENTED`, 72 `PARTIAL`, and
+9 `NOT_STARTED`; all 144 source task executions remain `NOT_RUN` with evidence
 `NONE`; and production is `NOT_CERTIFIED`.

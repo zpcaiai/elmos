@@ -15,7 +15,7 @@ representative workload, production migration, cutover, rollback, and
 independent certification evidence remain `NOT_RUN`; production status remains
 `NOT_CERTIFIED`.
 
-The repository implementation map is 63 `IMPLEMENTED`, 69 `PARTIAL`, and 12
+The repository implementation map is 63 `IMPLEMENTED`, 72 `PARTIAL`, and 9
 `NOT_STARTED`. All 144 product task executions remain `NOT_RUN` with evidence
 `NONE`; all four exact dependencies remain `UNRESOLVED`; and V100-V102 remain
 `NOT_APPLIED`.

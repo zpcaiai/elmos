@@ -4,7 +4,7 @@
 
 The repository result register remains authoritative:
 
-- implementation mapping is 63 `IMPLEMENTED`, 69 `PARTIAL`, and 12
+- implementation mapping is 63 `IMPLEMENTED`, 72 `PARTIAL`, and 9
   `NOT_STARTED`;
 - all 144 source task executions are `NOT_RUN`;
 - all 144 task evidence states are `NONE`;
@@ -32,7 +32,7 @@ Focused Java policy and API checks, when the Maven dependency graph is already
 available, are:
 
 ```sh
-mvn -B -ntp -pl modules/workflow -am -Dtest=TaskFinopsPolicyTest,TaskFinopsPortTest,CheckpointForkPolicyTest,TenantLifecyclePolicyTest,TaskFinopsFeatureRolloutTest,PaymentSettlementReconcilerTest,TaskFinopsAnalyticsTest,TaskFinopsAnalyticsServiceTest,TaskFinopsAnalyticsExportTest -Dsurefire.failIfNoSpecifiedTests=false test
+mvn -B -ntp -pl modules/workflow -am -Dtest=TaskFinopsPolicyTest,TaskFinopsPortTest,TaskFinopsAdmissionPolicyTest,TaskFinopsProgressBatchTest,CheckpointForkPolicyTest,TenantLifecyclePolicyTest,TaskFinopsFeatureRolloutTest,PaymentSettlementReconcilerTest,TaskFinopsAnalyticsTest,TaskFinopsAnalyticsServiceTest,TaskFinopsAnalyticsExportTest,WorkloadAwareSchedulerTest,TaskFinopsModelCacheAnalyticsTest -Dsurefire.failIfNoSpecifiedTests=false test
 mvn -B -ntp -pl modules/persistence -am -Dtest=TaskFinopsOperationsMigrationContractTest -Dsurefire.failIfNoSpecifiedTests=false test
 mvn -B -ntp -pl apps/control-plane -am -Dtest=TaskFinopsControllerTest,TaskFinopsOperationsControllerTest -Dsurefire.failIfNoSpecifiedTests=false test
 ```

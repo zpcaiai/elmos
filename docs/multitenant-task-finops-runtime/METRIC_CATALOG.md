@@ -47,6 +47,12 @@ progress fields come from `mtf_task_events` and `mtf_task_progress`.
 | `provider_reported_minor` | account/provider/currency/period | Exact scale-6 amount reported by the provider; absent or `UNKNOWN` provider outcome cannot be inferred as zero. |
 | `ledger_recorded_minor` | account/provider/currency/period | Exact scale-6 local ledger amount for the same currency and half-open period. |
 | `settlement_difference_minor` | account/provider/currency/period | Provider amount minus ledger amount. Only exact zero with independent evidence may be `MATCHED`; otherwise it is `UNRECONCILED` or `UNKNOWN`. |
+| `model_cache_observation_count` | model/provider/currency | Count of immutable model observations in the bounded local projection. Duplicate observation IDs fail closed. |
+| `model_cache_hit_count` | model/provider/currency | Count of observations with a positive cache-read token count. A claimed hit without cache-read tokens is invalid. |
+| `model_cache_hit_ratio` | model/provider/currency | Exact cache hits divided by observation count at scale 9; it is not a provider cache guarantee. |
+| `model_input_tokens`, `model_output_tokens` | model/provider | Exact non-negative token totals, never mixed across model/provider dimensions. |
+| `cache_read_tokens`, `cache_write_tokens` | model/provider | Exact cache token counters retained with the observation scope. They do not prove provider cache billing. |
+| `model_cost_per_output_token_minor` | model/provider/currency | Exact local cost divided by output tokens; `NULL` when no output tokens exist. Provider invoice reconciliation remains separate. |
 
 `mtf_task_financial_summary` is a rebuildable, account-scoped projection. Its
 `CURRENT`, `PARTIAL`, or `UNRECONCILED` qualification and event watermark must

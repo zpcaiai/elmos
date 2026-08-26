@@ -154,9 +154,14 @@
       "sha256": "sha256:760de7587bb390b8dfe76ccece3df02cf77b764deaaca66ddb43d32d8c440abe"
     },
     {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsAdmissionPolicy.java",
+      "byte_size": 11938,
+      "sha256": "sha256:d02fda94e9f2c12b2597c4c18a98339e9d46b76d9b940d0e39c0ce3c671f8256"
+    },
+    {
       "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsAnalytics.java",
-      "byte_size": 45646,
-      "sha256": "sha256:9792abf0867bec1803800a68db40b23d93c52e5e09ca70345826dffcff0f2acf"
+      "byte_size": 46027,
+      "sha256": "sha256:0f181e6fcadcd7c8779f6fe5b31b15c3e4ad5405cd4fa434b08af71d16a79b81"
     },
     {
       "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsAnalyticsService.java",
@@ -167,6 +172,11 @@
       "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsFeatureRollout.java",
       "byte_size": 9505,
       "sha256": "sha256:681672a902b6d3c0b84a23c33cc4cea85181b4fddafb77506dec589c6133eb74"
+    },
+    {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsModelCacheAnalytics.java",
+      "byte_size": 14917,
+      "sha256": "sha256:42be1b2eff327f6dac011bb69c798dd176def45113a7fb34a36e34975851ace6"
     },
     {
       "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsOperationsPort.java",
@@ -184,9 +194,24 @@
       "sha256": "sha256:b655ba020e28317ba5e7d915196673a3e7b4fd5d90c46e3c92ce79dd24dd4770"
     },
     {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsProgressBatch.java",
+      "byte_size": 10561,
+      "sha256": "sha256:944e4c4babaf974a8d842a158418a5cbbd42d29b4f3c7bb7302cd403e4ebe307"
+    },
+    {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsWorkflowStartPayload.java",
+      "byte_size": 15485,
+      "sha256": "sha256:90ac4b28fcd63a0d48ad1333b554356f4c373ef643b3df47ad5a2b00c1083350"
+    },
+    {
       "path": "modules/workflow/src/main/java/io/elmos/workflow/TenantLifecyclePolicy.java",
       "byte_size": 28268,
       "sha256": "sha256:6e75a81ee8849d5143451631e6cb9ffc9a1a6f696b24ad9b0ae7794a2cb0c0c1"
+    },
+    {
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/WorkloadAwareScheduler.java",
+      "byte_size": 9970,
+      "sha256": "sha256:394bf588f6c5291adce3f451fda41614b11d7afe1e702b8343a63ec48ca37460"
     },
     {
       "path": "modules/workflow/src/test/java/io/elmos/workflow/CheckpointForkPolicyTest.java",
@@ -197,6 +222,11 @@
       "path": "modules/workflow/src/test/java/io/elmos/workflow/PaymentSettlementReconcilerTest.java",
       "byte_size": 10399,
       "sha256": "sha256:a13327821977c16e5c74c30d4701a95f2e793b8cca372137d5f797da69dfbc2b"
+    },
+    {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsAdmissionPolicyTest.java",
+      "byte_size": 6612,
+      "sha256": "sha256:37ea8161e41a322174bd4a71114116c9bfea80381a399a5ace5243faba9b4ef6"
     },
     {
       "path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsAnalyticsExportTest.java",
@@ -219,6 +249,11 @@
       "sha256": "sha256:ac36223e057adf55911489b34bc83e11a0ca881c92b0c6eadd0c339ea4ba11d8"
     },
     {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsModelCacheAnalyticsTest.java",
+      "byte_size": 4325,
+      "sha256": "sha256:c5602212c77e17524cff48d39a652ef3ee65a6b7332f617d615f8ad83919e4d6"
+    },
+    {
       "path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsPolicyTest.java",
       "byte_size": 6712,
       "sha256": "sha256:cab647ab59c2bcb591a3ba44d22456b03cbc465609e96b868078c61c02e12abc"
@@ -229,9 +264,24 @@
       "sha256": "sha256:0b10e2cd528783f80ac1d02d90119eadf53359b0eb286bd99a2fcd0e55b2960c"
     },
     {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsProgressBatchTest.java",
+      "byte_size": 3709,
+      "sha256": "sha256:5b0c89e57738390b925920123255f5cc53096d9e55401f7261cb756b729f8d7a"
+    },
+    {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsWorkflowStartPayloadTest.java",
+      "byte_size": 5585,
+      "sha256": "sha256:42d529afc344ac971d3ac96253f0459d7982f3fba023987410c58e5ae666fa1e"
+    },
+    {
       "path": "modules/workflow/src/test/java/io/elmos/workflow/TenantLifecyclePolicyTest.java",
       "byte_size": 15788,
       "sha256": "sha256:3aa56104716b61bbd34dfd5d4e24f5d59e29126a343a162f4839ab5934eae916"
+    },
+    {
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/WorkloadAwareSchedulerTest.java",
+      "byte_size": 3666,
+      "sha256": "sha256:a3e7518be44bcecbca5bab301cf97bd3fa67b1657d5d9d3a2a83d306f682b1f4"
     },
     {
       "path": "tests/multitenant-task-finops/test_runtime_validation.py",
@@ -240,8 +290,8 @@
     },
     {
       "path": "tooling/update_multitenant_task_finops_bindings.py",
-      "byte_size": 21389,
-      "sha256": "sha256:360c10fec346bf24f1b36ed62a4a15a112b30fc115d7db8f609e5d0e0585f6e5"
+      "byte_size": 22643,
+      "sha256": "sha256:f49c3c55c92c27cf3c1eaa736a20845e815508f918dada8ab38633cbf983932e"
     },
     {
       "path": "tooling/validate_multitenant_task_finops_runtime.py",
