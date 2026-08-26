@@ -11,7 +11,7 @@
  * avoid.
  */
 import { AttrBinding, ComponentDef, EventName, Expr, ListPropDef, Literal, Node as CNode, PropDef, StateDef, Stmt } from "../models";
-import { listElementTypeSource, listKeyExpression, listPropIndex, referencedComponents } from "./react";
+import { dataPropTypeSource, listElementTypeSource, listKeyExpression, listPropIndex, referencedComponents } from "./react";
 
 const VUE_EVENT_DIRECTIVE: Record<EventName, string> = {
   onClick: "@click", onChange: "@change", onInput: "@input", onSubmit: "@submit",
@@ -20,6 +20,7 @@ const VUE_EVENT_DIRECTIVE: Record<EventName, string> = {
 function literalSource(literal: Literal): string {
   if (literal.type === "string") return JSON.stringify(literal.value);
   if (literal.type === "number") return String(literal.value);
+  if (literal.type === "null") return "null";
   return literal.value ? "true" : "false";
 }
 
@@ -38,6 +39,7 @@ function exprSource(expr: Expr, stateNames: ReadonlySet<string>, inScript: boole
     // never `.value`-unwrapped and never prefixed.
     case "member":
       return `${expr.object}.${expr.field}`;
+    case "path": return `${expr.object}.${expr.fields.join(".")}`;
     case "literal":
       return literalSource(expr.literal);
     case "unaryNot":
@@ -46,6 +48,9 @@ function exprSource(expr: Expr, stateNames: ReadonlySet<string>, inScript: boole
       const op = expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
+    case "stringMethod":
+      return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, stateNames, inScript)).join(", ")})`;
+    case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary":
       return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
@@ -121,8 +126,9 @@ function nodeSource(node: CNode, stateNames: ReadonlySet<string>, indent: string
     // `v-for` is a structural directive placed ON the repeated element, so
     // it reuses the same plumbing as v-if rather than wrapping the body.
     const list = lists.get(node.source);
-    const key = list ? listKeyExpression(list, node.itemName) : node.itemName;
-    return withDirective(node.body, `v-for="${node.itemName} in ${node.source}" :key="${key}"`, stateNames, indent, lists);
+    const key = node.keyField !== undefined ? `${node.itemName}.${node.keyField}` : list ? listKeyExpression(list, node.itemName) : node.itemName;
+    const source = node.sourceExpression === undefined ? node.source : exprSource(node.sourceExpression, stateNames, false);
+    return withDirective(node.body, `v-for="${node.itemName} in ${source}" :key="${key}"`, stateNames, indent, lists);
   }
   return elementSource(node, [], stateNames, indent, lists);
 }
@@ -176,7 +182,7 @@ function propsBlock(props: PropDef[]): string[] {
   const lines: string[] = [];
   if (dataProps.length > 0 || listProps.length > 0) {
     const fields = [
-      ...dataProps.map((p) => `  ${p.name}${p.required ? "" : "?"}: ${tsType(p.propType)};`),
+      ...dataProps.map((p) => `  ${p.name}${p.required ? "" : "?"}: ${dataPropTypeSource(p, "unknown")};`),
       ...listProps.map((p) => `  ${p.name}: ${listElementTypeSource(p)}[];`),
     ];
     const withDefaults = dataProps.filter((p) => p.defaultValue !== undefined);
@@ -196,7 +202,7 @@ function propsBlock(props: PropDef[]): string[] {
 }
 
 function stateBlock(state: StateDef[]): string[] {
-  return state.map((s) => `const ${s.name} = ref<${tsType(s.stateType)}>(${literalSource(s.initial)});`);
+  return state.map((s) => `const ${s.name} = ref<${tsType(s.stateType)}${s.nullable ? " | null" : ""}>(${literalSource(s.initial)});`);
 }
 
 export function emitVue3(component: ComponentDef): string {

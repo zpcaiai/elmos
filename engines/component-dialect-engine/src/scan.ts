@@ -40,6 +40,7 @@ import { DialectError, Framework, RouteError, isParseable } from "./models";
 import { parseComponentResults } from "./engine";
 import { discoverComponents } from "./pipeline";
 import { MiniProgramSource } from "./parsers/miniprogram";
+import { createReactProjectContext, ReactParserOptions } from "./parsers/react";
 
 export type BlockerFamily =
   | "props-and-types"
@@ -93,6 +94,7 @@ const BLOCKER_CATALOG: Record<string, { family: BlockerFamily; what: string }> =
   CERTIFIED_COMPONENT_UNKNOWN_IDENTIFIER: { family: "expressions", what: "an identifier that is neither a prop, state, nor the bound list item -- typically an import or module-scope constant" },
   CERTIFIED_COMPONENT_UNSUPPORTED_IDENTIFIER: { family: "expressions", what: "an identifier form outside the certified set" },
   CERTIFIED_COMPONENT_UNKNOWN_PROP: { family: "expressions", what: "a reference to a prop that was never declared" },
+  CERTIFIED_COMPONENT_OBJECT_PROP_READ: { family: "expressions", what: "a structured object/array prop rendered as a bare value, which would stringify differently across targets" },
   CERTIFIED_COMPONENT_EXPRESSION_PARSE_FAILED: { family: "expressions", what: "an expression the real parser could not read as a certified expression" },
 
   CERTIFIED_COMPONENT_UNSUPPORTED_HANDLER_STATEMENT: { family: "event-handlers", what: "a handler statement outside state assignment and callback invocation -- loops, conditionals, async and arbitrary calls are excluded" },
@@ -109,7 +111,7 @@ const BLOCKER_CATALOG: Record<string, { family: BlockerFamily; what: string }> =
   CERTIFIED_COMPONENT_UNKNOWN_LIST_SOURCE: { family: "list-rendering", what: "iterating something that is not a declared list prop" },
   CERTIFIED_COMPONENT_UNSUPPORTED_LIST_CALLBACK: { family: "list-rendering", what: "a .map callback that is not a single plain item parameter with an expression body -- index parameters and destructuring are excluded because they change list identity per target" },
   CERTIFIED_COMPONENT_UNSUPPORTED_LIST_BODY: { family: "list-rendering", what: "a list body that is not exactly one element node" },
-  CERTIFIED_COMPONENT_UNSUPPORTED_LIST_ELEMENT: { family: "list-rendering", what: "a list element type outside a primitive or a flat object of primitives" },
+  CERTIFIED_COMPONENT_UNSUPPORTED_LIST_ELEMENT: { family: "list-rendering", what: "a list element type outside a primitive or a bounded object shape (array fields remain blocked)" },
   CERTIFIED_COMPONENT_MISSING_LIST_KEY: { family: "list-rendering", what: "object list items with no identity field (`id`, or exactly one *Id/*Key) -- no target can be given a correct key, and an index key is the defect this engine exists to prevent" },
   CERTIFIED_COMPONENT_UNKNOWN_LIST_KEY: { family: "list-rendering", what: "a declared list key that is not a field of the element" },
   CERTIFIED_COMPONENT_UNEXPECTED_LIST_KEY: { family: "list-rendering", what: "a key on a primitive list, which is keyed by its own value" },
@@ -245,6 +247,9 @@ export function scanRepository(options: ScanOptions): FeasibilityReport {
   }
 
   const files = discoverComponents(repository, sourceFramework);
+  const reactProject = sourceFramework === "react" || sourceFramework === "typescript" || sourceFramework === "react-native"
+    ? createReactProjectContext(repository)
+    : undefined;
   const findings: ScanFinding[] = [];
 
   for (const file of files) {
@@ -281,7 +286,11 @@ export function scanRepository(options: ScanOptions): FeasibilityReport {
     // outcomes, and one of them being blocked no longer costs the other
     // four.
     try {
-      for (const result of parseComponentResults(source, sourceFramework, path.basename(file))) {
+      const reactOptions: ReactParserOptions = reactProject === undefined ? {} : {
+        project: reactProject,
+        sourceFile: reactProject.program.getSourceFile(path.resolve(file)),
+      };
+      for (const result of parseComponentResults(source, sourceFramework, path.basename(file), reactOptions)) {
         if (result.component !== null) {
           findings.push({ sourcePath: relative, componentName: result.component.name, status: "IN_SUBSET", reasonCode: null, reason: null, family: null });
         } else {

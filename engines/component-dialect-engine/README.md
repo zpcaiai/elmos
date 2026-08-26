@@ -79,7 +79,8 @@ destructured props object, `useState` state, and a single root element.
 - **Prop types:** `string`, `number`, `boolean`; optional props with
   literal defaults; `on*`-named callback props taking at most one
   primitive argument; **list props** typed `T[]` where `T` is a primitive
-  or a flat object of primitives. The props object may be annotated
+  or a bounded object shape (nested object paths are supported; array fields
+  inside rendered list elements remain blocked). The props object may be annotated
   inline or by a **type/interface declared in the same file**; an
   imported props type is refused, because a single-file parser genuinely
   does not know what that name means.
@@ -88,9 +89,9 @@ destructured props object, `useState` state, and a single root element.
   and ternaries. No function calls, no member access, no subscripts.
 - **Event handlers:** a flat list of state assignments and callback
   invocations. No loops, conditionals, `async`, or arbitrary calls.
-- **Elements:** `div span p button input label a h1–h6 ul ol li strong em
-  small code` plus the semantic containers `section article header footer
-  nav main aside`. Still refused, because there is no honest equivalent on
+- **Elements:** `div span p button input label a h1–h6 ul ol li strong em i
+  small code dl dt dd` plus the semantic containers `section article header
+  footer nav main aside`. Still refused, because there is no honest equivalent on
   React Native / ArkUI / Flutter: `table` and friends (no table model —
   faking one changes column sizing, spanning and accessibility), `form`
   (no submit event on RN, so `onSubmit` would be silently dropped), and

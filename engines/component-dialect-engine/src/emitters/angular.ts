@@ -14,7 +14,7 @@
  *    class body.
  */
 import { AttrBinding, ComponentDef, EventName, Expr, ListPropDef, Literal, Node as CNode, PropDef, Stmt } from "../models";
-import { listElementTypeSource, listPropIndex, referencedComponents } from "./react";
+import { dataPropTypeSource, listElementTypeSource, listPropIndex, referencedComponents } from "./react";
 
 const ANGULAR_EVENT: Record<EventName, string> = {
   onClick: "click", onChange: "change", onInput: "input", onSubmit: "submit",
@@ -28,6 +28,7 @@ function tsType(t: "string" | "number" | "boolean"): string { return t; }
 function literalSource(literal: Literal): string {
   if (literal.type === "string") return JSON.stringify(literal.value);
   if (literal.type === "number") return String(literal.value);
+  if (literal.type === "null") return "null";
   return literal.value ? "true" : "false";
 }
 
@@ -40,12 +41,15 @@ function exprSource(expr: Expr, inClass: boolean): string {
     case "ident": return inClass ? `this.${expr.name}` : expr.name;
     // `*ngFor` binds the loop variable as a template-local; `this.` is wrong.
     case "member": return `${expr.object}.${expr.field}`;
+    case "path": return `${expr.object}.${expr.fields.join(".")}`;
     case "literal": return literalSource(expr.literal);
     case "unaryNot": return `!${wrap(expr.operand)}`;
     case "binary": {
       const op = expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
+    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, inClass)).join(", ")})`;
+    case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
 }
@@ -106,7 +110,8 @@ function nodeSource(node: CNode, indent: string, ctx: TemplateContext): string {
     // Angular's identity hook is `trackBy`, which requires a component
     // method -- outside this profile's "no methods" rule. Plain *ngFor is
     // correct without it; it just re-creates DOM nodes on reorder.
-    return withDirective(node.body, `*ngFor="let ${node.itemName} of ${node.source}"`, indent, ctx);
+    const source = node.sourceExpression === undefined ? node.source : exprSource(node.sourceExpression, false);
+    return withDirective(node.body, `*ngFor="let ${node.itemName} of ${source}"`, indent, ctx);
   }
   return elementSource(node, [], indent, ctx);
 }
@@ -172,14 +177,14 @@ export function emitAngular(component: ComponentDef): string {
 
   for (const prop of dataProps) {
     if (prop.defaultValue !== undefined) {
-      lines.push(`  @Input() ${prop.name}: ${tsType(prop.propType)} = ${literalSource(prop.defaultValue)};`);
+      lines.push(`  @Input() ${prop.name}: ${dataPropTypeSource(prop, "unknown")} = ${literalSource(prop.defaultValue)};`);
     } else if (prop.required) {
       // Definite-assignment assertion: Angular assigns @Input before the
       // first change detection pass, which `strictPropertyInitialization`
       // cannot see.
-      lines.push(`  @Input() ${prop.name}!: ${tsType(prop.propType)};`);
+      lines.push(`  @Input() ${prop.name}!: ${dataPropTypeSource(prop, "unknown")};`);
     } else {
-      lines.push(`  @Input() ${prop.name}?: ${tsType(prop.propType)};`);
+      lines.push(`  @Input() ${prop.name}?: ${dataPropTypeSource(prop, "unknown")};`);
     }
   }
   for (const list of component.props.filter((p): p is ListPropDef => p.kind === "list")) {
@@ -190,7 +195,7 @@ export function emitAngular(component: ComponentDef): string {
     lines.push(`  @Output() ${outputNameForCallback(cb.name)} = new EventEmitter<${payload}>();`);
   }
   for (const s of component.state) {
-    lines.push(`  ${s.name}: ${tsType(s.stateType)} = ${literalSource(s.initial)};`);
+    lines.push(`  ${s.name}: ${tsType(s.stateType)}${s.nullable ? " | null" : ""} = ${literalSource(s.initial)};`);
   }
   lines.push(`}`);
   return lines.join("\n") + "\n";

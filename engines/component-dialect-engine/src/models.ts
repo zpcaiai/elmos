@@ -110,12 +110,30 @@ export function isParseable(framework: Framework): boolean {
 
 export type PrimitiveType = "string" | "number" | "boolean";
 
+/**
+ * A bounded structural value shape used for data props.
+ *
+ * The original profile only carried a primitive `propType`.  That made an
+ * imported alias such as `CurrentUsageSnapshot["tokens"]` look unsupported
+ * even when its fields were fully known to the TypeScript checker.  Keeping
+ * the shape in the canonical model lets every emitter preserve the contract
+ * without falling back to `any` or a target-specific guess.
+ */
+export type ValueShape =
+  | { kind: "primitive"; primitive: PrimitiveType; nullable?: boolean }
+  | { kind: "object"; fields: Record<string, { shape: ValueShape; optional: boolean }>; nullable?: boolean }
+  | { kind: "array"; element: ValueShape; nullable?: boolean }
+  /** A framework slot such as React's `children`; it is not a data object. */
+  | { kind: "slot"; slotName: "children"; nullable?: boolean };
+
 export type Literal =
   | { type: "string"; value: string }
   | { type: "number"; value: number }
-  | { type: "boolean"; value: boolean };
+  | { type: "boolean"; value: boolean }
+  | { type: "null" };
 
 export function literalType(literal: Literal): PrimitiveType {
+  require_(literal.type !== "null", "CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL", "null cannot initialize a non-null primitive state");
   return literal.type;
 }
 
@@ -125,22 +143,26 @@ export function literalType(literal: Literal): PrimitiveType {
  * Two forms are certified, in increasing order of what real code needs:
  *  - a bare primitive (`string[]`), read in the body as the loop variable
  *    itself;
- *  - a FLAT object whose every field is a primitive (`{ id: number;
- *    name: string }[]`), read as `item.<field>`.
+ *  - an object whose fields retain their structural `ValueShape` (optional /
+ *    nullable fields included), read through a validated path such as
+ *    `item.build_analysis.total`.
  *
- * Nested objects and arrays-of-arrays are deliberately excluded: they would
- * require an unbounded access path, and every target framework spells deep
- * access and null-safety differently.
+ * The path is still bounded by the declared shape: an undeclared field,
+ * nullable traversal, or an object rendered as a scalar fails validation.
+ * This is deliberately narrower than general JavaScript property access.
  */
 export type ListElementShape =
   | { kind: "primitive"; primitive: PrimitiveType }
-  | { kind: "object"; fields: Record<string, PrimitiveType> };
+  | { kind: "object"; fields: Record<string, { shape: ValueShape; optional: boolean }> };
 
 /** A plain data prop, e.g. `name: string`. */
 export interface DataPropDef {
   kind: "data";
   name: string;
   propType: PrimitiveType;
+  /** Present for structured/imported props; primitive props keep the legacy
+   * `propType` as the compact representation. */
+  valueShape?: ValueShape;
   required: boolean;
   /** Only set (and only meaningful) when `required` is false. */
   defaultValue?: Literal;
@@ -160,6 +182,8 @@ export interface ListPropDef {
   kind: "list";
   name: string;
   element: ListElementShape;
+  /** Present for a list nested under a structured object prop, e.g. `semantic.subjects`. */
+  sourceExpression?: Expr;
   /**
    * Field used as the render key. Required for object elements because
    * every target framework needs a stable identity for list diffing
@@ -185,10 +209,13 @@ export interface StateDef {
   name: string;
   stateType: PrimitiveType;
   initial: Literal;
+  /** True when the source state is explicitly nullable, e.g. `useState<string | null>(null)`. */
+  nullable?: boolean;
 }
 
-export type BinaryOperator = "+" | "-" | "*" | "/" | "%" | "<" | "<=" | ">" | ">=" | "==" | "!=" | "&&" | "||";
-export const BINARY_OPERATORS: readonly BinaryOperator[] = ["+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||"];
+export type BinaryOperator = "+" | "-" | "*" | "/" | "%" | "<" | "<=" | ">" | ">=" | "==" | "!=" | "&&" | "||" | "??";
+export const BINARY_OPERATORS: readonly BinaryOperator[] = ["+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "??"];
+export type StringMethod = "toUpperCase" | "toLowerCase" | "trim" | "replaceAll";
 
 export type Expr =
   | { kind: "ident"; name: string }
@@ -199,9 +226,12 @@ export type Expr =
    * enforced by `validateComponent`. Deeper paths are not certified.
    */
   | { kind: "member"; object: string; field: string }
+  | { kind: "path"; object: string; fields: string[] }
   | { kind: "literal"; literal: Literal }
   | { kind: "binary"; operator: BinaryOperator; left: Expr; right: Expr }
   | { kind: "unaryNot"; operand: Expr }
+  | { kind: "stringMethod"; method: StringMethod; receiver: Expr; args: Expr[] }
+  | { kind: "arrayLength"; operand: Expr }
   | { kind: "ternary"; condition: Expr; then: Expr; else: Expr };
 
 /** One statement inside an event handler body. Certified-component-v1 event
@@ -237,14 +267,16 @@ export type Stmt =
  */
 export const HTML_TAGS = [
   "div", "span", "p", "button", "input", "label", "a",
-  "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "strong", "em",
-  "section", "article", "header", "footer", "nav", "main", "aside",
+  "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "strong", "em", "i",
+  "section", "article", "header", "footer", "nav", "main", "aside", "dl", "dt", "dd",
   "small", "code",
 ] as const;
 export type HtmlTag = (typeof HTML_TAGS)[number];
 
 export const ATTR_NAMES = [
   "class", "id", "href", "type", "placeholder", "value", "disabled", "name", "for", "checked",
+  "role", "aria-hidden", "aria-label", "aria-labelledby", "aria-valuemin", "aria-valuemax", "aria-valuenow", "aria-valuetext",
+  "data-label", "tabIndex", "style",
 ] as const;
 export type AttrName = (typeof ATTR_NAMES)[number];
 
@@ -274,7 +306,7 @@ export type Node =
    * (or would need a framework-specific fragment wrapper that changes the
    * rendered DOM). Nested lists are rejected -- see validateComponent.
    */
-  | { kind: "list"; source: string; itemName: string; body: Node }
+  | { kind: "list"; source: string; sourceExpression?: Expr; itemName: string; body: Node; keyField?: string }
   /**
    * A reference to ANOTHER certified component: `<Child label={title} />`.
    *
@@ -308,6 +340,8 @@ export interface ComponentDef {
   props: PropDef[];
   state: StateDef[];
   root: Node;
+  /** Derived list sources are kept out of the public prop signature while remaining typed in the canonical IR. */
+  lists?: ListPropDef[];
 }
 
 const IDENTIFIER_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
@@ -336,6 +370,10 @@ export function validateComponent(component: ComponentDef): void {
     seenPropNames.add(prop.name);
     if (prop.kind === "data") {
       dataNames.add(prop.name);
+      if (prop.valueShape?.kind === "slot") {
+        // Slots are readable as identifiers in the source JSX/template, but
+        // are emitted through each target's native projection primitive.
+      }
     } else if (prop.kind === "list") {
       if (prop.element.kind === "object") {
         const fieldNames = Object.keys(prop.element.fields);
@@ -355,12 +393,20 @@ export function validateComponent(component: ComponentDef): void {
       callbackNames.add(prop.name);
     }
   }
+  for (const list of component.lists ?? []) {
+    require_(!listProps.has(list.name), "CERTIFIED_COMPONENT_DUPLICATE_LIST", `duplicate derived list source ${JSON.stringify(list.name)}`);
+    listProps.set(list.name, list);
+  }
 
   const stateNames = new Set<string>();
   for (const s of component.state) {
     checkIdentifier(s.name, "state name");
     require_(!stateNames.has(s.name) && !dataNames.has(s.name) && !callbackNames.has(s.name), "CERTIFIED_COMPONENT_DUPLICATE_STATE", `duplicate/shadowing state name ${JSON.stringify(s.name)}`);
-    require_(literalType(s.initial) === s.stateType, "CERTIFIED_COMPONENT_STATE_TYPE_MISMATCH", `state ${JSON.stringify(s.name)} initial value type does not match declared type`);
+    if (s.initial.type === "null") {
+      require_(s.nullable === true, "CERTIFIED_COMPONENT_STATE_TYPE_MISMATCH", `state ${JSON.stringify(s.name)} is initialized with null but is not declared nullable`);
+    } else {
+      require_(literalType(s.initial) === s.stateType, "CERTIFIED_COMPONENT_STATE_TYPE_MISMATCH", `state ${JSON.stringify(s.name)} initial value type does not match declared type`);
+    }
     stateNames.add(s.name);
   }
 
@@ -382,14 +428,28 @@ export function validateComponent(component: ComponentDef): void {
           return;
         }
         require_(readableNames.has(expr.name), "CERTIFIED_COMPONENT_UNKNOWN_IDENTIFIER", `identifier ${JSON.stringify(expr.name)} is not a declared prop or state variable`);
+        const data = component.props.find((p): p is DataPropDef => p.kind === "data" && p.name === expr.name);
+        require_(data?.valueShape?.kind !== "object" && data?.valueShape?.kind !== "array",
+          "CERTIFIED_COMPONENT_OBJECT_PROP_READ", `structured prop ${JSON.stringify(expr.name)} must be read through a declared field or list usage, not rendered as a bare value`);
         return;
       }
       case "member": {
         const list = scope.get(expr.object);
-        require_(list !== undefined, "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `${expr.object}.${expr.field} is outside certified-component-v1: field access is only supported on a list's loop variable`);
-        require_((list as ListPropDef).element.kind === "object", "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `loop variable ${JSON.stringify(expr.object)} has primitive elements and has no field ${JSON.stringify(expr.field)}`);
-        const fields = ((list as ListPropDef).element as Extract<ListElementShape, { kind: "object" }>).fields;
-        require_(Object.prototype.hasOwnProperty.call(fields, expr.field), "CERTIFIED_COMPONENT_UNKNOWN_LIST_FIELD", `${expr.object}.${expr.field} is not a declared field of list prop ${JSON.stringify(expr.object)}`);
+        if (list !== undefined) {
+          require_((list as ListPropDef).element.kind === "object", "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `loop variable ${JSON.stringify(expr.object)} has primitive elements and has no field ${JSON.stringify(expr.field)}`);
+          const fields = ((list as ListPropDef).element as Extract<ListElementShape, { kind: "object" }>).fields;
+          require_(Object.prototype.hasOwnProperty.call(fields, expr.field), "CERTIFIED_COMPONENT_UNKNOWN_LIST_FIELD", `${expr.object}.${expr.field} is not a declared field of list prop ${JSON.stringify(expr.object)}`);
+          return;
+        }
+        const data = component.props.find((p): p is DataPropDef => p.kind === "data" && p.name === expr.object);
+        const shape = data?.valueShape;
+        require_(shape?.kind === "object", "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `${expr.object}.${expr.field} is outside certified-component-v1: field access requires a declared object prop or list item`);
+        require_(Object.prototype.hasOwnProperty.call(shape.fields, expr.field), "CERTIFIED_COMPONENT_UNKNOWN_PROP_FIELD", `${expr.object}.${expr.field} is not a declared field of object prop ${JSON.stringify(expr.object)}`);
+        return;
+      }
+      case "path": {
+        const shape = resolvePathShape(expr.object, expr.fields, scope);
+        require_(shape !== null, "CERTIFIED_COMPONENT_UNKNOWN_PROP_FIELD", `${expr.object}.${expr.fields.join(".")} is not a declared structured field path`);
         return;
       }
       case "literal":
@@ -401,12 +461,94 @@ export function validateComponent(component: ComponentDef): void {
       case "unaryNot":
         checkExpr(expr.operand, scope);
         return;
+      case "stringMethod":
+        checkExpr(expr.receiver, scope);
+        require_(isStringExpression(expr.receiver, scope), "CERTIFIED_COMPONENT_STRING_METHOD_RECEIVER", `${expr.method} requires a certified string expression`);
+        const expectedArgs = expr.method === "replaceAll" ? 2 : 0;
+        require_(expr.args.length === expectedArgs, "CERTIFIED_COMPONENT_STRING_METHOD_ARITY", `${expr.method} expects ${expectedArgs} argument(s)`);
+        expr.args.forEach((arg) => {
+          checkExpr(arg, scope);
+          require_(arg.kind === "literal" && arg.literal.type === "string", "CERTIFIED_COMPONENT_STRING_METHOD_ARGUMENT", `${expr.method} arguments must be string literals`);
+        });
+        return;
+      case "arrayLength":
+        checkExpr(expr.operand, scope);
+        require_(isArrayExpression(expr.operand, scope), "CERTIFIED_COMPONENT_ARRAY_LENGTH_OPERAND", "length requires a certified array expression");
+        return;
       case "ternary":
         checkExpr(expr.condition, scope);
         checkExpr(expr.then, scope);
         checkExpr(expr.else, scope);
         return;
     }
+  }
+
+  function isStringExpression(expr: Expr, scope: Scope): boolean {
+    if (expr.kind === "literal") return expr.literal.type === "string";
+    if (expr.kind === "stringMethod") return true;
+    if (expr.kind === "ident") {
+      const list = scope.get(expr.name);
+      if (list !== undefined) return list.element.kind === "primitive" && list.element.primitive === "string";
+      const data = component.props.find((p): p is DataPropDef => p.kind === "data" && p.name === expr.name);
+      const shape = data?.valueShape;
+      if (data !== undefined) return shape === undefined ? data.propType === "string" : shape.kind === "primitive" && shape.primitive === "string";
+      return component.state.some((state) => state.name === expr.name && state.stateType === "string");
+    }
+    if (expr.kind === "member") {
+      const list = scope.get(expr.object);
+      if (list?.element.kind === "object") {
+        const field = list.element.fields[expr.field];
+        return field?.shape.kind === "primitive" && field.shape.primitive === "string";
+      }
+      const data = component.props.find((p): p is DataPropDef => p.kind === "data" && p.name === expr.object);
+      const shape = data?.valueShape;
+      if (shape?.kind !== "object") return false;
+      const field = shape.fields[expr.field];
+      return field?.shape.kind === "primitive" && field.shape.primitive === "string";
+    }
+    if (expr.kind === "path") {
+      const shape = resolvePathShape(expr.object, expr.fields, scope);
+      return shape?.kind === "primitive" && shape.primitive === "string";
+    }
+    if (expr.kind === "binary" && (expr.operator === "+" || expr.operator === "??")) return isStringExpression(expr.left, scope) && isStringExpression(expr.right, scope);
+    if (expr.kind === "ternary") return isStringExpression(expr.then, scope) && isStringExpression(expr.else, scope);
+    return false;
+  }
+
+  function isArrayExpression(expr: Expr, scope: Scope): boolean {
+    if (expr.kind === "ident") {
+      const list = scope.get(expr.name);
+      if (list !== undefined) return true;
+      const data = component.props.find((p): p is DataPropDef => p.kind === "data" && p.name === expr.name);
+      return data?.valueShape?.kind === "array";
+    }
+    if (expr.kind === "member") {
+      const data = component.props.find((p): p is DataPropDef => p.kind === "data" && p.name === expr.object);
+      const shape = data?.valueShape;
+      return shape?.kind === "object" && shape.fields[expr.field]?.shape.kind === "array";
+    }
+    if (expr.kind === "path") return resolvePathShape(expr.object, expr.fields, scope)?.kind === "array";
+    return false;
+  }
+
+  function resolvePathShape(object: string, fields: readonly string[], scope: Scope): ValueShape | null {
+    let shape: ValueShape | undefined;
+    const list = scope.get(object);
+    if (list !== undefined) {
+      if (list.element.kind !== "object") return null;
+      const first = fields[0];
+      if (first === undefined) return null;
+      shape = list.element.fields[first]?.shape;
+      fields = fields.slice(1);
+    } else {
+      const data = component.props.find((p): p is DataPropDef => p.kind === "data" && p.name === object);
+      shape = data?.valueShape;
+    }
+    for (const field of fields) {
+      if (shape?.kind !== "object") return null;
+      shape = shape.fields[field]?.shape;
+    }
+    return shape ?? null;
   }
 
   function checkStmt(stmt: Stmt, scope: Scope): void {
@@ -420,9 +562,40 @@ export function validateComponent(component: ComponentDef): void {
     }
   }
 
+  /** Returns the structural shape when it is knowable.  Text and attribute
+   * bindings may consume primitive values, but must never stringify an
+   * object/array differently on each target. */
+  function expressionShape(expr: Expr, scope: Scope): ValueShape | null {
+    if (expr.kind === "ident") {
+      const list = scope.get(expr.name);
+      if (list?.element.kind === "object") return { kind: "object", fields: list.element.fields };
+      const data = component.props.find((p): p is DataPropDef => p.kind === "data" && p.name === expr.name);
+      return data?.valueShape ?? null;
+    }
+    if (expr.kind === "member") {
+      const list = scope.get(expr.object);
+      if (list?.element.kind === "object") return list.element.fields[expr.field]?.shape ?? null;
+      const data = component.props.find((p): p is DataPropDef => p.kind === "data" && p.name === expr.object);
+      return data?.valueShape?.kind === "object" ? data.valueShape.fields[expr.field]?.shape ?? null : null;
+    }
+    if (expr.kind === "path") return resolvePathShape(expr.object, expr.fields, scope);
+    if (expr.kind === "arrayLength") return { kind: "primitive", primitive: "number" };
+    if (expr.kind === "stringMethod") return { kind: "primitive", primitive: "string" };
+    if (expr.kind === "ternary") {
+      const thenShape = expressionShape(expr.then, scope);
+      const elseShape = expressionShape(expr.else, scope);
+      return thenShape?.kind === "object" || thenShape?.kind === "array"
+        ? thenShape
+        : elseShape?.kind === "object" || elseShape?.kind === "array" ? elseShape : null;
+    }
+    return null;
+  }
+
   function checkNode(node: Node, scope: Scope): void {
     if (node.kind === "text") {
       checkExpr(node.value, scope);
+      const shape = expressionShape(node.value, scope);
+      require_(shape === null || shape.kind === "primitive", "CERTIFIED_COMPONENT_OBJECT_ITEM_READ", "structured list or prop values must be rendered through a primitive field");
       return;
     }
     if (node.kind === "conditional") {
@@ -439,6 +612,15 @@ export function validateComponent(component: ComponentDef): void {
         checkIdentifier(arg.name, "component prop");
         require_(!seen.has(arg.name), "CERTIFIED_COMPONENT_DUPLICATE_PROP", `prop ${JSON.stringify(arg.name)} is passed twice to ${node.name}`);
         seen.add(arg.name);
+        // Passing a declared structured prop through to a child preserves the
+        // object contract; it is not the same as interpolating that object in
+        // a text node. The child contract is checked when the repository
+        // pipeline resolves the referenced component.
+        if (arg.value.kind === "ident") {
+          const valueName = arg.value.name;
+          const data = component.props.find((p): p is DataPropDef => p.kind === "data" && p.name === valueName);
+          if (data?.valueShape?.kind === "object" || data?.valueShape?.kind === "array" || data?.valueShape?.kind === "slot") continue;
+        }
         checkExpr(arg.value, scope);
       }
       return;
@@ -446,6 +628,7 @@ export function validateComponent(component: ComponentDef): void {
     if (node.kind === "list") {
       const list = listProps.get(node.source);
       require_(list !== undefined, "CERTIFIED_COMPONENT_UNKNOWN_LIST_SOURCE", `list node iterates ${JSON.stringify(node.source)}, which is not a declared list prop`);
+      if (node.sourceExpression !== undefined) checkExpr(node.sourceExpression, scope);
       checkIdentifier(node.itemName, "list item variable");
       require_(!readableNames.has(node.itemName) && !callbackNames.has(node.itemName), "CERTIFIED_COMPONENT_LIST_ITEM_SHADOWS", `list item variable ${JSON.stringify(node.itemName)} shadows a declared prop or state variable`);
       // Nested lists would need a per-framework nested-key strategy and are
@@ -453,13 +636,22 @@ export function validateComponent(component: ComponentDef): void {
       require_(!scope.has(node.itemName), "CERTIFIED_COMPONENT_LIST_ITEM_SHADOWS", `list item variable ${JSON.stringify(node.itemName)} shadows an enclosing loop variable`);
       require_(scope.size === 0, "CERTIFIED_COMPONENT_NESTED_LIST", "nested list rendering is outside certified-component-v1");
       require_(node.body.kind === "element", "CERTIFIED_COMPONENT_UNSUPPORTED_LIST_BODY", "a list body must be exactly one element node");
+      if (node.keyField !== undefined) {
+        require_(list.element.kind === "object", "CERTIFIED_COMPONENT_UNEXPECTED_LIST_KEY", `list node ${JSON.stringify(node.source)} declares a field key but its elements are primitive`);
+        require_(Object.prototype.hasOwnProperty.call(list.element.fields, node.keyField), "CERTIFIED_COMPONENT_UNKNOWN_LIST_KEY", `list node ${JSON.stringify(node.source)} key field ${JSON.stringify(node.keyField)} is not declared on its element`);
+        require_(list.keyField === undefined || list.keyField === node.keyField, "CERTIFIED_COMPONENT_CONFLICTING_LIST_KEY", `list node ${JSON.stringify(node.source)} key ${JSON.stringify(node.keyField)} conflicts with its declared list key ${JSON.stringify(list.keyField)}`);
+      }
       const inner = new Map(scope);
       inner.set(node.itemName, list as ListPropDef);
       checkNode(node.body, inner);
       return;
     }
     for (const attr of node.attrs) {
-      if (attr.kind === "dynamic") checkExpr(attr.value, scope);
+      if (attr.kind === "dynamic") {
+        checkExpr(attr.value, scope);
+        const shape = expressionShape(attr.value, scope);
+        require_(shape === null || shape.kind === "primitive", "CERTIFIED_COMPONENT_OBJECT_ITEM_READ", `attribute ${JSON.stringify(attr.name)} must bind a primitive expression`);
+      }
     }
     for (const event of node.events) {
       event.body.forEach((s) => checkStmt(s, scope));

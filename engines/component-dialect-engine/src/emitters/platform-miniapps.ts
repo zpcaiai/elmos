@@ -120,6 +120,7 @@ const TAG_MAP: Readonly<Record<HtmlTag, string>> = {
   li: "view",
   strong: "text",
   em: "text",
+  i: "text",
   section: "view",
   article: "view",
   header: "view",
@@ -127,6 +128,9 @@ const TAG_MAP: Readonly<Record<HtmlTag, string>> = {
   nav: "view",
   main: "view",
   aside: "view",
+  dl: "view",
+  dt: "text",
+  dd: "text",
   small: "text",
   code: "text",
 };
@@ -242,6 +246,7 @@ function assertTargetNameClosure(component: ComponentDef): void {
 function literalSource(literal: Literal): string {
   if (literal.type === "string") return JSON.stringify(literal.value);
   if (literal.type === "number") return String(literal.value);
+  if (literal.type === "null") return "null";
   return literal.value ? "true" : "false";
 }
 
@@ -273,6 +278,7 @@ function templateExprSource(expr: Expr): string {
       return expr.name;
     case "member":
       return `${expr.object}.${expr.field}`;
+    case "path": return `${expr.object}.${expr.fields.join(".")}`;
     case "literal":
       return literalSource(expr.literal);
     case "unaryNot":
@@ -281,6 +287,8 @@ function templateExprSource(expr: Expr): string {
       const operator = expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator;
       return `${wrap(expr.left)} ${operator} ${wrap(expr.right)}`;
     }
+    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(templateExprSource).join(", ")})`;
+    case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary":
       return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
@@ -305,6 +313,8 @@ function jsExprSource(expr: Expr, context: JsExpressionContext): string {
       return `this.data.${expr.name}`;
     case "member":
       fail("MINIAPP_UNBOUND_LOOP_VALUE", `loop-local value ${expr.object}.${expr.field} was not bound into the event dataset`);
+    case "path":
+      fail("MINIAPP_UNBOUND_LOOP_VALUE", `loop-local value ${expr.object}.${expr.fields.join(".")} was not bound into the event dataset`);
     case "literal":
       return literalSource(expr.literal);
     case "unaryNot":
@@ -313,6 +323,8 @@ function jsExprSource(expr: Expr, context: JsExpressionContext): string {
       const operator = expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator;
       return `${wrap(expr.left)} ${operator} ${wrap(expr.right)}`;
     }
+    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => jsExprSource(arg, context)).join(", ")})`;
+    case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary":
       return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
@@ -332,6 +344,13 @@ function walkExpr(expr: Expr, visit: (candidate: Expr) => void): void {
       walkExpr(expr.condition, visit);
       walkExpr(expr.then, visit);
       walkExpr(expr.else, visit);
+      return;
+    case "stringMethod":
+      walkExpr(expr.receiver, visit);
+      expr.args.forEach((arg) => walkExpr(arg, visit));
+      return;
+    case "arrayLength":
+      walkExpr(expr.operand, visit);
       return;
     default:
       return;
@@ -498,8 +517,9 @@ function nodeSource(node: CNode, indent: string, context: RenderContext, scope: 
     const prefix = context.profile.directivePrefix;
     const list = context.lists.get(node.source);
     if (list === undefined) fail("MINIAPP_UNKNOWN_LIST", `list ${JSON.stringify(node.source)} is not declared`);
-    const key = list.keyField ?? "*this";
-    const directive = `${prefix}:for="{{ ${node.source} }}" ${prefix}:for-item="${node.itemName}" ${prefix}:key="${key}"`;
+    const key = node.keyField ?? list.keyField ?? "*this";
+    const source = node.sourceExpression === undefined ? node.source : templateExprSource(node.sourceExpression);
+    const directive = `${prefix}:for="{{ ${source} }}" ${prefix}:for-item="${node.itemName}" ${prefix}:key="${key}"`;
     return branchSource(node.body, directive, indent, context, { itemName: node.itemName });
   }
 

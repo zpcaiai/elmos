@@ -43,6 +43,81 @@ describe("React parsing (real TypeScript Compiler API)", () => {
     expect(ir.state.map((s) => s.name)).toEqual(["count", "busy"]);
     expect(ir.root.kind).toBe("element");
   });
+
+  it("inlines earlier pure local expressions without widening the target IR", () => {
+    const ir = parseReactComponent(`
+      function Alias({ name }: { name: string }) {
+        const heading = name;
+        const display = true ? heading : "unused";
+        return (<p>{display}</p>);
+      }
+    `, "Alias.tsx");
+    expect(ir.root.kind).toBe("element");
+    const child = ir.root.kind === "element" ? ir.root.children[0] : undefined;
+    expect(child).toEqual({
+      kind: "text",
+      value: {
+        kind: "ternary",
+        condition: { kind: "literal", literal: { type: "boolean", value: true } },
+        then: { kind: "ident", name: "name" },
+        else: { kind: "literal", literal: { type: "string", value: "unused" } },
+      },
+    });
+  });
+
+  it("preserves certified string methods and static label-map lookups", () => {
+    const ir = parseReactComponent(`
+      const labels = { READY: "就绪", BLOCKED: "阻断" };
+      function Label({ status }: { status: string }) {
+        const normalized = status.toUpperCase();
+        return <span aria-hidden={true}>{labels[normalized] ?? status}</span>;
+      }
+    `, "Label.tsx");
+    expect(ir.root).toEqual({
+      kind: "element",
+      tag: "span",
+      attrs: [{ kind: "dynamic", name: "aria-hidden", value: { kind: "literal", literal: { type: "boolean", value: true } } }],
+      events: [],
+      children: [{
+        kind: "text",
+        value: {
+          kind: "binary",
+          operator: "??",
+          left: {
+            kind: "ternary",
+            condition: { kind: "binary", operator: "==", left: { kind: "stringMethod", method: "toUpperCase", receiver: { kind: "ident", name: "status" }, args: [] }, right: { kind: "literal", literal: { type: "string", value: "READY" } } },
+            then: { kind: "literal", literal: { type: "string", value: "就绪" } },
+            else: {
+              kind: "ternary",
+              condition: { kind: "binary", operator: "==", left: { kind: "stringMethod", method: "toUpperCase", receiver: { kind: "ident", name: "status" }, args: [] }, right: { kind: "literal", literal: { type: "string", value: "BLOCKED" } } },
+              then: { kind: "literal", literal: { type: "string", value: "阻断" } },
+              else: { kind: "literal", literal: { type: "null" } },
+            },
+          },
+          right: { kind: "ident", name: "status" },
+        },
+      }],
+    });
+    expect(emitReact(ir)).toContain("status.toUpperCase()");
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("retains typed nested object paths and array length reads", () => {
+    const ir = parseReactComponent(`
+      function Summary({ report }: { report: { totals: { count: number }; items: string[] } }) {
+        return <p>{report.totals.count} / {report.items.length}</p>;
+      }
+    `, "Summary.tsx");
+    expect(ir.root.kind).toBe("element");
+    const values = ir.root.kind === "element" ? ir.root.children.filter((child) => child.kind === "text").map((child) => child.value) : [];
+    expect(values).toEqual([
+      { kind: "path", object: "report", fields: ["totals", "count"] },
+      { kind: "literal", literal: { type: "string", value: "/" } },
+      { kind: "arrayLength", operand: { kind: "member", object: "report", field: "items" } },
+    ]);
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
 });
 
 describe("cross-framework round trip", () => {
@@ -134,11 +209,13 @@ describe("fail-closed behavior outside certified-component-v1", () => {
     ["unsupported tag", `function C() { return (<video>hi</video>); }`],
     ["unsupported attribute", `function C() { return (<div data-tracking="x">hi</div>); }`],
     ["spread props", `function C(props: { a: string }) { return (<div {...props}>hi</div>); }`],
-    ["method call in expression", `function C({ a }: { a: string }) { return (<div>{a.toUpperCase()}</div>); }`],
+    ["unsupported method call in expression", `function C({ a }: { a: string }) { return (<div>{a.includes("x")}</div>); }`],
     ["two components in one file", `function A() { return (<div>a</div>); } function B() { return (<div>b</div>); }`],
     ["untyped props", `function C(props) { return (<div>hi</div>); }`],
     ["handler with a loop", `function C() { const [x, setX] = useState<number>(0); return (<button onClick={() => { for (;;) {} }}>go</button>); }`],
     ["non-literal useState", `function C({ a }: { a: number }) { const [x, setX] = useState<number>(a); return (<div>{x}</div>); }`],
+    ["forward local read", `function C({ a }: { a: number }) { const b = a + c; const c = a + 1; return (<div>{b}</div>); }`],
+    ["cyclic local read", `function C({ a }: { a: number }) { const b = c; const c = b; return (<div>{b}</div>); }`],
   ];
 
   it.each(cases)("blocks %s instead of guessing", (_name, source) => {

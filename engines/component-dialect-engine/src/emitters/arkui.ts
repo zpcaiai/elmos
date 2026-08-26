@@ -19,7 +19,7 @@
  *    function-typed field, which is what is emitted here.
  */
 import { ComponentDef, Expr, HtmlTag, ListPropDef, Literal, Node as CNode, PropDef, Stmt } from "../models";
-import { listKeyExpression, listPropIndex, referencedComponents } from "./react";
+import { listPropIndex, referencedComponents } from "./react";
 
 /** HTML tag -> ArkUI built-in component. Block-level tags become layout
  * containers, text-level tags become Text. */
@@ -28,7 +28,7 @@ import { listKeyExpression, listPropIndex, referencedComponents } from "./react"
 // why they were admitted to the subset while `table` and `form` were not.
 const CONTAINER_TAGS: ReadonlySet<HtmlTag> = new Set<HtmlTag>([
   "div", "ul", "ol", "p",
-  "section", "article", "header", "footer", "nav", "main", "aside",
+  "section", "article", "header", "footer", "nav", "main", "aside", "dl",
 ]);
 
 const TEXT_STYLE: Partial<Record<HtmlTag, string>> = {
@@ -42,11 +42,13 @@ const TEXT_STYLE: Partial<Record<HtmlTag, string>> = {
   small: ".fontSize(12)",
   code: ".fontFamily('monospace')",
   em: ".fontStyle(FontStyle.Italic)",
+  dt: ".fontWeight(FontWeight.Bold)",
 };
 
 function literalSource(literal: Literal): string {
   if (literal.type === "string") return `'${literal.value.replace(/'/g, "\\'")}'`;
   if (literal.type === "number") return String(literal.value);
+  if (literal.type === "null") return "null";
   return literal.value ? "true" : "false";
 }
 
@@ -59,12 +61,19 @@ function exprSource(expr: Expr): string {
     case "ident": return `this.${expr.name}`;
     // ForEach binds the item as a lambda parameter, not a struct field.
     case "member": return `${expr.object}.${expr.field}`;
+    // Object-valued list fields are emitted as bounded Record values. ArkTS
+    // does not guarantee a dot-property on a Record, so nested accesses use
+    // explicit key indexing rather than producing a visually plausible but
+    // type-invalid `item.build_analysis.total` expression.
+    case "path": return expr.fields.reduce((source, field) => `${source}[${JSON.stringify(field)}]`, expr.object);
     case "literal": return literalSource(expr.literal);
     case "unaryNot": return `!${wrap(expr.operand)}`;
     case "binary": {
       const op = expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
+    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(exprSource).join(", ")})`;
+    case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
 }
@@ -81,6 +90,8 @@ function handlerBody(body: Stmt[], indent: string): string[] {
     if (e.kind === "ident") reads.add(e.name);
     else if (e.kind === "binary") { collect(e.left); collect(e.right); }
     else if (e.kind === "unaryNot") collect(e.operand);
+    else if (e.kind === "stringMethod") { collect(e.receiver); e.args.forEach(collect); }
+    else if (e.kind === "arrayLength") collect(e.operand);
     else if (e.kind === "ternary") { collect(e.condition); collect(e.then); collect(e.else); }
   };
   for (const stmt of body) {
@@ -92,6 +103,8 @@ function handlerBody(body: Stmt[], indent: string): string[] {
     if (e.kind === "ident" && snapshot.has(e.name)) return `${e.name}$0`;
     if (e.kind === "binary") return `(${rewrite(e.left)} ${e.operator === "==" ? "===" : e.operator === "!=" ? "!==" : e.operator} ${rewrite(e.right)})`;
     if (e.kind === "unaryNot") return `!${rewrite(e.operand)}`;
+    if (e.kind === "stringMethod") return `${rewrite(e.receiver)}.${e.method}(${e.args.map(rewrite).join(", ")})`;
+    if (e.kind === "arrayLength") return `${rewrite(e.operand)}.length`;
     if (e.kind === "ternary") return `(${rewrite(e.condition)} ? ${rewrite(e.then)} : ${rewrite(e.else)})`;
     return exprSource(e);
   };
@@ -139,9 +152,14 @@ function nodeSource(node: CNode, indent: string, lists: ReadonlyMap<string, List
     // ArkUI takes an explicit key generator as ForEach's third argument;
     // it must return a string, so a numeric id is stringified.
     const list = lists.get(node.source);
-    const elementType = list && list.element.kind === "object" ? "Object" : "string | number | boolean";
-    const key = list ? listKeyExpression(list, node.itemName) : node.itemName;
-    const lines = [`${indent}ForEach(this.${node.source}, (${node.itemName}: ${elementType}) => {`];
+    const elementType = list && list.element.kind === "object" ? "Record<string, Object>" : "string | number | boolean";
+    const key = node.keyField !== undefined
+      ? `${node.itemName}[${JSON.stringify(node.keyField)}]`
+      : list?.keyField !== undefined
+        ? `${node.itemName}[${JSON.stringify(list.keyField)}]`
+        : node.itemName;
+    const source = node.sourceExpression === undefined ? `this.${node.source}` : exprSource(node.sourceExpression);
+    const lines = [`${indent}ForEach(${source}, (${node.itemName}: ${elementType}) => {`];
     lines.push(...nodeSource(node.body, indent + "  ", lists));
     lines.push(`${indent}}, (${node.itemName}: ${elementType}) => String(${key}))`);
     return lines;
@@ -201,7 +219,7 @@ export function emitArkUI(component: ComponentDef): string {
       const param = prop.paramType ? `value: ${arkType(prop.paramType)}` : "";
       lines.push(`  ${prop.name}: (${param}) => void = () => {};`);
     } else if (prop.kind === "list") {
-      const elementType = prop.element.kind === "object" ? "Object" : arkType(prop.element.primitive);
+      const elementType = prop.element.kind === "object" ? "Record<string, Object>" : arkType(prop.element.primitive);
       lines.push(`  @Prop ${prop.name}: Array<${elementType}> = [];`);
     } else if (prop.defaultValue !== undefined) {
       lines.push(`  @Prop ${prop.name}: ${arkType(prop.propType)} = ${literalSource(prop.defaultValue)};`);
@@ -211,7 +229,7 @@ export function emitArkUI(component: ComponentDef): string {
     }
   }
   for (const s of component.state) {
-    lines.push(`  @State ${s.name}: ${arkType(s.stateType)} = ${literalSource(s.initial)};`);
+    lines.push(`  @State ${s.name}: ${arkType(s.stateType)}${s.nullable ? " | null" : ""} = ${literalSource(s.initial)};`);
   }
 
   lines.push("");

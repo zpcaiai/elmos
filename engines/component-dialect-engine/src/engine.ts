@@ -12,7 +12,7 @@ import {
   ALL_FRAMEWORKS, ComponentDef, DialectError, EXECUTABLE_FRAMEWORKS, Framework,
   isParseable, RouteError,
 } from "./models";
-import { parseReactComponent, parseReactComponents, parseReactComponentResults } from "./parsers/react";
+import { parseReactComponent, parseReactComponents, parseReactComponentResults, ReactParserOptions } from "./parsers/react";
 import { parseVue3Component } from "./parsers/vue3";
 import { parseVue2Component } from "./parsers/vue2";
 import { parseSvelteComponent } from "./parsers/svelte";
@@ -61,7 +61,7 @@ export function resolveFramework(value: string): Framework {
   throw new RouteError(`UNSUPPORTED_FRAMEWORK: ${JSON.stringify(value)} is not one of ${ALL_FRAMEWORKS.join(", ")}`);
 }
 
-export function parseComponent(source: string | MiniProgramSource, framework: Framework, fileName: string): ComponentDef {
+export function parseComponent(source: string | MiniProgramSource, framework: Framework, fileName: string, reactOptions: ReactParserOptions = {}): ComponentDef {
   if (!isParseable(framework)) {
     throw new RouteError(
       `FRAMEWORK_NOT_PARSEABLE: ${framework} can only be a translation TARGET in certified-component-v1. ` +
@@ -73,7 +73,7 @@ export function parseComponent(source: string | MiniProgramSource, framework: Fr
     case "react":
     case "typescript":
     case "react-native":
-      return parseReactComponent(source as string, fileName);
+      return parseReactComponent(source as string, fileName, reactOptions);
     case "vue3":
       return parseVue3Component(source as string, fileName);
     case "vue2":
@@ -178,6 +178,7 @@ export interface TranslateOptions {
   /** Skip the SSR execution comparison even when both frameworks support
    * it. Off by default: the execution leg is the evidence that matters. */
   skipExecution?: boolean;
+  reactOptions?: ReactParserOptions;
 }
 
 /**
@@ -189,9 +190,9 @@ export interface TranslateOptions {
  * directory -- so for those this is exactly the single-component path
  * rather than a limitation being papered over.
  */
-export function parseComponents(source: string | MiniProgramSource, framework: Framework, fileName: string): ComponentDef[] {
+export function parseComponents(source: string | MiniProgramSource, framework: Framework, fileName: string, reactOptions: ReactParserOptions = {}): ComponentDef[] {
   if (framework === "react" || framework === "typescript" || framework === "react-native") {
-    return parseReactComponents(source as string, fileName);
+    return parseReactComponents(source as string, fileName, reactOptions);
   }
   return [parseComponent(source, framework, fileName)];
 }
@@ -208,12 +209,13 @@ export function parseComponentResults(
   source: string | MiniProgramSource,
   framework: Framework,
   fileName: string,
+  reactOptions: ReactParserOptions = {},
 ): { name: string | null; component: ComponentDef | null; error: DialectError | null }[] {
   if (framework === "react" || framework === "typescript" || framework === "react-native") {
-    return parseReactComponentResults(source as string, fileName);
+    return parseReactComponentResults(source as string, fileName, reactOptions);
   }
   try {
-    const component = parseComponent(source, framework, fileName);
+    const component = parseComponent(source, framework, fileName, reactOptions);
     return [{ name: component.name, component, error: null }];
   } catch (error) {
     if (error instanceof DialectError) return [{ name: null, component: null, error }];
@@ -245,7 +247,7 @@ export async function translateFile(
   if (from === "react" || from === "typescript" || from === "react-native") {
     let results: ReturnType<typeof parseReactComponentResults>;
     try {
-      results = parseReactComponentResults(source as string, options.fileName ?? "Component");
+      results = parseReactComponentResults(source as string, options.fileName ?? "Component", options.reactOptions);
     } catch (error) {
       if (error instanceof DialectError) return [{ name: null, report: blocked(from, to, error.code, error.reason) }];
       throw error;
@@ -262,7 +264,7 @@ export async function translateFile(
   // Every other source format is one component per file by definition.
   let components: ComponentDef[];
   try {
-    components = parseComponents(source, from, options.fileName ?? "Component");
+    components = parseComponents(source, from, options.fileName ?? "Component", options.reactOptions);
   } catch (error) {
     if (error instanceof DialectError) return [{ name: null, report: blocked(from, to, error.code, error.reason) }];
     throw error;

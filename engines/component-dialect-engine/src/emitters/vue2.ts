@@ -21,9 +21,16 @@ const VUE_EVENT_DIRECTIVE: Record<EventName, string> = {
 
 const RUNTIME_TYPE: Record<string, string> = { string: "String", number: "Number", boolean: "Boolean" };
 
+function runtimeType(prop: Extract<PropDef, { kind: "data" }>): string {
+  if (prop.valueShape?.kind === "object" || prop.valueShape?.kind === "slot") return "Object";
+  if (prop.valueShape?.kind === "array") return "Array";
+  return RUNTIME_TYPE[prop.propType] ?? "String";
+}
+
 function literalSource(literal: Literal): string {
   if (literal.type === "string") return JSON.stringify(literal.value);
   if (literal.type === "number") return String(literal.value);
+  if (literal.type === "null") return "null";
   return literal.value ? "true" : "false";
 }
 
@@ -38,12 +45,15 @@ function exprSource(expr: Expr, inScript: boolean): string {
     case "ident": return inScript ? `this.${expr.name}` : expr.name;
     // Loop variables are template-locals; `this.` would not resolve them.
     case "member": return `${expr.object}.${expr.field}`;
+    case "path": return `${expr.object}.${expr.fields.join(".")}`;
     case "literal": return literalSource(expr.literal);
     case "unaryNot": return `!${wrap(expr.operand)}`;
     case "binary": {
       const op = expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
+    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, inScript)).join(", ")})`;
+    case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
 }
@@ -87,8 +97,9 @@ function nodeSource(node: CNode, indent: string, lists: ReadonlyMap<string, List
   if (node.kind === "list") {
     // Same structural-directive shape as Vue 3.
     const list = lists.get(node.source);
-    const key = list ? listKeyExpression(list, node.itemName) : node.itemName;
-    return withDirective(node.body, `v-for="${node.itemName} in ${node.source}" :key="${key}"`, indent, lists);
+    const key = node.keyField !== undefined ? `${node.itemName}.${node.keyField}` : list ? listKeyExpression(list, node.itemName) : node.itemName;
+    const source = node.sourceExpression === undefined ? node.source : exprSource(node.sourceExpression, false);
+    return withDirective(node.body, `v-for="${node.itemName} in ${source}" :key="${key}"`, indent, lists);
   }
   return elementSource(node, [], indent, lists);
 }
@@ -123,7 +134,7 @@ function propsBlock(props: PropDef[]): string {
   if (dataProps.length === 0 && listProps.length === 0) return "";
   const listEntries = listProps.map((p) => `    ${p.name}: { type: Array, default: () => [] },`);
   const entries = dataProps.map((p) => {
-    const bits = [`type: ${RUNTIME_TYPE[p.propType]}`];
+    const bits = [`type: ${runtimeType(p)}`];
     if (p.defaultValue !== undefined) bits.push(`default: ${literalSource(p.defaultValue)}`);
     else if (p.required) bits.push("required: true");
     return `    ${p.name}: { ${bits.join(", ")} },`;

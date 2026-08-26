@@ -11,13 +11,13 @@
  * type-checks and then crashes on device.
  */
 import { AttrBinding, ComponentDef, EventName, Expr, HtmlTag, ListPropDef, Literal, Node as CNode, PropDef, Stmt } from "../models";
-import { listElementTypeSource, listKeyExpression, listPropIndex, referencedComponents } from "./react";
+import { dataPropTypeSource, listElementTypeSource, listKeyExpression, listPropIndex, referencedComponents } from "./react";
 
 /** HTML tag -> React Native core component. Text-bearing tags all become
  * `<Text>` because React Native throws if a raw string is rendered outside
  * one. */
 const TAG_MAP: Record<HtmlTag, string> = {
-  div: "View", p: "Text", span: "Text", strong: "Text", em: "Text",
+  div: "View", p: "Text", span: "Text", strong: "Text", em: "Text", i: "Text",
   h1: "Text", h2: "Text", h3: "Text", h4: "Text", h5: "Text", h6: "Text",
   ul: "View", ol: "View", li: "Text", label: "Text", a: "Text",
   button: "Pressable", input: "TextInput",
@@ -25,7 +25,7 @@ const TAG_MAP: Record<HtmlTag, string> = {
   // Native has no landmark roles, so the semantic meaning is genuinely
   // lost -- the layout is not.
   section: "View", article: "View", header: "View", footer: "View",
-  nav: "View", main: "View", aside: "View",
+  nav: "View", main: "View", aside: "View", dl: "View", dt: "Text", dd: "Text",
   small: "Text", code: "Text",
 };
 
@@ -34,7 +34,7 @@ const TAG_MAP: Record<HtmlTag, string> = {
 const SEMANTIC_STYLE: Partial<Record<HtmlTag, string>> = {
   h1: "h1", h2: "h2", h3: "h3", h4: "h4", h5: "h5", h6: "h6",
   strong: "strong", em: "em", p: "p", li: "li", a: "a",
-  small: "small", code: "code",
+  small: "small", code: "code", dt: "strong", dd: "dd",
 };
 
 const EVENT_PROP: Record<EventName, string> = {
@@ -44,6 +44,7 @@ const EVENT_PROP: Record<EventName, string> = {
 function literalSource(literal: Literal): string {
   if (literal.type === "string") return JSON.stringify(literal.value);
   if (literal.type === "number") return String(literal.value);
+  if (literal.type === "null") return "null";
   return literal.value ? "true" : "false";
 }
 
@@ -55,12 +56,15 @@ function exprSource(expr: Expr): string {
   switch (expr.kind) {
     case "ident": return expr.name;
     case "member": return `${expr.object}.${expr.field}`;
+    case "path": return `${expr.object}.${expr.fields.join(".")}`;
     case "literal": return literalSource(expr.literal);
     case "unaryNot": return `!${wrap(expr.operand)}`;
     case "binary": {
       const op = expr.operator === "==" ? "===" : expr.operator === "!=" ? "!==" : expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
+    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(exprSource).join(", ")})`;
+    case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
 }
@@ -121,9 +125,10 @@ function nodeSource(node: CNode, indent: string, usedStyles: Set<string>, notes:
   }
   if (node.kind === "list") {
     const list = lists.get(node.source);
-    const key = list ? listKeyExpression(list, node.itemName) : node.itemName;
+    const key = node.keyField !== undefined ? `${node.itemName}.${node.keyField}` : list ? listKeyExpression(list, node.itemName) : node.itemName;
+    const source = node.sourceExpression === undefined ? node.source : exprSource(node.sourceExpression);
     const bodySrc = nodeSource(node.body, indent + "  ", usedStyles, notes, lists, key);
-    return `${indent}{${node.source}.map((${node.itemName}) => (\n${bodySrc}\n${indent}))}`;
+    return `${indent}{${source}.map((${node.itemName}) => (\n${bodySrc}\n${indent}))}`;
   }
 
   const tag = TAG_MAP[node.tag];
@@ -186,7 +191,7 @@ function destructureSource(props: PropDef[]): string {
   const fields = props.map((p) => {
     if (p.kind === "callback") return `  ${p.name}: (${p.paramType ? `value: ${tsType(p.paramType)}` : ""}) => void;`;
     if (p.kind === "list") return `  ${p.name}: ${listElementTypeSource(p)}[];`;
-    return `  ${p.name}${p.required ? "" : "?"}: ${tsType(p.propType)};`;
+    return `  ${p.name}${p.required ? "" : "?"}: ${dataPropTypeSource(p)};`;
   });
   return `{ ${names.join(", ")} }: {\n${fields.join("\n")}\n}`;
 }
@@ -225,7 +230,7 @@ export function emitReactNative(component: ComponentDef): ReactNativeEmission {
   lines.push("");
   lines.push(`export default function ${component.name}(${destructureSource(component.props)}) {`);
   for (const s of component.state) {
-    lines.push(`  const [${s.name}, ${setterName(s.name)}] = useState<${tsType(s.stateType)}>(${literalSource(s.initial)});`);
+    lines.push(`  const [${s.name}, ${setterName(s.name)}] = useState<${tsType(s.stateType)}${s.nullable ? " | null" : ""}>(${literalSource(s.initial)});`);
   }
   if (component.state.length > 0) lines.push("");
   lines.push("  return (");

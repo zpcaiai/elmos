@@ -1699,12 +1699,20 @@ function inferCanonicalExpressionType(
     }
     case "member": {
       const local = scope.get(expression.object);
-      return local?.kind === "object" ? local.fields[expression.field] ?? null : null;
+      if (local?.kind !== "object") return null;
+      const field = local.fields[expression.field];
+      return field?.shape.kind === "primitive" ? field.shape.primitive : null;
     }
+    case "path":
+      return "string";
     case "literal":
-      return expression.literal.type;
+      return expression.literal.type === "null" ? null : expression.literal.type;
     case "unaryNot":
       return "boolean";
+    case "stringMethod":
+      return inferCanonicalExpressionType(expression.receiver, values, scope) === "string" ? "string" : null;
+    case "arrayLength":
+      return inferCanonicalExpressionType(expression.operand, values, scope) === null ? "number" : "number";
     case "ternary": {
       const thenType = inferCanonicalExpressionType(expression.then, values, scope);
       const elseType = inferCanonicalExpressionType(expression.else, values, scope);
@@ -1725,6 +1733,9 @@ function inferCanonicalExpressionType(
         return left === "number" && right === "number" ? "number" : null;
       }
       if (expression.operator === "&&" || expression.operator === "||") {
+        return left !== null && left === right ? left : null;
+      }
+      if (expression.operator === "??") {
         return left !== null && left === right ? left : null;
       }
       return null;
