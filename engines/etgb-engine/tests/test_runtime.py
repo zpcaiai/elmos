@@ -104,12 +104,13 @@ class RuntimeTests(unittest.TestCase):
         private_key = Ed25519PrivateKey.generate()
         public_key = private_key.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
         digest = "a" * 64
+        candidate_digest = "sha256:" + digest
         attestation = {
             "schema_version": "1.0",
             "attestation_id": "attestation-1",
             "profile": "release",
             "subject": {
-                "candidate_digest": digest,
+                "candidate_digest": candidate_digest,
                 "score_digest": digest,
                 "validation_digest": digest,
                 "coverage_digest": digest,
@@ -131,6 +132,12 @@ class RuntimeTests(unittest.TestCase):
         self.assertTrue(verify_attestation(attestation, trust_store, now=now)["valid"])
         attestation["subject"]["score_digest"] = "b" * 64
         self.assertFalse(verify_attestation(attestation, trust_store, now=now)["valid"])
+
+    def test_release_gate_accepts_a_valid_candidate_digest_as_a_supplied_input(self) -> None:
+        score = {"complete_run": False, "metrics": {"critical_oracle_pass_rate": 1.0, "silent_semantic_error_rate": 0.0, "data_corruption_count": 0, "security_regression_count": 0, "transaction_mismatch_count": 0, "flaky_case_count": 0, "evidence_completeness": 1.0, "unapproved_corpus_count": 0}, "by_priority": {}}
+        decision = evaluate_gate(score=score, validation={"valid": True}, coverage={"complete": True}, profile="release", candidate_digest="sha256:" + "a" * 64)
+        self.assertNotIn("frozen candidate digest is required for release/golden evaluation", decision["blockers"])
+        self.assertEqual(decision["candidate_digest"], "sha256:" + "a" * 64)
 
     def test_signed_license_review_is_bound_to_locked_commit(self) -> None:
         import yaml

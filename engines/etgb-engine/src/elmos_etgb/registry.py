@@ -21,13 +21,13 @@ from .campaigns import metamorphic_relation, mutation_summary
 from .candidate import freeze_candidate, load_spec
 from .checkpoint import CheckpointStore
 from .contracts import compile_requirement, validate_domain_case
-from .corpus import verify_lock
+from .corpus import build_license_review_request, verify_lock
 from .evidence import EvidenceStore
 from .harness import phase_plan
 from .incidents import regression_from_incident
 from .materializer import materialize
 from .oracles import compare_json, compare_trace
-from .orchestrator import build_plan, gate_profile, run_profile, select_cases
+from .orchestrator import build_plan, gate_profile, release_preflight, run_profile, select_cases
 from .performance import evaluate_performance
 from .policy import authorize, authority_digest
 from .risk import select_risk_plan
@@ -59,7 +59,7 @@ class SkillRegistry:
         "sql-dialect-routine-validation": ("validate_case", "capability"),
         "differential-oracle-engine": ("compare_json", "compare_trace"),
         "metamorphic-fuzz-mutation": ("metamorphic", "mutation_summary", "property_campaign"),
-        "corpus-governance": ("verify",),
+        "corpus-governance": ("verify", "review_request"),
         "release-certification": ("gate",),
         "production-harness-integration": ("phase_plan",),
         "environment-authority-sandbox": ("authorize", "authority_digest", "hidden_boundary"),
@@ -134,6 +134,8 @@ class SkillRegistry:
             return self._unavailable(skill, "real source/target runtime evidence is not provided by the offline package")
         if operation == "verify":
             return verify_lock(self.package_root, release=bool(data.get("release")))
+        if operation == "review_request":
+            return build_license_review_request(self.package_root)
         if operation == "compare_json":
             return compare_json(data.get("left"), data.get("right"), ignore_paths=data.get("ignore_paths", []), unordered_paths=data.get("unordered_paths", []), absolute_tolerance=float(data.get("absolute_tolerance", 0.0)), relative_tolerance=float(data.get("relative_tolerance", 0.0)))
         if operation == "compare_trace":
@@ -164,6 +166,8 @@ class SkillRegistry:
         if operation == "gate":
             results = self._results(data)
             return gate_profile(self.package_root, results, profile=str(data.get("profile", "release")), external_attested=bool(data.get("external_attested")), independent_verifier=data.get("independent_verifier"), external_attestation=dict(data["external_attestation"]) if isinstance(data.get("external_attestation"), Mapping) else None, trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, candidate_digest=data.get("candidate_digest"))
+        if operation == "preflight":
+            return release_preflight(self.package_root, profile=str(data.get("profile", "release")), results=self._results(data) if data.get("results") is not None or data.get("results_path") else None, candidate_digest=data.get("candidate_digest"), trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None)
         if operation == "eta":
             cases = data.get("cases")
             if cases is None and data.get("plan_path"):

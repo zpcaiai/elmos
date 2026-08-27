@@ -24,6 +24,25 @@ The v1.1 materialization contains 46,664 cases with complete declared coverage:
 cross-cutting 800, cross-language 29,535, project-generation 1,451,
 spring-modernization 3,117, and sql-conversion 11,761.
 
+The runtime now exposes two release-preparation commands that do not mutate the
+immutable source package or execute external projects:
+
+```bash
+PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb \
+  --repo-root . corpus-review-request \
+  --output .elmos/etgb/corpus-review-request-v11.json
+
+PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb \
+  --repo-root . preflight --profile release \
+  --results .elmos/etgb/smoke-results-v11.jsonl \
+  --output .elmos/etgb/release-preflight-v11.json
+```
+
+The first command creates 17 deterministic, unsigned review requests bound to
+the locked repository commits. The second reports the exact release scope,
+missing results, external-adapter count, corpus status, and candidate
+requirement. Both are handoff artifacts; neither can approve, sign, or certify.
+
 ## Evidence boundary
 
 Local unit/integration and smoke results are engineering evidence. The latest

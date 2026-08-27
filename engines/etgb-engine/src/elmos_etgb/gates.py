@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import operator
+import re
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -15,6 +16,7 @@ from .corpus import verify_lock
 
 OPERATORS = {"==": operator.eq, "!=": operator.ne, ">=": operator.ge, "<=": operator.le, ">": operator.gt, "<": operator.lt}
 NON_WAIVABLE_GATES = {"G-P0-PASS", "G-P0-SSER", "G-DATA", "G-SEC", "G-TX", "G-AUTHORITY", "G-EVIDENCE-INTEGRITY"}
+_CANDIDATE_DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 
 
 def _threshold(value: float | int | None, operator: str, threshold: float | int) -> bool:
@@ -29,7 +31,7 @@ def _threshold(value: float | int | None, operator: str, threshold: float | int)
     raise ValueError(f"unsupported gate operator: {operator}")
 
 
-def evaluate_gate(*, score: dict[str, Any], validation: dict[str, Any], coverage: dict[str, Any], profile: str, external_attested: bool = False, independent_verifier: str | None = None, external_attestation: Mapping[str, Any] | None = None, attestation_verification: Mapping[str, Any] | None = None) -> dict[str, Any]:
+def evaluate_gate(*, score: dict[str, Any], validation: dict[str, Any], coverage: dict[str, Any], profile: str, external_attested: bool = False, independent_verifier: str | None = None, external_attestation: Mapping[str, Any] | None = None, attestation_verification: Mapping[str, Any] | None = None, candidate_digest: str | None = None) -> dict[str, Any]:
     metrics = score.get("metrics", {})
     by_priority = score.get("by_priority", {})
     p1_applicable = float(by_priority.get("P1", {}).get("total_weight", 0.0)) > 0
@@ -73,7 +75,7 @@ def evaluate_gate(*, score: dict[str, Any], validation: dict[str, Any], coverage
             blockers.extend(f"attestation: {error}" for error in attestation_verification["errors"])
     if profile in {"release", "golden"} and not independent_verifier:
         blockers.append("independent verifier identity is required")
-    if profile in {"release", "golden"} and not external_attestation and not any("candidate" in blocker for blocker in blockers):
+    if profile in {"release", "golden"} and not _CANDIDATE_DIGEST.fullmatch(str(candidate_digest or "")):
         blockers.append("frozen candidate digest is required for release/golden evaluation")
     if profile in {"release", "golden"} and attestation_valid and attestation_verification.get("verifier_id") != independent_verifier:
         blockers.append("attestation verifier identity does not match the supplied verifier")
@@ -83,7 +85,7 @@ def evaluate_gate(*, score: dict[str, Any], validation: dict[str, Any], coverage
         decision = "BLOCKED"
     else:
         decision = "PROMOTE" if attestation_valid and independent_verifier else "READY_FOR_EXTERNAL_GATE"
-    return {"schema_version": "1.0", "profile": profile, "decision": decision, "certification_status": "NOT_CERTIFIED" if decision != "PROMOTE" else "EXTERNAL_ATTESTED_NOT_A_PRODUCTION_RELEASE", "checks": checks, "blockers": blockers, "external_attested": attestation_valid, "independent_verifier": independent_verifier, "attestation": dict(external_attestation) if external_attestation else None, "attestation_verification": dict(attestation_verification) if attestation_verification else None}
+    return {"schema_version": "1.0", "profile": profile, "decision": decision, "certification_status": "NOT_CERTIFIED" if decision != "PROMOTE" else "EXTERNAL_ATTESTED_NOT_A_PRODUCTION_RELEASE", "checks": checks, "blockers": blockers, "external_attested": attestation_valid, "independent_verifier": independent_verifier, "candidate_digest": candidate_digest, "attestation": dict(external_attestation) if external_attestation else None, "attestation_verification": dict(attestation_verification) if attestation_verification else None}
 
 
 def _active_waivers(waivers: list[dict[str, Any]] | None) -> dict[str, dict[str, Any]]:

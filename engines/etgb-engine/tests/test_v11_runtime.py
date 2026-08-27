@@ -10,6 +10,7 @@ from elmos_etgb.benchmark import validate_hidden_test_boundary
 from elmos_etgb.budget import BudgetExceeded, BudgetLedger
 from elmos_etgb.candidate import freeze_candidate, validate_candidate
 from elmos_etgb.checkpoint import CheckpointStore
+from elmos_etgb.corpus import build_license_review_request
 from elmos_etgb.evidence import EvidenceStore
 from elmos_etgb.incidents import regression_from_incident
 from elmos_etgb.materializer import materialize, smoke_cases
@@ -20,6 +21,7 @@ from elmos_etgb.skills import audit_skills
 from elmos_etgb.statistics import multi_seed_stability
 from elmos_etgb.supply_chain import inspect_tree
 from elmos_etgb.triage import cluster_failures
+from elmos_etgb.orchestrator import release_preflight
 from elmos_etgb.validation import coverage_report, validate_package
 
 
@@ -52,6 +54,23 @@ class V11RuntimeTests(unittest.TestCase):
         self.assertEqual(result["total_cases"], 46664)
         self.assertEqual({case["business_line"] for case in smoke_cases(PACKAGE)}, {"spring-modernization", "cross-language", "project-generation", "sql-conversion"})
         self.assertTrue(coverage_report(PACKAGE)["complete"])
+
+    def test_corpus_review_request_is_complete_but_not_an_approval(self) -> None:
+        request = build_license_review_request(PACKAGE)
+        self.assertEqual(request["request_type"], "corpus-license-review-request")
+        self.assertEqual(request["repository_count"], 17)
+        self.assertEqual(request["status"], "PENDING_EXTERNAL_REVIEW")
+        self.assertTrue(all(item["status"] == "PENDING_EXTERNAL_REVIEW" for item in request["repositories"]))
+        self.assertNotIn("signature", request)
+
+    def test_release_preflight_separates_full_scope_from_smoke(self) -> None:
+        result = release_preflight(PACKAGE, results=[])
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["scope"]["expected_cases"], 46664)
+        self.assertEqual(result["scope"]["observed_results"], 0)
+        self.assertEqual(result["scope"]["external_adapter_cases"], 46660)
+        self.assertEqual(result["corpus"]["unapproved"], 17)
+        self.assertTrue(any("full release scope" in blocker for blocker in result["blockers"]))
 
     def test_candidate_and_hidden_boundary_fail_closed(self) -> None:
         frozen = freeze_candidate(candidate())

@@ -11,7 +11,8 @@ from .attestation import load_json_object
 from .budget import estimate_machine_eta
 from .candidate import freeze_candidate_file, load_spec
 from .evidence import create_deterministic_bundle
-from .orchestrator import build_plan, gate_profile, run_profile, select_cases
+from .corpus import build_license_review_request
+from .orchestrator import build_plan, gate_profile, release_preflight, run_profile, select_cases
 from .package import PACKAGE_ROOT_NAME
 from .policy import authorize, load_document
 from .registry import SkillRegistry
@@ -91,6 +92,14 @@ def main(argv: list[str] | None = None) -> int:
     gate.add_argument("--attestation", type=Path)
     gate.add_argument("--trust-store", type=Path)
     gate.add_argument("--candidate-digest")
+    preflight = sub.add_parser("preflight")
+    preflight.add_argument("--profile", choices=["release", "golden"], default="release")
+    preflight.add_argument("--results", type=Path)
+    preflight.add_argument("--candidate-digest")
+    preflight.add_argument("--trust-store", type=Path)
+    preflight.add_argument("--output", type=Path, required=True)
+    review_request = sub.add_parser("corpus-review-request")
+    review_request.add_argument("--output", type=Path, required=True)
     freeze = sub.add_parser("freeze-candidate")
     freeze.add_argument("input", type=Path)
     freeze.add_argument("--output", type=Path, required=True)
@@ -198,6 +207,18 @@ def main(argv: list[str] | None = None) -> int:
             _write_json(args.output, result)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result["decision"] in {"PROMOTE", "READY_FOR_EXTERNAL_GATE"} else 2
+    if args.command == "preflight":
+        results = _read_jsonl(args.results) if args.results else None
+        trust_store = load_json_object(args.trust_store.resolve()) if args.trust_store else None
+        result = release_preflight(package_root, profile=args.profile, results=results, candidate_digest=args.candidate_digest, trust_store=trust_store)
+        _write_json(args.output, result)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["status"] == "READY_FOR_EXTERNAL_GATE" else 2
+    if args.command == "corpus-review-request":
+        result = build_license_review_request(package_root)
+        _write_json(args.output, result)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
     if args.command == "bundle":
         result = create_deterministic_bundle(args.source, args.output)
         print(json.dumps(result, ensure_ascii=False, indent=2))
