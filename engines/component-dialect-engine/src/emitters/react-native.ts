@@ -11,13 +11,13 @@
  * type-checks and then crashes on device.
  */
 import { AttrBinding, ComponentDef, EventName, Expr, HtmlTag, ListPropDef, Literal, Node as CNode, PropDef, Stmt, usesEventValueInStatements } from "../models";
-import { dataPropTypeSource, listElementTypeSource, listKeyExpression, listPropIndex, referencedComponents } from "./react";
+import { dataPropTypeSource, listElementTypeSource, listKeyExpression, listPropIndex, listSourceExpression, referencedComponents, stateInitialSource, stateTypeSource, staticListSource } from "./react";
 
 /** HTML tag -> React Native core component. Text-bearing tags all become
  * `<Text>` because React Native throws if a raw string is rendered outside
  * one. */
 const TAG_MAP: Record<HtmlTag, string> = {
-  div: "View", p: "Text", span: "Text", strong: "Text", em: "Text", i: "Text",
+  div: "View", p: "Text", span: "Text", strong: "Text", b: "Text", em: "Text", i: "Text",
   h1: "Text", h2: "Text", h3: "Text", h4: "Text", h5: "Text", h6: "Text",
   ul: "View", ol: "View", li: "Text", label: "Text", a: "Text",
   button: "Pressable", input: "TextInput",
@@ -26,14 +26,14 @@ const TAG_MAP: Record<HtmlTag, string> = {
   // lost -- the layout is not.
   section: "View", article: "View", header: "View", footer: "View",
   nav: "View", main: "View", aside: "View", dl: "View", dt: "Text", dd: "Text",
-  small: "Text", code: "Text",
+  small: "Text", code: "Text", br: "Text",
 };
 
 /** RN has no CSS cascade, so the semantic weight of these tags is carried
  * by a generated StyleSheet entry instead of being silently dropped. */
 const SEMANTIC_STYLE: Partial<Record<HtmlTag, string>> = {
   h1: "h1", h2: "h2", h3: "h3", h4: "h4", h5: "h5", h6: "h6",
-  strong: "strong", em: "em", p: "p", li: "li", a: "a",
+  strong: "strong", b: "strong", em: "em", p: "p", li: "li", a: "a",
   small: "small", code: "code", dt: "strong", dd: "dd",
 };
 
@@ -67,9 +67,21 @@ function exprSource(expr: Expr): string {
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(exprSource).join(", ")})`;
     case "numericFunction": return `Math.${expr.function}(${expr.args.map(exprSource).join(", ")})`;
     case "numericPredicate": return `Number.${expr.predicate}(${exprSource(expr.operand)})`;
+    case "numberMethod": return `${wrap(expr.receiver)}.toFixed(${expr.fractionDigits})`;
+    case "numberFormat": return `${wrap(expr.operand)}.toLocaleString(${JSON.stringify(expr.locale ?? "zh-CN")})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
+    case "percentageWidth": return `${exprSource(expr.value)} + "%"`;
+    case "styleObject": return `{ ${expr.fields.map((field) => `${field.name}: ${exprSource(field.value)}`).join(", ")} }`;
+    case "collectionFilter": return `${exprSource(expr.source)}.filter((${expr.itemName}) => ${exprSource(expr.predicate)})`;
+    case "collectionMap": return `${exprSource(expr.source)}.map((${expr.itemName}) => (${exprSource(expr.projection)}))`;
+    case "collectionReduce": return `${exprSource(expr.source)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${exprSource(expr.reducer)}), ${exprSource(expr.initial)})`;
+    case "collectionMax": return `Math.max(...${exprSource(expr.source)}.map((${expr.itemName}) => (${exprSource(expr.operand)})))`;
+    case "collectionJoin": return `${exprSource(expr.source)}.join(${exprSource(expr.separator)})`;
+    case "objectLookup": return `${exprSource(expr.object)}[${exprSource(expr.key)}]`;
+    case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${exprSource(field.value)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key)}]: ${exprSource(field.value)}`)].join(", ")} }`;
+    case "arrayLiteral": return `[${expr.items.map(exprSource).join(", ")}]`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
 }
@@ -108,6 +120,7 @@ function attrSource(attr: AttrBinding, tag: HtmlTag, styles: string[], notes: st
   if (attr.name === "id") {
     return attr.kind === "static" ? `testID=${JSON.stringify(attr.value)}` : `testID={${exprSource(attr.value)}}`;
   }
+  if (attr.name === "style" && attr.kind === "dynamic") return `style={${exprSource(attr.value)}}`;
   notes.push(`attribute ${attr.name} on <${tag}> has no React Native equivalent and was dropped`);
   return null;
 }
@@ -121,6 +134,7 @@ function nodeSource(node: CNode, indent: string, usedStyles: Set<string>, notes:
     if (node.value.kind === "literal" && node.value.literal.type === "string") return `${indent}${node.value.literal.value}`;
     return `${indent}{${exprSource(node.value)}}`;
   }
+  if (node.kind === "element" && node.tag === "br") return `${indent}<Text>{"\\n"}</Text>`;
   if (node.kind === "conditional") {
     const thenSrc = nodeSource(node.then, indent + "  ", usedStyles, notes, lists);
     if (node.else === null) return `${indent}{(${exprSource(node.condition)}) ? (\n${thenSrc}\n${indent}) : null}`;
@@ -136,7 +150,7 @@ function nodeSource(node: CNode, indent: string, usedStyles: Set<string>, notes:
   if (node.kind === "list") {
     const list = lists.get(node.source);
     const key = node.keyField !== undefined ? `${node.itemName}.${node.keyField}` : list ? listKeyExpression(list, node.itemName) : node.itemName;
-    const source = node.sourceExpression === undefined ? node.source : exprSource(node.sourceExpression);
+    const source = node.sourceExpression === undefined ? listSourceExpression(list, node.source) : exprSource(node.sourceExpression);
     const bodySrc = nodeSource(node.body, indent + "  ", usedStyles, notes, lists, key);
     return `${indent}{${source}.map((${node.itemName}) => (\n${bodySrc}\n${indent}))}`;
   }
@@ -238,10 +252,13 @@ export function emitReactNative(component: ComponentDef): ReactNativeEmission {
   for (const child of referencedComponents(component)) {
     lines.push(`import ${child} from "./${child}";`);
   }
+  for (const list of component.lists ?? []) {
+    if (list.staticItems !== undefined || list.staticValues !== undefined) lines.push(`const ${list.name} = ${staticListSource(list)};`);
+  }
   lines.push("");
   lines.push(`export default function ${component.name}(${destructureSource(component.props)}) {`);
   for (const s of component.state) {
-    lines.push(`  const [${s.name}, ${setterName(s.name)}] = useState<${tsType(s.stateType)}${s.nullable ? " | null" : ""}>(${literalSource(s.initial)});`);
+    lines.push(`  const [${s.name}, ${setterName(s.name)}] = useState<${stateTypeSource(s)}${s.nullable && s.stateShape === undefined ? " | null" : ""}>(${stateInitialSource(s)});`);
   }
   if (component.state.length > 0) lines.push("");
   lines.push("  return (");

@@ -149,7 +149,6 @@ describe("React parsing (real TypeScript Compiler API)", () => {
     });
     expect(emitReact(ir)).toContain("/^[a-z0-9][a-z0-9._/-]{2,180}$/i.test(draft.trim())");
     expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
-    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
     expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
   });
 
@@ -201,6 +200,147 @@ describe("React parsing (real TypeScript Compiler API)", () => {
     });
     expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
     expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("keeps bounded number formatting and percentage width in the shared IR", () => {
+    const ir = parseReactComponent(`
+      import { formatQuota } from "../lib/pricingCatalog";
+      function UsageMeter({ label, measure }: { label: string; measure: { consumed: number; usageBps: number } }) {
+        const visualPercent = Math.min(100, measure.usageBps / 100);
+        return <article>
+          <strong>{formatQuota(measure.consumed)}</strong>
+          <em>{(measure.usageBps / 100).toFixed(2)}</em>
+          <span style={{ width: \`\${visualPercent}%\` }}>{label}</span>
+        </article>;
+      }
+    `, "UsageMeter.tsx");
+    expect(ir.root).toMatchObject({
+      kind: "element",
+      children: [
+        { kind: "element", tag: "strong", children: [{ kind: "text", value: { kind: "numberFormat", format: "grouped" } }] },
+        { kind: "element", tag: "em", children: [{ kind: "text", value: { kind: "numberMethod", method: "toFixed", fractionDigits: 2 } }] },
+        { kind: "element", tag: "span", attrs: [{ kind: "dynamic", name: "style", value: { kind: "styleObject" } }] },
+      ],
+    });
+    expect(emitReact(ir)).toContain('toLocaleString("zh-CN")');
+    expect(emitReact(ir)).toContain('style={{ width: Math.min(100, measure.usageBps / 100) + "%" }}');
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("preserves an explicit en-US number-format locale", () => {
+    const ir = parseReactComponent(`
+      function Count({ value }: { value: number }) {
+        return <strong>{value.toLocaleString("en-US")}</strong>;
+      }
+    `, "Count.tsx");
+    expect(ir.root).toMatchObject({
+      kind: "element",
+      children: [{ kind: "text", value: { kind: "numberFormat", format: "grouped", locale: "en-US" } }],
+    });
+    expect(emitReact(ir)).toContain('value.toLocaleString("en-US")');
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("lowers only the exact Next Link import to a cross-target anchor", () => {
+    const ir = parseReactComponent(`
+      import Link from "next/link";
+      function Landing() {
+        return <div><Link className="button" href="/pricing">查看套餐</Link></div>;
+      }
+    `, "Landing.tsx");
+    expect(ir.root).toMatchObject({
+      kind: "element",
+      children: [{ kind: "element", tag: "a", attrs: [
+        { kind: "static", name: "class", value: "button" },
+        { kind: "static", name: "href", value: "/pricing" },
+      ] }],
+    });
+    expect(emitReact(ir)).toContain('<a className="button" href="/pricing">');
+    expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("materializes immutable object and tuple collections without dropping list identity", () => {
+    const ir = parseReactComponent(`
+      const cards = [
+        { id: "spring", title: "Spring", href: "/spring" },
+        { id: "routes", title: "Routes", href: "/translation" },
+      ] as const;
+      const notices = [
+        ["证据", "NOT_RUN"],
+        ["认证", "BLOCKED"],
+      ] as const;
+      function StaticCollections() {
+        return <section>
+          <div>{cards.map((card) => <a href={card.href} key={card.id}>{card.title}</a>)}</div>
+          <div>{notices.map(([title, status]) => <p key={title}>{title}: {status}</p>)}</div>
+        </section>;
+      }
+    `, "StaticCollections.tsx");
+    expect(ir.lists).toHaveLength(2);
+    expect(ir.lists?.map((list) => [list.name, list.keyField, list.staticItems?.length])).toEqual([
+      ["cards", "id", 2],
+      ["notices", "item0", 2],
+    ]);
+    expect(emitReact(ir)).toContain("const cards = [{ id: \"spring\"");
+    expect(emitReact(ir)).toContain("const notices = [{ item0: \"证据\"");
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("resolves closed object state aliases without widening the state shape", () => {
+    const ir = parseReactComponent(`
+      const initial = { enabled: false, count: 0, note: null } as const;
+      function StateAlias() {
+        const [state, setState] = useState<{ enabled: boolean; count: number; note: string | null }>(initial);
+        return <span>{state.enabled ? state.count : 0}</span>;
+      }
+    `, "StateAlias.tsx");
+    expect(ir.state).toEqual([{
+      name: "state",
+      stateType: "string",
+      stateShape: {
+        kind: "object",
+        fields: {
+          enabled: { shape: { kind: "primitive", primitive: "boolean" }, optional: false },
+          count: { shape: { kind: "primitive", primitive: "number" }, optional: false },
+          note: { shape: { kind: "primitive", primitive: "string", nullable: true }, optional: false },
+        },
+      },
+      initial: {
+        kind: "objectLiteral",
+        fields: [
+          { name: "enabled", value: { kind: "literal", literal: { type: "boolean", value: false } } },
+          { name: "count", value: { kind: "literal", literal: { type: "number", value: 0 } } },
+          { name: "note", value: { kind: "literal", literal: { type: "null" } } },
+        ],
+      },
+    }]);
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("keeps typed map/filter projections in the shared collection IR", () => {
+    const ir = parseReactComponent(`
+      const statuses = ["PASSED", "BLOCKED"] as const;
+      function Derived({ counts }: { counts: { PASSED: number; BLOCKED: number } }) {
+        const segments = statuses
+          .map((status) => ({ status, count: counts[status] }))
+          .filter((segment) => segment.count > 0);
+        return <div>{segments.map((segment) => <span key={segment.status}>{segment.status}</span>)}</div>;
+      }
+    `, "Derived.tsx");
+    expect(ir.lists?.find((list) => list.name === "segments")).toMatchObject({
+      element: { kind: "object" },
+      keyField: "status",
+      sourceExpression: { kind: "collectionFilter", source: { kind: "collectionMap" } },
+    });
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
   });
 
   it("inlines same-file pure primitive helpers and preserves finite checks", () => {

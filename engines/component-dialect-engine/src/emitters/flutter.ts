@@ -23,7 +23,7 @@
  *    required field; optional props become named parameters with defaults.
  */
 import { ComponentDef, Expr, HtmlTag, ListPropDef, Literal, Node as CNode, PropDef, Stmt } from "../models";
-import { listPropIndex, referencedComponents } from "./react";
+import { listPropIndex, listSourceExpression, referencedComponents, staticListSource } from "./react";
 
 // Same rule as ArkUI: block containers become a Column, and the HTML5
 // landmark semantics are genuinely absent rather than approximated.
@@ -45,6 +45,7 @@ const TEXT_STYLE: Partial<Record<HtmlTag, string>> = {
   h5: "const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)",
   h6: "const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)",
   strong: "const TextStyle(fontWeight: FontWeight.bold)",
+  b: "const TextStyle(fontWeight: FontWeight.bold)",
   em: "const TextStyle(fontStyle: FontStyle.italic)",
   small: "const TextStyle(fontSize: 12)",
   code: "const TextStyle(fontFamily: 'monospace')",
@@ -108,17 +109,41 @@ function exprSource(expr: Expr, scope: Scope): string {
       const op = expr.operator;
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
-    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method === "includes" ? "contains" : expr.method === "slice" ? "substring" : expr.method}(${expr.args.map((arg) => exprSource(arg, scope)).join(", ")})`;
+    case "stringMethod": return `${wrap(expr.receiver)}.${expr.method === "includes" ? "contains" : expr.method === "slice" ? "substring" : expr.method === "toLocaleLowerCase" ? "toLowerCase" : expr.method}(${expr.method === "toLocaleLowerCase" ? "" : expr.args.map((arg) => exprSource(arg, scope)).join(", ")})`;
     case "numericFunction": {
       const args = expr.args.map((arg) => exprSource(arg, scope)).join(", ");
       if (expr.function === "abs") return `${wrap(expr.args[0]!)}.abs()`;
-      if (expr.function === "floor" || expr.function === "ceil") return `${wrap(expr.args[0]!)}.${expr.function}()`;
+      if (expr.function === "floor" || expr.function === "ceil" || expr.function === "round") return `${wrap(expr.args[0]!)}.${expr.function}()`;
       return `math.${expr.function}(${args})`;
     }
     case "numericPredicate": return `${wrap(expr.operand)}.${expr.predicate}`;
+    case "numberMethod": return `${wrap(expr.receiver)}.toStringAsFixed(${expr.fractionDigits})`;
+    case "numberFormat": return `formatGroupedNumber(${exprSource(expr.operand, scope)})`;
     case "cssModuleClass": return dartString(expr.className);
     case "regexTest": return `RegExp(${dartString(expr.pattern)}, caseSensitive: ${!expr.flags.includes("i")}, multiLine: ${expr.flags.includes("m")}, dotAll: ${expr.flags.includes("s")}).hasMatch(${exprSource(expr.operand, scope)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
+    case "percentageWidth": return `(${exprSource(expr.value, scope)}).toString() + '%'`;
+    case "styleObject": return `{ ${expr.fields.map((field) => `${dartString(field.name)}: ${exprSource(field.value, scope)}`).join(", ")} }`;
+   case "collectionFilter": {
+     const filterScope: Scope = { ...scope, loopVars: new Set([...scope.loopVars, expr.itemName]) };
+     return `${exprSource(expr.source, scope)}.where((${expr.itemName}) => ${exprSource(expr.predicate, filterScope)}).toList()`;
+   }
+    case "collectionMap": {
+      const mapScope: Scope = { ...scope, loopVars: new Set([...scope.loopVars, expr.itemName]), objectLoopVars: new Set([...scope.objectLoopVars, expr.itemName]) };
+      return `${exprSource(expr.source, scope)}.map((${expr.itemName}) => (${exprSource(expr.projection, mapScope)})).toList()`;
+    }
+    case "collectionReduce": {
+      const reduceScope: Scope = { ...scope, loopVars: new Set([...scope.loopVars, expr.accumulatorName, expr.itemName]), objectLoopVars: new Set([...scope.objectLoopVars, expr.itemName]) };
+      return `${exprSource(expr.source, scope)}.fold(${exprSource(expr.initial, scope)}, (${expr.accumulatorName}, ${expr.itemName}) => (${exprSource(expr.reducer, reduceScope)}))`;
+    }
+    case "collectionMax": {
+      const maxScope: Scope = { ...scope, loopVars: new Set([...scope.loopVars, expr.itemName]), objectLoopVars: new Set([...scope.objectLoopVars, expr.itemName]) };
+      return `${exprSource(expr.source, scope)}.map((${expr.itemName}) => (${exprSource(expr.operand, maxScope)})).fold<double>(-double.infinity, (max, value) => max > value ? max : value)`;
+    }
+    case "collectionJoin": return `${exprSource(expr.source, scope)}.join(${exprSource(expr.separator, scope)})`;
+    case "objectLookup": return `${exprSource(expr.object, scope)}[${exprSource(expr.key, scope)}]`;
+    case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${dartString(field.name)}: ${exprSource(field.value, scope)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key, scope)}]: ${exprSource(field.value, scope)}`)].join(", ")} }`;
+    case "arrayLiteral": return `[${expr.items.map((item) => exprSource(item, scope)).join(", ")}]`;
     case "ternary":
       return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
@@ -132,8 +157,20 @@ function collectReads(expr: Expr, into: Set<string>): void {
   else if (expr.kind === "stringMethod") { collectReads(expr.receiver, into); expr.args.forEach((arg) => collectReads(arg, into)); }
   else if (expr.kind === "numericFunction") expr.args.forEach((arg) => collectReads(arg, into));
   else if (expr.kind === "numericPredicate") collectReads(expr.operand, into);
+  else if (expr.kind === "numberMethod") collectReads(expr.receiver, into);
+  else if (expr.kind === "numberFormat") collectReads(expr.operand, into);
   else if (expr.kind === "regexTest") collectReads(expr.operand, into);
   else if (expr.kind === "arrayLength") collectReads(expr.operand, into);
+  else if (expr.kind === "percentageWidth") collectReads(expr.value, into);
+  else if (expr.kind === "styleObject") expr.fields.forEach((field) => collectReads(field.value, into));
+ else if (expr.kind === "collectionFilter") { collectReads(expr.source, into); collectReads(expr.predicate, into); }
+  else if (expr.kind === "collectionMap") { collectReads(expr.source, into); collectReads(expr.projection, into); }
+  else if (expr.kind === "collectionReduce") { collectReads(expr.source, into); collectReads(expr.initial, into); collectReads(expr.reducer, into); }
+ else if (expr.kind === "collectionMax") { collectReads(expr.source, into); collectReads(expr.operand, into); }
+  else if (expr.kind === "collectionJoin") { collectReads(expr.source, into); collectReads(expr.separator, into); }
+  else if (expr.kind === "objectLookup") { collectReads(expr.object, into); collectReads(expr.key, into); }
+ else if (expr.kind === "objectLiteral") { expr.fields.forEach((field) => collectReads(field.value, into)); (expr.computedFields ?? []).forEach((field) => { collectReads(field.key, into); collectReads(field.value, into); }); }
+  else if (expr.kind === "arrayLiteral") expr.items.forEach((item) => collectReads(item, into));
   else if (expr.kind === "ternary") { collectReads(expr.condition, into); collectReads(expr.then, into); collectReads(expr.else, into); }
 }
 
@@ -185,6 +222,7 @@ function nodeSource(node: CNode, scope: Scope, indent: string, lists: ReadonlyMa
     return node.children.flatMap((child) => nodeSource(child, scope, indent, lists));
   }
   if (node.kind === "text") return [`${indent}Text(${textArgument([node], scope)}),`];
+  if (node.kind === "element" && node.tag === "br") return [`${indent}Text('\\n'),`];
 
   if (node.kind === "component") {
     // A Flutter child widget is a constructor call with named arguments.
@@ -192,6 +230,7 @@ function nodeSource(node: CNode, scope: Scope, indent: string, lists: ReadonlyMa
     return [`${indent}${node.name}(${args.join(", ")}),`];
   }
   if (node.kind === "list") {
+    const list = lists.get(node.source);
     // Dart has no list-diff key concept in a plain Column, so identity is
     // positional here; the canonical keyField is preserved in the model but
     // has no Flutter counterpart without a keyed widget strategy.
@@ -205,7 +244,7 @@ function nodeSource(node: CNode, scope: Scope, indent: string, lists: ReadonlyMa
     };
     const body = nodeSource(node.body, inner, indent + "    ", lists).join("\n");
     return [
-      `${indent}...${node.sourceExpression === undefined ? `widget.${node.source}` : exprSource(node.sourceExpression, scope)}.map((${node.itemName}) =>`,
+      `${indent}...${node.sourceExpression === undefined ? (list?.staticItems === undefined && list?.staticValues === undefined ? `widget.${node.source}` : staticListSource(list)) : exprSource(node.sourceExpression, scope)}.map((${node.itemName}) =>`,
       body.replace(/,$/, ""),
       `${indent}),`,
     ];
@@ -307,6 +346,18 @@ export function emitFlutter(component: ComponentDef): string {
   lines.push(`// NOTE: no Dart SDK was available to verify this file; see README.`);
   lines.push(`import 'package:flutter/material.dart';`);
   lines.push(`import 'dart:math' as math;`);
+  lines.push("");
+  lines.push(`String formatGroupedNumber(num value) {`);
+  lines.push(`  final fixed = value.toStringAsFixed(0);`);
+  lines.push(`  final negative = fixed.startsWith('-');`);
+  lines.push(`  final digits = negative ? fixed.substring(1) : fixed;`);
+  lines.push(`  final chunks = <String>[];`);
+  lines.push(`  for (var end = digits.length; end > 0; end -= 3) {`);
+  lines.push(`    final start = end > 3 ? end - 3 : 0;`);
+  lines.push(`    chunks.insert(0, digits.substring(start, end));`);
+  lines.push(`  }`);
+  lines.push(`  return '\${negative ? '-' : ''}\${chunks.join(',')}';`);
+  lines.push(`}`);
   // Dart resolves siblings by file path; snake_case is the enforced
   // convention for Dart file names.
   for (const child of referencedComponents(component)) {
@@ -347,7 +398,15 @@ export function emitFlutter(component: ComponentDef): string {
   lines.push("");
   lines.push(`class _${name}State extends State<${name}> {`);
   for (const s of component.state) {
-    lines.push(`  ${dartType(s.stateType)}${s.nullable ? "?" : ""} ${s.name} = ${literalSource(s.initial)};`);
+    const stateType = s.stateShape === undefined
+      ? dartType(s.stateType)
+      : s.stateShape.kind === "array"
+        ? `List<${s.stateShape.element.kind === "primitive" ? dartType(s.stateShape.element.primitive) : "Map<String, Object?>"}>`
+        : "Map<String, Object?>";
+    const initial = "kind" in s.initial
+      ? exprSource(s.initial, { stateNames, snapshot: new Set(), loopVars: new Set(), objectLoopVars: new Set() })
+      : literalSource(s.initial);
+    lines.push(`  ${stateType}${s.nullable && s.stateShape === undefined ? "?" : ""} ${s.name} = ${initial};`);
   }
   lines.push("");
   lines.push(`  @override`);

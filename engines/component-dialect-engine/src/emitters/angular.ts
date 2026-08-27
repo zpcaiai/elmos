@@ -14,7 +14,7 @@
  *    class body.
  */
 import { AttrBinding, ComponentDef, EventName, Expr, ListPropDef, Literal, Node as CNode, PropDef, Stmt } from "../models";
-import { dataPropTypeSource, listElementTypeSource, listPropIndex, referencedComponents } from "./react";
+import { dataPropTypeSource, listElementTypeSource, listPropIndex, listSourceExpression, referencedComponents, stateInitialSource, stateTypeSource, staticListSource } from "./react";
 
 const ANGULAR_EVENT: Record<EventName, string> = {
   onClick: "click", onChange: "change", onInput: "input", onSubmit: "submit",
@@ -56,11 +56,23 @@ function exprSource(expr: Expr, inClass: boolean): string {
     case "numericPredicate": return inClass
       ? `Number.${expr.predicate}(${exprSource(expr.operand, inClass)})`
       : `__ccNumber${expr.predicate.charAt(0).toUpperCase()}${expr.predicate.slice(1)}(${exprSource(expr.operand, inClass)})`;
+    case "numberMethod": return `${wrap(expr.receiver)}.toFixed(${expr.fractionDigits})`;
+    case "numberFormat": return `${wrap(expr.operand)}.toLocaleString(${JSON.stringify(expr.locale ?? "zh-CN")})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return inClass
       ? `new RegExp(${JSON.stringify(expr.pattern)}, ${JSON.stringify(expr.flags)}).test(${exprSource(expr.operand, inClass)})`
       : `__ccRegexTest(${JSON.stringify(expr.pattern)}, ${JSON.stringify(expr.flags)}, ${exprSource(expr.operand, inClass)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
+    case "percentageWidth": return `${exprSource(expr.value, inClass)} + "%"`;
+    case "styleObject": return `{ ${expr.fields.map((field) => `${field.name}: ${exprSource(field.value, inClass)}`).join(", ")} }`;
+    case "collectionFilter": return `${exprSource(expr.source, inClass)}.filter((${expr.itemName}) => ${exprSource(expr.predicate, inClass)})`;
+    case "collectionMap": return `${exprSource(expr.source, inClass)}.map((${expr.itemName}) => (${exprSource(expr.projection, inClass)}))`;
+    case "collectionReduce": return `${exprSource(expr.source, inClass)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${exprSource(expr.reducer, inClass)}), ${exprSource(expr.initial, inClass)})`;
+    case "collectionMax": return `Math.max(...${exprSource(expr.source, inClass)}.map((${expr.itemName}) => (${exprSource(expr.operand, inClass)})))`;
+    case "collectionJoin": return `${exprSource(expr.source, inClass)}.join(${exprSource(expr.separator, inClass)})`;
+    case "objectLookup": return `${exprSource(expr.object, inClass)}[${exprSource(expr.key, inClass)}]`;
+    case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${exprSource(field.value, inClass)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key, inClass)}]: ${exprSource(field.value, inClass)}`)].join(", ")} }`;
+    case "arrayLiteral": return `[${expr.items.map((item) => exprSource(item, inClass)).join(", ")}]`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
 }
@@ -170,7 +182,7 @@ function nodeSource(node: CNode, indent: string, ctx: TemplateContext): string {
     // Angular's identity hook is `trackBy`, which requires a component
     // method -- outside this profile's "no methods" rule. Plain *ngFor is
     // correct without it; it just re-creates DOM nodes on reorder.
-    const source = node.sourceExpression === undefined ? node.source : exprSource(node.sourceExpression, false);
+    const source = node.sourceExpression === undefined ? listSourceExpression(ctx.lists.get(node.source), node.source) : exprSource(node.sourceExpression, false);
     return withDirective(node.body, `*ngFor="let ${node.itemName} of ${source}"`, indent, ctx);
   }
   return elementSource(node, [], indent, ctx);
@@ -251,12 +263,15 @@ export function emitAngular(component: ComponentDef): string {
   for (const list of component.props.filter((p): p is ListPropDef => p.kind === "list")) {
     lines.push(`  @Input() ${list.name}: ${listElementTypeSource(list)}[] = [];`);
   }
+  for (const list of component.lists ?? []) {
+    if (list.staticItems !== undefined || list.staticValues !== undefined) lines.push(`  ${list.name} = ${staticListSource(list)};`);
+  }
   for (const cb of callbacks) {
     const payload = cb.paramType ? tsType(cb.paramType) : "void";
     lines.push(`  @Output() ${outputNameForCallback(cb.name)} = new EventEmitter<${payload}>();`);
   }
   for (const s of component.state) {
-    lines.push(`  ${s.name}: ${tsType(s.stateType)}${s.nullable ? " | null" : ""} = ${literalSource(s.initial)};`);
+    lines.push(`  ${s.name}: ${stateTypeSource(s)}${s.nullable && s.stateShape === undefined ? " | null" : ""} = ${stateInitialSource(s)};`);
   }
   if (usesRegexTest(component)) {
     lines.push(`  private __ccRegexTest(pattern: string, flags: string, value: string): boolean {`);
@@ -269,6 +284,7 @@ export function emitAngular(component: ComponentDef): string {
     lines.push(`  private __ccMathFloor(value: number): number { return Math.floor(value); }`);
     lines.push(`  private __ccMathCeil(value: number): number { return Math.ceil(value); }`);
     lines.push(`  private __ccMathAbs(value: number): number { return Math.abs(value); }`);
+    lines.push(`  private __ccMathRound(value: number): number { return Math.round(value); }`);
     lines.push(`  private __ccNumberIsFinite(value: number): boolean { return Number.isFinite(value); }`);
   }
   lines.push(`}`);

@@ -13,7 +13,7 @@
  *  - Events are `$emit`, not a `defineEmits`-returned function.
  */
 import { AttrBinding, ComponentDef, EventName, Expr, ListPropDef, Literal, Node as CNode, PropDef, StateDef, Stmt } from "../models";
-import { listKeyExpression, listPropIndex, referencedComponents } from "./react";
+import { listKeyExpression, listPropIndex, listSourceExpression, referencedComponents, stateInitialSource, staticListSource } from "./react";
 
 const VUE_EVENT_DIRECTIVE: Record<EventName, string> = {
   onClick: "@click", onChange: "@change", onInput: "@input", onSubmit: "@submit",
@@ -56,9 +56,21 @@ function exprSource(expr: Expr, inScript: boolean): string {
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, inScript)).join(", ")})`;
     case "numericFunction": return `Math.${expr.function}(${expr.args.map((arg) => exprSource(arg, inScript)).join(", ")})`;
     case "numericPredicate": return `Number.${expr.predicate}(${exprSource(expr.operand, inScript)})`;
+    case "numberMethod": return `${wrap(expr.receiver)}.toFixed(${expr.fractionDigits})`;
+    case "numberFormat": return `${wrap(expr.operand)}.toLocaleString(${JSON.stringify(expr.locale ?? "zh-CN")})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand, inScript)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
+    case "percentageWidth": return `${exprSource(expr.value, inScript)} + "%"`;
+    case "styleObject": return `{ ${expr.fields.map((field) => `${field.name}: ${exprSource(field.value, inScript)}`).join(", ")} }`;
+    case "collectionFilter": return `${exprSource(expr.source, inScript)}.filter((${expr.itemName}) => ${exprSource(expr.predicate, inScript)})`;
+    case "collectionMap": return `${exprSource(expr.source, inScript)}.map((${expr.itemName}) => (${exprSource(expr.projection, inScript)}))`;
+    case "collectionReduce": return `${exprSource(expr.source, inScript)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${exprSource(expr.reducer, inScript)}), ${exprSource(expr.initial, inScript)})`;
+    case "collectionMax": return `Math.max(...${exprSource(expr.source, inScript)}.map((${expr.itemName}) => (${exprSource(expr.operand, inScript)})))`;
+    case "collectionJoin": return `${exprSource(expr.source, inScript)}.join(${exprSource(expr.separator, inScript)})`;
+    case "objectLookup": return `${exprSource(expr.object, inScript)}[${exprSource(expr.key, inScript)}]`;
+    case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${exprSource(field.value, inScript)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key, inScript)}]: ${exprSource(field.value, inScript)}`)].join(", ")} }`;
+    case "arrayLiteral": return `[${expr.items.map((item) => exprSource(item, inScript)).join(", ")}]`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
 }
@@ -107,7 +119,7 @@ function nodeSource(node: CNode, indent: string, lists: ReadonlyMap<string, List
     // Same structural-directive shape as Vue 3.
     const list = lists.get(node.source);
     const key = node.keyField !== undefined ? `${node.itemName}.${node.keyField}` : list ? listKeyExpression(list, node.itemName) : node.itemName;
-    const source = node.sourceExpression === undefined ? node.source : exprSource(node.sourceExpression, false);
+    const source = node.sourceExpression === undefined ? listSourceExpression(list, node.source) : exprSource(node.sourceExpression, false);
     return withDirective(node.body, `v-for="${node.itemName} in ${source}" :key="${key}"`, indent, lists);
   }
   return elementSource(node, [], indent, lists);
@@ -151,9 +163,12 @@ function propsBlock(props: PropDef[]): string {
   return `  props: {\n${[...entries, ...listEntries].join("\n")}\n  },`;
 }
 
-function dataBlock(state: StateDef[]): string {
-  if (state.length === 0) return "";
-  const entries = state.map((s) => `      ${s.name}: ${literalSource(s.initial)},`);
+function dataBlock(state: StateDef[], lists: ReadonlyMap<string, ListPropDef>): string {
+  const entries = [
+    ...state.map((s) => `      ${s.name}: ${stateInitialSource(s)},`),
+    ...[...lists.values()].filter((list) => list.staticItems !== undefined || list.staticValues !== undefined).map((list) => `      ${list.name}: ${staticListSource(list)},`),
+  ];
+  if (entries.length === 0) return "";
   return `  data() {\n    return {\n${entries.join("\n")}\n    };\n  },`;
 }
 
@@ -162,7 +177,7 @@ export function emitVue2(component: ComponentDef): string {
   const scriptParts = [
     `  name: ${JSON.stringify(component.name)},`,
     propsBlock(component.props),
-    dataBlock(component.state),
+    dataBlock(component.state, listPropIndex(component)),
   ].filter((p) => p.length > 0);
   // Vue 2 has no auto-registration: a child must appear in `components`
   // or the tag renders as an unknown element with a runtime warning.

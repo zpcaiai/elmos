@@ -25,7 +25,7 @@
 import {
   AttrBinding, AttrName, ComponentDef, EventName, Expr, HtmlTag, ListPropDef, Literal, Node as CNode, PropDef, Stmt,
 } from "../models";
-import { listPropIndex, referencedComponents } from "./react";
+import { listPropIndex, listSourceExpression, referencedComponents, stateInitialSource, staticListSource } from "./react";
 
 /** HTML tag -> mini program built-in component. Verified against the
  * official component list; anything not mappable must fail closed rather
@@ -40,12 +40,12 @@ const TAG_MAP: Record<HtmlTag, string> = {
   div: "view", span: "text", p: "view", button: "button", input: "input",
   label: "label", a: "navigator", h1: "view", h2: "view", h3: "view",
   h4: "view", h5: "view", h6: "view", ul: "view", ol: "view", li: "view",
-  strong: "text", em: "text", i: "text",
+  strong: "text", b: "text", em: "text", i: "text",
   // The mini program component set has no landmark elements; every
   // semantic container is a `view`, which is what `div` already maps to.
   section: "view", article: "view", header: "view", footer: "view",
   nav: "view", main: "view", aside: "view", dl: "view", dt: "text", dd: "text",
-  small: "text", code: "text",
+  small: "text", code: "text", br: "text",
 };
 
 /** Headings and emphasis have no styling semantics in the mini program's
@@ -99,9 +99,21 @@ function exprSource(expr: Expr, inJs: boolean, snapshot: ReadonlySet<string> = n
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, inJs, snapshot)).join(", ")})`;
     case "numericFunction": return `Math.${expr.function}(${expr.args.map((arg) => exprSource(arg, inJs, snapshot)).join(", ")})`;
     case "numericPredicate": return `Number.${expr.predicate}(${exprSource(expr.operand, inJs, snapshot)})`;
+    case "numberMethod": return `${wrap(expr.receiver)}.toFixed(${expr.fractionDigits})`;
+    case "numberFormat": return `${wrap(expr.operand)}.toLocaleString(${JSON.stringify(expr.locale ?? "zh-CN")})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand, inJs, snapshot)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
+    case "percentageWidth": return `${exprSource(expr.value, inJs, snapshot)} + "%"`;
+    case "styleObject": return `{ ${expr.fields.map((field) => `${field.name}: ${exprSource(field.value, inJs, snapshot)}`).join(", ")} }`;
+    case "collectionFilter": return `${exprSource(expr.source, inJs, snapshot)}.filter((${expr.itemName}) => ${exprSource(expr.predicate, inJs, snapshot)})`;
+    case "collectionMap": return `${exprSource(expr.source, inJs, snapshot)}.map((${expr.itemName}) => (${exprSource(expr.projection, inJs, snapshot)}))`;
+    case "collectionReduce": return `${exprSource(expr.source, inJs, snapshot)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${exprSource(expr.reducer, inJs, snapshot)}), ${exprSource(expr.initial, inJs, snapshot)})`;
+    case "collectionMax": return `Math.max(...${exprSource(expr.source, inJs, snapshot)}.map((${expr.itemName}) => (${exprSource(expr.operand, inJs, snapshot)})))`;
+    case "collectionJoin": return `${exprSource(expr.source, inJs, snapshot)}.join(${exprSource(expr.separator, inJs, snapshot)})`;
+    case "objectLookup": return `${exprSource(expr.object, inJs, snapshot)}[${exprSource(expr.key, inJs, snapshot)}]`;
+    case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${exprSource(field.value, inJs, snapshot)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key, inJs, snapshot)}]: ${exprSource(field.value, inJs, snapshot)}`)].join(", ")} }`;
+    case "arrayLiteral": return `[${expr.items.map((item) => exprSource(item, inJs, snapshot)).join(", ")}]`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
 }
@@ -131,7 +143,19 @@ function collectReads(expr: Expr, into: Set<string>): void {
     case "regexTest": collectReads(expr.operand, into); return;
     case "numericFunction": expr.args.forEach((arg) => collectReads(arg, into)); return;
     case "numericPredicate": collectReads(expr.operand, into); return;
+    case "numberMethod": collectReads(expr.receiver, into); return;
+    case "numberFormat": collectReads(expr.operand, into); return;
     case "binary": collectReads(expr.left, into); collectReads(expr.right, into); return;
+    case "percentageWidth": collectReads(expr.value, into); return;
+    case "styleObject": expr.fields.forEach((field) => collectReads(field.value, into)); return;
+    case "collectionFilter": collectReads(expr.source, into); collectReads(expr.predicate, into); return;
+    case "collectionMap": collectReads(expr.source, into); collectReads(expr.projection, into); return;
+    case "collectionReduce": collectReads(expr.source, into); collectReads(expr.reducer, into); collectReads(expr.initial, into); return;
+    case "collectionMax": collectReads(expr.source, into); collectReads(expr.operand, into); return;
+    case "collectionJoin": collectReads(expr.source, into); collectReads(expr.separator, into); return;
+    case "objectLookup": collectReads(expr.object, into); collectReads(expr.key, into); return;
+    case "objectLiteral": expr.fields.forEach((field) => collectReads(field.value, into)); (expr.computedFields ?? []).forEach((field) => { collectReads(field.key, into); collectReads(field.value, into); }); return;
+    case "arrayLiteral": expr.items.forEach((item) => collectReads(item, into)); return;
     case "ternary": collectReads(expr.condition, into); collectReads(expr.then, into); collectReads(expr.else, into); return;
   }
 }
@@ -189,6 +213,10 @@ function attrSource(attr: AttrBinding, tag: HtmlTag, extraClasses: string[]): st
     }
     return `class="{{ ${exprSource(attr.value, false)} }}"`;
   }
+  if (attr.name === "style" && attr.kind === "dynamic") {
+    const width = attr.value.kind === "styleObject" ? attr.value.fields[0]?.value : undefined;
+    if (width?.kind === "percentageWidth") return `style="width: {{ ${exprSource(width.value, false)} }}%;"`;
+  }
   void tag;
   if (attr.kind === "static") return `${mapped}="${attr.value.replace(/"/g, "&quot;")}"`;
   return `${mapped}="{{ ${exprSource(attr.value, false).replace(/"/g, "&quot;")} }}"`;
@@ -225,7 +253,7 @@ function nodeSource(node: CNode, indent: string, handlers: EmittedHandler[], cou
     // disables list diffing rather than erroring.
     const list = lists.get(node.source);
     const key = node.keyField ?? (list && list.keyField !== undefined ? list.keyField : "*this");
-    const source = node.sourceExpression === undefined ? node.source : exprSource(node.sourceExpression, false);
+    const source = node.sourceExpression === undefined ? listSourceExpression(list, node.source) : exprSource(node.sourceExpression, false);
     const directive = `wx:for="{{ ${source} }}" wx:for-item="${node.itemName}" wx:key="${key}"`;
     return branchSource(node.body, directive, indent, handlers, counter, lists);
   }
@@ -297,8 +325,11 @@ function propertiesBlock(props: PropDef[]): string {
 }
 
 function dataBlock(component: ComponentDef): string {
-  if (component.state.length === 0) return "  data: {},";
-  const entries = component.state.map((s) => `    ${s.name}: ${literalSource(s.initial)},`);
+  const entries = [
+    ...component.state.map((s) => `    ${s.name}: ${stateInitialSource(s)},`),
+    ...[...listPropIndex(component).values()].filter((list) => list.staticItems !== undefined || list.staticValues !== undefined).map((list) => `    ${list.name}: ${staticListSource(list)},`),
+  ];
+  if (entries.length === 0) return "  data: {},";
   return `  data: {\n${entries.join("\n")}\n  },`;
 }
 

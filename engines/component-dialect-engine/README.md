@@ -73,31 +73,35 @@ registry cannot advertise a capability the engine lacks.
 
 ## certified-component-v1 scope
 
-One component per file: a named function component with an inline
-destructured props object, `useState` state, and a single root element.
+Each component is read independently: a named function component with an inline
+destructured props object, `useState` state, and a single root element. Several
+components may share one source file; helpers that return no JSX are excluded
+explicitly rather than counted as failed components.
 
 - **Prop types:** `string`, `number`, `boolean`; optional props with
-  literal defaults; `on*`-named callback props taking at most one
-  primitive argument; **list props** typed `T[]` where `T` is a primitive
-  or a bounded object shape (nested object paths are supported; array fields
-  inside rendered list elements remain blocked). The props object may be annotated
-  inline or by a **type/interface declared in the same file**; an
-  imported props type is refused, because a single-file parser genuinely
-  does not know what that name means.
-- **State:** `useState` with a literal initial value (Vue: `ref()`).
+  literal defaults; bounded structural object/array shapes; `on*`-named
+  callback props taking at most one primitive argument; and **list props**
+  typed `T[]` where `T` is a primitive or a bounded object shape. Nested
+  object paths are supported, while object/array values still cannot be
+  rendered as scalars. The props object may be annotated inline, by a
+  same-file type/interface, or by an exact type resolved through the project
+  checker.
+- **State:** `useState` with a literal or recursively closed object/array
+  initializer (including an exact immutable module constant); structured
+  state must have a checker-proven shape. Vue uses `ref()`.
 - **Expressions:** identifiers, literals, `! && || + - * / %`, comparisons,
-  and ternaries, plus the bounded pure numeric functions `Math.min`/
-  `Math.max` (1–8 numeric arguments) and unary `Math.floor`, `Math.ceil`,
-  `Math.abs`, the bounded pure string methods `trim`, `toUpperCase`,
-  `toLowerCase`, `replaceAll`, `includes`, `startsWith`, `endsWith`, and
-  literal-bound `slice`. A stateless regular-expression
-  predicate is supported only as a literal or a module-scope static regex,
-  with a 256-character pattern limit and `i/m/s/u` flags; global/sticky
-  regexes remain blocked. No arbitrary function calls, no subscripts.
+  and ternaries, plus bounded pure numeric functions `Math.min`/`Math.max`
+  (1–8 numeric arguments), `Math.floor`, `Math.ceil`, `Math.abs`, and
+  `Math.round`; bounded string methods; literal-bound `slice`; explicit
+  `toLocaleString("zh-CN"|"en-US")`; typed object lookup; CSS Module
+  tokens; and stateless regular-expression predicates. Static and derived
+  collections support constrained `map`, `filter`, `reduce`,
+  `Math.max(...map(...))` and `join`. Global/sticky regexes, arbitrary calls,
+  and unknown structures remain blocked.
 - **Event handlers:** a flat list of state assignments and callback
   invocations, including the typed input-event value for `onChange`/`onInput`.
   No loops, conditionals, `async`, or arbitrary calls.
-- **Elements:** `div span p button input label a h1–h6 ul ol li strong em i
+- **Elements:** `div span p button input label a h1–h6 ul ol li strong em i br
   small code dl dt dd` plus the semantic containers `section article header
   footer nav main aside`. Still refused, because there is no honest equivalent on
   React Native / ArkUI / Flutter: `table` and friends (no table model —
@@ -105,7 +109,8 @@ destructured props object, `useState` state, and a single root element.
   (no submit event on RN, so `onSubmit` would be silently dropped), and
   `img`/`video` (need asset resolution, which is a feature not a tag).
 - **Attributes:** `class id href type placeholder value disabled name for
-  checked maxLength`, static or bound to a certified expression. A default
+  checked maxLength role aria-* data-* tabIndex style`, static or bound to a
+  certified expression. A default
   import from `*.module.css` may provide a static class token such as
   `styles.empty`; the token is preserved, but the source stylesheet is not
   copied or certified by this engine.
@@ -113,7 +118,8 @@ destructured props object, `useState` state, and a single root element.
 - **Structure:** nested elements, text, interpolation, a single flat
   conditional (ternary / `v-if`+`v-else` / `wx:if`+`wx:else`), and
   **list rendering** (`.map` / `v-for` / `{#each}` / `*ngFor` / `wx:for` /
-  `ForEach` / Dart `.map`).
+  `ForEach` / Dart `.map`), including only type-checked static and derived
+  sources with stable object keys.
 - **Composition:** a component may render **another certified component**
   — `<Child label={title} />`. Props only: no children/slot projection
   (each target evaluates it differently) and no event bindings on the
@@ -123,14 +129,14 @@ destructured props object, `useState` state, and a single root element.
   out the ones declared beside it. Functions that return no JSX are
   helpers, not components: nothing is emitted for them and they are
   listed under `helpersNotMigrated` so the omission is explicit.
-- **List rendering** iterates a declared list prop with a plain item
-  binding and exactly one body element. Object elements need an identity
-  field (`id`, or exactly one field ending in `Id`/`Key`) because every
-  target needs a stable list key. No index binding, no destructured item,
-  no nested lists, no mapping over an expression — each of those changes
-  list-diffing behavior differently on each target.
+- **List rendering** iterates a declared list prop, immutable static collection,
+  or a bounded `map`/`filter` derivation with a plain item binding and exactly
+  one body element. Object elements need an identity field (`id`, or exactly
+  one field ending in `Id`/`Key`) because every target needs a stable list
+  key. No index binding, nested lists, async collections, or untyped
+  derivations.
 
-Everything else — object (non-list) props, effects and other hooks,
+Everything else — effects and other hooks,
 slots/children, refs, context, routing, styling systems, async data —
 raises `DialectError` and is reported `BLOCKED`.
 
@@ -259,10 +265,11 @@ really parsed.
 
 ### What it says about real code
 
-Run against this monorepo's own `apps/web-console` — a genuine Next.js
-application nobody shaped for the subset — the scan reports **8 of 33
-components in subset (24.2%)**, with 50 helper functions correctly
-excluded as non-components.
+At the latest local run against this monorepo's `apps/web-console` — a genuine
+Next.js application nobody shaped for the subset — the scan reports **28 of 65
+components in subset (43.1%)**, **37 explicitly blocked**, and **0 scan errors**.
+The ratio is a live upper-bound measurement, not runtime, production, or
+certification evidence.
 
 The first run of this scan reported **0 of 28**, and reading it is what
 produced every subset expansion since. It showed that
@@ -274,13 +281,11 @@ canonical model. Composition, multi-component files, semantic containers
 and same-file props types followed directly, and the measured number is
 what moved.
 
-The remaining blockers are honest ones: effect hooks and non-primitive
-prop types, roughly evenly. Those are real semantic boundaries, not
-oversights.
-
-The dogfood scan runs in the test suite and asserts zero engine errors on
-that real code — but deliberately does **not** assert the coverage
-number, which would turn an honest measurement into a target to game.
+The remaining blockers are honest ones: external/effect hooks and async state,
+unknown or union-shaped data, complex `Map`/`Set` derivations, and platform
+semantics such as slots, tables, disclosure elements, SVG and document roots.
+Those require new typed cross-platform IR and target validation; weakening the
+blocker rule would only hide semantic loss.
 
 The dogfood scan runs in the test suite and asserts zero engine errors on
 that real code — but deliberately does **not** assert the coverage

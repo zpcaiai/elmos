@@ -1722,6 +1722,28 @@ function inferCanonicalExpressionType(
         : null;
     case "numericPredicate":
       return inferCanonicalExpressionType(expression.operand, values, scope) === "number" ? "boolean" : null;
+    case "numberMethod":
+      return inferCanonicalExpressionType(expression.receiver, values, scope) === "number" ? "string" : null;
+    case "numberFormat":
+      return inferCanonicalExpressionType(expression.operand, values, scope) === "number" ? "string" : null;
+   case "collectionFilter":
+     return null;
+    case "collectionMap":
+      return null;
+    case "collectionReduce":
+    case "collectionMax":
+      return "number";
+    case "collectionJoin":
+      return "string";
+    case "objectLookup":
+      return null;
+   case "percentageWidth":
+      return inferCanonicalExpressionType(expression.value, values, scope) === "number" ? "string" : null;
+    case "styleObject":
+      return "string";
+    case "objectLiteral":
+    case "arrayLiteral":
+      return null;
     case "cssModuleClass":
       return "string";
     case "eventValue":
