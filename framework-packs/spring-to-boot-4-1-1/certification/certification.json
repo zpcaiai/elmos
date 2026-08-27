@@ -6,5 +6,23 @@
   "reason": "The exact 4.1.1 routes, feature catalog, target profile and verification plan are declared, but source/target build and startup, component/provider behavior, holdout, representative and independent verification evidence are NOT_RUN.",
   "certification_eligible": false,
   "external_evidence_status": "NOT_RUN",
+  "track_statuses": {
+    "source-build": "NOT_RUN",
+    "target-build": "NOT_RUN",
+    "source-startup": "NOT_RUN",
+    "target-startup": "NOT_RUN",
+    "component-contracts": "NOT_RUN",
+    "provider-behavior": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "representative-repository": "NOT_RUN",
+    "independent-verification": "NOT_RUN"
+  },
+  "provider_domain_statuses": {
+    "security": "NOT_RUN",
+    "database": "NOT_RUN",
+    "transaction": "NOT_RUN",
+    "messaging": "NOT_RUN",
+    "provider": "NOT_RUN"
+  },
   "next_review": "2026-11-09"
 }

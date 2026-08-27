@@ -76,6 +76,21 @@ class SpringVerificationPlanTests(unittest.TestCase):
         finally:
             temporary.cleanup()
 
+    def test_certification_record_cannot_advance_track_or_domain_status(self) -> None:
+        temporary, pack = self._copy_pack()
+        try:
+            certification = self._load(pack, "certification/certification.json")
+            certification["track_statuses"]["target-build"] = "PASSED"
+            certification["provider_domain_statuses"]["database"] = "PASSED"
+            self._write(pack, "certification/certification.json", certification)
+            errors = VALIDATOR.validate(pack)
+            self.assertIn("certification track statuses must remain NOT_RUN", errors)
+            self.assertIn(
+                "certification provider domain statuses must remain NOT_RUN", errors
+            )
+        finally:
+            temporary.cleanup()
+
     def test_placeholder_replay_protocol_is_rejected(self) -> None:
         temporary, pack = self._copy_pack()
         try:
