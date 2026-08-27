@@ -14,7 +14,7 @@
  *  - Callback props are just function props called directly.
  */
 import { AttrBinding, ComponentDef, EventName, Expr, ListPropDef, Literal, Node as CNode, PropDef, Stmt, usesEventValueInStatements } from "../models";
-import { dataPropTypeSource, listElementTypeSource, listKeyExpression, listPropIndex, referencedComponents } from "./react";
+import { dataPropTypeSource, listElementTypeSource, listKeyExpression, listPropIndex, listSourceExpression, referencedComponents, stateInitialSource, stateTypeSource, staticListSource } from "./react";
 
 const SVELTE_EVENT: Record<EventName, string> = {
   onClick: "onclick", onChange: "onchange", onInput: "oninput", onSubmit: "onsubmit",
@@ -48,9 +48,21 @@ function exprSource(expr: Expr): string {
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(exprSource).join(", ")})`;
     case "numericFunction": return `Math.${expr.function}(${expr.args.map(exprSource).join(", ")})`;
     case "numericPredicate": return `Number.${expr.predicate}(${exprSource(expr.operand)})`;
+    case "numberMethod": return `${wrap(expr.receiver)}.toFixed(${expr.fractionDigits})`;
+    case "numberFormat": return `${wrap(expr.operand)}.toLocaleString(${JSON.stringify(expr.locale ?? "zh-CN")})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
+    case "percentageWidth": return `${exprSource(expr.value)} + "%"`;
+    case "styleObject": return `{ ${expr.fields.map((field) => `${field.name}: ${exprSource(field.value)}`).join(", ")} }`;
+    case "collectionFilter": return `${exprSource(expr.source)}.filter((${expr.itemName}) => ${exprSource(expr.predicate)})`;
+    case "collectionMap": return `${exprSource(expr.source)}.map((${expr.itemName}) => (${exprSource(expr.projection)}))`;
+    case "collectionReduce": return `${exprSource(expr.source)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${exprSource(expr.reducer)}), ${exprSource(expr.initial)})`;
+    case "collectionMax": return `Math.max(...${exprSource(expr.source)}.map((${expr.itemName}) => (${exprSource(expr.operand)})))`;
+    case "collectionJoin": return `${exprSource(expr.source)}.join(${exprSource(expr.separator)})`;
+    case "objectLookup": return `${exprSource(expr.object)}[${exprSource(expr.key)}]`;
+    case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${exprSource(field.value)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key)}]: ${exprSource(field.value)}`)].join(", ")} }`;
+    case "arrayLiteral": return `[${expr.items.map(exprSource).join(", ")}]`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
 }
@@ -98,7 +110,7 @@ function nodeSource(node: CNode, indent: string, lists: ReadonlyMap<string, List
     // binding, which is why the key is not an attribute on the body here.
     const list = lists.get(node.source);
     const key = node.keyField !== undefined ? `${node.itemName}.${node.keyField}` : list ? listKeyExpression(list, node.itemName) : node.itemName;
-    const source = node.sourceExpression === undefined ? node.source : exprSource(node.sourceExpression);
+    const source = node.sourceExpression === undefined ? listSourceExpression(list, node.source) : exprSource(node.sourceExpression);
     return [
       `${indent}{#each ${source} as ${node.itemName} (${key})}`,
       nodeSource(node.body, indent + "  ", lists),
@@ -138,9 +150,12 @@ export function emitSvelte(component: ComponentDef): string {
   for (const child of referencedComponents(component)) {
     lines.push(`  import ${child} from "./${child}.svelte";`);
   }
+  for (const list of component.lists ?? []) {
+    if (list.staticItems !== undefined || list.staticValues !== undefined) lines.push(`  const ${list.name} = ${staticListSource(list)};`);
+  }
   lines.push(...propsSource(component.props));
   for (const s of component.state) {
-    lines.push(`  let ${s.name} = $state<${tsType(s.stateType)}${s.nullable ? " | null" : ""}>(${literalSource(s.initial)});`);
+    lines.push(`  let ${s.name} = $state<${stateTypeSource(s)}${s.nullable && s.stateShape === undefined ? " | null" : ""}>(${stateInitialSource(s)});`);
   }
   lines.push(`</script>`);
   lines.push("");

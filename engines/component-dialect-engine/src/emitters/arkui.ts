@@ -19,7 +19,7 @@
  *    function-typed field, which is what is emitted here.
  */
 import { ComponentDef, Expr, HtmlTag, ListPropDef, Literal, Node as CNode, PropDef, Stmt } from "../models";
-import { listPropIndex, referencedComponents } from "./react";
+import { listPropIndex, listSourceExpression, referencedComponents, staticListSource } from "./react";
 
 /** HTML tag -> ArkUI built-in component. Block-level tags become layout
  * containers, text-level tags become Text. */
@@ -39,6 +39,7 @@ const TEXT_STYLE: Partial<Record<HtmlTag, string>> = {
   h5: ".fontSize(18).fontWeight(FontWeight.Bold)",
   h6: ".fontSize(16).fontWeight(FontWeight.Bold)",
   strong: ".fontWeight(FontWeight.Bold)",
+  b: ".fontWeight(FontWeight.Bold)",
   small: ".fontSize(12)",
   code: ".fontFamily('monospace')",
   em: ".fontStyle(FontStyle.Italic)",
@@ -76,9 +77,21 @@ function exprSource(expr: Expr): string {
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(exprSource).join(", ")})`;
     case "numericFunction": return `Math.${expr.function}(${expr.args.map(exprSource).join(", ")})`;
     case "numericPredicate": return `Number.${expr.predicate}(${exprSource(expr.operand)})`;
+    case "numberMethod": return `${wrap(expr.receiver)}.toFixed(${expr.fractionDigits})`;
+    case "numberFormat": return `${wrap(expr.operand)}.toLocaleString(${JSON.stringify(expr.locale ?? "zh-CN")})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
+    case "percentageWidth": return `${exprSource(expr.value)} + "%"`;
+    case "styleObject": return `{ ${expr.fields.map((field) => `${field.name}: ${exprSource(field.value)}`).join(", ")} }`;
+    case "collectionFilter": return `${exprSource(expr.source)}.filter((${expr.itemName}) => ${exprSource(expr.predicate)})`;
+    case "collectionMap": return `${exprSource(expr.source)}.map((${expr.itemName}) => (${exprSource(expr.projection)}))`;
+    case "collectionReduce": return `${exprSource(expr.source)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${exprSource(expr.reducer)}), ${exprSource(expr.initial)})`;
+    case "collectionMax": return `Math.max(...${exprSource(expr.source)}.map((${expr.itemName}) => (${exprSource(expr.operand)})))`;
+    case "collectionJoin": return `${exprSource(expr.source)}.join(${exprSource(expr.separator)})`;
+    case "objectLookup": return `${exprSource(expr.object)}[${exprSource(expr.key)}]`;
+    case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${JSON.stringify(field.name)}: ${exprSource(field.value)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key)}]: ${exprSource(field.value)}`)].join(", ")} }`;
+    case "arrayLiteral": return `[${expr.items.map(exprSource).join(", ")}]`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
 }
@@ -98,8 +111,20 @@ function handlerBody(body: Stmt[], indent: string): string[] {
     else if (e.kind === "stringMethod") { collect(e.receiver); e.args.forEach(collect); }
     else if (e.kind === "numericFunction") e.args.forEach(collect);
     else if (e.kind === "numericPredicate") collect(e.operand);
+    else if (e.kind === "numberMethod") collect(e.receiver);
+    else if (e.kind === "numberFormat") collect(e.operand);
     else if (e.kind === "regexTest") collect(e.operand);
     else if (e.kind === "arrayLength") collect(e.operand);
+    else if (e.kind === "percentageWidth") collect(e.value);
+    else if (e.kind === "styleObject") e.fields.forEach((field) => collect(field.value));
+   else if (e.kind === "collectionFilter") { collect(e.source); collect(e.predicate); }
+    else if (e.kind === "collectionMap") { collect(e.source); collect(e.projection); }
+    else if (e.kind === "collectionReduce") { collect(e.source); collect(e.reducer); collect(e.initial); }
+    else if (e.kind === "collectionMax") { collect(e.source); collect(e.operand); }
+    else if (e.kind === "collectionJoin") { collect(e.source); collect(e.separator); }
+    else if (e.kind === "objectLookup") { collect(e.object); collect(e.key); }
+   else if (e.kind === "objectLiteral") { e.fields.forEach((field) => collect(field.value)); (e.computedFields ?? []).forEach((field) => { collect(field.key); collect(field.value); }); }
+    else if (e.kind === "arrayLiteral") e.items.forEach(collect);
     else if (e.kind === "ternary") { collect(e.condition); collect(e.then); collect(e.else); }
   };
   for (const stmt of body) {
@@ -114,9 +139,19 @@ function handlerBody(body: Stmt[], indent: string): string[] {
     if (e.kind === "stringMethod") return `${rewrite(e.receiver)}.${e.method}(${e.args.map(rewrite).join(", ")})`;
     if (e.kind === "numericFunction") return `Math.${e.function}(${e.args.map(rewrite).join(", ")})`;
     if (e.kind === "numericPredicate") return `Number.${e.predicate}(${rewrite(e.operand)})`;
+    if (e.kind === "numberMethod") return `${rewrite(e.receiver)}.toFixed(${e.fractionDigits})`;
+    if (e.kind === "numberFormat") return `${rewrite(e.operand)}.toLocaleString(${JSON.stringify(e.locale ?? "zh-CN")})`;
     if (e.kind === "cssModuleClass") return JSON.stringify(e.className);
     if (e.kind === "regexTest") return `/${e.pattern}/${e.flags}.test(${rewrite(e.operand)})`;
     if (e.kind === "arrayLength") return `${rewrite(e.operand)}.length`;
+    if (e.kind === "percentageWidth") return `${rewrite(e.value)} + "%"`;
+    if (e.kind === "styleObject") return `{ ${e.fields.map((field) => `${field.name}: ${rewrite(field.value)}`).join(", ")} }`;
+   if (e.kind === "collectionFilter") return `${rewrite(e.source)}.filter((${e.itemName}) => ${rewrite(e.predicate)})`;
+    if (e.kind === "collectionMap") return `${rewrite(e.source)}.map((${e.itemName}) => (${rewrite(e.projection)}))`;
+    if (e.kind === "collectionReduce") return `${rewrite(e.source)}.reduce((${e.accumulatorName}, ${e.itemName}) => (${rewrite(e.reducer)}), ${rewrite(e.initial)})`;
+    if (e.kind === "collectionMax") return `Math.max(...${rewrite(e.source)}.map((${e.itemName}) => (${rewrite(e.operand)})))`;
+   if (e.kind === "objectLiteral") return `{ ${e.fields.map((field) => `${JSON.stringify(field.name)}: ${rewrite(field.value)}`).join(", ")} }`;
+    if (e.kind === "arrayLiteral") return `[${e.items.map(rewrite).join(", ")}]`;
     if (e.kind === "ternary") return `(${rewrite(e.condition)} ? ${rewrite(e.then)} : ${rewrite(e.else)})`;
     return exprSource(e);
   };
@@ -147,6 +182,7 @@ function nodeSource(node: CNode, indent: string, lists: ReadonlyMap<string, List
   if (node.kind === "text") {
     return [`${indent}Text(${textArgument([node])})`];
   }
+  if (node.kind === "element" && node.tag === "br") return [`${indent}Text('\\n')`];
   if (node.kind === "conditional") {
     const lines = [`${indent}if (${exprSource(node.condition)}) {`];
     lines.push(...nodeSource(node.then, indent + "  ", lists));
@@ -173,7 +209,7 @@ function nodeSource(node: CNode, indent: string, lists: ReadonlyMap<string, List
       : list?.keyField !== undefined
         ? `${node.itemName}[${JSON.stringify(list.keyField)}]`
         : node.itemName;
-    const source = node.sourceExpression === undefined ? `this.${node.source}` : exprSource(node.sourceExpression);
+    const source = node.sourceExpression === undefined ? (lists.get(node.source)?.staticItems === undefined && lists.get(node.source)?.staticValues === undefined ? `this.${node.source}` : staticListSource(lists.get(node.source)!)) : exprSource(node.sourceExpression);
     const lines = [`${indent}ForEach(${source}, (${node.itemName}: ${elementType}) => {`];
     lines.push(...nodeSource(node.body, indent + "  ", lists));
     lines.push(`${indent}}, (${node.itemName}: ${elementType}) => String(${key}))`);
@@ -244,7 +280,13 @@ export function emitArkUI(component: ComponentDef): string {
     }
   }
   for (const s of component.state) {
-    lines.push(`  @State ${s.name}: ${arkType(s.stateType)}${s.nullable ? " | null" : ""} = ${literalSource(s.initial)};`);
+    const stateType = s.stateShape === undefined
+      ? arkType(s.stateType)
+      : s.stateShape.kind === "array"
+        ? `Array<${s.stateShape.element.kind === "primitive" ? arkType(s.stateShape.element.primitive) : "Record<string, Object>"}>`
+        : "Record<string, Object>";
+    const initial = "kind" in s.initial ? exprSource(s.initial) : literalSource(s.initial);
+    lines.push(`  @State ${s.name}: ${stateType}${s.nullable && s.stateShape === undefined ? " | null" : ""} = ${initial};`);
   }
 
   lines.push("");

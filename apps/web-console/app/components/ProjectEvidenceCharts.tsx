@@ -7,9 +7,7 @@ import type {
   GenerationProjectStructure,
   GenerationTargetId,
   TranslationBehaviorCoverage,
-  TranslationBehaviorCoverageStatus,
   TranslationSemanticCoverage,
-  TranslationSemanticCoverageStatus,
 } from "../lib/contracts";
 
 const statusPresentation = {
@@ -102,24 +100,19 @@ function CoverageMeter({
       </div>
       <div
         className="evidence-meter-track"
-        {...(safeTotal > 0 ? {
-          role: "progressbar",
-          "aria-label": label,
-          "aria-valuemin": 0,
-          "aria-valuemax": safeTotal,
-          "aria-valuenow": safePassed,
-          "aria-valuetext": valueText,
-        } : {
-          role: "status",
-          "aria-label": `${label}，${valueText}`,
-        })}
+        role={safeTotal > 0 ? "progressbar" : "status"}
+        aria-label={`${label}，${valueText}`}
+        aria-valuemin={0}
+        aria-valuemax={safeTotal}
+        aria-valuenow={safePassed}
+        aria-valuetext={valueText}
       >
         {segments.map((segment) => (
           <span
             aria-hidden="true"
             className={`evidence-meter-segment evidence-segment-${statusPresentation[segment.status].tone}`}
             key={segment.status}
-            style={{ width: safeTotal > 0 ? `${Math.min(100, segment.count / safeTotal * 100)}%` : "0%" }}
+            style={{ width: `${safeTotal > 0 ? Math.min(100, segment.count / safeTotal * 100) : 0}%` }}
           />
         ))}
       </div>
@@ -526,12 +519,6 @@ export function ProjectEvidenceCharts({ insights }: { insights?: GenerationInsig
   );
 }
 
-function translationCounts(
-  counts: Partial<Record<TranslationSemanticCoverageStatus | TranslationBehaviorCoverageStatus, number>>,
-): StatusCounts {
-  return Object.fromEntries(Object.entries(counts)) as StatusCounts;
-}
-
 export function TranslationEvidenceCharts({
   semanticCoverage,
   behaviorCoverage,
@@ -543,7 +530,7 @@ export function TranslationEvidenceCharts({
     <section className="translation-evidence-charts" aria-labelledby="translation-evidence-title">
       <div className="evidence-section-heading">
         <span><h3 id="translation-evidence-title">转换语义与行为覆盖</h3><small>编译器语义主题和行为用例使用不同分母</small></span>
-        <StatusMark status={semanticCoverage || behaviorCoverage ? "REPRESENTED" : "NOT_RUN"} compact />
+        <StatusMark status={semanticCoverage != null || behaviorCoverage != null ? "REPRESENTED" : "NOT_RUN"} compact />
       </div>
       <div className="translation-coverage-grid">
         <article className="translation-coverage-card">
@@ -551,14 +538,14 @@ export function TranslationEvidenceCharts({
             <span><h4>Semantic coverage</h4><small>{semanticCoverage?.profile ?? "compiler-semantic-symbol-coverage-v1"}</small></span>
             <StatusMark status={semanticCoverage?.status ?? "NOT_RUN"} compact />
           </div>
-          {semanticCoverage ? (
+          {semanticCoverage != null ? (
             <>
               <CoverageMeter
                 label="编译器语义主题"
                 status={semanticCoverage.complete ? "PASSED" : semanticCoverage.status}
                 passed={semanticCoverage.statusCounts.PASSED}
                 total={semanticCoverage.subjectCount}
-                counts={translationCounts(semanticCoverage.statusCounts)}
+                counts={semanticCoverage.statusCounts}
               />
               <dl className="evidence-facts">
                 <div><dt>源语言</dt><dd>{semanticCoverage.sourceLanguage}</dd></div>
@@ -575,14 +562,14 @@ export function TranslationEvidenceCharts({
             <span><h4>Behavior coverage</h4><small>{behaviorCoverage?.profile ?? "typed-pure-function-v1"}</small></span>
             <StatusMark status={behaviorCoverage?.status ?? "NOT_RUN"} compact />
           </div>
-          {behaviorCoverage ? (
+          {behaviorCoverage != null ? (
             <>
               <CoverageMeter
                 label="工作单元行为回放"
                 status={behaviorCoverage.complete ? "PASSED" : behaviorCoverage.status}
                 passed={behaviorCoverage.statusCounts.PASSED}
                 total={behaviorCoverage.workUnitCount}
-                counts={translationCounts(behaviorCoverage.statusCounts)}
+                counts={behaviorCoverage.statusCounts}
               />
               <dl className="evidence-facts">
                 <div><dt>行为用例</dt><dd>{behaviorCoverage.behaviorCaseCount} · {behaviorCoverage.behaviorCaseCountScope}</dd></div>

@@ -89,9 +89,21 @@ function normalizeSnapshots(expr: Expr): Expr {
     case "stringMethod": return { kind: "stringMethod", method: expr.method, receiver: normalizeSnapshots(expr.receiver), args: expr.args.map(normalizeSnapshots) };
     case "numericFunction": return { kind: "numericFunction", function: expr.function, args: expr.args.map(normalizeSnapshots) };
     case "numericPredicate": return { kind: "numericPredicate", predicate: expr.predicate, operand: normalizeSnapshots(expr.operand) };
+    case "numberMethod": return { kind: "numberMethod", method: expr.method, receiver: normalizeSnapshots(expr.receiver), fractionDigits: expr.fractionDigits };
+    case "numberFormat": return { kind: "numberFormat", format: expr.format, ...(expr.locale === undefined ? {} : { locale: expr.locale }), operand: normalizeSnapshots(expr.operand) };
     case "cssModuleClass": return expr;
     case "regexTest": return { kind: "regexTest", pattern: expr.pattern, flags: expr.flags, operand: normalizeSnapshots(expr.operand) };
     case "arrayLength": return { kind: "arrayLength", operand: normalizeSnapshots(expr.operand) };
+    case "percentageWidth": return { kind: "percentageWidth", value: normalizeSnapshots(expr.value) };
+    case "styleObject": return { kind: "styleObject", fields: expr.fields.map((field) => ({ name: field.name, value: normalizeSnapshots(field.value) })) };
+   case "collectionFilter": return { kind: "collectionFilter", source: normalizeSnapshots(expr.source), itemName: expr.itemName, predicate: normalizeSnapshots(expr.predicate) };
+    case "collectionMap": return { kind: "collectionMap", source: normalizeSnapshots(expr.source), itemName: expr.itemName, projection: normalizeSnapshots(expr.projection) };
+    case "collectionReduce": return { kind: "collectionReduce", source: normalizeSnapshots(expr.source), accumulatorName: expr.accumulatorName, itemName: expr.itemName, reducer: normalizeSnapshots(expr.reducer), initial: normalizeSnapshots(expr.initial) };
+    case "collectionMax": return { kind: "collectionMax", source: normalizeSnapshots(expr.source), itemName: expr.itemName, operand: normalizeSnapshots(expr.operand) };
+    case "collectionJoin": return { kind: "collectionJoin", source: normalizeSnapshots(expr.source), separator: normalizeSnapshots(expr.separator) };
+    case "objectLookup": return { kind: "objectLookup", object: normalizeSnapshots(expr.object), key: normalizeSnapshots(expr.key) };
+   case "objectLiteral": return { kind: "objectLiteral", fields: expr.fields.map((field) => ({ name: field.name, value: normalizeSnapshots(field.value) })), ...(expr.computedFields === undefined ? {} : { computedFields: expr.computedFields.map((field) => ({ key: normalizeSnapshots(field.key), value: normalizeSnapshots(field.value) })) }) };
+    case "arrayLiteral": return { kind: "arrayLiteral", items: expr.items.map(normalizeSnapshots) };
     case "binary": return { kind: "binary", operator: expr.operator, left: normalizeSnapshots(expr.left), right: normalizeSnapshots(expr.right) };
     case "ternary": return { kind: "ternary", condition: normalizeSnapshots(expr.condition), then: normalizeSnapshots(expr.then), else: normalizeSnapshots(expr.else) };
   }

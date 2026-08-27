@@ -11,7 +11,7 @@
  * avoid.
  */
 import { AttrBinding, ComponentDef, EventName, Expr, ListPropDef, Literal, Node as CNode, PropDef, StateDef, Stmt } from "../models";
-import { dataPropTypeSource, listElementTypeSource, listKeyExpression, listPropIndex, referencedComponents } from "./react";
+import { dataPropTypeSource, listElementTypeSource, listKeyExpression, listPropIndex, listSourceExpression, referencedComponents, stateInitialSource, stateTypeSource, staticListSource } from "./react";
 
 const VUE_EVENT_DIRECTIVE: Record<EventName, string> = {
   onClick: "@click", onChange: "@change", onInput: "@input", onSubmit: "@submit",
@@ -53,9 +53,21 @@ function exprSource(expr: Expr, stateNames: ReadonlySet<string>, inScript: boole
       return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, stateNames, inScript)).join(", ")})`;
     case "numericFunction": return `Math.${expr.function}(${expr.args.map((arg) => exprSource(arg, stateNames, inScript)).join(", ")})`;
     case "numericPredicate": return `Number.${expr.predicate}(${exprSource(expr.operand, stateNames, inScript)})`;
+    case "numberMethod": return `${wrap(expr.receiver)}.toFixed(${expr.fractionDigits})`;
+    case "numberFormat": return `${wrap(expr.operand)}.toLocaleString(${JSON.stringify(expr.locale ?? "zh-CN")})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand, stateNames, inScript)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
+    case "percentageWidth": return `${exprSource(expr.value, stateNames, inScript)} + "%"`;
+    case "styleObject": return `{ ${expr.fields.map((field) => `${field.name}: ${exprSource(field.value, stateNames, inScript)}`).join(", ")} }`;
+    case "collectionFilter": return `${exprSource(expr.source, stateNames, inScript)}.filter((${expr.itemName}) => ${exprSource(expr.predicate, stateNames, inScript)})`;
+    case "collectionMap": return `${exprSource(expr.source, stateNames, inScript)}.map((${expr.itemName}) => (${exprSource(expr.projection, stateNames, inScript)}))`;
+    case "collectionReduce": return `${exprSource(expr.source, stateNames, inScript)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${exprSource(expr.reducer, stateNames, inScript)}), ${exprSource(expr.initial, stateNames, inScript)})`;
+    case "collectionMax": return `Math.max(...${exprSource(expr.source, stateNames, inScript)}.map((${expr.itemName}) => (${exprSource(expr.operand, stateNames, inScript)})))`;
+    case "collectionJoin": return `${exprSource(expr.source, stateNames, inScript)}.join(${exprSource(expr.separator, stateNames, inScript)})`;
+    case "objectLookup": return `${exprSource(expr.object, stateNames, inScript)}[${exprSource(expr.key, stateNames, inScript)}]`;
+    case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${exprSource(field.value, stateNames, inScript)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key, stateNames, inScript)}]: ${exprSource(field.value, stateNames, inScript)}`)].join(", ")} }`;
+    case "arrayLiteral": return `[${expr.items.map((item) => exprSource(item, stateNames, inScript)).join(", ")}]`;
     case "ternary":
       return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
@@ -136,7 +148,7 @@ function nodeSource(node: CNode, stateNames: ReadonlySet<string>, indent: string
     // it reuses the same plumbing as v-if rather than wrapping the body.
     const list = lists.get(node.source);
     const key = node.keyField !== undefined ? `${node.itemName}.${node.keyField}` : list ? listKeyExpression(list, node.itemName) : node.itemName;
-    const source = node.sourceExpression === undefined ? node.source : exprSource(node.sourceExpression, stateNames, false);
+    const source = node.sourceExpression === undefined ? listSourceExpression(list, node.source) : exprSource(node.sourceExpression, stateNames, false);
     return withDirective(node.body, `v-for="${node.itemName} in ${source}" :key="${key}"`, stateNames, indent, lists);
   }
   return elementSource(node, [], stateNames, indent, lists);
@@ -211,7 +223,7 @@ function propsBlock(props: PropDef[]): string[] {
 }
 
 function stateBlock(state: StateDef[]): string[] {
-  return state.map((s) => `const ${s.name} = ref<${tsType(s.stateType)}${s.nullable ? " | null" : ""}>(${literalSource(s.initial)});`);
+  return state.map((s) => `const ${s.name} = ref<${stateTypeSource(s)}${s.nullable && s.stateShape === undefined ? " | null" : ""}>(${stateInitialSource(s)});`);
 }
 
 export function emitVue3(component: ComponentDef): string {
@@ -219,6 +231,9 @@ export function emitVue3(component: ComponentDef): string {
   const dataPropNames = component.props.filter((p) => p.kind === "data").map((p) => p.name);
   const scriptLines: string[] = [];
   if (component.state.length > 0) scriptLines.push(`import { ref } from "vue";`, "");
+  for (const list of component.lists ?? []) {
+    if (list.staticItems !== undefined || list.staticValues !== undefined) scriptLines.push(`const ${list.name} = ${staticListSource(list)};`);
+  }
   scriptLines.push(...propsBlock(component.props));
   scriptLines.push(...stateBlock(component.state));
   // `defineProps` returns a reactive object; template auto-exposes prop names,

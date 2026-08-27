@@ -9,7 +9,7 @@
  * `engines/sql-dialect-engine/src/elmos_sql_dialect/dialects.py`.
  */
 import {
-  AttrBinding, ComponentDef, DataPropDef, EventName, Expr, ListPropDef, Literal, Node as CNode, PropDef, Stmt, ValueShape, usesEventValueInStatements,
+  AttrBinding, ComponentDef, DataPropDef, EventName, Expr, ListPropDef, Literal, Node as CNode, PropDef, Stmt, StateDef, ValueShape, usesEventValueInStatements,
 } from "../models";
 
 /** The key expression for a list item: an object element uses its declared
@@ -61,6 +61,30 @@ export function literalSource(literal: Literal): string {
   return literal.value ? "true" : "false";
 }
 
+export function stateTypeSource(state: StateDef, slotType = "React.ReactNode"): string {
+  return valueShapeTypeSource(state.stateShape, state.stateType, slotType);
+}
+
+export function stateInitialSource(state: StateDef): string {
+  return "kind" in state.initial ? exprSource(state.initial) : literalSource(state.initial);
+}
+
+/** Materialize a closed module-level list when the canonical source has no
+ * prop binding.  The items are literals only, so this is deterministic and
+ * cannot accidentally execute source code in the target. */
+export function staticListSource(list: ListPropDef): string {
+  if (list.staticValues !== undefined) return `[${list.staticValues.map(literalSource).join(", ")}]`;
+  if (list.staticItems === undefined) return list.name;
+  return `[${list.staticItems.map((item) => `{ ${Object.entries(item.fields).map(([name, value]) => `${name}: ${literalSource(value)}`).join(", ")} }`).join(", ")}]`;
+}
+
+export function listSourceExpression(list: ListPropDef | undefined, source: string): string {
+  // Static lists are declared in the target component/module, not inlined in
+  // template attributes. This keeps Vue/Angular attribute quoting valid and
+  // gives mini-app templates a real data property to iterate.
+  return list?.staticItems === undefined && list?.staticValues === undefined ? source : list.name;
+}
+
 /** Renders an expression in plain JS/TS syntax. React, Vue, Svelte and the
  * WeChat mini program all accept this exact syntax inside their binding
  * delimiters, so it is shared; Flutter/ArkUI override where Dart/ArkTS
@@ -77,9 +101,21 @@ export function exprSource(expr: Expr): string {
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(exprSource).join(", ")})`;
     case "numericFunction": return `Math.${expr.function}(${expr.args.map(exprSource).join(", ")})`;
     case "numericPredicate": return `Number.${expr.predicate}(${exprSource(expr.operand)})`;
+    case "numberMethod": return `${wrap(expr.receiver)}.toFixed(${expr.fractionDigits})`;
+    case "numberFormat": return `${wrap(expr.operand)}.toLocaleString(${JSON.stringify(expr.locale ?? "zh-CN")})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
+    case "percentageWidth": return `${exprSource(expr.value)} + "%"`;
+    case "styleObject": return `{ ${expr.fields.map((field) => `${field.name}: ${exprSource(field.value)}`).join(", ")} }`;
+   case "collectionFilter": return `${exprSource(expr.source)}.filter((${expr.itemName}) => ${exprSource(expr.predicate)})`;
+    case "collectionMap": return `${exprSource(expr.source)}.map((${expr.itemName}) => (${exprSource(expr.projection)}))`;
+    case "collectionReduce": return `${exprSource(expr.source)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${exprSource(expr.reducer)}), ${exprSource(expr.initial)})`;
+    case "collectionMax": return `Math.max(...${exprSource(expr.source)}.map((${expr.itemName}) => (${exprSource(expr.operand)})))`;
+    case "collectionJoin": return `${exprSource(expr.source)}.join(${exprSource(expr.separator)})`;
+    case "objectLookup": return `${exprSource(expr.object)}[${exprSource(expr.key)}]`;
+    case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${exprSource(field.value)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key)}]: ${exprSource(field.value)}`)].join(", ")} }`;
+    case "arrayLiteral": return `[${expr.items.map(exprSource).join(", ")}]`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
 }
@@ -169,7 +205,7 @@ function nodeSource(node: CNode, indent: string, lists: ReadonlyMap<string, List
     // attribute list rather than emitted as a wrapper.
     const list = lists.get(node.source);
     const key = node.keyField !== undefined ? `${node.itemName}.${node.keyField}` : list ? listKeyExpression(list, node.itemName) : node.itemName;
-    const source = node.sourceExpression === undefined ? node.source : exprSource(node.sourceExpression);
+    const source = node.sourceExpression === undefined ? listSourceExpression(list, node.source) : exprSource(node.sourceExpression);
     const bodySrc = nodeSource(node.body, indent + "  ", lists, key);
     return `${indent}{${source}.map((${node.itemName}) => (\n${bodySrc}\n${indent}))}`;
   }
@@ -228,10 +264,13 @@ export function emitReact(component: ComponentDef): string {
   for (const child of referencedComponents(component)) {
     lines.push(`import ${child} from "./${child}";`);
   }
+  for (const list of component.lists ?? []) {
+    if (list.staticItems !== undefined || list.staticValues !== undefined) lines.push(`const ${list.name} = ${staticListSource(list)};`);
+  }
   lines.push("");
   lines.push(`export default function ${component.name}(${destructureSource(component.props)}) {`);
   for (const s of component.state) {
-    lines.push(`  const [${s.name}, ${setterName(s.name)}] = useState<${tsType(s.stateType)}${s.nullable ? " | null" : ""}>(${literalSource(s.initial)});`);
+    lines.push(`  const [${s.name}, ${setterName(s.name)}] = useState<${stateTypeSource(s)}${s.nullable && s.stateShape === undefined ? " | null" : ""}>(${stateInitialSource(s)});`);
   }
   if (usesState) lines.push("");
   lines.push("  return (");

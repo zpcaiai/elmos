@@ -24,7 +24,7 @@ import {
   fail,
   validateComponent,
 } from "../models";
-import { listPropIndex, referencedComponents } from "./react";
+import { listPropIndex, listSourceExpression, referencedComponents, stateInitialSource, staticListSource } from "./react";
 
 export const MINI_APP_PLATFORMS = ["wechat", "alipay", "douyin", "xiaohongshu"] as const;
 export type MiniAppPlatform = (typeof MINI_APP_PLATFORMS)[number];
@@ -119,6 +119,7 @@ const TAG_MAP: Readonly<Record<HtmlTag, string>> = {
   ol: "view",
   li: "view",
   strong: "text",
+  b: "text",
   em: "text",
   i: "text",
   section: "view",
@@ -133,6 +134,7 @@ const TAG_MAP: Readonly<Record<HtmlTag, string>> = {
   dd: "text",
   small: "text",
   code: "text",
+  br: "text",
 };
 
 const SEMANTIC_CLASS: Readonly<Partial<Record<HtmlTag, string>>> = {
@@ -143,6 +145,7 @@ const SEMANTIC_CLASS: Readonly<Partial<Record<HtmlTag, string>>> = {
   h5: "cc-h5",
   h6: "cc-h6",
   strong: "cc-strong",
+  b: "cc-strong",
   em: "cc-em",
   ul: "cc-ul",
   ol: "cc-ol",
@@ -295,9 +298,21 @@ function templateExprSource(expr: Expr): string {
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(templateExprSource).join(", ")})`;
     case "numericFunction": return `Math.${expr.function}(${expr.args.map(templateExprSource).join(", ")})`;
     case "numericPredicate": return `Number.${expr.predicate}(${templateExprSource(expr.operand)})`;
+    case "numberMethod": return `${wrap(expr.receiver)}.toFixed(${expr.fractionDigits})`;
+    case "numberFormat": return `${wrap(expr.operand)}.toLocaleString(${JSON.stringify(expr.locale ?? "zh-CN")})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${templateExprSource(expr.operand)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
+    case "percentageWidth": return `${templateExprSource(expr.value)} + "%"`;
+    case "styleObject": return `{ ${expr.fields.map((field) => `${field.name}: ${templateExprSource(field.value)}`).join(", ")} }`;
+    case "collectionFilter": return `${templateExprSource(expr.source)}.filter((${expr.itemName}) => ${templateExprSource(expr.predicate)})`;
+    case "collectionMap": return `${templateExprSource(expr.source)}.map((${expr.itemName}) => (${templateExprSource(expr.projection)}))`;
+    case "collectionReduce": return `${templateExprSource(expr.source)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${templateExprSource(expr.reducer)}), ${templateExprSource(expr.initial)})`;
+    case "collectionMax": return `Math.max(...${templateExprSource(expr.source)}.map((${expr.itemName}) => (${templateExprSource(expr.operand)})))`;
+    case "collectionJoin": return `${templateExprSource(expr.source)}.join(${templateExprSource(expr.separator)})`;
+    case "objectLookup": return `${templateExprSource(expr.object)}[${templateExprSource(expr.key)}]`;
+    case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${templateExprSource(field.value)}`), ...(expr.computedFields ?? []).map((field) => `[${templateExprSource(field.key)}]: ${templateExprSource(field.value)}`)].join(", ")} }`;
+    case "arrayLiteral": return `[${expr.items.map(templateExprSource).join(", ")}]`;
     case "ternary":
       return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
@@ -336,9 +351,21 @@ function jsExprSource(expr: Expr, context: JsExpressionContext): string {
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => jsExprSource(arg, context)).join(", ")})`;
     case "numericFunction": return `Math.${expr.function}(${expr.args.map((arg) => jsExprSource(arg, context)).join(", ")})`;
     case "numericPredicate": return `Number.${expr.predicate}(${jsExprSource(expr.operand, context)})`;
+    case "numberMethod": return `${wrap(expr.receiver)}.toFixed(${expr.fractionDigits})`;
+    case "numberFormat": return `${wrap(expr.operand)}.toLocaleString(${JSON.stringify(expr.locale ?? "zh-CN")})`;
     case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${jsExprSource(expr.operand, context)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
+    case "percentageWidth": return `${jsExprSource(expr.value, context)} + "%"`;
+    case "styleObject": return `{ ${expr.fields.map((field) => `${field.name}: ${jsExprSource(field.value, context)}`).join(", ")} }`;
+    case "collectionFilter": return `${jsExprSource(expr.source, context)}.filter((${expr.itemName}) => ${jsExprSource(expr.predicate, context)})`;
+    case "collectionMap": return `${jsExprSource(expr.source, context)}.map((${expr.itemName}) => (${jsExprSource(expr.projection, context)}))`;
+    case "collectionReduce": return `${jsExprSource(expr.source, context)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${jsExprSource(expr.reducer, context)}), ${jsExprSource(expr.initial, context)})`;
+    case "collectionMax": return `Math.max(...${jsExprSource(expr.source, context)}.map((${expr.itemName}) => (${jsExprSource(expr.operand, context)})))`;
+    case "collectionJoin": return `${jsExprSource(expr.source, context)}.join(${jsExprSource(expr.separator, context)})`;
+    case "objectLookup": return `${jsExprSource(expr.object, context)}[${jsExprSource(expr.key, context)}]`;
+    case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${jsExprSource(field.value, context)}`), ...(expr.computedFields ?? []).map((field) => `[${jsExprSource(field.key, context)}]: ${jsExprSource(field.value, context)}`)].join(", ")} }`;
+    case "arrayLiteral": return `[${expr.items.map((item) => jsExprSource(item, context)).join(", ")}]`;
     case "ternary":
       return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
   }
@@ -372,10 +399,51 @@ function walkExpr(expr: Expr, visit: (candidate: Expr) => void): void {
     case "numericPredicate":
       walkExpr(expr.operand, visit);
       return;
+    case "numberMethod":
+      walkExpr(expr.receiver, visit);
+      return;
+    case "numberFormat":
+      walkExpr(expr.operand, visit);
+      return;
     case "arrayLength":
       walkExpr(expr.operand, visit);
       return;
-    default:
+    case "percentageWidth":
+      walkExpr(expr.value, visit);
+      return;
+    case "styleObject":
+      expr.fields.forEach((field) => walkExpr(field.value, visit));
+      return;
+    case "collectionFilter":
+      walkExpr(expr.source, visit);
+      walkExpr(expr.predicate, visit);
+      return;
+    case "objectLookup":
+      walkExpr(expr.object, visit);
+      walkExpr(expr.key, visit);
+      return;
+    case "collectionMap":
+      walkExpr(expr.source, visit);
+      walkExpr(expr.projection, visit);
+      return;
+    case "collectionReduce":
+      walkExpr(expr.source, visit);
+      walkExpr(expr.reducer, visit);
+      walkExpr(expr.initial, visit);
+      return;
+    case "collectionMax":
+      walkExpr(expr.source, visit);
+      walkExpr(expr.operand, visit);
+      return;
+    case "collectionJoin":
+      walkExpr(expr.source, visit);
+      walkExpr(expr.separator, visit);
+      return;
+    case "objectLiteral":
+      expr.fields.forEach((field) => walkExpr(field.value, visit));
+      (expr.computedFields ?? []).forEach((field) => { walkExpr(field.key, visit); walkExpr(field.value, visit); });
+      return;
+   default:
       return;
   }
 }
@@ -545,7 +613,7 @@ function nodeSource(node: CNode, indent: string, context: RenderContext, scope: 
     const list = context.lists.get(node.source);
     if (list === undefined) fail("MINIAPP_UNKNOWN_LIST", `list ${JSON.stringify(node.source)} is not declared`);
     const key = node.keyField ?? list.keyField ?? "*this";
-    const source = node.sourceExpression === undefined ? node.source : templateExprSource(node.sourceExpression);
+    const source = node.sourceExpression === undefined ? listSourceExpression(list, node.source) : templateExprSource(node.sourceExpression);
     const directive = `${prefix}:for="{{ ${source} }}" ${prefix}:for-item="${node.itemName}" ${prefix}:key="${key}"`;
     return branchSource(node.body, directive, indent, context, { itemName: node.itemName });
   }
@@ -583,6 +651,13 @@ function elementSource(
       assertStaticTemplateLiteralSafe(attr.value, `static ${attr.name} attribute on ${node.tag}`);
       attributes.push(`${name}="${escapeAttribute(attr.value)}"`);
     } else {
+      if (attr.name === "style" && attr.value.kind === "styleObject") {
+        const width = attr.value.fields[0]?.value;
+        if (width?.kind === "percentageWidth") {
+          attributes.push(`style="width: {{ ${escapeAttribute(templateExprSource(width.value))} }}%;"`);
+          continue;
+        }
+      }
       attributes.push(`${name}="{{ ${escapeAttribute(templateExprSource(attr.value))} }}"`);
     }
   }
@@ -635,8 +710,11 @@ function propertiesBlock(props: readonly PropDef[], profile: PlatformProfile): s
 }
 
 function dataBlock(component: ComponentDef): string {
-  if (component.state.length === 0) return "  data: {},";
-  const entries = component.state.map((state) => `    ${state.name}: ${literalSource(state.initial)},`);
+  const entries = [
+    ...component.state.map((state) => `    ${state.name}: ${stateInitialSource(state)},`),
+    ...[...listPropIndex(component).values()].filter((list) => list.staticItems !== undefined || list.staticValues !== undefined).map((list) => `    ${list.name}: ${staticListSource(list)},`),
+  ];
+  if (entries.length === 0) return "  data: {},";
   return `  data: {\n${entries.join("\n")}\n  },`;
 }
 
