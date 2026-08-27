@@ -420,6 +420,31 @@ def validate(pack: Path) -> list[str]:
                 if policy.get(field) != expected:
                     errors.append(f"provider_domain_policy {field} drift")
 
+    plan_domain_section = plan.get("provider_domains")
+    expected_domain_ids = list(EXPECTED_PROVIDER_DOMAINS)
+    if not isinstance(plan_domain_section, list) or [
+        item.get("id") for item in plan_domain_section if isinstance(item, dict)
+    ] != expected_domain_ids:
+        errors.append("verification plan provider domains must exactly match the five provider domains")
+    else:
+        for domain in plan_domain_section:
+            domain_id = domain.get("id")
+            expected_domain = EXPECTED_PROVIDER_DOMAINS[domain_id]
+            if domain.get("feature_ids") != expected_domain["feature_ids"]:
+                errors.append(f"verification plan provider domain {domain_id} feature_ids drift")
+            if domain.get("status") != "NOT_RUN":
+                errors.append(f"verification plan provider domain {domain_id} status must remain NOT_RUN")
+        if isinstance(domain_section, list) and [
+            (item.get("id"), item.get("feature_ids"), item.get("status"))
+            for item in domain_section
+            if isinstance(item, dict)
+        ] != [
+            (item.get("id"), item.get("feature_ids"), item.get("status"))
+            for item in plan_domain_section
+            if isinstance(item, dict)
+        ]:
+            errors.append("verification plan and track contract provider domains drift")
+
     version_matrix = load_object(pack / VERSION_MATRIX_RELATIVE, errors, "version matrix")
     route_section = plan.get("routes")
     route_ids = route_section.get("ids") if isinstance(route_section, dict) else None
@@ -656,6 +681,13 @@ def validate(pack: Path) -> list[str]:
         for field in required_fields:
             if evidence.get(field) != "NOT_RUN":
                 errors.append(f"certification evidence {field} must remain NOT_RUN")
+        provider_domain_evidence = evidence.get("provider_domains")
+        if not isinstance(provider_domain_evidence, dict) or set(provider_domain_evidence) != set(
+            EXPECTED_PROVIDER_DOMAINS
+        ):
+            errors.append("certification evidence provider_domains must enumerate the five provider domains")
+        elif any(status != "NOT_RUN" for status in provider_domain_evidence.values()):
+            errors.append("certification evidence provider domain statuses must remain NOT_RUN")
         required_before = evidence.get("required_before_promotion")
         if not exact_string_list(required_before):
             errors.append("certification evidence required_before_promotion must be a string list")

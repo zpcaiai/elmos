@@ -53,6 +53,29 @@ class SpringVerificationPlanTests(unittest.TestCase):
             all(track["independent_verifier_status"] == "NOT_RUN" for track in tracks)
         )
 
+    def test_plan_exposes_all_provider_domains_as_not_run(self) -> None:
+        plan = self._load(self.SOURCE_PACK, "verification/validation-plan.json")
+        domains = plan["provider_domains"]
+        self.assertEqual(
+            [domain["id"] for domain in domains],
+            ["security", "database", "transaction", "messaging", "provider"],
+        )
+        self.assertTrue(all(domain["status"] == "NOT_RUN" for domain in domains))
+
+    def test_provider_domain_evidence_cannot_advance(self) -> None:
+        temporary, pack = self._copy_pack()
+        try:
+            evidence = self._load(pack, "certification/evidence.json")
+            evidence["provider_domains"]["security"] = "PASSED"
+            self._write(pack, "certification/evidence.json", evidence)
+            errors = VALIDATOR.validate(pack)
+            self.assertIn(
+                "certification evidence provider domain statuses must remain NOT_RUN",
+                errors,
+            )
+        finally:
+            temporary.cleanup()
+
     def test_placeholder_replay_protocol_is_rejected(self) -> None:
         temporary, pack = self._copy_pack()
         try:
