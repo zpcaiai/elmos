@@ -138,7 +138,7 @@ function baseName(path: string): string {
 function explicitlyNonRuntimeText(path: string): boolean {
   const name = baseName(path);
   return /^(?:readme|license|notice|changelog|contributing|code_of_conduct)(?:\..*)?$/iu.test(name)
-    || /^(?:package-lock\.json|yarn\.lock|npm-shrinkwrap\.json)$/u.test(name)
+    || /^(?:package-lock\.json|pnpm-lock\.yaml|yarn\.lock|npm-shrinkwrap\.json)$/u.test(name)
     || /^\.(?:git|docker|eslint|prettier|npm)ignore$/u.test(name);
 }
 
@@ -476,6 +476,95 @@ function parsePackageLock(path: string, digest: string, text: string, state: Mut
   }
 }
 
+function yamlScalar(value: string): string {
+  const trimmed = value.trim();
+  if ((trimmed.startsWith("'") && trimmed.endsWith("'")) || (trimmed.startsWith('"') && trimmed.endsWith('"'))) {
+    return trimmed.slice(1, -1).replaceAll("''", "'");
+  }
+  return trimmed;
+}
+
+function parsePnpmLock(path: string, digest: string, text: string, state: MutableScanState): boolean {
+  try {
+    const lines = text.split(/\r?\n/u);
+    if (!/^lockfileVersion:\s*['"]?9(?:\.0)?['"]?\s*$/u.test(lines[0] ?? "")) {
+      throw new Error("lockfileVersion 9 is required");
+    }
+    let inImporter = false;
+    let scope: "direct" | "dev" | null = null;
+    let currentName: string | null = null;
+    let currentVersion: string | null = null;
+    const flush = (): void => {
+      if (currentName && currentVersion && /^[0-9]+(?:\.[0-9]+){1,3}(?:-[0-9A-Za-z.-]+)?$/u.test(currentVersion)) {
+        state.lockedDependencies.push({
+          name: currentName,
+          version: currentVersion,
+          sourcePath: path,
+          sourceDigest: digest,
+          packageManager: "pnpm",
+        });
+      }
+      currentName = null;
+      currentVersion = null;
+    };
+    for (const line of lines) {
+      if (/^importers:\s*$/u.test(line)) {
+        flush();
+        inImporter = false;
+        scope = null;
+        continue;
+      }
+      if (!inImporter && /^  \.\s*:\s*$/u.test(line)) {
+        inImporter = true;
+        scope = null;
+        continue;
+      }
+      if (inImporter && /^  [^\s].*:\s*$/u.test(line)) {
+        flush();
+        inImporter = false;
+        scope = null;
+        continue;
+      }
+      if (!inImporter) continue;
+      const scopeMatch = /^    (dependencies|devDependencies|optionalDependencies|peerDependencies):\s*$/u.exec(line);
+      if (scopeMatch) {
+        flush();
+        scope = scopeMatch[1] === "devDependencies" ? "dev" : "direct";
+        continue;
+      }
+      if (scope === null) continue;
+      const dependencyMatch = /^      (['"]?)([^:'"]+)\1:\s*$/u.exec(line);
+      if (dependencyMatch) {
+        flush();
+        currentName = yamlScalar(dependencyMatch[2]!);
+        continue;
+      }
+      const versionMatch = /^        version:\s*(\S+)\s*$/u.exec(line);
+      if (versionMatch && currentName) {
+        const version = yamlScalar(versionMatch[1]!);
+        currentVersion = version.split("(")[0] ?? version;
+      }
+    }
+    flush();
+    const count = state.lockedDependencies.filter(item => item.sourcePath === path).length;
+    if (count === 0) throw new Error("root importer has no resolved dependencies");
+    state.configurations.push({
+      kind: "pnpm-lock",
+      path,
+      digest,
+      parsed: true,
+      signals: [`locked-dependencies:${count}`],
+    });
+    return true;
+  } catch (error) {
+    if (error instanceof MiniappInventoryError) throw error;
+    const message = error instanceof Error ? error.message.slice(0, 256) : "invalid pnpm lock";
+    state.configurations.push({ kind: "pnpm-lock", path, digest, parsed: false, signals: [], error: message });
+    state.configErrors.push({ path, message });
+    return false;
+  }
+}
+
 function parsePubspec(path: string, digest: string, text: string, state: MutableScanState): boolean {
   try {
     const lines = text.split(/\r?\n/u);
@@ -705,6 +794,7 @@ export function inventoryMiniappSource(value: unknown): MiniappSourceInventory {
     const name = baseName(inputFile.path);
     if (text !== null && name === "package.json") parsed = parsePackageJson(inputFile.path, digest, text, state);
     else if (text !== null && name === "package-lock.json") parsed = parsePackageLock(inputFile.path, digest, text, state);
+    else if (text !== null && name === "pnpm-lock.yaml") parsed = parsePnpmLock(inputFile.path, digest, text, state);
     else if (text !== null && name === "pubspec.yaml") parsed = parsePubspec(inputFile.path, digest, text, state);
     else if (text !== null && appConfigNames.has(name)) parsed = parseAppConfig(inputFile.path, digest, text, state);
     const kind = fileKind(inputFile.path, text === null);

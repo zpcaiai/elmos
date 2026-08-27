@@ -2,7 +2,7 @@
   "schema_version": 1,
   "evidence_key": "vue3-todo-wechat-local-static-2026-08-20",
   "scope": "local static source inventory typed UI IR and client-pack contract only",
-  "source_snapshot_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
+  "source_snapshot_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
   "environment": {
     "node": "26.0.0",
     "pnpm": "10.12.4",
@@ -11,12 +11,13 @@
   },
   "checks": [
     {"id": "source-byte-inventory", "state": "PASSED_LOCAL_STATIC", "artifact": "source-snapshots/manifest.json"},
+    {"id": "source-lock-version-build", "state": "PASSED_LOCAL_ENGINEERING_NOT_CERTIFIED", "artifact": "certification/source-build-evidence.json", "replay": "pnpm install --frozen-lockfile --ignore-scripts && pnpm run typecheck && pnpm run build"},
     {"id": "batch32-pack-schema", "state": "PASSED_LOCAL_TOOLING", "observed_output": "OK: client-packs/frontend-to-miniapp-vue3-wechat-v1", "replay": "python3 scripts/batch32/validate_client_pack.py client-packs/frontend-to-miniapp-vue3-wechat-v1"},
     {"id": "batch32-ui-ir-schema", "state": "PASSED_LOCAL_TOOLING", "observed_output": "OK: client-packs/frontend-to-miniapp-vue3-wechat-v1/ui-ir/model.json nodes=20", "replay": "python3 scripts/batch32/validate_ui_ir.py client-packs/frontend-to-miniapp-vue3-wechat-v1/ui-ir/model.json"},
     {"id": "digest-bound-local-conversion-replay", "state": "PASSED_LOCAL_ENGINEERING_NOT_CERTIFIED", "artifact": "certification/local-runtime-candidate-evidence.json", "replay": "pnpm --dir engines/frontend-client-engine run build && node client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/replay-local-runtime.mjs --check"},
     {"id": "batch32-conservative-gate", "state": "PASSED_LOCAL_TOOLING_NOT_CERTIFIED", "observed_output": "GATE PASS: frontend-to-miniapp-vue3-wechat-v1 status=experimental decision=NOT_CERTIFIED", "replay": "python3 scripts/batch32/run_client_gate.py client-packs/frontend-to-miniapp-vue3-wechat-v1"}
   ],
-  "source_runtime_execution": "NOT_RUN",
+  "source_runtime_execution": "LOCAL_EXECUTED_TYPECHECK_BUILD_NOT_LAUNCHED",
   "local_conversion_runtime": "LOCAL_EXECUTED_BOUNDED_SOURCE_DERIVED_CANDIDATE",
   "official_target_runtime": "NOT_RUN",
   "external_evidence": "NOT_RUN",

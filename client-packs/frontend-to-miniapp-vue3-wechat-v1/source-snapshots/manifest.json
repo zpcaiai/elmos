@@ -1,16 +1,70 @@
 {
   "schema_version": 1,
-  "snapshot_id": "vue3-todo-source-package-1.0.0",
-  "source_root": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source",
-  "aggregate_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
-  "file_count": 6,
+  "snapshot_id": "vue3-todo-source-snapshot-1.0.1",
+  "source_root": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1",
+  "aggregate_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
+  "file_count": 12,
   "files": [
-    {"path": "package.json", "bytes": 175, "sha256": "sha256:7e8a65afb5eb6171c7c34d1e44b90654eaf275c705107ea8317ea9fbc7139301"},
-    {"path": "src/App.vue", "bytes": 263, "sha256": "sha256:f051f1065b6ff315cf9c8d0e8f2e0d86d69ef0c8c02c2935d7017120d30bbe9c"},
-    {"path": "src/main.ts", "bytes": 196, "sha256": "sha256:459212bdd373406bce624931836e0e759dfef13e43aa18143ae5cc5e3758c236"},
-    {"path": "src/router.ts", "bytes": 241, "sha256": "sha256:1b40f66376ec1849e3d8bbc34beff969d93a45ec375a11368126af3048f3e18d"},
-    {"path": "src/stores/todo.ts", "bytes": 260, "sha256": "sha256:e623881dd8339f2edceed221d922a72ba3b537b9abbab5823847c6cdde1d8962"},
-    {"path": "src/views/HomeView.vue", "bytes": 504, "sha256": "sha256:ae19e4143890c99b4cba6f350f41ff8eef37f2244c98b354d3fe3b0f4c120c3f"}
+    {
+      "path": ".npmrc",
+      "bytes": 57,
+      "sha256": "sha256:252392ef86afdf22009b4b49a2a44103f6cd229eacf90bc69b259e72ccde9223"
+    },
+    {
+      "path": "index.html",
+      "bytes": 289,
+      "sha256": "sha256:68fee87a10c5f608a86112ff06bc3608dc9f6158bff1474170e076bb865166a6"
+    },
+    {
+      "path": "package.json",
+      "bytes": 461,
+      "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "bytes": 27372,
+      "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937"
+    },
+    {
+      "path": "src/App.vue",
+      "bytes": 263,
+      "sha256": "sha256:91985cca2e02ba745bdaa1b043f30977a3c7e0778c8309d21282e1f5efba922e"
+    },
+    {
+      "path": "src/env.d.ts",
+      "bytes": 231,
+      "sha256": "sha256:e8e78fe78ff61bc20e696f46c639522cf4a46c642867b496f8f43a62a8e57693"
+    },
+    {
+      "path": "src/main.ts",
+      "bytes": 196,
+      "sha256": "sha256:f58e4600449b795552da5ebb3bc448fb06f4dcb815625e90e20a0773ae484abf"
+    },
+    {
+      "path": "src/router.ts",
+      "bytes": 244,
+      "sha256": "sha256:4a100a699df9e076565bcba974ea0e7433a3d2d9cd6445d0a36f764eb5b629e4"
+    },
+    {
+      "path": "src/stores/todo.ts",
+      "bytes": 260,
+      "sha256": "sha256:dff9c172ca2a16986b3c943711625df827abda894b6529e38c41937292570c3a"
+    },
+    {
+      "path": "src/views/HomeView.vue",
+      "bytes": 504,
+      "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240"
+    },
+    {
+      "path": "tsconfig.json",
+      "bytes": 469,
+      "sha256": "sha256:910295623e22e81fc5b5a1cc7a854b18ef531fa48a634d7c67b37e33ca6285f1"
+    },
+    {
+      "path": "vite.config.ts",
+      "bytes": 130,
+      "sha256": "sha256:de24feac0f30281260058a655af8b0f057301e84e49425bdcdd36e5d6bee7d5a"
+    }
   ],
   "privacy": "public synthetic fixture; no credentials or personal data",
   "source_scripts_executed": false

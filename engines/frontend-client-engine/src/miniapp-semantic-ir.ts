@@ -223,6 +223,11 @@ export interface MiniappSemanticIr {
 
 type SourceFiles = Readonly<Record<string, string>>;
 
+const sourceBuildConfigPaths = new Set([
+  "vite.config.ts", "vite.config.js", "vite.config.mts", "vite.config.mjs",
+  "webpack.config.ts", "webpack.config.js", "rollup.config.ts", "rollup.config.js",
+]);
+
 type FrameworkFactoryKind = "vue-app" | "pinia" | "router" | "router-history-web" | "router-history-hash" | "router-history-memory";
 type FrameworkBinding = { readonly kind: FrameworkFactoryKind; readonly instanceId: string };
 
@@ -2115,7 +2120,23 @@ function analyzeMarkup(
   }
 }
 
-function analyzeHtmlScripts(path: string, source: string, state: MutableAnalysis): void {
+function resolveLocalHtmlScriptPath(htmlPath: string, sourceAttribute: string): string | null {
+  const withoutQuery = sourceAttribute.split(/[?#]/u, 1)[0] ?? "";
+  if (!withoutQuery || /^(?:[A-Za-z][A-Za-z0-9+.-]*:|\/\/)/u.test(withoutQuery)) return null;
+  const parts = (withoutQuery.startsWith("/") ? withoutQuery.slice(1) : `${htmlPath.slice(0, htmlPath.lastIndexOf("/") + 1)}${withoutQuery}`)
+    .split("/");
+  const normalized: string[] = [];
+  for (const part of parts) {
+    if (!part || part === ".") continue;
+    if (part === "..") {
+      if (normalized.length === 0) return null;
+      normalized.pop();
+    } else normalized.push(part);
+  }
+  return normalized.join("/") || null;
+}
+
+function analyzeHtmlScripts(path: string, source: string, state: MutableAnalysis, files: SourceFiles): void {
   const pattern = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/giu;
   let match: RegExpExecArray | null;
   while ((match = pattern.exec(source)) !== null) {
@@ -2123,6 +2144,8 @@ function analyzeHtmlScripts(path: string, source: string, state: MutableAnalysis
     const body = match[2] ?? "";
     const sourceAttribute = /\bsrc\s*=\s*["']([^"']+)["']/iu.exec(attributes)?.[1];
     if (sourceAttribute) {
+      const localPath = resolveLocalHtmlScriptPath(path, sourceAttribute);
+      if (localPath && Object.hasOwn(files, localPath) && /\btype\s*=\s*["']module["']/iu.test(attributes)) continue;
       state.findings.push(finding(
         "MINIAPP_H5_EXTERNAL_SCRIPT_LINK_REQUIRES_RESOLUTION",
         `HTML script source ${sourceAttribute} must be inventory-bound and analyzed before generation.`,
@@ -3017,16 +3040,29 @@ export function analyzeMiniappSource(
     if (path.endsWith(".vue") && ["vue2", "vue3", "uni-app"].includes(sourceLabel)) {
       applicableFiles.add(path);
       analyzeVue(path, source, state, sourceLabel);
-    } else if (/\.(?:ts|tsx|js|jsx)$/.test(path)) {
+    } else if (/\.(?:ts|tsx|js|jsx)$/.test(path) && !sourceBuildConfigPaths.has(path)) {
       applicableFiles.add(path);
       analyzeTypeScript(path, source, state);
+    } else if (sourceBuildConfigPaths.has(path)) {
+      applicableFiles.add(path);
+      state.parsedFiles.add(path);
+      state.parserEvidence.add("source-build-config-inventory-only");
     } else if (path.endsWith(".dart") && sourceLabel === "flutter") {
       applicableFiles.add(path);
       analyzeDart(path, source, state);
     } else if (/\.(?:html|wxml|axml|ttml|xhsml)$/.test(path)) {
       applicableFiles.add(path);
-      analyzeMarkup(path, source, path.endsWith(".html") ? "template-ast" : "native-template", state);
-      if (path.endsWith(".html")) analyzeHtmlScripts(path, source, state);
+      const isSourceBuildEntry = path === "index.html"
+        && /<script\b[^>]*\btype\s*=\s*["']module["'][^>]*\bsrc\s*=\s*["'][^"']+["']/iu.test(source)
+        && /<div\b[^>]*\bid\s*=\s*["']app["']/iu.test(source);
+      if (!isSourceBuildEntry) analyzeMarkup(path, source, path.endsWith(".html") ? "template-ast" : "native-template", state);
+      if (path.endsWith(".html")) {
+        if (isSourceBuildEntry) {
+          state.parsedFiles.add(path);
+          state.parserEvidence.add("source-build-entrypoint");
+        }
+        analyzeHtmlScripts(path, source, state, files);
+      }
     } else if (/\.(?:css|scss|less|sass|styl|wxss|acss|ttss)$/.test(path)) {
       applicableFiles.add(path);
       if (/\.(?:scss|less|sass|styl)$/u.test(path)) {

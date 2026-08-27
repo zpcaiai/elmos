@@ -38,6 +38,7 @@
     "transformations/vue3-todo-to-wechat-native.json",
     "certification/local-static-evidence.json",
     "certification/local-runtime-candidate-evidence.json",
+    "certification/source-build-evidence.json",
     "certification/external-evidence-status.json"
   ],
   "evidence_boundary": "Inventory and the checked-in review UI IR are local static evidence. The digest-bound source-derived conversion and generated candidate are bounded local engineering evidence and do not consume the checked-in review UI IR or transformation contract. Official build, target runtime, equivalence, quality, customer and external metrics remain NOT_RUN or UNKNOWN, never evidence-backed zeroes."

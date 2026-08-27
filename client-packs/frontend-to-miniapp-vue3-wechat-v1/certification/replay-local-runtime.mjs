@@ -33,7 +33,7 @@ const engineRootStat = lstatSync(engineRootCandidate);
 assert.ok(engineRootStat.isDirectory() && !engineRootStat.isSymbolicLink(), "engine root must be a directory and not a symlink");
 const engineRoot = realpathSync(engineRootCandidate);
 assertStrictDescendant(repositoryRoot, engineRoot, "canonical engine root");
-const sourceRootRelative = "skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source";
+const sourceRootRelative = "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1";
 const sourceRootCandidate = resolve(repositoryRoot, sourceRootRelative);
 assertStrictDescendant(repositoryRoot, sourceRootCandidate, "source root");
 const sourceRootStat = lstatSync(sourceRootCandidate);
@@ -213,14 +213,14 @@ const request = {
   requestId: "conv-vue3-todo-wechat",
   tenantId: "tenant-local-engineering",
   source: {
-    root: "examples/vue3-todo/source",
-    revision: expectedSourceArchiveDigest.slice("sha256:".length),
+    root: "source-snapshots/vue3-todo-v1.0.1",
+    revision: sourceManifest.aggregate_digest,
     snapshotDigest,
     sourceLabel: "vue3",
     frameworkVersion: "3.5.39",
     languageVersion: "5.9.2",
     runtimeVersion: "26.0.0",
-    buildToolVersion: "5.9.2",
+    buildToolVersion: "6.0.0",
   },
   targets: [requestedTarget],
   policy: {

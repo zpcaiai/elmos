@@ -564,7 +564,7 @@ process.stdout.write(JSON.stringify(catalog));
         )
         evidence_commands = {command["id"]: command for command in evidence["commands"]}
         self.assertEqual(evidence_commands["component-tests"]["expected_test_count"], 63)
-        self.assertEqual(evidence_commands["frontend-tests"]["expected_test_count"], 58)
+        self.assertEqual(evidence_commands["frontend-tests"]["expected_test_count"], 60)
         self.assertEqual(evidence["official_platform_builds"], "NOT_RUN")
         self.assertEqual(evidence["independent_verification"], "NOT_RUN")
         self.assertEqual(evidence["certification"], "NOT_CERTIFIED")

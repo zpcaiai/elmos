@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "transformation_key": "vue3-todo-ir-to-wechat-native-candidate-v1",
-  "source_snapshot_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
+  "source_snapshot_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
   "input_contract": "ui-ir/model.json",
   "target_profile": "target-profile/profile.json",
   "semantic_core": "typed-ui-interaction-ir",

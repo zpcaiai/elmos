@@ -382,7 +382,7 @@ LOCAL_QUALIFICATION_COMMANDS = (
             "Skill handlers, checkpoints and evidence gates"
         ),
         result_parser="node-test",
-        expected_test_count=58,
+        expected_test_count=60,
     ),
     QualificationCommand(
         command_id="integration-tests",

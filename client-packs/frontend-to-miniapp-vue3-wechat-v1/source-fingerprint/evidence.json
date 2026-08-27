@@ -3,20 +3,20 @@
   "pack_key": "frontend-to-miniapp-vue3-wechat-v1",
   "runs": [
     {
-      "run_id": "vue3-todo-static-inventory-2026-08-20",
+      "run_id": "vue3-todo-static-inventory-2026-08-27",
       "state": "PASSED_LOCAL_STATIC",
       "source_scripts_executed": false,
-      "file_count": 6,
-      "aggregate_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
+      "file_count": 12,
+      "aggregate_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
       "evidence_ref": "source-snapshots/manifest.json"
     },
     {
-      "run_id": "vue3-todo-source-runtime-2026-08-20",
-      "state": "NOT_RUN",
-      "reason": "No lockfile or approved source runtime was supplied; repository package scripts were not executed."
+      "run_id": "vue3-todo-source-build-2026-08-27",
+      "state": "LOCAL_EXECUTED_NOT_CERTIFIED",
+      "evidence_ref": "certification/source-build-evidence.json"
     }
   ],
   "coverage": 1.0,
-  "evidence_refs": ["source-snapshots/manifest.json", "certification/local-static-evidence.json", "certification/local-runtime-candidate-evidence.json"],
+  "evidence_refs": ["source-snapshots/manifest.json", "certification/source-build-evidence.json", "certification/local-static-evidence.json", "certification/local-runtime-candidate-evidence.json"],
   "certification": "NOT_CERTIFIED"
 }
