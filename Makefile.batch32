@@ -1,9 +1,15 @@
 UV ?= uv
+BATCH32_NODE_EXECUTABLE ?= $(shell command -v node 2>/dev/null)
+BATCH32_NODE_RUNTIME_BIN := $(if $(BATCH32_NODE_EXECUTABLE),$(dir $(BATCH32_NODE_EXECUTABLE)),/nonexistent/node-runtime-not-found/)
+BATCH32_PNPM_VERSION ?= $(shell sed -n 's/.*"packageManager": "pnpm@\([^"]*\)".*/\1/p' engines/frontend-client-engine/package.json)
+BATCH32_PNPM ?= pnpm dlx pnpm@$(BATCH32_PNPM_VERSION)
 BATCH32_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
 .PHONY: batch32-validate batch32-test batch32-check batch32-score
 batch32-validate:
 	$(BATCH32_PYTHON) scripts/batch32/validate_skill_bundle.py .agents/skills
 batch32-test:
+	CI=true PATH="$(BATCH32_NODE_RUNTIME_BIN):$$PATH" $(BATCH32_PNPM) --dir engines/frontend-client-engine install --frozen-lockfile
+	PATH="$(BATCH32_NODE_RUNTIME_BIN):$$PATH" $(BATCH32_PNPM) --dir engines/frontend-client-engine run build
 	$(BATCH32_PYTHON) -m unittest discover -s tests/batch32 -p 'test_*.py'
 batch32-check: batch32-validate batch32-test
 batch32-score:

@@ -1,0 +1,16 @@
+# Default-deny the monorepo deployment context. The Web Console deliberately
+# consumes only its application tree, governed route inventory, one pricing
+# contract, and pom.xml as the repository-root marker.
+/*
+!/apps/
+/apps/*
+!/apps/web-console/
+!/apps/web-console/**
+!/contracts/
+/contracts/*
+!/contracts/pricing-catalog-schema/
+/contracts/pricing-catalog-schema/*
+!/contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json
+!/routes/
+!/routes/**
+!/pom.xml
