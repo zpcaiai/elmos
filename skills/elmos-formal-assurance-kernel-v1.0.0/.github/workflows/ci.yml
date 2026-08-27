@@ -1,0 +1,58 @@
+name: formal-assurance-ci
+
+on:
+  push:
+    paths:
+      - "skills/**"
+      - "contracts/**"
+      - "workflows/**"
+      - "policies/**"
+      - "verifier-adapters/**"
+      - "db/**"
+      - "reference-kernel/**"
+      - "scripts/**"
+      - "PACKAGE_MANIFEST.yaml"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python scripts/generate_catalog.py
+      - run: git diff --exit-code -- skills/index.yaml skills/registry.generated.json SKILLS_INDEX.md
+      - run: python scripts/validate_package.py
+      - run: PYTHONPATH=reference-kernel python -m unittest discover -s reference-kernel/tests -v
+      - run: python scripts/check_release_pins.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: formal-assurance-validation
+          path: |
+            VALIDATION-REPORT.json
+            BUILD_REPORT.md
+
+  package:
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.13"}
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python scripts/package_release.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: formal-assurance-package
+          path: |
+            ../elmos-formal-assurance-kernel-v1.0.0.zip
+            ../elmos-formal-assurance-kernel-v1.0.0.zip.sha256

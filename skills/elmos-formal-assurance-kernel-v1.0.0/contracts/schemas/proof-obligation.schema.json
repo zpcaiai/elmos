@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/proof-obligation.schema.json",
+  "title": "Proof Obligation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "tenant",
+    "specId",
+    "propertyKind",
+    "criticality",
+    "formula",
+    "formulaHash",
+    "requiredAssurance",
+    "assumptionIds",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "tenant": {
+      "$ref": "common.schema.json#/$defs/tenantContext"
+    },
+    "specId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "subjectUri": {
+      "type": "string"
+    },
+    "propertyKind": {
+      "enum": [
+        "FUNCTIONAL_CORRECTNESS",
+        "TRACE_REFINEMENT",
+        "QUERY_EQUIVALENCE",
+        "SCHEMA_LOSSLESSNESS",
+        "STATE_INVARIANT",
+        "TEMPORAL_SAFETY",
+        "LIVENESS",
+        "NONINTERFERENCE",
+        "TERMINATION",
+        "RESOURCE_BOUND",
+        "ROUTE_COMPLETENESS",
+        "AUTHORIZATION_DOMINANCE"
+      ]
+    },
+    "criticality": {
+      "$ref": "common.schema.json#/$defs/criticality"
+    },
+    "formula": {
+      "type": "string",
+      "minLength": 1
+    },
+    "formulaHash": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    },
+    "requiredAssurance": {
+      "$ref": "common.schema.json#/$defs/assuranceLevel"
+    },
+    "assumptionIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/$defs/id"
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/$defs/id"
+      }
+    },
+    "status": {
+      "enum": [
+        "PLANNED",
+        "READY",
+        "RUNNING",
+        "BLOCKED",
+        "TERMINAL"
+      ]
+    },
+    "sourceMap": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "allowBounded": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

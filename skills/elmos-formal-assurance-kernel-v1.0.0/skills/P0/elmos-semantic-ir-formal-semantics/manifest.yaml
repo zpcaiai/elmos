@@ -1,0 +1,73 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-semantic-ir-formal-semantics
+  title: Semantic IR Formal Semantics
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: cross-language
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 为表达式、控制流、Heap、异常、异步、线程、I/O 和外部效应定义可执行的小步/大步语义。
+  dependencies:
+  - elmos-formal-spec-ir
+  - elmos-trusted-computing-base-registry
+  - elmos-language-semantic-profile
+  capabilities:
+  - operational semantics
+  - effect traces
+  - typed transition systems
+  - K/Lean definitions
+  inputs:
+  - name: language profiles
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: Semantic IR grammar
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: formal semantics module
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: interpreter oracle
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: semantic hash
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

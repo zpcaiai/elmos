@@ -1,0 +1,13 @@
+.git
+.venv
+__pycache__
+*.pyc
+*.zip
+FILES.sha256
+examples
+skills
+docs
+db
+policies
+verifier-adapters
+golden-routes

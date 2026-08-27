@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "pack_key": "formal-assurance-kernel-local",
+  "status": "experimental",
+  "owner": "elmos-formal-assurance-engineering",
+  "exact_scope": {
+    "migration_route": "formal-assurance-kernel-local-runtime",
+    "source_artifact_digest": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
+    "target_artifact_digest": "sha256:3674ece422d24bb7764d3693e4cfb58c03c1c8a8f37def8ef316a8394cc95552",
+    "workload_key": "formal-assurance-kernel-60-skills",
+    "risk_tier": "P1",
+    "environment_digest": "sha256:d35a2705350502eedfcc63fbb5c67fc0a2b7b0272126b1229c1917708cbb5a19"
+  },
+  "metrics": {},
+  "evidence_refs": [],
+  "limitations": [
+    "The repository runtime is bounded local evidence only.",
+    "Native solver, database, compiler, independent replay, holdout and representative production evidence are NOT_RUN.",
+    "No certification evidence or approval exists."
+  ],
+  "approved_at": null
+}

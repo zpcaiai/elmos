@@ -1,0 +1,77 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-schema-losslessness-proof
+  title: Schema Losslessness Proof
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: sql-conversion
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 证明表拆分、合并、重命名、编码与数据搬迁保持键、函数依赖、约束和所需信息。
+  dependencies:
+  - elmos-formal-spec-ir
+  - elmos-proof-obligation-planner
+  - elmos-verifier-portfolio-router
+  - elmos-sql-semantic-ir
+  capabilities:
+  - lossless join
+  - dependency preservation
+  - round-trip laws
+  - relational refinement
+  inputs:
+  - name: source/target schema
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: mapping DSL
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: constraints
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: losslessness proof
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: dependency report
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: counterexample rows
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

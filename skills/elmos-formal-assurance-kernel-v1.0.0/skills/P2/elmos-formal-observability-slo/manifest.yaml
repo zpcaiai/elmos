@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-formal-observability-slo
+  title: Formal Assurance Observability and SLO
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P2
+  domain: platform
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 为证明队列、求解器运行、缓存、未知率、证据新鲜度、反例修复和门禁建立指标、Trace、告警与容量模型。
+  dependencies:
+  - elmos-formal-assurance-orchestrator
+  - elmos-proof-artifact-store
+  - elmos-formal-release-gate
+  capabilities:
+  - OpenTelemetry
+  - SLO/error budgets
+  - cardinality controls
+  - cost attribution
+  inputs:
+  - name: runtime events
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: proof metrics
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: tenant/account dimensions
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: metrics
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: traces
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: dashboards-as-code
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: SLO alerts
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

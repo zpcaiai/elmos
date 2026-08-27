@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-spring-filter-interceptor-order-proof
+  title: Spring Filter and Interceptor Order Proof
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: spring-modernization
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 验证 Servlet Filter、Spring Security FilterChain、HandlerInterceptor 和 AOP Advice 的顺序、一次性执行与异常路径。
+  dependencies:
+  - elmos-spring-route-binding-proof
+  - elmos-spring-security-chain-model
+  - elmos-proof-obligation-planner
+  capabilities:
+  - partial-order constraints
+  - happens-before graph
+  - cycle detection
+  - state exploration
+  inputs:
+  - name: filter registrations
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: security chain
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: interceptor order
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: AOP pointcuts
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: order graph
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: cycle/conflict report
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: execution witness
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

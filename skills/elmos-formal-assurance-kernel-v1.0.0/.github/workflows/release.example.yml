@@ -1,0 +1,37 @@
+name: formal-assurance-production-release-example
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment: {type: choice, options: [staging, production], required: true}
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  release-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.13"}
+      - run: python -m pip install -r requirements-dev.txt
+      - name: Require exact release pins
+        run: python scripts/check_release_pins.py --strict
+      - name: Validate contracts and reference kernel
+        run: python scripts/validate_package.py
+      - name: Execute organization PostgreSQL migration harness
+        run: ./organization-ci/run-postgres17-migrations.sh
+      - name: Execute OPA policies
+        run: opa test policies/rego -v
+      - name: Execute enabled verifier conformance suites
+        run: ./organization-ci/run-formal-adapter-conformance.sh
+      - name: Build, SBOM, scan, sign and attest image
+        run: ./organization-ci/build-and-attest.sh
+      - name: Deploy and collect authoritative P05 evidence
+        run: ./organization-ci/deploy-and-collect-p05.sh "${{ inputs.environment }}"
+      - name: Enforce P05
+        run: python scripts/check_p05_gate.py --evidence .release/p05-evidence.json
+      - name: Build signed proof evidence bundle
+        run: ./organization-ci/build-signed-evidence.sh

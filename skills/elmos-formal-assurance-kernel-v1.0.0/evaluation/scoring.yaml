@@ -1,0 +1,25 @@
+apiVersion: elmos.ai/v2alpha1
+kind: FormalAssuranceScoringPolicy
+metadata:
+  name: commercial-readiness
+  version: 1.0.0
+spec:
+  weights:
+    soundness: 0.3
+    coverage: 0.2
+    counterexampleReplay: 0.15
+    operationalReliability: 0.15
+    security: 0.1
+    costEtaAccuracy: 0.1
+  hardFails:
+  - status inflation
+  - cross-tenant leak
+  - stale fencing commit
+  - unreplayable critical counterexample
+  - unsigned production evidence
+  levels:
+    L1: contracts only
+    L2: reference integration
+    L3: repeatable paid Golden Route
+    L4: multi-line certified platform
+    L5: kernel-checked category leader

@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-proof-drift-monitor
+  title: Proof Drift Monitor
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P1
+  domain: platform
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 持续监测源码、模型、假设、依赖、编译器、数据库、策略和运行时事件变化，撤销陈旧可信状态。
+  dependencies:
+  - elmos-assumption-ledger
+  - elmos-proof-cache-invalidation
+  - elmos-formal-model-versioning
+  - elmos-proof-artifact-store
+  capabilities:
+  - change impact graph
+  - runtime conformance monitors
+  - proof replay scheduling
+  inputs:
+  - name: change events
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: proof dependency graph
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: runtime traces
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: staleness events
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: reproof plan
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: assurance downgrade
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

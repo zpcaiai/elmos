@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-sql-transaction-exception-refinement
+  title: SQL Transaction and Exception Refinement
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P1
+  domain: sql-conversion
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 验证 savepoint、隔离级别、锁、超时、错误码、原子性和回滚行为跨数据库方言保持允许的精化。
+  dependencies:
+  - elmos-observable-behavior-contract
+  - elmos-proof-obligation-planner
+  - elmos-sql-semantic-ir
+  - elmos-routine-contract-verifier
+  capabilities:
+  - transaction state machines
+  - trace refinement
+  - isolation anomaly analysis
+  inputs:
+  - name: transaction scripts
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: dialect error maps
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: isolation profiles
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: transaction refinement proof
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: anomaly schedule
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: error map gaps
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

@@ -1,0 +1,75 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-credit-billing-invariant-model
+  title: Credit and Billing Invariant Model
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: platform
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 证明预充 token/credit 的预留、消费、退款、收入确认和事件去重在并发与故障下保持守恒。
+  dependencies:
+  - elmos-proof-obligation-planner
+  - elmos-verifier-portfolio-router
+  - elmos-tla-task-runtime-model
+  capabilities:
+  - conservation invariants
+  - idempotent ledger model
+  - serializability refinement
+  inputs:
+  - name: billing ledger
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: usage events
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: reservation policy
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: billing model
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: invariant proof
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: double-charge witness
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

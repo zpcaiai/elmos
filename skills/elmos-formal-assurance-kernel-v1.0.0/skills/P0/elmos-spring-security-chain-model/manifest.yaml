@@ -1,0 +1,81 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-spring-security-chain-model
+  title: Spring Security Chain Model
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: spring-modernization
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 把 Filter、Interceptor、Spring Security、CSRF、方法鉴权和错误 dispatch 建模为安全状态机，证明不存在绕过。
+  dependencies:
+  - elmos-formal-spec-ir
+  - elmos-proof-obligation-planner
+  - elmos-verifier-portfolio-router
+  capabilities:
+  - state-machine reachability
+  - authorization dominance
+  - noninterference
+  - TLA+/Alloy checking
+  inputs:
+  - name: legacy filters
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: interceptors
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: security config
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: route map
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: security model
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: bypass counterexample
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: dominance proof
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: residual risk
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

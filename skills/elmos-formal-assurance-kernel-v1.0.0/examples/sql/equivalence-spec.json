@@ -1,0 +1,17 @@
+{
+  "schema": "schema.sql",
+  "source": "source.sql",
+  "target": "target.sql",
+  "semantics": "BAG",
+  "constraints": [
+    "accounts.balance >= 0"
+  ],
+  "requiredStatus": "PROVED_FOR_SUPPORTED_FRAGMENT",
+  "fallback": {
+    "engine": "verieql",
+    "bound": {
+      "rows": 5
+    },
+    "status": "BOUNDED_NO_COUNTEREXAMPLE"
+  }
+}

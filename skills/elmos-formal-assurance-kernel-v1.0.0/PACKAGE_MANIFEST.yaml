@@ -1,0 +1,84 @@
+apiVersion: elmos.ai/v2alpha1
+kind: FormalAssuranceKernel
+metadata:
+  name: elmos-formal-assurance-kernel
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  releaseDate: '2026-08-27'
+  provenance: independent-production-design-based-on-formal-methods-and-elmos-contracts
+spec:
+  counts:
+    skills: 60
+    perSkillFiles: 300
+    jsonSchemas: 17
+    schemaExamples: 16
+    postgresMigrations: 4
+    openApiContracts: 4
+    asyncApiContracts: 1
+    regoModules: 6
+    regoTests: 6
+    verifierAdapters: 17
+    workflows: 10
+    goldenRoutes: 5
+    installProfiles: 7
+  runtimeRequirements:
+    postgresql: '17'
+    python: '>=3.11'
+    kubernetes: '>=1.30'
+    openTelemetry: 1.x
+    objectStorage: s3-compatible
+    eventBus: kafka-or-nats-or-redpanda
+    policyEngine: OPA-compatible
+  defaults:
+    topLevelAccountConcurrency: 3
+    networkPolicy: deny
+    unknownDecision: deny
+    adapterFailureMode: fail-closed
+    crossTenantCache: deny
+    etaUnit: machine-wall-clock-seconds
+    proofArtifactImmutability: true
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  assuranceLevels:
+  - NONE
+  - A0_TESTED
+  - A1_BOUNDED
+  - A2_SOLVER_PROVED
+  - A3_CERTIFIED
+  - A4_COMPOSED
+  - TRUSTED
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE
+  compatibility:
+    elmos: '>=0.9.0'
+    repositoryAutonomyKernel: '>=2.0.0'
+  autoDiscovery:
+    skills: skills/P*/*/SKILL.md
+    skillManifests: skills/P*/*/manifest.yaml
+    workflows: workflows/*.yaml
+    schemas: contracts/schemas/*.schema.json
+    policies: policies/rego/*.rego
+    adapters: verifier-adapters/*/adapter.yaml
+    goldenRoutes: golden-routes/*/route.yaml
+    profiles: profiles/*.yaml
+  install:
+    defaultProfile: full
+    overwrite: deny
+    uninstall: hash-aware
+  honestBoundary: Package validation is not P05/E1-E5 production certification.

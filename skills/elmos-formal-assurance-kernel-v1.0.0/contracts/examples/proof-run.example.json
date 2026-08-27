@@ -1,0 +1,24 @@
+{
+  "id": "run-demo-001",
+  "tenant": {
+    "tenantId": "tenant-demo",
+    "accountId": "acct-demo",
+    "projectId": "project-formal",
+    "dataClassification": "confidential"
+  },
+  "obligationId": "obl-demo-001",
+  "engine": "z3",
+  "engineVersion": "release-time-pinned",
+  "engineDigest": "d4a8f8682176e5f92ad28a05b5056c62f82ed7e14f9318f8910f20734c28d67f",
+  "mode": "SMT",
+  "options": {
+    "timeoutMs": 600000
+  },
+  "state": "SUCCEEDED",
+  "ownerId": "worker-7",
+  "fencingToken": 3,
+  "startedAt": "2026-08-27T00:00:00Z",
+  "completedAt": "2026-08-27T00:00:02Z",
+  "wallClockMs": 2000,
+  "traceId": "trace-demo-001"
+}

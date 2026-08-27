@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/proof-coverage.schema.json",
+  "title": "Proof Coverage",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tenant",
+    "subjectId",
+    "criticalTotal",
+    "byStatus",
+    "byAssurance",
+    "generatedAt"
+  ],
+  "properties": {
+    "tenant": {
+      "$ref": "common.schema.json#/$defs/tenantContext"
+    },
+    "subjectId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "criticalTotal": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "byStatus": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "byAssurance": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "weightedCoverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "uncoveredEntryPoints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "generatedAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    }
+  }
+}

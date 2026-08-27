@@ -1,0 +1,137 @@
+apiVersion: elmos.ai/v2alpha1
+kind: FormalAssuranceWorkflow
+metadata:
+  name: project-generation-formal-assurance
+  title: Generated Project Formal Assurance
+  version: 1.0.0
+  domain: project-generation
+spec:
+  durability:
+    checkpointEveryStep: true
+    resumePolicy: idempotent
+    fencingRequired: true
+  concurrency:
+    topLevelPerAccount: 3
+    maxParallelSteps: 8
+  budget:
+    etaUnit: wall-clock-seconds
+    reserveBeforeStart: true
+  steps:
+  - id: formalize
+    skillRef: elmos-requirement-to-formal-spec
+    dependsOn: []
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: architecture
+    skillRef: elmos-architecture-constraint-checker
+    dependsOn:
+    - formalize
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: api
+    skillRef: elmos-api-contract-verifier
+    dependsOn:
+    - formalize
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: data
+    skillRef: elmos-data-invariant-verifier
+    dependsOn:
+    - formalize
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: workflow
+    skillRef: elmos-generated-workflow-model-checker
+    dependsOn:
+    - formalize
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: noninterference
+    skillRef: elmos-tenant-noninterference-verifier
+    dependsOn:
+    - formalize
+    - architecture
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: verified-core
+    skillRef: elmos-verified-core-generator
+    dependsOn:
+    - formalize
+    - data
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: liveness
+    skillRef: elmos-liveness-fairness-verifier
+    dependsOn:
+    - workflow
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: termination
+    skillRef: elmos-resource-termination-verifier
+    dependsOn:
+    - formalize
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  terminalPolicy:
+    successRequires: all required steps terminal and gate allowed
+    unknownIsFailure: true
+  events:
+  - workflow.started
+  - proof.step.started
+  - proof.step.completed
+  - proof.step.failed
+  - workflow.completed

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "pack_key": "formal-assurance-kernel-local",
+  "capabilities": [
+    {
+      "key": "property-based-testing",
+      "status": "experimental",
+      "owner": "elmos-formal-assurance-engineering",
+      "evidence_refs": [],
+      "limitations": [
+        "Add executable evidence."
+      ]
+    }
+  ]
+}

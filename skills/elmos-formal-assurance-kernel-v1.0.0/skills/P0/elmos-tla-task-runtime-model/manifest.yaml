@@ -1,0 +1,75 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-tla-task-runtime-model
+  title: Elmos Task Runtime TLA+ Model
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: platform
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 对 Elmos 任务队列、每账号并发、暂停恢复取消、Checkpoint、重试、终态和副作用提交建模。
+  dependencies:
+  - elmos-proof-obligation-planner
+  - elmos-verifier-portfolio-router
+  - elmos-formal-assurance-orchestrator
+  capabilities:
+  - TLA+ safety/liveness
+  - state refinement
+  - failure injection
+  inputs:
+  - name: runtime state machine
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: scheduler policy
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: failure assumptions
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: TLA+ model
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: invariant result
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: counterexample trace
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

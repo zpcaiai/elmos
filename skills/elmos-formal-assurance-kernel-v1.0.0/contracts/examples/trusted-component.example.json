@@ -1,0 +1,17 @@
+{
+  "id": "tcb-z3",
+  "name": "Z3 adapter image",
+  "componentType": "SOLVER",
+  "version": "release-time-pinned",
+  "digest": "d4a8f8682176e5f92ad28a05b5056c62f82ed7e14f9318f8910f20734c28d67f",
+  "trustReason": "solver result trusted with independent input/output hash capture",
+  "status": "PINNED",
+  "sbomRef": {
+    "uri": "s3://elmos-proof/tenant-demo/artifact.bin",
+    "sha256": "c7c5c1d70c5dec4416ab6158afd0b223ef40c29b1dc1f97ed9428b94d4cadb1c",
+    "mediaType": "application/octet-stream",
+    "sizeBytes": 128,
+    "redacted": false
+  },
+  "affectedProofCount": 15
+}

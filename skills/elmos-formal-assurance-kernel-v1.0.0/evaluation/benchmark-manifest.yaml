@@ -1,0 +1,62 @@
+apiVersion: elmos.ai/v2alpha1
+kind: FormalAssuranceBenchmarkManifest
+metadata:
+  name: elmos-formal-assurance-commercial-benchmark
+  version: 1.0.0
+spec:
+  tracks:
+  - id: spring-large-repo
+    minimumCases: 3
+    scale:
+    - 2x >500k LOC
+    - 1x >1M LOC
+    metrics:
+    - route coverage
+    - trace refinement
+    - false gate allow
+    - wall-clock
+    - repair convergence
+  - id: cross-language
+    minimumCases: 1000
+    scale:
+    - functions
+    - modules
+    - repositories
+    metrics:
+    - proved/refuted/unknown
+    - semantic gap recall
+    - counterexample quality
+  - id: project-generation
+    minimumCases: 100
+    scale:
+    - multi-service
+    - multi-tenant
+    metrics:
+    - spec traceability
+    - invariant coverage
+    - liveness outcomes
+  - id: sql
+    minimumCases: 10000
+    scale:
+    - queries
+    - DDL
+    - routines
+    - triggers
+    metrics:
+    - unbounded proof
+    - bounded result
+    - counterexample replay
+    - dialect coverage
+  - id: platform
+    minimumCases: 500
+    scale:
+    - fault schedules
+    metrics:
+    - invariant violations
+    - recovery
+    - double charge
+    - stale commit
+  reporting:
+    separateBoundedFromProved: true
+    includeUnknowns: true
+    publishAssumptions: true

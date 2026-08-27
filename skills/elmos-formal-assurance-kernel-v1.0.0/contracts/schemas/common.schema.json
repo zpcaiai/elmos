@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/common.schema.json",
+  "title": "Elmos Formal Assurance Common Types",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "businessLine": {
+      "enum": [
+        "core",
+        "spring-modernization",
+        "cross-language",
+        "project-generation",
+        "sql-conversion",
+        "platform"
+      ]
+    },
+    "criticality": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3"
+      ]
+    },
+    "proofStatus": {
+      "enum": [
+        "PROVED_CERTIFIED",
+        "PROVED_INDUCTIVE",
+        "PROVED_SOLVER_TRUSTED",
+        "PROVED_FOR_SUPPORTED_FRAGMENT",
+        "BOUNDED_NO_COUNTEREXAMPLE",
+        "REFUTED_WITH_COUNTEREXAMPLE",
+        "UNKNOWN_TIMEOUT",
+        "UNKNOWN_RESOURCE_LIMIT",
+        "UNSUPPORTED",
+        "ASSUMPTION_REQUIRED",
+        "RUNTIME_MONITORED",
+        "WAIVED_BY_APPROVER"
+      ]
+    },
+    "assuranceLevel": {
+      "enum": [
+        "NONE",
+        "A0_TESTED",
+        "A1_BOUNDED",
+        "A2_SOLVER_PROVED",
+        "A3_CERTIFIED",
+        "A4_COMPOSED",
+        "TRUSTED"
+      ]
+    },
+    "tenantContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "accountId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/$defs/id"
+        },
+        "accountId": {
+          "$ref": "#/$defs/id"
+        },
+        "projectId": {
+          "$ref": "#/$defs/id"
+        },
+        "dataClassification": {
+          "enum": [
+            "public",
+            "internal",
+            "confidential",
+            "restricted"
+          ]
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceType",
+        "sourceRevision",
+        "capturedAt"
+      ],
+      "properties": {
+        "sourceType": {
+          "enum": [
+            "repository",
+            "requirement",
+            "schema",
+            "runtime",
+            "policy",
+            "model",
+            "generated"
+          ]
+        },
+        "sourceUri": {
+          "type": "string",
+          "maxLength": 2048
+        },
+        "sourceRevision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "capturedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "generator": {
+          "type": "string"
+        },
+        "generatorVersion": {
+          "type": "string"
+        }
+      }
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uri",
+        "sha256",
+        "mediaType"
+      ],
+      "properties": {
+        "uri": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "mediaType": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "encryptionKeyRef": {
+          "type": "string"
+        },
+        "redacted": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "bound": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "loopUnroll": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "steps": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rows": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "threads": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

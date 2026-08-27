@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/proof-run.schema.json",
+  "title": "Proof Run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "tenant",
+    "obligationId",
+    "engine",
+    "engineVersion",
+    "mode",
+    "state",
+    "fencingToken",
+    "startedAt"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "tenant": {
+      "$ref": "common.schema.json#/$defs/tenantContext"
+    },
+    "obligationId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "engine": {
+      "type": "string"
+    },
+    "engineVersion": {
+      "type": "string"
+    },
+    "engineDigest": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    },
+    "mode": {
+      "enum": [
+        "CERTIFIED",
+        "INDUCTIVE",
+        "SMT",
+        "BOUNDED",
+        "RUNTIME"
+      ]
+    },
+    "bound": {
+      "$ref": "common.schema.json#/$defs/bound"
+    },
+    "options": {
+      "type": "object"
+    },
+    "state": {
+      "enum": [
+        "QUEUED",
+        "LEASED",
+        "RUNNING",
+        "PAUSED",
+        "CANCEL_REQUESTED",
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELLED",
+        "TIMED_OUT"
+      ]
+    },
+    "ownerId": {
+      "type": "string"
+    },
+    "fencingToken": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "startedAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "completedAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "wallClockMs": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "traceId": {
+      "type": "string"
+    },
+    "checkpointRef": {
+      "$ref": "common.schema.json#/$defs/artifactRef"
+    }
+  }
+}
