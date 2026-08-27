@@ -342,10 +342,25 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
 
     @Override
     public int expireLeases(Duration gracePeriod) {
+        return expireLeases(null, gracePeriod);
+    }
+
+    @Override
+    public int expireLeases(UUID tenantId, Duration gracePeriod) {
         Duration grace = gracePeriod == null ? Duration.ZERO : gracePeriod;
         return transactions.execute(status -> {
-            List<ExpiredLease> expired = jdbc.sql("select tenant_id, work_item_id, attempt_id, worker_id, fencing_token from runtime.worker_leases where expires_at < now() - cast(:grace as interval) for update skip locked")
-                    .param("grace", grace.toSeconds() + " seconds").query((rs, row) -> new ExpiredLease(rs.getObject("tenant_id", UUID.class), rs.getObject("work_item_id", UUID.class), rs.getObject("attempt_id", UUID.class), rs.getObject("worker_id", UUID.class), rs.getLong("fencing_token"))).list();
+            if (tenantId != null) {
+                jdbc.sql("select set_config('app.tenant_id', :tenantId, true)")
+                        .param("tenantId", tenantId.toString()).query(String.class).single();
+            }
+            String leaseQuery = tenantId == null
+                    ? "select tenant_id, work_item_id, attempt_id, worker_id, fencing_token from runtime.worker_leases where expires_at < now() - cast(:grace as interval) for update skip locked"
+                    : "select tenant_id, work_item_id, attempt_id, worker_id, fencing_token from runtime.worker_leases where tenant_id = :tenantId and expires_at < now() - cast(:grace as interval) for update skip locked";
+            var leaseStatement = jdbc.sql(leaseQuery).param("grace", grace.toSeconds() + " seconds");
+            if (tenantId != null) {
+                leaseStatement = leaseStatement.param("tenantId", tenantId);
+            }
+            List<ExpiredLease> expired = leaseStatement.query((rs, row) -> new ExpiredLease(rs.getObject("tenant_id", UUID.class), rs.getObject("work_item_id", UUID.class), rs.getObject("attempt_id", UUID.class), rs.getObject("worker_id", UUID.class), rs.getLong("fencing_token"))).list();
             for (ExpiredLease lease : expired) {
                 jdbc.sql("update runtime.execution_attempts set status = 'LOST', completed_at = now(), error_code = 'LEASE_EXPIRED' where id = :attemptId and status in ('CREATED','RUNNING')")
                         .param("attemptId", lease.attemptId()).update();

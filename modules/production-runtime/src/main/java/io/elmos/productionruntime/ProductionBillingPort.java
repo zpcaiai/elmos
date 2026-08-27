@@ -19,5 +19,7 @@ public interface ProductionBillingPort {
     ModelCallReceipt beginModelCall(ProductionRuntimeModels.ModelCallRequest request);
     void markProviderAccepted(UUID tenantId, UUID modelCallId, String providerRequestId);
     void markProviderUnknown(UUID tenantId, UUID modelCallId, String providerStatus);
+    void completeModelCall(UUID tenantId, UUID modelCallId, String providerRequestId, UUID responseArtifactId);
+    void markProviderFailed(UUID tenantId, UUID modelCallId, String providerStatus);
     TopUpResult applyVerifiedTopUp(TopUpRequest request);
 }

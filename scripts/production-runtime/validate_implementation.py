@@ -23,6 +23,8 @@ REQUIRED_JAVA = {
     "ProductionRuntimeRecoveryService.java",
     "ProductionRuntimeSettlementReconciler.java",
     "TransactionalOutboxPublisher.java",
+    "ProductionModelProviderPort.java",
+    "ProductionModelCallExecutor.java",
 }
 
 
@@ -70,6 +72,9 @@ def main() -> int:
         for path in (chart / "Chart.yaml", chart / "values.yaml", chart / "templates/network-policy.yaml", chart / "templates/worker-statefulset.yaml"):
             if not path.is_file():
                 fail(f"deployment asset missing: {path}")
+        for path in (root / "scripts/production-runtime/run_local_harness.py", root / "scripts/production-runtime/run_pitr_drill.py", root / "scripts/production-runtime/verify_local_harness.py"):
+            if not path.is_file():
+                fail(f"local qualification harness asset missing: {path}")
         if "readOnlyRootFilesystem: true" not in (chart / "templates/worker-statefulset.yaml").read_text(encoding="utf-8"):
             fail("worker chart is not read-only")
         if "clusterIP: None" not in (chart / "templates/worker-statefulset.yaml").read_text(encoding="utf-8"):
@@ -80,6 +85,10 @@ def main() -> int:
             fail("scenario status must preserve all 20 scenarios and remain non-certified")
         if any(value.get("status") == "LOCAL_TEST_PASS" and not value.get("test") for value in scenarios.values()):
             fail("a local scenario result is missing its executable test binding")
+        for name in ("ChaosMatrix", "RedisLoss", "PITRRestore", "WorkerCrashCheckpointResume"):
+            value = scenarios.get(name)
+            if not isinstance(value, dict) or value.get("status") != "LOCAL_HARNESS_PASS" or not value.get("test"):
+                fail(f"local harness scenario is not qualified: {name}")
     except (OSError, ValueError) as exc:
         print(f"production-runtime implementation validation: FAIL: {exc}", file=sys.stderr)
         return 1

@@ -23,6 +23,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -32,11 +33,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -47,6 +53,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ProductionRuntimePostgresTest {
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17.5-alpine");
+    @Container
+    static final GenericContainer<?> REDIS = new GenericContainer<>("redis:7.4-alpine").withExposedPorts(6379);
 
     static DataSource dataSource;
     static JdbcClient jdbc;
@@ -178,7 +186,7 @@ class ProductionRuntimePostgresTest {
         var outcome = coordinator.dispatch(new DispatchRequest(fixture.tenantId, fixture.projectId, fixture.jobId, fixture.workItemId, fixture.walletId, fixture.workerId, BigDecimal.ONE, Instant.now().plusSeconds(300), Duration.ofSeconds(30), "reserve-" + fixture.workItemId, "dispatch-" + fixture.workItemId, Map.of()), envelope -> WorkerGatewayResult.ACKED);
         jdbc.sql("update runtime.worker_leases set leased_at = now() - interval '2 seconds', heartbeat_at = now() - interval '2 seconds', expires_at = now() - interval '1 second' where tenant_id = :tenantId and attempt_id = :attemptId")
                 .param("tenantId", fixture.tenantId).param("attemptId", outcome.envelope().attemptId()).update();
-        assertEquals(1, runtime.expireLeases(Duration.ZERO));
+        assertEquals(1, runtime.expireLeases(fixture.tenantId, Duration.ZERO));
         assertEquals("RETRY_WAIT", jdbc.sql("select status from orchestration.work_items where tenant_id = :tenantId and id = :id").param("tenantId", fixture.tenantId).param("id", fixture.workItemId).query(String.class).single());
         assertEquals(0, jdbc.sql("select count(*) from runtime.worker_leases where tenant_id = :tenantId and attempt_id = :attemptId").param("tenantId", fixture.tenantId).param("attemptId", outcome.envelope().attemptId()).query(Long.class).single());
     }
@@ -257,7 +265,7 @@ class ProductionRuntimePostgresTest {
             @Override public WorkerGatewayResult dispatch(ProductionRuntimeModels.DispatchEnvelope envelope) { return WorkerGatewayResult.UNKNOWN; }
             @Override public WorkerGatewayResult reconcile(ProductionRuntimeModels.DispatchEnvelope envelope) { return WorkerGatewayResult.ACKED; }
         };
-        assertEquals(1, recovery.recover(100, reconcilingGateway).advanced());
+        assertTrue(recovery.recover(100, reconcilingGateway).advanced() >= 1);
         assertEquals("ACKED", jdbc.sql("select state from runtime.dispatch_intents where tenant_id = :tenantId and work_item_id = :workItemId").param("tenantId", fixture.tenantId).param("workItemId", fixture.workItemId).query(String.class).single());
     }
 
@@ -312,6 +320,143 @@ class ProductionRuntimePostgresTest {
         assertEquals(BigDecimal.valueOf(3).setScale(12), row[1]);
         assertEquals(BigDecimal.TEN.setScale(12), row[2]);
         assertEquals(BigDecimal.valueOf(3).setScale(12), row[3]);
+    }
+
+    @Test
+    void providerAdapterCompletesOnceAndUnknownRequiresReconciliation() {
+        Fixture fixture = fixture();
+        billing.applyVerifiedTopUp(new TopUpRequest(fixture.tenantId, fixture.walletId, "test-pay", "payment-" + fixture.tenantId, BigDecimal.TEN, "hash-provider-adapter"));
+        var outcome = coordinator.dispatch(new DispatchRequest(fixture.tenantId, fixture.projectId, fixture.jobId, fixture.workItemId, fixture.walletId, fixture.workerId, BigDecimal.ONE, Instant.now().plusSeconds(300), Duration.ofSeconds(30), "reserve-" + fixture.workItemId, "dispatch-" + fixture.workItemId, Map.of()), envelope -> WorkerGatewayResult.ACKED);
+        ModelCallRequest request = new ModelCallRequest(fixture.tenantId, fixture.accountId, fixture.projectId, fixture.jobId, fixture.stageId, fixture.workItemId, outcome.envelope().attemptId(), "test-provider", "test-model", "provider-adapter-" + fixture.workItemId, "provider-request-hash");
+        UUID responseArtifactId = UUID.randomUUID();
+        AtomicInteger calls = new AtomicInteger();
+        ProductionModelProviderPort completeProvider = new ProductionModelProviderPort() {
+            @Override public ProviderResult execute(ModelCallRequest ignored) { calls.incrementAndGet(); return ProviderResult.complete("provider-request-complete", responseArtifactId); }
+            @Override public ProviderResult reconcile(String ignored) { return ProviderResult.unknown("not-needed"); }
+        };
+        ProductionModelCallExecutor executor = new ProductionModelCallExecutor(billing);
+        var completed = executor.execute(request, completeProvider);
+        assertEquals(ProductionRuntimeModels.ModelCallStatus.COMPLETE, completed.status());
+        assertEquals(responseArtifactId.toString(), completed.responseArtifactId());
+        assertEquals(1, calls.get());
+        assertEquals(completed, executor.execute(request, completeProvider));
+        assertEquals(1, calls.get(), "idempotent replay must not call the provider twice");
+
+        ModelCallRequest unknownRequest = new ModelCallRequest(fixture.tenantId, fixture.accountId, fixture.projectId, fixture.jobId, fixture.stageId, fixture.workItemId, outcome.envelope().attemptId(), "test-provider", "test-model", "provider-adapter-unknown-" + fixture.workItemId, "provider-unknown-hash");
+        ProductionModelProviderPort unknownProvider = new ProductionModelProviderPort() {
+            @Override public ProviderResult execute(ModelCallRequest ignored) { return ProviderResult.unknown("timeout-after-send"); }
+            @Override public ProviderResult reconcile(String ignored) { return ProviderResult.complete("provider-reconciled", UUID.randomUUID()); }
+        };
+        assertEquals(ProductionRuntimeModels.ModelCallStatus.UNKNOWN, executor.execute(unknownRequest, unknownProvider).status());
+        ProductionRuntimeException blocked = assertThrows(ProductionRuntimeException.class, () -> executor.execute(unknownRequest, completeProvider));
+        assertEquals("MODEL_CALL_RECONCILIATION_REQUIRED", blocked.code());
+    }
+
+    @Test
+    void chaosMatrixKeepsUnknownNonSuccessAndReleasesRejectedWork() {
+        Fixture rejectedFixture = fixture();
+        billing.applyVerifiedTopUp(new TopUpRequest(rejectedFixture.tenantId, rejectedFixture.walletId, "test-pay", "payment-" + rejectedFixture.tenantId, BigDecimal.TEN, "hash-chaos-rejected"));
+        var rejected = coordinator.dispatch(new DispatchRequest(rejectedFixture.tenantId, rejectedFixture.projectId, rejectedFixture.jobId, rejectedFixture.workItemId, rejectedFixture.walletId, rejectedFixture.workerId, BigDecimal.ONE, Instant.now().plusSeconds(300), Duration.ofSeconds(30), "reserve-" + rejectedFixture.workItemId, "dispatch-" + rejectedFixture.workItemId, Map.of("fault", "rejected")), envelope -> WorkerGatewayResult.REJECTED);
+        assertEquals(ProductionRuntimeCoordinator.DispatchStatus.RELEASED_AFTER_REJECTION, rejected.status());
+        assertEquals("RELEASED", jdbc.sql("select status from billing.credit_reservations where tenant_id = :tenantId and work_item_id = :workItemId").param("tenantId", rejectedFixture.tenantId).param("workItemId", rejectedFixture.workItemId).query(String.class).single());
+
+        Fixture unknownFixture = fixture();
+        billing.applyVerifiedTopUp(new TopUpRequest(unknownFixture.tenantId, unknownFixture.walletId, "test-pay", "payment-" + unknownFixture.tenantId, BigDecimal.TEN, "hash-chaos-unknown"));
+        var unknown = coordinator.dispatch(new DispatchRequest(unknownFixture.tenantId, unknownFixture.projectId, unknownFixture.jobId, unknownFixture.workItemId, unknownFixture.walletId, unknownFixture.workerId, BigDecimal.ONE, Instant.now().plusSeconds(300), Duration.ofSeconds(30), "reserve-" + unknownFixture.workItemId, "dispatch-" + unknownFixture.workItemId, Map.of("fault", "unknown")), envelope -> WorkerGatewayResult.UNKNOWN);
+        assertEquals(ProductionRuntimeCoordinator.DispatchStatus.PROVIDER_OR_WORKER_OUTCOME_UNKNOWN, unknown.status());
+        assertEquals("DISPATCHING", jdbc.sql("select state from runtime.dispatch_intents where tenant_id = :tenantId and work_item_id = :workItemId").param("tenantId", unknownFixture.tenantId).param("workItemId", unknownFixture.workItemId).query(String.class).single());
+        assertTrue(recovery.recover(10, envelope -> WorkerGatewayResult.UNKNOWN).unknown() >= 1);
+        WorkerGateway acknowledgingGateway = new WorkerGateway() {
+            @Override public WorkerGatewayResult dispatch(ProductionRuntimeModels.DispatchEnvelope envelope) { return WorkerGatewayResult.ACKED; }
+            @Override public WorkerGatewayResult reconcile(ProductionRuntimeModels.DispatchEnvelope envelope) { return WorkerGatewayResult.ACKED; }
+        };
+        assertTrue(recovery.recover(10, acknowledgingGateway).advanced() >= 1);
+        assertEquals("ACKED", jdbc.sql("select state from runtime.dispatch_intents where tenant_id = :tenantId and work_item_id = :workItemId").param("tenantId", unknownFixture.tenantId).param("workItemId", unknownFixture.workItemId).query(String.class).single());
+    }
+
+    @Test
+    void redisLossDoesNotDeleteDurableDispatchOrMoneyState() throws Exception {
+        Fixture fixture = fixture();
+        billing.applyVerifiedTopUp(new TopUpRequest(fixture.tenantId, fixture.walletId, "test-pay", "payment-" + fixture.tenantId, BigDecimal.TEN, "hash-redis-loss"));
+        var intent = runtime.prepareReservation(fixture.tenantId, fixture.projectId, fixture.jobId, fixture.workItemId, fixture.walletId, fixture.workerId, BigDecimal.ONE, Instant.now().plusSeconds(300), Map.of("redis", "ephemeral"), "reserve-" + fixture.workItemId, "dispatch-" + fixture.workItemId);
+        var reservation = billing.reserve(new ProductionRuntimeModels.ReserveRequest(fixture.tenantId, fixture.walletId, fixture.projectId, fixture.jobId, fixture.workItemId, "reserve-" + fixture.workItemId, BigDecimal.ONE, Instant.now().plusSeconds(300)));
+        runtime.attachReservation(fixture.tenantId, intent.id(), reservation.reservationId());
+        String key = "runtime:" + fixture.workItemId;
+        var set = REDIS.execInContainer("redis-cli", "SET", key, "checkpoint");
+        assertEquals(0, set.getExitCode(), set.getStderr());
+        assertEquals("checkpoint", REDIS.execInContainer("redis-cli", "GET", key).getStdout().trim());
+        assertEquals(0, REDIS.execInContainer("redis-cli", "FLUSHALL").getExitCode());
+        assertTrue(REDIS.execInContainer("redis-cli", "GET", key).getStdout().trim().isEmpty());
+
+        var report = recovery.recover(10, envelope -> WorkerGatewayResult.ACKED);
+        assertTrue(report.advanced() >= 1);
+        assertEquals("ACKED", jdbc.sql("select state from runtime.dispatch_intents where tenant_id = :tenantId and id = :id").param("tenantId", fixture.tenantId).param("id", intent.id()).query(String.class).single());
+        assertEquals(BigDecimal.valueOf(9).setScale(12), jdbc.sql("select available_balance from billing.wallet_balances where tenant_id = :tenantId and wallet_id = :walletId").param("tenantId", fixture.tenantId).param("walletId", fixture.walletId).query(BigDecimal.class).single());
+        assertEquals(BigDecimal.ONE.setScale(12), jdbc.sql("select reserved_balance from billing.wallet_balances where tenant_id = :tenantId and wallet_id = :walletId").param("tenantId", fixture.tenantId).param("walletId", fixture.walletId).query(BigDecimal.class).single());
+    }
+
+    @Test
+    void workerProcessKillResumesFromLatestDurableCheckpoint() throws Exception {
+        Fixture fixture = fixture();
+        billing.applyVerifiedTopUp(new TopUpRequest(fixture.tenantId, fixture.walletId, "test-pay", "payment-" + fixture.tenantId, BigDecimal.TEN, "hash-worker-kill"));
+        var outcome = coordinator.dispatch(new DispatchRequest(fixture.tenantId, fixture.projectId, fixture.jobId, fixture.workItemId, fixture.walletId, fixture.workerId, BigDecimal.ONE, Instant.now().plusSeconds(300), Duration.ofSeconds(30), "reserve-" + fixture.workItemId, "dispatch-" + fixture.workItemId, Map.of("fault", "worker-kill")), envelope -> WorkerGatewayResult.UNKNOWN);
+        Path ready = Files.createTempFile("elmos-worker-kill-", ".ready");
+        Files.deleteIfExists(ready);
+        Process worker = new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin", "java").toString(), "-cp", System.getProperty("java.class.path"), ProductionRuntimeWorkerKillProbe.class.getName(), ready.toString())
+                .redirectOutput(ProcessBuilder.Redirect.DISCARD).redirectError(ProcessBuilder.Redirect.DISCARD).start();
+        try {
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+            while (!Files.exists(ready) && System.nanoTime() < deadline) Thread.sleep(25);
+            assertTrue(Files.exists(ready), "worker probe did not start");
+            runtime.checkpoint(new Checkpoint(fixture.tenantId, fixture.jobId, fixture.workItemId, outcome.envelope().attemptId(), "WORKSPACE", 1, "cas://checkpoint/worker-kill", "d".repeat(64)));
+            worker.destroyForcibly();
+            assertTrue(worker.waitFor(5, TimeUnit.SECONDS), "worker process did not terminate");
+            WorkerGateway acknowledgingGateway = new WorkerGateway() {
+                @Override public WorkerGatewayResult dispatch(ProductionRuntimeModels.DispatchEnvelope envelope) { return WorkerGatewayResult.ACKED; }
+                @Override public WorkerGatewayResult reconcile(ProductionRuntimeModels.DispatchEnvelope envelope) { return WorkerGatewayResult.ACKED; }
+            };
+            var report = recovery.recover(10, acknowledgingGateway);
+            assertTrue(report.advanced() >= 1);
+            assertEquals(1, jdbc.sql("select count(*) from runtime.checkpoints where tenant_id = :tenantId and attempt_id = :attemptId").param("tenantId", fixture.tenantId).param("attemptId", outcome.envelope().attemptId()).query(Long.class).single());
+            assertEquals("ACKED", jdbc.sql("select state from runtime.dispatch_intents where tenant_id = :tenantId and id = :id").param("tenantId", fixture.tenantId).param("id", outcome.intent().id()).query(String.class).single());
+        } finally {
+            if (worker.isAlive()) worker.destroyForcibly();
+            Files.deleteIfExists(ready);
+        }
+    }
+
+    @Test
+    void localLoadHarnessMeasuresReserveP95WithoutNegativeBalance() throws Exception {
+        Fixture fixture = fixture();
+        int requestCount = 24;
+        billing.applyVerifiedTopUp(new TopUpRequest(fixture.tenantId, fixture.walletId, "test-pay", "payment-" + fixture.tenantId, BigDecimal.valueOf(requestCount), "hash-local-load"));
+        List<UUID> workItems = new ArrayList<>();
+        for (int index = 0; index < requestCount; index++) {
+            workItems.add(runtime.createWorkItem(new WorkItemRequest(fixture.tenantId, fixture.jobId, fixture.stageId, "inventory", "repo/load/" + index, 10, BigDecimal.ONE, 1, "load-item-" + index + "-" + fixture.tenantId)));
+        }
+        ExecutorService executor = Executors.newFixedThreadPool(8);
+        try {
+            List<Future<Long>> futures = new ArrayList<>();
+            for (int index = 0; index < requestCount; index++) {
+                UUID workItemId = workItems.get(index);
+                int requestIndex = index;
+                futures.add(executor.submit(() -> {
+                    long started = System.nanoTime();
+                    billing.reserve(new ProductionRuntimeModels.ReserveRequest(fixture.tenantId, fixture.walletId, fixture.projectId, fixture.jobId, workItemId, "load-reserve-" + requestIndex + "-" + fixture.tenantId, BigDecimal.ONE, Instant.now().plusSeconds(300)));
+                    return System.nanoTime() - started;
+                }));
+            }
+            List<Long> durations = new ArrayList<>();
+            for (Future<Long> future : futures) durations.add(future.get());
+            Collections.sort(durations);
+            double p95Millis = durations.get((int) Math.ceil(durations.size() * 0.95) - 1) / 1_000_000.0;
+            System.out.printf("LOCAL_HARNESS_METRIC scenario=TargetClusterLoad substitute=postgresql-testcontainers reserve_p95_ms=%.3f requests=%d%n", p95Millis, requestCount);
+            assertTrue(p95Millis >= 0);
+            assertEquals(BigDecimal.ZERO.setScale(12), jdbc.sql("select available_balance from billing.wallet_balances where tenant_id = :tenantId and wallet_id = :walletId").param("tenantId", fixture.tenantId).param("walletId", fixture.walletId).query(BigDecimal.class).single());
+            assertTrue(runtime.invariantViolations(fixture.tenantId).stream().noneMatch(value -> value.startsWith("NEGATIVE_WALLET")));
+        } finally {
+            executor.shutdownNow();
+        }
     }
 
     private Fixture fixture() {

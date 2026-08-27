@@ -23,6 +23,8 @@ public final class ProductionRuntimeScheduler {
 
     public int expireLeases(Duration gracePeriod) { return store.expireLeases(gracePeriod); }
 
+    public int expireLeases(UUID tenantId, Duration gracePeriod) { return store.expireLeases(tenantId, gracePeriod); }
+
     public int resumeAfterTopUp(UUID tenantId, int limit) { return store.resumeCreditWaiting(tenantId, limit); }
 
     public ProgressSnapshot rebuildProgress(UUID tenantId, UUID jobId) { return store.rebuildProgress(tenantId, jobId); }

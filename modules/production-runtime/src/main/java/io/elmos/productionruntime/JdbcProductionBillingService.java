@@ -290,6 +290,33 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
     }
 
     @Override
+    public void completeModelCall(UUID tenantId, UUID modelCallId, String providerRequestId, UUID responseArtifactId) {
+        inTenant(tenantId, () -> {
+            if (providerRequestId == null || providerRequestId.isBlank() || responseArtifactId == null) {
+                throw new IllegalArgumentException("provider completion requires request and artifact ids");
+            }
+            int updated = jdbc.sql("update ai_usage.model_calls set status = 'COMPLETE', provider_request_id = :providerRequestId, completed_at = now() where tenant_id = :tenantId and id = :id and status in ('CREATED','PROVIDER_ACCEPTED','RUNNING','UNKNOWN')")
+                    .param("tenantId", tenantId).param("id", modelCallId).param("providerRequestId", providerRequestId).update();
+            if (updated != 1) throw new ProductionRuntimeException("MODEL_CALL_STATE_CONFLICT", "model call is not ready for provider completion");
+            jdbc.sql("update ai_usage.model_call_receipts set receipt_state = 'COMPLETE', provider_request_id = :providerRequestId, response_artifact_id = :artifactId, updated_at = now() where tenant_id = :tenantId and model_call_id = :id")
+                    .param("tenantId", tenantId).param("id", modelCallId).param("providerRequestId", providerRequestId).param("artifactId", responseArtifactId).update();
+            return null;
+        });
+    }
+
+    @Override
+    public void markProviderFailed(UUID tenantId, UUID modelCallId, String providerStatus) {
+        inTenant(tenantId, () -> {
+            int updated = jdbc.sql("update ai_usage.model_calls set status = 'FAILED', completed_at = now() where tenant_id = :tenantId and id = :id and status in ('CREATED','PROVIDER_ACCEPTED','RUNNING','UNKNOWN')")
+                    .param("tenantId", tenantId).param("id", modelCallId).update();
+            if (updated != 1) throw new ProductionRuntimeException("MODEL_CALL_STATE_CONFLICT", "model call is not ready for provider failure");
+            jdbc.sql("update ai_usage.model_call_receipts set receipt_state = 'FAILED', last_provider_status = :status, updated_at = now() where tenant_id = :tenantId and model_call_id = :id")
+                    .param("tenantId", tenantId).param("id", modelCallId).param("status", boundedReason(providerStatus)).update();
+            return null;
+        });
+    }
+
+    @Override
     public TopUpResult applyVerifiedTopUp(TopUpRequest request) {
         return inTenant(request.tenantId(), () -> {
             String key = request.provider() + ":" + request.providerPaymentId();

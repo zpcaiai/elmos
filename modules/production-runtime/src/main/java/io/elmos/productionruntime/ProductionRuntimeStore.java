@@ -42,6 +42,7 @@ public interface ProductionRuntimeStore {
     Optional<UUID> activeReservationForWorkItem(UUID tenantId, UUID workItemId);
     int resumeCreditWaiting(UUID tenantId, int limit);
     int expireLeases(Duration gracePeriod);
+    int expireLeases(UUID tenantId, Duration gracePeriod);
     int abortDispatch(UUID tenantId, UUID dispatchIntentId, String reason);
     List<DispatchIntent> recoveryCandidates(int limit);
     List<ReadyWorkItem> selectFairReady(int limit);
