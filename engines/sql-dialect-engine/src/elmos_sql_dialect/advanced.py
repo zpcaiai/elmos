@@ -11,6 +11,7 @@ typed blockers.
 from __future__ import annotations
 
 from collections.abc import Mapping
+from typing import Protocol
 
 import sqlglot
 from sqlglot import exp
@@ -19,6 +20,7 @@ from .dialects import check_operator_sql, render_type
 from .emitter import CommentColumnCatalogLike, _object_name, _render_check_expression, _render_column
 from .identifiers import quote_identifier
 from .models import (
+    CanonicalTypeRef,
     CheckBooleanExpression,
     CheckComparison,
     CheckConnector,
@@ -55,6 +57,40 @@ from .parser import (
     _require_single_statement,
 )
 from .routine import _parse_value, _routine_name
+
+
+class RoutineIdentityCatalogLike(Protocol):
+    """Minimal catalog contract for signature-sensitive target routes."""
+
+    def has_unique_routine(
+        self,
+        kind: str,
+        schema: str | None,
+        name: str,
+        parameter_types: tuple[CanonicalTypeRef, ...],
+    ) -> bool: ...
+
+
+def _routine_argument_type_refs(
+    routine: exp.UserDefinedFunction | exp.Anonymous,
+    source_dialect: Dialect,
+) -> tuple[CanonicalTypeRef, ...]:
+    """Best-effort typed parsing for a privilege/comment routine signature.
+
+    The legacy string tuple remains in the public IR for source rendering.
+    This parallel typed tuple is populated only when every argument can be
+    represented by the canonical type model; an unknown type intentionally
+    disables catalog-gated lowering instead of being guessed.
+    """
+
+    refs: list[CanonicalTypeRef] = []
+    try:
+        for item in routine.expressions:
+            name = _plain_identifier(item, "routine argument type")
+            refs.append(_parse_type(exp.DataType.build(name, dialect=source_dialect.value), source_dialect))
+    except (DialectError, TypeError, ValueError):
+        return ()
+    return tuple(refs)
 
 
 def _create_statement(sql: str | exp.Expression, source_dialect: Dialect) -> exp.Create:
@@ -191,6 +227,7 @@ def parse_comment(
             str(value.this),
             schema=schema,
             routine_argument_types=argument_types,
+            routine_argument_type_refs=_routine_argument_type_refs(target, source_dialect),
         )
     if kind == "CONSTRAINT":
         target = statement.this
@@ -375,6 +412,7 @@ def parse_privilege(
             schema=schema,
             grant_option=bool(statement.args.get("grant_option")),
             routine_argument_types=argument_types,
+            routine_argument_type_refs=_routine_argument_type_refs(routine, source_dialect),
         )
     _require(
         object_kind == "TABLE",
@@ -895,6 +933,7 @@ def emit_comment(
     comment: Comment,
     target_dialect: Dialect,
     catalog: CommentColumnCatalogLike | None = None,
+    routine_catalog: RoutineIdentityCatalogLike | None = None,
 ) -> str:
     def tsql_literal(value: str) -> str:
         return "N'" + value.replace(chr(39), chr(39) * 2) + "'"
@@ -919,13 +958,30 @@ def emit_comment(
         return f"COMMENT ON CONSTRAINT {comment.object_name} ON {table} IS '{escaped}'"
 
     if comment.object_kind is CommentObjectKind.FUNCTION:
-        if target_dialect in (Dialect.MYSQL, Dialect.ORACLE):
+        if target_dialect is Dialect.ORACLE:
             raise DialectError(
                 "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
                 f"{target_dialect.value} has no standalone COMMENT ON FUNCTION metadata route",
             )
         qualified = _object_name(comment.schema, comment.object_name, target_dialect)
         signature = ", ".join(quote_identifier(item, target_dialect) for item in comment.routine_argument_types)
+        if target_dialect is Dialect.MYSQL:
+            if routine_catalog is None or not comment.routine_argument_type_refs:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED",
+                    "MySQL function comments require a catalog proof of one exact target routine identity",
+                )
+            if not routine_catalog.has_unique_routine(
+                "FUNCTION",
+                comment.schema,
+                comment.object_name,
+                comment.routine_argument_type_refs,
+            ):
+                raise DialectError(
+                    "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED",
+                    "source catalog cannot prove one exact routine identity for the MySQL function comment",
+                )
+            return f"ALTER FUNCTION {qualified} COMMENT '{escaped}'"
         if target_dialect is Dialect.TSQL:
             if comment.schema is None:
                 raise DialectError(
@@ -1014,7 +1070,11 @@ def emit_comment(
     return f"COMMENT ON {target} IS '{escaped}'"
 
 
-def emit_privilege(privilege: Privilege, target_dialect: Dialect) -> str:
+def emit_privilege(
+    privilege: Privilege,
+    target_dialect: Dialect,
+    routine_catalog: RoutineIdentityCatalogLike | None = None,
+) -> str:
     if privilege.grant_option:
         raise DialectError(
             "CERTIFIED_PRIVILEGE_GRANT_OPTION_UNSUPPORTED",
@@ -1029,11 +1089,33 @@ def emit_privilege(privilege: Privilege, target_dialect: Dialect) -> str:
                 f"{privilege.object_kind} {target}({', '.join(privilege.routine_argument_types)})"
             )
         else:
-            raise DialectError(
-                "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
-                f"{target_dialect.value} routine privileges cannot safely drop the source "
-                "signature without a target routine-identity catalogue",
-            )
+            if routine_catalog is None or not privilege.routine_argument_type_refs:
+                raise DialectError(
+                    "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
+                    f"{target_dialect.value} routine privileges cannot safely drop the source "
+                    "signature without a target routine-identity catalogue",
+                )
+            if not routine_catalog.has_unique_routine(
+                privilege.object_kind,
+                privilege.schema,
+                privilege.object_name,
+                privilege.routine_argument_type_refs,
+            ):
+                raise DialectError(
+                    "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
+                    f"source catalog cannot prove one exact {target_dialect.value} routine identity",
+                )
+            if target_dialect is Dialect.MYSQL:
+                if any(principal.casefold() == "public" for principal in privilege.principals):
+                    raise DialectError(
+                        "CERTIFIED_PRIVILEGE_PRINCIPAL_UNSUPPORTED_BY_TARGET",
+                        "MySQL has no PUBLIC grantee with PostgreSQL's all-account semantics",
+                    )
+                object_clause = f"{privilege.object_kind} {target}"
+            elif target_dialect is Dialect.TSQL:
+                object_clause = f"OBJECT::{target}"
+            else:
+                object_clause = target
     else:
         target = _object_name(privilege.schema, privilege.object_name, target_dialect)
         if target_dialect is Dialect.TSQL:

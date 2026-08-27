@@ -6,7 +6,14 @@ import json
 
 import pytest
 
-from elmos_sql_dialect.advanced import emit_comment, emit_trigger, parse_comment, parse_trigger
+from elmos_sql_dialect.advanced import (
+    emit_comment,
+    emit_privilege,
+    emit_trigger,
+    parse_comment,
+    parse_privilege,
+    parse_trigger,
+)
 from elmos_sql_dialect.capabilities import target_capability_matrix
 from elmos_sql_dialect.emitter import emit_create_index, emit_row_security
 from elmos_sql_dialect.engine import translate_ddl
@@ -194,6 +201,56 @@ def test_postgres_role_comment_is_typed_without_cross_target_fallback() -> None:
     )
     assert report["status"] == "BLOCKED", report
     assert report["reasonCode"] == "CERTIFIED_COMMENT_TARGET_UNSUPPORTED"
+
+
+def test_routine_identity_catalog_gates_signatureless_target_routes() -> None:
+    catalog = SourceSchemaCatalog()
+    statements = _parse_source_statements(
+        "CREATE FUNCTION public.audit_row(p_id INT) RETURNS INT LANGUAGE sql AS $$ SELECT p_id $$;",
+        Dialect.POSTGRES,
+    )
+    assert len(statements) == 1
+    _record_catalog_statement(catalog, statements[0], Dialect.POSTGRES, {"public": "dbo"})
+
+    privilege = parse_privilege(
+        "REVOKE EXECUTE ON FUNCTION public.audit_row(integer) FROM PUBLIC",
+        Dialect.POSTGRES,
+        {"public": "dbo"},
+    )
+    assert privilege.routine_argument_type_refs
+    assert emit_privilege(privilege, Dialect.ORACLE, catalog) == "REVOKE EXECUTE ON dbo.audit_row FROM PUBLIC"
+    assert emit_privilege(privilege, Dialect.TSQL, catalog) == (
+        "REVOKE EXECUTE ON OBJECT::dbo.audit_row FROM PUBLIC"
+    )
+    with pytest.raises(DialectError, match="CERTIFIED_PRIVILEGE_PRINCIPAL_UNSUPPORTED_BY_TARGET"):
+        emit_privilege(privilege, Dialect.MYSQL, catalog)
+
+    comment = parse_comment(
+        "COMMENT ON FUNCTION public.audit_row(integer) IS 'audit row'",
+        Dialect.POSTGRES,
+        {"public": "dbo"},
+    )
+    assert emit_comment(comment, Dialect.MYSQL, routine_catalog=catalog) == (
+        "ALTER FUNCTION dbo.audit_row COMMENT 'audit row'"
+    )
+
+
+def test_routine_identity_catalog_refuses_ambiguous_overloads() -> None:
+    catalog = SourceSchemaCatalog()
+    for sql in (
+        "CREATE FUNCTION public.f(p INT) RETURNS INT LANGUAGE sql AS $$ SELECT p $$",
+        "CREATE FUNCTION public.f(p BIGINT) RETURNS INT LANGUAGE sql AS $$ SELECT 1 $$",
+    ):
+        statements = _parse_source_statements(sql, Dialect.POSTGRES)
+        assert len(statements) == 1
+        _record_catalog_statement(catalog, statements[0], Dialect.POSTGRES, {"public": "dbo"})
+    privilege = parse_privilege(
+        "REVOKE EXECUTE ON FUNCTION public.f(integer) FROM PUBLIC",
+        Dialect.POSTGRES,
+        {"public": "dbo"},
+    )
+    with pytest.raises(DialectError, match="CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED"):
+        emit_privilege(privilege, Dialect.ORACLE, catalog)
 
 
 @pytest.mark.parametrize(

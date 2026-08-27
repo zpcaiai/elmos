@@ -39,6 +39,7 @@ from .models import (
     RoutineCharCode,
     RoutineFunction,
     RoutineFunctionCall,
+    RoutineIdentity,
     RoutineKind,
     RoutineLanguage,
     RoutineLiteral,
@@ -92,6 +93,58 @@ def _routine_name(
         schema = target_schema
     name = _plain_identifier(node.this, "routine name")
     return schema, name
+
+
+def parse_routine_identity(
+    sql: str | exp.Expression,
+    source_dialect: Dialect,
+    namespace_map: Mapping[str, str] | None = None,
+) -> RoutineIdentity:
+    """Parse only the typed identity of a routine for catalog evidence.
+
+    The body, security context and return contract are intentionally not
+    interpreted here.  This helper is used when a routine itself is outside
+    the portable execution route but a later GRANT/REVOKE or metadata
+    statement needs proof that its target identity is unique.  Unsupported
+    parameter types fail closed instead of becoming an untyped signature.
+    """
+
+    statement = sql if isinstance(sql, exp.Expression) else _require_single_statement(sql, source_dialect)
+    _require(
+        isinstance(statement, exp.Create),
+        "CERTIFIED_ROUTINE_IDENTITY_UNSUPPORTED",
+        "routine identity requires one CREATE FUNCTION or CREATE PROCEDURE statement",
+    )
+    assert isinstance(statement, exp.Create)
+    kind_name = str(statement.args.get("kind", "")).upper()
+    _require(
+        kind_name in {RoutineKind.FUNCTION.value, RoutineKind.PROCEDURE.value},
+        "CERTIFIED_ROUTINE_IDENTITY_UNSUPPORTED",
+        "routine identity requires CREATE FUNCTION or CREATE PROCEDURE",
+    )
+    _require(
+        isinstance(statement.this, exp.UserDefinedFunction),
+        "CERTIFIED_ROUTINE_IDENTITY_UNSUPPORTED",
+        "routine identity signature is malformed",
+    )
+    assert isinstance(statement.this, exp.UserDefinedFunction)
+    schema, name = _routine_name(statement.this.this, namespace_map)
+    parameter_types: list[CanonicalTypeRef] = []
+    for item in statement.this.expressions:
+        _require(
+            isinstance(item, exp.ColumnDef) and isinstance(item.kind, exp.DataType),
+            "CERTIFIED_ROUTINE_IDENTITY_UNSUPPORTED",
+            "routine identity parameters must carry typed declarations",
+        )
+        assert isinstance(item, exp.ColumnDef)
+        assert isinstance(item.kind, exp.DataType)
+        parameter_types.append(_parse_type(item.kind, source_dialect))
+    return RoutineIdentity(
+        kind=RoutineKind(kind_name),
+        name=name,
+        parameter_types=tuple(parameter_types),
+        schema=schema,
+    )
 
 
 def _property_language(prop: exp.Expression) -> RoutineLanguage:

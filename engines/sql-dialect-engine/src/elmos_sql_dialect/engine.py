@@ -14,6 +14,7 @@ from typing import Any, cast
 
 from . import emitter, parser
 from .advanced import (
+    RoutineIdentityCatalogLike,
     emit_comment,
     emit_privilege,
     emit_procedure,
@@ -52,6 +53,7 @@ def translate_ddl(
     namespace_profile: NamespaceProfile | None = None,
     catalog: emitter.ColumnCatalogLike | None = None,
     comment_catalog: emitter.CommentColumnCatalogLike | None = None,
+    routine_catalog: RoutineIdentityCatalogLike | None = None,
 ) -> dict[str, Any]:
     """Translate one statement from `source_dialect` to `target_dialect`.
 
@@ -81,6 +83,10 @@ def translate_ddl(
     column comments. MySQL's MODIFY COLUMN form must repeat the complete
     type/nullability/default/identity definition; a type-only catalogue is
     deliberately insufficient and remains blocked.
+
+    ``routine_catalog`` is optional typed source identity evidence for target
+    systems whose routine privilege/comment syntax omits PostgreSQL's
+    overloaded signature.  Missing or ambiguous evidence remains blocked.
     """
     source = _resolve_dialect(source_dialect)
     target = _resolve_dialect(target_dialect)
@@ -177,9 +183,14 @@ def translate_ddl(
         elif statement_kind == "VIEW":
             emitted = emit_view(parse_create_view(sql, source, active_namespace_map), target)
         elif statement_kind == "COMMENT":
-            emitted = emit_comment(parse_comment(sql, source, active_namespace_map), target, comment_catalog)
+            emitted = emit_comment(
+                parse_comment(sql, source, active_namespace_map),
+                target,
+                comment_catalog,
+                routine_catalog,
+            )
         elif statement_kind in ("GRANT", "REVOKE"):
-            emitted = emit_privilege(parse_privilege(sql, source, active_namespace_map), target)
+            emitted = emit_privilege(parse_privilege(sql, source, active_namespace_map), target, routine_catalog)
         elif statement_kind == "POLICY":
             parse_row_policy(sql, source)
             raise AssertionError("parse_row_policy is a permanent fail-closed route")  # pragma: no cover

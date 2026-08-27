@@ -88,7 +88,14 @@ def target_capability_matrix() -> list[dict[str, object]]:
             "comment_metadata",
             (Dialect.POSTGRES.value, Dialect.MYSQL.value, Dialect.TSQL.value),
             (Dialect.ORACLE.value,),
-            "object scope and required source type/catalogue evidence must be retained",
+            "object scope and required source type/catalogue evidence must be retained; "
+            "MySQL function comments require a unique typed routine identity",
+        ),
+        TargetCapability(
+            "signatureless_routine_metadata",
+            (Dialect.MYSQL.value, Dialect.ORACLE.value, Dialect.TSQL.value),
+            (),
+            "routine signatures may be omitted only after the source catalog proves one exact overload",
         ),
         TargetCapability(
             "mysql_text_prefix_index",

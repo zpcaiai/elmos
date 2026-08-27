@@ -1133,6 +1133,22 @@ class RoutineFunction(str, Enum):
 
 
 @dataclass(frozen=True)
+class RoutineIdentity:
+    """Typed routine identity used by catalog-gated metadata routes.
+
+    A target may omit a PostgreSQL-style routine signature only when the
+    source catalog proves that exactly one routine with this name, namespace,
+    kind and canonical parameter-type tuple exists.  This is identity
+    evidence, not a fallback that erases overload semantics.
+    """
+
+    kind: RoutineKind
+    name: str
+    parameter_types: tuple[CanonicalTypeRef, ...]
+    schema: str | None = None
+
+
+@dataclass(frozen=True)
 class RoutineLiteral:
     value: str
     is_string: bool = False
@@ -1336,6 +1352,7 @@ class Comment:
     schema: str | None = None
     table_schema: str | None = None
     routine_argument_types: tuple[str, ...] = ()
+    routine_argument_type_refs: tuple[CanonicalTypeRef, ...] = ()
 
 
 class PrivilegeAction(str, Enum):
@@ -1353,6 +1370,7 @@ class Privilege:
     schema: str | None = None
     grant_option: bool = False
     routine_argument_types: tuple[str, ...] = ()
+    routine_argument_type_refs: tuple[CanonicalTypeRef, ...] = ()
 
 
 class TriggerTiming(str, Enum):

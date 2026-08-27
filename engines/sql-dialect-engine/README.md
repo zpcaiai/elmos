@@ -65,12 +65,16 @@ remain `0`, external execution remains `NOT_RUN`, and certification remains
 
 The source-side number is not the same as target reachability. Replaying every
 admitted candidate through all four target emitters with that explicit profile
-gives **397/1255 = 31.6%** strict four-target intersection. Per-target route
-counts are PostgreSQL **1258**, MySQL **415**, Oracle **407**, and SQL Server
-**471** (route rates 100.0%, 33.0%, 32.4%, and 37.4%). The profile digest is
-recorded in both scanner and reachability reports, so namespace mappings cannot
-silently drift. These are emitter reachability upper bounds, not live-database
-execution or certification.
+gives **397/1258 = 31.6%** strict four-target intersection. The optimal strategy
+under the fail-closed constraints is a target-specific route portfolio, not a
+forced common denominator: PostgreSQL is the source-native route at **1258**,
+followed by SQL Server at **482**, MySQL at **426**, and Oracle at **418**
+(100.0%, 38.3%, 33.9%, and 33.2% of admitted candidates). Routine privileges
+and MySQL function comments are widened only when a typed source catalog proves
+one exact routine overload; `PUBLIC` grants remain blocked on MySQL. The
+profile digest is recorded in both scanner and reachability reports, so
+namespace mappings cannot silently drift. These are emitter reachability upper
+bounds, not live-database execution or certification.
 
 ## Certified SQL profile scope
 

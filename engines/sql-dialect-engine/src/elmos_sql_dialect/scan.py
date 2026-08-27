@@ -70,6 +70,7 @@ from .models import (
     DropColumn,
     DropConstraint,
     RenameColumn,
+    RoutineIdentity,
     Table,
 )
 from .parser import (
@@ -85,7 +86,7 @@ from .parser import (
     parse_update,
 )
 from .profiles import NamespaceProfile, resolve_namespace_profile
-from .routine import parse_create_routine
+from .routine import parse_create_routine, parse_routine_identity
 from .statement_splitter import split_statements
 from .static_do import parse_static_do
 
@@ -122,6 +123,7 @@ BlockerFamily = Literal[
     "identifiers",
     "structure",
     "source-format",
+    "security",
 ]
 
 #: Plain-language meaning per reason code, plus the family it belongs to.
@@ -487,6 +489,10 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
         "types",
         "MySQL column comments require the complete target column definition, not only a comment statement",
     ),
+    "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED": (
+        "identifiers",
+        "MySQL function comments require a typed source catalogue proving one exact routine identity",
+    ),
     "CERTIFIED_PRIVILEGE_UNSUPPORTED_OBJECT": (
         "structure",
         "the privilege target is not a table in the bounded privilege route",
@@ -499,6 +505,10 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
         "identifiers",
         "a non-PostgreSQL target cannot safely erase a source routine signature without "
         "a target routine-identity catalogue",
+    ),
+    "CERTIFIED_PRIVILEGE_PRINCIPAL_UNSUPPORTED_BY_TARGET": (
+        "security",
+        "the target principal model cannot preserve the source grant or revoke audience",
     ),
     "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED": (
         "structure",
@@ -665,6 +675,9 @@ class SourceSchemaCatalog:
     columns: dict[tuple[str, str], dict[str, CanonicalType]] = field(default_factory=dict)
     type_refs: dict[tuple[str, str], dict[str, CanonicalTypeRef]] = field(default_factory=dict)
     unique_keys: dict[tuple[str, str], set[tuple[str, ...]]] = field(default_factory=dict)
+    routine_signatures: dict[tuple[str, str, str], set[tuple[CanonicalTypeRef, ...]]] = field(
+        default_factory=dict
+    )
     evidence: list[dict[str, object]] = field(default_factory=list)
 
     def add_table(self, table: Table) -> None:
@@ -789,6 +802,23 @@ class SourceSchemaCatalog:
         matches = self._matching_keys(schema, table)
         return len(matches) == 1 and wanted in self.unique_keys.get(matches[0], set())
 
+    def add_routine_identity(self, identity: RoutineIdentity) -> None:
+        """Record a typed routine identity, coalescing CREATE OR REPLACE repeats."""
+        key = (identity.kind.value.casefold(), (identity.schema or "").casefold(), identity.name.casefold())
+        self.routine_signatures.setdefault(key, set()).add(identity.parameter_types)
+
+    def has_unique_routine(
+        self,
+        kind: str,
+        schema: str | None,
+        name: str,
+        parameter_types: tuple[CanonicalTypeRef, ...],
+    ) -> bool:
+        """Prove that one exact typed routine identity exists in the source catalog."""
+        key = (kind.casefold(), (schema or "").casefold(), name.casefold())
+        signatures = self.routine_signatures.get(key, set())
+        return len(signatures) == 1 and tuple(parameter_types) in signatures
+
 
 def _record_catalog_statement(
     catalog: SourceSchemaCatalog,
@@ -817,6 +847,31 @@ def _record_catalog_statement(
                         }
                         for column in table.columns
                     },
+                }
+            )
+        elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() in {
+            "FUNCTION",
+            "PROCEDURE",
+        }:
+            identity = parse_routine_identity(statement, dialect, namespace_map)
+            catalog.add_routine_identity(identity)
+            catalog.evidence.append(
+                {
+                    "kind": "CREATE_ROUTINE_IDENTITY",
+                    "routineKind": identity.kind.value,
+                    "routine": f"{identity.schema or ''}.{identity.name}",
+                    "parameterTypes": [
+                        {
+                            "canonicalType": item.canonical_type.value,
+                            "precision": item.precision,
+                            "scale": item.scale,
+                            "length": item.length,
+                            "jsonBinary": item.json_binary,
+                        }
+                        for item in identity.parameter_types
+                    ],
+                    "statementDigest": hashlib.sha256(statement.sql().encode("utf-8")).hexdigest(),
+                    "routeStatus": "IDENTITY_EVIDENCE_ONLY",
                 }
             )
         elif isinstance(statement, exp.Alter):
