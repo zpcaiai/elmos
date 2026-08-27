@@ -13,6 +13,7 @@ from jsonschema import Draft202012Validator
 from .contracts import validate_domain_case
 from .corpus import verify_lock
 from .package import verify_source_package
+from .skills import audit_skills
 
 
 def _load_json(path: Path) -> Any:
@@ -119,7 +120,7 @@ def coverage_report(package_root: Path) -> dict[str, Any]:
     return {"complete": not duplicate_ids and not missing and not unexpected, "declared_model": "ETGB-COVERAGE-1.0", "case_count": total, "lines": lines, "missing_case_count": len(missing), "missing_case_examples": missing[:20], "unexpected_case_count": len(unexpected), "unexpected_case_examples": unexpected[:20], "duplicate_case_ids": duplicate_ids[:20]}
 
 
-def validate_package(package_root: Path, *, release: bool = False, archive: Path | None = None, extracted: Path | None = None, max_errors: int = 50) -> dict[str, Any]:
+def validate_package(package_root: Path, *, release: bool = False, archive: Path | None = None, extracted: Path | None = None, trust_store: dict[str, Any] | None = None, max_errors: int = 50) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
     package_root = package_root.resolve(strict=True)
@@ -148,20 +149,50 @@ def validate_package(package_root: Path, *, release: bool = False, archive: Path
         expected_manifest = package_root / "PACKAGE_MANIFEST.json"
         if expected_manifest.is_file():
             manifest = _load_json(expected_manifest)
-            declared_total = manifest.get("case_summary", {}).get("total_cases")
+            summary = manifest.get("case_summary", {})
+            declared_total = summary.get("total_cases")
             if declared_total != total:
                 errors.append(f"PACKAGE_MANIFEST total_cases {declared_total} != materialized {total}")
+            for field, actual in (("by_business_line", counts),):
+                declared = summary.get(field, {})
+                if dict(declared) != dict(actual):
+                    errors.append(f"PACKAGE_MANIFEST {field} does not match materialized cases")
+            if manifest.get("skill_count") != 24:
+                errors.append(f"PACKAGE_MANIFEST skill_count must be 24, got {manifest.get('skill_count')}")
         coverage = coverage_report(package_root)
         if not coverage["complete"]:
             errors.append("declared capability matrix is not complete")
-        corpus = verify_lock(package_root, release=release)
+        skills = audit_skills(package_root)
+        if not skills["valid"]:
+            errors.extend(f"skills: {message}" for message in skills["errors"])
+        assurance = package_root / "suites/assurance-techniques.yaml"
+        if assurance.is_file():
+            techniques = yaml.safe_load(assurance.read_text(encoding="utf-8"))
+            required = {"example-based", "property-based", "differential", "metamorphic", "fuzz", "mutation", "fault-injection", "temporal-hidden"}
+            declared = {str(item.get("id")) for item in techniques.get("techniques", [])} if isinstance(techniques, dict) else set()
+            if not required.issubset(declared):
+                errors.append("assurance-techniques.yaml is missing required techniques")
+        required_integrations = (
+            "integrations/harness/adapter-contract.yaml",
+            "integrations/postgres/001_etgb_schema.sql",
+            "integrations/postgres/002_etgb_rls.sql",
+            "integrations/openapi/etgb-control-plane.openapi.yaml",
+            "integrations/events/etgb-events.asyncapi.yaml",
+            "integrations/otel/semantic-conventions.yaml",
+            "integrations/temporal/WORKFLOW_PSEUDOCODE.md",
+        )
+        for relative in required_integrations:
+            path = package_root / relative
+            if not path.is_file():
+                errors.append(f"missing integration contract: {relative}")
+        corpus = verify_lock(package_root, release=release, trust_store=trust_store)
         errors.extend(f"corpus: {message}" for message in corpus["errors"])
         warnings.extend(f"corpus: {message}" for message in corpus["warnings"])
         source_package = verify_source_package(archive, extracted=extracted) if archive else None
         if source_package and not source_package["valid"]:
             errors.extend(f"source package: {message}" for message in source_package["errors"])
             warnings.extend(f"source package: {message}" for message in source_package["warnings"])
-        return {"valid": not errors, "release_mode": release, "case_count": total, "case_files": dict(counts), "coverage": coverage, "corpus": corpus, "source_package": source_package, "errors": errors[:max_errors], "warnings": warnings}
+        return {"valid": not errors, "release_mode": release, "case_count": total, "case_files": dict(counts), "coverage": coverage, "skills": skills, "corpus": corpus, "source_package": source_package, "errors": errors[:max_errors], "warnings": warnings}
     except (OSError, ValueError, KeyError, TypeError, yaml.YAMLError) as exc:
         return {"valid": False, "release_mode": release, "case_count": 0, "case_files": {}, "errors": [str(exc)], "warnings": warnings}
 

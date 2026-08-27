@@ -1,0 +1,125 @@
+{
+  "schema_version": "1.1",
+  "total_results": 4,
+  "executable_results": 4,
+  "statuses": {
+    "passed": 4
+  },
+  "by_business_line": {
+    "spring-modernization": {
+      "passed": 1
+    },
+    "cross-language": {
+      "passed": 1
+    },
+    "project-generation": {
+      "passed": 1
+    },
+    "sql-conversion": {
+      "passed": 1
+    }
+  },
+  "metrics": {
+    "weighted_pass_rate": 1.0,
+    "p0_weighted_pass_rate": 1.0,
+    "p1_weighted_pass_rate": null,
+    "p2_weighted_pass_rate": null,
+    "silent_semantic_error_rate": 0.0,
+    "p0_silent_semantic_error_rate": 0.0,
+    "critical_oracle_pass_rate": 1.0,
+    "p0_critical_oracle_pass_rate": 1.0,
+    "evidence_completeness": 1.0,
+    "data_corruption_count": 0,
+    "security_regression_count": 0,
+    "transaction_mismatch_count": 0,
+    "flaky_case_count": 0,
+    "authority_violation_count": 0,
+    "evidence_integrity_failure_count": 0,
+    "unsupported_undisclosed_count": 0,
+    "recovery_failure_count": 0,
+    "budget_overrun_count": 0,
+    "supply_chain_failure_count": 0,
+    "performance_regression_count": 0,
+    "integrity_drift_count": 0,
+    "human_intervention_rate": 0.0,
+    "mutation_kill_rate": null,
+    "unapproved_corpus_count": 17,
+    "multi_seed_unstable_case_count": 0,
+    "insufficient_seed_case_count": 0
+  },
+  "cost": {
+    "token_input": 0,
+    "token_output": 0,
+    "credit_usd": 0.0,
+    "wall_clock_ms": 1765
+  },
+  "stability": {
+    "case_count": 4,
+    "unstable_case_count": 0,
+    "insufficient_seed_case_count": 0,
+    "cases": [
+      {
+        "case_id": "PG-SMOKE-PY-SQLITE-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "SM-SMOKE-CONTRACT-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "SQL-SMOKE-SQLITE-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "XLC-SMOKE-JAVA-PY-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      }
+    ]
+  },
+  "partial_run": false,
+  "interpretation": "Release gates are authoritative only for a complete release/golden run. Counts are derived from explicit Oracle/evidence classifications; missing release metrics block certification."
+}

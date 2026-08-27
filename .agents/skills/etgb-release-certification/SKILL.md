@@ -1,9 +1,9 @@
 ---
 name: etgb-release-certification
-description: Evaluate ETGB release gates, evidence completeness, waivers, and promotion decisions for Elmos candidates. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
+description: Evaluate hard gates, evidence, statistics, waivers and promotion decisions for immutable Elmos candidates. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
 metadata:
-  source_package: elmos-etgb-sota-skills-package-v1.0.0
-  source_archive_sha256: fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202
+  source_package: elmos-etgb-sota-skills-package-v1.1.0
+  source_archive_sha256: 6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e
   source_skill: release-certification
   runtime: engines/etgb-engine/src/elmos_etgb
 ---
@@ -72,4 +72,8 @@ Include plan, all case results, logs/diffs/traces, environment and corpus digest
 ## Canary
 
 Certification permits deployment to controlled canary; it does not replace production telemetry and rollback. Canary criteria must monitor the same business invariants used by ETGB.
+
+## v1.1 hard gates
+
+In addition to semantic gates, require zero Environment-authority violation, evidence-integrity failure, candidate/plan/Oracle drift, undisclosed unsupported behavior, P0 recovery failure, budget overrun and supply-chain failure. Missing seed coverage or required metrics is `BLOCKED`. Use `etgb gate`; do not hand-edit the decision after evidence is sealed.
 <!-- END UNTRUSTED SOURCE SKILL BODY -->

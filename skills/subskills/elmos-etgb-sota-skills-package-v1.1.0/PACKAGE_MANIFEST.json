@@ -1,0 +1,1099 @@
+{
+  "case_summary": {
+    "by_business_line": {
+      "cross-cutting": 800,
+      "cross-language": 29535,
+      "project-generation": 1451,
+      "spring-modernization": 3117,
+      "sql-conversion": 11761
+    },
+    "by_level": {
+      "L0": 12418,
+      "L1": 17730,
+      "L2": 16316,
+      "L3": 200
+    },
+    "by_priority": {
+      "P0": 7204,
+      "P1": 31530,
+      "P2": 7930
+    },
+    "generated_at": "2026-08-27",
+    "minimum_required": 10000,
+    "minimum_satisfied": true,
+    "schema_version": "1.0",
+    "total_cases": 46664,
+    "unique_capabilities_by_business_line": {
+      "cross-cutting": 100,
+      "cross-language": 174,
+      "project-generation": 91,
+      "spring-modernization": 222,
+      "sql-conversion": 207
+    }
+  },
+  "file_count": 211,
+  "files": [
+    {
+      "path": ".github/workflows/etgb-ci.yml",
+      "sha256": "18ea1453271c639cc2be248fb85674d20bd86ab0b1fdf5f549a535dde63e0c6a",
+      "size": 2329
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "fa17800218c18758b34637c2b67ec2e0c85cc6e311f39b1699cf07669cfb3619",
+      "size": 91
+    },
+    {
+      "path": "GENERATED_AT",
+      "sha256": "5255ffad1dd928c81ccc838ebc9859dd3eec87a85605a23d6b9edbc634ee34be",
+      "size": 11
+    },
+    {
+      "path": "Makefile",
+      "sha256": "14fb0e9695b6356cea31065e365640930534121abce486dcd66189e95b16c2d8",
+      "size": 574
+    },
+    {
+      "path": "README.md",
+      "sha256": "21da01a5b3ada4e4d4feca5badbbb6a886e799e02bfc8cce464435df86bd8324",
+      "size": 4148
+    },
+    {
+      "path": "VERSION",
+      "sha256": "1575e1af4a95f12f70b4ee6a6adce8160953d93ea17dc2611b90883ccc3ad3b8",
+      "size": 6
+    },
+    {
+      "path": "corpora/README.md",
+      "sha256": "7597ef4996c7d261509902c3cbbdc239a1bae207cec17131ae9ac46dd56803b3",
+      "size": 639
+    },
+    {
+      "path": "corpora/corpus-lock.yaml",
+      "sha256": "5623fc511018e89772a58d3410368405b6b7dee89bb84021e7109f27a279e8c3",
+      "size": 7058
+    },
+    {
+      "path": "docs/BUDGET_COST_ETA.md",
+      "sha256": "ecbc9164bf7675855f7cbeaf42e4e32bc02b44b798d82c27d4ff89d72f4569b3",
+      "size": 1059
+    },
+    {
+      "path": "docs/CASE_AUTHORING.md",
+      "sha256": "7f62fcaed0c0313a11ae835a03c47719f9fe5ddefb6788b5110306715b7d137b",
+      "size": 1126
+    },
+    {
+      "path": "docs/CHECKPOINT_RECOVERY.md",
+      "sha256": "66b123f1363c018a65fe3cfddf257f9a92459ae9479241682a27db1cb639b4ac",
+      "size": 1192
+    },
+    {
+      "path": "docs/CI_INTEGRATION.md",
+      "sha256": "ac849e83c637ac3534076115ad126f75f2916b53776220aa3b6e033238346394",
+      "size": 931
+    },
+    {
+      "path": "docs/CORPUS_CATALOG.md",
+      "sha256": "32a72a0b76d80e2232ffe9693e248b2db8aeb26bedaae13a64ed8f98d7d44668",
+      "size": 1185
+    },
+    {
+      "path": "docs/DATABASE_INTEGRATION.md",
+      "sha256": "495b9634d0f64ea8614036b95e3924b8715341cea726e60ecd8ae53a2e03f518",
+      "size": 1055
+    },
+    {
+      "path": "docs/DATA_MODEL.md",
+      "sha256": "f81d4066e70e85e5e7f167639f15365f3580ccae45505091718a0982636c5191",
+      "size": 2048
+    },
+    {
+      "path": "docs/ELMOS_INTEGRATION.md",
+      "sha256": "d393965dac6cf0cfc17dc1151a1e5cb04872a7710e226a0ff2f5884f89999267",
+      "size": 3409
+    },
+    {
+      "path": "docs/EVIDENCE_PROVENANCE.md",
+      "sha256": "0abfcac5766aeffad3de1487a2edeeb9ed09934a77f859839b795755f0f4e05f",
+      "size": 1059
+    },
+    {
+      "path": "docs/EXECUTION_PROFILES.md",
+      "sha256": "189735d4298e03f30e90b8e777d7cf4b7d4e8ba9663e50dbccfa84efe1f0f92f",
+      "size": 1042
+    },
+    {
+      "path": "docs/METRICS_AND_SCORING.md",
+      "sha256": "b16847bdb8adf22c45e601da1beab2a52249a99786978b2ed25647b96b035f45",
+      "size": 1151
+    },
+    {
+      "path": "docs/OPERATIONS_RUNBOOK.md",
+      "sha256": "30e39623322ff86d2d58d0d1baf7d86201ca4c3e98cfe70a755f5f1207a0119e",
+      "size": 1114
+    },
+    {
+      "path": "docs/ORACLE_MODEL.md",
+      "sha256": "c817a03d4158c4d6696247a7245bc69c62224e32826320ae6929d66169731574",
+      "size": 1595
+    },
+    {
+      "path": "docs/PERFORMANCE_SCALE.md",
+      "sha256": "b20fad292ed11ff9e4d9a879644c9938b1b668da336b515ab6ca9e7bb05e75db",
+      "size": 806
+    },
+    {
+      "path": "docs/PERMISSION_MODEL.md",
+      "sha256": "d9a6d242b2c7d2656ed03e3f9bb3be7096f126ab4559950b80102cb305917de9",
+      "size": 1334
+    },
+    {
+      "path": "docs/PRODUCTION_RUNTIME.md",
+      "sha256": "1252c9ded8de141b39fa3fe6a6add07942db41a8cac7ec3f51f85a51d1749552",
+      "size": 2067
+    },
+    {
+      "path": "docs/RELEASE_GATES.md",
+      "sha256": "8542e0b04a4a10745245ff9ef582885f46a1b4dbad47f119d62f449a23a1fa56",
+      "size": 1224
+    },
+    {
+      "path": "docs/SECURITY_AND_SANDBOX.md",
+      "sha256": "97bef8b27c5aa33652d32a436280a806f677a85b5bd5380d247f30a7656984b5",
+      "size": 972
+    },
+    {
+      "path": "docs/SKILL_CAPABILITY_MAP.md",
+      "sha256": "aec822436d4ab4084a53b4c70c7a417034c4f7ce718d71fc68761d5bfb6fa1cc",
+      "size": 4711
+    },
+    {
+      "path": "docs/SOTA_TEST_PLAN.md",
+      "sha256": "6c8754b2c1fd4be200310c88a6d0fd94271603c3c0562ededfd0da50ad058532",
+      "size": 14934
+    },
+    {
+      "path": "docs/SOURCES.md",
+      "sha256": "a6a4f479c5c6d1cbff3b4c2fc0d436fb07501c07d1859bfd82096c20c53ec52a",
+      "size": 1390
+    },
+    {
+      "path": "docs/STATISTICAL_VALIDITY.md",
+      "sha256": "e5ff2ff9e0d67777ae8e76e5579cdcb35a8a6d14a796e5daafc57f34c2392978",
+      "size": 582
+    },
+    {
+      "path": "docs/TEST_COVERAGE_MODEL.md",
+      "sha256": "bdc39654dd6502e8e932508b6e760c11221ae549af9d877c80a4a10b7878fd6c",
+      "size": 3498
+    },
+    {
+      "path": "docs/V1_1_CHANGELOG.md",
+      "sha256": "119a14828ea2aa9b5b91b577794da6697f9e3e9b1515b57a4bc42dd8ebaa8d60",
+      "size": 1407
+    },
+    {
+      "path": "etgb/__init__.py",
+      "sha256": "fa2d971670c8b877ed0856ec01cfc1fa774962ea224e8644f3253b186fb21875",
+      "size": 85
+    },
+    {
+      "path": "etgb/__main__.py",
+      "sha256": "b1ddd2bcfa40c7968337b203b5fc5a3f7bdd8e3251b6fb9bbb807dbab07b5bd4",
+      "size": 83
+    },
+    {
+      "path": "etgb/adapters/__init__.py",
+      "sha256": "39786f383a89bea15234104ca0a39a2a4d9300fe3ace177ffa76d028b261b969",
+      "size": 35
+    },
+    {
+      "path": "etgb/adapters/process.py",
+      "sha256": "80ff866c8db527699f15af7d49cfc53b67c8499b18bfb09ec268436fb9e75d32",
+      "size": 4649
+    },
+    {
+      "path": "etgb/adapters/sqlite.py",
+      "sha256": "d3bcfca52d8f9baab9a2f515e05cdcee2e6669231bfeddc41d55272f85b6c0d4",
+      "size": 3801
+    },
+    {
+      "path": "etgb/budget.py",
+      "sha256": "9b1818b628ca37aef2253d83c423e520feb1ae876e067e581a2b5497e3b6bbd7",
+      "size": 12202
+    },
+    {
+      "path": "etgb/candidate.py",
+      "sha256": "605c1acddb104c199daf990e3f797b6b47cc88757bfee4a99971b83a2b67fa1f",
+      "size": 2859
+    },
+    {
+      "path": "etgb/checkpoint.py",
+      "sha256": "58e1259e6e39f8353ae81cfc5a74d8d1f58d4950a9866ac63f0250a9370a1a7a",
+      "size": 6659
+    },
+    {
+      "path": "etgb/cli.py",
+      "sha256": "993f3d0fbcf46d85582e22c30a961ea7df4a485596f847960a487e7536b3e25f",
+      "size": 10599
+    },
+    {
+      "path": "etgb/coverage.py",
+      "sha256": "21f2faeb3ac1a87a460af7a8b536ec25d318282c046cee97286b16807fbcd882",
+      "size": 2630
+    },
+    {
+      "path": "etgb/evidence.py",
+      "sha256": "8af6d265fe4d8fd7ac4e303e97cf930cd329345f71c4b7004e0da7117af272a6",
+      "size": 12174
+    },
+    {
+      "path": "etgb/gates.py",
+      "sha256": "4e134de8aba037f1d88cb7e7801b87431739990c1b14f71c0d0ace5d8c2fc061",
+      "size": 4074
+    },
+    {
+      "path": "etgb/harness.py",
+      "sha256": "2929f70656768b9f566d752465e999ab162b4ccfe3b4074e5cd1b0023075cfc1",
+      "size": 10260
+    },
+    {
+      "path": "etgb/io.py",
+      "sha256": "3808b5aee73a6cdbbb3d2cb59e582fceffb0ed10729a8dda23d82d396bc2d109",
+      "size": 1702
+    },
+    {
+      "path": "etgb/materializer.py",
+      "sha256": "5951fc1a7a09dc2dc7bc060a69be4b56bb129469066a5d5b11529bd4680c061e",
+      "size": 25044
+    },
+    {
+      "path": "etgb/normalize.py",
+      "sha256": "27c9c3186ef27f7fa870ab4c3ba714abe253df0f1ee0f915af38a17aff93abc4",
+      "size": 2806
+    },
+    {
+      "path": "etgb/performance.py",
+      "sha256": "e6e7efd2d219d9d5e64b0ab6c8d932a759d9856337330e28d4d69a7eb64507aa",
+      "size": 3013
+    },
+    {
+      "path": "etgb/planner.py",
+      "sha256": "360b6cba4d5175d190ba0b498d8deb3d97f6e97f2b39f69d0683be1c7c7d9830",
+      "size": 4261
+    },
+    {
+      "path": "etgb/policy.py",
+      "sha256": "fa906db7bb76d6973ce0b6d239236334ad27568e656e243489e31a60ef777c44",
+      "size": 6946
+    },
+    {
+      "path": "etgb/risk.py",
+      "sha256": "027f4db31c0f0048c7bf8a0166a3f3d3e0b07e14ef470b0c89cba4eb81de3bba",
+      "size": 5558
+    },
+    {
+      "path": "etgb/runner.py",
+      "sha256": "a005326aa90519d8ca30899d2a769f028509d1a62781741c667d686c1bea19d7",
+      "size": 5736
+    },
+    {
+      "path": "etgb/scoring.py",
+      "sha256": "2906245d568bfc440597ebd5fb7a2d22ae890337398a65647852072a253133c8",
+      "size": 9307
+    },
+    {
+      "path": "etgb/skills.py",
+      "sha256": "1fb28fb51cce44e32a48863b9b17cd7e93fccee1e665901623279bf8eea6572f",
+      "size": 2851
+    },
+    {
+      "path": "etgb/state.py",
+      "sha256": "fb7e8805139acdcb7af42ec7ed121b2ae051bdf4d1d1095990efdc800662b409",
+      "size": 13879
+    },
+    {
+      "path": "etgb/statistics.py",
+      "sha256": "c24223adb9ad6e7f87b857ef1f7b50b43acd34175bb4dd7826d5b0c51a10d3f3",
+      "size": 4141
+    },
+    {
+      "path": "etgb/triage.py",
+      "sha256": "9eedd0b7a6ff2f27a6c8bab34d0117ac5b88eedcc83eb0b3397c8c1360040f30",
+      "size": 4274
+    },
+    {
+      "path": "etgb/validation.py",
+      "sha256": "330c47a13a4c2beaad1f2de0126b12dc310c5532a6a44b1a20a7ae6df4caf600",
+      "size": 3525
+    },
+    {
+      "path": "examples/environment-authority.yaml",
+      "sha256": "c55dfd934023d6582b6fa422241b958b517cc11494f11394eedce6df88bd262f",
+      "size": 668
+    },
+    {
+      "path": "examples/policy-request-allowed.json",
+      "sha256": "6655f1afdf6f76d14d65df460432ddc59dea9519c36ecec832a6fb52129da25b",
+      "size": 258
+    },
+    {
+      "path": "examples/policy-request-denied.json",
+      "sha256": "6f114824a54f678795bb84c02dac33ffc293fcd9ed35f221127437ab2f1110e3",
+      "size": 244
+    },
+    {
+      "path": "examples/release-candidate.yaml",
+      "sha256": "016a739ec3de3b6a364a5ba5175d05ef1d57593fbe6f85e63cff0f50555ca2e6",
+      "size": 711
+    },
+    {
+      "path": "examples/run-config.yaml",
+      "sha256": "aca1efed9cedd2c2d189081453d7567a8fdfbdafa815a11e214942d926559c87",
+      "size": 464
+    },
+    {
+      "path": "examples/waivers.yaml",
+      "sha256": "dbbc8c78aef7b20a7746c86a52c684ee9ee31e890b4bd0bbd03a6b37968c1a5f",
+      "size": 222
+    },
+    {
+      "path": "fixtures/cross-language/java-to-python-ledger/README.md",
+      "sha256": "c3b061cb6f74d561f260ab5f85ff72bbc7b8d4ee5422a3dd553cf0b13d0b97a2",
+      "size": 207
+    },
+    {
+      "path": "fixtures/cross-language/java-to-python-ledger/java/Ledger.java",
+      "sha256": "a5fc4eb635795ec6b3337bab8eb4541bd7daf81d2557c06b950cd698a3c4520e",
+      "size": 2420
+    },
+    {
+      "path": "fixtures/cross-language/java-to-python-ledger/python/ledger.py",
+      "sha256": "2c192ce629418f10c24e4aff4f85707203cc08508cd559bf757d40fe88c87bcf",
+      "size": 1362
+    },
+    {
+      "path": "fixtures/project-generation/python-sqlite-crud/README.md",
+      "sha256": "8c243a05fdd5568e63060578eb5264bda8f429d3c140e285750a13b1ef830d1d",
+      "size": 261
+    },
+    {
+      "path": "fixtures/project-generation/python-sqlite-crud/app.py",
+      "sha256": "55a4948c65d29de309f8e9810c935c169d66e8e50f087f3869045d60f01da558",
+      "size": 3499
+    },
+    {
+      "path": "fixtures/project-generation/python-sqlite-crud/requirements.yaml",
+      "sha256": "dacb595d649066111b530f836fb5204ef9853f52347cc64da221cbe5898208da",
+      "size": 523
+    },
+    {
+      "path": "fixtures/project-generation/python-sqlite-crud/test_app.py",
+      "sha256": "cdc4dbbc935fd37bb118b85597f1d65f2d3941e6100029afc8294f68c359c78b",
+      "size": 1417
+    },
+    {
+      "path": "fixtures/spring-modernization/contract-equivalence/README.md",
+      "sha256": "8b94460d79ca68ea3498692853cccc9a618e7de6f63dccc5e5636a3397439231",
+      "size": 230
+    },
+    {
+      "path": "fixtures/spring-modernization/contract-equivalence/legacy-contract.json",
+      "sha256": "117e638dbb8a527da1e7f9dc54d3b4bf5e3f1115646b2f7b691179c9f27c4d17",
+      "size": 1256
+    },
+    {
+      "path": "fixtures/spring-modernization/contract-equivalence/modern-contract.json",
+      "sha256": "d7336991e307ad6ed9ae759cb00a3ad38319d443d23e70cdfd36d68a888bc70e",
+      "size": 1241
+    },
+    {
+      "path": "fixtures/sql-conversion/sqlite-differential/README.md",
+      "sha256": "aea8474258550adc2540d69ddaef24bad8938c7975ecaaf1b629ba5088e60111",
+      "size": 273
+    },
+    {
+      "path": "fixtures/sql-conversion/sqlite-differential/seed.sql",
+      "sha256": "86eae6fde14a0f4cb9db634f20608b8a05540e54d5c9726235f36ba9190e95c8",
+      "size": 680
+    },
+    {
+      "path": "fixtures/sql-conversion/sqlite-differential/source.sql",
+      "sha256": "602889fbc5796bb37dc23c4fefda829345c6e7a9296e8d1c42c2750b2354276e",
+      "size": 638
+    },
+    {
+      "path": "fixtures/sql-conversion/sqlite-differential/target.sql",
+      "sha256": "7ddeed480ece79cfb14529cde39658c270423f1bfba1dc0f76d3af1f5003792c",
+      "size": 704
+    },
+    {
+      "path": "integrations/events/etgb-events.asyncapi.yaml",
+      "sha256": "0419e33bbecfb2eed5ac2172d26f5b0666dab8ce3dbe499bbb6b5df5033ac0a1",
+      "size": 5322
+    },
+    {
+      "path": "integrations/harness/adapter-contract.yaml",
+      "sha256": "a0a871c454e6fae50d7ab5bd36bc81bb031f88bc2b5bd6be3f4148808e939be1",
+      "size": 3241
+    },
+    {
+      "path": "integrations/harness/python-adapter-example.py",
+      "sha256": "7c8173852036097f9aaf28219b4e1d5f6f16329bb7184dad11151aa25ca67f61",
+      "size": 1521
+    },
+    {
+      "path": "integrations/openapi/etgb-control-plane.openapi.yaml",
+      "sha256": "69ea6badb01d9e9957d31813d3263890a412207961652c0a815eff9cee48da89",
+      "size": 9331
+    },
+    {
+      "path": "integrations/otel/semantic-conventions.yaml",
+      "sha256": "586d78f49e68e89371aad080bf6b1562a3a5c831196b30f2dc052399b4f303f9",
+      "size": 1192
+    },
+    {
+      "path": "integrations/policy/request-example.json",
+      "sha256": "65edc281b99b99ed753914ed019e2910eff4ecf95c8b7c972cb131378486ddb9",
+      "size": 298
+    },
+    {
+      "path": "integrations/policy/transform-worker-authority.yaml",
+      "sha256": "d0b5807e46b47dd21a7b44ca821363c28482d404d95d691b1de64a83893d67ee",
+      "size": 799
+    },
+    {
+      "path": "integrations/policy/validation-worker-authority.yaml",
+      "sha256": "cf21fd5583174f71d60cc120ee53c68750280a0680796a8989f343af900c0702",
+      "size": 713
+    },
+    {
+      "path": "integrations/postgres/001_etgb_schema.sql",
+      "sha256": "79afb759fe42bf78a395e7550da5db391085ad56f85ba3134248d0cc7757aef8",
+      "size": 19914
+    },
+    {
+      "path": "integrations/postgres/002_etgb_rls.sql",
+      "sha256": "9a3db5732e57e0ec190986cf84cd637361e511fff8e475d61b56a7ff21ef3aaa",
+      "size": 1169
+    },
+    {
+      "path": "integrations/postgres/README.md",
+      "sha256": "979bd562da63a974e9b498fa96fba0a4d646d9ac85fc55da1ece3fb9958d5079",
+      "size": 613
+    },
+    {
+      "path": "integrations/temporal/WORKFLOW_PSEUDOCODE.md",
+      "sha256": "4e74cbd909a8c879505437a945e8d52b467ed955542fe74b1d22647a6dca671a",
+      "size": 1162
+    },
+    {
+      "path": "matrices/coverage-requirements.yaml",
+      "sha256": "bb1767f0f6bdf4bfa5f36a1389cc21ff7a4abfb648f0fe71ec3ab475eb67b6a0",
+      "size": 1369
+    },
+    {
+      "path": "matrices/cross-cutting.yaml",
+      "sha256": "85ca19d27eda5c44be0cc067b98442f209d1db23706e774ccaaaf7d078de27c6",
+      "size": 8802
+    },
+    {
+      "path": "matrices/cross-language.yaml",
+      "sha256": "a5b6a32c44fb393bd988b35c680ed1c3536938ed0bb60621c7de28101c70892c",
+      "size": 48203
+    },
+    {
+      "path": "matrices/project-generation.yaml",
+      "sha256": "e0142aa96714698059fb86d74e76dbea2eb417f3326a51c5cf03e4a1624af6ef",
+      "size": 7929
+    },
+    {
+      "path": "matrices/release-gates.yaml",
+      "sha256": "f108b7f269bc6e48fea266c78a2f9e3e4b9ad1d70cdb7e109e3e5a4668ba4408",
+      "size": 1897
+    },
+    {
+      "path": "matrices/spring-modernization.yaml",
+      "sha256": "d1c9ad2de48b68d8de28aca42b508b62269ba91066a1ed2d4f8627f85a46dc1f",
+      "size": 51458
+    },
+    {
+      "path": "matrices/sql-conversion.yaml",
+      "sha256": "93fc1f8c300974851b1b7cc82e26c9feae47faeb2b1596fefe969f7f15bd4a84",
+      "size": 48276
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "2bf62e69cb2b95ce6ffbdf1e6dcdc9c1d24a0e17d4b40904dfb57ed0b065c0e7",
+      "size": 516
+    },
+    {
+      "path": "reports/VALIDATION_SUMMARY.md",
+      "sha256": "9d18855a2e3799758f0b8bb44e0b797675c52230a6885b4fc9cd8972aa307146",
+      "size": 3303
+    },
+    {
+      "path": "reports/coverage-report.json",
+      "sha256": "a4c383f7d34a0f4de19ffab61ff85fa85d2a8f4998959553df69a97d2a9cb4be",
+      "size": 1163
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/0f/0fc315fa63275ed1f24035da3e99950c4afa89da3cf693131388b5232a387b25",
+      "sha256": "0fc315fa63275ed1f24035da3e99950c4afa89da3cf693131388b5232a387b25",
+      "size": 4342
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/1d/1d6a41bd897c14b726bf7ba4639912f6de59dac31922014de64a272fca97be2a",
+      "sha256": "1d6a41bd897c14b726bf7ba4639912f6de59dac31922014de64a272fca97be2a",
+      "size": 86
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/20/207fc7a45d3b0d66860380eecefc02e821bca824f4765085510262ebb97f1fa4",
+      "sha256": "207fc7a45d3b0d66860380eecefc02e821bca824f4765085510262ebb97f1fa4",
+      "size": 176
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/2e/2e3e61e8021f2204bd7617258936837379a24be63079b25898384fde9fe0a81b",
+      "sha256": "2e3e61e8021f2204bd7617258936837379a24be63079b25898384fde9fe0a81b",
+      "size": 13771
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/35/35e8d0ba60b1daaaf12381280a87bc4c816c913d5076c4da307688c5e2737e02",
+      "sha256": "35e8d0ba60b1daaaf12381280a87bc4c816c913d5076c4da307688c5e2737e02",
+      "size": 4047
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/4a/4a20ba778e6ee95dc5b097a22a102271e520824d6dc01df50a8dcb6d61eeebe6",
+      "sha256": "4a20ba778e6ee95dc5b097a22a102271e520824d6dc01df50a8dcb6d61eeebe6",
+      "size": 64
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/53/53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "size": 2
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/95/9508a1868c028580be1ad59b6ae11b7bea1e99074110c43306b9963f6767fc5a",
+      "sha256": "9508a1868c028580be1ad59b6ae11b7bea1e99074110c43306b9963f6767fc5a",
+      "size": 1314
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/9c/9c2553a8e335dc8a8187f3dcb307c8d893db20622ba058c0ca608e5477dbe173",
+      "sha256": "9c2553a8e335dc8a8187f3dcb307c8d893db20622ba058c0ca608e5477dbe173",
+      "size": 99
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/9c/9ce9c3c18d874ec403f0a40945d9b3b3092f6f243cfc7b23c36bdfd900e15115",
+      "sha256": "9ce9c3c18d874ec403f0a40945d9b3b3092f6f243cfc7b23c36bdfd900e15115",
+      "size": 3361
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/9d/9d18855a2e3799758f0b8bb44e0b797675c52230a6885b4fc9cd8972aa307146",
+      "sha256": "9d18855a2e3799758f0b8bb44e0b797675c52230a6885b4fc9cd8972aa307146",
+      "size": 3303
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/a4/a4c383f7d34a0f4de19ffab61ff85fa85d2a8f4998959553df69a97d2a9cb4be",
+      "sha256": "a4c383f7d34a0f4de19ffab61ff85fa85d2a8f4998959553df69a97d2a9cb4be",
+      "size": 1163
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/b7/b763eadb45f856d8cef6d34e172ebd388cd404cf0eab19fdc45a5a7ad4cc5c43",
+      "sha256": "b763eadb45f856d8cef6d34e172ebd388cd404cf0eab19fdc45a5a7ad4cc5c43",
+      "size": 1314
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/c2/c28da1ee1691f92a3cc4391c14e9c2d9052598a4e386dbc69bb80c746e6a53ac",
+      "sha256": "c28da1ee1691f92a3cc4391c14e9c2d9052598a4e386dbc69bb80c746e6a53ac",
+      "size": 2911
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/c7/c78bc13a4f6f93c6c49b36b5ee5e825d4f1713e0ea0ba3f3043c8e10cc2f1548",
+      "sha256": "c78bc13a4f6f93c6c49b36b5ee5e825d4f1713e0ea0ba3f3043c8e10cc2f1548",
+      "size": 113
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/d2/d2dce3dd52fab223bfbaf8aa6208b02e28087a4db8f021be195ee05330238cf8",
+      "sha256": "d2dce3dd52fab223bfbaf8aa6208b02e28087a4db8f021be195ee05330238cf8",
+      "size": 1008
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/blobs/sha256/ec/ec4bceabe85377922e8b7c76f0fc443b26c9b2388ab58acf79cb8db180589247",
+      "sha256": "ec4bceabe85377922e8b7c76f0fc443b26c9b2388ab58acf79cb8db180589247",
+      "size": 100
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/manifest.hmac-sha256",
+      "sha256": "d50698c30231bfd0e57ad3a67b892d49d58501bd1054b0e1a96d1a9fe1877e36",
+      "size": 65
+    },
+    {
+      "path": "reports/etgb-evidence-bundle/manifest.json",
+      "sha256": "15b38ebecea886d226c9696bfc17ec73ad3faf0400ab46c6c45d4538043a2c97",
+      "size": 22657
+    },
+    {
+      "path": "reports/etgb-evidence.tar.gz",
+      "sha256": "8ceecb788aa6c863397ca85383385b19eeda850df64c1de2f955453b735a75ea",
+      "size": 13828
+    },
+    {
+      "path": "reports/evidence-build-summary.json",
+      "sha256": "9a5b3fa1585502f350382104c6e1f908488368d741c5acd3bb61dfa34c21d245",
+      "size": 435
+    },
+    {
+      "path": "reports/evidence-verification.json",
+      "sha256": "23174e02099c48cca8033fd29e942091836f764d37031487acff63fc536c4ed2",
+      "size": 194
+    },
+    {
+      "path": "reports/example-frozen-candidate.json",
+      "sha256": "d2dce3dd52fab223bfbaf8aa6208b02e28087a4db8f021be195ee05330238cf8",
+      "size": 1008
+    },
+    {
+      "path": "reports/package-validation.json",
+      "sha256": "b763eadb45f856d8cef6d34e172ebd388cd404cf0eab19fdc45a5a7ad4cc5c43",
+      "size": 1314
+    },
+    {
+      "path": "reports/policy-allowed.json",
+      "sha256": "4a20ba778e6ee95dc5b097a22a102271e520824d6dc01df50a8dcb6d61eeebe6",
+      "size": 64
+    },
+    {
+      "path": "reports/policy-denied.exit-code.txt",
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "size": 2
+    },
+    {
+      "path": "reports/policy-denied.json",
+      "sha256": "1d6a41bd897c14b726bf7ba4639912f6de59dac31922014de64a272fca97be2a",
+      "size": 86
+    },
+    {
+      "path": "reports/release-validation.exit-code.txt",
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "size": 2
+    },
+    {
+      "path": "reports/release-validation.json",
+      "sha256": "9508a1868c028580be1ad59b6ae11b7bea1e99074110c43306b9963f6767fc5a",
+      "size": 1314
+    },
+    {
+      "path": "reports/sample-machine-eta.json",
+      "sha256": "c28da1ee1691f92a3cc4391c14e9c2d9052598a4e386dbc69bb80c746e6a53ac",
+      "size": 2911
+    },
+    {
+      "path": "reports/sample-risk-plan-summary.json",
+      "sha256": "207fc7a45d3b0d66860380eecefc02e821bca824f4765085510262ebb97f1fa4",
+      "size": 176
+    },
+    {
+      "path": "reports/sample-risk-plan.json",
+      "sha256": "0fc315fa63275ed1f24035da3e99950c4afa89da3cf693131388b5232a387b25",
+      "size": 4342
+    },
+    {
+      "path": "reports/skills-audit.json",
+      "sha256": "c78bc13a4f6f93c6c49b36b5ee5e825d4f1713e0ea0ba3f3043c8e10cc2f1548",
+      "size": 113
+    },
+    {
+      "path": "reports/smoke-gate-decision.json",
+      "sha256": "35e8d0ba60b1daaaf12381280a87bc4c816c913d5076c4da307688c5e2737e02",
+      "size": 4047
+    },
+    {
+      "path": "reports/smoke-gate.exit-code.txt",
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "size": 2
+    },
+    {
+      "path": "reports/smoke-results.jsonl",
+      "sha256": "2e3e61e8021f2204bd7617258936837379a24be63079b25898384fde9fe0a81b",
+      "size": 13771
+    },
+    {
+      "path": "reports/smoke-run-summary.json",
+      "sha256": "ec4bceabe85377922e8b7c76f0fc443b26c9b2388ab58acf79cb8db180589247",
+      "size": 100
+    },
+    {
+      "path": "reports/smoke-score.json",
+      "sha256": "9ce9c3c18d874ec403f0a40945d9b3b3092f6f243cfc7b23c36bdfd900e15115",
+      "size": 3361
+    },
+    {
+      "path": "reports/unit-test-summary.txt",
+      "sha256": "9c2553a8e335dc8a8187f3dcb307c8d893db20622ba058c0ca608e5477dbe173",
+      "size": 99
+    },
+    {
+      "path": "schemas/budget.schema.json",
+      "sha256": "ad9504cdfcc36ebdc1f77eb79c320339ce0f1b3f72364df494f3e698dbd18720",
+      "size": 678
+    },
+    {
+      "path": "schemas/checkpoint.schema.json",
+      "sha256": "ad7e91671aa5a6be33d0d0047689bd368ae3cb23d4193d37173f4ebbd60a1abc",
+      "size": 1317
+    },
+    {
+      "path": "schemas/corpus-lock.schema.json",
+      "sha256": "c9444713b3db7955f46efb57f953b64f913cad93699d9ceb87731d26fb8c5252",
+      "size": 1690
+    },
+    {
+      "path": "schemas/environment-authority.schema.json",
+      "sha256": "dc13dd6007a0b411aaae8843a95bff7b74c0ab56e7a1c6d287b89acdd9ab23ed",
+      "size": 1913
+    },
+    {
+      "path": "schemas/evidence-manifest.schema.json",
+      "sha256": "282eecd188be6ee1b3de529b3ac7051c1d154db038529288b3c41fd2823d0da2",
+      "size": 687
+    },
+    {
+      "path": "schemas/gate-decision.schema.json",
+      "sha256": "40d68391a2a9936067de2150a716cae655ef0c720ec851cbc02f6157a8d46630",
+      "size": 660
+    },
+    {
+      "path": "schemas/release-candidate.schema.json",
+      "sha256": "49c505e1eed9f691b15259a90ae1d8e0cf1eac780b195d9117ffb53050137fbf",
+      "size": 1333
+    },
+    {
+      "path": "schemas/requirement-contract.schema.json",
+      "sha256": "9f154fc032ec5d49eda65bc33fb9eeaa77acfa9c9779983bda17835c86a1752a",
+      "size": 1182
+    },
+    {
+      "path": "schemas/run-plan.schema.json",
+      "sha256": "432c08844d7f783fb0ea8dc3b259e696b25267ed44d5d3d481be18cb5e63d261",
+      "size": 759
+    },
+    {
+      "path": "schemas/run-result.schema.json",
+      "sha256": "1f3a4c03ae3af567d0e95721f7f5e3fd5a08023087702be286a47fca879fa3e1",
+      "size": 1130
+    },
+    {
+      "path": "schemas/skill-manifest.schema.json",
+      "sha256": "5e25eee7c4cb7da7c5cb8dcc53ba3a106e0be222d9ed3d157c6f5328a8bf1a98",
+      "size": 1534
+    },
+    {
+      "path": "schemas/suite.schema.json",
+      "sha256": "896af7cb16e72a4f688412a83d80f1f353d964d3f15ce060c4b21e7820d39555",
+      "size": 789
+    },
+    {
+      "path": "schemas/test-case.schema.json",
+      "sha256": "09285dfdcfa470c18b9d3fab14fd43c6efc8d3f7c58a417469e5a1ca22255d07",
+      "size": 3998
+    },
+    {
+      "path": "scripts/create_evidence_bundle.py",
+      "sha256": "09061968bf93787ec414de554056be82036e7e58c24ebbea65dd90d572af5dc3",
+      "size": 2529
+    },
+    {
+      "path": "scripts/fetch_corpora.py",
+      "sha256": "c204ee1246c2fcffab93ee73eccbfdf228c577f7327db8b71c8a3d637bdee1d4",
+      "size": 1714
+    },
+    {
+      "path": "scripts/generate_package_manifest.py",
+      "sha256": "ee58aace94622e5e85cde78415a5d3018d3212a1a090c9342499bb3a8501fdbc",
+      "size": 2022
+    },
+    {
+      "path": "scripts/materialize_cases.py",
+      "sha256": "a1000d167ee4ee42737dfa80ce9b642edc713679eb22fc6836c9b6c562962152",
+      "size": 232
+    },
+    {
+      "path": "scripts/run_smoke.sh",
+      "sha256": "0dff0c9ec7f9fe175da1d770b312d0de1015e5853f68a2f10c817d59ca90187f",
+      "size": 247
+    },
+    {
+      "path": "scripts/verify_package.sh",
+      "sha256": "140bcc52223814df007a4e76f49d96333c2340fd6ec9262f6381207eb2e30b00",
+      "size": 626
+    },
+    {
+      "path": "skills/README.md",
+      "sha256": "8a03c8d1aed3980284436c7d50411eb1c8a2b7fe29c3d4d83c99b9b6e00c6e4d",
+      "size": 958
+    },
+    {
+      "path": "skills/benchmark-integrity-hidden-tests/SKILL.md",
+      "sha256": "c120cb50c0f757235a71223d944ad10e78eb2ad342df5d0a2fe487a9f31e9aa3",
+      "size": 2330
+    },
+    {
+      "path": "skills/budget-cost-eta-governance/SKILL.md",
+      "sha256": "f3fe8fcd15ab13c9c19907b8a8f5aa9effeda9f37225395a306dcd1ec9b6b7f7",
+      "size": 2288
+    },
+    {
+      "path": "skills/checkpoint-resume-recovery/SKILL.md",
+      "sha256": "1795cac6a908f8904c955120d3b2d6b43f6ff7b83d6383599a235d3408ac2e78",
+      "size": 2575
+    },
+    {
+      "path": "skills/corpus-governance/SKILL.md",
+      "sha256": "fa9de4587bea329f68b17c5825d166a169df81dc245af5823d808920946ab33e",
+      "size": 2459
+    },
+    {
+      "path": "skills/differential-oracle-engine/SKILL.md",
+      "sha256": "752f70be87c567f910de9f4035fd3bddd0938c02938cbaa15894c568512f8123",
+      "size": 2743
+    },
+    {
+      "path": "skills/environment-authority-sandbox/SKILL.md",
+      "sha256": "bcd29e1ad09febb2f8abefaa91ff1e684fb0f9690b4817f8d38749570da11cbb",
+      "size": 2780
+    },
+    {
+      "path": "skills/etgb-orchestrator/SKILL.md",
+      "sha256": "18981d45f5e9cc46f28507c1ebca2c8e6e3bbc92f9dffe9b541ad285ad02ed72",
+      "size": 4923
+    },
+    {
+      "path": "skills/evidence-provenance-ledger/SKILL.md",
+      "sha256": "b8c9a6b4e9f14171a97e327c10530f6307be57f612a41905e08665f2d83531c3",
+      "size": 2386
+    },
+    {
+      "path": "skills/incident-regression-learning/SKILL.md",
+      "sha256": "16b953bc0d81b1b0057dcdc0ddbe064211c179159dfe5924ce2e4c22472f8470",
+      "size": 1991
+    },
+    {
+      "path": "skills/manifest.yaml",
+      "sha256": "9657a00e690cac7573888787912f4f921fa9799569c9b6637f327edac06e06af",
+      "size": 9674
+    },
+    {
+      "path": "skills/metamorphic-fuzz-mutation/SKILL.md",
+      "sha256": "59a9f310c06a59737d0e80a5cfb4e5a721f412f352034521653015bddcafd4d2",
+      "size": 2667
+    },
+    {
+      "path": "skills/multi-tenant-scheduling-isolation/SKILL.md",
+      "sha256": "cc959377ee65f8b6ef740e1145040312fcae3752239d14aba30b2468a4dacd13",
+      "size": 2236
+    },
+    {
+      "path": "skills/observability-failure-triage/SKILL.md",
+      "sha256": "de6d9bd3dc67dbdf54812cb28db2be98902b3f6de968adbcb9d8bd22d8b37ff6",
+      "size": 2240
+    },
+    {
+      "path": "skills/performance-scale-certification/SKILL.md",
+      "sha256": "a54370194fc3d579b0e9227c3b3f9b8dd27be0da78e5512a6ed86de85718c088",
+      "size": 2242
+    },
+    {
+      "path": "skills/production-harness-integration/SKILL.md",
+      "sha256": "c2826177587320affbe70d40798245c98bb55ff6d7664b46f502a5d134dc7867",
+      "size": 3646
+    },
+    {
+      "path": "skills/project-generation-validation/SKILL.md",
+      "sha256": "b682a4451b757fe2f983573eeb7fb72550b14c25ea49523b401985c464b7cb59",
+      "size": 2981
+    },
+    {
+      "path": "skills/release-candidate-integrity/SKILL.md",
+      "sha256": "6a5749bb05f92310c7ae619ff641e4c0f6472a990b94d0fc5a57e24d3a48197b",
+      "size": 1676
+    },
+    {
+      "path": "skills/release-certification/SKILL.md",
+      "sha256": "70d7e083f90fdf7a893ce473223e1f75a4351af8b441b4c01cfd4207baa61474",
+      "size": 2379
+    },
+    {
+      "path": "skills/repository-translation-validation/SKILL.md",
+      "sha256": "1f2540c69fbfd5da937b2662bb8a631f7ec3ae072d4e249f9a365247c6cadd08",
+      "size": 3366
+    },
+    {
+      "path": "skills/risk-based-test-selection/SKILL.md",
+      "sha256": "74c21a6da518d3eba4b01410d2ff6f03eed213249cca21bc7b5e5ea9b2ccc3cf",
+      "size": 2198
+    },
+    {
+      "path": "skills/spring-modernization-validation/SKILL.md",
+      "sha256": "e9a341aed1fe0f1a4211b9d79ff0e06c29da150dceabd0e2d803dd86c1bef97a",
+      "size": 3645
+    },
+    {
+      "path": "skills/sql-dialect-routine-validation/SKILL.md",
+      "sha256": "c07c1c0ba83bd65b8d93fd397d9999e6e6c7d39d635f3f5472134609af96808e",
+      "size": 3008
+    },
+    {
+      "path": "skills/statistical-validity-reproducibility/SKILL.md",
+      "sha256": "accc070fdad27e27275f68170bb01b1bad0a1aa07acf105a43fa81bb8715bafd",
+      "size": 2127
+    },
+    {
+      "path": "skills/supply-chain-artifact-security/SKILL.md",
+      "sha256": "fc953160b2c6ccc04e7a7b1ca95139d82f56d1f3f1c46524879d5686b5657bf4",
+      "size": 2083
+    },
+    {
+      "path": "skills/test-case-authoring/SKILL.md",
+      "sha256": "058cb4e81f50be7b2d70994be1d5c09691764158e7f2a6f2b53c586318bf3c51",
+      "size": 3049
+    },
+    {
+      "path": "suites/CASE_INDEX.csv",
+      "sha256": "4a66a3cabd889af1bd044f104b93669fd5ec23c33d9f36eb2edd2143e5bedb6f",
+      "size": 8411837
+    },
+    {
+      "path": "suites/assurance-techniques.yaml",
+      "sha256": "b0fa97bee306fcf5bd5e6aa7861b1d132fd4ffd246ec7359b963eb8fce52c958",
+      "size": 1222
+    },
+    {
+      "path": "suites/cross-cutting.jsonl",
+      "sha256": "14da6e114a2e3da02db3f34726f04d6f73a49b303278fc02d7b34d3a84666159",
+      "size": 1462488
+    },
+    {
+      "path": "suites/cross-language.jsonl",
+      "sha256": "3f52383370ab843998d559e0f104890e3bc04747c9636daae492eb474e28456f",
+      "size": 51888598
+    },
+    {
+      "path": "suites/project-generation.jsonl",
+      "sha256": "aaa2c8eb935540fd36520fd7f0c4d192933c9f3e4e9886ac2e20bb1c0cc2fc5b",
+      "size": 2553100
+    },
+    {
+      "path": "suites/smoke.jsonl",
+      "sha256": "ca8a6fd639e8abf0b6b0b9d453ff0dc1e6567864d673dd627e0441ec3346f3fa",
+      "size": 6696
+    },
+    {
+      "path": "suites/spring-modernization.jsonl",
+      "sha256": "a6dd7de3ed67cd7b2da605c5d74e28f8b80202829b1c0bc5b3cd0ce491a5786b",
+      "size": 5729362
+    },
+    {
+      "path": "suites/sql-conversion.jsonl",
+      "sha256": "330d92bdca46163aa0ac06ea3844b15300763d1e94b2ba4882bb65ed39484476",
+      "size": 21288646
+    },
+    {
+      "path": "suites/suite.yaml",
+      "sha256": "2c118a680e9202404ea49758f84e4e6821dc9af7978403f2175339e1e5a7b036",
+      "size": 390
+    },
+    {
+      "path": "suites/summary.json",
+      "sha256": "3c7c19d08dc286cfd9ff2a4b352727eeed7c0e11760d8ce9c4aa68129767cb69",
+      "size": 671
+    },
+    {
+      "path": "suites/summary.md",
+      "sha256": "a79aac15970d821c93fab893cf9517a935ffd1b16fbda29b0ada8a7cb5166223",
+      "size": 438
+    },
+    {
+      "path": "tests/conftest.py",
+      "sha256": "6d34c88cfc06ba1a91f2333fa65f64d270aaa45f686f86b551dbb9dfbef88085",
+      "size": 144
+    },
+    {
+      "path": "tests/test_budget.py",
+      "sha256": "eb8102ef348b894769925b8ec4f940f6d953e37060b3f46360aa07ebf057ccbb",
+      "size": 2279
+    },
+    {
+      "path": "tests/test_case_schema_smoke.py",
+      "sha256": "dce18f74b7740ca5968de7637871d6a988900f857446b802a68351a4acea99a7",
+      "size": 463
+    },
+    {
+      "path": "tests/test_checkpoint_candidate.py",
+      "sha256": "57422a263f5b7d3b4a69b50c42a72d7b12bf3cbf4758906c7997319d7a731ca3",
+      "size": 2123
+    },
+    {
+      "path": "tests/test_coverage.py",
+      "sha256": "9b79667e54793cfce28042901291794b18ac1c5421e0256771350f8e2b745bfe",
+      "size": 261
+    },
+    {
+      "path": "tests/test_evidence.py",
+      "sha256": "102c96a5c7c5e8a60b8b8ef5dbf075f779c5fa54fa26d6840c018bd597310a23",
+      "size": 1393
+    },
+    {
+      "path": "tests/test_gates_statistics.py",
+      "sha256": "aa4f6ecca39d2a49e239da9535eaac0cfd4a9e655c39f17d776e8b08553aa69e",
+      "size": 1404
+    },
+    {
+      "path": "tests/test_materializer.py",
+      "sha256": "3d215632a59c6c90fe626b2695bf66c8fcf925e872edc2dec6c2023721a397b9",
+      "size": 528
+    },
+    {
+      "path": "tests/test_normalize.py",
+      "sha256": "3cce2b9318359a2f7574676fe18f539c1e3f2a1f9f6b5b85719952be4f19a071",
+      "size": 467
+    },
+    {
+      "path": "tests/test_policy.py",
+      "sha256": "820aa42c01c3918876400f9cae63b9ada68dd2347125fd32846f0c101ad9b9e2",
+      "size": 2003
+    },
+    {
+      "path": "tests/test_risk_performance_triage.py",
+      "sha256": "f784acefa55e3a898ebd68b8f99b7ede05a17f0b8776224f0a9e01222689f7bb",
+      "size": 1948
+    },
+    {
+      "path": "tests/test_runner_smoke.py",
+      "sha256": "a7aa953ce432f6c88fbfa4c24d7e17fff3f33a3f2e273d39dbdc8c3c217f1825",
+      "size": 432
+    },
+    {
+      "path": "tests/test_scoring.py",
+      "sha256": "3d1e2d379d5a9e3f3c47e92e03183248e5bca472ca26c35169add4db9124dcd1",
+      "size": 548
+    },
+    {
+      "path": "tests/test_skills_and_harness.py",
+      "sha256": "fa5f2b99c6d88e3c46e6ad1b915cd5e81d7d266d2c2f753b90d908c39edccdbf",
+      "size": 3884
+    },
+    {
+      "path": "tests/test_state_runtime.py",
+      "sha256": "f851d2c1903823781e571f95407ddce41e681101af4fafa6d0aa6ab2ee626744",
+      "size": 2563
+    }
+  ],
+  "generated_at": "2026-08-27",
+  "package": "elmos-etgb-sota-skills-package",
+  "schema_version": "1.1",
+  "skill_count": 24,
+  "skills_valid": true,
+  "total_bytes": 92035012,
+  "version": "1.1.0"
+}

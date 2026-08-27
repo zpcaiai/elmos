@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/etgb/schemas/evidence-manifest.schema.json",
+  "title": "ETGB Evidence Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "created_at", "sealed_at", "run", "artifacts", "events", "root_digest"],
+  "properties": {
+    "schema_version": {"const": "1.1"},
+    "created_at": {"type": "string"},
+    "sealed_at": {"type": ["string", "null"]},
+    "run": {"type": "object"},
+    "artifacts": {"type": "array", "items": {"type": "object"}},
+    "events": {"type": "array", "items": {"type": "object"}},
+    "root_digest": {"type": ["string", "null"]}
+  }
+}

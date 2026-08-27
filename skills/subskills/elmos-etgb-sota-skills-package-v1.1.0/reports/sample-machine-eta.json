@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.1",
+  "case_count": 12,
+  "concurrency": 3,
+  "machine_eta_ms": {
+    "p50": 760601,
+    "p90": 1180601
+  },
+  "predicted_credit_usd": {
+    "p50": 0.0,
+    "p90": 0.0
+  },
+  "predicted_tokens": {
+    "p50": 0,
+    "p90": 0
+  },
+  "prediction_basis": [
+    {
+      "case_id": "SQL-DDL-D44C3D8BE2AD23",
+      "capability_id": "SQL.ddl.clustered-index-adaptation",
+      "source": "business-line-history",
+      "p50_ms": 38,
+      "p90_ms": 38,
+      "sample_count": 1
+    },
+    {
+      "case_id": "XCUT-00CD6C39E13702",
+      "capability_id": "XCUT.out-of-memory-kill",
+      "source": "fallback",
+      "p50_ms": 300000,
+      "p90_ms": 480000,
+      "sample_count": 0
+    },
+    {
+      "case_id": "XCUT-012618797092C7",
+      "capability_id": "XCUT.external-side-effect-duplicate",
+      "source": "fallback",
+      "p50_ms": 300000,
+      "p90_ms": 480000,
+      "sample_count": 0
+    },
+    {
+      "case_id": "XCUT-006CB2F850503F",
+      "capability_id": "XCUT.budget-reservation-race",
+      "source": "fallback",
+      "p50_ms": 300000,
+      "p90_ms": 480000,
+      "sample_count": 0
+    },
+    {
+      "case_id": "XCUT-0263EB13480714",
+      "capability_id": "XCUT.wall-clock-budget-exceeded",
+      "source": "fallback",
+      "p50_ms": 300000,
+      "p90_ms": 480000,
+      "sample_count": 0
+    },
+    {
+      "case_id": "XCUT-01A0B6D7E56FC0",
+      "capability_id": "XCUT.credit-balance-negative",
+      "source": "fallback",
+      "p50_ms": 300000,
+      "p90_ms": 480000,
+      "sample_count": 0
+    },
+    {
+      "case_id": "XCUT-00BA413DF7BBAD",
+      "capability_id": "XCUT.host-reboot-recovery",
+      "source": "fallback",
+      "p50_ms": 300000,
+      "p90_ms": 480000,
+      "sample_count": 0
+    },
+    {
+      "case_id": "XCUT-024A2F867F4EA3",
+      "capability_id": "XCUT.path-traversal-archive",
+      "source": "fallback",
+      "p50_ms": 300000,
+      "p90_ms": 480000,
+      "sample_count": 0
+    },
+    {
+      "case_id": "SM-SMOKE-CONTRACT-001",
+      "capability_id": "SM.smoke.contract-equivalence",
+      "source": "capability-history",
+      "p50_ms": 1,
+      "p90_ms": 1,
+      "sample_count": 1
+    },
+    {
+      "case_id": "XLC-SMOKE-JAVA-PY-001",
+      "capability_id": "XLC.smoke.decimal-ledger",
+      "source": "capability-history",
+      "p50_ms": 1156,
+      "p90_ms": 1156,
+      "sample_count": 1
+    },
+    {
+      "case_id": "PG-SMOKE-PY-SQLITE-001",
+      "capability_id": "PG.smoke.crud-transaction-idempotency",
+      "source": "capability-history",
+      "p50_ms": 570,
+      "p90_ms": 570,
+      "sample_count": 1
+    },
+    {
+      "case_id": "SQL-SMOKE-SQLITE-001",
+      "capability_id": "SQL.smoke.query-trigger-state",
+      "source": "capability-history",
+      "p50_ms": 38,
+      "p90_ms": 38,
+      "sample_count": 1
+    }
+  ],
+  "note": "ETA is Elmos machine wall-clock, excluding human review or engineering time."
+}

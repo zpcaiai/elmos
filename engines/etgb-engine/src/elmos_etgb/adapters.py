@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 import sqlite3
+import shutil
 import tempfile
 from pathlib import Path
 from typing import Any, Callable
@@ -50,8 +51,12 @@ def _parse_json_output(text: str) -> Any:
 
 def execute_local_process(case: dict[str, Any], root: Path, *, store: EvidenceStore | None = None) -> tuple[str, list[dict[str, Any]], dict[str, Any], bool]:
     spec = case["execution"]
-    policy = ExecutionPolicy(root=root, timeout_seconds=int(spec["timeout_seconds"]), max_output_bytes=int(spec.get("max_output_bytes", 2 * 1024 * 1024)))
-    process = run_command_sequence(str(spec["command"]), resolve_within(root, spec["cwd"]), policy, env=spec.get("env"))
+    source_cwd = resolve_within(root, spec["cwd"])
+    with tempfile.TemporaryDirectory(prefix="etgb-local-workspace-") as temporary:
+        workspace = Path(temporary) / "workspace"
+        shutil.copytree(source_cwd, workspace)
+        policy = ExecutionPolicy(root=Path(temporary), timeout_seconds=int(spec["timeout_seconds"]), max_output_bytes=int(spec.get("max_output_bytes", 2 * 1024 * 1024)))
+        process = run_command_sequence(str(spec["command"]), workspace, policy, env=spec.get("env"))
     passed = process["returncode"] == 0 and not process["timed_out"] and not process["output_truncated"]
     oracle = {"type": "process-success", "critical": True, "passed": passed, "returncode": process["returncode"], "timed_out": process["timed_out"], "output_truncated": process["output_truncated"]}
     evidence = {"process": process, "artifacts": _process_artifacts(store, process, "local")}
@@ -61,10 +66,18 @@ def execute_local_process(case: dict[str, Any], root: Path, *, store: EvidenceSt
 def execute_differential_process(case: dict[str, Any], root: Path, *, store: EvidenceStore | None = None) -> tuple[str, list[dict[str, Any]], dict[str, Any], bool]:
     spec = case["execution"]
     timeout = int(spec["timeout_seconds"])
-    source_policy = ExecutionPolicy(root=root, timeout_seconds=timeout, max_output_bytes=int(spec.get("max_output_bytes", 2 * 1024 * 1024)))
-    target_policy = ExecutionPolicy(root=root, timeout_seconds=timeout, max_output_bytes=int(spec.get("max_output_bytes", 2 * 1024 * 1024)))
-    source = run_command_sequence(str(spec["source_command"]), resolve_within(root, spec["source_cwd"]), source_policy, env=spec.get("source_env"))
-    target = run_command_sequence(str(spec["target_command"]), resolve_within(root, spec["target_cwd"]), target_policy, env=spec.get("target_env"))
+    source_cwd = resolve_within(root, spec["source_cwd"])
+    target_cwd = resolve_within(root, spec["target_cwd"])
+    with tempfile.TemporaryDirectory(prefix="etgb-differential-workspace-") as temporary:
+        workspace = Path(temporary)
+        source_workspace = workspace / "source"
+        target_workspace = workspace / "target"
+        shutil.copytree(source_cwd, source_workspace)
+        shutil.copytree(target_cwd, target_workspace)
+        source_policy = ExecutionPolicy(root=workspace, timeout_seconds=timeout, max_output_bytes=int(spec.get("max_output_bytes", 2 * 1024 * 1024)))
+        target_policy = ExecutionPolicy(root=workspace, timeout_seconds=timeout, max_output_bytes=int(spec.get("max_output_bytes", 2 * 1024 * 1024)))
+        source = run_command_sequence(str(spec["source_command"]), source_workspace, source_policy, env=spec.get("source_env"))
+        target = run_command_sequence(str(spec["target_command"]), target_workspace, target_policy, env=spec.get("target_env"))
     build_pass = all(item["returncode"] == 0 and not item["timed_out"] and not item["output_truncated"] for item in (source, target))
     oracles: list[dict[str, Any]] = [{"type": "both-processes-success", "critical": True, "passed": build_pass, "source_returncode": source["returncode"], "target_returncode": target["returncode"]}]
     source_value: Any = None

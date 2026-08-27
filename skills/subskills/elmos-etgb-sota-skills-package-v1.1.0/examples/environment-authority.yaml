@@ -1,0 +1,30 @@
+schema_version: '1.1'
+authority_id: auth-ci-validation
+environment_id: env-ci-validation
+owner_type: environment
+owner_id: worker-ci-001
+tenant_id: tenant-ci
+role: validation-worker
+capabilities:
+  - harness.prepare
+  - harness.baseline
+  - harness.transform_or_generate
+  - harness.build
+  - harness.validate
+  - harness.score
+  - harness.publish
+  - filesystem.read
+filesystem:
+  read_roots: [/workspace/source, /workspace/public-tests]
+  write_roots: [/workspace/target, /workspace/build]
+network:
+  mode: deny
+  allowlist: []
+secrets:
+  allowed_refs: []
+hidden_tests:
+  read: true
+  write: false
+  execute: true
+fencing_token: 1
+expires_at: '2030-01-01T00:00:00Z'

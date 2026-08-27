@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import re
 import subprocess
+import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 from urllib.parse import urlparse
 
 import yaml
 
+from .attestation import AttestationError, load_json_object, verify_signed_record
 from .security import SecurityBoundaryError, resolve_within
 
 
@@ -21,7 +23,91 @@ def load_lock(root: Path) -> dict[str, Any]:
     return value
 
 
-def verify_lock(root: Path, *, release: bool = False) -> dict[str, Any]:
+def _load_jsonl(path: Path) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    with path.open(encoding="utf-8") as handle:
+        for line_number, line in enumerate(handle, 1):
+            if not line.strip():
+                continue
+            try:
+                value = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise ValueError(f"invalid JSON at {path}:{line_number}") from exc
+            if not isinstance(value, dict):
+                raise ValueError(f"governance record at {path}:{line_number} must be an object")
+            records.append(value)
+    return records
+
+
+def verify_license_reviews(root: Path, *, release: bool = False, trust_store: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """Verify signed, commit-bound corpus license review records.
+
+    The lock remains the source of corpus identity. A review record can satisfy
+    the lock's ``required`` state only when a separate trusted reviewer signs a
+    non-expired record for the exact repository and commit.
+    """
+
+    errors: list[str] = []
+    warnings: list[str] = []
+    lock = load_lock(root)
+    review_path = root / "corpora" / "license-reviews.jsonl"
+    required_ids = {str(repo.get("id")) for repo in lock["repositories"]}
+    if not review_path.is_file():
+        messages = [f"license review evidence missing: {identifier}" for identifier in sorted(required_ids)]
+        (errors if release else warnings).extend(messages)
+        return {"valid": not errors, "records": 0, "approved": 0, "unapproved": len(required_ids), "errors": errors, "warnings": warnings}
+    try:
+        records = _load_jsonl(review_path)
+    except (OSError, ValueError) as exc:
+        return {"valid": False, "records": 0, "approved": 0, "unapproved": len(required_ids), "errors": [str(exc)], "warnings": []}
+    if trust_store is None:
+        trust_path = root / "corpora" / "trust-store.json"
+        if trust_path.is_file():
+            try:
+                trust_store = load_json_object(trust_path)
+            except AttestationError as exc:
+                trust_store = {}
+                errors.append(str(exc))
+        else:
+            trust_store = {}
+    by_id: dict[str, dict[str, Any]] = {}
+    for record in records:
+        payload = record.get("payload") if isinstance(record, dict) else None
+        identifier = str(payload.get("corpus_id")) if isinstance(payload, dict) else ""
+        if identifier in by_id:
+            errors.append(f"duplicate license review record: {identifier}")
+            continue
+        by_id[identifier] = record
+        verification = verify_signed_record(record, trust_store, record_type="license-review")
+        if not verification["valid"]:
+            errors.extend(f"license review {identifier}: {error}" for error in verification["errors"])
+            continue
+        if not isinstance(payload, dict):
+            errors.append(f"license review {identifier}: payload must be an object")
+            continue
+        if payload.get("review_status") != "approved":
+            errors.append(f"license review {identifier}: review_status is not approved")
+    approved = 0
+    for repo in lock["repositories"]:
+        identifier = str(repo.get("id"))
+        record = by_id.get(identifier)
+        payload = record.get("payload") if isinstance(record, dict) else None
+        if not isinstance(payload, dict):
+            errors.append(f"license review evidence missing: {identifier}")
+            continue
+        if payload.get("repository") != repo.get("repository") or payload.get("commit") != repo.get("commit"):
+            errors.append(f"license review is not bound to locked repository/commit: {identifier}")
+            continue
+        if payload.get("review_status") == "approved":
+            approved += 1
+    unresolved = len(required_ids) - approved
+    if unresolved:
+        message = f"{unresolved} corpus license review(s) are not approved and verified"
+        (errors if release else warnings).append(message)
+    return {"valid": not errors, "records": len(records), "approved": approved, "unapproved": unresolved, "errors": errors, "warnings": warnings}
+
+
+def verify_lock(root: Path, *, release: bool = False, trust_store: Mapping[str, Any] | None = None) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
     try:
@@ -42,11 +128,11 @@ def verify_lock(root: Path, *, release: bool = False) -> dict[str, Any]:
         policy = repo.get("policy", {})
         if policy.get("network") != "allowlisted" or policy.get("secrets") != "none":
             errors.append(f"unsafe corpus policy: {identifier}")
-        if repo.get("license_review") != "approved":
-            message = f"license review required: {identifier}"
-            (errors if release else warnings).append(message)
-    approved = sum(1 for repo in lock["repositories"] if repo.get("license_review") == "approved")
-    return {"valid": not errors, "repositories": len(lock["repositories"]), "approved": approved, "unapproved": len(lock["repositories"]) - approved, "errors": errors, "warnings": warnings}
+    license_reviews = verify_license_reviews(root, release=release, trust_store=trust_store)
+    errors.extend(license_reviews["errors"])
+    warnings.extend(license_reviews["warnings"])
+    approved = license_reviews["approved"]
+    return {"valid": not errors, "repositories": len(lock["repositories"]), "approved": approved, "unapproved": license_reviews["unapproved"], "errors": errors, "warnings": warnings, "license_reviews": license_reviews}
 
 
 def fetch_approved(root: Path, *, allow_network: bool = False) -> list[dict[str, Any]]:

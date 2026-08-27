@@ -1,0 +1,56 @@
+schema_version: '1.1'
+namespace: elmos.etgb
+spans:
+  - etgb.run
+  - etgb.plan
+  - etgb.case
+  - etgb.phase.prepare
+  - etgb.phase.baseline
+  - etgb.phase.transform
+  - etgb.phase.generate
+  - etgb.phase.build
+  - etgb.phase.validate
+  - etgb.phase.score
+  - etgb.phase.publish
+  - etgb.oracle
+  - etgb.checkpoint
+  - etgb.compensation
+required_attributes:
+  - elmos.tenant.id
+  - elmos.project.id
+  - elmos.task.id
+  - etgb.run.id
+  - etgb.case.id
+  - etgb.capability.id
+  - etgb.business_line
+  - etgb.candidate.digest
+  - etgb.plan.digest
+  - etgb.environment.id
+  - etgb.authority.id
+  - etgb.owner.id
+  - etgb.fencing_token
+  - etgb.phase
+  - etgb.attempt
+  - etgb.seed
+  - etgb.status
+  - etgb.failure_class
+  - etgb.checkpoint.digest
+  - gen_ai.provider.name
+  - gen_ai.request.model
+  - gen_ai.usage.input_tokens
+  - gen_ai.usage.output_tokens
+  - elmos.credit.usd
+cardinality_policy:
+  forbidden_metric_labels:
+    - source_file_path
+    - prompt_text
+    - repository_url
+    - exception_message
+    - evidence_uri
+  high_cardinality_values: traces-and-logs-only
+redaction:
+  never_record:
+    - secret_value
+    - raw_access_token
+    - raw_private_source
+    - hidden_test_content

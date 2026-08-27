@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import tarfile
 import zipfile
 from pathlib import Path, PurePosixPath
 from typing import Any
@@ -12,8 +13,10 @@ from typing import Any
 import yaml
 
 
-EXPECTED_ARCHIVE_SHA256 = "fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202"
-PACKAGE_ROOT_NAME = "elmos-etgb-sota-skills-package-v1.0.0"
+EXPECTED_ARCHIVE_SHA256 = "6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e"
+PACKAGE_ROOT_NAME = "elmos-etgb-sota-skills-package-v1.1.0"
+PACKAGE_VERSION = "1.1.0"
+PACKAGE_ID = "elmos-etgb-sota-skills-package"
 SKILL_NAMES = (
     "etgb-orchestrator",
     "test-case-authoring",
@@ -25,6 +28,20 @@ SKILL_NAMES = (
     "metamorphic-fuzz-mutation",
     "corpus-governance",
     "release-certification",
+    "production-harness-integration",
+    "environment-authority-sandbox",
+    "checkpoint-resume-recovery",
+    "evidence-provenance-ledger",
+    "budget-cost-eta-governance",
+    "risk-based-test-selection",
+    "benchmark-integrity-hidden-tests",
+    "observability-failure-triage",
+    "performance-scale-certification",
+    "statistical-validity-reproducibility",
+    "supply-chain-artifact-security",
+    "incident-regression-learning",
+    "multi-tenant-scheduling-isolation",
+    "release-candidate-integrity",
 )
 _CHECKSUM_LINE = re.compile(r"^([0-9a-f]{64})  (.+)$")
 
@@ -39,7 +56,7 @@ def file_sha256(path: Path) -> str:
 
 def _safe_member(name: str) -> bool:
     path = PurePosixPath(name)
-    return bool(name) and not path.is_absolute() and "" not in path.parts and all(part not in {".", ".."} for part in path.parts)
+    return bool(name) and "\x00" not in name and "//" not in name and not path.is_absolute() and all(part not in {".", ".."} for part in path.parts)
 
 
 def _checksum_rows(content: str) -> dict[str, str]:
@@ -56,6 +73,43 @@ def _checksum_rows(content: str) -> dict[str, str]:
     return rows
 
 
+def _archive_kind(archive: Path) -> str:
+    if zipfile.is_zipfile(archive):
+        return "zip"
+    if tarfile.is_tarfile(archive):
+        return "tar"
+    raise ValueError(f"unsupported source archive format: {archive}")
+
+
+def _archive_members(archive: Path, kind: str) -> tuple[list[str], dict[str, bytes], list[str]]:
+    """Read archive members as inert bytes and surface link members separately."""
+
+    names: list[str] = []
+    files: dict[str, bytes] = {}
+    links: list[str] = []
+    if kind == "zip":
+        with zipfile.ZipFile(archive) as package:
+            for info in package.infolist():
+                names.append(info.filename)
+                mode = (info.external_attr >> 16) & 0o170000
+                if mode == 0o120000:
+                    links.append(info.filename)
+                elif not info.is_dir():
+                    files[info.filename] = package.read(info)
+    else:
+        with tarfile.open(archive, mode="r:*") as package:
+            for info in package.getmembers():
+                names.append(info.name)
+                if info.issym() or info.islnk():
+                    links.append(info.name)
+                elif info.isfile():
+                    handle = package.extractfile(info)
+                    if handle is None:
+                        raise ValueError(f"archive member has no readable payload: {info.name}")
+                    files[info.name] = handle.read()
+    return names, files, links
+
+
 def verify_source_package(archive: Path, *, extracted: Path | None = None, expected_archive_sha256: str = EXPECTED_ARCHIVE_SHA256) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -63,49 +117,47 @@ def verify_source_package(archive: Path, *, extracted: Path | None = None, expec
     actual_digest = file_sha256(archive)
     if expected_archive_sha256 and actual_digest != expected_archive_sha256:
         errors.append(f"archive digest mismatch: expected {expected_archive_sha256}, got {actual_digest}")
-    with zipfile.ZipFile(archive) as package:
-        infos = package.infolist()
-        names = [info.filename for info in infos]
+    names: list[str] = []
+    checksums: dict[str, str] = {}
+    try:
+        kind = _archive_kind(archive)
+        names, payloads, links = _archive_members(archive, kind)
         duplicate_names = sorted({name for name in names if names.count(name) > 1})
         errors.extend(f"duplicate archive member: {name}" for name in duplicate_names)
-        for info in infos:
-            if not _safe_member(info.filename):
-                errors.append(f"unsafe archive member: {info.filename}")
-            mode = (info.external_attr >> 16) & 0o170000
-            if mode == 0o120000:
-                errors.append(f"symlink archive member is forbidden: {info.filename}")
+        errors.extend(f"unsafe archive member: {name}" for name in names if not _safe_member(name))
+        errors.extend(f"link archive member is forbidden: {name}" for name in links)
         prefix = PACKAGE_ROOT_NAME + "/"
-        if not all(name.startswith(prefix) for name in names):
+        if not all(name == PACKAGE_ROOT_NAME or name.startswith(prefix) for name in names):
             errors.append("archive contains a member outside the pinned package root")
-        relative = {name[len(prefix):]: name for name in names if name.startswith(prefix) and name != prefix}
+        relative = {name[len(prefix):]: name for name in payloads if name.startswith(prefix)}
         required = {"PACKAGE_MANIFEST.json", "SHA256SUMS", "skills/manifest.yaml", "suites/suite.yaml", "schemas/test-case.schema.json"}
-        errors.extend(f"missing package member: {path}" for path in sorted(required - relative.keys()))
-        checksums: dict[str, str] = {}
+        errors.extend(f"missing package member: {path}" for path in sorted(required - set(relative)))
         if "SHA256SUMS" in relative:
             try:
-                checksums = _checksum_rows(package.read(relative["SHA256SUMS"]).decode("utf-8"))
+                checksums = _checksum_rows(payloads[relative["SHA256SUMS"]].decode("utf-8"))
             except (UnicodeDecodeError, ValueError) as exc:
                 errors.append(str(exc))
         for path, expected in checksums.items():
-            if path not in relative:
+            archive_name = relative.get(path)
+            if archive_name is None:
                 errors.append(f"checksum references missing member: {path}")
                 continue
-            actual = hashlib.sha256(package.read(relative[path])).hexdigest()
+            actual = hashlib.sha256(payloads[archive_name]).hexdigest()
             if actual != expected:
                 errors.append(f"package checksum mismatch: {path}")
         manifest: dict[str, Any] = {}
         try:
-            manifest = json.loads(package.read(relative["PACKAGE_MANIFEST.json"]))
+            manifest = json.loads(payloads[relative["PACKAGE_MANIFEST.json"]])
         except (KeyError, json.JSONDecodeError, UnicodeDecodeError) as exc:
             errors.append(f"invalid PACKAGE_MANIFEST.json: {exc}")
         if manifest:
-            if manifest.get("package") != PACKAGE_ROOT_NAME:
-                errors.append("package manifest identity mismatch")
+            if manifest.get("package") != PACKAGE_ID or manifest.get("version") != PACKAGE_VERSION:
+                errors.append("package manifest identity or version mismatch")
             checksum_file_count = len(checksums) - (1 if "PACKAGE_MANIFEST.json" in checksums else 0)
             if manifest.get("file_count") != checksum_file_count:
                 errors.append("package manifest file_count does not match SHA256SUMS")
         try:
-            skill_manifest = yaml.safe_load(package.read(relative["skills/manifest.yaml"]))
+            skill_manifest = yaml.safe_load(payloads[relative["skills/manifest.yaml"]])
             declared = [item.get("name") for item in skill_manifest.get("skills", [])]
             if tuple(declared) != SKILL_NAMES:
                 errors.append(f"skill registry mismatch: {declared}")
@@ -131,25 +183,29 @@ def verify_source_package(archive: Path, *, extracted: Path | None = None, expec
                 visit(name)
         except (KeyError, TypeError, AttributeError, ValueError, yaml.YAMLError) as exc:
             errors.append(f"invalid skill manifest: {exc}")
-        if extracted:
-            extracted = extracted.resolve(strict=True)
-            for path in checksums:
-                local = extracted / path
-                if not local.is_file():
-                    errors.append(f"extracted source missing: {path}")
-                    continue
-                if file_sha256(local) != checksums[path]:
-                    errors.append(f"extracted source drift: {path}")
-            extra = [path.relative_to(extracted).as_posix() for path in extracted.rglob("*") if path.is_file() and not any(part in {".venv", ".pytest_cache", "__pycache__"} or part.endswith(".egg-info") for part in path.relative_to(extracted).parts) and path.relative_to(extracted).as_posix() not in checksums]
-            if extra:
-                warnings.append(f"extracted tree has {len(extra)} generated or unmanifested files")
+    except (OSError, tarfile.TarError, ValueError) as exc:
+        errors.append(str(exc))
+        relative = {}
+    if extracted:
+        extracted = extracted.resolve(strict=True)
+        for path in checksums:
+            local = extracted / path
+            if local.is_symlink() or not local.is_file():
+                errors.append(f"extracted source missing: {path}")
+                continue
+            if file_sha256(local) != checksums[path]:
+                errors.append(f"extracted source drift: {path}")
+        extra = [path.relative_to(extracted).as_posix() for path in extracted.rglob("*") if path.is_file() and not any(part in {".venv", ".pytest_cache", "__pycache__"} or part.endswith(".egg-info") for part in path.relative_to(extracted).parts) and path.relative_to(extracted).as_posix() not in checksums and path.relative_to(extracted).as_posix() != "SHA256SUMS"]
+        if extra:
+            warnings.append(f"extracted tree has {len(extra)} generated or unmanifested files")
     return {
         "valid": not errors,
         "archive": str(archive),
         "archive_sha256": actual_digest,
         "archive_matches_pin": actual_digest == expected_archive_sha256,
-        "archive_entries": len(names) if 'names' in locals() else 0,
-        "checksum_entries": len(checksums) if 'checksums' in locals() else 0,
+        "archive_entries": len(names),
+        "checksum_entries": len(checksums),
+        "package_version": PACKAGE_VERSION,
         "skills": list(SKILL_NAMES),
         "errors": errors,
         "warnings": warnings,

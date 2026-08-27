@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-08-27",
+  "total_cases": 46664,
+  "by_business_line": {
+    "cross-cutting": 800,
+    "cross-language": 29535,
+    "project-generation": 1451,
+    "spring-modernization": 3117,
+    "sql-conversion": 11761
+  },
+  "by_priority": {
+    "P0": 7204,
+    "P1": 31530,
+    "P2": 7930
+  },
+  "by_level": {
+    "L0": 12418,
+    "L1": 17730,
+    "L2": 16316,
+    "L3": 200
+  },
+  "unique_capabilities_by_business_line": {
+    "cross-cutting": 100,
+    "cross-language": 174,
+    "project-generation": 91,
+    "spring-modernization": 222,
+    "sql-conversion": 207
+  },
+  "minimum_required": 10000,
+  "minimum_satisfied": true
+}

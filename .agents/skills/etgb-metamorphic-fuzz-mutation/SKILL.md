@@ -1,9 +1,9 @@
 ---
 name: etgb-metamorphic-fuzz-mutation
-description: Generate high-value property, metamorphic, fuzz, mutation, and fault-injection campaigns for ETGB cases. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
+description: Generate property, metamorphic, grammar fuzz, mutation and fault-injection campaigns with minimized reproductions. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
 metadata:
-  source_package: elmos-etgb-sota-skills-package-v1.0.0
-  source_archive_sha256: fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202
+  source_package: elmos-etgb-sota-skills-package-v1.1.0
+  source_archive_sha256: 6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e
   source_skill: metamorphic-fuzz-mutation
   runtime: engines/etgb-engine/src/elmos_etgb
 ---
@@ -75,4 +75,8 @@ Inject before/after durable writes and external side effects at every phase. Ver
 ## Promotion rule
 
 A fuzz-found issue is not closed until a deterministic regression exists. A P0 mutant survivor blocks release when it represents a forbidden semantic error.
+
+## Production integration
+
+Campaign workers run under restricted fuzz authority with no customer secrets and bounded CPU, memory, disk, process count, network and time. Findings enter the evidence ledger and failure clustering pipeline. Every minimized P0 finding creates an incident regression, hidden variant and representative mutant before closure.
 <!-- END UNTRUSTED SOURCE SKILL BODY -->

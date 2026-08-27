@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/etgb/schemas/environment-authority.schema.json",
+  "title": "Environment or Attachment Owned Authority",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version", "authority_id", "environment_id", "owner_type", "owner_id", "tenant_id",
+    "role", "capabilities", "filesystem", "network", "secrets", "hidden_tests", "fencing_token"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.1"},
+    "authority_id": {"type": "string"},
+    "environment_id": {"type": "string"},
+    "owner_type": {"enum": ["environment", "attachment"]},
+    "owner_id": {"type": "string"},
+    "tenant_id": {"type": "string"},
+    "role": {"type": "string"},
+    "capabilities": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "filesystem": {
+      "type": "object",
+      "required": ["read_roots", "write_roots"],
+      "properties": {
+        "read_roots": {"type": "array", "items": {"type": "string"}},
+        "write_roots": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "network": {
+      "type": "object",
+      "required": ["mode", "allowlist"],
+      "properties": {
+        "mode": {"enum": ["deny", "allowlist"]},
+        "allowlist": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "secrets": {
+      "type": "object",
+      "required": ["allowed_refs"],
+      "properties": {"allowed_refs": {"type": "array", "items": {"type": "string"}}}
+    },
+    "hidden_tests": {
+      "type": "object",
+      "required": ["read", "write", "execute"],
+      "properties": {
+        "read": {"type": "boolean"}, "write": {"type": "boolean"}, "execute": {"type": "boolean"}
+      }
+    },
+    "fencing_token": {"type": "integer", "minimum": 1},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "digest": {"type": "string"}
+  }
+}

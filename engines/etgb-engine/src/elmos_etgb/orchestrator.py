@@ -9,8 +9,11 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from .attestation import evidence_binding, verify_attestation_binding
 from .canonical import canonical_json, digest_json
+from .candidate import verify_frozen_candidate
 from .gates import evaluate_gate
+from .planner import build_plan as build_risk_plan
 from .runner import run_cases
 from .scoring import score_results
 from .validation import coverage_report, load_cases, validate_package
@@ -59,13 +62,10 @@ def select_cases(package_root: Path, *, profile: str | None = None, business_lin
     return selected
 
 
-def build_plan(package_root: Path, *, changed_from: str | None = None, root_for_git: Path | None = None) -> dict[str, Any]:
-    paths = changed_paths(root_for_git or package_root, changed_from) if changed_from else []
-    lines = affected_lines(paths)
-    cases = select_cases(package_root)
-    selected = [case["id"] for case in cases if "smoke" in case.get("profiles", []) or (case.get("business_line") in lines and case.get("priority") == "P0" and "pr" in case.get("profiles", []))]
-    payload = {"schema_version": "1.0", "suite_id": "elmos-etgb-sota-v1", "changed_from": changed_from, "changed_paths": paths, "affected_business_lines": sorted(lines), "case_ids": selected}
-    return {**payload, "plan_digest": digest_json(payload)}
+def build_plan(package_root: Path, *, changed_from: str | None = None, root_for_git: Path | None = None, history_path: Path | None = None, max_cases: int = 500, seed: int = 17, shard_count: int = 8, candidate_digest: str | None = None) -> dict[str, Any]:
+    """Build a digest-bound risk plan; release profiles must use full scope."""
+
+    return build_risk_plan(package_root, changed_from=changed_from, history_path=history_path, max_cases=max_cases, seed=seed, shard_count=shard_count, candidate_digest=candidate_digest)
 
 
 def shard_cases(cases: list[dict[str, Any]], *, shard_index: int, shard_count: int, corpus_commit: str = "", candidate_digest: str = "", seed: int = 0) -> list[dict[str, Any]]:
@@ -79,14 +79,21 @@ def shard_cases(cases: list[dict[str, Any]], *, shard_index: int, shard_count: i
     return selected
 
 
-def run_profile(package_root: Path, cases: list[dict[str, Any]], *, profile: str, output: Path, state_db: Path | None = None, artifact_root: Path | None = None, allow_unavailable: bool = False, owner: str | None = None, run_id: str | None = None, resume: bool = False) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+def run_profile(package_root: Path, cases: list[dict[str, Any]], *, profile: str, output: Path, state_db: Path | None = None, artifact_root: Path | None = None, allow_unavailable: bool = False, owner: str | None = None, run_id: str | None = None, resume: bool = False, candidate: dict[str, Any] | None = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     if not cases:
         raise ValueError("refuse to execute an empty ETGB plan")
-    validation = validate_package(package_root)
+    validation = validate_package(package_root, release=profile in {"release", "golden"})
     if not validation.get("valid"):
         raise ValueError("package validation failed; refuse execution")
-    results = run_cases(cases, package_root, profile=profile, state_db=state_db, artifact_root=artifact_root, allow_unavailable=allow_unavailable, owner=owner, run_id=run_id, resume=resume)
-    score = score_results(results, package_root, expected_count=len(cases) if profile == "smoke" else None, complete=True)
+    if profile in {"release", "golden"}:
+        if candidate is None:
+            raise ValueError("release/golden execution requires a frozen candidate")
+        candidate_errors = verify_frozen_candidate(candidate)
+        if candidate_errors:
+            raise ValueError("invalid frozen candidate: " + "; ".join(candidate_errors))
+    results = run_cases(cases, package_root, profile=profile, state_db=state_db, artifact_root=artifact_root, allow_unavailable=allow_unavailable, owner=owner, run_id=run_id, resume=resume, candidate=candidate)
+    complete = len(results) == len(cases) and not any(result.get("status") in {"unavailable", "skipped"} for result in results)
+    score = score_results(results, package_root, expected_count=len(cases), complete=complete, corpus_release=profile in {"release", "golden"})
     output.parent.mkdir(parents=True, exist_ok=True)
     payload = "\n".join(__import__("json").dumps(result, ensure_ascii=False, separators=(",", ":")) for result in results) + ("\n" if results else "")
     descriptor, temporary_name = tempfile.mkstemp(prefix=f".{output.name}.", dir=output.parent)
@@ -102,8 +109,22 @@ def run_profile(package_root: Path, cases: list[dict[str, Any]], *, profile: str
     return results, score
 
 
-def gate_profile(package_root: Path, results: list[dict[str, Any]], *, profile: str, external_attested: bool = False, independent_verifier: str | None = None) -> dict[str, Any]:
-    validation = validate_package(package_root, release=profile in {"release", "golden"})
+def gate_profile(package_root: Path, results: list[dict[str, Any]], *, profile: str, external_attested: bool = False, independent_verifier: str | None = None, external_attestation: dict[str, Any] | None = None, trust_store: dict[str, Any] | None = None, candidate_digest: str | None = None) -> dict[str, Any]:
+    validation = validate_package(package_root, release=profile in {"release", "golden"}, trust_store=trust_store)
     coverage = coverage_report(package_root)
-    score = score_results(results, package_root, expected_count=len(results), complete=not any(result.get("status") in {"unavailable", "skipped"} for result in results))
-    return evaluate_gate(score=score, validation=validation, coverage=coverage, profile=profile, external_attested=external_attested, independent_verifier=independent_verifier)
+    expected_scope = select_cases(package_root, profile=profile)
+    complete = len(results) == len(expected_scope) and not any(result.get("status") in {"unavailable", "skipped"} for result in results)
+    score = score_results(results, package_root, expected_count=len(expected_scope), complete=complete, corpus_release=profile in {"release", "golden"}, trust_store=trust_store)
+    attestation_verification = None
+    if external_attestation is not None:
+        attestation_verification = verify_attestation_binding(
+            external_attestation,
+            trust_store or {},
+            candidate_digest=candidate_digest,
+            score=score,
+            validation=validation,
+            coverage=coverage,
+            corpus=score.get("corpus", {}),
+            evidence=evidence_binding(results),
+        )
+    return evaluate_gate(score=score, validation=validation, coverage=coverage, profile=profile, external_attested=external_attested, independent_verifier=independent_verifier, external_attestation=external_attestation, attestation_verification=attestation_verification)

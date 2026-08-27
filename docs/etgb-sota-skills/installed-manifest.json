@@ -1,7 +1,7 @@
 {
   "certification_status": "NOT_CERTIFIED",
   "external_evidence": "NOT_RUN",
-  "namespace": "etgb-v1",
+  "namespace": "etgb-v1.1",
   "package": "elmos-etgb-sota-skills-package",
   "runtime_root": "engines/etgb-engine/src/elmos_etgb",
   "runtime_state": "BOUND",
@@ -9,118 +9,296 @@
   "skills": [
     {
       "dependencies": [
-        "corpus-governance",
-        "differential-oracle-engine",
+        "risk-based-test-selection",
+        "production-harness-integration",
+        "spring-modernization-validation",
+        "repository-translation-validation",
+        "project-generation-validation",
+        "sql-dialect-routine-validation",
+        "observability-failure-triage",
+        "incident-regression-learning",
         "release-certification"
       ],
-      "interface_path": "agent-skills/runtime/etgb-etgb-orchestrator/agents/openai.yaml",
-      "interface_sha256": "a0bd0806ac826867a46b0bec1a8ca6424f55211781651b026063fa0dcdc587fc",
-      "name": "etgb-etgb-orchestrator",
+      "interface_path": "agent-skills/runtime/etgb-orchestrator/agents/openai.yaml",
+      "interface_sha256": "c866238d7eaf4b65a3f494dbcc9e3127536726ad2caceefaebcf90c2640d997c",
+      "name": "etgb-orchestrator",
       "source_name": "etgb-orchestrator",
-      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/etgb-orchestrator/SKILL.md"
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/etgb-orchestrator/SKILL.md"
     },
     {
       "dependencies": [
-        "differential-oracle-engine"
+        "differential-oracle-engine",
+        "benchmark-integrity-hidden-tests",
+        "statistical-validity-reproducibility"
       ],
       "interface_path": "agent-skills/runtime/etgb-test-case-authoring/agents/openai.yaml",
       "interface_sha256": "49dfd590af87853dc8cd33958c475fe32a2022857ef909c22f8230bb8a7bc721",
       "name": "etgb-test-case-authoring",
       "source_name": "test-case-authoring",
-      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/test-case-authoring/SKILL.md"
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/test-case-authoring/SKILL.md"
     },
     {
       "dependencies": [
+        "production-harness-integration",
         "differential-oracle-engine",
         "metamorphic-fuzz-mutation",
-        "corpus-governance"
+        "corpus-governance",
+        "performance-scale-certification",
+        "supply-chain-artifact-security"
       ],
       "interface_path": "agent-skills/runtime/etgb-spring-modernization-validation/agents/openai.yaml",
       "interface_sha256": "826561f7527c8841ccad62a8700b3c9f35fa937c0bdf44ecf761c539d6b9a753",
       "name": "etgb-spring-modernization-validation",
       "source_name": "spring-modernization-validation",
-      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/spring-modernization-validation/SKILL.md"
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/spring-modernization-validation/SKILL.md"
     },
     {
       "dependencies": [
+        "production-harness-integration",
         "differential-oracle-engine",
         "metamorphic-fuzz-mutation",
-        "corpus-governance"
+        "corpus-governance",
+        "performance-scale-certification",
+        "supply-chain-artifact-security"
       ],
       "interface_path": "agent-skills/runtime/etgb-repository-translation-validation/agents/openai.yaml",
       "interface_sha256": "4e408c2ec8df2e0ac6fbe4676b65a889ee622922aaf7d4c1db80d1fa2df884cb",
       "name": "etgb-repository-translation-validation",
       "source_name": "repository-translation-validation",
-      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/repository-translation-validation/SKILL.md"
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/repository-translation-validation/SKILL.md"
     },
     {
       "dependencies": [
+        "production-harness-integration",
         "differential-oracle-engine",
-        "metamorphic-fuzz-mutation"
+        "metamorphic-fuzz-mutation",
+        "benchmark-integrity-hidden-tests",
+        "performance-scale-certification",
+        "supply-chain-artifact-security"
       ],
       "interface_path": "agent-skills/runtime/etgb-project-generation-validation/agents/openai.yaml",
       "interface_sha256": "c2a7cbcc4d328ca75e8c25faac736615d9e0e7b4f9d8b23740d50a2b881846c7",
       "name": "etgb-project-generation-validation",
       "source_name": "project-generation-validation",
-      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/project-generation-validation/SKILL.md"
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/project-generation-validation/SKILL.md"
     },
     {
       "dependencies": [
+        "production-harness-integration",
         "differential-oracle-engine",
         "metamorphic-fuzz-mutation",
-        "corpus-governance"
+        "corpus-governance",
+        "performance-scale-certification"
       ],
       "interface_path": "agent-skills/runtime/etgb-sql-dialect-routine-validation/agents/openai.yaml",
       "interface_sha256": "0673dd08533b4c23c0a1fd0d9625ff4023f2468939c045494e01b68954050203",
       "name": "etgb-sql-dialect-routine-validation",
       "source_name": "sql-dialect-routine-validation",
-      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/sql-dialect-routine-validation/SKILL.md"
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/sql-dialect-routine-validation/SKILL.md"
     },
     {
-      "dependencies": [],
+      "dependencies": [
+        "evidence-provenance-ledger",
+        "statistical-validity-reproducibility"
+      ],
       "interface_path": "agent-skills/runtime/etgb-differential-oracle-engine/agents/openai.yaml",
       "interface_sha256": "c3fc2ab3b052fd6b22b1f5f29a9cf56eb8e6179cda04ae5e0af4364643a6278d",
       "name": "etgb-differential-oracle-engine",
       "source_name": "differential-oracle-engine",
-      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/differential-oracle-engine/SKILL.md"
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/differential-oracle-engine/SKILL.md"
     },
     {
       "dependencies": [
-        "differential-oracle-engine"
+        "differential-oracle-engine",
+        "statistical-validity-reproducibility"
       ],
       "interface_path": "agent-skills/runtime/etgb-metamorphic-fuzz-mutation/agents/openai.yaml",
       "interface_sha256": "dc6f9b927fb6928f2da95037c200f1fe58611a1c5eaa836d6bcec10ebf0ca53e",
       "name": "etgb-metamorphic-fuzz-mutation",
       "source_name": "metamorphic-fuzz-mutation",
-      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/metamorphic-fuzz-mutation/SKILL.md"
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/metamorphic-fuzz-mutation/SKILL.md"
     },
     {
-      "dependencies": [],
+      "dependencies": [
+        "benchmark-integrity-hidden-tests",
+        "supply-chain-artifact-security"
+      ],
       "interface_path": "agent-skills/runtime/etgb-corpus-governance/agents/openai.yaml",
       "interface_sha256": "cd77409f76c76d96e8e26d315e4fe5fd43efb8ad4e1cbae77f6830520d21d0e9",
       "name": "etgb-corpus-governance",
       "source_name": "corpus-governance",
-      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/corpus-governance/SKILL.md"
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/corpus-governance/SKILL.md"
     },
     {
-      "dependencies": [],
+      "dependencies": [
+        "release-candidate-integrity",
+        "evidence-provenance-ledger",
+        "statistical-validity-reproducibility",
+        "performance-scale-certification",
+        "supply-chain-artifact-security"
+      ],
       "interface_path": "agent-skills/runtime/etgb-release-certification/agents/openai.yaml",
       "interface_sha256": "798362db63820bb1113b5cb6ef551876abba32b48d9df532b5b76dc5ce4dc541",
       "name": "etgb-release-certification",
       "source_name": "release-certification",
-      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/release-certification/SKILL.md"
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/release-certification/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "evidence-provenance-ledger",
+        "budget-cost-eta-governance",
+        "multi-tenant-scheduling-isolation",
+        "release-candidate-integrity"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-production-harness-integration/agents/openai.yaml",
+      "interface_sha256": "a3d97db2f4c0df64d255a172e66a3cfe6ff6b581533b5383224f508298f7fb10",
+      "name": "etgb-production-harness-integration",
+      "source_name": "production-harness-integration",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/production-harness-integration/SKILL.md"
+    },
+    {
+      "dependencies": [],
+      "interface_path": "agent-skills/runtime/etgb-environment-authority-sandbox/agents/openai.yaml",
+      "interface_sha256": "2c3822079c815cac2c10a25d7ef573931d7b3f1b562a253d0ce7900daf8e03ea",
+      "name": "etgb-environment-authority-sandbox",
+      "source_name": "environment-authority-sandbox",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/environment-authority-sandbox/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "environment-authority-sandbox",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-checkpoint-resume-recovery/agents/openai.yaml",
+      "interface_sha256": "50e67f60644426d35e7a0ec66bbd391808f179c984355c925af6e491e8ae79f1",
+      "name": "etgb-checkpoint-resume-recovery",
+      "source_name": "checkpoint-resume-recovery",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/checkpoint-resume-recovery/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "environment-authority-sandbox",
+        "supply-chain-artifact-security"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-evidence-provenance-ledger/agents/openai.yaml",
+      "interface_sha256": "ca809933a3f2493027e4ca02b63da621d7ea1252c2616218a768f85bcf556e73",
+      "name": "etgb-evidence-provenance-ledger",
+      "source_name": "evidence-provenance-ledger",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/evidence-provenance-ledger/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "multi-tenant-scheduling-isolation"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-budget-cost-eta-governance/agents/openai.yaml",
+      "interface_sha256": "dd364a656b6d7d542aab582c04b33244254ed1391b8f0c09471b455f340b7fe2",
+      "name": "etgb-budget-cost-eta-governance",
+      "source_name": "budget-cost-eta-governance",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/budget-cost-eta-governance/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "statistical-validity-reproducibility",
+        "release-candidate-integrity"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-risk-based-test-selection/agents/openai.yaml",
+      "interface_sha256": "d83db9014c74229cc830f6601dbcabff7932bb8da54f206ebefaf5d9c773cf0d",
+      "name": "etgb-risk-based-test-selection",
+      "source_name": "risk-based-test-selection",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/risk-based-test-selection/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "environment-authority-sandbox",
+        "release-candidate-integrity"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-benchmark-integrity-hidden-tests/agents/openai.yaml",
+      "interface_sha256": "52389a1365d77925b8bf11e9a8152b0320a847b8143bea0fa422062f458d8436",
+      "name": "etgb-benchmark-integrity-hidden-tests",
+      "source_name": "benchmark-integrity-hidden-tests",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/benchmark-integrity-hidden-tests/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "evidence-provenance-ledger",
+        "statistical-validity-reproducibility"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-observability-failure-triage/agents/openai.yaml",
+      "interface_sha256": "e0497d94042eed99a38a3a4e4fa4699da5502c700f0d2bfe192a528124cfa55d",
+      "name": "etgb-observability-failure-triage",
+      "source_name": "observability-failure-triage",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/observability-failure-triage/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "statistical-validity-reproducibility",
+        "budget-cost-eta-governance"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-performance-scale-certification/agents/openai.yaml",
+      "interface_sha256": "ead6e130b196e03edaba3e505265301b15fe0f27c75b825f1b56babb7d9653a1",
+      "name": "etgb-performance-scale-certification",
+      "source_name": "performance-scale-certification",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/performance-scale-certification/SKILL.md"
+    },
+    {
+      "dependencies": [],
+      "interface_path": "agent-skills/runtime/etgb-statistical-validity-reproducibility/agents/openai.yaml",
+      "interface_sha256": "d4f70fc659501820f9a890e00cba9f6a916ec9258e3e743b7e3d400422c3b6df",
+      "name": "etgb-statistical-validity-reproducibility",
+      "source_name": "statistical-validity-reproducibility",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/statistical-validity-reproducibility/SKILL.md"
+    },
+    {
+      "dependencies": [],
+      "interface_path": "agent-skills/runtime/etgb-supply-chain-artifact-security/agents/openai.yaml",
+      "interface_sha256": "17c940178d5196be6906dfbc322e6c762642f7297122cd63d909bd9ba81e354f",
+      "name": "etgb-supply-chain-artifact-security",
+      "source_name": "supply-chain-artifact-security",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/supply-chain-artifact-security/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "observability-failure-triage",
+        "metamorphic-fuzz-mutation"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-incident-regression-learning/agents/openai.yaml",
+      "interface_sha256": "551d26945eb3247d007d8b54c1b040eaa67c1f3f7730a09ac29d75b45d5d3409",
+      "name": "etgb-incident-regression-learning",
+      "source_name": "incident-regression-learning",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/incident-regression-learning/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "environment-authority-sandbox"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-multi-tenant-scheduling-isolation/agents/openai.yaml",
+      "interface_sha256": "79af6bd406ff92a5ee5fd3d667a00c6574ba15e4bdf3977f1fa56208552c60ef",
+      "name": "etgb-multi-tenant-scheduling-isolation",
+      "source_name": "multi-tenant-scheduling-isolation",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/multi-tenant-scheduling-isolation/SKILL.md"
+    },
+    {
+      "dependencies": [],
+      "interface_path": "agent-skills/runtime/etgb-release-candidate-integrity/agents/openai.yaml",
+      "interface_sha256": "3e040705349806ae97eb648eccba60003c257e9aa5a3dc9851576fa7b87170a3",
+      "name": "etgb-release-candidate-integrity",
+      "source_name": "release-candidate-integrity",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0/skills/release-candidate-integrity/SKILL.md"
     }
   ],
-  "source_archive": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0.zip",
-  "source_archive_sha256": "fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202",
-  "source_root": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0",
+  "source_archive": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0.tar.gz",
+  "source_archive_sha256": "6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e",
+  "source_root": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0",
   "source_validation": {
-    "archive": "/Users/stephen/DevProjects/AIProjects/elmos/skills/subskills/elmos-etgb-sota-skills-package-v1.0.0.zip",
-    "archive_entries": 107,
+    "archive": "/Users/stephen/DevProjects/AIProjects/elmos/skills/subskills/elmos-etgb-sota-skills-package-v1.1.0.tar.gz",
+    "archive_entries": 290,
     "archive_matches_pin": true,
-    "archive_sha256": "fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202",
-    "checksum_entries": 106,
+    "archive_sha256": "6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e",
+    "checksum_entries": 212,
     "errors": [],
+    "package_version": "1.1.0",
     "skills": [
       "etgb-orchestrator",
       "test-case-authoring",
@@ -131,10 +309,24 @@
       "differential-oracle-engine",
       "metamorphic-fuzz-mutation",
       "corpus-governance",
-      "release-certification"
+      "release-certification",
+      "production-harness-integration",
+      "environment-authority-sandbox",
+      "checkpoint-resume-recovery",
+      "evidence-provenance-ledger",
+      "budget-cost-eta-governance",
+      "risk-based-test-selection",
+      "benchmark-integrity-hidden-tests",
+      "observability-failure-triage",
+      "performance-scale-certification",
+      "statistical-validity-reproducibility",
+      "supply-chain-artifact-security",
+      "incident-regression-learning",
+      "multi-tenant-scheduling-isolation",
+      "release-candidate-integrity"
     ],
     "valid": true,
     "warnings": []
   },
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

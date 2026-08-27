@@ -1,0 +1,7 @@
+{
+  "selected": 4,
+  "output": "reports/smoke-results.jsonl",
+  "statuses": {
+    "passed": 4
+  }
+}

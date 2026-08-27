@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import base64
+import datetime as dt
 import json
 import tempfile
 import unittest
 from pathlib import Path
 
+from elmos_etgb.attestation import verify_attestation, unsigned_payload
 from elmos_etgb.canonical import CanonicalizationError, canonical_json, digest_json
 from elmos_etgb.evidence import EvidenceStore, build_evidence_manifest, create_deterministic_bundle, verify_evidence_manifest
 from elmos_etgb.gates import evaluate_gate
@@ -13,10 +16,11 @@ from elmos_etgb.runner import execute_case, run_cases
 from elmos_etgb.registry import SkillRegistry
 from elmos_etgb.security import ExecutionPolicy, SecurityBoundaryError, parse_command, resolve_within, run_command_sequence
 from elmos_etgb.state import StateConflict, StateStore
+from elmos_etgb.corpus import verify_license_reviews
 
 
 ROOT = Path(__file__).resolve().parents[3]
-PACKAGE = ROOT / "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0"
+PACKAGE = ROOT / "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0"
 
 
 class RuntimeTests(unittest.TestCase):
@@ -86,6 +90,78 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(decision["decision"], "BLOCKED")
         self.assertIn("independent external attestation", " ".join(decision["blockers"]))
 
+    def test_release_gate_does_not_accept_boolean_attestation_bypass(self) -> None:
+        score = {"complete_run": True, "metrics": {"critical_oracle_pass_rate": 1.0, "silent_semantic_error_rate": 0.0, "data_corruption_count": 0, "security_regression_count": 0, "transaction_mismatch_count": 0, "flaky_case_count": 0, "evidence_completeness": 1.0, "unapproved_corpus_count": 0}, "by_priority": {"P1": {"weighted_pass_rate": 1.0}, "P2": {"weighted_pass_rate": 1.0}}}
+        decision = evaluate_gate(score=score, validation={"valid": True}, coverage={"complete": True}, profile="release", external_attested=True, independent_verifier="verifier-1")
+        self.assertEqual(decision["decision"], "BLOCKED")
+        self.assertFalse(decision["external_attested"])
+
+    def test_ed25519_attestation_is_verified_and_tamper_evident(self) -> None:
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+        now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
+        private_key = Ed25519PrivateKey.generate()
+        public_key = private_key.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
+        digest = "a" * 64
+        attestation = {
+            "schema_version": "1.0",
+            "attestation_id": "attestation-1",
+            "profile": "release",
+            "subject": {
+                "candidate_digest": digest,
+                "score_digest": digest,
+                "validation_digest": digest,
+                "coverage_digest": digest,
+                "corpus_digest": digest,
+                "evidence_digest": digest,
+            },
+            "executor_id": "executor-1",
+            "verifier_id": "verifier-1",
+            "issued_at": now.isoformat(),
+            "expires_at": (now + dt.timedelta(hours=1)).isoformat(),
+            "key_id": "key-1",
+            "algorithm": "ed25519",
+        }
+        attestation["signature"] = base64.urlsafe_b64encode(private_key.sign(canonical_json(unsigned_payload(attestation)))).decode().rstrip("=")
+        trust_store = {
+            "schema_version": "1.0",
+            "keys": [{"key_id": "key-1", "algorithm": "ed25519", "status": "active", "public_key": base64.urlsafe_b64encode(public_key).decode().rstrip("="), "not_before": (now - dt.timedelta(hours=1)).isoformat(), "not_after": (now + dt.timedelta(hours=2)).isoformat()}],
+        }
+        self.assertTrue(verify_attestation(attestation, trust_store, now=now)["valid"])
+        attestation["subject"]["score_digest"] = "b" * 64
+        self.assertFalse(verify_attestation(attestation, trust_store, now=now)["valid"])
+
+    def test_signed_license_review_is_bound_to_locked_commit(self) -> None:
+        import yaml
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "corpora").mkdir()
+            commit = "a" * 40
+            (root / "corpora/corpus-lock.yaml").write_text(yaml.safe_dump({"schema_version": "1.0", "generated_at": "2026-08-27", "repositories": [{"id": "sample-corpus", "repository": "example/sample", "commit": commit, "license_review": "required", "redistribution": "metadata-only", "policy": {"network": "allowlisted", "secrets": "none"}}]}), encoding="utf-8")
+            now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
+            private_key = Ed25519PrivateKey.generate()
+            public_key = private_key.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
+            record = {
+                "schema_version": "1.0",
+                "record_type": "license-review",
+                "payload": {"corpus_id": "sample-corpus", "repository": "example/sample", "commit": commit, "license_spdx": ["Apache-2.0"], "review_status": "approved"},
+                "issuer_id": "license-reviewer-1",
+                "key_id": "license-key-1",
+                "algorithm": "ed25519",
+                "issued_at": (now - dt.timedelta(minutes=1)).isoformat(),
+                "expires_at": (now + dt.timedelta(hours=1)).isoformat(),
+            }
+            record["signature"] = base64.urlsafe_b64encode(private_key.sign(canonical_json(unsigned_payload(record)))).decode().rstrip("=")
+            (root / "corpora/license-reviews.jsonl").write_text(json.dumps(record) + "\n", encoding="utf-8")
+            trust_store = {"schema_version": "1.0", "keys": [{"key_id": "license-key-1", "algorithm": "ed25519", "status": "active", "public_key": base64.urlsafe_b64encode(public_key).decode().rstrip("="), "not_before": (now - dt.timedelta(hours=1)).isoformat(), "not_after": (now + dt.timedelta(hours=2)).isoformat()}]}
+            result = verify_license_reviews(root, release=True, trust_store=trust_store)
+            self.assertTrue(result["valid"])
+            self.assertEqual(result["approved"], 1)
+
     def test_runner_persists_completed_results_and_replays_idempotently(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -116,7 +192,7 @@ class RuntimeTests(unittest.TestCase):
     def test_registry_exposes_real_oracle_and_package_operations(self) -> None:
         registry = SkillRegistry(PACKAGE)
         names = {item["name"] for item in registry.describe()}
-        self.assertEqual(len(names), 10)
+        self.assertEqual(len(names), 24)
         self.assertTrue(registry.dispatch("differential-oracle-engine", "compare_json", {"left": {"a": 1}, "right": {"a": 1}})["passed"])
         self.assertTrue(registry.dispatch("test-case-authoring", "coverage")["complete"])
 

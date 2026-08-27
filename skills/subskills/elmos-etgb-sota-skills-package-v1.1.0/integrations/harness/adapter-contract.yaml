@@ -1,0 +1,131 @@
+schema_version: '1.1'
+contract_id: elmos.etgb.harness-adapter
+principles:
+  - adapters are deterministic or declare statistical behavior and seeds
+  - every mutating call is idempotent and fenced
+  - hidden tests execute in a distinct authority domain
+  - raw evidence is persisted before normalization
+  - cleanup never deletes sealed evidence
+context_required:
+  - tenant_id
+  - project_id
+  - task_id
+  - run_id
+  - case_run_id
+  - candidate_digest
+  - plan_digest
+  - case_digest
+  - environment_id
+  - authority_id
+  - owner_id
+  - fencing_token
+  - idempotency_key
+  - checkpoint_digest
+phases:
+  - name: prepare
+    state: PREPARING
+    request:
+      - case_document
+      - environment_authority
+      - resource_limits
+    response:
+      - workspace_digest
+      - toolchain_digest
+      - dependency_lock_digest
+  - name: baseline
+    state: BASELINING
+    request:
+      - source_snapshot
+      - public_workload
+    response:
+      - source_build
+      - source_contract
+      - source_state
+      - source_trace
+      - source_flake_report
+  - name: transform_or_generate
+    state_by_line:
+      project-generation: GENERATING
+      default: TRANSFORMING
+    request:
+      - source_snapshot_or_requirement_contract
+      - target_spec
+      - allowed_adaptations
+    response:
+      - target_repository_digest
+      - adaptation_manifest
+      - unsupported_manifest
+      - machine_usage
+  - name: build
+    state: BUILDING
+    response:
+      - clean_build_result
+      - sbom_digest
+      - provenance_digest
+      - artifact_digests
+  - name: validate
+    state: VALIDATING
+    authority_role: validation-worker
+    response:
+      - public_test_results
+      - hidden_test_results
+      - oracle_results
+      - mutation_results
+      - performance_results
+  - name: score
+    state: SCORING
+    response:
+      - score_document
+      - failure_classifications
+      - silent_semantic_error_claims
+  - name: publish
+    state: PUBLISHING
+    response:
+      - evidence_manifest_digest
+      - evidence_signature
+      - report_uris
+  - name: compensate
+    state: COMPENSATING
+    response:
+      - compensation_receipts
+      - unresolved_side_effects
+  - name: cleanup
+    state: terminal-or-compensating
+    response:
+      - workspace_cleanup_receipt
+      - retained_artifact_refs
+idempotency:
+  key_format: '{tenant_id}:{run_id}:{case_run_id}:{phase}:{phase_revision}'
+  duplicate_policy: return_original_response
+fencing:
+  required_on:
+    - workspace mutation
+    - checkpoint write
+    - artifact publication
+    - external side effect
+    - billing usage write
+  stale_token_policy: reject_without_side_effect
+checkpoint:
+  required_after_each_phase: true
+  verify:
+    - candidate_digest
+    - plan_digest
+    - environment_digest
+    - workspace_digest
+    - artifact_digests
+    - side_effect_receipts
+failure_classes:
+  infrastructure_retryable:
+    - transient-network
+    - provider-rate-limit
+    - executor-preemption
+  product_non_retryable_without_new_candidate:
+    - behavior-mismatch
+    - state-transaction-mismatch
+    - security-regression
+    - unsupported-undisclosed
+  blocked:
+    - source-baseline-broken
+    - oracle-conflict
+    - license-not-approved
+    - evidence-integrity-failure

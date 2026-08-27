@@ -1,0 +1,14 @@
+candidate_id: elmos-etgb-rc-2026-08-27
+source_commit: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+model: gpt-5.6-pro
+model_revision: '2026-08-27-prod-001'
+prompt_digest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+skill_manifest_digest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+rule_bundle_digest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+toolchain_image_digest: sha256:4444444444444444444444444444444444444444444444444444444444444444
+oracle_version: etgb-oracle-v1.1.0
+normalization_version: etgb-normalization-v1.1.0
+metadata:
+  package_version: 1.1.0
+  profiles: [release, golden]
+  corpus_lock: corpora/corpus-lock.yaml

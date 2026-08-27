@@ -1,9 +1,9 @@
 ---
 name: etgb-repository-translation-validation
-description: Validate whole-repository cross-language conversions with executable semantics, architecture adaptation, dependency handling, and hidden tests. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
+description: Validate whole-repository cross-language conversion, architecture adaptation, dependency handling and hidden semantics. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
 metadata:
-  source_package: elmos-etgb-sota-skills-package-v1.0.0
-  source_archive_sha256: fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202
+  source_package: elmos-etgb-sota-skills-package-v1.1.0
+  source_archive_sha256: 6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e
   source_skill: repository-translation-validation
   runtime: engines/etgb-engine/src/elmos_etgb
 ---
@@ -93,4 +93,8 @@ For Objective-C/Swift/Android Kotlin validate ownership, lifecycle, UI-thread, s
 - missing source capability not disclosed;
 - target test suite weakened to pass;
 - dependency substituted without contract evidence.
+
+## v1.1 production execution
+
+Bind semantic graph, adaptation manifest, target repository, dependency substitution, tests and evidence to one candidate digest. Large conversions use stable module shards and digest-verified resume. Evaluate architecture adaptation completeness, supply-chain changes, cost/ETA and multi-seed stability; never merge files from different candidate attempts into one claimed target.
 <!-- END UNTRUSTED SOURCE SKILL BODY -->

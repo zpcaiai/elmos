@@ -1,0 +1,226 @@
+schema_version: '1.1'
+package: elmos-etgb-sota-skills-package
+version: 1.1.0
+skills:
+- name: etgb-orchestrator
+  path: skills/etgb-orchestrator/SKILL.md
+  description: Plan, execute, pause, resume, aggregate and certify ETGB runs across all four Elmos business lines.
+  category: orchestration
+  maturity: production-contract
+  depends_on:
+  - risk-based-test-selection
+  - production-harness-integration
+  - spring-modernization-validation
+  - repository-translation-validation
+  - project-generation-validation
+  - sql-dialect-routine-validation
+  - observability-failure-triage
+  - incident-regression-learning
+  - release-certification
+- name: test-case-authoring
+  path: skills/test-case-authoring/SKILL.md
+  description: Create, review, materialize and maintain executable ETGB cases, capability matrices and independent Oracles.
+  category: assurance
+  maturity: production-contract
+  depends_on:
+  - differential-oracle-engine
+  - benchmark-integrity-hidden-tests
+  - statistical-validity-reproducibility
+- name: spring-modernization-validation
+  path: skills/spring-modernization-validation/SKILL.md
+  description: Validate repository-level Servlet, JSP, Struts, Spring Framework and Spring Boot modernization to Spring Boot 4.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - differential-oracle-engine
+  - metamorphic-fuzz-mutation
+  - corpus-governance
+  - performance-scale-certification
+  - supply-chain-artifact-security
+- name: repository-translation-validation
+  path: skills/repository-translation-validation/SKILL.md
+  description: Validate whole-repository cross-language conversion, architecture adaptation, dependency handling and hidden semantics.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - differential-oracle-engine
+  - metamorphic-fuzz-mutation
+  - corpus-governance
+  - performance-scale-certification
+  - supply-chain-artifact-security
+- name: project-generation-validation
+  path: skills/project-generation-validation/SKILL.md
+  description: Validate multilingual greenfield and evolutionary project generation from executable requirement contracts.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - differential-oracle-engine
+  - metamorphic-fuzz-mutation
+  - benchmark-integrity-hidden-tests
+  - performance-scale-certification
+  - supply-chain-artifact-security
+- name: sql-dialect-routine-validation
+  path: skills/sql-dialect-routine-validation/SKILL.md
+  description: Validate SQL dialect, DDL, DML, routine, trigger, transaction and analytics conversion by dual execution.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - differential-oracle-engine
+  - metamorphic-fuzz-mutation
+  - corpus-governance
+  - performance-scale-certification
+- name: differential-oracle-engine
+  path: skills/differential-oracle-engine/SKILL.md
+  description: Capture, normalize, compare and explain source/target behavior, state, side effects, traces, security and performance.
+  category: assurance
+  maturity: production-contract
+  depends_on:
+  - evidence-provenance-ledger
+  - statistical-validity-reproducibility
+- name: metamorphic-fuzz-mutation
+  path: skills/metamorphic-fuzz-mutation/SKILL.md
+  description: Generate property, metamorphic, grammar fuzz, mutation and fault-injection campaigns with minimized reproductions.
+  category: assurance
+  maturity: production-contract
+  depends_on:
+  - differential-oracle-engine
+  - statistical-validity-reproducibility
+- name: corpus-governance
+  path: skills/corpus-governance/SKILL.md
+  description: Select, pin, license-review, sandbox, time-split and maintain public/private ETGB corpora reproducibly.
+  category: governance
+  maturity: production-contract
+  depends_on:
+  - benchmark-integrity-hidden-tests
+  - supply-chain-artifact-security
+- name: release-certification
+  path: skills/release-certification/SKILL.md
+  description: Evaluate hard gates, evidence, statistics, waivers and promotion decisions for immutable Elmos candidates.
+  category: certification
+  maturity: production-contract
+  depends_on:
+  - release-candidate-integrity
+  - evidence-provenance-ledger
+  - statistical-validity-reproducibility
+  - performance-scale-certification
+  - supply-chain-artifact-security
+- name: production-harness-integration
+  path: skills/production-harness-integration/SKILL.md
+  description: Integrate ETGB with durable Elmos execution, adapter SDK, state machine, idempotency, outbox and control-plane contracts.
+  category: runtime-control
+  maturity: production-contract
+  depends_on:
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - evidence-provenance-ledger
+  - budget-cost-eta-governance
+  - multi-tenant-scheduling-isolation
+  - release-candidate-integrity
+- name: environment-authority-sandbox
+  path: skills/environment-authority-sandbox/SKILL.md
+  description: Enforce Environment-owned or Attachment-owned least-privilege authority, hidden-test isolation, leases and fencing.
+  category: runtime-control
+  maturity: production-contract
+  depends_on: []
+- name: checkpoint-resume-recovery
+  path: skills/checkpoint-resume-recovery/SKILL.md
+  description: Provide digest-verified checkpoints, pause, resume, cancellation, compensation and crash recovery for long runs.
+  category: runtime-control
+  maturity: production-contract
+  depends_on:
+  - environment-authority-sandbox
+  - evidence-provenance-ledger
+- name: evidence-provenance-ledger
+  path: skills/evidence-provenance-ledger/SKILL.md
+  description: Store raw and normalized ETGB evidence in a content-addressed, redacted, signed and tamper-evident ledger.
+  category: governance
+  maturity: production-contract
+  depends_on:
+  - environment-authority-sandbox
+  - supply-chain-artifact-security
+- name: budget-cost-eta-governance
+  path: skills/budget-cost-eta-governance/SKILL.md
+  description: Reserve and reconcile token, credit, compute and machine wall-clock budgets and produce calibrated Elmos ETAs.
+  category: runtime-control
+  maturity: production-contract
+  depends_on:
+  - multi-tenant-scheduling-isolation
+- name: risk-based-test-selection
+  path: skills/risk-based-test-selection/SKILL.md
+  description: Build immutable plans from change impact, P0 scope, incidents, coverage gaps, uncertainty and randomized controls.
+  category: orchestration
+  maturity: production-contract
+  depends_on:
+  - statistical-validity-reproducibility
+  - release-candidate-integrity
+- name: benchmark-integrity-hidden-tests
+  path: skills/benchmark-integrity-hidden-tests/SKILL.md
+  description: Prevent memorization, leakage, self-authored Oracles, cherry-picking and temporal contamination in ETGB evaluations.
+  category: governance
+  maturity: production-contract
+  depends_on:
+  - environment-authority-sandbox
+  - release-candidate-integrity
+- name: observability-failure-triage
+  path: skills/observability-failure-triage/SKILL.md
+  description: Instrument ETGB, classify and cluster failures, detect flakes and provide evidence-linked operational drill-down.
+  category: operations
+  maturity: production-contract
+  depends_on:
+  - evidence-provenance-ledger
+  - statistical-validity-reproducibility
+- name: performance-scale-certification
+  path: skills/performance-scale-certification/SKILL.md
+  description: Certify large-repository, data-volume, concurrency, soak, stress, resource, cost and latency scalability.
+  category: certification
+  maturity: production-contract
+  depends_on:
+  - statistical-validity-reproducibility
+  - budget-cost-eta-governance
+- name: statistical-validity-reproducibility
+  path: skills/statistical-validity-reproducibility/SKILL.md
+  description: Make probabilistic ETGB evaluation reproducible with fixed seeds, confidence intervals, stability and non-inferiority.
+  category: assurance
+  maturity: production-contract
+  depends_on: []
+- name: supply-chain-artifact-security
+  path: skills/supply-chain-artifact-security/SKILL.md
+  description: Safely ingest untrusted repositories and verify dependencies, SBOM, provenance, signatures and artifacts.
+  category: governance
+  maturity: production-contract
+  depends_on: []
+- name: incident-regression-learning
+  path: skills/incident-regression-learning/SKILL.md
+  description: Convert every production defect and near miss into minimal, realistic, hidden, mutant and planner regressions.
+  category: operations
+  maturity: production-contract
+  depends_on:
+  - observability-failure-triage
+  - metamorphic-fuzz-mutation
+- name: multi-tenant-scheduling-isolation
+  path: skills/multi-tenant-scheduling-isolation/SKILL.md
+  description: Enforce tenant isolation, three-task account concurrency, fair scheduling, quotas, leases, cache safety and backpressure.
+  category: runtime-control
+  maturity: production-contract
+  depends_on:
+  - environment-authority-sandbox
+- name: release-candidate-integrity
+  path: skills/release-candidate-integrity/SKILL.md
+  description: Freeze model, Prompt, Skill, rule, source, toolchain, Oracle and normalization into an immutable candidate digest.
+  category: governance
+  maturity: production-ready
+  depends_on: []
+entry_skill: etgb-orchestrator
+capability_model: matrices/coverage-requirements.yaml
+cli: etgb
+integration_contracts:
+- integrations/harness/adapter-contract.yaml
+- integrations/postgres/001_etgb_schema.sql
+- integrations/postgres/002_etgb_rls.sql
+- integrations/openapi/etgb-control-plane.openapi.yaml
+- integrations/events/etgb-events.asyncapi.yaml
+- integrations/otel/semantic-conventions.yaml
