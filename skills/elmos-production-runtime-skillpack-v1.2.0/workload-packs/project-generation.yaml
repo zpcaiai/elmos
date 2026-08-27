@@ -1,0 +1,15 @@
+id: multilingual-project-generation-v1
+job_type: PROJECT_GENERATION
+stages:
+  - requirements-normalization
+  - architecture-adr
+  - schema-api-contracts
+  - backend-generation
+  - frontend-generation
+  - database-migrations
+  - integration
+  - test-generation
+  - build-test
+  - security-quality-gates
+  - deployment-assets
+  - docs-report

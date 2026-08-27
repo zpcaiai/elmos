@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "tenant_id",
+    "work_item_id",
+    "state",
+    "reservation_idempotency_key",
+    "dispatch_idempotency_key"
+  ],
+  "properties": {
+    "tenant_id": {
+      "type": "string"
+    },
+    "work_item_id": {
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "RESERVING",
+        "RESERVED",
+        "ATTEMPT_CREATED",
+        "DISPATCHING",
+        "ACKED",
+        "COMPLETED",
+        "ABORTED"
+      ]
+    },
+    "reservation_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "worker_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "attempt_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fencing_token": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "reservation_idempotency_key": {
+      "type": "string"
+    },
+    "dispatch_idempotency_key": {
+      "type": "string"
+    }
+  }
+}

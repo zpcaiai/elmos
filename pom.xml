@@ -40,6 +40,7 @@
         <module>modules/secure-execution-plane</module>
         <module>modules/evidence-assurance-fabric</module>
         <module>modules/continuous-authorization</module>
+        <module>modules/production-runtime</module>
         <module>engines/database-data-engine</module>
         <module>engines/infrastructure-engine</module>
         <module>engines/security-compliance-engine</module>
