@@ -35,8 +35,10 @@ dropped.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import re
 from collections.abc import Iterable, Mapping
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
@@ -61,6 +63,7 @@ from .models import (
     AddConstraint,
     AlterTable,
     CanonicalType,
+    CanonicalTypeRef,
     Dialect,
     DialectError,
     DropColumn,
@@ -78,8 +81,10 @@ from .parser import (
     parse_insert_statement,
     parse_update,
 )
+from .profiles import NamespaceProfile, resolve_namespace_profile
 from .routine import parse_create_routine
 from .statement_splitter import split_statements
+from .static_do import parse_static_do
 
 FindingStatus = Literal["IN_SUBSET", "OUT_OF_SUBSET", "SCAN_ERROR"]
 CoverageDisposition = Literal[
@@ -205,12 +210,12 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     ),
     "CERTIFIED_ROUTINE_UNSUPPORTED_LANGUAGE": (
         "structure",
-        "only a table-free SQL expression function is in the portable routine profile; "
-        "PL/pgSQL and other routine languages remain explicit blockers",
+        "only SQL expressions and the narrow static PL/pgSQL block subset are in the portable routine profile; "
+        "other routine languages remain explicit blockers",
     ),
     "CERTIFIED_ROUTINE_UNSUPPORTED_BODY": (
         "structure",
-        "the function body is not one table-free SELECT expression in the typed routine IR",
+        "the function body is neither one table-free SELECT expression nor a narrow static PL/pgSQL block",
     ),
     "CERTIFIED_ROUTINE_UNSUPPORTED_FUNCTION": (
         "structure",
@@ -218,7 +223,8 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     ),
     "CERTIFIED_ROUTINE_UNSUPPORTED_PARAMETER": (
         "structure",
-        "routine parameters must have one plain name, one typed input value and no default/mode/constraint",
+        "routine parameters need a typed name and an explicitly supported mode/default; "
+        "complex signatures remain blocked",
     ),
     "CERTIFIED_ROUTINE_UNSUPPORTED_OPERATOR": (
         "structure",
@@ -230,7 +236,7 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     ),
     "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED": (
         "structure",
-        "RETURNS TABLE needs a typed row-shape IR and is not a scalar routine",
+        "RETURNS TABLE needs a static typed row shape and one matching read-only SELECT",
     ),
     "CERTIFIED_ROUTINE_NAMESPACE_MAPPING_REQUIRED": (
         "identifiers",
@@ -565,10 +571,19 @@ class FeasibilityReport:
     findings: list[ScanFinding]
     caveats: list[str] = field(default_factory=list)
     chinadb_coverage: dict[str, object] = field(default_factory=dict)
+    namespace_profile: dict[str, object] | None = None
+    source_catalog_evidence: list[dict[str, object]] = field(default_factory=list)
 
 
 def discover_sql_files(repository: str | os.PathLike[str]) -> list[Path]:
-    """Every `.sql` file under `repository`, sorted, skipping build output."""
+    """Every `.sql` file under ``repository`` in migration order.
+
+    Flyway-style ``V2`` and ``V10`` names do not sort correctly as ordinary
+    strings.  The catalogue is a sequence of source facts, so processing V10
+    before V2 can manufacture missing-column or uniqueness blockers.  Versioned
+    files therefore sort numerically; non-versioned SQL remains deterministic
+    after them.
+    """
     root = Path(repository)
     found: list[Path] = []
     for dirpath, dirnames, filenames in os.walk(root):
@@ -576,7 +591,13 @@ def discover_sql_files(repository: str | os.PathLike[str]) -> list[Path]:
         for name in filenames:
             if name.endswith(".sql"):
                 found.append(Path(dirpath) / name)
-    return sorted(found)
+    def order(path: Path) -> tuple[int, int, str]:
+        match = re.match(r"^V(\d+)(?:__|_)", path.name, re.IGNORECASE)
+        if match is None:
+            return (1, 0, str(path).casefold())
+        return (0, int(match.group(1)), str(path).casefold())
+
+    return sorted(found, key=order)
 
 
 def _excerpt(statement: exp.Expr) -> str:
@@ -610,6 +631,15 @@ def _catalog_key(schema: str | None, table: str) -> tuple[str, str]:
     return ((schema or "").casefold(), table.casefold())
 
 
+_BOUNDED_TENANT_COLUMN_DO = re.compile(
+    r"\bFOR\s+tenant_table\s+IN\s+SELECT\s+tablename\s+FROM\s+pg_tables"
+    r".*?\bschemaname\s*=\s*'public'"
+    r".*?\bEXECUTE\s+format\s*\(\s*'ALTER\s+TABLE\s+%I\s+"
+    r"ADD\s+COLUMN\s+IF\s+NOT\s+EXISTS\s+organization_id\s+varchar\s*\(\s*96\s*\)'",
+    re.DOTALL | re.IGNORECASE,
+)
+
+
 @dataclass
 class SourceSchemaCatalog:
     """Typed source facts used to prove bounded UPDATE row-source safety.
@@ -622,10 +652,15 @@ class SourceSchemaCatalog:
     """
 
     columns: dict[tuple[str, str], dict[str, CanonicalType]] = field(default_factory=dict)
+    type_refs: dict[tuple[str, str], dict[str, CanonicalTypeRef]] = field(default_factory=dict)
     unique_keys: dict[tuple[str, str], set[tuple[str, ...]]] = field(default_factory=dict)
+    evidence: list[dict[str, object]] = field(default_factory=list)
 
     def add_table(self, table: Table) -> None:
         key = _catalog_key(table.schema, table.name)
+        self.type_refs[key] = {
+            column.name.casefold(): column.type_ref for column in table.columns
+        }
         self.columns[key] = {
             column.name.casefold(): column.type_ref.canonical_type for column in table.columns
         }
@@ -634,16 +669,63 @@ class SourceSchemaCatalog:
             *(tuple(column.casefold() for column in unique) for unique in table.unique_constraints),
         } - {()}
 
+    def record_bounded_dynamic_tenant_column(
+        self,
+        statement: exp.Expression,
+        namespace_map: Mapping[str, str] | None,
+    ) -> None:
+        """Record one narrowly provable catalog effect without admitting it.
+
+        Some historical migrations use a PL/pgSQL loop to add the same typed
+        tenant column to every table in the public catalog.  The loop itself
+        remains outside the automatic route: dynamic SQL, dynamic object names,
+        control flow, policy changes and DML are never emitted by this method.
+        We only use the exact literal DDL format as source *evidence* for table
+        names already discovered by the source catalog.  Any other dynamic
+        body is ignored, so an UPDATE cannot gain proof from an approximation.
+        """
+        sql = statement.sql()
+        if not _BOUNDED_TENANT_COLUMN_DO.search(sql):
+            return
+        target_schema = (namespace_map or {}).get("", "")
+        type_ref = CanonicalTypeRef(CanonicalType.VARCHAR, length=96)
+        added: list[str] = []
+        for key in sorted(self.type_refs):
+            schema, table = key
+            if schema != target_schema.casefold() or table in {"organizations", "flyway_schema_history"}:
+                continue
+            columns = self.type_refs[key]
+            if "organization_id" in columns:
+                continue
+            columns["organization_id"] = type_ref
+            self.columns.setdefault(key, {})["organization_id"] = type_ref.canonical_type
+            added.append(table)
+        if added:
+            self.evidence.append(
+                {
+                    "kind": "BOUNDED_DYNAMIC_CATALOG_DDL",
+                    "column": "organization_id",
+                    "canonicalType": type_ref.canonical_type.value,
+                    "length": type_ref.length,
+                    "tables": added,
+                    "statementDigest": hashlib.sha256(sql.encode("utf-8")).hexdigest(),
+                    "routeStatus": "EVIDENCE_ONLY_NOT_EMITTED",
+                }
+            )
+
     def apply_alter(self, alter: AlterTable) -> None:
         key = _catalog_key(alter.schema, alter.table)
         columns = self.columns.setdefault(key, {})
+        type_refs = self.type_refs.setdefault(key, {})
         keys = self.unique_keys.setdefault(key, set())
         for action in alter.actions:
             if isinstance(action, AddColumn):
+                type_refs[action.column.name.casefold()] = action.column.type_ref
                 columns[action.column.name.casefold()] = action.column.type_ref.canonical_type
             elif isinstance(action, DropColumn):
                 name = action.column.casefold()
                 columns.pop(name, None)
+                type_refs.pop(name, None)
                 keys.difference_update({candidate for candidate in keys if name in candidate})
             elif isinstance(action, RenameColumn):
                 old = action.column.casefold()
@@ -651,6 +733,9 @@ class SourceSchemaCatalog:
                 column_type = columns.pop(old, None)
                 if column_type is not None:
                     columns[new] = column_type
+                type_ref = type_refs.pop(old, None)
+                if type_ref is not None:
+                    type_refs[new] = type_ref
                 keys_copy = list(keys)
                 keys.clear()
                 for candidate in keys_copy:
@@ -676,6 +761,18 @@ class SourceSchemaCatalog:
         present = [item for item in matches if item is not None]
         return present[0] if len(present) == 1 else None
 
+    def type_of_qualified(self, schema: str | None, table: str, column: str) -> CanonicalType | None:
+        matches = self._matching_keys(schema, table)
+        if len(matches) != 1:
+            return None
+        return self.columns.get(matches[0], {}).get(column.casefold())
+
+    def type_ref_of(self, schema: str | None, table: str, column: str) -> CanonicalTypeRef | None:
+        matches = self._matching_keys(schema, table)
+        if len(matches) != 1:
+            return None
+        return self.type_refs.get(matches[0], {}).get(column.casefold())
+
     def has_unique_key(self, schema: str | None, table: str, columns: tuple[str, ...]) -> bool:
         wanted = tuple(column.casefold() for column in columns)
         matches = self._matching_keys(schema, table)
@@ -690,10 +787,37 @@ def _record_catalog_statement(
 ) -> None:
     """Add only source statements whose typed schema facts parse cleanly."""
     try:
-        if isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "TABLE":
-            catalog.add_table(parse_create_table(statement, dialect, namespace_map))
+        if isinstance(statement, exp.Command) and str(statement.args.get("this", "")).upper() == "DO":
+            catalog.record_bounded_dynamic_tenant_column(statement, namespace_map)
+        elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "TABLE":
+            table = parse_create_table(statement, dialect, namespace_map)
+            catalog.add_table(table)
+            catalog.evidence.append(
+                {
+                    "kind": "CREATE_TABLE",
+                    "table": f"{table.schema or ''}.{table.name}",
+                    "statementDigest": hashlib.sha256(statement.sql().encode("utf-8")).hexdigest(),
+                    "columns": {
+                        column.name: {
+                            "canonicalType": column.type_ref.canonical_type.value,
+                            "precision": column.type_ref.precision,
+                            "scale": column.type_ref.scale,
+                            "length": column.type_ref.length,
+                        }
+                        for column in table.columns
+                    },
+                }
+            )
         elif isinstance(statement, exp.Alter):
-            catalog.apply_alter(parse_alter_table(statement, dialect, namespace_map))
+            alter = parse_alter_table(statement, dialect, namespace_map)
+            catalog.apply_alter(alter)
+            catalog.evidence.append(
+                {
+                    "kind": "ALTER_TABLE",
+                    "table": f"{alter.schema or ''}.{alter.table}",
+                    "statementDigest": hashlib.sha256(statement.sql().encode("utf-8")).hexdigest(),
+                }
+            )
     except DialectError:
         # A target- or statement-specific blocker must not turn into schema
         # evidence.  The next UPDATE then remains fail-closed.
@@ -724,6 +848,10 @@ def _classify(
     # appears in annotations, which this module never evaluates.
     assert isinstance(statement, exp.Expression)
     try:
+        command_sql = statement.sql() if isinstance(statement, exp.Command) else None
+        if (raw_sql or command_sql or "").lstrip().upper().startswith("DO"):
+            parse_static_do(raw_sql or command_sql or "", dialect, namespace_map)
+            return "IN_SUBSET", None, None
         # A file-level parse can leave one unusual PostgreSQL ALTER as an
         # opaque Command while the raw statement is still recoverable by the
         # narrow multi-action compatibility path. Reparse only that raw unit;
@@ -887,11 +1015,15 @@ def scan_repository(
     examples_per_blocker: int = 5,
     include_all_findings: bool = False,
     namespace_map: Mapping[str, str] | None = None,
+    namespace_profile: NamespaceProfile | None = None,
 ) -> FeasibilityReport:
     """Parse every statement in every `.sql` file and report subset membership."""
     root = Path(repository)
     if not root.exists():
         raise DialectError("REPOSITORY_NOT_FOUND", str(root))
+
+    active_namespace_profile = resolve_namespace_profile(namespace_map, namespace_profile)
+    active_namespace_map = active_namespace_profile
 
     findings: list[ScanFinding] = []
     catalog = SourceSchemaCatalog()
@@ -926,7 +1058,7 @@ def scan_repository(
             # each of the five had exactly one offending statement -- while
             # every coverage ratio was flattered, because those files
             # contributed 1 to the denominator instead of hundreds.
-            findings.extend(_recover_statements(text, relative, source_dialect, namespace_map, catalog))
+            findings.extend(_recover_statements(text, relative, source_dialect, active_namespace_map, catalog))
             continue
 
         index = 0
@@ -937,7 +1069,7 @@ def scan_repository(
                 continue  # a comment or trailing separator, not a statement
             index += 1
             raw_sql = raw_by_index[index - 1].text if raw_by_index else None
-            status, code, reason = _classify(statement, source_dialect, raw_sql, namespace_map, catalog)
+            status, code, reason = _classify(statement, source_dialect, raw_sql, active_namespace_map, catalog)
             family = BLOCKER_CATALOG.get(code or "", (None, ""))[0] if code else None
             findings.append(
                 ScanFinding(
@@ -952,9 +1084,17 @@ def scan_repository(
                     _disposition(status, code),
                 )
             )
-            _record_catalog_statement(catalog, statement, source_dialect, namespace_map)
+            _record_catalog_statement(catalog, statement, source_dialect, active_namespace_map)
 
-    return _build_report(root, source_dialect, findings, examples_per_blocker, include_all_findings)
+    return _build_report(
+        root,
+        source_dialect,
+        findings,
+        examples_per_blocker,
+        include_all_findings,
+        active_namespace_profile,
+        catalog,
+    )
 
 
 def _distinct_examples(group: list[ScanFinding], limit: int) -> list[str]:
@@ -977,6 +1117,8 @@ def _build_report(
     findings: list[ScanFinding],
     examples_per_blocker: int,
     include_all_findings: bool,
+    namespace_profile: NamespaceProfile | None = None,
+    catalog: SourceSchemaCatalog | None = None,
 ) -> FeasibilityReport:
     in_subset = sum(1 for f in findings if f.status == "IN_SUBSET")
     blocked = [f for f in findings if f.status == "OUT_OF_SUBSET"]
@@ -1114,7 +1256,8 @@ def _build_report(
         profile=(
             "certified-ddl-v1 + certified-alter-v1 + certified-drop-v1 + certified-schema-v1 "
             "+ certified-routine-v1 + certified-view-v1 + certified-comment-v1 "
-            "+ certified-privilege-v1 + certified-dml-v1 + certified-rls-v1"
+            "+ certified-privilege-v1 + certified-dml-v1 + certified-rls-v1 "
+            "+ certified-static-do-v1"
         ),
         repository=str(root.resolve()),
         source_dialect=source_dialect.value,
@@ -1137,6 +1280,8 @@ def _build_report(
         findings=findings if include_all_findings else [f for f in findings if f.status != "IN_SUBSET"],
         caveats=caveats,
         chinadb_coverage=chinadb_coverage,
+        namespace_profile=None if namespace_profile is None else namespace_profile.to_dict(),
+        source_catalog_evidence=[] if catalog is None else list(catalog.evidence),
     )
 
 

@@ -46,6 +46,33 @@ class LocalSpringUpgradeExecutionPortTest {
         assertTrue(!Files.isWritable(seedTracking) || !ownerCanWrite(seedTracking));
     }
 
+    @Test void rewriteUsesPinnedUpstreamAndRepositoryOwnedRecipeCoordinates() {
+        assertEquals(
+                List.of(
+                        "org.openrewrite.recipe:rewrite-spring:6.35.0",
+                        LocalSpringUpgradeExecutionPort.ELMOS_RECIPE_COORDINATE),
+                LocalSpringUpgradeExecutionPort.rewriteRecipeArtifactCoordinates("6.35.0"));
+        assertThrows(IllegalArgumentException.class,
+                () -> LocalSpringUpgradeExecutionPort.rewriteRecipeArtifactCoordinates(" "));
+    }
+
+    @Test void customRecipeRequiresItsArtifactAndParentPomInTheImmutableSeed() throws Exception {
+        Path repository = temporaryDirectory.resolve("recipe-seed");
+        assertFalse(LocalSpringUpgradeExecutionPort.hasElmosRecipeArtifact(repository));
+
+        Path artifactDirectory = repository.resolve(
+                "io/elmos/elmos-java-recipes/0.1.0-SNAPSHOT");
+        Path parentDirectory = repository.resolve(
+                "io/elmos/elmos-parent/0.1.0-SNAPSHOT");
+        Files.createDirectories(artifactDirectory);
+        Files.createDirectories(parentDirectory);
+        Files.writeString(artifactDirectory.resolve("elmos-java-recipes-0.1.0-SNAPSHOT.jar"), "jar");
+        Files.writeString(artifactDirectory.resolve("elmos-java-recipes-0.1.0-SNAPSHOT.pom"), "pom");
+        Files.writeString(parentDirectory.resolve("elmos-parent-0.1.0-SNAPSHOT.pom"), "parent");
+
+        assertTrue(LocalSpringUpgradeExecutionPort.hasElmosRecipeArtifact(repository));
+    }
+
     @Test void securedAndMissingRoutesProveStartupButServerErrorsDoNot() {
         assertTrue(LocalSpringUpgradeExecutionPort.isStartupStatus(200));
         assertTrue(LocalSpringUpgradeExecutionPort.isStartupStatus(401));

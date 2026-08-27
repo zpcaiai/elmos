@@ -67,10 +67,10 @@ def test_a_qualified_table_name_is_refused_with_the_shared_ddl_code() -> None:
     assert caught.value.code == "CERTIFIED_DDL_NAMESPACE_MAPPING_REQUIRED"
 
 
-def test_a_quoted_identifier_is_refused() -> None:
-    with pytest.raises(DialectError) as caught:
-        parse_drop_table('DROP TABLE "users"', Dialect.POSTGRES)
-    assert caught.value.code == "CERTIFIED_DDL_QUOTED_IDENTIFIER"
+def test_a_quoted_identifier_is_preserved_as_typed_name() -> None:
+    report = translate_ddl('DROP TABLE "users"', "postgres", "mysql", statement_kind="DROP")
+    assert report["status"] == "PASSED", report
+    assert report["emitted"] == "DROP TABLE `users`"
 
 
 @pytest.mark.parametrize("sql", ["DROP INDEX ix", "DROP SCHEMA app", "DROP VIEW v"])

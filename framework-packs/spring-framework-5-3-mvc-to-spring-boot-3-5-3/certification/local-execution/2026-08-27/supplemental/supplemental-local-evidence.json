@@ -1,0 +1,162 @@
+{
+  "binding": {
+    "policy_sha256": "sha256:943a248703887589201f4f329e26e56cfa7e15ac4e075ebedd5493a27ac99af0",
+    "source_commit": "7e1c098541143c96cce7d9a637fffe57d0e2baae",
+    "source_war_bytes": 9873951,
+    "source_war_path": "source-artifacts/legacy-spring-mvc-5.3.39.war",
+    "source_war_sha256": "sha256:0304b7290a71f4192eceaa75891f787532e4f26b5a7a7af7472d750aba1ff8ef",
+    "target_artifact_bytes": 28990394,
+    "target_artifact_sha256": "sha256:1fae241386924325e6f8099e59b2d5da19749cfd47b9fdb26f92fb7d5c857f60"
+  },
+  "claim_scope": "LOCAL_ISOLATED_EXACT_TUPLE_ONLY",
+  "evidence_class": "LOCAL_ENGINEERING_SUPPLEMENTAL",
+  "observations": {
+    "external_signatures": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "operability": {
+      "loopback_only": true,
+      "production_operations": "NOT_RUN",
+      "shutdown": {
+        "bounded": true,
+        "elapsed_ms": 35.875,
+        "returncode": 143
+      },
+      "status": "PASSED_LOCAL",
+      "target_probes": [
+        {
+          "bytes": 15,
+          "elapsed_ms": 2.495,
+          "sha256": "647a83cca85203d6d4eb07eea84ef6eb91d5c6482eaff2ac8bb65a342b9f2946",
+          "status": 200,
+          "url": "http://127.0.0.1:55847/actuator/health"
+        },
+        {
+          "bytes": 61,
+          "elapsed_ms": 6.142,
+          "sha256": "06999b17cc1ebccad19cbd3fc491a733b9da740dcbc2d29404226fa816d076e2",
+          "status": 200,
+          "url": "http://127.0.0.1:55847/api/orders/7"
+        },
+        {
+          "bytes": 142,
+          "elapsed_ms": 563.813,
+          "sha256": "7c972e56e323ba7372ffb204c18ffac6fdd5dd5f49d9602db13d22fa7b20f4b4",
+          "status": 200,
+          "url": "http://127.0.0.1:55847/orders"
+        }
+      ],
+      "target_readiness": {
+        "bytes": 15,
+        "elapsed_ms": 78.595,
+        "sha256": "647a83cca85203d6d4eb07eea84ef6eb91d5c6482eaff2ac8bb65a342b9f2946",
+        "status": 200,
+        "url": "http://127.0.0.1:55847/actuator/health"
+      }
+    },
+    "performance": {
+      "capacity_validation": "NOT_RUN_NO_SLO_BOUND",
+      "complete_requests": 200,
+      "concurrency": 8,
+      "exit_code": 0,
+      "requests": 200,
+      "requests_per_second": 4152.31,
+      "status": "PASSED_LOCAL_BENCHMARK",
+      "time_per_request_ms": 1.927,
+      "tool": "/usr/sbin/ab"
+    },
+    "representative_customer_scenario": "NOT_RUN",
+    "rollback": {
+      "production_rollback": "NOT_RUN",
+      "sequence": [
+        "target_startup_readiness",
+        "target_stop",
+        "source_startup_readiness",
+        "source_probe",
+        "source_stop"
+      ],
+      "shutdowns": {
+        "source": {
+          "bounded": true,
+          "elapsed_ms": 1692.293,
+          "returncode": 143
+        },
+        "target": {
+          "bounded": true,
+          "elapsed_ms": 35.875,
+          "returncode": 143
+        }
+      },
+      "source_build": {
+        "command": "mvn -B -ntp clean verify package (Java 11.0.26, Maven 3.9.11)",
+        "log_path": "raw/source-build.log",
+        "status": "PASSED_LOCAL",
+        "war_bytes": 9873951,
+        "war_sha256": "sha256:0304b7290a71f4192eceaa75891f787532e4f26b5a7a7af7472d750aba1ff8ef"
+      },
+      "source_probe": {
+        "bytes": 62,
+        "elapsed_ms": 1.819,
+        "sha256": "c0697d9710a80a397c61f8cc347feed45107335979b54fc5a6818a6382f95727",
+        "status": 200,
+        "url": "http://127.0.0.1:56068/api/orders/42"
+      },
+      "source_readiness": {
+        "bytes": 62,
+        "elapsed_ms": 1342.957,
+        "sha256": "c0697d9710a80a397c61f8cc347feed45107335979b54fc5a6818a6382f95727",
+        "status": 200,
+        "url": "http://127.0.0.1:56068/api/orders/42"
+      },
+      "status": "PASSED_LOCAL_ISOLATED_ROLLBACK_REHEARSAL",
+      "target_readiness": {
+        "bytes": 15,
+        "elapsed_ms": 78.595,
+        "sha256": "647a83cca85203d6d4eb07eea84ef6eb91d5c6482eaff2ac8bb65a342b9f2946",
+        "status": 200,
+        "url": "http://127.0.0.1:55847/actuator/health"
+      }
+    },
+    "sbom": {
+      "artifact_bound": true,
+      "bom_path": "sbom-local-inventory.json",
+      "component_count": 38,
+      "external_sbom_evidence": "NOT_RUN",
+      "status": "PARTIAL_LOCAL_INVENTORY_ONLY",
+      "vulnerability_scan": "NOT_RUN_TOOL_UNAVAILABLE"
+    },
+    "security": {
+      "archive_path_traversal_check": "PASSED_LOCAL",
+      "archive_symlink_check": "PASSED_LOCAL",
+      "artifact_archive_integrity": "PASSED_LOCAL",
+      "external_security_evidence": "NOT_RUN",
+      "manifest_tuple_integrity": "PASSED_LOCAL",
+      "status": "PARTIAL_LOCAL",
+      "vulnerability_scan": "NOT_RUN_TOOL_UNAVAILABLE"
+    }
+  },
+  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "policy_bytes_sha256": "sha256:943a248703887589201f4f329e26e56cfa7e15ac4e075ebedd5493a27ac99af0",
+  "policy_path": "qualification-policy.json",
+  "required_external_evidence_types": [
+    "source_build",
+    "target_build",
+    "source_startup",
+    "target_startup",
+    "behavioral_equivalence",
+    "security",
+    "performance",
+    "operability",
+    "sbom",
+    "rollback",
+    "independent_review",
+    "customer_acceptance",
+    "external_certification"
+  ],
+  "schema_version": 1,
+  "status_boundary": {
+    "external_evidence": "NOT_RUN",
+    "local_runner_may_certify": false,
+    "local_supplemental": "RECORDED_LOCAL_ONLY",
+    "production_certification": "NOT_CERTIFIED"
+  }
+}

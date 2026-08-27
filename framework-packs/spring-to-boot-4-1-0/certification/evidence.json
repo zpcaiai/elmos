@@ -1,7 +1,17 @@
 {
   "schema_version": 1,
   "pack_key": "spring-to-boot-4-1-0",
-  "status": "NOT_RUN",
-  "evidence": [],
+  "status": "PASSED_LOCAL_ENGINEERING",
+  "evidence": [
+    {
+      "id": "public-reference-routes",
+      "class": "LOCAL_PUBLIC_REPOSITORY_ENGINEERING",
+      "record": "public-reference-route-evidence.json"
+    }
+  ],
+  "external_execution_status": "NOT_RUN",
+  "independent_holdout": "NOT_RUN",
+  "representative_repository": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
   "required_before_promotion": ["real-source-build", "real-target-build", "target-startup", "development-tests", "independent-holdout", "representative-repository", "independent-verification"]
 }

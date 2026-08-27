@@ -7,5 +7,5 @@ from __future__ import annotations
 
 __all__ = [
     "engine", "models", "parser", "routine", "advanced", "emitter",
-    "validator", "dialects", "toolchains",
+    "validator", "dialects", "toolchains", "profiles", "identifiers", "capabilities",
 ]

@@ -61,6 +61,12 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     private static final int MAX_SOURCE_FILES = 100_000;
     private static final long MAX_CAPABILITY_MANIFEST_BYTES = 512L * 1024;
     private static final int MAX_HEALTH_RESPONSE_BYTES = 64 * 1024;
+    static final String ELMOS_RECIPE_COORDINATE =
+            "io.elmos:elmos-java-recipes:0.1.0-SNAPSHOT";
+    private static final Path ELMOS_RECIPE_REPOSITORY_PATH =
+            Path.of("io", "elmos", "elmos-java-recipes", "0.1.0-SNAPSHOT");
+    private static final Path ELMOS_PARENT_REPOSITORY_PATH =
+            Path.of("io", "elmos", "elmos-parent", "0.1.0-SNAPSHOT");
     private static final Path CAPABILITY_TEST_MANIFEST =
             Path.of("elmos", "spring-capability-tests.json");
     private static final Set<String> COMPLEX_CAPABILITY_STATES = Set.of(
@@ -326,9 +332,9 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         if (SpringRouteCatalog.GRADLE_BUILD_TOOL.equals(buildTool)) {
             requireGradleVersion(sourceJavaHome, toolHome);
         }
-        if (SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool) && dependencySeedRepository != null) {
+        if (dependencySeedRepository != null) {
             copyDependencySeed(dependencySeedRepository, toolHome.resolve(".m2/repository"));
-            control.log("maven dependency seed copied into the isolated per-run repository");
+            control.log("dependency seed copied into the isolated per-run repository");
         }
         copyTree(source, sourceBaseline);
         TestSummary sourceTests;
@@ -966,6 +972,8 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     private void runRewrite(Path root, Path toolHome, Control control,
                             SpringRouteCatalog.SpringRoute route, Path targetJavaHome) {
         Path recipeConfig = installExactRecipe(root, route);
+        Path recipeRepository = toolHome.resolve(".m2/repository");
+        requireElmosRecipeArtifact(recipeRepository);
         if (SpringRouteCatalog.GRADLE_BUILD_TOOL.equals(route.buildTool())) {
             if (!hasGradleRewritePlugin(root)) {
                 throw blocked("GRADLE_REWRITE_PLUGIN_NOT_DECLARED",
@@ -989,10 +997,41 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                 "org.openrewrite.maven:rewrite-maven-plugin:" + route.rewriteMavenPlugin() + ":run",
                 "-Drewrite.configLocation=" + root.relativize(recipeConfig),
                 "-Drewrite.activeRecipes=" + route.recipeId(),
-                "-Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-spring:"
-                        + route.rewriteSpring(),
+                "-Drewrite.recipeArtifactCoordinates="
+                        + String.join(",", rewriteRecipeArtifactCoordinates(route.rewriteSpring())),
                 "-Drewrite.exportDatatables=true"
         ), Duration.ofMinutes(30));
+    }
+
+    static List<String> rewriteRecipeArtifactCoordinates(String rewriteSpringVersion) {
+        if (rewriteSpringVersion == null || rewriteSpringVersion.isBlank()) {
+            throw new IllegalArgumentException("rewrite-spring version is required");
+        }
+        return List.of(
+                "org.openrewrite.recipe:rewrite-spring:" + rewriteSpringVersion,
+                ELMOS_RECIPE_COORDINATE);
+    }
+
+    static boolean hasElmosRecipeArtifact(Path repository) {
+        Objects.requireNonNull(repository, "repository");
+        Path artifactDirectory = repository.resolve(ELMOS_RECIPE_REPOSITORY_PATH);
+        Path parentDirectory = repository.resolve(ELMOS_PARENT_REPOSITORY_PATH);
+        return regularFile(artifactDirectory.resolve("elmos-java-recipes-0.1.0-SNAPSHOT.jar"))
+                && regularFile(artifactDirectory.resolve("elmos-java-recipes-0.1.0-SNAPSHOT.pom"))
+                && regularFile(parentDirectory.resolve("elmos-parent-0.1.0-SNAPSHOT.pom"));
+    }
+
+    private static boolean regularFile(Path path) {
+        return Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)
+                && !Files.isSymbolicLink(path);
+    }
+
+    private static void requireElmosRecipeArtifact(Path repository) {
+        if (!hasElmosRecipeArtifact(repository)) {
+            throw blocked("ELMOS_RECIPE_ARTIFACT_NOT_SEEDED",
+                    "The immutable Maven seed must contain " + ELMOS_RECIPE_COORDINATE
+                            + " and its io.elmos:elmos-parent:0.1.0-SNAPSHOT POM before a Spring recipe can run.");
+        }
     }
 
     private static boolean hasGradleRewritePlugin(Path root) {
@@ -1012,7 +1051,13 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         Path initScript = root.resolve(".elmos/openrewrite.init.gradle");
         String script = """
                 allprojects {
+                    repositories {
+                        mavenLocal()
+                    }
                     plugins.withId("org.openrewrite.rewrite") {
+                        dependencies {
+                            add("rewrite", "%s")
+                        }
                         rewrite {
                             configFile = rootProject.file("%s")
                             activeRecipe(System.getProperty("rewrite.activeRecipe"))
@@ -1020,7 +1065,9 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                         }
                     }
                 }
-                """.formatted(root.relativize(recipeConfig).toString().replace('\\', '/'));
+                """.formatted(
+                        ELMOS_RECIPE_COORDINATE,
+                        root.relativize(recipeConfig).toString().replace('\\', '/'));
         write(initScript, script.getBytes(StandardCharsets.UTF_8));
         return initScript;
     }

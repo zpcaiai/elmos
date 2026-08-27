@@ -52,7 +52,9 @@ def _routine_parser_fallback(sql: str, dialect: Dialect) -> tuple[str, ...] | No
     if dialect is Dialect.ORACLE and upper.startswith(
         ("CREATE PROCEDURE ", "CREATE OR REPLACE PROCEDURE ", "CREATE FUNCTION ", "CREATE OR REPLACE FUNCTION ")
     ):
-        if " IS BEGIN " in upper and upper.endswith(" END;"):
+        if " IS " in upper and upper.endswith(" END;") and (
+            " RETURN " in upper or upper.startswith("CREATE PROCEDURE ")
+        ):
             return (
                 "sqlglot exposes this PL/SQL routine as an opaque command; "
                 "typed emission was structurally checked and real Oracle execution is still required",

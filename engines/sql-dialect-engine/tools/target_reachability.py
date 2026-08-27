@@ -37,6 +37,7 @@ from elmos_sql_dialect.advanced import (
     parse_table_function,
     parse_trigger,
 )
+from elmos_sql_dialect.capabilities import target_capability_matrix
 from elmos_sql_dialect.models import (
     AddColumn,
     AlterTable,
@@ -48,16 +49,31 @@ from elmos_sql_dialect.models import (
     Table,
 )
 from elmos_sql_dialect.parser import _parse_source_statements
+from elmos_sql_dialect.profiles import NamespaceProfile, resolve_namespace_profile
 from elmos_sql_dialect.routine import emit_create_function, parse_create_routine
 from elmos_sql_dialect.scan import (
     SourceSchemaCatalog,
     _classify,
     _record_catalog_statement,
     discover_sql_files,
+    scan_repository,
 )
 from elmos_sql_dialect.statement_splitter import split_statements
+from elmos_sql_dialect.static_do import emit_static_do, parse_static_do
 
-DDL_TYPES = ("Create", "Alter", "Drop", "Index", "Comment", "Grant", "Revoke", "Insert", "Update", "Truncate")
+DDL_TYPES = (
+    "Create",
+    "Alter",
+    "Drop",
+    "Command",
+    "Index",
+    "Comment",
+    "Grant",
+    "Revoke",
+    "Insert",
+    "Update",
+    "Truncate",
+)
 ALL_DIALECTS = (Dialect.POSTGRES, Dialect.MYSQL, Dialect.ORACLE, Dialect.TSQL)
 
 
@@ -183,6 +199,8 @@ def emit_to(
             return emit_procedure(parse_procedure(statement, source, namespace_map), target)
         if kind == "TRIGGER":
             return emit_trigger(parse_trigger(statement, source, namespace_map), target)
+    if isinstance(statement, exp.Command) and statement.sql().lstrip().upper().startswith("DO"):
+        return emit_static_do(parse_static_do(statement.sql(), source, namespace_map), target, source_catalog)
     if isinstance(statement, exp.Alter):
         return emitter.emit_alter_table(
             parser.parse_alter_table(statement, source, namespace_map), target
@@ -216,9 +234,15 @@ def main() -> int:
         default=None,
         help="JSON object mapping source namespaces; use an empty key for the source default namespace",
     )
+    ap.add_argument(
+        "--namespace-profile",
+        default=None,
+        help="JSON namespace profile with name, mapping and optional digest",
+    )
     args = ap.parse_args()
 
     namespace_map = None
+    namespace_profile: NamespaceProfile | None = None
     if args.namespace_map is not None:
         try:
             raw_map = json.loads(args.namespace_map)
@@ -229,27 +253,64 @@ def main() -> int:
         ):
             ap.error("--namespace-map must be a JSON object of string-to-string mappings")
         namespace_map = raw_map
+    if args.namespace_profile is not None:
+        if namespace_map is not None:
+            ap.error("--namespace-profile cannot be combined with --namespace-map")
+        try:
+            raw_profile = json.loads(args.namespace_profile)
+        except json.JSONDecodeError as exc:
+            ap.error(f"--namespace-profile must be a JSON object: {exc}")
+        if not isinstance(raw_profile, dict):
+            ap.error("--namespace-profile must be a JSON object")
+        namespace_profile = NamespaceProfile.from_payload(raw_profile)
+    active_namespace_profile = resolve_namespace_profile(namespace_map, namespace_profile)
+    namespace_map = active_namespace_profile
 
     admitted = 0
+    discovered = 0
     reachable_per_target: Counter[str] = Counter()
     refusals_per_target: dict[str, Counter[str]] = {
         d.value: Counter() for d in ALL_DIALECTS
     }
     all_four = 0
+    disposition_units = 0
+    disposition_covered = 0
+    disposition_unknown = 0
+    catalog_evidence_units = 0
     lost_by_first_refusal: Counter[str] = Counter()
 
     for raw in args.corpus:
-        name, path, dialect_name = raw.split("=", 2)
+        _name, path, dialect_name = raw.split("=", 2)
         source = Dialect(dialect_name)
+        scan_report = scan_repository(path, source, namespace_profile=active_namespace_profile)
+        disposition_units += scan_report.totals["dispositionUnits"]
+        disposition_covered += scan_report.totals["dispositionCovered"]
+        disposition_unknown += scan_report.totals["dispositionUnknown"]
+        catalog_evidence_units += len(scan_report.source_catalog_evidence)
         comment_catalog = ReachabilityCommentCatalog()
         source_catalog = SourceSchemaCatalog()
         for file in discover_sql_files(Path(path).resolve(strict=True)):
+            # Keep the denominator identical to the authoritative scanner:
+            # source-format failures are still discovered units with an
+            # explicit disposition, not silently removed from the target
+            # reachability denominator.
+            discovered += len(split_statements(file.read_text(encoding="utf-8")))
             for statement in statements_of(file, source):
                 if type(statement).__name__ not in DDL_TYPES:
                     continue
+                # Build source facts before classifying the next unit.  This
+                # mirrors scan_repository and is essential for later UPDATE
+                # proofs; evidence-only catalog effects may come from a
+                # source statement that is intentionally not itself
+                # emittable (for example a dynamic DO block).
+                _record_catalog_statement(source_catalog, statement, source, namespace_map)
                 with contextlib.redirect_stderr(io.StringIO()):
                     status, _code, _reason = _classify(
-                        statement, source, namespace_map=namespace_map, catalog=source_catalog
+                        statement,
+                        source,
+                        raw_sql=statement.sql() if isinstance(statement, exp.Command) else None,
+                        namespace_map=namespace_map,
+                        catalog=source_catalog,
                     )
                 if status != "IN_SUBSET":
                     continue
@@ -286,20 +347,38 @@ def main() -> int:
                     comment_catalog.add_table(parser.parse_create_table(statement, source, namespace_map))
                 elif isinstance(statement, exp.Alter):
                     comment_catalog.apply_alter(parser.parse_alter_table(statement, source, namespace_map))
-                _record_catalog_statement(source_catalog, statement, source, namespace_map)
 
     out = {
         "kind": "elmos.sql-dialect.target-reachability",
+        "discovered_units": discovered,
         "admitted_source_side": admitted,
+        "source_candidate_rate": round(admitted / discovered, 4) if discovered else 0.0,
+        "disposition_units": disposition_units,
+        "disposition_covered": disposition_covered,
+        "disposition_unknown": disposition_unknown,
+        "disposition_coverage": round(disposition_covered / disposition_units, 4)
+        if disposition_units
+        else 0.0,
         "translatable_to_all_four": all_four,
         "all_four_ratio_of_admitted": round(all_four / admitted, 4)
         if admitted
         else 0.0,
         "reachable_per_target": dict(reachable_per_target),
+        "target_route_rate": {
+            dialect.value: round(reachable_per_target[dialect.value] / admitted, 4) if admitted else 0.0
+            for dialect in ALL_DIALECTS
+        },
+        "all_target_intersection_rate": round(all_four / admitted, 4) if admitted else 0.0,
         "refusals_per_target": {
             k: dict(v.most_common()) for k, v in refusals_per_target.items()
         },
         "lost_by_first_refusal": dict(lost_by_first_refusal.most_common()),
+        "namespaceProfile": None if active_namespace_profile is None else active_namespace_profile.to_dict(),
+        "capabilityMatrix": target_capability_matrix(),
+        "externalExecution": "NOT_RUN",
+        "independentVerification": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
+        "sourceCatalogEvidenceUnits": catalog_evidence_units,
     }
     args.output.write_text(
         json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8"

@@ -90,6 +90,7 @@ class DefaultKind(str, Enum):
     STRING = "STRING"
     BOOLEAN = "BOOLEAN"
     CURRENT_TIMESTAMP = "CURRENT_TIMESTAMP"
+    NULL = "NULL"
 
 
 @dataclass(frozen=True)
@@ -727,6 +728,13 @@ class Schema:
     if_not_exists: bool = False
 
 
+@dataclass(frozen=True)
+class StaticDoBlock:
+    """One statically expanded DDL statement from a safe DO block."""
+
+    statement: object
+
+
 # ---------------------------------------------------------------------------
 # certified-insert-v1
 #
@@ -1043,6 +1051,13 @@ class RoutineParameterReference:
 
 
 @dataclass(frozen=True)
+class RoutineVariableReference:
+    """A local variable in the narrow, static PL/pgSQL block route."""
+
+    name: str
+
+
+@dataclass(frozen=True)
 class RoutineCharCode:
     value: int
 
@@ -1061,13 +1076,34 @@ class RoutineFunctionCall:
 
 
 RoutineValueExpression = (
-    RoutineLiteral | RoutineParameterReference | RoutineCharCode | RoutineBinaryExpression | RoutineFunctionCall
+    RoutineLiteral
+    | RoutineParameterReference
+    | RoutineVariableReference
+    | RoutineCharCode
+    | RoutineBinaryExpression
+    | RoutineFunctionCall
 )
 
 
 @dataclass(frozen=True)
 class RoutineSelectBody:
     expression: RoutineValueExpression
+
+
+@dataclass(frozen=True)
+class RoutineBlockBody:
+    """A closed procedural body: declarations, assignments, and one return."""
+
+    declarations: tuple[RoutineVariable, ...]
+    assignments: tuple[RoutineAssignment, ...]
+    return_expression: RoutineValueExpression
+
+
+@dataclass(frozen=True)
+class RoutineVariable:
+    name: str
+    type_ref: CanonicalTypeRef
+    default: ColumnDefault | None = None
 
 
 @dataclass(frozen=True)
@@ -1082,6 +1118,7 @@ class RoutineParameter:
     name: str
     type_ref: CanonicalTypeRef
     mode: RoutineParameterMode = RoutineParameterMode.IN
+    default: ColumnDefault | None = None
 
 
 @dataclass(frozen=True)
@@ -1092,7 +1129,7 @@ class Routine:
     name: str
     parameters: tuple[RoutineParameter, ...]
     return_type: CanonicalTypeRef | None
-    body: RoutineSelectBody | None
+    body: RoutineSelectBody | RoutineBlockBody | None
     schema: str | None = None
     language: RoutineLanguage = RoutineLanguage.SQL
     stability: RoutineStability | None = None
@@ -1246,6 +1283,13 @@ class Trigger:
     schema: str | None = None
     table_schema: str | None = None
     routine_schema: str | None = None
+    when: CheckExpression | None = None
+    transition_new_table: str | None = None
+    transition_old_table: str | None = None
+    #: Optional column filter attached to the UPDATE event (`UPDATE OF ...`).
+    #: It is kept separate from `events` so an emitter cannot silently turn a
+    #: filtered UPDATE trigger into an all-column trigger.
+    update_columns: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

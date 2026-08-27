@@ -14,8 +14,14 @@ route.
 
 The pack remains `experimental`. Two exact Maven tuples have now passed local
 engineering execution: Boot 2.7.18 / Java 17 and Boot 3.5.3 / Java 21 to Boot
-4.1.0 / Java 21. Every other route and every unexecuted source version remains
-`NOT_RUN`. It supplies a real execution recipe and fail-closed obligations, not a certification claim. The
+4.1.0 / Java 21. Two non-customer public repositories have also completed a
+local Boot 2.7.18 / Java 17 to Boot 4.1.0 / Java 21 Rewrite, build and test
+run; the recorded result is in
+`certification/public-reference-route-evidence.json`. Every other route and
+every unexecuted source version remains `NOT_RUN`. These public runs are local
+engineering references, not an independent holdout, representative customer
+repository, organizationally independent verification, or certification claim.
+It supplies a real execution recipe and fail-closed obligations, not a certification claim. The
 target requires Spring Framework 7.0.8, Spring Security 7.1.0, Hibernate ORM
 7.4.1.Final, Tomcat 11.0.22, Java 21 and a compatible Maven or Gradle build.
 Security, data, transactions, messaging, cache, scheduler, XML/web.xml,
@@ -48,3 +54,11 @@ raw route and runner receipts are content-addressed beside the summary under
 `certification/local-execution/2026-08-27/`. This is local engineering
 evidence for the reference fixture, not a customer repository, independent
 holdout, representative corpus, independent verification, or certification.
+
+The worker routes also reference the repository-owned recipe artifact
+`io.elmos:elmos-java-recipes:0.1.0-SNAPSHOT`. A local worker must point
+`ELMOS_MAVEN_DEPENDENCY_SEED` at an immutable Maven repository containing that
+artifact, its POM, and the `io.elmos:elmos-parent:0.1.0-SNAPSHOT` POM. The
+worker fails closed with `ELMOS_RECIPE_ARTIFACT_NOT_SEEDED` when this exact
+recipe closure is absent; a successful public-repository run with a manually
+seeded artifact is not worker or external certification evidence.

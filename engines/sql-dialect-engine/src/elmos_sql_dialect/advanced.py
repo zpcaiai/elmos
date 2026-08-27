@@ -15,12 +15,17 @@ from collections.abc import Mapping
 import sqlglot
 from sqlglot import exp
 
-from .dialects import render_type
+from .dialects import check_operator_sql, render_type
 from .emitter import CommentColumnCatalogLike, _object_name, _render_check_expression, _render_column
+from .identifiers import quote_identifier
 from .models import (
     CheckBooleanExpression,
+    CheckComparison,
     CheckConnector,
     CheckExpression,
+    CheckNotExpression,
+    CheckOperator,
+    ColumnDefault,
     Comment,
     CommentObjectKind,
     Dialect,
@@ -285,7 +290,7 @@ def parse_privilege(
             "privilege routine",
         )
         schema_node = securable.args.get("db")
-        schema = None if schema_node is None else _plain_identifier(schema_node, "privilege routine schema")
+        schema: str | None = None if schema_node is None else _plain_identifier(schema_node, "privilege routine schema")
         if schema is not None:
             mapped_schema = None if namespace_map is None else namespace_map.get(schema)
             _require(
@@ -377,24 +382,35 @@ def _routine_parameters(
         )
         assert isinstance(item.kind, exp.DataType)
         mode = RoutineParameterMode.IN
+        default: ColumnDefault | None = None
         for constraint in item.args.get("constraints") or []:
-            if isinstance(constraint, exp.InOutColumnConstraint):
-                if constraint.args.get("input_") and constraint.args.get("output"):
+            constraint_kind = constraint.kind if isinstance(constraint, exp.ColumnConstraint) else constraint
+            if isinstance(constraint_kind, exp.InOutColumnConstraint):
+                if constraint_kind.args.get("input_") and constraint_kind.args.get("output"):
                     mode = RoutineParameterMode.INOUT
-                elif constraint.args.get("output"):
+                elif constraint_kind.args.get("output"):
                     mode = RoutineParameterMode.OUT
-                elif constraint.args.get("input_"):
+                elif constraint_kind.args.get("input_"):
                     mode = RoutineParameterMode.IN
                 else:
                     raise DialectError(
                         "CERTIFIED_ROUTINE_UNSUPPORTED_PARAMETER", "variadic parameters are outside the route"
                     )
+            elif isinstance(constraint_kind, exp.DefaultColumnConstraint):
+                _require(
+                    default is None,
+                    "CERTIFIED_ROUTINE_UNSUPPORTED_PARAMETER",
+                    f"parameter {name!r} has more than one default",
+                )
+                from .parser import _parse_default
+
+                default = _parse_default(constraint_kind.this, _parse_type(item.kind, source_dialect))
             else:
                 raise DialectError(
                     "CERTIFIED_ROUTINE_UNSUPPORTED_PARAMETER",
-                    "parameter defaults and constraints are outside the route",
+                    "parameter constraints outside mode and side-effect-free defaults are outside the route",
                 )
-        parameters.append(RoutineParameter(name, _parse_type(item.kind, source_dialect), mode))
+        parameters.append(RoutineParameter(name, _parse_type(item.kind, source_dialect), mode, default))
     return tuple(parameters)
 
 
@@ -558,6 +574,110 @@ def parse_table_function(
     )
 
 
+def _trigger_identifier(node: exp.Expression, what: str) -> tuple[str, str | None]:
+    """Read a trigger column and preserve the OLD/NEW pseudo-row qualifier."""
+
+    _require(isinstance(node, exp.Column), "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED", f"{what} must be a column")
+    assert isinstance(node, exp.Column)
+    qualifier = node.args.get("table")
+    qualifier_name: str | None = None
+    if qualifier is not None:
+        _require(
+            isinstance(qualifier, exp.Identifier),
+            "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED",
+            f"{what} qualifier must be OLD or NEW",
+        )
+        qualifier_name = str(qualifier.this).upper()
+        _require(
+            qualifier_name in {"OLD", "NEW"},
+            "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED",
+            f"{what} qualifier must be OLD or NEW",
+        )
+    return _plain_identifier(node.this, what), qualifier_name
+
+
+def _parse_trigger_when(node: exp.Expression, source_dialect: Dialect) -> CheckExpression:
+    """Parse the small trigger WHEN subset without treating OLD/NEW as tables.
+
+    Trigger predicates use the same SQL three-valued boolean model as CHECK,
+    but their pseudo-row qualifiers have special syntax and are therefore
+    parsed separately.  Only typed columns, literals, NULL tests, boolean
+    composition, and the NULL-safe column comparison are admitted.
+    """
+
+    if isinstance(node, exp.Paren):
+        return _parse_trigger_when(node.this, source_dialect)
+    if isinstance(node, exp.And | exp.Or):
+        left = _parse_trigger_when(node.this, source_dialect)
+        right = _parse_trigger_when(node.expression, source_dialect)
+        return CheckBooleanExpression(
+            connector=CheckConnector.AND if isinstance(node, exp.And) else CheckConnector.OR,
+            operands=(left, right),
+        )
+    if isinstance(node, exp.Not):
+        return CheckNotExpression(_parse_trigger_when(node.this, source_dialect))
+    if isinstance(node, exp.Is):
+        _require(
+            isinstance(node.expression, exp.Null),
+            "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED",
+            "trigger WHEN only supports IS [NOT] NULL",
+        )
+        column, qualifier = _trigger_identifier(node.this, "trigger WHEN left-hand column")
+        return CheckComparison(
+            column=column,
+            column_qualifier=qualifier,
+            operator=CheckOperator.IS_NOT_NULL if node.args.get("negate") else CheckOperator.IS_NULL,
+        )
+
+    operator_by_type: tuple[tuple[type[exp.Expression], CheckOperator], ...] = (
+        (exp.NullSafeNEQ, CheckOperator.IS_DISTINCT_FROM),
+        (exp.EQ, CheckOperator.EQ),
+        (exp.NEQ, CheckOperator.NE),
+        (exp.LT, CheckOperator.LT),
+        (exp.LTE, CheckOperator.LE),
+        (exp.GT, CheckOperator.GT),
+        (exp.GTE, CheckOperator.GE),
+    )
+    for expression_type, operator in operator_by_type:
+        if not isinstance(node, expression_type):
+            continue
+        column, qualifier = _trigger_identifier(node.this, "trigger WHEN left-hand column")
+        right = node.expression
+        if isinstance(right, exp.Column):
+            right_column, right_qualifier = _trigger_identifier(right, "trigger WHEN right-hand column")
+            return CheckComparison(
+                column=column,
+                column_qualifier=qualifier,
+                operator=operator,
+                right_column=right_column,
+                right_column_qualifier=right_qualifier,
+            )
+        if isinstance(right, exp.Boolean):
+            return CheckComparison(
+                column=column,
+                column_qualifier=qualifier,
+                operator=operator,
+                literal="true" if right.this else "false",
+                literal_is_boolean=True,
+            )
+        _require(
+            isinstance(right, exp.Literal),
+            "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED",
+            "trigger WHEN comparison requires a literal or OLD/NEW column",
+        )
+        return CheckComparison(
+            column=column,
+            column_qualifier=qualifier,
+            operator=operator,
+            literal=str(right.this),
+            literal_is_string=bool(right.is_string),
+        )
+    raise DialectError(
+        "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED",
+        "trigger WHEN expression is outside the typed OLD/NEW predicate subset",
+    )
+
+
 def parse_trigger(
     sql: str | exp.Expression,
     source_dialect: Dialect,
@@ -588,12 +708,26 @@ def parse_trigger(
     )
     _require(timing is not None, "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED", "trigger timing is unsupported")
     assert timing is not None
+    raw_events = tuple(trigger_properties.args.get("events") or [])
     event_values = tuple(
         TriggerEvent(str(item.this).upper())
-        for item in trigger_properties.args.get("events") or []
+        for item in raw_events
         if str(item.this).upper() in {"INSERT", "UPDATE", "DELETE"}
     )
     _require(bool(event_values), "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED", "trigger has no supported event")
+    update_columns: tuple[str, ...] = ()
+    for item in raw_events:
+        if str(item.this).upper() != "UPDATE":
+            continue
+        columns = tuple(
+            _plain_identifier(column, "trigger UPDATE OF column") for column in item.args.get("columns") or []
+        )
+        _require(
+            not update_columns or update_columns == columns,
+            "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED",
+            "multiple UPDATE OF event filters disagree",
+        )
+        update_columns = columns
     execute = trigger_properties.args.get("execute")
     _require(
         isinstance(execute, exp.TriggerExecute) and isinstance(execute.this, exp.Anonymous),
@@ -603,6 +737,20 @@ def parse_trigger(
     assert isinstance(execute, exp.TriggerExecute)
     assert isinstance(execute.this, exp.Anonymous)
     routine_name = _plain_identifier(exp.Identifier(this=str(execute.this.this), quoted=False), "trigger routine")
+    when: CheckExpression | None = None
+    when_node = trigger_properties.args.get("when")
+    if isinstance(when_node, exp.Expression):
+        when = _parse_trigger_when(when_node, source_dialect)
+    referencing = trigger_properties.args.get("referencing")
+    transition_new_table: str | None = None
+    transition_old_table: str | None = None
+    if isinstance(referencing, exp.TriggerReferencing):
+        new_node = referencing.args.get("new")
+        old_node = referencing.args.get("old")
+        if new_node is not None:
+            transition_new_table = _plain_identifier(new_node, "trigger NEW transition table")
+        if old_node is not None:
+            transition_old_table = _plain_identifier(old_node, "trigger OLD transition table")
     return Trigger(
         name=name,
         table=table,
@@ -612,6 +760,10 @@ def parse_trigger(
         routine_name=routine_name,
         schema=table_schema,
         table_schema=table_schema,
+        when=when,
+        transition_new_table=transition_new_table,
+        transition_old_table=transition_old_table,
+        update_columns=update_columns,
     )
 
 
@@ -657,10 +809,12 @@ def emit_view(view: View, target_dialect: Dialect) -> str:
         )
     replace = " OR REPLACE" if view.or_replace else ""
     query = view.query
-    selected = ", ".join(query.columns)
+    selected = ", ".join(
+        column if column == "*" else quote_identifier(column, target_dialect) for column in query.columns
+    )
     rendered = (
-        f"CREATE{replace} VIEW {_object_name(view.schema, view.name)} AS SELECT {selected} "  # noqa: S608
-        f"FROM {_object_name(query.table_schema, query.table)}"  # noqa: S608
+        f"CREATE{replace} VIEW {_object_name(view.schema, view.name, target_dialect)} AS SELECT {selected} "  # noqa: S608
+        f"FROM {_object_name(query.table_schema, query.table, target_dialect)}"  # noqa: S608
     )
     if query.predicate is not None:
         rendered += f" WHERE {_render_check_expression(query.predicate, target_dialect)}"
@@ -683,7 +837,7 @@ def emit_comment(
                 "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
                 f"{target_dialect.value} has no exact standalone constraint comment route",
             )
-        table = _object_name(comment.schema, comment.table_name or "")
+        table = _object_name(comment.schema, comment.table_name or "", target_dialect)
         return f"COMMENT ON CONSTRAINT {comment.object_name} ON {table} IS '{escaped}'"
 
     if comment.object_kind is CommentObjectKind.FUNCTION:
@@ -692,8 +846,8 @@ def emit_comment(
                 "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
                 f"{target_dialect.value} has no standalone COMMENT ON FUNCTION metadata route",
             )
-        qualified = _object_name(comment.schema, comment.object_name)
-        signature = ", ".join(comment.routine_argument_types)
+        qualified = _object_name(comment.schema, comment.object_name, target_dialect)
+        signature = ", ".join(quote_identifier(item, target_dialect) for item in comment.routine_argument_types)
         if target_dialect is Dialect.TSQL:
             if comment.schema is None:
                 raise DialectError(
@@ -738,10 +892,10 @@ def emit_comment(
                     "MySQL MODIFY COLUMN cannot be emitted without the full definition",
                 )
             return (
-                f"ALTER TABLE {_object_name(comment.schema, comment.table_name or '')} "
+                f"ALTER TABLE {_object_name(comment.schema, comment.table_name or '', target_dialect)} "
                 f"MODIFY COLUMN {_render_column(column, target_dialect)} COMMENT '{escaped}'"
             )
-        return f"ALTER TABLE {_object_name(comment.schema, comment.object_name)} COMMENT = '{escaped}'"
+        return f"ALTER TABLE {_object_name(comment.schema, comment.object_name, target_dialect)} COMMENT = '{escaped}'"
 
     if target_dialect is Dialect.TSQL:
         if comment.schema is None:
@@ -772,9 +926,12 @@ def emit_comment(
             )
         return "EXEC sys.sp_addextendedproperty " + ", ".join(parts)
     target = (
-        f"TABLE {_object_name(comment.schema, comment.object_name)}"
+        f"TABLE {_object_name(comment.schema, comment.object_name, target_dialect)}"
         if comment.object_kind is CommentObjectKind.TABLE
-        else f"COLUMN {_object_name(comment.table_schema, comment.table_name or '')}.{comment.object_name}"
+        else (
+            f"COLUMN {_object_name(comment.table_schema, comment.table_name or '', target_dialect)}."
+            f"{quote_identifier(comment.object_name, target_dialect)}"
+        )
     )
     return f"COMMENT ON {target} IS '{escaped}'"
 
@@ -788,7 +945,7 @@ def emit_privilege(privilege: Privilege, target_dialect: Dialect) -> str:
     privilege_list = ", ".join(privilege.privileges)
     principals = ", ".join(privilege.principals)
     if privilege.object_kind in {"FUNCTION", "PROCEDURE"}:
-        target = _object_name(privilege.schema, privilege.object_name)
+        target = _object_name(privilege.schema, privilege.object_name, target_dialect)
         if target_dialect is Dialect.POSTGRES:
             object_clause = (
                 f"{privilege.object_kind} {target}({', '.join(privilege.routine_argument_types)})"
@@ -800,7 +957,7 @@ def emit_privilege(privilege: Privilege, target_dialect: Dialect) -> str:
                 "signature without a target routine-identity catalogue",
             )
     else:
-        target = _object_name(privilege.schema, privilege.object_name)
+        target = _object_name(privilege.schema, privilege.object_name, target_dialect)
         if target_dialect is Dialect.TSQL:
             object_clause = f"OBJECT::{target}"
         else:
@@ -817,20 +974,43 @@ def emit_procedure(procedure: Procedure, target_dialect: Dialect) -> str:
             "CERTIFIED_ROUTINE_REPLACE_UNSUPPORTED_BY_TARGET",
             f"{target_dialect.value} has no exact CREATE OR REPLACE PROCEDURE spelling",
         )
-    qualified = _object_name(procedure.schema, procedure.name)
+    qualified = _object_name(procedure.schema, procedure.name, target_dialect)
     replace = " OR REPLACE" if procedure.or_replace and target_dialect in (Dialect.POSTGRES, Dialect.ORACLE) else ""
 
     def param(item: RoutineParameter) -> str:
+        default = ""
+        if item.default is not None:
+            if target_dialect is Dialect.MYSQL:
+                raise DialectError(
+                    "CERTIFIED_ROUTINE_PARAMETER_DEFAULT_UNSUPPORTED_BY_TARGET",
+                    "MySQL procedure parameters do not have an exact default-value signature route",
+                )
+            value = item.default.literal
+            if item.default.kind.value == "NULL":
+                rendered_default = "NULL"
+            elif item.default.kind.value == "CURRENT_TIMESTAMP":
+                rendered_default = "CURRENT_TIMESTAMP"
+            elif item.default.kind.value == "STRING":
+                assert value is not None
+                rendered_default = "'" + value.replace("'", "''") + "'"
+            elif item.default.kind.value == "BOOLEAN" and target_dialect in (Dialect.ORACLE, Dialect.TSQL):
+                rendered_default = "1" if value == "true" else "0"
+            else:
+                assert value is not None
+                rendered_default = value
+            default = (" = " if target_dialect is Dialect.TSQL else " DEFAULT ") + rendered_default
         if target_dialect is Dialect.TSQL:
             output = " OUTPUT" if item.mode is not RoutineParameterMode.IN else ""
-            return f"@{item.name} {_routine_type(item.type_ref, target_dialect)}{output}"
+            return f"@{item.name} {_routine_type(item.type_ref, target_dialect)}{default}{output}"
         mode = item.mode.value if target_dialect in (Dialect.POSTGRES, Dialect.ORACLE, Dialect.MYSQL) else ""
-        return f"{mode + ' ' if mode else ''}{item.name} {_routine_type(item.type_ref, target_dialect)}"
+        rendered_name = quote_identifier(item.name, target_dialect)
+        rendered_type = _routine_type(item.type_ref, target_dialect)
+        return f"{mode + ' ' if mode else ''}{rendered_name} {rendered_type}{default}"
 
     params = ", ".join(param(item) for item in procedure.parameters)
     statements: list[str] = []
     for assignment in procedure.assignments:
-        left = ("@" if target_dialect is Dialect.TSQL else "") + assignment.target
+        left = ("@" if target_dialect is Dialect.TSQL else "") + quote_identifier(assignment.target, target_dialect)
         from .routine import _render_routine_value
 
         right = _render_routine_value(assignment.value, target_dialect, tsql_parameters=target_dialect is Dialect.TSQL)
@@ -861,16 +1041,50 @@ def emit_table_function(function: TableFunction, target_dialect: Dialect) -> str
             "CERTIFIED_ROUTINE_REPLACE_UNSUPPORTED_BY_TARGET",
             "SQL Server CREATE OR ALTER version semantics are not pinned",
         )
-    qualified = _object_name(function.schema, function.name)
+    qualified = _object_name(function.schema, function.name, target_dialect)
+    for item in function.parameters:
+        if item.default is not None and target_dialect is Dialect.TSQL:
+            raise DialectError(
+                "CERTIFIED_ROUTINE_PARAMETER_DEFAULT_UNSUPPORTED_BY_TARGET",
+                "SQL Server table-valued function parameters do not have default values",
+            )
+
+    def default_sql(item: RoutineParameter) -> str:
+        if item.default is None:
+            return ""
+        value = item.default.literal
+        if item.default.kind.value == "NULL":
+            rendered = "NULL"
+        elif item.default.kind.value == "CURRENT_TIMESTAMP":
+            rendered = "CURRENT_TIMESTAMP"
+        elif item.default.kind.value == "STRING":
+            assert value is not None
+            rendered = "'" + value.replace("'", "''") + "'"
+        elif item.default.kind.value == "BOOLEAN":
+            rendered = "TRUE" if value == "true" else "FALSE"
+        else:
+            assert value is not None
+            rendered = value
+        return " DEFAULT " + rendered
+
     params = ", ".join(
-        ("@" if target_dialect is Dialect.TSQL else "") + item.name + " " + _routine_type(item.type_ref, target_dialect)
+        ("@" if target_dialect is Dialect.TSQL else "")
+        + quote_identifier(item.name, target_dialect)
+        + " "
+        + _routine_type(item.type_ref, target_dialect)
+        + default_sql(item)
         for item in function.parameters
     )
     columns = ", ".join(
-        item.name + " " + _routine_type(item.type_ref, target_dialect) for item in function.return_columns
+        quote_identifier(item.name, target_dialect)
+        + " "
+        + _routine_type(item.type_ref, target_dialect)
+        for item in function.return_columns
     )
-    selected = ", ".join(function.query.columns)
-    source = _object_name(function.query.table_schema, function.query.table)
+    selected = ", ".join(
+        column if column == "*" else quote_identifier(column, target_dialect) for column in function.query.columns
+    )
+    source = _object_name(function.query.table_schema, function.query.table, target_dialect)
     where = (
         ""
         if function.query.predicate is None
@@ -887,16 +1101,68 @@ def emit_table_function(function: TableFunction, target_dialect: Dialect) -> str
     )
 
 
+def _render_trigger_identifier(name: str, qualifier: str | None, dialect: Dialect) -> str:
+    # OLD and NEW are PostgreSQL trigger pseudo-records, not user tables.
+    # Quoting them would change the identifier lookup and make the emitted
+    # predicate invalid, so only those two typed qualifiers bypass quoting.
+    rendered_name = quote_identifier(name, dialect)
+    if qualifier is None:
+        return rendered_name
+    rendered_qualifier = qualifier if qualifier.upper() in {"OLD", "NEW"} else quote_identifier(qualifier, dialect)
+    return f"{rendered_qualifier}.{rendered_name}"
+
+
+def _render_trigger_expression(expression: CheckExpression, dialect: Dialect) -> str:
+    if isinstance(expression, CheckComparison):
+        left = _render_trigger_identifier(expression.column, expression.column_qualifier, dialect)
+        if expression.operator in {CheckOperator.IS_NULL, CheckOperator.IS_NOT_NULL}:
+            return f"{left} {expression.operator.value}"
+        if expression.right_column is not None:
+            right = _render_trigger_identifier(
+                expression.right_column, expression.right_column_qualifier, dialect
+            )
+        elif expression.literal_is_boolean:
+            right = "TRUE" if expression.literal == "true" else "FALSE"
+        else:
+            right = (
+                "'" + expression.literal.replace("'", "''") + "'"
+                if expression.literal_is_string
+                else expression.literal
+            )
+        if expression.operator is CheckOperator.IS_DISTINCT_FROM:
+            return f"{left} IS DISTINCT FROM {right}"
+        return f"{left} {check_operator_sql(expression.operator)} {right}"
+    if isinstance(expression, CheckNotExpression):
+        return f"NOT ({_render_trigger_expression(expression.operand, dialect)})"
+    joiner = f" {expression.connector.value} "
+    return joiner.join(
+        f"({_render_trigger_expression(operand, dialect)})" for operand in expression.operands
+    )
+
+
 def emit_trigger(trigger: Trigger, target_dialect: Dialect) -> str:
     if target_dialect is not Dialect.POSTGRES:
         raise DialectError(
             "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED",
             "trigger execution/action semantics are target-specific; this route emits only PostgreSQL trigger syntax",
         )
-    events = " OR ".join(item.value for item in trigger.events)
+    if trigger.transition_new_table is not None or trigger.transition_old_table is not None:
+        raise DialectError(
+            "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED",
+            "trigger transition-table semantics require a target action ABI and are not dropped from this route",
+        )
+    event_sql: list[str] = []
+    for event in trigger.events:
+        if event is TriggerEvent.UPDATE and trigger.update_columns:
+            columns = ", ".join(quote_identifier(column, target_dialect) for column in trigger.update_columns)
+            event_sql.append(f"UPDATE OF {columns}")
+        else:
+            event_sql.append(event.value)
+    events = " OR ".join(event_sql)
     row = " FOR EACH ROW" if trigger.row_level else " FOR EACH STATEMENT"
+    when = "" if trigger.when is None else f" WHEN ({_render_trigger_expression(trigger.when, target_dialect)})"
     return (
-        f"CREATE TRIGGER {trigger.name} {trigger.timing.value} {events} ON "
-        f"{_object_name(trigger.table_schema, trigger.table)}{row} "
-        f"EXECUTE FUNCTION {_object_name(trigger.routine_schema, trigger.routine_name)}()"
+        f"CREATE TRIGGER {quote_identifier(trigger.name, target_dialect)} {trigger.timing.value} {events} ON "
+        f"{_object_name(trigger.table_schema, trigger.table, target_dialect)}{row}{when} "
+        f"EXECUTE FUNCTION {_object_name(trigger.routine_schema, trigger.routine_name, target_dialect)}()"
     )

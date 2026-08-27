@@ -7,6 +7,23 @@ recipeList:
   - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7
   - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
   - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.maven.AddDependency:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-aspectj
+      version: 4.1.0
+      onlyIfUsing: io.github.resilience4j..*
+  - org.openrewrite.java.dependencies.ChangeDependency:
+      oldGroupId: io.github.resilience4j
+      oldArtifactId: resilience4j-spring-boot2
+      newArtifactId: resilience4j-spring-boot4
+      newVersion: 2.4.0
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.circuitbreaker.instances.default
+      filePattern: "**/application*.yml"
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.retry.instances.default
+      filePattern: "**/application*.yml"
+  - io.elmos.recipes.SpringSecurityLambdaChain
   - org.openrewrite.java.migrate.UpgradeToJava21
   - org.openrewrite.maven.UpgradeParentVersion:
       groupId: org.springframework.boot
@@ -40,6 +57,23 @@ recipeList:
   - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7
   - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
   - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.maven.AddDependency:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-aspectj
+      version: 4.1.0
+      onlyIfUsing: io.github.resilience4j..*
+  - org.openrewrite.java.dependencies.ChangeDependency:
+      oldGroupId: io.github.resilience4j
+      oldArtifactId: resilience4j-spring-boot2
+      newArtifactId: resilience4j-spring-boot4
+      newVersion: 2.4.0
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.circuitbreaker.instances.default
+      filePattern: "**/application*.yml"
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.retry.instances.default
+      filePattern: "**/application*.yml"
+  - io.elmos.recipes.SpringSecurityLambdaChain
   - org.openrewrite.java.migrate.UpgradeToJava21
   - org.openrewrite.maven.UpgradeParentVersion:
       groupId: org.springframework.boot
@@ -72,6 +106,23 @@ displayName: Spring Boot 2.7 to 4.1.0 on Java 21
 recipeList:
   - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
   - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.maven.AddDependency:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-aspectj
+      version: 4.1.0
+      onlyIfUsing: io.github.resilience4j..*
+  - org.openrewrite.java.dependencies.ChangeDependency:
+      oldGroupId: io.github.resilience4j
+      oldArtifactId: resilience4j-spring-boot2
+      newArtifactId: resilience4j-spring-boot4
+      newVersion: 2.4.0
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.circuitbreaker.instances.default
+      filePattern: "**/application*.yml"
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.retry.instances.default
+      filePattern: "**/application*.yml"
+  - io.elmos.recipes.SpringSecurityLambdaChain
   - org.openrewrite.java.migrate.UpgradeToJava21
   - org.openrewrite.maven.UpgradeParentVersion:
       groupId: org.springframework.boot
@@ -104,6 +155,23 @@ displayName: Spring Boot 3.0-3.4 to 4.1.0 on Java 21
 recipeList:
   - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
   - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.maven.AddDependency:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-aspectj
+      version: 4.1.0
+      onlyIfUsing: io.github.resilience4j..*
+  - org.openrewrite.java.dependencies.ChangeDependency:
+      oldGroupId: io.github.resilience4j
+      oldArtifactId: resilience4j-spring-boot2
+      newArtifactId: resilience4j-spring-boot4
+      newVersion: 2.4.0
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.circuitbreaker.instances.default
+      filePattern: "**/application*.yml"
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.retry.instances.default
+      filePattern: "**/application*.yml"
+  - io.elmos.recipes.SpringSecurityLambdaChain
   - org.openrewrite.java.migrate.UpgradeToJava21
   - org.openrewrite.maven.UpgradeParentVersion:
       groupId: org.springframework.boot
@@ -135,6 +203,23 @@ name: io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_0Java21
 displayName: Spring Boot 3.5 to 4.1.0 on Java 21
 recipeList:
   - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.maven.AddDependency:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-aspectj
+      version: 4.1.0
+      onlyIfUsing: io.github.resilience4j..*
+  - org.openrewrite.java.dependencies.ChangeDependency:
+      oldGroupId: io.github.resilience4j
+      oldArtifactId: resilience4j-spring-boot2
+      newArtifactId: resilience4j-spring-boot4
+      newVersion: 2.4.0
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.circuitbreaker.instances.default
+      filePattern: "**/application*.yml"
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.retry.instances.default
+      filePattern: "**/application*.yml"
+  - io.elmos.recipes.SpringSecurityLambdaChain
   - org.openrewrite.java.migrate.UpgradeToJava21
   - org.openrewrite.maven.UpgradeParentVersion:
       groupId: org.springframework.boot
@@ -166,6 +251,23 @@ name: io.elmos.openrewrite.SpringBoot4_0ToBoot4_1_0Java21
 displayName: Spring Boot 4.0 to 4.1.0 on Java 21
 recipeList:
   - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.maven.AddDependency:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-aspectj
+      version: 4.1.0
+      onlyIfUsing: io.github.resilience4j..*
+  - org.openrewrite.java.dependencies.ChangeDependency:
+      oldGroupId: io.github.resilience4j
+      oldArtifactId: resilience4j-spring-boot2
+      newArtifactId: resilience4j-spring-boot4
+      newVersion: 2.4.0
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.circuitbreaker.instances.default
+      filePattern: "**/application*.yml"
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.retry.instances.default
+      filePattern: "**/application*.yml"
+  - io.elmos.recipes.SpringSecurityLambdaChain
   - org.openrewrite.java.migrate.UpgradeToJava21
   - org.openrewrite.maven.UpgradeParentVersion:
       groupId: org.springframework.boot
@@ -200,6 +302,24 @@ recipeList:
   - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7
   - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
   - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.gradle.AddDependency:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-aspectj
+      version: 4.1.0
+      configuration: implementation
+      onlyIfUsing: io.github.resilience4j..*
+  - org.openrewrite.gradle.ChangeDependency:
+      oldGroupId: io.github.resilience4j
+      oldArtifactId: resilience4j-spring-boot2
+      newArtifactId: resilience4j-spring-boot4
+      newVersion: 2.4.0
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.circuitbreaker.instances.default
+      filePattern: "**/application*.yml"
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.retry.instances.default
+      filePattern: "**/application*.yml"
+  - io.elmos.recipes.SpringSecurityLambdaChain
   - org.openrewrite.gradle.plugins.ChangePluginVersion:
       pluginIdPattern: org.springframework.boot
       newVersion: 4.1.0
@@ -213,6 +333,24 @@ recipeList:
   - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7
   - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
   - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.gradle.AddDependency:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-aspectj
+      version: 4.1.0
+      configuration: implementation
+      onlyIfUsing: io.github.resilience4j..*
+  - org.openrewrite.gradle.ChangeDependency:
+      oldGroupId: io.github.resilience4j
+      oldArtifactId: resilience4j-spring-boot2
+      newArtifactId: resilience4j-spring-boot4
+      newVersion: 2.4.0
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.circuitbreaker.instances.default
+      filePattern: "**/application*.yml"
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.retry.instances.default
+      filePattern: "**/application*.yml"
+  - io.elmos.recipes.SpringSecurityLambdaChain
   - org.openrewrite.gradle.plugins.ChangePluginVersion:
       pluginIdPattern: org.springframework.boot
       newVersion: 4.1.0
@@ -225,6 +363,24 @@ displayName: Spring Boot 3.x Gradle to 4.1.0 on Java 21
 recipeList:
   - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
   - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.gradle.AddDependency:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-aspectj
+      version: 4.1.0
+      configuration: implementation
+      onlyIfUsing: io.github.resilience4j..*
+  - org.openrewrite.gradle.ChangeDependency:
+      oldGroupId: io.github.resilience4j
+      oldArtifactId: resilience4j-spring-boot2
+      newArtifactId: resilience4j-spring-boot4
+      newVersion: 2.4.0
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.circuitbreaker.instances.default
+      filePattern: "**/application*.yml"
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.retry.instances.default
+      filePattern: "**/application*.yml"
+  - io.elmos.recipes.SpringSecurityLambdaChain
   - org.openrewrite.gradle.plugins.ChangePluginVersion:
       pluginIdPattern: org.springframework.boot
       newVersion: 4.1.0
@@ -236,6 +392,24 @@ name: io.elmos.openrewrite.SpringBoot4_0GradleToBoot4_1_0Java21
 displayName: Spring Boot 4.0 Gradle to 4.1.0 on Java 21
 recipeList:
   - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.gradle.AddDependency:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-aspectj
+      version: 4.1.0
+      configuration: implementation
+      onlyIfUsing: io.github.resilience4j..*
+  - org.openrewrite.gradle.ChangeDependency:
+      oldGroupId: io.github.resilience4j
+      oldArtifactId: resilience4j-spring-boot2
+      newArtifactId: resilience4j-spring-boot4
+      newVersion: 2.4.0
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.circuitbreaker.instances.default
+      filePattern: "**/application*.yml"
+  - org.openrewrite.yaml.DeleteProperty:
+      propertyKey: resilience4j.retry.instances.default
+      filePattern: "**/application*.yml"
+  - io.elmos.recipes.SpringSecurityLambdaChain
   - org.openrewrite.gradle.plugins.ChangePluginVersion:
       pluginIdPattern: org.springframework.boot
       newVersion: 4.1.0

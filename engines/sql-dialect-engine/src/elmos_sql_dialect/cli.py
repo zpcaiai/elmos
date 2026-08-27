@@ -7,7 +7,8 @@ from pathlib import Path
 
 from .chinadb import chinadb_capabilities
 from .engine import translate_ddl
-from .models import Dialect, RouteError
+from .models import Dialect, DialectError, RouteError
+from .profiles import NamespaceProfile
 from .scan import render_markdown, report_to_json, scan_repository
 from .toolchains import verify_toolchain
 
@@ -38,6 +39,7 @@ def _translate_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPa
             "GRANT",
             "REVOKE",
             "POLICY",
+            "DO",
         ],
     )
     p.add_argument("--dsn", default=None, help="optional real-database DSN/connection params for execution validation")
@@ -46,6 +48,11 @@ def _translate_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPa
         default=None,
         help="JSON object mapping source schema names to target schema names",
     )
+    p.add_argument(
+        "--namespace-profile",
+        default=None,
+        help="JSON namespace profile with name, mapping and optional digest; mutually exclusive with --namespace-map",
+    )
     p.add_argument("--output", required=True, type=Path)
 
 
@@ -53,6 +60,7 @@ def _run_translate(args: argparse.Namespace) -> int:
     verify_toolchain()
     sql = args.source_file.read_text(encoding="utf-8")
     namespace_map = None
+    namespace_profile = None
     if args.namespace_map is not None:
         try:
             raw_map = json.loads(args.namespace_map)
@@ -63,6 +71,16 @@ def _run_translate(args: argparse.Namespace) -> int:
         ):
             raise RouteError("INVALID_NAMESPACE_MAP: expected a JSON object of string-to-string mappings")
         namespace_map = raw_map
+    if args.namespace_profile is not None:
+        if namespace_map is not None:
+            raise RouteError("INVALID_NAMESPACE_PROFILE: use --namespace-profile or --namespace-map, not both")
+        try:
+            raw_profile = json.loads(args.namespace_profile)
+        except json.JSONDecodeError as exc:
+            raise RouteError(f"INVALID_NAMESPACE_PROFILE: {exc}") from exc
+        if not isinstance(raw_profile, dict):
+            raise RouteError("INVALID_NAMESPACE_PROFILE: expected a JSON object")
+        namespace_profile = NamespaceProfile.from_payload(raw_profile)
     report = translate_ddl(
         sql,
         args.source_dialect,
@@ -70,6 +88,7 @@ def _run_translate(args: argparse.Namespace) -> int:
         statement_kind=args.statement_kind,
         dsn=args.dsn,
         namespace_map=namespace_map,
+        namespace_profile=namespace_profile,
     )
     args.output.mkdir(parents=True, exist_ok=True)
     (args.output / "translation-report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
@@ -94,6 +113,11 @@ def _scan_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]
         "--namespace-map", default=None, help="JSON object mapping source schema names to target schema names"
     )
     p.add_argument(
+        "--namespace-profile",
+        default=None,
+        help="JSON namespace profile with name, mapping and optional digest; mutually exclusive with --namespace-map",
+    )
+    p.add_argument(
         "--require-disposition-complete",
         action="store_true",
         help="succeed when every discovered unit has a non-unknown disposition",
@@ -104,6 +128,7 @@ def _run_scan(args: argparse.Namespace) -> int:
     """The pre-check exists so the subset boundary is visible BEFORE a
     migration is committed to, not from the wreckage of a failed run."""
     namespace_map = None
+    namespace_profile = None
     if args.namespace_map is not None:
         try:
             raw_map = json.loads(args.namespace_map)
@@ -114,12 +139,23 @@ def _run_scan(args: argparse.Namespace) -> int:
         ):
             raise RouteError("INVALID_NAMESPACE_MAP: expected a JSON object of string-to-string mappings")
         namespace_map = raw_map
+    if args.namespace_profile is not None:
+        if namespace_map is not None:
+            raise RouteError("INVALID_NAMESPACE_PROFILE: use --namespace-profile or --namespace-map, not both")
+        try:
+            raw_profile = json.loads(args.namespace_profile)
+        except json.JSONDecodeError as exc:
+            raise RouteError(f"INVALID_NAMESPACE_PROFILE: {exc}") from exc
+        if not isinstance(raw_profile, dict):
+            raise RouteError("INVALID_NAMESPACE_PROFILE: expected a JSON object")
+        namespace_profile = NamespaceProfile.from_payload(raw_profile)
     report = scan_repository(
         args.repository,
         Dialect(args.source_dialect),
         examples_per_blocker=args.examples,
         include_all_findings=args.all_findings,
         namespace_map=namespace_map,
+        namespace_profile=namespace_profile,
     )
     if args.output is not None:
         args.output.mkdir(parents=True, exist_ok=True)
@@ -176,7 +212,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "chinadb-capabilities":
             return _run_chinadb_capabilities(args)
         raise RouteError(f"UNKNOWN_COMMAND: {args.command!r}")  # pragma: no cover
-    except RouteError as exc:
+    except (RouteError, DialectError) as exc:
         print(json.dumps({"status": "BLOCKED", "reason": str(exc)}, indent=2))
         return 2
 

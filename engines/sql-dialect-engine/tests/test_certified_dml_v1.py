@@ -98,6 +98,35 @@ def test_update_from_rejects_missing_assignment_type_evidence() -> None:
     assert report["reasonCode"] == "CERTIFIED_UPDATE_COLUMN_TYPE_UNPROVEN"
 
 
+def test_update_from_allows_only_provable_character_widening() -> None:
+    catalog = _update_catalog(
+        "CREATE TABLE target (id VARCHAR(10) PRIMARY KEY, value VARCHAR(96))",
+        "CREATE TABLE source (id VARCHAR(10) PRIMARY KEY, value VARCHAR(64))",
+    )
+    report = translate_ddl(
+        "UPDATE target t SET value = s.value FROM source s WHERE t.id = s.id",
+        "postgres",
+        "mysql",
+        statement_kind="UPDATE",
+        catalog=catalog,
+    )
+    assert report["status"] == "PASSED", report
+
+    narrowing_catalog = _update_catalog(
+        "CREATE TABLE target (id VARCHAR(10) PRIMARY KEY, value VARCHAR(64))",
+        "CREATE TABLE source (id VARCHAR(10) PRIMARY KEY, value VARCHAR(96))",
+    )
+    blocked = translate_ddl(
+        "UPDATE target t SET value = s.value FROM source s WHERE t.id = s.id",
+        "postgres",
+        "mysql",
+        statement_kind="UPDATE",
+        catalog=narrowing_catalog,
+    )
+    assert blocked["status"] == "BLOCKED", blocked
+    assert blocked["reasonCode"] == "CERTIFIED_UPDATE_COLUMN_TYPE_UNPROVEN"
+
+
 @pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
 def test_single_source_insert_select_has_a_typed_route(target: str) -> None:
     report = translate_ddl(

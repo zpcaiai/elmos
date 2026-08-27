@@ -359,6 +359,8 @@ def render_auto_increment_suffix(dialect: Dialect) -> str:
 
 
 def render_default(default: ColumnDefault, type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
+    if default.kind == DefaultKind.NULL:
+        return "NULL"
     if default.kind == DefaultKind.CURRENT_TIMESTAMP:
         # SYSDATETIME(), not GETDATE(): GETDATE() returns the legacy `datetime`
         # type -- 3.33 ms granularity, range 1753-9999 -- so it silently
