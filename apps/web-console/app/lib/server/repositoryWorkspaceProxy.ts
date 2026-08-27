@@ -26,6 +26,7 @@ const maximumGenerationRepositoryFiles = 8;
 const maximumTranslationRepositoryFiles = 1_000;
 const maximumTranslationRepositoryBytes = 64 * 1024 * 1024;
 const requestTimeoutMs = 30_000;
+const workspaceCreateTimeoutMs = 5 * 60_000;
 const workspaceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const sourceCommitPattern = /^[0-9a-f]{40}$/;
 const digestPattern = /^[0-9a-f]{64}$/;
@@ -952,13 +953,16 @@ export async function repositoryWorkspaceRequest(
   const headers = trustedHeaders(actor);
   if (body !== undefined) headers.set("Content-Type", "application/json");
   try {
+    const timeoutMs = method === "POST" && targetPath === ""
+      ? workspaceCreateTimeoutMs
+      : requestTimeoutMs;
     return await fetch(`${controlPlaneBaseUrl()}/api/v1/repository-workspaces${targetPath}`, {
       method,
       headers,
       body,
       cache: "no-store",
       redirect: "error",
-      signal: AbortSignal.timeout(requestTimeoutMs),
+      signal: AbortSignal.timeout(timeoutMs),
     });
   } catch (error) {
     if (error instanceof RepositoryWorkspaceProxyError) throw error;
