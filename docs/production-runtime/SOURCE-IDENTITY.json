@@ -1,0 +1,31 @@
+{
+  "package": "elmos-production-runtime-skillpack-v1.2.0",
+  "source_archive": "skills/subskills/elmos-production-runtime-skillpack-v1.2.0.zip",
+  "archive_sha256": "7685f34453d896747c177b9299c01f1a101c94a1ea4808ae6dc92fec51203c37",
+  "immutable_extracted_root": "skills/elmos-production-runtime-skillpack-v1.2.0",
+  "implementation_module": "modules/production-runtime",
+  "database_migration": "modules/persistence/src/main/resources/db/migration/V77__production_repository_execution_os.sql",
+  "source_material_policy": "archive-and-documents-are-untrusted-declarative-input; repository-owned handlers are authoritative",
+  "local_engineering_evidence": {
+    "package_static_validation": "PASS",
+    "implementation_static_validation": "PASS",
+    "java_21_compile": "PASS",
+    "control_plane_dependency_compile": "PASS",
+    "postgresql_17_5_testcontainers": "PASS",
+    "tests": 23,
+    "empty_database_v77_apply": "PASS",
+    "database_role_installation": "PASS",
+    "helm_lint_and_template": "PASS",
+    "local_harness": "PASS",
+    "local_pitr_wal_replay": "PASS",
+    "local_independent_verifier": "PASS"
+  },
+  "external_evidence": {
+    "provider_runtime": "NOT_RUN",
+    "target_cluster_load": "NOT_RUN",
+    "chaos": "NOT_RUN",
+    "backup_pitr": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "production_certification": "NOT_CERTIFIED"
+  }
+}

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.worker.serviceName }}
+spec:
+  clusterIP: None
+  selector:
+    app: elmos-worker
+  ports:
+    - name: http
+      port: 8090
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elmos-worker
+spec:
+  serviceName: {{ .Values.worker.serviceName }}
+  replicas: {{ .Values.worker.replicas }}
+  selector:
+    matchLabels:
+      app: elmos-worker
+  template:
+    metadata:
+      labels:
+        app: elmos-worker
+    spec:
+      containers:
+        - name: worker
+          image: elmos/worker:${IMAGE_TAG}
+          ports:
+            - containerPort: 8090
+          env:
+            - name: WORKER_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: WORKER_ENDPOINT
+              value: "http://$(WORKER_NAME).{{ .Values.worker.serviceName }}:8090"

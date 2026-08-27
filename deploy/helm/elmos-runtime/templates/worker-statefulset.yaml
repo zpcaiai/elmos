@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.worker.serviceName }}
+  labels:
+    app.kubernetes.io/name: elmos-runtime
+    app.kubernetes.io/component: worker
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/name: elmos-runtime
+    app.kubernetes.io/component: worker
+  ports:
+    - name: worker
+      port: 8090
+      targetPort: worker
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elmos-worker
+  labels:
+    app.kubernetes.io/name: elmos-runtime
+    app.kubernetes.io/component: worker
+spec:
+  serviceName: {{ .Values.worker.serviceName }}
+  replicas: {{ .Values.worker.replicas }}
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: elmos-runtime
+      app.kubernetes.io/component: worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: elmos-runtime
+        app.kubernetes.io/component: worker
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+{{ toYaml .Values.podSecurityContext | indent 8 }}
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: worker
+          image: {{ .Values.images.worker | quote }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          ports:
+            - name: worker
+              containerPort: 8090
+          env:
+            - name: WORKER_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: WORKER_ENDPOINT
+              value: "http://$(WORKER_NAME).{{ .Values.worker.serviceName }}:8090"
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.secretName }}
+                  key: {{ .Values.database.jdbcUrlKey }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: worker
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: worker

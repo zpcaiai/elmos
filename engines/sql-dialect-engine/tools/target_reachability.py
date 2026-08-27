@@ -53,6 +53,7 @@ from elmos_sql_dialect.parser import (
     _parse_source_statements,
     looks_like_row_security,
     parse_row_security,
+    strip_leading_comments,
 )
 from elmos_sql_dialect.profiles import NamespaceProfile, resolve_namespace_profile
 from elmos_sql_dialect.routine import emit_create_function, parse_create_routine
@@ -144,7 +145,9 @@ def statements_of(path: Path, dialect: Dialect):
             for statement, raw in zip(statements, raw_statements, strict=True):
                 if isinstance(statement, exp.Command):
                     try:
-                        recovered = _parse_source_statements(raw.text, dialect)
+                        recovered = _parse_source_statements(
+                            strip_leading_comments(raw.text), dialect
+                        )
                     except Exception:  # noqa: S112 - preserve the opaque blocker
                         recovered = []
                     if len(recovered) == 1 and not isinstance(recovered[0], exp.Command):

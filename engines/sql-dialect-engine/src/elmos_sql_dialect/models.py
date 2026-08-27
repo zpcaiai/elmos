@@ -224,6 +224,11 @@ class CheckLiteral:
     value: str
     is_string: bool = False
     is_boolean: bool = False
+    #: PostgreSQL's explicitly typed IEEE-754 non-finite literals.  These are
+    #: retained in the source IR for faithful analysis, but target emitters
+    #: must reject them unless a versioned target profile proves an equivalent
+    #: floating-point representation.
+    is_special_float: bool = False
 
 
 class CheckValueFunction(str, Enum):
@@ -1325,6 +1330,11 @@ class TableFunction:
     query: ViewQuery
     schema: str | None = None
     or_replace: bool = False
+    #: SQL and the narrow static PL/pgSQL RETURN QUERY form share the same
+    #: canonical read-only query. The source language remains typed metadata
+    #: so a future emitter cannot accidentally treat an arbitrary procedural
+    #: body as this route.
+    language: RoutineLanguage = RoutineLanguage.SQL
 
 
 @dataclass(frozen=True)
@@ -1352,7 +1362,9 @@ class Comment:
     schema: str | None = None
     table_schema: str | None = None
     routine_argument_types: tuple[str, ...] = ()
-    routine_argument_type_refs: tuple[CanonicalTypeRef, ...] = ()
+    #: ``()`` is a proven zero-argument signature; ``None`` means the
+    #: signature could not be typed and must not pass a catalog gate.
+    routine_argument_type_refs: tuple[CanonicalTypeRef, ...] | None = ()
 
 
 class PrivilegeAction(str, Enum):
@@ -1370,7 +1382,9 @@ class Privilege:
     schema: str | None = None
     grant_option: bool = False
     routine_argument_types: tuple[str, ...] = ()
-    routine_argument_type_refs: tuple[CanonicalTypeRef, ...] = ()
+    #: ``()`` is a proven zero-argument signature; ``None`` means the
+    #: signature could not be typed and must not pass a catalog gate.
+    routine_argument_type_refs: tuple[CanonicalTypeRef, ...] | None = ()
 
 
 class TriggerTiming(str, Enum):

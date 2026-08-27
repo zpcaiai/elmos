@@ -1,0 +1,36 @@
+{
+  "package": "elmos-production-runtime-skillpack-v1.2.0",
+  "decision": "NOT_CERTIFIED",
+  "decision_reason": "local engineering evidence is not a substitute for target-provider, load, chaos, PITR, or independent verification evidence",
+  "scenarios": {
+    "BillingReconciliation": {"status": "LOCAL_TEST_PASS", "test": "billingReconciliationViewMatchesWalletAndReservationTruth"},
+    "ChaosMatrix": {"status": "LOCAL_HARNESS_PASS", "test": "chaosMatrixKeepsUnknownNonSuccessAndReleasesRejectedWork"},
+    "ConcurrentReserve": {"status": "LOCAL_TEST_PASS", "test": "concurrentReservationsNeverDriveWalletNegative"},
+    "CreditExhaustionResume": {"status": "LOCAL_TEST_PASS", "test": "creditExhaustionResumesAfterVerifiedTopUp"},
+    "DuplicateProviderCallReplay": {"status": "LOCAL_TEST_PASS", "test": "modelCallReplayIsStableAndProviderUncertaintyBlocksBlindRetry"},
+    "DuplicateUsage": {"status": "LOCAL_TEST_PASS", "test": "provisionsAggregateAndCompletesPrepaidDispatchSaga"},
+    "IdempotencyConflict": {"status": "LOCAL_TEST_PASS", "test": "topUpIdempotencyConflictCannotChangeMoney"},
+    "JournalBalance": {"status": "LOCAL_TEST_PASS", "test": "provisionsAggregateAndCompletesPrepaidDispatchSaga"},
+    "LeaseExpiry": {"status": "LOCAL_TEST_PASS", "test": "leaseExpiryRemovesLeaseAndMakesWorkRetryable"},
+    "PITRRestore": {"status": "LOCAL_HARNESS_PASS", "test": "scripts/production-runtime/run_pitr_drill.py"},
+    "ProjectorReplay": {"status": "LOCAL_TEST_PASS", "test": "projectorReplayRebuildsTheSameAuthoritativeCounts"},
+    "RLSIsolation": {"status": "LOCAL_TEST_PASS", "test": "rlsRoleCannotReadAnotherTenant"},
+    "RedisLoss": {"status": "LOCAL_HARNESS_PASS", "test": "redisLossDoesNotDeleteDurableDispatchOrMoneyState"},
+    "SchedulerRestartAtDispatching": {"status": "LOCAL_TEST_PASS", "test": "dispatchingUnknownOutcomeConvergesThroughDurableRecovery"},
+    "SchedulerRestartAtReserved": {"status": "LOCAL_TEST_PASS", "test": "reservedStateCanBeReplayedAfterSchedulerRestart"},
+    "SchedulerRestartAtReserving": {"status": "LOCAL_TEST_PASS", "test": "creditExhaustionResumesAfterVerifiedTopUp"},
+    "StaleFence": {"status": "LOCAL_TEST_PASS", "test": "staleFenceCannotCommitTerminalResult"},
+    "StreamingUsageReconciliation": {"status": "LOCAL_TEST_PASS", "test": "provisionsAggregateAndCompletesPrepaidDispatchSaga"},
+    "TopUpReplay": {"status": "LOCAL_TEST_PASS", "test": "provisionsAggregateAndCompletesPrepaidDispatchSaga"},
+    "WorkerCrashCheckpointResume": {"status": "LOCAL_HARNESS_PASS", "test": "workerProcessKillResumesFromLatestDurableCheckpoint"}
+  },
+  "external_required": [
+    "provider-runtime",
+    "target-cluster-load",
+    "redis-flush-recovery",
+    "worker-process-kill",
+    "backup-pitr-restore",
+    "chaos-matrix",
+    "independent-verification"
+  ]
+}

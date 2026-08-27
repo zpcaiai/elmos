@@ -9,9 +9,10 @@ from __future__ import annotations
 
 import pytest
 
+from elmos_sql_dialect.advanced import parse_table_function
 from elmos_sql_dialect.engine import translate_ddl
-from elmos_sql_dialect.models import Dialect
-from elmos_sql_dialect.routine import parse_create_routine
+from elmos_sql_dialect.models import Dialect, RoutineLanguage
+from elmos_sql_dialect.routine import parse_create_routine, parse_routine_identity
 
 PURE_FUNCTION = (
     "CREATE FUNCTION make_key(p VARCHAR(32)) RETURNS VARCHAR(64) "
@@ -38,6 +39,43 @@ def test_function_parser_builds_typed_body_instead_of_preserving_source_text() -
     assert routine.return_type.length == 64
     assert routine.body is not None
     assert "chr" not in repr(routine.body).lower()
+
+
+def test_static_plpgsql_return_query_table_function_has_a_typed_query_route() -> None:
+    sql = (
+        "CREATE FUNCTION active_users(p_min_id INT) RETURNS TABLE(id INT) "
+        "LANGUAGE plpgsql AS $$ BEGIN "
+        "RETURN QUERY SELECT id FROM users WHERE id > 0; END; $$"
+    )
+    table_function = parse_table_function(sql, Dialect.POSTGRES)
+    assert table_function.language is RoutineLanguage.PLPGSQL
+    assert table_function.query.table == "users"
+    report = translate_ddl(sql, "postgres", "tsql", statement_kind="FUNCTION")
+    assert report["status"] == "PASSED", report
+    assert report["emitted"] == (
+        "CREATE FUNCTION active_users(@p_min_id INT) RETURNS TABLE AS RETURN "
+        "(SELECT id FROM users WHERE id > 0)"
+    )
+
+
+def test_table_function_security_context_does_not_enter_static_route() -> None:
+    sql = (
+        "CREATE FUNCTION active_users() RETURNS TABLE(id INT) LANGUAGE plpgsql "
+        "SECURITY DEFINER SET search_path = public "
+        "AS $$ BEGIN RETURN QUERY SELECT id FROM users; END; $$"
+    )
+    report = translate_ddl(sql, "postgres", "tsql", statement_kind="FUNCTION")
+    assert report["status"] == "BLOCKED", report
+    assert report["reasonCode"] == "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED"
+
+
+def test_default_namespace_is_applied_to_typed_routine_identity() -> None:
+    identity = parse_routine_identity(
+        "CREATE FUNCTION f(p INT) RETURNS INT LANGUAGE SQL AS $$ SELECT p $$",
+        Dialect.POSTGRES,
+        namespace_map={"": "dbo"},
+    )
+    assert identity.schema == "dbo"
 
 
 @pytest.mark.parametrize(

@@ -17,6 +17,7 @@ not false automatic conversions.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 
 import sqlglot
@@ -69,6 +70,95 @@ def _require(condition: bool, code: str, message: str) -> None:
         raise DialectError(code, message)
 
 
+def _routine_signature_statement(
+    statement: str | exp.Expression,
+    source_dialect: Dialect,
+) -> exp.Expression:
+    """Recover only a routine signature from an opaque procedural statement.
+
+    sqlglot intentionally leaves some valid PL/pgSQL bodies as ``Command``
+    nodes.  Identity-sensitive metadata still needs the typed declaration
+    preceding that body, but must not treat the body as executable or infer a
+    portable routine route from it.  Truncate at the balanced parameter list
+    and parse that prefix as a minimal CREATE statement.  This helper is
+    therefore evidence-only: callers use the resulting parameter types for
+    identity matching, never for body emission.
+    """
+    if not isinstance(statement, exp.Command):
+        return (
+            statement
+            if isinstance(statement, exp.Expression)
+            else _require_single_statement(statement, source_dialect)
+        )
+    expression = statement.args.get("expression")
+    _require(
+        isinstance(expression, str),
+        "CERTIFIED_ROUTINE_IDENTITY_UNSUPPORTED",
+        "opaque routine statement has no recoverable declaration",
+    )
+    assert isinstance(expression, str)
+    source = "CREATE" + expression
+    routine_match = re.search(r"\b(?:FUNCTION|PROCEDURE)\b", source, re.IGNORECASE)
+    _require(
+        routine_match is not None,
+        "CERTIFIED_ROUTINE_IDENTITY_UNSUPPORTED",
+        "opaque statement is not a routine declaration",
+    )
+    assert routine_match is not None
+    open_paren = source.find("(", routine_match.end())
+    _require(
+        open_paren >= 0,
+        "CERTIFIED_ROUTINE_IDENTITY_UNSUPPORTED",
+        "routine declaration has no parameter list",
+    )
+    depth = 0
+    quote: str | None = None
+    index = open_paren
+    while index < len(source):
+        current = source[index]
+        if quote is not None:
+            if current == quote:
+                if index + 1 < len(source) and source[index + 1] == quote:
+                    index += 2
+                    continue
+                quote = None
+            index += 1
+            continue
+        if current in {"'", '"', "`"}:
+            quote = current
+        elif current == "(":
+            depth += 1
+        elif current == ")":
+            depth -= 1
+            if depth == 0:
+                return _require_single_statement(source[: index + 1], source_dialect)
+        index += 1
+    raise DialectError(
+        "CERTIFIED_ROUTINE_IDENTITY_UNSUPPORTED",
+        "routine declaration parameter list is not balanced",
+    )
+
+
+def _parse_routine_identity_type(data_type: exp.DataType, source_dialect: Dialect) -> CanonicalTypeRef:
+    """Parse a routine argument type without confusing it with column policy.
+
+    PostgreSQL permits an unparameterised NUMERIC as a routine *type identity*;
+    it is still rejected for portable columns/returns because those require a
+    fixed precision contract.  Keeping ``DECIMAL`` without precision only in
+    the identity IR lets a comment/privilege target be proven unique without
+    weakening the data-type route.
+    """
+    try:
+        return _parse_type(data_type, source_dialect)
+    except DialectError as exc:
+        if (
+            exc.code == "CERTIFIED_DDL_UNBOUNDED_DECIMAL"
+            and data_type.this is exp.DataType.Type.DECIMAL
+        ):
+            return CanonicalTypeRef(canonical_type=CanonicalType.DECIMAL)
+        raise
+
+
 def _routine_name(
     node: exp.Expression,
     namespace_map: Mapping[str, str] | None = None,
@@ -77,8 +167,15 @@ def _routine_name(
     assert isinstance(node, exp.Table)
     schema_node = node.args.get("db")
     schema: str | None = _plain_identifier(schema_node, "routine schema") if schema_node is not None else None
-    if schema is not None:
-        target_schema = None if namespace_map is None else namespace_map.get(schema)
+    source_schema = schema
+    if schema is None and namespace_map is not None and "" in namespace_map:
+        # The empty mapping entry is the explicit source default namespace.
+        # Tables and views already apply it through _mapped_table_name; routine
+        # identities must use the same typed rule or catalog-gated comments
+        # and privileges will miss otherwise identical unqualified routines.
+        source_schema = ""
+    if source_schema is not None:
+        target_schema = None if namespace_map is None else namespace_map.get(source_schema)
         _require(
             target_schema is not None,
             "CERTIFIED_ROUTINE_NAMESPACE_MAPPING_REQUIRED",
@@ -109,7 +206,7 @@ def parse_routine_identity(
     parameter types fail closed instead of becoming an untyped signature.
     """
 
-    statement = sql if isinstance(sql, exp.Expression) else _require_single_statement(sql, source_dialect)
+    statement = _routine_signature_statement(sql, source_dialect)
     _require(
         isinstance(statement, exp.Create),
         "CERTIFIED_ROUTINE_IDENTITY_UNSUPPORTED",
@@ -138,7 +235,7 @@ def parse_routine_identity(
         )
         assert isinstance(item, exp.ColumnDef)
         assert isinstance(item.kind, exp.DataType)
-        parameter_types.append(_parse_type(item.kind, source_dialect))
+        parameter_types.append(_parse_routine_identity_type(item.kind, source_dialect))
     return RoutineIdentity(
         kind=RoutineKind(kind_name),
         name=name,
