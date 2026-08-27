@@ -179,6 +179,21 @@ class SpringRouteCatalogTest {
     }
 
     @Test void exactSelectionRejectsMissingUnsupportedAndDowngradeTargets() {
+        assertEquals("SOURCE_JAVA_VERSION_UNRESOLVED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select("2.7.18", null, "maven")).code());
+        assertEquals("TARGET_SPRING_BOOT_VERSION_UNRESOLVED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select("2.7.18", "17", "maven", null, "17")).code());
+        assertEquals("TARGET_SPRING_BOOT_VERSION_UNRESOLVED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select("2.7.18", "17", "maven", "UNKNOWN", "17")).code());
+        assertEquals("TARGET_JAVA_VERSION_UNRESOLVED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select("2.7.18", "17", "maven", "3.2.12", null)).code());
+        assertEquals("TARGET_JAVA_VERSION_UNRESOLVED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select("2.7.18", "17", "maven", "3.2.12", "UNKNOWN")).code());
         assertEquals("TARGET_SPRING_BOOT_VERSION_UNRESOLVED",
                 assertThrows(BlockedException.class,
                         () -> SpringRouteCatalog.select("2.7.18", "17", "maven", "", "17")).code());
@@ -317,7 +332,17 @@ class SpringRouteCatalogTest {
         for (SpringRoute route : SpringRouteCatalog.routes()) {
             if (!route.targetBoot().equals("4.1.0")) continue;
             assertTrue(route.implemented(), route.routeId());
-            assertEquals(EvidenceStatus.NOT_RUN, route.routeEvidence(), route.routeId());
+            if (route.routeId().equals("boot-2.7-maven-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("2.7.18", route.verifiedSourceBoot());
+                assertEquals("17", route.verifiedSourceJava());
+            } else if (route.routeId().equals("boot-3.5-maven-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("3.5.3", route.verifiedSourceBoot());
+                assertEquals("21", route.verifiedSourceJava());
+            } else {
+                assertEquals(EvidenceStatus.NOT_RUN, route.routeEvidence(), route.routeId());
+            }
             assertEquals("spring-to-boot-4-1-0", route.packKey(), route.routeId());
             assertFalse(route.recipeId().isBlank(), route.routeId());
         }
@@ -490,5 +515,39 @@ class SpringRouteCatalogTest {
                                 List.of(),
                                 new SpringRouteCatalog.RouteRequest(
                                         null, "2.7.18", "17", "maven", "3.5.3", "21"))).code());
+    }
+
+    @Test void frameworkRoutesUseFrameworkSpecificDiagnosticsAndExactEvidenceChecks() {
+        assertEquals("SPRING_FRAMEWORK_VERSION_UNRESOLVED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.selectSpringFramework(
+                                "", "17", "maven", "4.1.1", "21")).code());
+        assertEquals("UNSUPPORTED_SOURCE_SPRING_FRAMEWORK_VERSION",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.selectSpringMvc(
+                                "3.1.9", "8", "maven", "3.5.3", "21")).code());
+
+        SpringRoute verified = SpringRouteCatalog
+                .byId("boot-2.7-maven-to-boot-3.5.3-java-21").orElseThrow();
+        assertEquals(EvidenceStatus.NOT_RUN, verified.evidenceFor("2.7.18", "11"));
+        assertEquals("migrated-spring-boot-3.5.3.zip", verified.artifactFileName());
+
+        assertThrows(IllegalArgumentException.class, () -> new SpringRoute(
+                "invalid-exact-route", "pack", "label", "2.7.0", "3.0.0", Set.of("17"),
+                "maven", "3.5.3", "21", "/recipe.yml", "recipe", "6.35.0", "6.44.0",
+                EvidenceStatus.NOT_RUN, "", "", "invalid", SpringRouteCatalog.SourceFamily.SPRING_BOOT,
+                "3.0.0"));
+    }
+
+    @Test void versionUtilitiesRemainTotalForNullMalformedAndTrailingDotInputs() {
+        assertEquals(0, SpringRouteCatalog.compare("2.7.", "2.7.0"));
+        assertEquals(0, SpringRouteCatalog.compare("2.7.0", "2.7."));
+        assertTrue(SpringRouteCatalog.compare("999999999999999999999", "1") < 0);
+        assertEquals(0, SpringRouteCatalog.compare("x", "0"));
+        assertEquals("", SpringRouteCatalog.normalizeJava(null));
+        assertEquals("", SpringRouteCatalog.normalizeJava(""));
+        assertEquals("21", SpringRouteCatalog.normalizeJava("1.21"));
+        assertEquals("1.8x", SpringRouteCatalog.normalizeJava("1.8x"));
+        assertEquals("1.", SpringRouteCatalog.normalizeJava("1."));
     }
 }

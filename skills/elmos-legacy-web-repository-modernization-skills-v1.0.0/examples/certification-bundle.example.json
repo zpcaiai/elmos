@@ -1,0 +1,45 @@
+{
+  "bundleVersion": "1.0.0",
+  "jobId": "job-demo-001",
+  "level": "E4",
+  "issuedAt": "2026-08-26T10:00:00Z",
+  "policySnapshotHash": "sha256:policy",
+  "repositorySnapshotId": "snapshot-demo-001",
+  "targetDigest": "sha256:target",
+  "artifacts": [
+    {
+      "type": "semantic-ir",
+      "uri": "artifact://ir",
+      "digest": "sha256:ir",
+      "schemaVersion": "1.0.0"
+    },
+    {
+      "type": "equivalence-report",
+      "uri": "artifact://equiv",
+      "digest": "sha256:equiv",
+      "schemaVersion": "1.0.0"
+    }
+  ],
+  "gates": [
+    {
+      "id": "E4",
+      "status": "passed"
+    }
+  ],
+  "allowedDeltas": [],
+  "unknowns": [],
+  "risks": [],
+  "metrics": {
+    "routeCoverage": 1.0,
+    "criticalMismatchCount": 0
+  },
+  "reproducibility": {
+    "commands": [
+      "elmos verify --job job-demo-001"
+    ],
+    "environmentDigests": [
+      "sha256:env"
+    ]
+  },
+  "signatures": []
+}

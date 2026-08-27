@@ -87,6 +87,9 @@ function normalizeSnapshots(expr: Expr): Expr {
     case "eventValue": return expr;
     case "unaryNot": return { kind: "unaryNot", operand: normalizeSnapshots(expr.operand) };
     case "stringMethod": return { kind: "stringMethod", method: expr.method, receiver: normalizeSnapshots(expr.receiver), args: expr.args.map(normalizeSnapshots) };
+    case "numericFunction": return { kind: "numericFunction", function: expr.function, args: expr.args.map(normalizeSnapshots) };
+    case "numericPredicate": return { kind: "numericPredicate", predicate: expr.predicate, operand: normalizeSnapshots(expr.operand) };
+    case "cssModuleClass": return expr;
     case "regexTest": return { kind: "regexTest", pattern: expr.pattern, flags: expr.flags, operand: normalizeSnapshots(expr.operand) };
     case "arrayLength": return { kind: "arrayLength", operand: normalizeSnapshots(expr.operand) };
     case "binary": return { kind: "binary", operator: expr.operator, left: normalizeSnapshots(expr.left), right: normalizeSnapshots(expr.right) };

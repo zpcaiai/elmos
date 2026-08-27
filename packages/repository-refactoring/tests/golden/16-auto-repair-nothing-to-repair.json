@@ -1,0 +1,22 @@
+{
+  "caseId": "16-auto-repair-nothing-to-repair",
+  "description": "With no failure signature there is nothing to repair; it must not invent work.",
+  "evidence": {},
+  "failureClass": null,
+  "inputDigest": "sha256:bd790907e54609778127b2015674d6c2d06fbd5a0639ba17a4980923ee18fb0b",
+  "outputDigest": "sha256:95211c1ea6fe9b3c35d0695f279ad4aef2a48fa7a0c91f6276d73c937d40a1c6",
+  "projections": {
+    "output.repairAttemptRecords": [],
+    "output.unresolvedFailureReport": {
+      "count": 0,
+      "failures": [],
+      "stoppedBecause": ""
+    },
+    "status": "succeeded"
+  },
+  "reasonCount": 1,
+  "riskClass": "R3",
+  "sideEffectsPerformed": false,
+  "skill": "bounded-auto-repair",
+  "status": "succeeded"
+}

@@ -28,7 +28,7 @@ from .advanced import (
     parse_table_function,
     parse_trigger,
 )
-from .models import Dialect, DialectError, RouteError
+from .models import Dialect, DialectError, InsertStatement, RouteError
 from .validator import validate
 
 
@@ -47,12 +47,17 @@ def translate_ddl(
     statement_kind: str = "TABLE",
     dsn: str | None = None,
     namespace_map: Mapping[str, str] | None = None,
+    catalog: emitter.ColumnCatalogLike | None = None,
+    comment_catalog: emitter.CommentColumnCatalogLike | None = None,
 ) -> dict[str, Any]:
     """Translate one statement from `source_dialect` to `target_dialect`.
 
     `statement_kind` selects the profile:
 
       TABLE / INDEX -- certified-ddl-v1
+      INSERT -- certified-insert-v1 (fixed-column literal seeds only)
+      INSERT -- certified-dml-v1 (bounded single-source SELECT seeds)
+      UPDATE -- certified-dml-v1 (single-table typed assignments)
       ALTER         -- certified-alter-v1
       DROP          -- certified-drop-v1
       SCHEMA        -- certified-schema-v1
@@ -62,20 +67,32 @@ def translate_ddl(
 
     Returns a structured report; never raises for out-of-profile input --
     that is reported as `status: "BLOCKED"`.
+
+    ``catalog`` is optional source-schema context for standalone indexes and
+    constraints. It is consulted only for target rules that need a column type
+    (currently MySQL TEXT keys); absent context remains unknown rather than
+    being treated as evidence of safety.
+
+    ``comment_catalog`` is optional full source-schema context for MySQL
+    column comments. MySQL's MODIFY COLUMN form must repeat the complete
+    type/nullability/default/identity definition; a type-only catalogue is
+    deliberately insufficient and remains blocked.
     """
     source = _resolve_dialect(source_dialect)
     target = _resolve_dialect(target_dialect)
     if source == target:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER: translating a dialect to itself is not a supported route")
     if statement_kind not in (
-        "TABLE", "INDEX", "ALTER", "DROP", "SCHEMA", "FUNCTION", "PROCEDURE", "TRIGGER",
+        "TABLE", "INDEX", "INSERT", "UPDATE", "ALTER", "DROP", "SCHEMA", "FUNCTION", "PROCEDURE", "TRIGGER",
         "VIEW", "COMMENT", "GRANT", "REVOKE", "POLICY",
     ):
         raise RouteError(
-            f"UNSUPPORTED_STATEMENT_KIND: {statement_kind!r} must be TABLE, INDEX, ALTER, DROP, "
-            "SCHEMA, FUNCTION, PROCEDURE, TRIGGER, VIEW, COMMENT, GRANT, REVOKE or POLICY"
+            f"UNSUPPORTED_STATEMENT_KIND: {statement_kind!r} must be TABLE, INDEX, INSERT, ALTER, DROP, "
+            "UPDATE, SCHEMA, FUNCTION, PROCEDURE, TRIGGER, VIEW, COMMENT, GRANT, REVOKE or POLICY"
         )
     profile = {
+        "INSERT": "certified-insert-v1 + certified-dml-v1",
+        "UPDATE": "certified-dml-v1",
         "ALTER": "certified-alter-v1",
         "DROP": "certified-drop-v1",
             "SCHEMA": "certified-schema-v1",
@@ -92,8 +109,18 @@ def translate_ddl(
     try:
         if statement_kind == "TABLE":
             emitted = emitter.emit_create_table(parser.parse_create_table(sql, source, namespace_map), target)
+        elif statement_kind == "INSERT":
+            insert = parser.parse_insert_statement(sql, source, namespace_map)
+            if isinstance(insert, InsertStatement):
+                emitted = emitter.emit_insert(insert, target)
+            else:
+                emitted = emitter.emit_insert_select(insert, target)
+        elif statement_kind == "UPDATE":
+            emitted = emitter.emit_update(parser.parse_update(sql, source, namespace_map), target)
         elif statement_kind == "ALTER":
-            emitted = emitter.emit_alter_table(parser.parse_alter_table(sql, source, namespace_map), target)
+            emitted = emitter.emit_alter_table(
+                parser.parse_alter_table(sql, source, namespace_map), target, catalog
+            )
         elif statement_kind == "DROP":
             emitted = emitter.emit_drop_table(parser.parse_drop_table(sql, source, namespace_map), target)
         elif statement_kind == "SCHEMA":
@@ -126,14 +153,16 @@ def translate_ddl(
         elif statement_kind == "VIEW":
             emitted = emit_view(parse_create_view(sql, source, namespace_map), target)
         elif statement_kind == "COMMENT":
-            emitted = emit_comment(parse_comment(sql, source, namespace_map), target)
+            emitted = emit_comment(parse_comment(sql, source, namespace_map), target, comment_catalog)
         elif statement_kind in ("GRANT", "REVOKE"):
             emitted = emit_privilege(parse_privilege(sql, source, namespace_map), target)
         elif statement_kind == "POLICY":
             parse_row_policy(sql, source)
             raise AssertionError("parse_row_policy is a permanent fail-closed route")  # pragma: no cover
         else:
-            emitted = emitter.emit_create_index(parser.parse_create_index(sql, source, namespace_map), target)
+            emitted = emitter.emit_create_index(
+                parser.parse_create_index(sql, source, namespace_map), target, catalog
+            )
     except DialectError as exc:
         return {
             "schemaVersion": "1.0",

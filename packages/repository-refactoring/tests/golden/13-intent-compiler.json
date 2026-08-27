@@ -1,0 +1,115 @@
+{
+  "caseId": "13-intent-compiler",
+  "description": "Goal classification, acceptance predicates, and the minimal conflict set.",
+  "evidence": {
+    "indexDigest": "sha256:aa3e83e0352691b8a2771e3a19ff716aab0cf75efb065093fb2be76b4eac6966",
+    "intentDigest": "sha256:c1ff3fb1e2dbb047c1155e729b1fb4cdfb1703884863c8ebd4a2d0134ea4697d"
+  },
+  "failureClass": null,
+  "inputDigest": "sha256:afd0a085ea0f1624a83a7cd90332a3c156e3979bab4c0d919461538bc9be0786",
+  "outputDigest": "sha256:48881313fb91c621052f39030fc2ec3512e03b89a55818c7df7868cbac7f9311",
+  "projections": {
+    "output.compiled_intent": {
+      "acceptancePredicates": [
+        {
+          "blocking": true,
+          "domain": "source",
+          "expression": "gates.parse and gates.typecheck and gates.build",
+          "id": "behaviorCompatibility-0",
+          "origin": "behaviorCompatibility=strict"
+        },
+        {
+          "blocking": true,
+          "domain": "behavior",
+          "expression": "tests.changed_target_pass and tests.regressions == 0",
+          "id": "behaviorCompatibility-1",
+          "origin": "behaviorCompatibility=strict"
+        },
+        {
+          "blocking": true,
+          "domain": "wire",
+          "expression": "api.wire_breaks == 0",
+          "id": "behaviorCompatibility-2",
+          "origin": "behaviorCompatibility=strict"
+        },
+        {
+          "blocking": true,
+          "domain": "binary",
+          "expression": "api.binary_breaks == 0",
+          "id": "behaviorCompatibility-3",
+          "origin": "behaviorCompatibility=strict"
+        },
+        {
+          "blocking": true,
+          "domain": "data",
+          "expression": "schema.destructive_changes == 0",
+          "id": "behaviorCompatibility-4",
+          "origin": "behaviorCompatibility=strict"
+        },
+        {
+          "blocking": true,
+          "domain": "operational",
+          "expression": "rollout.rollback_verified",
+          "id": "behaviorCompatibility-5",
+          "origin": "behaviorCompatibility=strict"
+        },
+        {
+          "blocking": true,
+          "domain": "source",
+          "expression": "api.source_breaks == 0",
+          "id": "publicApiCompatibility-0",
+          "origin": "publicApiCompatibility=backward-compatible"
+        },
+        {
+          "blocking": true,
+          "domain": "behavior",
+          "expression": "approvals.acceptance_0_confirmed",
+          "id": "acceptance-0",
+          "origin": "user acceptance criterion: all existing tests pass"
+        }
+      ],
+      "assumptions": [],
+      "conflicts": [],
+      "executable": true,
+      "goals": [
+        {
+          "confidence": "0.50",
+          "index": 0,
+          "operation": "rename-symbol",
+          "resolvedEntities": [
+            "sha256:786528dc38de988dcbd8d0af7"
+          ],
+          "targets": [
+            "post_entry",
+            "record_entry"
+          ],
+          "text": "rename post_entry to record_entry"
+        }
+      ],
+      "nonGoals": [
+        "do not change the public REST contract"
+      ],
+      "operations": [
+        "rename-symbol"
+      ],
+      "riskFloor": "R2",
+      "scopePolicy": {
+        "allowedPaths": [
+          "**"
+        ],
+        "forbiddenPaths": [],
+        "maximumChangedFiles": 200,
+        "maximumChangedLines": null,
+        "protectedSymbols": [
+          "REST"
+        ]
+      }
+    },
+    "status": "succeeded"
+  },
+  "reasonCount": 0,
+  "riskClass": "R2",
+  "sideEffectsPerformed": false,
+  "skill": "refactor-intent-compiler",
+  "status": "succeeded"
+}

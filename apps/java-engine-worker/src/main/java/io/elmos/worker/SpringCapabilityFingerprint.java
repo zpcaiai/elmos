@@ -635,7 +635,8 @@ final class SpringCapabilityFingerprint {
         collectConditions(content, conditions,
                 Pattern.compile("<(?:beans(?::beans)?)\\b[^>]*\\bprofile\\s*=\\s*[\"']([^\"']+)[\"']"),
                 "xml-profile:");
-        if (relative.toLowerCase(Locale.ROOT).contains("/src/test/")) {
+        String normalizedRelative = relative.toLowerCase(Locale.ROOT);
+        if (normalizedRelative.contains("/src/test/") || normalizedRelative.startsWith("src/test/")) {
             conditions.add("test-scope");
         }
         return conditions.stream().map(SpringCapabilityFingerprint::compact).toList();
@@ -671,7 +672,7 @@ final class SpringCapabilityFingerprint {
                 masked.append(trimmed.startsWith("#") || trimmed.startsWith("!")
                         ? " ".repeat(line.length()) : line).append('\n');
             }
-            if (!content.endsWith("\n") && masked.length() > 0) masked.setLength(masked.length() - 1);
+            if (!content.endsWith("\n")) masked.setLength(masked.length() - 1);
             return masked.toString();
         }
         String withoutBlocks = maskPattern(content, Pattern.compile("/\\*.*?\\*/", Pattern.DOTALL));
@@ -751,7 +752,7 @@ final class SpringCapabilityFingerprint {
         if (hasState(traces, EvidenceState.GENERATED)) return EvidenceState.GENERATED;
         if (hasState(traces, EvidenceState.TEST_ONLY)) return EvidenceState.TEST_ONLY;
         if (hasState(traces, EvidenceState.DECLARED_ONLY)) return EvidenceState.DECLARED_ONLY;
-        return active ? EvidenceState.OBSERVED : EvidenceState.UNKNOWN;
+        return EvidenceState.UNKNOWN;
     }
 
     private static boolean hasState(List<String> traces, EvidenceState state) {
@@ -805,8 +806,7 @@ final class SpringCapabilityFingerprint {
                 .map(Rule::obligations)
                 .orElseGet(() -> {
                     List<String> obligations = new ArrayList<>(BASE_OBLIGATIONS);
-                    if (id.equals("security") || id.equals("persistence")
-                            || id.equals("messaging") || id.equals("web")) {
+                    if (Set.of("security", "persistence", "messaging", "web").contains(id)) {
                         obligations.add("preserve-cross-capability-ordering");
                         obligations.add("verify-provider-specific-defaults");
                     }

@@ -97,6 +97,9 @@ function exprSource(expr: Expr, inJs: boolean, snapshot: ReadonlySet<string> = n
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, inJs, snapshot)).join(", ")})`;
+    case "numericFunction": return `Math.${expr.function}(${expr.args.map((arg) => exprSource(arg, inJs, snapshot)).join(", ")})`;
+    case "numericPredicate": return `Number.${expr.predicate}(${exprSource(expr.operand, inJs, snapshot)})`;
+    case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand, inJs, snapshot)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
@@ -126,6 +129,8 @@ function collectReads(expr: Expr, into: Set<string>): void {
     case "unaryNot": collectReads(expr.operand, into); return;
     case "stringMethod": collectReads(expr.receiver, into); expr.args.forEach((arg) => collectReads(arg, into)); return;
     case "regexTest": collectReads(expr.operand, into); return;
+    case "numericFunction": expr.args.forEach((arg) => collectReads(arg, into)); return;
+    case "numericPredicate": collectReads(expr.operand, into); return;
     case "binary": collectReads(expr.left, into); collectReads(expr.right, into); return;
     case "ternary": collectReads(expr.condition, into); collectReads(expr.then, into); collectReads(expr.else, into); return;
   }
@@ -190,6 +195,10 @@ function attrSource(attr: AttrBinding, tag: HtmlTag, extraClasses: string[]): st
 }
 
 function nodeSource(node: CNode, indent: string, handlers: EmittedHandler[], counter: { n: number }, lists: ReadonlyMap<string, ListPropDef>): string {
+  if (node.kind === "fragment") {
+    const childSrc = node.children.map((child) => nodeSource(child, indent + "  ", handlers, counter, lists)).join("\n");
+    return `${indent}<block>\n${childSrc}\n${indent}</block>`;
+  }
   if (node.kind === "text") {
     if (node.value.kind === "literal" && node.value.literal.type === "string") {
       return `${indent}${node.value.literal.value}`;

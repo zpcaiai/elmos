@@ -1576,6 +1576,9 @@ function visitCanonicalNodes(
 ): void {
   visit(node);
   switch (node.kind) {
+    case "fragment":
+      node.children.forEach((child) => visitCanonicalNodes(child, visit));
+      return;
     case "element":
       node.children.forEach((child) => visitCanonicalNodes(child, visit));
       return;
@@ -1711,8 +1714,16 @@ function inferCanonicalExpressionType(
       return "boolean";
     case "stringMethod":
       return inferCanonicalExpressionType(expression.receiver, values, scope) === "string"
-        ? expression.method === "includes" ? "boolean" : "string"
+        ? ["includes", "startsWith", "endsWith"].includes(expression.method) ? "boolean" : "string"
         : null;
+    case "numericFunction":
+      return expression.args.length > 0 && expression.args.every((arg) => inferCanonicalExpressionType(arg, values, scope) === "number")
+        ? "number"
+        : null;
+    case "numericPredicate":
+      return inferCanonicalExpressionType(expression.operand, values, scope) === "number" ? "boolean" : null;
+    case "cssModuleClass":
+      return "string";
     case "eventValue":
       return "string";
     case "regexTest":
@@ -1829,6 +1840,10 @@ function validateSameRunInvocationContracts(
         return;
       }
       if (node.kind === "element") {
+        node.children.forEach((child) => visit(child, scope));
+        return;
+      }
+      if (node.kind === "fragment") {
         node.children.forEach((child) => visit(child, scope));
         return;
       }

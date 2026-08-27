@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/unknown-semantics-ledger.schema.json",
+  "title": "Unknown Semantics Ledger",
+  "type": "object",
+  "required": [
+    "ledgerVersion",
+    "items"
+  ],
+  "properties": {
+    "ledgerVersion": {
+      "type": "string"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "severity",
+          "status",
+          "scope",
+          "description",
+          "evidenceRefs",
+          "blocks"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "enum": [
+              "missing-environment",
+              "dynamic-reflection",
+              "script",
+              "native",
+              "encrypted-config",
+              "unreplayed-path",
+              "evidence-conflict",
+              "external-system",
+              "other"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "status": {
+            "enum": [
+              "open",
+              "inferred",
+              "resolved",
+              "accepted-risk"
+            ]
+          },
+          "scope": {
+            "type": "object"
+          },
+          "description": {
+            "type": "string"
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "resolutionPlan": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "E1",
+                "E2",
+                "E3",
+                "E4",
+                "E5",
+                "cutover"
+              ]
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

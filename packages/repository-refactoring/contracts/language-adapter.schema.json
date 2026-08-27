@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/language-adapter.schema.json",
+  "title": "LanguageAdapterDescriptor",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.dev/v1"
+    },
+    "kind": {
+      "const": "LanguageAdapter"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "name",
+        "version",
+        "digest"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "digest": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "certificationLevel": {
+          "enum": [
+            "L0",
+            "L1",
+            "L2",
+            "L3",
+            "L4"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "languages",
+        "toolchains",
+        "capabilities",
+        "operations",
+        "resourceProfile",
+        "security"
+      ],
+      "properties": {
+        "languages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "toolchains": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "versionRange"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "versionRange": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "buildSystems": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": {
+            "enum": [
+              "none",
+              "partial",
+              "full"
+            ]
+          }
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "probe",
+              "restore",
+              "parse",
+              "index",
+              "query",
+              "lower",
+              "apply",
+              "format",
+              "validate",
+              "rollback"
+            ]
+          }
+        },
+        "resourceProfile": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": "number"
+            },
+            "memoryMiB": {
+              "type": "integer"
+            },
+            "diskMiB": {
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": false
+        },
+        "security": {
+          "type": "object",
+          "properties": {
+            "network": {
+              "enum": [
+                "deny",
+                "restore-only",
+                "allowlisted"
+              ]
+            },
+            "exec": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "writePaths": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

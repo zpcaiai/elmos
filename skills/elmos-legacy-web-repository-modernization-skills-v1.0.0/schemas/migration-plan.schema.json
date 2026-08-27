@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/migration-plan.schema.json",
+  "title": "Migration Plan",
+  "type": "object",
+  "required": [
+    "planVersion",
+    "policySnapshotHash",
+    "target",
+    "strategy",
+    "units",
+    "gates",
+    "rollback"
+  ],
+  "properties": {
+    "planVersion": {
+      "type": "string"
+    },
+    "policySnapshotHash": {
+      "type": "string"
+    },
+    "target": {
+      "type": "object",
+      "required": [
+        "springBoot",
+        "springFramework",
+        "jakartaEE",
+        "servlet",
+        "java",
+        "packaging"
+      ],
+      "properties": {
+        "springBoot": {
+          "type": "string"
+        },
+        "springFramework": {
+          "type": "string"
+        },
+        "jakartaEE": {
+          "type": "string"
+        },
+        "servlet": {
+          "type": "string"
+        },
+        "java": {
+          "type": "integer",
+          "minimum": 17
+        },
+        "packaging": {
+          "enum": [
+            "jar",
+            "executable-war",
+            "traditional-war",
+            "mixed"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "strategy": {
+      "enum": [
+        "preserve-first",
+        "strangler",
+        "dual-run",
+        "direct-cutover"
+      ]
+    },
+    "allowedDeltas": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "units": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "modules",
+          "routes",
+          "risk",
+          "dependsOn",
+          "changes",
+          "verification"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "modules": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "routes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "risk": {
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "changes": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "verification": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rollback": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "compatibilityShims": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "cutover": {
+      "type": "object"
+    },
+    "rollback": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

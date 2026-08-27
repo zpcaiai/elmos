@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.1",
+  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "run_id": "spring-mvc-5.3.39-to-boot-3.5.3-local-2026-08-27",
+  "status": "PASSED_LOCAL",
+  "claim_scope": "LOCAL_ENGINEERING_EXACT_FIXTURE_ONLY",
+  "certification_eligible": false,
+  "external_execution_status": "NOT_RUN",
+  "receipt_binding": "The index deliberately does not self-reference; it binds the final receipt, every receipt-owned raw evidence file, the migrated-repository ZIP, and the exact executable WAR used by WarLauncher by byte count and SHA-256.",
+  "files": [
+    {
+      "path": "artifacts/executed-spring-boot-3.5.3.war",
+      "bytes": 28990394,
+      "sha256": "45a3a26a169e576db8e91c4bea6688e785dea2f2b2b231b163d3748fdd3b2175"
+    },
+    {
+      "path": "artifacts/migrated-spring-boot-3.5.3.zip",
+      "bytes": 17347,
+      "sha256": "f85763c1d86a6af8e39cbdcb0d98571595e58e9ecf8a047b1df6e0ebf1fcd298"
+    },
+    {
+      "path": "evidence/complex-capability-verification.json",
+      "bytes": 1189,
+      "sha256": "85f63088d86e75e075efaac72fea5c0d756c2a7d0c18dd887a3f49cf55f83125"
+    },
+    {
+      "path": "evidence/control.log",
+      "bytes": 21560,
+      "sha256": "186fc103bbd5aa6ef5dad3da65be5257aabda281b95813d7731f9be3e7b071e5"
+    },
+    {
+      "path": "evidence/framework-contract-model.json",
+      "bytes": 18963,
+      "sha256": "b7d4bcbc203782ccb67192ba2956f6fb10e00e24689e787160ca3fb6f6c90b11"
+    },
+    {
+      "path": "evidence/route-selection.json",
+      "bytes": 638,
+      "sha256": "b9e3b039a836709cea9b3827d17e53ac1f8e4929b48bb20a2f818ee75ca96190"
+    },
+    {
+      "path": "evidence/source-snapshot-manifest.json",
+      "bytes": 5108,
+      "sha256": "61d5706de6bebe97f62dd98341abf8da782a0188c27f2ef77453d1ef3fbc7d39"
+    },
+    {
+      "path": "evidence/source-startup.log",
+      "bytes": 3907,
+      "sha256": "ff38e61d222803085e02896f975292955b9e44bccdc55e8dd3e565cb31501d45"
+    },
+    {
+      "path": "evidence/source-test-summary.json",
+      "bytes": 753,
+      "sha256": "6d585f58917f6c3310e4310882e1162d4e2149a4c01c67f79ddd6f03793f99f4"
+    },
+    {
+      "path": "evidence/spring-mvc-http-oracle.json",
+      "bytes": 3497,
+      "sha256": "c997ee1578bef38a0aedf64aa665e8dd2f3acef905b48f09b1809b3c4ca6371f"
+    },
+    {
+      "path": "evidence/target-materialization-receipt.json",
+      "bytes": 5227,
+      "sha256": "eab6e4b363321f47cbc0164e0e0bed8d2c7200b0532e18244ce2d03475b5d6ba"
+    },
+    {
+      "path": "evidence/target-materialization-source-map.json",
+      "bytes": 2071,
+      "sha256": "08980b02774abae20146f4a63e9cf8ecd497ecb1c1655a63b53681b2daef66fe"
+    },
+    {
+      "path": "evidence/target-startup.log",
+      "bytes": 3314,
+      "sha256": "578a7b5bf997b9bb0ad645157cc09e817c232fc88d95b1ecd4f5acda3243beb5"
+    },
+    {
+      "path": "evidence/target-test-summary.json",
+      "bytes": 1060,
+      "sha256": "5cb811fee14910a7d358b69d5f14b146feb0d9a148ad94ecb4f9579851f2b934"
+    },
+    {
+      "path": "evidence/test-parity.json",
+      "bytes": 994,
+      "sha256": "54d24fcd6a8e8a3e497ceea7970b86fa0b262c209c37e6d8d5cbb2558d53d9df"
+    },
+    {
+      "path": "local-qualification.json",
+      "bytes": 8851,
+      "sha256": "a730e9e4320e8068c763db0a3b0239e35d480b70f8df4f511f0c3f0c36107a35"
+    }
+  ]
+}

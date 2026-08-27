@@ -50,6 +50,13 @@ function exprSource(expr: Expr, inClass: boolean): string {
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, inClass)).join(", ")})`;
+    case "numericFunction": return inClass
+      ? `Math.${expr.function}(${expr.args.map((arg) => exprSource(arg, inClass)).join(", ")})`
+      : `__ccMath${expr.function.charAt(0).toUpperCase()}${expr.function.slice(1)}(${expr.args.map((arg) => exprSource(arg, inClass)).join(", ")})`;
+    case "numericPredicate": return inClass
+      ? `Number.${expr.predicate}(${exprSource(expr.operand, inClass)})`
+      : `__ccNumber${expr.predicate.charAt(0).toUpperCase()}${expr.predicate.slice(1)}(${exprSource(expr.operand, inClass)})`;
+    case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return inClass
       ? `new RegExp(${JSON.stringify(expr.pattern)}, ${JSON.stringify(expr.flags)}).test(${exprSource(expr.operand, inClass)})`
       : `__ccRegexTest(${JSON.stringify(expr.pattern)}, ${JSON.stringify(expr.flags)}, ${exprSource(expr.operand, inClass)})`;
@@ -84,6 +91,30 @@ function usesRegexTest(component: ComponentDef): boolean {
     return false;
   };
   const node = (current: CNode): boolean => {
+    if (current.kind === "fragment") return current.children.some(node);
+    if (current.kind === "text") return expression(current.value);
+    if (current.kind === "conditional") return expression(current.condition) || node(current.then) || (current.else !== null && node(current.else));
+    if (current.kind === "list") return node(current.body);
+    if (current.kind === "component") return current.props.some((prop) => expression(prop.value));
+    return current.attrs.some((attr) => attr.kind === "dynamic" && expression(attr.value))
+      || current.events.some((event) => event.body.some((statement) => statement.kind === "setState" ? expression(statement.value) : statement.args.some(expression)))
+      || current.children.some(node);
+  };
+  return node(component.root);
+}
+
+function usesNumericFunction(component: ComponentDef): boolean {
+  const expression = (expr: Expr): boolean => {
+    if (expr.kind === "numericFunction" || expr.kind === "numericPredicate") return true;
+    if (expr.kind === "binary") return expression(expr.left) || expression(expr.right);
+    if (expr.kind === "unaryNot" || expr.kind === "arrayLength") return expression(expr.operand);
+    if (expr.kind === "stringMethod") return expression(expr.receiver) || expr.args.some(expression);
+    if (expr.kind === "regexTest") return expression(expr.operand);
+    if (expr.kind === "ternary") return expression(expr.condition) || expression(expr.then) || expression(expr.else);
+    return false;
+  };
+  const node = (current: CNode): boolean => {
+    if (current.kind === "fragment") return current.children.some(node);
     if (current.kind === "text") return expression(current.value);
     if (current.kind === "conditional") return expression(current.condition) || node(current.then) || (current.else !== null && node(current.else));
     if (current.kind === "list") return node(current.body);
@@ -109,6 +140,10 @@ interface TemplateContext {
 }
 
 function nodeSource(node: CNode, indent: string, ctx: TemplateContext): string {
+  if (node.kind === "fragment") {
+    const childSrc = node.children.map((child) => nodeSource(child, indent + "  ", ctx)).join("\n");
+    return `${indent}<ng-container>\n${childSrc}\n${indent}</ng-container>`;
+  }
   if (node.kind === "text") {
     if (node.value.kind === "literal" && node.value.literal.type === "string") return `${indent}${node.value.literal.value}`;
     return `${indent}{{ ${exprSource(node.value, false)} }}`;
@@ -227,6 +262,14 @@ export function emitAngular(component: ComponentDef): string {
     lines.push(`  private __ccRegexTest(pattern: string, flags: string, value: string): boolean {`);
     lines.push(`    return new RegExp(pattern, flags).test(value);`);
     lines.push(`  }`);
+  }
+  if (usesNumericFunction(component)) {
+    lines.push(`  private __ccMathMin(...values: number[]): number { return Math.min(...values); }`);
+    lines.push(`  private __ccMathMax(...values: number[]): number { return Math.max(...values); }`);
+    lines.push(`  private __ccMathFloor(value: number): number { return Math.floor(value); }`);
+    lines.push(`  private __ccMathCeil(value: number): number { return Math.ceil(value); }`);
+    lines.push(`  private __ccMathAbs(value: number): number { return Math.abs(value); }`);
+    lines.push(`  private __ccNumberIsFinite(value: number): boolean { return Number.isFinite(value); }`);
   }
   lines.push(`}`);
   return lines.join("\n") + "\n";

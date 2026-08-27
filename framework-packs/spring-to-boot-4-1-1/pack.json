@@ -45,7 +45,10 @@
     "feature_matrix": "target-profile/feature-matrix.json",
     "corpus": "corpus",
     "certification": "certification",
-    "local_execution_evidence": "certification/evidence.json"
+    "local_execution_evidence": "certification/evidence.json",
+    "verification_plan": "verification/validation-plan.json",
+    "verification_track_contract": "verification/track-contract.json",
+    "gate_report": "certification/gate-report.md"
   },
   "gates": {
     "real_source_runtime": true,

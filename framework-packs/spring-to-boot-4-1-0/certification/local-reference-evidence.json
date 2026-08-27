@@ -1,0 +1,151 @@
+{
+  "authorized_customer_repository": "NOT_RUN",
+  "behavioral_parity": true,
+  "certification_eligible": false,
+  "customer_acceptance": "NOT_RUN",
+  "customer_holdout": "NOT_RUN",
+  "equivalence": {
+    "production_status": "NOT_RUN",
+    "scope": "HTTP-health-web-validation-security-fixture-contracts",
+    "status": "PASSED_LOCAL"
+  },
+  "evidence_class": "LOCAL_REFERENCE_ROUTE_ENGINEERING",
+  "execution_status": "PASSED_LOCAL",
+  "external_certification": "NOT_RUN",
+  "external_execution_status": "NOT_RUN",
+  "independent_review": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "migration": {
+    "maven": "Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)",
+    "production_status": "NOT_RUN",
+    "recipe_id": "io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_0Java21",
+    "recipe_sha256": "75faf8019a3a04fb6aa71e1577542b003ade11b596193b150d61fb813e16f629",
+    "status": "PASSED_LOCAL"
+  },
+  "pack_key": "spring-to-boot-4-1-0",
+  "persistence": {
+    "production_status": "NOT_RUN",
+    "source": {
+      "count_response": {
+        "count": 0
+      },
+      "count_status": 200,
+      "rollback_status": 500
+    },
+    "status": "PASSED_LOCAL",
+    "target": {
+      "count_response": {
+        "count": 0
+      },
+      "count_status": 200,
+      "rollback_status": 500
+    }
+  },
+  "rootless_runner": "NOT_RUN",
+  "rootless_transformer": "NOT_RUN",
+  "rootless_verifier": "NOT_RUN",
+  "route_id": "boot-3.5-maven-to-boot-4.1.0-java-21",
+  "schema_version": 2,
+  "scope": [
+    "web",
+    "configuration",
+    "lifecycle",
+    "security",
+    "persistence",
+    "transactions"
+  ],
+  "security": {
+    "production_status": "NOT_RUN",
+    "source": {
+      "authenticated_order_status": 200,
+      "unauthenticated_order_status": 401
+    },
+    "status": "PASSED_LOCAL",
+    "target": {
+      "authenticated_order_status": 200,
+      "unauthenticated_order_status": 401
+    }
+  },
+  "source": {
+    "build": "PASSED",
+    "java": "openjdk version \"21.0.11\" 2026-04-21 LTS",
+    "runtime": {
+      "health": {
+        "status": "UP"
+      },
+      "jar_sha256": "c4ea488c05b68a7ee71cdbc7a2aae9574577e55f1b5aabdaffaf8e09b86eabf7",
+      "persistence": {
+        "count_response": {
+          "count": 0
+        },
+        "count_status": 200,
+        "rollback_status": 500
+      },
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "id": 7,
+          "status": "REVIEW"
+        }
+      },
+      "security": {
+        "authenticated_order_status": 200,
+        "unauthenticated_order_status": 401
+      }
+    },
+    "version": "3.5.3"
+  },
+  "target": {
+    "build": "PASSED",
+    "java": "openjdk version \"21.0.11\" 2026-04-21 LTS",
+    "runtime": {
+      "health": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      },
+      "jar_sha256": "27e821d3c595ef3d3939a5f01338bbc9c5007792290406da590eecc26fd88c5e",
+      "persistence": {
+        "count_response": {
+          "count": 0
+        },
+        "count_status": 200,
+        "rollback_status": 500
+      },
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "id": 7,
+          "status": "REVIEW"
+        }
+      },
+      "security": {
+        "authenticated_order_status": 200,
+        "unauthenticated_order_status": 401
+      }
+    },
+    "version": "4.1.0"
+  }
+}

@@ -113,6 +113,24 @@ def test_a_mixed_multi_action_alter_fails_closed() -> None:
         parse_alter_table("ALTER TABLE t ADD COLUMN a INTEGER, DROP COLUMN b", Dialect.POSTGRES)
 
 
+def test_opaque_postgres_multi_add_alter_is_recovered_action_by_action() -> None:
+    # sqlglot falls back to Command for this PostgreSQL spelling because the
+    # final CHECK contains a list. The compatibility path must still parse
+    # every action through the normal typed ALTER parser.
+    alter = parse_alter_table(
+        "ALTER TABLE mainframe_business_rules "
+        "ADD COLUMN confidence NUMERIC(5,4), "
+        "ADD COLUMN authority VARCHAR(32) NOT NULL DEFAULT 'CANDIDATE', "
+        "ADD CONSTRAINT mainframe_rule_authority CHECK "
+        "(authority IN ('CANDIDATE','BUSINESS_APPROVED','REJECTED'))",
+        Dialect.POSTGRES,
+    )
+    assert len(alter.actions) == 3
+    emitted = emit_alter_table(alter, Dialect.POSTGRES)
+    assert "confidence NUMERIC(5, 4)" in emitted
+    assert "mainframe_rule_authority" in emitted
+
+
 def test_an_inline_reference_on_an_added_column_is_preserved() -> None:
     alter = parse_alter_table(
         "ALTER TABLE sessions ADD COLUMN account_ref VARCHAR(96) "

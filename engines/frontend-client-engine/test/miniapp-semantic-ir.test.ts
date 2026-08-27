@@ -71,6 +71,37 @@ test("Vue SFC and TypeScript compiler APIs produce traced deterministic semantic
   for (const ref of first.ir.nodes.flatMap(node => node.sourceRefs)) {
     assert.equal(ref.sha256, sourceDigests.get(ref.path), `trace must bind real source bytes: ${ref.path}`);
   }
+
+  const chainedFiles = [
+    ...vueTodoFiles.map(file => file.path === "src/router.ts" ? {
+      ...file,
+      content: String(file.content).replace("export default createRouter", "export const router = createRouter"),
+    } : file),
+    {
+      path: "src/main.ts",
+      content: `import { createApp } from "vue"; import { createPinia } from "pinia"; import App from "./App.vue"; import { router } from "./router"; createApp(App).use(createPinia()).use(router).mount("#app");`,
+    },
+  ];
+  const chainedRequest = miniappRequest(chainedFiles);
+  const chainedInventory = inventoryMiniappSource({
+    schemaVersion: "1.0",
+    inventoryId: "inv-vue-chained-bootstrap",
+    sourceRevision: chainedRequest.source.revision,
+    sourceSnapshotDigest: chainedRequest.source.snapshotDigest,
+    sourceLabelHint: chainedRequest.source.sourceLabel,
+    limits: chainedRequest.policy.limits,
+    files: chainedFiles,
+  });
+  const chainedSources = Object.fromEntries(chainedFiles.map(file => [file.path, String(file.content)]));
+  const chainedAnalysis = analyzeMiniappSource(chainedRequest, chainedInventory, chainedSources);
+  const frameworkEffects = chainedAnalysis.effects.filter(effect => effect.name.startsWith("vue.") || effect.name === "pinia.create");
+  assert.ok(frameworkEffects.some(effect => effect.name === "vue.app.use.pinia"));
+  assert.ok(frameworkEffects.some(effect => effect.name === "vue.app.use.router"));
+  assert.ok(frameworkEffects.some(effect => effect.name === "vue.app.mount"));
+  assert.equal(
+    chainedAnalysis.findings.some(finding => finding.code === "MINIAPP_CALL_SEMANTICS_UNRESOLVED"),
+    false,
+  );
   validateMiniappSemanticIr(first.ir);
 });
 

@@ -1,0 +1,377 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/recipe.schema.json",
+  "title": "RefactorRecipe",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.dev/v1"
+    },
+    "kind": {
+      "const": "RefactorRecipe"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "quarantined",
+            "verified",
+            "certified",
+            "deprecated",
+            "revoked"
+          ]
+        },
+        "owners": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "languages",
+        "riskClass",
+        "applicability",
+        "preconditions",
+        "negativeGuards",
+        "actions",
+        "postconditions",
+        "validation",
+        "rollback",
+        "idempotence"
+      ],
+      "properties": {
+        "languages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "frameworks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "riskClass": {
+          "enum": [
+            "R1",
+            "R2",
+            "R3",
+            "R4",
+            "R5"
+          ]
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "enum": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "array",
+                  "object"
+                ]
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "default": {},
+              "pattern": {
+                "type": "string"
+              },
+              "enum": {
+                "type": "array"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "applicability": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/predicate"
+          }
+        },
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/predicate"
+          }
+        },
+        "negativeGuards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/predicate"
+          }
+        },
+        "select": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/action"
+          }
+        },
+        "postconditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/predicate"
+          }
+        },
+        "validation": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "gate",
+              "blocking"
+            ],
+            "properties": {
+              "gate": {
+                "type": "string"
+              },
+              "command": {
+                "type": "string"
+              },
+              "profile": {
+                "type": "string"
+              },
+              "blocking": {
+                "type": "boolean"
+              },
+              "timeoutSeconds": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        },
+        "rollback": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "strategy"
+          ],
+          "properties": {
+            "strategy": {
+              "enum": [
+                "reverse-patch",
+                "snapshot-restore",
+                "compensation",
+                "forward-only"
+              ]
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/action"
+              }
+            }
+          }
+        },
+        "idempotence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "secondRunExpectedDiff"
+          ],
+          "properties": {
+            "secondRunExpectedDiff": {
+              "const": "empty"
+            },
+            "key": {
+              "type": "string"
+            }
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "plugin": {
+          "type": "object",
+          "properties": {
+            "runtime": {
+              "enum": [
+                "wasm",
+                "container",
+                "jvm",
+                "dotnet",
+                "node",
+                "python",
+                "rust-native"
+              ]
+            },
+            "entrypoint": {
+              "type": "string"
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^sha256:"
+            },
+            "permissions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  },
+  "$defs": {
+    "predicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "expression"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "semantic-query",
+            "build-query",
+            "file-query",
+            "version-query",
+            "contract-query",
+            "metric-query",
+            "manual"
+          ]
+        },
+        "expression": {
+          "type": "string"
+        },
+        "expected": {},
+        "onUnknown": {
+          "enum": [
+            "fail",
+            "warn",
+            "approval"
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "operation",
+        "selector",
+        "expectedCardinality"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "operation": {
+          "type": "string"
+        },
+        "selector": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "expectedCardinality": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "max": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "min",
+            "max"
+          ],
+          "additionalProperties": false
+        },
+        "conflictPolicy": {
+          "enum": [
+            "fail",
+            "serialize",
+            "merge-if-disjoint"
+          ]
+        },
+        "formatPolicy": {
+          "enum": [
+            "preserve",
+            "touched-range",
+            "file",
+            "repository"
+          ]
+        }
+      }
+    }
+  }
+}

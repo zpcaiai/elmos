@@ -14,13 +14,24 @@ Two suites, because one construct splits the matrix:
   safe        the same minus `most_negative`, so TypeScript and React have a
               suite they can actually run.
 
-Toolchain resolution is fail-closed and self-describing. Each target's compiler
-is looked up under the pinned toolchain root (`ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT`,
-default `~/.local/share/elmos/toolchains`); if exactly one version directory
-matches, that binary is used and its resolved path plus `--version` output is
-recorded in the evidence. Otherwise the target falls back to PATH and is
-recorded as `PATH` provenance, or is reported NOT_RUN. A target is never
-reported as passing on a toolchain the report cannot name.
+Toolchain resolution is fail-closed, self-describing, and GRADED. Strongest
+first:
+
+  EXACT   `toolchains.exact_toolchain()` -- the engine's own verifier -- accepted
+          the binary. That checks the version AND the sha256 against the
+          repository pin, plus Xcode/SDK identity for the Apple targets. This
+          is evidence about the toolchain the repository pins.
+  PINNED  exactly one version directory under the toolchain root
+          (`ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT`, default
+          `~/.local/share/elmos/toolchains`). The path is named, but nothing
+          about its contents was verified.
+  PATH    whatever `shutil.which` found. Says nothing beyond "a binary by that
+          name existed".
+
+A row NEVER drops a grade silently: when `exact_toolchain()` refuses, its code
+is carried into the weaker provenance string, so `PATH:` always arrives with
+the reason it is not `EXACT:`. A target is never reported as passing on a
+toolchain the report cannot name.
 
     python differential_execution.py --out /tmp/elmos-diff --json evidence.json
 """
@@ -42,6 +53,7 @@ from elmos_polyglot_route.emitter import emit
 from elmos_polyglot_route.identifier_hygiene import plan_identifiers
 from elmos_polyglot_route.models import SUPPORTED_LANGUAGES, RouteError
 from elmos_polyglot_route.python_analyzer import analyze_python
+from elmos_polyglot_route.toolchains import exact_toolchain
 
 SOURCE_TEXT = '''
 def nary_and(a: bool, b: bool, c: bool) -> bool:
@@ -100,19 +112,112 @@ def toolchain_root() -> Path:
     return Path(value).expanduser()
 
 
-def resolve(language: str, relative: str, path_name: str) -> tuple[str | None, str]:
-    """(executable, provenance). Exactly one pinned version directory or nothing --
-    two candidates is ambiguity, and ambiguity is reported, not guessed."""
+#: Which pinned toolchain the ENGINE resolves for each target, and which of
+#: its two binaries this harness drives. Deliberately explicit rather than
+#: derived from the target name: `flutter` must drive the BUNDLED `dart`
+#: (`.auxiliary`), not the `flutter` wrapper, and `objc` is the same clang as
+#: `cpp` with `-x objective-c` selecting the mode.
+_ENGINE_TOOLCHAIN: dict[str, tuple[str, str]] = {
+    "python": ("python", "executable"),
+    "go": ("go", "executable"),
+    "java": ("java", "executable"),          # `.auxiliary` is javac
+    "php": ("php", "executable"),
+    "rust": ("rust", "executable"),          # rustc; `.auxiliary` is cargo
+    "cpp": ("cpp", "executable"),            # clang++, NOT whatever g++ is on PATH
+    "objc": ("objc", "executable"),          # the same clang driver
+    "swift": ("swift", "executable"),        # swiftc; `.auxiliary` is the `swift` driver
+    "kotlin": ("kotlin", "executable"),      # kotlinc; `.auxiliary` is the launcher
+    "typescript": ("typescript", "executable"),  # node; `.auxiliary` is the tsc launcher
+    "csharp": ("csharp", "executable"),      # the dotnet muxer
+    "flutter": ("flutter", "auxiliary"),     # the bundled dart
+}
+
+
+#: How each Apple target is told where the SDK is. `swiftc` takes a whole
+#: SDK with `-sdk`; the clang drivers take it as the sysroot.
+_APPLE_SDK_FLAG = {"cpp": "-isysroot", "objc": "-isysroot", "swift": "-sdk"}
+
+
+@dataclasses.dataclass(frozen=True)
+class Resolved:
+    """One target's binary and how much is actually known about it."""
+
+    executable: str | None
+    provenance: str
+    auxiliary: str | None = None
+    profile: tuple[str, ...] = ()
+
+    def sdk_flags(self, language: str) -> list[str]:
+        """The SDK flags this target needs, or none.
+
+        Only for a binary the engine verified: the `/usr/bin` shims find their
+        own SDK, and pinning one onto an unverified compiler would dress a
+        PATH row up as pinned evidence.
+        """
+
+        flag = _APPLE_SDK_FLAG.get(language)
+        if flag is None or not self.provenance.startswith("EXACT:"):
+            return []
+        for entry in self.profile:
+            if entry.startswith("sdk-path="):
+                return [flag, entry[len("sdk-path="):]]
+        return []
+
+
+def resolve(language: str, exe: tuple[str, str, str]) -> Resolved:
+    """The strongest grade the machine supports, and never a silent downgrade.
+
+    `exact_toolchain` is the engine's own verifier: version plus sha256 against
+    the repository pin. When it refuses, its code is carried into the weaker
+    provenance string -- a `PATH:` row must state why it is not `EXACT:`.
+    """
+    # `language` is the TARGET name (`csharp`), never the toolchain directory
+    # (`dotnet`). Reading the directory here is what made `ELMOS_DIFF_CSHARP`
+    # a documented override that silently did nothing.
+    directory, relative, path_name = exe
     override = os.environ.get(f"ELMOS_DIFF_{language.upper()}")
     if override:
-        return override, f"ENV:ELMOS_DIFF_{language.upper()}"
-    candidates = sorted((toolchain_root() / language).glob(f"*/{relative}"))
+        # An explicit operator instruction still wins, and is labelled as one:
+        # `ENV:` asserts nothing about the binary beyond "someone named it".
+        return Resolved(override, f"ENV:ELMOS_DIFF_{language.upper()}")
+
+    engine_note = "EXACT_NOT_ATTEMPTED:no pinned toolchain registered for this target"
+    registered = _ENGINE_TOOLCHAIN.get(language)
+    if registered is not None:
+        engine_language, attribute = registered
+        try:
+            toolchain = exact_toolchain(engine_language)
+        except RouteError as error:
+            engine_note = f"EXACT_REFUSED:{error}"
+        except Exception as error:  # noqa: BLE001 - grading must not abort the run
+            engine_note = f"EXACT_ERRORED:{type(error).__name__}:{error}"
+        else:
+            chosen = getattr(toolchain, attribute)
+            if chosen and os.access(chosen, os.X_OK):
+                return Resolved(
+                    str(chosen),
+                    f"EXACT:{engine_language}:{toolchain.version}:{chosen}",
+                    str(toolchain.auxiliary) if toolchain.auxiliary else None,
+                    tuple(toolchain.profile),
+                )
+            engine_note = (
+                f"EXACT_UNUSABLE:{engine_language}:{attribute}="
+                f"{chosen!r} is missing or not executable"
+            )
+
+    candidates = sorted((toolchain_root() / directory).glob(f"*/{relative}"))
     if len(candidates) == 1 and os.access(candidates[0], os.X_OK):
-        return str(candidates[0]), f"PINNED:{candidates[0]}"
+        return Resolved(str(candidates[0]), f"PINNED:{candidates[0]} ({engine_note})")
     if len(candidates) > 1:
-        return None, f"AMBIGUOUS:{len(candidates)} versions under {toolchain_root() / language}"
+        return Resolved(
+            None,
+            f"AMBIGUOUS:{len(candidates)} versions under {toolchain_root() / directory}"
+            f" ({engine_note})",
+        )
     found = shutil.which(path_name)
-    return (found, f"PATH:{found}") if found else (None, "NOT_FOUND")
+    if found:
+        return Resolved(found, f"PATH:{found} ({engine_note})")
+    return Resolved(None, f"NOT_FOUND ({engine_note})")
 
 
 def version_of(executable: str, flag: str = "--version") -> str:
@@ -176,6 +281,15 @@ def _dotnet_target_framework(executable: str) -> str:
     return f"net{major}.0" if major.isdigit() else "net8.0"
 
 
+#: Objective-C has no generic print. Picking the renderer by the function's
+#: DECLARED return type keeps the harness from deciding what a value is.
+_OBJC_RENDERERS = {
+    "integer": "elmos_render_i",
+    "number": "elmos_render_d",
+    "boolean": "elmos_render_b",
+}
+
+
 @dataclasses.dataclass(frozen=True)
 class Target:
     style: str
@@ -211,15 +325,15 @@ TARGETS: dict[str, Target] = {
                    ("rust", "bin/rustc", "rustc")),
     "cpp": Target("cpp", '    std::cout << "{n}|{i}|" << std::boolalpha << ({call}) << std::endl;',
                   ("#include <iostream>", "int main() {"), ("    return 0;", "}"), "drive.cpp", True,
-                  (("{exe}", "-std=c++17", "-o", "drive", "drive.cpp"),), ("./drive",),
-                  ("cpp", "bin/g++", "g++")),
+                  (("{exe}", "-std=c++20", "-o", "drive", "drive.cpp"),), ("./drive",),
+                  ("cpp", "bin/clang++", "clang++")),
     # `-framework Foundation` is REQUIRED: the emitted unit raises
     # `[NSException raise:...]` for the R1 overflow guard, so dropping the
     # framework compiles and then fails at LINK time with
     # "symbol(s) not found for architecture arm64". (It was dropped once to
     # get past a Linux container that has no Foundation at all -- that fixed
     # the wrong end. On Linux this target is NOT_RUN either way.)
-    "objc": Target("objc", '    printf("{n}|{i}|%s\\n", elmos_render({call}));',
+    "objc": Target("objc", '    printf("{n}|{i}|%s\\n", {render}({call}));',
                    ("#include <stdio.h>", "int main() {"), ("    return 0;", "}"), "drive.m", True,
                    (("{exe}", "-framework", "Foundation", "-o", "drive", "drive.m"),), ("./drive",),
                    ("objc", "bin/clang", "clang")),
@@ -230,7 +344,7 @@ TARGETS: dict[str, Target] = {
     "kotlin": Target("kotlin", '    println("{n}|{i}|" + {call})',
                      ("fun main() {",), ("}",), "drive.kt", False,
                      (("{exe}", "Migrated.kt", "drive.kt", "-include-runtime", "-d", "drive.jar"),),
-                     ("java", "-jar", "drive.jar"), ("kotlin", "bin/kotlinc", "kotlinc")),
+                     ("{java}", "-jar", "drive.jar"), ("kotlin", "bin/kotlinc", "kotlinc")),
     "typescript": Target("typescript", '  console.log("{n}|{i}|" + String({call}));',
                          ('import * as m from "./migrated.ts";',), (), "drive.ts", False,
                          (), ("{exe}", "--experimental-strip-types", "drive.ts"),
@@ -246,6 +360,24 @@ TARGETS: dict[str, Target] = {
 }
 
 
+#: Every runnable target must have a pinned toolchain registered, or this
+#: module refuses to load. The alternative -- printing
+#: "no pinned toolchain registered" about a target that has one -- is a
+#: measurement instrument lying quietly, which is the failure mode this whole
+#: grading exercise exists to remove.
+_UNREGISTERED = sorted(set(TARGETS) - set(_ENGINE_TOOLCHAIN))
+if _UNREGISTERED:
+    raise SystemExit(
+        "differential_execution: these targets have a runnable driver but no "
+        f"pinned toolchain registered in _ENGINE_TOOLCHAIN: {_UNREGISTERED}"
+    )
+_UNKNOWN = sorted(set(_ENGINE_TOOLCHAIN) - set(TARGETS))
+if _UNKNOWN:
+    raise SystemExit(
+        f"differential_execution: _ENGINE_TOOLCHAIN names non-targets: {_UNKNOWN}"
+    )
+
+
 def run_target(language: str, out: Path, ir, cases: dict[str, list[list[int]]],
                emitted_name: str) -> tuple[str, object]:
     spec = TARGETS.get(language)
@@ -254,7 +386,8 @@ def run_target(language: str, out: Path, ir, cases: dict[str, list[list[int]]],
             "reason": "no runnable driver for this target -- its EMISSION result above is "
                       "the evidence this harness produces for it"
         }
-    executable, provenance = resolve(*spec.exe)
+    resolved = resolve(language, spec.exe)
+    executable, provenance = resolved.executable, resolved.provenance
     if executable is None:
         return "NOT_RUN", {"reason": f"toolchain not resolvable ({provenance})"}
 
@@ -266,8 +399,16 @@ def run_target(language: str, out: Path, ir, cases: dict[str, list[list[int]]],
     if spec.prepend_emitted:
         lines = [(out / language / emitted_name).read_text(encoding="utf-8"), *lines]
     if language == "objc":
-        lines.insert(1, 'static const char *elmos_render(long long v){static char b[32];'
+        # ONE renderer taking `long long` printed booleans as 0/1 and
+        # truncated doubles (-2.5 -> -2) at the implicit conversion in the
+        # call. Both looked like the engine DIVERGING from canonical when the
+        # only thing diverging was this printf. One renderer per canonical
+        # type, chosen from the function's declared return type.
+        lines.insert(1, 'static const char *elmos_render_i(long long v){static char b[40];'
                         'snprintf(b,sizeof b,"%lld",v);return b;}')
+        lines.insert(2, 'static const char *elmos_render_d(double v){static char b[40];'
+                        'snprintf(b,sizeof b,"%.17g",v);return b;}')
+        lines.insert(3, 'static const char *elmos_render_b(int v){return v ? "true" : "false";}')
     for name, vectors in cases.items():
         fn = by_name[name]
         for index, vector in enumerate(vectors):
@@ -275,7 +416,15 @@ def run_target(language: str, out: Path, ir, cases: dict[str, list[list[int]]],
                 literal(v, p.type, spec.style) for p, v in zip(fn.parameters, vector, strict=True)
             )
             call = f"{spec.call_prefix}{target_name[name]}({arguments})"
-            lines.append(spec.line.format(n=name, i=index, call=call))
+            render = _OBJC_RENDERERS.get(fn.return_type)
+            if language == "objc" and render is None:
+                return "NOT_RUN", {
+                    "reason": f"no objc renderer for return type {fn.return_type!r} -- "
+                              "refusing to print it rather than mis-render it",
+                    "toolchain": provenance,
+                }
+            # Targets whose line has no {render} placeholder ignore the kwarg.
+            lines.append(spec.line.format(n=name, i=index, call=call, render=render))
     lines += list(spec.footer)
     (out / language / spec.filename).write_text("\n".join(lines) + "\n", encoding="utf-8")
     if language == "csharp":
@@ -287,20 +436,48 @@ def run_target(language: str, out: Path, ir, cases: dict[str, list[list[int]]],
             "<Nullable>disable</Nullable><StartupObject>Drive</StartupObject>"
             "</PropertyGroup></Project>\n", encoding="utf-8")
 
-    javac = executable.replace("bin/java", "bin/javac") if language == "java" else executable
+    # `ExactToolchain.auxiliary` IS javac for the java toolchain. The old
+    # `executable.replace("bin/java", "bin/javac")` silently produced a
+    # non-existent path for any layout that is not `.../bin/java`.
+    javac = resolved.auxiliary if language == "java" and resolved.auxiliary else executable
+    if language == "java" and javac == executable:
+        javac = executable.replace("bin/java", "bin/javac")
+
+    # Kotlin compiles to a jar and then runs it -- on `java`. That was a bare
+    # PATH name, so the row graded `PINNED:` while half its execution ran on a
+    # binary the evidence never named. Resolve it through the same ladder.
+    java_runner = "java"
+    if language == "kotlin":
+        kotlin_java = resolve("java", ("java", "bin/java", "java"))
+        if kotlin_java.executable is None:
+            return "NOT_RUN", {
+                "reason": f"kotlin needs a java runtime to run its jar ({kotlin_java.provenance})",
+                "toolchain": provenance,
+            }
+        java_runner = kotlin_java.executable
+        provenance = f"{provenance} + java {kotlin_java.provenance}"
+
+    # Inserted after argv[0] rather than appended: `swiftc -sdk X -o drive
+    # drive.swift` is fine, but flags after the input file are read as inputs
+    # by some drivers. Recorded in the evidence so the SDK is never implicit.
+    sdk_flags = resolved.sdk_flags(language)
+    if sdk_flags:
+        provenance = f"{provenance} {' '.join(sdk_flags)}"
+
     for step in spec.build_cmd:
-        cmd = [part.format(exe=executable, javac=javac) for part in step]
+        cmd = [part.format(exe=executable, javac=javac, java=java_runner) for part in step]
+        cmd[1:1] = sdk_flags
         proc = subprocess.run(cmd, cwd=out / language, capture_output=True, text=True, timeout=1800)
         if proc.returncode != 0:
             tail = (proc.stderr or proc.stdout).strip().splitlines()
             return "NOT_RUN", {"reason": "build failed", "toolchain": provenance,
-                               "stderr": tail[-3:] if tail else []}
-    cmd = [part.format(exe=executable) for part in spec.run_cmd]
+                               "stderr": tail[-8:] if tail else []}
+    cmd = [part.format(exe=executable, java=java_runner) for part in spec.run_cmd]
     proc = subprocess.run(cmd, cwd=out / language, capture_output=True, text=True, timeout=1800)
     if proc.returncode != 0:
         tail = (proc.stderr or proc.stdout).strip().splitlines()
         return "NOT_RUN", {"reason": "run failed", "toolchain": provenance,
-                           "stderr": tail[-3:] if tail else []}
+                           "stderr": tail[-8:] if tail else []}
 
     actual: dict[str, list[str]] = {name: [] for name in cases}
     for row in proc.stdout.splitlines():

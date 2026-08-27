@@ -1,0 +1,658 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/legacy-web-semantic-ir.schema.json",
+  "title": "Legacy Web Semantic IR",
+  "type": "object",
+  "required": [
+    "irVersion",
+    "repositorySnapshotId",
+    "modules",
+    "endpoints",
+    "pipelines",
+    "stateObjects",
+    "sideEffects",
+    "unknownRefs"
+  ],
+  "properties": {
+    "irVersion": {
+      "type": "string"
+    },
+    "repositorySnapshotId": {
+      "type": "string"
+    },
+    "targetBaselineHint": {
+      "type": "object"
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/module"
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/endpoint"
+      }
+    },
+    "pipelines": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/pipeline"
+      }
+    },
+    "bindings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/binding"
+      }
+    },
+    "stateObjects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/state"
+      }
+    },
+    "views": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/view"
+      }
+    },
+    "securityRules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/security"
+      }
+    },
+    "transactions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/transaction"
+      }
+    },
+    "sideEffects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/effect"
+      }
+    },
+    "deployment": {
+      "type": "object"
+    },
+    "concurrency": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "unknownRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidenceCoverage": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "evidenceRefs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "module": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "packaging",
+        "frameworks",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "packaging": {
+          "enum": [
+            "jar",
+            "war",
+            "ear",
+            "unknown"
+          ]
+        },
+        "frameworks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dependsOn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidenceRefs": {
+          "$ref": "#/$defs/evidenceRefs"
+        }
+      },
+      "additionalProperties": true
+    },
+    "endpoint": {
+      "type": "object",
+      "required": [
+        "id",
+        "pathPattern",
+        "methods",
+        "dispatcherTypes",
+        "owner",
+        "pipelineId",
+        "navigation",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "pathPattern": {
+          "type": "string"
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dispatcherTypes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "REQUEST",
+              "FORWARD",
+              "INCLUDE",
+              "ERROR",
+              "ASYNC"
+            ]
+          }
+        },
+        "owner": {
+          "type": "object",
+          "required": [
+            "framework",
+            "symbol"
+          ],
+          "properties": {
+            "framework": {
+              "type": "string"
+            },
+            "symbol": {
+              "type": "string"
+            }
+          }
+        },
+        "pipelineId": {
+          "type": "string"
+        },
+        "bindingIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "stateReadIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "stateWriteIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "securityRuleIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "transactionIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sideEffectIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "navigation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/navigation"
+          }
+        },
+        "criticality": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "evidenceRefs": {
+          "$ref": "#/$defs/evidenceRefs"
+        }
+      },
+      "additionalProperties": true
+    },
+    "pipeline": {
+      "type": "object",
+      "required": [
+        "id",
+        "steps",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pipelineStep"
+          }
+        },
+        "evidenceRefs": {
+          "$ref": "#/$defs/evidenceRefs"
+        }
+      },
+      "additionalProperties": false
+    },
+    "pipelineStep": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "order",
+        "phase",
+        "shortCircuit",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "order": {
+          "type": "integer"
+        },
+        "phase": {
+          "enum": [
+            "before",
+            "invoke",
+            "after",
+            "result",
+            "error",
+            "dispatch"
+          ]
+        },
+        "condition": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "shortCircuit": {
+          "type": "object"
+        },
+        "reads": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "writes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sideEffects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidenceRefs": {
+          "$ref": "#/$defs/evidenceRefs"
+        }
+      },
+      "additionalProperties": true
+    },
+    "binding": {
+      "type": "object",
+      "required": [
+        "id",
+        "sourceName",
+        "targetType",
+        "scope",
+        "required",
+        "conversion",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "sourceName": {
+          "type": "string"
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "targetPath": {
+          "type": "string"
+        },
+        "targetType": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "resetBeforePopulate": {
+          "type": "boolean"
+        },
+        "conversion": {
+          "type": "object"
+        },
+        "allowlisted": {
+          "type": "boolean"
+        },
+        "evidenceRefs": {
+          "$ref": "#/$defs/evidenceRefs"
+        }
+      },
+      "additionalProperties": true
+    },
+    "navigation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "target"
+      ],
+      "properties": {
+        "when": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "render",
+            "forward",
+            "include",
+            "redirect",
+            "chain",
+            "error-dispatch",
+            "stream",
+            "none"
+          ]
+        },
+        "target": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "type": "integer"
+        },
+        "preserveRequestAttributes": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "state": {
+      "type": "object",
+      "required": [
+        "id",
+        "key",
+        "scope",
+        "lifetime",
+        "reads",
+        "writes",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "scope": {
+          "enum": [
+            "page",
+            "request",
+            "action",
+            "session",
+            "application",
+            "thread",
+            "static",
+            "cache",
+            "database",
+            "external"
+          ]
+        },
+        "type": {
+          "type": "string"
+        },
+        "lifetime": {
+          "type": "string"
+        },
+        "serializable": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "reads": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "writes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidenceRefs": {
+          "$ref": "#/$defs/evidenceRefs"
+        }
+      },
+      "additionalProperties": true
+    },
+    "view": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "path",
+        "reads",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "reads": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "taglibs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sideEffects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidenceRefs": {
+          "$ref": "#/$defs/evidenceRefs"
+        }
+      },
+      "additionalProperties": true
+    },
+    "security": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "decisionPoint",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "decisionPoint": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "onDeny": {
+          "type": "object"
+        },
+        "evidenceRefs": {
+          "$ref": "#/$defs/evidenceRefs"
+        }
+      },
+      "additionalProperties": true
+    },
+    "transaction": {
+      "type": "object",
+      "required": [
+        "id",
+        "boundary",
+        "commit",
+        "rollback",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "boundary": {
+          "type": "string"
+        },
+        "propagation": {
+          "type": "string"
+        },
+        "isolation": {
+          "type": "string"
+        },
+        "commit": {
+          "type": "string"
+        },
+        "rollback": {
+          "type": "string"
+        },
+        "evidenceRefs": {
+          "$ref": "#/$defs/evidenceRefs"
+        }
+      },
+      "additionalProperties": true
+    },
+    "effect": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "destination",
+        "operation",
+        "order",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "database",
+            "message",
+            "file",
+            "email",
+            "http",
+            "cache",
+            "audit",
+            "other"
+          ]
+        },
+        "destination": {
+          "type": "string"
+        },
+        "operation": {
+          "type": "string"
+        },
+        "order": {
+          "type": "integer"
+        },
+        "idempotency": {
+          "type": "string"
+        },
+        "transactionId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "evidenceRefs": {
+          "$ref": "#/$defs/evidenceRefs"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

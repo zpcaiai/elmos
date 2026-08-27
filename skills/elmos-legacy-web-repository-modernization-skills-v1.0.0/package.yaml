@@ -1,0 +1,700 @@
+schema_version: elmos.skills.package/v1
+id: elmos.java-legacy-web.repository-modernization
+name: Elmos Java Legacy Web Repository Modernization
+version: 1.0.0
+released_at: '2026-08-26'
+priority: P0
+status: implementation-ready
+language: zh-CN
+entrypoint: skills/control-plane/00-modernization-orchestrator/SKILL.md
+scope:
+  sources:
+  - Struts 1.x
+  - Struts 2.x
+  - Servlet/JSP
+  - mixed legacy Java Web repositories
+  target:
+    framework: Spring Boot 4.x
+    foundation:
+    - Spring Framework 7.x
+    - Jakarta EE 11
+    - Servlet 6.1
+    java:
+      minimum: 17
+      recommended: 21
+      supported_policy:
+      - 17
+      - 21
+      - 25
+  default_mode: preserve-first
+  goal: repository-level semantic preservation, behavioral equivalence, production certification
+architecture:
+  core: Repository Semantic Compiler
+  layers:
+  - control-plane
+  - repository-forensics
+  - semantic-recovery
+  - semantic-model
+  - planning
+  - transformation
+  - verification
+  - repair-certification
+  domain_adapters:
+  - struts1
+  - struts2
+  - servlet
+  - jsp-taglib
+  - springboot4
+required_artifacts:
+- repository-snapshot
+- repository-evidence-graph
+- legacy-web-semantic-ir
+- unknown-semantics-ledger
+- migration-plan
+- semantic-source-map
+- equivalence-reports
+- risk-register
+- evidence-bundle
+- e0-e5-certification
+execution_contract:
+  resumable: true
+  idempotent: true
+  auditable: true
+  authority_scoped: true
+  machine_wall_clock_eta: true
+  max_auto_repair_iterations_per_root_cause: 5
+  unknown_critical_blocks_e5: true
+skills:
+- id: 00-modernization-orchestrator
+  title: 仓库级现代化总编排器
+  phase: control-plane
+  priority: P0
+  path: skills/control-plane/00-modernization-orchestrator/SKILL.md
+  requires: []
+  produces:
+  - modernization-run-manifest
+  - phase-dag
+  - final-certification-bundle
+- id: 01-job-contract-and-policy-resolver
+  title: 任务契约与策略解析
+  phase: control-plane
+  priority: P0
+  path: skills/control-plane/01-job-contract-and-policy-resolver/SKILL.md
+  requires: []
+  produces:
+  - job-contract
+  - policy-snapshot
+- id: 02-reproducible-repository-snapshot
+  title: 可复现仓库快照
+  phase: control-plane
+  priority: P0
+  path: skills/control-plane/02-reproducible-repository-snapshot/SKILL.md
+  requires:
+  - 01-job-contract-and-policy-resolver
+  produces:
+  - repository-snapshot
+  - reproduction-lock
+- id: 03-checkpoint-resume-cancel
+  title: 检查点、恢复与取消
+  phase: control-plane
+  priority: P0
+  path: skills/control-plane/03-checkpoint-resume-cancel/SKILL.md
+  requires:
+  - 01-job-contract-and-policy-resolver
+  produces:
+  - execution-checkpoints
+  - resume-token
+  - cancellation-ledger
+- id: 04-wall-clock-eta-and-cost-model
+  title: 机器运行时 ETA 与成本模型
+  phase: control-plane
+  priority: P0
+  path: skills/control-plane/04-wall-clock-eta-and-cost-model/SKILL.md
+  requires:
+  - 02-reproducible-repository-snapshot
+  produces:
+  - eta-estimate
+  - cost-estimate
+  - estimate-confidence
+- id: 05-tool-authority-and-sandbox
+  title: 工具权限与执行沙箱
+  phase: control-plane
+  priority: P0
+  path: skills/control-plane/05-tool-authority-and-sandbox/SKILL.md
+  requires:
+  - 01-job-contract-and-policy-resolver
+  produces:
+  - authority-plan
+  - sandbox-profile
+  - audit-policy
+- id: 10-build-and-module-topology
+  title: 构建与模块拓扑恢复
+  phase: repository-forensics
+  priority: P0
+  path: skills/repository-forensics/10-build-and-module-topology/SKILL.md
+  requires:
+  - 02-reproducible-repository-snapshot
+  produces:
+  - build-topology
+  - module-dag
+  - generated-source-map
+- id: 11-framework-and-version-fingerprinting
+  title: 框架与版本指纹
+  phase: repository-forensics
+  priority: P0
+  path: skills/repository-forensics/11-framework-and-version-fingerprinting/SKILL.md
+  requires:
+  - 10-build-and-module-topology
+  produces:
+  - framework-inventory
+  - version-confidence
+- id: 12-runtime-deployment-topology
+  title: 运行时与部署拓扑恢复
+  phase: repository-forensics
+  priority: P0
+  path: skills/repository-forensics/12-runtime-deployment-topology/SKILL.md
+  requires:
+  - 10-build-and-module-topology
+  - 11-framework-and-version-fingerprinting
+  produces:
+  - runtime-topology
+  - container-contract
+- id: 13-route-ownership-and-conflict-analysis
+  title: 路由所有权与冲突分析
+  phase: repository-forensics
+  priority: P0
+  path: skills/repository-forensics/13-route-ownership-and-conflict-analysis/SKILL.md
+  requires:
+  - 11-framework-and-version-fingerprinting
+  - 12-runtime-deployment-topology
+  produces:
+  - effective-route-table
+  - route-conflicts
+- id: 14-environment-config-overlay-analysis
+  title: 环境配置叠加分析
+  phase: repository-forensics
+  priority: P0
+  path: skills/repository-forensics/14-environment-config-overlay-analysis/SKILL.md
+  requires:
+  - 10-build-and-module-topology
+  - 12-runtime-deployment-topology
+  produces:
+  - effective-config-matrix
+  - secret-reference-map
+- id: 15-dependency-compatibility-and-jakarta-readiness
+  title: 依赖兼容性与 Jakarta 就绪度
+  phase: repository-forensics
+  priority: P0
+  path: skills/repository-forensics/15-dependency-compatibility-and-jakarta-readiness/SKILL.md
+  requires:
+  - 10-build-and-module-topology
+  - 11-framework-and-version-fingerprinting
+  - 14-environment-config-overlay-analysis
+  produces:
+  - dependency-compatibility-graph
+  - jakarta-readiness-report
+- id: 20-struts1-lifecycle-recovery
+  title: Struts 1 请求生命周期恢复
+  phase: semantic-recovery
+  priority: P0
+  path: skills/semantic-recovery/20-struts1-lifecycle-recovery/SKILL.md
+  requires:
+  - 11-framework-and-version-fingerprinting
+  - 13-route-ownership-and-conflict-analysis
+  produces:
+  - struts1-pipeline-ir
+- id: 21-struts2-interceptor-pipeline-recovery
+  title: Struts 2 拦截器流水线恢复
+  phase: semantic-recovery
+  priority: P0
+  path: skills/semantic-recovery/21-struts2-interceptor-pipeline-recovery/SKILL.md
+  requires:
+  - 11-framework-and-version-fingerprinting
+  - 13-route-ownership-and-conflict-analysis
+  produces:
+  - struts2-invocation-ir
+- id: 22-servlet-container-semantics-recovery
+  title: Servlet 容器语义恢复
+  phase: semantic-recovery
+  priority: P0
+  path: skills/semantic-recovery/22-servlet-container-semantics-recovery/SKILL.md
+  requires:
+  - 12-runtime-deployment-topology
+  - 13-route-ownership-and-conflict-analysis
+  produces:
+  - servlet-container-ir
+- id: 23-jsp-taglib-and-view-semantics
+  title: JSP、Taglib 与视图语义恢复
+  phase: semantic-recovery
+  priority: P0
+  path: skills/semantic-recovery/23-jsp-taglib-and-view-semantics/SKILL.md
+  requires:
+  - 11-framework-and-version-fingerprinting
+  - 12-runtime-deployment-topology
+  produces:
+  - view-semantics-ir
+  - view-dependency-graph
+- id: 24-request-binding-and-type-conversion
+  title: 请求绑定与类型转换恢复
+  phase: semantic-recovery
+  priority: P0
+  path: skills/semantic-recovery/24-request-binding-and-type-conversion/SKILL.md
+  requires:
+  - 20-struts1-lifecycle-recovery
+  - 21-struts2-interceptor-pipeline-recovery
+  - 22-servlet-container-semantics-recovery
+  produces:
+  - binding-conversion-ir
+- id: 25-navigation-dispatch-and-error-semantics
+  title: 导航、分派与错误语义恢复
+  phase: semantic-recovery
+  priority: P0
+  path: skills/semantic-recovery/25-navigation-dispatch-and-error-semantics/SKILL.md
+  requires:
+  - 20-struts1-lifecycle-recovery
+  - 21-struts2-interceptor-pipeline-recovery
+  - 22-servlet-container-semantics-recovery
+  produces:
+  - navigation-dispatch-ir
+- id: 26-session-state-and-scope-semantics
+  title: Session、状态与作用域语义恢复
+  phase: semantic-recovery
+  priority: P0
+  path: skills/semantic-recovery/26-session-state-and-scope-semantics/SKILL.md
+  requires:
+  - 20-struts1-lifecycle-recovery
+  - 21-struts2-interceptor-pipeline-recovery
+  - 22-servlet-container-semantics-recovery
+  - 23-jsp-taglib-and-view-semantics
+  produces:
+  - state-scope-ir
+  - request-sequence-state-machine
+- id: 27-security-authn-authz-csrf-semantics
+  title: 认证、授权与 CSRF 语义恢复
+  phase: semantic-recovery
+  priority: P0
+  path: skills/semantic-recovery/27-security-authn-authz-csrf-semantics/SKILL.md
+  requires:
+  - 13-route-ownership-and-conflict-analysis
+  - 20-struts1-lifecycle-recovery
+  - 21-struts2-interceptor-pipeline-recovery
+  - 22-servlet-container-semantics-recovery
+  produces:
+  - security-semantics-ir
+- id: 28-transaction-and-side-effect-topology
+  title: 事务与副作用拓扑恢复
+  phase: semantic-recovery
+  priority: P0
+  path: skills/semantic-recovery/28-transaction-and-side-effect-topology/SKILL.md
+  requires:
+  - 10-build-and-module-topology
+  - 14-environment-config-overlay-analysis
+  produces:
+  - transaction-ir
+  - side-effect-graph
+- id: 29-concurrency-lifecycle-and-threadlocal
+  title: 并发、实例生命周期与 ThreadLocal 恢复
+  phase: semantic-recovery
+  priority: P0
+  path: skills/semantic-recovery/29-concurrency-lifecycle-and-threadlocal/SKILL.md
+  requires:
+  - 20-struts1-lifecycle-recovery
+  - 21-struts2-interceptor-pipeline-recovery
+  - 22-servlet-container-semantics-recovery
+  produces:
+  - concurrency-lifecycle-ir
+- id: 30-repository-evidence-graph
+  title: Repository Evidence Graph
+  phase: semantic-model
+  priority: P0
+  path: skills/semantic-model/30-repository-evidence-graph/SKILL.md
+  requires:
+  - 10-build-and-module-topology
+  - 13-route-ownership-and-conflict-analysis
+  - 20-struts1-lifecycle-recovery
+  - 21-struts2-interceptor-pipeline-recovery
+  - 22-servlet-container-semantics-recovery
+  - 23-jsp-taglib-and-view-semantics
+  - 24-request-binding-and-type-conversion
+  - 25-navigation-dispatch-and-error-semantics
+  - 26-session-state-and-scope-semantics
+  - 27-security-authn-authz-csrf-semantics
+  - 28-transaction-and-side-effect-topology
+  - 29-concurrency-lifecycle-and-threadlocal
+  produces:
+  - repository-evidence-graph
+- id: 31-legacy-web-semantic-ir
+  title: Legacy Web Semantic IR
+  phase: semantic-model
+  priority: P0
+  path: skills/semantic-model/31-legacy-web-semantic-ir/SKILL.md
+  requires:
+  - 30-repository-evidence-graph
+  produces:
+  - legacy-web-semantic-ir
+- id: 32-behavioral-contract-and-sequence-mining
+  title: 行为契约与请求序列挖掘
+  phase: semantic-model
+  priority: P0
+  path: skills/semantic-model/32-behavioral-contract-and-sequence-mining/SKILL.md
+  requires:
+  - 31-legacy-web-semantic-ir
+  produces:
+  - behavior-contracts
+  - sequence-scenarios
+- id: 33-unknown-semantics-ledger
+  title: 未知语义债务账本
+  phase: semantic-model
+  priority: P0
+  path: skills/semantic-model/33-unknown-semantics-ledger/SKILL.md
+  requires:
+  - 31-legacy-web-semantic-ir
+  produces:
+  - unknown-semantics-ledger
+- id: 34-semantic-risk-scoring
+  title: 语义风险评分
+  phase: semantic-model
+  priority: P0
+  path: skills/semantic-model/34-semantic-risk-scoring/SKILL.md
+  requires:
+  - 31-legacy-web-semantic-ir
+  - 33-unknown-semantics-ledger
+  produces:
+  - semantic-risk-register
+  - verification-budget
+- id: 40-preserve-first-migration-strategy
+  title: Preserve-first 迁移策略
+  phase: planning
+  priority: P0
+  path: skills/planning/40-preserve-first-migration-strategy/SKILL.md
+  requires:
+  - 31-legacy-web-semantic-ir
+  - 34-semantic-risk-scoring
+  produces:
+  - migration-strategy
+- id: 41-springboot4-target-architecture
+  title: Spring Boot 4 目标架构合成
+  phase: planning
+  priority: P0
+  path: skills/planning/41-springboot4-target-architecture/SKILL.md
+  requires:
+  - 15-dependency-compatibility-and-jakarta-readiness
+  - 40-preserve-first-migration-strategy
+  produces:
+  - target-architecture
+- id: 42-multi-module-conversion-wave-planner
+  title: 多模块转换波次规划
+  phase: planning
+  priority: P0
+  path: skills/planning/42-multi-module-conversion-wave-planner/SKILL.md
+  requires:
+  - 10-build-and-module-topology
+  - 34-semantic-risk-scoring
+  - 41-springboot4-target-architecture
+  produces:
+  - conversion-wave-plan
+- id: 43-compatibility-shim-synthesis
+  title: 兼容层合成规划
+  phase: planning
+  priority: P0
+  path: skills/planning/43-compatibility-shim-synthesis/SKILL.md
+  requires:
+  - 31-legacy-web-semantic-ir
+  - 41-springboot4-target-architecture
+  produces:
+  - compatibility-shim-plan
+- id: 44-packaging-view-and-container-decision
+  title: 打包、视图与容器决策
+  phase: planning
+  priority: P0
+  path: skills/planning/44-packaging-view-and-container-decision/SKILL.md
+  requires:
+  - 12-runtime-deployment-topology
+  - 23-jsp-taglib-and-view-semantics
+  - 41-springboot4-target-architecture
+  produces:
+  - packaging-decision
+- id: 45-cutover-strangler-and-dual-run-plan
+  title: 切流、Strangler 与双运行规划
+  phase: planning
+  priority: P0
+  path: skills/planning/45-cutover-strangler-and-dual-run-plan/SKILL.md
+  requires:
+  - 40-preserve-first-migration-strategy
+  - 42-multi-module-conversion-wave-planner
+  produces:
+  - cutover-plan
+  - rollback-plan
+- id: 50-deterministic-ast-and-config-rewrite
+  title: 确定性 AST 与配置改写
+  phase: transformation
+  priority: P0
+  path: skills/transformation/50-deterministic-ast-and-config-rewrite/SKILL.md
+  requires:
+  - 40-preserve-first-migration-strategy
+  - 41-springboot4-target-architecture
+  produces:
+  - deterministic-change-set
+- id: 51-struts1-to-springmvc-generator
+  title: Struts 1→Spring MVC 生成器
+  phase: transformation
+  priority: P0
+  path: skills/transformation/51-struts1-to-springmvc-generator/SKILL.md
+  requires:
+  - 20-struts1-lifecycle-recovery
+  - 31-legacy-web-semantic-ir
+  - 43-compatibility-shim-synthesis
+  - 50-deterministic-ast-and-config-rewrite
+  produces:
+  - struts1-target-changes
+- id: 52-struts2-to-springmvc-generator
+  title: Struts 2→Spring MVC 生成器
+  phase: transformation
+  priority: P0
+  path: skills/transformation/52-struts2-to-springmvc-generator/SKILL.md
+  requires:
+  - 21-struts2-interceptor-pipeline-recovery
+  - 31-legacy-web-semantic-ir
+  - 43-compatibility-shim-synthesis
+  - 50-deterministic-ast-and-config-rewrite
+  produces:
+  - struts2-target-changes
+- id: 53-servlet-to-springmvc-generator
+  title: Servlet→Spring MVC 生成器
+  phase: transformation
+  priority: P0
+  path: skills/transformation/53-servlet-to-springmvc-generator/SKILL.md
+  requires:
+  - 22-servlet-container-semantics-recovery
+  - 31-legacy-web-semantic-ir
+  - 43-compatibility-shim-synthesis
+  - 50-deterministic-ast-and-config-rewrite
+  produces:
+  - servlet-target-changes
+- id: 54-jakarta-and-dependency-migration
+  title: Jakarta 与依赖迁移
+  phase: transformation
+  priority: P0
+  path: skills/transformation/54-jakarta-and-dependency-migration/SKILL.md
+  requires:
+  - 15-dependency-compatibility-and-jakarta-readiness
+  - 50-deterministic-ast-and-config-rewrite
+  produces:
+  - dependency-target-changes
+- id: 55-spring-security-validation-transaction-generator
+  title: Security、Validation 与 Transaction 生成器
+  phase: transformation
+  priority: P0
+  path: skills/transformation/55-spring-security-validation-transaction-generator/SKILL.md
+  requires:
+  - 24-request-binding-and-type-conversion
+  - 27-security-authn-authz-csrf-semantics
+  - 28-transaction-and-side-effect-topology
+  - 41-springboot4-target-architecture
+  produces:
+  - cross-cutting-target-changes
+- id: 56-jsp-preserve-or-modernize
+  title: JSP 保留或现代化
+  phase: transformation
+  priority: P0
+  path: skills/transformation/56-jsp-preserve-or-modernize/SKILL.md
+  requires:
+  - 23-jsp-taglib-and-view-semantics
+  - 44-packaging-view-and-container-decision
+  produces:
+  - view-target-changes
+- id: 57-source-map-change-provenance
+  title: 语义 Source Map 与变更溯源
+  phase: transformation
+  priority: P0
+  path: skills/transformation/57-source-map-change-provenance/SKILL.md
+  requires:
+  - 50-deterministic-ast-and-config-rewrite
+  - 51-struts1-to-springmvc-generator
+  - 52-struts2-to-springmvc-generator
+  - 53-servlet-to-springmvc-generator
+  - 54-jakarta-and-dependency-migration
+  - 55-spring-security-validation-transaction-generator
+  - 56-jsp-preserve-or-modernize
+  produces:
+  - semantic-source-map
+  - change-provenance
+- id: 58-idempotent-change-set-commit
+  title: 幂等 Change Set 提交
+  phase: transformation
+  priority: P0
+  path: skills/transformation/58-idempotent-change-set-commit/SKILL.md
+  requires:
+  - 03-checkpoint-resume-cancel
+  - 57-source-map-change-provenance
+  produces:
+  - committed-change-sets
+- id: 60-static-semantic-coverage
+  title: 静态语义覆盖验证
+  phase: verification
+  priority: P0
+  path: skills/verification/60-static-semantic-coverage/SKILL.md
+  requires:
+  - 31-legacy-web-semantic-ir
+  - 58-idempotent-change-set-commit
+  produces:
+  - static-coverage-report
+- id: 61-test-and-scenario-generation
+  title: 测试与场景生成
+  phase: verification
+  priority: P0
+  path: skills/verification/61-test-and-scenario-generation/SKILL.md
+  requires:
+  - 32-behavioral-contract-and-sequence-mining
+  - 58-idempotent-change-set-commit
+  produces:
+  - generated-test-suite
+- id: 62-differential-http-and-view-oracle
+  title: HTTP 与视图差分 Oracle
+  phase: verification
+  priority: P0
+  path: skills/verification/62-differential-http-and-view-oracle/SKILL.md
+  requires:
+  - 58-idempotent-change-set-commit
+  - 61-test-and-scenario-generation
+  produces:
+  - http-view-equivalence-report
+- id: 63-session-db-and-side-effect-diff
+  title: Session、数据库与副作用差分
+  phase: verification
+  priority: P0
+  path: skills/verification/63-session-db-and-side-effect-diff/SKILL.md
+  requires:
+  - 26-session-state-and-scope-semantics
+  - 28-transaction-and-side-effect-topology
+  - 62-differential-http-and-view-oracle
+  produces:
+  - state-side-effect-equivalence-report
+- id: 64-security-equivalence-and-hardening
+  title: 安全等价与可选硬化验证
+  phase: verification
+  priority: P0
+  path: skills/verification/64-security-equivalence-and-hardening/SKILL.md
+  requires:
+  - 27-security-authn-authz-csrf-semantics
+  - 55-spring-security-validation-transaction-generator
+  - 62-differential-http-and-view-oracle
+  produces:
+  - security-equivalence-report
+  - hardening-delta-report
+- id: 65-concurrency-performance-and-fault-verification
+  title: 并发、性能与故障验证
+  phase: verification
+  priority: P0
+  path: skills/verification/65-concurrency-performance-and-fault-verification/SKILL.md
+  requires:
+  - 29-concurrency-lifecycle-and-threadlocal
+  - 62-differential-http-and-view-oracle
+  produces:
+  - nonfunctional-equivalence-report
+- id: 66-observability-and-trace-correlation
+  title: 可观测性与 Trace 关联
+  phase: verification
+  priority: P0
+  path: skills/verification/66-observability-and-trace-correlation/SKILL.md
+  requires:
+  - 03-checkpoint-resume-cancel
+  - 62-differential-http-and-view-oracle
+  produces:
+  - trace-correlation-index
+- id: 70-mismatch-classification
+  title: 差异分类与根因定位
+  phase: repair-certification
+  priority: P0
+  path: skills/repair-certification/70-mismatch-classification/SKILL.md
+  requires:
+  - 60-static-semantic-coverage
+  - 62-differential-http-and-view-oracle
+  - 63-session-db-and-side-effect-diff
+  - 64-security-equivalence-and-hardening
+  - 65-concurrency-performance-and-fault-verification
+  produces:
+  - mismatch-ledger
+- id: 71-bounded-semantic-auto-repair
+  title: 有界语义自动修复
+  phase: repair-certification
+  priority: P0
+  path: skills/repair-certification/71-bounded-semantic-auto-repair/SKILL.md
+  requires:
+  - 58-idempotent-change-set-commit
+  - 70-mismatch-classification
+  produces:
+  - repair-change-sets
+  - repair-evidence
+- id: 72-impact-based-regression-selection
+  title: 影响面回归选择
+  phase: repair-certification
+  priority: P1
+  path: skills/repair-certification/72-impact-based-regression-selection/SKILL.md
+  requires:
+  - 32-behavioral-contract-and-sequence-mining
+  - 57-source-map-change-provenance
+  - 71-bounded-semantic-auto-repair
+  produces:
+  - regression-selection-plan
+- id: 73-production-cutover-rollback
+  title: 生产切流与回滚执行
+  phase: repair-certification
+  priority: P1
+  path: skills/repair-certification/73-production-cutover-rollback/SKILL.md
+  requires:
+  - 45-cutover-strangler-and-dual-run-plan
+  - 64-security-equivalence-and-hardening
+  - 65-concurrency-performance-and-fault-verification
+  - 66-observability-and-trace-correlation
+  produces:
+  - cutover-execution-report
+- id: 74-evidence-bundle-and-e0-e5-certification
+  title: 证据包与 E0–E5 生产认证
+  phase: repair-certification
+  priority: P0
+  path: skills/repair-certification/74-evidence-bundle-and-e0-e5-certification/SKILL.md
+  requires:
+  - 33-unknown-semantics-ledger
+  - 60-static-semantic-coverage
+  - 62-differential-http-and-view-oracle
+  - 63-session-db-and-side-effect-diff
+  - 64-security-equivalence-and-hardening
+  - 65-concurrency-performance-and-fault-verification
+  - 70-mismatch-classification
+  - 72-impact-based-regression-selection
+  - 73-production-cutover-rollback
+  produces:
+  - e0-e5-certification
+  - evidence-bundle
+- id: 75-golden-route-benchmark-and-learning-cache
+  title: Golden Route 基准与学习缓存
+  phase: repair-certification
+  priority: P1
+  path: skills/repair-certification/75-golden-route-benchmark-and-learning-cache/SKILL.md
+  requires:
+  - 04-wall-clock-eta-and-cost-model
+  - 74-evidence-bundle-and-e0-e5-certification
+  produces:
+  - golden-route-scorecard
+  - validated-pattern-cache
+schemas:
+- schemas/repository-evidence-graph.schema.json
+- schemas/legacy-web-semantic-ir.schema.json
+- schemas/behavior-contract.schema.json
+- schemas/migration-plan.schema.json
+- schemas/equivalence-report.schema.json
+- schemas/certification-bundle.schema.json
+- schemas/execution-checkpoint.schema.json
+- schemas/wall-clock-estimate.schema.json
+- schemas/unknown-semantics-ledger.schema.json
+- schemas/semantic-source-map.schema.json
+policies:
+- policies/semantic-invariants.yaml
+- policies/migration-gates.yaml
+- policies/normalization-policy.yaml
+- policies/risk-taxonomy.yaml
+- policies/repair-policy.yaml
+- policies/security-modes.yaml
+- policies/cache-invalidation.yaml
+- policies/tool-authority.yaml

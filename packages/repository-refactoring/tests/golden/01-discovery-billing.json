@@ -1,0 +1,96 @@
+{
+  "caseId": "01-discovery-billing",
+  "description": "Language, build, ownership and sensitive-area inventory of a small polyglot repo.",
+  "evidence": {
+    "inventoryDigest": "sha256:27a12686229a47afffec2f50f278dbd3fe74f07019dfba4941b3885ad5bec3f9",
+    "treeDigest": "sha256:aa2275886926d6c5c71860610583951379a8398ebf06fd87b040807463401989"
+  },
+  "failureClass": null,
+  "inputDigest": "sha256:fd481d2a149195bcccdf4b25288babb03c4d7559dc287dbedb842f65e127f1c6",
+  "outputDigest": "sha256:2876733ea979748c3c39ab7994b1a84877f92b7f1caf41036a65007e082e9278",
+  "projections": {
+    "output.language_inventory.languages": [
+      {
+        "byteShare": "0.6824",
+        "bytes": 810,
+        "files": 5,
+        "generatedFiles": 0,
+        "language": "python",
+        "testFiles": 1
+      },
+      {
+        "byteShare": "0.0935",
+        "bytes": 111,
+        "files": 1,
+        "generatedFiles": 0,
+        "language": "protobuf",
+        "testFiles": 0
+      },
+      {
+        "byteShare": "0.1213",
+        "bytes": 144,
+        "files": 1,
+        "generatedFiles": 0,
+        "language": "sql",
+        "testFiles": 0
+      },
+      {
+        "byteShare": "0.0649",
+        "bytes": 77,
+        "files": 1,
+        "generatedFiles": 0,
+        "language": "toml",
+        "testFiles": 0
+      },
+      {
+        "byteShare": "0.0379",
+        "bytes": 45,
+        "files": 1,
+        "generatedFiles": 0,
+        "language": "unknown",
+        "testFiles": 0
+      }
+    ],
+    "output.repository_inventory.buildSystems": [
+      "python-project"
+    ],
+    "output.repository_inventory.coverage": "1.0000",
+    "output.repository_inventory.ownership": {
+      "CODEOWNERS": [
+        "@acme/platform"
+      ],
+      "contracts/billing.proto": [
+        "@acme/platform"
+      ],
+      "db/migrations/001_init.sql": [
+        "@acme/platform"
+      ],
+      "pyproject.toml": [
+        "@acme/platform"
+      ],
+      "src/acme/__init__.py": [
+        "@acme/payments"
+      ],
+      "src/acme/api.py": [
+        "@acme/payments"
+      ],
+      "src/acme/billing.py": [
+        "@acme/payments"
+      ],
+      "src/acme/ledger.py": [
+        "@acme/payments"
+      ],
+      "tests/test_billing.py": [
+        "@acme/platform"
+      ]
+    },
+    "output.repository_inventory.testPaths": [
+      "tests/test_billing.py"
+    ]
+  },
+  "reasonCount": 1,
+  "riskClass": "R0",
+  "sideEffectsPerformed": false,
+  "skill": "repository-discovery",
+  "status": "succeeded"
+}

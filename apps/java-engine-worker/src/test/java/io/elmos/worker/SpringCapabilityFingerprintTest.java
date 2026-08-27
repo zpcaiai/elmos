@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +22,8 @@ import static io.elmos.worker.SpringCapabilityFingerprint.EvidenceState.DECLARED
 import static io.elmos.worker.SpringCapabilityFingerprint.EvidenceState.OBSERVED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SpringCapabilityFingerprintTest {
@@ -201,6 +206,7 @@ class SpringCapabilityFingerprintTest {
         Files.writeString(temporaryDirectory.resolve("pom.xml"), pom);
         write("src/main/java/example/Comments.java", """
                 package example;
+                import @Scheduled;
                 // @KafkaListener(topics = "not-active")
                 /* @Transactional */
                 final class Comments { }
@@ -414,6 +420,139 @@ class SpringCapabilityFingerprintTest {
                 .anyMatch(obligation -> obligation.contains("human-or-provider-specific")));
     }
 
+    @Test void defensiveDiscoveryAndFallbackFcmPathsRemainExplicit() throws Exception {
+        write("src/main/java/example/LegacySecurity.java", """
+                package example;
+                class LegacySecurity {
+                    WebSecurityConfigurerAdapter adapter;
+                    AbstractRoutingDataSource dataSource;
+                    ChainedTransactionManager transactionManager;
+                    AuthenticationProvider authenticationProvider;
+                }
+                """);
+        write("src/main/generated/example/GeneratedJob.java", """
+                package example;
+                class GeneratedJob { @Scheduled(cron = "0 * * * * *") void run() { } }
+                """);
+        write("generated-sources/example/GeneratedSource.java",
+                "class GeneratedSource { @Scheduled void run() { } }\n");
+        write("project/src/test/java/example/NestedTest.java",
+                "class NestedTest { @Scheduled void run() { } }\n");
+        write("project/src/main/java/example/NestedMain.java",
+                "@Configuration class NestedMain { @Bean Object bean() { return null; } }\n");
+        write("Unclassified.java", """
+                class Unclassified { @Scheduled(cron = "0 * * * * *") void run() { } }
+                """);
+        write("target/Excluded.java", "class Excluded { @Scheduled void ignored() { } }");
+        write("src/main/java/example/Conditional.java", """
+                package example;
+                @ConditionalOnProperty(name = "feature", havingValue = "${feature.enabled:false}")
+                @Conditional
+                class Conditional { }
+                """);
+        write("src/main/resources/application-prod.yml",
+                "# masked comment\nspring:\n  datasource:\n    url: jdbc:h2:mem:test");
+        write("src/main/resources/application.yml", "! masked comment\nspring:\n  task:\n    scheduling:\n      pool:\n        size: 2\n");
+        write("src/main/resources/settings.properties", "! properties comment\nspring.task.scheduling.pool.size=2\n");
+        write("src/main/resources/settings.yaml", "");
+        write("src/main/resources/context.xml",
+                "<!-- @Transactional\n     @Scheduled -->\n<beans profile=\"prod\"></beans>\n");
+        write("src/main/resources/crlf.xml", "<!-- @Transactional\r\n     @Scheduled -->\r\n<beans></beans>\r\n");
+        write("src/main/java/example/Huge.java",
+                "x".repeat(2 * 1024 * 1024 + 1));
+
+        SpringCapabilityFingerprint.Analysis analysis =
+                SpringCapabilityFingerprint.analyze(temporaryDirectory, null, null);
+        assertTrue(analysis.unknowns().contains(
+                "legacy-security-adapter-requires-rewrite-and-contract-review"));
+        assertTrue(analysis.unknowns().contains(
+                "dynamic-datasource-routing-requires-runtime-introspection"));
+        assertTrue(analysis.unknowns().contains(
+                "multi-resource-transaction-semantics-require-provider-contract"));
+
+        Path unknownRoot = temporaryDirectory.resolve("unknown-root");
+        Files.createDirectories(unknownRoot);
+        Files.writeString(unknownRoot.resolve("Unclassified.java"),
+                "class Unclassified { @Scheduled void run() { } }\n");
+        SpringCapabilityFingerprint.Analysis unknownAnalysis =
+                SpringCapabilityFingerprint.analyze(unknownRoot, null, null);
+        assertTrue(unknownAnalysis.unknowns().contains("capability-semantics-unknown:scheduler"));
+
+        Path generatedRoot = temporaryDirectory.resolve("generated-root");
+        Files.createDirectories(generatedRoot.resolve("generated-sources/example"));
+        Files.writeString(generatedRoot.resolve("generated-sources/example/Generated.java"),
+                "class Generated { @Scheduled void run() { } }\n");
+        SpringCapabilityFingerprint.Analysis generatedAnalysis =
+                SpringCapabilityFingerprint.analyze(generatedRoot, null, null);
+        assertTrue(generatedAnalysis.unknowns().contains(
+                "generated-capability-build-activation-unresolved:scheduler"));
+
+        Path emptyRoot = temporaryDirectory.resolve("empty-root");
+        Files.createDirectories(emptyRoot);
+        SpringCapabilityFingerprint.analyze(emptyRoot, "", "");
+        SpringCapabilityFingerprint.analyze(temporaryDirectory, null, "   ");
+
+        SpringUpgradeModels.Fingerprint fallback = new SpringUpgradeModels.Fingerprint(
+                "UNKNOWN", "21", "maven", List.of(), List.of(), List.of(), Map.of(
+                        "validation", List.of("observed|source|Validation.java:1|validation"),
+                        "actuator", List.of("observed|source|Actuator.java:1|actuator"),
+                        "persistence", List.of("unknown|source|Persistence.java:1|persistence|conditions= ,value"),
+                        "messaging", List.of("unknown|source|Messaging.java:1|messaging"),
+                        "web", List.of("unknown|source|Web.java:1|web"),
+                        "security", List.of("unknown|source|Security.java:1|security")));
+        Map<String, Map<String, Object>> contracts = fcmById(fallback);
+        assertEquals("validation", contracts.get("validation").get("domain"));
+        assertEquals("operations", contracts.get("actuator").get("domain"));
+        assertEquals("persistence", contracts.get("persistence").get("domain"));
+        assertEquals("unknown", contracts.get("persistence").get("status"));
+        assertTrue(list(contracts.get("persistence").get("obligations"))
+                .contains("preserve-cross-capability-ordering"));
+
+        new SpringCapabilityFingerprint.Analysis(List.of(), List.of(), Map.of(), List.of());
+        new SpringCapabilityFingerprint.Analysis(List.of(), List.of(), Map.of(), List.of(), null);
+
+        InvocationTargetException oddSourcePatterns = assertThrows(InvocationTargetException.class,
+                () -> invokePrivate("sources", new Class<?>[]{String[].class},
+                        (Object) new String[]{"only-an-expression"}));
+        assertTrue(oddSourcePatterns.getCause() instanceof IllegalArgumentException);
+        assertNull(invokePrivate("boundedRead", new Class<?>[]{Path.class}, temporaryDirectory));
+        assertNull(invokePrivate("boundedRead", new Class<?>[]{Path.class},
+                temporaryDirectory.resolve("src/main/java/example/Huge.java")));
+        InvocationTargetException missingRoot = assertThrows(InvocationTargetException.class,
+                () -> invokePrivate("sourceFiles", new Class<?>[]{Path.class},
+                        temporaryDirectory.resolve("does-not-exist")));
+        assertTrue(missingRoot.getCause() instanceof IllegalStateException);
+        invokePrivate("derive", new Class<?>[]{Map.class, String.class, List.class},
+                new java.util.HashMap<>(), "aggregate", List.of("missing-child"));
+        assertTrue((Boolean) invokePrivate("ignoredCodeLine",
+                new Class<?>[]{Path.class, String.class, int.class},
+                Path.of("Example.java"), "import org.springframework.Context;", 0));
+        assertTrue((Boolean) invokePrivate("ignoredCodeLine",
+                new Class<?>[]{Path.class, String.class, int.class},
+                Path.of("Example.java"), "package example;", 0));
+        assertTrue((Boolean) invokePrivate("ignoredCodeLine",
+                new Class<?>[]{Path.class, String.class, int.class},
+                Path.of("Example.java"), "static import example.Context;", 0));
+        assertFalse((Boolean) invokePrivate("ignoredCodeLine",
+                new Class<?>[]{Path.class, String.class, int.class},
+                Path.of("Example.java"), "class Example {}", 0));
+        Path incompatibleRoot = (Path) Proxy.newProxyInstance(
+                Path.class.getClassLoader(), new Class<?>[]{Path.class}, (proxy, method, arguments) -> {
+                    if (method.getName().equals("toAbsolutePath") || method.getName().equals("normalize")) {
+                        return proxy;
+                    }
+                    if (method.getName().equals("relativize")) {
+                        throw new IllegalArgumentException("different filesystem providers");
+                    }
+                    throw new UnsupportedOperationException(method.getName());
+                });
+        assertTrue((Boolean) invokePrivate("containsExcludedSegment",
+                new Class<?>[]{Path.class, Path.class}, incompatibleRoot, Path.of("/tmp/file.java")));
+        assertEquals("", invokePrivate("compact", new Class<?>[]{String.class}, (Object) null));
+        assertEquals(240, ((String) invokePrivate("compact", new Class<?>[]{String.class},
+                "x".repeat(241))).length());
+    }
+
     private void write(String relative, String content) throws Exception {
         Path target = temporaryDirectory.resolve(relative);
         Files.createDirectories(target.getParent());
@@ -437,5 +576,12 @@ class SpringCapabilityFingerprintTest {
     @SuppressWarnings("unchecked")
     private static List<String> list(Object value) {
         return (List<String>) value;
+    }
+
+    private static Object invokePrivate(String name, Class<?>[] parameterTypes, Object... arguments)
+            throws Exception {
+        Method method = SpringCapabilityFingerprint.class.getDeclaredMethod(name, parameterTypes);
+        method.setAccessible(true);
+        return method.invoke(null, arguments);
     }
 }

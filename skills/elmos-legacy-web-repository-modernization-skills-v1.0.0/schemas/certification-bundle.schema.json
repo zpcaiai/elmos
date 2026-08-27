@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/certification-bundle.schema.json",
+  "title": "E0-E5 Certification Bundle",
+  "type": "object",
+  "required": [
+    "bundleVersion",
+    "jobId",
+    "level",
+    "policySnapshotHash",
+    "artifacts",
+    "gates",
+    "unknowns",
+    "risks",
+    "reproducibility"
+  ],
+  "properties": {
+    "bundleVersion": {
+      "type": "string"
+    },
+    "jobId": {
+      "type": "string"
+    },
+    "level": {
+      "enum": [
+        "E0",
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "BLOCKED"
+      ]
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "policySnapshotHash": {
+      "type": "string"
+    },
+    "repositorySnapshotId": {
+      "type": "string"
+    },
+    "targetDigest": {
+      "type": "string"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "uri",
+          "digest"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "uri": {
+            "type": "string"
+          },
+          "digest": {
+            "type": "string"
+          },
+          "schemaVersion": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "allowedDeltas": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "reproducibility": {
+      "type": "object",
+      "required": [
+        "commands",
+        "environmentDigests"
+      ],
+      "properties": {
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "environmentDigests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "signatures": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "additionalProperties": false
+}

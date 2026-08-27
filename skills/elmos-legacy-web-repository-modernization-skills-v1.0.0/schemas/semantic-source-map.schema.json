@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/semantic-source-map.schema.json",
+  "title": "Semantic Source Map",
+  "type": "object",
+  "required": [
+    "mapVersion",
+    "repositorySnapshotId",
+    "targetDigest",
+    "mappings"
+  ],
+  "properties": {
+    "mapVersion": {
+      "type": "string"
+    },
+    "repositorySnapshotId": {
+      "type": "string"
+    },
+    "targetDigest": {
+      "type": "string"
+    },
+    "mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "legacyEvidenceRefs",
+          "irNodeRefs",
+          "decisionRefs",
+          "targetLocations",
+          "testRefs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "legacyEvidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "irNodeRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "decisionRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "targetLocations": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "testRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "verificationRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recipe": {
+            "type": "object"
+          },
+          "modelGeneration": {
+            "type": [
+              "object",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

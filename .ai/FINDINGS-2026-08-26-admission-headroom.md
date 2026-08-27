@@ -274,16 +274,83 @@ Objective-C(`LLONG_MIN`) 四套补偿——**目标侧一直在支持一个源�
 
 ### 执行证据（`canonical.evaluate` 是参照，不是某个目标）
 
-45 组参数向量 × 13 个目标：
+Mac 上 13 个目标全部跑通，**每一个可执行的行都是 `EXACT:` 级证据**：
 
 ```
-java  python  go  rust  cpp  php     AGREES_WITH_CANONICAL   45/45
-typescript, react                    EMISSION_REFUSED  INTEGER_LITERAL_UNSAFE_*
-csharp, objc, swift, kotlin, flutter NOT_RUN（本容器无工具链）
+full 套件（45 向量）
+  java python csharp go rust cpp objc swift php kotlin flutter   AGREES 45/45  (11)
+  typescript, react                    EMISSION_REFUSED:INTEGER_LITERAL_UNSAFE_*
+
+safe_integer 套件（44 向量）
+  上面 11 个 + typescript                                        AGREES 44/44  (12)
+  react                                无可执行驱动，发射结果即其证据
 ```
 
-TypeScript/React 的**拒绝本身就是证据**：`-9223372036854775808` 超出
-`Number.MAX_SAFE_INTEGER`，发射器拒绝给出一个错的常量。这条 R 规则以前永远走不到。
+TypeScript/React 在 `full` 上的**拒绝本身就是证据**：`-9223372036854775808` 超出
+`Number.MAX_SAFE_INTEGER`，发射器拒绝给出一个错的常量而不是给个近似值。
+**这条 R 规则以前永远走不到**——源侧根本产不出负字面量。它们在 `safe_integer`
+上 44/44，证明拒绝是针对那一个值的，不是整套都不行。
+
+### 证据分四级，弱级别必须自带降级原因
+
+| 级别 | 含义 |
+|---|---|
+| **`EXACT:`** | `toolchains.exact_toolchain()` 接受了它——**版本 + sha256** 与仓库钉的比对通过；cpp/objc/swift 还比对了 Xcode 与 SDK 身份 |
+| **`PINNED:`** | 工具链根下恰好一个版本目录。**只证明路径唯一，不证明内容是对的** |
+| **`PATH:`** | `which` 找到的。只说明「存在一个叫这名字的可执行文件」 |
+| **`ENV:`** | 你用 `ELMOS_DIFF_<LANG>` 自己指的。什么都不保证 |
+
+关键规则：**降级必须携带原因**。`exact_toolchain()` 拒绝时，它的错误码被拼进后面
+那个弱级别字符串，所以不会出现一个光秃秃的 `PATH:` 而不说明为什么不是 `EXACT:`。
+
+本轮结果 13 行里 12 行 `EXACT:`（react 无驱动）。Apple 三个目标的行还带着
+`-isysroot`/`-sdk` 与具体 SDK 路径——**SDK 是证据的一部分，不能是隐式的**。
+
+### 公开更正：上一版报告里的 `PINNED:` 有一半是错的，不是「弱」
+
+上一版写「只有 go 1.25.0 / rust 1.89.0 / php 8.4.12 / kotlin 2.2.20 四行是 `PINNED:`
+真钉死工具链」。**`php 8.4.12` 这一行是错的。** 引擎钉的 PHP 是
+`/opt/homebrew/Cellar/php/8.5.9`（`toolchains.py` 里写死的 `_EXPECTED_PHP_ROOT`），
+而我自己 glob 出来的 `PINNED:` 指向工具链根下的 8.4.12 —— **那是引擎会拒绝的一份，
+我却把它当作「钉死工具链证据」发布了。**
+
+java 同理：上一版记的是 `PATH: java(sdkman 21.0.11-tem)`，引擎钉的是 Homebrew Cellar
+的 openjdk@21。**版本号一模一样，二进制不是同一个。**
+
+根因是我造了个弱得多的轮子：**我自己的 `PINNED:` 只证明「某个目录下只有一个版本」，
+不证明那是仓库要的那个。** 引擎里 `exact_toolchain()` 早就在做版本 + sha256 校验，
+13 个语言一个不缺——我一次都没问过它。
+
+### 这一轮修掉的五个差分器缺陷（全是 harness，没有一个是引擎）
+
+1. **csharp / objc 的 DIVERGES**（上一版已记）：csproj 写死 `net8.0`；objc 只有一个
+   `elmos_render(long long)`，把布尔打成 `0/1`、把 `-2.5` 截成 `-2`。`45 − 27 = 18`
+   正好等于报出来的 DIVERGES 数——**算术对得上，诊断才站得住**。
+2. **`resolve()` 用错了查表 key**：`spec.exe[0]` 是**工具链目录名**不是目标名，九个
+   目标两者拼写恰好相同，三个不同（`csharp→dotnet`、`typescript→node`、
+   `flutter→dart`）。于是这三行打出「没有注册钉死工具链」——**一句假话**。
+   同一个错还让文档里的 `ELMOS_DIFF_CSHARP` **从来没生效过**（真实变量名是
+   `ELMOS_DIFF_DOTNET`）。现在 `_ENGINE_TOOLCHAIN` 与 `TARGETS` 的集合差在**导入期**
+   `SystemExit`——**一个会悄悄误报的评级器，比不评级更坏**。
+3. **Apple 目标缺 SDK sysroot**：`/usr/bin/clang` 不是编译器，是先问 `xcrun` 要 SDK
+   再转发的 shim。直接调 `Xcode.app` 里的真驱动就没人补 `-isysroot`，标准库整个不在
+   （`'cstdint' file not found`、`Foundation.h` 找不到、`unable to load standard
+   library`）。SDK 路径取自 `ExactToolchain.profile` 的 `sdk-path=`，即引擎验过的那份；
+   **回落到 `PATH:` 的行一个 sdk 参数都不加**——给未验证的编译器硬塞 sysroot，等于把
+   PATH 行打扮成钉死证据。
+4. **kotlin 那行是假的 `PINNED:`**：`kotlinc` 编成 jar 后用 `("java", "-jar", ...)`
+   ——**裸的 PATH 名字**，证据里从头到尾没记过这个 java 是哪个。一半执行跑在没被命名的
+   二进制上，行却标着 PINNED。现在 java 走同一条阶梯并把 provenance 拼进这一行。
+5. **javac 是字符串替换出来的**：`executable.replace("bin/java", "bin/javac")`，凡是
+   布局不是 `.../bin/java` 的就悄悄产出一个不存在的路径。现在直接取
+   `ExactToolchain.auxiliary`。
+
+还有一个不算缺陷但同样代价高的：`stderr: tail[-3:]`。cpp 失败回来的三行是两行 caret
+画和一句 `1 error generated.`，**真正的诊断 `'cstdint' file not found` 正好被截在上面
+一行**。一个把诊断本身截掉的诊断尾巴，代价是往返一次只有那台机器能跑的验证。已改成 8 行。
+
+**总结这一条**：`DIVERGES` 五次全部是差分器自己的错，引擎一次都没错。
+**差分工具本身必须先被证伪，否则它只是在用自己的 bug 给引擎判刑。**
 
 ### 准入率：**1/16046 → 1/16046，没有变**
 

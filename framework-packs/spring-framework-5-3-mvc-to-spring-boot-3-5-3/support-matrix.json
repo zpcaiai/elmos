@@ -9,7 +9,7 @@
       "reason": "The exact fixture passed local source/target builds, Tomcat/WarLauncher startup, one exact JSON GET comparison and preserved controller tests; this does not generalize beyond the fixture.",
       "evidence_refs": [
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-26/evidence-index.json"
+        "certification/local-execution/2026-08-27/evidence-index.json"
       ]
     },
     {
@@ -37,7 +37,7 @@
       "reason": "Two validation-error contracts and the controller advice contract passed in the preserved 6 source and 9 target tests for the exact fixture; locale, groups and other providers remain NOT_RUN.",
       "evidence_refs": [
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-26/evidence-index.json"
+        "certification/local-execution/2026-08-27/evidence-index.json"
       ]
     },
     {
@@ -75,7 +75,7 @@
       "reason": "The exact fixture's ControllerAdvice status and JSON shape passed preserved source/target tests locally; broader exception resolvers and production errors remain NOT_RUN.",
       "evidence_refs": [
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-26/evidence-index.json"
+        "certification/local-execution/2026-08-27/evidence-index.json"
       ]
     },
     {
@@ -85,7 +85,7 @@
       "reason": "The exact fixture's UTF-8 filter and /api/** audit interceptor behavior passed preserved tests and the JSON HTTP comparison across Tomcat 9 and embedded Tomcat 10 locally.",
       "evidence_refs": [
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-26/evidence-index.json"
+        "certification/local-execution/2026-08-27/evidence-index.json"
       ]
     },
     {
@@ -117,7 +117,7 @@
       "evidence_refs": [
         "target-profile/scaffold/manifest.json",
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-26/evidence-index.json"
+        "certification/local-execution/2026-08-27/evidence-index.json"
       ]
     },
     {
@@ -127,7 +127,7 @@
       "reason": "The exact fixture passed bounded external Tomcat 9 source startup/shutdown and Boot WarLauncher target startup/Actuator/shutdown locally; alternate lifecycle integrations remain NOT_RUN.",
       "evidence_refs": [
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-26/evidence-index.json"
+        "certification/local-execution/2026-08-27/evidence-index.json"
       ]
     }
   ]

@@ -16,7 +16,7 @@ import sqlglot
 from sqlglot import exp
 
 from .dialects import render_type
-from .emitter import _object_name, _render_check_expression
+from .emitter import CommentColumnCatalogLike, _object_name, _render_check_expression, _render_column
 from .models import (
     CheckBooleanExpression,
     CheckConnector,
@@ -152,9 +152,9 @@ def parse_comment(
     assert isinstance(statement, exp.Comment)
     kind = str(statement.args.get("kind", "")).upper()
     _require(
-        kind in {"TABLE", "COLUMN"},
+        kind in {"TABLE", "COLUMN", "FUNCTION", "CONSTRAINT"},
         "CERTIFIED_COMMENT_UNSUPPORTED_OBJECT",
-        "only table and column comments are supported",
+        "only table, column, constraint and scalar function comments are in the typed object route",
     )
     value = statement.args.get("expression")
     _require(
@@ -166,6 +166,49 @@ def parse_comment(
     if kind == "TABLE":
         schema, table = _mapped_table_name(statement.this, "comment table", namespace_map)
         return Comment(CommentObjectKind.TABLE, table, str(value.this), schema=schema)
+    if kind == "FUNCTION":
+        target = statement.this
+        _require(
+            isinstance(target, exp.UserDefinedFunction),
+            "CERTIFIED_COMMENT_UNSUPPORTED_OBJECT",
+            "function comment target is malformed",
+        )
+        assert isinstance(target, exp.UserDefinedFunction)
+        schema, name = _routine_name(target.this, namespace_map)
+        argument_types = tuple(
+            _plain_identifier(item, "comment function argument type") for item in target.expressions
+        )
+        return Comment(
+            CommentObjectKind.FUNCTION,
+            name,
+            str(value.this),
+            schema=schema,
+            routine_argument_types=argument_types,
+        )
+    if kind == "CONSTRAINT":
+        target = statement.this
+        _require(
+            isinstance(target, exp.Table),
+            "CERTIFIED_COMMENT_UNSUPPORTED_OBJECT",
+            "constraint comment target is malformed",
+        )
+        assert isinstance(target, exp.Table)
+        constraint_node = target.args.get("constraint")
+        _require(
+            isinstance(constraint_node, exp.Identifier),
+            "CERTIFIED_COMMENT_UNSUPPORTED_OBJECT",
+            "constraint comment name is missing",
+        )
+        assert isinstance(constraint_node, exp.Identifier)
+        schema, table = _mapped_table_name(target, "comment constraint table", namespace_map)
+        return Comment(
+            CommentObjectKind.CONSTRAINT,
+            _plain_identifier(constraint_node, "comment constraint"),
+            str(value.this),
+            table_name=table,
+            schema=schema,
+            table_schema=schema,
+        )
     target = statement.this
     _require(
         isinstance(target, exp.Column), "CERTIFIED_COMMENT_UNSUPPORTED_OBJECT", "column comment target is malformed"
@@ -220,21 +263,69 @@ def parse_privilege(
     _require(
         isinstance(securable, exp.Table),
         "CERTIFIED_PRIVILEGE_UNSUPPORTED_OBJECT",
-        "only table privileges are in the bounded privilege route",
+        "privilege target is not a table or routine reference",
     )
     assert isinstance(securable, exp.Table)
     # PostgreSQL permits the TABLE keyword to be omitted for ordinary table
     # grants/revokes.  Infer it only from a typed Table AST node; do not infer
     # object kinds from the raw SQL text.
     object_kind = str(statement.args.get("kind") or "TABLE").upper()
+    privileges = tuple(str(item.this).upper() for item in statement.args.get("privileges") or [])
+    _require(bool(privileges), "CERTIFIED_PRIVILEGE_EMPTY", "privilege list is empty")
+    if object_kind in {"FUNCTION", "PROCEDURE"}:
+        routine = securable.this
+        _require(
+            isinstance(routine, exp.Anonymous),
+            "CERTIFIED_PRIVILEGE_UNSUPPORTED_OBJECT",
+            "routine privilege target must carry a named routine reference",
+        )
+        assert isinstance(routine, exp.Anonymous)
+        name = _plain_identifier(
+            exp.Identifier(this=str(routine.this), quoted=False),
+            "privilege routine",
+        )
+        schema_node = securable.args.get("db")
+        schema = None if schema_node is None else _plain_identifier(schema_node, "privilege routine schema")
+        if schema is not None:
+            mapped_schema = None if namespace_map is None else namespace_map.get(schema)
+            _require(
+                mapped_schema is not None,
+                "CERTIFIED_ROUTINE_NAMESPACE_MAPPING_REQUIRED",
+                f"routine schema {schema!r} needs an explicit namespace_map",
+            )
+            assert mapped_schema is not None
+            _require(
+                bool(_IDENTIFIER_RE.match(mapped_schema)),
+                "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+                f"mapped routine schema {mapped_schema!r} is not a plain identifier",
+            )
+            schema = mapped_schema
+        argument_types = tuple(
+            _plain_identifier(item, "privilege routine argument type") for item in routine.expressions
+        )
+        _require(
+            set(privileges) <= {"EXECUTE", "ALL"},
+            "CERTIFIED_PRIVILEGE_UNSUPPORTED_KIND",
+            "routine privilege route supports EXECUTE or ALL only",
+        )
+        principals = tuple(_principal(item) for item in statement.args.get("principals") or [])
+        _require(bool(principals), "CERTIFIED_PRIVILEGE_EMPTY", "principal list is empty")
+        return Privilege(
+            action=action,
+            privileges=privileges,
+            object_name=name,
+            principals=principals,
+            object_kind=object_kind,
+            schema=schema,
+            grant_option=bool(statement.args.get("grant_option")),
+            routine_argument_types=argument_types,
+        )
     _require(
         object_kind == "TABLE",
         "CERTIFIED_PRIVILEGE_UNSUPPORTED_OBJECT",
-        "only table privileges are in the portable route",
+        "only table, function and procedure privileges are in the typed route",
     )
     schema, object_name = _mapped_table_name(securable, "privilege table", namespace_map)
-    privileges = tuple(str(item.this).upper() for item in statement.args.get("privileges") or [])
-    _require(bool(privileges), "CERTIFIED_PRIVILEGE_EMPTY", "privilege list is empty")
     allowed = {"SELECT", "INSERT", "UPDATE", "DELETE", "REFERENCES", "ALL"}
     _require(set(privileges) <= allowed, "CERTIFIED_PRIVILEGE_UNSUPPORTED_KIND", "privilege is outside the table route")
     principals = tuple(_principal(item) for item in statement.args.get("principals") or [])
@@ -576,18 +667,116 @@ def emit_view(view: View, target_dialect: Dialect) -> str:
     return rendered
 
 
-def emit_comment(comment: Comment, target_dialect: Dialect) -> str:
+def emit_comment(
+    comment: Comment,
+    target_dialect: Dialect,
+    catalog: CommentColumnCatalogLike | None = None,
+) -> str:
+    def tsql_literal(value: str) -> str:
+        return "N'" + value.replace(chr(39), chr(39) * 2) + "'"
+
+    escaped = comment.text.replace(chr(39), chr(39) * 2)
+
+    if comment.object_kind is CommentObjectKind.CONSTRAINT:
+        if target_dialect is not Dialect.POSTGRES:
+            raise DialectError(
+                "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
+                f"{target_dialect.value} has no exact standalone constraint comment route",
+            )
+        table = _object_name(comment.schema, comment.table_name or "")
+        return f"COMMENT ON CONSTRAINT {comment.object_name} ON {table} IS '{escaped}'"
+
+    if comment.object_kind is CommentObjectKind.FUNCTION:
+        if target_dialect in (Dialect.MYSQL, Dialect.ORACLE):
+            raise DialectError(
+                "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
+                f"{target_dialect.value} has no standalone COMMENT ON FUNCTION metadata route",
+            )
+        qualified = _object_name(comment.schema, comment.object_name)
+        signature = ", ".join(comment.routine_argument_types)
+        if target_dialect is Dialect.TSQL:
+            if comment.schema is None:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_TARGET_SCHEMA_REQUIRED",
+                    "SQL Server function properties require an explicit target schema mapping",
+                )
+            if len(comment.text.encode("utf-16-le")) > 7500:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_TARGET_VALUE_TOO_LARGE",
+                    "SQL Server extended-property values are limited to 7,500 bytes",
+                )
+            return (
+                "EXEC sys.sp_addextendedproperty "
+                "@name = N'MS_Description', "
+                f"@value = {tsql_literal(comment.text)}, "
+                "@level0type = N'SCHEMA', "
+                f"@level0name = {tsql_literal(comment.schema)}, "
+                "@level1type = N'FUNCTION', "
+                f"@level1name = {tsql_literal(comment.object_name)}"
+            )
+        target = f"FUNCTION {qualified}({signature})"
+        return f"COMMENT ON {target} IS '{escaped}'"
+
+    if target_dialect is Dialect.MYSQL:
+        if comment.object_kind is CommentObjectKind.COLUMN:
+            if catalog is None:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED",
+                    "MySQL column comments require a full MODIFY/CHANGE column definition; "
+                    "the one-statement COMMENT profile has no type/nullability/default catalogue",
+                )
+            column = catalog.column_of(
+                comment.table_schema or comment.schema,
+                comment.table_name or "",
+                comment.object_name,
+            )
+            if column is None:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED",
+                    f"source catalogue has no complete definition for "
+                    f"{comment.table_name or ''}.{comment.object_name}; "
+                    "MySQL MODIFY COLUMN cannot be emitted without the full definition",
+                )
+            return (
+                f"ALTER TABLE {_object_name(comment.schema, comment.table_name or '')} "
+                f"MODIFY COLUMN {_render_column(column, target_dialect)} COMMENT '{escaped}'"
+            )
+        return f"ALTER TABLE {_object_name(comment.schema, comment.object_name)} COMMENT = '{escaped}'"
+
     if target_dialect is Dialect.TSQL:
-        raise DialectError(
-            "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
-            "SQL Server comments require extended-property ownership and schema identity",
-        )
+        if comment.schema is None:
+            raise DialectError(
+                "CERTIFIED_COMMENT_TARGET_SCHEMA_REQUIRED",
+                "SQL Server extended properties require an explicit target schema; supply a "
+                "namespace_map entry for the source default namespace",
+            )
+        if len(comment.text.encode("utf-16-le")) > 7500:
+            raise DialectError(
+                "CERTIFIED_COMMENT_TARGET_VALUE_TOO_LARGE",
+                "SQL Server extended-property values are limited to 7,500 bytes",
+            )
+        parts = [
+            "@name = N'MS_Description'",
+            f"@value = {tsql_literal(comment.text)}",
+            "@level0type = N'SCHEMA'",
+            f"@level0name = {tsql_literal(comment.schema)}",
+            "@level1type = N'TABLE'",
+            f"@level1name = {tsql_literal(comment.table_name or comment.object_name)}",
+        ]
+        if comment.object_kind is CommentObjectKind.COLUMN:
+            parts.extend(
+                [
+                    "@level2type = N'COLUMN'",
+                    f"@level2name = {tsql_literal(comment.object_name)}",
+                ]
+            )
+        return "EXEC sys.sp_addextendedproperty " + ", ".join(parts)
     target = (
         f"TABLE {_object_name(comment.schema, comment.object_name)}"
         if comment.object_kind is CommentObjectKind.TABLE
         else f"COLUMN {_object_name(comment.table_schema, comment.table_name or '')}.{comment.object_name}"
     )
-    return f"COMMENT ON {target} IS '{comment.text.replace(chr(39), chr(39) * 2)}'"
+    return f"COMMENT ON {target} IS '{escaped}'"
 
 
 def emit_privilege(privilege: Privilege, target_dialect: Dialect) -> str:
@@ -596,16 +785,30 @@ def emit_privilege(privilege: Privilege, target_dialect: Dialect) -> str:
             "CERTIFIED_PRIVILEGE_GRANT_OPTION_UNSUPPORTED",
             "grant-option lifecycle needs a target role/ownership policy",
         )
-    target = _object_name(privilege.schema, privilege.object_name)
     privilege_list = ", ".join(privilege.privileges)
     principals = ", ".join(privilege.principals)
-    if target_dialect is Dialect.TSQL:
-        object_clause = f"OBJECT::{target}"
+    if privilege.object_kind in {"FUNCTION", "PROCEDURE"}:
+        target = _object_name(privilege.schema, privilege.object_name)
+        if target_dialect is Dialect.POSTGRES:
+            object_clause = (
+                f"{privilege.object_kind} {target}({', '.join(privilege.routine_argument_types)})"
+            )
+        else:
+            raise DialectError(
+                "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
+                f"{target_dialect.value} routine privileges cannot safely drop the source "
+                "signature without a target routine-identity catalogue",
+            )
     else:
-        object_clause = target
-    table_keyword = "TABLE " if target_dialect is Dialect.POSTGRES else ""
+        target = _object_name(privilege.schema, privilege.object_name)
+        if target_dialect is Dialect.TSQL:
+            object_clause = f"OBJECT::{target}"
+        else:
+            object_clause = target
+        table_keyword = "TABLE " if target_dialect is Dialect.POSTGRES else ""
+        object_clause = table_keyword + object_clause
     direction = "TO" if privilege.action is PrivilegeAction.GRANT else "FROM"
-    return f"{privilege.action.value} {privilege_list} ON {table_keyword}{object_clause} {direction} {principals}"
+    return f"{privilege.action.value} {privilege_list} ON {object_clause} {direction} {principals}"
 
 
 def emit_procedure(procedure: Procedure, target_dialect: Dialect) -> str:

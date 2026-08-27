@@ -7,7 +7,7 @@
  * components with react-dom/server and @vue/server-renderer and compare
  * the resulting DOM.
  */
-import { parseReactComponent } from "../src/parsers/react";
+import { parseReactComponent, parseReactComponentResults } from "../src/parsers/react";
 import { parseVue3Component } from "../src/parsers/vue3";
 import { emitReact } from "../src/emitters/react";
 import { emitVue3 } from "../src/emitters/vue3";
@@ -152,6 +152,140 @@ describe("React parsing (real TypeScript Compiler API)", () => {
     expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
     expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
   });
+
+  it("accepts only static Math bounds and CSS Module class tokens", () => {
+    const ir = parseReactComponent(`
+      import styles from "./Empty.module.css";
+      function Empty({ count }: { count: number }) {
+        return <div className={styles.empty}>{Math.min(100, Math.max(0, count))}</div>;
+      }
+    `, "Empty.tsx");
+    expect(ir.root).toMatchObject({
+      kind: "element",
+      attrs: [{ kind: "dynamic", name: "class", value: { kind: "cssModuleClass", className: "empty" } }],
+      children: [{
+        kind: "text",
+        value: {
+          kind: "numericFunction",
+          function: "min",
+          args: [{ kind: "literal", literal: { type: "number", value: 100 } }, {
+            kind: "numericFunction",
+            function: "max",
+          }],
+        },
+      }],
+    });
+    expect(emitReact(ir)).toContain('className={"empty"}');
+    expect(emitReact(ir)).toContain("Math.min(100, Math.max(0, count))");
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("keeps bounded numeric and string helpers typed across targets", () => {
+    const ir = parseReactComponent(`
+      function Helpers({ value, label }: { value: number; label: string }) {
+        return <p>{Math.floor(value)} / {Math.ceil(value)} / {Math.abs(value)} / {label.startsWith("A") ? label.slice(0, 2) : label.endsWith("!") ? label.slice(1) : label}</p>;
+      }
+    `, "Helpers.tsx");
+    expect(ir.root).toMatchObject({
+      kind: "element",
+      children: [
+        { kind: "text", value: { kind: "numericFunction", function: "floor" } },
+        { kind: "text", value: { kind: "literal", literal: { type: "string", value: "/" } } },
+        { kind: "text", value: { kind: "numericFunction", function: "ceil" } },
+        { kind: "text", value: { kind: "literal", literal: { type: "string", value: "/" } } },
+        { kind: "text", value: { kind: "numericFunction", function: "abs" } },
+        { kind: "text", value: { kind: "literal", literal: { type: "string", value: "/" } } },
+        { kind: "text", value: { kind: "ternary" } },
+      ],
+    });
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("inlines same-file pure primitive helpers and preserves finite checks", () => {
+    const result = parseReactComponentResults(`
+      function finiteCount(value: number): number {
+        return Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
+      }
+      function Bounded({ value }: { value: number }) {
+        return <p>{finiteCount(value)}</p>;
+      }
+    `, "Bounded.tsx").find((candidate) => candidate.name === "Bounded");
+    expect(result?.error).toBeNull();
+    const ir = result?.component;
+    expect(ir).not.toBeNull();
+    if (ir === null || ir === undefined) throw new Error("BOUNDED_COMPONENT_NOT_PARSED");
+    const value = ir.root.kind === "element" ? ir.root.children[0] : undefined;
+    expect(value).toEqual({
+      kind: "text",
+      value: {
+        kind: "ternary",
+        condition: {
+          kind: "binary",
+          operator: "&&",
+          left: { kind: "numericPredicate", predicate: "isFinite", operand: { kind: "ident", name: "value" } },
+          right: { kind: "binary", operator: ">", left: { kind: "ident", name: "value" }, right: { kind: "literal", literal: { type: "number", value: 0 } } },
+        },
+        then: { kind: "numericFunction", function: "floor", args: [{ kind: "ident", name: "value" }] },
+        else: { kind: "literal", literal: { type: "number", value: 0 } },
+      },
+    });
+    expect(emitReact(ir)).toContain("Number.isFinite(value)");
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("preserves transparent JSX fragments across the canonical tree and template targets", () => {
+    const ir = parseReactComponent(`
+      function Fragmented({ ready }: { ready: boolean }) {
+        return <section>{ready ? (
+          <>
+            <strong>ready</strong>
+            <span>details</span>
+          </>
+        ) : <em>waiting</em>}</section>;
+      }
+    `, "Fragmented.tsx");
+    expect(ir.root).toMatchObject({
+      kind: "element",
+      children: [{
+        kind: "conditional",
+        then: {
+          kind: "fragment",
+          children: [
+            { kind: "element", tag: "strong" },
+            { kind: "element", tag: "span" },
+          ],
+        },
+        else: { kind: "element", tag: "em" },
+      }],
+    });
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("normalizes a bounded early JSX return into a target-neutral conditional", () => {
+    const ir = parseReactComponent(`
+      function Guard({ ready }: { ready: boolean }) {
+        if (ready) {
+          return <strong>ready</strong>;
+        }
+        return <em>waiting</em>;
+      }
+    `, "Guard.tsx");
+    expect(ir.root).toEqual({
+      kind: "conditional",
+      condition: { kind: "ident", name: "ready" },
+      then: { kind: "element", tag: "strong", attrs: [], events: [], children: [{ kind: "text", value: { kind: "literal", literal: { type: "string", value: "ready" } } }] },
+      else: { kind: "element", tag: "em", attrs: [], events: [], children: [{ kind: "text", value: { kind: "literal", literal: { type: "string", value: "waiting" } } }] },
+    });
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
 });
 
 describe("cross-framework round trip", () => {
@@ -243,7 +377,7 @@ describe("fail-closed behavior outside certified-component-v1", () => {
     ["unsupported tag", `function C() { return (<video>hi</video>); }`],
     ["unsupported attribute", `function C() { return (<div data-tracking="x">hi</div>); }`],
     ["spread props", `function C(props: { a: string }) { return (<div {...props}>hi</div>); }`],
-    ["unsupported method call in expression", `function C({ a }: { a: string }) { return (<div>{a.startsWith("x")}</div>); }`],
+    ["unsupported method call in expression", `function C({ a }: { a: string }) { return (<div>{a.charAt(0)}</div>); }`],
     ["two components in one file", `function A() { return (<div>a</div>); } function B() { return (<div>b</div>); }`],
     ["untyped props", `function C(props) { return (<div>hi</div>); }`],
     ["handler with a loop", `function C() { const [x, setX] = useState<number>(0); return (<button onClick={() => { for (;;) {} }}>go</button>); }`],

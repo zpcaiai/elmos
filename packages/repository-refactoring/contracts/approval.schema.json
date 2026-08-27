@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/approval.schema.json",
+  "title": "ApprovalDecision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "approvalId",
+    "runId",
+    "gateId",
+    "decision",
+    "actor",
+    "boundDigests",
+    "decidedAt"
+  ],
+  "properties": {
+    "approvalId": {
+      "type": "string"
+    },
+    "runId": {
+      "type": "string"
+    },
+    "gateId": {
+      "type": "string"
+    },
+    "decision": {
+      "enum": [
+        "approve",
+        "reject",
+        "request-changes",
+        "approve-with-conditions"
+      ]
+    },
+    "actor": {
+      "type": "object",
+      "required": [
+        "subject",
+        "roles"
+      ],
+      "properties": {
+        "subject": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "boundDigests": {
+      "type": "object",
+      "required": [
+        "request",
+        "plan",
+        "recipeLock",
+        "patch"
+      ],
+      "properties": {
+        "request": {
+          "type": "string"
+        },
+        "plan": {
+          "type": "string"
+        },
+        "recipeLock": {
+          "type": "string"
+        },
+        "patch": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "conditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "predicate"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "predicate": {
+            "type": "string"
+          },
+          "satisfied": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "reason": {
+      "type": "string"
+    },
+    "decidedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "signature": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,237 @@
+mappingVersion: 1.0.0
+source: Struts 2.x
+target: Spring Boot 4 / Spring MVC
+defaultRule: expand effective package/interceptor/result configuration before mapping
+constructs:
+- source: package/namespace inheritance
+  targetCandidates:
+  - controller base path
+  - metadata registry
+  requiredIR:
+  - effective inherited config
+  risk: high
+- source: action mapping
+  targetCandidates:
+  - '@RequestMapping handler'
+  requiredIR:
+  - name
+  - namespace
+  - class
+  - method
+  - allowed methods
+  risk: critical
+- source: wildcard mapping
+  targetCandidates:
+  - explicit generated mappings
+  - bounded pattern resolver
+  requiredIR:
+  - pattern substitution
+  - precedence
+  risk: critical
+- source: Dynamic Method Invocation
+  targetCandidates:
+  - explicit handlers
+  - dispatch adapter
+  requiredIR:
+  - enabled flag
+  - allowed methods
+  - input names
+  risk: critical
+- source: interceptor stack
+  targetCandidates:
+  - composed Spring extensions
+  - LegacyInvocationPipeline
+  requiredIR:
+  - ordered around chain
+  - params
+  - conditions
+  risk: critical
+- source: custom interceptor
+  targetCandidates:
+  - Filter
+  - HandlerInterceptor
+  - AOP
+  - ArgumentResolver
+  - pipeline adapter
+  requiredIR:
+  - before/after/short circuit/effects
+  risk: critical
+- source: ParametersInterceptor
+  targetCandidates:
+  - WebDataBinder/ArgumentResolver
+  requiredIR:
+  - allow/exclude patterns
+  - order
+  - conversion
+  risk: critical
+- source: ConversionErrorInterceptor
+  targetCandidates:
+  - BindingResult/conversion error adapter
+  requiredIR:
+  - error values
+  - messages
+  - scope
+  risk: high
+- source: ValidationInterceptor
+  targetCandidates:
+  - Spring Validator/Jakarta Validation
+  requiredIR:
+  - method exclusions
+  - validation files
+  - order
+  risk: critical
+- source: WorkflowInterceptor
+  targetCandidates:
+  - validation short-circuit adapter
+  requiredIR:
+  - input result
+  - exclude methods
+  risk: critical
+- source: PrepareInterceptor
+  targetCandidates:
+  - ArgumentResolver/pre-handler service
+  requiredIR:
+  - prepareAlways/first/prefix behavior
+  risk: high
+- source: ModelDrivenInterceptor
+  targetCandidates:
+  - explicit model argument/model adapter
+  requiredIR:
+  - model object
+  - stack order
+  risk: high
+- source: ScopedModelDriven/ScopeInterceptor
+  targetCandidates:
+  - request/session scoped model bridge
+  requiredIR:
+  - scope key
+  - lifecycle
+  risk: critical
+- source: Token/TokenSessionInterceptor
+  targetCandidates:
+  - CSRF/idempotency service
+  requiredIR:
+  - token storage
+  - invalid result
+  - duplicate behavior
+  risk: critical
+- source: RolesInterceptor
+  targetCandidates:
+  - Spring Security authorization
+  requiredIR:
+  - allowed/disallowed roles
+  - deny result
+  risk: critical
+- source: FileUpload/ActionFileUpload
+  targetCandidates:
+  - MultipartFile + validation
+  requiredIR:
+  - limits
+  - temp
+  - field naming
+  - errors
+  risk: critical
+- source: ExceptionMappingInterceptor
+  targetCandidates:
+  - ControllerAdvice/ExceptionResolver
+  requiredIR:
+  - mapping order
+  - result
+  - logging
+  risk: critical
+- source: PreResultListener
+  targetCandidates:
+  - post-handler/pre-render hook
+  - pipeline adapter
+  requiredIR:
+  - registration order
+  - result mutation
+  risk: high
+- source: ValueStack
+  targetCandidates:
+  - explicit Model/request/session contract
+  - restricted compatibility stack
+  requiredIR:
+  - object order
+  - read/write paths
+  risk: critical
+- source: OGNL expressions
+  targetCandidates:
+  - compiled explicit access
+  - restricted expression adapter
+  requiredIR:
+  - property/method access
+  - context variables
+  risk: critical
+- source: type converters
+  targetCandidates:
+  - Converter/Formatter
+  requiredIR:
+  - scope
+  - locale
+  - failure behavior
+  risk: high
+- source: result dispatcher
+  targetCandidates:
+  - view/forward ModelAndView
+  requiredIR:
+  - location
+  - parse
+  - encoding
+  risk: high
+- source: redirect/redirectAction result
+  targetCandidates:
+  - 'RedirectView/redirect:'
+  requiredIR:
+  - params
+  - anchor
+  - status
+  - namespace
+  risk: critical
+- source: stream result
+  targetCandidates:
+  - StreamingResponseBody/ResponseEntity/resource
+  requiredIR:
+  - stream source
+  - content type/length/buffer
+  risk: critical
+- source: json/xml result
+  targetCandidates:
+  - ResponseEntity/message converter
+  requiredIR:
+  - include/exclude
+  - root
+  - status
+  - encoding
+  risk: high
+- source: chain result
+  targetCandidates:
+  - explicit orchestration
+  - chain compatibility adapter
+  requiredIR:
+  - target action
+  - namespace
+  - skip actions
+  - final result
+  risk: critical
+- source: unknown handler
+  targetCandidates:
+  - explicit fallback registry
+  requiredIR:
+  - resolution behavior
+  risk: critical
+- source: async action
+  targetCandidates:
+  - Callable/DeferredResult/WebAsyncTask
+  requiredIR:
+  - context propagation
+  - result/exception
+  risk: critical
+- source: Struts tags
+  targetCandidates:
+  - preserve taglib
+  - explicit view contract
+  requiredIR:
+  - ValueStack reads
+  - URL/form generation
+  risk: high

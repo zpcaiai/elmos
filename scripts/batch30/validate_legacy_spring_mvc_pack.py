@@ -87,7 +87,7 @@ EXTERNAL_RUNTIME_GATE_FIELDS = {
     "external_certification",
 }
 
-LOCAL_EVIDENCE_RELATIVE = Path("certification/local-execution/2026-08-26")
+LOCAL_EVIDENCE_RELATIVE = Path("certification/local-execution/2026-08-27")
 LOCAL_EVIDENCE_INDEX = LOCAL_EVIDENCE_RELATIVE / "evidence-index.json"
 EXPECTED_HARNESS_FILES = {
     "apps/java-engine-worker/src/main/java/io/elmos/worker/LocalSpringUpgradeExecutionPort.java",
@@ -108,7 +108,7 @@ CONTROLLED_TARGET_PROFILE_RESOURCES = (
         "worker_path": "apps/java-engine-worker/src/main/resources/spring-mvc/target-profile/profile.json",
         "resource": "classpath:/spring-mvc/target-profile/profile.json",
         "bytes": 3731,
-        "sha256": "4856d1c012274be15fa9339a4a11524314994ca858e2b7856fcd367fb1de63a5",
+        "sha256": "8042f1bed7cde57d13e9794b7a694437d5b12d40f0eb4948c656d942a9297ee1",
     },
     {
         "pack_path": "target-profile/scaffold/manifest.json",

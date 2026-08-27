@@ -12,6 +12,8 @@ from __future__ import annotations
 import pytest
 
 from elmos_sql_dialect.engine import translate_ddl
+from elmos_sql_dialect.models import CanonicalType, DefaultKind, Dialect
+from elmos_sql_dialect.parser import parse_create_table
 
 
 def _emit(ddl: str, source: str, target: str) -> str:
@@ -62,6 +64,26 @@ def test_unbounded_numeric_fails_closed_instead_of_rounding_to_scale_zero(target
 
 def test_parameterised_decimal_still_translates() -> None:
     assert "DECIMAL(12, 4)" in _emit("CREATE TABLE t (price NUMERIC(12,4))", "postgres", "mysql")
+
+
+def test_jsonb_literal_default_is_retained_as_a_typed_source_fact() -> None:
+    table = parse_create_table(
+        "CREATE TABLE t (payload JSONB NOT NULL DEFAULT '{}'::jsonb)", Dialect.POSTGRES
+    )
+    default = table.columns[0].default
+    assert default is not None
+    assert default.kind is DefaultKind.STRING
+    assert default.literal == "{}"
+    assert default.cast_type is not None
+    assert default.cast_type.canonical_type is CanonicalType.JSON
+    assert default.cast_type.json_binary is True
+
+
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+def test_jsonb_literal_default_does_not_get_downgraded_to_plain_json(target: str) -> None:
+    assert _blocked(
+        "CREATE TABLE t (payload JSONB NOT NULL DEFAULT '{}'::jsonb)", "postgres", target
+    ) == "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED"
 
 
 def test_decimal_precision_beyond_the_target_maximum_fails_closed() -> None:

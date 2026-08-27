@@ -1,0 +1,106 @@
+benchmarkVersion: 1.0.0
+eligibility:
+  repositoryCountMin: 3
+  locEachMin: 500000
+  oneRepositoryLocMin: 1000000
+  licenseOrAuthorizationRequired: true
+  requiredCoverage:
+  - Struts1
+  - Struts2
+  - Servlet/JSP
+  - mixed framework
+  requiredEnterpriseFeatures:
+  - multi-module
+  - external container or enterprise descriptor
+  - JNDI or managed resource
+  - stateful flows
+  - critical DB writes
+corpora:
+- id: GR-S1-LARGE
+  description: Struts1-heavy enterprise WAR/EAR
+  minimum:
+    loc: 500000
+    modules: 20
+    routes: 300
+  features:
+  - custom RequestProcessor
+  - ActionForm session flows
+  - Commons Validator
+  - Tiles/JSP
+  - JNDI
+  - container security
+  target: E4 then E5
+- id: GR-S2-LARGE
+  description: Struts2-heavy multi-module application
+  minimum:
+    loc: 500000
+    modules: 20
+    routes: 300
+  features:
+  - custom interceptor stacks
+  - OGNL/ValueStack
+  - wildcard/DMI
+  - file upload
+  - chain/stream results
+  - JSP tags
+  target: E4 then E5
+- id: GR-HYBRID-XL
+  description: 1M+ LOC mixed Struts1/Struts2/Servlet/old Spring repository
+  minimum:
+    loc: 1000000
+    modules: 50
+    routes: 800
+  features:
+  - route ownership conflicts
+  - web fragments
+  - multiple WARs
+  - shared session
+  - distributed side effects
+  - enterprise container
+  target: E4 then staged E5
+scorecard:
+  semantic:
+    routeCoverage:
+      target: 1.0
+    criticalIrCoverage:
+      target: 1.0
+    criticalUnknowns:
+      target: 0
+    httpEquivalence:
+      target: 0.999
+    criticalStateSecurityTransactionDbEffectMismatch:
+      target: 0
+  delivery:
+    firstPassCompileRate:
+      report: true
+    firstPassScenarioRate:
+      report: true
+    autoRepairIterationsP50:
+      report: true
+    machineWallClockP50P80P95:
+      report: true
+    tokenComputeStorageCost:
+      report: true
+    cacheHitRate:
+      report: true
+    manualDecisionCount:
+      report: true
+  production:
+    securityGate:
+      target: passed
+    performanceGate:
+      target: passed
+    rollbackRehearsal:
+      target: passed
+    operabilityEndpoints:
+      target:
+      - /livez
+      - /readyz
+      - /metrics
+      - /version
+antiGaming:
+- Do not exclude difficult routes from denominator without approved scope change.
+- Do not count normalized mismatches as strict equivalence.
+- Do not remove failing source tests without evidence.
+- Report all manual changes and waivers.
+- Use fixed repository snapshot and target baseline for comparable runs.

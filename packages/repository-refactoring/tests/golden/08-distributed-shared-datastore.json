@@ -1,0 +1,43 @@
+{
+  "caseId": "08-distributed-shared-datastore",
+  "description": "Two services reaching the same table is coupling, and it forbids a distributed transaction.",
+  "evidence": {
+    "distributedPlanDigest": "sha256:87c736bd2e9114d5aa41a9b054dbeb2e0333ba86a80153234272d90e04fb7ffa"
+  },
+  "failureClass": "approval-required",
+  "inputDigest": "sha256:aa3033ef34e2420585bec414395b635f53ada2cd5dcc210a6729994b6776681e",
+  "outputDigest": "sha256:87c736bd2e9114d5aa41a9b054dbeb2e0333ba86a80153234272d90e04fb7ffa",
+  "projections": {
+    "output.callPolicyFindings": [
+      {
+        "blocking": true,
+        "control": "timeout",
+        "detail": "a remote call with no timeout in view; the absence of a timeout is indistinguishable from an unbounded wait for the caller",
+        "line": 5,
+        "path": "services/billing/client.py"
+      }
+    ],
+    "output.hotPathKnowledge": "unknown",
+    "output.sharedDatastores": [
+      {
+        "detail": "more than one service reaches this table directly; extracting either side without an ownership decision leaves them coupled through the database",
+        "paths": [
+          "services/billing/client.py",
+          "services/ledger/handler.py"
+        ],
+        "services": [
+          "billing",
+          "ledger"
+        ],
+        "table": "public.ledger_entries"
+      }
+    ],
+    "output.writePattern": "local-transaction",
+    "status": "blocked"
+  },
+  "reasonCount": 4,
+  "riskClass": "R4",
+  "sideEffectsPerformed": false,
+  "skill": "distributed-system-refactor",
+  "status": "blocked"
+}

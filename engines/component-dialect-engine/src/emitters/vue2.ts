@@ -54,6 +54,9 @@ function exprSource(expr: Expr, inScript: boolean): string {
       return `${wrap(expr.left)} ${op} ${wrap(expr.right)}`;
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => exprSource(arg, inScript)).join(", ")})`;
+    case "numericFunction": return `Math.${expr.function}(${expr.args.map((arg) => exprSource(arg, inScript)).join(", ")})`;
+    case "numericPredicate": return `Number.${expr.predicate}(${exprSource(expr.operand, inScript)})`;
+    case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${exprSource(expr.operand, inScript)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
@@ -82,6 +85,10 @@ function attrSource(attr: AttrBinding): string {
 }
 
 function nodeSource(node: CNode, indent: string, lists: ReadonlyMap<string, ListPropDef>): string {
+  if (node.kind === "fragment") {
+    const childSrc = node.children.map((child) => nodeSource(child, indent + "  ", lists)).join("\n");
+    return `${indent}<template>\n${childSrc}\n${indent}</template>`;
+  }
   if (node.kind === "text") {
     if (node.value.kind === "literal" && node.value.literal.type === "string") return `${indent}${node.value.literal.value}`;
     return `${indent}{{ ${exprSource(node.value, false)} }}`;

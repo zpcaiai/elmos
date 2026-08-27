@@ -17,17 +17,29 @@ SQL 方言转写的覆盖口径现已拆开：当前迁移语料的自动转写�
 因此 100% 表示没有 SQL 单元从审计与后续动作中丢失，不表示未获证明的跨方言
 语义已经自动转换；外部执行、独立验证和认证继续保持 `NOT_RUN` / `NOT_CERTIFIED`。
 
-截至 2026-08-26，对当前 76 个真实迁移文件的最新复测为：自动转写候选
-**742/1485 = 50.0%**（源侧上界），处置覆盖 **1485/1485 = 100.0%**；本轮新增的
-便携 LIKE 子集、列对列/布尔/NOT/时间间隔 CHECK typed IR、DESC 索引排序保留、以及既有的
+截至 2026-08-27，对当前 76 个真实迁移文件的最新复测为：自动转写候选
+**1171/1485 = 78.9%**（源侧上界），处置覆盖 **1485/1485 = 100.0%**；本轮新增的
+便携 LIKE 子集、列对列/布尔/NOT/时间间隔 CHECK typed IR、类型化 TRIM/BTRIM、空值测试相等展开、
+同类型数值列加法和带 INNER JOIN 的 INSERT SELECT、DESC 索引排序保留、以及既有的
 `certified-drop-v1`、`certified-schema-v1`、便携正则 CHECK、同连接符扁平化及混合层级 CHECK 树、
 父子布尔 CHECK 树、SERIAL/BIGSERIAL 身份映射和 IEEE-754 binary64 映射均有负例/目标语法回验；同时修正了 70 条带索引修饰符语句的静默丢失风险，未将
 人工迁移或源格式复核伪装成自动转换。
 
+将 1171 条源侧候选逐条通过四个目标 emitter 的最新复测为：无目标默认命名空间映射时
+**341/1171 = 29.1%**，PostgreSQL/MySQL/Oracle/SQL Server 分别为 1171/409/402/411；
+显式声明源默认命名空间 `{"": "dbo"}` 后，SQL Server 表/列注释可走
+`sys.sp_addextendedproperty`，MySQL 在完整源列 catalogue 下使用
+`ALTER TABLE ... MODIFY COLUMN ... COMMENT`，四目标交集提升为 **391/1171 = 33.4%**，
+SQL Server 为 466；缺少完整列定义或 JSONB 列注释仍失败关闭。固定列清单、纯字面量
+`INSERT ... VALUES`、受限单源/等值 INNER JOIN `INSERT ... SELECT` 和单表 `UPDATE` 也通过
+typed DML profile 纳入，冲突策略、`UPDATE ... FROM` 和 `clock_timestamp()` 等表达式继续失败关闭。
+该数字是 target-profile emitter reachability 上界，不是实库执行、独立验证或认证证据。
+
 本轮另增 `certified-routine-v1`：纯 SQL 单表达式标量函数通过 typed IR
 生成四方言函数定义；259 个触发器、45 个 PL/pgSQL 函数、15 个
 `RETURNS TABLE`、7 个不支持的参数签名、4 个 `OR REPLACE`、3 个带 schema
-限定的函数均保留机器可读 routine blocker，未伪装成成功转换。428 条本地测试通过。真实数据库执行、
+限定的函数均保留机器可读 routine blocker，未伪装成成功转换。函数/约束注释和 routine 权限保留完整签名，
+非 PostgreSQL 无精确目标身份时失败关闭。完整 SQL 工程测试通过；真实数据库执行、
 独立验证和认证仍为 `NOT_RUN` / `NOT_CERTIFIED`。
 
 ## 业务线状态
@@ -46,7 +58,7 @@ SQL 方言转写的覆盖口径现已拆开：当前迁移语料的自动转写�
 | 用户操作日志与生产运营管理端 | 根布局采集器、Web BFF 审计 proxy、control-plane 全 API 拦截器、V50/V51 双存储、企业 OIDC、`/admin` | 浏览器隐私性能遥测与不可删除服务端审计分离；BFF 每个业务 API 在执行前写审计，control-plane 每个 API 写执行前/完成结果和耗时；企业会话权限映射真实租户/Actor；18 条业务线 SLO、告警、事件、负责人、通知 outbox、性能/Bug 诊断提案、乐观并发、审批、摘要绑定 SCM 计划、30 天保留证据与自动任务闭环；输入、Token、查询、请求体、错误原文和源码均不采集 | `REPOSITORY_CLOSED` | 真实 IdP/凭证轮换执行、外部告警接收、真实 SCM 补丁/测试/PR/部署、生产量级容量成本、隐私评审和值班/故障演练保持 `NOT_RUN` |
 | 运维、部署与可观测性 | 18 个运行时服务、24 个 Compose 服务、Web/Runner 健康检查、runtime operability validator | Web 到 control-plane 路由闭环；名称/端口唯一；Java/.NET/TypeScript 公开错误边界扫描；13 个任务控制器强制 404/409；项目生成任务使用租户目录原子持久化、重启失败关闭、0600 Secret 文件、维护期拒绝写入、内容寻址备份/逐文件校验/静默恢复；非 root 只读 Web 容器声明健康探针 | `REPOSITORY_CLOSED` | 真实生产部署、外部 Secret Provider、SLO/告警值班、离机保留、生产 RPO/RTO、跨区 DR 和故障演练保持 `NOT_RUN` |
 | 产品商业化 B34-B56A 与 Convergence | commercialization UI/API、Product Skills、closure/convergence control plane | 产品闭环/收敛 Skills 的来源、摘要、接口和反伪造校验通过；CI 与 `production-readiness-check` 都覆盖 Batch 97-104 和 closure/convergence；缺失外证时 gate 返回 `BLOCKED` | `REPOSITORY_CLOSED` | 至少两个独立设计伙伴、独立审查、客户验收、单位经济性、GA/生产批准保持 `NOT_RUN` |
-| SQL 方言与本地 routine 转写 `certified-ddl-v1` + `certified-alter-v1` + `certified-routine-v1` + typed object routes | `engines/sql-dialect-engine` CLI、`make sql-dialect` | PostgreSQL/MySQL/Oracle/SQL Server 四方言 12 条方向；DDL、ALTER、显式 namespace mapping、视图、表/列注释、表权限、标量函数、受限 OUT/INOUT 过程、简单 `RETURNS TABLE` 函数与 PostgreSQL trigger metadata 通过真实 sqlglot AST、typed IR 和逐厂商 emitter 转写；JSON/plain binary、SERIAL/BIGSERIAL、DECIMAL 精度与索引语义按目标能力保守映射；PL/pgSQL 副作用、动态 SQL、事务控制、RLS、JSONB/数组和未闭合目标路线均返回机器可读 blocker；扫描器实测自动候选 **742/1485 = 50.0%**，处置覆盖 **1485/1485 = 100.0%**；428 条本地测试、ruff/mypy 通过 | `REPOSITORY_CLOSED`（仅限明确 profile 的已证明子集） | Oracle/SQL Server 的 routine 语法仍需真实目标执行，Postgres/MySQL routine 也尚未做外部数据库执行；外部执行、独立验证与认证保持 `NOT_RUN` / `NOT_CERTIFIED` |
+| SQL 方言与本地 routine 转写 `certified-ddl-v1` + `certified-alter-v1` + `certified-insert-v1` + `certified-dml-v1` + `certified-routine-v1` + typed object routes | `engines/sql-dialect-engine` CLI、`make sql-dialect` | PostgreSQL/MySQL/Oracle/SQL Server 四方言 12 条方向；DDL、ALTER、固定列纯字面量 INSERT、受限单源/等值 INNER JOIN `INSERT ... SELECT`、单表 `UPDATE`、显式 namespace mapping、视图、表/列/函数/约束注释、保留完整签名的 routine 权限、表权限、标量函数、受限 OUT/INOUT 过程、简单 `RETURNS TABLE` 函数与 PostgreSQL trigger metadata 通过真实 sqlglot AST、typed IR 和逐厂商 emitter 转写；SQL Server 表/列注释在显式 schema profile 下使用 `sys.sp_addextendedproperty`，固定边界 ASCII regex 在 SQL Server 使用 binary-collation lowering；MySQL 表注释使用 `ALTER TABLE ... COMMENT`，完整源列 catalogue 下列注释使用 `ALTER TABLE ... MODIFY COLUMN ... COMMENT`，缺少完整列定义时失败关闭；JSON/plain binary、SERIAL/BIGSERIAL、DECIMAL 精度与索引语义按目标能力保守映射；相邻 PostgreSQL 注释字面量和 `COMMENT ON CONSTRAINT` 语法缺口仅做严格词法合并/兼容解析后重新走 typed IR；PL/pgSQL 副作用、动态 SQL、事务控制、联接与冲突策略、RLS、JSONB/数组和未闭合目标路线均返回机器可读 blocker；扫描器实测自动候选 **1171/1485 = 78.9%**，默认无 namespace profile 的四目标 emitter reachability **341/1171 = 29.1%**，显式 `{"": "dbo"}` profile 为 **391/1171 = 33.4%**，源 SQL 处置覆盖 **1485/1485 = 100.0%**；新增 13 个国产数据库目标（DM8、KingbaseES、openGauss、TiDB、GBase 8s/8c/8a、HighGo/HGDB、OceanBase 双模式、GaussDB 双模式、GoldenDB）逐目标 route ledger 为 **19305/19305 = 100.0%**，但这些目标仍是 `SPEC_ONLY`，未验证 target adapter 不发射目标 SQL；完整 SQL 工程测试、ruff/mypy 通过 | `REPOSITORY_CLOSED`（仅限明确 profile 的已证明子集；国产目标为 route accounting） | Oracle/SQL Server 的 routine 语法仍需真实目标执行，Postgres/MySQL routine 也尚未做外部数据库执行；国产目标 renderer、实库执行、独立验证与认证均保持 `NOT_RUN` / `NOT_CERTIFIED` |
 | 大前端组件转写 `certified-component-v1` | `engines/component-dialect-engine` CLI、仓库级流水线、`make component-dialect` | 10 个框架（React/TypeScript/Vue 3/Vue 2/Angular/Svelte/React Native/微信小程序/ArkUI/Flutter）、6 个可作源、**54 条方向对全部真转写**；解析全部走各自官方真编译器，发射为逐框架手写；每次发射由目标框架**真编译器**回验；React/TypeScript/Vue 3/Vue 2/Svelte 五端**真 SSR 渲染并比对规范化 DOM**（54 对中 20 对拿到行为等价证据）；Vue 3/Svelte/Angular 往返 canonical IR **精确相等**（含列表渲染）；支持**组件组合**（子组件引用：Angular 按 selector 且必须进 standalone `imports`、微信必须进 `usingComponents`、Vue 2 必须进 `components`——三者写错都是「编译通过但渲染空白」）、**单文件多组件**（逐组件隔离失败，一个组件越界不牵连同文件其它组件）、**语义容器标签**与**同文件具名 props 类型**；提供**转换前覆盖率预检**（`scan`：纯解析、不写盘、不选目标端，输出「N 个组件 / M 个在子集内 / 阻塞原因排名」的 JSON+Markdown 双格式报告，并在报告正文声明该数字是上界；对本仓库自带的 `apps/web-console` 真实代码实测为 **8/33（24.2%）**，另有 50 个返回非 JSX 的辅助函数被正确判定为「非组件」并排除出分母；首次实测为 0/28，正是该读数驱动了后续四轮子集扩容）；提供**人工接管工作流**（`handoff`：指派、标记手工移植、`handoff.json` 随工程入库；重跑**绝不覆盖**手写代码，源文件变更后以 `SOURCE_CHANGED_SINCE_PORT` 判定手工移植已过期并把 `deliveryStatus` 压回 `INCOMPLETE`；人工产物不记任何引擎证据，故 `status` 仍为 `PARTIAL`）；仓库级流水线产出**真能 `vite build` 的工程** + 逐文件 `coverage-report.json`，子集外产出大声抛错的占位桩且整体记 `PARTIAL`；263 条真实测试、`tsc` 干净 | `REPOSITORY_CLOSED`（仅限 `certified-component-v1` 子集） | ArkUI（ArkTS `struct` 无独立解析器）与 Flutter（需 Dart SDK）**只能作目标端**；Angular/React Native/微信小程序/ArkUI/Flutter 缺可得运行时，执行级验证恒为 `EXECUTION_NOT_AVAILABLE`；子集外构造（对象 props、其余 hooks、slots、路由、样式体系、异步数据）；Vue 2/微信小程序的运行期 props 只记 `Array` 而无元素类型，故**只能作列表目标端、不能作列表源端**（`CERTIFIED_COMPONENT_UNRECOVERABLE_LIST_ELEMENT`）、真实客户整库迁移、独立验证与外部认证保持 `NOT_RUN` |
 
 ## 第二轮横向缺陷与解决方案

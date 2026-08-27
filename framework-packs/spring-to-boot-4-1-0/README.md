@@ -12,11 +12,39 @@ final 4.1.0 pin. A source version is never guessed: the engine must resolve an
 exact dependency/BOM/plugin version and an exact source JDK before selecting a
 route.
 
-The pack is `experimental` and every route is `NOT_RUN`. It supplies a real
-execution recipe and fail-closed obligations, not a certification claim. The
+The pack remains `experimental`. Two exact Maven tuples have now passed local
+engineering execution: Boot 2.7.18 / Java 17 and Boot 3.5.3 / Java 21 to Boot
+4.1.0 / Java 21. Every other route and every unexecuted source version remains
+`NOT_RUN`. It supplies a real execution recipe and fail-closed obligations, not a certification claim. The
 target requires Spring Framework 7.0.8, Spring Security 7.1.0, Hibernate ORM
 7.4.1.Final, Tomcat 11.0.22, Java 21 and a compatible Maven or Gradle build.
 Security, data, transactions, messaging, cache, scheduler, XML/web.xml,
 JSP/view and custom auto-configuration behavior remain source-specific FCM
 obligations until a real target build, startup and independent holdout are
 recorded.
+
+To inspect the next external-gate prerequisites without changing certification
+state, run:
+
+```text
+python3 scripts/operations/assess_spring_boot_4_1_external_readiness.py \
+  --engine /absolute/path/to/rootless/docker-or-podman
+```
+
+This read-only audit reports `NOT_READY_FOR_EXTERNAL_GATE` until a protected
+rootless runner preflight, physically separate holdout and representative
+repository evidence, and a separate verifier receipt are available. A
+preflight observation never becomes external execution evidence, and the
+audit never writes certification evidence. The checked-in local execution
+receipt may change the protected-runner diagnostic to
+`PREFLIGHT_AND_LOCAL_ROOTLESS_EXECUTION_RECORDED_EXTERNAL_NOT_RUN`; it is a
+development reference fixture result only and does not change any external
+`NOT_RUN` boundary or certification state.
+
+The current local receipt records a real Boot 3.5.3 / Java 21 source build,
+OpenRewrite transformation, Boot 4.1.0 / Java 21 target build, source and
+target startup probes, and a rootless Podman target startup with cleanup. Its
+raw route and runner receipts are content-addressed beside the summary under
+`certification/local-execution/2026-08-27/`. This is local engineering
+evidence for the reference fixture, not a customer repository, independent
+holdout, representative corpus, independent verification, or certification.

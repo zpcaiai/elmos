@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/checkpoint.schema.json",
+  "title": "RefactorCheckpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "checkpointId",
+    "runId",
+    "stepId",
+    "sequence",
+    "createdAt",
+    "stateVersion",
+    "workspaceTreeDigest",
+    "artifactManifestDigest",
+    "sideEffectCursor"
+  ],
+  "properties": {
+    "checkpointId": {
+      "type": "string"
+    },
+    "runId": {
+      "type": "string"
+    },
+    "stepId": {
+      "type": "string"
+    },
+    "shardId": {
+      "type": "string"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "stateVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "workspaceTreeDigest": {
+      "type": "string"
+    },
+    "artifactManifestDigest": {
+      "type": "string"
+    },
+    "sideEffectCursor": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "resumeToken": {
+      "type": "string"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

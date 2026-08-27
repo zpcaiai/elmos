@@ -1,0 +1,321 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/semantic-ir.schema.json",
+  "title": "SemanticIndexSnapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "snapshotId",
+    "repositories",
+    "entities",
+    "relationships",
+    "coverage"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.dev/v1"
+    },
+    "kind": {
+      "const": "SemanticIndexSnapshot"
+    },
+    "snapshotId": {
+      "type": "string"
+    },
+    "irVersion": {
+      "type": "string"
+    },
+    "repositories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "repositoryId",
+          "revision",
+          "treeDigest"
+        ],
+        "properties": {
+          "repositoryId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "treeDigest": {
+            "type": "string"
+          },
+          "adapterDigests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entity"
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/relationship"
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "resolution",
+        "typeAttribution",
+        "buildGraph",
+        "testLink",
+        "unknownRiskWeight"
+      ],
+      "properties": {
+        "resolution": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "typeAttribution": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "buildGraph": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "testLink": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "unknownRiskWeight": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "partitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "partitionId": {
+            "type": "string"
+          },
+          "digest": {
+            "type": "string"
+          },
+          "artifactUri": {
+            "type": "string"
+          },
+          "entityCount": {
+            "type": "integer"
+          },
+          "relationshipCount": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "sourceRange": {
+      "type": "object",
+      "required": [
+        "repositoryId",
+        "path",
+        "startLine",
+        "startColumn",
+        "endLine",
+        "endColumn"
+      ],
+      "properties": {
+        "repositoryId": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "startLine": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "startColumn": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "endLine": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "endColumn": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "language",
+        "name",
+        "confidence",
+        "provenance"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "repository",
+            "module",
+            "build-target",
+            "source-file",
+            "generated-file",
+            "namespace",
+            "package",
+            "type",
+            "function",
+            "method",
+            "property",
+            "field",
+            "variable",
+            "macro",
+            "template",
+            "api-contract",
+            "event-contract",
+            "database-object",
+            "config-key",
+            "test",
+            "deployment-unit"
+          ]
+        },
+        "language": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "qualifiedName": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        },
+        "sourceRange": {
+          "$ref": "#/$defs/sourceRange"
+        },
+        "visibility": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "contentDigest": {
+          "type": "string"
+        },
+        "nativePayloadRef": {
+          "type": "string"
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "adapter",
+            "version"
+          ],
+          "properties": {
+            "adapter": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            },
+            "toolchainDigest": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "from",
+        "to",
+        "confidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "declares",
+            "references",
+            "calls",
+            "overrides",
+            "implements",
+            "inherits",
+            "imports",
+            "exports",
+            "reads",
+            "writes",
+            "publishes",
+            "subscribes",
+            "serializes",
+            "persists",
+            "tests",
+            "owns",
+            "builds",
+            "deploys",
+            "generates"
+          ]
+        },
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        },
+        "sourceRange": {
+          "$ref": "#/$defs/sourceRange"
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    }
+  }
+}

@@ -90,7 +90,7 @@
     ],
     "execution_status": "PASSED_LOCAL",
     "execution_scope": "LOCAL_ENGINEERING_EXACT_FIXTURE_ONLY",
-    "evidence_ref": "certification/local-execution/2026-08-26/evidence-index.json"
+    "evidence_ref": "certification/local-execution/2026-08-27/evidence-index.json"
   },
   "startup": {
     "command": "java -jar target/<verified-boot-artifact>.war --server.address=127.0.0.1 --server.port=<ephemeral-port>",
@@ -98,7 +98,7 @@
     "shutdown_check": "SIGTERM followed by bounded graceful completion",
     "execution_status": "PASSED_LOCAL",
     "execution_scope": "LOCAL_ENGINEERING_EXACT_FIXTURE_ONLY",
-    "evidence_ref": "certification/local-execution/2026-08-26/evidence-index.json"
+    "evidence_ref": "certification/local-execution/2026-08-27/evidence-index.json"
   },
   "manual_obligations": [
     "existing corporate Maven parents require an approved parent/BOM strategy",

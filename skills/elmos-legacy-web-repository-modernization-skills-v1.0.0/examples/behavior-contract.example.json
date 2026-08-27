@@ -1,0 +1,72 @@
+{
+  "contractVersion": "1.0.0",
+  "repositorySnapshotId": "snapshot-demo-001",
+  "scenarios": [
+    {
+      "id": "scenario:create-order-success",
+      "name": "authenticated user creates order",
+      "risk": "critical",
+      "preconditions": [
+        {
+          "dbFixture": "customer-1"
+        },
+        {
+          "session": {
+            "loginUser": "user-1"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "id": "post-create",
+          "request": {
+            "method": "POST",
+            "path": "/legacy/orders/create.do",
+            "form": {
+              "customerId": "1"
+            }
+          },
+          "clock": "2026-08-26T09:00:00Z",
+          "identity": {
+            "session": "s1",
+            "user": "user-1"
+          },
+          "expectedState": {
+            "session.currentOrder": "present",
+            "db.orders.delta": 1
+          }
+        }
+      ],
+      "assertions": [
+        {
+          "path": "response.status",
+          "op": "eq",
+          "value": 200
+        },
+        {
+          "path": "dispatch.kind",
+          "op": "eq",
+          "value": "forward"
+        },
+        {
+          "path": "dispatch.target",
+          "op": "eq",
+          "value": "/WEB-INF/jsp/order/success.jsp"
+        },
+        {
+          "path": "effects.database.orders.insert.count",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "normalizers": [
+        "NORM-TRACE-ID",
+        "NORM-SESSION-ID"
+      ],
+      "evidenceRefs": [
+        "endpoint:orders-create",
+        "tx:create-order"
+      ]
+    }
+  ]
+}

@@ -8,6 +8,8 @@ cross-dialect generator.
 
 from __future__ import annotations
 
+from typing import Protocol
+
 from .dialects import (
     check_operator_sql,
     render_auto_increment_suffix,
@@ -26,18 +28,43 @@ from .models import (
     CheckExpression,
     CheckNotExpression,
     CheckOperator,
+    CheckValueFunction,
+    CheckValueOperator,
     Column,
     Dialect,
     DialectError,
+    DmlAggregate,
+    DmlCoalesce,
+    DmlColumn,
+    DmlCurrentTimestamp,
+    DmlExpression,
+    DmlLiteral,
+    DmlPredicate,
     DropColumn,
     DropConstraint,
     DropTable,
     ForeignKey,
     Index,
+    InsertLiteral,
+    InsertSelectStatement,
+    InsertStatement,
     RenameColumn,
     Schema,
     Table,
+    UpdateStatement,
 )
+
+
+class ColumnCatalogLike(Protocol):
+    """Minimal source-catalogue contract used by context-aware emitters."""
+
+    def type_of(self, table: str, column: str) -> CanonicalType | None: ...
+
+
+class CommentColumnCatalogLike(Protocol):
+    """Full source column definition needed by MySQL column comments."""
+
+    def column_of(self, table_schema: str | None, table: str, column: str) -> Column | None: ...
 
 
 def _render_literal(value: str, is_string: bool) -> str:
@@ -55,37 +82,121 @@ def _render_boolean(value: str, dialect: Dialect) -> str:
     return "TRUE" if value == "true" else "FALSE"
 
 
+def _render_tsql_regex_check(column: str, pattern: str) -> str:
+    """Lower a small, exact ASCII-regex subset to SQL Server predicates.
+
+    SQL Server has no regular-expression CHECK predicate. These lowerings are
+    deliberately limited to patterns whose language is a fixed ASCII
+    character set with an explicit character length. The conversion first
+    converts to NVARCHAR and applies a binary collation, then checks byte
+    length so SQL Server's trailing-space behaviour cannot widen the accepted
+    language. Patterns outside this table remain blocked.
+    """
+    value = f"CONVERT(nvarchar(max), {column}) COLLATE Latin1_General_100_BIN2"
+
+    fixed_patterns = {
+        "^[0-9a-f]{64}$": ("[0-9a-f]", 64),
+        "^[0-9a-f]{40}$": ("[0-9a-f]", 40),
+    }
+    if pattern in fixed_patterns:
+        character_class, length = fixed_patterns[pattern]
+        return (
+            f"(DATALENGTH(CONVERT(nvarchar(max), {column})) = {length * 2} "
+            f"AND {value} NOT LIKE N'%[^{character_class}]%')"
+        )
+
+    prefix_patterns = {
+        "^sha256:[0-9a-f]{64}$": ("sha256:", "[0-9a-f]", 64),
+    }
+    if pattern in prefix_patterns:
+        prefix, character_class, suffix_length = prefix_patterns[pattern]
+        total_length = len(prefix) + suffix_length
+        suffix = f"SUBSTRING({value}, {len(prefix) + 1}, {suffix_length})"
+        return (
+            f"(DATALENGTH(CONVERT(nvarchar(max), {column})) = {total_length * 2} "
+            f"AND LEFT({value}, {len(prefix)}) = N'{prefix}' "
+            f"AND {suffix} NOT LIKE N'%[^{character_class}]%')"
+        )
+
+    bounded_classes = {
+        "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$": (2, 256, "[A-Za-z0-9._:-]"),
+        "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$": (2, 128, "[A-Za-z0-9._:-]"),
+    }
+    if pattern in bounded_classes:
+        minimum_bytes, maximum_bytes, character_class = bounded_classes[pattern]
+        return (
+            f"(DATALENGTH(CONVERT(nvarchar(max), {column})) BETWEEN "
+            f"{minimum_bytes} AND {maximum_bytes} "
+            f"AND LEFT({value}, 1) LIKE N'[A-Za-z0-9]' "
+            f"AND {value} NOT LIKE N'%[^{character_class}]%')"
+        )
+
+    if pattern == "^[0-9]+$":
+        return (
+            f"(DATALENGTH(CONVERT(nvarchar(max), {column})) >= 2 "
+            f"AND {value} NOT LIKE N'%[^0-9]%')"
+        )
+
+    raise DialectError(
+        "CERTIFIED_DDL_REGEX_CHECK_UNREACHABLE_ON_TARGET",
+        "SQL Server has no regex CHECK predicate; only the bounded ASCII regex "
+        "patterns with a proven binary-collation lowering are supported",
+    )
+
+
 def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> str:
+    left = (
+        f"{comparison.column_qualifier}.{comparison.column}"
+        if comparison.column_qualifier is not None
+        else comparison.column
+    )
+    if comparison.left_expression is not None:
+        if comparison.left_expression.function is CheckValueFunction.TRIM:
+            left = f"TRIM({left})"
+        elif comparison.left_expression.operator is CheckValueOperator.ADD:
+            right = comparison.left_expression.right_column
+            assert right is not None
+            left = f"({left} + {right})"
+        else:  # pragma: no cover - closed enum, defensive for future extensions
+            function = comparison.left_expression.function
+            value_operator = comparison.left_expression.operator
+            value_name = (
+                function.value
+                if function is not None
+                else value_operator.value
+                if value_operator is not None
+                else "unknown"
+            )
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                f"unsupported CHECK value function {value_name}",
+            )
     operator = comparison.operator
     if operator is CheckOperator.IS_TRUE:
-        return f"{comparison.column} = {_render_boolean('true', dialect)}"
+        return f"{left} = {_render_boolean('true', dialect)}"
     if operator in NULLARY_CHECK_OPERATORS:
-        return f"{comparison.column} {operator.value}"
+        return f"{left} {operator.value}"
     if operator is CheckOperator.IN:
         members = ", ".join(
             (_render_boolean(item.value, dialect) if item.is_boolean else _render_literal(item.value, item.is_string))
             for item in comparison.literals
         )
-        return f"{comparison.column} IN ({members})"
+        return f"{left} IN ({members})"
     if operator is CheckOperator.LIKE:
-        return f"{comparison.column} LIKE {_render_literal(comparison.literal, True)}"
+        return f"{left} LIKE {_render_literal(comparison.literal, True)}"
     if operator is CheckOperator.BETWEEN:
         low, high = comparison.literals
         return (
-            f"{comparison.column} BETWEEN {_render_literal(low.value, low.is_string)}"
+            f"{left} BETWEEN {_render_literal(low.value, low.is_string)}"
             f" AND {_render_literal(high.value, high.is_string)}"
         )
     if operator is CheckOperator.MATCHES_REGEX:
         pattern = _render_literal(comparison.literal, True)
         if dialect is Dialect.TSQL:
-            raise DialectError(
-                "CERTIFIED_DDL_REGEX_CHECK_UNREACHABLE_ON_TARGET",
-                "SQL Server has no regex CHECK predicate; LIKE cannot preserve regex "
-                "anchors, bounded quantifiers, or character classes",
-            )
+            return _render_tsql_regex_check(left, comparison.literal)
         if dialect is Dialect.POSTGRES:
-            return f"{comparison.column} ~ {pattern}"
-        return f"REGEXP_LIKE({comparison.column}, {pattern}, 'c')"
+            return f"{left} ~ {pattern}"
+        return f"REGEXP_LIKE({left}, {pattern}, 'c')"
     if comparison.right_interval_column is not None:
         assert comparison.right_interval_value is not None
         assert comparison.right_interval_unit is not None
@@ -99,15 +210,20 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
             right = f"{comparison.right_interval_column} + INTERVAL '{value}' {unit}"
         else:
             right = f"DATEADD({unit}, {value}, {comparison.right_interval_column})"
-        return f"{comparison.column} {check_operator_sql(operator)} {right}"
+        return f"{left} {check_operator_sql(operator)} {right}"
     if comparison.right_column is not None:
-        return f"{comparison.column} {check_operator_sql(operator)} {comparison.right_column}"
+        right = (
+            f"{comparison.right_column_qualifier}.{comparison.right_column}"
+            if comparison.right_column_qualifier is not None
+            else comparison.right_column
+        )
+        return f"{left} {check_operator_sql(operator)} {right}"
     literal = (
         _render_boolean(comparison.literal, dialect)
         if comparison.literal_is_boolean
         else _render_literal(comparison.literal, comparison.literal_is_string)
     )
-    return f"{comparison.column} {check_operator_sql(comparison.operator)} {literal}"
+    return f"{left} {check_operator_sql(comparison.operator)} {literal}"
 
 
 def _render_column(column: Column, dialect: Dialect) -> str:
@@ -210,6 +326,32 @@ def _require_mysql_text_rules(table: Table) -> None:
             "CERTIFIED_DDL_MYSQL_TEXT_KEY_REQUIRES_PREFIX",
             f"MySQL TEXT key columns require an index prefix: {', '.join(offending)}. "
             "A prefix weakens equality/uniqueness semantics, so this translator will not invent "
+            "one; use a bounded VARCHAR or an explicitly approved target-specific mapping",
+        )
+
+
+def _require_mysql_catalog_text_keys(
+    catalog: ColumnCatalogLike | None,
+    table: str,
+    columns: tuple[str, ...],
+) -> None:
+    """Refuse known TEXT keys when a surrounding source catalogue is supplied.
+
+    Index and standalone constraint statements do not carry column types. A
+    missing catalogue entry therefore remains unknown and is not treated as a
+    pass; the single-statement API keeps its historical behaviour, while a
+    repository/migration caller can opt into this stronger check.
+    """
+    if catalog is None:
+        return
+    offending = sorted(
+        column for column in columns if catalog.type_of(table, column) is CanonicalType.TEXT
+    )
+    if offending:
+        raise DialectError(
+            "CERTIFIED_DDL_MYSQL_TEXT_KEY_REQUIRES_PREFIX",
+            f"MySQL TEXT key columns require an index prefix: {', '.join(offending)}. "
+            "A prefix weakens equality/uniqueness semantics, so the translator will not invent "
             "one; use a bounded VARCHAR or an explicitly approved target-specific mapping",
         )
 
@@ -334,7 +476,9 @@ def emit_create_table(table: Table, dialect: Dialect) -> str:
     return f"CREATE TABLE{existence} {_object_name(table.schema, table.name)} (\n    {body}\n)"
 
 
-def emit_create_index(index: Index, dialect: Dialect) -> str:
+def emit_create_index(index: Index, dialect: Dialect, catalog: ColumnCatalogLike | None = None) -> str:
+    if dialect is Dialect.MYSQL:
+        _require_mysql_catalog_text_keys(catalog, index.table, tuple(column.name for column in index.columns))
     if index.predicate is not None and dialect not in (Dialect.POSTGRES, Dialect.TSQL):
         raise DialectError(
             "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET",
@@ -413,6 +557,79 @@ def emit_create_schema(schema: Schema, dialect: Dialect) -> str:
     return f"CREATE SCHEMA{existence} {schema.name}"
 
 
+def _render_insert_literal(value: InsertLiteral, dialect: Dialect) -> str:
+    if value.is_null:
+        return "NULL"
+    assert value.value is not None
+    if value.is_boolean:
+        return _render_boolean(value.value, dialect)
+    return _render_literal(value.value, value.is_string)
+
+
+def emit_insert(insert: InsertStatement, dialect: Dialect) -> str:
+    """Emit a fixed-column literal seed without changing its row set."""
+    columns = ", ".join(insert.columns)
+    rows = ",\n    ".join(
+        "(" + ", ".join(_render_insert_literal(value, dialect) for value in row) + ")"
+        for row in insert.rows
+    )
+    return f"INSERT INTO {_object_name(insert.schema, insert.table)} ({columns}) VALUES {rows}"  # noqa: S608
+
+
+def _render_dml_expression(value: DmlExpression, dialect: Dialect) -> str:
+    if isinstance(value, DmlColumn):
+        return f"{value.qualifier}.{value.name}" if value.qualifier is not None else value.name
+    if isinstance(value, DmlLiteral):
+        return _render_insert_literal(value.value, dialect)
+    if isinstance(value, DmlCurrentTimestamp):
+        return "SYSDATETIME()" if dialect is Dialect.TSQL else "CURRENT_TIMESTAMP"
+    if isinstance(value, DmlCoalesce):
+        return f"COALESCE({value.column.name}, {_render_dml_expression(value.fallback, dialect)})"
+    if isinstance(value, DmlAggregate):
+        return f"{value.function.value}({value.column.name})"
+    if isinstance(value, DmlPredicate):
+        return _render_check_expression(value.predicate, dialect)
+    raise TypeError(f"unhandled DML IR node: {type(value).__name__}")  # pragma: no cover
+
+
+def emit_insert_select(insert: InsertSelectStatement, dialect: Dialect) -> str:
+    """Emit the bounded INSERT ... SELECT profile."""
+    columns = ", ".join(insert.columns)
+    expressions = ", ".join(_render_dml_expression(item, dialect) for item in insert.expressions)
+    source = _object_name(insert.source_schema, insert.source_table)
+    if insert.source_alias is not None:
+        source += f" {insert.source_alias}"
+    rendered = (
+        f"INSERT INTO {_object_name(insert.schema, insert.table)} ({columns}) "  # noqa: S608
+        f"SELECT {expressions} FROM {source}"  # noqa: S608
+    )
+    for join in insert.joins:
+        conditions = " AND ".join(
+            f"{_render_dml_expression(condition.left, dialect)} = "
+            f"{_render_dml_expression(condition.right, dialect)}"
+            for condition in join.conditions
+        )
+        rendered += (
+            f" INNER JOIN {_object_name(join.schema, join.table)} {join.alias} ON {conditions}"
+        )
+    if insert.predicate is not None:
+        rendered += f" WHERE {_render_check_expression(insert.predicate, dialect)}"
+    if insert.group_by:
+        rendered += f" GROUP BY {', '.join(insert.group_by)}"
+    return rendered  # noqa: S608
+
+
+def emit_update(update: UpdateStatement, dialect: Dialect) -> str:
+    """Emit a single-table UPDATE without inventing a target row source."""
+    assignments = ", ".join(
+        f"{item.target} = {_render_dml_expression(item.value, dialect)}" for item in update.assignments
+    )
+    rendered = f"UPDATE {_object_name(update.schema, update.table)} SET {assignments}"  # noqa: S608
+    if update.predicate is not None:
+        rendered += f" WHERE {_render_check_expression(update.predicate, dialect)}"
+    return rendered  # noqa: S608
+
+
 def _render_check_clause(check: CheckConstraint, dialect: Dialect) -> str:
     comparison_sql = (
         _render_check_expression(check.expression, dialect)
@@ -428,7 +645,11 @@ def _named(name: str | None, clause: str) -> str:
     return f"CONSTRAINT {name} {clause}" if name else clause
 
 
-def emit_alter_table(alter: AlterTable, dialect: Dialect) -> str:
+def emit_alter_table(
+    alter: AlterTable,
+    dialect: Dialect,
+    catalog: ColumnCatalogLike | None = None,
+) -> str:
     """Render one certified-alter-v1 model in the target dialect.
 
     Two rules here are NOT enforceable by the syntax-validation leg, because
@@ -503,6 +724,10 @@ def emit_alter_table(alter: AlterTable, dialect: Dialect) -> str:
                         "an index prefix. A prefix weakens equality semantics, so the translator "
                         "will not invent one",
                     )
+            if dialect is Dialect.MYSQL and action.foreign_key is not None:
+                _require_mysql_catalog_text_keys(
+                    catalog, action.foreign_key.ref_table, action.foreign_key.ref_columns
+                )
             column_sql = _render_column(action.column, dialect)
             if action.foreign_key is not None:
                 reference = f" REFERENCES {_object_name(action.foreign_key.ref_schema, action.foreign_key.ref_table)}"
@@ -544,10 +769,21 @@ def emit_alter_table(alter: AlterTable, dialect: Dialect) -> str:
 
         elif isinstance(action, AddConstraint):
             if action.primary_key:
+                if dialect is Dialect.MYSQL:
+                    _require_mysql_catalog_text_keys(catalog, alter.table, action.primary_key)
                 clause = f"PRIMARY KEY ({', '.join(action.primary_key)})"
             elif action.unique:
+                if dialect is Dialect.MYSQL:
+                    _require_mysql_catalog_text_keys(catalog, alter.table, action.unique)
                 clause = f"UNIQUE ({', '.join(action.unique)})"
             elif action.foreign_key is not None:
+                if dialect is Dialect.MYSQL:
+                    _require_mysql_catalog_text_keys(
+                        catalog, alter.table, action.foreign_key.columns
+                    )
+                    _require_mysql_catalog_text_keys(
+                        catalog, action.foreign_key.ref_table, action.foreign_key.ref_columns
+                    )
                 clause = _render_foreign_key_clause(action.foreign_key, dialect)
             else:
                 assert action.check is not None  # AddConstraint.__post_init__ guarantees one is set

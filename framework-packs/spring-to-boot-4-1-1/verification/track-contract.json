@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "contract_key": "spring-to-boot-4-1-1-track-contract",
+  "pack_key": "spring-to-boot-4-1-1",
+  "status": "PREPARED_NOT_RUN",
+  "authority": "This is a declarative execution contract. It does not execute a build, start a process, authorize provider access, create evidence, or certify the Pack.",
+  "target": {
+    "profile_key": "spring-to-boot-4-1-1-java-21",
+    "target_spring_boot": "4.1.1",
+    "target_java": "21",
+    "route_source": "version-matrix.json#tuples[*]",
+    "target_profile": "target-profile/profile.json",
+    "provider_lock": "target-profile/dependency-locks/spring-boot-4.1.1.properties",
+    "feature_matrix": "target-profile/feature-matrix.json",
+    "fcm": "contracts/framework-contract-model.json"
+  },
+  "failure_policy": "FAIL_CLOSED",
+  "provider_domain_policy": {
+    "source_profile_required": true,
+    "target_provider_version_lock_required": true,
+    "unsupported_or_unresolved_semantics": "NOT_RUN",
+    "domain_overlap": "FAIL_CLOSED",
+    "static_mapping_is_not_runtime_evidence": true
+  },
+  "provider_domains": [
+    {
+      "id": "security",
+      "feature_ids": ["security-web", "security-method-oauth2"],
+      "target_profile_keys": ["spring_security"],
+      "source_profile_required": true,
+      "unresolved_provider_profiles": [],
+      "status": "NOT_RUN",
+      "required_evidence_roles": ["source-security-profile", "target-security-profile", "security-oracle", "negative-path-results"]
+    },
+    {
+      "id": "database",
+      "feature_ids": ["data-jpa", "data-jdbc", "data-r2dbc", "data-redis", "data-document"],
+      "target_profile_keys": ["persistence"],
+      "source_profile_required": true,
+      "unresolved_provider_profiles": ["spring-jdbc", "spring-r2dbc", "spring-data-redis", "spring-data-document"],
+      "status": "NOT_RUN",
+      "required_evidence_roles": ["source-database-profile", "target-database-profile", "data-reconciliation", "query-oracle"]
+    },
+    {
+      "id": "transaction",
+      "feature_ids": ["transactions"],
+      "target_profile_keys": ["persistence"],
+      "source_profile_required": true,
+      "unresolved_provider_profiles": [],
+      "status": "NOT_RUN",
+      "required_evidence_roles": ["transaction-schedule", "isolation-lock-oracle", "rollback-results", "duplicate-side-effect-results"]
+    },
+    {
+      "id": "messaging",
+      "feature_ids": ["messaging-kafka", "messaging-amqp", "messaging-jms", "messaging-integration", "messaging-batch"],
+      "target_profile_keys": ["spring_kafka", "spring_amqp", "spring_integration"],
+      "source_profile_required": true,
+      "unresolved_provider_profiles": ["spring-jms", "spring-batch"],
+      "status": "NOT_RUN",
+      "required_evidence_roles": ["source-message-profile", "target-message-profile", "delivery-oracle", "duplicate-loss-results"]
+    },
+    {
+      "id": "provider",
+      "feature_ids": ["boot-grpc", "boot-actuator", "boot-observability", "web-graphql", "web-hateoas", "integration-ldap-session", "cache", "scheduler"],
+      "target_profile_keys": ["grpc", "observability", "spring_graphql", "spring_hateoas", "spring_ldap", "spring_session"],
+      "source_profile_required": true,
+      "unresolved_provider_profiles": [],
+      "status": "NOT_RUN",
+      "required_evidence_roles": ["provider-version-lock", "provider-runtime-log", "provider-oracle", "negative-path-results"]
+    }
+  ],
+  "tracks": [
+    {
+      "id": "source-build",
+      "required": true,
+      "execution_mode": "DECLARATIVE_PROTOCOL_NOT_EXECUTABLE",
+      "route_binding": "version-matrix.json#tuples[*]",
+      "corpus_role": "development",
+      "protocol": "DECLARATIVE_ONLY batch30.source-build; route_selector=version-matrix.json#tuples[*]; source_fingerprint=source-fingerprint/manifest.json; exact_source_version=required; source_java=tuple.source_java; build_tool=tuple.build; operation=clean-verify",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "failure_policy": "FAIL_CLOSED",
+      "required_evidence_roles": ["source-build-log", "source-artifact-digest", "source-toolchain-manifest"]
+    },
+    {
+      "id": "target-build",
+      "required": true,
+      "execution_mode": "DECLARATIVE_PROTOCOL_NOT_EXECUTABLE",
+      "route_binding": "version-matrix.json#tuples[*]",
+      "corpus_role": "development",
+      "protocol": "DECLARATIVE_ONLY batch30.target-build; route_selector=version-matrix.json#tuples[*]; recipe=tuple.recipe; target_profile=target-profile/profile.json; target_spring_boot=4.1.1; target_java=21; build_tool=tuple.build; operation=clean-verify",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "failure_policy": "FAIL_CLOSED",
+      "required_evidence_roles": ["target-build-log", "target-artifact-digest", "target-toolchain-manifest"]
+    },
+    {
+      "id": "source-startup",
+      "required": true,
+      "execution_mode": "DECLARATIVE_PROTOCOL_NOT_EXECUTABLE",
+      "route_binding": "version-matrix.json#tuples[*]",
+      "corpus_role": "development",
+      "protocol": "DECLARATIVE_ONLY batch30.source-startup; artifact_role=source-build-artifact; source_fingerprint=source-fingerprint/manifest.json; bind=exact_source_tuple; address=127.0.0.1; port=ephemeral; probes=health,shutdown",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "failure_policy": "FAIL_CLOSED",
+      "required_evidence_roles": ["source-startup-log", "source-health-probe", "source-shutdown-probe"]
+    },
+    {
+      "id": "target-startup",
+      "required": true,
+      "execution_mode": "DECLARATIVE_PROTOCOL_NOT_EXECUTABLE",
+      "route_binding": "version-matrix.json#tuples[*]",
+      "corpus_role": "development",
+      "protocol": "DECLARATIVE_ONLY batch30.target-startup; artifact_role=target-build-artifact; target_profile=target-profile/profile.json#startup; address=127.0.0.1; port=ephemeral; probes=health,shutdown",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "failure_policy": "FAIL_CLOSED",
+      "required_evidence_roles": ["target-startup-log", "target-health-probe", "target-shutdown-probe"]
+    },
+    {
+      "id": "component-contracts",
+      "required": true,
+      "execution_mode": "DECLARATIVE_PROTOCOL_NOT_EXECUTABLE",
+      "route_binding": "version-matrix.json#tuples[*]",
+      "corpus_role": "development",
+      "protocol": "DECLARATIVE_ONLY batch30.component-contracts; route_selector=version-matrix.json#tuples[*]; fcm=contracts/framework-contract-model.json; feature_matrix=target-profile/feature-matrix.json; compare=source,target",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "failure_policy": "FAIL_CLOSED",
+      "required_evidence_roles": ["source-fcm", "target-fcm", "component-oracle"]
+    },
+    {
+      "id": "provider-behavior",
+      "required": true,
+      "execution_mode": "DECLARATIVE_PROTOCOL_NOT_EXECUTABLE",
+      "route_binding": "version-matrix.json#tuples[*]",
+      "corpus_role": "development",
+      "protocol": "DECLARATIVE_ONLY batch30.provider-behavior; target_profile=target-profile/profile.json#providers; provider_lock=target-profile/dependency-locks/spring-boot-4.1.1.properties; domains=security,database,transaction,messaging,provider; isolation=required",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "failure_policy": "FAIL_CLOSED",
+      "required_evidence_roles": ["provider-runtime-log", "provider-version-lock", "behavioral-oracle", "negative-path-results"]
+    },
+    {
+      "id": "holdout",
+      "required": true,
+      "execution_mode": "DECLARATIVE_PROTOCOL_NOT_EXECUTABLE",
+      "route_binding": "version-matrix.json#tuples[*]",
+      "corpus_role": "holdout",
+      "protocol": "DECLARATIVE_ONLY batch30.holdout; corpus=corpus/holdout; source_target=required; mapping_authoring=false; isolation=required",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "failure_policy": "FAIL_CLOSED",
+      "required_evidence_roles": ["holdout-corpus-binding", "holdout-source-target-results", "holdout-regression-summary"]
+    },
+    {
+      "id": "representative-repository",
+      "required": true,
+      "execution_mode": "DECLARATIVE_PROTOCOL_NOT_EXECUTABLE",
+      "route_binding": "version-matrix.json#tuples[*]",
+      "corpus_role": "representative_repository",
+      "protocol": "DECLARATIVE_ONLY batch30.representative-repository; corpus=corpus/real-repository; authorization=required; source_target_build_startup=required; isolation=required",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "failure_policy": "FAIL_CLOSED",
+      "required_evidence_roles": ["repository-authorization", "representative-source-target-results", "representative-regression-summary"]
+    },
+    {
+      "id": "independent-verification",
+      "required": true,
+      "execution_mode": "DECLARATIVE_PROTOCOL_NOT_EXECUTABLE",
+      "route_binding": "track-contract.tracks[0..7]",
+      "input_corpus_role": "holdout",
+      "evidence_destination": "certification/independent-verification",
+      "protocol": "DECLARATIVE_ONLY batch30.independent-verification; input=content-addressed-evidence; source_tracks=source-build,target-build,source-startup,target-startup,component-contracts,provider-behavior,holdout,representative-repository; verifier=separate; output=certification/independent-verification",
+      "status": "NOT_RUN",
+      "authorization_status": "NOT_RUN",
+      "independent_verifier_status": "NOT_RUN",
+      "failure_policy": "FAIL_CLOSED",
+      "required_evidence_roles": ["verifier-identity", "verifier-replay-log", "verifier-attestation"]
+    }
+  ]
+}

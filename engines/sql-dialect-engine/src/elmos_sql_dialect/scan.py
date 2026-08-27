@@ -41,7 +41,7 @@ from collections.abc import Iterable, Mapping
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Literal
+from typing import Literal, cast
 
 import sqlglot
 from sqlglot import exp
@@ -55,13 +55,17 @@ from .advanced import (
     parse_table_function,
     parse_trigger,
 )
+from .chinadb import CHINADB_TARGETS, chinadb_capabilities
 from .models import Dialect, DialectError
 from .parser import (
+    _parse_source_statements,
     parse_alter_table,
     parse_create_index,
     parse_create_schema,
     parse_create_table,
     parse_drop_table,
+    parse_insert_statement,
+    parse_update,
 )
 from .routine import parse_create_routine
 from .statement_splitter import split_statements
@@ -115,7 +119,57 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     ),
     "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": (
         "statement-kind",
-        "a statement no certified profile covers -- CREATE VIEW, GRANT/REVOKE and DML still land here",
+        "a statement no certified profile covers -- query DML and procedural control flow still land here",
+    ),
+    "CERTIFIED_INSERT_UNSUPPORTED_SOURCE": (
+        "statement-kind",
+        "the INSERT source is not a fixed VALUES row set or bounded single-source SELECT",
+    ),
+    "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY": (
+        "statement-kind",
+        "the INSERT SELECT query has joins, subqueries, ordering, limits, CTEs or another "
+        "shape outside the bounded single-source route",
+    ),
+    "CERTIFIED_INSERT_UNSUPPORTED_MODIFIER": (
+        "statement-kind",
+        "an INSERT conflict, rerun, hint or other modifier needs its own target semantic route",
+    ),
+    "CERTIFIED_INSERT_UNSUPPORTED_EXPRESSION": (
+        "types",
+        "an INSERT value is an expression or typed literal outside the portable literal seed profile",
+    ),
+    "CERTIFIED_INSERT_UNSUPPORTED_TARGET": (
+        "identifiers",
+        "the INSERT target is not one plain table with an explicit column list",
+    ),
+    "CERTIFIED_DML_UNSUPPORTED_EXPRESSION": (
+        "structure",
+        "the DML value is outside the typed column/literal/timestamp/COALESCE/MIN expression core",
+    ),
+    "CERTIFIED_DML_UNSUPPORTED_PREDICATE": (
+        "structure",
+        "the DML predicate is outside the portable comparison and null-test core",
+    ),
+    "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE": (
+        "statement-kind",
+        "UPDATE ... FROM or another derived row source needs a target-specific route",
+    ),
+    "CERTIFIED_UPDATE_UNSUPPORTED_MODIFIER": (
+        "statement-kind",
+        "UPDATE ordering, limiting or CTE semantics are outside the bounded route",
+    ),
+    "CERTIFIED_UPDATE_UNSUPPORTED_ASSIGNMENT": (
+        "structure",
+        "UPDATE assignments must be plain target columns with typed values",
+    ),
+    "CERTIFIED_UPDATE_EMPTY": ("structure", "an UPDATE has no assignments"),
+    "CERTIFIED_UPDATE_DUPLICATE_TARGET": (
+        "structure",
+        "an UPDATE assigns the same target column more than once",
+    ),
+    "CERTIFIED_UPDATE_UNSUPPORTED_STATEMENT": (
+        "statement-kind",
+        "not a single UPDATE statement",
     ),
     "CERTIFIED_ROUTINE_PROCEDURE_UNSUPPORTED": (
         "statement-kind",
@@ -280,7 +334,7 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     ),
     "CERTIFIED_DDL_REGEX_CHECK_UNREACHABLE_ON_TARGET": (
         "constraints",
-        "a regex CHECK has no equivalent predicate on SQL Server",
+        "SQL Server has no regex CHECK predicate; only a bounded ASCII subset has a proven binary-collation lowering",
     ),
     "CERTIFIED_DDL_MULTI_LEVEL_CHECK": (
         "constraints",
@@ -381,6 +435,18 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
         "statement-kind",
         "the target stores comments through a different ownership/property mechanism",
     ),
+    "CERTIFIED_COMMENT_TARGET_SCHEMA_REQUIRED": (
+        "identifiers",
+        "SQL Server extended properties require an explicit target schema mapping",
+    ),
+    "CERTIFIED_COMMENT_TARGET_VALUE_TOO_LARGE": (
+        "statement-kind",
+        "the SQL Server extended-property value exceeds its 7,500-byte limit",
+    ),
+    "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED": (
+        "types",
+        "MySQL column comments require the complete target column definition, not only a comment statement",
+    ),
     "CERTIFIED_PRIVILEGE_UNSUPPORTED_OBJECT": (
         "structure",
         "the privilege target is not a table in the bounded privilege route",
@@ -388,6 +454,11 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     "CERTIFIED_PRIVILEGE_UNSUPPORTED_KIND": (
         "structure",
         "the privilege or grant option requires a target-specific security policy",
+    ),
+    "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED": (
+        "identifiers",
+        "a non-PostgreSQL target cannot safely erase a source routine signature without "
+        "a target routine-identity catalogue",
     ),
     "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED": (
         "structure",
@@ -470,6 +541,7 @@ class FeasibilityReport:
     families: list[FamilyGroup]
     findings: list[ScanFinding]
     caveats: list[str] = field(default_factory=list)
+    chinadb_coverage: dict[str, object] = field(default_factory=dict)
 
 
 def discover_sql_files(repository: str | os.PathLike[str]) -> list[Path]:
@@ -534,6 +606,17 @@ def _classify(
     # appears in annotations, which this module never evaluates.
     assert isinstance(statement, exp.Expression)
     try:
+        # A file-level parse can leave one unusual PostgreSQL ALTER as an
+        # opaque Command while the raw statement is still recoverable by the
+        # narrow multi-action compatibility path. Reparse only that raw unit;
+        # ordinary commands remain commands and therefore fail closed below.
+        if isinstance(statement, exp.Command) and raw_sql is not None:
+            try:
+                recovered = _parse_source_statements(raw_sql, dialect)
+            except sqlglot.errors.SqlglotError:
+                recovered = []
+            if len(recovered) == 1 and not isinstance(recovered[0], exp.Command):
+                statement = recovered[0]
         if isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "TABLE":
             parse_create_table(statement, dialect, namespace_map)
         elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "INDEX":
@@ -571,6 +654,10 @@ def _classify(
             parse_alter_table(statement, dialect)
         elif isinstance(statement, exp.Drop):
             parse_drop_table(statement, dialect)
+        elif isinstance(statement, exp.Insert):
+            parse_insert_statement(raw_sql or statement, dialect, namespace_map)
+        elif isinstance(statement, exp.Update):
+            parse_update(raw_sql or statement, dialect, namespace_map)
         else:
             # Not covered by any certified DDL profile. This is the single
             # most important number in the report, so it is produced by the
@@ -623,7 +710,7 @@ def _recover_statements(
             )
             continue
         try:
-            parsed = [s for s in sqlglot.parse(raw.text, read=source_dialect.value) if s is not None]
+            parsed = _parse_source_statements(raw.text, source_dialect)
         except Exception as exc:  # noqa: BLE001 - sqlglot raises several types
             findings.append(
                 ScanFinding(
@@ -710,7 +797,7 @@ def scan_repository(
         # file containing a semicolon inside a string literal, a $$-quoted
         # body, or a BEGIN ... END block.
         try:
-            statements = sqlglot.parse(text, read=source_dialect.value)
+            statements = _parse_source_statements(text, source_dialect)
         except Exception:  # noqa: BLE001 - sqlglot raises several types
             # ONE construct the parser cannot read must not discard the file.
             # Measured, five files lost 750 KB of real schema this way, and
@@ -831,6 +918,66 @@ def _build_report(
         "procedure IS work the customer needs done, so excluding it would flatter the ratio by hiding "
         "exactly what this engine cannot do.",
     ]
+
+    # ChinaDB target renderers are not registered in this standalone engine.
+    # Still account for every source unit against every exact domestic target
+    # so the coverage ledger cannot silently omit that part of the migration.
+    # An admitted source statement is therefore an explicit target-adapter
+    # review, not an automatic conversion claim.
+    domestic_disposition_counts = {
+        "TARGET_ADAPTER_REVIEW_REQUIRED": disposition_counts.get(
+            "AUTOMATED_TRANSLATION_CANDIDATE", 0
+        ),
+        "MANUAL_MIGRATION_REQUIRED": disposition_counts.get("MANUAL_MIGRATION_REQUIRED", 0),
+        "SOURCE_FORMAT_REVIEW": disposition_counts.get("SOURCE_FORMAT_REVIEW", 0),
+        "ENGINE_DEFECT": disposition_counts.get("ENGINE_DEFECT", 0),
+    }
+    domestic_source_units = len(findings)
+    domestic_route_units = domestic_source_units * len(CHINADB_TARGETS)
+    domestic_source_route_covered = sum(domestic_disposition_counts.values())
+    domestic_route_covered = domestic_source_route_covered * len(CHINADB_TARGETS)
+    domestic_route_coverage = (
+        round(domestic_route_covered / domestic_route_units, 3) if domestic_route_units else 0.0
+    )
+    domestic_target_rows = [
+        {
+            "targetId": target.id,
+            "label": target.label,
+            "routeDispositionUnits": domestic_source_units,
+            "routeDispositionCovered": domestic_source_route_covered,
+            "routeDispositionUnknown": domestic_source_units - domestic_source_route_covered,
+            "routeDispositionCoverage": domestic_route_coverage,
+            "sourceAutomaticCandidates": in_subset,
+            "automaticTargetEmissions": 0,
+            "targetAdapterReviewRequired": in_subset,
+            "manualMigrationRequired": domestic_disposition_counts["MANUAL_MIGRATION_REQUIRED"],
+            "sourceFormatReview": domestic_disposition_counts["SOURCE_FORMAT_REVIEW"],
+            "engineDefects": domestic_disposition_counts["ENGINE_DEFECT"],
+            "targetSqlEmission": "PROHIBITED_UNTIL_EXACT_ADAPTER_AND_EVIDENCE",
+            "externalExecution": "NOT_RUN",
+            "certification": "NOT_CERTIFIED",
+        }
+        for target in CHINADB_TARGETS
+    ]
+    chinadb_coverage = chinadb_capabilities()
+    chinadb_coverage.update(
+        {
+            "sourceUnits": domestic_source_units,
+            "routeUnits": domestic_route_units,
+            "routeDispositionCovered": domestic_route_covered,
+            "routeDispositionUnknown": domestic_route_units - domestic_route_covered,
+            "routeDispositionCoverage": domestic_route_coverage,
+            "dispositionCounts": domestic_disposition_counts,
+            "automaticTargetEmissions": 0,
+            "targets": domestic_target_rows,
+        }
+    )
+    caveats.append(
+        "ChinaDB coverage is a route-disposition ledger: all exact domestic target identities are "
+        "counted, but no compatibility label is treated as an exact renderer. Admitted source units "
+        "remain TARGET_ADAPTER_REVIEW_REQUIRED until a versioned target adapter and independent "
+        "evidence exist."
+    )
     if scan_errors:
         caveats.insert(
             0,
@@ -844,7 +991,7 @@ def _build_report(
         profile=(
             "certified-ddl-v1 + certified-alter-v1 + certified-drop-v1 + certified-schema-v1 "
             "+ certified-routine-v1 + certified-view-v1 + certified-comment-v1 "
-            "+ certified-privilege-v1 + certified-rls-v1"
+            "+ certified-privilege-v1 + certified-dml-v1 + certified-rls-v1"
         ),
         repository=str(root.resolve()),
         source_dialect=source_dialect.value,
@@ -866,6 +1013,7 @@ def _build_report(
         families=families,
         findings=findings if include_all_findings else [f for f in findings if f.status != "IN_SUBSET"],
         caveats=caveats,
+        chinadb_coverage=chinadb_coverage,
     )
 
 
@@ -917,6 +1065,31 @@ def render_markdown(report: FeasibilityReport) -> str:
         f"| Disposition unknown | {totals['dispositionUnknown']} |",
         "",
     ]
+
+    china = report.chinadb_coverage
+    if china:
+        lines += [
+            "## ChinaDB domestic target coverage",
+            "",
+            f"**{china['routeDispositionCovered']} of {china['routeUnits']} domestic target-route "
+            f"units ({pct(cast(float, china['routeDispositionCoverage']))}) have an explicit disposition "
+            "across 13 exact target identities.**",
+            "",
+            "This is complete route accounting, not a claim that every unit emits target SQL. "
+            "The registry is `SPEC_ONLY`; unverified target adapters remain explicit review work.",
+            "",
+            "| | Count |",
+            "|---|---|",
+            f"| ChinaDB target identities | {china['targetCount']} |",
+            f"| Planned source-family routes | {china['plannedRouteCount']} |",
+            f"| Domestic route units | {china['routeUnits']} |",
+            f"| Domestic route dispositions covered | {china['routeDispositionCovered']} |",
+            f"| Domestic route dispositions unknown | {china['routeDispositionUnknown']} |",
+            f"| Automatic target emissions | {china['automaticTargetEmissions']} |",
+            "| External execution | `NOT_RUN` |",
+            "| Certification | `NOT_CERTIFIED` |",
+            "",
+        ]
 
     if report.blockers:
         lines += [

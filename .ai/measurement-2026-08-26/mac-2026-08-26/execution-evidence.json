@@ -15,26 +15,24 @@
         "agree": 45,
         "differ": 0,
         "detail": [],
-        "toolchain": "PATH:/Users/stephen/.sdkman/candidates/java/current/bin/java",
-        "version": "openjdk 25.0.4 2026-07-21 LTS"
+        "toolchain": "EXACT:java:21.0.11:/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+        "version": "openjdk 21.0.11 2026-04-21"
       },
       "python": {
         "status": "AGREES_WITH_CANONICAL",
         "agree": 45,
         "differ": 0,
         "detail": [],
-        "toolchain": "PATH:/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python3",
+        "toolchain": "EXACT:python:3.12.12+20260211:/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/bin/python3.12",
         "version": "Python 3.12.12"
       },
       "csharp": {
-        "status": "NOT_RUN",
-        "reason": "run failed",
-        "toolchain": "PATH:/opt/homebrew/bin/dotnet",
-        "stderr": [
-          "",
-          "To install missing framework, download:",
-          "https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=8.0.0&arch=arm64&rid=osx-arm64&os=osx.26"
-        ]
+        "status": "AGREES_WITH_CANONICAL",
+        "agree": 45,
+        "differ": 0,
+        "detail": [],
+        "toolchain": "EXACT:csharp:10.0.301:/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+        "version": "10.0.301"
       },
       "typescript": {
         "status": "EMISSION_REFUSED",
@@ -45,7 +43,7 @@
         "agree": 45,
         "differ": 0,
         "detail": [],
-        "toolchain": "PINNED:/Users/stephen/.local/share/elmos/toolchains/go/1.25.0/bin/go",
+        "toolchain": "EXACT:go:1.25.0:/Users/stephen/.local/share/elmos/toolchains/go/1.25.0/bin/go",
         "version": "flag provided but not defined: -version"
       },
       "rust": {
@@ -53,7 +51,7 @@
         "agree": 45,
         "differ": 0,
         "detail": [],
-        "toolchain": "PINNED:/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/bin/rustc",
+        "toolchain": "EXACT:rust:1.89.0:/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/rustup/toolchains/1.89.0-aarch64-apple-darwin/bin/rustc",
         "version": "rustc 1.89.0 (29483883e 2025-08-04)"
       },
       "cpp": {
@@ -61,25 +59,23 @@
         "agree": 45,
         "differ": 0,
         "detail": [],
-        "toolchain": "PATH:/usr/bin/g++",
+        "toolchain": "EXACT:cpp:Apple clang version 21.0.0 (clang-2100.1.1.101):/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
         "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
       },
       "objc": {
-        "status": "NOT_RUN",
-        "reason": "build failed",
-        "toolchain": "PATH:/usr/bin/clang",
-        "stderr": [
-          "       in objc-stubs-file",
-          "ld: symbol(s) not found for architecture arm64",
-          "clang: error: linker command failed with exit code 1 (use -v to see invocation)"
-        ]
+        "status": "AGREES_WITH_CANONICAL",
+        "agree": 45,
+        "differ": 0,
+        "detail": [],
+        "toolchain": "EXACT:objc:Apple clang version 21.0.0 (clang-2100.1.1.101):/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
       },
       "swift": {
         "status": "AGREES_WITH_CANONICAL",
         "agree": 45,
         "differ": 0,
         "detail": [],
-        "toolchain": "PATH:/usr/bin/swiftc",
+        "toolchain": "EXACT:swift:Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101):/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
         "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
       },
       "php": {
@@ -87,15 +83,15 @@
         "agree": 45,
         "differ": 0,
         "detail": [],
-        "toolchain": "PINNED:/Users/stephen/.local/share/elmos/toolchains/php/8.4.12/bin/php",
-        "version": "PHP 8.4.12 (cli) (built: Jul 28 2026 11:50:39) (NTS)"
+        "toolchain": "EXACT:php:PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS):/opt/homebrew/Cellar/php/8.5.9/bin/php",
+        "version": "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)"
       },
       "kotlin": {
         "status": "AGREES_WITH_CANONICAL",
         "agree": 45,
         "differ": 0,
         "detail": [],
-        "toolchain": "PINNED:/Users/stephen/.local/share/elmos/toolchains/kotlin/2.2.20/bin/kotlinc",
+        "toolchain": "EXACT:kotlin:kotlinc-jvm 2.2.20 (JRE 21.0.11):/Users/stephen/.local/share/elmos/toolchains/kotlin/2.2.20/bin/kotlinc + java EXACT:java:21.0.11:/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
         "version": "error: invalid argument: --version"
       },
       "react": {
@@ -107,8 +103,8 @@
         "agree": 45,
         "differ": 0,
         "detail": [],
-        "toolchain": "PATH:/opt/homebrew/bin/dart",
-        "version": "Dart SDK version: 3.8.1 (stable) (Wed May 28 00:47:25 2025 -0700) on \"macos_arm64\""
+        "toolchain": "EXACT:flutter:Flutter 3.44.1 / Dart 3.12.1:/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/dart",
+        "version": "Dart SDK version: 3.12.1 (stable) (Tue May 26 01:02:21 2026 -0700) on \"macos_arm64\""
       }
     },
     "safe_integer": {
@@ -117,33 +113,31 @@
         "agree": 44,
         "differ": 0,
         "detail": [],
-        "toolchain": "PATH:/Users/stephen/.sdkman/candidates/java/current/bin/java",
-        "version": "openjdk 25.0.4 2026-07-21 LTS"
+        "toolchain": "EXACT:java:21.0.11:/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+        "version": "openjdk 21.0.11 2026-04-21"
       },
       "python": {
         "status": "AGREES_WITH_CANONICAL",
         "agree": 44,
         "differ": 0,
         "detail": [],
-        "toolchain": "PATH:/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python3",
+        "toolchain": "EXACT:python:3.12.12+20260211:/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/bin/python3.12",
         "version": "Python 3.12.12"
       },
       "csharp": {
-        "status": "NOT_RUN",
-        "reason": "run failed",
-        "toolchain": "PATH:/opt/homebrew/bin/dotnet",
-        "stderr": [
-          "",
-          "To install missing framework, download:",
-          "https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=8.0.0&arch=arm64&rid=osx-arm64&os=osx.26"
-        ]
+        "status": "AGREES_WITH_CANONICAL",
+        "agree": 44,
+        "differ": 0,
+        "detail": [],
+        "toolchain": "EXACT:csharp:10.0.301:/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+        "version": "10.0.301"
       },
       "typescript": {
         "status": "AGREES_WITH_CANONICAL",
         "agree": 44,
         "differ": 0,
         "detail": [],
-        "toolchain": "PATH:/opt/homebrew/bin/node",
+        "toolchain": "EXACT:typescript:5.9.2 / Node 26.0.0:/opt/homebrew/Cellar/node/26.0.0/bin/node",
         "version": "v26.0.0"
       },
       "go": {
@@ -151,7 +145,7 @@
         "agree": 44,
         "differ": 0,
         "detail": [],
-        "toolchain": "PINNED:/Users/stephen/.local/share/elmos/toolchains/go/1.25.0/bin/go",
+        "toolchain": "EXACT:go:1.25.0:/Users/stephen/.local/share/elmos/toolchains/go/1.25.0/bin/go",
         "version": "flag provided but not defined: -version"
       },
       "rust": {
@@ -159,7 +153,7 @@
         "agree": 44,
         "differ": 0,
         "detail": [],
-        "toolchain": "PINNED:/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/bin/rustc",
+        "toolchain": "EXACT:rust:1.89.0:/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/rustup/toolchains/1.89.0-aarch64-apple-darwin/bin/rustc",
         "version": "rustc 1.89.0 (29483883e 2025-08-04)"
       },
       "cpp": {
@@ -167,25 +161,23 @@
         "agree": 44,
         "differ": 0,
         "detail": [],
-        "toolchain": "PATH:/usr/bin/g++",
+        "toolchain": "EXACT:cpp:Apple clang version 21.0.0 (clang-2100.1.1.101):/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
         "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
       },
       "objc": {
-        "status": "NOT_RUN",
-        "reason": "build failed",
-        "toolchain": "PATH:/usr/bin/clang",
-        "stderr": [
-          "       in objc-stubs-file",
-          "ld: symbol(s) not found for architecture arm64",
-          "clang: error: linker command failed with exit code 1 (use -v to see invocation)"
-        ]
+        "status": "AGREES_WITH_CANONICAL",
+        "agree": 44,
+        "differ": 0,
+        "detail": [],
+        "toolchain": "EXACT:objc:Apple clang version 21.0.0 (clang-2100.1.1.101):/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
       },
       "swift": {
         "status": "AGREES_WITH_CANONICAL",
         "agree": 44,
         "differ": 0,
         "detail": [],
-        "toolchain": "PATH:/usr/bin/swiftc",
+        "toolchain": "EXACT:swift:Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101):/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
         "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
       },
       "php": {
@@ -193,15 +185,15 @@
         "agree": 44,
         "differ": 0,
         "detail": [],
-        "toolchain": "PINNED:/Users/stephen/.local/share/elmos/toolchains/php/8.4.12/bin/php",
-        "version": "PHP 8.4.12 (cli) (built: Jul 28 2026 11:50:39) (NTS)"
+        "toolchain": "EXACT:php:PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS):/opt/homebrew/Cellar/php/8.5.9/bin/php",
+        "version": "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)"
       },
       "kotlin": {
         "status": "AGREES_WITH_CANONICAL",
         "agree": 44,
         "differ": 0,
         "detail": [],
-        "toolchain": "PINNED:/Users/stephen/.local/share/elmos/toolchains/kotlin/2.2.20/bin/kotlinc",
+        "toolchain": "EXACT:kotlin:kotlinc-jvm 2.2.20 (JRE 21.0.11):/Users/stephen/.local/share/elmos/toolchains/kotlin/2.2.20/bin/kotlinc + java EXACT:java:21.0.11:/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
         "version": "error: invalid argument: --version"
       },
       "react": {
@@ -213,8 +205,8 @@
         "agree": 44,
         "differ": 0,
         "detail": [],
-        "toolchain": "PATH:/opt/homebrew/bin/dart",
-        "version": "Dart SDK version: 3.8.1 (stable) (Wed May 28 00:47:25 2025 -0700) on \"macos_arm64\""
+        "toolchain": "EXACT:flutter:Flutter 3.44.1 / Dart 3.12.1:/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/dart",
+        "version": "Dart SDK version: 3.12.1 (stable) (Tue May 26 01:02:21 2026 -0700) on \"macos_arm64\""
       }
     }
   }

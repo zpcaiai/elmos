@@ -79,7 +79,7 @@ def repository_commit(root: Path) -> str | None:
     """Read HEAD without letting git touch the index (no lock files)."""
     try:
         completed = subprocess.run(  # noqa: S603 - fixed argv
-            ["git", "-C", str(root), "rev-parse", "HEAD"],
+            ["git", "-C", str(root), "rev-parse", "HEAD"],  # noqa: S607 - git from PATH by design
             capture_output=True,
             text=True,
             timeout=20,

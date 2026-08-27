@@ -72,6 +72,50 @@ def test_predicates_compose_with_the_existing_binary_comparisons() -> None:
     assert _check_line(report) == "CHECK (a > 0 AND s IN ('A', 'B'))"
 
 
+@pytest.mark.parametrize("source", ["postgres", "mysql"])
+@pytest.mark.parametrize("target", ["postgres", "mysql", "oracle", "tsql"])
+def test_default_space_trim_is_a_typed_cross_dialect_check_value(
+    source: str, target: str
+) -> None:
+    if source == target:
+        pytest.skip("same-dialect translation is not a supported route")
+    spelling = "btrim" if source == "postgres" else "trim"
+    report = translate_ddl(
+        f"CREATE TABLE t (s VARCHAR(16), CHECK ({spelling}(s) <> ''))",
+        source,
+        target,
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    assert "TRIM(s) <> ''" in report["emitted"]
+
+
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+def test_null_test_equality_expands_to_an_exact_boolean_truth_table(target: str) -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (a VARCHAR(8), b VARCHAR(8), CHECK ((a IS NULL) = (b IS NULL)))",
+        "postgres",
+        target,
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    assert "a IS NULL AND b IS NULL" in report["emitted"]
+    assert "a IS NOT NULL AND b IS NOT NULL" in report["emitted"]
+
+
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+def test_same_typed_numeric_column_addition_is_preserved_in_checks(target: str) -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (a DECIMAL(30,0), b DECIMAL(30,0), limit_value DECIMAL(30,0), "
+        "CHECK (a + b <= limit_value))",
+        "postgres",
+        target,
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    assert "(a + b) <= limit_value" in report["emitted"]
+
+
 @pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
 def test_mixed_boolean_levels_are_emitted_with_their_source_parentheses(target: str) -> None:
     report = translate_ddl(
@@ -117,7 +161,30 @@ def test_the_genuinely_divergent_predicates_are_still_refused(label: str, sql: s
     assert report["emitted"] is None
 
 
-def test_regex_is_refused_only_when_the_target_has_no_equivalent() -> None:
+@pytest.mark.parametrize(
+    ("pattern", "fragment"),
+    [
+        ("^[0-9a-f]{64}$", "DATALENGTH(CONVERT(nvarchar(max), s)) = 128"),
+        ("^[0-9a-f]{40}$", "DATALENGTH(CONVERT(nvarchar(max), s)) = 80"),
+        ("^sha256:[0-9a-f]{64}$", "LEFT(CONVERT(nvarchar(max), s) COLLATE Latin1_General_100_BIN2, 7) = N'sha256:'"),
+        ("^[0-9]+$", "DATALENGTH(CONVERT(nvarchar(max), s)) >= 2"),
+    ],
+)
+def test_bounded_ascii_regexes_have_a_binary_collation_sql_server_lowering(
+    pattern: str, fragment: str
+) -> None:
+    report = translate_ddl(
+        f"CREATE TABLE t (s TEXT, CHECK (s ~ '{pattern}'))",
+        "postgres",
+        "tsql",
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report
+    assert fragment in report["emitted"]
+    assert "COLLATE Latin1_General_100_BIN2" in report["emitted"]
+
+
+def test_regex_is_refused_when_sql_server_has_no_proven_equivalent() -> None:
     report = translate_ddl(
         "CREATE TABLE t (s VARCHAR(8), CHECK (s ~ '^[a-f]+$'))",
         "postgres",

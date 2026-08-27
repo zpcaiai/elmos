@@ -1,0 +1,79 @@
+{
+  "caseId": "03-impact-of-rename",
+  "description": "Closure of a cross-file rename, including the importer and the test.",
+  "evidence": {
+    "impactDigest": "sha256:cf52fd72f0ff1d5bc3492647f928954cb5a5d0a4b63fb380fd2df84aa1e5b0c5",
+    "indexDigest": "sha256:aa3e83e0352691b8a2771e3a19ff716aab0cf75efb065093fb2be76b4eac6966"
+  },
+  "failureClass": null,
+  "inputDigest": "sha256:f12fdc2d5b2237c2b4aed10308df2e50b6ece45460772081c33df67d26591984",
+  "outputDigest": "sha256:7cae7382ee5220c2f5f73ff8f972bcc258d9d430582e1b2feb3d03020a86d856",
+  "projections": {
+    "output.risk_assessment.riskClass": "R2",
+    "output.risk_assessment.unknownPenalty": "0.1583",
+    "output.test_selection_plan": {
+      "changedTargets": [
+        "python:acme-billing"
+      ],
+      "coverage": "1.0000",
+      "testPaths": [
+        "tests/test_billing.py"
+      ],
+      "testTargets": [
+        "python:acme-billing:test"
+      ],
+      "uncoveredPaths": [],
+      "uncoveredTargets": []
+    },
+    "output.wave_plan": [
+      {
+        "dependsOn": [],
+        "rationale": "dependency distance 0 from the change seeds",
+        "shards": [
+          {
+            "buildTargets": [
+              "python:acme-billing"
+            ],
+            "owners": [
+              "@acme/payments"
+            ],
+            "paths": [
+              "src/acme/ledger.py"
+            ],
+            "shardId": "w0-python_acme-billing-0"
+          }
+        ],
+        "waveId": "wave-0"
+      },
+      {
+        "dependsOn": [
+          "wave-0"
+        ],
+        "rationale": "dependency distance 1 from the change seeds",
+        "shards": [
+          {
+            "buildTargets": [
+              "python:acme-billing"
+            ],
+            "owners": [
+              "@acme/payments",
+              "@acme/platform"
+            ],
+            "paths": [
+              "src/acme/api.py",
+              "src/acme/billing.py",
+              "tests/test_billing.py"
+            ],
+            "shardId": "w1-python_acme-billing-0"
+          }
+        ],
+        "waveId": "wave-1"
+      }
+    ]
+  },
+  "reasonCount": 2,
+  "riskClass": "R2",
+  "sideEffectsPerformed": false,
+  "skill": "change-impact-analysis",
+  "status": "succeeded"
+}

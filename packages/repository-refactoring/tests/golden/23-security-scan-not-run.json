@@ -1,0 +1,21 @@
+{
+  "caseId": "23-security-scan-not-run",
+  "description": "An unexecuted scan is undecided, and this gate treats undecided as failing.",
+  "evidence": {
+    "securityReportDigest": "sha256:588980fe03e178180f995e0b156c3984c0471b2781a6add239ab2121e82aeded"
+  },
+  "failureClass": "approval-required",
+  "inputDigest": "sha256:4883feacecd3dff5a97101f8c5d42bbf37768058d0964c1c580a731631d5fb39",
+  "outputDigest": "sha256:744b107e27e6a02803b9e02d97f5c4f4da8261112ab3b8b88c6833237d67fe06",
+  "projections": {
+    "output.allowed": false,
+    "output.scanStatus": "not-run",
+    "output.securityDiff": [],
+    "status": "blocked"
+  },
+  "reasonCount": 1,
+  "riskClass": "R2",
+  "sideEffectsPerformed": false,
+  "skill": "security-preservation",
+  "status": "blocked"
+}

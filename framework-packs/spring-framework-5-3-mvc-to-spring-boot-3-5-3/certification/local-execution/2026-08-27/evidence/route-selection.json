@@ -1,0 +1,16 @@
+{
+  "accepted_source_constraint" : "exact:5.3.39",
+  "detected_build_tool" : "maven",
+  "detected_java" : "11",
+  "detected_source_framework_family" : "spring-mvc",
+  "detected_source_framework_version" : "5.3.39",
+  "detected_spring_boot" : "UNKNOWN",
+  "experimental_opt_in_required" : false,
+  "pack_key" : "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "recipe_id" : "io.elmos.openrewrite.SpringFramework5_3MvcToSpringBoot3_5_3Java21",
+  "route_evidence" : "PASSED_LOCAL",
+  "route_id" : "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21",
+  "schema_version" : "1.0",
+  "target_java" : "21",
+  "target_spring_boot" : "3.5.3"
+}

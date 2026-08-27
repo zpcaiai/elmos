@@ -27,7 +27,7 @@ the same 142 UTF-8 bytes; only the exact 32-hex-character `JSESSIONID` value is
 treated as governed nondeterminism while cookie attributes remain exact.
 
 The content-addressed evidence index is
-`certification/local-execution/2026-08-26/evidence-index.json`. It separately
+`certification/local-execution/2026-08-27/evidence-index.json`. It separately
 binds the 17,347-byte migrated-repository ZIP and the 28,990,394-byte executable
 WAR, whose manifest names Boot `3.5.3`, `WarLauncher` and
 `io.elmos.legacy.LegacyMvcApplication`. It also preserves the Java materializer

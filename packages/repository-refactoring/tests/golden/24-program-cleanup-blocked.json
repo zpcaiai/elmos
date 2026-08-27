@@ -1,0 +1,90 @@
+{
+  "caseId": "24-program-cleanup-blocked",
+  "description": "The cleanup wave blocks while an external consumer has not adopted.",
+  "evidence": {
+    "programPlanDigest": "sha256:73ecda6a342ad7eb889682f49431f75734d2b713121eaf1e7922682ed579a015"
+  },
+  "failureClass": "approval-required",
+  "inputDigest": "sha256:4290b00ebf218b51496a45f5b772c4c94b97454c34c3dcbdb0ab6f6c9d74193b",
+  "outputDigest": "sha256:a50ed056c78b8fdb627bfc375650ea75df867a300e2b2370219e84d820e7b51a",
+  "projections": {
+    "output.adoption.stuckConsumers": [
+      {
+        "owners": [],
+        "reason": "outside this organisation; adoption cannot be scheduled",
+        "repositoryId": "partner-portal",
+        "role": "consumer",
+        "state": "pending",
+        "waveId": "wave-1-consumers"
+      }
+    ],
+    "output.plan.waves": [
+      {
+        "destructive": false,
+        "gate": "api-compatibility",
+        "order": 0,
+        "repositories": [
+          "billing-api"
+        ],
+        "requires": [],
+        "title": "Publish the new surface alongside the old one",
+        "waveId": "wave-0-compatibility"
+      },
+      {
+        "destructive": false,
+        "gate": "changed-target-tests",
+        "order": 1,
+        "repositories": [
+          "billing-sdk-go",
+          "partner-portal",
+          "web"
+        ],
+        "requires": [
+          "wave-0-compatibility"
+        ],
+        "title": "Consumers accept both shapes",
+        "waveId": "wave-1-consumers"
+      },
+      {
+        "destructive": false,
+        "gate": "canary-guardrails",
+        "order": 2,
+        "repositories": [
+          "billing-api"
+        ],
+        "requires": [
+          "wave-1-consumers"
+        ],
+        "title": "Providers emit the new shape",
+        "waveId": "wave-2-providers"
+      },
+      {
+        "destructive": true,
+        "gate": "old-path-usage-zero",
+        "order": 3,
+        "repositories": [
+          "billing-api"
+        ],
+        "requires": [
+          "wave-2-providers"
+        ],
+        "title": "Remove the compatibility layer",
+        "waveId": "wave-3-cleanup"
+      }
+    ],
+    "output.startGate": {
+      "blockers": [
+        "wave 'wave-2-providers' is not adopted; outstanding: billing-api",
+        "1 consumer(s) have not adopted: partner-portal; removal while any of them still calls the old path is the breakage, not the cleanup"
+      ],
+      "mayStart": false,
+      "wave": "wave-3-cleanup"
+    },
+    "status": "blocked"
+  },
+  "reasonCount": 3,
+  "riskClass": "R4",
+  "sideEffectsPerformed": false,
+  "skill": "multi-repository-refactor-program",
+  "status": "blocked"
+}

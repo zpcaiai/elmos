@@ -1,0 +1,50 @@
+{
+  "caseId": "09-client-platform-gap",
+  "description": "DOM use is a hard gap on a miniprogram target, and a visual result with no renderer is not-run.",
+  "evidence": {
+    "clientReportDigest": "sha256:40db69f1471a78bbcb5dfc946ac069b8c401c14fb320cf90a2f2b245a06c5145"
+  },
+  "failureClass": "approval-required",
+  "inputDigest": "sha256:80203ef5c88e8dcf2818b86414a7c4eefb44208c3f3676bf90475911b61ce2ec",
+  "outputDigest": "sha256:40db69f1471a78bbcb5dfc946ac069b8c401c14fb320cf90a2f2b245a06c5145",
+  "projections": {
+    "output.platformCompatibilityMatrix": {
+      "gaps": [
+        {
+          "adapterRequired": "wechat-miniprogram has no DOM; the component must be rewritten against the platform's own view layer, not shimmed",
+          "capability": "dom",
+          "component": "Cart",
+          "path": "src/Cart.tsx",
+          "platform": "wechat-miniprogram"
+        }
+      ],
+      "targets": [
+        "web",
+        "wechat-miniprogram"
+      ]
+    },
+    "output.sensitiveSurfaces": [],
+    "output.visualDiff": [
+      {
+        "decided": false,
+        "difference": "",
+        "journey": "route:/cart",
+        "status": "not-run",
+        "threshold": "0.01"
+      },
+      {
+        "decided": false,
+        "difference": "",
+        "journey": "route:/checkout/:id",
+        "status": "not-run",
+        "threshold": "0.01"
+      }
+    ],
+    "status": "blocked"
+  },
+  "reasonCount": 2,
+  "riskClass": "R3",
+  "sideEffectsPerformed": false,
+  "skill": "ui-and-client-refactor",
+  "status": "blocked"
+}

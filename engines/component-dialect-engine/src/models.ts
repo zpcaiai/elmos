@@ -215,7 +215,9 @@ export interface StateDef {
 
 export type BinaryOperator = "+" | "-" | "*" | "/" | "%" | "<" | "<=" | ">" | ">=" | "==" | "!=" | "&&" | "||" | "??";
 export const BINARY_OPERATORS: readonly BinaryOperator[] = ["+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "??"];
-export type StringMethod = "toUpperCase" | "toLowerCase" | "trim" | "replaceAll" | "includes";
+export type StringMethod = "toUpperCase" | "toLowerCase" | "trim" | "replaceAll" | "includes" | "startsWith" | "endsWith" | "slice";
+export type NumericFunction = "min" | "max" | "floor" | "ceil" | "abs";
+export type NumericPredicate = "isFinite";
 
 export type Expr =
   | { kind: "ident"; name: string }
@@ -231,6 +233,13 @@ export type Expr =
   | { kind: "binary"; operator: BinaryOperator; left: Expr; right: Expr }
   | { kind: "unaryNot"; operand: Expr }
   | { kind: "stringMethod"; method: StringMethod; receiver: Expr; args: Expr[] }
+  /** A bounded pure numeric aggregate. It mirrors Math.min/Math.max without
+   * opening the expression subset to arbitrary global calls. */
+  | { kind: "numericFunction"; function: NumericFunction; args: Expr[] }
+  /** A bounded numeric predicate with a target-native spelling. */
+  | { kind: "numericPredicate"; predicate: NumericPredicate; operand: Expr }
+  /** A static class token imported from a CSS Module. */
+  | { kind: "cssModuleClass"; className: string }
   /** The value supplied by an input/change event; its concrete spelling is
    * selected by each target emitter. */
   | { kind: "eventValue" }
@@ -258,6 +267,9 @@ export function usesEventValue(expr: Expr): boolean {
     case "binary": return usesEventValue(expr.left) || usesEventValue(expr.right);
     case "unaryNot": return usesEventValue(expr.operand);
     case "stringMethod": return usesEventValue(expr.receiver) || expr.args.some(usesEventValue);
+    case "numericFunction": return expr.args.some(usesEventValue);
+    case "numericPredicate": return usesEventValue(expr.operand);
+    case "cssModuleClass": return false;
     case "regexTest": return usesEventValue(expr.operand);
     case "arrayLength": return usesEventValue(expr.operand);
     case "ternary": return usesEventValue(expr.condition) || usesEventValue(expr.then) || usesEventValue(expr.else);
@@ -324,6 +336,8 @@ export interface EventBinding {
 
 export type Node =
   | { kind: "element"; tag: HtmlTag; attrs: AttrBinding[]; events: EventBinding[]; children: Node[] }
+  /** A JSX fragment is a transparent grouping with no rendered DOM node. */
+  | { kind: "fragment"; children: Node[] }
   | { kind: "text"; value: Expr }
   | { kind: "conditional"; condition: Expr; then: Node; else: Node | null }
   /**
@@ -494,12 +508,27 @@ export function validateComponent(component: ComponentDef): void {
       case "stringMethod":
         checkExpr(expr.receiver, scope);
         require_(isStringExpression(expr.receiver, scope), "CERTIFIED_COMPONENT_STRING_METHOD_RECEIVER", `${expr.method} requires a certified string expression`);
-        const expectedArgs = expr.method === "replaceAll" ? 2 : expr.method === "includes" ? 1 : 0;
-        require_(expr.args.length === expectedArgs, "CERTIFIED_COMPONENT_STRING_METHOD_ARITY", `${expr.method} expects ${expectedArgs} argument(s)`);
+        const expectedArgs = expr.method === "replaceAll" ? 2 : expr.method === "includes" || expr.method === "startsWith" || expr.method === "endsWith" ? 1 : expr.method === "slice" ? 1 : 0;
+        require_(expr.method === "slice" ? expr.args.length <= 2 && expr.args.length >= 1 : expr.args.length === expectedArgs, "CERTIFIED_COMPONENT_STRING_METHOD_ARITY", `${expr.method} expects ${expr.method === "slice" ? "one or two" : expectedArgs} argument(s)`);
         expr.args.forEach((arg) => {
           checkExpr(arg, scope);
-          require_(arg.kind === "literal" && arg.literal.type === "string", "CERTIFIED_COMPONENT_STRING_METHOD_ARGUMENT", `${expr.method} arguments must be string literals`);
+          const expectedType = expr.method === "slice" ? "number" : "string";
+          require_(arg.kind === "literal" && arg.literal.type === expectedType, "CERTIFIED_COMPONENT_STRING_METHOD_ARGUMENT", `${expr.method} arguments must be ${expectedType} literals`);
         });
+        return;
+      case "numericFunction":
+        require_(expr.args.length >= 1 && expr.args.length <= 8, "CERTIFIED_COMPONENT_NUMERIC_FUNCTION_ARITY", `${expr.function} expects between 1 and 8 arguments`);
+        expr.args.forEach((arg) => {
+          checkExpr(arg, scope);
+          require_(isNumberExpression(arg, scope), "CERTIFIED_COMPONENT_NUMERIC_FUNCTION_ARGUMENT", `${expr.function} arguments must be certified number expressions`);
+        });
+        return;
+      case "numericPredicate":
+        checkExpr(expr.operand, scope);
+        require_(isNumberExpression(expr.operand, scope), `${expr.predicate.toUpperCase()}_OPERAND`, `${expr.predicate} requires a certified number expression`);
+        return;
+      case "cssModuleClass":
+        checkIdentifier(expr.className, "CSS Module class name");
         return;
       case "eventValue":
         return;
@@ -523,6 +552,7 @@ export function validateComponent(component: ComponentDef): void {
 
   function isStringExpression(expr: Expr, scope: Scope): boolean {
     if (expr.kind === "literal") return expr.literal.type === "string";
+    if (expr.kind === "cssModuleClass") return true;
     if (expr.kind === "eventValue") return true;
     if (expr.kind === "stringMethod") return expr.method !== "includes";
     if (expr.kind === "ident") {
@@ -551,6 +581,42 @@ export function validateComponent(component: ComponentDef): void {
     }
     if (expr.kind === "binary" && (expr.operator === "+" || expr.operator === "??")) return isStringExpression(expr.left, scope) && isStringExpression(expr.right, scope);
     if (expr.kind === "ternary") return isStringExpression(expr.then, scope) && isStringExpression(expr.else, scope);
+    return false;
+  }
+
+  function isNumberExpression(expr: Expr, scope: Scope): boolean {
+    if (expr.kind === "literal") return expr.literal.type === "number";
+    if (expr.kind === "ident") {
+      const list = scope.get(expr.name);
+      if (list !== undefined) return list.element.kind === "primitive" && list.element.primitive === "number";
+      const data = component.props.find((p): p is DataPropDef => p.kind === "data" && p.name === expr.name);
+      const shape = data?.valueShape;
+      if (data !== undefined) return shape === undefined ? data.propType === "number" : shape.kind === "primitive" && shape.primitive === "number";
+      return component.state.some((state) => state.name === expr.name && state.stateType === "number");
+    }
+    if (expr.kind === "member") {
+      const list = scope.get(expr.object);
+      if (list?.element.kind === "object") {
+        const field = list.element.fields[expr.field];
+        return field?.shape.kind === "primitive" && field.shape.primitive === "number";
+      }
+      const data = component.props.find((p): p is DataPropDef => p.kind === "data" && p.name === expr.object);
+      const shape = data?.valueShape;
+      if (shape?.kind !== "object") return false;
+      const field = shape.fields[expr.field];
+      return field?.shape.kind === "primitive" && field.shape.primitive === "number";
+    }
+    if (expr.kind === "path") {
+      const shape = resolvePathShape(expr.object, expr.fields, scope);
+      return shape?.kind === "primitive" && shape.primitive === "number";
+    }
+    if (expr.kind === "binary") {
+      return ["+", "-", "*", "/", "%"].includes(expr.operator)
+        && isNumberExpression(expr.left, scope)
+        && isNumberExpression(expr.right, scope);
+    }
+    if (expr.kind === "numericFunction") return expr.args.length > 0 && expr.args.every((arg) => isNumberExpression(arg, scope));
+    if (expr.kind === "ternary") return isNumberExpression(expr.then, scope) && isNumberExpression(expr.else, scope);
     return false;
   }
 
@@ -621,7 +687,9 @@ export function validateComponent(component: ComponentDef): void {
     if (expr.kind === "eventValue") return { kind: "primitive", primitive: "string" };
     if (expr.kind === "arrayLength") return { kind: "primitive", primitive: "number" };
     if (expr.kind === "stringMethod") return { kind: "primitive", primitive: expr.method === "includes" ? "boolean" : "string" };
+    if (expr.kind === "cssModuleClass") return { kind: "primitive", primitive: "string" };
     if (expr.kind === "regexTest") return { kind: "primitive", primitive: "boolean" };
+    if (expr.kind === "numericPredicate") return { kind: "primitive", primitive: "boolean" };
     if (expr.kind === "ternary") {
       const thenShape = expressionShape(expr.then, scope);
       const elseShape = expressionShape(expr.else, scope);
@@ -633,6 +701,10 @@ export function validateComponent(component: ComponentDef): void {
   }
 
   function checkNode(node: Node, scope: Scope): void {
+    if (node.kind === "fragment") {
+      node.children.forEach((child) => checkNode(child, scope));
+      return;
+    }
     if (node.kind === "text") {
       checkExpr(node.value, scope);
       const shape = expressionShape(node.value, scope);

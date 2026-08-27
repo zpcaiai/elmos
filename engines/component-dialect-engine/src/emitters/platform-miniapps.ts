@@ -221,6 +221,9 @@ function assertTargetNameClosure(component: ComponentDef): void {
 
   const visit = (node: CNode): void => {
     switch (node.kind) {
+      case "fragment":
+        node.children.forEach(visit);
+        return;
       case "component":
         assertUniqueTargetNames(
           node.props.map((prop) => prop.name),
@@ -290,6 +293,9 @@ function templateExprSource(expr: Expr): string {
       return `${wrap(expr.left)} ${operator} ${wrap(expr.right)}`;
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map(templateExprSource).join(", ")})`;
+    case "numericFunction": return `Math.${expr.function}(${expr.args.map(templateExprSource).join(", ")})`;
+    case "numericPredicate": return `Number.${expr.predicate}(${templateExprSource(expr.operand)})`;
+    case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${templateExprSource(expr.operand)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary":
@@ -328,6 +334,9 @@ function jsExprSource(expr: Expr, context: JsExpressionContext): string {
       return `${wrap(expr.left)} ${operator} ${wrap(expr.right)}`;
     }
     case "stringMethod": return `${wrap(expr.receiver)}.${expr.method}(${expr.args.map((arg) => jsExprSource(arg, context)).join(", ")})`;
+    case "numericFunction": return `Math.${expr.function}(${expr.args.map((arg) => jsExprSource(arg, context)).join(", ")})`;
+    case "numericPredicate": return `Number.${expr.predicate}(${jsExprSource(expr.operand, context)})`;
+    case "cssModuleClass": return JSON.stringify(expr.className);
     case "regexTest": return `/${expr.pattern}/${expr.flags}.test(${jsExprSource(expr.operand, context)})`;
     case "arrayLength": return `${wrap(expr.operand)}.length`;
     case "ternary":
@@ -355,6 +364,12 @@ function walkExpr(expr: Expr, visit: (candidate: Expr) => void): void {
       expr.args.forEach((arg) => walkExpr(arg, visit));
       return;
     case "regexTest":
+      walkExpr(expr.operand, visit);
+      return;
+    case "numericFunction":
+      expr.args.forEach((arg) => walkExpr(arg, visit));
+      return;
+    case "numericPredicate":
       walkExpr(expr.operand, visit);
       return;
     case "arrayLength":
@@ -497,6 +512,10 @@ function classAttribute(node: Extract<CNode, { kind: "element" }>): { value: str
 }
 
 function nodeSource(node: CNode, indent: string, context: RenderContext, scope: RenderScope | null): string {
+  if (node.kind === "fragment") {
+    const childSrc = node.children.map((child) => nodeSource(child, indent + "  ", context, scope)).join("\n");
+    return `${indent}<block>\n${childSrc}\n${indent}</block>`;
+  }
   if (node.kind === "text") {
     if (node.value.kind === "literal" && node.value.literal.type === "string") {
       assertStaticTemplateLiteralSafe(node.value.literal.value, "static text");

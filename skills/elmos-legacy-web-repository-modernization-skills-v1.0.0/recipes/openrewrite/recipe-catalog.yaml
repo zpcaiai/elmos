@@ -1,0 +1,150 @@
+catalogVersion: 1.0.0
+recipes:
+- id: org.elmos.legacyweb.PrepareSpringBoot4Baseline
+  phase: foundation
+  applicability:
+  - targetArchitecture.springBoot matches 4.x
+  operations:
+  - create/update target BOM/starters
+  - configure Java release
+  - configure test starters
+  - create application entrypoint
+  postconditions:
+  - Boot baseline resolved
+  - Java>=17
+  - no duplicate unmanaged core versions
+- id: org.elmos.legacyweb.MigrateJakartaNamespaces
+  phase: foundation
+  applicability:
+  - jakartaReadinessReport exists
+  operations:
+  - symbol-aware imports/FQNs
+  - XML namespace
+  - reflection/service loader scan
+  - generated-source migration
+  postconditions:
+  - no incompatible javax API in runtime graph
+  - Java SE javax namespaces preserved
+- id: org.elmos.legacyweb.GenerateEffectiveRouteRegistry
+  phase: routing
+  applicability:
+  - effectiveRouteTable confirmed
+  operations:
+  - generate explicit route metadata
+  - detect collision
+  - attach legacy route id
+  postconditions:
+  - source route coverage=100%
+  - no unauthorized route expansion
+- id: org.elmos.legacyweb.Struts1ActionToController
+  phase: framework
+  applicability:
+  - endpoint.owner.framework=struts1
+  - struts1PipelineIR confirmed
+  operations:
+  - generate controller/handler
+  - move orchestration
+  - preserve action result mapping
+  - attach source map
+  postconditions:
+  - handler compiled
+  - navigation contract generated
+  - concurrency review passed
+- id: org.elmos.legacyweb.Struts1FormLifecycle
+  phase: framework
+  applicability:
+  - ActionForm binding exists
+  operations:
+  - generate DTO/model
+  - reset-before-populate hook
+  - validation adapter
+  - scope bridge
+  postconditions:
+  - binding allowlist explicit
+  - reset/validate order test generated
+- id: org.elmos.legacyweb.Struts2InvocationPipeline
+  phase: framework
+  applicability:
+  - struts2InvocationIR confirmed
+  operations:
+  - map standard interceptors
+  - generate custom pipeline adapter
+  - model short-circuit/after unwind
+  - map result
+  postconditions:
+  - interceptor trace contract generated
+  - no lost custom interceptor
+- id: org.elmos.legacyweb.ServletRegistrationMigration
+  phase: framework
+  applicability:
+  - servletContainerIR confirmed
+  operations:
+  - migrate or retain servlet
+  - generate registration beans
+  - preserve filter dispatcher/order
+  - migrate listeners
+  postconditions:
+  - effective mappings equivalent
+  - async/lifecycle flags explicit
+- id: org.elmos.legacyweb.WebDescriptorMigration
+  phase: configuration
+  applicability:
+  - effective descriptor compiled
+  operations:
+  - map params/session/errors/security/resources
+  - preserve deployment failures/conflicts
+  - generate target config
+  postconditions:
+  - descriptor semantic coverage=100%
+- id: org.elmos.legacyweb.LegacyNavigationAdapter
+  phase: framework
+  applicability:
+  - navigation kind lacks direct target mapping
+  operations:
+  - generate forward/include/chain/error adapter
+  - preserve request attributes/commit
+  postconditions:
+  - navigation differential test generated
+- id: org.elmos.legacyweb.PreserveJspWarPackaging
+  phase: view
+  applicability:
+  - viewStrategy=preserve
+  - JSP count>0
+  operations:
+  - configure WAR/JSP resources
+  - preserve taglibs/Tiles
+  - generate view contract tests
+  postconditions:
+  - JSP resolves
+  - WEB-INF protection verified
+- id: org.elmos.legacyweb.GenerateSecurityFromRecoveredSemantics
+  phase: cross-cutting
+  applicability:
+  - securitySemanticsIR confirmed
+  operations:
+  - generate SecurityFilterChain/authorization
+  - preserve deny behavior
+  - optional hardening delta
+  postconditions:
+  - identity-role matrix tests generated
+  - no route unprotected
+- id: org.elmos.legacyweb.GenerateTransactionBoundaries
+  phase: cross-cutting
+  applicability:
+  - transactionIR confirmed
+  operations:
+  - generate annotations/programmatic transaction
+  - map rollback/propagation/isolation
+  - instrument effect observation
+  postconditions:
+  - transaction differential tests generated
+- id: org.elmos.legacyweb.RemoveLegacyFrameworkDependencies
+  phase: cleanup
+  applicability:
+  - all source framework nodes mapped and verified
+  operations:
+  - remove Struts dependencies/config/bootstrap
+  - remove compatibility artifacts eligible for deletion
+  postconditions:
+  - no runtime legacy framework classes
+  - full regression required

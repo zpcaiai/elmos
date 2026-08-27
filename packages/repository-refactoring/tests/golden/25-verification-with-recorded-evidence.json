@@ -1,0 +1,171 @@
+{
+  "caseId": "25-verification-with-recorded-evidence",
+  "description": "The other half of case 05: with real recorded evidence the mechanical gates pass, and only genuinely undecided ones remain.",
+  "evidence": {
+    "executor": "recorded",
+    "patchDigest": "sha256:9de232f87488d26e5b172c1f3db74880daede40845c40a481f0fbf50f61f764b",
+    "validationDigest": "sha256:a9759879d2a42683b73a1ecdd568f36091906a41a0ea2efc0fb7cb375758a9b9"
+  },
+  "failureClass": "repairable",
+  "inputDigest": "sha256:d44e7edb04743265361d4464d043412883649e3da57374cb18efafd703f6d433",
+  "outputDigest": "sha256:78c8fe927c837a3f92e211f79972969ac9794a1074ec222f84a7214b00f35df1",
+  "projections": {
+    "output.validation_report.blockingFailures": [
+      "api-compatibility"
+    ],
+    "output.validation_report.gateDecisions": [
+      {
+        "blocking": true,
+        "decision": "pass",
+        "detail": "no suppression, skip or test removal detected",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "anti-cheat"
+      },
+      {
+        "blocking": true,
+        "decision": "fail",
+        "detail": "removed acme.ledger.post_entry",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "api-compatibility"
+      },
+      {
+        "blocking": true,
+        "decision": "pass",
+        "detail": "build:python: exit 0",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "build"
+      },
+      {
+        "blocking": true,
+        "decision": "pass",
+        "detail": "changed-target-tests:python: exit 0",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "changed-target-tests"
+      },
+      {
+        "blocking": true,
+        "decision": "pass",
+        "detail": "every hunk maps to a recipe action",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "evidence-completeness"
+      },
+      {
+        "blocking": true,
+        "decision": "not-applicable",
+        "detail": "",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "full-tests"
+      },
+      {
+        "blocking": true,
+        "decision": "pass",
+        "detail": "second run produced no change",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "idempotence"
+      },
+      {
+        "blocking": false,
+        "decision": "not-applicable",
+        "detail": "no command is known for 'license-scan' in python, protobuf, sql, toml",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "license-scan"
+      },
+      {
+        "blocking": true,
+        "decision": "pass",
+        "detail": "every changed file re-parses",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "parse"
+      },
+      {
+        "blocking": true,
+        "decision": "not-applicable",
+        "detail": "",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "performance"
+      },
+      {
+        "blocking": true,
+        "decision": "pass",
+        "detail": "the inverse patch restores the exact base tree digest",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "rollback-proof"
+      },
+      {
+        "blocking": true,
+        "decision": "pass",
+        "detail": "every changed file re-parses",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "round-trip"
+      },
+      {
+        "blocking": true,
+        "decision": "not-applicable",
+        "detail": "",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "schema-compatibility"
+      },
+      {
+        "blocking": true,
+        "decision": "pass",
+        "detail": "no file outside the declared scope was touched",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "scope-containment"
+      },
+      {
+        "blocking": true,
+        "decision": "not-applicable",
+        "detail": "",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "security-scan"
+      },
+      {
+        "blocking": true,
+        "decision": "pass",
+        "detail": "typecheck:python: exit 0",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "typecheck"
+      }
+    ],
+    "output.validation_report.passed": false,
+    "output.validation_report.undecidedBlockingGates": [],
+    "status": "blocked"
+  },
+  "reasonCount": 1,
+  "riskClass": "R2",
+  "sideEffectsPerformed": false,
+  "skill": "test-and-verification",
+  "status": "blocked"
+}

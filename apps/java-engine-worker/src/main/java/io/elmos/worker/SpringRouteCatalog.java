@@ -403,10 +403,12 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-to-boot-4.1.0.yml",
                     "io.elmos.openrewrite.SpringBoot2_7ToBoot4_1_0Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
+                    EvidenceStatus.PASSED_LOCAL, "2.7.18", "17",
                     "Direct edge with the required Boot 3.5 and Boot 4.0 semantic migrations. "
-                            + "The official intermediate guidance is represented inside the recipe; "
-                            + "this route is not a claim that every application is source-compatible.",
+                            + "The exact Boot 2.7.18 / Java 17 tuple passed local source/target build, "
+                            + "startup and web behavior probes. The official intermediate guidance is "
+                            + "represented inside the recipe; security, persistence, transactions, "
+                            + "messaging, holdout and independent verification remain NOT_RUN.",
                     SourceFamily.SPRING_BOOT),
             new SpringRoute(
                     "boot-3.0-3.4-maven-to-boot-4.1.0-java-21",
@@ -430,10 +432,12 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-to-boot-4.1.0.yml",
                     "io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_0Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
+                    EvidenceStatus.PASSED_LOCAL, "3.5.3", "21",
                     "Direct Boot 3.5 to Boot 4 edge. The OpenRewrite Boot 4.0 composition is "
-                            + "followed by an exact Boot 4.1.0 pin; 4.1.0 target build and startup "
-                            + "evidence are still NOT_RUN.",
+                            + "followed by an exact Boot 4.1.0 pin. The exact Boot 3.5.3 / Java 21 "
+                            + "source tuple passed local source/target build, startup and web "
+                            + "behavior probes; security, persistence, transactions, messaging, "
+                            + "holdout and independent verification remain NOT_RUN.",
                     SourceFamily.SPRING_BOOT),
             new SpringRoute(
                     "boot-4.0-maven-to-boot-4.1.0-java-21",
