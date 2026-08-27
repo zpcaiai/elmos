@@ -51,7 +51,7 @@ function literalSource(literal: Literal): string {
 function exprSource(expr: Expr): string {
   const wrap = (e: Expr): string => {
     const src = exprSource(e);
-    return e.kind === "binary" || e.kind === "ternary" ? `(${src})` : src;
+    return e.kind === "binary" || e.kind === "ternary" || e.kind === "objectLiteral" ? `(${src})` : src;
   };
   switch (expr.kind) {
     case "ident": return expr.name;
@@ -79,7 +79,7 @@ function exprSource(expr: Expr): string {
     case "collectionReduce": return `${exprSource(expr.source)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${exprSource(expr.reducer)}), ${exprSource(expr.initial)})`;
     case "collectionMax": return `Math.max(...${exprSource(expr.source)}.map((${expr.itemName}) => (${exprSource(expr.operand)})))`;
     case "collectionJoin": return `${exprSource(expr.source)}.join(${exprSource(expr.separator)})`;
-    case "objectLookup": return `${exprSource(expr.object)}[${exprSource(expr.key)}]`;
+    case "objectLookup": return `${wrap(expr.object)}[${exprSource(expr.key)}]`;
     case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${exprSource(field.value)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key)}]: ${exprSource(field.value)}`)].join(", ")} }`;
     case "arrayLiteral": return `[${expr.items.map(exprSource).join(", ")}]`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;

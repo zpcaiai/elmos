@@ -173,7 +173,7 @@ describe("list rendering fails closed outside the certified shape", () => {
     ["mapping over a non-prop expression", `function C({ rows }: { rows: { id: number }[] }) { return (<ul>{rows.slice(0).map((row) => (<li>{row.id}</li>))}</ul>); }`],
     ["object elements with no identity field", `function C({ rows }: { rows: { label: string; note: string }[] }) { return (<ul>{rows.map((row) => (<li>{row.label}</li>))}</ul>); }`],
     ["a field not declared on the element", `function C({ rows }: { rows: { id: number; label: string }[] }) { return (<ul>{rows.map((row) => (<li>{row.missing}</li>))}</ul>); }`],
-    ["array fields inside element types", `function C({ rows }: { rows: { id: number; inner: number[] }[] }) { return (<ul>{rows.map((row) => (<li>{row.id}</li>))}</ul>); }`],
+    ["rendering an array field as scalar text", `function C({ rows }: { rows: { id: number; inner: number[] }[] }) { return (<ul>{rows.map((row) => (<li>{row.inner}</li>))}</ul>); }`],
     ["reading an object item without a field", `function C({ rows }: { rows: { id: number }[] }) { return (<ul>{rows.map((row) => (<li>{row}</li>))}</ul>); }`],
     ["interpolating a list prop directly", `function C({ rows }: { rows: { id: number }[] }) { return (<div>{rows}</div>); }`],
     ["a nested list", `function C({ a, b }: { a: { id: number }[]; b: { id: number }[] }) { return (<ul>{a.map((x) => (<li>{b.map((y) => (<span>{y.id}</span>))}</li>))}</ul>); }`],

@@ -27,8 +27,11 @@ function runtimeType(prop: Extract<PropDef, { kind: "data" }>): string {
   return RUNTIME_TYPE[prop.propType] ?? "String";
 }
 
-function literalSource(literal: Literal): string {
-  if (literal.type === "string") return JSON.stringify(literal.value);
+function literalSource(literal: Literal, inScript: boolean): string {
+  if (literal.type === "string") {
+    if (inScript) return JSON.stringify(literal.value);
+    return `'${literal.value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
+  }
   if (literal.type === "number") return String(literal.value);
   if (literal.type === "null") return "null";
   return literal.value ? "true" : "false";
@@ -39,14 +42,14 @@ function literalSource(literal: Literal): string {
 function exprSource(expr: Expr, inScript: boolean): string {
   const wrap = (e: Expr): string => {
     const src = exprSource(e, inScript);
-    return e.kind === "binary" || e.kind === "ternary" ? `(${src})` : src;
+    return e.kind === "binary" || e.kind === "ternary" || e.kind === "objectLiteral" ? `(${src})` : src;
   };
   switch (expr.kind) {
     case "ident": return inScript ? `this.${expr.name}` : expr.name;
     // Loop variables are template-locals; `this.` would not resolve them.
     case "member": return `${expr.object}.${expr.field}`;
     case "path": return `${expr.object}.${expr.fields.join(".")}`;
-    case "literal": return literalSource(expr.literal);
+    case "literal": return literalSource(expr.literal, inScript);
     case "eventValue": return "$event.target.value";
     case "unaryNot": return `!${wrap(expr.operand)}`;
     case "binary": {
@@ -68,7 +71,7 @@ function exprSource(expr: Expr, inScript: boolean): string {
     case "collectionReduce": return `${exprSource(expr.source, inScript)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${exprSource(expr.reducer, inScript)}), ${exprSource(expr.initial, inScript)})`;
     case "collectionMax": return `Math.max(...${exprSource(expr.source, inScript)}.map((${expr.itemName}) => (${exprSource(expr.operand, inScript)})))`;
     case "collectionJoin": return `${exprSource(expr.source, inScript)}.join(${exprSource(expr.separator, inScript)})`;
-    case "objectLookup": return `${exprSource(expr.object, inScript)}[${exprSource(expr.key, inScript)}]`;
+    case "objectLookup": return `${wrap(expr.object)}[${exprSource(expr.key, inScript)}]`;
     case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${exprSource(field.value, inScript)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key, inScript)}]: ${exprSource(field.value, inScript)}`)].join(", ")} }`;
     case "arrayLiteral": return `[${expr.items.map((item) => exprSource(item, inScript)).join(", ")}]`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
@@ -156,7 +159,7 @@ function propsBlock(props: PropDef[]): string {
   const listEntries = listProps.map((p) => `    ${p.name}: { type: Array, default: () => [] },`);
   const entries = dataProps.map((p) => {
     const bits = [`type: ${runtimeType(p)}`];
-    if (p.defaultValue !== undefined) bits.push(`default: ${literalSource(p.defaultValue)}`);
+    if (p.defaultValue !== undefined) bits.push(`default: ${literalSource(p.defaultValue, true)}`);
     else if (p.required) bits.push("required: true");
     return `    ${p.name}: { ${bits.join(", ")} },`;
   });

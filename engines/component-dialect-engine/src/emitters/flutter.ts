@@ -81,7 +81,7 @@ interface Scope {
 function exprSource(expr: Expr, scope: Scope): string {
   const wrap = (e: Expr): string => {
     const src = exprSource(e, scope);
-    return e.kind === "binary" || e.kind === "ternary" ? `(${src})` : src;
+    return e.kind === "binary" || e.kind === "ternary" || e.kind === "objectLiteral" ? `(${src})` : src;
   };
   switch (expr.kind) {
     case "ident":
@@ -141,7 +141,7 @@ function exprSource(expr: Expr, scope: Scope): string {
       return `${exprSource(expr.source, scope)}.map((${expr.itemName}) => (${exprSource(expr.operand, maxScope)})).fold<double>(-double.infinity, (max, value) => max > value ? max : value)`;
     }
     case "collectionJoin": return `${exprSource(expr.source, scope)}.join(${exprSource(expr.separator, scope)})`;
-    case "objectLookup": return `${exprSource(expr.object, scope)}[${exprSource(expr.key, scope)}]`;
+    case "objectLookup": return `${wrap(expr.object)}[${exprSource(expr.key, scope)}]`;
     case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${dartString(field.name)}: ${exprSource(field.value, scope)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key, scope)}]: ${exprSource(field.value, scope)}`)].join(", ")} }`;
     case "arrayLiteral": return `[${expr.items.map((item) => exprSource(item, scope)).join(", ")}]`;
     case "ternary":

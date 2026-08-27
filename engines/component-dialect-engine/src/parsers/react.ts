@@ -77,6 +77,7 @@ interface StaticPureFunctionDefinition {
 interface StaticClosedValueDefinition {
   readonly kind: "closed-value";
   readonly initializer: ts.Expression;
+  readonly value?: Expr;
   readonly stringMap?: ReadonlyMap<string, StaticStringMapValue>;
 }
 type StaticDefinition = ReadonlyMap<string, StaticStringMapValue> | StaticRegexDefinition | StaticCssModuleDefinition | StaticNumberFormatDefinition | StaticNavigationDefinition | StaticListDefinition | StaticPrimitiveListDefinition | StaticPureFunctionDefinition | StaticClosedValueDefinition;
@@ -160,8 +161,10 @@ function tryStaticLiteral(node: ts.Expression): Literal | null {
  * Values stay as literals in the canonical list contract; an array containing
  * a call, spread, computed field, or nested object is left for the normal
  * fail-closed expression path instead of being partially folded. */
-function staticListDefinitionFromInitializer(initializer: ts.Expression): StaticListDefinition | null {
+function staticListDefinitionFromInitializer(initializer: ts.Expression, staticMaps: StaticStringMaps = new Map()): StaticListDefinition | null {
   const array = unwrapStaticValue(initializer);
+  const mapped = staticMappedObjectListDefinitionFromInitializer(array, staticMaps);
+  if (mapped !== null) return mapped;
   if (!ts.isArrayLiteralExpression(array) || array.elements.length === 0) return null;
   const items: StaticListItem[] = [];
   for (const element of array.elements) {
@@ -260,6 +263,337 @@ function regexDefinitionFromNode(node: ts.Expression): StaticRegexDefinition | n
   return { kind: "regex", pattern, flags };
 }
 
+type StaticConstant =
+  | { kind: "undefined" }
+  | { kind: "literal"; literal: Literal }
+  | { kind: "array"; items: StaticConstant[] }
+  | { kind: "object"; fields: ReadonlyMap<string, StaticConstant> };
+
+function staticConstantLiteral(value: StaticConstant): Literal | null {
+  return value.kind === "literal" ? value.literal : null;
+}
+
+function staticConstantKey(value: StaticConstant): string | number | null {
+  const literal = staticConstantLiteral(value);
+  if (literal?.type === "string" || literal?.type === "number") return literal.value;
+  return null;
+}
+
+function staticConstantFromDefinition(
+  definition: StaticDefinition | undefined,
+  staticMaps: StaticStringMaps,
+  stack: readonly string[],
+): StaticConstant | null {
+  if (definition === undefined) return null;
+  if (isStaticListDefinition(definition)) {
+    return { kind: "array", items: definition.items.map((item) => ({ kind: "object", fields: new Map(Object.entries(item.fields).map(([name, literal]) => [name, { kind: "literal", literal }])) })) };
+  }
+  if (isStaticPrimitiveListDefinition(definition)) return { kind: "array", items: definition.values.map((literal) => ({ kind: "literal", literal })) };
+  if (isStaticClosedValueDefinition(definition)) {
+    return staticConstantFromExpression(definition.initializer, new Map(), staticMaps, stack);
+  }
+  return null;
+}
+
+function staticConstantFromExpression(
+  node: ts.Expression,
+  bindings: ReadonlyMap<string, StaticConstant>,
+  staticMaps: StaticStringMaps,
+  stack: readonly string[] = [],
+): StaticConstant | null {
+  const value = unwrapStaticValue(node);
+  const literal = tryStaticLiteral(value);
+  if (literal !== null) return { kind: "literal", literal };
+  if (ts.isIdentifier(value)) {
+    const bound = bindings.get(value.text);
+    if (bound !== undefined) return bound;
+    if (stack.includes(value.text)) return null;
+    return staticConstantFromDefinition(staticMaps.get(value.text), staticMaps, [...stack, value.text]);
+  }
+  if (ts.isArrayLiteralExpression(value)) {
+    const items: StaticConstant[] = [];
+    for (const element of value.elements) {
+      if (ts.isSpreadElement(element)) return null;
+      const item = staticConstantFromExpression(element as ts.Expression, bindings, staticMaps, stack);
+      if (item === null) return null;
+      items.push(item);
+    }
+    return { kind: "array", items };
+  }
+  if (ts.isObjectLiteralExpression(value)) {
+    const fields = new Map<string, StaticConstant>();
+    for (const property of value.properties) {
+      if (!ts.isPropertyAssignment(property) || ts.isComputedPropertyName(property.name)) return null;
+      const name = ts.isIdentifier(property.name) || ts.isStringLiteral(property.name) ? property.name.text : null;
+      if (name === null || fields.has(name)) return null;
+      const field = staticConstantFromExpression(property.initializer, bindings, staticMaps, stack);
+      if (field === null) return null;
+      fields.set(name, field);
+    }
+    return { kind: "object", fields };
+  }
+  if (ts.isTemplateExpression(value)) {
+    let result = value.head.text;
+    for (const span of value.templateSpans) {
+      const part = staticConstantFromExpression(span.expression, bindings, staticMaps, stack);
+      const partLiteral = part === null ? null : staticConstantLiteral(part);
+      if (partLiteral === null || (partLiteral.type !== "string" && partLiteral.type !== "number" && partLiteral.type !== "boolean")) return null;
+      result += String(partLiteral.value) + span.literal.text;
+    }
+    return { kind: "literal", literal: { type: "string", value: result } };
+  }
+  if (ts.isPropertyAccessExpression(value)) {
+    if (value.name.text === "length") {
+      const receiver = staticConstantFromExpression(value.expression, bindings, staticMaps, stack);
+      return receiver?.kind === "array" ? { kind: "literal", literal: { type: "number", value: receiver.items.length } } : null;
+    }
+    const receiver = staticConstantFromExpression(value.expression, bindings, staticMaps, stack);
+    return receiver?.kind === "object" ? receiver.fields.get(value.name.text) ?? { kind: "undefined" } : null;
+  }
+  if (ts.isElementAccessExpression(value) && value.argumentExpression !== undefined) {
+    const receiver = staticConstantFromExpression(value.expression, bindings, staticMaps, stack);
+    const key = staticConstantFromExpression(value.argumentExpression, bindings, staticMaps, stack);
+    const keyValue = key === null ? null : staticConstantKey(key);
+    if (receiver?.kind === "object" && typeof keyValue === "string") return receiver.fields.get(keyValue) ?? { kind: "undefined" };
+    if (receiver?.kind === "array" && typeof keyValue === "number" && Number.isInteger(keyValue) && keyValue >= 0) return receiver.items[keyValue] ?? { kind: "undefined" };
+    return null;
+  }
+  if (ts.isPrefixUnaryExpression(value)) {
+    const operand = staticConstantFromExpression(value.operand, bindings, staticMaps, stack);
+    const operandLiteral = operand === null ? null : staticConstantLiteral(operand);
+    if (operandLiteral === null) return null;
+    if (value.operator === ts.SyntaxKind.ExclamationToken) return { kind: "literal", literal: { type: "boolean", value: !Boolean(operandLiteral.type === "null" ? null : operandLiteral.value) } };
+    if (value.operator === ts.SyntaxKind.MinusToken && operandLiteral.type === "number") return { kind: "literal", literal: { type: "number", value: -operandLiteral.value } };
+    if (value.operator === ts.SyntaxKind.PlusToken && operandLiteral.type === "number") return operand;
+    return null;
+  }
+  if (ts.isBinaryExpression(value)) {
+    const left = staticConstantFromExpression(value.left, bindings, staticMaps, stack);
+    const right = staticConstantFromExpression(value.right, bindings, staticMaps, stack);
+    const leftLiteral = left === null ? null : staticConstantLiteral(left);
+    const rightLiteral = right === null ? null : staticConstantLiteral(right);
+    if (value.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken) return left === null || left.kind === "undefined" || leftLiteral?.type === "null" ? right : left;
+    if (leftLiteral === null || rightLiteral === null) return null;
+    if (leftLiteral.type === "null" || rightLiteral.type === "null") return null;
+    const leftValue = leftLiteral.value;
+    const rightValue = rightLiteral.value;
+    switch (value.operatorToken.kind) {
+      case ts.SyntaxKind.PlusToken: {
+        if (typeof leftValue === "string" || typeof rightValue === "string") return { kind: "literal", literal: { type: "string", value: String(leftValue) + String(rightValue) } };
+        if (typeof leftValue === "number" && typeof rightValue === "number") return { kind: "literal", literal: { type: "number", value: leftValue + rightValue } };
+        return null;
+      }
+      case ts.SyntaxKind.MinusToken: return { kind: "literal", literal: { type: "number", value: Number(leftValue) - Number(rightValue) } };
+      case ts.SyntaxKind.AsteriskToken: return { kind: "literal", literal: { type: "number", value: Number(leftValue) * Number(rightValue) } };
+      case ts.SyntaxKind.SlashToken: return { kind: "literal", literal: { type: "number", value: Number(leftValue) / Number(rightValue) } };
+      case ts.SyntaxKind.PercentToken: return { kind: "literal", literal: { type: "number", value: Number(leftValue) % Number(rightValue) } };
+      case ts.SyntaxKind.LessThanToken: return { kind: "literal", literal: { type: "boolean", value: leftValue < rightValue } };
+      case ts.SyntaxKind.LessThanEqualsToken: return { kind: "literal", literal: { type: "boolean", value: leftValue <= rightValue } };
+      case ts.SyntaxKind.GreaterThanToken: return { kind: "literal", literal: { type: "boolean", value: leftValue > rightValue } };
+      case ts.SyntaxKind.GreaterThanEqualsToken: return { kind: "literal", literal: { type: "boolean", value: leftValue >= rightValue } };
+      case ts.SyntaxKind.EqualsEqualsToken:
+      case ts.SyntaxKind.EqualsEqualsEqualsToken: return { kind: "literal", literal: { type: "boolean", value: leftValue === rightValue } };
+      case ts.SyntaxKind.ExclamationEqualsToken:
+      case ts.SyntaxKind.ExclamationEqualsEqualsToken: return { kind: "literal", literal: { type: "boolean", value: leftValue !== rightValue } };
+      case ts.SyntaxKind.AmpersandAmpersandToken: return { kind: "literal", literal: { type: "boolean", value: Boolean(leftValue && rightValue) } };
+      case ts.SyntaxKind.BarBarToken: return { kind: "literal", literal: { type: "boolean", value: Boolean(leftValue || rightValue) } };
+      default: return null;
+    }
+  }
+  if (ts.isConditionalExpression(value)) {
+    const condition = staticConstantFromExpression(value.condition, bindings, staticMaps, stack);
+    const conditionLiteral = condition === null ? null : staticConstantLiteral(condition);
+    if (conditionLiteral?.type !== "boolean") return null;
+    return staticConstantFromExpression(conditionLiteral.value ? value.whenTrue : value.whenFalse, bindings, staticMaps, stack);
+  }
+  if (ts.isCallExpression(value)) {
+    if (ts.isIdentifier(value.expression) && value.expression.text === "Number" && value.arguments.length === 1) {
+      const argument = staticConstantFromExpression(at(value.arguments, 0, "CERTIFIED_COMPONENT_STATIC_EVALUATION", "Number is missing its argument"), bindings, staticMaps, stack);
+      const argumentLiteral = argument === null ? null : staticConstantLiteral(argument);
+      if (argumentLiteral !== null && (argumentLiteral.type === "string" || argumentLiteral.type === "number" || argumentLiteral.type === "boolean")) {
+        const number = Number(argumentLiteral.value);
+        return Number.isFinite(number) ? { kind: "literal", literal: { type: "number", value: number } } : null;
+      }
+      return null;
+    }
+    if (!ts.isPropertyAccessExpression(value.expression)) return null;
+    const method = value.expression.name.text;
+    const receiver = staticConstantFromExpression(value.expression.expression, bindings, staticMaps, stack);
+    if (receiver?.kind === "array" && method === "map" && value.arguments.length === 1) {
+      const callback = at(value.arguments, 0, "CERTIFIED_COMPONENT_STATIC_EVALUATION", "map is missing its callback");
+      require_(ts.isArrowFunction(callback) && callback.parameters.length >= 1 && callback.parameters.length <= 2 && !ts.isBlock(callback.body), "CERTIFIED_COMPONENT_STATIC_EVALUATION", "static map must use a synchronous expression callback with one or two parameters");
+      const arrow = callback as ts.ArrowFunction;
+      const first = at(arrow.parameters, 0, "CERTIFIED_COMPONENT_STATIC_EVALUATION", "static map is missing its item parameter");
+      const firstName = first.name;
+      require_(ts.isIdentifier(firstName), "CERTIFIED_COMPONENT_STATIC_EVALUATION", "static map item parameter must be a plain identifier");
+      const result: StaticConstant[] = [];
+      receiver.items.forEach((item, index) => {
+        const nextBindings = new Map(bindings);
+        nextBindings.set((firstName as ts.Identifier).text, item);
+        const second = arrow.parameters[1];
+        if (second !== undefined) {
+          require_(ts.isIdentifier(second.name), "CERTIFIED_COMPONENT_STATIC_EVALUATION", "static map index parameter must be a plain identifier");
+          nextBindings.set(second.name.text, { kind: "literal", literal: { type: "number", value: index } });
+        }
+        const mapped = staticConstantFromExpression(arrow.body as ts.Expression, nextBindings, staticMaps, stack);
+        if (mapped === null) return null;
+        result.push(mapped);
+      });
+      return { kind: "array", items: result };
+    }
+    if (receiver?.kind === "array" && method === "reduce" && value.arguments.length === 2) {
+      const callback = at(value.arguments, 0, "CERTIFIED_COMPONENT_STATIC_EVALUATION", "reduce is missing its callback");
+      require_(ts.isArrowFunction(callback) && callback.parameters.length === 2 && !ts.isBlock(callback.body), "CERTIFIED_COMPONENT_STATIC_EVALUATION", "static reduce must use a synchronous expression callback with two parameters");
+      const arrow = callback as ts.ArrowFunction;
+      const accumulatorParameter = at(arrow.parameters, 0, "CERTIFIED_COMPONENT_STATIC_EVALUATION", "static reduce is missing its accumulator parameter");
+      const itemParameter = at(arrow.parameters, 1, "CERTIFIED_COMPONENT_STATIC_EVALUATION", "static reduce is missing its item parameter");
+      require_(ts.isIdentifier(accumulatorParameter.name) && ts.isIdentifier(itemParameter.name), "CERTIFIED_COMPONENT_STATIC_EVALUATION", "static reduce parameters must be plain identifiers");
+      let accumulator = staticConstantFromExpression(at(value.arguments, 1, "CERTIFIED_COMPONENT_STATIC_EVALUATION", "reduce is missing its initial value"), bindings, staticMaps, stack);
+      if (accumulator === null) return null;
+      for (const item of receiver.items) {
+        const nextBindings = new Map(bindings);
+        nextBindings.set(accumulatorParameter.name.text, accumulator);
+        nextBindings.set(itemParameter.name.text, item);
+        accumulator = staticConstantFromExpression(arrow.body as ts.Expression, nextBindings, staticMaps, stack);
+        if (accumulator === null) return null;
+      }
+      return accumulator;
+    }
+    if (receiver?.kind === "literal" && receiver.literal.type === "string" && (method === "replace" || method === "replaceAll" || method === "toUpperCase" || method === "toLowerCase" || method === "trim")) {
+      const args = value.arguments.map((argument) => staticConstantFromExpression(argument, bindings, staticMaps, stack));
+      const literals = args.map((argument) => argument === null ? null : staticConstantLiteral(argument));
+      if (!literals.some((argument) => argument === null)) {
+        if (method === "toUpperCase" && literals.length === 0) return { kind: "literal", literal: { type: "string", value: receiver.literal.value.toUpperCase() } };
+        if (method === "toLowerCase" && literals.length === 0) return { kind: "literal", literal: { type: "string", value: receiver.literal.value.toLowerCase() } };
+        if (method === "trim" && literals.length === 0) return { kind: "literal", literal: { type: "string", value: receiver.literal.value.trim() } };
+        if ((method === "replace" || method === "replaceAll") && literals.length === 2 && literals[1]?.type === "string") {
+          const pattern = literals[0];
+          if (pattern?.type === "string") return { kind: "literal", literal: { type: "string", value: method === "replaceAll" ? receiver.literal.value.split(pattern.value).join(literals[1].value) : receiver.literal.value.replace(pattern.value, literals[1].value) } };
+        }
+      }
+    }
+    const patternNode = value.arguments[0];
+    if (method === "replace" && value.arguments.length === 2 && patternNode !== undefined && ts.isRegularExpressionLiteral(patternNode)) {
+      const receiverValue = staticConstantFromExpression(value.expression.expression, bindings, staticMaps, stack);
+      const replacement = staticConstantFromExpression(at(value.arguments, 1, "CERTIFIED_COMPONENT_STATIC_EVALUATION", "replace is missing its replacement"), bindings, staticMaps, stack);
+      const replacementLiteral = replacement === null ? null : staticConstantLiteral(replacement);
+      const regex = regexDefinitionFromNode(patternNode);
+      if (receiverValue?.kind === "literal" && receiverValue.literal.type === "string" && replacementLiteral?.type === "string" && regex !== null) {
+        const flags = regex.flags.includes("g") ? regex.flags : `${regex.flags}g`;
+        return { kind: "literal", literal: { type: "string", value: receiverValue.literal.value.replace(new RegExp(regex.pattern, flags), replacementLiteral.value) } };
+      }
+    }
+    return null;
+  }
+  return null;
+}
+
+function staticConstantToExpr(value: StaticConstant): Expr {
+  if (value.kind === "undefined") return { kind: "literal", literal: { type: "null" } };
+  if (value.kind === "literal") return { kind: "literal", literal: value.literal };
+  if (value.kind === "array") return { kind: "arrayLiteral", items: value.items.map(staticConstantToExpr) };
+  return { kind: "objectLiteral", fields: [...value.fields.entries()].map(([name, field]) => ({ name, value: staticConstantToExpr(field) })) };
+}
+
+function staticConstantFromExpr(expr: Expr): StaticConstant | null {
+  if (expr.kind === "literal") return { kind: "literal", literal: expr.literal };
+  if (expr.kind === "arrayLiteral") {
+    const items = expr.items.map(staticConstantFromExpr);
+    return items.every((item) => item !== null) ? { kind: "array", items: items as StaticConstant[] } : null;
+  }
+  if (expr.kind === "objectLiteral") {
+    const fields = new Map<string, StaticConstant>();
+    for (const field of expr.fields) {
+      const value = staticConstantFromExpr(field.value);
+      if (value === null) return null;
+      fields.set(field.name, value);
+    }
+    return { kind: "object", fields };
+  }
+  return null;
+}
+
+function staticListDefinitionFromStaticConstant(value: StaticConstant): StaticListDefinition | null {
+  if (value.kind !== "array" || value.items.length === 0 || !value.items.every((item) => item.kind === "object")) return null;
+  const first = value.items[0];
+  if (first === undefined || first.kind !== "object") return null;
+  const fieldNames = [...first.fields.keys()];
+  if (fieldNames.length === 0) return null;
+  const fields: Record<string, { shape: ValueShape; optional: boolean }> = {};
+  const items: StaticListItem[] = [];
+  for (const item of value.items) {
+    if (item.kind !== "object" || item.fields.size !== fieldNames.length) return null;
+    const literals: Record<string, Literal> = {};
+    for (const fieldName of fieldNames) {
+      const field = item.fields.get(fieldName);
+      const fieldLiteral = field === undefined ? null : staticConstantLiteral(field);
+      if (fieldLiteral === null || fieldLiteral.type === "null") return null;
+      literals[fieldName] = fieldLiteral;
+    }
+    items.push({ fields: literals });
+  }
+  for (const fieldName of fieldNames) {
+    const literal = items[0]?.fields[fieldName];
+    if (literal === undefined) return null;
+    fields[fieldName] = { shape: { kind: "primitive", primitive: literalType(literal) }, optional: false };
+  }
+  return { kind: "static-list", element: { kind: "object", fields }, items };
+}
+
+/** Return the common element contract of an immutable object-of-arrays
+ * lookup. The selected array can vary with a typed key at runtime, so this
+ * helper intentionally records only its shared shape; the emitted list keeps
+ * the exact lookup expression instead of pretending one branch is always
+ * selected. */
+function staticListDefinitionFromExpression(expression: Expr, name: string): ListPropDef | null {
+  const candidates: StaticListDefinition[] = [];
+  if (expression.kind === "arrayLiteral") {
+    const constant = staticConstantFromExpr(expression);
+    const definition = constant === null ? null : staticListDefinitionFromStaticConstant(constant);
+    if (definition !== null) candidates.push(definition);
+  } else if (expression.kind === "objectLookup" && expression.object.kind === "objectLiteral") {
+    for (const field of expression.object.fields) {
+      const constant = staticConstantFromExpr(field.value);
+      const definition = constant === null ? null : staticListDefinitionFromStaticConstant(constant);
+      if (definition === null) return null;
+      candidates.push(definition);
+    }
+  }
+  const first = candidates[0];
+  if (first === undefined || candidates.some((candidate) => JSON.stringify(candidate.element) !== JSON.stringify(first.element))) return null;
+  const keyField = inferredKeyFieldOrUndefined(first.element, `static list ${JSON.stringify(name)}`);
+  return { kind: "list", name, sourceExpression: expression, element: first.element, ...(keyField === undefined ? {} : { keyField }) };
+}
+
+function staticMappedObjectListDefinitionFromInitializer(initializer: ts.Expression, staticMaps: StaticStringMaps): StaticListDefinition | null {
+  const value = unwrapStaticValue(initializer);
+  if (!ts.isCallExpression(value) || !ts.isPropertyAccessExpression(value.expression) || value.expression.name.text !== "map") return null;
+  try {
+    const result = staticConstantFromExpression(value, new Map(), staticMaps);
+    return result === null ? null : staticListDefinitionFromStaticConstant(result);
+  } catch (error) {
+    // A map that is only partly static must continue through the ordinary
+    // parser and remain blocked; static folding is an optimization, not a
+    // second permissive parser or a new diagnostic boundary.
+    if (error instanceof DialectError && error.code === "CERTIFIED_COMPONENT_STATIC_EVALUATION") return null;
+    throw error;
+  }
+}
+
+function isClosedStaticValueWithReferences(node: ts.Expression, staticMaps: StaticStringMaps, stack: readonly string[] = []): boolean {
+  const value = unwrapStaticValue(node);
+  if (isClosedStaticValue(value)) return true;
+  if (ts.isIdentifier(value)) {
+    if (stack.includes(value.text)) return false;
+    const definition = staticMaps.get(value.text);
+    return definition !== undefined && (isStaticListDefinition(definition) || isStaticPrimitiveListDefinition(definition) || isStaticClosedValueDefinition(definition) && isClosedStaticValueWithReferences(definition.initializer, staticMaps, [...stack, value.text]));
+  }
+  if (!ts.isObjectLiteralExpression(value)) return false;
+  return value.properties.every((property) => ts.isPropertyAssignment(property)
+    && (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name))
+    && isClosedStaticValueWithReferences(property.initializer, staticMaps, stack));
+}
+
 function collectStaticStringMaps(sourceFile: ts.SourceFile, project?: ReactProjectContext): StaticStringMaps {
   const maps = new Map<string, StaticDefinition>();
   for (const statement of sourceFile.statements) {
@@ -290,7 +624,7 @@ function collectStaticStringMaps(sourceFile: ts.SourceFile, project?: ReactProje
         const declaration = importedValueDeclaration(specifier, project);
         const initializer = declaration?.initializer;
         if (initializer === undefined) continue;
-        const definition = staticDefinitionFromInitializer(initializer);
+        const definition = staticDefinitionFromInitializer(initializer, maps);
         if (definition !== null && !maps.has(specifier.name.text)) maps.set(specifier.name.text, definition);
       }
     }
@@ -301,7 +635,7 @@ function collectStaticStringMaps(sourceFile: ts.SourceFile, project?: ReactProje
       let initializer = declaration.initializer;
       while (initializer !== undefined && (ts.isAsExpression(initializer) || ts.isTypeAssertionExpression(initializer))) initializer = initializer.expression;
       if (!ts.isIdentifier(declaration.name) || initializer === undefined) continue;
-      const staticList = staticListDefinitionFromInitializer(initializer);
+      const staticList = staticListDefinitionFromInitializer(initializer, maps);
       if (staticList !== null) {
         maps.set(declaration.name.text, staticList);
         continue;
@@ -316,13 +650,8 @@ function collectStaticStringMaps(sourceFile: ts.SourceFile, project?: ReactProje
         maps.set(declaration.name.text, regex);
         continue;
       }
-      if (!ts.isObjectLiteralExpression(initializer)) continue;
-      const stringMap = staticStringMapFromInitializer(initializer);
-      if (stringMap !== null) {
-        maps.set(declaration.name.text, { kind: "closed-value", initializer, stringMap });
-      } else if (isClosedStaticValue(initializer)) {
-        maps.set(declaration.name.text, { kind: "closed-value", initializer });
-      }
+      const definition = staticDefinitionFromInitializer(initializer, maps);
+      if (definition !== null) maps.set(declaration.name.text, definition);
     }
   }
   for (const statement of sourceFile.statements) {
@@ -564,6 +893,20 @@ function anyLiteralFromNode(node: ts.Expression): Literal {
   fail("CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL", `expression of kind ${ts.SyntaxKind[node.kind]} is not a plain literal`);
 }
 
+/** Fold exactly one deterministic date expression used by immutable fallback
+ * state.  `new Date(0).toISOString()` has a fixed result independent of the
+ * host timezone; other Date constructors and methods remain outside the
+ * portable expression subset. */
+function fixedDateIsoLiteral(node: ts.Expression): Literal | null {
+  const call = unwrapStaticValue(node);
+  if (!ts.isCallExpression(call) || call.arguments.length !== 0 || !ts.isPropertyAccessExpression(call.expression) || call.expression.name.text !== "toISOString") return null;
+  const receiver = unwrapStaticValue(call.expression.expression);
+  if (!ts.isNewExpression(receiver) || !ts.isIdentifier(receiver.expression) || receiver.expression.text !== "Date" || receiver.arguments?.length !== 1) return null;
+  const epoch = receiver.arguments[0];
+  if (epoch === undefined || !ts.isNumericLiteral(epoch) || Number(epoch.text) !== 0) return null;
+  return { type: "string", value: "1970-01-01T00:00:00.000Z" };
+}
+
 /** A module-level value may be reused as state only when its complete tree is
  * made of literals.  This deliberately rejects spreads, calls, identifiers,
  * getters and computed properties: resolving a name must never turn a
@@ -603,16 +946,24 @@ function staticStringMapFromInitializer(initializer: ts.Expression): ReadonlyMap
   return entries.size === 0 ? null : entries;
 }
 
-function staticDefinitionFromInitializer(initializer: ts.Expression): StaticDefinition | null {
-  const staticList = staticListDefinitionFromInitializer(initializer);
+function staticDefinitionFromInitializer(initializer: ts.Expression, staticMaps: StaticStringMaps = new Map()): StaticDefinition | null {
+  const staticList = staticListDefinitionFromInitializer(initializer, staticMaps);
   if (staticList !== null) return staticList;
   const staticPrimitiveList = staticPrimitiveListDefinitionFromInitializer(initializer);
   if (staticPrimitiveList !== null) return staticPrimitiveList;
   const regex = regexDefinitionFromNode(initializer);
   if (regex !== null) return regex;
-  if (!isClosedStaticValue(initializer)) return null;
   const stringMap = staticStringMapFromInitializer(initializer);
-  return stringMap === null ? { kind: "closed-value", initializer } : { kind: "closed-value", initializer, stringMap };
+  if (stringMap !== null) {
+    const evaluatedMap = staticConstantFromExpression(initializer, new Map(), staticMaps);
+    return evaluatedMap === null
+      ? { kind: "closed-value", initializer, stringMap }
+      : { kind: "closed-value", initializer, stringMap, value: staticConstantToExpr(evaluatedMap) };
+  }
+  const evaluated = staticConstantFromExpression(initializer, new Map(), staticMaps);
+  if (evaluated !== null) return { kind: "closed-value", initializer, value: staticConstantToExpr(evaluated) };
+  if (!isClosedStaticValueWithReferences(initializer, staticMaps)) return null;
+  return { kind: "closed-value", initializer };
 }
 
 function importedValueDeclaration(
@@ -636,6 +987,8 @@ function importedValueDeclaration(
  * what makes the new state shape portable rather than a disguised `any`. */
 function closedStateValue(node: ts.Expression, staticMaps: StaticStringMaps): Literal | Expr {
   const value = unwrapStaticValue(node);
+  const fixedDate = fixedDateIsoLiteral(value);
+  if (fixedDate !== null) return fixedDate;
   if (ts.isStringLiteral(value) || ts.isNoSubstitutionTemplateLiteral(value) || ts.isNumericLiteral(value)
     || value.kind === ts.SyntaxKind.TrueKeyword || value.kind === ts.SyntaxKind.FalseKeyword || value.kind === ts.SyntaxKind.NullKeyword) {
     return anyLiteralFromNode(value);
@@ -665,6 +1018,7 @@ function closedStateValue(node: ts.Expression, staticMaps: StaticStringMaps): Li
   if (ts.isIdentifier(value)) {
     const definition = staticMaps.get(value.text);
     if (definition !== undefined && isStaticClosedValueDefinition(definition)) {
+      if (definition.value !== undefined) return definition.value;
       return closedStateValue(definition.initializer, staticMaps);
     }
     if (definition !== undefined && isStaticListDefinition(definition)) {
@@ -828,10 +1182,33 @@ function collectionJoinExpression(node: ts.CallExpression, staticMaps: StaticStr
 function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map(), eventParameter?: string, pureFunctionStack: readonly string[] = [], bindings: ExpressionBindings = new Map()): Expr {
   if (ts.isParenthesizedExpression(node)) return parseExpr(node.expression, staticMaps, eventParameter, pureFunctionStack, bindings);
   if (ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)) return parseExpr(node.expression, staticMaps, eventParameter, pureFunctionStack, bindings);
+  const fixedDate = fixedDateIsoLiteral(node);
+  if (fixedDate !== null) return { kind: "literal", literal: fixedDate };
   if (isEventTargetValue(node, eventParameter)) return { kind: "eventValue" };
-  if (ts.isIdentifier(node)) return bindings.get(node.text) ?? { kind: "ident", name: node.text };
+  if (ts.isIdentifier(node)) {
+    const bound = bindings.get(node.text);
+    if (bound !== undefined) return bound;
+    const definition = staticMaps.get(node.text);
+    if (definition !== undefined && isStaticClosedValueDefinition(definition) && definition.value !== undefined) return definition.value;
+    return { kind: "ident", name: node.text };
+  }
   if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
     const functionName = node.expression.text;
+    if (functionName === "useMemo") {
+      require_(node.arguments.length === 2, "CERTIFIED_COMPONENT_USEMEMO_ARITY", "useMemo requires a pure callback and an explicit dependency array");
+      const callback = at(node.arguments, 0, "CERTIFIED_COMPONENT_USEMEMO_CALLBACK", "useMemo is missing its callback");
+      require_(ts.isArrowFunction(callback) && !callback.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.AsyncKeyword), "CERTIFIED_COMPONENT_USEMEMO_CALLBACK", "useMemo callback must be a synchronous inline arrow");
+      const arrow = callback as ts.ArrowFunction;
+      require_(!ts.isBlock(arrow.body), "CERTIFIED_COMPONENT_USEMEMO_CALLBACK", "useMemo callback must return one pure expression directly");
+      const dependencies = at(node.arguments, 1, "CERTIFIED_COMPONENT_USEMEMO_DEPENDENCIES", "useMemo is missing its dependency array");
+      require_(ts.isArrayLiteralExpression(dependencies), "CERTIFIED_COMPONENT_USEMEMO_DEPENDENCIES", "useMemo dependencies must be an explicit array literal");
+      // Dependencies are parsed for the same reason the callback is parsed:
+      // an effectful or otherwise unknown dependency must not disappear when
+      // the memo wrapper is erased. The pure body is evaluated directly in
+      // the target, so memoization itself has no observable semantics left.
+      dependencies.elements.forEach((dependency) => parseExpr(dependency as ts.Expression, staticMaps, eventParameter, pureFunctionStack, bindings));
+      return parseExpr(arrow.body as ts.Expression, staticMaps, eventParameter, pureFunctionStack, bindings);
+    }
     const definition = staticMaps.get(functionName);
     if (definition !== undefined && isStaticNumberFormatDefinition(definition)) {
       require_(node.arguments.length === 1, "CERTIFIED_COMPONENT_NUMBER_FORMAT_ARITY", `${functionName} expects exactly one argument`);
@@ -921,6 +1298,13 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
     if (definition !== undefined && isStaticCssModuleDefinition(definition)) {
       return { kind: "cssModuleClass", className: node.name.text };
     }
+    if (definition !== undefined && isStaticClosedValueDefinition(definition)) {
+      const value = definition.value;
+      if (value?.kind === "objectLiteral") {
+        const field = value.fields.find((candidate) => candidate.name === node.name.text);
+        if (field !== undefined) return field.value;
+      }
+    }
   }
   if (ts.isObjectLiteralExpression(node)) {
     const fields: { name: string; value: Expr }[] = [];
@@ -990,6 +1374,18 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
       }
       return staticLookupExpression(values, parseExpr(node.argumentExpression, staticMaps, eventParameter, pureFunctionStack, bindings));
     }
+    if (table !== undefined && isStaticClosedValueDefinition(table)) {
+      // A closed module object may contain immutable arrays or other closed
+      // objects referenced by name. Inline that fully resolved value before
+      // lowering the lookup so generated targets do not depend on a source
+      // module import that the canonical component does not carry.
+      const object = closedStateValue(table.initializer, staticMaps);
+      require_("kind" in object, "CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS", `static value ${node.expression.text} could not be lowered to a closed object`);
+      const objectExpression: Expr = "type" in object
+        ? { kind: "literal", literal: object as Literal }
+        : object as Expr;
+      return { kind: "objectLookup", object: objectExpression, key: parseExpr(node.argumentExpression, staticMaps, eventParameter, pureFunctionStack, bindings) };
+    }
     return {
       kind: "objectLookup",
       object: parseExpr(node.expression, staticMaps, eventParameter, pureFunctionStack, bindings),
@@ -1041,7 +1437,7 @@ function collectionFilterExpression(
  * `() => setCount(count + 1)`, `() => setCount(!on)`,
  * `(v) => onChange(v)` -- a single expression statement, or a block of
  * such statements, each either a setState call or a callback-prop call. */
-function parseHandlerBody(fn: ts.ArrowFunction, staticMaps: StaticStringMaps = new Map(), callbackNames: ReadonlySet<string> = new Set()): Stmt[] {
+function parseHandlerBody(fn: ts.ArrowFunction, staticMaps: StaticStringMaps = new Map(), callbackNames: ReadonlySet<string> = new Set(), stateSetterNames: ReadonlyMap<string, string> = new Map()): Stmt[] {
   const parameterName = fn.parameters[0]?.name;
   const eventParameter = fn.parameters.length === 1 && parameterName !== undefined && ts.isIdentifier(parameterName)
     ? parameterName.text
@@ -1050,6 +1446,11 @@ function parseHandlerBody(fn: ts.ArrowFunction, staticMaps: StaticStringMaps = n
     require_(ts.isCallExpression(expr) && ts.isIdentifier(expr.expression), "CERTIFIED_COMPONENT_UNSUPPORTED_HANDLER_STATEMENT", "handler statement must be a single call expression");
     const call = expr as ts.CallExpression;
     const callee = (call.expression as ts.Identifier).text;
+    const boundState = stateSetterNames.get(callee);
+    if (boundState !== undefined) {
+      require_(call.arguments.length === 1, "CERTIFIED_COMPONENT_BAD_SETSTATE_ARITY", `${callee} must be called with exactly one argument`);
+      return { kind: "setState", target: boundState, value: parseExpr(at(call.arguments, 0, "CERTIFIED_COMPONENT_BAD_SETSTATE_ARITY", `${callee} is missing its argument`), staticMaps, eventParameter) };
+    }
     const fourth = callee[3];
     if (!callbackNames.has(callee) && callee.startsWith("set") && fourth !== undefined && fourth === fourth.toUpperCase() && fourth !== fourth.toLowerCase()) {
       require_(call.arguments.length === 1, "CERTIFIED_COMPONENT_BAD_SETSTATE_ARITY", `${callee} must be called with exactly one argument`);
@@ -1106,7 +1507,7 @@ const JSX_EVENT_PROP_TO_EVENT_NAME: Record<string, EventName> = {
   onClick: "onClick", onChange: "onChange", onInput: "onInput", onSubmit: "onSubmit",
 };
 
-function parseJsxChildren(children: ts.NodeArray<ts.JsxChild>, staticMaps: StaticStringMaps = new Map(), callbackNames: ReadonlySet<string> = new Set(), bindings: ExpressionBindings = new Map()): CNode[] {
+function parseJsxChildren(children: ts.NodeArray<ts.JsxChild>, staticMaps: StaticStringMaps = new Map(), callbackNames: ReadonlySet<string> = new Set(), bindings: ExpressionBindings = new Map(), stateSetterNames: ReadonlyMap<string, string> = new Map()): CNode[] {
   const result: CNode[] = [];
   for (const child of children) {
     if (ts.isJsxText(child)) {
@@ -1121,29 +1522,29 @@ function parseJsxChildren(children: ts.NodeArray<ts.JsxChild>, staticMaps: Stati
         result.push({
           kind: "conditional",
           condition: parseExpr(expr.condition, staticMaps, undefined, [], bindings),
-          then: parseJsxNode(expr.whenTrue, staticMaps, callbackNames, bindings),
-          else: expr.whenFalse.kind === ts.SyntaxKind.NullKeyword ? null : parseJsxNode(expr.whenFalse, staticMaps, callbackNames, bindings),
+          then: parseJsxNode(expr.whenTrue, staticMaps, callbackNames, bindings, stateSetterNames),
+          else: expr.whenFalse.kind === ts.SyntaxKind.NullKeyword ? null : parseJsxNode(expr.whenFalse, staticMaps, callbackNames, bindings, stateSetterNames),
         });
         continue;
       }
       if (ts.isBinaryExpression(expr) && expr.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken && isJsxLike(expr.right)) {
-        result.push({ kind: "conditional", condition: parseExpr(expr.left, staticMaps, undefined, [], bindings), then: parseJsxNode(expr.right, staticMaps, callbackNames, bindings), else: null });
+        result.push({ kind: "conditional", condition: parseExpr(expr.left, staticMaps, undefined, [], bindings), then: parseJsxNode(expr.right, staticMaps, callbackNames, bindings, stateSetterNames), else: null });
         continue;
       }
-      const listNode = tryParseListExpression(expr, staticMaps, callbackNames, bindings);
+      const listNode = tryParseListExpression(expr, staticMaps, callbackNames, bindings, stateSetterNames);
       if (listNode !== null) {
         result.push(listNode);
         continue;
       }
       if (isJsxLike(expr)) {
-        result.push(parseJsxNode(expr, staticMaps, callbackNames, bindings));
+        result.push(parseJsxNode(expr, staticMaps, callbackNames, bindings, stateSetterNames));
         continue;
       }
       result.push({ kind: "text", value: parseExpr(expr, staticMaps, undefined, [], bindings) });
       continue;
     }
     if (ts.isJsxElement(child) || ts.isJsxSelfClosingElement(child) || ts.isJsxFragment(child)) {
-      result.push(parseJsxNode(child, staticMaps, callbackNames, bindings));
+      result.push(parseJsxNode(child, staticMaps, callbackNames, bindings, stateSetterNames));
       continue;
     }
     fail("CERTIFIED_COMPONENT_UNSUPPORTED_JSX_CHILD", `JSX child kind ${ts.SyntaxKind[(child as ts.Node).kind]} is outside certified-component-v1`);
@@ -1172,7 +1573,7 @@ function isJsxLike(node: ts.Expression): boolean {
  * call at all, so the caller can fall through to its other JSX-child
  * cases. A `.map` call that IS present but malformed fails closed.
  */
-function tryParseListExpression(expr: ts.Expression, staticMaps: StaticStringMaps = new Map(), callbackNames: ReadonlySet<string> = new Set(), bindings: ExpressionBindings = new Map()): CNode | null {
+function tryParseListExpression(expr: ts.Expression, staticMaps: StaticStringMaps = new Map(), callbackNames: ReadonlySet<string> = new Set(), bindings: ExpressionBindings = new Map(), stateSetterNames: ReadonlyMap<string, string> = new Map()): CNode | null {
   const call = unwrapParens(expr);
   if (!ts.isCallExpression(call)) return null;
   if (!ts.isPropertyAccessExpression(call.expression) || call.expression.name.text !== "map") return null;
@@ -1241,7 +1642,7 @@ function tryParseListExpression(expr: ts.Expression, staticMaps: StaticStringMap
       }
     }
   }
-  return { kind: "list", source, sourceExpression: sourceExpression.kind === "ident" ? undefined : sourceExpression, itemName, ...(keyField === undefined ? {} : { keyField }), body: parseJsxNode(body, staticMaps, callbackNames, bodyBindings) };
+  return { kind: "list", source, sourceExpression: sourceExpression.kind === "ident" ? undefined : sourceExpression, itemName, ...(keyField === undefined ? {} : { keyField }), body: parseJsxNode(body, staticMaps, callbackNames, bodyBindings, stateSetterNames) };
 }
 
 function applyExplicitListKeys(root: CNode, props: PropDef[]): void {
@@ -1443,9 +1844,9 @@ function materializeStateLists(root: CNode, state: readonly StateDef[]): ListPro
   return [...lists.values()];
 }
 
-function parseJsxNode(rawNode: ts.Expression, staticMaps: StaticStringMaps = new Map(), callbackNames: ReadonlySet<string> = new Set(), bindings: ExpressionBindings = new Map()): CNode {
+function parseJsxNode(rawNode: ts.Expression, staticMaps: StaticStringMaps = new Map(), callbackNames: ReadonlySet<string> = new Set(), bindings: ExpressionBindings = new Map(), stateSetterNames: ReadonlyMap<string, string> = new Map()): CNode {
   const node = unwrapParens(rawNode);
-  if (ts.isJsxFragment(node)) return { kind: "fragment", children: parseJsxChildren(node.children, staticMaps, callbackNames, bindings) };
+  if (ts.isJsxFragment(node)) return { kind: "fragment", children: parseJsxChildren(node.children, staticMaps, callbackNames, bindings, stateSetterNames) };
   require_(ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node), "CERTIFIED_COMPONENT_UNSUPPORTED_JSX_NODE", `expected a JSX element, got ${ts.SyntaxKind[node.kind]}`);
   const opening = ts.isJsxElement(node) ? node.openingElement : node;
   const tagName = opening.tagName.getText();
@@ -1469,7 +1870,7 @@ function parseJsxNode(rawNode: ts.Expression, staticMaps: StaticStringMaps = new
       else if (ts.isJsxExpression(jsxAttr.initializer) && jsxAttr.initializer.expression) attrs.push({ kind: "dynamic", name: attrName, value: parseExpr(jsxAttr.initializer.expression, staticMaps, undefined, [], bindings) });
       else fail("CERTIFIED_COMPONENT_UNSUPPORTED_ATTRIBUTE", `navigation Link attribute ${JSON.stringify(rawName)} has an unsupported value shape`);
     }
-    return { kind: "element", tag: "a", attrs, events: [], children: ts.isJsxElement(node) ? parseJsxChildren(node.children, staticMaps, callbackNames) : [] };
+    return { kind: "element", tag: "a", attrs, events: [], children: ts.isJsxElement(node) ? parseJsxChildren(node.children, staticMaps, callbackNames, bindings, stateSetterNames) : [] };
   }
 
   // A capitalised tag is a component reference, not an unknown element.
@@ -1519,7 +1920,7 @@ function parseJsxNode(rawNode: ts.Expression, staticMaps: StaticStringMaps = new
       require_(jsxAttr.initializer !== undefined && ts.isJsxExpression(jsxAttr.initializer) && jsxAttr.initializer.expression !== undefined, "CERTIFIED_COMPONENT_BAD_EVENT_BINDING", `${rawName} must bind to an arrow function`);
       const init = (jsxAttr.initializer as ts.JsxExpression).expression as ts.Expression;
       require_(ts.isArrowFunction(init), "CERTIFIED_COMPONENT_BAD_EVENT_BINDING", `${rawName} must bind to an inline arrow function`);
-      events.push({ name: mappedEvent, body: parseHandlerBody(init, staticMaps, callbackNames) });
+      events.push({ name: mappedEvent, body: parseHandlerBody(init, staticMaps, callbackNames, stateSetterNames) });
       continue;
     }
     const attrName = jsxAttrName(rawName);
@@ -1537,7 +1938,7 @@ function parseJsxNode(rawNode: ts.Expression, staticMaps: StaticStringMaps = new
     }
   }
 
-  const children = ts.isJsxElement(node) ? parseJsxChildren(node.children, staticMaps, callbackNames, bindings) : [];
+  const children = ts.isJsxElement(node) ? parseJsxChildren(node.children, staticMaps, callbackNames, bindings, stateSetterNames) : [];
   return { kind: "element", tag, attrs, events, children };
 }
 
@@ -1547,17 +1948,17 @@ function parseJsxNode(rawNode: ts.Expression, staticMaps: StaticStringMaps = new
  * canonical conditional node instead of treating the expression itself as a
  * tag.  A non-JSX branch remains fail-closed in parseJsxNode.
  */
-function parseRenderExpression(raw: ts.Expression, staticMaps: StaticStringMaps, callbackNames: ReadonlySet<string> = new Set(), bindings: ExpressionBindings = new Map()): CNode {
+function parseRenderExpression(raw: ts.Expression, staticMaps: StaticStringMaps, callbackNames: ReadonlySet<string> = new Set(), bindings: ExpressionBindings = new Map(), stateSetterNames: ReadonlyMap<string, string> = new Map()): CNode {
   const node = unwrapParens(raw);
   if (ts.isConditionalExpression(node) && (isJsxLike(node.whenTrue) || isJsxLike(node.whenFalse))) {
     return {
       kind: "conditional",
       condition: parseExpr(node.condition, staticMaps, undefined, [], bindings),
-      then: parseJsxNode(node.whenTrue, staticMaps, callbackNames, bindings),
-      else: node.whenFalse.kind === ts.SyntaxKind.NullKeyword ? null : parseJsxNode(node.whenFalse, staticMaps, callbackNames, bindings),
+      then: parseJsxNode(node.whenTrue, staticMaps, callbackNames, bindings, stateSetterNames),
+      else: node.whenFalse.kind === ts.SyntaxKind.NullKeyword ? null : parseJsxNode(node.whenFalse, staticMaps, callbackNames, bindings, stateSetterNames),
     };
   }
-  return parseJsxNode(node, staticMaps, callbackNames);
+  return parseJsxNode(node, staticMaps, callbackNames, bindings, stateSetterNames);
 }
 
 /**
@@ -2100,6 +2501,7 @@ function parseFunctionComponent(
 
   const body = requireDefined(fn.body, "CERTIFIED_COMPONENT_MISSING_BODY", "component must have a body");
   const state: StateDef[] = [];
+  const stateSetterNames = new Map<string, string>();
   const localDefinitions = new Map<string, LocalExpressionDefinition>();
   let returnStatement: ts.ReturnStatement | undefined;
   const earlyReturns: { condition: ts.Expression; statement: ts.ReturnStatement }[] = [];
@@ -2115,9 +2517,13 @@ function parseFunctionComponent(
           continue;
         }
         const fields = staticObjectAliasFields(decl.initializer, staticMaps);
-        localDefinitions.set(declName.text, fields === null
-          ? { expression: parseExpr(decl.initializer, staticMaps), order: statementOrder }
-          : { fields, order: statementOrder });
+        if (fields !== null) {
+          localDefinitions.set(declName.text, { fields, order: statementOrder });
+        } else {
+          const expression = parseExpr(decl.initializer, staticMaps);
+          const staticList = staticListDefinitionFromExpression(expression, declName.text);
+          localDefinitions.set(declName.text, { expression, ...(staticList === null ? {} : { list: staticList }), order: statementOrder });
+        }
         continue;
       }
       require_(ts.isArrayBindingPattern(declName) && declName.elements.length === 2, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "expected a `const [x, setX] = useState(...)` declaration");
@@ -2127,16 +2533,20 @@ function parseFunctionComponent(
       require_(ts.isBindingElement(setterEl) && ts.isIdentifier(setterEl.name), "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "useState setter must be a plain identifier");
       const getterName = (getterEl.name as ts.Identifier).text;
       const setterNameText = (setterEl.name as ts.Identifier).text;
-      const firstChar = at([...getterName], 0, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "empty state name");
-      const expectedSetter = "set" + firstChar.toUpperCase() + getterName.slice(1);
-      require_(setterNameText === expectedSetter, "CERTIFIED_COMPONENT_NONSTANDARD_SETTER_NAME", `useState setter must be named ${expectedSetter}`);
       const initializer = requireDefined(decl.initializer, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "expected a useState(...) call");
       require_(ts.isCallExpression(initializer) && ts.isIdentifier(initializer.expression) && initializer.expression.text === "useState", "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "expected a useState(...) call");
       require_(initializer.arguments.length === 1, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "useState must be called with exactly one closed literal initial value");
       const initial = closedStateValue(at(initializer.arguments, 0, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "missing useState argument"), staticMaps);
       const checker = options.project?.checker;
-      const declared = checker !== undefined
-        ? valueShapeFromChecker(checker.getTypeAtLocation(getterEl.name), checker, getterEl.name, `state ${getterName}`)
+      const checkerType = checker?.getTypeAtLocation(getterEl.name);
+      // A synthetic single-file project has no React declaration for
+      // `useState`, so TypeScript can report `any` even when the source has an
+      // explicit type argument. Never let that tooling absence erase a
+      // stronger source annotation; real incompatible checker types still
+      // take precedence and fail closed below.
+      const declared = checker !== undefined && checkerType !== undefined
+        && (checkerType.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) === 0
+        ? valueShapeFromChecker(checkerType, checker, getterEl.name, `state ${getterName}`)
         : initializer.typeArguments?.[0] !== undefined
           ? shapeFromTypeNode(initializer.typeArguments[0], `state ${getterName}`, localTypes)
           : undefined;
@@ -2158,6 +2568,12 @@ function parseFunctionComponent(
         require_(initialLiteral !== undefined, "CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL", `state ${JSON.stringify(getterName)} requires a primitive literal initializer`);
         state.push({ name: getterName, stateType, ...(nullable ? { nullable: true } : {}), initial: initialLiteral });
       }
+      // The destructuring declaration is the source of truth for the setter
+      // binding. React does not require the conventional `set${Name}` spelling;
+      // recording the exact local name lets the canonical IR keep the state
+      // target while each emitter chooses its own setter syntax.
+      require_(!stateSetterNames.has(setterNameText), "CERTIFIED_COMPONENT_DUPLICATE_SETTER", `state setter ${JSON.stringify(setterNameText)} is bound more than once`);
+      stateSetterNames.set(setterNameText, getterName);
       continue;
     }
     if (ts.isIfStatement(stmt)) {
@@ -2184,13 +2600,13 @@ function parseFunctionComponent(
   let returned = requireDefined(ret.expression, "CERTIFIED_COMPONENT_MISSING_RETURN", "component must return JSX");
   if (ts.isParenthesizedExpression(returned)) returned = returned.expression;
   const callbackNames = new Set(props.filter((prop): prop is CallbackPropDef => prop.kind === "callback").map((prop) => prop.name));
-  let root = parseRenderExpression(returned, staticMaps, callbackNames);
+  let root = parseRenderExpression(returned, staticMaps, callbackNames, new Map(), stateSetterNames);
   for (let index = earlyReturns.length - 1; index >= 0; index -= 1) {
     const early = earlyReturns[index]!;
     root = {
       kind: "conditional",
       condition: parseExpr(early.condition, staticMaps),
-      then: parseRenderExpression(requireDefined(early.statement.expression, "CERTIFIED_COMPONENT_MISSING_RETURN", "an early return must return JSX"), staticMaps, callbackNames),
+      then: parseRenderExpression(requireDefined(early.statement.expression, "CERTIFIED_COMPONENT_MISSING_RETURN", "an early return must return JSX"), staticMaps, callbackNames, new Map(), stateSetterNames),
       else: root,
     };
   }

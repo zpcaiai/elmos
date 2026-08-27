@@ -79,7 +79,7 @@ function literalSource(literal: Literal): string {
 function exprSource(expr: Expr, inJs: boolean, snapshot: ReadonlySet<string> = new Set()): string {
   const wrap = (e: Expr): string => {
     const src = exprSource(e, inJs, snapshot);
-    return e.kind === "binary" || e.kind === "ternary" ? `(${src})` : src;
+    return e.kind === "binary" || e.kind === "ternary" || e.kind === "objectLiteral" ? `(${src})` : src;
   };
   switch (expr.kind) {
     case "ident":
@@ -111,7 +111,7 @@ function exprSource(expr: Expr, inJs: boolean, snapshot: ReadonlySet<string> = n
     case "collectionReduce": return `${exprSource(expr.source, inJs, snapshot)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${exprSource(expr.reducer, inJs, snapshot)}), ${exprSource(expr.initial, inJs, snapshot)})`;
     case "collectionMax": return `Math.max(...${exprSource(expr.source, inJs, snapshot)}.map((${expr.itemName}) => (${exprSource(expr.operand, inJs, snapshot)})))`;
     case "collectionJoin": return `${exprSource(expr.source, inJs, snapshot)}.join(${exprSource(expr.separator, inJs, snapshot)})`;
-    case "objectLookup": return `${exprSource(expr.object, inJs, snapshot)}[${exprSource(expr.key, inJs, snapshot)}]`;
+    case "objectLookup": return `${wrap(expr.object)}[${exprSource(expr.key, inJs, snapshot)}]`;
     case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${exprSource(field.value, inJs, snapshot)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key, inJs, snapshot)}]: ${exprSource(field.value, inJs, snapshot)}`)].join(", ")} }`;
     case "arrayLiteral": return `[${expr.items.map((item) => exprSource(item, inJs, snapshot)).join(", ")}]`;
     case "ternary": return `${wrap(expr.condition)} ? ${wrap(expr.then)} : ${wrap(expr.else)}`;
