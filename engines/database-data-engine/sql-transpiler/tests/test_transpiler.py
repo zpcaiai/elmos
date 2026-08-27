@@ -230,7 +230,10 @@ def test_unexpected_emission_faults_are_failed_closed_not_raised(
 
 
 def test_emission_fault_diagnostic_does_not_leak_source_sql() -> None:
-    secret = "SELECT SUM(a) FILTER (WHERE tenant_secret_column) OVER (ORDER BY d ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) FROM t"
+    secret = (
+        "SELECT SUM(a) FILTER (WHERE tenant_secret_column) OVER (ORDER BY d "
+        "ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) FROM t"
+    )
     result = transpile(
         TranspileRequest(
             query_id="emission-fault-privacy",

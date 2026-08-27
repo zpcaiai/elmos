@@ -240,7 +240,8 @@ class WalletMigrationContractTest {
             // search_path while holding the OWNER's privileges: a caller who can
             // create a schema can shadow any unqualified name it resolves and be
             // executed as the owner.
-            assertTrue(header.contains("SET search_path = public"),
+            assertTrue(header.contains("SET search_path = public")
+                            || header.contains("SET search_path = pg_catalog, public, pg_temp"),
                     () -> signature + " is SECURITY DEFINER without a pinned search_path");
         }
         int securityDefinerCount = definers;
