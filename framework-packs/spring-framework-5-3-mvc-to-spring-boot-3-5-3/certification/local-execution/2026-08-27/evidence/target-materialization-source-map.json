@@ -1,5 +1,4 @@
 {
-  "schema_version" : 1,
   "mappings" : [ {
     "source" : "src/main/java/io/elmos/legacy/service/LegacyOrderService.java",
     "target" : "src/main/java/io/elmos/legacy/service/LegacyOrderService.java",
@@ -30,5 +29,6 @@
     "target" : "src/test/java/io/elmos/legacy/web/LegacyOrderControllerTest.java",
     "source_sha256" : "e3ab30e8c9839af612e78479cae5cdc5c051f0273b28ff93dd550900f84d4f68",
     "mapping" : "copy-with-exact-javax-validation-and-servlet-namespace-migration"
-  } ]
+  } ],
+  "schema_version" : 1
 }

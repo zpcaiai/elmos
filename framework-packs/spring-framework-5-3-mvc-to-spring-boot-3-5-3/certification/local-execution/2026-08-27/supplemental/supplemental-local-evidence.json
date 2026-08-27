@@ -1,12 +1,12 @@
 {
   "binding": {
-    "policy_sha256": "sha256:943a248703887589201f4f329e26e56cfa7e15ac4e075ebedd5493a27ac99af0",
+    "policy_sha256": "sha256:1b30855b88e5ddd22cd35a7324412cc786f7e3592a5afeb652bd16ad94b1f361",
     "source_commit": "7e1c098541143c96cce7d9a637fffe57d0e2baae",
     "source_war_bytes": 9873951,
     "source_war_path": "source-artifacts/legacy-spring-mvc-5.3.39.war",
     "source_war_sha256": "sha256:0304b7290a71f4192eceaa75891f787532e4f26b5a7a7af7472d750aba1ff8ef",
     "target_artifact_bytes": 28990394,
-    "target_artifact_sha256": "sha256:1fae241386924325e6f8099e59b2d5da19749cfd47b9fdb26f92fb7d5c857f60"
+    "target_artifact_sha256": "sha256:d97a8f267d824a540e0f59763776afe0679c35945503e9935a321f59f592d4c5"
   },
   "claim_scope": "LOCAL_ISOLATED_EXACT_TUPLE_ONLY",
   "evidence_class": "LOCAL_ENGINEERING_SUPPLEMENTAL",
@@ -18,39 +18,39 @@
       "production_operations": "NOT_RUN",
       "shutdown": {
         "bounded": true,
-        "elapsed_ms": 35.875,
+        "elapsed_ms": 39.046,
         "returncode": 143
       },
       "status": "PASSED_LOCAL",
       "target_probes": [
         {
           "bytes": 15,
-          "elapsed_ms": 2.495,
+          "elapsed_ms": 2.05,
           "sha256": "647a83cca85203d6d4eb07eea84ef6eb91d5c6482eaff2ac8bb65a342b9f2946",
           "status": 200,
-          "url": "http://127.0.0.1:55847/actuator/health"
+          "url": "http://127.0.0.1:49455/actuator/health"
         },
         {
           "bytes": 61,
-          "elapsed_ms": 6.142,
+          "elapsed_ms": 5.538,
           "sha256": "06999b17cc1ebccad19cbd3fc491a733b9da740dcbc2d29404226fa816d076e2",
           "status": 200,
-          "url": "http://127.0.0.1:55847/api/orders/7"
+          "url": "http://127.0.0.1:49455/api/orders/7"
         },
         {
           "bytes": 142,
-          "elapsed_ms": 563.813,
+          "elapsed_ms": 451.9,
           "sha256": "7c972e56e323ba7372ffb204c18ffac6fdd5dd5f49d9602db13d22fa7b20f4b4",
           "status": 200,
-          "url": "http://127.0.0.1:55847/orders"
+          "url": "http://127.0.0.1:49455/orders"
         }
       ],
       "target_readiness": {
         "bytes": 15,
-        "elapsed_ms": 78.595,
+        "elapsed_ms": 64.219,
         "sha256": "647a83cca85203d6d4eb07eea84ef6eb91d5c6482eaff2ac8bb65a342b9f2946",
         "status": 200,
-        "url": "http://127.0.0.1:55847/actuator/health"
+        "url": "http://127.0.0.1:49455/actuator/health"
       }
     },
     "performance": {
@@ -59,9 +59,9 @@
       "concurrency": 8,
       "exit_code": 0,
       "requests": 200,
-      "requests_per_second": 4152.31,
+      "requests_per_second": 5130.97,
       "status": "PASSED_LOCAL_BENCHMARK",
-      "time_per_request_ms": 1.927,
+      "time_per_request_ms": 1.559,
       "tool": "/usr/sbin/ab"
     },
     "representative_customer_scenario": "NOT_RUN",
@@ -77,12 +77,12 @@
       "shutdowns": {
         "source": {
           "bounded": true,
-          "elapsed_ms": 1692.293,
+          "elapsed_ms": 1680.111,
           "returncode": 143
         },
         "target": {
           "bounded": true,
-          "elapsed_ms": 35.875,
+          "elapsed_ms": 39.046,
           "returncode": 143
         }
       },
@@ -95,25 +95,25 @@
       },
       "source_probe": {
         "bytes": 62,
-        "elapsed_ms": 1.819,
+        "elapsed_ms": 1.691,
         "sha256": "c0697d9710a80a397c61f8cc347feed45107335979b54fc5a6818a6382f95727",
         "status": 200,
-        "url": "http://127.0.0.1:56068/api/orders/42"
+        "url": "http://127.0.0.1:49675/api/orders/42"
       },
       "source_readiness": {
         "bytes": 62,
-        "elapsed_ms": 1342.957,
+        "elapsed_ms": 1263.839,
         "sha256": "c0697d9710a80a397c61f8cc347feed45107335979b54fc5a6818a6382f95727",
         "status": 200,
-        "url": "http://127.0.0.1:56068/api/orders/42"
+        "url": "http://127.0.0.1:49675/api/orders/42"
       },
       "status": "PASSED_LOCAL_ISOLATED_ROLLBACK_REHEARSAL",
       "target_readiness": {
         "bytes": 15,
-        "elapsed_ms": 78.595,
+        "elapsed_ms": 64.219,
         "sha256": "647a83cca85203d6d4eb07eea84ef6eb91d5c6482eaff2ac8bb65a342b9f2946",
         "status": 200,
-        "url": "http://127.0.0.1:55847/actuator/health"
+        "url": "http://127.0.0.1:49455/actuator/health"
       }
     },
     "sbom": {
@@ -135,7 +135,7 @@
     }
   },
   "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
-  "policy_bytes_sha256": "sha256:943a248703887589201f4f329e26e56cfa7e15ac4e075ebedd5493a27ac99af0",
+  "policy_bytes_sha256": "sha256:1b30855b88e5ddd22cd35a7324412cc786f7e3592a5afeb652bd16ad94b1f361",
   "policy_path": "qualification-policy.json",
   "required_external_evidence_types": [
     "source_build",

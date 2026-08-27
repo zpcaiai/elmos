@@ -15,7 +15,7 @@
   },
   "target": {
     "artifact_path": "artifacts/executed-spring-boot-3.5.3.war",
-    "artifact_sha256": "sha256:1fae241386924325e6f8099e59b2d5da19749cfd47b9fdb26f92fb7d5c857f60",
+    "artifact_sha256": "sha256:d97a8f267d824a540e0f59763776afe0679c35945503e9935a321f59f592d4c5",
     "artifact_bytes": 28990394,
     "artifact_format": "spring-boot-executable-war",
     "framework": "spring-boot",
@@ -46,7 +46,7 @@
   },
   "policy": {
     "path": "qualification-policy.json",
-    "sha256": "sha256:943a248703887589201f4f329e26e56cfa7e15ac4e075ebedd5493a27ac99af0"
+    "sha256": "sha256:1b30855b88e5ddd22cd35a7324412cc786f7e3592a5afeb652bd16ad94b1f361"
   },
   "status_boundary": {
     "local_execution": "PASSED_LOCAL",
