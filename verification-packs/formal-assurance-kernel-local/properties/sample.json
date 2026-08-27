@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "property_id": "property.formal-assurance-kernel-local",
+  "claim_id": "claim.behavior",
+  "owner": "elmos-formal-assurance-engineering",
+  "generator": {
+    "kind": "schema-aware",
+    "constraints": [
+      "valid-domain"
+    ]
+  },
+  "oracle_refs": [
+    "oracle.business"
+  ],
+  "assertion": {
+    "kind": "source-target-equivalence"
+  },
+  "shrinker": {
+    "kind": "structure-aware"
+  },
+  "replay": {
+    "seed": "1",
+    "command": "PYTHONPATH=engines/formal-assurance-engine/src python3 -m unittest discover -s engines/formal-assurance-engine/tests -p 'test_*.py'"
+  }
+}

@@ -2,8 +2,8 @@
 name: etgb-project-generation-validation
 description: Validate multilingual greenfield and evolutionary project generation from executable requirement contracts. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
 metadata:
-  source_package: elmos-etgb-sota-skills-package-v1.0.0
-  source_archive_sha256: fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202
+  source_package: elmos-etgb-sota-skills-package-v1.1.0
+  source_archive_sha256: 6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e
   source_skill: project-generation-validation
   runtime: engines/etgb-engine/src/elmos_etgb
 ---
@@ -81,4 +81,8 @@ Requirement satisfaction, functional correctness, data/transaction integrity, se
 ## Failure policy
 
 A polished UI or extensive codebase cannot compensate for failed critical behavior. Missing or contradictory requirements must be surfaced, not invented invisibly.
+
+## v1.1 production execution
+
+Freeze the requirement contract and assumptions as part of the plan. Separate generation from hidden acceptance, sign the generated artifact/SBOM/provenance, and preserve user-owned regions during evolution. Track token/credit/machine wall-clock per phase and test pause/resume/cancel without duplicate migrations, webhooks or messages.
 <!-- END UNTRUSTED SOURCE SKILL BODY -->

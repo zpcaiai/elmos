@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/verifier-adapter.schema.json",
+  "title": "Verifier Adapter",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.ai/v2alpha1"
+    },
+    "kind": {
+      "const": "VerifierAdapter"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "name",
+        "versionPolicy"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "versionPolicy": {
+          "enum": [
+            "release-time-pinned",
+            "exact"
+          ]
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "engine",
+        "evidenceTrust",
+        "supportedProperties",
+        "execution",
+        "security"
+      ],
+      "properties": {
+        "engine": {
+          "type": "string"
+        },
+        "evidenceTrust": {
+          "enum": [
+            "KERNEL_CHECKED",
+            "SOLVER_TRUSTED",
+            "BOUNDED",
+            "RUNTIME"
+          ]
+        },
+        "supportedProperties": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "execution": {
+          "type": "object",
+          "required": [
+            "command",
+            "timeoutSeconds",
+            "memoryMb"
+          ],
+          "properties": {
+            "command": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "timeoutSeconds": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "memoryMb": {
+              "type": "integer",
+              "minimum": 128
+            }
+          }
+        },
+        "security": {
+          "type": "object",
+          "required": [
+            "network",
+            "secrets",
+            "filesystem"
+          ],
+          "properties": {
+            "network": {
+              "const": "deny"
+            },
+            "secrets": {
+              "const": "none"
+            },
+            "filesystem": {
+              "enum": [
+                "read-only-input-temp-output",
+                "read-only"
+              ]
+            }
+          }
+        },
+        "inputMediaTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "outputParser": {
+          "type": "string"
+        },
+        "licenseReviewRequired": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

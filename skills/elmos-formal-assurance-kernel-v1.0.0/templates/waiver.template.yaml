@@ -1,0 +1,13 @@
+apiVersion: elmos.ai/v2alpha1
+kind: ProofWaiverTemplate
+metadata: {name: replace-me}
+spec:
+  obligationId: replace-me
+  reason: REPLACE_WITH_AT_LEAST_20_CHARACTERS
+  risk: HIGH
+  owner: replace-me
+  compensatingControls: []
+  approvals:
+    - {approver: replace-me, role: security, approvedAt: REPLACE_WITH_TIMESTAMP}
+    - {approver: replace-me, role: business, approvedAt: REPLACE_WITH_TIMESTAMP}
+  expiresAt: REPLACE_WITH_TIMESTAMP

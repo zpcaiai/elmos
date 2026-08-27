@@ -1,0 +1,77 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-reflection-ffi-boundary-verifier
+  title: Reflection and FFI Boundary Verifier
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P2
+  domain: cross-language
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 对反射、动态加载、native/FFI、宏生成和外部运行时建立闭世界清单、契约桩和运行时监控边界。
+  dependencies:
+  - elmos-assumption-ledger
+  - elmos-trusted-computing-base-registry
+  - elmos-language-semantic-profile
+  - elmos-semantic-ir-formal-semantics
+  capabilities:
+  - closed-world enumeration
+  - contract stubs
+  - runtime attestation
+  - boundary monitoring
+  inputs:
+  - name: reflection inventory
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: native manifests
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: external contracts
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: boundary model
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: monitor config
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: assumption records
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

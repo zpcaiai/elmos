@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-proof-cache-invalidation
+  title: Proof Cache and Invalidation
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: core
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 以公式、语义模型、假设、工具链、选项和边界的内容寻址键复用证明，同时保证任何语义漂移都不会误命中。
+  dependencies:
+  - elmos-proof-obligation-planner
+  - elmos-assumption-ledger
+  - elmos-trusted-computing-base-registry
+  capabilities:
+  - content-addressed caching
+  - Merkle dependency graph
+  - selective invalidation
+  inputs:
+  - name: proof plans
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: semantic hashes
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: TCB records
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: tenant policy
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: cache key
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: cache hit evidence
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: invalidation events
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

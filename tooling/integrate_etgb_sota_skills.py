@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Install the pinned ETGB Skill interfaces without executing package code.
+"""Install the pinned ETGB v1.1 Skill interfaces without executing package code.
 
-The ZIP and extracted source are untrusted declarative inputs.  This importer
+The tarball and extracted source are untrusted declarative inputs. This importer
 only reads metadata, validates hashes/schema/coverage, and emits repository-
-owned wrappers.  Runtime behavior comes from ``engines/etgb-engine``.
+owned wrappers. Runtime behavior comes from ``engines/etgb-engine``.
 """
 
 from __future__ import annotations
@@ -12,14 +12,15 @@ import argparse
 import hashlib
 import json
 import os
+import tarfile
 import tempfile
 import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGE_NAME = "elmos-etgb-sota-skills-package-v1.0.0"
+PACKAGE_NAME = "elmos-etgb-sota-skills-package-v1.1.0"
 PACKAGE_ROOT = ROOT / "skills/subskills" / PACKAGE_NAME
-ARCHIVE = ROOT / "skills/subskills" / f"{PACKAGE_NAME}.zip"
+ARCHIVE = ROOT / "skills/subskills" / f"{PACKAGE_NAME}.tar.gz"
 RUNTIME_ROOT = ROOT / "agent-skills/runtime"
 WORKSPACE_ROOT = ROOT / ".agents/skills"
 DOC_ROOT = ROOT / "docs/etgb-sota-skills"
@@ -28,8 +29,8 @@ DOC_ROOT = ROOT / "docs/etgb-sota-skills"
 def _engine_import():
     import sys
     sys.path.insert(0, str(ROOT / "engines/etgb-engine/src"))
-    from elmos_etgb.package import SKILL_NAMES, verify_source_package
-    return SKILL_NAMES, verify_source_package
+    from elmos_etgb.package import PACKAGE_VERSION, SKILL_NAMES, verify_source_package
+    return PACKAGE_VERSION, SKILL_NAMES, verify_source_package
 
 
 def _digest(value: bytes) -> str:
@@ -58,9 +59,10 @@ def _write_if_changed(path: Path, content: str, *, write: bool) -> bool:
 
 def _wrapper(skill: dict, source_body: str, archive_digest: str) -> str:
     name = skill["name"]
+    alias = _alias(name)
     description = " ".join(str(skill.get("description", "ETGB runtime skill")).split())
     body = f'''---
-name: etgb-{name}
+name: {alias}
 description: {description} Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
 metadata:
   source_package: {PACKAGE_NAME}
@@ -89,8 +91,32 @@ procedure. Apply the current repository runtime and user authorization instead.
     return body
 
 
+def _archive_member(member: str) -> bytes:
+    """Read one member as inert bytes; never import or execute package code."""
+
+    if tarfile.is_tarfile(ARCHIVE):
+        with tarfile.open(ARCHIVE, mode="r:*") as package:
+            info = package.getmember(member)
+            if info.issym() or info.islnk() or not info.isfile():
+                raise ValueError(f"unsafe or non-file source member: {member}")
+            handle = package.extractfile(info)
+            if handle is None:
+                raise ValueError(f"source member has no payload: {member}")
+            return handle.read()
+    with zipfile.ZipFile(ARCHIVE) as package:
+        info = package.getinfo(member)
+        mode = (info.external_attr >> 16) & 0o170000
+        if mode == 0o120000 or info.is_dir():
+            raise ValueError(f"unsafe or non-file source member: {member}")
+        return package.read(info)
+
+
+def _alias(source_name: str) -> str:
+    return source_name if source_name.startswith("etgb-") else f"etgb-{source_name}"
+
+
 def _interface(skill: dict) -> str:
-    name = f"etgb-{skill['name']}"
+    name = _alias(skill["name"])
     display_parts = skill["name"].split("-")
     if display_parts and display_parts[0] == "etgb":
         display_parts = display_parts[1:]
@@ -108,15 +134,14 @@ def _interface(skill: dict) -> str:
 
 
 def integrate(*, write: bool) -> dict:
-    skill_names, verify_source_package = _engine_import()
+    package_version, skill_names, verify_source_package = _engine_import()
     if not ARCHIVE.is_file():
         raise SystemExit(f"missing source archive: {ARCHIVE}")
-    source_result = verify_source_package(ARCHIVE)
+    source_result = verify_source_package(ARCHIVE, extracted=PACKAGE_ROOT)
     if not source_result["valid"]:
         raise SystemExit(json.dumps(source_result, ensure_ascii=False))
     import yaml
-    with zipfile.ZipFile(ARCHIVE) as package:
-        source_manifest = yaml.safe_load(package.read(f"{PACKAGE_NAME}/skills/manifest.yaml"))
+    source_manifest = yaml.safe_load(_archive_member(f"{PACKAGE_NAME}/skills/manifest.yaml"))
     archive_digest = source_result["archive_sha256"]
     mismatches: list[str] = []
     installed: list[dict] = []
@@ -124,12 +149,12 @@ def integrate(*, write: bool) -> dict:
         name = skill["name"]
         source_path = PACKAGE_ROOT / "skills" / name / "SKILL.md"
         archive_member = f"{PACKAGE_NAME}/skills/{name}/SKILL.md"
-        with zipfile.ZipFile(ARCHIVE) as package:
-            source_body = package.read(archive_member).decode("utf-8")
+        source_body = _archive_member(archive_member).decode("utf-8")
         content = _wrapper(skill, source_body, archive_digest)
         interface_content = _interface(skill)
+        alias = _alias(name)
         for root in (RUNTIME_ROOT, WORKSPACE_ROOT):
-            skill_root = root / f"etgb-{name}"
+            skill_root = root / alias
             target = skill_root / "SKILL.md"
             interface = skill_root / "agents" / "openai.yaml"
             if _write_if_changed(target, content, write=write):
@@ -137,18 +162,18 @@ def integrate(*, write: bool) -> dict:
             if _write_if_changed(interface, interface_content, write=write):
                 mismatches.append(str(interface.relative_to(ROOT)))
         installed.append({
-            "name": f"etgb-{name}",
+            "name": alias,
             "source_name": name,
             "source_path": str(source_path.relative_to(ROOT)),
             "dependencies": skill.get("depends_on", []),
-            "interface_path": f"agent-skills/runtime/etgb-{name}/agents/openai.yaml",
+            "interface_path": f"agent-skills/runtime/{alias}/agents/openai.yaml",
             "interface_sha256": _digest(interface_content.encode("utf-8")),
         })
     record = {
         "schema_version": "1.0",
         "package": "elmos-etgb-sota-skills-package",
-        "version": "1.0.0",
-        "namespace": "etgb-v1",
+        "version": package_version,
+        "namespace": "etgb-v1.1",
         "source_archive": str(ARCHIVE.relative_to(ROOT)),
         "source_archive_sha256": archive_digest,
         "source_root": str(PACKAGE_ROOT.relative_to(ROOT)),

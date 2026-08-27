@@ -1,0 +1,10 @@
+{
+  "authority_id": "auth-ci-validation",
+  "environment_id": "env-ci-validation",
+  "owner_id": "worker-ci-001",
+  "tenant_id": "tenant-ci",
+  "action": "filesystem.read",
+  "path": "/workspace/source/pom.xml",
+  "path_mode": "read",
+  "fencing_token": 1
+}

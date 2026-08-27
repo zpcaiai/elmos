@@ -1,0 +1,137 @@
+openapi: 3.1.0
+info:
+  title: Elmos Formal Assurance Control API
+  version: 1.0.0
+servers:
+- url: /api
+paths:
+  /v1/formal/specs:
+    post:
+      operationId: createFormalSpec
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/formal-spec.schema.json
+      responses:
+        '201':
+          description: Created
+        '400':
+          $ref: '#/components/responses/Problem'
+  /v1/proof-plans:
+    post:
+      operationId: createProofPlan
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/proof-plan.schema.json
+      responses:
+        '202':
+          description: Accepted
+  /v1/proof-runs:
+    post:
+      operationId: startProofRun
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/proof-run.schema.json
+      responses:
+        '202':
+          description: Accepted
+        '402':
+          description: Credit reservation failed
+        '429':
+          description: Account concurrency limit reached
+  /v1/proof-runs/{runId}:
+    get:
+      operationId: getProofRun
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Run
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/proof-run.schema.json
+        '404':
+          $ref: '#/components/responses/Problem'
+  /v1/proof-runs/{runId}/actions:
+    post:
+      operationId: controlProofRun
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - action
+              - idempotencyKey
+              properties:
+                action:
+                  enum:
+                  - PAUSE
+                  - RESUME
+                  - CANCEL
+                idempotencyKey:
+                  type: string
+      responses:
+        '202':
+          description: Action accepted
+        '409':
+          description: Invalid state transition
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Problem:
+      description: RFC 9457 problem
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required:
+            - type
+            - title
+            - status
+            properties:
+              type:
+                type: string
+              title:
+                type: string
+              status:
+                type: integer
+              detail:
+                type: string
+              traceId:
+                type: string

@@ -1,0 +1,82 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-spring-transaction-refinement
+  title: Spring Transaction Refinement
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: spring-modernization
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 证明旧事务边界、传播、隔离、回滚规则、重试与 outbox 行为在 Spring Boot 4 中被精化。
+  dependencies:
+  - elmos-formal-spec-ir
+  - elmos-observable-behavior-contract
+  - elmos-proof-obligation-planner
+  - elmos-verifier-portfolio-router
+  capabilities:
+  - trace refinement
+  - transaction state machines
+  - simulation
+  - invariant model checking
+  inputs:
+  - name: legacy transaction metadata
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: target annotations
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: DB/message effects
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: exception map
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: transaction model
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: refinement result
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: failure schedule
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: repair hints
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

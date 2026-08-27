@@ -1,9 +1,9 @@
 ---
 name: etgb-sql-dialect-routine-validation
-description: Validate SQL dialect, DDL/DML, stored routine, trigger, transaction, and analytics-platform conversion by dual-database execution. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
+description: Validate SQL dialect, DDL, DML, routine, trigger, transaction and analytics conversion by dual execution. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
 metadata:
-  source_package: elmos-etgb-sota-skills-package-v1.0.0
-  source_archive_sha256: fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202
+  source_package: elmos-etgb-sota-skills-package-v1.1.0
+  source_archive_sha256: 6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e
   source_skill: sql-dialect-routine-validation
   runtime: engines/etgb-engine/src/elmos_etgb
 ---
@@ -80,4 +80,8 @@ Correctness is mandatory before plan/performance. Compare latency/throughput/sca
 ## Critical rule
 
 A target statement that executes successfully with different results is a silent semantic error, not a partial success.
+
+## v1.1 production execution
+
+Pin exact source/target DBMS versions/images and client/session settings in the candidate/Environment. Checkpoint schema/routine groups, but preserve dependency order and transaction boundaries. Store normalized datasets, result/state/lock traces and conversion manifests as digested evidence. Managed database credentials remain scoped to the SQL validation Environment and are never available to the transformation model.
 <!-- END UNTRUSTED SOURCE SKILL BODY -->

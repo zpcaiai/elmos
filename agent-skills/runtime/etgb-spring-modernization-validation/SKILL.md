@@ -1,9 +1,9 @@
 ---
 name: etgb-spring-modernization-validation
-description: Validate repository-level modernization of Servlet, JSP, Struts, Spring Framework, and Spring Boot legacy systems to Spring Boot 4. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
+description: Validate repository-level Servlet, JSP, Struts, Spring Framework and Spring Boot modernization to Spring Boot 4. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
 metadata:
-  source_package: elmos-etgb-sota-skills-package-v1.0.0
-  source_archive_sha256: fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202
+  source_package: elmos-etgb-sota-skills-package-v1.1.0
+  source_archive_sha256: 6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e
   source_skill: spring-modernization-validation
   runtime: engines/etgb-engine/src/elmos_etgb
 ---
@@ -102,4 +102,8 @@ Test startup, readiness, graceful shutdown, reverse proxy headers, TLS, external
 ## Golden Route promotion
 
 A repository enters Golden Route only after repeated clean runs, zero P0 SSER, reproducible environment, approved corpus/license and signed evidence.
+
+## v1.1 production execution
+
+Run through the durable harness with separate source, transformation and hidden-validation Environments. Capture SBOM/provenance for the modernized artifact, checkpoint module-level work for L4 repositories, enforce machine ETA/cost budgets and include rollback/deployment evidence. Golden Route claims require scale certification, repeated seeds/runs and zero authority/evidence/recovery failures.
 <!-- END UNTRUSTED SOURCE SKILL BODY -->

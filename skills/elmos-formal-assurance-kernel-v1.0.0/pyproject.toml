@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elmos-formal-assurance-kernel"
+version = "1.0.0"
+description = "Commercial formal assurance contracts and executable reference kernel for Elmos"
+requires-python = ">=3.11"
+license = {text = "Proprietary integration contract; see LICENSE-POLICY.md"}
+authors = [{name = "Elmos Formal Assurance Platform"}]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "PyYAML>=6.0",
+  "jsonschema>=4.23",
+]
+
+[project.scripts]
+elmos-formal = "elmos_formal_assurance.cli:main"
+elmos-formal-server = "elmos_formal_assurance.server:main"
+
+[tool.setuptools]
+package-dir = {"" = "reference-kernel"}
+
+[tool.setuptools.packages.find]
+where = ["reference-kernel"]
+include = ["elmos_formal_assurance*"]

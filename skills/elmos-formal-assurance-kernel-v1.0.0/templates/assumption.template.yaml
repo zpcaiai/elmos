@@ -1,0 +1,12 @@
+apiVersion: elmos.ai/v2alpha1
+kind: AssumptionTemplate
+metadata: {name: replace-me}
+spec:
+  statement: REPLACE_WITH_EXPLICIT_ASSUMPTION
+  formalExpression: ""
+  riskLevel: HIGH
+  owner: replace-me
+  monitor:
+    required: true
+    id: replace-me
+  expiresAt: REPLACE_WITH_TIMESTAMP

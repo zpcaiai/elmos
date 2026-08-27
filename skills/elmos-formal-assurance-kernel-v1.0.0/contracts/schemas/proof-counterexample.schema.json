@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/proof-counterexample.schema.json",
+  "title": "Proof Counterexample",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "tenant",
+    "runId",
+    "obligationId",
+    "kind",
+    "witness",
+    "minimized",
+    "replay"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "tenant": {
+      "$ref": "common.schema.json#/$defs/tenantContext"
+    },
+    "runId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "obligationId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "kind": {
+      "enum": [
+        "INPUT",
+        "STATE",
+        "SCHEDULE",
+        "DATABASE",
+        "TRACE",
+        "MODEL_INSTANCE"
+      ]
+    },
+    "witness": {
+      "type": "object"
+    },
+    "minimized": {
+      "type": "boolean"
+    },
+    "violatedProperty": {
+      "type": "string"
+    },
+    "replay": {
+      "type": "object",
+      "required": [
+        "command"
+      ],
+      "properties": {
+        "command": {
+          "type": "string"
+        },
+        "environment": {
+          "type": "object"
+        }
+      }
+    },
+    "generatedTests": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/artifactRef"
+      }
+    }
+  }
+}

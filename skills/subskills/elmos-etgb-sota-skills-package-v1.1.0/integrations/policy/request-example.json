@@ -1,0 +1,10 @@
+{
+  "environment_id": "env-transform-example",
+  "authority_id": "auth-transform-example",
+  "owner_id": "worker-transform-001",
+  "tenant_id": "00000000-0000-0000-0000-000000000001",
+  "action": "harness.build",
+  "fencing_token": 1,
+  "path": "/workspace/build/app.jar",
+  "path_mode": "write"
+}

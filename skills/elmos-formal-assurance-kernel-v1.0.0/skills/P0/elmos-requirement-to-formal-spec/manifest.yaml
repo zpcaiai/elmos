@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-requirement-to-formal-spec
+  title: Requirement-to-Formal-Spec Compiler
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: project-generation
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 把需求编译为 Data/API/Workflow/Security/Resource 五类正式规格，并把歧义显式化为阻断项或批准假设。
+  dependencies:
+  - elmos-formal-spec-ir
+  - elmos-assumption-ledger
+  - elmos-proof-status-policy
+  capabilities:
+  - controlled natural language
+  - schema synthesis
+  - state-machine extraction
+  - ambiguity analysis
+  inputs:
+  - name: requirements
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: domain glossary
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: business policies
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: formal specs
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: ambiguity report
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: traceability matrix
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

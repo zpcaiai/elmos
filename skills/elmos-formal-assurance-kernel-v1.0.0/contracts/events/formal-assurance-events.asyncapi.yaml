@@ -1,0 +1,82 @@
+asyncapi: 3.0.0
+info:
+  title: Elmos Formal Assurance Events
+  version: 1.0.0
+defaultContentType: application/json
+channels:
+  proofEvents:
+    address: formal-assurance.proof-events
+    messages:
+      proofEvent:
+        $ref: '#/components/messages/ProofEvent'
+  driftEvents:
+    address: formal-assurance.drift-events
+    messages:
+      driftEvent:
+        $ref: '#/components/messages/DriftEvent'
+  gateEvents:
+    address: formal-assurance.gate-events
+    messages:
+      gateEvent:
+        $ref: '#/components/messages/GateEvent'
+operations:
+  publishProofEvent:
+    action: send
+    channel:
+      $ref: '#/channels/proofEvents'
+  consumeDriftEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/driftEvents'
+  publishGateEvent:
+    action: send
+    channel:
+      $ref: '#/channels/gateEvents'
+components:
+  messages:
+    ProofEvent:
+      name: ProofEvent
+      payload:
+        type: object
+        required:
+        - eventId
+        - eventType
+        - tenantId
+        - aggregateId
+        - occurredAt
+        properties:
+          eventId:
+            type: string
+          eventType:
+            type: string
+          tenantId:
+            type: string
+          aggregateId:
+            type: string
+          occurredAt:
+            type: string
+            format: date-time
+          payload:
+            type: object
+    DriftEvent:
+      name: DriftEvent
+      payload:
+        type: object
+        required:
+        - dependencyKind
+        - dependencyId
+        - oldHash
+        - newHash
+        properties:
+          dependencyKind:
+            type: string
+          dependencyId:
+            type: string
+          oldHash:
+            type: string
+          newHash:
+            type: string
+    GateEvent:
+      name: GateEvent
+      payload:
+        $ref: ../schemas/release-gate-decision.schema.json

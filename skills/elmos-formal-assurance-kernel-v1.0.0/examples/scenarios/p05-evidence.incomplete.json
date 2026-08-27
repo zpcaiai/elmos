@@ -1,0 +1,17 @@
+{
+  "environment": "SYNTHETIC",
+  "imagesPinned": false,
+  "sbomVerified": false,
+  "signaturesVerified": false,
+  "vulnerabilityGatePassed": false,
+  "databaseMigrationsApplied": false,
+  "backupRestoreRehearsed": false,
+  "livezPassed": true,
+  "readyzPassed": true,
+  "metricsPassed": true,
+  "versionPassed": true,
+  "networkPolicyEnforced": false,
+  "solverSandboxVerified": false,
+  "evidenceStoreIntegrityPassed": true,
+  "releaseManifestSigned": false
+}

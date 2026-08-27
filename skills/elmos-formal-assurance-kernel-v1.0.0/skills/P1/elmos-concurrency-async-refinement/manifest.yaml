@@ -1,0 +1,77 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-concurrency-async-refinement
+  title: Concurrency and Async Refinement
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P1
+  domain: cross-language
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 验证线程、锁、原子变量、async/await、channel、任务取消和内存可见性在语言转换中的安全精化。
+  dependencies:
+  - elmos-observable-behavior-contract
+  - elmos-proof-obligation-planner
+  - elmos-verifier-portfolio-router
+  - elmos-semantic-ir-formal-semantics
+  capabilities:
+  - weak bisimulation
+  - linearizability
+  - memory-model abstraction
+  - schedule model checking
+  inputs:
+  - name: concurrent SIR
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: source/target memory profiles
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: schedule bounds
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: refinement model
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: race/deadlock witness
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: bounded coverage
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

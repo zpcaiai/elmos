@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/release-gate-decision.schema.json",
+  "title": "Release Gate Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "tenant",
+    "subjectId",
+    "gate",
+    "decision",
+    "policyRevision",
+    "evaluatedAt",
+    "blockingReasons",
+    "evidenceHash"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "tenant": {
+      "$ref": "common.schema.json#/$defs/tenantContext"
+    },
+    "subjectId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "gate": {
+      "enum": [
+        "P05_DEPLOYMENT_COMPLETE",
+        "E1_STATIC",
+        "E2_MODEL",
+        "E3_DIFFERENTIAL",
+        "E4_FAILURE_INJECTION",
+        "E5_CUSTOMER_GOLDEN_ROUTE"
+      ]
+    },
+    "decision": {
+      "enum": [
+        "ALLOW",
+        "DENY",
+        "ADVISORY"
+      ]
+    },
+    "policyRevision": {
+      "type": "string"
+    },
+    "evaluatedAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "blockingReasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidenceHash": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    },
+    "expiresAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    }
+  }
+}

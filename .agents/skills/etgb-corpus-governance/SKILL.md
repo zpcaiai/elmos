@@ -1,9 +1,9 @@
 ---
 name: etgb-corpus-governance
-description: Select, pin, license-review, sandbox, time-split, fetch, and maintain public/private ETGB corpora reproducibly. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
+description: Select, pin, license-review, sandbox, time-split and maintain public/private ETGB corpora reproducibly. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
 metadata:
-  source_package: elmos-etgb-sota-skills-package-v1.0.0
-  source_archive_sha256: fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202
+  source_package: elmos-etgb-sota-skills-package-v1.1.0
+  source_archive_sha256: 6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e
   source_skill: corpus-governance
   runtime: engines/etgb-engine/src/elmos_etgb
 ---
@@ -67,4 +67,8 @@ Release/golden cannot follow branch names. Every corpus reference is a 40-charac
 ## Retirement
 
 Retire corpora that become unavailable, legally blocked, irreproducible or no longer representative. Preserve historical metadata so old evidence remains interpretable.
+
+## v1.1 integrity and supply-chain requirements
+
+Before approval, run archive/path/submodule/binary/build-script scans and record SBOM/provenance expectations. Assign public, hidden, customer-private and time-split partitions with separate authority. Corpus revocation after plan freeze blocks new execution; historical evidence retains the original snapshot metadata and review state.
 <!-- END UNTRUSTED SOURCE SKILL BODY -->

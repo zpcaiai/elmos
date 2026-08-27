@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-formal-assurance-orchestrator
+  title: Formal Assurance Orchestrator
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: core
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 执行证明 DAG，管理配额、并发、超时、暂停恢复、重试、证据提交和失败隔离，是形式化可信层的控制平面。
+  dependencies:
+  - elmos-proof-obligation-planner
+  - elmos-proof-status-policy
+  - elmos-verifier-portfolio-router
+  - elmos-proof-cache-invalidation
+  - elmos-formal-model-versioning
+  capabilities:
+  - durable workflow
+  - idempotent execution
+  - lease/fencing
+  - evidence commit protocol
+  inputs:
+  - name: proof plan
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: tenant/account policy
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: verifier adapters
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: proof runs
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: progress events
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: checkpoint
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: final evidence set
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

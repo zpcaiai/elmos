@@ -179,6 +179,14 @@ autonomous-qa-self-healing-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/autonomous-qa-self-healing -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/autonomous-qa-engine/src python3 -m unittest discover -s engines/autonomous-qa-engine/tests -p 'test_*.py'
 
+.PHONY: formal-assurance-kernel
+formal-assurance-kernel:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_formal_assurance_kernel.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s engines/formal-assurance-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/formal-assurance-kernel -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_verification_pack.py verification-packs/formal-assurance-kernel-local
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/run_verification_gate.py verification-packs/formal-assurance-kernel-local
+
 repository-autonomy-kernel:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_repository_autonomy_kernel.py
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-autonomy-kernel/src $(UV) run --no-project --quiet --with pytest python -m pytest -q -p no:cacheprovider packages/repository-autonomy-kernel/tests
@@ -604,9 +612,11 @@ spring-golden-route-commercial-task-inventory:
 
 .PHONY: etgb-sota-skills
 etgb-sota-skills:
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 env PYTHONPATH=engines/etgb-engine/src python3 tooling/integrate_etgb_sota_skills.py
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 env PYTHONPATH=engines/etgb-engine/src python3 -m unittest discover -s engines/etgb-engine/tests -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) validate
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) coverage
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) run --profile smoke --output .elmos/etgb/smoke-results.jsonl --state-db .elmos/etgb/state.sqlite --artifact-root .elmos/etgb/evidence
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) score .elmos/etgb/smoke-results.jsonl --expected-count 4 --output .elmos/etgb/smoke-score.json
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 tooling/integrate_etgb_sota_skills.py
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m unittest discover -s engines/etgb-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) validate --archive skills/subskills/elmos-etgb-sota-skills-package-v1.1.0.tar.gz --extracted skills/subskills/elmos-etgb-sota-skills-package-v1.1.0
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) coverage
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) materialize --output .elmos/etgb/materialized.json
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) run --profile smoke --output .elmos/etgb/smoke-results-v11.jsonl --artifact-root .elmos/etgb/evidence-v11
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) score .elmos/etgb/smoke-results-v11.jsonl --expected-count 4 --output .elmos/etgb/smoke-score-v11.json
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) gate .elmos/etgb/smoke-results-v11.jsonl --profile smoke --output .elmos/etgb/smoke-gate-v11.json

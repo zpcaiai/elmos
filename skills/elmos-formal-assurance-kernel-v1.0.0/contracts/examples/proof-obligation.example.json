@@ -1,0 +1,25 @@
+{
+  "id": "obl-demo-001",
+  "tenant": {
+    "tenantId": "tenant-demo",
+    "accountId": "acct-demo",
+    "projectId": "project-formal",
+    "dataClassification": "confidential"
+  },
+  "specId": "spec-demo-001",
+  "subjectUri": "repo://legacy#route/login",
+  "propertyKind": "TRACE_REFINEMENT",
+  "criticality": "P0",
+  "formula": "forall req,state. trace(target,req,state) <= trace(source,req,state)",
+  "formulaHash": "7374df08a7a6cf109af41565ca431fc53c9c1b9207294cd5f584cdc568b997ed",
+  "requiredAssurance": "A2_SOLVER_PROVED",
+  "assumptionIds": [
+    "assume-db-contract"
+  ],
+  "dependencies": [],
+  "status": "READY",
+  "sourceMap": [
+    "legacy/src/Action.java:10"
+  ],
+  "allowBounded": false
+}

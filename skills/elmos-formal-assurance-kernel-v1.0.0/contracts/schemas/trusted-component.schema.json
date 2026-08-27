@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/trusted-component.schema.json",
+  "title": "Trusted Component",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "componentType",
+    "version",
+    "digest",
+    "trustReason",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "name": {
+      "type": "string"
+    },
+    "componentType": {
+      "enum": [
+        "PARSER",
+        "SEMANTICS",
+        "ADAPTER",
+        "SOLVER",
+        "KERNEL",
+        "COMPILER",
+        "RUNTIME",
+        "DATABASE",
+        "EXTERNAL_CONTRACT"
+      ]
+    },
+    "version": {
+      "type": "string"
+    },
+    "digest": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    },
+    "signatureRef": {
+      "type": "string"
+    },
+    "trustReason": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "PROPOSED",
+        "PINNED",
+        "REVOKED",
+        "VULNERABLE",
+        "UNKNOWN"
+      ]
+    },
+    "sbomRef": {
+      "$ref": "common.schema.json#/$defs/artifactRef"
+    },
+    "affectedProofCount": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

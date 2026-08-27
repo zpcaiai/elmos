@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/etgb/schemas/corpus-lock.schema.json",
+  "title": "ETGB Corpus Lock",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "repositories"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "repositories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "repository",
+          "commit",
+          "business_lines",
+          "purpose",
+          "license_review"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "repository": {
+            "type": "string"
+          },
+          "commit": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "business_lines": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "license_review": {
+            "enum": [
+              "required",
+              "approved",
+              "blocked"
+            ]
+          },
+          "redistribution": {
+            "enum": [
+              "metadata-only",
+              "allowed",
+              "blocked"
+            ]
+          },
+          "resource_class": {
+            "enum": [
+              "small",
+              "medium",
+              "large",
+              "xlarge"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

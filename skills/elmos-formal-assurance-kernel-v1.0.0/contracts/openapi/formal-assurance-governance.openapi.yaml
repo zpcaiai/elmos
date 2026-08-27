@@ -1,0 +1,81 @@
+openapi: 3.1.0
+info:
+  title: Elmos Formal Assurance Governance API
+  version: 1.0.0
+paths:
+  /v1/assumptions:
+    post:
+      operationId: registerAssumption
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/proof-assumption.schema.json
+      responses:
+        '201':
+          description: Registered
+  /v1/trusted-components:
+    post:
+      operationId: registerTrustedComponent
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/trusted-component.schema.json
+      responses:
+        '201':
+          description: Registered
+  /v1/waivers:
+    post:
+      operationId: proposeWaiver
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/proof-waiver.schema.json
+      responses:
+        '201':
+          description: Proposed
+        '403':
+          description: Separation-of-duties violation
+  /v1/drift/events:
+    post:
+      operationId: reportProofDrift
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - dependencyKind
+              - dependencyId
+              - newHash
+              properties:
+                dependencyKind:
+                  type: string
+                dependencyId:
+                  type: string
+                newHash:
+                  type: string
+                  pattern: ^[a-f0-9]{64}$
+      responses:
+        '202':
+          description: Invalidation queued
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

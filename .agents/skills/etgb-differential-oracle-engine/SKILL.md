@@ -1,9 +1,9 @@
 ---
 name: etgb-differential-oracle-engine
-description: Capture, normalize, compare, and explain source/target behavior, state, side effects, traces, security, and performance. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
+description: Capture, normalize, compare and explain source/target behavior, state, side effects, traces, security and performance. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
 metadata:
-  source_package: elmos-etgb-sota-skills-package-v1.0.0
-  source_archive_sha256: fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202
+  source_package: elmos-etgb-sota-skills-package-v1.1.0
+  source_archive_sha256: 6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e
   source_skill: differential-oracle-engine
   runtime: engines/etgb-engine/src/elmos_etgb
 ---
@@ -80,4 +80,10 @@ For each Oracle return pass/fail, criticality, first difference, compact context
 ## Metamorphic integration
 
 Accept a relation Oracle `R(source_input, transformed_input, outputs)` rather than requiring a fixed answer. Store transformation and relation definition in evidence.
+
+## Evidence and version binding
+
+Every Oracle result records Oracle and normalization versions, candidate/plan/case digests, raw evidence references, first difference and criticality. Ignore/tolerance policy is immutable after plan freeze. Oracle conflicts are quarantined and reviewed; they cannot be resolved by selecting whichever result favors the candidate.
+
+For probabilistic outputs, compare declared invariants and distributions with `statistical-validity-reproducibility`. For performance, evaluate only after semantic correctness and use `performance-scale-certification` budgets.
 <!-- END UNTRUSTED SOURCE SKILL BODY -->

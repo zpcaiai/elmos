@@ -1,0 +1,46 @@
+{
+  "traceId": "trace-demo-001",
+  "tenant": {
+    "tenantId": "tenant-demo",
+    "accountId": "acct-demo",
+    "projectId": "project-formal",
+    "dataClassification": "confidential"
+  },
+  "subjectId": "route-login",
+  "startedAt": "2026-08-27T00:00:00Z",
+  "events": [
+    {
+      "sequence": 0,
+      "kind": "HTTP",
+      "logicalTime": 0,
+      "correlationId": "req-1",
+      "payload": {
+        "method": "POST",
+        "path": "/login"
+      },
+      "payloadHash": "e0603c499aae47eb89343ad0ef3178e044c62e70ae2309b35591d1d49a3211ec"
+    },
+    {
+      "sequence": 1,
+      "kind": "AUTH_DECISION",
+      "logicalTime": 1,
+      "correlationId": "req-1",
+      "payload": {
+        "decision": "ALLOW"
+      },
+      "payloadHash": "bdf49c3c3882102fc017ffb661108c63a836d065888a4093994398cc55c2ea2f",
+      "causedBy": 0
+    },
+    {
+      "sequence": 2,
+      "kind": "DB_WRITE",
+      "logicalTime": 2,
+      "correlationId": "req-1",
+      "payload": {
+        "table": "session"
+      },
+      "payloadHash": "7bdc25d1694ef984782a16f6f1710c1c6bc83ba7a131b515baf532bea021d011",
+      "causedBy": 1
+    }
+  ]
+}

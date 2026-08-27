@@ -1,9 +1,9 @@
 ---
 name: etgb-test-case-authoring
-description: Create, review, materialize, and maintain executable ETGB test cases and capability matrices. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
+description: Create, review, materialize and maintain executable ETGB cases, capability matrices and independent Oracles. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
 metadata:
-  source_package: elmos-etgb-sota-skills-package-v1.0.0
-  source_archive_sha256: fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202
+  source_package: elmos-etgb-sota-skills-package-v1.1.0
+  source_archive_sha256: 6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e
   source_skill: test-case-authoring
   runtime: engines/etgb-engine/src/elmos_etgb
 ---
@@ -70,4 +70,10 @@ Every production defect creates:
 ## Stable IDs
 
 Do not rename IDs when titles change. If expected semantics changes, version the case and preserve old evidence. Matrix-generated IDs must remain deterministic from their dimension tuple.
+
+## v1.1 production additions
+
+Every new case must state candidate/plan binding, authority role, checkpoint/fault safe points, expected evidence and statistical seed policy where applicable. Cross-cutting incidents should map to one of the 100 operational scenarios. Add an execution adapter contract rather than embedding unreviewed shell/network privileges in the case.
+
+For security, recovery, billing, evidence or tenant-isolation defects, the case must prove both prevention and fail-closed behavior. For large-repository claims, identify the scale tier and whether the case is shard/resume safe.
 <!-- END UNTRUSTED SOURCE SKILL BODY -->

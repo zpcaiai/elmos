@@ -1,0 +1,6 @@
+interface:
+  display_name: "ETGB Checkpoint Resume Recovery"
+  short_description: "Run ETGB assurance with evidence controls"
+  default_prompt: "Use $etgb-checkpoint-resume-recovery to run this ETGB capability with fail-closed evidence."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/etgb/schemas/release-candidate.schema.json",
+  "title": "Frozen ETGB Release Candidate",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version", "candidate_id", "source_commit", "model", "model_revision",
+    "prompt_digest", "skill_manifest_digest", "rule_bundle_digest", "toolchain_image_digest",
+    "oracle_version", "normalization_version", "frozen_at", "candidate_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.1"},
+    "candidate_id": {"type": "string", "minLength": 3},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "model": {"type": "string"},
+    "model_revision": {"type": "string"},
+    "prompt_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "skill_manifest_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "rule_bundle_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "toolchain_image_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "oracle_version": {"type": "string"},
+    "normalization_version": {"type": "string"},
+    "frozen_at": {"type": "string", "format": "date-time"},
+    "candidate_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

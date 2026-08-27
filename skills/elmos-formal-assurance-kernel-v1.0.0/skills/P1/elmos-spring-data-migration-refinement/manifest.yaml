@@ -1,0 +1,81 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-spring-data-migration-refinement
+  title: Spring Data Migration Refinement
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P1
+  domain: spring-modernization
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 证明实体、ORM 映射、Schema 变更和批量数据迁移保持键、约束、值域、关系与可逆性要求。
+  dependencies:
+  - elmos-formal-spec-ir
+  - elmos-proof-obligation-planner
+  - elmos-verifier-portfolio-router
+  capabilities:
+  - schema refinement
+  - lossless mappings
+  - round-trip laws
+  - relational invariants
+  inputs:
+  - name: legacy schema
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: JPA entities
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: migration scripts
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: data profile
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: mapping proof
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: loss report
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: counterexample row
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: rollback evidence
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import gzip
+import hmac
 import json
 import os
 import re
@@ -16,6 +17,8 @@ from .canonical import canonical_json, digest_json, sha256_bytes
 
 
 _SECRET_PATTERNS = (
+    re.compile(r"\bsk-[A-Za-z0-9_-]{16,}\b"),
+    re.compile(r"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b"),
     re.compile(r"(?i)(authorization\s*:\s*bearer\s+)[^\s,;]+"),
     re.compile(r"(?i)(\b(?:token|password|secret|api[_-]?key)\s*[=:]\s*)[^\s,;]+"),
     re.compile(r"(?i)(-----BEGIN [A-Z ]+ PRIVATE KEY-----)[\s\S]*?(-----END [A-Z ]+ PRIVATE KEY-----)"),
@@ -38,10 +41,14 @@ class EvidenceError(ValueError):
 class EvidenceStore:
     """Write immutable blobs below a single tenant/run-scoped directory."""
 
-    def __init__(self, root: Path) -> None:
+    def __init__(self, root: Path, *, hmac_key: bytes | None = None) -> None:
         self.root = root.resolve()
+        self.hmac_key = hmac_key
         self.root.mkdir(parents=True, exist_ok=True)
         os.chmod(self.root, 0o700)
+        self.manifest_path = self.root / "manifest.json"
+        if not self.manifest_path.exists():
+            self.manifest_path.write_text(json.dumps({"schema_version": "1.1", "events": [], "sealed": False}, sort_keys=True) + "\n", encoding="utf-8")
 
     def _path(self, digest: str) -> Path:
         if not re.fullmatch(r"[0-9a-f]{64}", digest):
@@ -89,7 +96,94 @@ class EvidenceStore:
     def put_json(self, value: Any, *, role: str) -> dict[str, Any]:
         return self.put_bytes(canonical_json(value), media_type="application/json", role=role)
 
-    def verify(self, artifact: dict[str, Any]) -> bool:
+    def _append_event(self, event_type: str, payload: dict[str, Any]) -> None:
+        try:
+            manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise EvidenceError("evidence manifest is unreadable") from exc
+        if manifest.get("sealed"):
+            raise EvidenceError("evidence ledger is already sealed")
+        previous = manifest["events"][-1]["event_digest"] if manifest.get("events") else None
+        event = {"sequence": len(manifest.get("events", [])), "event_type": event_type, "payload": payload, "previous_event_digest": previous}
+        event["event_digest"] = digest_json(event)
+        manifest.setdefault("events", []).append(event)
+        temporary = self.manifest_path.with_name(f".{self.manifest_path.name}.tmp")
+        temporary.write_text(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        os.replace(temporary, self.manifest_path)
+
+    def add_bytes(self, *, logical_name: str, data: bytes, media_type: str, producer_environment: str, redact: bool = False) -> dict[str, Any]:
+        if not logical_name or logical_name.startswith("/") or ".." in Path(logical_name).parts:
+            raise EvidenceError("unsafe logical_name")
+        raw_digest = sha256_bytes(data)
+        redacted = False
+        stored = data
+        if redact and media_type.startswith("text/"):
+            text, redacted = redact_text(data.decode("utf-8", errors="replace"))
+            stored = text.encode("utf-8")
+        artifact = self.put_bytes(stored, media_type=media_type, role=logical_name, redacted=redacted)
+        artifact.update({"artifact_id": "sha256:" + artifact["sha256"], "logical_name": logical_name, "producer_environment": producer_environment, "raw_sha256": raw_digest, "blob_path": str(self._path(artifact["sha256"]).relative_to(self.root))})
+        manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+        existing = next((item for item in manifest.setdefault("artifacts", []) if item.get("logical_name") == logical_name), None)
+        if existing is not None:
+            if existing.get("sha256") != artifact["sha256"]:
+                raise EvidenceError(f"logical artifact already bound to another digest: {logical_name}")
+            return existing
+        manifest["artifacts"].append(artifact)
+        self.manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        self._append_event("artifact.added", artifact)
+        return artifact
+
+    def add_file(self, path: Path, *, logical_name: str, producer_environment: str, redact: bool = False) -> dict[str, Any]:
+        if path.is_symlink() or not path.is_file():
+            raise EvidenceError(f"evidence input must be a regular file: {path}")
+        media_type = "text/plain" if path.suffix.lower() in {".txt", ".log", ".json", ".yaml", ".yml"} else "application/octet-stream"
+        return self.add_bytes(logical_name=logical_name, data=path.read_bytes(), media_type=media_type, producer_environment=producer_environment, redact=redact)
+
+    def add_json(self, *, logical_name: str, value: Any, producer_environment: str, **_: Any) -> dict[str, Any]:
+        return self.add_bytes(logical_name=logical_name, data=canonical_json(value), media_type="application/json", producer_environment=producer_environment)
+
+    def seal(self, run_metadata: dict[str, Any]) -> dict[str, Any]:
+        manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+        if manifest.get("sealed"):
+            return manifest
+        self._append_event("ledger.sealed", {"run_metadata": run_metadata})
+        manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+        manifest["sealed"] = True
+        manifest["seal_digest"] = digest_json({key: value for key, value in manifest.items() if key not in {"seal_digest", "signature"}})
+        if self.hmac_key:
+            manifest["signature"] = hmac.new(self.hmac_key, manifest["seal_digest"].encode("utf-8"), hashlib.sha256).hexdigest()
+        self.manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        return manifest
+
+    def verify(self, artifact: dict[str, Any] | None = None) -> Any:
+        if artifact is not None:
+            digest = artifact.get("sha256", "")
+            path = self._path(digest)
+            return path.is_file() and sha256_file(path) == digest and path.stat().st_size == artifact.get("size")
+        errors: list[str] = []
+        try:
+            manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            return {"valid": False, "errors": [str(exc)], "signature_status": "missing"}
+        previous = None
+        for event in manifest.get("events", []):
+            unsigned = {key: event[key] for key in ("sequence", "event_type", "payload", "previous_event_digest")}
+            if event.get("previous_event_digest") != previous or event.get("event_digest") != digest_json(unsigned):
+                errors.append("event digest mismatch")
+            previous = event.get("event_digest")
+            payload = event.get("payload", {})
+            if event.get("event_type") == "artifact.added" and not self.verify(payload):
+                errors.append(f"artifact digest mismatch: {payload.get('sha256')}")
+        signature_status = "unsigned"
+        if manifest.get("sealed"):
+            expected = digest_json({key: value for key, value in manifest.items() if key not in {"seal_digest", "signature"}})
+            if manifest.get("seal_digest") != expected: errors.append("seal digest mismatch")
+            if self.hmac_key:
+                expected_signature = hmac.new(self.hmac_key, manifest["seal_digest"].encode("utf-8"), hashlib.sha256).hexdigest()
+                if not hmac.compare_digest(str(manifest.get("signature", "")), expected_signature): errors.append("evidence signature mismatch")
+                else: signature_status = "valid"
+            else: signature_status = "unverified"
+        return {"valid": not errors, "errors": errors, "signature_status": signature_status, "event_count": len(manifest.get("events", [])), "sealed": bool(manifest.get("sealed"))}
         digest = artifact.get("sha256", "")
         path = self._path(digest)
         return path.is_file() and sha256_file(path) == digest and path.stat().st_size == artifact.get("size")
@@ -171,3 +265,23 @@ def create_deterministic_bundle(source_root: Path, output: Path) -> dict[str, An
     finally:
         temporary.unlink(missing_ok=True)
     return {"path": str(output), "sha256": sha256_file(output), "files": len(files), "bytes": output.stat().st_size}
+
+
+def create_bundle_from_paths(output_dir: Path, paths: Iterable[Path], *, producer_environment: str, run_metadata: dict[str, Any], hmac_key: bytes | None = None, redact_text_artifacts: bool = True) -> dict[str, Any]:
+    """Collect regular files into a sealed evidence ledger without executing them."""
+
+    store = EvidenceStore(output_dir, hmac_key=hmac_key)
+    for source in paths:
+        source = Path(source)
+        if source.is_symlink():
+            raise EvidenceError(f"evidence input must be a regular file or directory: {source}")
+        if source.is_dir():
+            for child in sorted(path for path in source.rglob("*") if path.is_file() and not path.is_symlink()):
+                logical_name = child.relative_to(source.parent).as_posix()
+                store.add_file(child, logical_name=logical_name, producer_environment=producer_environment, redact=redact_text_artifacts and child.suffix.lower() in {".txt", ".log", ".json", ".yaml", ".yml"})
+        elif source.is_file():
+            store.add_file(source, logical_name=source.name, producer_environment=producer_environment, redact=redact_text_artifacts and source.suffix.lower() in {".txt", ".log", ".json", ".yaml", ".yml"})
+        else:
+            raise EvidenceError(f"evidence input does not exist: {source}")
+    store.seal(run_metadata)
+    return store.verify()

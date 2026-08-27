@@ -12,10 +12,7 @@ from pathlib import Path
 from typing import Any, Iterator
 
 from .canonical import canonical_json, digest_json
-
-
-class StateConflict(RuntimeError):
-    """Raised when a caller loses ownership or races a lifecycle transition."""
+from .state_v11 import ALLOWED_TRANSITIONS, JsonRunStateStore, RunState, StateConflict, TERMINAL_STATES
 
 
 class StateStore:

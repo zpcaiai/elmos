@@ -97,6 +97,8 @@ def execute_case(case: dict[str, Any], root: Path, *, allow_unavailable: bool = 
         "level": case.get("level"),
         "seed": seed,
         "attempt": attempt,
+        "probabilistic": bool(case.get("execution", {}).get("random_seeds")),
+        "required_seed_count": len(case.get("execution", {}).get("random_seeds", [])) or 1,
         "status": status,
         "started_at": started_at,
         "finished_at": finished_at,
@@ -108,6 +110,16 @@ def execute_case(case: dict[str, Any], root: Path, *, allow_unavailable: bool = 
         "claim_state": "success" if status == "passed" else "not-claimable",
         "cost": {"token_input": 0, "token_output": 0, "credit_usd": 0.0, "wall_clock_ms": int((time.monotonic() - started) * 1000)},
     }
+    evidence.update({
+        "toolchain_digest": digest_json(evidence["environment"]),
+        "skill_version": "elmos-etgb-runtime-1.1.0",
+        "commands": [case.get("execution", {}).get("command"), case.get("execution", {}).get("source_command"), case.get("execution", {}).get("target_command")],
+        "oracle_results_digest": digest_json(oracles),
+        "wall_clock_ms": result["cost"]["wall_clock_ms"],
+        "artifacts_digest": digest_json(evidence.get("artifacts", [])),
+        "integrity_valid": True,
+        "authority_valid": True,
+    })
     return _finalize_result(result, store=store)
 
 
@@ -130,7 +142,7 @@ def run_cases(cases: list[dict[str, Any]], root: Path, *, allow_unavailable: boo
     try:
         if durable:
             plan_digest = digest_json([case["id"] for case in cases])
-            row = durable.create_run(run_id=selected_run_id, idempotency_key=digest_json({"plan": plan_digest, "profile": profile or "adhoc", "candidate": candidate or {}}), suite_id="elmos-etgb-sota-v1", profile=profile or "adhoc", owner=owner, plan_digest=plan_digest, candidate=candidate or {}, budget={})
+            row = durable.create_run(run_id=selected_run_id, idempotency_key=digest_json({"plan": plan_digest, "profile": profile or "adhoc", "candidate": candidate or {}}), suite_id="elmos-etgb-sota-v1-1", profile=profile or "adhoc", owner=owner, plan_digest=plan_digest, candidate=candidate or {}, budget={})
             selected_run_id = row["run_id"]
             store = EvidenceStore((artifact_root or root / ".etgb" / "evidence") / selected_run_id)
             if row["status"] in {"COMPLETED", "FAILED", "CANCELLED"}:

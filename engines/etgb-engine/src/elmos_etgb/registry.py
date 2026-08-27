@@ -1,20 +1,42 @@
-"""Exact ten-Skill registry and narrow operation dispatch."""
+"""Explicit v1.1 Skill registry and JSON-safe operation dispatch.
+
+Every source Skill has an allowlisted operation surface. The registry is not a
+generic prompt dispatcher: unsupported provider/runtime work is returned as an
+explicit non-claimable result, while local control-plane operations execute
+with typed inputs and fail-closed validation.
+"""
 
 from __future__ import annotations
 
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Mapping
+from typing import Any, Mapping
 
 import yaml
 
-from .campaigns import metamorphic_relation, mutation_summary, property_campaign
+from .benchmark import validate_hidden_test_boundary
+from .budget import BudgetLedger, estimate_machine_eta
+from .campaigns import metamorphic_relation, mutation_summary
+from .candidate import freeze_candidate, load_spec
+from .checkpoint import CheckpointStore
 from .contracts import compile_requirement, validate_domain_case
 from .corpus import verify_lock
+from .evidence import EvidenceStore
+from .harness import phase_plan
+from .incidents import regression_from_incident
+from .materializer import materialize
 from .oracles import compare_json, compare_trace
 from .orchestrator import build_plan, gate_profile, run_profile, select_cases
+from .performance import evaluate_performance
+from .policy import authorize, authority_digest
+from .risk import select_risk_plan
+from .scheduling import FairScheduler, TaskRequest
 from .scoring import score_results
+from .skills import audit_skills
+from .statistics import multi_seed_stability, non_inferiority, wilson_interval
+from .supply_chain import inspect_tree
+from .triage import cluster_failures
 from .validation import coverage_report, load_cases, validate_package, validate_results
 
 
@@ -26,114 +48,204 @@ class SkillDescriptor:
 
 
 class SkillRegistry:
+    """Bind all 24 exact v1.1 source names to repository-owned handlers."""
+
+    _OPERATIONS: dict[str, tuple[str, ...]] = {
+        "etgb-orchestrator": ("plan", "run", "score", "gate", "eta", "stability", "triage"),
+        "test-case-authoring": ("validate", "coverage", "materialized", "validate_case"),
+        "spring-modernization-validation": ("validate_case", "capability"),
+        "repository-translation-validation": ("validate_case", "capability"),
+        "project-generation-validation": ("compile_requirement", "validate_case", "capability"),
+        "sql-dialect-routine-validation": ("validate_case", "capability"),
+        "differential-oracle-engine": ("compare_json", "compare_trace"),
+        "metamorphic-fuzz-mutation": ("metamorphic", "mutation_summary", "property_campaign"),
+        "corpus-governance": ("verify",),
+        "release-certification": ("gate",),
+        "production-harness-integration": ("phase_plan",),
+        "environment-authority-sandbox": ("authorize", "authority_digest", "hidden_boundary"),
+        "checkpoint-resume-recovery": ("verify_checkpoint", "resume_contract"),
+        "evidence-provenance-ledger": ("verify_evidence",),
+        "budget-cost-eta-governance": ("eta", "reserve", "consume", "reconcile"),
+        "risk-based-test-selection": ("risk_plan",),
+        "benchmark-integrity-hidden-tests": ("hidden_boundary",),
+        "observability-failure-triage": ("triage",),
+        "performance-scale-certification": ("performance",),
+        "statistical-validity-reproducibility": ("stability", "wilson", "non_inferiority"),
+        "supply-chain-artifact-security": ("inspect",),
+        "incident-regression-learning": ("regression",),
+        "multi-tenant-scheduling-isolation": ("schedule",),
+        "release-candidate-integrity": ("freeze",),
+    }
+
     def __init__(self, package_root: Path) -> None:
         self.package_root = package_root.resolve(strict=True)
         manifest = yaml.safe_load((self.package_root / "skills/manifest.yaml").read_text(encoding="utf-8"))
+        if not isinstance(manifest, dict):
+            raise ValueError("skills manifest must be an object")
         self._skills = {
-            item["name"]: SkillDescriptor(item["name"], item.get("description", ""), tuple(item.get("depends_on", [])))
+            str(item["name"]): SkillDescriptor(str(item["name"]), str(item.get("description", "")), tuple(str(value) for value in item.get("depends_on", [])))
             for item in manifest.get("skills", [])
         }
-        self._operations: dict[str, tuple[str, ...]] = {
-            "etgb-orchestrator": ("plan", "run", "score", "gate"),
-            "test-case-authoring": ("validate", "coverage", "materialized"),
-            "spring-modernization-validation": ("validate_case", "capability"),
-            "repository-translation-validation": ("validate_case", "capability"),
-            "project-generation-validation": ("compile_requirement", "validate_case", "capability"),
-            "sql-dialect-routine-validation": ("validate_case", "capability"),
-            "differential-oracle-engine": ("compare_json", "compare_trace"),
-            "metamorphic-fuzz-mutation": ("property_campaign", "metamorphic", "mutation_summary"),
-            "corpus-governance": ("verify",),
-            "release-certification": ("gate",),
-        }
+        missing = sorted(set(self._skills) - set(self._OPERATIONS))
+        if missing:
+            raise ValueError("unbound ETGB skills: " + ", ".join(missing))
 
     @property
     def skills(self) -> tuple[SkillDescriptor, ...]:
         return tuple(self._skills[name] for name in sorted(self._skills))
 
     def describe(self) -> list[dict[str, Any]]:
-        return [{"name": skill.name, "description": skill.description, "depends_on": list(skill.dependencies), "operations": list(self._operations.get(skill.name, ())), "runtime_state": "BOUND"} for skill in self.skills]
+        return [{"name": skill.name, "description": skill.description, "depends_on": list(skill.dependencies), "operations": list(self._OPERATIONS[skill.name]), "runtime_state": "BOUND"} for skill in self.skills]
+
+    @staticmethod
+    def _results(payload: Mapping[str, Any], key: str = "results") -> list[dict[str, Any]]:
+        value = payload.get(key)
+        if value is None and payload.get(f"{key}_path"):
+            value = [json.loads(line) for line in Path(str(payload[f"{key}_path"])).read_text(encoding="utf-8").splitlines() if line.strip()]
+        if not isinstance(value, list) or not all(isinstance(item, Mapping) for item in value):
+            raise ValueError(f"{key} requires a list or {key}_path")
+        return [dict(item) for item in value]
+
+    @staticmethod
+    def _unavailable(skill: str, reason: str) -> dict[str, Any]:
+        return {"skill": skill, "status": "EXTERNAL_ADAPTER_REQUIRED", "claimable": False, "reason": reason, "external_evidence": "NOT_RUN"}
 
     def dispatch(self, skill: str, operation: str, payload: Mapping[str, Any] | None = None) -> Any:
         if skill not in self._skills:
             raise KeyError(f"unknown ETGB skill: {skill}")
-        if operation not in self._operations.get(skill, ()):
+        if operation not in self._OPERATIONS[skill]:
             raise ValueError(f"operation '{operation}' is not allowed for {skill}")
-        payload = dict(payload or {})
+        data = dict(payload or {})
         if operation == "validate":
-            return validate_package(self.package_root, release=bool(payload.get("release")))
+            return validate_package(self.package_root, release=bool(data.get("release")), archive=Path(data["archive"]) if data.get("archive") else None, extracted=Path(data["extracted"]) if data.get("extracted") else None)
         if operation == "coverage":
             return coverage_report(self.package_root)
         if operation == "materialized":
-            return {"case_count": sum(1 for _ in load_cases(self.package_root)), "coverage": coverage_report(self.package_root)}
-        if operation == "verify":
-            return verify_lock(self.package_root, release=bool(payload.get("release")))
-        if operation == "compile_requirement":
-            return compile_requirement(payload.get("requirement", ""), contract_id=str(payload.get("contract_id", "REQ-ETGB")))
+            return materialize(self.package_root)
         if operation == "validate_case":
-            case = payload.get("case")
+            case = data.get("case")
             if not isinstance(case, Mapping):
                 raise ValueError("case must be an object")
             errors = validate_domain_case(case)
             return {"valid": not errors, "errors": errors}
+        if operation == "compile_requirement":
+            return compile_requirement(data.get("requirement", ""), contract_id=str(data.get("contract_id", "REQ-ETGB")))
         if operation == "capability":
-            return {"skill": skill, "status": "EXTERNAL_ADAPTER_REQUIRED", "claimable": False, "reason": "real source/target runtime evidence is not provided by the offline package"}
+            return self._unavailable(skill, "real source/target runtime evidence is not provided by the offline package")
+        if operation == "verify":
+            return verify_lock(self.package_root, release=bool(data.get("release")))
         if operation == "compare_json":
-            return compare_json(payload.get("left"), payload.get("right"), ignore_paths=payload.get("ignore_paths", []), unordered_paths=payload.get("unordered_paths", []), absolute_tolerance=float(payload.get("absolute_tolerance", 0.0)), relative_tolerance=float(payload.get("relative_tolerance", 0.0)))
+            return compare_json(data.get("left"), data.get("right"), ignore_paths=data.get("ignore_paths", []), unordered_paths=data.get("unordered_paths", []), absolute_tolerance=float(data.get("absolute_tolerance", 0.0)), relative_tolerance=float(data.get("relative_tolerance", 0.0)))
         if operation == "compare_trace":
-            return compare_trace(list(payload.get("left", [])), list(payload.get("right", [])), happens_before=payload.get("happens_before", []))
+            return compare_trace(list(data.get("left", [])), list(data.get("right", [])), happens_before=data.get("happens_before", []))
         if operation == "property_campaign":
-            return {"status": "requires_callable", "claimable": False, "reason": "callables cannot cross the JSON dispatch boundary"}
+            return self._unavailable(skill, "callables are intentionally not accepted across the JSON dispatch boundary")
         if operation == "metamorphic":
-            return metamorphic_relation(str(payload.get("name", "unnamed")), payload.get("left"), payload.get("right"), relation=lambda left, right: left == right)
+            return metamorphic_relation(str(data.get("name", "unnamed")), data.get("left"), data.get("right"), relation=lambda left, right: left == right)
         if operation == "mutation_summary":
-            return mutation_summary(list(payload.get("mutants", [])), [bool(value) for value in payload.get("killed", [])])
+            return mutation_summary(list(data.get("mutants", [])), [bool(value) for value in data.get("killed", [])])
         if operation == "plan":
-            repo_root = Path(str(payload.get("repo_root", self.package_root.parents[2])))
-            return build_plan(self.package_root, changed_from=payload.get("changed_from"), root_for_git=repo_root)
+            repo_root = Path(str(data.get("repo_root", self.package_root.parents[2])))
+            return build_plan(self.package_root, changed_from=data.get("changed_from"), root_for_git=repo_root, history_path=Path(data["history"]) if data.get("history") else None, max_cases=int(data.get("max_cases", 500)), seed=int(data.get("seed", 17)), shard_count=int(data.get("shards", 8)), candidate_digest=data.get("candidate_digest"))
         if operation == "run":
-            profile = str(payload.get("profile", "smoke"))
-            output_value = payload.get("output")
-            if not output_value:
+            output = data.get("output")
+            if not output:
                 raise ValueError("run requires an explicit output path")
-            plan_ids = set(str(case_id) for case_id in payload.get("case_ids", [])) or None
-            cases = select_cases(
-                self.package_root,
-                profile=profile,
-                business_line=payload.get("business_line"),
-                priority=payload.get("priority"),
-                case_id=payload.get("case_id"),
-                plan_ids=plan_ids,
-                limit=int(payload["limit"]) if payload.get("limit") is not None else None,
-            )
-            results, score = run_profile(
-                self.package_root,
-                cases,
-                profile=profile,
-                output=Path(str(output_value)).resolve(),
-                state_db=Path(str(payload["state_db"])).resolve() if payload.get("state_db") else None,
-                artifact_root=Path(str(payload["artifact_root"])).resolve() if payload.get("artifact_root") else None,
-                allow_unavailable=bool(payload.get("allow_unavailable")),
-                owner=payload.get("owner"),
-                run_id=payload.get("run_id"),
-                resume=bool(payload.get("resume")),
-            )
-            return {"selected": len(cases), "results": results, "score": score}
+            selected = select_cases(self.package_root, profile=str(data.get("profile", "smoke")), business_line=data.get("business_line"), priority=data.get("priority"), case_id=data.get("case_id"), plan_ids=set(str(value) for value in data.get("case_ids", [])) or None, limit=int(data["limit"]) if data.get("limit") is not None else None)
+            candidate = load_spec(Path(str(data["candidate"]))) if data.get("candidate") else None
+            results, score = run_profile(self.package_root, selected, profile=str(data.get("profile", "smoke")), output=Path(str(output)).resolve(), state_db=Path(str(data["state_db"])).resolve() if data.get("state_db") else None, artifact_root=Path(str(data["artifact_root"])).resolve() if data.get("artifact_root") else None, allow_unavailable=bool(data.get("allow_unavailable")), owner=data.get("owner"), run_id=data.get("run_id"), resume=bool(data.get("resume")), candidate=candidate)
+            return {"selected": len(selected), "results": results, "score": score}
         if operation == "score":
-            results = payload.get("results")
-            if results is None and payload.get("results_path"):
-                results = [json.loads(line) for line in Path(str(payload["results_path"])).read_text(encoding="utf-8").splitlines() if line.strip()]
-            if not isinstance(results, list) or not all(isinstance(result, Mapping) for result in results):
-                raise ValueError("score requires a results list or results_path")
-            result_list = [dict(result) for result in results]
-            errors = validate_results(result_list, self.package_root)
+            results = self._results(data)
+            errors = validate_results(results, self.package_root)
             if errors:
                 raise ValueError(f"invalid results: {errors[:3]}")
-            return score_results(result_list, self.package_root, expected_count=int(payload["expected_count"]) if payload.get("expected_count") is not None else None, complete=bool(payload["complete"]) if "complete" in payload else None)
+            return score_results(results, self.package_root, expected_count=int(data["expected_count"]) if data.get("expected_count") is not None else None, complete=bool(data["complete"]) if "complete" in data else None, corpus_release=bool(data.get("release")))
         if operation == "gate":
-            results = payload.get("results")
-            if results is None and payload.get("results_path"):
-                results = [json.loads(line) for line in Path(str(payload["results_path"])).read_text(encoding="utf-8").splitlines() if line.strip()]
-            if not isinstance(results, list) or not all(isinstance(result, Mapping) for result in results):
-                raise ValueError("gate requires a results list or results_path")
-            return gate_profile(self.package_root, [dict(result) for result in results], profile=str(payload.get("profile", "release")), external_attested=bool(payload.get("external_attested")), independent_verifier=payload.get("independent_verifier"))
+            results = self._results(data)
+            return gate_profile(self.package_root, results, profile=str(data.get("profile", "release")), external_attested=bool(data.get("external_attested")), independent_verifier=data.get("independent_verifier"), external_attestation=dict(data["external_attestation"]) if isinstance(data.get("external_attestation"), Mapping) else None, trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, candidate_digest=data.get("candidate_digest"))
+        if operation == "eta":
+            cases = data.get("cases")
+            if cases is None and data.get("plan_path"):
+                plan = json.loads(Path(str(data["plan_path"])).read_text(encoding="utf-8")); cases = select_cases(self.package_root, plan_ids=set(plan.get("case_ids", [])))
+            if not isinstance(cases, list):
+                cases = list(load_cases(self.package_root))
+            history = data.get("history", [])
+            if isinstance(history, str):
+                history = [json.loads(line) for line in Path(history).read_text(encoding="utf-8").splitlines() if line.strip()]
+            return estimate_machine_eta(cases, history, concurrency=int(data.get("concurrency", 3)))
+        if operation == "stability":
+            return multi_seed_stability(self._results(data))
+        if operation == "triage":
+            return cluster_failures(self._results(data))
+        if operation == "phase_plan":
+            return [{"from": source.value, "phase": phase, "to": target.value} for source, phase, target in phase_plan(data)]
+        if operation == "authorize":
+            authority = data.get("authority")
+            request = data.get("request")
+            if not isinstance(authority, Mapping) or not isinstance(request, Mapping):
+                raise ValueError("authorize requires authority and request objects")
+            return authorize(dict(authority), dict(request)).as_dict()
+        if operation == "authority_digest":
+            authority = data.get("authority")
+            if not isinstance(authority, Mapping):
+                raise ValueError("authority must be an object")
+            return {"digest": authority_digest(dict(authority))}
+        if operation == "hidden_boundary":
+            return validate_hidden_test_boundary(data.get("public_paths", []), data.get("hidden_paths", []), worker_role=str(data.get("worker_role", "orchestrator")))
+        if operation == "verify_checkpoint":
+            directory = Path(str(data.get("directory", data.get("checkpoint_root", ""))))
+            if not str(directory):
+                raise ValueError("checkpoint directory is required")
+            return CheckpointStore(directory).verify(str(data["run_id"]))
+        if operation == "resume_contract":
+            return CheckpointStore(Path(str(data["directory"]))).resume_contract(str(data["run_id"]), candidate_digest=str(data["candidate_digest"]), plan_digest=str(data["plan_digest"]), current_fencing_token=int(data["current_fencing_token"]))
+        if operation == "verify_evidence":
+            store = EvidenceStore(Path(str(data["directory"])), hmac_key=str(data["hmac_key"]).encode() if data.get("hmac_key") else None)
+            return store.verify()
+        if operation in {"reserve", "consume", "reconcile"}:
+            ledger = BudgetLedger(Path(str(data["ledger"])))
+            if operation == "reserve":
+                return ledger.reserve(run_id=str(data["run_id"]), tenant_id=str(data["tenant_id"]), owner_id=str(data["owner_id"]), max_input_tokens=int(data.get("max_input_tokens", 0)), max_output_tokens=int(data.get("max_output_tokens", 0)), max_credit_usd=float(data.get("max_credit_usd", 0)), max_wall_clock_ms=int(data.get("max_wall_clock_ms", 0)))
+            if operation == "consume":
+                return ledger.consume(run_id=str(data["run_id"]), idempotency_key=str(data["idempotency_key"]), phase=str(data["phase"]), input_tokens=int(data.get("input_tokens", 0)), output_tokens=int(data.get("output_tokens", 0)), credit_usd=float(data.get("credit_usd", 0)), wall_clock_ms=int(data.get("wall_clock_ms", 0)))
+            return ledger.reconcile(str(data["run_id"]))
+        if operation == "risk_plan":
+            cases = data.get("cases", list(load_cases(self.package_root)))
+            return select_risk_plan(cases, affected_lines=set(data.get("affected_lines", [])), historical_results=data.get("historical_results", []), max_cases=int(data.get("max_cases", 500)), seed=int(data.get("seed", 17)))
+        if operation == "performance":
+            return evaluate_performance(dict(data.get("candidate", {})), dict(data.get("budgets", {})), baseline=dict(data.get("baseline", {})))
+        if operation == "wilson":
+            lower, upper = wilson_interval(int(data["successes"]), int(data["trials"]))
+            return {"lower": lower, "upper": upper}
+        if operation == "non_inferiority":
+            return non_inferiority(int(data["candidate_successes"]), int(data["candidate_trials"]), int(data["baseline_successes"]), int(data["baseline_trials"]), margin=float(data["margin"]))
+        if operation == "inspect":
+            return inspect_tree(Path(str(data["root"])))
+        if operation == "regression":
+            incident = data.get("incident")
+            if not isinstance(incident, Mapping):
+                raise ValueError("incident must be an object")
+            return regression_from_incident(incident)
+        if operation == "schedule":
+            scheduler = FairScheduler(max_active_per_account=int(data.get("max_active_per_account", 3)))
+            requests = data.get("requests", [])
+            if not isinstance(requests, list):
+                raise ValueError("requests must be a list")
+            for value in requests:
+                if not isinstance(value, Mapping):
+                    raise ValueError("each scheduling request must be an object")
+                scheduler.enqueue(TaskRequest(task_id=str(value["task_id"]), tenant_id=str(value["tenant_id"]), account_id=str(value["account_id"]), priority=int(value.get("priority", 0))))
+            dispatched = []
+            while True:
+                item = scheduler.dispatch(account_id=data.get("account_id"), tenant_id=data.get("tenant_id"))
+                if item is None:
+                    break
+                dispatched.append(item)
+            return {"dispatched": dispatched, "snapshot": scheduler.snapshot()}
+        if operation == "freeze":
+            candidate = data.get("candidate")
+            if not isinstance(candidate, Mapping):
+                raise ValueError("candidate must be an object")
+            return freeze_candidate(dict(candidate))
         raise AssertionError(operation)

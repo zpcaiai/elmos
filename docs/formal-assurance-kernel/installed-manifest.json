@@ -1,0 +1,1338 @@
+{
+  "counts": {
+    "domains": {
+      "core": 10,
+      "cross-language": 10,
+      "platform": 11,
+      "project-generation": 9,
+      "spring-modernization": 10,
+      "sql-conversion": 10
+    },
+    "priority": {
+      "P0": 48,
+      "P1": 10,
+      "P2": 2
+    },
+    "skills": 60
+  },
+  "honestBoundary": "Local handlers are bounded engineering evidence; P05 and E1-E5 certification require authorized external evidence.",
+  "packageId": "elmos-formal-assurance-kernel-v1.0.0",
+  "packageVersion": "1.0.0",
+  "runtime": {
+    "binding": "BOUND_LOCAL_EXACT",
+    "certification": "NOT_CERTIFIED",
+    "engine": "engines/formal-assurance-engine",
+    "externalEvidence": "NOT_RUN"
+  },
+  "schemaVersion": 1,
+  "skills": [
+    {
+      "capabilities": [
+        "contract refinement",
+        "schema inclusion",
+        "stateful protocol checking",
+        "consumer-driven constraints"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-observable-behavior-contract",
+        "elmos-proof-obligation-planner",
+        "elmos-requirement-to-formal-spec"
+      ],
+      "domain": "project-generation",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_api_contract_verifier",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-api-contract-verifier",
+      "title": "API Contract Verifier"
+    },
+    {
+      "capabilities": [
+        "graph constraints",
+        "relational logic",
+        "policy-as-code",
+        "architecture fitness functions"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-requirement-to-formal-spec"
+      ],
+      "domain": "project-generation",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_architecture_constraint_checker",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-architecture-constraint-checker",
+      "title": "Architecture Constraint Checker"
+    },
+    {
+      "capabilities": [
+        "assumption contracts",
+        "dependency fingerprinting",
+        "runtime monitors",
+        "risk acceptance"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-formal-spec-ir"
+      ],
+      "domain": "core",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_assumption_ledger",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-assumption-ledger",
+      "title": "Assumption Ledger"
+    },
+    {
+      "capabilities": [
+        "weak bisimulation",
+        "linearizability",
+        "memory-model abstraction",
+        "schedule model checking"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-observable-behavior-contract",
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-semantic-ir-formal-semantics"
+      ],
+      "domain": "cross-language",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_concurrency_async_refinement",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P1",
+      "skillId": "elmos-concurrency-async-refinement",
+      "title": "Concurrency and Async Refinement"
+    },
+    {
+      "capabilities": [
+        "counterexample minimization",
+        "trace concretization",
+        "fixture synthesis",
+        "test deduplication"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-proof-status-policy",
+        "elmos-verifier-portfolio-router",
+        "elmos-formal-assurance-orchestrator"
+      ],
+      "domain": "platform",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_counterexample_to_test",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-counterexample-to-test",
+      "title": "Counterexample-to-Test Compiler"
+    },
+    {
+      "capabilities": [
+        "conservation invariants",
+        "idempotent ledger model",
+        "serializability refinement"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-tla-task-runtime-model"
+      ],
+      "domain": "platform",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_credit_billing_invariant_model",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-credit-billing-invariant-model",
+      "title": "Credit and Billing Invariant Model"
+    },
+    {
+      "capabilities": [
+        "product programs",
+        "self-composition",
+        "relational invariants",
+        "symbolic execution"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-observable-behavior-contract",
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-semantic-ir-formal-semantics"
+      ],
+      "domain": "cross-language",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_cross_language_product_program",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-cross-language-product-program",
+      "title": "Cross-language Product Program Verifier"
+    },
+    {
+      "capabilities": [
+        "inductive invariants",
+        "transactional Hoare logic",
+        "constraint implication",
+        "bounded relational analysis"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-requirement-to-formal-spec"
+      ],
+      "domain": "project-generation",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_data_invariant_verifier",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-data-invariant-verifier",
+      "title": "Data Invariant Verifier"
+    },
+    {
+      "capabilities": [
+        "constraint implication",
+        "relational model finding",
+        "schema refinement"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-sql-semantic-ir",
+        "elmos-schema-losslessness-proof"
+      ],
+      "domain": "sql-conversion",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_ddl_constraint_preservation",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-ddl-constraint-preservation",
+      "title": "DDL Constraint Preservation"
+    },
+    {
+      "capabilities": [
+        "state relational verification",
+        "affected-row equivalence",
+        "conflict semantics"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-observable-behavior-contract",
+        "elmos-proof-obligation-planner",
+        "elmos-sql-semantic-ir",
+        "elmos-sql-query-equivalence"
+      ],
+      "domain": "sql-conversion",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_dml_state_equivalence",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-dml-state-equivalence",
+      "title": "DML State Equivalence"
+    },
+    {
+      "capabilities": [
+        "string analysis",
+        "grammar abstraction",
+        "template enumeration",
+        "injection safety"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-assumption-ledger",
+        "elmos-trusted-computing-base-registry",
+        "elmos-sql-semantic-ir"
+      ],
+      "domain": "sql-conversion",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_dynamic_sql_proof_boundary",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-dynamic-sql-proof-boundary",
+      "title": "Dynamic SQL Proof Boundary"
+    },
+    {
+      "capabilities": [
+        "effect systems",
+        "trace inclusion",
+        "exception sum types",
+        "causal alignment"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-observable-behavior-contract",
+        "elmos-semantic-ir-formal-semantics",
+        "elmos-cross-language-product-program"
+      ],
+      "domain": "cross-language",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_effect_exception_trace_refinement",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-effect-exception-trace-refinement",
+      "title": "Effect and Exception Trace Refinement"
+    },
+    {
+      "capabilities": [
+        "durable workflow",
+        "idempotent execution",
+        "lease/fencing",
+        "evidence commit protocol"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-proof-status-policy",
+        "elmos-verifier-portfolio-router",
+        "elmos-proof-cache-invalidation",
+        "elmos-formal-model-versioning"
+      ],
+      "domain": "core",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_formal_assurance_orchestrator",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-formal-assurance-orchestrator",
+      "title": "Formal Assurance Orchestrator"
+    },
+    {
+      "capabilities": [
+        "evidence-backed reporting",
+        "coverage stratification",
+        "machine-human consistency"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-status-policy",
+        "elmos-proof-artifact-store",
+        "elmos-formal-release-gate"
+      ],
+      "domain": "platform",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_formal_assurance_report",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-formal-assurance-report",
+      "title": "Formal Assurance Report"
+    },
+    {
+      "capabilities": [
+        "semantic versioning",
+        "model migration",
+        "proof replay",
+        "change impact"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-formal-spec-ir",
+        "elmos-assumption-ledger",
+        "elmos-proof-cache-invalidation"
+      ],
+      "domain": "core",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_formal_model_versioning",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P1",
+      "skillId": "elmos-formal-model-versioning",
+      "title": "Formal Model Versioning"
+    },
+    {
+      "capabilities": [
+        "OpenTelemetry",
+        "SLO/error budgets",
+        "cardinality controls",
+        "cost attribution"
+      ],
+      "capabilityState": "PARTIAL_EXTERNAL_OBSERVABILITY_OR_BOUNDARY_EVIDENCE_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-formal-assurance-orchestrator",
+        "elmos-proof-artifact-store",
+        "elmos-formal-release-gate"
+      ],
+      "domain": "platform",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_formal_observability_slo",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P2",
+      "skillId": "elmos-formal-observability-slo",
+      "title": "Formal Assurance Observability and SLO"
+    },
+    {
+      "capabilities": [
+        "policy-as-code",
+        "evidence aggregation",
+        "separation of duties"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-status-policy",
+        "elmos-formal-assurance-orchestrator",
+        "elmos-proof-artifact-store"
+      ],
+      "domain": "platform",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_formal_release_gate",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-formal-release-gate",
+      "title": "Formal Release Gate"
+    },
+    {
+      "capabilities": [
+        "typed first-order logic",
+        "relational contracts",
+        "LTL/CTL property fragments",
+        "source-location preserving IR"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [],
+      "domain": "core",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_formal_spec_ir",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-formal-spec-ir",
+      "title": "Formal Specification IR"
+    },
+    {
+      "capabilities": [
+        "TLA+ model checking",
+        "symbolic model checking",
+        "state refinement",
+        "fairness assumptions"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-requirement-to-formal-spec"
+      ],
+      "domain": "project-generation",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_generated_workflow_model_checker",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-generated-workflow-model-checker",
+      "title": "Generated Workflow Model Checker"
+    },
+    {
+      "capabilities": [
+        "Hoare logic",
+        "weakest preconditions",
+        "JML ESC",
+        "runtime assertion checking"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-trusted-computing-base-registry"
+      ],
+      "domain": "spring-modernization",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_java_jml_contract_verifier",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-java-jml-contract-verifier",
+      "title": "Java JML Contract Verifier"
+    },
+    {
+      "capabilities": [
+        "formal language profiles",
+        "feature capability lattice",
+        "closed-world declarations"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-formal-spec-ir",
+        "elmos-assumption-ledger"
+      ],
+      "domain": "cross-language",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_language_semantic_profile",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-language-semantic-profile",
+      "title": "Language Semantic Profile"
+    },
+    {
+      "capabilities": [
+        "linearizability",
+        "monotonic tokens",
+        "state-machine model checking"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-tla-task-runtime-model"
+      ],
+      "domain": "platform",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_lease_fencing_verifier",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-lease-fencing-verifier",
+      "title": "Lease and Fencing Verifier"
+    },
+    {
+      "capabilities": [
+        "differential execution",
+        "trace alignment",
+        "causal normalization",
+        "refinement checking"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-observable-behavior-contract",
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-formal-assurance-orchestrator"
+      ],
+      "domain": "spring-modernization",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_legacy_modernization_trace_validator",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-legacy-modernization-trace-validator",
+      "title": "Legacy Modernization Trace Validator"
+    },
+    {
+      "capabilities": [
+        "LTL liveness",
+        "weak/strong fairness",
+        "ranking arguments",
+        "temporal decomposition"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-generated-workflow-model-checker"
+      ],
+      "domain": "project-generation",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_liveness_fairness_verifier",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P1",
+      "skillId": "elmos-liveness-fairness-verifier",
+      "title": "Liveness and Fairness Verifier"
+    },
+    {
+      "capabilities": [
+        "trace semantics",
+        "normalization functions",
+        "refinement relations",
+        "observational equivalence"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-formal-spec-ir"
+      ],
+      "domain": "core",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_observable_behavior_contract",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-observable-behavior-contract",
+      "title": "Observable Behavior Contract"
+    },
+    {
+      "capabilities": [
+        "content-addressed storage",
+        "append-only metadata",
+        "envelope encryption",
+        "retention policies"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-status-policy",
+        "elmos-trusted-computing-base-registry",
+        "elmos-proof-cache-invalidation",
+        "elmos-formal-assurance-orchestrator"
+      ],
+      "domain": "platform",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_proof_artifact_store",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-proof-artifact-store",
+      "title": "Proof Artifact Store"
+    },
+    {
+      "capabilities": [
+        "content-addressed caching",
+        "Merkle dependency graph",
+        "selective invalidation"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-assumption-ledger",
+        "elmos-trusted-computing-base-registry"
+      ],
+      "domain": "core",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_proof_cache_invalidation",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-proof-cache-invalidation",
+      "title": "Proof Cache and Invalidation"
+    },
+    {
+      "capabilities": [
+        "proof-carrying artifacts",
+        "signed manifests",
+        "independent replay"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-status-policy",
+        "elmos-trusted-computing-base-registry",
+        "elmos-proof-cache-invalidation",
+        "elmos-repository-refinement-composer"
+      ],
+      "domain": "cross-language",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_proof_carrying_conversion",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P1",
+      "skillId": "elmos-proof-carrying-conversion",
+      "title": "Proof-Carrying Conversion"
+    },
+    {
+      "capabilities": [
+        "change impact graph",
+        "runtime conformance monitors",
+        "proof replay scheduling"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-assumption-ledger",
+        "elmos-proof-cache-invalidation",
+        "elmos-formal-model-versioning",
+        "elmos-proof-artifact-store"
+      ],
+      "domain": "platform",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_proof_drift_monitor",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P1",
+      "skillId": "elmos-proof-drift-monitor",
+      "title": "Proof Drift Monitor"
+    },
+    {
+      "capabilities": [
+        "reproducible bundles",
+        "manifest signing",
+        "offline verification",
+        "provenance"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-trusted-computing-base-registry",
+        "elmos-proof-artifact-store",
+        "elmos-formal-assurance-report"
+      ],
+      "domain": "platform",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_proof_evidence_bundle",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P1",
+      "skillId": "elmos-proof-evidence-bundle",
+      "title": "Proof Evidence Bundle"
+    },
+    {
+      "capabilities": [
+        "weakest-precondition planning",
+        "assume-guarantee decomposition",
+        "risk-based proof planning",
+        "dependency DAG"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-formal-spec-ir",
+        "elmos-observable-behavior-contract"
+      ],
+      "domain": "core",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_proof_obligation_planner",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-proof-obligation-planner",
+      "title": "Proof Obligation Planner"
+    },
+    {
+      "capabilities": [
+        "lattice-based status model",
+        "evidence-strength ordering",
+        "anti-inflation rules"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-assumption-ledger"
+      ],
+      "domain": "core",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_proof_status_policy",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-proof-status-policy",
+      "title": "Proof Status Policy"
+    },
+    {
+      "capabilities": [
+        "closed-world enumeration",
+        "contract stubs",
+        "runtime attestation",
+        "boundary monitoring"
+      ],
+      "capabilityState": "PARTIAL_EXTERNAL_OBSERVABILITY_OR_BOUNDARY_EVIDENCE_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-assumption-ledger",
+        "elmos-trusted-computing-base-registry",
+        "elmos-language-semantic-profile",
+        "elmos-semantic-ir-formal-semantics"
+      ],
+      "domain": "cross-language",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_reflection_ffi_boundary_verifier",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P2",
+      "skillId": "elmos-reflection-ffi-boundary-verifier",
+      "title": "Reflection and FFI Boundary Verifier"
+    },
+    {
+      "capabilities": [
+        "assume-guarantee reasoning",
+        "interface contracts",
+        "compositional refinement",
+        "dependency SCC handling"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-rule-preservation-prover",
+        "elmos-cross-language-product-program",
+        "elmos-formal-assurance-orchestrator"
+      ],
+      "domain": "cross-language",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_repository_refinement_composer",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-repository-refinement-composer",
+      "title": "Repository Refinement Composer"
+    },
+    {
+      "capabilities": [
+        "controlled natural language",
+        "schema synthesis",
+        "state-machine extraction",
+        "ambiguity analysis"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-formal-spec-ir",
+        "elmos-assumption-ledger",
+        "elmos-proof-status-policy"
+      ],
+      "domain": "project-generation",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_requirement_to_formal_spec",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-requirement-to-formal-spec",
+      "title": "Requirement-to-Formal-Spec Compiler"
+    },
+    {
+      "capabilities": [
+        "ranking functions",
+        "abstract interpretation",
+        "amortized resource contracts",
+        "bounded loops"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-requirement-to-formal-spec"
+      ],
+      "domain": "project-generation",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_resource_termination_verifier",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-resource-termination-verifier",
+      "title": "Resource and Termination Verifier"
+    },
+    {
+      "capabilities": [
+        "Hoare logic",
+        "Boogie VC generation",
+        "symbolic execution",
+        "loop invariants"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-sql-semantic-ir"
+      ],
+      "domain": "sql-conversion",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_routine_contract_verifier",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-routine-contract-verifier",
+      "title": "SQL Routine Contract Verifier"
+    },
+    {
+      "capabilities": [
+        "relational Hoare logic",
+        "induction on syntax",
+        "SMT discharge",
+        "kernel-checked lemmas"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-semantic-ir-formal-semantics"
+      ],
+      "domain": "cross-language",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_rule_preservation_prover",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-rule-preservation-prover",
+      "title": "Transformation Rule Preservation Prover"
+    },
+    {
+      "capabilities": [
+        "lossless join",
+        "dependency preservation",
+        "round-trip laws",
+        "relational refinement"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-formal-spec-ir",
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-sql-semantic-ir"
+      ],
+      "domain": "sql-conversion",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_schema_losslessness_proof",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-schema-losslessness-proof",
+      "title": "Schema Losslessness Proof"
+    },
+    {
+      "capabilities": [
+        "range analysis",
+        "type relation synthesis",
+        "semantic diff rules",
+        "SMT obligations"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-language-semantic-profile",
+        "elmos-semantic-ir-formal-semantics"
+      ],
+      "domain": "cross-language",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_semantic_gap_obligation_generator",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-semantic-gap-obligation-generator",
+      "title": "Semantic Gap Obligation Generator"
+    },
+    {
+      "capabilities": [
+        "operational semantics",
+        "effect traces",
+        "typed transition systems",
+        "K/Lean definitions"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-formal-spec-ir",
+        "elmos-trusted-computing-base-registry",
+        "elmos-language-semantic-profile"
+      ],
+      "domain": "cross-language",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_semantic_ir_formal_semantics",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-semantic-ir-formal-semantics",
+      "title": "Semantic IR Formal Semantics"
+    },
+    {
+      "capabilities": [
+        "schema refinement",
+        "lossless mappings",
+        "round-trip laws",
+        "relational invariants"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-formal-spec-ir",
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router"
+      ],
+      "domain": "spring-modernization",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_spring_data_migration_refinement",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P1",
+      "skillId": "elmos-spring-data-migration-refinement",
+      "title": "Spring Data Migration Refinement"
+    },
+    {
+      "capabilities": [
+        "sum-type equivalence",
+        "decision-table completeness",
+        "SMT relation checks"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-observable-behavior-contract",
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router"
+      ],
+      "domain": "spring-modernization",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_spring_exception_mapping_refinement",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-spring-exception-mapping-refinement",
+      "title": "Spring Exception Mapping Refinement"
+    },
+    {
+      "capabilities": [
+        "partial-order constraints",
+        "happens-before graph",
+        "cycle detection",
+        "state exploration"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-spring-route-binding-proof",
+        "elmos-spring-security-chain-model",
+        "elmos-proof-obligation-planner"
+      ],
+      "domain": "spring-modernization",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_spring_filter_interceptor_order_proof",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-spring-filter-interceptor-order-proof",
+      "title": "Spring Filter and Interceptor Order Proof"
+    },
+    {
+      "capabilities": [
+        "call-graph dominance",
+        "pointcut set equivalence",
+        "proxy reachability"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-spring-security-chain-model",
+        "elmos-spring-transaction-refinement",
+        "elmos-java-jml-contract-verifier"
+      ],
+      "domain": "spring-modernization",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_spring_proxy_aop_semantic_checker",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P1",
+      "skillId": "elmos-spring-proxy-aop-semantic-checker",
+      "title": "Spring Proxy and AOP Semantic Checker"
+    },
+    {
+      "capabilities": [
+        "regular-language inclusion",
+        "SMT overlap detection",
+        "relational binding verification",
+        "Alloy structure analysis"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-observable-behavior-contract",
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router"
+      ],
+      "domain": "spring-modernization",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_spring_route_binding_proof",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-spring-route-binding-proof",
+      "title": "Spring Route and Binding Proof"
+    },
+    {
+      "capabilities": [
+        "state-machine reachability",
+        "authorization dominance",
+        "noninterference",
+        "TLA+/Alloy checking"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-formal-spec-ir",
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router"
+      ],
+      "domain": "spring-modernization",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_spring_security_chain_model",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-spring-security-chain-model",
+      "title": "Spring Security Chain Model"
+    },
+    {
+      "capabilities": [
+        "finite-state refinement",
+        "linearizability checks",
+        "session fixation properties"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-observable-behavior-contract",
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router"
+      ],
+      "domain": "spring-modernization",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_spring_session_state_refinement",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-spring-session-state-refinement",
+      "title": "Spring Session State Refinement"
+    },
+    {
+      "capabilities": [
+        "trace refinement",
+        "transaction state machines",
+        "simulation",
+        "invariant model checking"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-formal-spec-ir",
+        "elmos-observable-behavior-contract",
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router"
+      ],
+      "domain": "spring-modernization",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_spring_transaction_refinement",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-spring-transaction-refinement",
+      "title": "Spring Transaction Refinement"
+    },
+    {
+      "capabilities": [
+        "unbounded query equivalence",
+        "SMT-based bounded checking",
+        "relational algebra rewrites",
+        "counterexample database synthesis"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-observable-behavior-contract",
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-sql-semantic-ir"
+      ],
+      "domain": "sql-conversion",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_sql_query_equivalence",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-sql-query-equivalence",
+      "title": "SQL Query Equivalence"
+    },
+    {
+      "capabilities": [
+        "denotational SQL semantics",
+        "bag relational algebra",
+        "three-valued logic",
+        "state transition IR"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-formal-spec-ir",
+        "elmos-language-semantic-profile"
+      ],
+      "domain": "sql-conversion",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_sql_semantic_ir",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-sql-semantic-ir",
+      "title": "SQL Semantic IR"
+    },
+    {
+      "capabilities": [
+        "transaction state machines",
+        "trace refinement",
+        "isolation anomaly analysis"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-observable-behavior-contract",
+        "elmos-proof-obligation-planner",
+        "elmos-sql-semantic-ir",
+        "elmos-routine-contract-verifier"
+      ],
+      "domain": "sql-conversion",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_sql_transaction_exception_refinement",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P1",
+      "skillId": "elmos-sql-transaction-exception-refinement",
+      "title": "SQL Transaction and Exception Refinement"
+    },
+    {
+      "capabilities": [
+        "range proofs",
+        "rounding semantics",
+        "encoding equivalence",
+        "type refinement"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-sql-semantic-ir"
+      ],
+      "domain": "sql-conversion",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_sql_type_precision_verifier",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-sql-type-precision-verifier",
+      "title": "SQL Type and Precision Verifier"
+    },
+    {
+      "capabilities": [
+        "noninterference",
+        "self-composition",
+        "taint-assisted relational verification",
+        "access-path analysis"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-observable-behavior-contract",
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-requirement-to-formal-spec"
+      ],
+      "domain": "project-generation",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_tenant_noninterference_verifier",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-tenant-noninterference-verifier",
+      "title": "Tenant Noninterference Verifier"
+    },
+    {
+      "capabilities": [
+        "TLA+ safety/liveness",
+        "state refinement",
+        "failure injection"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-formal-assurance-orchestrator"
+      ],
+      "domain": "platform",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_tla_task_runtime_model",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-tla-task-runtime-model",
+      "title": "Elmos Task Runtime TLA+ Model"
+    },
+    {
+      "capabilities": [
+        "trace refinement",
+        "termination analysis",
+        "dependency graph model checking"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-observable-behavior-contract",
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-sql-semantic-ir"
+      ],
+      "domain": "sql-conversion",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_trigger_trace_verifier",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-trigger-trace-verifier",
+      "title": "Trigger Trace Verifier"
+    },
+    {
+      "capabilities": [
+        "TCB minimization",
+        "component attestation",
+        "SBOM/provenance linkage",
+        "impact analysis"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-assumption-ledger",
+        "elmos-proof-status-policy"
+      ],
+      "domain": "core",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_trusted_computing_base_registry",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-trusted-computing-base-registry",
+      "title": "Trusted Computing Base Registry"
+    },
+    {
+      "capabilities": [
+        "correct-by-construction code",
+        "contract extraction",
+        "refinement wrappers",
+        "proof-aware code generation"
+      ],
+      "capabilityState": "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-verifier-portfolio-router",
+        "elmos-requirement-to-formal-spec"
+      ],
+      "domain": "project-generation",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_verified_core_generator",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P1",
+      "skillId": "elmos-verified-core-generator",
+      "title": "Verified Core Generator"
+    },
+    {
+      "capabilities": [
+        "capability matching",
+        "portfolio solving",
+        "cross-checking",
+        "timeout escalation"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-proof-obligation-planner",
+        "elmos-proof-status-policy",
+        "elmos-trusted-computing-base-registry"
+      ],
+      "domain": "core",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_verifier_portfolio_router",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-verifier-portfolio-router",
+      "title": "Verifier Portfolio Router"
+    },
+    {
+      "capabilities": [
+        "risk acceptance workflow",
+        "four-eyes approval",
+        "expiry enforcement",
+        "compensating controls"
+      ],
+      "capabilityState": "LOCAL_BOUNDED",
+      "certificationStatus": "NOT_CERTIFIED",
+      "dependencies": [
+        "elmos-assumption-ledger",
+        "elmos-proof-status-policy",
+        "elmos-formal-release-gate"
+      ],
+      "domain": "platform",
+      "externalEvidenceStatus": "NOT_RUN",
+      "handlerId": "execute_elmos_waiver_governance",
+      "implementationState": "BOUND_LOCAL_EXACT",
+      "priority": "P0",
+      "skillId": "elmos-waiver-governance",
+      "title": "Proof Waiver Governance"
+    }
+  ],
+  "sourceArchiveSha256": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
+  "sourceTreeSha256": "sha256:3674ece422d24bb7764d3693e4cfb58c03c1c8a8f37def8ef316a8394cc95552"
+}

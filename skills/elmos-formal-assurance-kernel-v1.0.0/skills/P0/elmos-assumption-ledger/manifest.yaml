@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-assumption-ledger
+  title: Assumption Ledger
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: core
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 集中登记证明依赖的环境、数据库、编译器、运行时、外部 API、闭世界和数值假设，并在假设漂移时使证据失效。
+  dependencies:
+  - elmos-formal-spec-ir
+  capabilities:
+  - assumption contracts
+  - dependency fingerprinting
+  - runtime monitors
+  - risk acceptance
+  inputs:
+  - name: specifications
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: toolchain manifests
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: environment IR
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: external contracts
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: assumption records
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: assumption hash
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: monitor requirements
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: staleness events
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE
