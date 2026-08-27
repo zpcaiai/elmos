@@ -22,6 +22,7 @@ import { resolveFramework, translateComponent } from "./engine";
 import { runRepository } from "./pipeline";
 import { renderFeasibilityMarkdown, scanRepository } from "./scan";
 import { assign, loadManifest, markPorted, summarize, unmark } from "./handoff";
+import { bindEvidenceObservation, validateEvidenceLedger } from "./evidence";
 import { verifyBuild } from "./verify";
 
 interface Args {
@@ -79,6 +80,16 @@ Commands:
               A component marked hand-ported is never overwritten by a
               later 'repository' run, and that run reports it stale if
               its SOURCE changed after the port.
+
+  evidence    init        --source-file <path> --source-framework <f> --target-framework <f>
+                          --output <dir> [--skip-execution]
+              validate    --file <evidence-ledger.json>
+              bind        --file <evidence-ledger.json> --record-id <id>
+                          --status PASSED|FAILED --artifact-file <path> --executor <id>
+                          [--verifier <id>] [--independent] [--note <text>]
+              init creates a NOT_CERTIFIED ledger. bind hashes the supplied
+              artifact bytes and keeps the claim NOT_CERTIFIED; it records
+              evidence but cannot manufacture a release or certification decision.
 
 Frameworks: ${ALL_FRAMEWORKS.join(", ")}
   Parseable as a SOURCE: react, typescript, react-native, vue3
@@ -204,10 +215,63 @@ function commandHandoff(args: Args): number {
   throw new RouteError(`UNKNOWN_HANDOFF_SUBCOMMAND: ${JSON.stringify(sub)} is not assign, mark-ported, unmark or status`);
 }
 
+async function commandEvidence(args: Args): Promise<number> {
+  const sub = args.values["_sub"] ?? "";
+  if (sub === "init") {
+    const sourceFile = required(args, "source-file");
+    const report = await translateComponent(
+      fs.readFileSync(sourceFile, "utf8"),
+      required(args, "source-framework"),
+      required(args, "target-framework"),
+      { fileName: path.basename(sourceFile), skipExecution: args.flags.has("skip-execution") },
+    );
+    const output = required(args, "output");
+    fs.mkdirSync(output, { recursive: true });
+    fs.writeFileSync(path.join(output, "translation-report.json"), JSON.stringify(report, null, 2) + "\n");
+    if (report.semanticIR !== null) fs.writeFileSync(path.join(output, "semantic-ir.json"), JSON.stringify(report.semanticIR, null, 2) + "\n");
+    if (report.evidence !== null) fs.writeFileSync(path.join(output, "evidence-ledger.json"), JSON.stringify(report.evidence, null, 2) + "\n");
+    console.log(JSON.stringify({ status: report.status, reasonCode: report.reasonCode, output }, null, 2));
+    return report.status === "PASSED" ? 0 : 2;
+  }
+  if (sub === "validate") {
+    const file = required(args, "file");
+    const ledger = JSON.parse(fs.readFileSync(file, "utf8")) as Parameters<typeof validateEvidenceLedger>[0];
+    const errors = validateEvidenceLedger(ledger);
+    console.log(JSON.stringify({ valid: errors.length === 0, errors }, null, 2));
+    return errors.length === 0 ? 0 : 2;
+  }
+  if (sub === "bind") {
+    const file = required(args, "file");
+    const ledger = JSON.parse(fs.readFileSync(file, "utf8")) as Parameters<typeof bindEvidenceObservation>[0];
+    const artifactFile = required(args, "artifact-file");
+    const status = required(args, "status");
+    if (status !== "PASSED" && status !== "FAILED") throw new RouteError("EVIDENCE_STATUS_INVALID: status must be PASSED or FAILED");
+    let updated;
+    try {
+      updated = bindEvidenceObservation(ledger, required(args, "record-id"), {
+        status,
+        artifactPath: artifactFile,
+        artifactContents: fs.readFileSync(artifactFile, "utf8"),
+        executor: required(args, "executor"),
+        ...(args.values["verifier"] !== undefined ? { verifier: args.values["verifier"] } : {}),
+        ...(args.flags.has("independent") ? { independent: true } : {}),
+        ...(args.values["note"] !== undefined ? { notes: [args.values["note"]] } : {}),
+      });
+    } catch (error) {
+      throw new RouteError(error instanceof Error ? error.message : "EVIDENCE_LEDGER_INVALID");
+    }
+    fs.writeFileSync(file, JSON.stringify(updated, null, 2) + "\n");
+    console.log(JSON.stringify({ file, claim: updated.claim, unresolved: updated.unresolved }, null, 2));
+    return 0;
+  }
+  throw new RouteError(`UNKNOWN_EVIDENCE_SUBCOMMAND: ${JSON.stringify(sub)} is not init, validate or bind`);
+}
+
 export async function main(argv: string[]): Promise<number> {
   const args = parseArgs(argv);
   try {
     if (args.command === "handoff") return commandHandoff(args);
+    if (args.command === "evidence") return await commandEvidence(args);
     if (args.command === "scan") return commandScan(args);
     if (args.command === "translate") return await commandTranslate(args);
     if (args.command === "repository") return await commandRepository(args);

@@ -41,6 +41,9 @@ const roleNames = [
 ] as const;
 const maximumCookieValueLength = 3_800;
 const maximumTenantMemberships = 32;
+const localCredentialSessionLifetimeMs = 60 * 60_000;
+const localCredentialUsernameDefault = "test";
+const localCredentialPasswordDefault = "test";
 
 export type AccountRole = typeof roleNames[number];
 export type AccountPermission =
@@ -195,6 +198,13 @@ export type AuthorizationFlow = {
   expiresAt: number;
 };
 
+export type LocalCredentialSession = {
+  session: string;
+  accessToken: string;
+  expiresAt: number;
+  principal: AccountPrincipal;
+};
+
 export type OidcConfiguration = {
   issuer: string;
   authorizationEndpoint: string;
@@ -282,6 +292,138 @@ export function oidcConfigured(): boolean {
   } catch {
     return false;
   }
+}
+
+type LocalCredentialConfiguration = {
+  username: string;
+  password: string;
+  organizationId: string;
+};
+
+function localCredentialsEnabled(): boolean {
+  return process.env.NODE_ENV !== "production"
+    && process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS === "true";
+}
+
+function localCredentialConfiguration(): LocalCredentialConfiguration {
+  if (!localCredentialsEnabled()) {
+    throw new AccountSessionError(
+      404,
+      "LOCAL_CREDENTIALS_DISABLED",
+      "本地测试账号只允许在显式启用的非生产环境使用。",
+    );
+  }
+  const username = process.env.ELMOS_LOCAL_CREDENTIALS_USERNAME?.trim()
+    || localCredentialUsernameDefault;
+  const password = process.env.ELMOS_LOCAL_CREDENTIALS_PASSWORD
+    ?? localCredentialPasswordDefault;
+  const organizationId = process.env.ELMOS_LOCAL_CREDENTIALS_ORGANIZATION_ID?.trim()
+    || "local-test";
+  if (
+    !identifierPattern.test(username)
+    || username.length > 200
+    || password.length < 1
+    || password.length > 1_024
+    || !organizationPattern.test(organizationId)
+  ) {
+    throw new AccountSessionError(
+      503,
+      "LOCAL_CREDENTIALS_CONFIGURATION_INVALID",
+      "本地测试账号配置无效。",
+    );
+  }
+  return { username, password, organizationId };
+}
+
+export function localCredentialsConfigured(): boolean {
+  try {
+    localCredentialConfiguration();
+    sessionKey();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function assertLocalCredentialRequest(request: Request): void {
+  if (!localCredentialsEnabled()) {
+    throw new AccountSessionError(
+      404,
+      "LOCAL_CREDENTIALS_DISABLED",
+      "本地测试账号只允许在显式启用的非生产环境使用。",
+    );
+  }
+  let requestUrl: URL;
+  let hostUrl: URL;
+  try {
+    requestUrl = new URL(request.url);
+    const host = request.headers.get("host")?.trim();
+    if (!host) throw new Error("HOST_HEADER_REQUIRED");
+    hostUrl = new URL(`${requestUrl.protocol}//${host}`);
+  } catch {
+    throw new AccountSessionError(
+      400,
+      "LOCAL_CREDENTIALS_REQUEST_INVALID",
+      "本地测试账号请求地址无效。",
+    );
+  }
+  const loopbackHosts = ["127.0.0.1", "localhost", "::1"];
+  if (
+    !loopbackHosts.includes(requestUrl.hostname)
+    || !loopbackHosts.includes(hostUrl.hostname)
+    || hostUrl.username
+    || hostUrl.password
+    || hostUrl.pathname !== "/"
+    || hostUrl.search
+    || hostUrl.hash
+    || hostUrl.port !== requestUrl.port
+  ) {
+    throw new AccountSessionError(
+      403,
+      "LOCAL_CREDENTIALS_LOOPBACK_ONLY",
+      "本地测试账号仅允许从 localhost 使用。",
+    );
+  }
+}
+
+export function authenticateLocalCredentials(
+  username: string,
+  password: string,
+): LocalCredentialSession {
+  const configuration = localCredentialConfiguration();
+  if (
+    username.length > 200
+    || password.length > 1_024
+    || !safeEqual(username, configuration.username)
+    || !safeEqual(password, configuration.password)
+  ) {
+    throw new AccountSessionError(
+      401,
+      "LOCAL_CREDENTIALS_INVALID",
+      "本地测试账号或密码错误。",
+    );
+  }
+  const roles: AccountRole[] = ["DEVELOPER"];
+  const primaryMembership = membership(configuration.organizationId, roles, []);
+  const principal: AccountPrincipal = {
+    actorId: "local:test",
+    displayName: "Local Test Account",
+    email: "test@localhost",
+    organizationId: configuration.organizationId,
+    roles: primaryMembership.roles,
+    permissions: primaryMembership.permissions,
+    memberships: [primaryMembership],
+  };
+  const accessToken = base64url(randomBytes(32));
+  const expiresAt = Date.now() + localCredentialSessionLifetimeMs;
+  const session = seal({
+    version: 1,
+    principal,
+    accessTokenHash: hashToken(accessToken),
+    issuedAt: Date.now(),
+    expiresAt,
+  } satisfies SealedSession);
+  return { session, accessToken, expiresAt, principal };
 }
 
 function sessionKey(): Buffer {

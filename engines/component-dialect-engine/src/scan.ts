@@ -37,6 +37,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { DialectError, Framework, RouteError, isParseable } from "./models";
+import { classifyBlocker, SemanticCategory, SemanticDisposition } from "./cross-platform-ir";
 import { parseComponentResults } from "./engine";
 import { discoverComponents } from "./pipeline";
 import { MiniProgramSource } from "./parsers/miniprogram";
@@ -162,6 +163,19 @@ export interface ScanFinding {
   reasonCode: string | null;
   reason: string | null;
   family: BlockerFamily | null;
+  /** Cross-platform semantic routing for the hand-port queue. */
+  semanticCategory?: SemanticCategory;
+  disposition?: SemanticDisposition;
+}
+
+export interface ManualPortPlanEntry {
+  sourcePath: string;
+  componentName: string | null;
+  ownership: "HAND_PORTED";
+  semanticCategory: SemanticCategory;
+  reasonCode: string;
+  reason: string;
+  requiredEvidence: string[];
 }
 
 export interface BlockerGroup {
@@ -208,6 +222,8 @@ export interface FeasibilityReport {
   blockers: BlockerGroup[];
   families: FamilyGroup[];
   findings: ScanFinding[];
+  /** Planning metadata only; this is not evidence that a human port exists. */
+  manualPortPlan: ManualPortPlanEntry[];
   caveats: string[];
 }
 
@@ -266,6 +282,7 @@ export function scanRepository(options: ScanOptions): FeasibilityReport {
             reasonCode: "CERTIFIED_COMPONENT_MISSING_SCRIPT",
             reason: `no sibling ${path.basename(jsFile)} was found next to ${path.basename(file)}`,
             family: "source-format",
+            semanticCategory: "render-tree", disposition: "HAND_PORTED",
           });
           continue;
         }
@@ -292,7 +309,7 @@ export function scanRepository(options: ScanOptions): FeasibilityReport {
       };
       for (const result of parseComponentResults(source, sourceFramework, path.basename(file), reactOptions)) {
         if (result.component !== null) {
-          findings.push({ sourcePath: relative, componentName: result.component.name, status: "IN_SUBSET", reasonCode: null, reason: null, family: null });
+          findings.push({ sourcePath: relative, componentName: result.component.name, status: "IN_SUBSET", reasonCode: null, reason: null, family: null, disposition: "AUTOMATIC" });
         } else {
           const code = result.error?.code ?? "UNKNOWN";
           findings.push({
@@ -300,6 +317,7 @@ export function scanRepository(options: ScanOptions): FeasibilityReport {
             status: code === "CERTIFIED_COMPONENT_NOT_A_COMPONENT" ? "NOT_A_COMPONENT" : "OUT_OF_SUBSET",
             reasonCode: code, reason: result.error?.reason ?? null,
             family: BLOCKER_CATALOG[code]?.family ?? null,
+            ...(code === "CERTIFIED_COMPONENT_NOT_A_COMPONENT" ? {} : classifyBlocker(code)),
           });
         }
       }
@@ -309,6 +327,7 @@ export function scanRepository(options: ScanOptions): FeasibilityReport {
           sourcePath: relative, componentName: null, status: "OUT_OF_SUBSET",
           reasonCode: error.code, reason: error.reason,
           family: BLOCKER_CATALOG[error.code]?.family ?? null,
+          ...classifyBlocker(error.code),
         });
       } else {
         // Not a subset boundary -- an engine defect. Counted separately so
@@ -357,6 +376,21 @@ export function scanRepository(options: ScanOptions): FeasibilityReport {
     .map(([family, count]) => ({ family, count, shareOfBlocked: blocked.length === 0 ? 0 : round3(count / blocked.length) }))
     .sort((a, b) => b.count - a.count || a.family.localeCompare(b.family));
 
+  const manualPortPlan: ManualPortPlanEntry[] = blocked.map((finding) => {
+    const classification = classifyBlocker(finding.reasonCode ?? "UNKNOWN");
+    return {
+      sourcePath: finding.sourcePath,
+      componentName: finding.componentName,
+      ownership: "HAND_PORTED",
+      semanticCategory: finding.semanticCategory ?? classification.category,
+      reasonCode: finding.reasonCode ?? "UNKNOWN",
+      reason: finding.reason ?? "blocked without a detailed reason",
+      requiredEvidence: classification.disposition === "HAND_PORTED"
+        ? ["target-build", "browser-or-device", "platform-runtime", "independent-review"]
+        : ["controlled-runtime", "cancellation-cleanup", "independent-review"],
+    };
+  });
+
   const caveats = [
     "This is an UPPER BOUND. Parsing proves a component is inside certified-component-v1 from the SOURCE side. " +
     "During a real run each emission is re-validated by the target framework's own compiler, and a component can " +
@@ -389,7 +423,8 @@ export function scanRepository(options: ScanOptions): FeasibilityReport {
     upperBoundCoverage: denominator === 0 ? 0 : round3(inSubset / denominator),
     blockers,
     families,
-      findings: options.includeAllFindings ? findings : findings.filter((f) => f.status !== "IN_SUBSET"),
+    findings: options.includeAllFindings ? findings : findings.filter((f) => f.status !== "IN_SUBSET"),
+    manualPortPlan,
     caveats,
   };
 }

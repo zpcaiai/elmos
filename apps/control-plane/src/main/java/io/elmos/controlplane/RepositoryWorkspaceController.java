@@ -402,7 +402,7 @@ public final class RepositoryWorkspaceController {
                 errorCode,
                 null,
                 null,
-                Map.of("externalSideEffect", String.valueOf(externalSideEffect))
+                Map.of("EXTERNAL_SIDE_EFFECT", String.valueOf(externalSideEffect))
         )));
     }
 

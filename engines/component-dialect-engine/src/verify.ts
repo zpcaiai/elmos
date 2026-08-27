@@ -26,7 +26,6 @@ const UNVERIFIABLE: Partial<Record<Framework, string>> = {
   "react-native": "requires the Expo/Metro bundler plus an Android or iOS simulator",
   miniprogram: "requires the official WeChat Developer Tools (no public headless CLI)",
   arkui: "requires HarmonyOS DevEco Studio and the ArkTS compiler",
-  flutter: "requires the Flutter/Dart SDK",
   angular: "requires an Angular CLI workspace with platform-server for a real build",
 };
 
@@ -45,7 +44,21 @@ export function verifyBuild(destination: string, framework: Framework, options: 
   if (unverifiable) {
     return { status: "NOT_VERIFIABLE_HERE", command: null, reason: `${framework} ${unverifiable}`, output: null };
   }
+  if (framework === "flutter" && !fs.existsSync(path.join(destination, "pubspec.yaml"))) {
+    return { status: "NOT_VERIFIABLE_HERE", command: null, reason: "Flutter target has no generated pubspec.yaml to analyze", output: null };
+  }
   if (!fs.existsSync(path.join(destination, "package.json"))) {
+    if (framework === "flutter" && fs.existsSync(path.join(destination, "pubspec.yaml"))) {
+      const pub = run("flutter", ["pub", "get"], destination);
+      if (!pub.ok) return { status: "FAILED", command: "flutter pub get", reason: "Flutter dependencies could not be resolved", output: pub.output.slice(-4000) };
+      const analyze = run("flutter", ["analyze", "--no-fatal-infos"], destination);
+      return {
+        status: analyze.ok ? "PASSED" : "FAILED",
+        command: "flutter pub get && flutter analyze --no-fatal-infos",
+        reason: analyze.ok ? "Dart/Flutter static analysis passed; device runtime was not exercised" : "the generated Flutter project did not pass Dart analysis",
+        output: analyze.output.slice(-4000),
+      };
+    }
     return { status: "FAILED", command: null, reason: "no package.json was written to the destination", output: null };
   }
 

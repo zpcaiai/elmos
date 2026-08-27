@@ -12,21 +12,15 @@ import {
   ALL_FRAMEWORKS, ComponentDef, DialectError, EXECUTABLE_FRAMEWORKS, Framework,
   isParseable, RouteError,
 } from "./models";
+import { buildCrossPlatformIR, CrossPlatformComponentIR } from "./cross-platform-ir";
+import { emitFromTargetAdapter } from "./target-adapters";
+import { ComponentEvidenceLedger, createEvidenceLedger } from "./evidence";
 import { parseReactComponent, parseReactComponents, parseReactComponentResults, ReactParserOptions } from "./parsers/react";
 import { parseVue3Component } from "./parsers/vue3";
 import { parseVue2Component } from "./parsers/vue2";
 import { parseSvelteComponent } from "./parsers/svelte";
 import { parseAngularComponent } from "./parsers/angular";
 import { parseMiniProgramComponent, MiniProgramSource } from "./parsers/miniprogram";
-import { emitReact } from "./emitters/react";
-import { emitVue3 } from "./emitters/vue3";
-import { emitVue2 } from "./emitters/vue2";
-import { emitAngular } from "./emitters/angular";
-import { emitSvelte } from "./emitters/svelte";
-import { emitMiniProgram } from "./emitters/miniprogram";
-import { emitReactNative } from "./emitters/react-native";
-import { emitArkUI } from "./emitters/arkui";
-import { emitFlutter } from "./emitters/flutter";
 import { ExecutionStatus, validateSyntax } from "./validator";
 import { compareRendered, defaultExecutionCases } from "./execution";
 
@@ -48,6 +42,15 @@ export interface TranslationReport {
   /** Constructs with no equivalent on the target that were dropped. Always
    * surfaced, never silently discarded. */
   notes: string[];
+  /** Typed, framework-neutral semantic contract consumed by the target
+   * adapter. Null means the source failed before a canonical component could
+   * be constructed. */
+  semanticIR: CrossPlatformComponentIR | null;
+  targetAdapterId: string | null;
+  /** A fail-closed ledger of the evidence still needed for this exact
+   * source/target tuple. It starts NOT_RUN and cannot be promoted by JSON
+   * editing alone. */
+  evidence: ComponentEvidenceLedger | null;
   validation: {
     syntaxStatus: "PASSED" | "FAILED";
     syntaxDiagnostics: string[];
@@ -65,8 +68,8 @@ export function parseComponent(source: string | MiniProgramSource, framework: Fr
   if (!isParseable(framework)) {
     throw new RouteError(
       `FRAMEWORK_NOT_PARSEABLE: ${framework} can only be a translation TARGET in certified-component-v1. ` +
-      `ArkUI's struct syntax has no standalone parser and Flutter needs the Dart SDK; neither is available, ` +
-      `so this engine refuses to guess at their source rather than shipping an unverifiable regex parser.`,
+      `ArkUI's struct syntax has no standalone parser and Flutter source parsing is owned by the external Dart toolchain; ` +
+      `this engine refuses to guess at their source rather than shipping an unverifiable regex parser.`,
     );
   }
   switch (framework) {
@@ -91,69 +94,14 @@ export function parseComponent(source: string | MiniProgramSource, framework: Fr
   }
 }
 
-interface Emission {
-  emitted: string | null;
-  emittedFiles: Record<string, string> | null;
-  notes: string[];
-}
-
-export function emitComponent(component: ComponentDef, framework: Framework): Emission {
-  switch (framework) {
-    case "react":
-    case "typescript":
-      return { emitted: emitReact(component), emittedFiles: null, notes: [] };
-    case "vue3":
-      return { emitted: emitVue3(component), emittedFiles: null, notes: [] };
-    case "vue2":
-      return {
-        emitted: emitVue2(component),
-        emittedFiles: null,
-        // Vue 2's Options API cannot express an emit payload type, so this
-        // information is genuinely lost in the target format. Reported so
-        // nobody assumes a later Vue2 -> X translation still has it.
-        notes: component.props.some((p) => p.kind === "callback" && p.paramType !== undefined)
-          ? ["Vue 2 has no typed emit declaration; callback payload types are not representable and will not survive a translation back out of Vue 2"]
-          : [],
-      };
-    case "angular":
-      return { emitted: emitAngular(component), emittedFiles: null, notes: [] };
-    case "svelte":
-      return { emitted: emitSvelte(component), emittedFiles: null, notes: [] };
-    case "react-native": {
-      const result = emitReactNative(component);
-      return { emitted: result.source, emittedFiles: null, notes: result.notes };
-    }
-    case "miniprogram": {
-      const notes = ["WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"];
-      // A WeChat `properties` entry has no "required" concept -- every
-      // property carries a default value -- so a required prop is emitted
-      // with a synthesized empty default and cannot be recovered as
-      // required on the way back out.
-      if (component.props.some((p) => p.kind === "data" && p.required)) {
-        notes.push("WeChat properties cannot express a required prop; required props are emitted with a synthesized default value and will read back as optional");
-      }
-      // `triggerEvent` detail is untyped, so a callback payload type is
-      // lost the same way it is in Vue 2.
-      if (component.props.some((p) => p.kind === "callback" && p.paramType !== undefined)) {
-        notes.push("WeChat triggerEvent carries an untyped detail object; callback payload types are not representable and will not survive a translation back out of the mini program");
-      }
-      return { emitted: null, emittedFiles: emitMiniProgram(component), notes };
-    }
-    case "arkui":
-      return {
-        emitted: emitArkUI(component),
-        emittedFiles: null,
-        notes: ["no ArkTS compiler is installed here, so this output has NOT been verified by a real HarmonyOS toolchain"],
-      };
-    case "flutter":
-      return {
-        emitted: emitFlutter(component),
-        emittedFiles: null,
-        notes: ["no Dart SDK is installed here, so this output has NOT been verified by a real Flutter toolchain"],
-      };
-    default:
-      throw new RouteError(`EMITTER_NOT_IMPLEMENTED: no certified-component-v1 emitter for ${framework} yet`);
-  }
+export function emitComponent(
+  component: ComponentDef,
+  framework: Framework,
+  sourceFramework: Framework = "typescript",
+  sourceFile = `${component.name}.source`,
+): { emitted: string | null; emittedFiles: Record<string, string> | null; notes: string[] } {
+  const ir = buildCrossPlatformIR(component, sourceFramework, sourceFile);
+  return emitFromTargetAdapter(ir, framework);
 }
 
 function blocked(source: Framework, target: Framework, code: string, reason: string): TranslationReport {
@@ -169,6 +117,9 @@ function blocked(source: Framework, target: Framework, code: string, reason: str
     emitted: null,
     emittedFiles: null,
     notes: [],
+    semanticIR: null,
+    targetAdapterId: null,
+    evidence: null,
     validation: null,
   };
 }
@@ -306,9 +257,10 @@ async function translateParsed(
   to: Framework,
   options: TranslateOptions,
 ): Promise<TranslationReport> {
-  let emission: Emission;
+  const semanticIR = buildCrossPlatformIR(component, from, options.fileName ?? `${component.name}.source`);
+  let emission: { emitted: string | null; emittedFiles: Record<string, string> | null; notes: string[] };
   try {
-    emission = emitComponent(component, to);
+    emission = emitFromTargetAdapter(semanticIR, to);
   } catch (error) {
     if (error instanceof DialectError) return blocked(from, to, error.code, error.reason);
     throw error;
@@ -321,7 +273,7 @@ async function translateParsed(
   if (options.skipExecution) {
     executionStatus = "EXECUTION_NOT_ATTEMPTED";
   } else if (EXECUTABLE_FRAMEWORKS.has(from) && EXECUTABLE_FRAMEWORKS.has(to) && syntax.status === "PASSED") {
-    const sourceEmission = emitComponent(component, from);
+    const sourceEmission = emitFromTargetAdapter(semanticIR, from);
     const result = await compareRendered(
       { framework: from, source: sourceEmission.emitted as string },
       { framework: to, source: emission.emitted as string },
@@ -346,6 +298,9 @@ async function translateParsed(
     emitted: emission.emitted,
     emittedFiles: emission.emittedFiles,
     notes: emission.notes,
+    semanticIR,
+    targetAdapterId: semanticIR.targetAdapters[to]?.adapterId ?? null,
+    evidence: createEvidenceLedger(semanticIR, to),
     validation: {
       syntaxStatus: syntax.status,
       syntaxDiagnostics: syntax.diagnostics,

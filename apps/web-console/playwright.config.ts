@@ -363,6 +363,14 @@ export default defineConfig({
       env: {
         ...webServerEnvironment,
         ELMOS_LOCAL_RUNNER_ENABLED: "true",
+        ...(webServerMode === "development" ? {
+          ELMOS_ALLOW_LOCAL_CREDENTIALS: "true",
+          ELMOS_LOCAL_CREDENTIALS_USERNAME: "test",
+          ELMOS_LOCAL_CREDENTIALS_PASSWORD: "test",
+          ELMOS_LOCAL_CREDENTIALS_ORGANIZATION_ID: "local-e2e",
+          ELMOS_SESSION_SECRET: "elmos-local-e2e-session-secret-at-least-32-characters",
+          ELMOS_PUBLIC_ORIGIN: baseURL,
+        } : {}),
         ELMOS_LOCAL_RUNNER_ROOT: runnerRoot,
         ELMOS_REPOSITORY_ROOT: repositoryRoot,
         ELMOS_TRANSLATION_SOURCE_ROOT: translationSourceRoot,

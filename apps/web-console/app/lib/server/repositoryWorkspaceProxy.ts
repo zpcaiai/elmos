@@ -26,6 +26,7 @@ const maximumGenerationRepositoryFiles = 8;
 const maximumTranslationRepositoryFiles = 1_000;
 const maximumTranslationRepositoryBytes = 64 * 1024 * 1024;
 const requestTimeoutMs = 30_000;
+const workspaceCreateTimeoutMs = 5 * 60_000;
 const workspaceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const sourceCommitPattern = /^[0-9a-f]{40}$/;
 const digestPattern = /^[0-9a-f]{64}$/;
@@ -166,7 +167,15 @@ function authorizeBrowser(
       return {
         organizationId: account.principal.organizationId,
         actorId: account.principal.actorId,
-        accessToken: account.accessToken,
+        // The local test account deliberately issues an opaque development
+        // session token, not an OIDC JWT. Keep it inside the Web Console and
+        // authenticate the internal control-plane hop with its separately
+        // configured repository key.
+        ...(account.principal.actorId === "local:test"
+          && process.env.NODE_ENV !== "production"
+          && process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS === "true"
+          ? {}
+          : { accessToken: account.accessToken }),
       };
     } catch (error) {
       if (error instanceof AccountSessionError) {
@@ -944,13 +953,16 @@ export async function repositoryWorkspaceRequest(
   const headers = trustedHeaders(actor);
   if (body !== undefined) headers.set("Content-Type", "application/json");
   try {
+    const timeoutMs = method === "POST" && targetPath === ""
+      ? workspaceCreateTimeoutMs
+      : requestTimeoutMs;
     return await fetch(`${controlPlaneBaseUrl()}/api/v1/repository-workspaces${targetPath}`, {
       method,
       headers,
       body,
       cache: "no-store",
       redirect: "error",
-      signal: AbortSignal.timeout(requestTimeoutMs),
+      signal: AbortSignal.timeout(timeoutMs),
     });
   } catch (error) {
     if (error instanceof RepositoryWorkspaceProxyError) throw error;

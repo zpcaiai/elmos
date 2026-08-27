@@ -181,7 +181,7 @@ describe("emit-only frameworks", () => {
     for (const target of ["arkui", "flutter"] as const) {
       const report = await translateComponent(COUNTER, "react", target, { fileName: "Counter.tsx" });
       expect(report.status).toBe("PASSED");
-      expect(report.notes.join(" ")).toMatch(/has NOT been verified by a real/);
+      expect(report.notes.join(" ")).toMatch(/external|has NOT been verified by a real/);
       expect(report.validation?.executionStatus).toBe("EXECUTION_NOT_AVAILABLE");
     }
   });
