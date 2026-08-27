@@ -23,3 +23,15 @@ The only success transition is `CompletionGateEngine`; Agent prose produces a
 `CompletionProposal` and cannot bypass mandatory failed or evidence-free checks.
 All side effects pass through `ToolGateway`, which writes action, policy and
 observation events with tenant scope and idempotency keys.
+
+## Follow-up plans
+
+- [Completion plan](COMPLETION_PLAN.md) — external adapters, production topology,
+  evidence ownership, rollback and GA entry conditions.
+- [Test plan](TEST_PLAN.md) — contract, integration, security, Chaos, load,
+  Golden Repo, browser/device and independent-verification cases.
+
+The plans explicitly preserve `NOT_RUN / NOT_CERTIFIED` for real
+Temporal/PostgreSQL, production sandbox, external Provider, browser/device,
+Golden Repo, load/Chaos and independent security review until those environments
+actually execute and produce independently verifiable evidence.
