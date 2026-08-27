@@ -244,7 +244,10 @@ class WalletMigrationContractTest {
             int markerOffset = header.indexOf(marker);
             assertTrue(markerOffset >= 0,
                     () -> signature + " is SECURITY DEFINER without a pinned search_path");
-            assertFalse(header.substring(markerOffset + marker.length()).isBlank(),
+            String searchPath = header.substring(markerOffset + marker.length()).trim();
+            assertTrue(searchPath.equals("public") || searchPath.equals("pg_catalog, public, pg_temp"),
+                    () -> signature + " is SECURITY DEFINER with an unsupported search_path: " + searchPath);
+            assertFalse(searchPath.isBlank(),
                     () -> signature + " is SECURITY DEFINER with an empty search_path");
         }
         final int observedDefiners = definers;

@@ -8,7 +8,12 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
+import org.eclipse.jgit.transport.Transport;
+import org.eclipse.jgit.transport.TransportHttp;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.transport.http.HttpConnection;
+import org.eclipse.jgit.transport.http.HttpConnectionFactory;
+import org.eclipse.jgit.transport.http.JDKHttpConnectionFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -53,6 +58,8 @@ import java.util.UUID;
  * workspace metadata.</p>
  */
 public final class GitRepositoryWorkspaceService {
+    private static final int maximumGitTransportAttempts = 3;
+
     public enum Provider { GITHUB, GITEE, GENERIC_GIT }
     public enum Completeness { COMPLETE, INCOMPLETE_SUBMODULES, INCOMPLETE_LFS }
     public enum ChangeOperation { UPSERT, DELETE }
@@ -382,6 +389,33 @@ public final class GitRepositoryWorkspaceService {
         }
         String workspaceId = UUID.randomUUID().toString();
         Path directory = workspaceDirectory(workspaceId);
+        for (int attempt = 1; attempt <= maximumGitTransportAttempts; attempt++) {
+            try {
+                return createWorkspaceAttempt(
+                        request,
+                        credentialUsername,
+                        credential,
+                        cloneUri,
+                        workspaceId,
+                        directory
+                );
+            } catch (GitTransportFailure failure) {
+                if (attempt == maximumGitTransportAttempts || !isRetryableTransportFailure(failure)) {
+                    throw failure;
+                }
+            }
+        }
+        throw new IllegalStateException("GIT_FETCH_RETRY_EXHAUSTED");
+    }
+
+    private Workspace createWorkspaceAttempt(
+            CreateRequest request,
+            String credentialUsername,
+            Optional<EphemeralCredential> credential,
+            URI cloneUri,
+            String workspaceId,
+            Path directory
+    ) {
         Path repository = directory.resolve(REPOSITORY);
         try {
             Files.createDirectory(directory);
@@ -395,7 +429,8 @@ public final class GitRepositoryWorkspaceService {
                 var fetch = git.fetch()
                         .setRemote(cloneUri.toString())
                         .setDepth(1)
-                        .setRefSpecs(new RefSpec("+" + resolvedRef + ":refs/elmos/source"));
+                        .setRefSpecs(new RefSpec("+" + resolvedRef + ":refs/elmos/source"))
+                        .setTransportConfigCallback(transport -> configureHttpTransport(transport, cloneUri));
                 callFetch(fetch, credentialUsername, credential);
                 ObjectId fetched = git.getRepository().resolve("refs/elmos/source^{commit}");
                 if (fetched == null || !sourceCommit.equals(fetched.name())) {
@@ -412,6 +447,81 @@ public final class GitRepositoryWorkspaceService {
         } catch (Exception failure) {
             safeDelete(directory);
             throw new IllegalStateException("GIT_WORKSPACE_CREATE_FAILED", failure);
+        }
+    }
+
+    private static boolean isRetryableTransportFailure(Throwable failure) {
+        for (Throwable current = failure; current != null; current = current.getCause()) {
+            if (current instanceof IOException
+                    && ("Premature EOF".equals(current.getMessage())
+                    || "Connection reset".equals(current.getMessage())
+                    || "Read timed out".equals(current.getMessage()))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void configureHttpTransport(Transport transport, URI cloneUri) {
+        if (transport instanceof TransportHttp http) {
+            http.setHttpConnectionFactory(new PinnedHttpConnectionFactory(cloneUri));
+            http.setAdditionalHeaders(Map.of(
+                    "Accept-Encoding", "identity",
+                    "Connection", "close"
+            ));
+        }
+    }
+
+    /** Rejects redirects outside the exact credential-bearing repository origin. */
+    private static final class PinnedHttpConnectionFactory implements HttpConnectionFactory {
+        private final URI cloneUri;
+        private final HttpConnectionFactory delegate = new JDKHttpConnectionFactory();
+
+        private PinnedHttpConnectionFactory(URI cloneUri) {
+            this.cloneUri = cloneUri;
+        }
+
+        @Override
+        public HttpConnection create(java.net.URL url) throws IOException {
+            requirePinned(url);
+            HttpConnection connection = delegate.create(url);
+            connection.setInstanceFollowRedirects(false);
+            return connection;
+        }
+
+        @Override
+        public HttpConnection create(java.net.URL url, java.net.Proxy proxy) throws IOException {
+            requirePinned(url);
+            HttpConnection connection = delegate.create(url, proxy);
+            connection.setInstanceFollowRedirects(false);
+            return connection;
+        }
+
+        private void requirePinned(java.net.URL url) throws IOException {
+            URI target;
+            try {
+                target = url.toURI();
+            } catch (Exception invalid) {
+                throw new IOException("SCM transport URL is invalid", invalid);
+            }
+            String clonePath = cloneUri.getPath();
+            boolean allowedQuery = target.getQuery() == null
+                    || "service=git-upload-pack".equals(target.getQuery());
+            if (!"https".equalsIgnoreCase(target.getScheme())
+                    || target.getHost() == null
+                    || !cloneUri.getHost().equalsIgnoreCase(target.getHost())
+                    || effectivePort(cloneUri) != effectivePort(target)
+                    || target.getUserInfo() != null
+                    || target.getFragment() != null
+                    || !allowedQuery
+                    || !(Objects.equals(clonePath, target.getPath())
+                    || target.getPath().startsWith(clonePath + "/"))) {
+                throw new IOException("SCM redirect left the pinned repository origin");
+            }
+        }
+
+        private static int effectivePort(URI uri) {
+            return uri.getPort() < 0 ? 443 : uri.getPort();
         }
     }
 
@@ -1074,7 +1184,8 @@ public final class GitRepositoryWorkspaceService {
             var command = Git.lsRemoteRepository()
                     .setRemote(uri.toString())
                     .setHeads(true)
-                    .setTags(true);
+                    .setTags(true)
+                    .setTransportConfigCallback(transport -> configureHttpTransport(transport, uri));
             Collection<Ref> advertised = callLsRemote(command, username, credential);
             Map<String, Ref> refs = new HashMap<>();
             advertised.forEach(ref -> refs.put(ref.getName(), ref));
