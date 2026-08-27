@@ -190,6 +190,30 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
             f"{left} BETWEEN {_render_literal(low.value, low.is_string)}"
             f" AND {_render_literal(high.value, high.is_string)}"
         )
+    if operator is CheckOperator.IS_DISTINCT_FROM:
+        if comparison.right_column is None:
+            raise DialectError(
+                "CERTIFIED_DML_UNSUPPORTED_PREDICATE",
+                "IS DISTINCT FROM requires a right-hand column",
+            )
+        right = (
+            f"{comparison.right_column_qualifier}.{comparison.right_column}"
+            if comparison.right_column_qualifier is not None
+            else comparison.right_column
+        )
+        if dialect is Dialect.POSTGRES:
+            return f"{left} IS DISTINCT FROM {right}"
+        if dialect is Dialect.MYSQL:
+            # MySQL's null-safe equality is the exact complement of SQL's
+            # IS DISTINCT FROM relation.
+            return f"NOT ({left} <=> {right})"
+        # Oracle and SQL Server versions supported by this profile do not
+        # share one portable spelling.  The explicit three-valued expansion
+        # preserves equality, inequality and NULL-vs-non-NULL cases exactly.
+        return (
+            f"({left} <> {right} OR ({left} IS NULL AND {right} IS NOT NULL) "
+            f"OR ({left} IS NOT NULL AND {right} IS NULL))"
+        )
     if operator is CheckOperator.MATCHES_REGEX:
         pattern = _render_literal(comparison.literal, True)
         if dialect is Dialect.TSQL:
@@ -620,14 +644,65 @@ def emit_insert_select(insert: InsertSelectStatement, dialect: Dialect) -> str:
 
 
 def emit_update(update: UpdateStatement, dialect: Dialect) -> str:
-    """Emit a single-table UPDATE without inventing a target row source."""
+    """Emit a typed single-table UPDATE or a proven one-row-source UPDATE."""
     assignments = ", ".join(
         f"{item.target} = {_render_dml_expression(item.value, dialect)}" for item in update.assignments
     )
-    rendered = f"UPDATE {_object_name(update.schema, update.table)} SET {assignments}"  # noqa: S608
-    if update.predicate is not None:
-        rendered += f" WHERE {_render_check_expression(update.predicate, dialect)}"
-    return rendered  # noqa: S608
+    if update.source_table is None:
+        rendered = f"UPDATE {_object_name(update.schema, update.table)} SET {assignments}"  # noqa: S608
+        if update.predicate is not None:
+            rendered += f" WHERE {_render_check_expression(update.predicate, dialect)}"
+        return rendered  # noqa: S608
+
+    if update.target_alias is None or update.source_alias is None or not update.join_conditions:
+        raise DialectError(
+            "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+            "typed UPDATE row-source metadata is incomplete",
+        )
+    target = _object_name(update.schema, update.table)
+    source = _object_name(update.source_schema, update.source_table)
+    joins = " AND ".join(
+        f"{_render_dml_expression(condition.left, dialect)} = "
+        f"{_render_dml_expression(condition.right, dialect)}"
+        for condition in update.join_conditions
+    )
+    predicate = (
+        f" AND {_render_check_expression(update.predicate, dialect)}"
+        if update.predicate is not None
+        else ""
+    )
+    where = (
+        f" WHERE {_render_check_expression(update.predicate, dialect)}"
+        if update.predicate is not None
+        else ""
+    )
+    if dialect is Dialect.POSTGRES:
+        return (
+            f"UPDATE {target} {update.target_alias} SET {assignments} FROM {source} "  # noqa: S608
+            f"{update.source_alias} WHERE {joins}{predicate}"
+        )
+    if dialect is Dialect.MYSQL:
+        return (
+            f"UPDATE {target} {update.target_alias} INNER JOIN {source} {update.source_alias} "  # noqa: S608
+            f"ON {joins} SET {assignments}"
+            f"{where}"
+        )
+    if dialect is Dialect.ORACLE:
+        oracle_assignments = ", ".join(
+            f"{update.target_alias}.{item.target} = {_render_dml_expression(item.value, dialect)}"
+            for item in update.assignments
+        )
+        return (
+            f"MERGE INTO {target} {update.target_alias} USING {source} {update.source_alias} "  # noqa: S608
+            f"ON ({joins}) WHEN MATCHED THEN UPDATE SET "
+            f"{oracle_assignments}"
+            f"{where}"
+        )
+    return (
+        f"UPDATE {update.target_alias} SET {assignments} FROM {target} {update.target_alias} "  # noqa: S608
+        f"INNER JOIN {source} {update.source_alias} ON {joins}"
+        f"{where}"
+    )
 
 
 def _render_check_clause(check: CheckConstraint, dialect: Dialect) -> str:

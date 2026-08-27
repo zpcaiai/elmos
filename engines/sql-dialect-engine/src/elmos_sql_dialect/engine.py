@@ -10,7 +10,7 @@ instead of an uncaught exception -- mirroring `engines/polyglot-route-engine`'s
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, cast
 
 from . import emitter, parser
 from .advanced import (
@@ -116,7 +116,14 @@ def translate_ddl(
             else:
                 emitted = emitter.emit_insert_select(insert, target)
         elif statement_kind == "UPDATE":
-            emitted = emitter.emit_update(parser.parse_update(sql, source, namespace_map), target)
+            update_catalog = (
+                cast(parser.UpdateCatalogLike, catalog)
+                if catalog is not None and hasattr(catalog, "has_unique_key")
+                else None
+            )
+            emitted = emitter.emit_update(
+                parser.parse_update(sql, source, namespace_map, update_catalog), target
+            )
         elif statement_kind == "ALTER":
             emitted = emitter.emit_alter_table(
                 parser.parse_alter_table(sql, source, namespace_map), target, catalog

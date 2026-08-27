@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
-from typing import cast
+from typing import Protocol, cast
 
 import sqlglot
 from sqlglot import exp
@@ -152,6 +152,14 @@ _CHECK_OPERATOR_MAP: dict[type, CheckOperator] = {
     exp.GT: CheckOperator.GT,
     exp.GTE: CheckOperator.GE,
 }
+
+
+class UpdateCatalogLike(Protocol):
+    """Source-schema proof required by the typed UPDATE ... FROM route."""
+
+    def type_of(self, table: str, column: str) -> CanonicalType | None: ...
+
+    def has_unique_key(self, schema: str | None, table: str, columns: tuple[str, ...]) -> bool: ...
 
 _REFERENTIAL_ACTION_MAP = {
     "CASCADE": ReferentialAction.CASCADE,
@@ -564,6 +572,15 @@ def _parse_type(data_type: exp.DataType, source_dialect: Dialect) -> CanonicalTy
         return CanonicalTypeRef(canonical_type=CanonicalType.ARRAY, element_type=element_type)
     if sqlglot_type in {_VARBINARY_TYPE, _BINARY_TYPE, _BLOB_TYPE}:
         binary_fixed = sqlglot_type == _BINARY_TYPE
+        # PostgreSQL BYTEA is normalised by sqlglot to VARBINARY with no
+        # parameters.  BYTEA is genuinely unbounded byte storage (rather
+        # than a vendor default length), so retain that fact in the typed IR;
+        # dialects.render_type lowers it to each target's unbounded LOB form.
+        # Do not generalise this to bare VARBINARY/BLOB from other sources:
+        # those spellings have different vendor-specific defaults and would
+        # require a source-specific capability contract.
+        if sqlglot_type == _VARBINARY_TYPE and not params and source_dialect is Dialect.POSTGRES:
+            return CanonicalTypeRef(canonical_type=CanonicalType.BINARY, binary_fixed=False)
         if sqlglot_type == _BLOB_TYPE and not params:
             raise DialectError(
                 "CERTIFIED_DDL_UNBOUNDED_BINARY",
@@ -1676,6 +1693,7 @@ _DML_PREDICATE_OPERATORS = frozenset(
         CheckOperator.GE,
         CheckOperator.IS_NULL,
         CheckOperator.IS_NOT_NULL,
+        CheckOperator.IS_DISTINCT_FROM,
     }
 )
 
@@ -1770,6 +1788,21 @@ def _parse_qualified_dml_predicate(
             column=column.name,
             column_qualifier=column.qualifier,
             operator=CheckOperator.IS_NOT_NULL if node.args.get("negate") else CheckOperator.IS_NULL,
+        )
+    if isinstance(node, exp.NullSafeNEQ):
+        left = _parse_dml_column(node.this, "DML distinctness left column", allowed_qualifiers)
+        right = _parse_dml_column(node.expression, "DML distinctness right column", allowed_qualifiers)
+        _require(
+            left.qualifier != right.qualifier,
+            "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+            "IS DISTINCT FROM in an UPDATE row-source predicate must compare target and source columns",
+        )
+        return CheckComparison(
+            column=left.name,
+            column_qualifier=left.qualifier,
+            operator=CheckOperator.IS_DISTINCT_FROM,
+            right_column=right.name,
+            right_column_qualifier=right.qualifier,
         )
     if isinstance(node, exp.Column):
         column = _parse_dml_column(node, "DML boolean column", allowed_qualifiers)
@@ -2118,8 +2151,14 @@ def parse_update(
     sql: str | exp.Expression,
     source_dialect: Dialect,
     namespace_map: Mapping[str, str] | None = None,
+    catalog: UpdateCatalogLike | None = None,
 ) -> UpdateStatement:
-    """Parse a single-table UPDATE with typed values and predicates."""
+    """Parse a typed single-table UPDATE or a proven one-row-source UPDATE.
+
+    ``UPDATE ... FROM`` is admitted only for one plain source table, equality
+    joins, and a catalogue witness that the source join columns are a declared
+    unique key.  Without that witness the old fail-closed blocker remains.
+    """
     statement = _statement(sql, source_dialect)
     _require(
         isinstance(statement, exp.Update),
@@ -2127,17 +2166,124 @@ def parse_update(
         "certified-dml-v1 only accepts one UPDATE statement",
     )
     assert isinstance(statement, exp.Update)
-    _require(
-        statement.args.get("from_") is None,
-        "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
-        "UPDATE ... FROM changes row-source semantics and needs a target-specific route",
-    )
+    from_clause = statement.args.get("from_")
     _require(
         not any(statement.args.get(flag) for flag in ("order", "limit", "with")),
         "CERTIFIED_UPDATE_UNSUPPORTED_MODIFIER",
         "UPDATE ORDER BY, LIMIT and CTE modifiers are outside certified-dml-v1",
     )
     schema, table = _mapped_table_name(statement.this, "UPDATE target table", namespace_map)
+    target_alias: str | None = None
+    source_table: str | None = None
+    source_alias: str | None = None
+    source_schema: str | None = None
+    join_conditions: tuple[DmlJoinCondition, ...] = ()
+    allowed_qualifiers = frozenset[str]()
+    residual_where: exp.Expression | None = None
+
+    if from_clause is not None:
+        _require(
+            isinstance(from_clause, exp.From),
+            "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+            "UPDATE row source is malformed",
+        )
+        assert isinstance(from_clause, exp.From)
+        target_alias_node = statement.this.args.get("alias")
+        _require(
+            isinstance(target_alias_node, exp.TableAlias)
+            and isinstance(target_alias_node.this, exp.Identifier),
+            "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+            "UPDATE ... FROM requires a plain target alias",
+        )
+        assert isinstance(target_alias_node, exp.TableAlias)
+        assert isinstance(target_alias_node.this, exp.Identifier)
+        target_alias = _plain_identifier(target_alias_node.this, "UPDATE target alias")
+        source_nodes = [from_clause.this, *from_clause.expressions]
+        _require(
+            len(source_nodes) == 1 and isinstance(source_nodes[0], exp.Table),
+            "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+            "UPDATE ... FROM supports exactly one plain source table",
+        )
+        source_ref = source_nodes[0]
+        assert isinstance(source_ref, exp.Table)
+        source_schema, source_table = _mapped_table_name(source_ref, "UPDATE source table", namespace_map)
+        source_alias_node = source_ref.args.get("alias")
+        _require(
+            isinstance(source_alias_node, exp.TableAlias)
+            and isinstance(source_alias_node.this, exp.Identifier),
+            "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+            "UPDATE ... FROM requires a plain source alias",
+        )
+        assert isinstance(source_alias_node, exp.TableAlias)
+        assert isinstance(source_alias_node.this, exp.Identifier)
+        source_alias = _plain_identifier(source_alias_node.this, "UPDATE source alias")
+        _require(
+            target_alias.casefold() != source_alias.casefold(),
+            "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+            "UPDATE target and source aliases must differ",
+        )
+        allowed_qualifiers = frozenset((target_alias.casefold(), source_alias.casefold()))
+        where = statement.args.get("where")
+        _require(
+            isinstance(where, exp.Where),
+            "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+            "UPDATE ... FROM requires a WHERE clause containing its equality join",
+        )
+        assert isinstance(where, exp.Where)
+        terms: list[exp.Expression] = []
+
+        def flatten_and(node: exp.Expression) -> None:
+            if isinstance(node, exp.And):
+                assert isinstance(node.this, exp.Expression) and isinstance(node.expression, exp.Expression)
+                flatten_and(node.this)
+                flatten_and(node.expression)
+            else:
+                terms.append(node)
+
+        flatten_and(where.this)
+        parsed_joins: list[DmlJoinCondition] = []
+        residual: list[exp.Expression] = []
+        for term in terms:
+            if (
+                isinstance(term, exp.EQ)
+                and isinstance(term.this, exp.Column)
+                and isinstance(term.expression, exp.Column)
+            ):
+                left = _parse_dml_column(term.this, "UPDATE join left column", allowed_qualifiers)
+                right = _parse_dml_column(term.expression, "UPDATE join right column", allowed_qualifiers)
+                if left.qualifier == target_alias and right.qualifier == source_alias:
+                    parsed_joins.append(DmlJoinCondition(left, right))
+                    continue
+                if left.qualifier == source_alias and right.qualifier == target_alias:
+                    parsed_joins.append(DmlJoinCondition(right, left))
+                    continue
+            residual.append(term)
+        _require(
+            bool(parsed_joins),
+            "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+            "UPDATE ... FROM requires at least one target/source equality join",
+        )
+        _require(
+            len(residual) <= 1,
+            "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+            "UPDATE ... FROM supports at most one residual typed predicate",
+        )
+        join_conditions = tuple(parsed_joins)
+        residual_where = residual[0] if residual else None
+        _require(
+            catalog is not None,
+            "CERTIFIED_UPDATE_SOURCE_KEY_UNPROVEN",
+            "UPDATE ... FROM requires source-schema evidence for a unique join key",
+        )
+        assert catalog is not None
+        source_key = tuple(item.right.name for item in join_conditions)
+        assert source_table is not None
+        _require(
+            catalog.has_unique_key(source_schema, source_table, source_key),
+            "CERTIFIED_UPDATE_SOURCE_KEY_NOT_UNIQUE",
+            f"UPDATE source join columns {source_key!r} are not a declared unique key",
+        )
+        assert target_alias is not None and source_alias is not None
     assignments: list[UpdateAssignment] = []
     for item in statement.expressions:
         _require(
@@ -2153,17 +2299,50 @@ def parse_update(
             "UPDATE assignment targets must be unqualified columns",
         )
         target = _plain_identifier(item.this.this, "UPDATE assignment target")
-        assignments.append(UpdateAssignment(target, _parse_dml_expression(item.expression, source_dialect)))
+        value = _parse_dml_expression(item.expression, source_dialect, allowed_qualifiers)
+        if from_clause is not None:
+            assert source_alias is not None
+            _require(
+                isinstance(value, DmlColumn)
+                and value.qualifier is not None
+                and value.qualifier.casefold() == source_alias.casefold(),
+                "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+                "UPDATE ... FROM assignments must copy one typed source column",
+            )
+            assert isinstance(value, DmlColumn)
+            assert value.qualifier is not None
+            assert source_alias is not None
+            assert catalog is not None and source_table is not None
+            target_type = catalog.type_of(table, target)
+            source_type = catalog.type_of(source_table, value.name)
+            _require(
+                target_type is not None and source_type is not None and target_type is source_type,
+                "CERTIFIED_UPDATE_COLUMN_TYPE_UNPROVEN",
+                "UPDATE source and target assignment columns need matching catalogue types",
+            )
+        assignments.append(UpdateAssignment(target, value))
     where = statement.args.get("where")
     predicate = None
-    if where is not None:
+    if residual_where is not None:
+        predicate = _parse_qualified_dml_predicate(residual_where, allowed_qualifiers)
+    elif where is not None and from_clause is None:
         _require(
             isinstance(where, exp.Where),
             "CERTIFIED_UPDATE_UNSUPPORTED_PREDICATE",
             "UPDATE WHERE clause is malformed",
         )
         predicate = _parse_dml_predicate(where.this, source_dialect)
-    return UpdateStatement(table=table, assignments=tuple(assignments), predicate=predicate, schema=schema)
+    return UpdateStatement(
+        table=table,
+        assignments=tuple(assignments),
+        predicate=predicate,
+        schema=schema,
+        target_alias=target_alias,
+        source_table=source_table,
+        source_alias=source_alias,
+        source_schema=source_schema,
+        join_conditions=join_conditions,
+    )
 
 
 def _alter_table_name(

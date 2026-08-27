@@ -6,7 +6,8 @@ import pytest
 
 from elmos_sql_dialect.engine import translate_ddl
 from elmos_sql_dialect.models import Dialect, DialectError
-from elmos_sql_dialect.parser import parse_insert_select, parse_update
+from elmos_sql_dialect.parser import parse_create_table, parse_insert_select, parse_update
+from elmos_sql_dialect.scan import SourceSchemaCatalog
 
 
 @pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
@@ -36,6 +37,65 @@ def test_update_from_remains_fail_closed() -> None:
     )
     assert report["status"] == "BLOCKED", report
     assert report["reasonCode"] == "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE"
+
+
+def _update_catalog(*ddls: str) -> SourceSchemaCatalog:
+    catalog = SourceSchemaCatalog()
+    for ddl in ddls:
+        catalog.add_table(parse_create_table(ddl, Dialect.POSTGRES))
+    return catalog
+
+
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+def test_update_from_has_a_typed_route_when_the_source_key_is_proven(target: str) -> None:
+    catalog = _update_catalog(
+        "CREATE TABLE target (id VARCHAR(10) PRIMARY KEY, value VARCHAR(10))",
+        "CREATE TABLE source (id VARCHAR(10) PRIMARY KEY, value VARCHAR(10))",
+    )
+    report = translate_ddl(
+        "UPDATE target t SET value = s.value FROM source s "
+        "WHERE t.id = s.id AND t.value IS DISTINCT FROM s.value",
+        "postgres",
+        target,
+        statement_kind="UPDATE",
+        catalog=catalog,
+    )
+    assert report["status"] == "PASSED", report
+    assert report["validation"]["syntaxStatus"] == "PASSED", report
+    assert "value = s.value" in report["emitted"]
+    assert "IS DISTINCT FROM" not in report["emitted"]
+
+
+def test_update_from_rejects_a_non_unique_source_join_key() -> None:
+    catalog = _update_catalog(
+        "CREATE TABLE target (id VARCHAR(10) PRIMARY KEY, value VARCHAR(10))",
+        "CREATE TABLE source (id VARCHAR(10), value VARCHAR(10))",
+    )
+    report = translate_ddl(
+        "UPDATE target t SET value = s.value FROM source s WHERE t.id = s.id",
+        "postgres",
+        "mysql",
+        statement_kind="UPDATE",
+        catalog=catalog,
+    )
+    assert report["status"] == "BLOCKED", report
+    assert report["reasonCode"] == "CERTIFIED_UPDATE_SOURCE_KEY_NOT_UNIQUE"
+
+
+def test_update_from_rejects_missing_assignment_type_evidence() -> None:
+    catalog = _update_catalog(
+        "CREATE TABLE target (id VARCHAR(10) PRIMARY KEY, value VARCHAR(10))",
+        "CREATE TABLE source (id VARCHAR(10) PRIMARY KEY, value INTEGER)",
+    )
+    report = translate_ddl(
+        "UPDATE target t SET value = s.value FROM source s WHERE t.id = s.id",
+        "postgres",
+        "mysql",
+        statement_kind="UPDATE",
+        catalog=catalog,
+    )
+    assert report["status"] == "BLOCKED", report
+    assert report["reasonCode"] == "CERTIFIED_UPDATE_COLUMN_TYPE_UNPROVEN"
 
 
 @pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])

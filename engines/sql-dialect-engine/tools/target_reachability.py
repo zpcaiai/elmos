@@ -49,7 +49,12 @@ from elmos_sql_dialect.models import (
 )
 from elmos_sql_dialect.parser import _parse_source_statements
 from elmos_sql_dialect.routine import emit_create_function, parse_create_routine
-from elmos_sql_dialect.scan import _classify, discover_sql_files
+from elmos_sql_dialect.scan import (
+    SourceSchemaCatalog,
+    _classify,
+    _record_catalog_statement,
+    discover_sql_files,
+)
 from elmos_sql_dialect.statement_splitter import split_statements
 
 DDL_TYPES = ("Create", "Alter", "Drop", "Index", "Comment", "Grant", "Revoke", "Insert", "Update", "Truncate")
@@ -148,6 +153,7 @@ def emit_to(
     target: Dialect,
     namespace_map: dict[str, str] | None = None,
     comment_catalog: ReachabilityCommentCatalog | None = None,
+    source_catalog: SourceSchemaCatalog | None = None,
 ) -> str | None:
     """Emitted SQL, or None with the refusal recorded by the caller."""
     if isinstance(statement, exp.Create):
@@ -191,7 +197,9 @@ def emit_to(
             return emitter.emit_insert(insert, target)
         return emitter.emit_insert_select(insert, target)
     if isinstance(statement, exp.Update):
-        return emitter.emit_update(parser.parse_update(statement, source, namespace_map), target)
+        return emitter.emit_update(
+            parser.parse_update(statement, source, namespace_map, source_catalog), target
+        )
     if isinstance(statement, exp.Comment):
         return emit_comment(parse_comment(statement, source, namespace_map), target, comment_catalog)
     if isinstance(statement, exp.Grant | exp.Revoke):
@@ -234,12 +242,15 @@ def main() -> int:
         name, path, dialect_name = raw.split("=", 2)
         source = Dialect(dialect_name)
         comment_catalog = ReachabilityCommentCatalog()
+        source_catalog = SourceSchemaCatalog()
         for file in discover_sql_files(Path(path).resolve(strict=True)):
             for statement in statements_of(file, source):
                 if type(statement).__name__ not in DDL_TYPES:
                     continue
                 with contextlib.redirect_stderr(io.StringIO()):
-                    status, _code, _reason = _classify(statement, source, namespace_map=namespace_map)
+                    status, _code, _reason = _classify(
+                        statement, source, namespace_map=namespace_map, catalog=source_catalog
+                    )
                 if status != "IN_SUBSET":
                     continue
                 admitted += 1
@@ -250,7 +261,14 @@ def main() -> int:
                         continue
                     try:
                         with contextlib.redirect_stderr(io.StringIO()):
-                            emit_to(statement, source, target, namespace_map, comment_catalog)
+                            emit_to(
+                                statement,
+                                source,
+                                target,
+                                namespace_map,
+                                comment_catalog,
+                                source_catalog,
+                            )
                         reachable_per_target[target.value] += 1
                     except DialectError as refusal:
                         refusals_per_target[target.value][refusal.code] += 1
@@ -268,6 +286,7 @@ def main() -> int:
                     comment_catalog.add_table(parser.parse_create_table(statement, source, namespace_map))
                 elif isinstance(statement, exp.Alter):
                     comment_catalog.apply_alter(parser.parse_alter_table(statement, source, namespace_map))
+                _record_catalog_statement(source_catalog, statement, source, namespace_map)
 
     out = {
         "kind": "elmos.sql-dialect.target-reachability",

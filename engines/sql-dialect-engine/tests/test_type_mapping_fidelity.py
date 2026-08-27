@@ -163,6 +163,44 @@ def test_varchar_beyond_the_sql_server_nvarchar_limit_fails_closed() -> None:
     )
 
 
+@pytest.mark.parametrize(
+    ("target", "expected"),
+    [
+        ("mysql", "LONGBLOB"),
+        ("oracle", "BLOB"),
+        ("tsql", "VARBINARY(MAX)"),
+    ],
+)
+def test_postgres_bytea_uses_an_unbounded_target_byte_storage_type(
+    target: str, expected: str
+) -> None:
+    # BYTEA has no declared length and accepts arbitrary byte payloads.  The
+    # target must therefore use its unbounded byte type, never a bounded
+    # BINARY(n)/VARBINARY(n) approximation.
+    emitted = _emit("CREATE TABLE t (payload BYTEA)", "postgres", target)
+    assert f"payload {expected}" in emitted
+
+
+def test_postgres_bytea_is_retained_as_unbounded_binary_in_the_canonical_model() -> None:
+    table = parse_create_table("CREATE TABLE t (payload BYTEA)", Dialect.POSTGRES)
+    type_ref = table.columns[0].type_ref
+    assert type_ref.canonical_type is CanonicalType.BINARY
+    assert type_ref.length is None
+    assert type_ref.binary_fixed is False
+
+
+def test_fixed_binary_without_a_length_stays_fail_closed() -> None:
+    assert _blocked("CREATE TABLE t (payload BINARY)", "postgres", "mysql") == (
+        "CERTIFIED_DDL_UNBOUNDED_BINARY"
+    )
+
+
+def test_bare_non_postgres_varbinary_stays_fail_closed() -> None:
+    assert _blocked("CREATE TABLE t (payload VARBINARY)", "mysql", "postgres") == (
+        "CERTIFIED_DDL_UNBOUNDED_BINARY"
+    )
+
+
 # --------------------------------------------------------------------------
 # 6. Oracle targets must spell character length semantics, because Oracle's
 #    default is BYTE and every other dialect here counts characters.
