@@ -166,7 +166,15 @@ function authorizeBrowser(
       return {
         organizationId: account.principal.organizationId,
         actorId: account.principal.actorId,
-        accessToken: account.accessToken,
+        // The local test account deliberately issues an opaque development
+        // session token, not an OIDC JWT. Keep it inside the Web Console and
+        // authenticate the internal control-plane hop with its separately
+        // configured repository key.
+        ...(account.principal.actorId === "local:test"
+          && process.env.NODE_ENV !== "production"
+          && process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS === "true"
+          ? {}
+          : { accessToken: account.accessToken }),
       };
     } catch (error) {
       if (error instanceof AccountSessionError) {

@@ -243,8 +243,9 @@ class WalletMigrationContractTest {
             assertTrue(header.contains("SET search_path = public"),
                     () -> signature + " is SECURITY DEFINER without a pinned search_path");
         }
-        assertTrue(definers >= 10,
-                () -> "expected the ten accounting functions, found " + definers);
+        int securityDefinerCount = definers;
+        assertTrue(securityDefinerCount >= 10,
+                () -> "expected the ten accounting functions, found " + securityDefinerCount);
     }
 
     @Test void seededPricesAreDraftSoAnUnapprovedPriceCannotCharge() throws Exception {

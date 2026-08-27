@@ -91,6 +91,13 @@ public class ControlPlaneSecurityConfiguration {
                                 "/api/v1/operations-observability/jobs/*/cancel",
                                 "/api/v1/tenant-quota/adjust")
                         .permitAll()
+                        // RepositoryWorkspaceController performs the legacy
+                        // internal-key check itself when OIDC is disabled.
+                        // Keeping this path outside Spring's JWT gate lets an
+                        // isolated development Web Console use its opaque
+                        // local test session without treating it as a JWT.
+                        .requestMatchers("/api/v1/repository-workspaces/**")
+                        .permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(resourceServer ->
