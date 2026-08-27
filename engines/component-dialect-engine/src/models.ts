@@ -602,6 +602,12 @@ export function validateComponent(component: ComponentDef): void {
   function sourceListForExpression(expr: Expr): ListPropDef | undefined {
     if (expr.kind === "ident") return listProps.get(expr.name);
     if (expr.kind === "member") return listProps.get(expr.object + "." + expr.field);
+    // A local immutable list may be lowered to a closed object lookup (for
+    // example `ranges[namespace]`). Its ListPropDef retains the exact source
+    // expression, so match that binding instead of treating the lookup as an
+    // unknown arbitrary collection.
+    const explicit = [...listProps.values()].find((list) => list.sourceExpression !== undefined && JSON.stringify(list.sourceExpression) === JSON.stringify(expr));
+    if (explicit !== undefined) return explicit;
     if (expr.kind === "collectionFilter") return sourceListForExpression(expr.source);
     if (expr.kind === "collectionMap") {
       const source = sourceListForExpression(expr.source);

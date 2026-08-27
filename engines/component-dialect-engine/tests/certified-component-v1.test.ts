@@ -11,6 +11,7 @@ import { parseReactComponent, parseReactComponentResults } from "../src/parsers/
 import { parseVue3Component } from "../src/parsers/vue3";
 import { emitReact } from "../src/emitters/react";
 import { emitVue3 } from "../src/emitters/vue3";
+import { emitVue2 } from "../src/emitters/vue2";
 import { emitMiniProgram } from "../src/emitters/miniprogram";
 import { validateSyntax } from "../src/validator";
 import { compareRendered, defaultExecutionCases, normalizeHtml } from "../src/execution";
@@ -42,6 +43,52 @@ describe("React parsing (real TypeScript Compiler API)", () => {
     ]);
     expect(ir.state.map((s) => s.name)).toEqual(["count", "busy"]);
     expect(ir.root.kind).toBe("element");
+  });
+
+  it("binds nonstandard useState setter names to the canonical state target", () => {
+    const ir = parseReactComponent(`
+      function Draft({ initial }: { initial: string }) {
+        const [draft, updateDraft] = useState<string>("");
+        return <input value={draft} onChange={(event) => updateDraft(event.target.value)} />;
+      }
+    `, "Draft.tsx");
+    expect(ir.root).toMatchObject({
+      kind: "element",
+      events: [{ name: "onChange", body: [{ kind: "setState", target: "draft", value: { kind: "eventValue" } }] }],
+    });
+    expect(emitReact(ir)).toContain("setDraft(event.target.value)");
+  });
+
+  it("erases only pure synchronous useMemo wrappers", () => {
+    const ir = parseReactComponent(`
+      function Memo({ value }: { value: number }) {
+        const doubled = useMemo(() => Math.max(0, value * 2), [value]);
+        return <span>{doubled}</span>;
+      }
+    `, "Memo.tsx");
+    expect(ir.root).toMatchObject({
+      kind: "element",
+      children: [{ kind: "text", value: { kind: "numericFunction", function: "max" } }],
+    });
+    expect(() => parseReactComponent(`
+      function UnsafeMemo({ value }: { value: number }) {
+        const result = useMemo(() => fetch(String(value)), [value]);
+        return <span>{result}</span>;
+      }
+    `, "UnsafeMemo.tsx")).toThrow(DialectError);
+  });
+
+  it("folds the fixed epoch ISO fallback inside a closed state object", () => {
+    const ir = parseReactComponent(`
+      function EpochState() {
+        const [snapshot, replaceSnapshot] = useState<{ fetchedAt: string }>({ fetchedAt: new Date(0).toISOString() });
+        return <span>{snapshot.fetchedAt}</span>;
+      }
+    `, "EpochState.tsx");
+    expect(ir.state[0]?.initial).toMatchObject({
+      kind: "objectLiteral",
+      fields: [{ name: "fetchedAt", value: { kind: "literal", literal: { type: "string", value: "1970-01-01T00:00:00.000Z" } } }],
+    });
   });
 
   it("inlines earlier pure local expressions without widening the target IR", () => {
@@ -241,6 +288,7 @@ describe("React parsing (real TypeScript Compiler API)", () => {
     expect(emitReact(ir)).toContain('value.toLocaleString("en-US")');
     expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
     expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue2", emitVue2(ir))).toEqual({ status: "PASSED", diagnostics: [] });
     expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
   });
 
@@ -288,6 +336,29 @@ describe("React parsing (real TypeScript Compiler API)", () => {
     expect(emitReact(ir)).toContain("const notices = [{ item0: \"证据\"");
     expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
     expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+  });
+
+  it("preserves a typed lookup across immutable object-of-array collections", () => {
+    const ir = parseReactComponent(`
+      const groups = {
+        first: [{ id: "a", label: "A" }],
+        second: [{ id: "b", label: "B" }],
+      } as const;
+      function Groups({ selected }: { selected: string }) {
+        const items = groups[selected];
+        return <ul>{items.map((item) => <li key={item.id}>{item.label}</li>)}</ul>;
+      }
+    `, "Groups.tsx");
+    expect(ir.lists?.find((list) => list.name === "items")).toMatchObject({
+      element: { kind: "object", fields: { id: { shape: { kind: "primitive", primitive: "string" } } } },
+      keyField: "id",
+      sourceExpression: { kind: "objectLookup", object: { kind: "objectLiteral" }, key: { kind: "ident", name: "selected" } },
+    });
+    expect(emitReact(ir)).toContain('({ first: [{ id: "a", label: "A" }], second: [{ id: "b", label: "B" }] })[selected]');
+    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
+    expect(validateSyntax("vue2", emitVue2(ir))).toEqual({ status: "PASSED", diagnostics: [] });
     expect(validateSyntax("miniprogram", emitMiniProgram(ir))).toEqual({ status: "PASSED", diagnostics: [] });
   });
 

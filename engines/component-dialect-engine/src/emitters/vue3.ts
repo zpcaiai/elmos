@@ -17,8 +17,11 @@ const VUE_EVENT_DIRECTIVE: Record<EventName, string> = {
   onClick: "@click", onChange: "@change", onInput: "@input", onSubmit: "@submit",
 };
 
-function literalSource(literal: Literal): string {
-  if (literal.type === "string") return JSON.stringify(literal.value);
+function literalSource(literal: Literal, inScript: boolean): string {
+  if (literal.type === "string") {
+    if (inScript) return JSON.stringify(literal.value);
+    return `'${literal.value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
+  }
   if (literal.type === "number") return String(literal.value);
   if (literal.type === "null") return "null";
   return literal.value ? "true" : "false";
@@ -30,7 +33,7 @@ function literalSource(literal: Literal): string {
 function exprSource(expr: Expr, stateNames: ReadonlySet<string>, inScript: boolean): string {
   const wrap = (e: Expr): string => {
     const src = exprSource(e, stateNames, inScript);
-    return e.kind === "binary" || e.kind === "ternary" ? `(${src})` : src;
+    return e.kind === "binary" || e.kind === "ternary" || e.kind === "objectLiteral" ? `(${src})` : src;
   };
   switch (expr.kind) {
     case "ident":
@@ -41,7 +44,7 @@ function exprSource(expr: Expr, stateNames: ReadonlySet<string>, inScript: boole
       return `${expr.object}.${expr.field}`;
     case "path": return `${expr.object}.${expr.fields.join(".")}`;
     case "literal":
-      return literalSource(expr.literal);
+      return literalSource(expr.literal, inScript);
     case "eventValue": return "$event.target.value";
     case "unaryNot":
       return `!${wrap(expr.operand)}`;
@@ -65,7 +68,7 @@ function exprSource(expr: Expr, stateNames: ReadonlySet<string>, inScript: boole
     case "collectionReduce": return `${exprSource(expr.source, stateNames, inScript)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${exprSource(expr.reducer, stateNames, inScript)}), ${exprSource(expr.initial, stateNames, inScript)})`;
     case "collectionMax": return `Math.max(...${exprSource(expr.source, stateNames, inScript)}.map((${expr.itemName}) => (${exprSource(expr.operand, stateNames, inScript)})))`;
     case "collectionJoin": return `${exprSource(expr.source, stateNames, inScript)}.join(${exprSource(expr.separator, stateNames, inScript)})`;
-    case "objectLookup": return `${exprSource(expr.object, stateNames, inScript)}[${exprSource(expr.key, stateNames, inScript)}]`;
+    case "objectLookup": return `${wrap(expr.object)}[${exprSource(expr.key, stateNames, inScript)}]`;
     case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${exprSource(field.value, stateNames, inScript)}`), ...(expr.computedFields ?? []).map((field) => `[${exprSource(field.key, stateNames, inScript)}]: ${exprSource(field.value, stateNames, inScript)}`)].join(", ")} }`;
     case "arrayLiteral": return `[${expr.items.map((item) => exprSource(item, stateNames, inScript)).join(", ")}]`;
     case "ternary":
@@ -209,7 +212,7 @@ function propsBlock(props: PropDef[]): string[] {
     const withDefaults = dataProps.filter((p) => p.defaultValue !== undefined);
     const definition = `defineProps<{\n${fields.join("\n")}\n}>()`;
     if (withDefaults.length > 0) {
-      const defaults = withDefaults.map((p) => `  ${p.name}: ${literalSource(p.defaultValue as Literal)},`);
+      const defaults = withDefaults.map((p) => `  ${p.name}: ${literalSource(p.defaultValue as Literal, true)},`);
       lines.push(`const props = withDefaults(${definition}, {\n${defaults.join("\n")}\n});`);
     } else {
       lines.push(`const props = ${definition};`);

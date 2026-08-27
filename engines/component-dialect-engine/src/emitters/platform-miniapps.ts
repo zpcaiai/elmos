@@ -278,7 +278,7 @@ function localKey(expr: Expr, scope: RenderScope | null): string | null {
 function templateExprSource(expr: Expr): string {
   const wrap = (child: Expr): string => {
     const source = templateExprSource(child);
-    return child.kind === "binary" || child.kind === "ternary" ? `(${source})` : source;
+    return child.kind === "binary" || child.kind === "ternary" || child.kind === "objectLiteral" ? `(${source})` : source;
   };
   switch (expr.kind) {
     case "ident":
@@ -310,7 +310,7 @@ function templateExprSource(expr: Expr): string {
     case "collectionReduce": return `${templateExprSource(expr.source)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${templateExprSource(expr.reducer)}), ${templateExprSource(expr.initial)})`;
     case "collectionMax": return `Math.max(...${templateExprSource(expr.source)}.map((${expr.itemName}) => (${templateExprSource(expr.operand)})))`;
     case "collectionJoin": return `${templateExprSource(expr.source)}.join(${templateExprSource(expr.separator)})`;
-    case "objectLookup": return `${templateExprSource(expr.object)}[${templateExprSource(expr.key)}]`;
+    case "objectLookup": return `${wrap(expr.object)}[${templateExprSource(expr.key)}]`;
     case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${templateExprSource(field.value)}`), ...(expr.computedFields ?? []).map((field) => `[${templateExprSource(field.key)}]: ${templateExprSource(field.value)}`)].join(", ")} }`;
     case "arrayLiteral": return `[${expr.items.map(templateExprSource).join(", ")}]`;
     case "ternary":
@@ -326,7 +326,7 @@ function jsExprSource(expr: Expr, context: JsExpressionContext): string {
 
   const wrap = (child: Expr): string => {
     const source = jsExprSource(child, context);
-    return child.kind === "binary" || child.kind === "ternary" ? `(${source})` : source;
+    return child.kind === "binary" || child.kind === "ternary" || child.kind === "objectLiteral" ? `(${source})` : source;
   };
   switch (expr.kind) {
     case "ident":
@@ -363,7 +363,7 @@ function jsExprSource(expr: Expr, context: JsExpressionContext): string {
     case "collectionReduce": return `${jsExprSource(expr.source, context)}.reduce((${expr.accumulatorName}, ${expr.itemName}) => (${jsExprSource(expr.reducer, context)}), ${jsExprSource(expr.initial, context)})`;
     case "collectionMax": return `Math.max(...${jsExprSource(expr.source, context)}.map((${expr.itemName}) => (${jsExprSource(expr.operand, context)})))`;
     case "collectionJoin": return `${jsExprSource(expr.source, context)}.join(${jsExprSource(expr.separator, context)})`;
-    case "objectLookup": return `${jsExprSource(expr.object, context)}[${jsExprSource(expr.key, context)}]`;
+    case "objectLookup": return `${wrap(expr.object)}[${jsExprSource(expr.key, context)}]`;
     case "objectLiteral": return `{ ${[...expr.fields.map((field) => `${field.name}: ${jsExprSource(field.value, context)}`), ...(expr.computedFields ?? []).map((field) => `[${jsExprSource(field.key, context)}]: ${jsExprSource(field.value, context)}`)].join(", ")} }`;
     case "arrayLiteral": return `[${expr.items.map((item) => jsExprSource(item, context)).join(", ")}]`;
     case "ternary":
