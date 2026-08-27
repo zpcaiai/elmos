@@ -227,9 +227,16 @@ class CheckLiteral:
 
 
 class CheckValueFunction(str, Enum):
-    """A scalar CHECK value function with one exact cross-dialect spelling."""
+    """A closed scalar CHECK value function.
+
+    ``JSONB_TYPEOF`` is deliberately target-bound: it is retained in the
+    typed PostgreSQL source IR, but emitters must refuse targets that cannot
+    preserve JSONB storage semantics.
+    """
 
     TRIM = "TRIM"
+    JSONB_TYPEOF = "JSONB_TYPEOF"
+    ARRAY_LENGTH = "ARRAY_LENGTH"
 
 
 class CheckValueOperator(str, Enum):
@@ -246,6 +253,7 @@ class CheckValueExpression:
     function: CheckValueFunction | None = None
     operator: CheckValueOperator | None = None
     right_column: str | None = None
+    dimension: int | None = None
 
     def __post_init__(self) -> None:
         if (self.function is None) == (self.operator is None):
@@ -257,6 +265,16 @@ class CheckValueExpression:
             raise DialectError(
                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                 "CHECK scalar functions cannot carry an operator operand",
+            )
+        if self.function is CheckValueFunction.ARRAY_LENGTH and self.dimension != 1:
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                "ARRAY_LENGTH CHECK expressions are limited to the first dimension",
+            )
+        if self.function is not CheckValueFunction.ARRAY_LENGTH and self.dimension is not None:
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                "only ARRAY_LENGTH CHECK expressions may carry a dimension",
             )
         if self.operator is not None and self.right_column is None:
             raise DialectError(
@@ -318,7 +336,11 @@ class CheckComparison:
                 "a qualified CHECK right column requires a column comparison",
             )
         if self.left_expression is not None:
-            if self.left_expression.column != self.column or self.operator not in BINARY_CHECK_OPERATORS:
+            allowed_expression_operator = self.operator in BINARY_CHECK_OPERATORS or (
+                self.left_expression.function is CheckValueFunction.ARRAY_LENGTH
+                and self.operator is CheckOperator.BETWEEN
+            )
+            if self.left_expression.column != self.column or not allowed_expression_operator:
                 raise DialectError(
                     "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                     "CHECK value functions are limited to binary comparisons on their source column",
@@ -554,6 +576,27 @@ class Table:
                                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                                 "typed CHECK addition requires two same-typed numeric columns",
                             )
+                    if comparison.left_expression.function is CheckValueFunction.JSONB_TYPEOF:
+                        type_ref = {
+                            column.name: column.type_ref for column in self.columns
+                        }[comparison.column]
+                        if not (
+                            type_ref.canonical_type is CanonicalType.JSON
+                            and type_ref.json_binary
+                        ):
+                            raise DialectError(
+                                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                                "JSONB_TYPEOF CHECK expressions require a JSONB column",
+                            )
+                    if comparison.left_expression.function is CheckValueFunction.ARRAY_LENGTH:
+                        type_ref = {
+                            column.name: column.type_ref for column in self.columns
+                        }[comparison.column]
+                        if type_ref.canonical_type is not CanonicalType.ARRAY:
+                            raise DialectError(
+                                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                                "ARRAY_LENGTH CHECK expressions require an ARRAY column",
+                            )
                 if comparison.right_column is not None and comparison.right_column not in names:
                     raise DialectError(
                         "CERTIFIED_DDL_UNKNOWN_COLUMN",
@@ -593,11 +636,62 @@ class Table:
 
 
 @dataclass(frozen=True)
-class IndexColumn:
-    """One plain index key with its optional descending order preserved."""
+class IndexExpressionKind(str, Enum):
+    LOWER = "LOWER"
+    JSON_TEXT_PATH = "JSON_TEXT_PATH"
 
-    name: str
+
+@dataclass(frozen=True)
+class IndexExpression:
+    """A deliberately tiny typed expression-index key.
+
+    This is not an escape hatch for arbitrary expression text.  The parser
+    only constructs the two source PostgreSQL forms whose AST and source
+    semantics are explicit: ``LOWER(column)`` and one-level JSON text-path
+    extraction from a JSON/JSONB column.  Target adapters may still refuse
+    the key when their storage, collation, or JSON operator semantics are not
+    proven equivalent.
+    """
+
+    kind: IndexExpressionKind
+    column: str
+    json_key: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.kind is IndexExpressionKind.LOWER:
+            if self.json_key is not None:
+                raise DialectError(
+                    "CERTIFIED_DDL_UNSUPPORTED_INDEX_EXPRESSION",
+                    "LOWER index expressions cannot carry a JSON path",
+                )
+            return
+        if self.kind is IndexExpressionKind.JSON_TEXT_PATH:
+            if not self.json_key:
+                raise DialectError(
+                    "CERTIFIED_DDL_UNSUPPORTED_INDEX_EXPRESSION",
+                    "JSON text-path index expressions require one non-empty key",
+                )
+            return
+        raise DialectError(
+            "CERTIFIED_DDL_UNSUPPORTED_INDEX_EXPRESSION",
+            f"index expression kind {self.kind!r} is outside the typed profile",
+        )
+
+
+@dataclass(frozen=True)
+class IndexColumn:
+    """One typed index key with its optional descending order preserved."""
+
+    name: str = ""
     descending: bool = False
+    expression: IndexExpression | None = None
+
+    def __post_init__(self) -> None:
+        if (bool(self.name)) == (self.expression is not None):
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_INDEX_EXPRESSION",
+                "an index key must be exactly one plain identifier or typed expression",
+            )
 
 
 @dataclass(frozen=True)
@@ -1039,6 +1133,22 @@ class RoutineFunction(str, Enum):
 
 
 @dataclass(frozen=True)
+class RoutineIdentity:
+    """Typed routine identity used by catalog-gated metadata routes.
+
+    A target may omit a PostgreSQL-style routine signature only when the
+    source catalog proves that exactly one routine with this name, namespace,
+    kind and canonical parameter-type tuple exists.  This is identity
+    evidence, not a fallback that erases overload semantics.
+    """
+
+    kind: RoutineKind
+    name: str
+    parameter_types: tuple[CanonicalTypeRef, ...]
+    schema: str | None = None
+
+
+@dataclass(frozen=True)
 class RoutineLiteral:
     value: str
     is_string: bool = False
@@ -1230,6 +1340,7 @@ class CommentObjectKind(str, Enum):
     COLUMN = "COLUMN"
     FUNCTION = "FUNCTION"
     CONSTRAINT = "CONSTRAINT"
+    ROLE = "ROLE"
 
 
 @dataclass(frozen=True)
@@ -1241,6 +1352,7 @@ class Comment:
     schema: str | None = None
     table_schema: str | None = None
     routine_argument_types: tuple[str, ...] = ()
+    routine_argument_type_refs: tuple[CanonicalTypeRef, ...] = ()
 
 
 class PrivilegeAction(str, Enum):
@@ -1258,6 +1370,7 @@ class Privilege:
     schema: str | None = None
     grant_option: bool = False
     routine_argument_types: tuple[str, ...] = ()
+    routine_argument_type_refs: tuple[CanonicalTypeRef, ...] = ()
 
 
 class TriggerTiming(str, Enum):
@@ -1300,6 +1413,31 @@ class RowPolicy:
     table: str
     using_expression: str | None = None
     check_expression: str | None = None
+    schema: str | None = None
+
+
+class RowSecurityAction(str, Enum):
+    """PostgreSQL table-level row-security state transitions.
+
+    These are deliberately separate from :class:`RowPolicy`: enabling or
+    forcing RLS is a typed table property, while a policy carries an arbitrary
+    authorization predicate and needs its own target-specific IR.  Keeping
+    the two apart prevents a caller from treating a control statement as a
+    policy or from silently replacing either with ordinary table privileges.
+    """
+
+    ENABLE = "ENABLE"
+    FORCE = "FORCE"
+    DISABLE = "DISABLE"
+    NO_FORCE = "NO FORCE"
+
+
+@dataclass(frozen=True)
+class RowSecurityCommand:
+    """A PostgreSQL-only, schema-qualified RLS state transition."""
+
+    table: str
+    action: RowSecurityAction
     schema: str | None = None
 
 

@@ -11,6 +11,7 @@ typed blockers.
 from __future__ import annotations
 
 from collections.abc import Mapping
+from typing import Protocol
 
 import sqlglot
 from sqlglot import exp
@@ -19,6 +20,7 @@ from .dialects import check_operator_sql, render_type
 from .emitter import CommentColumnCatalogLike, _object_name, _render_check_expression, _render_column
 from .identifiers import quote_identifier
 from .models import (
+    CanonicalTypeRef,
     CheckBooleanExpression,
     CheckComparison,
     CheckConnector,
@@ -55,6 +57,40 @@ from .parser import (
     _require_single_statement,
 )
 from .routine import _parse_value, _routine_name
+
+
+class RoutineIdentityCatalogLike(Protocol):
+    """Minimal catalog contract for signature-sensitive target routes."""
+
+    def has_unique_routine(
+        self,
+        kind: str,
+        schema: str | None,
+        name: str,
+        parameter_types: tuple[CanonicalTypeRef, ...],
+    ) -> bool: ...
+
+
+def _routine_argument_type_refs(
+    routine: exp.UserDefinedFunction | exp.Anonymous,
+    source_dialect: Dialect,
+) -> tuple[CanonicalTypeRef, ...]:
+    """Best-effort typed parsing for a privilege/comment routine signature.
+
+    The legacy string tuple remains in the public IR for source rendering.
+    This parallel typed tuple is populated only when every argument can be
+    represented by the canonical type model; an unknown type intentionally
+    disables catalog-gated lowering instead of being guessed.
+    """
+
+    refs: list[CanonicalTypeRef] = []
+    try:
+        for item in routine.expressions:
+            name = _plain_identifier(item, "routine argument type")
+            refs.append(_parse_type(exp.DataType.build(name, dialect=source_dialect.value), source_dialect))
+    except (DialectError, TypeError, ValueError):
+        return ()
+    return tuple(refs)
 
 
 def _create_statement(sql: str | exp.Expression, source_dialect: Dialect) -> exp.Create:
@@ -153,6 +189,8 @@ def parse_comment(
     namespace_map: Mapping[str, str] | None = None,
 ) -> Comment:
     statement = sql if isinstance(sql, exp.Expression) else _require_single_statement(sql, source_dialect)
+    if isinstance(statement, exp.Command) and looks_like_role_comment(statement.sql(), source_dialect):
+        return parse_role_comment(statement.sql(), source_dialect)
     _require(isinstance(statement, exp.Comment), "CERTIFIED_COMMENT_UNSUPPORTED_STATEMENT", "expected COMMENT ON")
     assert isinstance(statement, exp.Comment)
     kind = str(statement.args.get("kind", "")).upper()
@@ -189,6 +227,7 @@ def parse_comment(
             str(value.this),
             schema=schema,
             routine_argument_types=argument_types,
+            routine_argument_type_refs=_routine_argument_type_refs(target, source_dialect),
         )
     if kind == "CONSTRAINT":
         target = statement.this
@@ -243,6 +282,55 @@ def parse_comment(
         schema=table_schema,
         table_schema=table_schema,
     )
+
+
+def looks_like_role_comment(sql: str, source_dialect: Dialect) -> bool:
+    """Recognize PostgreSQL's opaque ``COMMENT ON ROLE`` command shape."""
+
+    if source_dialect is not Dialect.POSTGRES:
+        return False
+    try:
+        tokens = list(sqlglot.tokenize(sql, read=source_dialect.value))
+    except sqlglot.errors.SqlglotError:
+        return False
+    if len(tokens) != 6:
+        return False
+    values = [str(token.text).upper() for token in tokens]
+    return (
+        values[:3] == ["COMMENT", "ON", "ROLE"]
+        and values[4] == "IS"
+        and tokens[3].token_type.name in {"VAR", "IDENTIFIER"}
+        and tokens[5].token_type.name == "STRING"
+    )
+
+
+def parse_role_comment(sql: str | exp.Expression, source_dialect: Dialect) -> Comment:
+    """Parse one typed PostgreSQL role comment; other object kinds stay separate."""
+
+    _require(
+        source_dialect is Dialect.POSTGRES,
+        "CERTIFIED_COMMENT_UNSUPPORTED_OBJECT",
+        "role comments are admitted only from PostgreSQL",
+    )
+    statement_sql = sql if isinstance(sql, str) else sql.sql()
+    try:
+        tokens = list(sqlglot.tokenize(statement_sql, read=source_dialect.value))
+    except sqlglot.errors.SqlglotError as exc:
+        raise DialectError(
+            "CERTIFIED_COMMENT_PARSE_FAILED",
+            f"postgres parser rejected role comment: {exc}",
+        ) from exc
+    _require(
+        looks_like_role_comment(statement_sql, source_dialect),
+        "CERTIFIED_COMMENT_UNSUPPORTED_STATEMENT",
+        "expected COMMENT ON ROLE <identifier> IS <string literal>",
+    )
+    role_token = tokens[3]
+    role = _plain_identifier(
+        exp.Identifier(this=str(role_token.text), quoted=role_token.token_type.name == "IDENTIFIER"),
+        "comment role",
+    )
+    return Comment(CommentObjectKind.ROLE, role, str(tokens[5].text))
 
 
 def _principal(node: exp.Expression) -> str:
@@ -324,6 +412,7 @@ def parse_privilege(
             schema=schema,
             grant_option=bool(statement.args.get("grant_option")),
             routine_argument_types=argument_types,
+            routine_argument_type_refs=_routine_argument_type_refs(routine, source_dialect),
         )
     _require(
         object_kind == "TABLE",
@@ -730,13 +819,31 @@ def parse_trigger(
         update_columns = columns
     execute = trigger_properties.args.get("execute")
     _require(
-        isinstance(execute, exp.TriggerExecute) and isinstance(execute.this, exp.Anonymous),
+        isinstance(execute, exp.TriggerExecute),
         "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED",
         "trigger action must call one named routine",
     )
     assert isinstance(execute, exp.TriggerExecute)
-    assert isinstance(execute.this, exp.Anonymous)
-    routine_name = _plain_identifier(exp.Identifier(this=str(execute.this.this), quoted=False), "trigger routine")
+    action = execute.this
+    routine_schema: str | None = None
+    routine_name: str
+    if isinstance(action, exp.Anonymous):
+        routine_name = _plain_identifier(exp.Identifier(this=str(action.this), quoted=False), "trigger routine")
+    else:
+        _require(
+            isinstance(action, exp.Dot) and isinstance(action.expression, exp.Anonymous),
+            "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED",
+            "trigger action must call one named routine",
+        )
+        assert isinstance(action, exp.Dot)
+        assert isinstance(action.expression, exp.Anonymous)
+        routine_schema, routine_name = _routine_name(
+            exp.Table(
+                this=exp.Identifier(this=str(action.expression.this), quoted=False),
+                db=action.this,
+            ),
+            namespace_map,
+        )
     when: CheckExpression | None = None
     when_node = trigger_properties.args.get("when")
     if isinstance(when_node, exp.Expression):
@@ -760,6 +867,7 @@ def parse_trigger(
         routine_name=routine_name,
         schema=table_schema,
         table_schema=table_schema,
+        routine_schema=routine_schema,
         when=when,
         transition_new_table=transition_new_table,
         transition_old_table=transition_old_table,
@@ -825,11 +933,20 @@ def emit_comment(
     comment: Comment,
     target_dialect: Dialect,
     catalog: CommentColumnCatalogLike | None = None,
+    routine_catalog: RoutineIdentityCatalogLike | None = None,
 ) -> str:
     def tsql_literal(value: str) -> str:
         return "N'" + value.replace(chr(39), chr(39) * 2) + "'"
 
     escaped = comment.text.replace(chr(39), chr(39) * 2)
+
+    if comment.object_kind is CommentObjectKind.ROLE:
+        if target_dialect is not Dialect.POSTGRES:
+            raise DialectError(
+                "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
+                f"{target_dialect.value} has no exact standalone role-comment metadata route",
+            )
+        return f"COMMENT ON ROLE {quote_identifier(comment.object_name, target_dialect)} IS '{escaped}'"
 
     if comment.object_kind is CommentObjectKind.CONSTRAINT:
         if target_dialect is not Dialect.POSTGRES:
@@ -841,13 +958,30 @@ def emit_comment(
         return f"COMMENT ON CONSTRAINT {comment.object_name} ON {table} IS '{escaped}'"
 
     if comment.object_kind is CommentObjectKind.FUNCTION:
-        if target_dialect in (Dialect.MYSQL, Dialect.ORACLE):
+        if target_dialect is Dialect.ORACLE:
             raise DialectError(
                 "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
                 f"{target_dialect.value} has no standalone COMMENT ON FUNCTION metadata route",
             )
         qualified = _object_name(comment.schema, comment.object_name, target_dialect)
         signature = ", ".join(quote_identifier(item, target_dialect) for item in comment.routine_argument_types)
+        if target_dialect is Dialect.MYSQL:
+            if routine_catalog is None or not comment.routine_argument_type_refs:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED",
+                    "MySQL function comments require a catalog proof of one exact target routine identity",
+                )
+            if not routine_catalog.has_unique_routine(
+                "FUNCTION",
+                comment.schema,
+                comment.object_name,
+                comment.routine_argument_type_refs,
+            ):
+                raise DialectError(
+                    "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED",
+                    "source catalog cannot prove one exact routine identity for the MySQL function comment",
+                )
+            return f"ALTER FUNCTION {qualified} COMMENT '{escaped}'"
         if target_dialect is Dialect.TSQL:
             if comment.schema is None:
                 raise DialectError(
@@ -936,7 +1070,11 @@ def emit_comment(
     return f"COMMENT ON {target} IS '{escaped}'"
 
 
-def emit_privilege(privilege: Privilege, target_dialect: Dialect) -> str:
+def emit_privilege(
+    privilege: Privilege,
+    target_dialect: Dialect,
+    routine_catalog: RoutineIdentityCatalogLike | None = None,
+) -> str:
     if privilege.grant_option:
         raise DialectError(
             "CERTIFIED_PRIVILEGE_GRANT_OPTION_UNSUPPORTED",
@@ -951,11 +1089,33 @@ def emit_privilege(privilege: Privilege, target_dialect: Dialect) -> str:
                 f"{privilege.object_kind} {target}({', '.join(privilege.routine_argument_types)})"
             )
         else:
-            raise DialectError(
-                "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
-                f"{target_dialect.value} routine privileges cannot safely drop the source "
-                "signature without a target routine-identity catalogue",
-            )
+            if routine_catalog is None or not privilege.routine_argument_type_refs:
+                raise DialectError(
+                    "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
+                    f"{target_dialect.value} routine privileges cannot safely drop the source "
+                    "signature without a target routine-identity catalogue",
+                )
+            if not routine_catalog.has_unique_routine(
+                privilege.object_kind,
+                privilege.schema,
+                privilege.object_name,
+                privilege.routine_argument_type_refs,
+            ):
+                raise DialectError(
+                    "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
+                    f"source catalog cannot prove one exact {target_dialect.value} routine identity",
+                )
+            if target_dialect is Dialect.MYSQL:
+                if any(principal.casefold() == "public" for principal in privilege.principals):
+                    raise DialectError(
+                        "CERTIFIED_PRIVILEGE_PRINCIPAL_UNSUPPORTED_BY_TARGET",
+                        "MySQL has no PUBLIC grantee with PostgreSQL's all-account semantics",
+                    )
+                object_clause = f"{privilege.object_kind} {target}"
+            elif target_dialect is Dialect.TSQL:
+                object_clause = f"OBJECT::{target}"
+            else:
+                object_clause = target
     else:
         target = _object_name(privilege.schema, privilege.object_name, target_dialect)
         if target_dialect is Dialect.TSQL:

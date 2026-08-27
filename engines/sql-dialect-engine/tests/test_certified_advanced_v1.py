@@ -87,7 +87,7 @@ def test_function_comment_does_not_fall_back_to_table_metadata_on_mysql() -> Non
     )
     with pytest.raises(DialectError) as exc:
         emit_comment(comment, Dialect.MYSQL)
-    assert exc.value.code == "CERTIFIED_COMMENT_TARGET_UNSUPPORTED"
+    assert exc.value.code == "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED"
 
 
 def test_constraint_comment_uses_strict_postgres_compatibility_fallback() -> None:

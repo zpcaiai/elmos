@@ -30,6 +30,7 @@ from elmos_sql_dialect.advanced import (
     emit_table_function,
     emit_trigger,
     emit_view,
+    looks_like_role_comment,
     parse_comment,
     parse_create_view,
     parse_privilege,
@@ -48,7 +49,11 @@ from elmos_sql_dialect.models import (
     RenameColumn,
     Table,
 )
-from elmos_sql_dialect.parser import _parse_source_statements
+from elmos_sql_dialect.parser import (
+    _parse_source_statements,
+    looks_like_row_security,
+    parse_row_security,
+)
 from elmos_sql_dialect.profiles import NamespaceProfile, resolve_namespace_profile
 from elmos_sql_dialect.routine import emit_create_function, parse_create_routine
 from elmos_sql_dialect.scan import (
@@ -172,6 +177,15 @@ def emit_to(
     source_catalog: SourceSchemaCatalog | None = None,
 ) -> str | None:
     """Emitted SQL, or None with the refusal recorded by the caller."""
+    if isinstance(statement, exp.Command) and looks_like_row_security(statement.sql(), source):
+        return emitter.emit_row_security(parse_row_security(statement.sql(), source, namespace_map), target)
+    if isinstance(statement, exp.Command) and looks_like_role_comment(statement.sql(), source):
+        return emit_comment(
+            parse_comment(statement.sql(), source, namespace_map),
+            target,
+            comment_catalog,
+            source_catalog,
+        )
     if isinstance(statement, exp.Create):
         kind = str(statement.args.get("kind", "")).upper()
         if kind == "TABLE":
@@ -219,9 +233,14 @@ def emit_to(
             parser.parse_update(statement, source, namespace_map, source_catalog), target
         )
     if isinstance(statement, exp.Comment):
-        return emit_comment(parse_comment(statement, source, namespace_map), target, comment_catalog)
+        return emit_comment(
+            parse_comment(statement, source, namespace_map),
+            target,
+            comment_catalog,
+            source_catalog,
+        )
     if isinstance(statement, exp.Grant | exp.Revoke):
-        return emit_privilege(parse_privilege(statement, source, namespace_map), target)
+        return emit_privilege(parse_privilege(statement, source, namespace_map), target, source_catalog)
     raise DialectError("UNROUTED", "no emitter for this statement kind")
 
 
@@ -278,10 +297,12 @@ def main() -> int:
     disposition_unknown = 0
     catalog_evidence_units = 0
     lost_by_first_refusal: Counter[str] = Counter()
+    source_dialects: set[Dialect] = set()
 
     for raw in args.corpus:
         _name, path, dialect_name = raw.split("=", 2)
         source = Dialect(dialect_name)
+        source_dialects.add(source)
         scan_report = scan_repository(path, source, namespace_profile=active_namespace_profile)
         disposition_units += scan_report.totals["dispositionUnits"]
         disposition_covered += scan_report.totals["dispositionCovered"]
@@ -348,6 +369,11 @@ def main() -> int:
                 elif isinstance(statement, exp.Alter):
                     comment_catalog.apply_alter(parser.parse_alter_table(statement, source, namespace_map))
 
+    target_priority = sorted(
+        (dialect.value for dialect in ALL_DIALECTS),
+        key=lambda dialect: (-reachable_per_target[dialect], dialect),
+    )
+    non_source_priority = [dialect for dialect in target_priority if Dialect(dialect) not in source_dialects]
     out = {
         "kind": "elmos.sql-dialect.target-reachability",
         "discovered_units": discovered,
@@ -369,6 +395,16 @@ def main() -> int:
             for dialect in ALL_DIALECTS
         },
         "all_target_intersection_rate": round(all_four / admitted, 4) if admitted else 0.0,
+        "routeStrategy": {
+            "mode": "target-specific-portfolio",
+            "targetPriority": target_priority,
+            "bestTarget": target_priority[0] if target_priority else None,
+            "bestNonSourceTarget": non_source_priority[0] if non_source_priority else None,
+            "reason": (
+                "maximize exact target routes independently; the strict intersection remains a separate "
+                "fail-closed metric and must not be widened by semantic downgrades"
+            ),
+        },
         "refusals_per_target": {
             k: dict(v.most_common()) for k, v in refusals_per_target.items()
         },
