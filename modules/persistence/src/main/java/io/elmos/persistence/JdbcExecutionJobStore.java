@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 /**
  * PostgreSQL 17 adapter for {@link ExecutionJobPort}.
@@ -40,6 +41,8 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final int LEASE_TOKEN_BYTES = 32;
     private static final int MAX_LIST_OFFSET = 10_000;
+    private static final Pattern DIGEST_IMAGE =
+            Pattern.compile("^[a-z0-9][a-z0-9._/-]*(:[0-9]+)?/?[a-z0-9._/-]*@sha256:[0-9a-f]{64}$");
 
     private final JdbcClient jdbc;
     private final TransactionTemplate transactions;
@@ -213,8 +216,20 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     // ---- runner facing -----------------------------------------------------
 
     @Override
-    public List<LeaseGrant> claim(String runnerNodeId, List<String> capabilities, int limit, int leaseSeconds) {
+    public List<LeaseGrant> claim(
+            String runnerNodeId,
+            List<String> capabilities,
+            List<String> availableImages,
+            int limit,
+            int leaseSeconds) {
         int bounded = Math.min(Math.max(limit, 1), 16);
+        if (availableImages == null || availableImages.isEmpty()
+                || availableImages.size() > 32
+                || availableImages.stream().distinct().count() != availableImages.size()
+                || availableImages.stream().anyMatch(
+                image -> image == null || !DIGEST_IMAGE.matcher(image).matches())) {
+            throw new ExecutionStateException("ELMOS_RUNNER_AVAILABLE_IMAGES_INVALID");
+        }
 
         // One credential per potential slot. Unused ones are simply discarded:
         // generating them up front keeps the claim a single round trip while the

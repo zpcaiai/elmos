@@ -150,10 +150,16 @@ public final class ControlPlaneClient {
 
     // ---- lease lifecycle ---------------------------------------------------
 
-    public List<Lease> claim(int limit) {
+    public List<Lease> claim(int limit, List<String> availableImages) {
+        if (availableImages == null || availableImages.isEmpty()
+                || availableImages.size() > 32) {
+            throw new IllegalArgumentException("RUNNER_AVAILABLE_IMAGES_REQUIRED");
+        }
+        availableImages.forEach(ContainerRuntime::validateImage);
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("runnerNodeId", config.runnerNodeId());
         body.put("capabilities", config.capabilities());
+        body.put("availableImages", List.copyOf(availableImages));
         body.put("limit", limit);
         body.put("leaseSeconds", config.leaseSeconds());
 

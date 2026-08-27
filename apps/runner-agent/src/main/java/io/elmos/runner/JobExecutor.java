@@ -61,7 +61,7 @@ public final class JobExecutor {
         HeartbeatPump pump = new HeartbeatPump(client, lease, config, metrics);
 
         try {
-            ContainerRuntime.validateImage(lease.runnerImage());
+            containers.requireImageAvailableLocally(lease.runnerImage());
 
             workspace = JobWorkspace.create(config.workRoot(), lease.jobId(),
                     config.workloadUid(), config.workloadGid());

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * In-process control plane used by the agent self-test.
@@ -40,6 +41,8 @@ public final class FakeControlPlane implements AutoCloseable {
     public final AtomicInteger heartbeatCount = new AtomicInteger();
     public final AtomicInteger claimCount = new AtomicInteger();
     public final AtomicInteger registrationCount = new AtomicInteger();
+    public final AtomicReference<Map<String, Object>> lastClaimRequest =
+            new AtomicReference<>(Map.of());
 
     public final AtomicBoolean cancelRequested = new AtomicBoolean(false);
     public final AtomicBoolean pauseRequested = new AtomicBoolean(false);
@@ -73,7 +76,7 @@ public final class FakeControlPlane implements AutoCloseable {
         });
 
         server.createContext("/runner/v1/leases/claim", exchange -> {
-            readBody(exchange);
+            lastClaimRequest.set(Json.parseObject(readBody(exchange)));
             claimCount.incrementAndGet();
             List<Map<String, Object>> batch = new ArrayList<>(pendingLeases);
             pendingLeases.clear();

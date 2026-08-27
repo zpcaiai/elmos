@@ -43,6 +43,48 @@ public final class ContainerRuntime {
         }
     }
 
+    /**
+     * Returns the exact configured image references that still exist in the local
+     * engine store. This command cannot contact a registry and is run immediately
+     * before every claim, so the control plane never leases a job whose image was
+     * merely named in configuration but is absent from this node.
+     */
+    public List<String> locallyAvailableImages() {
+        if (config.allowHostExecution()) {
+            // Host execution is development-only and has no container store to
+            // interrogate. The immutable configuration list still bounds claims.
+            return config.runnerImages();
+        }
+        List<String> available = new ArrayList<>();
+        for (String image : config.runnerImages()) {
+            validateImage(image);
+            ProcessRunner.Result result = processes.run(
+                    List.of(config.containerEngine(), "image", "exists", image),
+                    null, Map.of(), 30);
+            if (result.ok()) {
+                available.add(image);
+            }
+        }
+        return List.copyOf(available);
+    }
+
+    /** Startup gate: every configured digest must already be present locally. */
+    public void requireConfiguredImagesLocal() {
+        List<String> available = locallyAvailableImages();
+        if (!available.equals(config.runnerImages())) {
+            throw new IllegalStateException("RUNNER_CONFIGURED_IMAGE_NOT_AVAILABLE_LOCALLY");
+        }
+    }
+
+    /** Defense in depth against removal in the short interval after claim. */
+    public void requireImageAvailableLocally(String image) {
+        validateImage(image);
+        if (!config.runnerImages().contains(image)
+                || !locallyAvailableImages().contains(image)) {
+            throw new IllegalArgumentException("RUNNER_IMAGE_NOT_AVAILABLE_LOCALLY");
+        }
+    }
+
     List<String> buildCommand(ControlPlaneClient.Lease lease, JobWorkspace workspace, String containerName) {
         validateImage(lease.runnerImage());
 
@@ -62,9 +104,10 @@ public final class ContainerRuntime {
         // write fails with Permission denied. Verified at startup by the write probe.
         command.add("--user=" + config.workloadUid() + ":" + config.workloadGid());
         command.add("--userns=keep-id");           // rootless mapping stays explicit
-        // A digest reference is resolved against a registry unless the image is
-        // already local; never let a job stall on a registry round trip mid-lease.
-        command.add("--pull=missing");
+        // The claim request advertises only digest references verified in the
+        // local store. A workload must never turn a later removal race into a
+        // registry call mid-lease.
+        command.add("--pull=never");
 
         // --- budgets ---------------------------------------------------------
         command.add("--cpus=" + String.format(java.util.Locale.ROOT, "%.2f", lease.budgetCpuMillis() / 1000.0));

@@ -117,6 +117,8 @@ GOVERNED_TECHNIQUES = (
     | {
         "assurance-case",
         "browser-journey",
+        "differential-execution",
+        "formal-route-campaign",
         "holdout",
         "missing-context",
         "negative-authentication",
@@ -129,6 +131,14 @@ GOVERNED_TECHNIQUES = (
     }
 )
 MAXIMUM_LOCAL_DECISION = "READY_FOR_EXTERNAL_GATE"
+REGISTERED_NON_MIGRATION_SCOPES = {
+    (
+        "elmos-project-generation-source-ingestion",
+        "project-intent-to-approved-source-bundle",
+        "multi-format-source-ingestion-security",
+        "local-deterministic-parser-security-qualification",
+    ),
+}
 
 
 def write_gate_output(pack: Path, name: str, content: str) -> None:
@@ -203,6 +213,85 @@ def load_required_local(pack: Path, relative: str) -> dict[str, Any]:
     if not isinstance(document, dict):
         raise TypeError(f"required pack file is not an object: {relative}")
     return document
+
+
+def run_campaign_validator(
+    pack: Path,
+    validator_name: str,
+    invalid_prefix: str,
+    invalid_json_message: str,
+    defaults: dict[str, Any],
+    timeout_seconds: int,
+) -> tuple[dict[str, Any], list[str]]:
+    """Run one strict campaign validator against the immutable pack snapshot."""
+
+    result = dict(defaults)
+    try:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(Path(__file__).with_name(validator_name)),
+                str(pack),
+                "--json",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout_seconds,
+        )
+    except subprocess.TimeoutExpired:
+        result.update({"status": "invalid", "errors": ["validator timed out"]})
+        return result, [f"{invalid_prefix}: validator timed out"]
+    except OSError as exc:
+        detail = f"validator could not start: {exc}"
+        result.update({"status": "invalid", "errors": [detail]})
+        return result, [f"{invalid_prefix}: {detail}"]
+
+    payload = completed.stdout.strip()
+    try:
+        parsed = json.loads(payload)
+        if not isinstance(parsed, dict):
+            raise TypeError("validator output is not a JSON object")
+        result.update(parsed)
+    except (json.JSONDecodeError, TypeError, ValueError):
+        result.update({"status": "invalid", "errors": [invalid_json_message]})
+
+    if completed.returncode == 0 and result.get("status") == "valid":
+        return result, []
+
+    raw_details = result.get("errors")
+    details = (
+        [
+            item.strip()[:4096]
+            for item in raw_details
+            if isinstance(item, str) and item.strip()
+        ]
+        if isinstance(raw_details, list)
+        else []
+    )
+    if not details:
+        stderr = completed.stderr.strip()
+        details = [stderr[:4096] if stderr else "unknown campaign validation error"]
+    return result, [f"{invalid_prefix}: {detail}" for detail in details]
+
+
+def route_equivalence_is_not_applicable(
+    manifest: dict[str, Any],
+) -> bool:
+    """Recognize an exact registered non-migration verification scope."""
+
+    scope = manifest.get("scope", {})
+    return (
+        isinstance(scope, dict)
+        and scope.get("source_target_migration_equivalence") == "NOT_APPLICABLE"
+        and (
+            manifest.get("pack_key"),
+            scope.get("migration_route"),
+            scope.get("workload_key"),
+            scope.get("validation_kind"),
+        )
+        in REGISTERED_NON_MIGRATION_SCOPES
+    )
 
 
 def validate_certification_corpus(
@@ -317,8 +406,13 @@ def certification_blockers(
     assurance: dict[str, Any],
     evidence: dict[str, Any],
     certification: dict[str, Any],
+    formal_equivalence_applicable: bool,
 ) -> list[str]:
     blockers: list[str] = []
+    requested_certified = (
+        manifest.get("status") == "certified"
+        or certification.get("status") == "certified"
+    )
     if (
         manifest.get("status") != "certified"
         or certification.get("status") != "certified"
@@ -395,6 +489,22 @@ def certification_blockers(
             append_once(blockers, f"{key} must be explicitly zero")
 
     property_spec = load_required_local(pack, "properties/sample.json")
+    if requested_certified and formal_equivalence_applicable:
+        p0_claim_ids = {
+            claim.get("claim_id")
+            for claim in profile.get("claims", [])
+            if claim.get("criticality") == "P0"
+        }
+        if proof.get("property_id") != property_spec.get("property_id"):
+            append_once(
+                blockers,
+                f"proof references unknown property_id: {proof.get('property_id')}",
+            )
+        elif (
+            property_spec.get("claim_id") in p0_claim_ids
+            and proof.get("status") != "proved"
+        ):
+            append_once(blockers, "required P0 proof is not resolved")
     global_solver_required = bool(
         set(profile.get("techniques", [])) & SOLVER_TECHNIQUES
     )
@@ -638,7 +748,11 @@ def main(repository_root: Path | None = None) -> int:
         return 2
 
     structural_failures: list[str] = []
+    campaign_blockers: list[str] = []
     validator = Path(__file__).with_name("validate_verification_pack.py")
+    formal_campaign: dict[str, Any] | None = None
+    frontend_campaign: dict[str, Any] | None = None
+    frontend_campaign_version: int | None = None
     records: list[tuple[Any, dict[str, Any]]] = []
     repository_digest: str | None = None
     evaluated_digest: str | None = None
@@ -648,11 +762,12 @@ def main(repository_root: Path | None = None) -> int:
             pack = Path(temporary) / "pack"
             shutil.copytree(output_pack.resolve(strict=True), pack, symlinks=True)
             snapshot_digest = pack_content_digest(pack)
-            if snapshot_digest != original_digest:
+            snapshot_stable = snapshot_digest == original_digest
+            if not snapshot_stable:
                 structural_failures.append(
                     "verification pack changed while the immutable snapshot was created"
                 )
-            if subprocess.run(
+            generic_validation = subprocess.run(
                 [
                     sys.executable,
                     str(validator),
@@ -661,7 +776,9 @@ def main(repository_root: Path | None = None) -> int:
                     str(repository_root),
                 ],
                 check=False,
-            ).returncode:
+            )
+            generic_validation_passed = generic_validation.returncode == 0
+            if not generic_validation_passed:
                 structural_failures.append("verification pack validation failed")
             manifest = load_required_local(pack, "pack.json")
             profile = load_required_local(pack, "validation-profile.json")
@@ -672,6 +789,186 @@ def main(repository_root: Path | None = None) -> int:
             certification = load_required_local(
                 pack, "certification/certification.json"
             )
+            requested_certified = (
+                manifest.get("status") == "certified"
+                or certification.get("status") == "certified"
+            )
+            campaign_evaluation_allowed = (
+                snapshot_stable and generic_validation_passed
+            )
+            if manifest.get("formal_route_campaign") is not None:
+                formal_defaults = {
+                    "status": "not-run",
+                    "formal_ready": False,
+                    "certification_ready": False,
+                    "independent_verification_status": "NOT_RUN",
+                }
+                if campaign_evaluation_allowed:
+                    formal_campaign, campaign_failures = run_campaign_validator(
+                        pack,
+                        "validate_formal_route_campaign.py",
+                        "formal route campaign invalid",
+                        "formal route validator emitted invalid JSON",
+                        {
+                            **formal_defaults,
+                            "status": "invalid",
+                        },
+                        660,
+                    )
+                else:
+                    formal_campaign = {
+                        **formal_defaults,
+                        "errors": [
+                            "campaign validation was not run because the pack failed prerequisite validation"
+                        ],
+                    }
+                    campaign_failures = []
+                for failure in campaign_failures:
+                    append_once(structural_failures, failure)
+                if (
+                    formal_campaign.get("status") == "valid"
+                    and requested_certified
+                ):
+                    if formal_campaign.get("formal_ready") is not True:
+                        append_once(
+                            campaign_blockers,
+                            "formal route campaign is not proof-ready",
+                        )
+                    if formal_campaign.get("certification_ready") is not True:
+                        append_once(
+                            campaign_blockers,
+                            "formal route campaign is not certification-ready",
+                        )
+                    if (
+                        formal_campaign.get("independent_verification_status")
+                        != "PASSED"
+                    ):
+                        append_once(
+                            campaign_blockers,
+                            "formal route campaign independent verification is not PASSED",
+                        )
+
+            has_frontend_v1 = (
+                manifest.get("frontend_formal_route_campaign") is not None
+            )
+            has_frontend_v2 = (
+                manifest.get("frontend_formal_route_campaign_v2") is not None
+            )
+            frontend_defaults = {
+                "status": "not-run",
+                "structural_status": "FAILED",
+                "local_equivalence_status": "NOT_EVALUATED",
+                "bounded_proof_profile_ready": False,
+                "model_formal_ready": False,
+                "formal_ready": False,
+                "browser_ready": False,
+                "native_ready": False,
+                "runtime_ready": False,
+                "independent_ready": False,
+                "external_evidence_status": "NOT_RUN",
+                "certification_ready": False,
+            }
+            if has_frontend_v1 and has_frontend_v2:
+                append_once(
+                    structural_failures,
+                    "frontend v1 and v2 campaign declarations are mutually exclusive",
+                )
+                frontend_campaign = {
+                    **frontend_defaults,
+                    "errors": [
+                        "frontend v1 and v2 campaign declarations are mutually exclusive"
+                    ],
+                }
+            elif has_frontend_v2:
+                frontend_campaign_version = 2
+                if campaign_evaluation_allowed:
+                    frontend_campaign, campaign_failures = run_campaign_validator(
+                        pack,
+                        "validate_frontend_formal_route_campaign_v2.py",
+                        "frontend v2 formal route campaign invalid",
+                        "frontend v2 formal validator emitted invalid JSON",
+                        {
+                            **frontend_defaults,
+                            "status": "invalid",
+                        },
+                        540,
+                    )
+                else:
+                    frontend_campaign = {
+                        **frontend_defaults,
+                        "errors": [
+                            "campaign validation was not run because the pack failed prerequisite validation"
+                        ],
+                    }
+                    campaign_failures = []
+                for failure in campaign_failures:
+                    append_once(structural_failures, failure)
+                if requested_certified:
+                    # A prerequisite failure must prevent replay, but it must not
+                    # hide the exact readiness dimensions behind a generic
+                    # structural error. Defaults remain false when the campaign
+                    # was not safely executed, so a certified claim still reports
+                    # every missing requirement without treating untrusted input
+                    # as executable authority.
+                    for field in (
+                        "model_formal_ready",
+                        "formal_ready",
+                        "browser_ready",
+                        "native_ready",
+                        "runtime_ready",
+                        "independent_ready",
+                        "certification_ready",
+                    ):
+                        if frontend_campaign.get(field) is not True:
+                            append_once(
+                                campaign_blockers,
+                                f"frontend v2 campaign {field} is not true",
+                            )
+            elif has_frontend_v1:
+                frontend_campaign_version = 1
+                if campaign_evaluation_allowed:
+                    frontend_campaign, campaign_failures = run_campaign_validator(
+                        pack,
+                        "validate_frontend_formal_route_campaign.py",
+                        "frontend formal route campaign invalid",
+                        "frontend formal validator emitted invalid JSON",
+                        {
+                            **frontend_defaults,
+                            "status": "invalid",
+                            "local_equivalence_status": "INCOMPLETE",
+                        },
+                        180,
+                    )
+                else:
+                    frontend_campaign = {
+                        **frontend_defaults,
+                        "errors": [
+                            "campaign validation was not run because the pack failed prerequisite validation"
+                        ],
+                    }
+                    campaign_failures = []
+                for failure in campaign_failures:
+                    append_once(structural_failures, failure)
+                if (
+                    frontend_campaign.get("status") == "valid"
+                    and requested_certified
+                ):
+                    if frontend_campaign.get("formal_ready") is not True:
+                        append_once(
+                            campaign_blockers,
+                            "frontend formal route campaign is not proof-ready",
+                        )
+                    if frontend_campaign.get("certification_ready") is not True:
+                        append_once(
+                            campaign_blockers,
+                            "frontend formal route campaign is not certification-ready",
+                        )
+                    if frontend_campaign.get("external_evidence_status") != "PASSED":
+                        append_once(
+                            campaign_blockers,
+                            "frontend formal route campaign external evidence is not PASSED",
+                        )
+
             records = repository_binding_records(pack)
             repository_digest, repository_errors = repository_files_digest(
                 records, repository_root
@@ -680,6 +977,24 @@ def main(repository_root: Path | None = None) -> int:
                 append_once(
                     structural_failures,
                     f"repository binding evaluation failed: {error}",
+                )
+            registered_non_migration_scope = (
+                route_equivalence_is_not_applicable(manifest)
+                and bool(records)
+                and repository_digest is not None
+                and not repository_errors
+            )
+            formal_equivalence_applicable = not registered_non_migration_scope
+            if (
+                requested_certified
+                and formal_equivalence_applicable
+                and manifest.get("formal_route_campaign") is None
+                and not has_frontend_v1
+                and not has_frontend_v2
+            ):
+                append_once(
+                    campaign_blockers,
+                    "certified pack must declare a strict formal route campaign",
                 )
             evaluated_digest = compose_evaluated_pack_digest(
                 snapshot_digest, repository_digest
@@ -696,7 +1011,10 @@ def main(repository_root: Path | None = None) -> int:
                 assurance,
                 evidence,
                 certification,
+                formal_equivalence_applicable,
             )
+            for blocker in campaign_blockers:
+                append_once(blockers, blocker)
             if pack_content_digest(pack) != snapshot_digest:
                 structural_failures.append(
                     "immutable verification snapshot changed during evaluation"
@@ -743,10 +1061,6 @@ def main(repository_root: Path | None = None) -> int:
     for failure in live_drift_failures("before final gate output"):
         append_once(structural_failures, failure)
 
-    requested_certified = (
-        manifest.get("status") == "certified"
-        or certification.get("status") == "certified"
-    )
     def build_outputs() -> tuple[dict[str, Any], str]:
         failures = [
             *structural_failures,
@@ -777,6 +1091,91 @@ def main(repository_root: Path | None = None) -> int:
             "failures": failures,
             "certification_blockers": blockers,
         }
+        if formal_campaign is not None:
+            result["formal_route_campaign"] = {
+                key: formal_campaign.get(key)
+                for key in (
+                    "status",
+                    "campaign_key",
+                    "formal_ready",
+                    "certification_ready",
+                    "independent_verification_status",
+                    "route_count",
+                    "required_obligation_count",
+                    "unresolved_required_obligation_ids",
+                    "composition_count",
+                    "proved_composition_count",
+                )
+            }
+        if frontend_campaign is not None:
+            result.update(
+                {
+                    "structural_status": (
+                        "FAILED" if structural_failures else "PASSED"
+                    ),
+                    "local_equivalence_status": frontend_campaign.get(
+                        "local_equivalence_status", "NOT_EVALUATED"
+                    ),
+                    "bounded_proof_profile_ready": (
+                        frontend_campaign.get("bounded_proof_profile_ready") is True
+                    ),
+                    "formal_ready": frontend_campaign.get("formal_ready") is True,
+                    "external_evidence_status": frontend_campaign.get(
+                        "external_evidence_status", "NOT_RUN"
+                    ),
+                    "frontend_formal_contract_version": frontend_campaign_version,
+                    "model_formal_ready": (
+                        frontend_campaign_version == 2
+                        and frontend_campaign.get("model_formal_ready") is True
+                    ),
+                    "browser_ready": (
+                        frontend_campaign_version == 2
+                        and frontend_campaign.get("browser_ready") is True
+                    ),
+                    "native_ready": (
+                        frontend_campaign_version == 2
+                        and frontend_campaign.get("native_ready") is True
+                    ),
+                    "runtime_ready": (
+                        frontend_campaign_version == 2
+                        and frontend_campaign.get("runtime_ready") is True
+                    ),
+                    "independent_ready": (
+                        frontend_campaign_version == 2
+                        and frontend_campaign.get("independent_ready") is True
+                    ),
+                    "certification_ready": (
+                        frontend_campaign.get("certification_ready") is True
+                    ),
+                }
+            )
+            result["frontend_formal_route_campaign"] = {
+                key: frontend_campaign.get(key)
+                for key in (
+                    "status",
+                    "campaign_key",
+                    "route_count",
+                    "profile_count",
+                    "structural_status",
+                    "local_equivalence_status",
+                    "bounded_proof_profile_ready",
+                    "formal_ready",
+                    "external_evidence_status",
+                    "certification_ready",
+                    "proved_route_count",
+                    "proved_under_assumptions_route_count",
+                    "native_route_count",
+                    "native_applicable_route_count",
+                    "native_passed_route_count",
+                    "model_formal_ready",
+                    "browser_ready",
+                    "native_ready",
+                    "runtime_ready",
+                    "independent_ready",
+                    "block_count",
+                    "scenario_count",
+                )
+            }
         lines = [
             f"# Batch 35 gate: {manifest.get('pack_key')}",
             "",
