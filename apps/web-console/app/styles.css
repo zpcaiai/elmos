@@ -141,6 +141,13 @@ a.secondary-link:hover, button.secondary-link:hover { background: rgba(255,255,2
 .auth-card h1 { margin: 0; font-size: 30px; letter-spacing: -.04em; }
 .auth-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
 .auth-card > small { color: var(--muted); font-size: 10px; line-height: 1.55; }
+.auth-form { width: 100%; display: flex; flex-direction: column; gap: 12px; padding: 17px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-soft); }
+.auth-form h2 { margin: 0; font-size: 16px; }
+.auth-form p { font-size: 10px; }
+.auth-form label { display: flex; flex-direction: column; gap: 6px; }
+.auth-form label > span { color: var(--ink-soft); font-size: 10px; font-weight: 700; }
+.auth-form input { width: 100%; min-height: 40px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 8px; outline: 0; background: white; color: var(--ink); font-size: 11px; }
+.auth-form input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,123,123,.1); }
 .auth-error, .auth-not-configured { width: 100%; display: flex; flex-direction: column; gap: 4px; padding: 12px; border: 1px solid #e7c6c2; border-radius: 9px; background: var(--red-soft); color: var(--red); font-size: 11px; line-height: 1.5; }
 .auth-not-configured { border-color: #ead9c5; background: var(--amber-soft); color: var(--amber); }
 .auth-not-configured span { color: var(--ink-soft); font-size: 10px; }

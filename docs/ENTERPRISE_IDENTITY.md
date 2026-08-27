@@ -80,6 +80,16 @@ production for isolated development and browser fixtures. Production Web
 Console routes require an enterprise session; a static shared browser token is
 not an accepted production identity.
 
+For a loopback-only browser test account, start the Web Console with
+`ELMOS_ALLOW_LOCAL_CREDENTIALS=true` and a 32-character-or-longer
+`ELMOS_SESSION_SECRET`. The default local credentials are `test` / `test` and
+the default tenant is `local-test`; they can be overridden with
+`ELMOS_LOCAL_CREDENTIALS_USERNAME`, `ELMOS_LOCAL_CREDENTIALS_PASSWORD` and
+`ELMOS_LOCAL_CREDENTIALS_ORGANIZATION_ID`. The login endpoint rejects
+production requests and non-loopback hosts, and the account receives only the
+`DEVELOPER` role. Never enable this mode in a deployed or production
+environment.
+
 ## Verification boundary
 
 Local type checks, Java tests and browser tests are engineering evidence.

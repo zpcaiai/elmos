@@ -173,10 +173,7 @@ export async function proxy(request: NextRequest) {
   );
   if (!protectedRoute) return NextResponse.next();
   const localCredentialMode = process.env.NODE_ENV !== "production"
-    && (
-      process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS === "true"
-      || process.env.ELMOS_LOCAL_RUNNER_ENABLED === "true"
-    );
+    && process.env.ELMOS_LOCAL_RUNNER_ENABLED === "true";
   const approvedAdminFallback = request.nextUrl.pathname === "/admin"
     && process.env.ELMOS_ADMIN_ALLOW_TOKEN_FALLBACK === "true";
   if (
