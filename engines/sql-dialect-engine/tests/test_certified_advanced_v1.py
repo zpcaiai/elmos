@@ -13,6 +13,8 @@ from elmos_sql_dialect.advanced import emit_comment, emit_privilege, parse_comme
 from elmos_sql_dialect.engine import translate_ddl
 from elmos_sql_dialect.models import CommentObjectKind, Dialect, DialectError
 from elmos_sql_dialect.parser import parse_create_table
+from elmos_sql_dialect.routine import parse_routine_identity
+from elmos_sql_dialect.scan import SourceSchemaCatalog
 
 
 class _CommentCatalog:
@@ -88,6 +90,47 @@ def test_function_comment_does_not_fall_back_to_table_metadata_on_mysql() -> Non
     with pytest.raises(DialectError) as exc:
         emit_comment(comment, Dialect.MYSQL)
     assert exc.value.code == "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED"
+
+
+def test_mysql_zero_argument_function_comment_uses_proven_identity() -> None:
+    catalog = SourceSchemaCatalog()
+    identity = parse_routine_identity(
+        "CREATE FUNCTION elmos_sync_payment_order_directory() RETURNS varchar "
+        "LANGUAGE sql AS 'SELECT NULL'",
+        Dialect.POSTGRES,
+        {"": "dbo"},
+    )
+    catalog.add_routine_identity(identity)
+    comment = parse_comment(
+        "COMMENT ON FUNCTION elmos_sync_payment_order_directory() IS 'trigger metadata'",
+        Dialect.POSTGRES,
+        {"": "dbo"},
+    )
+    assert comment.routine_argument_type_refs == ()
+    assert emit_comment(comment, Dialect.MYSQL, routine_catalog=catalog) == (
+        "ALTER FUNCTION dbo.elmos_sync_payment_order_directory COMMENT 'trigger metadata'"
+    )
+
+
+def test_mysql_function_comment_keeps_unbounded_numeric_as_identity_only() -> None:
+    catalog = SourceSchemaCatalog()
+    identity = parse_routine_identity(
+        "CREATE FUNCTION elmos_wallet_post_entry(p_amount numeric) RETURNS varchar "
+        "LANGUAGE sql AS 'SELECT NULL'",
+        Dialect.POSTGRES,
+        {"": "dbo"},
+    )
+    catalog.add_routine_identity(identity)
+    comment = parse_comment(
+        "COMMENT ON FUNCTION elmos_wallet_post_entry(numeric) IS 'wallet entry'",
+        Dialect.POSTGRES,
+        {"": "dbo"},
+    )
+    assert comment.routine_argument_type_refs is not None
+    assert comment.routine_argument_type_refs[0].precision is None
+    assert emit_comment(comment, Dialect.MYSQL, routine_catalog=catalog).startswith(
+        "ALTER FUNCTION dbo.elmos_wallet_post_entry COMMENT"
+    )
 
 
 def test_constraint_comment_uses_strict_postgres_compatibility_fallback() -> None:

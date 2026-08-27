@@ -84,6 +84,7 @@ from .parser import (
     parse_insert_statement,
     parse_row_security,
     parse_update,
+    strip_leading_comments,
 )
 from .profiles import NamespaceProfile, resolve_namespace_profile
 from .routine import parse_create_routine, parse_routine_identity
@@ -830,6 +831,36 @@ def _record_catalog_statement(
     try:
         if isinstance(statement, exp.Command) and str(statement.args.get("this", "")).upper() == "DO":
             catalog.record_bounded_dynamic_tenant_column(statement, namespace_map)
+        elif isinstance(statement, exp.Command) and re.match(
+            r"^\s+(?:OR\s+REPLACE\s+)?(?:FUNCTION|PROCEDURE)\b",
+            str(statement.args.get("expression", "")),
+            re.IGNORECASE,
+        ):
+            # sqlglot exposes some valid PL/pgSQL bodies as opaque Commands.
+            # Preserve their declaration as identity-only evidence so a
+            # later COMMENT/GRANT can prove one overload, while the routine
+            # body, security context and executable route remain blocked.
+            identity = parse_routine_identity(statement, dialect, namespace_map)
+            catalog.add_routine_identity(identity)
+            catalog.evidence.append(
+                {
+                    "kind": "CREATE_ROUTINE_IDENTITY",
+                    "routineKind": identity.kind.value,
+                    "routine": f"{identity.schema or ''}.{identity.name}",
+                    "parameterTypes": [
+                        {
+                            "canonicalType": item.canonical_type.value,
+                            "precision": item.precision,
+                            "scale": item.scale,
+                            "length": item.length,
+                            "jsonBinary": item.json_binary,
+                        }
+                        for item in identity.parameter_types
+                    ],
+                    "statementDigest": hashlib.sha256(statement.sql().encode("utf-8")).hexdigest(),
+                    "routeStatus": "IDENTITY_EVIDENCE_ONLY",
+                }
+            )
         elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "TABLE":
             table = parse_create_table(statement, dialect, namespace_map)
             catalog.add_table(table)
@@ -914,6 +945,24 @@ def _classify(
     # appears in annotations, which this module never evaluates.
     assert isinstance(statement, exp.Expression)
     try:
+        if raw_sql is not None:
+            normalized_raw = strip_leading_comments(raw_sql)
+            if normalized_raw != raw_sql:
+                try:
+                    recovered = _parse_source_statements(normalized_raw, dialect)
+                except sqlglot.errors.SqlglotError:
+                    recovered = []
+                if len(recovered) == 1 and not isinstance(recovered[0], exp.Command):
+                    # Use the recovered AST as the semantic input.  The
+                    # caller's original text remains evidence, while all
+                    # admission still goes through the typed parser below.
+                    statement = recovered[0]
+                    raw_sql = None
+                else:
+                    # Keep opaque constructs such as DO visible to the
+                    # dedicated static-DO/RLS classifiers after their prose
+                    # header has been removed.
+                    raw_sql = normalized_raw
         command_sql = statement.sql() if isinstance(statement, exp.Command) else None
         if isinstance(statement, exp.Command) and looks_like_row_security(
             raw_sql or command_sql or "", dialect
@@ -1033,7 +1082,7 @@ def _recover_statements(
             )
             continue
         try:
-            parsed = _parse_source_statements(raw.text, source_dialect)
+            parsed = _parse_source_statements(strip_leading_comments(raw.text), source_dialect)
         except Exception as exc:  # noqa: BLE001 - sqlglot raises several types
             findings.append(
                 ScanFinding(
@@ -1065,7 +1114,13 @@ def _recover_statements(
             )
             continue
         statement = parsed[0]
-        status, code, reason = _classify(statement, source_dialect, raw.text, namespace_map, catalog)
+        status, code, reason = _classify(
+            statement,
+            source_dialect,
+            strip_leading_comments(raw.text),
+            namespace_map,
+            catalog,
+        )
         family = BLOCKER_CATALOG.get(code or "", (None, ""))[0] if code else None
         findings.append(
             ScanFinding(

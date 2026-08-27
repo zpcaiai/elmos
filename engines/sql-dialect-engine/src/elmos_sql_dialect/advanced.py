@@ -10,6 +10,7 @@ typed blockers.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 from typing import Protocol
 
@@ -36,6 +37,7 @@ from .models import (
     PrivilegeAction,
     Procedure,
     RoutineAssignment,
+    RoutineLanguage,
     RoutineParameter,
     RoutineParameterMode,
     RowPolicy,
@@ -56,7 +58,8 @@ from .parser import (
     _require,
     _require_single_statement,
 )
-from .routine import _parse_value, _routine_name
+from .routine import _parse_routine_identity_type, _parse_value, _property_language, _routine_name
+from .statement_splitter import split_statements
 
 
 class RoutineIdentityCatalogLike(Protocol):
@@ -74,7 +77,7 @@ class RoutineIdentityCatalogLike(Protocol):
 def _routine_argument_type_refs(
     routine: exp.UserDefinedFunction | exp.Anonymous,
     source_dialect: Dialect,
-) -> tuple[CanonicalTypeRef, ...]:
+) -> tuple[CanonicalTypeRef, ...] | None:
     """Best-effort typed parsing for a privilege/comment routine signature.
 
     The legacy string tuple remains in the public IR for source rendering.
@@ -87,9 +90,14 @@ def _routine_argument_type_refs(
     try:
         for item in routine.expressions:
             name = _plain_identifier(item, "routine argument type")
-            refs.append(_parse_type(exp.DataType.build(name, dialect=source_dialect.value), source_dialect))
+            refs.append(
+                _parse_routine_identity_type(
+                    exp.DataType.build(name, dialect=source_dialect.value),
+                    source_dialect,
+                )
+            )
     except (DialectError, TypeError, ValueError):
-        return ()
+        return None
     return tuple(refs)
 
 
@@ -378,13 +386,26 @@ def parse_privilege(
             "privilege routine",
         )
         schema_node = securable.args.get("db")
-        schema: str | None = None if schema_node is None else _plain_identifier(schema_node, "privilege routine schema")
-        if schema is not None:
-            mapped_schema = None if namespace_map is None else namespace_map.get(schema)
+        source_schema: str | None = (
+            None if schema_node is None else _plain_identifier(schema_node, "privilege routine schema")
+        )
+        schema: str | None = source_schema
+        if source_schema is None and namespace_map is not None and "" in namespace_map:
+            # Keep privilege targets on the same explicit default namespace as
+            # routine definitions and comments. Without this, the catalog
+            # proves `dbo.f(...)` while the privilege still asks for `f(...)`.
+            schema = namespace_map[""]
+            _require(
+                bool(_IDENTIFIER_RE.match(schema)),
+                "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+                f"mapped routine schema {schema!r} is not a plain identifier",
+            )
+        if source_schema is not None:
+            mapped_schema = None if namespace_map is None else namespace_map.get(source_schema)
             _require(
                 mapped_schema is not None,
                 "CERTIFIED_ROUTINE_NAMESPACE_MAPPING_REQUIRED",
-                f"routine schema {schema!r} needs an explicit namespace_map",
+                f"routine schema {source_schema!r} needs an explicit namespace_map",
             )
             assert mapped_schema is not None
             _require(
@@ -612,6 +633,47 @@ def parse_table_function(
     assert isinstance(udf, exp.UserDefinedFunction)
     schema, name = _routine_name(udf.this, namespace_map)
     parameters = _routine_parameters(udf, source_dialect)
+    language = RoutineLanguage.OTHER
+    properties = statement.args.get("properties")
+    if isinstance(properties, exp.Properties):
+        for prop in properties.expressions:
+            if isinstance(prop, exp.ReturnsProperty):
+                continue
+            if isinstance(prop, exp.LanguageProperty):
+                language = _property_language(prop)
+                continue
+            if isinstance(prop, exp.StrictProperty):
+                raise DialectError(
+                    "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET",
+                    "PostgreSQL STRICT null short-circuiting is routine metadata; the table-function route "
+                    "does not synthesize a wrapper with unverified type/null semantics",
+                )
+            if isinstance(prop, exp.SqlSecurityProperty):
+                raise DialectError(
+                    "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED",
+                    "SECURITY DEFINER/INVOKER changes table-function execution identity and needs an exact "
+                    "target mapping",
+                )
+            if isinstance(prop, exp.SetConfigProperty):
+                raise DialectError(
+                    "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED",
+                    "SET configuration changes table-function name resolution or execution context and "
+                    "needs an exact target mapping",
+                )
+            if isinstance(prop, exp.StabilityProperty):
+                raise DialectError(
+                    "CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET",
+                    "table-function volatility/stability has no one exact cross-dialect route",
+                )
+            raise DialectError(
+                "CERTIFIED_ROUTINE_UNSUPPORTED_PROPERTY",
+                f"table-function property {type(prop).__name__} is outside certified-routine-v1",
+            )
+    _require(
+        language in (RoutineLanguage.SQL, RoutineLanguage.PLPGSQL),
+        "CERTIFIED_ROUTINE_UNSUPPORTED_LANGUAGE",
+        f"table-function language {language.value} is outside the narrow SQL/PLpgSQL route",
+    )
     return_schema = returns.args.get("this")
     _require(
         isinstance(return_schema, exp.Schema),
@@ -640,26 +702,79 @@ def parse_table_function(
         )
     body = statement.args.get("expression")
     _require(
-        isinstance(body, exp.Heredoc), "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED", "table function body must be SQL"
+        isinstance(body, exp.Heredoc),
+        "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
+        "table function body must be a dollar-quoted SQL body",
     )
     assert isinstance(body, exp.Heredoc)
-    statements: list[exp.Expression] = []
-    for item in sqlglot.parse(str(body.this).strip(), read=source_dialect.value):
-        if isinstance(item, exp.Expression):
-            statements.append(item)
+    raw_body = str(body.this).strip()
+    if language is RoutineLanguage.PLPGSQL:
+        # This is intentionally smaller than the scalar PL/pgSQL subset: a
+        # table function may expose only one read-only query. Declarations,
+        # assignments, loops, EXCEPTION blocks, DML and EXECUTE all remain
+        # outside the route instead of being reconstructed from source text.
+        chunks = split_statements(raw_body)
+        _require(
+            len(chunks) == 2 and chunks[1].text.strip().upper() == "END",
+            "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
+            "PL/pgSQL table function must be BEGIN RETURN QUERY SELECT ...; END",
+        )
+        match = re.fullmatch(
+            r"BEGIN\s+RETURN\s+QUERY\s+(?P<select>SELECT\b.*)",
+            chunks[0].text.strip(),
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        _require(
+            match is not None,
+            "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
+            "PL/pgSQL table function must contain one static RETURN QUERY SELECT",
+        )
+        assert match is not None
+        query_sql = match.group("select").strip()
+    else:
+        query_sql = raw_body
+    try:
+        statements = [
+            item for item in sqlglot.parse(query_sql, read=source_dialect.value) if isinstance(item, exp.Expression)
+        ]
+    except sqlglot.errors.SqlglotError as exc:
+        raise DialectError(
+            "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
+            f"table function query could not be parsed: {exc}",
+        ) from exc
     _require(
         len(statements) == 1,
         "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
         "table function body must contain one SELECT",
     )
-    query = _parse_query(statements[0], source_dialect, namespace_map)
+    try:
+        query = _parse_query(statements[0], source_dialect, namespace_map)
+    except DialectError as exc:
+        raise DialectError(
+            "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
+            f"table function query is outside the static read-only route: {exc.message}",
+        ) from exc
+    parameter_names = {item.name.casefold() for item in parameters}
+    for column in statements[0].find_all(exp.Column):
+        if column.args.get("table") is None and str(column.this).casefold() in parameter_names:
+            raise DialectError(
+                "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
+                "table-function query parameter references need a parameter-aware query IR; "
+                "unqualified names remain fail-closed",
+            )
     _require(
         query.columns == tuple(item.name for item in return_columns),
         "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
         "table function SELECT shape must match declared return columns exactly",
     )
     return TableFunction(
-        name, parameters, tuple(return_columns), query, schema=schema, or_replace=bool(statement.args.get("replace"))
+        name,
+        parameters,
+        tuple(return_columns),
+        query,
+        schema=schema,
+        or_replace=bool(statement.args.get("replace")),
+        language=language,
     )
 
 
@@ -966,7 +1081,7 @@ def emit_comment(
         qualified = _object_name(comment.schema, comment.object_name, target_dialect)
         signature = ", ".join(quote_identifier(item, target_dialect) for item in comment.routine_argument_types)
         if target_dialect is Dialect.MYSQL:
-            if routine_catalog is None or not comment.routine_argument_type_refs:
+            if routine_catalog is None or comment.routine_argument_type_refs is None:
                 raise DialectError(
                     "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED",
                     "MySQL function comments require a catalog proof of one exact target routine identity",
@@ -1089,7 +1204,7 @@ def emit_privilege(
                 f"{privilege.object_kind} {target}({', '.join(privilege.routine_argument_types)})"
             )
         else:
-            if routine_catalog is None or not privilege.routine_argument_type_refs:
+            if routine_catalog is None or privilege.routine_argument_type_refs is None:
                 raise DialectError(
                     "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
                     f"{target_dialect.value} routine privileges cannot safely drop the source "

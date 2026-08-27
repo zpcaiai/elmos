@@ -313,6 +313,39 @@ def _coalesce_adjacent_string_literals(sql: str) -> str:
     return "".join(output)
 
 
+def strip_leading_comments(sql: str) -> str:
+    """Remove only ordinary comments before the first SQL token.
+
+    Migration files commonly put a prose header before a statement.  When a
+    whole file needs lexical recovery, sqlglot can otherwise return an opaque
+    ``Command`` even though the statement after that header has a normal typed
+    AST.  SQL optimizer/version hints are deliberately retained, as are
+    unterminated comments, so this helper cannot turn executable annotations
+    or malformed source into a candidate.
+    """
+    index = 0
+    length = len(sql)
+    while index < length:
+        while index < length and sql[index].isspace():
+            index += 1
+        if sql.startswith("--", index):
+            newline = sql.find("\n", index + 2)
+            if newline < 0:
+                return ""
+            index = newline + 1
+            continue
+        if sql.startswith("/*", index):
+            if sql.startswith("/*+", index) or sql.startswith("/*!", index):
+                return sql
+            closing = sql.find("*/", index + 2)
+            if closing < 0:
+                return sql
+            index = closing + 2
+            continue
+        break
+    return sql[index:]
+
+
 def _recover_multi_action_alter(
     sql: str,
     source_dialect: Dialect,
@@ -806,9 +839,27 @@ def _parse_default(node: exp.Expression, type_ref: CanonicalTypeRef) -> ColumnDe
     )
 
 
-def _check_literal(node: exp.Expression | None, what: str) -> CheckLiteral:
+def _check_literal(node: exp.Expression | None, what: str, source_dialect: Dialect) -> CheckLiteral:
     if isinstance(node, exp.Boolean):
         return CheckLiteral(value="true" if node.this else "false", is_boolean=True)
+    if isinstance(node, exp.Cast):
+        target = node.args.get("to")
+        literal = node.this
+        _require(
+            source_dialect is Dialect.POSTGRES
+            and isinstance(target, exp.DataType)
+            and target.this == DataType.Type.DOUBLE
+            and isinstance(literal, exp.Literal)
+            and literal.is_string
+            and str(literal.this) in {"Infinity", "-Infinity", "NaN"},
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            f"{what} typed casts are limited to explicit PostgreSQL non-finite DOUBLE literals",
+        )
+        return CheckLiteral(
+            value=str(literal.this),
+            is_string=True,
+            is_special_float=True,
+        )
     _require(isinstance(node, exp.Literal), "CERTIFIED_DDL_UNSUPPORTED_CHECK", f"{what} must be a plain literal")
     assert isinstance(node, exp.Literal)  # narrows for mypy
     return CheckLiteral(value=str(node.this), is_string=bool(node.is_string))
@@ -935,7 +986,7 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
         return CheckComparison(
             column=column,
             operator=CheckOperator.IN,
-            literals=tuple(_check_literal(m, "CHECK IN member") for m in members),
+            literals=tuple(_check_literal(m, "CHECK IN member", source_dialect) for m in members),
         )
 
     # LIKE is admitted only for patterns whose result is independent of
@@ -973,8 +1024,8 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
             column=between_column,
             operator=CheckOperator.BETWEEN,
             literals=(
-                _check_literal(node.args.get("low"), "CHECK BETWEEN lower bound"),
-                _check_literal(node.args.get("high"), "CHECK BETWEEN upper bound"),
+                _check_literal(node.args.get("low"), "CHECK BETWEEN lower bound", source_dialect),
+                _check_literal(node.args.get("high"), "CHECK BETWEEN upper bound", source_dialect),
             ),
             left_expression=left_expression,
         )
@@ -1158,6 +1209,30 @@ def _unwrap_check_parens(node: exp.Expression) -> exp.Expression:
     return node
 
 
+def _looks_like_boolean_predicate(node: exp.Expression) -> bool:
+    """Recognize syntax that can produce a SQL boolean predicate.
+
+    This is intentionally only a shape check.  ``_parse_check_comparison``
+    still performs the typed validation and raises for every unsupported
+    operand.  Requiring an explicit predicate operator prevents an ordinary
+    scalar ``column = column`` comparison from being mistaken for boolean
+    equality.
+    """
+
+    current = _unwrap_check_parens(node)
+    return isinstance(
+        current,
+        exp.Is
+        | exp.In
+        | exp.Between
+        | exp.Like
+        | exp.RegexpLike
+        | exp.And
+        | exp.Or
+        | exp.Not,
+    ) or type(current) in _CHECK_OPERATOR_MAP
+
+
 def _parse_check(
     node: exp.Expression, source_dialect: Dialect
 ) -> tuple[tuple[CheckComparison, ...], CheckConnector | None, CheckExpression | None]:
@@ -1168,6 +1243,39 @@ def _parse_check(
                 "CHECK boolean nesting exceeds the bounded canonical form",
             )
         current = _unwrap_check_parens(current)
+        # PostgreSQL permits a boolean predicate to be compared directly with
+        # another predicate.  Expand the narrow portable form where one side
+        # is an IS NULL test.  For SQL CHECK constraints, (p = q) and
+        # (p AND q) OR (NOT p AND NOT q) have identical TRUE/NULL acceptance
+        # for all combinations of SQL three-valued operands; NULL is never
+        # silently treated as FALSE.
+        if isinstance(current, exp.EQ):
+            left = _unwrap_check_parens(current.this)
+            right = _unwrap_check_parens(current.expression)
+            if (
+                _looks_like_boolean_predicate(left)
+                and _looks_like_boolean_predicate(right)
+                and (isinstance(left, exp.Is) or isinstance(right, exp.Is))
+                and not (isinstance(left, exp.Is) and isinstance(right, exp.Is))
+            ):
+                left_expr = build(left, depth + 1)
+                right_expr = build(right, depth + 1)
+                return CheckBooleanExpression(
+                    connector=CheckConnector.OR,
+                    operands=(
+                        CheckBooleanExpression(
+                            connector=CheckConnector.AND,
+                            operands=(left_expr, right_expr),
+                        ),
+                        CheckBooleanExpression(
+                            connector=CheckConnector.AND,
+                            operands=(
+                                CheckNotExpression(operand=left_expr),
+                                CheckNotExpression(operand=right_expr),
+                            ),
+                        ),
+                    ),
+                )
         if isinstance(current, exp.And | exp.Or):
             connector = CheckConnector.AND if isinstance(current, exp.And) else CheckConnector.OR
             return CheckBooleanExpression(

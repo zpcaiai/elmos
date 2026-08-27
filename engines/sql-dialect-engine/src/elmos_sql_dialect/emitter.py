@@ -27,6 +27,7 @@ from .models import (
     CheckComparison,
     CheckConstraint,
     CheckExpression,
+    CheckLiteral,
     CheckNotExpression,
     CheckOperator,
     CheckValueFunction,
@@ -73,6 +74,19 @@ class CommentColumnCatalogLike(Protocol):
 
 def _render_literal(value: str, is_string: bool) -> str:
     return f"'{value.replace(chr(39), chr(39) * 2)}'" if is_string else value
+
+
+def _render_check_literal(literal: CheckLiteral, dialect: Dialect) -> str:
+    if literal.is_special_float:
+        if dialect is not Dialect.POSTGRES:
+            raise DialectError(
+                "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET",
+                "PostgreSQL non-finite DOUBLE literals have no unconditionally equivalent target spelling",
+            )
+        return f"{_render_literal(literal.value, True)}::double precision"
+    if literal.is_boolean:
+        return _render_boolean(literal.value, dialect)
+    return _render_literal(literal.value, literal.is_string)
 
 
 def _object_name(schema: str | None, name: str, dialect: Dialect) -> str:
@@ -197,7 +211,7 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
         return f"{left} {operator.value}"
     if operator is CheckOperator.IN:
         members = ", ".join(
-            (_render_boolean(item.value, dialect) if item.is_boolean else _render_literal(item.value, item.is_string))
+            _render_check_literal(item, dialect)
             for item in comparison.literals
         )
         return f"{left} IN ({members})"
@@ -206,8 +220,8 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
     if operator is CheckOperator.BETWEEN:
         low, high = comparison.literals
         return (
-            f"{left} BETWEEN {_render_literal(low.value, low.is_string)}"
-            f" AND {_render_literal(high.value, high.is_string)}"
+            f"{left} BETWEEN {_render_check_literal(low, dialect)}"
+            f" AND {_render_check_literal(high, dialect)}"
         )
     if operator is CheckOperator.IS_DISTINCT_FROM:
         if comparison.right_column is not None:

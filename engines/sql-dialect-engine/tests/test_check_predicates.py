@@ -104,6 +104,34 @@ def test_null_test_equality_expands_to_an_exact_boolean_truth_table(target: str)
 
 
 @pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+def test_predicate_and_null_test_equality_preserves_check_three_valued_logic(target: str) -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (session_state VARCHAR(16), quarantine_id VARCHAR(128), "
+        "CHECK ((session_state = 'QUARANTINED') = (quarantine_id IS NOT NULL)))",
+        "postgres",
+        target,
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    assert "session_state = 'QUARANTINED' AND quarantine_id IS NOT NULL" in report["emitted"]
+    assert "NOT (session_state = 'QUARANTINED')" in report["emitted"]
+    assert "NOT (quarantine_id IS NOT NULL)" in report["emitted"]
+
+
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+def test_postgres_nonfinite_double_check_literals_remain_fail_closed(target: str) -> None:
+    report = translate_ddl(
+        "ALTER TABLE audit_events ADD CONSTRAINT c CHECK "
+        "(metric_value IS NULL OR metric_value NOT IN ('Infinity'::float8, '-Infinity'::float8))",
+        "postgres",
+        target,
+        statement_kind="ALTER",
+    )
+    assert report["status"] == "BLOCKED"
+    assert report["reasonCode"] == "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET"
+
+
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
 def test_same_typed_numeric_column_addition_is_preserved_in_checks(target: str) -> None:
     report = translate_ddl(
         "CREATE TABLE t (a DECIMAL(30,0), b DECIMAL(30,0), limit_value DECIMAL(30,0), "

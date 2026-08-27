@@ -166,14 +166,11 @@ def translate_ddl(
                 else:
                     # A RETURNS TABLE declaration is still a routine even
                     # when its body is outside the table-function subset.
-                    # Re-run the scalar parser only to recover its explicit
-                    # table-return blocker; never silently downgrade it to a
-                    # scalar conversion.
-                    try:
-                        parse_create_routine(sql, source, active_namespace_map)
-                    except DialectError as scalar_error:
-                        raise scalar_error from exc
-                    raise
+                    # Preserve the table-function parser's first typed
+                    # refusal. Re-running the scalar parser can mask a more
+                    # specific security, language or property blocker with
+                    # the generic scalar table-return refusal.
+                    raise exc
             else:
                 emitted = emit_table_function(table_function, target)
         elif statement_kind == "PROCEDURE":
