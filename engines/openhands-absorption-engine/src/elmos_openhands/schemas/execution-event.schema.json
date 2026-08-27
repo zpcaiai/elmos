@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExecutionEvent",
+  "type": "object",
+  "required": ["event_id", "tenant_id", "run_id", "seq", "event_type", "timestamp", "payload", "digest"],
+  "properties": {
+    "event_id": {"type": "string", "format": "uuid"},
+    "tenant_id": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "seq": {"type": "integer", "minimum": 0},
+    "event_type": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+$"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "payload": {"type": "object"},
+    "artifact_refs": {"type": "array"},
+    "policy_decision": {"type": ["object", "null"]},
+    "usage": {"type": ["object", "null"]},
+    "cost": {"type": ["object", "null"]},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "additionalProperties": true
+}

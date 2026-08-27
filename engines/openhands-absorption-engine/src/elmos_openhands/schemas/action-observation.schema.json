@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ActionObservationEnvelope",
+  "oneOf": [
+    {"$ref": "#/$defs/action"},
+    {"$ref": "#/$defs/observation"}
+  ],
+  "$defs": {
+    "action": {
+      "type": "object",
+      "required": ["kind", "action_id", "tool", "args", "risk_context", "idempotency_key"],
+      "properties": {
+        "kind": {"const": "action"},
+        "action_id": {"type": "string", "minLength": 1},
+        "tool": {"type": "string", "minLength": 1},
+        "args": {"type": "object"},
+        "risk_context": {"type": "object"},
+        "idempotency_key": {"type": "string", "minLength": 1},
+        "read_scope": {"type": "array", "items": {"type": "string"}},
+        "write_scope": {"type": "array", "items": {"type": "string"}},
+        "expected_side_effects": {"type": "array", "items": {"type": "string"}},
+        "required_capabilities": {"type": "array", "items": {"type": "string"}},
+        "timeout_seconds": {"type": "number", "exclusiveMinimum": 0},
+        "risk_hint": {"type": ["string", "null"]},
+        "schema_version": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "observation": {
+      "type": "object",
+      "required": ["kind", "action_id", "status", "result"],
+      "properties": {
+        "kind": {"const": "observation"},
+        "action_id": {"type": "string", "minLength": 1},
+        "status": {"enum": ["success", "failure", "timeout", "cancelled", "blocked"]},
+        "result": {},
+        "artifacts": {"type": "array"},
+        "metrics": {"type": "object"},
+        "error": {},
+        "changed_resources": {"type": "array", "items": {"type": "string"}},
+        "reconciliation_hint": {"type": ["string", "null"]},
+        "schema_version": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  }
+}
