@@ -659,6 +659,10 @@ function buildFiles(
     schemaVersion: "1.0",
     platform,
     findings,
+    sourceRouteNames: ir.routes
+      .filter(route => route.name !== undefined)
+      .map(route => ({ name: route.name, path: route.path, sourceRefs: route.sourceRefs }))
+      .sort((left, right) => `${left.path}:${left.name}`.localeCompare(`${right.path}:${right.name}`, "en-US")),
     unsupportedBehaviorMustNotBeDropped: true,
     officialBuild: "NOT_RUN",
     runtime: "NOT_RUN",

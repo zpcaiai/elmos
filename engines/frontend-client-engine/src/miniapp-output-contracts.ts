@@ -1182,6 +1182,7 @@ function sourceAnalysisSchemaBody(
           guards: route.guards,
           parameters: route.parameters,
           path: route.path,
+          ...(route.name === undefined ? {} : { name: route.name }),
         },
         id: route.id,
         kind: "route",
@@ -1451,6 +1452,7 @@ function semanticIrSchemaBody(run: MiniappConversionRun): unknown {
           id: route.id,
           parameters: route.parameters,
           path: route.path,
+          ...(route.name === undefined ? {} : { name: route.name }),
           source_refs: route.sourceRefs.map(sourceRefString),
         })),
         components: run.semanticIr.components.map((component) => ({
