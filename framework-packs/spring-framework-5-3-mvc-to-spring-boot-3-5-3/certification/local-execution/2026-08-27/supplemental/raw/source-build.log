@@ -1,0 +1,79 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------< io.elmos.fixtures:legacy-spring-mvc >-----------------
+[INFO] Building legacy-spring-mvc 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ legacy-spring-mvc ---
+[INFO] Deleting /private/tmp/spring-local-supplemental-build.KHBVZ1/source/target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ legacy-spring-mvc ---
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ legacy-spring-mvc ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 5 source files with javac [debug release 11] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ legacy-spring-mvc ---
+[INFO] skip non existing resourceDirectory /private/tmp/spring-local-supplemental-build.KHBVZ1/source/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ legacy-spring-mvc ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug release 11] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.2:test (default-test) @ legacy-spring-mvc ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.legacy.web.LegacyOrderControllerTest
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+Aug 27, 2026 12:01:45 PM org.hibernate.validator.internal.util.Version <clinit>
+INFO: HV000001: Hibernate Validator 6.2.5.Final
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.494 s -- in io.elmos.legacy.web.LegacyOrderControllerTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- war:3.4.0:war (default-war) @ legacy-spring-mvc ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [legacy-spring-mvc] in [/private/tmp/spring-local-supplemental-build.KHBVZ1/source/target/legacy-spring-mvc]
+[INFO] Processing war project
+[INFO] Copying webapp resources [/private/tmp/spring-local-supplemental-build.KHBVZ1/source/src/main/webapp]
+[INFO] Building war: /private/tmp/spring-local-supplemental-build.KHBVZ1/source/target/legacy-spring-mvc.war
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ legacy-spring-mvc ---
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ legacy-spring-mvc ---
+[INFO] Nothing to compile - all classes are up to date.
+[WARNING] Overwriting artifact's file from /private/tmp/spring-local-supplemental-build.KHBVZ1/source/target/legacy-spring-mvc.war to /private/tmp/spring-local-supplemental-build.KHBVZ1/source/target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ legacy-spring-mvc ---
+[INFO] skip non existing resourceDirectory /private/tmp/spring-local-supplemental-build.KHBVZ1/source/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ legacy-spring-mvc ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug release 11] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.2:test (default-test) @ legacy-spring-mvc ---
+[INFO] Skipping execution of surefire because it has already been run for this configuration
+[INFO] 
+[INFO] --- war:3.4.0:war (default-war) @ legacy-spring-mvc ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [legacy-spring-mvc] in [/private/tmp/spring-local-supplemental-build.KHBVZ1/source/target/legacy-spring-mvc]
+[INFO] Processing war project
+[INFO] Copying webapp resources [/private/tmp/spring-local-supplemental-build.KHBVZ1/source/src/main/webapp]
+[INFO] Building war: /private/tmp/spring-local-supplemental-build.KHBVZ1/source/target/legacy-spring-mvc.war
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.308 s
+[INFO] Finished at: 2026-08-27T12:01:46+08:00
+[INFO] ------------------------------------------------------------------------

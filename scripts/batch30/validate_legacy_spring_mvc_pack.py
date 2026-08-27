@@ -64,6 +64,14 @@ REQUIRED_FILES = {
     "certification/gap-inventory.md",
     "certification/local-execution/2026-08-27/exact-tuple-binding.json",
     "certification/local-execution/2026-08-27/qualification-policy.json",
+    "certification/local-execution/2026-08-27/supplemental/supplemental-index.json",
+    "certification/local-execution/2026-08-27/supplemental/supplemental-local-evidence.json",
+    "certification/local-execution/2026-08-27/supplemental/sbom-local-inventory.json",
+    "certification/local-execution/2026-08-27/supplemental/source-artifacts/legacy-spring-mvc-5.3.39.war",
+    "certification/local-execution/2026-08-27/supplemental/raw/source-build.log",
+    "certification/local-execution/2026-08-27/supplemental/raw/source-rollback.log",
+    "certification/local-execution/2026-08-27/supplemental/raw/target-ab.txt",
+    "certification/local-execution/2026-08-27/supplemental/raw/target-startup.log",
 }
 
 LOCAL_RUNTIME_GATE_FIELDS = {
@@ -318,6 +326,139 @@ def validate_exact_tuple_binding(
     return errors
 
 
+def validate_supplemental_evidence(
+    evidence_root: Path,
+    receipt: dict[str, Any],
+) -> list[str]:
+    errors: list[str] = []
+    supplemental_root = evidence_root / "supplemental"
+    index_path = supplemental_root / "supplemental-index.json"
+    evidence_path = supplemental_root / "supplemental-local-evidence.json"
+    bom_path = supplemental_root / "sbom-local-inventory.json"
+    try:
+        index = load(index_path)
+        supplemental = load(evidence_path)
+        bom = load(bom_path)
+    except (OSError, ValueError) as exc:
+        return [f"supplemental local evidence is invalid JSON: {exc}"]
+
+    expected_files = {
+        "raw/source-build.log",
+        "raw/source-rollback.log",
+        "raw/target-ab.txt",
+        "raw/target-startup.log",
+        "sbom-local-inventory.json",
+        "source-artifacts/legacy-spring-mvc-5.3.39.war",
+        "supplemental-local-evidence.json",
+    }
+    items = index.get("files")
+    indexed = {
+        item.get("path"): item
+        for item in items
+        if isinstance(item, dict) and isinstance(item.get("path"), str)
+    } if isinstance(items, list) else {}
+    if index.get("schema_version") != 1 or index.get("index_does_not_self_reference") is not True:
+        errors.append("supplemental evidence index schema or self-reference guard is invalid")
+    if set(indexed) != expected_files:
+        errors.append("supplemental evidence index file inventory is incomplete or has extras")
+    for relative, item in indexed.items():
+        candidate = supplemental_root / relative
+        if candidate.is_symlink() or not candidate.is_file():
+            errors.append(f"supplemental evidence file is missing or unsafe: {relative}")
+            continue
+        if item.get("bytes") != candidate.stat().st_size or item.get("sha256") != digest(candidate):
+            errors.append(f"supplemental evidence digest or size mismatch: {relative}")
+
+    binding = supplemental.get("binding", {})
+    target = receipt.get("target", {}).get("executed_war", {})
+    if supplemental.get("evidence_class") != "LOCAL_ENGINEERING_SUPPLEMENTAL":
+        errors.append("supplemental evidence class is not local engineering")
+    if binding.get("source_commit") != receipt.get("source_commit"):
+        errors.append("supplemental evidence source commit does not match the receipt")
+    if binding.get("target_artifact_sha256") != f"sha256:{target.get('sha256')}":
+        errors.append("supplemental evidence target artifact digest does not match the receipt")
+    if binding.get("target_artifact_bytes") != target.get("bytes"):
+        errors.append("supplemental evidence target artifact size does not match the receipt")
+    if binding.get("policy_sha256") != receipt.get("policy_snapshot", {}).get("sha256"):
+        errors.append("supplemental evidence policy digest does not match the receipt")
+    source_artifact = supplemental_root / "source-artifacts/legacy-spring-mvc-5.3.39.war"
+    source_digest = f"sha256:{digest(source_artifact)}" if source_artifact.is_file() else None
+    if binding.get("source_war_sha256") != source_digest:
+        errors.append("supplemental evidence source WAR digest is not content-bound")
+    if binding.get("source_war_path") != "source-artifacts/legacy-spring-mvc-5.3.39.war":
+        errors.append("supplemental evidence source WAR path is not exact")
+    if binding.get("source_war_bytes") != source_artifact.stat().st_size:
+        errors.append("supplemental evidence source WAR size is not content-bound")
+
+    if supplemental.get("status_boundary") != {
+        "external_evidence": "NOT_RUN",
+        "local_runner_may_certify": False,
+        "local_supplemental": "RECORDED_LOCAL_ONLY",
+        "production_certification": "NOT_CERTIFIED",
+    }:
+        errors.append("supplemental evidence status boundary is unsafe")
+    observations = supplemental.get("observations", {})
+    security = observations.get("security", {})
+    if security.get("status") != "PARTIAL_LOCAL" or security.get("vulnerability_scan") != "NOT_RUN_TOOL_UNAVAILABLE":
+        errors.append("supplemental security result must remain partial without a vulnerability scanner")
+    performance = observations.get("performance", {})
+    if performance.get("status") != "PASSED_LOCAL_BENCHMARK" or performance.get("capacity_validation") != "NOT_RUN_NO_SLO_BOUND":
+        errors.append("supplemental performance result must remain a local benchmark without an SLO")
+    if performance.get("complete_requests") != 200 or performance.get("concurrency") != 8:
+        errors.append("supplemental performance workload is not the fixed 200/8 workload")
+    sbom = observations.get("sbom", {})
+    if sbom.get("status") != "PARTIAL_LOCAL_INVENTORY_ONLY" or sbom.get("artifact_bound") is not True:
+        errors.append("supplemental SBOM result must remain a local artifact-bound inventory")
+    if not isinstance(sbom.get("component_count"), int) or sbom.get("component_count", 0) <= 0:
+        errors.append("supplemental SBOM must contain at least one component")
+    if sbom.get("vulnerability_scan") != "NOT_RUN_TOOL_UNAVAILABLE":
+        errors.append("supplemental SBOM vulnerability scan must remain NOT_RUN")
+    if bom.get("bomFormat") != "CycloneDX" or bom.get("specVersion") != "1.5":
+        errors.append("supplemental SBOM format must be CycloneDX 1.5")
+    if len(bom.get("components", [])) != sbom.get("component_count"):
+        errors.append("supplemental SBOM component count is not self-consistent")
+    bom_hashes = bom.get("metadata", {}).get("component", {}).get("hashes", [])
+    if not bom_hashes or bom_hashes[0].get("content") != target.get("sha256"):
+        errors.append("supplemental SBOM metadata is not bound to the target artifact")
+
+    operability = observations.get("operability", {})
+    if operability.get("status") != "PASSED_LOCAL" or operability.get("loopback_only") is not True:
+        errors.append("supplemental operability result is not loopback-only local evidence")
+    rollback = observations.get("rollback", {})
+    if rollback.get("status") != "PASSED_LOCAL_ISOLATED_ROLLBACK_REHEARSAL" or rollback.get("production_rollback") != "NOT_RUN":
+        errors.append("supplemental rollback result must remain isolated local rehearsal")
+    if rollback.get("sequence") != [
+        "target_startup_readiness",
+        "target_stop",
+        "source_startup_readiness",
+        "source_probe",
+        "source_stop",
+    ]:
+        errors.append("supplemental rollback sequence is not exact")
+    if rollback.get("source_build", {}).get("status") != "PASSED_LOCAL":
+        errors.append("supplemental rollback source build is not PASSED_LOCAL")
+    for name in ("target", "source"):
+        shutdown = rollback.get("shutdowns", {}).get(name, {})
+        if shutdown.get("bounded") is not True:
+            errors.append(f"supplemental rollback {name} shutdown is not bounded")
+    for field in ("independent_holdout", "representative_customer_scenario", "external_signatures"):
+        if observations.get(field) != "NOT_RUN":
+            errors.append(f"supplemental {field} must remain NOT_RUN")
+
+    for relative, needle in (
+        ("raw/source-build.log", "BUILD SUCCESS"),
+        ("raw/source-rollback.log", "Apache Tomcat/9.0.120"),
+        ("raw/target-startup.log", "Spring Boot ::                (v3.5.3)"),
+        ("raw/target-startup.log", "Java 21.0.11"),
+        ("raw/target-startup.log", "Apache Tomcat/10.1.42"),
+        ("raw/target-ab.txt", "Complete requests:      200"),
+        ("raw/target-ab.txt", "Failed requests:        0"),
+    ):
+        if needle not in (supplemental_root / relative).read_text(encoding="utf-8", errors="replace"):
+            errors.append(f"supplemental raw evidence is missing expected marker: {relative}: {needle}")
+    return errors
+
+
 def validate_local_evidence(pack: Path) -> tuple[list[str], dict[str, Any] | None]:
     errors: list[str] = []
     evidence_root = pack / LOCAL_EVIDENCE_RELATIVE
@@ -394,6 +535,7 @@ def validate_local_evidence(pack: Path) -> tuple[list[str], dict[str, Any] | Non
     if not re.fullmatch(r"[0-9a-f]{64}", str(receipt.get("source_snapshot_sha256", ""))):
         errors.append("local qualification receipt source snapshot is not content-addressed")
     errors.extend(validate_exact_tuple_binding(evidence_root, receipt))
+    errors.extend(validate_supplemental_evidence(evidence_root, receipt))
 
     source = receipt.get("source", {})
     if source.get("spring_framework") != "5.3.39" or source.get("tomcat") != "9.0.120":
