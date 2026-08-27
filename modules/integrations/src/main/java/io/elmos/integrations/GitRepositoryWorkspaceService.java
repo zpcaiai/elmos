@@ -13,7 +13,8 @@ import org.eclipse.jgit.transport.TransportHttp;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.transport.http.HttpConnection;
 import org.eclipse.jgit.transport.http.HttpConnectionFactory;
-import org.eclipse.jgit.transport.http.JDKHttpConnectionFactory;
+import org.eclipse.jgit.transport.http.HttpConnectionFactory2;
+import org.eclipse.jgit.transport.http.apache.HttpClientConnectionFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -450,12 +451,17 @@ public final class GitRepositoryWorkspaceService {
         }
     }
 
-    private static boolean isRetryableTransportFailure(Throwable failure) {
+    static boolean isRetryableTransportFailure(Throwable failure) {
         for (Throwable current = failure; current != null; current = current.getCause()) {
+            String message = current.getMessage();
+            String type = current.getClass().getName();
             if (current instanceof IOException
-                    && ("Premature EOF".equals(current.getMessage())
-                    || "Connection reset".equals(current.getMessage())
-                    || "Read timed out".equals(current.getMessage()))) {
+                    && ("Premature EOF".equals(message)
+                    || "Connection reset".equals(message)
+                    || "Read timed out".equals(message)
+                    || (message != null && (message.startsWith("Truncated chunk")
+                    || message.contains("Unexpected end of")))
+                    || type.endsWith("TruncatedChunkException"))) {
                 return true;
             }
         }
@@ -473,9 +479,9 @@ public final class GitRepositoryWorkspaceService {
     }
 
     /** Rejects redirects outside the exact credential-bearing repository origin. */
-    private static final class PinnedHttpConnectionFactory implements HttpConnectionFactory {
+    private static final class PinnedHttpConnectionFactory implements HttpConnectionFactory2 {
         private final URI cloneUri;
-        private final HttpConnectionFactory delegate = new JDKHttpConnectionFactory();
+        private final HttpConnectionFactory2 delegate = new HttpClientConnectionFactory();
 
         private PinnedHttpConnectionFactory(URI cloneUri) {
             this.cloneUri = cloneUri;
@@ -495,6 +501,11 @@ public final class GitRepositoryWorkspaceService {
             HttpConnection connection = delegate.create(url, proxy);
             connection.setInstanceFollowRedirects(false);
             return connection;
+        }
+
+        @Override
+        public GitSession newSession() {
+            return delegate.newSession();
         }
 
         private void requirePinned(java.net.URL url) throws IOException {
@@ -1661,7 +1672,13 @@ public final class GitRepositoryWorkspaceService {
             String username,
             Optional<EphemeralCredential> credential
     ) throws Exception {
-        if (credential.isEmpty()) return command.call();
+        if (credential.isEmpty()) {
+            try {
+                return command.call();
+            } catch (Exception error) {
+                throw new GitTransportFailure(error);
+            }
+        }
         return credential.get().use(value -> {
             try {
                 return command
@@ -1679,7 +1696,11 @@ public final class GitRepositoryWorkspaceService {
             Optional<EphemeralCredential> credential
     ) throws Exception {
         if (credential.isEmpty()) {
-            command.call();
+            try {
+                command.call();
+            } catch (Exception error) {
+                throw new GitTransportFailure(error);
+            }
             return;
         }
         credential.get().use(value -> {
