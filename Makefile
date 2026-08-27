@@ -565,3 +565,12 @@ multitenant-task-finops-skills:
 spring-golden-route-commercial-task-inventory:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_spring_golden_route_source_task_coverage.py --check
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests/spring-golden-route-commercial/test_source_task_coverage.py
+
+.PHONY: etgb-sota-skills
+etgb-sota-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 env PYTHONPATH=engines/etgb-engine/src python3 tooling/integrate_etgb_sota_skills.py
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 env PYTHONPATH=engines/etgb-engine/src python3 -m unittest discover -s engines/etgb-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) validate
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) coverage
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) run --profile smoke --output .elmos/etgb/smoke-results.jsonl --state-db .elmos/etgb/state.sqlite --artifact-root .elmos/etgb/evidence
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) score .elmos/etgb/smoke-results.jsonl --expected-count 4 --output .elmos/etgb/smoke-score.json

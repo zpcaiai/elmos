@@ -1,0 +1,140 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "external_evidence": "NOT_RUN",
+  "namespace": "etgb-v1",
+  "package": "elmos-etgb-sota-skills-package",
+  "runtime_root": "engines/etgb-engine/src/elmos_etgb",
+  "runtime_state": "BOUND",
+  "schema_version": "1.0",
+  "skills": [
+    {
+      "dependencies": [
+        "corpus-governance",
+        "differential-oracle-engine",
+        "release-certification"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-etgb-orchestrator/agents/openai.yaml",
+      "interface_sha256": "a0bd0806ac826867a46b0bec1a8ca6424f55211781651b026063fa0dcdc587fc",
+      "name": "etgb-etgb-orchestrator",
+      "source_name": "etgb-orchestrator",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/etgb-orchestrator/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "differential-oracle-engine"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-test-case-authoring/agents/openai.yaml",
+      "interface_sha256": "49dfd590af87853dc8cd33958c475fe32a2022857ef909c22f8230bb8a7bc721",
+      "name": "etgb-test-case-authoring",
+      "source_name": "test-case-authoring",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/test-case-authoring/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "differential-oracle-engine",
+        "metamorphic-fuzz-mutation",
+        "corpus-governance"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-spring-modernization-validation/agents/openai.yaml",
+      "interface_sha256": "826561f7527c8841ccad62a8700b3c9f35fa937c0bdf44ecf761c539d6b9a753",
+      "name": "etgb-spring-modernization-validation",
+      "source_name": "spring-modernization-validation",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/spring-modernization-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "differential-oracle-engine",
+        "metamorphic-fuzz-mutation",
+        "corpus-governance"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-repository-translation-validation/agents/openai.yaml",
+      "interface_sha256": "4e408c2ec8df2e0ac6fbe4676b65a889ee622922aaf7d4c1db80d1fa2df884cb",
+      "name": "etgb-repository-translation-validation",
+      "source_name": "repository-translation-validation",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/repository-translation-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "differential-oracle-engine",
+        "metamorphic-fuzz-mutation"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-project-generation-validation/agents/openai.yaml",
+      "interface_sha256": "c2a7cbcc4d328ca75e8c25faac736615d9e0e7b4f9d8b23740d50a2b881846c7",
+      "name": "etgb-project-generation-validation",
+      "source_name": "project-generation-validation",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/project-generation-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "differential-oracle-engine",
+        "metamorphic-fuzz-mutation",
+        "corpus-governance"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-sql-dialect-routine-validation/agents/openai.yaml",
+      "interface_sha256": "0673dd08533b4c23c0a1fd0d9625ff4023f2468939c045494e01b68954050203",
+      "name": "etgb-sql-dialect-routine-validation",
+      "source_name": "sql-dialect-routine-validation",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/sql-dialect-routine-validation/SKILL.md"
+    },
+    {
+      "dependencies": [],
+      "interface_path": "agent-skills/runtime/etgb-differential-oracle-engine/agents/openai.yaml",
+      "interface_sha256": "c3fc2ab3b052fd6b22b1f5f29a9cf56eb8e6179cda04ae5e0af4364643a6278d",
+      "name": "etgb-differential-oracle-engine",
+      "source_name": "differential-oracle-engine",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/differential-oracle-engine/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "differential-oracle-engine"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-metamorphic-fuzz-mutation/agents/openai.yaml",
+      "interface_sha256": "dc6f9b927fb6928f2da95037c200f1fe58611a1c5eaa836d6bcec10ebf0ca53e",
+      "name": "etgb-metamorphic-fuzz-mutation",
+      "source_name": "metamorphic-fuzz-mutation",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/metamorphic-fuzz-mutation/SKILL.md"
+    },
+    {
+      "dependencies": [],
+      "interface_path": "agent-skills/runtime/etgb-corpus-governance/agents/openai.yaml",
+      "interface_sha256": "cd77409f76c76d96e8e26d315e4fe5fd43efb8ad4e1cbae77f6830520d21d0e9",
+      "name": "etgb-corpus-governance",
+      "source_name": "corpus-governance",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/corpus-governance/SKILL.md"
+    },
+    {
+      "dependencies": [],
+      "interface_path": "agent-skills/runtime/etgb-release-certification/agents/openai.yaml",
+      "interface_sha256": "798362db63820bb1113b5cb6ef551876abba32b48d9df532b5b76dc5ce4dc541",
+      "name": "etgb-release-certification",
+      "source_name": "release-certification",
+      "source_path": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0/skills/release-certification/SKILL.md"
+    }
+  ],
+  "source_archive": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0.zip",
+  "source_archive_sha256": "fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202",
+  "source_root": "skills/subskills/elmos-etgb-sota-skills-package-v1.0.0",
+  "source_validation": {
+    "archive": "/Users/stephen/DevProjects/AIProjects/elmos/skills/subskills/elmos-etgb-sota-skills-package-v1.0.0.zip",
+    "archive_entries": 107,
+    "archive_matches_pin": true,
+    "archive_sha256": "fcd4fbdadea0498a6f9598ce592627a936d70467f884052319a11ee7e9dad202",
+    "checksum_entries": 106,
+    "errors": [],
+    "skills": [
+      "etgb-orchestrator",
+      "test-case-authoring",
+      "spring-modernization-validation",
+      "repository-translation-validation",
+      "project-generation-validation",
+      "sql-dialect-routine-validation",
+      "differential-oracle-engine",
+      "metamorphic-fuzz-mutation",
+      "corpus-governance",
+      "release-certification"
+    ],
+    "valid": true,
+    "warnings": []
+  },
+  "version": "1.0.0"
+}
