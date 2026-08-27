@@ -1,0 +1,20 @@
+{
+  "name": "elmos-pi-harness",
+  "version": "5.1.0",
+  "source_package": "elmos-pi-harness-architecture-v5.1.0",
+  "implementation_status": "LOCAL_ENGINEERING_IMPLEMENTATION",
+  "implemented": [
+    "environment-owned authority and immutable snapshots",
+    "executor generation fencing",
+    "durable workspace leases and checkpoint-gated takeover",
+    "protocol capability negotiation",
+    "typed tool-result transport",
+    "append-only tenant-scoped task history",
+    "idempotent state-changing requests",
+    "content-addressed artifacts",
+    "external-verifier-owned benchmark success",
+    "conservative evidence/certification state"
+  ],
+  "external_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

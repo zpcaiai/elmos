@@ -45,6 +45,10 @@ production-readiness-check: business-line-contracts chinadb-commercial-migration
 # not a package, so `-t .` cannot find it.
 operations-scripts-test:
 	$(UV) run --quiet --with pyyaml python -m unittest discover -s scripts/operations -p 'test_*.py'
+.PHONY: pi-harness
+pi-harness:
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_pi_harness.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/pi-harness/src python3 -m unittest discover -s packages/pi-harness/tests -p 'test_*.py'
 backend:
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B verify
 # Seven modules form a closed cluster that no `apps/` component references:

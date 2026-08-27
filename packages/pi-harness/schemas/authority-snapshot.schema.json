@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["authority_owner_id", "environment_id", "permission_profile_version", "allowed_capabilities", "denied_capabilities", "sandbox_overrides"],
+  "properties": {
+    "authority_owner_id": {"type": "string", "format": "uuid"},
+    "environment_id": {"type": "string", "format": "uuid"},
+    "permission_profile_version": {"type": "string", "minLength": 1},
+    "allowed_capabilities": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "denied_capabilities": {"type": "array", "items": {"type": "string"}},
+    "sandbox_overrides": {"type": "object"}
+  }
+}

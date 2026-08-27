@@ -1,0 +1,71 @@
+openapi: 3.1.0
+info:
+  title: Elmos PI Harness API
+  version: 5.1.0
+  description: Durable tenant-scoped execution kernel with environment-owned authority.
+security:
+  - bearerAuth: []
+paths:
+  /healthz:
+    get:
+      security: []
+      responses:
+        '200': {description: Liveness}
+  /readyz:
+    get:
+      security: []
+      responses:
+        '200': {description: Durable store ready}
+  /v1/tasks:
+    post:
+      parameters:
+        - {$ref: '#/components/parameters/TenantId'}
+        - {$ref: '#/components/parameters/ActorId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/TaskCreate'}
+      responses:
+        '201': {description: Created}
+        '200': {description: Idempotent replay}
+        '409': {description: Conflict}
+  /v1/tasks/{task_id}:
+    get:
+      parameters:
+        - {$ref: '#/components/parameters/TenantId'}
+        - {$ref: '#/components/parameters/ActorId'}
+        - {$ref: '#/components/parameters/TaskId'}
+      responses:
+        '200': {description: Task state}
+        '404': {description: Not found in tenant}
+  /v1/tasks/{task_id}/events:
+    get:
+      parameters:
+        - {$ref: '#/components/parameters/TenantId'}
+        - {$ref: '#/components/parameters/ActorId'}
+        - {$ref: '#/components/parameters/TaskId'}
+        - {in: query, name: after, schema: {type: integer, minimum: 0}}
+        - {in: query, name: limit, schema: {type: integer, minimum: 1, maximum: 1000}}
+      responses:
+        '200': {description: Bounded event page}
+components:
+  securitySchemes:
+    bearerAuth: {type: http, scheme: bearer}
+  parameters:
+    TenantId: {in: header, name: X-Tenant-Id, required: true, schema: {type: string, format: uuid}}
+    ActorId: {in: header, name: X-Actor-Id, required: true, schema: {type: string, minLength: 1}}
+    IdempotencyKey: {in: header, name: Idempotency-Key, required: true, schema: {type: string, minLength: 1}}
+    TaskId: {in: path, name: task_id, required: true, schema: {type: string, format: uuid}}
+  schemas:
+    TaskCreate:
+      type: object
+      required: [project_id, objective]
+      properties:
+        project_id: {type: string, format: uuid}
+        objective: {type: string, minLength: 1}
+        inputs: {type: array}
+        constraints: {type: object}
+        budgets: {type: object}
+        execution: {type: object}
