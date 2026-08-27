@@ -30,7 +30,7 @@ import { referencedComponents } from "./emitters/react";
 import { parseComponents } from "./engine";
 import { createReactProjectContext } from "./parsers/react";
 import {
-  HandoffAlert, HandoffCheck, HandoffSummary, checkPortedEntry, findEntry,
+  HandoffAlert, HandoffCheck, HandoffSummary, PortOwnership, checkPortedEntry, findEntry,
   loadManifest, summarize,
 } from "./handoff";
 
@@ -60,6 +60,11 @@ const TARGET_EXTENSION: Record<Framework, string> = {
   flutter: ".dart",
 };
 
+function targetComponentPath(destination: string, framework: Framework, componentName: string): string {
+  const root = framework === "flutter" ? path.join(destination, "lib") : path.join(destination, "src");
+  return path.join(root, "components", `${componentName}${TARGET_EXTENSION[framework]}`);
+}
+
 const IGNORED_DIRECTORIES = new Set([
   "node_modules", ".git", "dist", "build", "out", "coverage", ".next", ".nuxt",
   ".svelte-kit", "vendor", "target", "__pycache__", ".cde-scratch",
@@ -71,6 +76,9 @@ export interface FileOutcome {
   /** MANUALLY_PORTED means a human owns this file. The engine did not
    * produce it, did not validate it, and did not overwrite it. */
   status: "CONVERTED" | "BLOCKED" | "MANUALLY_PORTED";
+  /** Stable review label. MANUALLY_PORTED remains the operational status for
+   * compatibility with existing coverage consumers. */
+  ownership: "ENGINE_GENERATED" | PortOwnership;
   reasonCode: string | null;
   reason: string | null;
   syntaxStatus: string | null;
@@ -236,6 +244,7 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
           sourcePath: relative,
           targetPath: "",
           status: "BLOCKED",
+          ownership: "ENGINE_GENERATED",
           reasonCode: "CERTIFIED_COMPONENT_MISSING_SCRIPT",
           reason: `no sibling ${path.basename(jsFile)} was found next to ${path.basename(file)}`,
           syntaxStatus: null, executionStatus: null, notes: [],
@@ -311,6 +320,7 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
         handoffChecks.push(check);
         outcomes.push({
           sourcePath: relative, targetPath: path.relative(destination, dir), status: "MANUALLY_PORTED",
+          ownership: "HAND_PORTED",
           reasonCode: report.reasonCode, reason: report.reason,
           syntaxStatus: null, executionStatus: null,
           notes: check.detail, handoffAlerts: check.alerts,
@@ -323,6 +333,7 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
         }
         outcomes.push({
           sourcePath: relative, targetPath: path.relative(destination, dir), status: "CONVERTED",
+          ownership: "ENGINE_GENERATED",
           reasonCode: null, reason: null,
           syntaxStatus: report.validation?.syntaxStatus ?? null,
           executionStatus: report.validation?.executionStatus ?? null,
@@ -334,6 +345,7 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
         writeFileEnsuringDir(path.join(dir, "index.json"), `{ "component": true, "usingComponents": {} }\n`);
         outcomes.push({
           sourcePath: relative, targetPath: path.relative(destination, dir), status: "BLOCKED",
+          ownership: "ENGINE_GENERATED",
           reasonCode: report.reasonCode, reason: report.reason,
           syntaxStatus: report.validation?.syntaxStatus ?? null,
           executionStatus: report.validation?.executionStatus ?? null,
@@ -343,7 +355,7 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
       continue;
     }
 
-    const targetFile = path.join(destination, "src", "components", `${primaryName}${TARGET_EXTENSION[targetFramework]}`);
+    const targetFile = targetComponentPath(destination, targetFramework, primaryName);
     if (isPorted && ported) {
       // The whole point: this file is NOT written. A week of hand work
       // must survive someone re-running the pipeline.
@@ -354,6 +366,7 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
       handoffChecks.push(check);
       outcomes.push({
         sourcePath: relative, targetPath: path.relative(destination, targetFile), status: "MANUALLY_PORTED",
+        ownership: "HAND_PORTED",
         reasonCode: report.reasonCode, reason: report.reason,
         syntaxStatus: null, executionStatus: null,
         notes: check.detail, handoffAlerts: check.alerts,
@@ -364,6 +377,7 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
       writeFileEnsuringDir(targetFile, report.emitted);
       outcomes.push({
         sourcePath: relative, targetPath: path.relative(destination, targetFile), status: "CONVERTED",
+        ownership: "ENGINE_GENERATED",
         reasonCode: null, reason: null,
         syntaxStatus: report.validation?.syntaxStatus ?? null,
         executionStatus: report.validation?.executionStatus ?? null,
@@ -373,6 +387,7 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
       writeFileEnsuringDir(targetFile, blockedPlaceholder(targetFramework, primaryName, report.reasonCode ?? "UNKNOWN", report.reason ?? ""));
       outcomes.push({
         sourcePath: relative, targetPath: path.relative(destination, targetFile), status: "BLOCKED",
+        ownership: "ENGINE_GENERATED",
         reasonCode: report.reasonCode, reason: report.reason,
         syntaxStatus: report.validation?.syntaxStatus ?? null,
         executionStatus: report.validation?.executionStatus ?? null,
@@ -396,6 +411,7 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
       }
       outcomes.push({
         sourcePath: extra.relative, targetPath: path.relative(destination, dir),
+        ownership: "ENGINE_GENERATED",
         status: extra.report.status === "PASSED" ? "CONVERTED" : "BLOCKED",
         reasonCode: extra.report.reasonCode, reason: extra.report.reason,
         syntaxStatus: extra.report.validation?.syntaxStatus ?? null,
@@ -404,12 +420,13 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
       });
       continue;
     }
-    const extraFile = path.join(destination, "src", "components", `${extra.name}${TARGET_EXTENSION[targetFramework]}`);
+    const extraFile = targetComponentPath(destination, targetFramework, extra.name);
     writeFileEnsuringDir(extraFile, extra.report.status === "PASSED" && extra.report.emitted !== null
       ? extra.report.emitted
       : blockedPlaceholder(targetFramework, extra.name, extra.report.reasonCode ?? "UNKNOWN", extra.report.reason ?? ""));
     outcomes.push({
       sourcePath: extra.relative, targetPath: path.relative(destination, extraFile),
+      ownership: "ENGINE_GENERATED",
       status: extra.report.status === "PASSED" ? "CONVERTED" : "BLOCKED",
       reasonCode: extra.report.reasonCode, reason: extra.report.reason,
       syntaxStatus: extra.report.validation?.syntaxStatus ?? null,
@@ -557,6 +574,8 @@ function writeProjectScaffold(destination: string, framework: Framework, outcome
   if (framework === "flutter") {
     writeFileEnsuringDir(path.join(destination, "pubspec.yaml"),
       `name: elmos_translated_app\ndescription: Components translated by ELMOS certified-component-v1.\npublish_to: 'none'\nversion: 0.1.0\n\nenvironment:\n  sdk: '>=3.4.0 <4.0.0'\n\ndependencies:\n  flutter:\n    sdk: flutter\n\nflutter:\n  uses-material-design: true\n`);
+    writeFileEnsuringDir(path.join(destination, "lib", "main.dart"),
+      `import 'package:flutter/material.dart';\n\nvoid main() {\n  runApp(const MaterialApp(home: Scaffold(body: SizedBox.expand())));\n}\n`);
     return;
   }
 

@@ -47,7 +47,7 @@ component is `PARTIAL`, never rounded up to `COMPLETE` — the same rule
 | WeChat Mini Program | ✅ `@wxml/parser` + TS API | ✅ | ✅ `@wxml/parser` + TypeScript | ❌ needs WeChat DevTools |
 | React Native | ✅ TypeScript Compiler API | ✅ | ✅ TypeScript | ❌ needs Metro + a simulator |
 | HarmonyOS ArkUI | ❌ **emit-only** | ✅ | ❌ no ArkTS compiler available | ❌ needs DevEco Studio |
-| Flutter | ❌ **emit-only** | ✅ | ❌ no Dart SDK available | ❌ needs the Dart SDK |
+| Flutter | ❌ **emit-only** | ✅ | ❌ external Flutter/Dart analysis required | ❌ needs a real Flutter device/runtime |
 
 **All 54 direction pairs** (6 real source frameworks x 10 targets, minus
 self-pairs) are exercised by tests that run the target's own real compiler.
@@ -62,8 +62,9 @@ differ only in what those formats genuinely cannot represent (below).
 
 **Why ArkUI and Flutter are emit-only.** ArkTS's `struct` declaration is
 not valid TypeScript and has no published standalone parser; Dart requires
-the Dart SDK. Rather than ship a regex "parser" whose output nobody can
-verify, this engine refuses those two as sources and says so. The same
+the external Dart toolchain owns Flutter source parsing. Rather than ship a
+regex "parser" whose output nobody can verify, this engine refuses those two
+as sources and says so. The same
 call `engines/sql-dialect-engine` makes for Oracle/SQL Server execution
 validation.
 
@@ -139,6 +140,44 @@ explicitly rather than counted as failed components.
 Everything else — effects and other hooks,
 slots/children, refs, context, routing, styling systems, async data —
 raises `DialectError` and is reported `BLOCKED`.
+
+## Cross-platform IR, target adapters and hand-port ownership
+
+Every successfully parsed component is lowered to the typed
+`elmos.cross-platform-component-ir`. It keeps render nodes, state transitions,
+effect obligations, data shapes, derived collections, slots, platform
+semantics, styling, accessibility and every target adapter plan in one
+digest-bound record. `target-adapters.ts` is the only target dispatch surface;
+the existing framework emitters are invoked behind their named adapter, so a
+target cannot be treated as complete merely because it can print source text.
+
+Source constructs that the canonical parser cannot represent do not receive a
+fabricated IR. `scan` emits a `manualPortPlan` with the semantic category,
+reason code and required evidence. Once a human has implemented the target,
+`handoff mark-ported` records `ownership: "HAND_PORTED"`; later repository
+runs preserve that file and report stale source changes instead of overwriting
+the work. A hand port is delivery progress, not automatic engine evidence.
+
+The translation report carries an evidence ledger for the exact source/target
+tuple. It starts `NOT_RUN` and `NOT_CERTIFIED`. Real runners can bind artifact
+bytes with the `evidence bind` command; the ledger computes the digest itself,
+requires an executor, and requires a distinct verifier for independent review.
+It never promotes a release or certification claim. `sourceTrace` currently
+declares `COMPONENT_MODEL_ONLY` with a null source range because the canonical
+parser has not yet materialized exact AST spans.
+
+```bash
+node dist/cli.js evidence init \
+  --source-file ./Counter.tsx --source-framework react \
+  --target-framework vue3 --output ./evidence/counter
+node dist/cli.js evidence validate --file ./evidence/counter/evidence-ledger.json
+node dist/cli.js evidence bind \
+  --file ./evidence/counter/evidence-ledger.json --record-id browser \
+  --status PASSED --artifact-file ./browser-result.json --executor playwright-runner
+```
+
+The command records evidence produced elsewhere; it does not turn a local
+browser run into device, platform, independent or production certification.
 
 ## Defects this engine exists to prevent
 

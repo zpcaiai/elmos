@@ -37,12 +37,16 @@ import { RouteError } from "./models";
 export const HANDOFF_FILE = "handoff.json";
 
 export type HandoffState = "UNASSIGNED" | "ASSIGNED" | "MANUALLY_PORTED";
+/** Explicit ownership label used in reports and review tooling. The legacy
+ * state name remains readable for backwards-compatible manifests. */
+export type PortOwnership = "ENGINE_GENERATED" | "HAND_PORTED";
 
 export interface HandoffEntry {
   /** Source path, relative to the source repository. The stable identity
    * of a component across runs -- target paths can move as emitters change. */
   sourcePath: string;
   state: HandoffState;
+  ownership: PortOwnership;
   assignee: string | null;
   note: string | null;
   /** Reason the engine could not convert it, carried forward so the person
@@ -108,7 +112,16 @@ export function loadManifest(destination: string): HandoffManifest {
   if (manifest.kind !== "elmos.component-dialect-handoff" || !Array.isArray(manifest.entries)) {
     throw new RouteError(`HANDOFF_MANIFEST_INVALID: ${file} is not an ELMOS handoff manifest`);
   }
-  return { schemaVersion: "1.0", kind: "elmos.component-dialect-handoff", entries: manifest.entries };
+  return {
+    schemaVersion: "1.0",
+    kind: "elmos.component-dialect-handoff",
+    // Older manifests predate explicit ownership. Normalize them without
+    // losing the protection mark or treating missing metadata as a port.
+    entries: manifest.entries.map((entry) => ({
+      ...entry,
+      ownership: entry.ownership ?? (entry.state === "MANUALLY_PORTED" ? "HAND_PORTED" : "ENGINE_GENERATED"),
+    })),
+  };
 }
 
 export function saveManifest(destination: string, manifest: HandoffManifest): void {
@@ -134,7 +147,7 @@ function upsert(manifest: HandoffManifest, sourcePath: string): HandoffEntry {
   const existing = findEntry(manifest, sourcePath);
   if (existing) return existing;
   const created: HandoffEntry = {
-    sourcePath, state: "UNASSIGNED", assignee: null, note: null, reasonCode: null,
+    sourcePath, state: "UNASSIGNED", ownership: "ENGINE_GENERATED", assignee: null, note: null, reasonCode: null,
     sourceHashAtPort: null, targetHashAtPort: null, markedAt: null,
     updatedAt: new Date().toISOString(),
   };
@@ -203,6 +216,7 @@ export function markPorted(options: MarkPortedOptions): HandoffEntry {
   const manifest = loadManifest(options.destination);
   const entry = upsert(manifest, options.sourcePath);
   entry.state = "MANUALLY_PORTED";
+  entry.ownership = "HAND_PORTED";
   if (options.assignee !== undefined) entry.assignee = options.assignee;
   if (options.note !== undefined) entry.note = options.note;
   entry.sourceHashAtPort = hashContent(fs.readFileSync(sourceFile, "utf8"));
@@ -220,6 +234,7 @@ export function unmark(destination: string, sourcePath: string): HandoffEntry {
   const entry = findEntry(manifest, sourcePath);
   if (!entry) throw new RouteError(`HANDOFF_ENTRY_NOT_FOUND: ${sourcePath}`);
   entry.state = entry.assignee ? "ASSIGNED" : "UNASSIGNED";
+  entry.ownership = "ENGINE_GENERATED";
   entry.sourceHashAtPort = null;
   entry.targetHashAtPort = null;
   entry.markedAt = null;

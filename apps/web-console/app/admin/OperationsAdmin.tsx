@@ -1981,9 +1981,18 @@ export function OperationsAdmin() {
                 <IncidentCard
                   key={incident.incidentId}
                   incident={incident}
-                  actorId={view.actorId}
+                  businessLineLabel={lineLabels[incident.businessLine] ?? incident.businessLine}
                   disabled={!can("OPERATOR") || Boolean(busyAction)}
-                  mutate={mutate}
+                  onAssign={() => mutate("ASSIGN_INCIDENT", {
+                    incidentId: incident.incidentId,
+                    ownerActorId: view.actorId,
+                    expectedVersion: incident.version,
+                  })}
+                  onResolve={() => mutate("RESOLVE_INCIDENT", {
+                    incidentId: incident.incidentId,
+                    resolutionCode: "OPERATOR_VERIFIED_RESOLUTION",
+                    expectedVersion: incident.version,
+                  })}
                 />
               ))}
             </div>
@@ -1997,7 +2006,18 @@ export function OperationsAdmin() {
                   key={proposal.proposalId}
                   proposal={proposal}
                   disabled={!can("APPROVER") || Boolean(busyAction)}
-                  mutate={mutate}
+                  onApprove={() => mutate("APPROVE_REMEDIATION", {
+                    proposalId: proposal.proposalId,
+                    expectedVersion: proposal.version,
+                  })}
+                  onReject={() => mutate("REJECT_REMEDIATION", {
+                    proposalId: proposal.proposalId,
+                    expectedVersion: proposal.version,
+                  })}
+                  onPrepareScm={() => mutate("PREPARE_SCM", {
+                    proposalId: proposal.proposalId,
+                    expectedVersion: proposal.version,
+                  })}
                 />
               ))}
             </div>
@@ -2102,19 +2122,21 @@ export function OperationsAdmin() {
 
 function IncidentCard({
   incident,
-  actorId,
+  businessLineLabel,
   disabled,
-  mutate,
+  onAssign,
+  onResolve,
 }: {
   incident: OperationsIncident;
-  actorId: string;
+  businessLineLabel: string;
   disabled: boolean;
-  mutate: (action: AdminAction, body?: Record<string, unknown>) => Promise<void>;
+  onAssign: () => Promise<void>;
+  onResolve: () => Promise<void>;
 }) {
   return (
     <article className={styles.controlCard}>
       <div><span className={styles.severity}>{incident.severity}</span><strong>{incident.summaryCode}</strong></div>
-      <p>{lineLabels[incident.businessLine] ?? incident.businessLine} · {incident.status}</p>
+      <p>{businessLineLabel} · {incident.status}</p>
       <small>负责人：{incident.ownerActorId}</small>
       {incident.status !== "RESOLVED" && (
         <div className={styles.inlineActions}>
@@ -2122,11 +2144,7 @@ function IncidentCard({
             className="secondary-button"
             type="button"
             disabled={disabled}
-            onClick={() => mutate("ASSIGN_INCIDENT", {
-              incidentId: incident.incidentId,
-              ownerActorId: actorId,
-              expectedVersion: incident.version,
-            })}
+            onClick={() => onAssign()}
           >
             接手
           </button>
@@ -2134,11 +2152,7 @@ function IncidentCard({
             className="secondary-button"
             type="button"
             disabled={disabled}
-            onClick={() => mutate("RESOLVE_INCIDENT", {
-              incidentId: incident.incidentId,
-              resolutionCode: "OPERATOR_VERIFIED_RESOLUTION",
-              expectedVersion: incident.version,
-            })}
+            onClick={() => onResolve()}
           >
             标记已解决
           </button>
@@ -2151,28 +2165,29 @@ function IncidentCard({
 function RemediationCard({
   proposal,
   disabled,
-  mutate,
+  onApprove,
+  onReject,
+  onPrepareScm,
 }: {
   proposal: OperationsRemediation;
   disabled: boolean;
-  mutate: (action: AdminAction, body?: Record<string, unknown>) => Promise<void>;
+  onApprove: () => Promise<void>;
+  onReject: () => Promise<void>;
+  onPrepareScm: () => Promise<void>;
 }) {
   return (
     <article className={styles.controlCard}>
       <div><span className={styles.kind}>{proposal.remediationKind}</span><strong>{proposal.titleCode}</strong></div>
       <code>{proposal.recipeId}</code>
       <p>{proposal.status} · 风险 {proposal.riskLevel}</p>
-      <small title={proposal.preconditionDigest}>前置摘要：{proposal.preconditionDigest.slice(0, 24)}…</small>
+      <small aria-label={`前置摘要：${proposal.preconditionDigest}`}>前置摘要：{proposal.preconditionDigest.slice(0, 24)}…</small>
       {proposal.status === "PROPOSED" && (
         <div className={styles.inlineActions}>
           <button
             className="primary-button"
             type="button"
             disabled={disabled}
-            onClick={() => mutate("APPROVE_REMEDIATION", {
-              proposalId: proposal.proposalId,
-              expectedVersion: proposal.version,
-            })}
+            onClick={() => onApprove()}
           >
             批准
           </button>
@@ -2180,10 +2195,7 @@ function RemediationCard({
             className="secondary-button"
             type="button"
             disabled={disabled}
-            onClick={() => mutate("REJECT_REMEDIATION", {
-              proposalId: proposal.proposalId,
-              expectedVersion: proposal.version,
-            })}
+            onClick={() => onReject()}
           >
             拒绝
           </button>
@@ -2194,15 +2206,12 @@ function RemediationCard({
           className="primary-button"
           type="button"
           disabled={disabled}
-          onClick={() => mutate("PREPARE_SCM", {
-            proposalId: proposal.proposalId,
-            expectedVersion: proposal.version,
-          })}
+          onClick={() => onPrepareScm()}
         >
           生成摘要绑定 SCM 计划
         </button>
       )}
-      {proposal.artifactDigest && <small title={proposal.artifactDigest}>产物摘要：{proposal.artifactDigest.slice(0, 24)}…</small>}
+      {proposal.artifactDigest && <small aria-label={`产物摘要：${proposal.artifactDigest}`}>产物摘要：{proposal.artifactDigest.slice(0, 24)}…</small>}
     </article>
   );
 }

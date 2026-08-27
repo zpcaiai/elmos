@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/component-translation-evidence.schema.json",
+  "title": "ELMOS Component Translation Evidence Ledger",
+  "type": "object",
+  "required": ["schemaVersion", "kind", "componentId", "irDigest", "sourceFramework", "targetFramework", "claim", "records", "unresolved"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "kind": { "const": "elmos.component-translation-evidence" },
+    "componentId": { "type": "string", "minLength": 1 },
+    "irDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "sourceFramework": { "type": "string", "minLength": 1 },
+    "targetFramework": { "type": "string", "minLength": 1 },
+    "claim": { "enum": ["ENGINEERING_ONLY", "READY_FOR_EXTERNAL_GATE", "NOT_CERTIFIED"] },
+    "records": { "type": "array", "items": { "type": "object", "required": ["id", "channel", "status", "framework", "environment", "artifactPath", "artifactDigest", "executor", "verifier", "independent", "observedAt", "notes"] } },
+    "unresolved": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": true
+}

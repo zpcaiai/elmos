@@ -230,7 +230,7 @@ describe("handoff is drivable from the CLI", () => {
     }
 
     const entry = loadManifest(destination).entries.find((e) => e.sourcePath === CHART_SOURCE);
-    expect(entry).toMatchObject({ state: "MANUALLY_PORTED", assignee: "dana", note: "needs the real chart lib" });
+    expect(entry).toMatchObject({ state: "MANUALLY_PORTED", ownership: "HAND_PORTED", assignee: "dana", note: "needs the real chart lib" });
     expect(entry?.sourceHashAtPort).toMatch(/^[0-9a-f]{64}$/);
   }, 180000);
 
