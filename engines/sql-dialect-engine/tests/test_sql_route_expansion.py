@@ -15,7 +15,7 @@ from elmos_sql_dialect.advanced import (
     parse_trigger,
 )
 from elmos_sql_dialect.capabilities import target_capability_matrix
-from elmos_sql_dialect.emitter import emit_create_index, emit_row_security
+from elmos_sql_dialect.emitter import emit_create_index, emit_create_table, emit_row_security
 from elmos_sql_dialect.engine import translate_ddl
 from elmos_sql_dialect.models import (
     CheckComparison,
@@ -203,6 +203,40 @@ def test_postgres_role_comment_is_typed_without_cross_target_fallback() -> None:
     assert report["reasonCode"] == "CERTIFIED_COMMENT_TARGET_UNSUPPORTED"
 
 
+def test_sql_server_role_comment_uses_database_principal_extended_property() -> None:
+    report = translate_ddl(
+        "COMMENT ON ROLE elmos_scheduler IS 'non-login scheduler role'",
+        "postgres",
+        "tsql",
+        statement_kind="COMMENT",
+    )
+    assert report["status"] == "PASSED", report
+    assert report["emitted"] == (
+        "EXEC sys.sp_addextendedproperty @name = N'MS_Description', "
+        "@value = N'non-login scheduler role', "
+        "@level0type = N'USER', @level0name = N'elmos_scheduler'"
+    )
+
+
+def test_sql_server_role_comment_still_respects_extended_property_value_limit() -> None:
+    comment = parse_comment(
+        "COMMENT ON ROLE elmos_scheduler IS 'non-login scheduler role'",
+        Dialect.POSTGRES,
+    )
+    long_comment = type(comment)(
+        object_kind=comment.object_kind,
+        object_name=comment.object_name,
+        text="x" * 3751,
+        table_name=comment.table_name,
+        schema=comment.schema,
+        table_schema=comment.table_schema,
+        routine_argument_types=comment.routine_argument_types,
+        routine_argument_type_refs=comment.routine_argument_type_refs,
+    )
+    with pytest.raises(DialectError, match="CERTIFIED_COMMENT_TARGET_VALUE_TOO_LARGE"):
+        emit_comment(long_comment, Dialect.TSQL)
+
+
 def test_routine_identity_catalog_gates_signatureless_target_routes() -> None:
     catalog = SourceSchemaCatalog()
     statements = _parse_source_statements(
@@ -301,6 +335,21 @@ def test_jsonb_typeof_check_is_typed_and_target_bound() -> None:
     assert blocked["reasonCode"] == "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED"
 
 
+def test_jsonb_top_level_key_check_is_typed_and_target_bound() -> None:
+    ddl = "CREATE TABLE payloads (payload JSONB NOT NULL CHECK (payload ? 'quotaAllocationId'))"
+    table = parse_create_table(ddl, Dialect.POSTGRES)
+    check = table.check_constraints[0].expression
+    assert isinstance(check, CheckComparison)
+    assert check.left_expression is not None
+    assert check.left_expression.function is CheckValueFunction.JSONB_HAS_KEY
+    assert check.left_expression.argument is not None
+    assert check.left_expression.argument.value == "quotaAllocationId"
+    assert "payload ? 'quotaAllocationId'" in emit_create_table(table, Dialect.POSTGRES)
+    blocked = translate_ddl(ddl, "postgres", "mysql")
+    assert blocked["status"] == "BLOCKED", blocked
+    assert blocked["reasonCode"] == "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED"
+
+
 def test_array_length_check_is_typed_and_target_bound() -> None:
     ddl = "CREATE TABLE api_keys (scopes TEXT[] CHECK (ARRAY_LENGTH(scopes, 1) BETWEEN 1 AND 24))"
     table = parse_create_table(ddl, Dialect.POSTGRES)
@@ -309,6 +358,59 @@ def test_array_length_check_is_typed_and_target_bound() -> None:
     assert check.left_expression is not None
     assert check.left_expression.function.value == "ARRAY_LENGTH"
     blocked = translate_ddl(ddl, "postgres", "oracle")
+    assert blocked["status"] == "BLOCKED", blocked
+    assert blocked["reasonCode"] == "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED"
+
+
+def test_array_cardinality_and_null_element_checks_are_typed_and_target_bound() -> None:
+    ddl = (
+        "CREATE TABLE cache_entries ("
+        "action_component_names TEXT[], "
+        "action_component_values TEXT[], "
+        "CHECK (CARDINALITY(action_component_names) = CARDINALITY(action_component_values)), "
+        "CHECK (ARRAY_POSITION(action_component_names, NULL) IS NULL)"
+        ")"
+    )
+    table = parse_create_table(ddl, Dialect.POSTGRES)
+    first, second = table.check_constraints
+    assert isinstance(first.expression, CheckComparison)
+    assert first.expression.left_expression is not None
+    assert first.expression.left_expression.function is CheckValueFunction.ARRAY_CARDINALITY
+    assert first.expression.right_expression is not None
+    assert isinstance(second.expression, CheckComparison)
+    assert second.expression.left_expression is not None
+    assert second.expression.left_expression.function is CheckValueFunction.ARRAY_POSITION
+    assert second.expression.left_expression.argument is not None
+    assert second.expression.left_expression.argument.is_null
+    blocked = translate_ddl(ddl, "postgres", "mysql")
+    assert blocked["status"] == "BLOCKED", blocked
+    assert blocked["reasonCode"] == "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED"
+
+
+def test_array_containment_check_is_typed_and_target_bound() -> None:
+    ddl = (
+        "CREATE TABLE usage_alert_preferences ("
+        "threshold_bps INTEGER[] NOT NULL DEFAULT ARRAY[5000,8000], "
+        "CHECK (threshold_bps <@ ARRAY[1000,2500,5000,7500,8000,9000,9500,10000])"
+        ")"
+    )
+    table = parse_create_table(ddl, Dialect.POSTGRES)
+    check = table.check_constraints[0].expression
+    assert isinstance(check, CheckComparison)
+    assert check.left_expression is not None
+    assert check.left_expression.function is CheckValueFunction.ARRAY_CONTAINED_BY
+    assert [item.value for item in check.left_expression.arguments] == [
+        "1000",
+        "2500",
+        "5000",
+        "7500",
+        "8000",
+        "9000",
+        "9500",
+        "10000",
+    ]
+    assert "threshold_bps <@ ARRAY[1000, 2500" in emit_create_table(table, Dialect.POSTGRES)
+    blocked = translate_ddl(ddl, "postgres", "mysql")
     assert blocked["status"] == "BLOCKED", blocked
     assert blocked["reasonCode"] == "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED"
 

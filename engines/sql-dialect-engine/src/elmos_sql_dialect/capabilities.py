@@ -89,7 +89,8 @@ def target_capability_matrix() -> list[dict[str, object]]:
             (Dialect.POSTGRES.value, Dialect.MYSQL.value, Dialect.TSQL.value),
             (Dialect.ORACLE.value,),
             "object scope and required source type/catalogue evidence must be retained; "
-            "MySQL function comments require a unique typed routine identity",
+            "SQL Server role comments use database-principal extended properties; MySQL function "
+            "comments require a unique typed routine identity",
         ),
         TargetCapability(
             "signatureless_routine_metadata",

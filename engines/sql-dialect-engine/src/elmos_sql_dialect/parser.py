@@ -780,7 +780,31 @@ def _parse_type(data_type: exp.DataType, source_dialect: Dialect) -> CanonicalTy
     return CanonicalTypeRef(canonical_type=canonical)
 
 
-def _parse_default(node: exp.Expression, type_ref: CanonicalTypeRef) -> ColumnDefault:
+def _default_literal_matches_type(literal: CheckLiteral, type_ref: CanonicalTypeRef) -> bool:
+    if literal.is_null:
+        return True
+    if literal.is_boolean:
+        return type_ref.canonical_type is CanonicalType.BOOLEAN
+    if literal.is_string:
+        return type_ref.canonical_type in {
+            CanonicalType.CHAR,
+            CanonicalType.VARCHAR,
+            CanonicalType.TEXT,
+        }
+    return type_ref.canonical_type in {
+        CanonicalType.INT16,
+        CanonicalType.INT32,
+        CanonicalType.INT64,
+        CanonicalType.FLOAT64,
+        CanonicalType.DECIMAL,
+    }
+
+
+def _parse_default(
+    node: exp.Expression,
+    type_ref: CanonicalTypeRef,
+    source_dialect: Dialect | None = None,
+) -> ColumnDefault:
     if isinstance(node, exp.Null):
         return ColumnDefault(kind=DefaultKind.NULL)
     if isinstance(node, exp.CurrentTimestamp):
@@ -790,6 +814,54 @@ def _parse_default(node: exp.Expression, type_ref: CanonicalTypeRef) -> ColumnDe
             "CURRENT_TIMESTAMP default is only supported on TIMESTAMP columns",
         )
         return ColumnDefault(kind=DefaultKind.CURRENT_TIMESTAMP)
+    if type_ref.canonical_type is CanonicalType.ARRAY:
+        _require(
+            source_dialect is Dialect.POSTGRES,
+            "CERTIFIED_DDL_UNSUPPORTED_DEFAULT",
+            "ARRAY defaults are only admitted from PostgreSQL's typed ARRAY literal route",
+        )
+        assert type_ref.element_type is not None
+        array_node: exp.Expression = node
+        cast_type: CanonicalTypeRef | None = None
+        if isinstance(node, exp.Cast):
+            target = node.args.get("to")
+            _require(
+                isinstance(target, exp.DataType),
+                "CERTIFIED_DDL_UNSUPPORTED_DEFAULT",
+                "typed ARRAY defaults require an explicit ARRAY type cast",
+            )
+            assert isinstance(target, exp.DataType)
+            cast_type = _parse_type(target, Dialect.POSTGRES)
+            _require(
+                cast_type == type_ref,
+                "CERTIFIED_DDL_DEFAULT_TYPE_MISMATCH",
+                "typed ARRAY default cast must match the declared ARRAY column type",
+            )
+            array_node = node.this
+        _require(
+            isinstance(array_node, exp.Array),
+            "CERTIFIED_DDL_UNSUPPORTED_DEFAULT",
+            "ARRAY defaults are limited to literal ARRAY[...] expressions",
+        )
+        members = tuple(
+            _check_literal(item, "ARRAY default member", Dialect.POSTGRES, allow_null=True)
+            for item in array_node.expressions
+        )
+        _require(
+            bool(members),
+            "CERTIFIED_DDL_UNSUPPORTED_DEFAULT",
+            "ARRAY defaults must contain at least one typed literal member",
+        )
+        _require(
+            all(_default_literal_matches_type(item, type_ref.element_type) for item in members),
+            "CERTIFIED_DDL_DEFAULT_TYPE_MISMATCH",
+            "ARRAY default members must match the declared element type",
+        )
+        return ColumnDefault(
+            kind=DefaultKind.ARRAY,
+            cast_type=cast_type,
+            array_elements=members,
+        )
     if isinstance(node, exp.Cast):
         # PostgreSQL migration DDL commonly spells JSONB defaults as either
         # `'{}'::jsonb` or `CAST('{}' AS JSONB)`.  This is not an arbitrary
@@ -839,9 +911,22 @@ def _parse_default(node: exp.Expression, type_ref: CanonicalTypeRef) -> ColumnDe
     )
 
 
-def _check_literal(node: exp.Expression | None, what: str, source_dialect: Dialect) -> CheckLiteral:
+def _check_literal(
+    node: exp.Expression | None,
+    what: str,
+    source_dialect: Dialect,
+    *,
+    allow_null: bool = False,
+) -> CheckLiteral:
     if isinstance(node, exp.Boolean):
         return CheckLiteral(value="true" if node.this else "false", is_boolean=True)
+    if isinstance(node, exp.Null):
+        _require(
+            allow_null,
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            f"{what} cannot be NULL in this CHECK route",
+        )
+        return CheckLiteral(value="", is_null=True)
     if isinstance(node, exp.Cast):
         target = node.args.get("to")
         literal = node.this
@@ -888,6 +973,41 @@ def _parse_check_left_value(
             function=CheckValueFunction.ARRAY_LENGTH,
             dimension=1,
         )
+    if isinstance(node, exp.Anonymous) and str(node.this).upper() == "CARDINALITY":
+        _require(
+            source_dialect is Dialect.POSTGRES,
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "CARDINALITY CHECK expressions are only admitted from PostgreSQL",
+        )
+        arguments = list(node.expressions or [])
+        _require(
+            len(arguments) == 1,
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "CARDINALITY CHECK expressions must have one column argument",
+        )
+        column = _plain_identifier(arguments[0], what)
+        return column, CheckValueExpression(
+            column=column,
+            function=CheckValueFunction.ARRAY_CARDINALITY,
+        )
+    if isinstance(node, exp.ArrayPosition):
+        _require(
+            source_dialect is Dialect.POSTGRES,
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "ARRAY_POSITION CHECK expressions are only admitted from PostgreSQL",
+        )
+        column = _plain_identifier(node.this, what)
+        argument = _check_literal(
+            node.expression,
+            "ARRAY_POSITION search literal",
+            source_dialect,
+            allow_null=True,
+        )
+        return column, CheckValueExpression(
+            column=column,
+            function=CheckValueFunction.ARRAY_POSITION,
+            argument=argument,
+        )
     if isinstance(node, exp.Anonymous) and str(node.this).upper() == "JSONB_TYPEOF":
         _require(
             source_dialect is Dialect.POSTGRES,
@@ -902,6 +1022,20 @@ def _parse_check_left_value(
         )
         column = _plain_identifier(arguments[0], what)
         return column, CheckValueExpression(column=column, function=CheckValueFunction.JSONB_TYPEOF)
+    if isinstance(node, exp.Anonymous) and str(node.this).upper() == "OCTET_LENGTH":
+        _require(
+            source_dialect in {Dialect.POSTGRES, Dialect.MYSQL},
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "OCTET_LENGTH CHECK expressions are only admitted from byte-length dialects",
+        )
+        arguments = list(node.expressions or [])
+        _require(
+            len(arguments) == 1,
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "OCTET_LENGTH CHECK expressions must have one column argument",
+        )
+        column = _plain_identifier(arguments[0], what)
+        return column, CheckValueExpression(column=column, function=CheckValueFunction.OCTET_LENGTH)
     if isinstance(node, exp.Trim):
         _require(
             node.expression is None,
@@ -957,14 +1091,86 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
     # `negate` flag. `IS TRUE` is also an `Is`, and is refused: Oracle has no
     # boolean type and no `IS TRUE`.
     if isinstance(node, exp.Is):
+        if isinstance(node.expression, exp.Boolean):
+            _require(
+                bool(node.expression.this) and not node.args.get("negate"),
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                "only strict IS TRUE checks are in the typed boolean route",
+            )
+            return CheckComparison(
+                column=_plain_identifier(node.this, "CHECK left-hand column"),
+                operator=CheckOperator.IS_TRUE,
+                strict_truth_test=True,
+            )
         _require(
             isinstance(node.expression, exp.Null),
             "CERTIFIED_DDL_UNSUPPORTED_CHECK",
             "certified-ddl-v1 supports IS [NOT] NULL only; IS TRUE/FALSE has no Oracle equivalent",
         )
-        column = _plain_identifier(node.this, "CHECK left-hand column")
+        column, left_expression = _parse_check_left_value(
+            node.this, "CHECK left-hand column", source_dialect
+        )
         operator = CheckOperator.IS_NOT_NULL if node.args.get("negate") else CheckOperator.IS_NULL
-        return CheckComparison(column=column, operator=operator)
+        return CheckComparison(
+            column=column,
+            operator=operator,
+            left_expression=left_expression,
+        )
+
+    if isinstance(node, exp.JSONBContains):
+        _require(
+            source_dialect is Dialect.POSTGRES,
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "JSONB key checks are only admitted from PostgreSQL",
+        )
+        column = _plain_identifier(node.this, "JSONB key-check column")
+        argument = _check_literal(
+            node.expression,
+            "JSONB key-check key",
+            source_dialect,
+        )
+        _require(
+            argument.is_string,
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "JSONB key checks require one string key literal",
+        )
+        return CheckComparison(
+            column=column,
+            operator=CheckOperator.IS_TRUE,
+            left_expression=CheckValueExpression(
+                column=column,
+                function=CheckValueFunction.JSONB_HAS_KEY,
+                argument=argument,
+            ),
+        )
+
+    if isinstance(node, exp.ArrayContainedBy):
+        _require(
+            source_dialect is Dialect.POSTGRES,
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "ARRAY containment checks are only admitted from PostgreSQL",
+        )
+        column = _plain_identifier(node.this, "ARRAY containment column")
+        values = node.expression
+        _require(
+            isinstance(values, exp.Array) and bool(values.expressions),
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "ARRAY containment checks require a non-empty literal ARRAY",
+        )
+        assert isinstance(values, exp.Array)
+        arguments = tuple(
+            _check_literal(item, "ARRAY containment member", source_dialect, allow_null=True)
+            for item in values.expressions
+        )
+        return CheckComparison(
+            column=column,
+            operator=CheckOperator.IS_TRUE,
+            left_expression=CheckValueExpression(
+                column=column,
+                function=CheckValueFunction.ARRAY_CONTAINED_BY,
+                arguments=arguments,
+            ),
+        )
 
     # A bare BOOLEAN column in a CHECK is an assertion of truth. The table
     # model verifies the referenced column is actually BOOLEAN before any
@@ -1138,6 +1344,23 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
             right_column=_plain_identifier(literal, "CHECK right-hand column"),
             left_expression=left_expression,
         )
+    if isinstance(literal, exp.Anonymous):
+        right_column, right_expression = _parse_check_left_value(
+            literal, "CHECK right-hand value", source_dialect
+        )
+        if right_expression is not None:
+            _require(
+                left_expression is not None
+                and left_expression.function is right_expression.function,
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                "typed CHECK function comparisons require the same function on both sides",
+            )
+            return CheckComparison(
+                column=binary_column,
+                operator=binary_operator,
+                left_expression=left_expression,
+                right_expression=right_expression,
+            )
     if isinstance(literal, exp.Boolean):
         return CheckComparison(
             column=binary_column,
@@ -1172,16 +1395,14 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
             right_interval_value=int(str(interval_literal.this)),
             right_interval_unit=CheckIntervalUnit(unit_text),
         )
-    _require(
-        isinstance(literal, exp.Literal),
-        "CERTIFIED_DDL_UNSUPPORTED_CHECK",
-        "CHECK right-hand side must be a plain literal",
-    )
+    parsed_literal = _check_literal(literal, "CHECK right-hand side", source_dialect)
     return CheckComparison(
         column=binary_column,
         operator=binary_operator,
-        literal=str(literal.this),
-        literal_is_string=bool(literal.is_string),
+        literal=parsed_literal.value,
+        literal_is_string=parsed_literal.is_string,
+        literal_is_boolean=parsed_literal.is_boolean,
+        literal_is_special_float=parsed_literal.is_special_float,
         left_expression=left_expression,
     )
 
@@ -1350,7 +1571,7 @@ def _column_constraints(
         elif isinstance(kind, exp.AutoIncrementColumnConstraint | exp.GeneratedAsIdentityColumnConstraint):
             auto_increment = True
         elif isinstance(kind, exp.DefaultColumnConstraint):
-            default = _parse_default(kind.this, type_ref)
+            default = _parse_default(kind.this, type_ref, source_dialect)
         elif isinstance(kind, exp.UniqueColumnConstraint) and kind.this is None:
             unique_shorthand = True
         elif isinstance(kind, exp.Reference):

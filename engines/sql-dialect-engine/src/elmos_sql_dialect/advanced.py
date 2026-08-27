@@ -514,7 +514,11 @@ def _routine_parameters(
                 )
                 from .parser import _parse_default
 
-                default = _parse_default(constraint_kind.this, _parse_type(item.kind, source_dialect))
+                default = _parse_default(
+                    constraint_kind.this,
+                    _parse_type(item.kind, source_dialect),
+                    source_dialect,
+                )
             else:
                 raise DialectError(
                     "CERTIFIED_ROUTINE_UNSUPPORTED_PARAMETER",
@@ -1056,6 +1060,23 @@ def emit_comment(
     escaped = comment.text.replace(chr(39), chr(39) * 2)
 
     if comment.object_kind is CommentObjectKind.ROLE:
+        if target_dialect is Dialect.TSQL:
+            if len(comment.text.encode("utf-16-le")) > 7500:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_TARGET_VALUE_TOO_LARGE",
+                    "SQL Server extended-property values are limited to 7,500 bytes",
+                )
+            # SQL Server documents application-role metadata through the
+            # database-principal level-0 USER scope.  Keeping the role name
+            # at that level preserves the object identity; do not attach it
+            # to a schema or silently turn it into a table comment.
+            return (
+                "EXEC sys.sp_addextendedproperty "
+                "@name = N'MS_Description', "
+                f"@value = {tsql_literal(comment.text)}, "
+                "@level0type = N'USER', "
+                f"@level0name = {tsql_literal(comment.object_name)}"
+            )
         if target_dialect is not Dialect.POSTGRES:
             raise DialectError(
                 "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
@@ -1064,6 +1085,28 @@ def emit_comment(
         return f"COMMENT ON ROLE {quote_identifier(comment.object_name, target_dialect)} IS '{escaped}'"
 
     if comment.object_kind is CommentObjectKind.CONSTRAINT:
+        if target_dialect is Dialect.TSQL:
+            if comment.schema is None or comment.table_name is None:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_TARGET_SCHEMA_REQUIRED",
+                    "SQL Server constraint properties require explicit schema and table identity",
+                )
+            if len(comment.text.encode("utf-16-le")) > 7500:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_TARGET_VALUE_TOO_LARGE",
+                    "SQL Server extended-property values are limited to 7,500 bytes",
+                )
+            return (
+                "EXEC sys.sp_addextendedproperty "
+                "@name = N'MS_Description', "
+                f"@value = {tsql_literal(comment.text)}, "
+                "@level0type = N'SCHEMA', "
+                f"@level0name = {tsql_literal(comment.schema)}, "
+                "@level1type = N'TABLE', "
+                f"@level1name = {tsql_literal(comment.table_name)}, "
+                "@level2type = N'CONSTRAINT', "
+                f"@level2name = {tsql_literal(comment.object_name)}"
+            )
         if target_dialect is not Dialect.POSTGRES:
             raise DialectError(
                 "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",

@@ -37,15 +37,16 @@ relabel manual work as translated.
 
 The separate automatic-translation measure remains an upper bound. With the
 digest-bound profile `persistence-public-to-dbo` (`{"": "dbo", "public":
-"dbo"}`), the current 76-file migration corpus measures **1261/1485 = 84.9%**
+"dbo"}`), the current 76-file migration corpus measures **1267/1485 = 85.3%**
 source-side candidates. This includes typed namespace profiles, quoted and
 reserved identifiers, views, callable, constraint and PostgreSQL role comments, table
 privileges, bounded procedures, typed `RETURNS TABLE`, narrow static PL/pgSQL
 blocks, static single-DDL `DO` expansion, literal-only INSERT seeds, bounded
 single-source `INSERT ... SELECT`, simple single-table `UPDATE`, source catalog
 evidence for provable assignments, trigger OLD/NEW predicates and `UPDATE OF`
-metadata, typed `LOWER`/one-level JSON text-path index keys, JSONB type checks,
-typed `ARRAY_LENGTH(..., 1)` checks, NULL-aware `IS DISTINCT FROM` comparisons,
+metadata, typed `LOWER`/one-level JSON text-path index keys, JSONB type and
+top-level-key checks, typed PostgreSQL ARRAY defaults/containment,
+`ARRAY_LENGTH(..., 1)` checks, NULL-aware `IS DISTINCT FROM` comparisons,
 JSON/plain binary routes, typed TRIM/BTRIM, NULL-aware CHECK trees, explicit
 PostgreSQL non-finite DOUBLE literals, and the existing DDL/ALTER/routine
 expansions. Dynamic SQL, arbitrary
@@ -66,11 +67,11 @@ remain `0`, external execution remains `NOT_RUN`, and certification remains
 
 The source-side number is not the same as target reachability. Replaying every
 admitted candidate through all four target emitters with that explicit profile
-gives **398/1261 = 31.6%** strict four-target intersection. The optimal strategy
+gives **398/1267 = 31.4%** strict four-target intersection. The optimal strategy
 under the fail-closed constraints is a target-specific route portfolio, not a
-forced common denominator: PostgreSQL is the source-native route at **1261**,
-followed by SQL Server at **506**, MySQL at **432**, and Oracle at **426**
-(100.0%, 40.1%, 34.3%, and 33.8% of admitted candidates). Routine privileges
+forced common denominator: PostgreSQL is the source-native route at **1267**,
+followed by SQL Server at **512**, MySQL at **432**, and Oracle at **426**
+(100.0%, 40.4%, 34.1%, and 33.6% of admitted candidates). Routine privileges
 and MySQL function comments are widened only when a typed source catalog proves
 one exact routine overload, including a proven zero-argument signature; opaque
 PL/pgSQL declarations contribute identity-only evidence and remain blocked for
@@ -201,10 +202,10 @@ PostgreSQL `IS DISTINCT FROM` remain blocked rather than approximated.
 spelling. MySQL table comments use `ALTER TABLE ... COMMENT = ...`; MySQL
 column comments need a complete `MODIFY`/`CHANGE` definition and therefore
 remain blocked in the one-statement profile without a column catalogue. SQL
-Server has no equivalent statement; with an explicit target schema it uses
-`sys.sp_addextendedproperty` at the schema, table, and optional column levels,
-and refuses values over 7,500 bytes. Without that schema mapping, the comment
-remains blocked because SQL Server's object-level metadata scope is ambiguous.
+Server uses `sys.sp_addextendedproperty`: roles use the documented database
+principal level-0 scope, while tables, columns, functions, and constraints use
+their typed object hierarchy. Values over 7,500 bytes remain blocked, and
+object scopes are never collapsed into a different metadata object.
 
 **CREATE INDEX:** name, target table, plain column list with preserved
 `DESC` ordering, optional `UNIQUE`. PostgreSQL and SQL Server preserve typed
@@ -244,8 +245,9 @@ PostgreSQL trigger route that preserves timing, event filters, OLD/NEW
 predicates, and row/statement scope. Expression index keys also use a closed
 typed IR for `LOWER(column)` and one-level PostgreSQL JSON text paths; only
 PostgreSQL emits those keys until other target collations and JSON operators
-are proven equivalent. PostgreSQL-only JSONB type and array-length checks are
-also typed and target-gated. The parser retains schema, `OR REPLACE`,
+are proven equivalent. PostgreSQL-only JSONB type/key and array
+cardinality/position/containment/default checks are also typed and target-gated.
+The parser retains schema, `OR REPLACE`,
 stability, STRICT, SECURITY DEFINER, and `SET search_path` facts, but refuses
 them when no exact mapping is supplied. Narrow PL/pgSQL admits only local
 variables, simple assignments, and one final return; side effects, table reads,
@@ -378,9 +380,9 @@ hiding exactly what this engine cannot do.
 ### What it says about real code
 
 Run against the current checkout's 76 migration files with the digest-bound
-namespace profile, the scan reports **1261 of 1485 statements as automatic
-translation candidates (84.9% upper bound)**. It also reports **1485 of 1485
-(100.0%) with an explicit disposition**: 1261 automatic candidates, 215
+namespace profile, the scan reports **1267 of 1485 statements as automatic
+translation candidates (85.3% upper bound)**. It also reports **1485 of 1485
+(100.0%) with an explicit disposition**: 1267 automatic candidates, 209
 manual migrations, and 9 source-format reviews.
 
 The automatic candidate number is intentionally conservative. The blocker
@@ -388,7 +390,8 @@ ranking says why, while the disposition ledger ensures no unit disappears:
 
 | Blocker | Occurrences | Distinct | What it really is |
 |---|---|---|---|
-| `CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED` | 76 | 2 | SECURITY DEFINER/search_path changes execution identity or name resolution |
+| `CERTIFIED_ROUTINE_UNSUPPORTED_BODY` | 54 | 1 | arbitrary procedural bodies without a bounded typed route remain blocked |
+| `CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED` | 22 | 2 | SECURITY DEFINER/search_path changes execution identity or name resolution |
 | `CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW` | 70 | 1 | dynamic SQL and procedural control flow cannot be statically expanded |
 | `CERTIFIED_DDL_UNSUPPORTED_STATEMENT` | 29 | 1 | routine/query statements without a bounded typed route remain blocked |
 | `CERTIFIED_DDL_UNBOUNDED_DECIMAL` | 12 | 1 | arbitrary-precision DECIMAL/NUMBER has no fixed cross-dialect equivalent |
@@ -396,13 +399,11 @@ ranking says why, while the disposition ledger ensures no unit disappears:
 | `CERTIFIED_RLS_TARGET_ROUTE_REQUIRED` | 7 | 1 | RLS requires a target policy model; it is never weakened to an open policy |
 | `CERTIFIED_DDL_UNSUPPORTED_TYPE` | 5 | 1 | residual vendor-specific/return types remain outside the certified set |
 | `CERTIFIED_INSERT_UNSUPPORTED_MODIFIER` | 3 | 1 | conflict/upsert semantics need a target-specific route |
-| `CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET` | 3 | 2 | STABLE volatility has no exact common target declaration |
-| `CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET` | 3 | 1 | STRICT null short-circuiting has no exact common target mapping |
-| `CERTIFIED_DDL_UNSUPPORTED_CHECK` | 2 | 2 | residual CHECK expression semantics are not in the typed predicate profile |
-| `CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE` | 2 | 2 | computed CHECK operands outside the typed JSONB/array profile remain blocked |
-| `CERTIFIED_DDL_UNSUPPORTED_DEFAULT` | 1 | 1 | a non-literal default remains outside the typed default profile |
+| `CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET` | 2 | 2 | STABLE volatility has no exact common target declaration |
+| `CERTIFIED_DDL_UNSUPPORTED_CHECK` | 1 | 1 | residual CHECK expression semantics are not in the typed predicate profile |
+| `CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE` | 1 | 1 | computed CHECK operands outside the typed JSONB/array profile remain blocked |
 | `CERTIFIED_DML_UNSUPPORTED_EXPRESSION` | 1 | 1 | volatile `clock_timestamp()` and other expressions remain outside the typed DML profile |
-| `CERTIFIED_ROUTINE_UNSUPPORTED_LANGUAGE` | 1 | 1 | routine language has no bounded certified route |
+| `CERTIFIED_ROUTINE_UNSUPPORTED_LANGUAGE` | 2 | 1 | routine language has no bounded certified route |
 
 The first run of this scan reported **8.0%**, and reading it found a real
 defect rather than a subset limit: inline `b_id INTEGER REFERENCES b(id)`
@@ -424,10 +425,11 @@ single-source/equi-join `INSERT ... SELECT`, simple single-table `UPDATE`, and
 a typed `UPDATE ... FROM` route gated by source PRIMARY KEY/UNIQUE and matching
 catalogue types, PostgreSQL adjacent-string comment recovery, and the earlier
 CHECK/identity/precision work. It also admits typed `LOWER` and one-level JSON
-text-path expression indexes plus `JSONB_TYPEOF` object, `ARRAY_LENGTH` array,
+text-path expression indexes plus `JSONB_TYPEOF`/top-level-key object checks,
+typed `ARRAY_LENGTH`/`CARDINALITY`/`ARRAY_POSITION`/containment/default routes,
 and PostgreSQL-only table-level RLS state controls on the source side; their
 non-PostgreSQL target routes remain explicitly blocked. The current checkout
-therefore measures **1261/1485 = 84.9%** automatic candidates with the
+therefore measures **1267/1485 = 85.3%** automatic candidates with the
 explicit namespace profile.
 The repository-level headline remains **1485/1485 = 100.0% disposition
 coverage**: every blocker is explicit manual or source-review work, and none

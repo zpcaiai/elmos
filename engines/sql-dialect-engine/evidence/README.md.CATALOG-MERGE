@@ -1,0 +1,108 @@
+# Execution-level evidence
+
+The engine validates every emission by re-parsing it with `sqlglot` in the
+target's strict mode. That leg is a third-party **parser**, not the target's own
+grammar, and it cannot see a statement that parses but that the server refuses.
+These scripts close that gap for the two servers that run rootless.
+
+They are **not** unit tests and are not part of `pytest`: they need live
+servers, so they are run deliberately and their output is recorded in
+`.ai/measurement-2026-08-25/`.
+
+## Bringing the servers up
+
+```bash
+apt-get update && apt-get install -y postgresql mysql-server   # PG 16, MySQL 8
+./ensure_servers.sh                                            # start, or re-attach
+```
+
+`ensure_servers.sh` is not a convenience. The container reclaims background
+processes, and a harness that assumes the servers from ten minutes ago are still
+running will happily emit numbers from a partial run — that happened here, and
+the resulting figures were wrong in a way nothing in the output announced. The
+script exits non-zero unless both servers actually answer, so every evidence run
+proves its own preconditions first.
+
+**Check `@@collation_server` before trusting any regex result.** The MySQL
+default is `utf8mb4_0900_ai_ci`, which is case-INsensitive; that is the whole
+condition `run_refusal_justification.py` exists to demonstrate. A server
+configured case-sensitively would make the evidence pass for the wrong reason,
+so `ensure_servers.sh` warns when it sees one.
+
+## The scripts
+
+| script | what it establishes |
+| --- | --- |
+| `run_regex_check_execution.py` | the counterfactual: a naive `REGEXP` emission is strictly weaker than the PostgreSQL source, and the engine's `REGEXP_LIKE(..., 'c')` is not |
+| `run_regex_equivalence.py` | all 8 regex patterns in the corpus accept and reject the same strings on PostgreSQL and MySQL |
+| `run_refusal_justification.py` | the two refusals this profile added are justified by real server behaviour, not by argument |
+| `run_corpus_execution.py` | every admitted statement, emitted and really executed, applied in migration order |
+| `verify_reserved_words.py` | derives a dialect's reserved words from a RUNNING server and diffs the shipped list — this is what upgrades Oracle and SQL Server from `VENDOR_DOCUMENTED` to `EXECUTION_VERIFIED` |
+
+## Four harness defects worth not repeating
+
+Every one produced a plausible, wrong number before being caught:
+
+1. **One statement per rolled-back transaction.** A migration corpus is a
+   sequence; every `ALTER` then failed with "table doesn't exist" and the run
+   reported a false 31%. Statements are applied in order and committed.
+2. **Multi-statement scripts.** `emit_alter_table` legitimately emits
+   `ALTER ...;\nALTER ...` for a multi-action ALTER, and a driver executes one
+   statement per call. The driver's refusal looked exactly like an engine
+   syntax error.
+3. **Sharing one database across unrelated schemas.** chinook and sakila both
+   define a `customer` table, so sakila's `ADD PRIMARY KEY` landed on chinook's
+   table and reported "Multiple primary key defined". A migration set IS one
+   sequence and must share a database; a directory of independent public schemas
+   is not. `CORPORA` carries an `is_sequence` flag for exactly this.
+4. **Assuming the servers were still up.** See `ensure_servers.sh`.
+
+All four would have been reported as engine defects. Split refusals into
+`MISSING_OBJECT` (a cascade from partial coverage) and `EMISSION_DEFECT` (the
+server rejected SQL this engine produced) before drawing any conclusion — and
+note that MySQL 1824 "Failed to open the referenced table" belongs to the first
+group even though it reads like the second.
+
+## What this cannot cover, and exactly why
+
+Oracle and SQL Server stay `EXECUTION_NOT_AVAILABLE` — **not** passing.
+
+That was measured, not assumed. From the container these agents run in:
+
+```
+packages.microsoft.com          000     download.oracle.com        000
+container-registry.oracle.com   000     mcr.microsoft.com          000
+registry-1.docker.io            000     index.docker.io            000
+archive.ubuntu.com              200     pypi.org                   200
+```
+
+Every vendor package host and every container registry is refused by the egress
+proxy, and there is no docker daemon. Neither server can be installed or pulled
+here at all — the gap is environmental, not a decision.
+
+**To close it**, on any machine that can reach those hosts:
+
+```bash
+docker run -d -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD=<pw> \
+  -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+docker run -d -e ORACLE_PWD=<pw> -p 1521:1521 \
+  container-registry.oracle.com/database/free:latest
+
+python evidence/verify_reserved_words.py --dialect tsql \
+  --dsn "Driver={ODBC Driver 18 for SQL Server};Server=localhost;UID=sa;PWD=<pw>;TrustServerCertificate=yes" \
+  --output ../../.ai/measurement-2026-08-25/reserved-words-tsql.json
+python evidence/verify_reserved_words.py --dialect oracle \
+  --dsn "system/<pw>@//localhost:1521/FREEPDB1" \
+  --output ../../.ai/measurement-2026-08-25/reserved-words-oracle.json
+```
+
+A clean run (`verdict: EXECUTION_VERIFIED`) is what promotes
+`PROVENANCE[Dialect.ORACLE]` and `PROVENANCE[Dialect.TSQL]` in
+`reserved_words.py`. Nothing else should promote them. A `DISAGREES_WITH_SERVER`
+verdict lists both directions — words shipped that the server actually accepts,
+and words the server reserves that are not shipped. The second list is the
+dangerous one.
+
+MySQL is already at `EXECUTION_VERIFIED`: all 261 shipped words were probed
+against MySQL 8.0.46 and every one was refused as an identifier, with no false
+positives (`reserved-words-evidence.json`).

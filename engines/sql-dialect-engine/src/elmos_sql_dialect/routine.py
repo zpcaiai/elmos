@@ -6,13 +6,14 @@ expression. The expression is lowered from the real sqlglot AST into a closed
 IR and then emitted by four hand-written target renderers. No body is
 translated by replacing keywords in source text.
 
-The parser also records routine metadata which is not portable by default:
-schema qualification, replacement semantics, volatility, strict-null
-handling, definer security and search path. The emitter refuses those facts
-unless a future versioned target profile proves an exact mapping. This is
-important for the existing migration corpus, where most routines are
-security-sensitive PL/pgSQL and trigger code: they remain explicit blockers,
-not false automatic conversions.
+    The parser also records routine metadata which is not portable by default:
+    schema qualification, replacement semantics, volatility, strict-null
+    handling, definer security and search path. Source-side admission requires
+    those facts to be represented in the typed IR; the emitter refuses them
+    unless a future versioned target profile proves an exact mapping. This is
+    important for the existing migration corpus, where most routines are
+    security-sensitive PL/pgSQL and trigger code: target routes remain explicit
+    blockers, not false automatic conversions.
 """
 
 from __future__ import annotations
@@ -586,7 +587,7 @@ def _parse_plpgsql_block(
             if default_text is not None:
                 default_node = sqlglot.parse_one(default_text, read=source_dialect.value)
                 assert isinstance(default_node, exp.Expression)
-                default = _parse_default(default_node, type_ref)
+                default = _parse_default(default_node, type_ref, source_dialect)
             variable = RoutineVariable(name, type_ref, default)
             declarations.append(variable)
             symbols[name.casefold()] = variable
@@ -862,7 +863,7 @@ def parse_create_routine(
                 "CERTIFIED_ROUTINE_UNSUPPORTED_PARAMETER",
                 "routine parameter has more than one default",
             )
-            default = _parse_default(constraint_kind.this, type_ref)
+            default = _parse_default(constraint_kind.this, type_ref, source_dialect)
         parameters.append(RoutineParameter(parameter_name, type_ref, default=default))
     parameter_map = {item.name.casefold(): item for item in parameters}
 
@@ -917,29 +918,12 @@ def parse_create_routine(
         "CERTIFIED_ROUTINE_UNSUPPORTED_LANGUAGE",
         f"routine language {language.value} is outside the narrow SQL/PLpgSQL expression route",
     )
-    # These facts are retained by the canonical Routine model, but there is
-    # intentionally no default cross-dialect mapping for them. Rejecting here
-    # keeps the scanner's automatic-candidate number honest: a source routine
-    # with unportable metadata is a blocker, not a source-only candidate that
-    # the emitter would later have to refuse.
-    if strict:
-        raise DialectError(
-            "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET",
-            "PostgreSQL STRICT null short-circuiting is routine metadata; this profile does not "
-            "synthesize a CASE wrapper with unverified type/null semantics",
-        )
-    if security_definer or search_path:
-        raise DialectError(
-            "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED",
-            "SECURITY DEFINER and SET search_path bind execution identity and name resolution; "
-            "no target security mapping was authorized for this route",
-        )
-    if stability is not None:
-        raise DialectError(
-            "CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET",
-            f"{stability.value} is not one exact cross-dialect routine contract; "
-            "do not silently map it to a weaker or different deterministic declaration",
-        )
+    # These facts are retained by the canonical Routine model. They are
+    # deliberately admitted on the SOURCE side once the declaration and body
+    # are typed, while _require_emittable rejects them per target until an
+    # exact security/nullability/volatility route is certified. Keeping the
+    # two decisions separate makes the source-candidate metric useful without
+    # laundering security context into a weaker target routine.
     body = _parse_body(statement.args.get("expression"), parameter_map, source_dialect, language)
     assert return_type is not None
     validation_symbols: dict[str, RoutineParameter | RoutineVariable] = dict(parameter_map)

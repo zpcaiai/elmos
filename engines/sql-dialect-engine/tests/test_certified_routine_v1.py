@@ -41,6 +41,28 @@ def test_function_parser_builds_typed_body_instead_of_preserving_source_text() -
     assert "chr" not in repr(routine.body).lower()
 
 
+def test_source_routine_ir_retains_nonportable_metadata_for_target_gate() -> None:
+    routine = parse_create_routine(
+        "CREATE FUNCTION guarded(p INT) RETURNS INT LANGUAGE SQL STABLE STRICT "
+        "SECURITY DEFINER AS $$ SELECT p $$",
+        Dialect.POSTGRES,
+    )
+    assert routine.strict is True
+    assert routine.security_definer is True
+    assert routine.search_path == ()
+    assert routine.stability is not None
+
+    report = translate_ddl(
+        "CREATE FUNCTION guarded(p INT) RETURNS INT LANGUAGE SQL STABLE STRICT "
+        "SECURITY DEFINER AS $$ SELECT p $$",
+        "postgres",
+        "mysql",
+        statement_kind="FUNCTION",
+    )
+    assert report["status"] == "BLOCKED"
+    assert report["reasonCode"] == "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET"
+
+
 def test_static_plpgsql_return_query_table_function_has_a_typed_query_route() -> None:
     sql = (
         "CREATE FUNCTION active_users(p_min_id INT) RETURNS TABLE(id INT) "

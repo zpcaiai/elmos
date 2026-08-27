@@ -118,6 +118,51 @@ def test_predicate_and_null_test_equality_preserves_check_three_valued_logic(tar
     assert "NOT (quarantine_id IS NOT NULL)" in report["emitted"]
 
 
+@pytest.mark.parametrize(
+    ("target", "fragment"),
+    [
+        ("mysql", "b IS TRUE"),
+        ("oracle", "NVL(b, 0) = 1"),
+        ("tsql", "ISNULL(b, 0) = 1"),
+    ],
+)
+def test_strict_is_true_preserves_null_as_false_across_targets(target: str, fragment: str) -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (b BOOLEAN, CHECK (b IS TRUE))",
+        "postgres",
+        target,
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    assert f"CHECK ({fragment})" in report["emitted"]
+
+
+@pytest.mark.parametrize(
+    ("target", "function"),
+    [("mysql", "OCTET_LENGTH"), ("oracle", "LENGTHB"), ("tsql", "DATALENGTH")],
+)
+def test_binary_octet_length_check_uses_target_byte_length_function(target: str, function: str) -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (payload BYTEA, CHECK (OCTET_LENGTH(payload) BETWEEN 1 AND 16384))",
+        "postgres",
+        target,
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "PASSED", report["reasonCode"]
+    assert f"{function}(payload) BETWEEN 1 AND 16384" in report["emitted"]
+
+
+def test_octet_length_check_is_typed_to_binary_storage() -> None:
+    report = translate_ddl(
+        "CREATE TABLE t (payload VARCHAR(32), CHECK (OCTET_LENGTH(payload) > 0))",
+        "postgres",
+        "mysql",
+        statement_kind="TABLE",
+    )
+    assert report["status"] == "BLOCKED"
+    assert report["reasonCode"] == "CERTIFIED_DDL_UNSUPPORTED_CHECK"
+
+
 @pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
 def test_postgres_nonfinite_double_check_literals_remain_fail_closed(target: str) -> None:
     report = translate_ddl(
@@ -173,8 +218,6 @@ def test_string_members_are_quoted_and_embedded_quotes_doubled() -> None:
         # MySQL's default collation is case-insensitive, so the same predicate
         # accepts different rows on different targets.
         ("like", "CREATE TABLE t (s VARCHAR(8), CHECK (s LIKE 'a%'))"),
-        # Parses as `Is` too, but Oracle has no boolean type and no IS TRUE.
-        ("is-true", "CREATE TABLE t (b BOOLEAN, CHECK (b IS TRUE))"),
         # PostgreSQL-only.
         ("between-symmetric", "CREATE TABLE t (a INT, CHECK (a BETWEEN SYMMETRIC 9 AND 1))"),
         # A subquery is the other half of the original narrowing rationale.

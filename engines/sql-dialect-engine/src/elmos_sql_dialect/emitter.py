@@ -77,6 +77,8 @@ def _render_literal(value: str, is_string: bool) -> str:
 
 
 def _render_check_literal(literal: CheckLiteral, dialect: Dialect) -> str:
+    if literal.is_null:
+        return "NULL"
     if literal.is_special_float:
         if dialect is not Dialect.POSTGRES:
             raise DialectError(
@@ -186,16 +188,60 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
                 )
             assert comparison.left_expression.dimension is not None
             left = f"ARRAY_LENGTH({left}, {comparison.left_expression.dimension})"
+        elif comparison.left_expression.function is CheckValueFunction.ARRAY_CARDINALITY:
+            if dialect is not Dialect.POSTGRES:
+                raise DialectError(
+                    "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED",
+                    "CARDINALITY requires PostgreSQL array storage and has no exact target mapping",
+                )
+            left = f"CARDINALITY({left})"
+        elif comparison.left_expression.function is CheckValueFunction.ARRAY_POSITION:
+            if dialect is not Dialect.POSTGRES:
+                raise DialectError(
+                    "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED",
+                    "ARRAY_POSITION requires PostgreSQL array storage and has no exact target mapping",
+                )
+            argument = comparison.left_expression.argument
+            assert argument is not None
+            left = f"ARRAY_POSITION({left}, {_render_check_literal(argument, dialect)})"
+        elif comparison.left_expression.function is CheckValueFunction.ARRAY_CONTAINED_BY:
+            if dialect is not Dialect.POSTGRES:
+                raise DialectError(
+                    "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED",
+                    "array containment requires PostgreSQL array storage and has no exact target mapping",
+                )
+            members = ", ".join(
+                _render_check_literal(item, dialect)
+                for item in comparison.left_expression.arguments
+            )
+            left = f"{left} <@ ARRAY[{members}]"
+        elif comparison.left_expression.function is CheckValueFunction.JSONB_HAS_KEY:
+            if dialect is not Dialect.POSTGRES:
+                raise DialectError(
+                    "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED",
+                    "JSONB key-existence semantics require PostgreSQL JSONB storage and have no exact common mapping",
+                )
+            argument = comparison.left_expression.argument
+            assert argument is not None
+            left = f"{left} ? {_render_check_literal(argument, dialect)}"
+        elif comparison.left_expression.function is CheckValueFunction.OCTET_LENGTH:
+            function = {
+                Dialect.POSTGRES: "OCTET_LENGTH",
+                Dialect.MYSQL: "OCTET_LENGTH",
+                Dialect.ORACLE: "LENGTHB",
+                Dialect.TSQL: "DATALENGTH",
+            }[dialect]
+            left = f"{function}({left})"
         elif comparison.left_expression.operator is CheckValueOperator.ADD:
             right = comparison.left_expression.right_column
             assert right is not None
             left = f"({left} + {quote_identifier(right, dialect)})"
         else:  # pragma: no cover - closed enum, defensive for future extensions
-            function = comparison.left_expression.function
+            value_function = comparison.left_expression.function
             value_operator = comparison.left_expression.operator
             value_name = (
-                function.value
-                if function is not None
+                value_function.value
+                if value_function is not None
                 else value_operator.value
                 if value_operator is not None
                 else "unknown"
@@ -206,6 +252,17 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
             )
     operator = comparison.operator
     if operator is CheckOperator.IS_TRUE:
+        if (
+            comparison.left_expression is not None
+            and comparison.left_expression.function is CheckValueFunction.JSONB_HAS_KEY
+        ):
+            return left
+        if comparison.strict_truth_test:
+            if dialect in (Dialect.POSTGRES, Dialect.MYSQL):
+                return f"{left} IS TRUE"
+            if dialect is Dialect.ORACLE:
+                return f"NVL({left}, 0) = 1"
+            return f"ISNULL({left}, 0) = 1"
         return f"{left} = {_render_boolean('true', dialect)}"
     if operator in NULLARY_CHECK_OPERATORS:
         return f"{left} {operator.value}"
@@ -235,7 +292,14 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
             right = (
                 _render_boolean(comparison.literal, dialect)
                 if comparison.literal_is_boolean
-                else _render_literal(comparison.literal, comparison.literal_is_string)
+                else _render_check_literal(
+                    CheckLiteral(
+                        comparison.literal,
+                        is_string=comparison.literal_is_string,
+                        is_special_float=comparison.literal_is_special_float,
+                    ),
+                    dialect,
+                )
             )
         if dialect is Dialect.POSTGRES:
             return f"{left} IS DISTINCT FROM {right}"
@@ -278,10 +342,30 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
             else comparison.right_column
         )
         return f"{left} {check_operator_sql(operator)} {right}"
-    literal = (
-        _render_boolean(comparison.literal, dialect)
-        if comparison.literal_is_boolean
-        else _render_literal(comparison.literal, comparison.literal_is_string)
+    if comparison.right_expression is not None:
+        expression = comparison.right_expression
+        if expression.function is CheckValueFunction.ARRAY_CARDINALITY:
+            if dialect is not Dialect.POSTGRES:
+                raise DialectError(
+                    "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED",
+                    "CARDINALITY requires PostgreSQL array storage and has no exact target mapping",
+                )
+            right = f"CARDINALITY({quote_identifier(expression.column, dialect)})"
+        else:  # pragma: no cover - closed typed route, defensive for future extensions
+            assert expression.function is not None
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                f"unsupported CHECK right value function {expression.function.value}",
+            )
+        return f"{left} {check_operator_sql(operator)} {right}"
+    literal = _render_check_literal(
+        CheckLiteral(
+            comparison.literal,
+            is_string=comparison.literal_is_string,
+            is_boolean=comparison.literal_is_boolean,
+            is_special_float=comparison.literal_is_special_float,
+        ),
+        dialect,
     )
     return f"{left} {check_operator_sql(comparison.operator)} {literal}"
 

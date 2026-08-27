@@ -149,6 +149,51 @@ def test_constraint_comment_uses_strict_postgres_compatibility_fallback() -> Non
         emit_comment(comment, Dialect.ORACLE)
 
 
+def test_sql_server_constraint_comment_uses_constraint_extended_property() -> None:
+    comment = parse_comment(
+        "COMMENT ON CONSTRAINT runner_nodes_ready_requires_attestation "
+        "ON runner_nodes IS 'A node cannot reach READY without attestation'",
+        Dialect.POSTGRES,
+        namespace_map={"": "dbo"},
+    )
+    emitted = emit_comment(comment, Dialect.TSQL)
+    assert emitted == (
+        "EXEC sys.sp_addextendedproperty @name = N'MS_Description', "
+        "@value = N'A node cannot reach READY without attestation', "
+        "@level0type = N'SCHEMA', @level0name = N'dbo', "
+        "@level1type = N'TABLE', @level1name = N'runner_nodes', "
+        "@level2type = N'CONSTRAINT', "
+        "@level2name = N'runner_nodes_ready_requires_attestation'"
+    )
+
+
+def test_sql_server_constraint_comment_requires_schema_and_respects_value_limit() -> None:
+    comment = parse_comment(
+        "COMMENT ON CONSTRAINT c ON users IS 'description'",
+        Dialect.POSTGRES,
+    )
+    with pytest.raises(DialectError, match="CERTIFIED_COMMENT_TARGET_SCHEMA_REQUIRED"):
+        emit_comment(comment, Dialect.TSQL)
+
+    long_comment = parse_comment(
+        "COMMENT ON CONSTRAINT c ON users IS 'description'",
+        Dialect.POSTGRES,
+        namespace_map={"": "dbo"},
+    )
+    long_comment = type(long_comment)(
+        object_kind=long_comment.object_kind,
+        object_name=long_comment.object_name,
+        text="x" * 3751,
+        table_name=long_comment.table_name,
+        schema=long_comment.schema,
+        table_schema=long_comment.table_schema,
+        routine_argument_types=long_comment.routine_argument_types,
+        routine_argument_type_refs=long_comment.routine_argument_type_refs,
+    )
+    with pytest.raises(DialectError, match="CERTIFIED_COMMENT_TARGET_VALUE_TOO_LARGE"):
+        emit_comment(long_comment, Dialect.TSQL)
+
+
 def test_postgres_adjacent_comment_literals_are_lexically_coalesced() -> None:
     report = translate_ddl(
         "COMMENT ON TABLE users IS 'user ' 'table'",

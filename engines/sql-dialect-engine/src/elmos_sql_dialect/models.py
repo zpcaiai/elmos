@@ -91,6 +91,7 @@ class DefaultKind(str, Enum):
     BOOLEAN = "BOOLEAN"
     CURRENT_TIMESTAMP = "CURRENT_TIMESTAMP"
     NULL = "NULL"
+    ARRAY = "ARRAY"
 
 
 @dataclass(frozen=True)
@@ -101,8 +102,25 @@ class ColumnDefault:
     #: PostgreSQL `'{}'::jsonb`.  Keeping the cast in the IR prevents a
     #: renderer from silently turning a JSONB default into an untyped string.
     #: It is intentionally optional and currently only admits the JSONB
-    #: literal profile in ``parser._parse_default``.
+    #: literal and PostgreSQL ARRAY literal profiles in ``parser._parse_default``.
     cast_type: CanonicalTypeRef | None = None
+    #: Typed scalar members for a PostgreSQL ARRAY[...] default.  Keeping
+    #: members separate from ``literal`` prevents a renderer from treating an
+    #: array expression as an opaque string or silently serialising it as JSON.
+    array_elements: tuple[CheckLiteral, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.kind is DefaultKind.ARRAY:
+            if not self.array_elements or self.literal is not None:
+                raise DialectError(
+                    "CERTIFIED_DDL_UNSUPPORTED_DEFAULT",
+                    "ARRAY defaults require one or more typed members and no scalar literal",
+                )
+        elif self.array_elements:
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_DEFAULT",
+                "only ARRAY defaults may carry typed array members",
+            )
 
 
 @dataclass(frozen=True)
@@ -224,11 +242,21 @@ class CheckLiteral:
     value: str
     is_string: bool = False
     is_boolean: bool = False
+    is_null: bool = False
     #: PostgreSQL's explicitly typed IEEE-754 non-finite literals.  These are
     #: retained in the source IR for faithful analysis, but target emitters
     #: must reject them unless a versioned target profile proves an equivalent
     #: floating-point representation.
     is_special_float: bool = False
+
+    def __post_init__(self) -> None:
+        if self.is_null and (
+            self.value or self.is_string or self.is_boolean or self.is_special_float
+        ):
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                "NULL CHECK literals cannot carry another literal kind",
+            )
 
 
 class CheckValueFunction(str, Enum):
@@ -242,6 +270,11 @@ class CheckValueFunction(str, Enum):
     TRIM = "TRIM"
     JSONB_TYPEOF = "JSONB_TYPEOF"
     ARRAY_LENGTH = "ARRAY_LENGTH"
+    ARRAY_CARDINALITY = "ARRAY_CARDINALITY"
+    ARRAY_POSITION = "ARRAY_POSITION"
+    ARRAY_CONTAINED_BY = "ARRAY_CONTAINED_BY"
+    JSONB_HAS_KEY = "JSONB_HAS_KEY"
+    OCTET_LENGTH = "OCTET_LENGTH"
 
 
 class CheckValueOperator(str, Enum):
@@ -259,6 +292,8 @@ class CheckValueExpression:
     operator: CheckValueOperator | None = None
     right_column: str | None = None
     dimension: int | None = None
+    argument: CheckLiteral | None = None
+    arguments: tuple[CheckLiteral, ...] = ()
 
     def __post_init__(self) -> None:
         if (self.function is None) == (self.operator is None):
@@ -270,6 +305,34 @@ class CheckValueExpression:
             raise DialectError(
                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                 "CHECK scalar functions cannot carry an operator operand",
+            )
+        if self.function in {
+            CheckValueFunction.ARRAY_POSITION,
+            CheckValueFunction.JSONB_HAS_KEY,
+        } and self.argument is None:
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                "typed CHECK search expressions require one search literal",
+            )
+        if self.function not in {
+            CheckValueFunction.ARRAY_POSITION,
+            CheckValueFunction.JSONB_HAS_KEY,
+        } and self.argument is not None:
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                "only typed search expressions may carry a search literal",
+            )
+        if self.function is CheckValueFunction.ARRAY_CONTAINED_BY and (
+            not self.arguments or self.argument is not None
+        ):
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                "ARRAY containment checks require a non-empty typed literal list",
+            )
+        if self.function is not CheckValueFunction.ARRAY_CONTAINED_BY and self.arguments:
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                "only ARRAY_CONTAINED_BY checks may carry a typed literal list",
             )
         if self.function is CheckValueFunction.ARRAY_LENGTH and self.dimension != 1:
             raise DialectError(
@@ -311,6 +374,12 @@ class CheckComparison:
     literal: str = ""
     literal_is_string: bool = False
     literal_is_boolean: bool = False
+    literal_is_special_float: bool = False
+    #: PostgreSQL `IS TRUE` is a strict two-valued truth test: NULL is false.
+    #: A bare boolean CHECK is different because CHECK accepts NULL. Preserve
+    #: that distinction so Oracle/T-SQL lowering can use an explicit NULL-to-0
+    #: normalization instead of widening the accepted rows.
+    strict_truth_test: bool = False
     #: A column-to-column comparison. This is mutually exclusive with
     #: `literal`; both are preserved in the canonical IR rather than reducing
     #: the right side to text and risking a literal/identifier confusion.
@@ -326,6 +395,10 @@ class CheckComparison:
     right_interval_column: str | None = None
     right_interval_value: int | None = None
     right_interval_unit: CheckIntervalUnit | None = None
+    #: Optional typed wrapper around the right operand. The current route
+    #: uses this only for same-array CARDINALITY comparisons; keeping it
+    #: separate prevents a function result from becoming a column identifier.
+    right_expression: CheckValueExpression | None = None
     #: Optional typed wrapper around the left column. The base `column` stays
     #: present for schema/type validation; the wrapper preserves a supported
     #: scalar operation without falling back to raw SQL text.
@@ -342,13 +415,41 @@ class CheckComparison:
             )
         if self.left_expression is not None:
             allowed_expression_operator = self.operator in BINARY_CHECK_OPERATORS or (
-                self.left_expression.function is CheckValueFunction.ARRAY_LENGTH
+                self.left_expression.function in {
+                    CheckValueFunction.ARRAY_LENGTH,
+                    CheckValueFunction.ARRAY_CARDINALITY,
+                    CheckValueFunction.OCTET_LENGTH,
+                }
                 and self.operator is CheckOperator.BETWEEN
+            ) or (
+                self.left_expression.function is CheckValueFunction.ARRAY_POSITION
+                and self.operator in NULLARY_CHECK_OPERATORS
+            ) or (
+                self.left_expression.function in {
+                    CheckValueFunction.ARRAY_CONTAINED_BY,
+                    CheckValueFunction.JSONB_HAS_KEY,
+                }
+                and self.operator is CheckOperator.IS_TRUE
             )
             if self.left_expression.column != self.column or not allowed_expression_operator:
                 raise DialectError(
                     "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                     "CHECK value functions are limited to binary comparisons on their source column",
+                )
+        if self.right_expression is not None:
+            if (
+                self.operator not in BINARY_CHECK_OPERATORS
+                or self.right_column is not None
+                or self.right_interval_column is not None
+                or self.literal
+                or self.literal_is_string
+                or self.literal_is_boolean
+                or self.literal_is_special_float
+                or self.literals
+            ):
+                raise DialectError(
+                    "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                    "typed CHECK right expressions are limited to binary comparisons",
                 )
         if self.operator is CheckOperator.MATCHES_REGEX:
             if not self.literal_is_string:
@@ -371,6 +472,11 @@ class CheckComparison:
                 raise DialectError(
                     "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                     "IS TRUE column assertions take no operand",
+                )
+            if self.strict_truth_test and self.column == "":
+                raise DialectError(
+                    "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                    "strict IS TRUE checks require a source column",
                 )
             return
         if self.operator in NULLARY_CHECK_OPERATORS:
@@ -426,6 +532,8 @@ class CheckComparison:
                     "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                     "a column-to-column CHECK comparison cannot also carry a literal",
                 )
+        elif self.right_expression is not None:
+            return
         elif not self.literal and not self.literal_is_string and not self.literal_is_boolean:
             raise DialectError(
                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
@@ -593,14 +701,79 @@ class Table:
                                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                                 "JSONB_TYPEOF CHECK expressions require a JSONB column",
                             )
-                    if comparison.left_expression.function is CheckValueFunction.ARRAY_LENGTH:
+                    if comparison.left_expression.function is CheckValueFunction.JSONB_HAS_KEY:
+                        type_ref = {
+                            column.name: column.type_ref for column in self.columns
+                        }[comparison.column]
+                        argument = comparison.left_expression.argument
+                        if not (
+                            type_ref.canonical_type is CanonicalType.JSON
+                            and type_ref.json_binary
+                            and argument is not None
+                            and argument.is_string
+                            and not argument.is_null
+                        ):
+                            raise DialectError(
+                                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                                "JSONB key checks require a JSONB column and a non-NULL string key",
+                            )
+                    if comparison.left_expression.function in {
+                        CheckValueFunction.ARRAY_LENGTH,
+                        CheckValueFunction.ARRAY_CARDINALITY,
+                        CheckValueFunction.ARRAY_POSITION,
+                        CheckValueFunction.ARRAY_CONTAINED_BY,
+                    }:
                         type_ref = {
                             column.name: column.type_ref for column in self.columns
                         }[comparison.column]
                         if type_ref.canonical_type is not CanonicalType.ARRAY:
                             raise DialectError(
                                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
-                                "ARRAY_LENGTH CHECK expressions require an ARRAY column",
+                                "array CHECK expressions require an ARRAY column",
+                            )
+                        if comparison.left_expression.function is CheckValueFunction.ARRAY_CONTAINED_BY:
+                            element_type = type_ref.element_type
+                            arguments = comparison.left_expression.arguments
+                            if element_type is None or any(
+                                not item.is_null
+                                and (
+                                    (item.is_boolean and element_type.canonical_type is not CanonicalType.BOOLEAN)
+                                    or (
+                                        item.is_string
+                                        and element_type.canonical_type
+                                        not in {
+                                            CanonicalType.CHAR,
+                                            CanonicalType.VARCHAR,
+                                            CanonicalType.TEXT,
+                                        }
+                                    )
+                                    or (
+                                        not item.is_boolean
+                                        and not item.is_string
+                                        and element_type.canonical_type
+                                        not in {
+                                            CanonicalType.INT16,
+                                            CanonicalType.INT32,
+                                            CanonicalType.INT64,
+                                            CanonicalType.FLOAT64,
+                                            CanonicalType.DECIMAL,
+                                        }
+                                    )
+                                )
+                                for item in arguments
+                            ):
+                                raise DialectError(
+                                    "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                                    "ARRAY containment members must match the declared element type",
+                                )
+                    if comparison.left_expression.function is CheckValueFunction.OCTET_LENGTH:
+                        type_ref = {
+                            column.name: column.type_ref for column in self.columns
+                        }[comparison.column]
+                        if type_ref.canonical_type is not CanonicalType.BINARY:
+                            raise DialectError(
+                                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                                "OCTET_LENGTH CHECK expressions require a BINARY column",
                             )
                 if comparison.right_column is not None and comparison.right_column not in names:
                     raise DialectError(
@@ -615,6 +788,30 @@ class Table:
                         "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                         "column-to-column CHECK comparisons require the same canonical type",
                     )
+                if comparison.right_expression is not None:
+                    if comparison.right_expression.column not in names:
+                        raise DialectError(
+                            "CERTIFIED_DDL_UNKNOWN_COLUMN",
+                            f"CHECK references unknown column {comparison.right_expression.column!r}",
+                        )
+                    if comparison.left_expression is None:
+                        raise DialectError(
+                            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                            "typed CHECK right expressions require a typed left expression",
+                        )
+                    if comparison.left_expression.function is not comparison.right_expression.function:
+                        raise DialectError(
+                            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                            "typed CHECK function comparisons require the same function on both sides",
+                        )
+                    if (
+                        column_types[comparison.column]
+                        is not column_types[comparison.right_expression.column]
+                    ):
+                        raise DialectError(
+                            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                            "typed CHECK function comparisons require same-typed columns",
+                        )
                 if comparison.right_interval_column is not None:
                     if comparison.right_interval_column not in names:
                         raise DialectError(
@@ -629,11 +826,24 @@ class Table:
                             "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                             "timestamp interval CHECK comparisons require TIMESTAMP columns",
                         )
+                is_jsonb_key_predicate = (
+                    comparison.left_expression is not None
+                    and comparison.left_expression.function is CheckValueFunction.JSONB_HAS_KEY
+                )
+                is_array_boolean_predicate = (
+                    comparison.left_expression is not None
+                    and comparison.left_expression.function is CheckValueFunction.ARRAY_CONTAINED_BY
+                )
                 if (
-                    comparison.operator is CheckOperator.IS_TRUE
-                    or comparison.literal_is_boolean
-                    or any(item.is_boolean for item in comparison.literals)
-                ) and column_types[comparison.column] is not CanonicalType.BOOLEAN:
+                    (
+                        comparison.operator is CheckOperator.IS_TRUE
+                        or comparison.literal_is_boolean
+                        or any(item.is_boolean for item in comparison.literals)
+                    )
+                    and not is_jsonb_key_predicate
+                    and not is_array_boolean_predicate
+                    and column_types[comparison.column] is not CanonicalType.BOOLEAN
+                ):
                     raise DialectError(
                         "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                         f"boolean CHECK predicate references non-BOOLEAN column {comparison.column!r}",

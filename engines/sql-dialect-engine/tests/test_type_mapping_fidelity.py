@@ -11,8 +11,14 @@ from __future__ import annotations
 
 import pytest
 
+from elmos_sql_dialect.emitter import emit_create_table
 from elmos_sql_dialect.engine import translate_ddl
-from elmos_sql_dialect.models import CanonicalType, DefaultKind, Dialect
+from elmos_sql_dialect.models import (
+    CanonicalType,
+    DefaultKind,
+    Dialect,
+    DialectError,
+)
 from elmos_sql_dialect.parser import parse_create_table
 
 
@@ -84,6 +90,38 @@ def test_jsonb_literal_default_does_not_get_downgraded_to_plain_json(target: str
     assert _blocked(
         "CREATE TABLE t (payload JSONB NOT NULL DEFAULT '{}'::jsonb)", "postgres", target
     ) == "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED"
+
+
+def test_postgres_array_literal_default_is_retained_as_typed_source_fact() -> None:
+    table = parse_create_table(
+        "CREATE TABLE t (threshold_bps INTEGER[] NOT NULL DEFAULT ARRAY[5000,8000])",
+        Dialect.POSTGRES,
+    )
+    default = table.columns[0].default
+    assert default is not None
+    assert default.kind is DefaultKind.ARRAY
+    assert [item.value for item in default.array_elements] == ["5000", "8000"]
+    assert all(not item.is_string for item in default.array_elements)
+    rendered = emit_create_table(table, Dialect.POSTGRES)
+    assert "INTEGER[]" in rendered
+    assert "DEFAULT ARRAY[5000, 8000]" in rendered
+
+
+@pytest.mark.parametrize("ddl", [
+    "CREATE TABLE t (threshold_bps INTEGER[] DEFAULT ARRAY['5000'])",
+    "CREATE TABLE t (threshold_bps INTEGER[] DEFAULT ARRAY[])",
+])
+def test_array_literal_defaults_fail_closed_on_untyped_or_mismatched_members(ddl: str) -> None:
+    with pytest.raises(DialectError):
+        parse_create_table(ddl, Dialect.POSTGRES)
+
+
+def test_array_literal_default_does_not_get_serialized_to_a_non_postgres_type() -> None:
+    assert _blocked(
+        "CREATE TABLE t (threshold_bps INTEGER[] NOT NULL DEFAULT ARRAY[5000,8000])",
+        "postgres",
+        "mysql",
+    ) == "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED"
 
 
 def test_decimal_precision_beyond_the_target_maximum_fails_closed() -> None:
