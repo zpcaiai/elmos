@@ -3,16 +3,16 @@
   "pack_key": "frontend-to-miniapp-vue3-wechat-v1",
   "source_tuple": {
     "stack": "vue3-sfc-fixture",
-    "versions": ["source-package-1.0.0-parser-3.5.39"],
+    "versions": ["vue3-source-snapshot-1.0.1-vue-3.5.39"],
     "language": "typescript",
     "language_versions": ["5.9.2"],
-    "runtime": "static-analysis-worker-nodejs",
+    "runtime": "nodejs-source-build-and-static-analysis",
     "runtime_versions": ["26.0.0"],
-    "build_tool": "typescript-5.9.2-static-analysis",
+    "build_tool": "vite-6.0.0",
     "package_manager": "pnpm-10.12.4",
-    "router": ["vue-router-declared-minimum-4.0.0"],
+    "router": ["vue-router-4.5.0"],
     "renderer": ["vue-sfc-compiler-3.5.39-static-only"],
-    "state": ["pinia-declared-minimum-2.0.0"],
+    "state": ["pinia-2.3.1"],
     "forms": ["vue-v-model-static-contract"],
     "styling": ["vue-scoped-css-static-contract"],
     "design_system": ["fixture-local-css"],
@@ -23,7 +23,7 @@
     "browsers": [],
     "devices": []
   },
-  "snapshot_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
+  "snapshot_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
   "coverage": 1.0,
   "routes": [{"path": "/", "source_ref": "src/router.ts", "discovery": "static"}],
   "components": [
@@ -39,9 +39,9 @@
   "design_assets": [{"name": "app-shell", "source_ref": "src/App.vue", "mode": "scoped-css"}],
   "accessibility": [{"name": "todo-input-label", "source_ref": "src/views/HomeView.vue", "mode": "aria-label-static"}],
   "runtime_evidence": [],
-  "evidence_refs": ["source-snapshots/manifest.json", "source-fingerprint/evidence.json", "certification/local-runtime-candidate-evidence.json"],
+  "evidence_refs": ["source-snapshots/manifest.json", "certification/source-build-evidence.json", "source-fingerprint/evidence.json", "certification/local-runtime-candidate-evidence.json"],
   "critical_unknowns": [
-    "The fixture has no lockfile, so the resolved Vue, Vue Router and Pinia runtime versions are unknown.",
-    "The source application was not installed, built or launched."
+    "The source snapshot includes exact Vue, Vue Router and Pinia versions bound to pnpm-lock.yaml.",
+    "The source application has a locally replayed typecheck/build but has not been launched in an approved runtime."
   ]
 }

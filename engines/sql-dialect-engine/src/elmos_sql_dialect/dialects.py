@@ -284,10 +284,22 @@ def render_type(type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
         )
     if t == CanonicalType.BINARY:
         if type_ref.length is None:
-            raise DialectError(
-                "CERTIFIED_DDL_UNBOUNDED_BINARY",
-                "binary length is required for a portable fixed/variable byte mapping",
-            )
+            if type_ref.binary_fixed:
+                raise DialectError(
+                    "CERTIFIED_DDL_UNBOUNDED_BINARY",
+                    "fixed-width binary storage requires an explicit length",
+                )
+            # PostgreSQL BYTEA, Oracle BLOB, MySQL LONGBLOB and SQL Server
+            # VARBINARY(MAX) all preserve arbitrary byte payloads.  This is
+            # intentionally a separate typed route from bounded BINARY(n):
+            # bounded source length enforcement is not portable, while the
+            # unbounded source contract is.
+            return {
+                Dialect.POSTGRES: "BYTEA",
+                Dialect.MYSQL: "LONGBLOB",
+                Dialect.ORACLE: "BLOB",
+                Dialect.TSQL: "VARBINARY(MAX)",
+            }[dialect]
         length = type_ref.length
         if dialect is Dialect.ORACLE and length > 2_000:
             raise DialectError(

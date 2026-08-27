@@ -7,17 +7,17 @@
       "domain": "discovery",
       "status": "experimental",
       "owner": "elmos-frontend-client-engine",
-      "source_versions": ["source-package-1.0.0-parser-3.5.39"],
+      "source_versions": ["vue3-source-snapshot-1.0.1-vue-3.5.39"],
       "target_versions": ["wechat-base-library-3.9.1-requested-NOT_RUN"],
       "evidence_refs": ["certification/local-static-evidence.json"],
-      "reason": "All six pinned fixture files are byte-hashed and represented in local static inventory; source installation and runtime discovery remain NOT_RUN."
+      "reason": "All twelve pinned source snapshot files are byte-hashed and represented in local static inventory; source install/typecheck/build are locally evidenced while official runtime discovery remains NOT_RUN."
     },
     {
       "id": "typed-ui-interaction-ir",
       "domain": "semantic-ir",
       "status": "experimental",
       "owner": "elmos-frontend-client-engine",
-      "source_versions": ["source-package-1.0.0-parser-3.5.39"],
+      "source_versions": ["vue3-source-snapshot-1.0.1-vue-3.5.39"],
       "target_versions": ["wechat-base-library-3.9.1-requested-NOT_RUN"],
       "evidence_refs": ["ui-ir/model.json", "certification/local-static-evidence.json"],
       "reason": "The pinned route, components, state, event, form binding, resource, style and accessibility facts have typed nodes and source-map entries; runtime equivalence remains NOT_RUN."
@@ -27,7 +27,7 @@
       "domain": "target-generation",
       "status": "experimental",
       "owner": "elmos-client-modernization-maintainers",
-      "source_versions": ["source-package-1.0.0-parser-3.5.39"],
+      "source_versions": ["vue3-source-snapshot-1.0.1-vue-3.5.39"],
       "target_versions": ["wechat-base-library-3.9.1-requested-NOT_RUN"],
       "evidence_refs": ["transformations/vue3-todo-to-wechat-native.json", "certification/local-runtime-candidate-evidence.json"],
       "reason": "A digest-bound local runtime analyzed the pinned source snapshot and generated one bounded native WeChat candidate. The checked-in review UI IR and transformation contract are separate and are not consumed by that runtime; official target build, preview, device runtime and equivalence evidence remain NOT_RUN."
@@ -37,7 +37,7 @@
       "domain": "runtime-validation",
       "status": "blocked",
       "owner": "elmos-miniapp-candidate-review",
-      "source_versions": ["source-package-1.0.0-parser-3.5.39"],
+      "source_versions": ["vue3-source-snapshot-1.0.1-vue-3.5.39"],
       "target_versions": ["wechat-base-library-3.9.1-requested-NOT_RUN"],
       "evidence_refs": [],
       "reason": "Exact official toolchain lock, WeChat developer account, build, preview, emulator and physical-device execution evidence are absent and remain NOT_RUN."
@@ -47,7 +47,7 @@
       "domain": "quality",
       "status": "blocked",
       "owner": "elmos-accessibility-review",
-      "source_versions": ["source-package-1.0.0-parser-3.5.39"],
+      "source_versions": ["vue3-source-snapshot-1.0.1-vue-3.5.39"],
       "target_versions": ["wechat-base-library-3.9.1-requested-NOT_RUN"],
       "evidence_refs": [],
       "reason": "Approved baselines, assistive-technology sessions, performance measurements and independent external review are absent and remain NOT_RUN."

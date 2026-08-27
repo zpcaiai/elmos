@@ -6,18 +6,18 @@
     "archive_path": "skills/subskills/elmos-frontend-to-miniapp-skills-v1.0.0.zip",
     "archive_sha256": "sha256:e8fabbe19f96a432e3ba77470e1c35a000cc683cd4ac0c084bbabcf31df79d82",
     "archive_bytes": 281829,
-    "manifest_sha256": "sha256:6dd05d088680de1ac50fe3778bfc6d654afcf17922dab2690cb770ac27701c9f",
-    "manifest_bytes": 1202,
-    "snapshot_id": "vue3-todo-source-package-1.0.0",
+    "manifest_sha256": "sha256:1f1848a8d4d40f1aa5a47ee61bc1b5157ebe55001b8aef6759266e8ea6c8c04b",
+    "manifest_bytes": 2273,
+    "snapshot_id": "vue3-todo-source-snapshot-1.0.1",
     "privacy": "public synthetic fixture; no credentials or personal data",
-    "manifest_aggregate_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
-    "runtime_file_set_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
-    "file_count": 6,
-    "byte_count": 1639,
+    "manifest_aggregate_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
+    "runtime_file_set_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
+    "file_count": 12,
+    "byte_count": 30476,
     "source_scripts_executed": false
   },
   "runtime_implementation": {
-    "digest": "sha256:77f0eed71b937858c579c4ef4f846ede86c615b7146f9ee0a67e9db3c9d73c09",
+    "digest": "sha256:dca978c88c176d29f06a3cdcfd31ebbc60b49de55313d59bbbe1930e56e6b308",
     "file_count": 24,
     "node_version": "26.0.0",
     "typescript_version": "5.9.2",
@@ -25,8 +25,8 @@
   },
   "request": {
     "request_id": "conv-vue3-todo-wechat",
-    "request_digest": "sha256:3a6e8b167511c9c5decf5c090ac5bd9eae61445142bf6463c0806e8369241a02",
-    "source_revision": "e8fabbe19f96a432e3ba77470e1c35a000cc683cd4ac0c084bbabcf31df79d82",
+    "request_digest": "sha256:0f683412841f28e016ccff898f5b349673f309b979d7a30571f5bc1bdfb19e9a",
+    "source_revision": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
     "target": {
       "platform": "wechat",
       "platformVersion": "3.9.1",
@@ -61,22 +61,25 @@
     }
   },
   "conversion": {
-    "run_id": "miniapp-run-conv-vue3-todo-wechat-23e9d800789a1fb4",
-    "deterministic_digest": "sha256:3cfe12e088d65c5622e4120d3b1bf8b672c2f9ab1b586f9c37918ea9d75f0ff2",
-    "analysis_digest": "sha256:8683aae7b10a506f6980d148b22522a7de52d9a9ef93611905c2a90ce4e5916c",
-    "semantic_ir_digest": "sha256:1b635a64657dc6861412dcc9e499c4e3c5360de467379caa06049be83eddd72a",
-    "plan_digest": "sha256:b5d133cd2e3908956f1d77a48d15d186d885c7a1f65348c821b3138c5a5b117e",
-    "checkpoint_digest": "sha256:decdb60c1902b33133072c62c70a42776c5a50a65d8e25a7ed43ca8f7cfdc2b5"
+    "run_id": "miniapp-run-conv-vue3-todo-wechat-a3d9a1108aad7f06",
+    "deterministic_digest": "sha256:fcea5aafb07268a04ad1c2ca148d52400214ed2a111e137a5e2d2487598b6d55",
+    "analysis_digest": "sha256:980b47d70f146ddba083d78d17f4007a94bb2d2f607d456ec0107b1dc71d59db",
+    "semantic_ir_digest": "sha256:149d49beb320824da249b859e341d9129aea76035072ee3b6bc6e1d49c5a5f4d",
+    "plan_digest": "sha256:e0ca83d8e1e940976763a63fc3d4107c4660fb1f0f822b91f6c556229d5100af",
+    "checkpoint_digest": "sha256:4edee0710a554fdb6732202ac070bfa29bc38b244bea671078271031ad634714"
   },
   "analysis": {
-    "parser": "@vue/compiler-sfc+@vue/compiler-sfc-template@3.5.39+router-ast+typescript-compiler-api+vue-router-ast",
+    "parser": "@vue/compiler-sfc+@vue/compiler-sfc-template@3.5.39+router-ast+source-build-config-inventory-only+source-build-entrypoint+typescript-compiler-api+vue-router-ast",
     "coverage": 1,
     "parsed_files": [
+      "index.html",
       "src/App.vue",
+      "src/env.d.ts",
       "src/main.ts",
       "src/router.ts",
       "src/stores/todo.ts",
-      "src/views/HomeView.vue"
+      "src/views/HomeView.vue",
+      "vite.config.ts"
     ],
     "failed_files": [],
     "component_count": 8,
@@ -92,7 +95,7 @@
         "sourceRefs": [
           {
             "path": "src/App.vue",
-            "sha256": "sha256:f051f1065b6ff315cf9c8d0e8f2e0d86d69ef0c8c02c2935d7017120d30bbe9c",
+            "sha256": "sha256:91985cca2e02ba745bdaa1b043f30977a3c7e0778c8309d21282e1f5efba922e",
             "startLine": 6,
             "startColumn": 3,
             "endLine": 6,
@@ -109,7 +112,7 @@
         "sourceRefs": [
           {
             "path": "src/App.vue",
-            "sha256": "sha256:f051f1065b6ff315cf9c8d0e8f2e0d86d69ef0c8c02c2935d7017120d30bbe9c",
+            "sha256": "sha256:91985cca2e02ba745bdaa1b043f30977a3c7e0778c8309d21282e1f5efba922e",
             "startLine": 7,
             "startColumn": 5,
             "endLine": 7,
@@ -126,7 +129,7 @@
         "sourceRefs": [
           {
             "path": "src/views/HomeView.vue",
-            "sha256": "sha256:ae19e4143890c99b4cba6f350f41ff8eef37f2244c98b354d3fe3b0f4c120c3f",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
             "startLine": 15,
             "startColumn": 3,
             "endLine": 15,
@@ -143,7 +146,7 @@
         "sourceRefs": [
           {
             "path": "src/views/HomeView.vue",
-            "sha256": "sha256:ae19e4143890c99b4cba6f350f41ff8eef37f2244c98b354d3fe3b0f4c120c3f",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
             "startLine": 18,
             "startColumn": 5,
             "endLine": 18,
@@ -160,45 +163,11 @@
         "sourceRefs": [
           {
             "path": "src/views/HomeView.vue",
-            "sha256": "sha256:ae19e4143890c99b4cba6f350f41ff8eef37f2244c98b354d3fe3b0f4c120c3f",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
             "startLine": 19,
             "startColumn": 7,
             "endLine": 19,
             "endColumn": 89
-          }
-        ]
-      },
-      {
-        "code": "MINIAPP_ROUTER_HISTORY_BASE_UNRESOLVED",
-        "severity": "error",
-        "message": "Router history must be one trace-bound createWebHistory(\"/\") call; null, hash, memory, dynamic and referenced history are not equivalent to the native root page stack.",
-        "classification": "D",
-        "blocking": true,
-        "sourceRefs": [
-          {
-            "path": "src/router.ts",
-            "sha256": "sha256:1b40f66376ec1849e3d8bbc34beff969d93a45ec375a11368126af3048f3e18d",
-            "startLine": 5,
-            "startColumn": 3,
-            "endLine": 5,
-            "endColumn": 30
-          }
-        ]
-      },
-      {
-        "code": "MINIAPP_ROUTER_HISTORY_BASE_UNRESOLVED",
-        "severity": "error",
-        "message": "Only createWebHistory(\"/\") is equivalent to the native root page stack; hash, memory, null, dynamic and non-root bases are blocked.",
-        "classification": "D",
-        "blocking": true,
-        "sourceRefs": [
-          {
-            "path": "src/router.ts",
-            "sha256": "sha256:1b40f66376ec1849e3d8bbc34beff969d93a45ec375a11368126af3048f3e18d",
-            "startLine": 5,
-            "startColumn": 12,
-            "endLine": 5,
-            "endColumn": 30
           }
         ]
       },
@@ -211,7 +180,7 @@
         "sourceRefs": [
           {
             "path": "src/App.vue",
-            "sha256": "sha256:f051f1065b6ff315cf9c8d0e8f2e0d86d69ef0c8c02c2935d7017120d30bbe9c",
+            "sha256": "sha256:91985cca2e02ba745bdaa1b043f30977a3c7e0778c8309d21282e1f5efba922e",
             "startLine": 12,
             "startColumn": 1,
             "endLine": 12,
@@ -232,7 +201,7 @@
       "A": 8,
       "B": 0,
       "C": 7,
-      "D": 8,
+      "D": 0,
       "E": 0
     },
     "findings": [
@@ -272,20 +241,6 @@
         "message": "ul carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile."
       },
       {
-        "code": "MINIAPP_ROUTER_HISTORY_BASE_UNRESOLVED",
-        "platform": "all",
-        "classification": "D",
-        "blocking": true,
-        "message": "Only createWebHistory(\"/\") is equivalent to the native root page stack; hash, memory, null, dynamic and non-root bases are blocked."
-      },
-      {
-        "code": "MINIAPP_ROUTER_HISTORY_BASE_UNRESOLVED",
-        "platform": "all",
-        "classification": "D",
-        "blocking": true,
-        "message": "Router history must be one trace-bound createWebHistory(\"/\") call; null, hash, memory, dynamic and referenced history are not equivalent to the native root page stack."
-      },
-      {
         "code": "MINIAPP_SCOPED_STYLE_NOT_LOWERED",
         "platform": "all",
         "classification": "C",
@@ -293,53 +248,11 @@
         "message": "Vue scoped/module style ownership requires deterministic scope selectors and matching template attributes before target emission."
       },
       {
-        "code": "MINIAPP_SOURCE_BUILD_TOOL_BINDING_MISSING_OR_AMBIGUOUS",
-        "platform": "all",
-        "classification": "D",
-        "blocking": true,
-        "message": "requested build tool 5.9.2 requires exactly one known manifest dependency and package-lock resolution; found 0/0."
-      },
-      {
-        "code": "MINIAPP_SOURCE_LANGUAGE_LOCK_EVIDENCE_MISSING",
-        "platform": "all",
-        "classification": "D",
-        "blocking": true,
-        "message": "typescript@missing has no package-lock resolution for requested language 5.9.2."
-      },
-      {
-        "code": "MINIAPP_SOURCE_RUNTIME_DECLARATION_MISSING",
-        "platform": "all",
-        "classification": "D",
-        "blocking": true,
-        "message": "requested source runtime 26.0.0 has no exact package.json engines.node declaration; installed source runtime execution remains NOT_RUN."
-      },
-      {
-        "code": "MINIAPP_SOURCE_VERSION_LOCK_EVIDENCE_MISSING",
-        "platform": "all",
-        "classification": "D",
-        "blocking": true,
-        "message": "vue@^3.0.0 has no parsed package-lock resolution bound to source bytes."
-      },
-      {
-        "code": "MINIAPP_SOURCE_VERSION_MANIFEST_MISMATCH",
-        "platform": "all",
-        "classification": "D",
-        "blocking": true,
-        "message": "request 3.5.39 does not match source manifest vue@^3.0.0."
-      },
-      {
-        "code": "MINIAPP_EFFECT_NOT_WIRED",
+        "code": "MINIAPP_DEPENDENCY_ADAPTER_NOT_WIRED",
         "platform": "wechat",
         "classification": "C",
         "blocking": true,
-        "message": "vue-router.history.unsupported/source-router-history is represented in the plan but has no generated lifecycle implementation."
-      },
-      {
-        "code": "MINIAPP_FRAMEWORK_BOOTSTRAP_UNRESOLVED",
-        "platform": "wechat",
-        "classification": "D",
-        "blocking": true,
-        "message": "createRouter must reference the exact createWebHistory(\"/\") instance."
+        "message": "@vitejs/plugin-vue: The dependency is declared but no exact source import/call-site evidence was recovered."
       }
     ]
   },
@@ -348,7 +261,7 @@
     "platform_version": "3.9.1",
     "toolchain_version": "1.06.2504010",
     "profile_version": "2026-08-20.1",
-    "deterministic_digest": "sha256:be0868bb6a6ad243ca53bb06d758c1c1235dc22327af6cce74246950e91870f8",
+    "deterministic_digest": "sha256:78246d3918bc18962daae20f4794d3c564cff6084350cbd5b9c6bc769384f8bb",
     "file_count": 11,
     "static_validation": "PASSED",
     "official_build": "NOT_RUN",
@@ -377,8 +290,8 @@
       },
       {
         "path": "migration-findings.json",
-        "sha256": "sha256:17fe76396b68a14e3bc46311739e9a898ac212f00916900bf9dcdae5f41490ab",
-        "bytes": 3117
+        "sha256": "sha256:358afa61d5c23921f2e4a4a70d03f9bd3bbce688fa6ab2608fa24e7154a9a490",
+        "bytes": 1855
       },
       {
         "path": "pages/index/index.js",
@@ -407,14 +320,14 @@
       },
       {
         "path": "trace-map.json",
-        "sha256": "sha256:adb34337d168628b4cc93a3eb78a2773f5d356b04ca56cc161083ce6c54ecc3d",
-        "bytes": 1183
+        "sha256": "sha256:35e174b57f2f63ecc423d8f5cff6e39dc2e98823631a616054214518b2c0027b",
+        "bytes": 1253
       }
     ]
   },
   "gates": {
     "G0": "PASSED",
-    "G1": "PASSED",
+    "G1": "BLOCKED",
     "G2": "PASSED",
     "G3": "BLOCKED",
     "G4": "BLOCKED",

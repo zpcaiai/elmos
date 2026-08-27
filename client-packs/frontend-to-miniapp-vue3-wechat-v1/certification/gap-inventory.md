@@ -1,7 +1,7 @@
 # Gap inventory
 
-- Resolve and lock the exact source Vue, Vue Router and Pinia versions; install,
-  build and launch the pinned source fixture in an approved isolated runtime.
+- Launch the pinned source snapshot in an approved isolated runtime and bind
+  startup/runtime evidence to the existing source-build evidence.
 - Bind a pinned official WeChat developer toolchain and account profile.
 - Materialize the digest-bound local candidate in an authorized review
   workspace, run the official build and preview, and execute the P0 journey in

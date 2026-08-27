@@ -145,6 +145,7 @@ class CheckOperator(str, Enum):
     IS_NULL = "IS NULL"
     IS_NOT_NULL = "IS NOT NULL"
     IS_TRUE = "IS TRUE"
+    IS_DISTINCT_FROM = "IS DISTINCT FROM"
     IN = "IN"
     BETWEEN = "BETWEEN"
     LIKE = "LIKE"
@@ -162,6 +163,7 @@ BINARY_CHECK_OPERATORS: frozenset[CheckOperator] = frozenset(
         CheckOperator.LE,
         CheckOperator.GT,
         CheckOperator.GE,
+        CheckOperator.IS_DISTINCT_FROM,
     }
 )
 NULLARY_CHECK_OPERATORS: frozenset[CheckOperator] = frozenset({CheckOperator.IS_NULL, CheckOperator.IS_NOT_NULL})
@@ -934,12 +936,23 @@ class UpdateAssignment:
 
 @dataclass(frozen=True)
 class UpdateStatement:
-    """A single-table UPDATE without a FROM/derived-row source."""
+    """A typed UPDATE with an optional proven single-table row source.
+
+    The source form is admitted only when the parser receives a source
+    catalogue proving that the join columns are a declared unique key.  That
+    proof prevents a target row from being updated more than once by a
+    one-to-many join, which is not portable across all four target dialects.
+    """
 
     table: str
     assignments: tuple[UpdateAssignment, ...]
     predicate: CheckExpression | None = None
     schema: str | None = None
+    target_alias: str | None = None
+    source_table: str | None = None
+    source_alias: str | None = None
+    source_schema: str | None = None
+    join_conditions: tuple[DmlJoinCondition, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.assignments:
@@ -947,6 +960,22 @@ class UpdateStatement:
         targets = tuple(item.target.casefold() for item in self.assignments)
         if len(set(targets)) != len(targets):
             raise DialectError("CERTIFIED_UPDATE_DUPLICATE_TARGET", "UPDATE assigns one column more than once")
+        has_source = self.source_table is not None
+        if has_source != (self.source_alias is not None):
+            raise DialectError(
+                "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+                "an UPDATE row source requires both a source table and a plain source alias",
+            )
+        if has_source and not self.join_conditions:
+            raise DialectError(
+                "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+                "an UPDATE row source requires at least one typed equality join",
+            )
+        if not has_source and self.join_conditions:
+            raise DialectError(
+                "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
+                "typed UPDATE join conditions require a source table",
+            )
 
 
 # ---------------------------------------------------------------------------

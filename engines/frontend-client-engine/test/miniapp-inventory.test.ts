@@ -114,6 +114,40 @@ test("package-lock resolutions are byte-bound typed evidence, not inferred insta
   assert.ok(inventory.configurationEvidence.some(item => item.kind === "package-lock" && item.parsed));
 });
 
+test("pnpm importer resolutions are parsed as byte-bound typed evidence", () => {
+  const lockContent = [
+    "lockfileVersion: '9.0'",
+    "",
+    "importers:",
+    "  .:",
+    "    dependencies:",
+    "      vue:",
+    "        specifier: 3.5.39",
+    "        version: 3.5.39",
+    "    devDependencies:",
+    "      typescript:",
+    "        specifier: 5.9.2",
+    "        version: 5.9.2",
+    "      vite:",
+    "        specifier: 6.0.0",
+    "        version: 6.0.0",
+    "packages:",
+    "  vue@3.5.39:",
+    "    resolution: {}",
+  ].join("\n");
+  const inventory = inventoryMiniappSource(inventoryInput([
+    { path: "package.json", content: JSON.stringify({ dependencies: { vue: "3.5.39" }, devDependencies: { typescript: "5.9.2", vite: "6.0.0" } }) },
+    { path: "pnpm-lock.yaml", content: lockContent },
+    { path: "src/App.vue", content: "<template><main>Locked</main></template>" },
+  ]));
+  assert.deepEqual(inventory.lockedDependencies, [
+    { name: "vite", version: "6.0.0", sourcePath: "pnpm-lock.yaml", sourceDigest: `sha256:${createHash("sha256").update(lockContent).digest("hex")}`, packageManager: "pnpm" },
+    { name: "typescript", version: "5.9.2", sourcePath: "pnpm-lock.yaml", sourceDigest: `sha256:${createHash("sha256").update(lockContent).digest("hex")}`, packageManager: "pnpm" },
+    { name: "vue", version: "3.5.39", sourcePath: "pnpm-lock.yaml", sourceDigest: `sha256:${createHash("sha256").update(lockContent).digest("hex")}`, packageManager: "pnpm" },
+  ].sort((left, right) => `${left.name}\u0000${left.version}`.localeCompare(`${right.name}\u0000${right.version}`)));
+  assert.ok(inventory.configurationEvidence.some(item => item.kind === "pnpm-lock" && item.parsed));
+});
+
 test("strong React and Vue evidence is retained as a blocking multi-framework conflict", () => {
   const inventory = inventoryMiniappSource(inventoryInput([
     {

@@ -1134,7 +1134,7 @@ export function planMiniappConversion(
       platform: "all" as const,
       classification: "D" as const,
       blocking: true,
-      message: `${frameworkDependency}@${declaredFrameworkVersion ?? "missing"} has no parsed package-lock resolution bound to source bytes.`,
+      message: `${frameworkDependency}@${declaredFrameworkVersion ?? "missing"} has no parsed lockfile resolution bound to source bytes.`,
     }] : []),
     ...(declaredFrameworkVersion && declaredFrameworkVersion !== request.source.frameworkVersion ? [{
       code: "MINIAPP_SOURCE_VERSION_MANIFEST_MISMATCH",
@@ -1162,7 +1162,7 @@ export function planMiniappConversion(
       platform: "all" as const,
       classification: "D" as const,
       blocking: true,
-      message: `${languageDependency}@${declaredLanguageVersion ?? "missing"} has no package-lock resolution for requested language ${request.source.languageVersion}.`,
+      message: `${languageDependency}@${declaredLanguageVersion ?? "missing"} has no lockfile resolution for requested language ${request.source.languageVersion}.`,
     }] : []),
     ...(declaredLanguageVersion && declaredLanguageVersion !== request.source.languageVersion ? [{
       code: "MINIAPP_SOURCE_LANGUAGE_MANIFEST_MISMATCH",
@@ -1196,7 +1196,7 @@ export function planMiniappConversion(
       platform: "all" as const,
       classification: "D" as const,
       blocking: true,
-      message: `requested build tool ${request.source.buildToolVersion} requires exactly one known manifest dependency and package-lock resolution; found ${declaredBuildTools.length}/${lockedBuildTools.length}.`,
+      message: `requested build tool ${request.source.buildToolVersion} requires exactly one known manifest dependency and lockfile resolution; found ${declaredBuildTools.length}/${lockedBuildTools.length}.`,
     }] : []),
     ...(lockedBuildTools.length === 1 && (lockedBuildTools[0]!.declared !== request.source.buildToolVersion
       || lockedBuildTools[0]!.locked !== request.source.buildToolVersion) ? [{

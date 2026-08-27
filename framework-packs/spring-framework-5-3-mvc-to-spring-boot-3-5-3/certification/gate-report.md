@@ -19,9 +19,12 @@
 - Exact target build: `9/9 PASSED_LOCAL` with Java `21.0.11` / Maven `3.9.11`
 - Exact target startup: `PASSED_LOCAL` through Boot `3.5.3` `WarLauncher`
 - Actuator health and two GET/JSP comparisons: `PASSED_LOCAL`
+- Source commit: `7e1c098541143c96cce7d9a637fffe57d0e2baae`
 - Source snapshot SHA-256: `68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581`
+- Target profile SHA-256: `8042f1bed7cde57d13e9794b7a694437d5b12d40f0eb4948c656d942a9297ee1`
+- Qualification policy SHA-256: `d219db8f61c27e55acc4b2fe5f0899e131fa2b5fc9e3c0d2caffb12e0ed6f3cd`
 - Download ZIP: `17,347` bytes / `f85763c1d86a6af8e39cbdcb0d98571595e58e9ecf8a047b1df6e0ebf1fcd298`
-- Executed WAR: `28,990,394` bytes / `58c46baf60eeec971a95a02d183c8c8e74108699a6194263e2db20f3a28c986f`
+- Executed WAR: `28,990,394` bytes / `1fae241386924325e6f8099e59b2d5da19749cfd47b9fdb26f92fb7d5c857f60`
 - Negative, holdout and representative corpora: `NOT_RUN`
 - Customer, Rootless and independent review: `NOT_RUN`
 

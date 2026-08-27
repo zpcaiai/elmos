@@ -36,7 +36,7 @@ or an engine defect. This is the 100% completeness measure; it does not
 relabel manual work as translated.
 
 The separate automatic-translation measure remains an upper bound. On the
-current 76-file migration corpus it is **1171/1485 = 78.9%**, after adding
+current 76-file migration corpus it is **1173/1485 = 79.0%**, after adding
 typed namespace mapping, views, callable and constraint comments, table
 privileges, bounded procedures, table-valued functions, literal-only INSERT
 seeds, bounded single-source `INSERT ... SELECT`, simple single-table `UPDATE`,
@@ -59,12 +59,12 @@ remain `0`, external execution remains `NOT_RUN`, and certification remains
 `NOT_CERTIFIED`.
 
 The source-side number is not the same as target reachability. Replaying every
-source-side candidate through all four target emitters gives **341/1171 = 29.1%**
+source-side candidate through all four target emitters gives **343/1173 = 29.2%**
 with no target namespace profile, with per-target reachability of PostgreSQL
-1171, MySQL 409, Oracle 402, and SQL Server 411. When the caller explicitly
+1173, MySQL 411, Oracle 404, and SQL Server 413. When the caller explicitly
 declares the source default namespace mapping `{"": "dbo"}`, SQL Server table
 and column comments can use extended properties, raising the profile-specific
-intersection to **391/1171 = 33.4%** (SQL Server 466; MySQL column comments use
+intersection to **393/1173 = 33.5%** (SQL Server 468; MySQL column comments use
 the complete source column definition when a comment catalogue is supplied).
 These are emitter
 reachability upper bounds, not live-database execution or certification.
@@ -359,9 +359,9 @@ hiding exactly what this engine cannot do.
 ### What it says about real code
 
 Run against the current checkout's 76 migration files, the scan reports
-**1171 of 1485 statements as automatic translation candidates (78.9% upper
+**1173 of 1485 statements as automatic translation candidates (79.0% upper
 bound)**, counting all active profiles. It also reports **1485 of 1485 (100.0%)
-with an explicit disposition**: 1171 automatic candidates, 305 manual
+with an explicit disposition**: 1173 automatic candidates, 303 manual
 migrations, and 9 source-format reviews.
 
 The automatic candidate number is intentionally conservative. The blocker
@@ -381,10 +381,9 @@ ranking says why, while the disposition ledger ensures no unit disappears:
 | `CERTIFIED_ROUTINE_UNSUPPORTED_PARAMETER` | 7 | 2 | unsupported parameter shapes need a target-specific callable contract |
 | `CERTIFIED_DDL_UNSUPPORTED_TYPE` | 5 | 1 | residual vendor-specific/return types remain outside the certified set |
 | `CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED` | 4 | 1 | SECURITY DEFINER/search_path changes execution identity or name resolution |
-| `CERTIFIED_UPDATE_UNSUPPORTED_SOURCE` | 4 | 1 | `UPDATE ... FROM` needs a target-specific row-source route |
+| `CERTIFIED_UPDATE_COLUMN_TYPE_UNPROVEN` | 3 | 1 | source/target assignment types are not both proven by the source catalogue |
 | `CERTIFIED_INSERT_UNSUPPORTED_MODIFIER` | 3 | 1 | conflict/upsert semantics need a target-specific route |
 | `CERTIFIED_DDL_UNSUPPORTED_CHECK` | 3 | 2 | residual CHECK expression semantics are not in the typed predicate profile |
-| `CERTIFIED_DDL_UNBOUNDED_BINARY` | 1 | 1 | an unbounded binary column needs an explicit target LOB policy |
 | `CERTIFIED_DDL_UNSUPPORTED_DEFAULT` | 1 | 1 | a non-literal default remains outside the typed default profile |
 | `CERTIFIED_DML_UNSUPPORTED_EXPRESSION` | 1 | 1 | volatile `clock_timestamp()` and other expressions remain outside the typed DML profile |
 
@@ -401,11 +400,13 @@ The historical 64-file snapshot was 174/1015 = 17.1%. Subsequent typed
 expansions now cover schema-qualified objects with explicit mapping, safe
 OR REPLACE cases, view/query metadata, callable and constraint comments, table
 privileges, bounded procedures, table-valued functions, trigger metadata,
-JSON/plain binary routes, the typed JSONB literal-default profile, literal-only
-INSERT seeds, bounded single-source/equi-join `INSERT ... SELECT`, simple single-table
-`UPDATE`, PostgreSQL adjacent-string comment recovery, and the earlier
+JSON/plain binary routes, unbounded PostgreSQL `BYTEA` to target LOB mappings,
+the typed JSONB literal-default profile, literal-only INSERT seeds, bounded
+single-source/equi-join `INSERT ... SELECT`, simple single-table `UPDATE`, and
+a typed `UPDATE ... FROM` route gated by a source PRIMARY KEY/UNIQUE proof and
+matching catalogue types, PostgreSQL adjacent-string comment recovery, and the earlier
 CHECK/identity/precision work. The current checkout therefore measures
-**1171/1485 = 78.9%** automatic candidates. The repository-
+**1173/1485 = 79.0%** automatic candidates. The repository-
 level headline remains **1485/1485 = 100.0% disposition coverage**: every
 blocker is explicit manual or source-review work, and none is silently
 converted.

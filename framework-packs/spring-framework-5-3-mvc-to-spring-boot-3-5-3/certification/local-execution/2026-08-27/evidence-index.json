@@ -11,7 +11,7 @@
     {
       "path": "artifacts/executed-spring-boot-3.5.3.war",
       "bytes": 28990394,
-      "sha256": "45a3a26a169e576db8e91c4bea6688e785dea2f2b2b231b163d3748fdd3b2175"
+      "sha256": "1fae241386924325e6f8099e59b2d5da19749cfd47b9fdb26f92fb7d5c857f60"
     },
     {
       "path": "artifacts/migrated-spring-boot-3.5.3.zip",
@@ -25,13 +25,13 @@
     },
     {
       "path": "evidence/control.log",
-      "bytes": 21560,
-      "sha256": "186fc103bbd5aa6ef5dad3da65be5257aabda281b95813d7731f9be3e7b071e5"
+      "bytes": 21519,
+      "sha256": "5cad8725f2d379bf91266be6cdf45434053f80455e9471123e6b3263b505e5d3"
     },
     {
       "path": "evidence/framework-contract-model.json",
       "bytes": 18963,
-      "sha256": "b7d4bcbc203782ccb67192ba2956f6fb10e00e24689e787160ca3fb6f6c90b11"
+      "sha256": "8ced6f9733e9a9caca6c7e29f27a29d70c12a47fc5f109c8bd69837a93a3c6d5"
     },
     {
       "path": "evidence/route-selection.json",
@@ -41,12 +41,12 @@
     {
       "path": "evidence/source-snapshot-manifest.json",
       "bytes": 5108,
-      "sha256": "61d5706de6bebe97f62dd98341abf8da782a0188c27f2ef77453d1ef3fbc7d39"
+      "sha256": "e7272d33177f48e5dcea5e2057a1dfe310fae03defb9133dc8f189542285b9a4"
     },
     {
       "path": "evidence/source-startup.log",
-      "bytes": 3907,
-      "sha256": "ff38e61d222803085e02896f975292955b9e44bccdc55e8dd3e565cb31501d45"
+      "bytes": 3903,
+      "sha256": "a2fe42e276073a0b617ff045b7b92c0238558c252b50d306a5d688d677339c80"
     },
     {
       "path": "evidence/source-test-summary.json",
@@ -56,22 +56,22 @@
     {
       "path": "evidence/spring-mvc-http-oracle.json",
       "bytes": 3497,
-      "sha256": "c997ee1578bef38a0aedf64aa665e8dd2f3acef905b48f09b1809b3c4ca6371f"
+      "sha256": "b2c48aa861cb44ad909b2f7ce6e3f9bdffd34c0d6f648ffc56b27e50861505e7"
     },
     {
       "path": "evidence/target-materialization-receipt.json",
       "bytes": 5227,
-      "sha256": "eab6e4b363321f47cbc0164e0e0bed8d2c7200b0532e18244ce2d03475b5d6ba"
+      "sha256": "65fd7cf281a5776b94ea3de121cac035f6dd352a8cbbf22d82913c49a25215be"
     },
     {
       "path": "evidence/target-materialization-source-map.json",
       "bytes": 2071,
-      "sha256": "08980b02774abae20146f4a63e9cf8ecd497ecb1c1655a63b53681b2daef66fe"
+      "sha256": "7eb257f10a630e4f0e7f7a75295165bce95ea4334342cd040e00b01c005ec56c"
     },
     {
       "path": "evidence/target-startup.log",
-      "bytes": 3314,
-      "sha256": "578a7b5bf997b9bb0ad645157cc09e817c232fc88d95b1ecd4f5acda3243beb5"
+      "bytes": 3308,
+      "sha256": "5864588005630cde6c45f5470f4c181c12a6e114de9fd648c8923ec8dba1537f"
     },
     {
       "path": "evidence/target-test-summary.json",
@@ -85,8 +85,8 @@
     },
     {
       "path": "local-qualification.json",
-      "bytes": 8851,
-      "sha256": "a730e9e4320e8068c763db0a3b0239e35d480b70f8df4f511f0c3f0c36107a35"
+      "bytes": 9175,
+      "sha256": "71547ba59d5e31fc13ede41e4c4fb0b5efb632a9f1d2b2a03735a011aa226bba"
     }
   ]
 }

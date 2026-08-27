@@ -6,16 +6,16 @@
   "exact_tuple": {
     "source": {
       "stack": "vue3-sfc-fixture",
-      "versions": ["source-package-1.0.0-parser-3.5.39"],
+      "versions": ["vue3-source-snapshot-1.0.1-vue-3.5.39"],
       "language": "typescript",
       "language_versions": ["5.9.2"],
-      "runtime": "static-analysis-worker-nodejs",
+      "runtime": "nodejs-source-build-and-static-analysis",
       "runtime_versions": ["26.0.0"],
-      "build_tool": "typescript-5.9.2-static-analysis",
+      "build_tool": "vite-6.0.0",
       "package_manager": "pnpm-10.12.4",
-      "router": ["vue-router-declared-minimum-4.0.0"],
+      "router": ["vue-router-4.5.0"],
       "renderer": ["vue-sfc-compiler-3.5.39-static-only"],
-      "state": ["pinia-declared-minimum-2.0.0"],
+      "state": ["pinia-2.3.1"],
       "forms": ["vue-v-model-static-contract"],
       "styling": ["vue-scoped-css-static-contract"],
       "design_system": ["fixture-local-css"],
@@ -51,7 +51,7 @@
       "devices": ["wechat-devtools-emulator-NOT_RUN", "wechat-physical-device-NOT_RUN"]
     }
   },
-  "evidence_refs": ["certification/local-static-evidence.json", "certification/local-runtime-candidate-evidence.json", "certification/external-evidence-status.json"],
+  "evidence_refs": ["certification/source-build-evidence.json", "certification/local-static-evidence.json", "certification/local-runtime-candidate-evidence.json", "certification/external-evidence-status.json"],
   "recertification_triggers": [
     "source snapshot digest change",
     "source dependency resolution change",

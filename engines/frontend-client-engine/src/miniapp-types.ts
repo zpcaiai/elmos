@@ -177,7 +177,7 @@ export interface MiniappLockedDependencyEvidence {
   readonly version: string;
   readonly sourcePath: string;
   readonly sourceDigest: string;
-  readonly packageManager: "npm";
+  readonly packageManager: "npm" | "pnpm";
 }
 
 export interface MiniappDeclaredRuntimeEvidence {
@@ -188,7 +188,7 @@ export interface MiniappDeclaredRuntimeEvidence {
   readonly evidenceKind: "manifest-declaration";
 }
 
-export type MiniappConfigurationKind = "package-json" | "package-lock" | "pubspec" | "app-config";
+export type MiniappConfigurationKind = "package-json" | "package-lock" | "pnpm-lock" | "pubspec" | "app-config";
 
 export interface MiniappConfigurationEvidence {
   readonly kind: MiniappConfigurationKind;

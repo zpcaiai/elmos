@@ -56,7 +56,18 @@ from .advanced import (
     parse_trigger,
 )
 from .chinadb import CHINADB_TARGETS, chinadb_capabilities
-from .models import Dialect, DialectError
+from .models import (
+    AddColumn,
+    AddConstraint,
+    AlterTable,
+    CanonicalType,
+    Dialect,
+    DialectError,
+    DropColumn,
+    DropConstraint,
+    RenameColumn,
+    Table,
+)
 from .parser import (
     _parse_source_statements,
     parse_alter_table,
@@ -153,6 +164,18 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE": (
         "statement-kind",
         "UPDATE ... FROM or another derived row source needs a target-specific route",
+    ),
+    "CERTIFIED_UPDATE_SOURCE_KEY_UNPROVEN": (
+        "structure",
+        "an UPDATE row source has no source-schema proof that its join columns are unique",
+    ),
+    "CERTIFIED_UPDATE_SOURCE_KEY_NOT_UNIQUE": (
+        "structure",
+        "an UPDATE row source can match a target row more than once because its join columns are not a declared key",
+    ),
+    "CERTIFIED_UPDATE_COLUMN_TYPE_UNPROVEN": (
+        "types",
+        "an UPDATE row-source assignment lacks matching typed source and target catalogue facts",
     ),
     "CERTIFIED_UPDATE_UNSUPPORTED_MODIFIER": (
         "statement-kind",
@@ -583,11 +606,106 @@ def _disposition(status: FindingStatus, reason_code: str | None) -> CoverageDisp
     return "MANUAL_MIGRATION_REQUIRED"
 
 
+def _catalog_key(schema: str | None, table: str) -> tuple[str, str]:
+    return ((schema or "").casefold(), table.casefold())
+
+
+@dataclass
+class SourceSchemaCatalog:
+    """Typed source facts used to prove bounded UPDATE row-source safety.
+
+    This catalogue is built from the migration source, never from a live
+    database.  A source UPDATE may use a table as its row source only when
+    the exact source join columns are a declared PRIMARY KEY or UNIQUE key.
+    Dropping an unknown constraint invalidates the table's recorded keys,
+    which is conservative: absent evidence is never treated as uniqueness.
+    """
+
+    columns: dict[tuple[str, str], dict[str, CanonicalType]] = field(default_factory=dict)
+    unique_keys: dict[tuple[str, str], set[tuple[str, ...]]] = field(default_factory=dict)
+
+    def add_table(self, table: Table) -> None:
+        key = _catalog_key(table.schema, table.name)
+        self.columns[key] = {
+            column.name.casefold(): column.type_ref.canonical_type for column in table.columns
+        }
+        self.unique_keys[key] = {
+            tuple(column.casefold() for column in table.primary_key),
+            *(tuple(column.casefold() for column in unique) for unique in table.unique_constraints),
+        } - {()}
+
+    def apply_alter(self, alter: AlterTable) -> None:
+        key = _catalog_key(alter.schema, alter.table)
+        columns = self.columns.setdefault(key, {})
+        keys = self.unique_keys.setdefault(key, set())
+        for action in alter.actions:
+            if isinstance(action, AddColumn):
+                columns[action.column.name.casefold()] = action.column.type_ref.canonical_type
+            elif isinstance(action, DropColumn):
+                name = action.column.casefold()
+                columns.pop(name, None)
+                keys.difference_update({candidate for candidate in keys if name in candidate})
+            elif isinstance(action, RenameColumn):
+                old = action.column.casefold()
+                new = action.new_name.casefold()
+                column_type = columns.pop(old, None)
+                if column_type is not None:
+                    columns[new] = column_type
+                keys_copy = list(keys)
+                keys.clear()
+                for candidate in keys_copy:
+                    keys.add(tuple(new if item == old else item for item in candidate))
+            elif isinstance(action, AddConstraint):
+                if action.primary_key:
+                    keys.add(tuple(column.casefold() for column in action.primary_key))
+                if action.unique:
+                    keys.add(tuple(column.casefold() for column in action.unique))
+            elif isinstance(action, DropConstraint):
+                # The certified alter IR intentionally does not preserve the
+                # dropped constraint's old shape. Invalidate all uniqueness
+                # facts rather than guessing which one was removed.
+                keys.clear()
+
+    def _matching_keys(self, schema: str | None, table: str) -> list[tuple[str, str]]:
+        if schema is not None:
+            return [_catalog_key(schema, table)]
+        return [key for key in self.columns if key[1] == table.casefold()]
+
+    def type_of(self, table: str, column: str) -> CanonicalType | None:
+        matches = [self.columns[key].get(column.casefold()) for key in self._matching_keys(None, table)]
+        present = [item for item in matches if item is not None]
+        return present[0] if len(present) == 1 else None
+
+    def has_unique_key(self, schema: str | None, table: str, columns: tuple[str, ...]) -> bool:
+        wanted = tuple(column.casefold() for column in columns)
+        matches = self._matching_keys(schema, table)
+        return len(matches) == 1 and wanted in self.unique_keys.get(matches[0], set())
+
+
+def _record_catalog_statement(
+    catalog: SourceSchemaCatalog,
+    statement: exp.Expression,
+    dialect: Dialect,
+    namespace_map: Mapping[str, str] | None,
+) -> None:
+    """Add only source statements whose typed schema facts parse cleanly."""
+    try:
+        if isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "TABLE":
+            catalog.add_table(parse_create_table(statement, dialect, namespace_map))
+        elif isinstance(statement, exp.Alter):
+            catalog.apply_alter(parse_alter_table(statement, dialect, namespace_map))
+    except DialectError:
+        # A target- or statement-specific blocker must not turn into schema
+        # evidence.  The next UPDATE then remains fail-closed.
+        return
+
+
 def _classify(
     statement: exp.Expr,
     dialect: Dialect,
     raw_sql: str | None = None,
     namespace_map: Mapping[str, str] | None = None,
+    catalog: SourceSchemaCatalog | None = None,
 ) -> tuple[FindingStatus, str | None, str | None]:
     """Parse one statement through the real certified parser.
 
@@ -657,7 +775,7 @@ def _classify(
         elif isinstance(statement, exp.Insert):
             parse_insert_statement(raw_sql or statement, dialect, namespace_map)
         elif isinstance(statement, exp.Update):
-            parse_update(raw_sql or statement, dialect, namespace_map)
+            parse_update(raw_sql or statement, dialect, namespace_map, catalog)
         else:
             # Not covered by any certified DDL profile. This is the single
             # most important number in the report, so it is produced by the
@@ -678,6 +796,7 @@ def _recover_statements(
     relative: str,
     source_dialect: Dialect,
     namespace_map: Mapping[str, str] | None = None,
+    catalog: SourceSchemaCatalog | None = None,
 ) -> list[ScanFinding]:
     """Classify a file the parser refused as a whole, statement by statement.
 
@@ -742,7 +861,7 @@ def _recover_statements(
             )
             continue
         statement = parsed[0]
-        status, code, reason = _classify(statement, source_dialect, raw.text, namespace_map)
+        status, code, reason = _classify(statement, source_dialect, raw.text, namespace_map, catalog)
         family = BLOCKER_CATALOG.get(code or "", (None, ""))[0] if code else None
         findings.append(
             ScanFinding(
@@ -757,6 +876,8 @@ def _recover_statements(
                 _disposition(status, code),
             )
         )
+        if catalog is not None:
+            _record_catalog_statement(catalog, statement, source_dialect, namespace_map)
     return findings
 
 
@@ -773,6 +894,7 @@ def scan_repository(
         raise DialectError("REPOSITORY_NOT_FOUND", str(root))
 
     findings: list[ScanFinding] = []
+    catalog = SourceSchemaCatalog()
     for path in discover_sql_files(root):
         relative = str(path.relative_to(root))
         try:
@@ -804,7 +926,7 @@ def scan_repository(
             # each of the five had exactly one offending statement -- while
             # every coverage ratio was flattered, because those files
             # contributed 1 to the denominator instead of hundreds.
-            findings.extend(_recover_statements(text, relative, source_dialect, namespace_map))
+            findings.extend(_recover_statements(text, relative, source_dialect, namespace_map, catalog))
             continue
 
         index = 0
@@ -815,7 +937,7 @@ def scan_repository(
                 continue  # a comment or trailing separator, not a statement
             index += 1
             raw_sql = raw_by_index[index - 1].text if raw_by_index else None
-            status, code, reason = _classify(statement, source_dialect, raw_sql, namespace_map)
+            status, code, reason = _classify(statement, source_dialect, raw_sql, namespace_map, catalog)
             family = BLOCKER_CATALOG.get(code or "", (None, ""))[0] if code else None
             findings.append(
                 ScanFinding(
@@ -830,6 +952,7 @@ def scan_repository(
                     _disposition(status, code),
                 )
             )
+            _record_catalog_statement(catalog, statement, source_dialect, namespace_map)
 
     return _build_report(root, source_dialect, findings, examples_per_blocker, include_all_findings)
 

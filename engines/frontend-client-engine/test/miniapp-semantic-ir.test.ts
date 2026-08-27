@@ -169,3 +169,28 @@ test("semantic IR validation rejects dangling references and untraced nodes", ()
     application: { ...ir.application, title: "tampered" },
   }), /deterministic digest does not match its content/);
 });
+
+test("local HTML build entrypoints and bundler configs are inventoried without UI semantics", () => {
+  const files = [
+    ...vueTodoFiles,
+    { path: "src/main.ts", content: 'import { createApp } from "vue"; import App from "./App.vue"; createApp(App).mount("#app");' },
+    { path: "index.html", content: '<!doctype html><html><body><div id="app"></div><script type="module" src="/src/main.ts"></script></body></html>' },
+    { path: "vite.config.ts", content: 'import { defineConfig } from "vite"; export default defineConfig({});' },
+  ];
+  const request = miniappRequest(files);
+  const inventory = inventoryMiniappSource({
+    schemaVersion: "1.0",
+    inventoryId: "inv-vue-build-entrypoints",
+    sourceRevision: request.source.revision,
+    sourceSnapshotDigest: request.source.snapshotDigest,
+    sourceLabelHint: request.source.sourceLabel,
+    limits: request.policy.limits,
+    files,
+  });
+  const sources = Object.fromEntries(files.map(file => [file.path, String(file.content)]));
+  const analysis = analyzeMiniappSource(request, inventory, sources);
+  assert.ok(analysis.parsedFiles.includes("index.html"));
+  assert.ok(analysis.parsedFiles.includes("vite.config.ts"));
+  assert.equal(analysis.findings.some(finding => finding.code === "MINIAPP_H5_EXTERNAL_SCRIPT_LINK_REQUIRES_RESOLUTION"), false);
+  assert.equal(analysis.findings.some(finding => finding.code === "MINIAPP_CALL_SEMANTICS_UNRESOLVED"), false);
+});
