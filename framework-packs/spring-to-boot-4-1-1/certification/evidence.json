@@ -9,6 +9,13 @@
   "development_contracts": "NOT_RUN",
   "component_contracts": "NOT_RUN",
   "provider_behavior": "NOT_RUN",
+  "provider_domains": {
+    "security": "NOT_RUN",
+    "database": "NOT_RUN",
+    "transaction": "NOT_RUN",
+    "messaging": "NOT_RUN",
+    "provider": "NOT_RUN"
+  },
   "independent_holdout": "NOT_RUN",
   "representative_repository": "NOT_RUN",
   "independent_verification": "NOT_RUN",

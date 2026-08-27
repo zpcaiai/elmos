@@ -151,6 +151,33 @@
     ],
     "unsupported": ["unmapped-spring-construct"]
   },
+  "provider_domains": [
+    {
+      "id": "security",
+      "feature_ids": ["security-web", "security-method-oauth2"],
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "database",
+      "feature_ids": ["data-jpa", "data-jdbc", "data-r2dbc", "data-redis", "data-document"],
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "transaction",
+      "feature_ids": ["transactions"],
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "messaging",
+      "feature_ids": ["messaging-kafka", "messaging-amqp", "messaging-jms", "messaging-integration", "messaging-batch"],
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "provider",
+      "feature_ids": ["boot-grpc", "boot-actuator", "boot-observability", "web-graphql", "web-hateoas", "integration-ldap-session", "cache", "scheduler"],
+      "status": "NOT_RUN"
+    }
+  ],
   "tracks": [
     {
       "id": "source-build",

@@ -37,6 +37,26 @@ test("Vue SFC and TypeScript compiler APIs produce traced deterministic semantic
   assert.equal(first.analysis.coverage, 1);
   assert.ok(first.analysis.components.length >= 4);
   assert.ok(first.analysis.routes.some(route => route.path === "/"));
+  assert.equal(first.analysis.findings.some(finding => finding.code === "MINIAPP_ROUTE_DECLARATION_UNBOUND"), false);
+  assert.equal(first.analysis.findings.some(finding => finding.code === "MINIAPP_ROUTE_OPTION_UNRESOLVED"), false);
+  const namedRouteFiles = vueTodoFiles.map(file => file.path === "src/router.ts" ? {
+    ...file,
+    content: String(file.content).replace('routes: [{ path: "/", component: "App" }]', 'routes: [{ path: "/", name: "home", component: "App" }]'),
+  } : file);
+  const namedRouteRequest = miniappRequest(namedRouteFiles);
+  const namedRouteInventory = inventoryMiniappSource({
+    schemaVersion: "1.0",
+    inventoryId: "inv-vue-named-route",
+    sourceRevision: namedRouteRequest.source.revision,
+    sourceSnapshotDigest: namedRouteRequest.source.snapshotDigest,
+    sourceLabelHint: namedRouteRequest.source.sourceLabel,
+    limits: namedRouteRequest.policy.limits,
+    files: namedRouteFiles,
+  });
+  const namedRouteSources = Object.fromEntries(namedRouteFiles.map(file => [file.path, String(file.content)]));
+  const namedRouteAnalysis = analyzeMiniappSource(namedRouteRequest, namedRouteInventory, namedRouteSources);
+  assert.equal(namedRouteAnalysis.routes.find(route => route.path === "/")?.name, "home");
+  assert.equal(namedRouteAnalysis.findings.some(finding => finding.code === "MINIAPP_ROUTE_OPTION_UNRESOLVED"), false);
   assert.ok(first.analysis.states.some(state => state.name === "title"));
   assert.ok(first.analysis.states.some(state => state.name === "items" && state.scope === "application"));
   assert.deepEqual(first.analysis.interactions.map(interaction => ({

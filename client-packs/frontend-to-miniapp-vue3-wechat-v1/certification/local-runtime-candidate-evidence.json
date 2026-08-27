@@ -17,7 +17,7 @@
     "source_scripts_executed": false
   },
   "runtime_implementation": {
-    "digest": "sha256:958a5a61c8f0aa861c72b2f9f47ce76ba14ed754f26cafd16a17266b96d67ac7",
+    "digest": "sha256:77f0eed71b937858c579c4ef4f846ede86c615b7146f9ee0a67e9db3c9d73c09",
     "file_count": 24,
     "node_version": "26.0.0",
     "typescript_version": "5.9.2",
@@ -62,10 +62,10 @@
   },
   "conversion": {
     "run_id": "miniapp-run-conv-vue3-todo-wechat-23e9d800789a1fb4",
-    "deterministic_digest": "sha256:e698b8c5d256b32aa1e7d60af8adb25ce4b465b6b2b3963c5cfed5715a1fe005",
-    "analysis_digest": "sha256:b36e1283f8d45e67cd2ab67fa3df0d874f24b92ac343d4d0cb19ff0764fe67dc",
-    "semantic_ir_digest": "sha256:2f170e4deb0d2060e6bb976bd5948987cd68d90b2706575c8c0200826480109e",
-    "plan_digest": "sha256:fb778385eb3874fc947054c4d0a64b2d77f1b8fe01f7a375903bb365fc3a8d4f",
+    "deterministic_digest": "sha256:3cfe12e088d65c5622e4120d3b1bf8b672c2f9ab1b586f9c37918ea9d75f0ff2",
+    "analysis_digest": "sha256:8683aae7b10a506f6980d148b22522a7de52d9a9ef93611905c2a90ce4e5916c",
+    "semantic_ir_digest": "sha256:1b635a64657dc6861412dcc9e499c4e3c5360de467379caa06049be83eddd72a",
+    "plan_digest": "sha256:b5d133cd2e3908956f1d77a48d15d186d885c7a1f65348c821b3138c5a5b117e",
     "checkpoint_digest": "sha256:decdb60c1902b33133072c62c70a42776c5a50a65d8e25a7ed43ca8f7cfdc2b5"
   },
   "analysis": {
@@ -80,34 +80,9 @@
     ],
     "failed_files": [],
     "component_count": 8,
-    "route_count": 0,
+    "route_count": 1,
     "state_count": 2,
     "findings": [
-      {
-        "code": "MINIAPP_APPLICATION_ROOT_AMBIGUOUS",
-        "severity": "error",
-        "message": "No explicit router was recovered and 2 independent render roots remain; a single application root cannot be inferred.",
-        "classification": "D",
-        "blocking": true,
-        "sourceRefs": [
-          {
-            "path": "src/App.vue",
-            "sha256": "sha256:f051f1065b6ff315cf9c8d0e8f2e0d86d69ef0c8c02c2935d7017120d30bbe9c",
-            "startLine": 6,
-            "startColumn": 3,
-            "endLine": 6,
-            "endColumn": 27
-          },
-          {
-            "path": "src/views/HomeView.vue",
-            "sha256": "sha256:ae19e4143890c99b4cba6f350f41ff8eef37f2244c98b354d3fe3b0f4c120c3f",
-            "startLine": 15,
-            "startColumn": 3,
-            "endLine": 15,
-            "endColumn": 12
-          }
-        ]
-      },
       {
         "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
         "severity": "warning",
@@ -194,40 +169,6 @@
         ]
       },
       {
-        "code": "MINIAPP_ROUTE_DECLARATION_UNBOUND",
-        "severity": "error",
-        "message": "Route-like object / is not owned by a validated router route container and cannot be lowered as a native page.",
-        "classification": "D",
-        "blocking": true,
-        "sourceRefs": [
-          {
-            "path": "src/router.ts",
-            "sha256": "sha256:1b40f66376ec1849e3d8bbc34beff969d93a45ec375a11368126af3048f3e18d",
-            "startLine": 6,
-            "startColumn": 12,
-            "endLine": 6,
-            "endColumn": 60
-          }
-        ]
-      },
-      {
-        "code": "MINIAPP_ROUTE_OPTION_UNRESOLVED",
-        "severity": "error",
-        "message": "Each route object must contain exactly path and component properties; aliases, guards, meta, props, children and spreads are not lowered.",
-        "classification": "D",
-        "blocking": true,
-        "sourceRefs": [
-          {
-            "path": "src/router.ts",
-            "sha256": "sha256:1b40f66376ec1849e3d8bbc34beff969d93a45ec375a11368126af3048f3e18d",
-            "startLine": 6,
-            "startColumn": 12,
-            "endLine": 6,
-            "endColumn": 60
-          }
-        ]
-      },
-      {
         "code": "MINIAPP_ROUTER_HISTORY_BASE_UNRESOLVED",
         "severity": "error",
         "message": "Router history must be one trace-bound createWebHistory(\"/\") call; null, hash, memory, dynamic and referenced history are not equivalent to the native root page stack.",
@@ -282,7 +223,7 @@
   },
   "semantic_ir": {
     "profile": "miniapp-ui-interaction-v1",
-    "node_count": 19,
+    "node_count": 20,
     "trace_coverage": 1,
     "batch32_pack_model": "ui-ir/model.json is a separate 20-node review model, not this runtime IR"
   },
@@ -291,17 +232,10 @@
       "A": 8,
       "B": 0,
       "C": 7,
-      "D": 12,
+      "D": 8,
       "E": 0
     },
     "findings": [
-      {
-        "code": "MINIAPP_APPLICATION_ROOT_AMBIGUOUS",
-        "platform": "all",
-        "classification": "D",
-        "blocking": true,
-        "message": "No explicit router was recovered and 2 independent render roots remain; a single application root cannot be inferred."
-      },
       {
         "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
         "platform": "all",
@@ -336,20 +270,6 @@
         "classification": "C",
         "blocking": true,
         "message": "ul carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile."
-      },
-      {
-        "code": "MINIAPP_ROUTE_DECLARATION_UNBOUND",
-        "platform": "all",
-        "classification": "D",
-        "blocking": true,
-        "message": "Route-like object / is not owned by a validated router route container and cannot be lowered as a native page."
-      },
-      {
-        "code": "MINIAPP_ROUTE_OPTION_UNRESOLVED",
-        "platform": "all",
-        "classification": "D",
-        "blocking": true,
-        "message": "Each route object must contain exactly path and component properties; aliases, guards, meta, props, children and spreads are not lowered."
       },
       {
         "code": "MINIAPP_ROUTER_HISTORY_BASE_UNRESOLVED",
@@ -420,13 +340,6 @@
         "classification": "D",
         "blocking": true,
         "message": "createRouter must reference the exact createWebHistory(\"/\") instance."
-      },
-      {
-        "code": "MINIAPP_ROUTE_MANIFEST_EMPTY",
-        "platform": "wechat",
-        "classification": "D",
-        "blocking": true,
-        "message": "No source route or uniquely traceable application root was recovered; an empty native page manifest cannot be treated as a generated candidate."
       }
     ]
   },
@@ -435,8 +348,8 @@
     "platform_version": "3.9.1",
     "toolchain_version": "1.06.2504010",
     "profile_version": "2026-08-20.1",
-    "deterministic_digest": "sha256:6a79ddbfc221cc30a873b48affd65448fd964210047cdb0e5efea47f85a40ab3",
-    "file_count": 7,
+    "deterministic_digest": "sha256:be0868bb6a6ad243ca53bb06d758c1c1235dc22327af6cce74246950e91870f8",
+    "file_count": 11,
     "static_validation": "PASSED",
     "official_build": "NOT_RUN",
     "device_runtime": "NOT_RUN",
@@ -454,8 +367,8 @@
       },
       {
         "path": "app.json",
-        "sha256": "sha256:e04cc060133c5587efcb965bb8c0dfee55b574634a64f138c15119909fa18ed5",
-        "bytes": 196
+        "sha256": "sha256:bfc2c6a6b1d0d35c4a703cf381337f6f1e0cdef73dd9fc8c79b9bec0693c0ad1",
+        "bytes": 223
       },
       {
         "path": "app.wxss",
@@ -464,8 +377,28 @@
       },
       {
         "path": "migration-findings.json",
-        "sha256": "sha256:7ec7e2cd073b22a7d669da7a3faadae0a008e6095bb030f231d0c5291f8f1391",
-        "bytes": 3427
+        "sha256": "sha256:17fe76396b68a14e3bc46311739e9a898ac212f00916900bf9dcdae5f41490ab",
+        "bytes": 3117
+      },
+      {
+        "path": "pages/index/index.js",
+        "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+        "bytes": 1488
+      },
+      {
+        "path": "pages/index/index.json",
+        "sha256": "sha256:0a8bcafa55f5e50b92ef24d825875f116290019242a8f949c4c9520cd9bc8228",
+        "bytes": 64
+      },
+      {
+        "path": "pages/index/index.wxml",
+        "sha256": "sha256:1f5d28a1d8dd006746bbd77ff988ae1efbbb94952379701c4e0d0a7bbf0c94e3",
+        "bytes": 1000
+      },
+      {
+        "path": "pages/index/index.wxss",
+        "sha256": "sha256:6e264462b17ffd3ebacf55d7568e7db53886ccb978fe3da2680b8303b0de653f",
+        "bytes": 476
       },
       {
         "path": "project.config.json",
@@ -474,8 +407,8 @@
       },
       {
         "path": "trace-map.json",
-        "sha256": "sha256:c234d1c6565c20aa559e6d5dbfeb3faf77a998ba3d75533dd9d2eaacaafe0074",
-        "bytes": 430
+        "sha256": "sha256:adb34337d168628b4cc93a3eb78a2773f5d356b04ca56cc161083ce6c54ecc3d",
+        "bytes": 1183
       }
     ]
   },

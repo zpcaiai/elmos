@@ -83,6 +83,8 @@ export interface MiniappAnalyzedInteraction {
 export interface MiniappAnalyzedRoute {
   readonly id: string;
   readonly path: string;
+  /** A static Vue Router name is preserved as source metadata for downstream evidence. */
+  readonly name?: string;
   readonly component: string;
   readonly componentModule?: string | null;
   readonly parameters: readonly string[];
@@ -1045,21 +1047,28 @@ function analyzeTypeScript(
       const names = routeObject.properties.map(property => ts.isSpreadAssignment(property) ? undefined : propertyName(property.name));
       const pathProperty = routeObject.properties.find(property => ts.isPropertyAssignment(property)
         && propertyName(property.name) === "path");
+      const nameProperty = routeObject.properties.find(property => ts.isPropertyAssignment(property)
+        && propertyName(property.name) === "name");
       const componentProperty = routeObject.properties.find(property => ts.isPropertyAssignment(property)
         && propertyName(property.name) === "component");
       const routePath = pathProperty && ts.isPropertyAssignment(pathProperty)
         ? literalText(pathProperty.initializer)
         : undefined;
+      const routeName = nameProperty && ts.isPropertyAssignment(nameProperty)
+        ? literalText(nameProperty.initializer)
+        : undefined;
       const componentInitializer = componentProperty && ts.isPropertyAssignment(componentProperty)
         ? unwrapExpression(componentProperty.initializer)
         : undefined;
-      const valid = names.length === 2
+      const valid = names.length >= 2 && names.length <= 3
         && names.filter(name => name === "path").length === 1
         && names.filter(name => name === "component").length === 1
+        && names.filter(name => name === "name").length <= 1
         && routeObject.properties.every(property => ts.isPropertyAssignment(property)
-          && ["path", "component"].includes(propertyName(property.name) ?? ""))
+          && ["path", "component", "name"].includes(propertyName(property.name) ?? ""))
         && typeof routePath === "string"
         && routePath.startsWith("/")
+        && (nameProperty === undefined || (typeof routeName === "string" && routeName.length > 0))
         && Boolean(componentInitializer)
         && componentInitializer?.kind !== ts.SyntaxKind.NullKeyword;
       if (!valid) {
@@ -1650,6 +1659,11 @@ function analyzeTypeScript(
         ));
       }
       if (routePath?.startsWith("/") && validatedRouteContainer) {
+        const nameProperty = parent.properties.find(item => ts.isPropertyAssignment(item)
+          && propertyName(item.name) === "name");
+        const routeName = nameProperty && ts.isPropertyAssignment(nameProperty)
+          ? literalText(nameProperty.initializer)
+          : undefined;
         const componentProperty = parent.properties.find(item => ts.isPropertyAssignment(item)
           && ["component", "element"].includes(propertyName(item.name) ?? ""));
         const componentInitializer = componentProperty && ts.isPropertyAssignment(componentProperty)
@@ -1670,6 +1684,7 @@ function analyzeTypeScript(
         state.routes.push({
           id: stableId("route", path, `${routePath}:${absoluteStart(node)}`),
           path: routePath,
+          ...(routeName !== undefined ? { name: routeName } : {}),
           component,
           componentModule,
           parameters: routePath.split("/").filter(part => part.startsWith(":")),
