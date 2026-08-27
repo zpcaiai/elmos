@@ -115,7 +115,6 @@ def test_unsupported_dialect_name_fails_closed_before_parsing() -> None:
         ("unsupported_json_binary_type", "CREATE TABLE t (id INT PRIMARY KEY, payload JSONB)"),
         ("generated_column", "CREATE TABLE t (id INT PRIMARY KEY, doubled INT GENERATED ALWAYS AS (id * 2) STORED)"),
         ("qualified_table_name", "CREATE TABLE myschema.t (id INT PRIMARY KEY)"),
-        ("quoted_identifier", 'CREATE TABLE "My Table" (id INT PRIMARY KEY)'),
         ("check_with_function_call", "CREATE TABLE t (id INT PRIMARY KEY, name VARCHAR(10) CHECK (LENGTH(name) > 0))"),
         (
             "check_with_nonportable_leaf",

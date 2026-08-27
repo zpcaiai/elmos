@@ -17,6 +17,7 @@ from .dialects import (
     render_reference_actions,
     render_type,
 )
+from .identifiers import qualified_name, quote_identifier
 from .models import (
     NULLARY_CHECK_OPERATORS,
     AddColumn,
@@ -71,8 +72,8 @@ def _render_literal(value: str, is_string: bool) -> str:
     return f"'{value.replace(chr(39), chr(39) * 2)}'" if is_string else value
 
 
-def _object_name(schema: str | None, name: str) -> str:
-    return f"{schema}.{name}" if schema else name
+def _object_name(schema: str | None, name: str, dialect: Dialect) -> str:
+    return qualified_name(schema, name, dialect)
 
 
 def _render_boolean(value: str, dialect: Dialect) -> str:
@@ -146,9 +147,9 @@ def _render_tsql_regex_check(column: str, pattern: str) -> str:
 
 def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> str:
     left = (
-        f"{comparison.column_qualifier}.{comparison.column}"
+        f"{quote_identifier(comparison.column_qualifier, dialect)}.{quote_identifier(comparison.column, dialect)}"
         if comparison.column_qualifier is not None
-        else comparison.column
+        else quote_identifier(comparison.column, dialect)
     )
     if comparison.left_expression is not None:
         if comparison.left_expression.function is CheckValueFunction.TRIM:
@@ -156,7 +157,7 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
         elif comparison.left_expression.operator is CheckValueOperator.ADD:
             right = comparison.left_expression.right_column
             assert right is not None
-            left = f"({left} + {right})"
+            left = f"({left} + {quote_identifier(right, dialect)})"
         else:  # pragma: no cover - closed enum, defensive for future extensions
             function = comparison.left_expression.function
             value_operator = comparison.left_expression.operator
@@ -197,9 +198,10 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
                 "IS DISTINCT FROM requires a right-hand column",
             )
         right = (
-            f"{comparison.right_column_qualifier}.{comparison.right_column}"
+            f"{quote_identifier(comparison.right_column_qualifier, dialect)}."
+            f"{quote_identifier(comparison.right_column, dialect)}"
             if comparison.right_column_qualifier is not None
-            else comparison.right_column
+            else quote_identifier(comparison.right_column, dialect)
         )
         if dialect is Dialect.POSTGRES:
             return f"{left} IS DISTINCT FROM {right}"
@@ -227,13 +229,13 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
         value = comparison.right_interval_value
         unit = comparison.right_interval_unit.value
         if dialect is Dialect.POSTGRES:
-            right = f"{comparison.right_interval_column} + INTERVAL '{value} {unit.lower()}'"
+            right = f"{quote_identifier(comparison.right_interval_column, dialect)} + INTERVAL '{value} {unit.lower()}'"
         elif dialect is Dialect.MYSQL:
-            right = f"DATE_ADD({comparison.right_interval_column}, INTERVAL {value} {unit})"
+            right = f"DATE_ADD({quote_identifier(comparison.right_interval_column, dialect)}, INTERVAL {value} {unit})"
         elif dialect is Dialect.ORACLE:
-            right = f"{comparison.right_interval_column} + INTERVAL '{value}' {unit}"
+            right = f"{quote_identifier(comparison.right_interval_column, dialect)} + INTERVAL '{value}' {unit}"
         else:
-            right = f"DATEADD({unit}, {value}, {comparison.right_interval_column})"
+            right = f"DATEADD({unit}, {value}, {quote_identifier(comparison.right_interval_column, dialect)})"
         return f"{left} {check_operator_sql(operator)} {right}"
     if comparison.right_column is not None:
         right = (
@@ -251,7 +253,7 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
 
 
 def _render_column(column: Column, dialect: Dialect) -> str:
-    parts = [column.name, render_type(column.type_ref, dialect)]
+    parts = [quote_identifier(column.name, dialect), render_type(column.type_ref, dialect)]
     if column.auto_increment:
         parts[-1] = parts[-1] + render_auto_increment_suffix(dialect)
     default = None if column.default is None else f"DEFAULT {render_default(column.default, column.type_ref, dialect)}"
@@ -318,7 +320,13 @@ def _require_mysql_identifiers(table: Table) -> None:
     identifiers = [table.name, *(column.name for column in table.columns)]
     identifiers.extend(fk.ref_table for fk in table.foreign_keys)
     identifiers.extend(column for fk in table.foreign_keys for column in fk.ref_columns)
-    offending = sorted({name for name in identifiers if name.casefold() in _MYSQL_RESERVED_IDENTIFIERS})
+    offending = sorted(
+        {
+            str(name)
+            for name in identifiers
+            if not getattr(name, "quoted", False) and name.casefold() in _MYSQL_RESERVED_IDENTIFIERS
+        }
+    )
     if offending:
         raise DialectError(
             "CERTIFIED_DDL_TARGET_RESERVED_IDENTIFIER",
@@ -381,10 +389,10 @@ def _require_mysql_catalog_text_keys(
 
 
 def _render_foreign_key_clause(fk: ForeignKey, dialect: Dialect) -> str:
-    reference = f"REFERENCES {_object_name(fk.ref_schema, fk.ref_table)}"
+    reference = f"REFERENCES {_object_name(fk.ref_schema, fk.ref_table, dialect)}"
     if fk.ref_columns:
-        reference += f" ({', '.join(fk.ref_columns)})"
-    base = f"FOREIGN KEY ({', '.join(fk.columns)}) {reference}"
+        reference += f" ({', '.join(quote_identifier(column, dialect) for column in fk.ref_columns)})"
+    base = f"FOREIGN KEY ({', '.join(quote_identifier(column, dialect) for column in fk.columns)}) {reference}"
     actions = render_reference_actions(fk.on_delete, fk.on_update, dialect)
     return f"{base} {actions}" if actions else base
 
@@ -476,14 +484,16 @@ def emit_create_table(table: Table, dialect: Dialect) -> str:
     lines: list[str] = [_render_column(c, dialect) for c in table.columns]
 
     if table.primary_key:
-        lines.append(f"PRIMARY KEY ({', '.join(table.primary_key)})")
+        lines.append(f"PRIMARY KEY ({', '.join(quote_identifier(column, dialect) for column in table.primary_key)})")
 
     for unique in table.unique_constraints:
-        lines.append(f"UNIQUE ({', '.join(unique)})")
+        lines.append(f"UNIQUE ({', '.join(quote_identifier(column, dialect) for column in unique)})")
 
     for fk in table.foreign_keys:
         clause = _render_foreign_key_clause(fk, dialect)
-        lines.append(f"CONSTRAINT {fk.name} {clause}" if fk.name else clause)
+        lines.append(
+            f"CONSTRAINT {quote_identifier(fk.name, dialect)} {clause}" if fk.name else clause
+        )
 
     for check in table.check_constraints:
         comparison_sql = (
@@ -494,10 +504,12 @@ def emit_create_table(table: Table, dialect: Dialect) -> str:
             )
         )
         clause = f"CHECK ({comparison_sql})"
-        lines.append(f"CONSTRAINT {check.name} {clause}" if check.name else clause)
+        lines.append(
+            f"CONSTRAINT {quote_identifier(check.name, dialect)} {clause}" if check.name else clause
+        )
 
     body = ",\n    ".join(lines)
-    return f"CREATE TABLE{existence} {_object_name(table.schema, table.name)} (\n    {body}\n)"
+    return f"CREATE TABLE{existence} {_object_name(table.schema, table.name, dialect)} (\n    {body}\n)"
 
 
 def emit_create_index(index: Index, dialect: Dialect, catalog: ColumnCatalogLike | None = None) -> str:
@@ -526,15 +538,18 @@ def emit_create_index(index: Index, dialect: Dialect, catalog: ColumnCatalogLike
         object_name=index.name,
         supported=_IF_NOT_EXISTS_INDEX_SUPPORT,
     )
-    columns = ", ".join(f"{column.name}{' DESC' if column.descending else ''}" for column in index.columns)
-    rendered = f"{keyword}{existence} {index.name}"
+    columns = ", ".join(
+        f"{quote_identifier(column.name, dialect)}{' DESC' if column.descending else ''}"
+        for column in index.columns
+    )
+    rendered = f"{keyword}{existence} {quote_identifier(index.name, dialect)}"
     if index.using == "btree" and dialect is Dialect.POSTGRES:
         rendered += " USING btree"
-    rendered += f" ON {_object_name(index.table_schema, index.table)} ({columns})"
+    rendered += f" ON {_object_name(index.table_schema, index.table, dialect)} ({columns})"
     if index.using == "btree" and dialect is Dialect.MYSQL:
         rendered += " USING BTREE"
     if index.include:
-        rendered += f" INCLUDE ({', '.join(index.include)})"
+        rendered += f" INCLUDE ({', '.join(quote_identifier(column, dialect) for column in index.include)})"
     if index.predicate is not None:
         rendered += f" WHERE {_render_check_expression(index.predicate, dialect)}"
     return rendered
@@ -560,7 +575,7 @@ def emit_drop_table(drop: DropTable, dialect: Dialect) -> str:
             "removing the modifier would change rerun behaviour",
         )
     suffix = " IF EXISTS" if drop.if_exists else ""
-    return f"DROP TABLE{suffix} {_object_name(drop.schema, drop.name)}"
+    return f"DROP TABLE{suffix} {_object_name(drop.schema, drop.name, dialect)}"
 
 
 def emit_create_schema(schema: Schema, dialect: Dialect) -> str:
@@ -578,7 +593,7 @@ def emit_create_schema(schema: Schema, dialect: Dialect) -> str:
         object_name=schema.name,
         supported=_IF_NOT_EXISTS_SCHEMA_SUPPORT,
     )
-    return f"CREATE SCHEMA{existence} {schema.name}"
+    return f"CREATE SCHEMA{existence} {quote_identifier(schema.name, dialect)}"
 
 
 def _render_insert_literal(value: InsertLiteral, dialect: Dialect) -> str:
@@ -592,25 +607,30 @@ def _render_insert_literal(value: InsertLiteral, dialect: Dialect) -> str:
 
 def emit_insert(insert: InsertStatement, dialect: Dialect) -> str:
     """Emit a fixed-column literal seed without changing its row set."""
-    columns = ", ".join(insert.columns)
+    columns = ", ".join(quote_identifier(column, dialect) for column in insert.columns)
     rows = ",\n    ".join(
         "(" + ", ".join(_render_insert_literal(value, dialect) for value in row) + ")"
         for row in insert.rows
     )
-    return f"INSERT INTO {_object_name(insert.schema, insert.table)} ({columns}) VALUES {rows}"  # noqa: S608
+    return f"INSERT INTO {_object_name(insert.schema, insert.table, dialect)} ({columns}) VALUES {rows}"  # noqa: S608
 
 
 def _render_dml_expression(value: DmlExpression, dialect: Dialect) -> str:
     if isinstance(value, DmlColumn):
-        return f"{value.qualifier}.{value.name}" if value.qualifier is not None else value.name
+        return (
+            f"{quote_identifier(value.qualifier, dialect)}.{quote_identifier(value.name, dialect)}"
+            if value.qualifier is not None
+            else quote_identifier(value.name, dialect)
+        )
     if isinstance(value, DmlLiteral):
         return _render_insert_literal(value.value, dialect)
     if isinstance(value, DmlCurrentTimestamp):
         return "SYSDATETIME()" if dialect is Dialect.TSQL else "CURRENT_TIMESTAMP"
     if isinstance(value, DmlCoalesce):
-        return f"COALESCE({value.column.name}, {_render_dml_expression(value.fallback, dialect)})"
+        fallback = _render_dml_expression(value.fallback, dialect)
+        return f"COALESCE({quote_identifier(value.column.name, dialect)}, {fallback})"
     if isinstance(value, DmlAggregate):
-        return f"{value.function.value}({value.column.name})"
+        return f"{value.function.value}({quote_identifier(value.column.name, dialect)})"
     if isinstance(value, DmlPredicate):
         return _render_check_expression(value.predicate, dialect)
     raise TypeError(f"unhandled DML IR node: {type(value).__name__}")  # pragma: no cover
@@ -618,13 +638,13 @@ def _render_dml_expression(value: DmlExpression, dialect: Dialect) -> str:
 
 def emit_insert_select(insert: InsertSelectStatement, dialect: Dialect) -> str:
     """Emit the bounded INSERT ... SELECT profile."""
-    columns = ", ".join(insert.columns)
+    columns = ", ".join(quote_identifier(column, dialect) for column in insert.columns)
     expressions = ", ".join(_render_dml_expression(item, dialect) for item in insert.expressions)
-    source = _object_name(insert.source_schema, insert.source_table)
+    source = _object_name(insert.source_schema, insert.source_table, dialect)
     if insert.source_alias is not None:
         source += f" {insert.source_alias}"
     rendered = (
-        f"INSERT INTO {_object_name(insert.schema, insert.table)} ({columns}) "  # noqa: S608
+        f"INSERT INTO {_object_name(insert.schema, insert.table, dialect)} ({columns}) "  # noqa: S608
         f"SELECT {expressions} FROM {source}"  # noqa: S608
     )
     for join in insert.joins:
@@ -634,7 +654,7 @@ def emit_insert_select(insert: InsertSelectStatement, dialect: Dialect) -> str:
             for condition in join.conditions
         )
         rendered += (
-            f" INNER JOIN {_object_name(join.schema, join.table)} {join.alias} ON {conditions}"
+            f" INNER JOIN {_object_name(join.schema, join.table, dialect)} {join.alias} ON {conditions}"
         )
     if insert.predicate is not None:
         rendered += f" WHERE {_render_check_expression(insert.predicate, dialect)}"
@@ -646,10 +666,11 @@ def emit_insert_select(insert: InsertSelectStatement, dialect: Dialect) -> str:
 def emit_update(update: UpdateStatement, dialect: Dialect) -> str:
     """Emit a typed single-table UPDATE or a proven one-row-source UPDATE."""
     assignments = ", ".join(
-        f"{item.target} = {_render_dml_expression(item.value, dialect)}" for item in update.assignments
+        f"{quote_identifier(item.target, dialect)} = {_render_dml_expression(item.value, dialect)}"
+        for item in update.assignments
     )
     if update.source_table is None:
-        rendered = f"UPDATE {_object_name(update.schema, update.table)} SET {assignments}"  # noqa: S608
+        rendered = f"UPDATE {_object_name(update.schema, update.table, dialect)} SET {assignments}"  # noqa: S608
         if update.predicate is not None:
             rendered += f" WHERE {_render_check_expression(update.predicate, dialect)}"
         return rendered  # noqa: S608
@@ -659,8 +680,8 @@ def emit_update(update: UpdateStatement, dialect: Dialect) -> str:
             "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
             "typed UPDATE row-source metadata is incomplete",
         )
-    target = _object_name(update.schema, update.table)
-    source = _object_name(update.source_schema, update.source_table)
+    target = _object_name(update.schema, update.table, dialect)
+    source = _object_name(update.source_schema, update.source_table, dialect)
     joins = " AND ".join(
         f"{_render_dml_expression(condition.left, dialect)} = "
         f"{_render_dml_expression(condition.right, dialect)}"
@@ -677,30 +698,34 @@ def emit_update(update: UpdateStatement, dialect: Dialect) -> str:
         else ""
     )
     if dialect is Dialect.POSTGRES:
-        return (
-            f"UPDATE {target} {update.target_alias} SET {assignments} FROM {source} "  # noqa: S608
-            f"{update.source_alias} WHERE {joins}{predicate}"
+        return (  # noqa: S608
+            f"UPDATE {target} {quote_identifier(update.target_alias, dialect)} SET {assignments} FROM {source} "  # noqa: S608
+            f"{quote_identifier(update.source_alias, dialect)} WHERE {joins}{predicate}"
         )
     if dialect is Dialect.MYSQL:
-        return (
-            f"UPDATE {target} {update.target_alias} INNER JOIN {source} {update.source_alias} "  # noqa: S608
+        return (  # noqa: S608
+            f"UPDATE {target} {quote_identifier(update.target_alias, dialect)} INNER JOIN {source} "  # noqa: S608
+            f"{quote_identifier(update.source_alias, dialect)} "  # noqa: S608
             f"ON {joins} SET {assignments}"
             f"{where}"
         )
     if dialect is Dialect.ORACLE:
         oracle_assignments = ", ".join(
-            f"{update.target_alias}.{item.target} = {_render_dml_expression(item.value, dialect)}"
+            f"{quote_identifier(update.target_alias, dialect)}.{quote_identifier(item.target, dialect)} = "
+            f"{_render_dml_expression(item.value, dialect)}"
             for item in update.assignments
         )
         return (
-            f"MERGE INTO {target} {update.target_alias} USING {source} {update.source_alias} "  # noqa: S608
+            f"MERGE INTO {target} {quote_identifier(update.target_alias, dialect)} USING {source} "
+            f"{quote_identifier(update.source_alias, dialect)} "  # noqa: S608
             f"ON ({joins}) WHEN MATCHED THEN UPDATE SET "
             f"{oracle_assignments}"
             f"{where}"
         )
-    return (
-        f"UPDATE {update.target_alias} SET {assignments} FROM {target} {update.target_alias} "  # noqa: S608
-        f"INNER JOIN {source} {update.source_alias} ON {joins}"
+    return (  # noqa: S608
+        f"UPDATE {quote_identifier(update.target_alias, dialect)} SET {assignments} FROM {target} "  # noqa: S608
+        f"{quote_identifier(update.target_alias, dialect)} "  # noqa: S608
+        f"INNER JOIN {source} {quote_identifier(update.source_alias, dialect)} ON {joins}"
         f"{where}"
     )
 
@@ -716,8 +741,8 @@ def _render_check_clause(check: CheckConstraint, dialect: Dialect) -> str:
     return f"CHECK ({comparison_sql})"
 
 
-def _named(name: str | None, clause: str) -> str:
-    return f"CONSTRAINT {name} {clause}" if name else clause
+def _named(name: str | None, clause: str, dialect: Dialect) -> str:
+    return f"CONSTRAINT {quote_identifier(name, dialect)} {clause}" if name else clause
 
 
 def emit_alter_table(
@@ -761,7 +786,13 @@ def emit_alter_table(
                     identifiers.extend(action.foreign_key.ref_columns)
             elif isinstance(action, DropConstraint):
                 identifiers.append(action.name)
-        offending = sorted({name for name in identifiers if name.casefold() in _MYSQL_RESERVED_IDENTIFIERS})
+        offending = sorted(
+            {
+                str(name)
+                for name in identifiers
+                if not getattr(name, "quoted", False) and name.casefold() in _MYSQL_RESERVED_IDENTIFIERS
+            }
+        )
         if offending:
             raise DialectError(
                 "CERTIFIED_DDL_TARGET_RESERVED_IDENTIFIER",
@@ -805,7 +836,8 @@ def emit_alter_table(
                 )
             column_sql = _render_column(action.column, dialect)
             if action.foreign_key is not None:
-                reference = f" REFERENCES {_object_name(action.foreign_key.ref_schema, action.foreign_key.ref_table)}"
+                reference_name = _object_name(action.foreign_key.ref_schema, action.foreign_key.ref_table, dialect)
+                reference = f" REFERENCES {reference_name}"
                 if action.foreign_key.ref_columns:
                     reference += f" ({', '.join(action.foreign_key.ref_columns)})"
                 column_sql += reference
@@ -818,28 +850,31 @@ def emit_alter_table(
                 column_sql += " " + _render_check_clause(action.check, dialect)
             if dialect is Dialect.ORACLE:
                 # Oracle: no COLUMN keyword; parenthesised column list.
-                statements.append(f"ALTER TABLE {_object_name(alter.schema, alter.table)} ADD ({column_sql})")
+                statements.append(f"ALTER TABLE {_object_name(alter.schema, alter.table, dialect)} ADD ({column_sql})")
             elif dialect is Dialect.TSQL:
                 # SQL Server: ADD, without the COLUMN keyword.
-                statements.append(f"ALTER TABLE {_object_name(alter.schema, alter.table)} ADD {column_sql}")
+                statements.append(f"ALTER TABLE {_object_name(alter.schema, alter.table, dialect)} ADD {column_sql}")
             else:
-                statements.append(f"ALTER TABLE {_object_name(alter.schema, alter.table)} ADD COLUMN {column_sql}")
+                table_name = _object_name(alter.schema, alter.table, dialect)
+                statements.append(f"ALTER TABLE {table_name} ADD COLUMN {column_sql}")
 
         elif isinstance(action, DropColumn):
-            statements.append(f"ALTER TABLE {_object_name(alter.schema, alter.table)} DROP COLUMN {action.column}")
+            table_name = _object_name(alter.schema, alter.table, dialect)
+            column_name = quote_identifier(action.column, dialect)
+            statements.append(f"ALTER TABLE {table_name} DROP COLUMN {column_name}")
 
         elif isinstance(action, RenameColumn):
             if dialect is Dialect.TSQL:
                 # T-SQL's only column rename. Quoting follows sp_rename's
                 # documented 'table.column' form.
-                statements.append(
-                    f"EXEC sp_rename '{_object_name(alter.schema, alter.table)}.{action.column}', "
-                    f"'{action.new_name}', 'COLUMN'"
-                )
+                table_name = _object_name(alter.schema, alter.table, dialect)
+                old_name = f"{table_name}.{quote_identifier(action.column, dialect)}"
+                new_name = quote_identifier(action.new_name, dialect)
+                statements.append(f"EXEC sp_rename '{old_name}', '{new_name}', 'COLUMN'")
             else:
                 statements.append(
-                    f"ALTER TABLE {_object_name(alter.schema, alter.table)} RENAME COLUMN "
-                    f"{action.column} TO {action.new_name}"
+                    f"ALTER TABLE {_object_name(alter.schema, alter.table, dialect)} RENAME COLUMN "
+                    f"{quote_identifier(action.column, dialect)} TO {quote_identifier(action.new_name, dialect)}"
                 )
 
         elif isinstance(action, AddConstraint):
@@ -864,10 +899,13 @@ def emit_alter_table(
                 assert action.check is not None  # AddConstraint.__post_init__ guarantees one is set
                 clause = _render_check_clause(action.check, dialect)
             statements.append(
-                f"ALTER TABLE {_object_name(alter.schema, alter.table)} ADD {_named(action.name, clause)}"
+                f"ALTER TABLE {_object_name(alter.schema, alter.table, dialect)} "
+                f"ADD {_named(action.name, clause, dialect)}"
             )
 
         elif isinstance(action, DropConstraint):
-            statements.append(f"ALTER TABLE {_object_name(alter.schema, alter.table)} DROP CONSTRAINT {action.name}")
+            table_name = _object_name(alter.schema, alter.table, dialect)
+            constraint_name = quote_identifier(action.name, dialect)
+            statements.append(f"ALTER TABLE {table_name} DROP CONSTRAINT {constraint_name}")
 
     return ";\n".join(statements)

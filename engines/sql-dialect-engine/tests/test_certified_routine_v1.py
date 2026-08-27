@@ -59,7 +59,7 @@ def test_function_parser_builds_typed_body_instead_of_preserving_source_text() -
         ),
         (
             "CREATE FUNCTION f(p INT) RETURNS INT LANGUAGE plpgsql "
-            "AS $$ BEGIN RETURN p; END $$",
+            "AS $$ BEGIN IF p > 0 THEN RETURN p; END IF; END $$",
             "CERTIFIED_ROUTINE_UNSUPPORTED_LANGUAGE",
         ),
         (

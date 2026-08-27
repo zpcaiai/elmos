@@ -26,6 +26,7 @@ from sqlglot.expressions import DataType
 from sqlglot.tokens import Tokenizer
 
 from .dialects import IDENTIFIER_PATTERN
+from .identifiers import CanonicalIdentifier
 from .models import (
     AddColumn,
     AddConstraint,
@@ -144,6 +145,27 @@ _VARBINARY_TYPE = DataType.Type.VARBINARY
 _BINARY_TYPE = DataType.Type.BINARY
 _BLOB_TYPE = DataType.Type.BLOB
 
+
+def _assignment_type_compatible(source: CanonicalTypeRef, target: CanonicalTypeRef) -> bool:
+    """Return only provably non-narrowing typed assignment pairs.
+
+    The DML route is not allowed to rely on vendor coercion.  Exact canonical
+    refs are required everywhere, with one explicit widening proof for bounded
+    character values: copying ``VARCHAR(64)`` into ``VARCHAR(96)`` preserves
+    every source value and cannot truncate it.  Unbounded, numeric, temporal,
+    JSON, array and binary differences remain blocked until their semantics are
+    modelled explicitly.
+    """
+    if source == target:
+        return True
+    if source.canonical_type != target.canonical_type:
+        return False
+    if source.canonical_type not in {CanonicalType.CHAR, CanonicalType.VARCHAR}:
+        return False
+    if source.length is None or target.length is None:
+        return False
+    return source.length <= target.length
+
 _CHECK_OPERATOR_MAP: dict[type, CheckOperator] = {
     exp.EQ: CheckOperator.EQ,
     exp.NEQ: CheckOperator.NE,
@@ -158,6 +180,10 @@ class UpdateCatalogLike(Protocol):
     """Source-schema proof required by the typed UPDATE ... FROM route."""
 
     def type_of(self, table: str, column: str) -> CanonicalType | None: ...
+
+    def type_of_qualified(self, schema: str | None, table: str, column: str) -> CanonicalType | None: ...
+
+    def type_ref_of(self, schema: str | None, table: str, column: str) -> CanonicalTypeRef | None: ...
 
     def has_unique_key(self, schema: str | None, table: str, columns: tuple[str, ...]) -> bool: ...
 
@@ -436,7 +462,7 @@ def _parse_source_statements(sql: str, source_dialect: Dialect) -> list[exp.Expr
         raise parse_error
 
 
-def _plain_identifier(node: exp.Expression | None, what: str) -> str:
+def _plain_identifier(node: exp.Expression | None, what: str) -> CanonicalIdentifier:
     _require(node is not None, "CERTIFIED_DDL_MISSING_IDENTIFIER", f"{what} is missing")
     ident = node
     if isinstance(ident, exp.Column):
@@ -445,24 +471,43 @@ def _plain_identifier(node: exp.Expression | None, what: str) -> str:
         inner = ident.this
         return _plain_identifier(inner, what)
     _require(
-        isinstance(ident, exp.Identifier),
+        isinstance(ident, exp.Identifier | exp.Literal),
         "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
         f"{what} is not a plain identifier ({type(ident).__name__})",
     )
+    if isinstance(ident, exp.Literal):
+        # MySQL parses a double-quoted or backtick-quoted identifier as a
+        # string-shaped literal in a few contexts.  It is still an identifier
+        # because it arrived in an identifier position; retain that fact in
+        # the canonical string-compatible wrapper.
+        _require(
+            ident.is_string,
+            "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+            f"{what} literal is not a quoted identifier",
+        )
+        name = str(ident.this)
+        _require(
+            bool(name) and "\x00" not in name,
+            "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+            f"{what} is empty or contains NUL",
+        )
+        return CanonicalIdentifier(name, quoted=True)
     assert isinstance(ident, exp.Identifier)  # narrows for mypy; _require already enforced this at runtime
-    _require(
-        not ident.args.get("quoted"),
-        "CERTIFIED_DDL_QUOTED_IDENTIFIER",
-        f"{what} {ident.this!r} uses a quoted/escaped identifier, which is outside certified-ddl-v1",
-    )
     name = ident.this
     assert isinstance(name, str)  # narrows for mypy; the regex check below enforces it at runtime
+    if ident.args.get("quoted"):
+        _require(
+            bool(name) and "\x00" not in name,
+            "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+            f"{what} is empty or contains NUL",
+        )
+        return CanonicalIdentifier(name, quoted=True)
     _require(
         bool(_IDENTIFIER_RE.match(name)),
         "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
         f"{what} {name!r} is not a plain [A-Za-z_][A-Za-z0-9_]* identifier",
     )
-    return name
+    return CanonicalIdentifier(name, quoted=False)
 
 
 def _mapped_table_name(
@@ -698,6 +743,8 @@ def _parse_type(data_type: exp.DataType, source_dialect: Dialect) -> CanonicalTy
 
 
 def _parse_default(node: exp.Expression, type_ref: CanonicalTypeRef) -> ColumnDefault:
+    if isinstance(node, exp.Null):
+        return ColumnDefault(kind=DefaultKind.NULL)
     if isinstance(node, exp.CurrentTimestamp):
         _require(
             type_ref.canonical_type == CanonicalType.TIMESTAMP,
@@ -985,18 +1032,20 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
         f"CHECK comparison operator {type(node).__name__} is outside certified-ddl-v1",
     )
     assert binary_operator is not None  # narrows for mypy; _require already enforced this at runtime
-    column, left_expression = _parse_check_left_value(node.this, "CHECK left-hand column")
+    parsed_left = _parse_check_left_value(node.this, "CHECK left-hand column")
+    parsed_column: str = parsed_left[0]
+    left_expression = parsed_left[1]
     literal = node.expression
     if isinstance(literal, exp.Column):
         return CheckComparison(
-            column=column,
+            column=parsed_column,
             operator=binary_operator,
             right_column=_plain_identifier(literal, "CHECK right-hand column"),
             left_expression=left_expression,
         )
     if isinstance(literal, exp.Boolean):
         return CheckComparison(
-            column=column,
+            column=parsed_column,
             operator=binary_operator,
             literal="true" if literal.this else "false",
             literal_is_boolean=True,
@@ -1022,7 +1071,7 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
             "timestamp CHECK intervals are limited to seconds, minutes, hours, and days",
         )
         return CheckComparison(
-            column=column,
+            column=parsed_column,
             operator=binary_operator,
             right_interval_column=_plain_identifier(interval_column, "CHECK interval column"),
             right_interval_value=int(str(interval_literal.this)),
@@ -1034,7 +1083,7 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
         "CHECK right-hand side must be a plain literal",
     )
     return CheckComparison(
-        column=column,
+        column=parsed_column,
         operator=binary_operator,
         literal=str(literal.this),
         literal_is_string=bool(literal.is_string),
@@ -1557,7 +1606,7 @@ def parse_create_schema(
         "CERTIFIED_SCHEMA_QUALIFIED_NAME",
         "certified-schema-v1 requires one unqualified schema name",
     )
-    schema_name = _plain_identifier(schema.args.get("db"), "schema name")
+    schema_name: str = _plain_identifier(schema.args.get("db"), "schema name")
     if namespace_map is not None and schema_name in namespace_map:
         schema_name = namespace_map[schema_name]
         _require(
@@ -2313,12 +2362,28 @@ def parse_update(
             assert value.qualifier is not None
             assert source_alias is not None
             assert catalog is not None and source_table is not None
-            target_type = catalog.type_of(table, target)
-            source_type = catalog.type_of(source_table, value.name)
+            qualified_ref = getattr(catalog, "type_ref_of", None)
+            if callable(qualified_ref):
+                target_type_ref = qualified_ref(schema, table, target)
+                source_type_ref = qualified_ref(source_schema, source_table, value.name)
+                types_match = (
+                    target_type_ref is not None
+                    and source_type_ref is not None
+                    and _assignment_type_compatible(source_type_ref, target_type_ref)
+                )
+            else:
+                qualified_type = getattr(catalog, "type_of_qualified", None)
+                if callable(qualified_type):
+                    target_type = qualified_type(schema, table, target)
+                    source_type = qualified_type(source_schema, source_table, value.name)
+                else:
+                    target_type = catalog.type_of(table, target)
+                    source_type = catalog.type_of(source_table, value.name)
+                types_match = target_type is not None and source_type is not None and target_type is source_type
             _require(
-                target_type is not None and source_type is not None and target_type is source_type,
+                types_match,
                 "CERTIFIED_UPDATE_COLUMN_TYPE_UNPROVEN",
-                "UPDATE source and target assignment columns need matching catalogue types",
+                "UPDATE source and target assignment columns need matching typed catalogue facts",
             )
         assignments.append(UpdateAssignment(target, value))
     where = statement.args.get("where")

@@ -29,6 +29,8 @@ from .advanced import (
     parse_trigger,
 )
 from .models import Dialect, DialectError, InsertStatement, RouteError
+from .profiles import NamespaceProfile, resolve_namespace_profile
+from .static_do import emit_static_do, parse_static_do
 from .validator import validate
 
 
@@ -47,6 +49,7 @@ def translate_ddl(
     statement_kind: str = "TABLE",
     dsn: str | None = None,
     namespace_map: Mapping[str, str] | None = None,
+    namespace_profile: NamespaceProfile | None = None,
     catalog: emitter.ColumnCatalogLike | None = None,
     comment_catalog: emitter.CommentColumnCatalogLike | None = None,
 ) -> dict[str, Any]:
@@ -80,15 +83,17 @@ def translate_ddl(
     """
     source = _resolve_dialect(source_dialect)
     target = _resolve_dialect(target_dialect)
+    active_namespace_profile: NamespaceProfile | None = None
+    active_namespace_map: Mapping[str, str] | None = None
     if source == target:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER: translating a dialect to itself is not a supported route")
     if statement_kind not in (
         "TABLE", "INDEX", "INSERT", "UPDATE", "ALTER", "DROP", "SCHEMA", "FUNCTION", "PROCEDURE", "TRIGGER",
-        "VIEW", "COMMENT", "GRANT", "REVOKE", "POLICY",
+        "VIEW", "COMMENT", "GRANT", "REVOKE", "POLICY", "DO",
     ):
         raise RouteError(
             f"UNSUPPORTED_STATEMENT_KIND: {statement_kind!r} must be TABLE, INDEX, INSERT, ALTER, DROP, "
-            "UPDATE, SCHEMA, FUNCTION, PROCEDURE, TRIGGER, VIEW, COMMENT, GRANT, REVOKE or POLICY"
+            "UPDATE, SCHEMA, FUNCTION, PROCEDURE, TRIGGER, VIEW, COMMENT, GRANT, REVOKE, POLICY or DO"
         )
     profile = {
         "INSERT": "certified-insert-v1 + certified-dml-v1",
@@ -101,16 +106,22 @@ def translate_ddl(
             "GRANT": "certified-privilege-v1",
             "REVOKE": "certified-privilege-v1",
             "POLICY": "certified-rls-v1",
+            "DO": "certified-static-do-v1",
         "FUNCTION": "certified-routine-v1",
         "PROCEDURE": "certified-routine-v1",
         "TRIGGER": "certified-routine-v1",
     }.get(statement_kind, "certified-ddl-v1")
 
     try:
+        # A malformed or stale digest is input rejection, not an uncaught
+        # caller exception. Keep the same structured BLOCKED contract as all
+        # other fail-closed route decisions.
+        active_namespace_profile = resolve_namespace_profile(namespace_map, namespace_profile)
+        active_namespace_map = active_namespace_profile
         if statement_kind == "TABLE":
-            emitted = emitter.emit_create_table(parser.parse_create_table(sql, source, namespace_map), target)
+            emitted = emitter.emit_create_table(parser.parse_create_table(sql, source, active_namespace_map), target)
         elif statement_kind == "INSERT":
-            insert = parser.parse_insert_statement(sql, source, namespace_map)
+            insert = parser.parse_insert_statement(sql, source, active_namespace_map)
             if isinstance(insert, InsertStatement):
                 emitted = emitter.emit_insert(insert, target)
             else:
@@ -122,24 +133,24 @@ def translate_ddl(
                 else None
             )
             emitted = emitter.emit_update(
-                parser.parse_update(sql, source, namespace_map, update_catalog), target
+                parser.parse_update(sql, source, active_namespace_map, update_catalog), target
             )
         elif statement_kind == "ALTER":
             emitted = emitter.emit_alter_table(
-                parser.parse_alter_table(sql, source, namespace_map), target, catalog
+                parser.parse_alter_table(sql, source, active_namespace_map), target, catalog
             )
         elif statement_kind == "DROP":
-            emitted = emitter.emit_drop_table(parser.parse_drop_table(sql, source, namespace_map), target)
+            emitted = emitter.emit_drop_table(parser.parse_drop_table(sql, source, active_namespace_map), target)
         elif statement_kind == "SCHEMA":
-            emitted = emitter.emit_create_schema(parser.parse_create_schema(sql, source, namespace_map), target)
+            emitted = emitter.emit_create_schema(parser.parse_create_schema(sql, source, active_namespace_map), target)
         elif statement_kind == "FUNCTION":
             from .routine import emit_create_function, parse_create_routine
 
             try:
-                table_function = parse_table_function(sql, source, namespace_map)
+                table_function = parse_table_function(sql, source, active_namespace_map)
             except DialectError as exc:
                 if exc.code == "CERTIFIED_ROUTINE_NOT_TABLE_FUNCTION":
-                    emitted = emit_create_function(parse_create_routine(sql, source, namespace_map), target)
+                    emitted = emit_create_function(parse_create_routine(sql, source, active_namespace_map), target)
                 else:
                     # A RETURNS TABLE declaration is still a routine even
                     # when its body is outside the table-function subset.
@@ -147,28 +158,30 @@ def translate_ddl(
                     # table-return blocker; never silently downgrade it to a
                     # scalar conversion.
                     try:
-                        parse_create_routine(sql, source, namespace_map)
+                        parse_create_routine(sql, source, active_namespace_map)
                     except DialectError as scalar_error:
                         raise scalar_error from exc
                     raise
             else:
                 emitted = emit_table_function(table_function, target)
         elif statement_kind == "PROCEDURE":
-            emitted = emit_procedure(parse_procedure(sql, source, namespace_map), target)
+            emitted = emit_procedure(parse_procedure(sql, source, active_namespace_map), target)
         elif statement_kind == "TRIGGER":
-            emitted = emit_trigger(parse_trigger(sql, source, namespace_map), target)
+            emitted = emit_trigger(parse_trigger(sql, source, active_namespace_map), target)
         elif statement_kind == "VIEW":
-            emitted = emit_view(parse_create_view(sql, source, namespace_map), target)
+            emitted = emit_view(parse_create_view(sql, source, active_namespace_map), target)
         elif statement_kind == "COMMENT":
-            emitted = emit_comment(parse_comment(sql, source, namespace_map), target, comment_catalog)
+            emitted = emit_comment(parse_comment(sql, source, active_namespace_map), target, comment_catalog)
         elif statement_kind in ("GRANT", "REVOKE"):
-            emitted = emit_privilege(parse_privilege(sql, source, namespace_map), target)
+            emitted = emit_privilege(parse_privilege(sql, source, active_namespace_map), target)
         elif statement_kind == "POLICY":
             parse_row_policy(sql, source)
             raise AssertionError("parse_row_policy is a permanent fail-closed route")  # pragma: no cover
+        elif statement_kind == "DO":
+            emitted = emit_static_do(parse_static_do(sql, source, active_namespace_map), target, catalog)
         else:
             emitted = emitter.emit_create_index(
-                parser.parse_create_index(sql, source, namespace_map), target, catalog
+                parser.parse_create_index(sql, source, active_namespace_map), target, catalog
             )
     except DialectError as exc:
         return {
@@ -178,6 +191,7 @@ def translate_ddl(
             "profile": profile,
             "sourceDialect": source.value,
             "targetDialect": target.value,
+            "namespaceProfile": None if active_namespace_profile is None else active_namespace_profile.to_dict(),
             "reasonCode": exc.code,
             "reason": exc.message,
             "emitted": None,
@@ -198,6 +212,7 @@ def translate_ddl(
         "profile": profile,
         "sourceDialect": source.value,
         "targetDialect": target.value,
+        "namespaceProfile": None if active_namespace_profile is None else active_namespace_profile.to_dict(),
         "reasonCode": None if status == "PASSED" else (
             "CERTIFIED_ALTER_TARGET_VALIDATION_FAILED" if statement_kind == "ALTER"
             else "CERTIFIED_DROP_TARGET_VALIDATION_FAILED" if statement_kind == "DROP"
