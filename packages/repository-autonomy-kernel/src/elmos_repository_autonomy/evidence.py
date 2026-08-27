@@ -1,0 +1,120 @@
+"""Content-addressed artifacts, independent verification and release gates."""
+
+from __future__ import annotations
+
+import re
+from collections.abc import Mapping
+from typing import Any
+
+from .errors import ContractError
+from .models import (
+    Status,
+    bytes_digest,
+    canonical_json,
+    digest,
+    require_mapping,
+    utc_now,
+)
+from .storage import DurableStore
+
+
+def content_bytes(content: Any) -> bytes:
+    if isinstance(content, bytes):
+        return content
+    if isinstance(content, str):
+        return content.encode("utf-8")
+    return canonical_json(content)
+
+
+def create_artifact(payload: Mapping[str, Any], *, store: DurableStore | None = None, tenant_id: str = "local", run_id: str | None = None) -> dict[str, Any]:
+    content = content_bytes(payload.get("content"))
+    producer = require_mapping(payload.get("producer_step", {}), "producer_step")
+    security_label = str(payload.get("security_label", "INTERNAL"))
+    if security_label == "SECRET" or re.search(rb"(?:password|authorization|private[_-]?key)\s*[:=]", content, re.IGNORECASE):
+        raise ContractError("SECRET_EXPOSURE", "secret-like material cannot be persisted as an artifact")
+    artifact = {"artifact_id": str(__import__("uuid").uuid4()), "tenant_id": tenant_id, "kind": str(payload.get("kind", "evidence")), "content_hash": bytes_digest(content), "size_bytes": len(content), "media_type": str(payload.get("media_type", "application/json")), "producer": producer, "repo_snapshot_sha": payload.get("repo_snapshot"), "task_spec_version": payload.get("task_spec_version"), "created_at": utc_now()}
+    if store is not None:
+        persisted = store.put_artifact(tenant_id=tenant_id, content=content, kind=artifact["kind"], media_type=artifact["media_type"], run_id=run_id, metadata={"producer": producer, "security_label": security_label})
+        artifact.update(persisted)
+    evidence = {"evidence_id": str(__import__("uuid").uuid4()), "claim": f"artifact {artifact['content_hash']} is content-addressed", "evidence_type": "artifact-integrity", "source": {"artifact_id": artifact["artifact_id"], "content_hash": artifact["content_hash"], "byte_count": len(content)}, "confidence": 1.0, "captured_at": utc_now()}
+    if store is not None:
+        evidence = store.put_evidence(tenant_id=tenant_id, claim=evidence["claim"], evidence_type=evidence["evidence_type"], source=evidence["source"], run_id=run_id, confidence=1.0, snapshot_sha=payload.get("repo_snapshot"))
+    return {"artifact": artifact, "evidence": evidence, "provenance_edge": {"from": producer, "to": artifact["content_hash"], "relation": "produced"}, "retention_decision": {"security_label": security_label, "retention": "policy-bound"}, "integrity_record": {"algorithm": "SHA-256", "verified": bytes_digest(content) == artifact["content_hash"], "byte_count": len(content)}}
+
+
+def verification_mesh(change_set: Any, validation: Any, task_spec: Mapping[str, Any], snapshot: Mapping[str, Any], policies: Any) -> dict[str, Any]:
+    validations = validation if isinstance(validation, list) else []
+    findings: list[dict[str, Any]] = []
+    for item in validations:
+        row = require_mapping(item, "validation_dag[]")
+        status = str(row.get("status", "NOT_RUN")).upper()
+        if status in {"FAIL", "FAILED", "BLOCKED"}:
+            severity = str(row.get("severity", "P1"))
+            findings.append({"id": f"finding:{digest(row)[:20]}", "severity": severity, "status": "OPEN", "confidence": float(row.get("confidence", 1.0)), "description": str(row.get("description", "validation failed")), "evidence_ids": list(row.get("evidence_ids", [])), "reproducer": row.get("reproducer")})
+    high = [finding for finding in findings if finding["severity"] in {"P0", "P1"}]
+    high_verified = all(bool(item.get("independent_verification")) for item in high)
+    gate = "PASS" if not high and all(str(item.get("status", "NOT_RUN")).upper() in {"PASS", "PASSED"} for item in validations) else "BLOCKED" if any(str(item.get("status", "NOT_RUN")).upper() == "NOT_RUN" for item in validations) else "FAIL"
+    return {"verification_run": {"status": "COMPLETED", "validator_count": len(validations), "snapshot_sha": snapshot.get("sha256") or digest(snapshot)}, "findings": findings, "finding_validations": [{"finding_id": item["id"], "independent": bool(item.get("independent_verification")), "status": "VALIDATED" if item.get("independent_verification") else "PENDING"} for item in high], "coverage_report": {"criteria": len(task_spec.get("acceptance_criteria", [])) if isinstance(task_spec.get("acceptance_criteria", []), list) else 0, "validators": len(validations), "high_severity_independent": high_verified}, "release_recommendation": {"status": gate if high_verified else "BLOCKED", "reason": "all required validators passed" if gate == "PASS" and high_verified else "high-severity findings require independent verification" if not high_verified else "validation incomplete"}}
+
+
+def release_gate(payload: Mapping[str, Any]) -> dict[str, Any]:
+    criteria = payload.get("acceptance_criteria", [])
+    if isinstance(criteria, Mapping):
+        criteria = [{"id": key, "status": value} for key, value in criteria.items()]
+    validations = payload.get("validation_results", [])
+    if isinstance(validations, Mapping):
+        validations = [{"id": key, "status": value} for key, value in validations.items()]
+    validation_by_id = {str(item.get("id", item.get("gate", index))): item for index, item in enumerate(validations) if isinstance(item, Mapping)}
+    gate_results = []
+    for index, criterion in enumerate(criteria if isinstance(criteria, list) else []):
+        item = criterion if isinstance(criterion, Mapping) else {"id": str(criterion)}
+        gate_id = str(item.get("id", index))
+        result = validation_by_id.get(gate_id, item)
+        status = str(result.get("status", "NOT_RUN")).upper()
+        gate_results.append({"id": gate_id, "status": "PASS" if status in {"PASS", "PASSED", "ACCEPTED"} else status, "evidence_ids": list(result.get("evidence_ids", []))})
+    if not gate_results and isinstance(validations, list):
+        gate_results = [{"id": str(item.get("id", index)), "status": str(item.get("status", "NOT_RUN")).upper(), "evidence_ids": list(item.get("evidence_ids", []))} for index, item in enumerate(validations) if isinstance(item, Mapping)]
+    open_findings = []
+    for finding in payload.get("findings", []):
+        if isinstance(finding, Mapping) and str(finding.get("status", "OPEN")).upper() == "OPEN":
+            open_findings.append(finding)
+    artifacts = payload.get("artifacts", [])
+    artifact_valid = all(isinstance(item, Mapping) and item.get("content_hash") and item.get("integrity_verified", item.get("content_hash", "").startswith("sha256:")) for item in artifacts) if isinstance(artifacts, list) else False
+    approvals = payload.get("approvals", [])
+    approved = bool(approvals) and all(isinstance(item, Mapping) and str(item.get("status", "")).upper() in {"APPROVED", "PASS", "ACCEPTED"} for item in approvals)
+    deployment = payload.get("deployment_results", {})
+    deployment = require_mapping(deployment, "deployment_results") if isinstance(deployment, Mapping) else {}
+    health = require_mapping(deployment.get("health", payload.get("health", {})), "deployment_results.health")
+    rollback_ready = bool(deployment.get("rollback_ready", payload.get("rollback_ready", False)))
+    all_pass = bool(gate_results) and all(item["status"] == "PASS" for item in gate_results)
+    critical_open = any(str(item.get("severity", "P1")) in {"P0", "P1"} for item in open_findings)
+    health_ok = all(health.get(name) is True for name in ("livez", "readyz", "metrics", "version"))
+    missing: list[str] = []
+    if not all_pass: missing.append("all-mandatory-gates-pass")
+    if critical_open: missing.append("no-open-P0-P1")
+    if not rollback_ready: missing.append("rollback-ready")
+    if not health_ok: missing.append("deployment-health")
+    if not artifact_valid: missing.append("artifact-integrity")
+    if not approved: missing.append("independent-approval")
+    if not isinstance(deployment.get("deployment_evidence"), list): missing.append("deployment-evidence")
+    if not missing:
+        decision, attested = Status.P05_DEPLOYMENT_COMPLETE.value, True
+    elif any(item["status"] in {"FAIL", "FAILED", "REJECTED"} for item in gate_results) or critical_open:
+        decision, attested = Status.REJECTED.value, False
+    else:
+        decision, attested = Status.BLOCKED.value, False
+    acceptance = {"decision": decision, "independent": True, "decided_at": utc_now(), "reasons": missing, "completion_claim_ignored_for_acceptance": True}
+    return {"acceptance_decision": acceptance, "gate_results": gate_results, "release_bundle": {"status": "READY" if attested else "NOT_READY", "artifact_hashes": [item.get("content_hash") for item in artifacts if isinstance(item, Mapping)]}, "rollback_bundle": {"status": "READY" if rollback_ready else "NOT_READY", "required": True}, "deployment_complete_attestation": {"status": decision, "attested": attested, "gate": "P05_DEPLOYMENT_COMPLETE" if attested else "P05_DEPLOYMENT_COMPLETE_NOT_ISSUED"}}
+
+
+def security_assurance(change: Mapping[str, Any], diff: Any, index: Mapping[str, Any], policy: Mapping[str, Any], deployment_artifact: Any) -> dict[str, Any]:
+    text = str(diff if diff is not None else change)
+    findings: list[dict[str, Any]] = []
+    if re.search(r"(?i)(api[_-]?key|password|secret|private[_-]?key)\s*[:=]\s*['\"]?[^\s'\"]+", text):
+        findings.append({"id": "security:secret-exposure", "severity": "P0", "status": "OPEN", "description": "secret-like material detected in change input"})
+    if re.search(r"(?i)ignore (?:all|previous) instructions|disable (?:security|policy)|exfiltrate", text):
+        findings.append({"id": "security:prompt-injection", "severity": "P1", "status": "OPEN", "description": "repository text contains prompt-injection markers"})
+    layers = policy.get("required_layers", ["rules", "sast", "sca", "sbom"]) if isinstance(policy, Mapping) else ["rules", "sast", "sca", "sbom"]
+    layer_results = {str(layer): "PASS" if isinstance(deployment_artifact, Mapping) and deployment_artifact.get(str(layer)) in {True, "PASS", "PASSED"} else "NOT_RUN" for layer in layers}
+    gate = "FAIL" if findings else "BLOCKED" if any(value == "NOT_RUN" for value in layer_results.values()) else "PASS"
+    return {"security_findings": findings, "threat_model_delta": {"new_surfaces": ["untrusted-repository-text"], "index_partial": bool(index.get("partial"))}, "security_gate": {"status": gate, "layers": layer_results, "critical_open": bool(findings)}, "sbom_references": list(deployment_artifact.get("sbom_references", [])) if isinstance(deployment_artifact, Mapping) else [], "waiver": {"status": "NOT_APPLICABLE" if not findings else "REQUIRED", "expires_at": None}}
