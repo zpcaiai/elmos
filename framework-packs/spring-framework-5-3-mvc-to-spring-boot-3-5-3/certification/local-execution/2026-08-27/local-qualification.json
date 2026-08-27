@@ -120,11 +120,11 @@
   },
   "exact_tuple_binding" : {
     "path" : "exact-tuple-binding.json",
-    "sha256" : "sha256:fe47bfe68b090da5293fe1bdf430a21373b25411636bf06491efa0cd40228af9"
+    "sha256" : "sha256:d78f14f4c357564f954f3379101f4e015605b1439fdb3543dc77ac625347899b"
   },
   "policy_snapshot" : {
     "path" : "qualification-policy.json",
-    "sha256" : "sha256:d219db8f61c27e55acc4b2fe5f0899e131fa2b5fc9e3c0d2caffb12e0ed6f3cd"
+    "sha256" : "sha256:943a248703887589201f4f329e26e56cfa7e15ac4e075ebedd5493a27ac99af0"
   },
   "evidence_files" : [ {
     "path" : "evidence/complex-capability-verification.json",

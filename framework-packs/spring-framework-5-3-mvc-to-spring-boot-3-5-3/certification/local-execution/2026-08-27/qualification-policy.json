@@ -59,10 +59,10 @@
       "packaging": "executable-war"
     }
   },
-  "source_commit": "6a8e08f2288b4914fbf92466bfb9df239a29e1f5",
+  "source_commit": "7e1c098541143c96cce7d9a637fffe57d0e2baae",
   "target_artifact": {
     "format": "spring-boot-executable-war",
-    "sha256": "sha256:1391fa57bf3171c4a5cfee536f841e0b28814a8ff0f90688125c95e2ec8570e7",
+    "sha256": "sha256:1fae241386924325e6f8099e59b2d5da19749cfd47b9fdb26f92fb7d5c857f60",
     "manifest": {
       "Main-Class": "org.springframework.boot.loader.launch.WarLauncher",
       "Spring-Boot-Version": "3.5.3",

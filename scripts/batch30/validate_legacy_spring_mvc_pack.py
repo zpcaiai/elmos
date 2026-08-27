@@ -62,6 +62,8 @@ REQUIRED_FILES = {
     "certification/certification.json",
     "certification/gate-report.md",
     "certification/gap-inventory.md",
+    "certification/local-execution/2026-08-27/exact-tuple-binding.json",
+    "certification/local-execution/2026-08-27/qualification-policy.json",
 }
 
 LOCAL_RUNTIME_GATE_FIELDS = {
@@ -197,6 +199,125 @@ def validate_controlled_target_profile_resources(pack: Path) -> list[str]:
     return errors
 
 
+def validate_exact_tuple_binding(
+    evidence_root: Path,
+    receipt: dict[str, Any],
+) -> list[str]:
+    errors: list[str] = []
+    binding_path = evidence_root / "exact-tuple-binding.json"
+    policy_path = evidence_root / "qualification-policy.json"
+    try:
+        binding = load(binding_path)
+        policy = load(policy_path)
+    except (OSError, ValueError) as exc:
+        return [f"exact tuple binding or qualification policy is invalid JSON: {exc}"]
+
+    binding_ref = receipt.get("exact_tuple_binding")
+    if binding_ref != {
+        "path": "exact-tuple-binding.json",
+        "sha256": f"sha256:{digest(binding_path)}",
+    }:
+        errors.append("local qualification receipt does not bind exact tuple bytes")
+    policy_ref = receipt.get("policy_snapshot")
+    if policy_ref != {
+        "path": "qualification-policy.json",
+        "sha256": f"sha256:{digest(policy_path)}",
+    }:
+        errors.append("local qualification receipt does not bind qualification policy bytes")
+
+    source = binding.get("source", {})
+    target = binding.get("target", {})
+    if binding.get("schema_version") != 1 or binding.get("pack_key") != PACK_KEY:
+        errors.append("exact tuple binding schema or pack key is not exact")
+    if source.get("commit") != receipt.get("source_commit"):
+        errors.append("exact tuple binding source commit does not match the receipt")
+    if source.get("snapshot_sha256") != f"sha256:{receipt.get('source_snapshot_sha256')}":
+        errors.append("exact tuple binding source snapshot does not match the receipt")
+    expected_source = {
+        "framework": "spring-framework-mvc",
+        "framework_version": "5.3.39",
+        "java": "11.0.26",
+        "maven": "3.9.11",
+        "servlet_namespace": "javax.servlet",
+        "servlet_api": "4.0.1",
+        "packaging": "war",
+    }
+    for field, expected in expected_source.items():
+        if source.get(field) != expected:
+            errors.append(f"exact tuple binding source {field} drifted")
+
+    receipt_target = receipt.get("target", {})
+    executed_war = receipt_target.get("executed_war", {})
+    expected_target = {
+        "artifact_path": executed_war.get("path"),
+        "artifact_sha256": f"sha256:{executed_war.get('sha256')}",
+        "artifact_bytes": executed_war.get("bytes"),
+        "artifact_format": "spring-boot-executable-war",
+        "framework": "spring-boot",
+        "framework_version": "3.5.3",
+        "spring_framework_version": "6.2.8",
+        "java": "21.0.11",
+        "maven": "3.9.11",
+        "servlet_namespace": "jakarta.servlet",
+        "servlet_api": "6.1",
+        "embedded_tomcat": "10.1.42",
+        "packaging": "executable-war",
+    }
+    for field, expected in expected_target.items():
+        if target.get(field) != expected:
+            errors.append(f"exact tuple binding target {field} drifted")
+    if target.get("manifest") != executed_war.get("manifest"):
+        errors.append("exact tuple binding target manifest does not match the receipt")
+
+    policy_digest = f"sha256:{digest(policy_path)}"
+    if policy.get("schema_version") != 1 or policy.get("scope") != "LOCAL_ENGINEERING_EXACT_FIXTURE_ONLY":
+        errors.append("qualification policy schema or scope is not exact")
+    if policy.get("source_commit") != receipt.get("source_commit"):
+        errors.append("qualification policy source commit does not match the receipt")
+    if policy.get("target_artifact", {}).get("sha256") != expected_target["artifact_sha256"]:
+        errors.append("qualification policy target artifact does not match the receipt")
+    if binding.get("policy", {}).get("sha256") != policy_digest:
+        errors.append("exact tuple binding policy digest does not match policy bytes")
+    policy_evidence = policy.get("evidence_policy", {})
+    if policy_evidence.get("external_evidence_status") != "NOT_RUN":
+        errors.append("qualification policy external evidence status must remain NOT_RUN")
+    if policy_evidence.get("certification_status") != "NOT_CERTIFIED":
+        errors.append("qualification policy certification status must remain NOT_CERTIFIED")
+    if policy_evidence.get("signature_algorithm") != "Ed25519":
+        errors.append("qualification policy signature algorithm must remain Ed25519")
+    if policy_evidence.get("required_evidence_types") != [
+        "source_build",
+        "target_build",
+        "source_startup",
+        "target_startup",
+        "behavioral_equivalence",
+        "security",
+        "performance",
+        "operability",
+        "sbom",
+        "rollback",
+        "independent_review",
+        "customer_acceptance",
+        "external_certification",
+    ]:
+        errors.append("qualification policy must enumerate the exact 13 evidence types")
+    controls = policy.get("controls", {})
+    expected_controls = {
+        "application_egress": "DENY",
+        "customer_data": False,
+        "credential_access": False,
+        "dependency_resolution": "DECLARED_MAVEN_REPOSITORIES_ONLY",
+        "external_certification_promotion": False,
+        "production_deployment": False,
+        "source_tree_mutation": "DENY",
+        "target_artifact_overwrite": False,
+        "workspace": "EPHEMERAL_ISOLATED",
+    }
+    if controls != expected_controls:
+        errors.append("qualification policy controls are not the approved fail-closed set")
+    return errors
+
+
 def validate_local_evidence(pack: Path) -> tuple[list[str], dict[str, Any] | None]:
     errors: list[str] = []
     evidence_root = pack / LOCAL_EVIDENCE_RELATIVE
@@ -272,6 +393,7 @@ def validate_local_evidence(pack: Path) -> tuple[list[str], dict[str, Any] | Non
         errors.append("local qualification receipt source commit is not exact")
     if not re.fullmatch(r"[0-9a-f]{64}", str(receipt.get("source_snapshot_sha256", ""))):
         errors.append("local qualification receipt source snapshot is not content-addressed")
+    errors.extend(validate_exact_tuple_binding(evidence_root, receipt))
 
     source = receipt.get("source", {})
     if source.get("spring_framework") != "5.3.39" or source.get("tomcat") != "9.0.120":

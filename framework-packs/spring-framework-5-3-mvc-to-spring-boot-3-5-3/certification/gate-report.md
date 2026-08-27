@@ -22,7 +22,7 @@
 - Source commit: `7e1c098541143c96cce7d9a637fffe57d0e2baae`
 - Source snapshot SHA-256: `68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581`
 - Target profile SHA-256: `8042f1bed7cde57d13e9794b7a694437d5b12d40f0eb4948c656d942a9297ee1`
-- Qualification policy SHA-256: `d219db8f61c27e55acc4b2fe5f0899e131fa2b5fc9e3c0d2caffb12e0ed6f3cd`
+- Qualification policy SHA-256: `943a248703887589201f4f329e26e56cfa7e15ac4e075ebedd5493a27ac99af0`
 - Download ZIP: `17,347` bytes / `f85763c1d86a6af8e39cbdcb0d98571595e58e9ecf8a047b1df6e0ebf1fcd298`
 - Executed WAR: `28,990,394` bytes / `1fae241386924325e6f8099e59b2d5da19749cfd47b9fdb26f92fb7d5c857f60`
 - Negative, holdout and representative corpora: `NOT_RUN`
