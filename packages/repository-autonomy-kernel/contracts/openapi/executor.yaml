@@ -1,0 +1,21 @@
+openapi: 3.1.0
+info: {title: Elmos Autonomy Executor Boundary, version: 2.0.0}
+paths:
+  /v2/tool-calls:
+    post:
+      operationId: executeTypedTool
+      security: [{verifiedIdentity: []}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/ToolCallRequest"}}}}
+      responses: {"202": {description: Typed result or NOT_RUN}, "401": {description: Identity required}, "422": {description: Authorization or contract failure}}
+components:
+  securitySchemes:
+    verifiedIdentity: {type: apiKey, in: header, name: X-Elmos-Identity-Verified}
+  schemas:
+    ToolCallRequest:
+      type: object
+      required: [tool_descriptor, tool_call_request, execution_authority]
+      properties:
+        tool_descriptor: {type: object}
+        tool_call_request: {type: object}
+        execution_authority: {type: object}
+        policy_snapshot: {type: object}
