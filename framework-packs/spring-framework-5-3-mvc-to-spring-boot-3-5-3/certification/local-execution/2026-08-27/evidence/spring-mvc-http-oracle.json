@@ -11,7 +11,7 @@
       "request_body_sha256" : "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "request_header_names" : [ "accept" ]
     },
-    "compared_headers" : [ "content-language", "set-cookie", "content-type" ],
+    "compared_headers" : [ "content-type", "set-cookie", "content-language" ],
     "equal" : true,
     "source" : {
       "body_bytes" : 142,
@@ -37,7 +37,7 @@
       "request_body_sha256" : "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "request_header_names" : [ "accept" ]
     },
-    "compared_headers" : [ "x-legacy-audit", "content-type" ],
+    "compared_headers" : [ "content-type", "x-legacy-audit" ],
     "equal" : true,
     "source" : {
       "body_bytes" : 61,

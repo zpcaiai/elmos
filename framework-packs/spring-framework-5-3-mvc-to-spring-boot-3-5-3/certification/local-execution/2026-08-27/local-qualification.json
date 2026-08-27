@@ -4,8 +4,8 @@
   "claim_scope" : "LOCAL_ENGINEERING_EXACT_FIXTURE_ONLY",
   "certified" : false,
   "external_execution_status" : "NOT_RUN",
-  "observed_at" : "2026-08-26T16:37:15.866005Z",
-  "source_commit" : "c92db0a661230c71c0c10d75b95155f16f6837d2",
+  "observed_at" : "2026-08-27T01:29:37.711238Z",
+  "source_commit" : "7e1c098541143c96cce7d9a637fffe57d0e2baae",
   "source_snapshot_sha256" : "68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581",
   "route_id" : "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21",
   "pack_key" : "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
@@ -15,21 +15,21 @@
     "maven" : "Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)\nMaven home: /private/tmp/elmos-mvc-exact-runtime.S3ekrH/apache-maven-3.9.11\nJava version: 11.0.26, vendor: Amazon.com Inc., runtime: /Users/stephen/Library/Java/JavaVirtualMachines/corretto-11.0.26/Contents/Home\nDefault locale: en_US, platform encoding: UTF-8\nOS name: \"mac os x\", version: \"26.6.2\", arch: \"aarch64\", family: \"mac\"",
     "maven_archive" : {
       "path" : "/private/tmp/elmos-mvc-exact-runtime.S3ekrH/apache-maven-3.9.11-bin.zip",
-      "sha256" : "0d7125e8c91097b36edb990ea5934e6c68b4440eef4ea96510a0f6815e7eeadb",
+      "bytes" : 9278421,
       "sha512" : "03e2d65d4483a3396980629f260e25cac0d8b6f7f2791e4dc20bc83f9514db8d0f05b0479e699a5f34679250c49c8e52e961262ded468a20de0be254d8207076",
-      "bytes" : 9278421
+      "sha256" : "0d7125e8c91097b36edb990ea5934e6c68b4440eef4ea96510a0f6815e7eeadb"
     },
     "tomcat" : "9.0.120",
     "tomcat_archive" : {
       "path" : "/private/tmp/elmos-mvc-exact-runtime.S3ekrH/apache-tomcat-9.0.120.zip",
-      "sha256" : "93306f86baafe13186cc3e705c201040d68b0192a50be667a1f576ee4711db0d",
+      "bytes" : 13697062,
       "sha512" : "fca7cfbe8255b61fac0e474a9a7ac6fbaf2792c72061fda2666b26eb5ba60718adc4fc0cbd013f14a41f101bcd7f5b70b2d3eedc37554ff0db4bdb6e2e2898f6",
-      "bytes" : 13697062
+      "sha256" : "93306f86baafe13186cc3e705c201040d68b0192a50be667a1f576ee4711db0d"
     },
     "catalina_jar" : {
-      "bytes" : 1873710,
+      "path" : "lib/catalina.jar",
       "sha256" : "540f8b3855dc3d963f6872f5fb10a156985ee9bf8ffc78a9f859eda5675309dd",
-      "path" : "lib/catalina.jar"
+      "bytes" : 1873710
     },
     "tomcat_consumed_manifest_sha256" : "bf6e25983335bc1e3ac471195f4f5d09b65c8b57abdce636a087c6fb6c9c0fcd"
   },
@@ -41,134 +41,142 @@
     "maven" : "Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)\nMaven home: /private/tmp/elmos-mvc-exact-runtime.S3ekrH/apache-maven-3.9.11\nJava version: 21.0.11, vendor: Homebrew, runtime: /opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home\nDefault locale: en_US, platform encoding: UTF-8\nOS name: \"mac os x\", version: \"26.6.2\", arch: \"aarch64\", family: \"mac\"",
     "download_artifact" : {
       "path" : "artifacts/migrated-spring-boot-3.5.3.zip",
-      "format" : "migrated-repository-zip",
+      "bytes" : 17347,
       "sha256" : "f85763c1d86a6af8e39cbdcb0d98571595e58e9ecf8a047b1df6e0ebf1fcd298",
-      "bytes" : 17347
+      "format" : "migrated-repository-zip"
     },
     "executed_war" : {
-      "sha256" : "45a3a26a169e576db8e91c4bea6688e785dea2f2b2b231b163d3748fdd3b2175",
-      "path" : "artifacts/executed-spring-boot-3.5.3.war",
-      "bytes" : 28990394,
+      "sha256" : "1fae241386924325e6f8099e59b2d5da19749cfd47b9fdb26f92fb7d5c857f60",
+      "format" : "spring-boot-executable-war",
       "manifest" : {
-        "Spring-Boot-Version" : "3.5.3",
+        "Main-Class" : "org.springframework.boot.loader.launch.WarLauncher",
         "Start-Class" : "io.elmos.legacy.LegacyMvcApplication",
-        "Main-Class" : "org.springframework.boot.loader.launch.WarLauncher"
+        "Spring-Boot-Version" : "3.5.3"
       },
-      "format" : "spring-boot-executable-war"
+      "bytes" : 28990394,
+      "path" : "artifacts/executed-spring-boot-3.5.3.war"
     }
   },
   "harness" : {
-    "repository_head" : "c92db0a661230c71c0c10d75b95155f16f6837d2",
-    "worktree_binding" : "repository-head-plus-content-addressed-files",
     "files" : [ {
-      "bytes" : 142273,
+      "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/LocalSpringUpgradeExecutionPort.java",
       "sha256" : "4e1be76b6c98b9161b631462294efc86e7a14e4fee7f24b86ff0fb6e1acb8f55",
-      "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/LocalSpringUpgradeExecutionPort.java"
+      "bytes" : 142273
     }, {
-      "bytes" : 24468,
+      "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringDeploymentGuidance.java",
       "sha256" : "34a9b9f03464fbe51107cf67bc7be8053c05c49bbc9cd9a7e7b121dfe416edce",
-      "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringDeploymentGuidance.java"
+      "bytes" : 24468
     }, {
-      "bytes" : 53833,
+      "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringMvcExactTargetMaterializer.java",
       "sha256" : "efc42f495c373d546aded828acd20ca1de978cf03c3e156d40743f86fb688029",
-      "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringMvcExactTargetMaterializer.java"
+      "bytes" : 53833
     }, {
-      "bytes" : 75522,
+      "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringMvcWarRuntime.java",
       "sha256" : "0259438b7e6a580b782857dcddf03cf6d629ba5d1ddf92e095ae6388eb102eaf",
-      "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringMvcWarRuntime.java"
+      "bytes" : 75522
     }, {
-      "bytes" : 58524,
+      "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringRouteCatalog.java",
       "sha256" : "fba645276e91c5ca3a2a85198354cb66719ebc7e6b83a0d4c0f075907fe0bb4c",
-      "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringRouteCatalog.java"
+      "bytes" : 58524
     }, {
-      "bytes" : 12230,
+      "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringUpgradeModels.java",
       "sha256" : "73502b43bad525aca9be94e5b9e71e2e21236c1c1d24a0a40b82df768be081e6",
-      "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringUpgradeModels.java"
+      "bytes" : 12230
     }, {
-      "bytes" : 1315,
+      "path" : "apps/java-engine-worker/src/main/resources/rewrite/spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml",
       "sha256" : "e6b648f5dfdf350c1f6ac0ccc9636b40453af13a48e18974076e455dc872b75b",
-      "path" : "apps/java-engine-worker/src/main/resources/rewrite/spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml"
+      "bytes" : 1315
     }, {
-      "bytes" : 2785,
+      "path" : "apps/java-engine-worker/src/main/resources/spring-mvc/exact-5.3.39-fixture-manifest.json",
       "sha256" : "f982de2d2daca2247f5f3efa788a64f653bb2d576a4c8516fafc0cd96d34fe74",
-      "path" : "apps/java-engine-worker/src/main/resources/spring-mvc/exact-5.3.39-fixture-manifest.json"
+      "bytes" : 2785
     }, {
-      "bytes" : 3731,
+      "path" : "apps/java-engine-worker/src/main/resources/spring-mvc/target-profile/profile.json",
       "sha256" : "8042f1bed7cde57d13e9794b7a694437d5b12d40f0eb4948c656d942a9297ee1",
-      "path" : "apps/java-engine-worker/src/main/resources/spring-mvc/target-profile/profile.json"
+      "bytes" : 3731
     }, {
-      "bytes" : 1773,
+      "path" : "apps/java-engine-worker/src/main/resources/spring-mvc/target-profile/scaffold-manifest.json",
       "sha256" : "a2e741b1a535c690633b27e0301f6931ad287e2b0ddd3fefb97cb5194d5819d6",
-      "path" : "apps/java-engine-worker/src/main/resources/spring-mvc/target-profile/scaffold-manifest.json"
+      "bytes" : 1773
     }, {
-      "bytes" : 25171,
+      "path" : "apps/java-engine-worker/src/test/java/io/elmos/worker/SpringMvcExactLocalQualificationIT.java",
       "sha256" : "dcb22eac660143b7063cadb6bbc6e137528f2ffae0298afdd7fda90b8e25ef7f",
-      "path" : "apps/java-engine-worker/src/test/java/io/elmos/worker/SpringMvcExactLocalQualificationIT.java"
-    } ]
+      "bytes" : 25171
+    } ],
+    "worktree_binding" : "repository-head-plus-content-addressed-files",
+    "repository_head" : "7e1c098541143c96cce7d9a637fffe57d0e2baae"
   },
   "execution" : {
-    "target_clean_verify" : "PASSED",
-    "source_clean_verify" : "PASSED",
-    "target_warlauncher_startup" : "PASSED",
-    "bounded_shutdown" : "PASSED",
-    "trusted_java_materializer" : "PASSED",
-    "target_actuator_health" : "PASSED",
-    "validation_and_error_contract_tests" : "PASSED",
-    "get_and_jsp_oracle_comparisons" : 2,
+    "source_tomcat_startup" : "PASSED",
     "openrewrite_actual_execution" : true,
-    "source_tomcat_startup" : "PASSED"
+    "get_and_jsp_oracle_comparisons" : 2,
+    "validation_and_error_contract_tests" : "PASSED",
+    "target_actuator_health" : "PASSED",
+    "trusted_java_materializer" : "PASSED",
+    "bounded_shutdown" : "PASSED",
+    "target_warlauncher_startup" : "PASSED",
+    "source_clean_verify" : "PASSED",
+    "target_clean_verify" : "PASSED"
+  },
+  "exact_tuple_binding" : {
+    "path" : "exact-tuple-binding.json",
+    "sha256" : "sha256:fe47bfe68b090da5293fe1bdf430a21373b25411636bf06491efa0cd40228af9"
+  },
+  "policy_snapshot" : {
+    "path" : "qualification-policy.json",
+    "sha256" : "sha256:d219db8f61c27e55acc4b2fe5f0899e131fa2b5fc9e3c0d2caffb12e0ed6f3cd"
   },
   "evidence_files" : [ {
-    "bytes" : 1189,
+    "path" : "evidence/complex-capability-verification.json",
     "sha256" : "85f63088d86e75e075efaac72fea5c0d756c2a7d0c18dd887a3f49cf55f83125",
-    "path" : "evidence/complex-capability-verification.json"
+    "bytes" : 1189
   }, {
-    "bytes" : 21560,
-    "sha256" : "186fc103bbd5aa6ef5dad3da65be5257aabda281b95813d7731f9be3e7b071e5",
-    "path" : "evidence/control.log"
+    "path" : "evidence/control.log",
+    "sha256" : "5cad8725f2d379bf91266be6cdf45434053f80455e9471123e6b3263b505e5d3",
+    "bytes" : 21519
   }, {
-    "bytes" : 18963,
-    "sha256" : "b7d4bcbc203782ccb67192ba2956f6fb10e00e24689e787160ca3fb6f6c90b11",
-    "path" : "evidence/framework-contract-model.json"
+    "path" : "evidence/framework-contract-model.json",
+    "sha256" : "8ced6f9733e9a9caca6c7e29f27a29d70c12a47fc5f109c8bd69837a93a3c6d5",
+    "bytes" : 18963
   }, {
-    "bytes" : 638,
+    "path" : "evidence/route-selection.json",
     "sha256" : "b9e3b039a836709cea9b3827d17e53ac1f8e4929b48bb20a2f818ee75ca96190",
-    "path" : "evidence/route-selection.json"
+    "bytes" : 638
   }, {
-    "bytes" : 5108,
-    "sha256" : "61d5706de6bebe97f62dd98341abf8da782a0188c27f2ef77453d1ef3fbc7d39",
-    "path" : "evidence/source-snapshot-manifest.json"
+    "path" : "evidence/source-snapshot-manifest.json",
+    "sha256" : "e7272d33177f48e5dcea5e2057a1dfe310fae03defb9133dc8f189542285b9a4",
+    "bytes" : 5108
   }, {
-    "bytes" : 3907,
-    "sha256" : "ff38e61d222803085e02896f975292955b9e44bccdc55e8dd3e565cb31501d45",
-    "path" : "evidence/source-startup.log"
+    "path" : "evidence/source-startup.log",
+    "sha256" : "a2fe42e276073a0b617ff045b7b92c0238558c252b50d306a5d688d677339c80",
+    "bytes" : 3903
   }, {
-    "bytes" : 753,
+    "path" : "evidence/source-test-summary.json",
     "sha256" : "6d585f58917f6c3310e4310882e1162d4e2149a4c01c67f79ddd6f03793f99f4",
-    "path" : "evidence/source-test-summary.json"
+    "bytes" : 753
   }, {
-    "bytes" : 3497,
-    "sha256" : "c997ee1578bef38a0aedf64aa665e8dd2f3acef905b48f09b1809b3c4ca6371f",
-    "path" : "evidence/spring-mvc-http-oracle.json"
+    "path" : "evidence/spring-mvc-http-oracle.json",
+    "sha256" : "b2c48aa861cb44ad909b2f7ce6e3f9bdffd34c0d6f648ffc56b27e50861505e7",
+    "bytes" : 3497
   }, {
-    "bytes" : 5227,
-    "sha256" : "eab6e4b363321f47cbc0164e0e0bed8d2c7200b0532e18244ce2d03475b5d6ba",
-    "path" : "evidence/target-materialization-receipt.json"
+    "path" : "evidence/target-materialization-receipt.json",
+    "sha256" : "65fd7cf281a5776b94ea3de121cac035f6dd352a8cbbf22d82913c49a25215be",
+    "bytes" : 5227
   }, {
-    "bytes" : 2071,
-    "sha256" : "08980b02774abae20146f4a63e9cf8ecd497ecb1c1655a63b53681b2daef66fe",
-    "path" : "evidence/target-materialization-source-map.json"
+    "path" : "evidence/target-materialization-source-map.json",
+    "sha256" : "7eb257f10a630e4f0e7f7a75295165bce95ea4334342cd040e00b01c005ec56c",
+    "bytes" : 2071
   }, {
-    "bytes" : 3314,
-    "sha256" : "578a7b5bf997b9bb0ad645157cc09e817c232fc88d95b1ecd4f5acda3243beb5",
-    "path" : "evidence/target-startup.log"
+    "path" : "evidence/target-startup.log",
+    "sha256" : "5864588005630cde6c45f5470f4c181c12a6e114de9fd648c8923ec8dba1537f",
+    "bytes" : 3308
   }, {
-    "bytes" : 1060,
+    "path" : "evidence/target-test-summary.json",
     "sha256" : "5cb811fee14910a7d358b69d5f14b146feb0d9a148ad94ecb4f9579851f2b934",
-    "path" : "evidence/target-test-summary.json"
+    "bytes" : 1060
   }, {
-    "bytes" : 994,
+    "path" : "evidence/test-parity.json",
     "sha256" : "54d24fcd6a8e8a3e497ceea7970b86fa0b262c209c37e6d8d5cbb2558d53d9df",
-    "path" : "evidence/test-parity.json"
+    "bytes" : 994
   } ]
 }

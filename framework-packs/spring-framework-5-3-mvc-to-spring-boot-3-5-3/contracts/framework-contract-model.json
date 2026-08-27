@@ -4,7 +4,7 @@
   "model_status": "LOCAL_ENGINEERING_EXACT_FIXTURE_PARTIAL",
   "extraction_status": "PASSED_LOCAL_EXACT_FIXTURE",
   "source_snapshot_sha256": "68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581",
-  "source_commit": "c92db0a661230c71c0c10d75b95155f16f6837d2",
+  "source_commit": "7e1c098541143c96cce7d9a637fffe57d0e2baae",
   "execution_evidence_ref": "certification/local-execution/2026-08-27/evidence-index.json",
   "exact_tuple": {
     "framework": "spring-framework-mvc",
