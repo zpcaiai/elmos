@@ -49,6 +49,7 @@ import sqlglot
 from sqlglot import exp
 
 from .advanced import (
+    looks_like_role_comment,
     parse_comment,
     parse_create_view,
     parse_privilege,
@@ -73,12 +74,14 @@ from .models import (
 )
 from .parser import (
     _parse_source_statements,
+    looks_like_row_security,
     parse_alter_table,
     parse_create_index,
     parse_create_schema,
     parse_create_table,
     parse_drop_table,
     parse_insert_statement,
+    parse_row_security,
     parse_update,
 )
 from .profiles import NamespaceProfile, resolve_namespace_profile
@@ -414,6 +417,14 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     "CERTIFIED_DDL_UNSUPPORTED_INDEX_MODIFIER": (
         "structure",
         "a CREATE INDEX modifier such as WHERE, INCLUDE or USING has no common exact spelling",
+    ),
+    "CERTIFIED_DDL_UNSUPPORTED_INDEX_EXPRESSION": (
+        "structure",
+        "an index expression is outside the closed typed LOWER/one-level JSON text-path profile",
+    ),
+    "CERTIFIED_DDL_INDEX_EXPRESSION_UNSUPPORTED_BY_TARGET": (
+        "structure",
+        "the target has no proven exact route for the source expression index's collation or JSON operator semantics",
     ),
     "CERTIFIED_DDL_UNSUPPORTED_INDEX_ORDER": (
         "structure",
@@ -849,6 +860,16 @@ def _classify(
     assert isinstance(statement, exp.Expression)
     try:
         command_sql = statement.sql() if isinstance(statement, exp.Command) else None
+        if isinstance(statement, exp.Command) and looks_like_row_security(
+            raw_sql or command_sql or "", dialect
+        ):
+            parse_row_security(raw_sql or command_sql or "", dialect, namespace_map)
+            return "IN_SUBSET", None, None
+        if isinstance(statement, exp.Command) and looks_like_role_comment(
+            raw_sql or command_sql or "", dialect
+        ):
+            parse_comment(raw_sql or command_sql or "", dialect, namespace_map)
+            return "IN_SUBSET", None, None
         if (raw_sql or command_sql or "").lstrip().upper().startswith("DO"):
             parse_static_do(raw_sql or command_sql or "", dialect, namespace_map)
             return "IN_SUBSET", None, None

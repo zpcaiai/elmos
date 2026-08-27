@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
-from typing import Protocol, cast
+from typing import Any, Protocol, cast
 
 import sqlglot
 from sqlglot import exp
@@ -67,11 +67,15 @@ from .models import (
     ForeignKey,
     Index,
     IndexColumn,
+    IndexExpression,
+    IndexExpressionKind,
     InsertLiteral,
     InsertSelectStatement,
     InsertStatement,
     ReferentialAction,
     RenameColumn,
+    RowSecurityAction,
+    RowSecurityCommand,
     Schema,
     Table,
     UpdateAssignment,
@@ -169,6 +173,7 @@ def _assignment_type_compatible(source: CanonicalTypeRef, target: CanonicalTypeR
 _CHECK_OPERATOR_MAP: dict[type, CheckOperator] = {
     exp.EQ: CheckOperator.EQ,
     exp.NEQ: CheckOperator.NE,
+    exp.NullSafeNEQ: CheckOperator.IS_DISTINCT_FROM,
     exp.LT: CheckOperator.LT,
     exp.LTE: CheckOperator.LE,
     exp.GT: CheckOperator.GT,
@@ -809,7 +814,43 @@ def _check_literal(node: exp.Expression | None, what: str) -> CheckLiteral:
     return CheckLiteral(value=str(node.this), is_string=bool(node.is_string))
 
 
-def _parse_check_left_value(node: exp.Expression, what: str) -> tuple[str, CheckValueExpression | None]:
+def _parse_check_left_value(
+    node: exp.Expression, what: str, source_dialect: Dialect
+) -> tuple[str, CheckValueExpression | None]:
+    if isinstance(node, exp.ArraySize):
+        _require(
+            source_dialect is Dialect.POSTGRES,
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "ARRAY_LENGTH CHECK expressions are only admitted from PostgreSQL",
+        )
+        dimension = node.expression
+        _require(
+            isinstance(dimension, exp.Literal)
+            and not dimension.is_string
+            and str(dimension.this) == "1",
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "ARRAY_LENGTH CHECK expressions require dimension 1",
+        )
+        column = _plain_identifier(node.this, what)
+        return column, CheckValueExpression(
+            column=column,
+            function=CheckValueFunction.ARRAY_LENGTH,
+            dimension=1,
+        )
+    if isinstance(node, exp.Anonymous) and str(node.this).upper() == "JSONB_TYPEOF":
+        _require(
+            source_dialect is Dialect.POSTGRES,
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "JSONB_TYPEOF CHECK expressions are only admitted from PostgreSQL",
+        )
+        arguments = list(node.expressions or [])
+        _require(
+            len(arguments) == 1,
+            "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+            "JSONB_TYPEOF CHECK expressions must have one column argument",
+        )
+        column = _plain_identifier(arguments[0], what)
+        return column, CheckValueExpression(column=column, function=CheckValueFunction.JSONB_TYPEOF)
     if isinstance(node, exp.Trim):
         _require(
             node.expression is None,
@@ -925,14 +966,17 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
             "CERTIFIED_DDL_UNSUPPORTED_CHECK",
             "BETWEEN SYMMETRIC is PostgreSQL-only and outside certified-ddl-v1",
         )
-        column = _plain_identifier(node.this, "CHECK left-hand column")
+        parsed_left = _parse_check_left_value(node.this, "CHECK left-hand column", source_dialect)
+        between_column: str = parsed_left[0]
+        left_expression = parsed_left[1]
         return CheckComparison(
-            column=column,
+            column=between_column,
             operator=CheckOperator.BETWEEN,
             literals=(
                 _check_literal(node.args.get("low"), "CHECK BETWEEN lower bound"),
                 _check_literal(node.args.get("high"), "CHECK BETWEEN upper bound"),
             ),
+            left_expression=left_expression,
         )
 
     # sqlglot represents PostgreSQL `~`, MySQL `REGEXP`, and Oracle/MySQL
@@ -1032,20 +1076,20 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
         f"CHECK comparison operator {type(node).__name__} is outside certified-ddl-v1",
     )
     assert binary_operator is not None  # narrows for mypy; _require already enforced this at runtime
-    parsed_left = _parse_check_left_value(node.this, "CHECK left-hand column")
-    parsed_column: str = parsed_left[0]
+    parsed_left = _parse_check_left_value(node.this, "CHECK left-hand column", source_dialect)
+    binary_column: str = parsed_left[0]
     left_expression = parsed_left[1]
     literal = node.expression
     if isinstance(literal, exp.Column):
         return CheckComparison(
-            column=parsed_column,
+            column=binary_column,
             operator=binary_operator,
             right_column=_plain_identifier(literal, "CHECK right-hand column"),
             left_expression=left_expression,
         )
     if isinstance(literal, exp.Boolean):
         return CheckComparison(
-            column=parsed_column,
+            column=binary_column,
             operator=binary_operator,
             literal="true" if literal.this else "false",
             literal_is_boolean=True,
@@ -1071,7 +1115,7 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
             "timestamp CHECK intervals are limited to seconds, minutes, hours, and days",
         )
         return CheckComparison(
-            column=parsed_column,
+            column=binary_column,
             operator=binary_operator,
             right_interval_column=_plain_identifier(interval_column, "CHECK interval column"),
             right_interval_value=int(str(interval_literal.this)),
@@ -1083,7 +1127,7 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
         "CHECK right-hand side must be a plain literal",
     )
     return CheckComparison(
-        column=parsed_column,
+        column=binary_column,
         operator=binary_operator,
         literal=str(literal.this),
         literal_is_string=bool(literal.is_string),
@@ -1491,6 +1535,68 @@ def parse_create_index(
         "CERTIFIED_DDL_UNSUPPORTED_INDEX_MODIFIER",
         "CREATE INDEX modifiers are outside the common profile: " + ", ".join(sorted(unexpected_params)),
     )
+
+    def parse_typed_expression(node: exp.Expression) -> IndexExpression:
+        """Parse the closed PostgreSQL expression-index key subset.
+
+        sqlglot normalises PostgreSQL ``jsonb_col ->> 'key'`` into
+        ``JSON_EXTRACT_SCALAR``.  We accept only that one-level text path and
+        ``LOWER(column)``.  No raw expression SQL enters the canonical IR,
+        and all non-PostgreSQL emitters reject these keys unless a future
+        versioned capability proves the same collation/JSON semantics.
+        """
+
+        if isinstance(node, exp.Paren):
+            node = node.this
+        if isinstance(node, exp.Lower):
+            return IndexExpression(
+                kind=IndexExpressionKind.LOWER,
+                column=_plain_identifier(node.this, "index expression column"),
+            )
+        if isinstance(node, exp.JSONExtractScalar):
+            _require(
+                source_dialect is Dialect.POSTGRES,
+                "CERTIFIED_DDL_UNSUPPORTED_INDEX_EXPRESSION",
+                "JSON text-path index expressions are only admitted from PostgreSQL",
+            )
+            _require(
+                bool(node.args.get("only_json_types")),
+                "CERTIFIED_DDL_UNSUPPORTED_INDEX_EXPRESSION",
+                "JSON index expressions must use PostgreSQL's JSON/JSONB text-path operator",
+            )
+            path = node.args.get("expression")
+            _require(
+                isinstance(path, exp.JSONPath),
+                "CERTIFIED_DDL_UNSUPPORTED_INDEX_EXPRESSION",
+                "JSON index expressions require one static JSON path",
+            )
+            assert isinstance(path, exp.JSONPath)
+            path_parts = path.args.get("expressions") or []
+            _require(
+                len(path_parts) == 2
+                and isinstance(path_parts[0], exp.JSONPathRoot)
+                and isinstance(path_parts[1], exp.JSONPathKey),
+                "CERTIFIED_DDL_UNSUPPORTED_INDEX_EXPRESSION",
+                "JSON index expressions only support one object key, not arrays or wildcards",
+            )
+            key_node = path_parts[1]
+            assert isinstance(key_node, exp.JSONPathKey)
+            key = str(key_node.this)
+            _require(
+                bool(key) and "\x00" not in key,
+                "CERTIFIED_DDL_UNSUPPORTED_INDEX_EXPRESSION",
+                "JSON index object keys must be non-empty and NUL-free",
+            )
+            return IndexExpression(
+                kind=IndexExpressionKind.JSON_TEXT_PATH,
+                column=_plain_identifier(node.this, "JSON index expression column"),
+                json_key=key,
+            )
+        raise DialectError(
+            "CERTIFIED_DDL_UNSUPPORTED_INDEX_EXPRESSION",
+            f"index expression {type(node).__name__} is outside the typed profile",
+        )
+
     index_columns: list[IndexColumn] = []
     for column in params.args.get("columns") or []:
         descending = False
@@ -1509,7 +1615,10 @@ def parse_create_index(
             )
             descending = desc is True
             column = column.this
-        index_columns.append(IndexColumn(name=_plain_identifier(column, "index column"), descending=descending))
+        if isinstance(column, exp.Identifier | exp.Column | exp.Literal):
+            index_columns.append(IndexColumn(name=_plain_identifier(column, "index column"), descending=descending))
+        else:
+            index_columns.append(IndexColumn(expression=parse_typed_expression(column), descending=descending))
     where = params.args.get("where")
     predicate = None
     if where is not None:
@@ -1618,6 +1727,121 @@ def parse_create_schema(
         name=schema_name,
         if_not_exists=bool(statement.args.get("exists")),
     )
+
+
+def _row_security_tokens(sql: str, source_dialect: Dialect) -> list[Any]:
+    """Tokenize the PostgreSQL RLS control grammar without parsing it as DDL.
+
+    sqlglot currently exposes these PostgreSQL statements as opaque
+    ``Command`` nodes. Tokenization still gives us a dialect-aware lexical
+    boundary (including comments and quoted identifiers); the exact token
+    sequence is then checked by ``parse_row_security`` before a typed IR node
+    is constructed. No source text is retained for emission.
+    """
+
+    try:
+        return list(sqlglot.tokenize(sql, read=source_dialect.value))
+    except sqlglot.errors.SqlglotError as exc:
+        raise DialectError(
+            "CERTIFIED_RLS_PARSE_FAILED",
+            f"{source_dialect.value} parser rejected row-security control syntax: {exc}",
+        ) from exc
+
+
+def _row_security_token_values(sql: str, source_dialect: Dialect) -> list[str]:
+    return [str(token.text) for token in _row_security_tokens(sql, source_dialect)]
+
+
+def looks_like_row_security(sql: str, source_dialect: Dialect) -> bool:
+    """Return whether a command has the closed RLS-control suffix.
+
+    This is only a dispatch guard for opaque sqlglot ``Command`` nodes. The
+    complete grammar and identifiers are still validated by
+    ``parse_row_security``.
+    """
+
+    try:
+        values = [value.upper() for value in _row_security_token_values(sql, source_dialect)]
+    except DialectError:
+        return False
+    if len(values) < 7 or values[:2] != ["ALTER", "TABLE"] or values[-3:] != ["ROW", "LEVEL", "SECURITY"]:
+        return False
+    action_start = len(values) - 3
+    action_start -= 2 if values[action_start - 2 : action_start] == ["NO", "FORCE"] else 1
+    name = values[2:action_start]
+    action = values[action_start:len(values) - 3]
+    return len(name) in {1, 3} and action in [["ENABLE"], ["DISABLE"], ["FORCE"], ["NO", "FORCE"]]
+
+
+def parse_row_security(
+    sql: str | exp.Expression,
+    source_dialect: Dialect,
+    namespace_map: Mapping[str, str] | None = None,
+) -> RowSecurityCommand:
+    """Parse one PostgreSQL table-level RLS state transition.
+
+    PostgreSQL is the only certified target for this IR. ``CREATE POLICY``
+    and its authorization predicate remain outside this route; accepting a
+    state transition here does not weaken, synthesize, or replace a policy.
+    """
+
+    _require(
+        source_dialect is Dialect.POSTGRES,
+        "CERTIFIED_RLS_UNSUPPORTED_SOURCE",
+        "table-level row-security controls are admitted only from PostgreSQL",
+    )
+    raw_sql = sql if isinstance(sql, str) else sql.sql()
+    tokens = _row_security_tokens(raw_sql, source_dialect)
+    values = [str(token.text).upper() for token in tokens]
+    _require(
+        len(values) >= 7 and values[:2] == ["ALTER", "TABLE"] and values[-3:] == ["ROW", "LEVEL", "SECURITY"],
+        "CERTIFIED_RLS_UNSUPPORTED_STATEMENT",
+        "expected ALTER TABLE <name> <RLS action> ROW LEVEL SECURITY",
+    )
+
+    action_end = len(values) - 3
+    is_no_force = values[action_end - 2 : action_end] == ["NO", "FORCE"]
+    action_start = action_end - (2 if is_no_force else 1)
+    action_values = values[action_start:action_end]
+    if action_values == ["NO", "FORCE"]:
+        action = RowSecurityAction.NO_FORCE
+    else:
+        _require(
+            action_values in (["ENABLE"], ["DISABLE"], ["FORCE"]),
+            "CERTIFIED_RLS_UNSUPPORTED_STATEMENT",
+            f"RLS action {' '.join(action_values)!r} is outside the typed PostgreSQL route",
+        )
+        action = RowSecurityAction(action_values[0])
+
+    name_tokens = tokens[2:action_start]
+    name_values = values[2:action_start]
+    _require(
+        len(name_values) in {1, 3},
+        "CERTIFIED_RLS_UNSUPPORTED_STATEMENT",
+        "RLS control must name one table, optionally schema-qualified",
+    )
+    if len(name_values) == 3:
+        _require(
+            name_values[1] == ".",
+            "CERTIFIED_RLS_UNSUPPORTED_IDENTIFIER_SHAPE",
+            "RLS table qualification must use one schema and one table",
+        )
+
+    def identifier(token: Any, what: str) -> exp.Identifier:
+        kind_name = token.token_type.name
+        _require(
+            kind_name in {"VAR", "IDENTIFIER"},
+            "CERTIFIED_RLS_UNSUPPORTED_IDENTIFIER_SHAPE",
+            f"{what} must be a plain or double-quoted identifier",
+        )
+        return exp.Identifier(this=str(token.text), quoted=kind_name == "IDENTIFIER")
+
+    table_node = exp.Table(
+        this=identifier(name_tokens[-1], "RLS table name"),
+        db=identifier(name_tokens[0], "RLS schema name") if len(name_values) == 3 else None,
+    )
+    schema, table = _mapped_table_name(table_node, "RLS table name", namespace_map)
+    return RowSecurityCommand(table=table, action=action, schema=schema)
 
 
 def _parse_insert_literal(node: exp.Expression) -> InsertLiteral:

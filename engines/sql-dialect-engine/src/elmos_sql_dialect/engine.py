@@ -60,10 +60,11 @@ def translate_ddl(
       TABLE / INDEX -- certified-ddl-v1
       INSERT -- certified-insert-v1 (fixed-column literal seeds only)
       INSERT -- certified-dml-v1 (bounded single-source SELECT seeds)
-      UPDATE -- certified-dml-v1 (single-table typed assignments)
-      ALTER         -- certified-alter-v1
-      DROP          -- certified-drop-v1
-      SCHEMA        -- certified-schema-v1
+    UPDATE -- certified-dml-v1 (single-table typed assignments)
+    ALTER         -- certified-alter-v1
+    DROP          -- certified-drop-v1
+    SCHEMA        -- certified-schema-v1
+      RLS         -- PostgreSQL-only typed row-security state controls
       FUNCTION / PROCEDURE / TRIGGER -- certified-routine-v1
       VIEW / COMMENT / GRANT / REVOKE -- typed database object profiles
       POLICY -- explicit RLS target-route blocker
@@ -88,19 +89,20 @@ def translate_ddl(
     if source == target:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER: translating a dialect to itself is not a supported route")
     if statement_kind not in (
-        "TABLE", "INDEX", "INSERT", "UPDATE", "ALTER", "DROP", "SCHEMA", "FUNCTION", "PROCEDURE", "TRIGGER",
+        "TABLE", "INDEX", "INSERT", "UPDATE", "ALTER", "DROP", "SCHEMA", "RLS", "FUNCTION", "PROCEDURE", "TRIGGER",
         "VIEW", "COMMENT", "GRANT", "REVOKE", "POLICY", "DO",
     ):
         raise RouteError(
             f"UNSUPPORTED_STATEMENT_KIND: {statement_kind!r} must be TABLE, INDEX, INSERT, ALTER, DROP, "
-            "UPDATE, SCHEMA, FUNCTION, PROCEDURE, TRIGGER, VIEW, COMMENT, GRANT, REVOKE, POLICY or DO"
+            "UPDATE, SCHEMA, RLS, FUNCTION, PROCEDURE, TRIGGER, VIEW, COMMENT, GRANT, REVOKE, POLICY or DO"
         )
     profile = {
         "INSERT": "certified-insert-v1 + certified-dml-v1",
         "UPDATE": "certified-dml-v1",
         "ALTER": "certified-alter-v1",
-        "DROP": "certified-drop-v1",
+            "DROP": "certified-drop-v1",
             "SCHEMA": "certified-schema-v1",
+            "RLS": "certified-rls-control-v1",
             "VIEW": "certified-view-v1",
             "COMMENT": "certified-comment-v1",
             "GRANT": "certified-privilege-v1",
@@ -143,6 +145,10 @@ def translate_ddl(
             emitted = emitter.emit_drop_table(parser.parse_drop_table(sql, source, active_namespace_map), target)
         elif statement_kind == "SCHEMA":
             emitted = emitter.emit_create_schema(parser.parse_create_schema(sql, source, active_namespace_map), target)
+        elif statement_kind == "RLS":
+            emitted = emitter.emit_row_security(
+                parser.parse_row_security(sql, source, active_namespace_map), target
+            )
         elif statement_kind == "FUNCTION":
             from .routine import emit_create_function, parse_create_routine
 

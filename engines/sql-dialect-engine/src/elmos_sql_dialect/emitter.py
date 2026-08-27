@@ -46,10 +46,13 @@ from .models import (
     DropTable,
     ForeignKey,
     Index,
+    IndexColumn,
+    IndexExpressionKind,
     InsertLiteral,
     InsertSelectStatement,
     InsertStatement,
     RenameColumn,
+    RowSecurityCommand,
     Schema,
     Table,
     UpdateStatement,
@@ -154,6 +157,21 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
     if comparison.left_expression is not None:
         if comparison.left_expression.function is CheckValueFunction.TRIM:
             left = f"TRIM({left})"
+        elif comparison.left_expression.function is CheckValueFunction.JSONB_TYPEOF:
+            if dialect is not Dialect.POSTGRES:
+                raise DialectError(
+                    "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED",
+                    "JSONB_TYPEOF requires PostgreSQL JSONB storage and has no exact target mapping",
+                )
+            left = f"JSONB_TYPEOF({left})"
+        elif comparison.left_expression.function is CheckValueFunction.ARRAY_LENGTH:
+            if dialect is not Dialect.POSTGRES:
+                raise DialectError(
+                    "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED",
+                    "ARRAY_LENGTH requires PostgreSQL array storage and has no exact target mapping",
+                )
+            assert comparison.left_expression.dimension is not None
+            left = f"ARRAY_LENGTH({left}, {comparison.left_expression.dimension})"
         elif comparison.left_expression.operator is CheckValueOperator.ADD:
             right = comparison.left_expression.right_column
             assert right is not None
@@ -192,17 +210,19 @@ def _render_check_comparison(comparison: CheckComparison, dialect: Dialect) -> s
             f" AND {_render_literal(high.value, high.is_string)}"
         )
     if operator is CheckOperator.IS_DISTINCT_FROM:
-        if comparison.right_column is None:
-            raise DialectError(
-                "CERTIFIED_DML_UNSUPPORTED_PREDICATE",
-                "IS DISTINCT FROM requires a right-hand column",
+        if comparison.right_column is not None:
+            right = (
+                f"{quote_identifier(comparison.right_column_qualifier, dialect)}."
+                f"{quote_identifier(comparison.right_column, dialect)}"
+                if comparison.right_column_qualifier is not None
+                else quote_identifier(comparison.right_column, dialect)
             )
-        right = (
-            f"{quote_identifier(comparison.right_column_qualifier, dialect)}."
-            f"{quote_identifier(comparison.right_column, dialect)}"
-            if comparison.right_column_qualifier is not None
-            else quote_identifier(comparison.right_column, dialect)
-        )
+        else:
+            right = (
+                _render_boolean(comparison.literal, dialect)
+                if comparison.literal_is_boolean
+                else _render_literal(comparison.literal, comparison.literal_is_string)
+            )
         if dialect is Dialect.POSTGRES:
             return f"{left} IS DISTINCT FROM {right}"
         if dialect is Dialect.MYSQL:
@@ -388,6 +408,31 @@ def _require_mysql_catalog_text_keys(
         )
 
 
+def _render_index_key(column: IndexColumn, dialect: Dialect) -> str:
+    if column.expression is None:
+        rendered = quote_identifier(column.name, dialect)
+    else:
+        if dialect is not Dialect.POSTGRES:
+            raise DialectError(
+                "CERTIFIED_DDL_INDEX_EXPRESSION_UNSUPPORTED_BY_TARGET",
+                f"typed expression index keys have no exact route to {dialect.value}; "
+                "collation and JSON operator semantics must be proven before emission",
+            )
+        expression = column.expression
+        if expression.kind is IndexExpressionKind.LOWER:
+            rendered = f"LOWER({quote_identifier(expression.column, dialect)})"
+        elif expression.kind is IndexExpressionKind.JSON_TEXT_PATH:
+            assert expression.json_key is not None
+            key = expression.json_key.replace("'", "''")
+            rendered = f"{quote_identifier(expression.column, dialect)} ->> '{key}'"
+        else:  # pragma: no cover - IndexExpression validates its closed kind set
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_INDEX_EXPRESSION",
+                f"unknown typed index expression {expression.kind!r}",
+            )
+    return f"{rendered}{' DESC' if column.descending else ''}"
+
+
 def _render_foreign_key_clause(fk: ForeignKey, dialect: Dialect) -> str:
     reference = f"REFERENCES {_object_name(fk.ref_schema, fk.ref_table, dialect)}"
     if fk.ref_columns:
@@ -514,7 +559,11 @@ def emit_create_table(table: Table, dialect: Dialect) -> str:
 
 def emit_create_index(index: Index, dialect: Dialect, catalog: ColumnCatalogLike | None = None) -> str:
     if dialect is Dialect.MYSQL:
-        _require_mysql_catalog_text_keys(catalog, index.table, tuple(column.name for column in index.columns))
+        _require_mysql_catalog_text_keys(
+            catalog,
+            index.table,
+            tuple(column.name for column in index.columns if column.expression is None),
+        )
     if index.predicate is not None and dialect not in (Dialect.POSTGRES, Dialect.TSQL):
         raise DialectError(
             "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET",
@@ -539,7 +588,7 @@ def emit_create_index(index: Index, dialect: Dialect, catalog: ColumnCatalogLike
         supported=_IF_NOT_EXISTS_INDEX_SUPPORT,
     )
     columns = ", ".join(
-        f"{quote_identifier(column.name, dialect)}{' DESC' if column.descending else ''}"
+        _render_index_key(column, dialect)
         for column in index.columns
     )
     rendered = f"{keyword}{existence} {quote_identifier(index.name, dialect)}"
@@ -594,6 +643,27 @@ def emit_create_schema(schema: Schema, dialect: Dialect) -> str:
         supported=_IF_NOT_EXISTS_SCHEMA_SUPPORT,
     )
     return f"CREATE SCHEMA{existence} {quote_identifier(schema.name, dialect)}"
+
+
+def emit_row_security(command: RowSecurityCommand, dialect: Dialect) -> str:
+    """Emit a typed PostgreSQL RLS state transition.
+
+    The state change is not portable merely because all four vendors have
+    permissions features. PostgreSQL's policy evaluation, owner bypass and
+    FORCE/NO FORCE state have no common equivalent in this engine, so every
+    non-PostgreSQL target remains an explicit refusal.
+    """
+
+    if dialect is not Dialect.POSTGRES:
+        raise DialectError(
+            "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED",
+            f"{dialect.value} has no exact PostgreSQL row-security state mapping; "
+            "the route will not downgrade RLS to ordinary privileges",
+        )
+    return (
+        f"ALTER TABLE {_object_name(command.schema, command.table, dialect)} "
+        f"{command.action.value} ROW LEVEL SECURITY"
+    )
 
 
 def _render_insert_literal(value: InsertLiteral, dialect: Dialect) -> str:

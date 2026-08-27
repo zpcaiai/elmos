@@ -30,6 +30,7 @@ from elmos_sql_dialect.advanced import (
     emit_table_function,
     emit_trigger,
     emit_view,
+    looks_like_role_comment,
     parse_comment,
     parse_create_view,
     parse_privilege,
@@ -48,7 +49,11 @@ from elmos_sql_dialect.models import (
     RenameColumn,
     Table,
 )
-from elmos_sql_dialect.parser import _parse_source_statements
+from elmos_sql_dialect.parser import (
+    _parse_source_statements,
+    looks_like_row_security,
+    parse_row_security,
+)
 from elmos_sql_dialect.profiles import NamespaceProfile, resolve_namespace_profile
 from elmos_sql_dialect.routine import emit_create_function, parse_create_routine
 from elmos_sql_dialect.scan import (
@@ -172,6 +177,10 @@ def emit_to(
     source_catalog: SourceSchemaCatalog | None = None,
 ) -> str | None:
     """Emitted SQL, or None with the refusal recorded by the caller."""
+    if isinstance(statement, exp.Command) and looks_like_row_security(statement.sql(), source):
+        return emitter.emit_row_security(parse_row_security(statement.sql(), source, namespace_map), target)
+    if isinstance(statement, exp.Command) and looks_like_role_comment(statement.sql(), source):
+        return emit_comment(parse_comment(statement.sql(), source, namespace_map), target, comment_catalog)
     if isinstance(statement, exp.Create):
         kind = str(statement.args.get("kind", "")).upper()
         if kind == "TABLE":

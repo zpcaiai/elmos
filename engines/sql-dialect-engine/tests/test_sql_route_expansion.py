@@ -6,11 +6,25 @@ import json
 
 import pytest
 
-from elmos_sql_dialect.advanced import emit_trigger, parse_trigger
+from elmos_sql_dialect.advanced import emit_comment, emit_trigger, parse_comment, parse_trigger
 from elmos_sql_dialect.capabilities import target_capability_matrix
+from elmos_sql_dialect.emitter import emit_create_index, emit_row_security
 from elmos_sql_dialect.engine import translate_ddl
-from elmos_sql_dialect.models import Dialect, DialectError
-from elmos_sql_dialect.parser import _parse_source_statements, parse_create_table
+from elmos_sql_dialect.models import (
+    CheckComparison,
+    CheckValueFunction,
+    CommentObjectKind,
+    Dialect,
+    DialectError,
+    IndexExpressionKind,
+    RowSecurityAction,
+)
+from elmos_sql_dialect.parser import (
+    _parse_source_statements,
+    parse_create_index,
+    parse_create_table,
+    parse_row_security,
+)
 from elmos_sql_dialect.profiles import NamespaceProfile
 from elmos_sql_dialect.routine import parse_create_routine
 from elmos_sql_dialect.scan import SourceSchemaCatalog, _record_catalog_statement
@@ -87,6 +101,7 @@ def test_capability_matrix_is_explicit_about_non_common_jsonb_and_array_routes()
     assert matrix["jsonb_binary"]["exact_targets"] == ("postgres",)
     assert matrix["array_exact"]["exact_targets"] == ("postgres",)
     assert matrix["routine_trigger_action"]["exact_targets"] == ("postgres",)
+    assert matrix["row_security_control"]["exact_targets"] == ("postgres",)
 
 
 def test_null_defaults_are_typed_literals_not_dropped() -> None:
@@ -122,12 +137,132 @@ def test_trigger_ir_preserves_update_of_old_new_and_null_semantics() -> None:
     sql = (
         "CREATE TRIGGER audit_update BEFORE UPDATE OF id, name ON public.users "
         "FOR EACH ROW WHEN (NEW.id IS DISTINCT FROM OLD.id AND NOT (NEW.name = 'x')) "
-        "EXECUTE FUNCTION audit_row()"
+        "EXECUTE FUNCTION public.audit_row()"
     )
     trigger = parse_trigger(sql, Dialect.POSTGRES, namespace_map={"public": "dbo"})
     assert trigger.update_columns == ("id", "name")
+    assert trigger.routine_schema == "dbo"
     assert trigger.when is not None
     emitted = emit_trigger(trigger, Dialect.POSTGRES)
     assert "UPDATE OF id, name" in emitted
     assert "WHEN ((NEW.id IS DISTINCT FROM OLD.id) AND (NOT (NEW.name = 'x')))" in emitted
     assert "ON dbo.users" in emitted
+    assert "EXECUTE FUNCTION dbo.audit_row()" in emitted
+
+
+@pytest.mark.parametrize("action", ["ENABLE", "FORCE", "DISABLE", "NO FORCE"])
+def test_row_security_control_is_typed_and_postgres_target_bound(action: str) -> None:
+    command = parse_row_security(
+        f'ALTER TABLE public."Order" {action} ROW LEVEL SECURITY',
+        Dialect.POSTGRES,
+        namespace_map={"public": "dbo"},
+    )
+    assert command.action is RowSecurityAction(action)
+    assert command.schema == "dbo"
+    assert command.table == "Order"
+    assert emit_row_security(command, Dialect.POSTGRES) == (
+        f'ALTER TABLE dbo."Order" {action} ROW LEVEL SECURITY'
+    )
+
+
+def test_row_security_is_not_downgraded_to_privileges_on_other_targets() -> None:
+    report = translate_ddl(
+        "ALTER TABLE public.accounts ENABLE ROW LEVEL SECURITY",
+        "postgres",
+        "mysql",
+        statement_kind="RLS",
+        namespace_map={"public": "dbo"},
+    )
+    assert report["status"] == "BLOCKED", report
+    assert report["reasonCode"] == "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED"
+
+
+def test_postgres_role_comment_is_typed_without_cross_target_fallback() -> None:
+    comment = parse_comment(
+        "COMMENT ON ROLE elmos_scheduler IS 'non-login scheduler role'",
+        Dialect.POSTGRES,
+    )
+    assert comment.object_kind is CommentObjectKind.ROLE
+    assert emit_comment(comment, Dialect.POSTGRES) == (
+        "COMMENT ON ROLE elmos_scheduler IS 'non-login scheduler role'"
+    )
+    report = translate_ddl(
+        "COMMENT ON ROLE elmos_scheduler IS 'non-login scheduler role'",
+        "postgres",
+        "mysql",
+        statement_kind="COMMENT",
+    )
+    assert report["status"] == "BLOCKED", report
+    assert report["reasonCode"] == "CERTIFIED_COMMENT_TARGET_UNSUPPORTED"
+
+
+@pytest.mark.parametrize(
+    ("sql", "kind", "expected"),
+    [
+        (
+            "CREATE UNIQUE INDEX recipe_name_uq ON public.recipes ((payload ->> 'recipeName'))",
+            IndexExpressionKind.JSON_TEXT_PATH,
+            "payload ->> 'recipeName'",
+        ),
+        (
+            "CREATE UNIQUE INDEX account_email_uq ON public.accounts (LOWER(email))",
+            IndexExpressionKind.LOWER,
+            "LOWER(email)",
+        ),
+    ],
+)
+def test_typed_expression_index_keys_are_structured_and_source_renderable(
+    sql: str, kind: IndexExpressionKind, expected: str
+) -> None:
+    index = parse_create_index(sql, Dialect.POSTGRES, namespace_map={"public": "dbo"})
+    assert index.columns[0].expression is not None
+    assert index.columns[0].expression.kind is kind
+    assert "ON dbo." in emit_create_index(index, Dialect.POSTGRES)
+    assert expected in emit_create_index(index, Dialect.POSTGRES)
+
+
+def test_typed_expression_index_keys_remain_blocked_without_target_proof() -> None:
+    report = translate_ddl(
+        "CREATE UNIQUE INDEX account_email_uq ON accounts (LOWER(email))",
+        "postgres",
+        "mysql",
+        statement_kind="INDEX",
+    )
+    assert report["status"] == "BLOCKED", report
+    assert report["reasonCode"] == "CERTIFIED_DDL_INDEX_EXPRESSION_UNSUPPORTED_BY_TARGET"
+
+
+def test_jsonb_typeof_check_is_typed_and_target_bound() -> None:
+    ddl = "CREATE TABLE payloads (payload JSONB NOT NULL CHECK (JSONB_TYPEOF(payload) = 'object'))"
+    table = parse_create_table(ddl, Dialect.POSTGRES)
+    check = table.check_constraints[0].expression
+    assert isinstance(check, CheckComparison)
+    assert check.left_expression is not None
+    assert check.left_expression.function is CheckValueFunction.JSONB_TYPEOF
+    blocked = translate_ddl(ddl, "postgres", "mysql")
+    assert blocked["status"] == "BLOCKED", blocked
+    assert blocked["reasonCode"] == "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED"
+
+
+def test_array_length_check_is_typed_and_target_bound() -> None:
+    ddl = "CREATE TABLE api_keys (scopes TEXT[] CHECK (ARRAY_LENGTH(scopes, 1) BETWEEN 1 AND 24))"
+    table = parse_create_table(ddl, Dialect.POSTGRES)
+    check = table.check_constraints[0].expression
+    assert isinstance(check, CheckComparison)
+    assert check.left_expression is not None
+    assert check.left_expression.function.value == "ARRAY_LENGTH"
+    blocked = translate_ddl(ddl, "postgres", "oracle")
+    assert blocked["status"] == "BLOCKED", blocked
+    assert blocked["reasonCode"] == "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED"
+
+
+@pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
+def test_is_distinct_from_literal_preserves_null_semantics(target: str) -> None:
+    report = translate_ddl(
+        "CREATE TABLE states (status VARCHAR(16) CHECK (status IS DISTINCT FROM 'READY'))",
+        "postgres",
+        target,
+    )
+    assert report["status"] == "PASSED", report
+    assert report["emitted"] is not None
+    assert "READY" in report["emitted"]

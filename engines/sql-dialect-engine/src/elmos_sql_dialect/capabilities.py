@@ -59,10 +59,24 @@ def target_capability_matrix() -> list[dict[str, object]]:
             "predicate and NULL filtering semantics must be native and exact",
         ),
         TargetCapability(
+            "typed_expression_index",
+            (Dialect.POSTGRES.value,),
+            (Dialect.MYSQL.value, Dialect.ORACLE.value, Dialect.TSQL.value),
+            "LOWER and one-level JSON text-path keys are retained in typed IR; "
+            "target collation/JSON semantics must be proven",
+        ),
+        TargetCapability(
             "routine_trigger_action",
             (Dialect.POSTGRES.value,),
             (Dialect.MYSQL.value, Dialect.ORACLE.value, Dialect.TSQL.value),
             "timing, event, row/statement scope, OLD/NEW and action ABI are typed",
+        ),
+        TargetCapability(
+            "row_security_control",
+            (Dialect.POSTGRES.value,),
+            (Dialect.MYSQL.value, Dialect.ORACLE.value, Dialect.TSQL.value),
+            "ENABLE/FORCE/DISABLE/NO FORCE state is retained only on PostgreSQL; "
+            "RLS is never downgraded to ordinary privileges",
         ),
         TargetCapability(
             "if_not_exists_table_or_schema",

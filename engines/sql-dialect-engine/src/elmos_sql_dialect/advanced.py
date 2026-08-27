@@ -153,6 +153,8 @@ def parse_comment(
     namespace_map: Mapping[str, str] | None = None,
 ) -> Comment:
     statement = sql if isinstance(sql, exp.Expression) else _require_single_statement(sql, source_dialect)
+    if isinstance(statement, exp.Command) and looks_like_role_comment(statement.sql(), source_dialect):
+        return parse_role_comment(statement.sql(), source_dialect)
     _require(isinstance(statement, exp.Comment), "CERTIFIED_COMMENT_UNSUPPORTED_STATEMENT", "expected COMMENT ON")
     assert isinstance(statement, exp.Comment)
     kind = str(statement.args.get("kind", "")).upper()
@@ -243,6 +245,55 @@ def parse_comment(
         schema=table_schema,
         table_schema=table_schema,
     )
+
+
+def looks_like_role_comment(sql: str, source_dialect: Dialect) -> bool:
+    """Recognize PostgreSQL's opaque ``COMMENT ON ROLE`` command shape."""
+
+    if source_dialect is not Dialect.POSTGRES:
+        return False
+    try:
+        tokens = list(sqlglot.tokenize(sql, read=source_dialect.value))
+    except sqlglot.errors.SqlglotError:
+        return False
+    if len(tokens) != 6:
+        return False
+    values = [str(token.text).upper() for token in tokens]
+    return (
+        values[:3] == ["COMMENT", "ON", "ROLE"]
+        and values[4] == "IS"
+        and tokens[3].token_type.name in {"VAR", "IDENTIFIER"}
+        and tokens[5].token_type.name == "STRING"
+    )
+
+
+def parse_role_comment(sql: str | exp.Expression, source_dialect: Dialect) -> Comment:
+    """Parse one typed PostgreSQL role comment; other object kinds stay separate."""
+
+    _require(
+        source_dialect is Dialect.POSTGRES,
+        "CERTIFIED_COMMENT_UNSUPPORTED_OBJECT",
+        "role comments are admitted only from PostgreSQL",
+    )
+    statement_sql = sql if isinstance(sql, str) else sql.sql()
+    try:
+        tokens = list(sqlglot.tokenize(statement_sql, read=source_dialect.value))
+    except sqlglot.errors.SqlglotError as exc:
+        raise DialectError(
+            "CERTIFIED_COMMENT_PARSE_FAILED",
+            f"postgres parser rejected role comment: {exc}",
+        ) from exc
+    _require(
+        looks_like_role_comment(statement_sql, source_dialect),
+        "CERTIFIED_COMMENT_UNSUPPORTED_STATEMENT",
+        "expected COMMENT ON ROLE <identifier> IS <string literal>",
+    )
+    role_token = tokens[3]
+    role = _plain_identifier(
+        exp.Identifier(this=str(role_token.text), quoted=role_token.token_type.name == "IDENTIFIER"),
+        "comment role",
+    )
+    return Comment(CommentObjectKind.ROLE, role, str(tokens[5].text))
 
 
 def _principal(node: exp.Expression) -> str:
@@ -730,13 +781,31 @@ def parse_trigger(
         update_columns = columns
     execute = trigger_properties.args.get("execute")
     _require(
-        isinstance(execute, exp.TriggerExecute) and isinstance(execute.this, exp.Anonymous),
+        isinstance(execute, exp.TriggerExecute),
         "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED",
         "trigger action must call one named routine",
     )
     assert isinstance(execute, exp.TriggerExecute)
-    assert isinstance(execute.this, exp.Anonymous)
-    routine_name = _plain_identifier(exp.Identifier(this=str(execute.this.this), quoted=False), "trigger routine")
+    action = execute.this
+    routine_schema: str | None = None
+    routine_name: str
+    if isinstance(action, exp.Anonymous):
+        routine_name = _plain_identifier(exp.Identifier(this=str(action.this), quoted=False), "trigger routine")
+    else:
+        _require(
+            isinstance(action, exp.Dot) and isinstance(action.expression, exp.Anonymous),
+            "CERTIFIED_ROUTINE_TRIGGER_UNSUPPORTED",
+            "trigger action must call one named routine",
+        )
+        assert isinstance(action, exp.Dot)
+        assert isinstance(action.expression, exp.Anonymous)
+        routine_schema, routine_name = _routine_name(
+            exp.Table(
+                this=exp.Identifier(this=str(action.expression.this), quoted=False),
+                db=action.this,
+            ),
+            namespace_map,
+        )
     when: CheckExpression | None = None
     when_node = trigger_properties.args.get("when")
     if isinstance(when_node, exp.Expression):
@@ -760,6 +829,7 @@ def parse_trigger(
         routine_name=routine_name,
         schema=table_schema,
         table_schema=table_schema,
+        routine_schema=routine_schema,
         when=when,
         transition_new_table=transition_new_table,
         transition_old_table=transition_old_table,
@@ -830,6 +900,14 @@ def emit_comment(
         return "N'" + value.replace(chr(39), chr(39) * 2) + "'"
 
     escaped = comment.text.replace(chr(39), chr(39) * 2)
+
+    if comment.object_kind is CommentObjectKind.ROLE:
+        if target_dialect is not Dialect.POSTGRES:
+            raise DialectError(
+                "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
+                f"{target_dialect.value} has no exact standalone role-comment metadata route",
+            )
+        return f"COMMENT ON ROLE {quote_identifier(comment.object_name, target_dialect)} IS '{escaped}'"
 
     if comment.object_kind is CommentObjectKind.CONSTRAINT:
         if target_dialect is not Dialect.POSTGRES:
