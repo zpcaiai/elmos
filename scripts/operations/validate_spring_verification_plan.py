@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +18,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 PACK_KEY = "spring-to-boot-4-1-1"
 PLAN_RELATIVE = Path("verification/validation-plan.json")
+TRACK_CONTRACT_RELATIVE = Path("verification/track-contract.json")
 FEATURE_MATRIX_RELATIVE = Path("target-profile/feature-matrix.json")
 PROFILE_RELATIVE = Path("target-profile/profile.json")
 VERSION_MATRIX_RELATIVE = Path("version-matrix.json")
@@ -72,6 +74,169 @@ REQUIRED_PROVIDER_FEATURES = {
     "security-method-oauth2",
 }
 
+DECLARATIVE_PROTOCOL = "DECLARATIVE_PROTOCOL_NOT_EXECUTABLE"
+FAILURE_POLICY = "FAIL_CLOSED"
+PLACEHOLDER = re.compile(r"<[^>]*>|\$\{[^}]+\}")
+EXPECTED_PROVIDER_DOMAINS = {
+    "security": {
+        "feature_ids": ["security-web", "security-method-oauth2"],
+        "target_profile_keys": ["spring_security"],
+        "unresolved_provider_profiles": [],
+        "required_evidence_roles": [
+            "source-security-profile",
+            "target-security-profile",
+            "security-oracle",
+            "negative-path-results",
+        ],
+    },
+    "database": {
+        "feature_ids": ["data-jpa", "data-jdbc", "data-r2dbc", "data-redis", "data-document"],
+        "target_profile_keys": ["persistence"],
+        "unresolved_provider_profiles": [
+            "spring-jdbc",
+            "spring-r2dbc",
+            "spring-data-redis",
+            "spring-data-document",
+        ],
+        "required_evidence_roles": [
+            "source-database-profile",
+            "target-database-profile",
+            "data-reconciliation",
+            "query-oracle",
+        ],
+    },
+    "transaction": {
+        "feature_ids": ["transactions"],
+        "target_profile_keys": ["persistence"],
+        "unresolved_provider_profiles": [],
+        "required_evidence_roles": [
+            "transaction-schedule",
+            "isolation-lock-oracle",
+            "rollback-results",
+            "duplicate-side-effect-results",
+        ],
+    },
+    "messaging": {
+        "feature_ids": [
+            "messaging-kafka",
+            "messaging-amqp",
+            "messaging-jms",
+            "messaging-integration",
+            "messaging-batch",
+        ],
+        "target_profile_keys": ["spring_kafka", "spring_amqp", "spring_integration"],
+        "unresolved_provider_profiles": ["spring-jms", "spring-batch"],
+        "required_evidence_roles": [
+            "source-message-profile",
+            "target-message-profile",
+            "delivery-oracle",
+            "duplicate-loss-results",
+        ],
+    },
+    "provider": {
+        "feature_ids": [
+            "boot-grpc",
+            "boot-actuator",
+            "boot-observability",
+            "web-graphql",
+            "web-hateoas",
+            "integration-ldap-session",
+            "cache",
+            "scheduler",
+        ],
+        "target_profile_keys": [
+            "grpc",
+            "observability",
+            "spring_graphql",
+            "spring_hateoas",
+            "spring_ldap",
+            "spring_session",
+        ],
+        "unresolved_provider_profiles": [],
+        "required_evidence_roles": [
+            "provider-version-lock",
+            "provider-runtime-log",
+            "provider-oracle",
+            "negative-path-results",
+        ],
+    },
+}
+
+EXPECTED_TRACK_ROUTE_BINDINGS = {
+    "source-build": "version-matrix.json#tuples[*]",
+    "target-build": "version-matrix.json#tuples[*]",
+    "source-startup": "version-matrix.json#tuples[*]",
+    "target-startup": "version-matrix.json#tuples[*]",
+    "component-contracts": "version-matrix.json#tuples[*]",
+    "provider-behavior": "version-matrix.json#tuples[*]",
+    "holdout": "version-matrix.json#tuples[*]",
+    "representative-repository": "version-matrix.json#tuples[*]",
+    "independent-verification": "track-contract.tracks[0..7]",
+}
+EXPECTED_PROTOCOL_MARKERS = {
+    "source-build": (
+        "source_fingerprint=source-fingerprint/manifest.json",
+        "exact_source_version=required",
+        "build_tool=tuple.build",
+    ),
+    "target-build": (
+        "recipe=tuple.recipe",
+        "target_profile=target-profile/profile.json",
+        "target_spring_boot=4.1.1",
+        "target_java=21",
+        "build_tool=tuple.build",
+    ),
+    "source-startup": (
+        "artifact_role=source-build-artifact",
+        "source_fingerprint=source-fingerprint/manifest.json",
+        "bind=exact_source_tuple",
+        "probes=health,shutdown",
+    ),
+    "target-startup": (
+        "artifact_role=target-build-artifact",
+        "target_profile=target-profile/profile.json#startup",
+        "probes=health,shutdown",
+    ),
+    "component-contracts": (
+        "fcm=contracts/framework-contract-model.json",
+        "feature_matrix=target-profile/feature-matrix.json",
+        "compare=source,target",
+    ),
+    "provider-behavior": (
+        "target_profile=target-profile/profile.json#providers",
+        "provider_lock=target-profile/dependency-locks/spring-boot-4.1.1.properties",
+        "domains=security,database,transaction,messaging,provider",
+        "isolation=required",
+    ),
+    "holdout": (
+        "corpus=corpus/holdout",
+        "source_target=required",
+        "mapping_authoring=false",
+        "isolation=required",
+    ),
+    "representative-repository": (
+        "corpus=corpus/real-repository",
+        "authorization=required",
+        "source_target_build_startup=required",
+        "isolation=required",
+    ),
+    "independent-verification": (
+        "input=content-addressed-evidence",
+        "verifier=separate",
+        "output=certification/independent-verification",
+    ),
+}
+
+
+def has_placeholder(value: Any) -> bool:
+    if isinstance(value, str):
+        return PLACEHOLDER.search(value) is not None
+    if isinstance(value, list):
+        return any(has_placeholder(item) for item in value)
+    if isinstance(value, dict):
+        return any(has_placeholder(item) for item in value.values())
+    return False
+
 
 def load_object(path: Path, errors: list[str], label: str) -> dict[str, Any] | None:
     try:
@@ -93,7 +258,10 @@ def validate(pack: Path) -> list[str]:
     errors: list[str] = []
     manifest = load_object(pack / "pack.json", errors, "pack.json")
     plan = load_object(pack / PLAN_RELATIVE, errors, "verification plan")
-    if manifest is None or plan is None:
+    track_contract = load_object(
+        pack / TRACK_CONTRACT_RELATIVE, errors, "verification track contract"
+    )
+    if manifest is None or plan is None or track_contract is None:
         return errors
 
     if manifest.get("pack_key") != PACK_KEY:
@@ -104,6 +272,10 @@ def validate(pack: Path) -> list[str]:
     else:
         if paths.get("verification_plan") != PLAN_RELATIVE.as_posix():
             errors.append("pack.json paths.verification_plan must bind the validation plan")
+        if paths.get("verification_track_contract") != TRACK_CONTRACT_RELATIVE.as_posix():
+            errors.append("pack.json paths.verification_track_contract must bind the track contract")
+        elif not (pack / TRACK_CONTRACT_RELATIVE).is_file():
+            errors.append("verification track contract is missing")
         if paths.get("gate_report") != "certification/gate-report.md" or not (
             pack / "certification/gate-report.md"
         ).is_file():
@@ -117,6 +289,56 @@ def validate(pack: Path) -> list[str]:
         errors.append("verification plan pack_key drift")
     if plan.get("plan_status") != "PREPARED_NOT_RUN":
         errors.append("verification plan must remain PREPARED_NOT_RUN")
+
+    execution_protocol = plan.get("execution_protocol")
+    if not isinstance(execution_protocol, dict):
+        errors.append("verification plan execution_protocol is required")
+    else:
+        expected_protocol = {
+            "kind": DECLARATIVE_PROTOCOL,
+            "route_selector": "version-matrix.json#tuples[*]",
+            "target_profile_selector": "target-profile/profile.json",
+            "provider_lock_selector": "target-profile/dependency-locks/spring-boot-4.1.1.properties",
+            "required_failure_policy": FAILURE_POLICY,
+        }
+        for field, expected in expected_protocol.items():
+            if execution_protocol.get(field) != expected:
+                errors.append(f"verification execution_protocol {field} drift")
+        if has_placeholder(execution_protocol):
+            errors.append("verification execution_protocol contains a placeholder")
+
+    contract_target = track_contract.get("target")
+    if track_contract.get("schema_version") != 1:
+        errors.append("verification track contract schema_version must be 1")
+    if track_contract.get("contract_key") != f"{PACK_KEY}-track-contract":
+        errors.append("verification track contract key drift")
+    if track_contract.get("pack_key") != PACK_KEY:
+        errors.append("verification track contract pack_key drift")
+    if track_contract.get("status") != "PREPARED_NOT_RUN":
+        errors.append("verification track contract must remain PREPARED_NOT_RUN")
+    if track_contract.get("failure_policy") != FAILURE_POLICY:
+        errors.append("verification track contract failure_policy must be FAIL_CLOSED")
+    if has_placeholder(track_contract):
+        errors.append("verification track contract contains a placeholder")
+    if not isinstance(contract_target, dict):
+        errors.append("verification track contract target is required")
+    else:
+        expected_contract_target = {
+            "profile_key": "spring-to-boot-4-1-1-java-21",
+            "target_spring_boot": "4.1.1",
+            "target_java": "21",
+            "route_source": "version-matrix.json#tuples[*]",
+            "target_profile": "target-profile/profile.json",
+            "provider_lock": "target-profile/dependency-locks/spring-boot-4.1.1.properties",
+            "feature_matrix": "target-profile/feature-matrix.json",
+            "fcm": "contracts/framework-contract-model.json",
+        }
+        for field, expected in expected_contract_target.items():
+            if contract_target.get(field) != expected:
+                errors.append(f"verification track contract target {field} drift")
+        provider_lock = contract_target.get("provider_lock")
+        if isinstance(provider_lock, str) and not (pack / provider_lock).is_file():
+            errors.append("verification track contract provider lock is missing")
 
     target = plan.get("target")
     manifest_target = manifest.get("target")
@@ -146,6 +368,57 @@ def validate(pack: Path) -> list[str]:
             errors.append("target profile Spring Boot tuple drift")
         if profile.get("runtime") != "java" or profile.get("runtime_versions") != ["21"]:
             errors.append("target profile Java tuple drift")
+
+    domain_section = track_contract.get("provider_domains")
+    expected_domain_ids = list(EXPECTED_PROVIDER_DOMAINS)
+    if not isinstance(domain_section, list) or [
+        item.get("id") for item in domain_section if isinstance(item, dict)
+    ] != expected_domain_ids:
+        errors.append("provider domains must exactly match security/database/transaction/messaging/provider")
+    else:
+        provider_keys = set()
+        if profile is not None and isinstance(profile.get("providers"), dict):
+            provider_keys = set(profile["providers"])
+        observed_provider_features: list[str] = []
+        for domain in domain_section:
+            domain_id = domain.get("id")
+            expected_domain = EXPECTED_PROVIDER_DOMAINS[domain_id]
+            for field in (
+                "feature_ids",
+                "target_profile_keys",
+                "unresolved_provider_profiles",
+                "required_evidence_roles",
+            ):
+                if domain.get(field) != expected_domain[field]:
+                    errors.append(f"provider domain {domain_id} {field} drift")
+            if domain.get("source_profile_required") is not True:
+                errors.append(f"provider domain {domain_id} source_profile_required must be true")
+            if domain.get("status") != "NOT_RUN":
+                errors.append(f"provider domain {domain_id} status must remain NOT_RUN")
+            observed_provider_features.extend(domain.get("feature_ids", []))
+            for profile_key in domain.get("target_profile_keys", []):
+                if profile_key not in provider_keys:
+                    errors.append(
+                        f"provider domain {domain_id} target profile key is missing: {profile_key}"
+                    )
+        if len(observed_provider_features) != len(set(observed_provider_features)):
+            errors.append("provider domain feature coverage must be duplicate-free")
+        if set(observed_provider_features) != REQUIRED_PROVIDER_FEATURES:
+            errors.append("provider domains must exactly cover provider feature set")
+        policy = track_contract.get("provider_domain_policy")
+        if not isinstance(policy, dict):
+            errors.append("provider_domain_policy is required")
+        else:
+            expected_policy = {
+                "source_profile_required": True,
+                "target_provider_version_lock_required": True,
+                "unsupported_or_unresolved_semantics": "NOT_RUN",
+                "domain_overlap": FAILURE_POLICY,
+                "static_mapping_is_not_runtime_evidence": True,
+            }
+            for field, expected in expected_policy.items():
+                if policy.get(field) != expected:
+                    errors.append(f"provider_domain_policy {field} drift")
 
     version_matrix = load_object(pack / VERSION_MATRIX_RELATIVE, errors, "version matrix")
     route_section = plan.get("routes")
@@ -275,8 +548,19 @@ def validate(pack: Path) -> list[str]:
             for field in ("status", "authorization_status", "independent_verifier_status"):
                 if track.get(field) != "NOT_RUN":
                     errors.append(f"verification track {track_id} {field} must remain NOT_RUN")
+            if track.get("execution_mode") != DECLARATIVE_PROTOCOL:
+                errors.append(f"verification track {track_id} execution_mode must be declarative")
             if not isinstance(track.get("replay_command"), str) or not track["replay_command"].strip():
                 errors.append(f"verification track replay_command is missing: {track_id}")
+            elif has_placeholder(track["replay_command"]):
+                errors.append(f"verification track replay_command contains a placeholder: {track_id}")
+            elif not track["replay_command"].startswith("DECLARATIVE_ONLY batch30."):
+                errors.append(f"verification track replay_command must be declarative: {track_id}")
+            elif any(
+                marker not in track["replay_command"]
+                for marker in EXPECTED_PROTOCOL_MARKERS.get(track_id, ())
+            ):
+                errors.append(f"verification track replay_command binding is incomplete: {track_id}")
             role = track.get("corpus_role", track.get("input_corpus_role"))
             if role not in corpus_roles:
                 errors.append(f"verification track corpus role is invalid: {track_id}")
@@ -303,6 +587,62 @@ def validate(pack: Path) -> list[str]:
         independent = tracks[-1]
         if independent.get("evidence_destination") != "certification/independent-verification":
             errors.append("independent verifier evidence destination drift")
+
+    contract_tracks = track_contract.get("tracks")
+    if not isinstance(contract_tracks, list) or [
+        item.get("id") for item in contract_tracks if isinstance(item, dict)
+    ] != list(TRACK_IDS):
+        errors.append("verification track contract must exactly match the required ordered track list")
+    elif isinstance(tracks, list) and len(tracks) == len(contract_tracks):
+        for plan_track, contract_track in zip(tracks, contract_tracks):
+            track_id = plan_track.get("id")
+            if contract_track.get("id") != track_id:
+                errors.append(f"verification track contract id drift: {track_id}")
+                continue
+            for field in (
+                "required",
+                "execution_mode",
+                "status",
+                "authorization_status",
+                "independent_verifier_status",
+                "failure_policy",
+            ):
+                expected = plan_track.get(field)
+                if contract_track.get(field) != expected:
+                    errors.append(f"verification track contract {track_id} {field} drift")
+            if contract_track.get("execution_mode") != DECLARATIVE_PROTOCOL:
+                errors.append(f"verification track contract {track_id} execution_mode must be declarative")
+            protocol = contract_track.get("protocol")
+            if protocol != plan_track.get("replay_command"):
+                errors.append(f"verification track contract {track_id} protocol drift")
+            elif not isinstance(protocol, str) or has_placeholder(protocol):
+                errors.append(f"verification track contract {track_id} protocol contains a placeholder")
+            elif not protocol.startswith("DECLARATIVE_ONLY batch30."):
+                errors.append(f"verification track contract {track_id} protocol must be declarative")
+            elif any(
+                marker not in protocol
+                for marker in EXPECTED_PROTOCOL_MARKERS.get(track_id, ())
+            ):
+                errors.append(f"verification track contract {track_id} protocol binding is incomplete")
+            expected_route = EXPECTED_TRACK_ROUTE_BINDINGS[track_id]
+            if contract_track.get("route_binding") != expected_route:
+                errors.append(f"verification track contract {track_id} route_binding drift")
+            contract_role = contract_track.get("corpus_role", contract_track.get("input_corpus_role"))
+            plan_role = plan_track.get("corpus_role", plan_track.get("input_corpus_role"))
+            if contract_role != plan_role:
+                errors.append(f"verification track contract {track_id} corpus role drift")
+            if contract_track.get("required_evidence_roles") != plan_track.get("required_evidence_roles"):
+                errors.append(f"verification track contract {track_id} evidence roles drift")
+            if contract_track.get("failure_policy") != FAILURE_POLICY:
+                errors.append(f"verification track contract {track_id} failure_policy must be FAIL_CLOSED")
+            if contract_track.get("status") != "NOT_RUN":
+                errors.append(f"verification track contract {track_id} status must remain NOT_RUN")
+            if contract_track.get("authorization_status") != "NOT_RUN":
+                errors.append(f"verification track contract {track_id} authorization must remain NOT_RUN")
+            if contract_track.get("independent_verifier_status") != "NOT_RUN":
+                errors.append(f"verification track contract {track_id} verifier status must remain NOT_RUN")
+        if contract_tracks[-1].get("evidence_destination") != "certification/independent-verification":
+            errors.append("verification track contract independent verifier evidence destination drift")
 
     evidence = load_object(pack / EVIDENCE_RELATIVE, errors, "certification evidence")
     if evidence is not None:

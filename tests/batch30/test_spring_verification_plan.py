@@ -38,6 +38,84 @@ class SpringVerificationPlanTests(unittest.TestCase):
     def test_current_plan_is_complete_and_not_run(self) -> None:
         self.assertEqual(VALIDATOR.validate(self.SOURCE_PACK), [])
 
+    def test_track_contract_is_complete_and_not_run(self) -> None:
+        contract = self._load(self.SOURCE_PACK, "verification/track-contract.json")
+        self.assertEqual(contract["status"], "PREPARED_NOT_RUN")
+        tracks = contract["tracks"]
+        self.assertEqual(
+            [track["id"] for track in tracks], list(VALIDATOR.TRACK_IDS)
+        )
+        self.assertTrue(all(track["status"] == "NOT_RUN" for track in tracks))
+        self.assertTrue(
+            all(track["authorization_status"] == "NOT_RUN" for track in tracks)
+        )
+        self.assertTrue(
+            all(track["independent_verifier_status"] == "NOT_RUN" for track in tracks)
+        )
+
+    def test_placeholder_replay_protocol_is_rejected(self) -> None:
+        temporary, pack = self._copy_pack()
+        try:
+            contract = self._load(pack, "verification/track-contract.json")
+            tracks = contract["tracks"]
+            assert isinstance(tracks, list)
+            tracks[0]["protocol"] = "<unbound-runner> --source-build"
+            self._write(pack, "verification/track-contract.json", contract)
+            errors = VALIDATOR.validate(pack)
+            self.assertTrue(
+                any("track contract contains a placeholder" in error for error in errors),
+                errors,
+            )
+        finally:
+            temporary.cleanup()
+
+    def test_provider_domains_cover_security_data_transaction_messaging(self) -> None:
+        temporary, pack = self._copy_pack()
+        try:
+            contract = self._load(pack, "verification/track-contract.json")
+            domains = contract["provider_domains"]
+            assert isinstance(domains, list)
+            domains[1]["feature_ids"].remove("data-jpa")
+            self._write(pack, "verification/track-contract.json", contract)
+            errors = VALIDATOR.validate(pack)
+            self.assertIn("provider domain database feature_ids drift", errors)
+            self.assertIn("provider domains must exactly cover provider feature set", errors)
+        finally:
+            temporary.cleanup()
+
+    def test_track_contract_cannot_promote_runtime_status(self) -> None:
+        temporary, pack = self._copy_pack()
+        try:
+            contract = self._load(pack, "verification/track-contract.json")
+            tracks = contract["tracks"]
+            assert isinstance(tracks, list)
+            tracks[0]["status"] = "PASSED"
+            self._write(pack, "verification/track-contract.json", contract)
+            errors = VALIDATOR.validate(pack)
+            self.assertTrue(
+                any(
+                    "track contract source-build status must remain NOT_RUN" in error
+                    for error in errors
+                ),
+                errors,
+            )
+        finally:
+            temporary.cleanup()
+
+    def test_provider_domains_cannot_overlap(self) -> None:
+        temporary, pack = self._copy_pack()
+        try:
+            contract = self._load(pack, "verification/track-contract.json")
+            domains = contract["provider_domains"]
+            assert isinstance(domains, list)
+            domains[1]["feature_ids"].append("security-web")
+            self._write(pack, "verification/track-contract.json", contract)
+            errors = VALIDATOR.validate(pack)
+            self.assertIn("provider domain database feature_ids drift", errors)
+            self.assertIn("provider domain feature coverage must be duplicate-free", errors)
+        finally:
+            temporary.cleanup()
+
     def test_track_status_cannot_be_manually_promoted(self) -> None:
         temporary, pack = self._copy_pack()
         try:
