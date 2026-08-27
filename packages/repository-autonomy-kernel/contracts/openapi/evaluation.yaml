@@ -1,0 +1,21 @@
+openapi: 3.1.0
+info: {title: Elmos Autonomy Evaluation API, version: 2.0.0}
+paths:
+  /v2/arena/runs:
+    post:
+      operationId: runArena
+      security: [{verifiedIdentity: []}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/EvaluationRequest"}}}}
+      responses: {"202": {description: Local evaluation plan/results}, "422": {description: Insufficient or blocked evaluation}}
+  /v2/gym/suites/{suite}/run:
+    post:
+      operationId: runGoldenRouteGym
+      security: [{verifiedIdentity: []}]
+      parameters: [{in: path, name: suite, required: true, schema: {type: string}}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/EvaluationRequest"}}}}
+      responses: {"202": {description: Golden route status}, "422": {description: Blocked}}
+components:
+  securitySchemes:
+    verifiedIdentity: {type: apiKey, in: header, name: X-Elmos-Identity-Verified}
+  schemas:
+    EvaluationRequest: {type: object, additionalProperties: true}

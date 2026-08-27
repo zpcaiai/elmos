@@ -1,0 +1,18 @@
+replicaCount: 2
+image:
+  repository: elmos/repository-autonomy-kernel
+  tag: "2.0.0"
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 8080
+persistence:
+  enabled: true
+  size: 10Gi
+resources:
+  requests: {cpu: 100m, memory: 128Mi}
+  limits: {cpu: "1", memory: 512Mi}
+networkPolicy:
+  enabled: true
+  ingress: []
+  egress: []

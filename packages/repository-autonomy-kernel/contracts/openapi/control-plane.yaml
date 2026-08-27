@@ -1,0 +1,62 @@
+openapi: 3.1.0
+info:
+  title: Elmos Repository Autonomy Kernel Control Plane
+  version: 2.0.0
+  description: Fail-closed lifecycle and Skill dispatch API.
+servers:
+  - url: http://localhost:8080
+paths:
+  /livez:
+    get: {operationId: live, responses: {"200": {description: Process is alive}}}
+  /readyz:
+    get: {operationId: ready, responses: {"200": {description: Store is ready}, "503": {description: Store is unavailable}}}
+  /version:
+    get: {operationId: version, responses: {"200": {description: Version metadata, content: {application/json: {schema: {$ref: "#/components/schemas/Version"}}}}}}
+  /v1/skills:
+    get: {operationId: listSkills, responses: {"200": {description: Exact closed-world catalog}}}
+  /v1/skills/{skill}:run:
+    post:
+      operationId: dispatchSkill
+      parameters: [{in: path, name: skill, required: true, schema: {type: string}}]
+      security: [{verifiedIdentity: []}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/TypedObject"}}}}
+      responses: {"200": {description: Structured Skill result}, "401": {description: Identity required}, "422": {description: Blocked or invalid}}
+  /v2/runs:
+    post:
+      operationId: createRun
+      security: [{verifiedIdentity: []}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/TypedObject"}}}}
+      responses: {"202": {description: Run planned}, "401": {description: Identity required}, "422": {description: Blocked}}
+  /v2/runs/{runId}:
+    get:
+      operationId: getRun
+      security: [{verifiedIdentity: []}]
+      parameters: [{in: path, name: runId, required: true, schema: {type: string, format: uuid}}]
+      responses: {"200": {description: Run state}, "401": {description: Identity required}, "404": {description: Not found}}
+  /v2/runs/{runId}/events:
+    get:
+      operationId: listRunEvents
+      security: [{verifiedIdentity: []}]
+      parameters: [{in: path, name: runId, required: true, schema: {type: string, format: uuid}}]
+      responses: {"200": {description: Append-only event stream}, "401": {description: Identity required}}
+  /v2/runs/{runId}/{action}:
+    post:
+      operationId: transitionRun
+      security: [{verifiedIdentity: []}]
+      parameters:
+        - {in: path, name: runId, required: true, schema: {type: string, format: uuid}}
+        - {in: path, name: action, required: true, schema: {type: string, enum: [pause, resume, cancel]}}
+      responses: {"202": {description: Transition requested}, "401": {description: Identity required}, "422": {description: Invalid transition}}
+components:
+  securitySchemes:
+    verifiedIdentity:
+      type: apiKey
+      in: header
+      name: X-Elmos-Identity-Verified
+      description: Must be true together with tenant and account identity headers.
+  schemas:
+    TypedObject: {type: object, additionalProperties: true}
+    Version:
+      type: object
+      required: [package, version]
+      properties: {package: {type: string}, version: {type: string}}

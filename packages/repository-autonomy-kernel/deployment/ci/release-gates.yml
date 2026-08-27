@@ -1,0 +1,26 @@
+name: repository-autonomy-kernel
+
+on:
+  push:
+    paths:
+      - "packages/repository-autonomy-kernel/**"
+      - "tooling/validate_repository_autonomy_kernel.py"
+      - "Makefile"
+  pull_request:
+    paths:
+      - "packages/repository-autonomy-kernel/**"
+      - "tooling/validate_repository_autonomy_kernel.py"
+      - "Makefile"
+
+jobs:
+  local-contract-gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
+      - run: make repository-autonomy-kernel

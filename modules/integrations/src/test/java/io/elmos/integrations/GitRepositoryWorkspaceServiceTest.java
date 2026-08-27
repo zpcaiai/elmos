@@ -6,6 +6,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -269,6 +270,20 @@ class GitRepositoryWorkspaceServiceTest {
         assertFalse(Files.exists(materialized.resolve(".env")));
         assertEquals(List.of(".env"), first.excludedProtectedPaths());
         assertEquals("MATERIALIZED_VERIFIED", first.status());
+    }
+
+    @Test
+    void retriesPrematureAndTruncatedGitTransportButNotPolicyFailures() {
+        assertTrue(GitRepositoryWorkspaceService.isRetryableTransportFailure(
+                new RuntimeException(new IOException("Premature EOF"))));
+        assertTrue(GitRepositoryWorkspaceService.isRetryableTransportFailure(
+                new RuntimeException(new IOException("Truncated chunk (expected size: 73, actual size: 6)"))));
+        assertTrue(GitRepositoryWorkspaceService.isRetryableTransportFailure(
+                new RuntimeException(new IOException("Unexpected end of input"))));
+        assertFalse(GitRepositoryWorkspaceService.isRetryableTransportFailure(
+                new RuntimeException(new SecurityException("GIT_FETCHED_COMMIT_MISMATCH"))));
+        assertFalse(GitRepositoryWorkspaceService.isRetryableTransportFailure(
+                new RuntimeException(new IOException("Authentication is required"))));
     }
 
     private GitRepositoryWorkspaceService service() {

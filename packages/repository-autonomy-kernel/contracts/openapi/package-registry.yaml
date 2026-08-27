@@ -1,0 +1,29 @@
+openapi: 3.1.0
+info: {title: Elmos Capability Package Registry API, version: 2.0.0}
+paths:
+  /v2/packages:
+    post:
+      operationId: registerCapabilityPackage
+      security: [{verifiedIdentity: []}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/PackageRegistration"}}}}
+      responses: {"201": {description: Package registration decision}, "422": {description: Invalid or unsigned package}}
+  /v2/adapters/{adapter}/conformance:
+    post:
+      operationId: checkAdapterConformance
+      security: [{verifiedIdentity: []}]
+      parameters: [{in: path, name: adapter, required: true, schema: {type: string}}]
+      requestBody: {content: {application/json: {schema: {type: object}}}}
+      responses: {"202": {description: Conformance result}, "422": {description: Unknown adapter or incomplete cases}}
+components:
+  securitySchemes:
+    verifiedIdentity: {type: apiKey, in: header, name: X-Elmos-Identity-Verified}
+  schemas:
+    PackageRegistration:
+      type: object
+      required: [package_manifest, components, dependency_lock, signature, test_results]
+      properties:
+        package_manifest: {type: object}
+        components: {type: array}
+        dependency_lock: {type: object}
+        signature: {type: object}
+        test_results: {type: array}
