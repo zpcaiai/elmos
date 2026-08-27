@@ -1417,7 +1417,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                 "version", fingerprint.sourceFrameworkVersion()));
         String detectedSourceVersion = SpringRouteCatalog.SourceFamily.SPRING_BOOT.contractValue()
                 .equals(fingerprint.sourceFrameworkFamily())
-                ? fingerprint.sourceFrameworkVersion() : fingerprint.springBootVersion();
+                ? fingerprint.springBootVersion() : fingerprint.sourceFrameworkVersion();
         model.put("exact_tuple", route.tuple(
                 detectedSourceVersion, SpringRouteCatalog.normalizeJava(fingerprint.javaVersion())));
         model.put("capabilities", SpringCapabilityFingerprint.fcmCapabilities(fingerprint));
