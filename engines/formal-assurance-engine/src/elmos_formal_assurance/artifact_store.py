@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import json
 import os
 import tempfile
 from pathlib import Path
 from typing import Any
 
-from .canonical import digest_bytes, validate_digest, validate_identifier
+from .canonical import canonical_json, digest_bytes, validate_digest, validate_identifier
 
 
 class ArtifactStoreError(ValueError):
@@ -44,9 +45,10 @@ class ContentAddressedArtifactStore:
             raise ArtifactStoreError("retention class is invalid")
         digest = digest_bytes(data)
         digest_hex = digest.removeprefix("sha256:")
-        directory = self.root / tenant_id / digest_hex[:2]
+        directory = self._tenant_directory(tenant_id) / digest_hex[:2]
         self._check_directory(directory)
         target = directory / digest_hex
+        metadata_target = directory / f"{digest_hex}.metadata.json"
         if target.exists() or target.is_symlink():
             if (
                 target.is_symlink()
@@ -81,6 +83,37 @@ class ContentAddressedArtifactStore:
             finally:
                 if temporary.exists() or temporary.is_symlink():
                     temporary.unlink()
+        metadata = {
+            "tenantId": tenant_id,
+            "sha256": digest,
+            "mediaType": media_type,
+            "sizeBytes": len(data),
+            "retentionClass": retention_class,
+        }
+        metadata_bytes = canonical_json(metadata) + b"\n"
+        if metadata_target.exists() or metadata_target.is_symlink():
+            if metadata_target.is_symlink() or not metadata_target.is_file():
+                raise ArtifactStoreError("artifact metadata path is unsafe")
+            if metadata_target.read_bytes() != metadata_bytes:
+                raise ArtifactStoreError("artifact metadata cannot be overwritten")
+        else:
+            temporary_metadata = Path(
+                tempfile.mkstemp(prefix=f".{digest_hex}.metadata.", dir=directory)[1]
+            )
+            try:
+                with temporary_metadata.open("wb") as handle:
+                    handle.write(metadata_bytes)
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                os.chmod(temporary_metadata, 0o440)
+                try:
+                    os.link(temporary_metadata, metadata_target)
+                except FileExistsError:
+                    if metadata_target.read_bytes() != metadata_bytes:
+                        raise ArtifactStoreError("artifact metadata cannot be overwritten")
+            finally:
+                if temporary_metadata.exists() or temporary_metadata.is_symlink():
+                    temporary_metadata.unlink()
         return {
             "uri": f"cas://{tenant_id}/{digest}",
             "sha256": digest,
@@ -94,13 +127,63 @@ class ContentAddressedArtifactStore:
         validate_identifier(tenant_id, "tenantId")
         canonical = validate_digest(digest, "sha256")
         digest_hex = canonical.removeprefix("sha256:")
-        path = self.root / tenant_id / digest_hex[:2] / digest_hex
+        path = self._tenant_directory(tenant_id) / digest_hex[:2] / digest_hex
         if path.is_symlink() or not path.is_file():
             raise ArtifactStoreError("artifact is missing or unsafe")
         data = path.read_bytes()
         if digest_bytes(data) != canonical:
             raise ArtifactStoreError("artifact content digest mismatch")
         return data
+
+    def metadata(self, tenant_id: str, digest: str) -> dict[str, Any]:
+        validate_identifier(tenant_id, "tenantId")
+        canonical = validate_digest(digest, "sha256")
+        digest_hex = canonical.removeprefix("sha256:")
+        path = self._tenant_directory(tenant_id) / digest_hex[:2] / f"{digest_hex}.metadata.json"
+        if path.is_symlink() or not path.is_file():
+            raise ArtifactStoreError("artifact metadata is missing or unsafe")
+        try:
+            value = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, ValueError) as exc:
+            raise ArtifactStoreError("artifact metadata is invalid") from exc
+        if not isinstance(value, dict) or value.get("sha256") != canonical:
+            raise ArtifactStoreError("artifact metadata digest mismatch")
+        return value
+
+    def delete(
+        self,
+        tenant_id: str,
+        digest: str,
+        *,
+        retention_class: str | None = None,
+        legal_hold: bool = False,
+    ) -> None:
+        """Apply the local retention policy; audit evidence is never deleted."""
+        if legal_hold:
+            raise ArtifactStoreError("legal-hold artifacts cannot be deleted")
+        metadata = self.metadata(tenant_id, digest)
+        actual_retention = metadata.get("retentionClass")
+        if retention_class is not None and retention_class != actual_retention:
+            raise ArtifactStoreError("retention class does not match artifact metadata")
+        if actual_retention != "EPHEMERAL":
+            raise ArtifactStoreError("only EPHEMERAL artifacts may be deleted locally")
+        canonical = validate_digest(digest, "sha256")
+        digest_hex = canonical.removeprefix("sha256:")
+        directory = self._tenant_directory(tenant_id) / digest_hex[:2]
+        content = directory / digest_hex
+        metadata_path = directory / f"{digest_hex}.metadata.json"
+        if content.is_symlink() or metadata_path.is_symlink():
+            raise ArtifactStoreError("artifact path is unsafe")
+        try:
+            content.unlink()
+            metadata_path.unlink()
+        except FileNotFoundError as exc:
+            raise ArtifactStoreError("artifact is missing") from exc
+
+    def _tenant_directory(self, tenant_id: str) -> Path:
+        """Use a digest for the filesystem segment; IDs may contain '/'."""
+        tenant_digest = digest_bytes(tenant_id.encode("utf-8")).removeprefix("sha256:")
+        return self.root / tenant_digest
 
     def _check_directory(self, path: Path) -> None:
         relative = path.relative_to(self.root)

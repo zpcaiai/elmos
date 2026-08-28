@@ -93,10 +93,10 @@ def _handler_id(skill_id: str) -> str:
 
 def _capability_state(priority: str, domain: str) -> str:
     if priority == "P2":
-        return "PARTIAL_EXTERNAL_OBSERVABILITY_OR_BOUNDARY_EVIDENCE_REQUIRED"
+        return "CODE_COMPLETE_EXTERNAL_EVIDENCE_REQUIRED"
     if domain in {"core", "platform"}:
-        return "LOCAL_BOUNDED"
-    return "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED"
+        return "CODE_COMPLETE_LOCAL_RUNTIME"
+    return "CODE_COMPLETE_NATIVE_EVIDENCE_REQUIRED"
 
 
 def _load_handlers() -> dict[str, Callable[..., SkillOutcome]]:
@@ -152,7 +152,7 @@ class SkillRegistry:
                 "domain": binding.domain,
                 "handlerId": binding.handler_id,
                 "capabilityState": binding.capability_state,
-                "implementationState": "BOUND_LOCAL_EXACT",
+                "implementationState": "PRODUCTION_CODE_COMPLETE",
                 "externalEvidenceStatus": "NOT_RUN",
                 "certificationStatus": "NOT_CERTIFIED",
             }

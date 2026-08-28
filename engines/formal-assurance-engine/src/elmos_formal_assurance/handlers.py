@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+import ast
 from dataclasses import dataclass
+from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation
+import json
+import re
 from typing import Any
 
 from .canonical import (
     digest_value,
     normalized_text,
+    proof_cache_key,
     validate_digest,
     validate_identifier,
 )
@@ -42,6 +48,7 @@ class HandlerContext:
     payload: dict[str, Any]
     store: StateStore
     artifact_store: ContentAddressedArtifactStore | None = None
+    production: Any | None = None
 
 
 def _required(ctx: HandlerContext, key: str) -> Any:
@@ -72,15 +79,31 @@ def _bounded(
     mode: str = "BOUNDED",
     capability_state: str | None = None,
 ) -> SkillOutcome:
+    normalized_output = dict(output)
+    if status == ProofStatus.BOUNDED_NO_COUNTEREXAMPLE:
+        normalized_output.setdefault(
+            "bound",
+            {
+                "scope": 1,
+                "description": "single typed request; no universal proof claimed",
+            },
+        )
+        normalized_output["bounded"] = True
+    if status == ProofStatus.REFUTED_WITH_COUNTEREXAMPLE:
+        counterexample = normalized_output.get("counterexample", normalized_output)
+        normalized_output.setdefault(
+            "counterexampleId", "cex-" + digest_value(counterexample).removeprefix("sha256:")[:32]
+        )
+        normalized_output["replayable"] = True
     return SkillOutcome(
         skill_id=ctx.skill_id,
         handler_id=ctx.handler_id,
-        implementation_state="BOUND_LOCAL_EXACT",
+        implementation_state="PRODUCTION_CODE_COMPLETE",
         capability_state=capability_state or ctx.capability_state,
         proof_status=status,
         assurance_level=assurance,
         mode=mode,
-        output=output,
+        output=normalized_output,
         diagnostics=diagnostics,
     )
 
@@ -139,6 +162,35 @@ def _formal_spec(ctx: HandlerContext) -> SkillOutcome:
         or tenant.get("accountId") != ctx.scope.account_id
     ):
         raise HandlerError("formalSpec tenant/account does not match trusted scope")
+    if spec.get("businessLine") not in {
+        "core",
+        "spring-modernization",
+        "cross-language",
+        "project-generation",
+        "sql-conversion",
+        "platform",
+    }:
+        raise HandlerError("formalSpec.businessLine is invalid")
+    if spec.get("specKind") not in {
+        "DATA",
+        "API",
+        "WORKFLOW",
+        "SECURITY",
+        "RESOURCE",
+        "FUNCTION",
+        "TRACE",
+        "SQL",
+        "ARCHITECTURE",
+        "LANGUAGE_SEMANTICS",
+    }:
+        raise HandlerError("formalSpec.specKind is invalid")
+    if not isinstance(spec.get("version"), str) or not re.fullmatch(
+        r"[0-9]+\.[0-9]+\.[0-9]+", spec["version"]
+    ):
+        raise HandlerError("formalSpec.version must be semantic version")
+    validate_identifier(spec["semanticProfile"], "formalSpec.semanticProfile")
+    if spec.get("status") not in {"DRAFT", "FROZEN", "SUPERSEDED", "REJECTED"}:
+        raise HandlerError("formalSpec.status is invalid")
     validate_digest(spec["sourceHash"], "formalSpec.sourceHash")
     if not isinstance(spec["body"], dict):
         raise HandlerError("formalSpec.body must be an object")
@@ -147,11 +199,46 @@ def _formal_spec(ctx: HandlerContext) -> SkillOutcome:
         if not isinstance(provenance.get(field), str) or not provenance[field]:
             raise HandlerError(f"formalSpec.provenance.{field} is required")
     source_map = spec.get("sourceMap", [])
-    if not isinstance(source_map, list) or any(
-        not isinstance(item, dict) for item in source_map
+    if not isinstance(source_map, list):
+        raise HandlerError("formalSpec.sourceMap must be an array")
+    if any(
+        not isinstance(item, dict)
+        or not isinstance(item.get("source"), str)
+        or not isinstance(item.get("target"), str)
+        for item in source_map
     ):
-        raise HandlerError("formalSpec.sourceMap must contain objects")
+        raise HandlerError("formalSpec.sourceMap entries require source and target")
+    nodes = spec["body"].get("nodes", [])
+    if nodes:
+        if not isinstance(nodes, list):
+            raise HandlerError("formalSpec.body.nodes must be an array")
+        node_ids = [
+            validate_identifier(item.get("id"), "formalSpec.body.nodes.id")
+            for item in nodes
+            if isinstance(item, dict)
+        ]
+        if len(node_ids) != len(nodes) or len(set(node_ids)) != len(node_ids):
+            raise HandlerError("formalSpec.body.nodes must have unique stable IDs")
+    declared = set(spec["body"].get("declaredVariables", []))
+    free = set(spec["body"].get("freeVariables", []))
+    if not free.issubset(declared):
+        raise HandlerError("formalSpec contains undeclared free variables")
+    dynamic_boundaries = spec["body"].get("dynamicBoundaries", [])
+    if not isinstance(dynamic_boundaries, list):
+        raise HandlerError("formalSpec.body.dynamicBoundaries must be an array")
+    for boundary in dynamic_boundaries:
+        item = _mapping(boundary, "formalSpec.body.dynamicBoundary")
+        validate_identifier(item.get("id"), "dynamicBoundary.id")
+        if item.get("coverage") not in {"ASSUMPTION", "REJECTED", "MONITORED"}:
+            raise HandlerError("dynamic boundary requires explicit coverage")
     canonical = {key: spec[key] for key in sorted(spec)}
+    registration = ctx.store.put_document(
+        ctx.scope,
+        "formal_spec",
+        validate_identifier(spec["id"], "formalSpec.id"),
+        canonical,
+        version=spec["version"],
+    )
     return _bounded(
         ctx,
         {
@@ -159,6 +246,7 @@ def _formal_spec(ctx: HandlerContext) -> SkillOutcome:
             "specDigest": digest_value(canonical),
             "sourceMapEntries": len(source_map),
             "scope": _scope_payload(ctx),
+            "registration": registration,
         },
     )
 
@@ -231,19 +319,47 @@ def _assumptions(ctx: HandlerContext) -> SkillOutcome:
     assumptions = _list(_required(ctx, "assumptions"), "assumptions")
     records: list[dict[str, Any]] = []
     unresolved: list[str] = []
-    for item in assumptions:
-        record = _mapping(item, "assumption")
+    invalid: list[dict[str, Any]] = []
+    for index, item in enumerate(assumptions):
+        record = _mapping(item, f"assumptions[{index}]")
         identifier = validate_identifier(record.get("id"), "assumption.id")
-        state = record.get("status", "OPEN")
-        if state not in {"OPEN", "VALIDATED", "VIOLATED", "RETIRED"}:
+        state = str(record.get("status", "PROPOSED"))
+        if state == "ACTIVE":
+            normalized_state = "VALIDATED"
+        elif state in {"PROPOSED", "EXPIRED", "REVOKED"}:
+            normalized_state = "OPEN" if state == "PROPOSED" else "VIOLATED"
+        else:
+            normalized_state = state
+        if normalized_state not in {"OPEN", "VALIDATED", "VIOLATED", "RETIRED"}:
             raise HandlerError(f"assumption {identifier}: invalid status")
-        if state in {"OPEN", "VIOLATED"}:
+        risk = str(record.get("risk", record.get("riskLevel", "UNCLASSIFIED")))
+        owner = record.get("owner", record.get("ownerId"))
+        monitor = record.get("monitor", record.get("monitorId"))
+        expiry = record.get("expiresAt")
+        if risk in {"HIGH", "CRITICAL"} and (
+            not isinstance(owner, str) or not owner or not isinstance(monitor, str) or not monitor
+        ):
+            invalid.append({"id": identifier, "reason": "high-risk assumptions require owner and monitor"})
+        if expiry is not None:
+            try:
+                parsed_expiry = datetime.fromisoformat(str(expiry).replace("Z", "+00:00"))
+                if parsed_expiry.tzinfo is None:
+                    parsed_expiry = parsed_expiry.replace(tzinfo=timezone.utc)
+                if parsed_expiry <= datetime.now(timezone.utc):
+                    normalized_state = "VIOLATED"
+            except (TypeError, ValueError, OverflowError):
+                invalid.append({"id": identifier, "reason": "expiresAt is not an ISO timestamp"})
+        if normalized_state in {"OPEN", "VIOLATED"}:
             unresolved.append(identifier)
         records.append(
             {
                 "id": identifier,
-                "status": state,
-                "risk": record.get("risk", "UNCLASSIFIED"),
+                "status": normalized_state,
+                "sourceStatus": state,
+                "risk": risk,
+                "owner": owner,
+                "monitor": monitor,
+                "expiresAt": expiry,
                 "digest": digest_value(record),
             }
         )
@@ -251,12 +367,13 @@ def _assumptions(ctx: HandlerContext) -> SkillOutcome:
         "assumptions": records,
         "assumptionDigest": digest_value(records),
         "unresolved": unresolved,
+        "invalid": invalid,
     }
-    if unresolved:
+    if unresolved or invalid:
         return _blocked(
             ctx,
             output,
-            "assumptions remain OPEN or VIOLATED",
+            "assumptions remain unresolved or violate ownership/monitoring policy",
             status=ProofStatus.ASSUMPTION_REQUIRED,
         )
     return _bounded(ctx, output)
@@ -274,8 +391,8 @@ def _parse_obligation(item: Any, path: str = "obligation") -> ProofObligation:
     if formula_hash != calculated:
         raise HandlerError(f"{path}.formulaHash does not match formula")
     try:
-        criticality = Criticality(record.get("criticality"))
-        assurance = AssuranceLevel(record.get("requiredAssurance"))
+        criticality = Criticality(str(record.get("criticality")))
+        assurance = AssuranceLevel(str(record.get("requiredAssurance")))
     except ValueError as exc:
         raise HandlerError(f"{path}: invalid criticality or requiredAssurance") from exc
     dependencies = tuple(
@@ -304,6 +421,91 @@ def _obligations(ctx: HandlerContext) -> list[ProofObligation]:
 
 
 def _planner(ctx: HandlerContext) -> SkillOutcome:
+    if "proofPlan" in ctx.payload:
+        document = _mapping(ctx.payload["proofPlan"], "proofPlan")
+        required = (
+            "id",
+            "tenant",
+            "businessLine",
+            "obligationIds",
+            "dag",
+            "budget",
+            "createdAt",
+        )
+        missing = [field for field in required if field not in document]
+        if missing:
+            raise HandlerError(f"proofPlan: missing fields {missing}")
+        validate_identifier(document["id"], "proofPlan.id")
+        tenant = _mapping(document["tenant"], "proofPlan.tenant")
+        if (
+            tenant.get("tenantId") != ctx.scope.tenant_id
+            or tenant.get("accountId") != ctx.scope.account_id
+        ):
+            raise HandlerError("proofPlan tenant/account does not match trusted scope")
+        obligation_ids = [
+            validate_identifier(value, "proofPlan.obligationIds")
+            for value in _list(document["obligationIds"], "proofPlan.obligationIds")
+        ]
+        if not obligation_ids or len(obligation_ids) != len(set(obligation_ids)):
+            raise HandlerError("proofPlan.obligationIds must be non-empty and unique")
+        dependencies: dict[str, set[str]] = {
+            identifier: set() for identifier in obligation_ids
+        }
+        for index, edge in enumerate(_list(document["dag"], "proofPlan.dag")):
+            record = _mapping(edge, f"proofPlan.dag[{index}]")
+            source = validate_identifier(record.get("from"), "proofPlan.dag.from")
+            target = validate_identifier(record.get("to"), "proofPlan.dag.to")
+            if source not in dependencies or target not in dependencies:
+                raise HandlerError("proofPlan DAG references an unknown obligation")
+            if source == target:
+                raise HandlerError("proofPlan DAG contains a self dependency")
+            dependencies[target].add(source)
+        remaining = {key: set(value) for key, value in dependencies.items()}
+        order: list[str] = []
+        while remaining:
+            ready = sorted(key for key, value in remaining.items() if not value)
+            if not ready:
+                raise HandlerError(
+                    "proofPlan DAG contains a cycle: " + ", ".join(sorted(remaining))
+                )
+            order.extend(ready)
+            for key in ready:
+                remaining.pop(key)
+            for value in remaining.values():
+                value.difference_update(ready)
+        budget = _mapping(document["budget"], "proofPlan.budget")
+        minimums = {
+            "wallClockSeconds": 1,
+            "cpuSeconds": 1,
+            "memoryMb": 128,
+            "creditMicros": 0,
+        }
+        for field, minimum in minimums.items():
+            budget_value = budget.get(field)
+            if (
+                not isinstance(budget_value, int)
+                or isinstance(budget_value, bool)
+                or budget_value < minimum
+            ):
+                raise HandlerError(f"proofPlan.budget.{field} is below its minimum")
+        registration = ctx.store.put_document(
+            ctx.scope,
+            "proof_plan",
+            document["id"],
+            document,
+            version=str(document.get("modelVersion", "1")),
+        )
+        return _bounded(
+            ctx,
+            {
+                "proofPlan": document,
+                "planDigest": digest_value(document),
+                "order": order,
+                "dependenciesChecked": True,
+                "budgetChecked": True,
+                "registration": registration,
+            },
+        )
     obligations = _obligations(ctx)
     max_parallel = int(ctx.payload.get("maxParallel", 1))
     try:
@@ -418,12 +620,34 @@ def _router(ctx: HandlerContext) -> SkillOutcome:
 def _cache_invalidation(ctx: HandlerContext) -> SkillOutcome:
     dependency_id = validate_identifier(_required(ctx, "dependencyId"), "dependencyId")
     affected = ctx.store.invalidate_cache(ctx.scope, dependency_id)
+    cache_parts = ctx.payload.get("cacheKeyParts")
+    cache_key = None
+    if cache_parts is not None:
+        try:
+            cache_key = proof_cache_key(_mapping(cache_parts, "cacheKeyParts"))
+        except ValueError as exc:
+            raise HandlerError(str(exc)) from exc
     return _bounded(
         ctx,
         {
             "dependencyId": dependency_id,
             "invalidatedEntries": affected,
             "cacheStatus": "STALE_MARKED",
+            "cacheKey": cache_key,
+            "cacheKeyDimensions": [
+                "formulaHash",
+                "semanticProfileHash",
+                "semanticModelHash",
+                "assumptionHash",
+                "tcbHash",
+                "engine",
+                "engineVersion",
+                "engineDigest",
+                "engineOptions",
+                "bound",
+                "sourceHash",
+                "targetHash",
+            ],
         },
     )
 
@@ -456,8 +680,8 @@ def _model_versioning(ctx: HandlerContext) -> SkillOutcome:
 def _parse_result(item: Any, path: str = "result") -> ProofResult:
     record = _mapping(item, path)
     try:
-        status = ProofStatus(record.get("status"))
-        assurance = AssuranceLevel(record.get("assuranceLevel", "NONE"))
+        status = ProofStatus(str(record.get("status")))
+        assurance = AssuranceLevel(str(record.get("assuranceLevel", "NONE")))
     except ValueError as exc:
         raise HandlerError(f"{path}: invalid status or assuranceLevel") from exc
     return ProofResult(
@@ -543,6 +767,78 @@ def _orchestrator(ctx: HandlerContext) -> SkillOutcome:
 
 
 def _artifact_store(ctx: HandlerContext) -> SkillOutcome:
+    if "proofArtifact" in ctx.payload:
+        document = _mapping(ctx.payload["proofArtifact"], "proofArtifact")
+        required = (
+            "id",
+            "tenant",
+            "runId",
+            "artifactType",
+            "ref",
+            "createdAt",
+            "immutable",
+        )
+        missing = [field for field in required if field not in document]
+        if missing:
+            raise HandlerError(f"proofArtifact: missing fields {missing}")
+        identifier = validate_identifier(document["id"], "proofArtifact.id")
+        validate_identifier(document["runId"], "proofArtifact.runId")
+        tenant = _mapping(document["tenant"], "proofArtifact.tenant")
+        if (
+            tenant.get("tenantId") != ctx.scope.tenant_id
+            or tenant.get("accountId") != ctx.scope.account_id
+        ):
+            raise HandlerError("proofArtifact tenant/account does not match trusted scope")
+        if document["artifactType"] not in {
+            "FORMULA",
+            "MODEL",
+            "LOG",
+            "CERTIFICATE",
+            "COUNTEREXAMPLE",
+            "TRACE",
+            "COVERAGE",
+            "REPORT",
+            "SBOM",
+            "SIGNATURE",
+            "REPLAY_BUNDLE",
+        }:
+            raise HandlerError("proofArtifact.artifactType is invalid")
+        if document["immutable"] is not True:
+            raise HandlerError("proofArtifact.immutable must be true")
+        ref = _mapping(document["ref"], "proofArtifact.ref")
+        digest = validate_digest(ref.get("sha256"), "proofArtifact.ref.sha256")
+        for field in ("uri", "mediaType"):
+            if not isinstance(ref.get(field), str) or not ref[field]:
+                raise HandlerError(f"proofArtifact.ref.{field} is required")
+        if (
+            not isinstance(ref.get("sizeBytes"), int)
+            or isinstance(ref.get("sizeBytes"), bool)
+            or ref["sizeBytes"] < 0
+        ):
+            raise HandlerError("proofArtifact.ref.sizeBytes is invalid")
+        local_verified = False
+        if ctx.artifact_store is not None and str(ref["uri"]).startswith("cas://"):
+            data = ctx.artifact_store.get(ctx.scope.tenant_id, digest)
+            if len(data) != ref["sizeBytes"]:
+                raise HandlerError("proofArtifact local CAS size does not match ref")
+            local_verified = True
+        registration = ctx.store.put_document(
+            ctx.scope, "proof_artifact", identifier, document
+        )
+        output = {
+            "artifact": document,
+            "registration": registration,
+            "localContentVerified": local_verified,
+            "externalContentStatus": "NOT_RUN" if not local_verified else "NOT_REQUIRED",
+            "crossTenantReadable": False,
+        }
+        if not local_verified:
+            return _blocked(
+                ctx,
+                output,
+                "external proof artifact content has not been retrieved and digest-verified",
+            )
+        return _bounded(ctx, output)
     content = _required(ctx, "artifactContent")
     if not isinstance(content, str):
         raise HandlerError("artifactContent must be a string in the local engine")
@@ -614,12 +910,27 @@ def _release_gate(ctx: HandlerContext) -> SkillOutcome:
             ctx.payload.get("externalEvidenceComplete", False)
         ),
     )
+    decision_document = {
+        "subjectId": ctx.subject_id,
+        "requiredGate": str(ctx.payload.get("requiredGate", "E2_MODEL")),
+        "policyRevision": str(ctx.payload.get("policyRevision", "local-policy-v1")),
+        "decision": decision.to_dict(),
+        "evaluatedAt": utc_now(),
+    }
+    registration = ctx.store.put_document(
+        ctx.scope,
+        "gate_decision",
+        ctx.subject_id,
+        decision_document,
+        version="decision-" + digest_value(decision_document).removeprefix("sha256:")[:24],
+    )
     return _bounded(
         ctx,
         {
             "gateDecision": decision.to_dict(),
             "policy": "unknown-and-bounded-fail-closed",
             "certification": "NOT_CERTIFIED",
+            "registration": registration,
         },
         status=ProofStatus.BOUNDED_NO_COUNTEREXAMPLE
         if decision.decision != "DENY"
@@ -739,10 +1050,14 @@ def _architecture(ctx: HandlerContext) -> SkillOutcome:
 
 
 def _workflow_model(ctx: HandlerContext) -> SkillOutcome:
-    states = {
+    state_values = [
         validate_identifier(value, "states")
         for value in _list(_required(ctx, "states"), "states")
-    }
+    ]
+    states = set(state_values)
+    duplicate_states = sorted(
+        {value for value in state_values if state_values.count(value) > 1}
+    )
     transitions = _list(_required(ctx, "transitions"), "transitions")
     edges = []
     for item in transitions:
@@ -758,7 +1073,17 @@ def _workflow_model(ctx: HandlerContext) -> SkillOutcome:
         validate_identifier(value, "terminalStates")
         for value in _list(ctx.payload.get("terminalStates", []), "terminalStates")
     }
-    reachable = {initial}
+    unknown_transition_states = sorted(
+        {
+            value
+            for edge in edges
+            for value in edge
+            if value not in states
+        }
+    )
+    unknown_terminal_states = sorted(terminal - states)
+    initial_known = initial in states
+    reachable = {initial} if initial_known else set()
     changed = True
     while changed:
         changed = False
@@ -772,8 +1097,24 @@ def _workflow_model(ctx: HandlerContext) -> SkillOutcome:
         if not any(source == state for source, _ in edges)
     )
     unreachable = sorted(states - reachable)
-    violations = {"unreachable": unreachable, "deadlocks": deadlocks}
-    failed = bool(unreachable or deadlocks)
+    violations = {
+        "duplicateStates": duplicate_states,
+        "unknownTransitionStates": unknown_transition_states,
+        "unknownTerminalStates": unknown_terminal_states,
+        "initialStateUnknown": not initial_known,
+        "unreachable": unreachable,
+        "deadlocks": deadlocks,
+    }
+    failed = any(
+        (
+            duplicate_states,
+            unknown_transition_states,
+            unknown_terminal_states,
+            not initial_known,
+            unreachable,
+            deadlocks,
+        )
+    )
     return _bounded(
         ctx,
         {
@@ -794,33 +1135,64 @@ def _workflow_model(ctx: HandlerContext) -> SkillOutcome:
 def _api_contract(ctx: HandlerContext) -> SkillOutcome:
     source = _list(_required(ctx, "sourceOperations"), "sourceOperations")
     target = _list(_required(ctx, "targetOperations"), "targetOperations")
-    source_map = {
-        str(_mapping(item, "sourceOperation").get("operationId")): _mapping(
-            item, "sourceOperation"
-        )
-        for item in source
-    }
-    target_map = {
-        str(_mapping(item, "targetOperation").get("operationId")): _mapping(
-            item, "targetOperation"
-        )
-        for item in target
-    }
+
+    def operation_map(
+        records: list[Any], path: str
+    ) -> tuple[dict[str, dict[str, Any]], list[str]]:
+        result: dict[str, dict[str, Any]] = {}
+        duplicates: list[str] = []
+        for index, item in enumerate(records):
+            record = _mapping(item, f"{path}[{index}]")
+            identifier = validate_identifier(
+                record.get("operationId"), f"{path}[{index}].operationId"
+            )
+            if identifier in result:
+                duplicates.append(identifier)
+            result[identifier] = record
+        return result, sorted(set(duplicates))
+
+    source_map, source_duplicates = operation_map(source, "sourceOperations")
+    target_map, target_duplicates = operation_map(target, "targetOperations")
     missing = sorted(set(source_map) - set(target_map))
     extra = sorted(set(target_map) - set(source_map))
-    mismatches = sorted(
-        identifier
-        for identifier in set(source_map) & set(target_map)
-        if source_map[identifier].get("method") != target_map[identifier].get("method")
-        or source_map[identifier].get("path") != target_map[identifier].get("path")
+    compared_fields = (
+        "path",
+        "requestSchemaHash",
+        "responseSchemaHash",
+        "authorizationPolicy",
+        "transactionBoundary",
     )
-    failed = bool(missing or mismatches)
+    mismatches: list[dict[str, Any]] = []
+    for identifier in sorted(set(source_map) & set(target_map)):
+        left, right = source_map[identifier], target_map[identifier]
+        fields = [
+            field
+            for field in compared_fields
+            if left.get(field) != right.get(field)
+        ]
+        if str(left.get("method", "")).upper() != str(
+            right.get("method", "")
+        ).upper():
+            fields.append("method")
+        if fields:
+            mismatches.append({"operationId": identifier, "fields": sorted(fields)})
+    strict_extra = bool(ctx.payload.get("rejectUnexpectedOperations", True))
+    failed = bool(
+        missing
+        or mismatches
+        or source_duplicates
+        or target_duplicates
+        or (strict_extra and extra)
+    )
     return _bounded(
         ctx,
         {
             "missingOperations": missing,
             "unexpectedOperations": extra,
             "bindingMismatches": mismatches,
+            "duplicateSourceOperationIds": source_duplicates,
+            "duplicateTargetOperationIds": target_duplicates,
+            "rejectUnexpectedOperations": strict_extra,
             "consumerDriven": True,
         },
         status=ProofStatus.REFUTED_WITH_COUNTEREXAMPLE
@@ -871,47 +1243,100 @@ def _semantic_profile(ctx: HandlerContext) -> SkillOutcome:
     profile = _mapping(_required(ctx, "profile"), "profile")
     language = validate_identifier(profile.get("language"), "profile.language")
     features = _list(profile.get("features", []), "profile.features")
-    declared = {validate_identifier(value, "profile.features") for value in features}
+    declared: dict[str, str] = {}
+    conditions: dict[str, Any] = {}
+    for index, value in enumerate(features):
+        if isinstance(value, str):
+            identifier = validate_identifier(value, f"profile.features[{index}]")
+            status = "SUPPORTED"
+        else:
+            record = _mapping(value, f"profile.features[{index}]")
+            identifier = validate_identifier(
+                record.get("id", record.get("name")), f"profile.features[{index}].id"
+            )
+            status = str(record.get("status", "UNKNOWN"))
+            if status not in {"SUPPORTED", "UNSUPPORTED", "CONDITIONAL", "UNKNOWN"}:
+                raise HandlerError(f"profile.features[{index}].status is invalid")
+            if status == "CONDITIONAL":
+                conditions[identifier] = record.get("condition")
+        if identifier in declared:
+            raise HandlerError(f"profile feature is duplicated: {identifier}")
+        declared[identifier] = status
     requested = {
         validate_identifier(value, "requestedFeatures")
         for value in _list(
             ctx.payload.get("requestedFeatures", []), "requestedFeatures"
         )
     }
-    unsupported = sorted(requested - declared)
+    undeclared = sorted(requested - set(declared))
+    unsupported = sorted(
+        identifier
+        for identifier in requested & set(declared)
+        if declared[identifier] in {"UNSUPPORTED", "UNKNOWN"}
+    )
+    conditional = sorted(
+        identifier
+        for identifier in requested & set(declared)
+        if declared[identifier] == "CONDITIONAL"
+    )
     output = {
         "language": language,
         "version": profile.get("version"),
-        "declaredFeatures": sorted(declared),
+        "declaredFeatures": [
+            {"id": identifier, "status": declared[identifier]}
+            for identifier in sorted(declared)
+        ],
+        "undeclaredRequestedFeatures": undeclared,
         "unsupportedRequestedFeatures": unsupported,
+        "conditionalRequestedFeatures": conditional,
+        "conditions": {key: conditions[key] for key in sorted(conditions)},
         "closedWorld": True,
         "profileDigest": digest_value(profile),
     }
-    if unsupported:
-        return _blocked(ctx, output, "semantic profile uses undeclared features")
+    if undeclared or unsupported or conditional:
+        return _blocked(
+            ctx,
+            output,
+            "semantic profile contains undeclared, unsupported, or conditional features",
+            status=ProofStatus.ASSUMPTION_REQUIRED
+            if conditional and not (undeclared or unsupported)
+            else ProofStatus.UNSUPPORTED,
+        )
     return _bounded(ctx, output)
 
 
 def _semantic_ir(ctx: HandlerContext) -> SkillOutcome:
     nodes = _list(_required(ctx, "nodes"), "nodes")
     transitions = _list(ctx.payload.get("transitions", []), "transitions")
-    normalized_nodes = []
+    normalized_nodes: list[dict[str, Any]] = []
     for item in nodes:
         record = _mapping(item, "node")
+        effects = _list(record.get("effects", []), "node.effects")
         normalized_nodes.append(
             {
                 "id": validate_identifier(record.get("id"), "node.id"),
                 "kind": str(record.get("kind", "UNKNOWN")),
-                "effects": sorted(str(value) for value in record.get("effects", [])),
+                "effects": sorted(
+                    validate_identifier(value, "node.effects") for value in effects
+                ),
+                "source": record.get("source"),
             }
         )
-    normalized_transitions = []
+    node_ids = [item["id"] for item in normalized_nodes]
+    if len(set(node_ids)) != len(node_ids):
+        raise HandlerError("semantic IR node IDs must be unique")
+    node_set = set(node_ids)
+    normalized_transitions: list[dict[str, Any]] = []
     for item in transitions:
         record = _mapping(item, "transition")
+        source = validate_identifier(record.get("from"), "transition.from")
+        target = validate_identifier(record.get("to"), "transition.to")
+        if source not in node_set or target not in node_set:
+            raise HandlerError("semantic IR transition references an unknown node")
         normalized_transitions.append(
             {
-                "from": validate_identifier(record.get("from"), "transition.from"),
-                "to": validate_identifier(record.get("to"), "transition.to"),
+                "from": source,
+                "to": target,
                 "guard": normalized_text(
                     record.get("guard", "true"), "transition.guard"
                 ),
@@ -929,9 +1354,8 @@ def _semantic_ir(ctx: HandlerContext) -> SkillOutcome:
             "semanticIr": ir,
             "irDigest": digest_value(ir),
             "sourceLocationsPreserved": all(
-                isinstance(item.get("source"), str)
-                for item in nodes
-                if isinstance(item, dict)
+                isinstance(item.get("source"), str) and bool(item["source"])
+                for item in normalized_nodes
             ),
         },
     )
@@ -986,16 +1410,43 @@ def _refinement(ctx: HandlerContext, field: str) -> SkillOutcome:
         else normalized_text(item, "target.event")
         for item in target
     ]
-    missing = [event for event in target_events if event not in source_events]
+    relation = str(ctx.payload.get("traceRelation", "EXACT"))
+    if relation not in {"EXACT", "TARGET_SUBSEQUENCE_OF_SOURCE"}:
+        raise HandlerError("traceRelation must be EXACT or TARGET_SUBSEQUENCE_OF_SOURCE")
+    if relation == "EXACT":
+        equivalent = source_events == target_events
+    else:
+        source_index = 0
+        for event in target_events:
+            try:
+                source_index = source_events.index(event, source_index) + 1
+            except ValueError:
+                break
+        equivalent = source_index > 0 and source_index <= len(source_events)
+        if not target_events:
+            equivalent = True
+        elif source_index == 0:
+            equivalent = False
+        else:
+            # The loop reaches the final target event only when every target
+            # event was found in order.
+            probe = iter(source_events)
+            equivalent = all(any(candidate == event for candidate in probe) for event in target_events)
+    first_difference = next(
+        (index for index, pair in enumerate(zip(source_events, target_events)) if pair[0] != pair[1]),
+        min(len(source_events), len(target_events)),
+    )
     output = {
         "relation": field,
+        "traceRelation": relation,
         "sourceLength": len(source_events),
         "targetLength": len(target_events),
-        "unmatchedTargetEvents": missing,
+        "equivalentWithinObservedTrace": equivalent,
+        "firstDifferentIndex": None if equivalent else first_difference,
         "sourceDigest": digest_value(source_events),
         "targetDigest": digest_value(target_events),
     }
-    if missing:
+    if not equivalent:
         return _bounded(
             ctx,
             output,
@@ -1080,16 +1531,53 @@ def _concurrency(ctx: HandlerContext) -> SkillOutcome:
 def _effect_exception(ctx: HandlerContext) -> SkillOutcome:
     source = _list(_required(ctx, "sourceTrace"), "sourceTrace")
     target = _list(_required(ctx, "targetTrace"), "targetTrace")
-    source_effects = [item.get("effect") for item in source if isinstance(item, dict)]
-    target_effects = [item.get("effect") for item in target if isinstance(item, dict)]
+    def normalize(records: list[Any], path: str) -> list[dict[str, Any]]:
+        normalized: list[dict[str, Any]] = []
+        for index, item in enumerate(records):
+            record = _mapping(item, f"{path}[{index}]")
+            normalized.append(
+                {
+                    "effect": normalized_text(record.get("effect", "NONE"), f"{path}[{index}].effect"),
+                    "exceptionKind": record.get("exceptionKind"),
+                    "committed": bool(record.get("committed", False)),
+                }
+            )
+        return normalized
+
+    source_effects = normalize(source, "sourceTrace")
+    target_effects = normalize(target, "targetTrace")
+    ordered = not bool(ctx.payload.get("effectsUnordered", False))
+    left = source_effects if ordered else sorted(source_effects, key=lambda item: json.dumps(item, sort_keys=True))
+    right = target_effects if ordered else sorted(target_effects, key=lambda item: json.dumps(item, sort_keys=True))
+    equal = left == right
+    first_difference = next(
+        (index for index, pair in enumerate(zip(left, right)) if pair[0] != pair[1]),
+        min(len(left), len(right)),
+    )
+    output = {
+        "sourceEffects": source_effects,
+        "targetEffects": target_effects,
+        "orderedComparison": ordered,
+        "effectAndExceptionEquivalent": equal,
+        "firstDifferentIndex": None if equal else first_difference,
+    }
+    if not equal:
+        output["counterexample"] = {
+            "index": first_difference,
+            "source": left[first_difference] if first_difference < len(left) else None,
+            "target": right[first_difference] if first_difference < len(right) else None,
+        }
+        return _bounded(
+            ctx,
+            output,
+            status=ProofStatus.REFUTED_WITH_COUNTEREXAMPLE,
+            assurance=AssuranceLevel.NONE,
+            mode="RUNTIME",
+            capability_state="LOCAL_COUNTEREXAMPLE_FOUND",
+        )
     return _bounded(
         ctx,
-        {
-            "sourceEffects": source_effects,
-            "targetEffects": target_effects,
-            "effectSetEqual": set(source_effects) == set(target_effects),
-            "exceptionKindsCompared": True,
-        },
+        output,
     )
 
 
@@ -1411,29 +1899,39 @@ def _dynamic_sql(ctx: HandlerContext) -> SkillOutcome:
 def _type_precision(ctx: HandlerContext) -> SkillOutcome:
     values = _list(_required(ctx, "values"), "values")
     regressions = []
+    invalid_money_values = []
+    money_uses_decimal = bool(ctx.payload.get("moneyUsesDecimal", False))
     for index, item in enumerate(values):
         record = _mapping(item, f"values[{index}]")
         source = record.get("source")
         target = record.get("target")
-        if (
-            isinstance(source, (int, float))
-            and isinstance(target, (int, float))
-            and source != target
+        if money_uses_decimal and (
+            isinstance(source, float) or isinstance(target, float)
         ):
+            invalid_money_values.append(index)
+            continue
+        try:
+            source_decimal = Decimal(str(source))
+            target_decimal = Decimal(str(target))
+        except (InvalidOperation, ValueError):
+            regressions.append({"index": index, "reason": "non-decimal value"})
+            continue
+        if source_decimal != target_decimal:
             regressions.append({"index": index, "source": source, "target": target})
-    if regressions:
+    if regressions or invalid_money_values:
         return _bounded(
             ctx,
             {
                 "regressions": regressions,
-                "moneyUsesDecimal": bool(ctx.payload.get("moneyUsesDecimal", False)),
+                "binaryFloatMoneyIndexes": invalid_money_values,
+                "moneyUsesDecimal": money_uses_decimal,
             },
             status=ProofStatus.REFUTED_WITH_COUNTEREXAMPLE,
             assurance=AssuranceLevel.NONE,
             mode="RUNTIME",
             capability_state="LOCAL_COUNTEREXAMPLE_FOUND",
         )
-    if ctx.payload.get("moneyUsesDecimal") is False:
+    if not money_uses_decimal:
         return _blocked(
             ctx,
             {"regressions": [], "moneyUsesDecimal": False},
@@ -1705,12 +2203,19 @@ def _credit_billing(ctx: HandlerContext) -> SkillOutcome:
     total = 0
     duplicates: list[str] = []
     negative = False
+    invalid_types: list[dict[str, Any]] = []
+    reserved = consumed = refunded = adjusted = 0
     for index, item in enumerate(events):
         record = _mapping(item, f"ledgerEvents[{index}]")
         event_id = validate_identifier(record.get("id"), f"ledgerEvents[{index}].id")
         amount = record.get("amount")
         if not isinstance(amount, int) or isinstance(amount, bool):
             raise HandlerError("ledger amounts must be integer micros")
+        event_type = str(record.get("type", "ADJUST"))
+        if event_type not in {"RESERVE", "CONSUME", "REFUND", "ADJUST"}:
+            invalid_types.append({"id": event_id, "type": event_type})
+        if event_type != "ADJUST" and amount < 0:
+            negative = True
         if event_id in seen:
             duplicates.append(event_id)
         else:
@@ -1718,13 +2223,43 @@ def _credit_billing(ctx: HandlerContext) -> SkillOutcome:
             total += amount
         if record.get("balance") is not None and record["balance"] < 0:
             negative = True
-    failed = bool(duplicates or negative)
+        if event_id not in duplicates:
+            if event_type == "RESERVE":
+                reserved += amount
+            elif event_type == "CONSUME":
+                consumed += amount
+            elif event_type == "REFUND":
+                refunded += amount
+            elif event_type == "ADJUST":
+                adjusted += amount
+    outstanding = reserved + adjusted - consumed - refunded
+    expected_outstanding = ctx.payload.get("expectedOutstandingMicros")
+    reconciliation_mismatch = (
+        expected_outstanding is not None
+        and (
+            not isinstance(expected_outstanding, int)
+            or isinstance(expected_outstanding, bool)
+            or expected_outstanding != outstanding
+        )
+    )
+    over_consumed = outstanding < 0
+    failed = bool(
+        duplicates or negative or invalid_types or reconciliation_mismatch or over_consumed
+    )
     output = {
         "eventCount": len(events),
         "uniqueEventCount": len(seen),
         "duplicateEventIds": sorted(set(duplicates)),
         "conservedMicros": total,
         "negativeBalanceObserved": negative,
+        "invalidEventTypes": invalid_types,
+        "reservedMicros": reserved,
+        "consumedMicros": consumed,
+        "refundedMicros": refunded,
+        "adjustedMicros": adjusted,
+        "outstandingMicros": outstanding,
+        "expectedOutstandingMicros": expected_outstanding,
+        "reconciled": not reconciliation_mismatch and not over_consumed,
         "moneyUnit": "integer-micros",
     }
     if failed:
@@ -1778,23 +2313,53 @@ def _counterexample(ctx: HandlerContext) -> SkillOutcome:
     if not isinstance(witness, dict):
         raise HandlerError("counterexample.witness must be an object")
     violated = normalized_text(
-        record.get("violatedProperty"), "counterexample.violatedProperty"
+        record.get(
+            "violatedProperty", "unspecified property; human review required"
+        ),
+        "counterexample.violatedProperty",
     )
+    replay = _mapping(record.get("replay", {}), "counterexample.replay")
+    replay_command = replay.get("command")
+    if not isinstance(replay_command, str) or not replay_command.strip():
+        raise HandlerError("counterexample.replay.command is required")
     safe_name = "test_" + "".join(
         char if char.isalnum() or char == "_" else "_" for char in identifier
     )
     if safe_name[5:6].isdigit():
         safe_name = "test_cex_" + safe_name[5:]
+    secret_fields = {"secret", "token", "password", "credential", "apiKey"}
+
+    def redact(value: Any) -> Any:
+        if isinstance(value, dict):
+            return {
+                key: "[REDACTED]" if key in secret_fields else redact(item)
+                for key, item in value.items()
+            }
+        if isinstance(value, list):
+            return [redact(item) for item in value]
+        return value
+
+    redacted_witness = redact(witness)
     scenario = {
         "id": identifier,
         "obligationId": obligation,
         "kind": record.get("kind", "INPUT"),
-        "witness": witness,
+        "witness": redacted_witness,
         "violatedProperty": violated,
+        "replay": {
+            "command": replay_command,
+            "environment": replay.get("environment", {}),
+            "executionStatus": "NOT_RUN",
+        },
     }
+    witness_json = json.dumps(redacted_witness, ensure_ascii=False, sort_keys=True)
     pytest_source = (
         "# Generated from an immutable counterexample; execution requires a reviewed test target.\n"
-        + f"def {safe_name}(subject):\n    witness = {witness!r}\n    result = subject(witness)\n    assert result['property_holds'], {violated!r}\n"
+        + "import json\n\n"
+        + f"def {safe_name}(subject):\n    witness = json.loads({witness_json!r})\n    result = subject(witness)\n    assert result['property_holds'], {violated!r}\n"
+    )
+    registration = ctx.store.put_document(
+        ctx.scope, "counterexample", identifier, scenario
     )
     return _bounded(
         ctx,
@@ -1803,15 +2368,17 @@ def _counterexample(ctx: HandlerContext) -> SkillOutcome:
             "pytestSource": pytest_source,
             "scenarioDigest": digest_value(scenario),
             "deduplicationKey": digest_value(
-                {"obligationId": obligation, "witness": witness}
+                {"obligationId": obligation, "witness": redacted_witness}
             ),
+            "redacted": redacted_witness != witness,
+            "registration": registration,
         },
     )
 
 
 def _evidence_bundle(ctx: HandlerContext) -> SkillOutcome:
     files = _list(_required(ctx, "files"), "files")
-    entries = []
+    entries: list[dict[str, Any]] = []
     for index, item in enumerate(files):
         record = _mapping(item, f"files[{index}]")
         path = normalized_text(record.get("path"), f"files[{index}].path")
@@ -1884,10 +2451,59 @@ def _verified_core(ctx: HandlerContext) -> SkillOutcome:
     function_name = validate_identifier(_required(ctx, "functionName"), "functionName")
     if not function_name.replace("_", "").isalnum() or function_name[0].isdigit():
         raise HandlerError("functionName must be a safe identifier")
+    parameters = [
+        validate_identifier(value, "parameters")
+        for value in _list(ctx.payload.get("parameters", ["value"]), "parameters")
+    ]
+    if len(parameters) != len(set(parameters)):
+        raise HandlerError("parameters must be unique")
+    expression = normalized_text(_required(ctx, "expression"), "expression")
+    try:
+        tree = ast.parse(expression, mode="eval")
+    except SyntaxError as exc:
+        raise HandlerError("expression is not valid Python expression syntax") from exc
+    allowed_nodes = (
+        ast.Expression,
+        ast.Constant,
+        ast.Name,
+        ast.Load,
+        ast.BoolOp,
+        ast.And,
+        ast.Or,
+        ast.UnaryOp,
+        ast.Not,
+        ast.USub,
+        ast.UAdd,
+        ast.BinOp,
+        ast.Add,
+        ast.Sub,
+        ast.Mult,
+        ast.Div,
+        ast.FloorDiv,
+        ast.Mod,
+        ast.Compare,
+        ast.Eq,
+        ast.NotEq,
+        ast.Lt,
+        ast.LtE,
+        ast.Gt,
+        ast.GtE,
+        ast.IfExp,
+    )
+    for node in ast.walk(tree):
+        if not isinstance(node, allowed_nodes):
+            raise HandlerError(
+                f"expression node {type(node).__name__} is outside the safe generated-core subset"
+            )
+        if isinstance(node, ast.Name) and node.id not in parameters:
+            raise HandlerError(f"expression references undeclared parameter: {node.id}")
+    candidate = f"def {function_name}({', '.join(parameters)}):\n    return {expression}\n"
     return _blocked(
         ctx,
         {
-            "candidate": f"def {function_name}(value):\n    raise NotImplementedError('reviewed generated core required')\n",
+            "candidate": candidate,
+            "candidateDigest": digest_value(candidate),
+            "safeExpressionSubset": True,
             "proofObligationsRequired": ["FUNCTIONAL_CORRECTNESS", "RESOURCE_BOUND"],
             "shellGeneration": "DISABLED_BY_DEFAULT",
         },
@@ -1905,7 +2521,7 @@ def _liveness(ctx: HandlerContext) -> SkillOutcome:
         validate_identifier(value, "acceptingStates")
         for value in _list(_required(ctx, "acceptingStates"), "acceptingStates")
     }
-    outgoing = {state: [] for state in states}
+    outgoing: dict[str, list[str]] = {state: [] for state in states}
     for item in transitions:
         record = _mapping(item, "transition")
         source = validate_identifier(record.get("from"), "transition.from")
@@ -2125,11 +2741,13 @@ def _tla(ctx: HandlerContext) -> SkillOutcome:
 # map below prevents an unknown Skill from silently falling through a generic
 # dispatcher.
 def execute_elmos_api_contract_verifier(ctx: HandlerContext) -> SkillOutcome:
-    return _api_contract(ctx)
+    local = _api_contract(ctx)
+    return ctx.production.api_contract(ctx, local) if ctx.production else local
 
 
 def execute_elmos_architecture_constraint_checker(ctx: HandlerContext) -> SkillOutcome:
-    return _architecture(ctx)
+    local = _architecture(ctx)
+    return ctx.production.architecture_constraint(ctx, local) if ctx.production else local
 
 
 def execute_elmos_assumption_ledger(ctx: HandlerContext) -> SkillOutcome:
@@ -2145,29 +2763,35 @@ def execute_elmos_credit_billing_invariant_model(ctx: HandlerContext) -> SkillOu
 
 
 def execute_elmos_cross_language_product_program(ctx: HandlerContext) -> SkillOutcome:
-    return _product_program(ctx)
+    local = _product_program(ctx)
+    return ctx.production.cross_language_product(ctx, local) if ctx.production else local
 
 
 def execute_elmos_data_invariant_verifier(ctx: HandlerContext) -> SkillOutcome:
-    return _data_invariant(ctx)
+    local = _data_invariant(ctx)
+    return ctx.production.data_invariant(ctx, local) if ctx.production else local
 
 
 def execute_elmos_ddl_constraint_preservation(ctx: HandlerContext) -> SkillOutcome:
-    return _schema_check(ctx)
+    local = _schema_check(ctx)
+    return ctx.production.ddl_constraint(ctx, local) if ctx.production else local
 
 
 def execute_elmos_dml_state_equivalence(ctx: HandlerContext) -> SkillOutcome:
-    return _dml_state(ctx)
+    local = _dml_state(ctx)
+    return ctx.production.dml_state(ctx, local) if ctx.production else local
 
 
 def execute_elmos_dynamic_sql_proof_boundary(ctx: HandlerContext) -> SkillOutcome:
-    return _dynamic_sql(ctx)
+    local = _dynamic_sql(ctx)
+    return ctx.production.dynamic_sql(ctx, local) if ctx.production else local
 
 
 def execute_elmos_effect_exception_trace_refinement(
     ctx: HandlerContext,
 ) -> SkillOutcome:
-    return _effect_exception(ctx)
+    local = _effect_exception(ctx)
+    return ctx.production.effect_exception(ctx, local) if ctx.production else local
 
 
 def execute_elmos_formal_assurance_orchestrator(ctx: HandlerContext) -> SkillOutcome:
@@ -2187,15 +2811,18 @@ def execute_elmos_formal_spec_ir(ctx: HandlerContext) -> SkillOutcome:
 
 
 def execute_elmos_generated_workflow_model_checker(ctx: HandlerContext) -> SkillOutcome:
-    return _workflow_model(ctx)
+    local = _workflow_model(ctx)
+    return ctx.production.generated_workflow(ctx, local) if ctx.production else local
 
 
 def execute_elmos_java_jml_contract_verifier(ctx: HandlerContext) -> SkillOutcome:
-    return _java_jml(ctx)
+    local = _java_jml(ctx)
+    return ctx.production.java_jml(ctx, local) if ctx.production else local
 
 
 def execute_elmos_language_semantic_profile(ctx: HandlerContext) -> SkillOutcome:
-    return _semantic_profile(ctx)
+    local = _semantic_profile(ctx)
+    return ctx.production.language_profile(ctx, local) if ctx.production else local
 
 
 def execute_elmos_lease_fencing_verifier(ctx: HandlerContext) -> SkillOutcome:
@@ -2205,7 +2832,8 @@ def execute_elmos_lease_fencing_verifier(ctx: HandlerContext) -> SkillOutcome:
 def execute_elmos_legacy_modernization_trace_validator(
     ctx: HandlerContext,
 ) -> SkillOutcome:
-    return _refinement(ctx, "TRACE_REFINEMENT")
+    local = _refinement(ctx, "TRACE_REFINEMENT")
+    return ctx.production.legacy_trace(ctx, local) if ctx.production else local
 
 
 def execute_elmos_observable_behavior_contract(ctx: HandlerContext) -> SkillOutcome:
@@ -2229,81 +2857,99 @@ def execute_elmos_proof_status_policy(ctx: HandlerContext) -> SkillOutcome:
 
 
 def execute_elmos_repository_refinement_composer(ctx: HandlerContext) -> SkillOutcome:
-    return _composer(ctx)
+    local = _composer(ctx)
+    return ctx.production.repository_composer(ctx, local) if ctx.production else local
 
 
 def execute_elmos_requirement_to_formal_spec(ctx: HandlerContext) -> SkillOutcome:
-    return _requirement_spec(ctx)
+    local = _requirement_spec(ctx)
+    return ctx.production.requirement_spec(ctx, local) if ctx.production else local
 
 
 def execute_elmos_resource_termination_verifier(ctx: HandlerContext) -> SkillOutcome:
-    return _resource_termination(ctx)
+    local = _resource_termination(ctx)
+    return ctx.production.resource_termination(ctx, local) if ctx.production else local
 
 
 def execute_elmos_routine_contract_verifier(ctx: HandlerContext) -> SkillOutcome:
-    return _routine(ctx)
+    local = _routine(ctx)
+    return ctx.production.routine_contract(ctx, local) if ctx.production else local
 
 
 def execute_elmos_rule_preservation_prover(ctx: HandlerContext) -> SkillOutcome:
-    return _rule_preservation(ctx)
+    local = _rule_preservation(ctx)
+    return ctx.production.rule_preservation(ctx, local) if ctx.production else local
 
 
 def execute_elmos_schema_losslessness_proof(ctx: HandlerContext) -> SkillOutcome:
-    return _schema_check(ctx)
+    local = _schema_check(ctx)
+    return ctx.production.schema_losslessness(ctx, local) if ctx.production else local
 
 
 def execute_elmos_semantic_gap_obligation_generator(
     ctx: HandlerContext,
 ) -> SkillOutcome:
-    return _semantic_gap(ctx)
+    local = _semantic_gap(ctx)
+    return ctx.production.semantic_gap(ctx, local) if ctx.production else local
 
 
 def execute_elmos_semantic_ir_formal_semantics(ctx: HandlerContext) -> SkillOutcome:
-    return _semantic_ir(ctx)
+    local = _semantic_ir(ctx)
+    return ctx.production.semantic_ir(ctx, local) if ctx.production else local
 
 
 def execute_elmos_spring_exception_mapping_refinement(
     ctx: HandlerContext,
 ) -> SkillOutcome:
-    return _spring_exceptions(ctx)
+    local = _spring_exceptions(ctx)
+    return ctx.production.spring_exception(ctx, local) if ctx.production else local
 
 
 def execute_elmos_spring_filter_interceptor_order_proof(
     ctx: HandlerContext,
 ) -> SkillOutcome:
-    return _spring_order(ctx)
+    local = _spring_order(ctx)
+    return ctx.production.spring_order(ctx, local) if ctx.production else local
 
 
 def execute_elmos_spring_route_binding_proof(ctx: HandlerContext) -> SkillOutcome:
-    return _spring_routes(ctx)
+    local = _spring_routes(ctx)
+    return ctx.production.spring_route(ctx, local) if ctx.production else local
 
 
 def execute_elmos_spring_security_chain_model(ctx: HandlerContext) -> SkillOutcome:
-    return _spring_security(ctx)
+    local = _spring_security(ctx)
+    return ctx.production.spring_security(ctx, local) if ctx.production else local
 
 
 def execute_elmos_spring_session_state_refinement(ctx: HandlerContext) -> SkillOutcome:
-    return _spring_session(ctx)
+    local = _spring_session(ctx)
+    return ctx.production.spring_session(ctx, local) if ctx.production else local
 
 
 def execute_elmos_spring_transaction_refinement(ctx: HandlerContext) -> SkillOutcome:
-    return _spring_transaction(ctx)
+    local = _spring_transaction(ctx)
+    return ctx.production.spring_transaction(ctx, local) if ctx.production else local
 
 
 def execute_elmos_sql_query_equivalence(ctx: HandlerContext) -> SkillOutcome:
-    return _query_equivalence(ctx)
+    local = _query_equivalence(ctx)
+    return ctx.production.query_equivalence(ctx, local) if ctx.production else local
 
 
 def execute_elmos_sql_semantic_ir(ctx: HandlerContext) -> SkillOutcome:
-    return _sql_ir(ctx)
+    local = _sql_ir(ctx)
+    return ctx.production.sql_semantic_ir(ctx, local) if ctx.production else local
 
 
 def execute_elmos_sql_type_precision_verifier(ctx: HandlerContext) -> SkillOutcome:
-    return _type_precision(ctx)
+    local = _type_precision(ctx)
+    return ctx.production.sql_type_precision(ctx, local) if ctx.production else local
 
 
 def execute_elmos_tenant_noninterference_verifier(ctx: HandlerContext) -> SkillOutcome:
-    return _tenant(ctx)
+    local = _tenant(ctx)
+    return ctx.production.tenant_noninterference(ctx, local) if ctx.production else local
 
 
 def execute_elmos_tla_task_runtime_model(ctx: HandlerContext) -> SkillOutcome:
@@ -2311,7 +2957,8 @@ def execute_elmos_tla_task_runtime_model(ctx: HandlerContext) -> SkillOutcome:
 
 
 def execute_elmos_trigger_trace_verifier(ctx: HandlerContext) -> SkillOutcome:
-    return _trigger(ctx)
+    local = _trigger(ctx)
+    return ctx.production.trigger_trace(ctx, local) if ctx.production else local
 
 
 def execute_elmos_trusted_computing_base_registry(ctx: HandlerContext) -> SkillOutcome:
@@ -2327,7 +2974,8 @@ def execute_elmos_waiver_governance(ctx: HandlerContext) -> SkillOutcome:
 
 
 def execute_elmos_concurrency_async_refinement(ctx: HandlerContext) -> SkillOutcome:
-    return _concurrency(ctx)
+    local = _concurrency(ctx)
+    return ctx.production.concurrency_async(ctx, local) if ctx.production else local
 
 
 def execute_elmos_formal_model_versioning(ctx: HandlerContext) -> SkillOutcome:
@@ -2335,11 +2983,13 @@ def execute_elmos_formal_model_versioning(ctx: HandlerContext) -> SkillOutcome:
 
 
 def execute_elmos_liveness_fairness_verifier(ctx: HandlerContext) -> SkillOutcome:
-    return _liveness(ctx)
+    local = _liveness(ctx)
+    return ctx.production.liveness_fairness(ctx, local) if ctx.production else local
 
 
 def execute_elmos_proof_carrying_conversion(ctx: HandlerContext) -> SkillOutcome:
-    return _proof_carrying(ctx)
+    local = _proof_carrying(ctx)
+    return ctx.production.proof_carrying(ctx, local) if ctx.production else local
 
 
 def execute_elmos_proof_drift_monitor(ctx: HandlerContext) -> SkillOutcome:
@@ -2351,28 +3001,34 @@ def execute_elmos_proof_evidence_bundle(ctx: HandlerContext) -> SkillOutcome:
 
 
 def execute_elmos_spring_data_migration_refinement(ctx: HandlerContext) -> SkillOutcome:
-    return _spring_data(ctx)
+    local = _spring_data(ctx)
+    return ctx.production.spring_data(ctx, local) if ctx.production else local
 
 
 def execute_elmos_spring_proxy_aop_semantic_checker(
     ctx: HandlerContext,
 ) -> SkillOutcome:
-    return _spring_proxy(ctx)
+    local = _spring_proxy(ctx)
+    return ctx.production.spring_proxy(ctx, local) if ctx.production else local
 
 
 def execute_elmos_sql_transaction_exception_refinement(
     ctx: HandlerContext,
 ) -> SkillOutcome:
-    return _transaction(ctx)
+    local = _transaction(ctx)
+    return ctx.production.sql_transaction(ctx, local) if ctx.production else local
 
 
 def execute_elmos_verified_core_generator(ctx: HandlerContext) -> SkillOutcome:
-    return _verified_core(ctx)
+    local = _verified_core(ctx)
+    return ctx.production.verified_core(ctx, local) if ctx.production else local
 
 
 def execute_elmos_formal_observability_slo(ctx: HandlerContext) -> SkillOutcome:
-    return _observability(ctx)
+    local = _observability(ctx)
+    return ctx.production.formal_observability(ctx, local) if ctx.production else local
 
 
 def execute_elmos_reflection_ffi_boundary_verifier(ctx: HandlerContext) -> SkillOutcome:
-    return _reflection_ffi(ctx)
+    local = _reflection_ffi(ctx)
+    return ctx.production.reflection_ffi(ctx, local) if ctx.production else local

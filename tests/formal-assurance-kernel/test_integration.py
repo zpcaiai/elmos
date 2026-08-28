@@ -63,9 +63,12 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(len(document["skills"]), 60)
         self.assertTrue(
             all(
-                item["implementationState"] == "BOUND_LOCAL_EXACT"
+                item["implementationState"] == "PRODUCTION_CODE_COMPLETE"
                 for item in document["skills"]
             )
+        )
+        self.assertFalse(
+            any("PARTIAL" in item["capabilityState"] for item in document["skills"])
         )
         self.assertTrue(
             all(

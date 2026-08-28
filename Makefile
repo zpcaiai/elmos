@@ -155,6 +155,8 @@ autonomous-qa-self-healing-skills:
 .PHONY: formal-assurance-kernel
 formal-assurance-kernel:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_formal_assurance_kernel.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with ruff==0.15.20 ruff check engines/formal-assurance-engine/src engines/formal-assurance-engine/tests
+	MYPY_CACHE_DIR=/tmp/elmos-formal-assurance-mypy PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with mypy==2.1.0 mypy --ignore-missing-imports engines/formal-assurance-engine/src/elmos_formal_assurance
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s engines/formal-assurance-engine/tests -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/formal-assurance-kernel -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_verification_pack.py verification-packs/formal-assurance-kernel-local

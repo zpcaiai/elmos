@@ -40,8 +40,28 @@ class ResultValidationError(ValueError):
 
 
 def validate_result(result: ProofResult) -> None:
+    if not isinstance(result.engine, str) or not result.engine.strip():
+        raise ResultValidationError("proof result requires a verifier engine")
     if result.mode not in _PROOF_MODES:
         raise ResultValidationError(f"unsupported proof mode: {result.mode}")
+    expected_modes = {
+        ProofStatus.PROVED_CERTIFIED: {"CERTIFIED"},
+        ProofStatus.PROVED_INDUCTIVE: {"INDUCTIVE"},
+        ProofStatus.PROVED_SOLVER_TRUSTED: {"SMT"},
+        ProofStatus.PROVED_FOR_SUPPORTED_FRAGMENT: {"CERTIFIED", "INDUCTIVE", "SMT"},
+    }
+    if result.status in expected_modes and result.mode not in expected_modes[result.status]:
+        raise ResultValidationError(
+            f"{result.status} is incompatible with mode {result.mode}"
+        )
+    if result.status in _PROVED and result.assurance_level in {
+        AssuranceLevel.NONE,
+        AssuranceLevel.A0_TESTED,
+        AssuranceLevel.A1_BOUNDED,
+    }:
+        raise ResultValidationError("proved status requires solver-level assurance")
+    if result.status == ProofStatus.RUNTIME_MONITORED and result.mode != "RUNTIME":
+        raise ResultValidationError("runtime monitored status requires RUNTIME mode")
     if result.status == ProofStatus.BOUNDED_NO_COUNTEREXAMPLE:
         if result.mode != "BOUNDED":
             raise ResultValidationError("bounded status requires BOUNDED mode")
@@ -178,6 +198,9 @@ def evaluate_release_gate(
                 )
             continue
         blocking.append(f"{obligation.id}: non-passing status {result.status}")
+
+    if evaluated == 0:
+        blocking.append("no required proof obligations were evaluated")
 
     decision = "DENY" if blocking else ("ADVISORY" if advisory else "ALLOW")
     return GateDecision(
