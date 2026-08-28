@@ -798,6 +798,7 @@ def discover_unit(
 
     coverage_subjects: list[dict[str, Any]] = []
     candidate_symbols: list[dict[str, Any]] = []
+    compiler_candidate_enumeration: tuple[bool, str | None] | None = None
     coverage_blockers: list[dict[str, Any]] = []
     if source_language == "python":
         python_subjects = _python_subject_inventory(content, relative)
@@ -973,6 +974,13 @@ def discover_unit(
                 for native_subject in coverage_subjects
                 if native_subject["candidate"] is True
             ]
+            if raw_inventory.get("enumeration_status") == "PASSED":
+                compiler_candidate_enumeration = (
+                    len(candidate_symbols) <= MAX_CANDIDATES_PER_FILE,
+                    None
+                    if len(candidate_symbols) <= MAX_CANDIDATES_PER_FILE
+                    else "FUNCTION_INVENTORY_LIMIT_EXCEEDED",
+                )
             for native_subject in coverage_subjects:
                 already_blocked = any(
                     blocker.get("coverage_key") == native_subject["coverage_key"]
@@ -1033,12 +1041,17 @@ def discover_unit(
                     )
     candidates = [str(subject["name"]) for subject in candidate_symbols[:MAX_CANDIDATES_PER_FILE]]
     result["candidates"] = candidates
-    # Grafted from the other side of this merge: the functional-conversion
-    # denominator needs to know whether this file's candidate list is complete.
-    # Without these keys an incomplete inventory silently reads as a complete one.
-    _inventory_names, _inventory_complete, _inventory_reason = _candidate_inventory(
-        content, source_language
-    )
+    # The functional-conversion denominator must use a compiler-backed
+    # declaration inventory whenever one is available.  Native inventories
+    # are the authoritative whole-file frontends for non-Python languages;
+    # falling back to the proposal-only regex scanner manufactured an UNKNOWN
+    # obligation for every otherwise exact native module.
+    if compiler_candidate_enumeration is not None:
+        _inventory_complete, _inventory_reason = compiler_candidate_enumeration
+    else:
+        _inventory_names, _inventory_complete, _inventory_reason = _candidate_inventory(
+            content, source_language
+        )
     result["candidate_enumeration_complete"] = _inventory_complete
     result["candidate_enumeration_reason"] = _inventory_reason
     result["coverage_subject_count"] = len(coverage_subjects)

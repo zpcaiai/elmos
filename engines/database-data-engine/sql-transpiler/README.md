@@ -57,6 +57,10 @@ The machine-readable contracts are:
 - `schemas/batch31/chinadb-skill-capabilities.schema.json`
 - `schemas/batch31/chinadb-skill-request.schema.json`
 - `schemas/batch31/chinadb-skill-result.schema.json`
+- `schemas/batch31/chinadb-production-qualification-requirements.schema.json`
+- `schemas/batch31/chinadb-production-qualification-request.schema.json`
+- `schemas/batch31/chinadb-production-trust-store.schema.json`
+- `schemas/batch31/chinadb-production-qualification-result.schema.json`
 
 ## Run
 
@@ -76,6 +80,17 @@ uv run elmos-sql-transpiler commercial-skill-run \
   01-estate-inventory-assessment \
   examples/chinadb-skill-inventory.json \
   --output /tmp/elmos-chinadb-inventory-result.json
+uv run elmos-sql-transpiler commercial-production-requirements \
+  --output /tmp/elmos-chinadb-production-requirements.json
+uv run elmos-sql-transpiler commercial-production-template \
+  --tenant-id tenant-required \
+  --project-id project-required \
+  --actor-id actor-required \
+  --implementer-organization-id organization-required \
+  --output /tmp/elmos-chinadb-production-request.json
+uv run elmos-sql-transpiler commercial-production-plan \
+  /tmp/elmos-chinadb-production-request.json \
+  --output /tmp/elmos-chinadb-production-plan.json
 uv run elmos-sql-transpiler transpile \
   examples/postgresql-to-mysql.json \
   /tmp/elmos-orders-mysql
@@ -105,10 +120,21 @@ The sidecar exposes the same local surface at:
 
 - `GET /internal/v1/chinadb-skills/capabilities`
 - `POST /internal/v1/chinadb-skills/{skill_id}/execute`
+- `GET /internal/v1/chinadb-production/requirements`
+- `POST /internal/v1/chinadb-production/plan`
 
 The execution endpoint accepts strict UTF-8 JSON with no duplicate fields,
 requires exact `scope.tenantId`, `scope.projectId`, and `scope.actorId`, is
 request/response/concurrency bounded, and rejects inline credential material.
+
+The production qualification planner validates the 13 exact target tuples,
+disposable environments, vendor tool versions/digests, authorizations, and
+independent-verifier separation. Production completion requires a
+digest-chained Ed25519 authorization, execution, independent-verification, and
+certification receipt from an operator-pinned trust store. Planning performs
+no external call and returns no target SQL; without those real receipts the
+five production boundary fields remain `NOT_RUN` / `NOT_CERTIFIED` / `null` /
+`0`. See `docs/batch31/CHINADB_PRODUCTION_QUALIFICATION.md`.
 
 The output directory is create-only. A successful materialization contains target SQL, typed source/target AST, source and target profiles, route, source map identity, Runner configuration, verification state, and a transpilation report. The raw source SQL is not copied, although its typed AST and literals are retained in the canonical IR; customer handling policy still applies.
 

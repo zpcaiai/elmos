@@ -8,6 +8,7 @@ import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from multiprocessing.connection import Connection
+from pathlib import Path
 from typing import Any, NoReturn, Protocol
 
 import anyio
@@ -24,6 +25,13 @@ from .commercial_request import (
     parse_commercial_request_json,
 )
 from .models import CommercialAssessRequest
+from .production_qualification import (
+    evaluate_production_qualification,
+    parse_production_qualification_json,
+    parse_production_trust_store_json,
+    production_qualification_requirements,
+    production_trust_store_digest,
+)
 from .skill_runtime import (
     MAX_REQUEST_BYTES,
     SKILLS_BY_ID,
@@ -40,6 +48,7 @@ MAX_HTTP_STATEMENTS = 256
 MAX_HTTP_RESPONSE_BYTES = 4 * 1024 * 1024
 MAX_CONCURRENT_ASSESSMENTS = 1
 MAX_CONCURRENT_SKILL_RUNS = 4
+MAX_CONCURRENT_PRODUCTION_PLANS = 2
 ASSESSMENT_TIMEOUT_SECONDS = 15.0
 
 _HTTP_REQUEST_LIMITS = CommercialRequestLimits(
@@ -209,6 +218,29 @@ def _assert_fail_closed_skill_result(value: dict[str, Any]) -> None:
         or verification.get("independentVerification") != "NOT_RUN"
     ):
         raise AssertionError("commercial Skill result escaped fail-closed boundaries")
+
+
+def _assert_production_qualification_result(value: dict[str, Any]) -> None:
+    summary = value.get("summary")
+    effects = value.get("effects")
+    targets = value.get("targets")
+    if (
+        value.get("targetSql") is not None
+        or not isinstance(summary, dict)
+        or not isinstance(effects, dict)
+        or effects.get("externalCallsExecuted") != []
+        or not isinstance(targets, list)
+        or len(targets) != 13
+    ):
+        raise AssertionError("production qualification result escaped its no-effect boundary")
+    certified = sum(
+        isinstance(target, dict) and target.get("certification") == "CERTIFIED"
+        for target in targets
+    )
+    if summary.get("productionDefinitionOfDoneCount") != certified:
+        raise AssertionError("production qualification count is not evidence-derived")
+    if value.get("productionDefinitionOfDoneCount") != certified:
+        raise AssertionError("top-level production qualification count is not evidence-derived")
 
 
 def _send_child_message(connection: Connection, value: bytes) -> None:
@@ -446,6 +478,27 @@ app = FastAPI(
 )
 _assessment_gate = AssessmentConcurrencyGate(MAX_CONCURRENT_ASSESSMENTS)
 _skill_gate = AssessmentConcurrencyGate(MAX_CONCURRENT_SKILL_RUNS)
+_production_plan_gate = AssessmentConcurrencyGate(MAX_CONCURRENT_PRODUCTION_PLANS)
+
+
+def _configured_production_trust_store() -> dict[str, Any] | None:
+    raw_path = os.environ.get("ELMOS_CHINADB_QUALIFICATION_TRUST_STORE")
+    expected_digest = os.environ.get("ELMOS_CHINADB_QUALIFICATION_TRUST_STORE_DIGEST")
+    if raw_path is None and expected_digest is None:
+        return None
+    if not raw_path or not expected_digest:
+        raise RuntimeError(
+            "ChinaDB qualification trust store path and digest must be configured together"
+        )
+    path = Path(raw_path)
+    if not path.is_absolute() or path.is_symlink() or not path.is_file():
+        raise RuntimeError("ChinaDB qualification trust store must be an absolute regular file")
+    if path.stat().st_size > MAX_REQUEST_BYTES:
+        raise RuntimeError("ChinaDB qualification trust store exceeds the bounded size")
+    trust_store = parse_production_trust_store_json(path.read_bytes())
+    if production_trust_store_digest(trust_store) != expected_digest:
+        raise RuntimeError("ChinaDB qualification trust store digest mismatch")
+    return trust_store
 
 
 @app.middleware("http")
@@ -493,6 +546,7 @@ def _readiness() -> dict[str, str | int]:
     _require_pinned_parser()
     capabilities = commercial_capabilities()
     skills = skill_capabilities()
+    production = production_qualification_requirements()
     if (
         capabilities.get("targetCount") != 13
         or capabilities.get("plannedRouteCount") != 78
@@ -503,6 +557,10 @@ def _readiness() -> dict[str, str | int]:
         or skills.get("codeImplementedCount") != 47
         or skills.get("externalExecution") != "NOT_RUN"
         or skills.get("certification") != "NOT_CERTIFIED"
+        or production.get("targetCount") != 13
+        or production.get("productionBoundaries", {}).get("externalExecution") != "NOT_RUN"
+        or production.get("productionBoundaries", {}).get("certification")
+        != "NOT_CERTIFIED"
     ):
         raise RuntimeError("ChinaDB commercial capability registry is not fail closed")
     return {
@@ -583,6 +641,110 @@ async def skill_capabilities_endpoint() -> Response:
                 retryable=True,
             )
         )
+
+
+@app.get("/internal/v1/chinadb-production/requirements")
+async def production_requirements_endpoint() -> Response:
+    try:
+        payload = _bounded_json_bytes(
+            production_qualification_requirements(),
+            maximum=MAX_HTTP_RESPONSE_BYTES,
+        )
+        return _json_response(payload)
+    except _ResponseLimitExceeded:
+        return _error_response(
+            SidecarFailure(
+                500,
+                "CHINADB_PRODUCTION_REQUIREMENTS_TOO_LARGE",
+                "ChinaDB production requirements exceed the bounded response limit.",
+            )
+        )
+    except (KeyError, RuntimeError, TypeError, ValueError):
+        return _error_response(
+            SidecarFailure(
+                503,
+                "CHINADB_PRODUCTION_REQUIREMENTS_UNAVAILABLE",
+                "ChinaDB production requirements are unavailable.",
+                retryable=True,
+            )
+        )
+
+
+@app.post("/internal/v1/chinadb-production/plan")
+async def production_plan_endpoint(request: Request) -> Response:
+    try:
+        if not _content_type_is_json(request.headers.get("content-type")):
+            raise SidecarFailure(
+                415,
+                "CHINADB_PRODUCTION_JSON_REQUIRED",
+                "ChinaDB production planning accepts only UTF-8 application/json.",
+            )
+        if request.headers.get("content-encoding") not in {None, "", "identity"}:
+            raise SidecarFailure(
+                415,
+                "CHINADB_PRODUCTION_CONTENT_ENCODING_REJECTED",
+                "ChinaDB production planning does not accept encoded request bodies.",
+            )
+        if request.headers.get("transfer-encoding") not in {None, ""}:
+            raise SidecarFailure(
+                400,
+                "CHINADB_PRODUCTION_TRANSFER_ENCODING_REJECTED",
+                "ChinaDB production planning requires one bounded content-length body.",
+            )
+        declared_length = _declared_content_length(request.headers.get("content-length"))
+        if declared_length > MAX_REQUEST_BYTES:
+            raise SidecarFailure(
+                413,
+                "CHINADB_PRODUCTION_REQUEST_TOO_LARGE",
+                "ChinaDB production planning request exceeds the bounded input limit.",
+            )
+        raw_payload = await _read_request_body(request, declared_length)
+        try:
+            qualification_request = parse_production_qualification_json(raw_payload)
+            trust_store = _configured_production_trust_store()
+        except (OSError, RuntimeError, ValueError) as error:
+            raise SidecarFailure(
+                422,
+                "CHINADB_PRODUCTION_REQUEST_REJECTED",
+                "ChinaDB production planning rejected the strict request or trust binding.",
+            ) from error
+        if not await _production_plan_gate.try_acquire():
+            raise SidecarFailure(
+                429,
+                "CHINADB_PRODUCTION_CAPACITY_EXHAUSTED",
+                "ChinaDB production planning has reached its bounded concurrency limit.",
+                retryable=True,
+            )
+        try:
+            result = await anyio.to_thread.run_sync(
+                lambda: evaluate_production_qualification(
+                    qualification_request,
+                    trust_store=trust_store,
+                ),
+                abandon_on_cancel=False,
+            )
+        except (KeyError, RuntimeError, TypeError, ValueError) as error:
+            raise SidecarFailure(
+                422,
+                "CHINADB_PRODUCTION_PLAN_REJECTED",
+                "ChinaDB production planning failed closed and no external effect ran.",
+            ) from error
+        finally:
+            await _production_plan_gate.release()
+        _assert_production_qualification_result(result)
+        return _json_response(
+            _bounded_json_bytes(result, maximum=MAX_HTTP_RESPONSE_BYTES)
+        )
+    except _ResponseLimitExceeded:
+        return _error_response(
+            SidecarFailure(
+                413,
+                "CHINADB_PRODUCTION_RESULT_TOO_LARGE",
+                "ChinaDB production qualification result exceeds the bounded limit.",
+            )
+        )
+    except SidecarFailure as failure:
+        return _error_response(failure)
 
 
 @app.post("/internal/v1/chinadb-skills/{skill_id}/execute")

@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0",
+  "scope": {
+    "tenantId": "tenant-required",
+    "projectId": "project-required",
+    "actorId": "actor-required"
+  },
+  "capabilitySnapshotDigest": "sha256:e5ea97babb0a340929a8afad37116d73d920b0991e30cc636d1277b7102d7bbc",
+  "trustStoreDigest": null,
+  "implementer": {
+    "actorId": "actor-required",
+    "organizationId": "organization-required"
+  },
+  "targets": [
+    {
+      "targetId": "dm8",
+      "exactTuple": null,
+      "disposableEnvironment": null,
+      "vendorTools": [],
+      "independentVerifier": null,
+      "receipts": { "authorization": null, "execution": null, "independentVerification": null, "certification": null }
+    },
+    {
+      "targetId": "kingbasees",
+      "exactTuple": null,
+      "disposableEnvironment": null,
+      "vendorTools": [],
+      "independentVerifier": null,
+      "receipts": { "authorization": null, "execution": null, "independentVerification": null, "certification": null }
+    },
+    {
+      "targetId": "opengauss",
+      "exactTuple": null,
+      "disposableEnvironment": null,
+      "vendorTools": [],
+      "independentVerifier": null,
+      "receipts": { "authorization": null, "execution": null, "independentVerification": null, "certification": null }
+    },
+    {
+      "targetId": "tidb",
+      "exactTuple": null,
+      "disposableEnvironment": null,
+      "vendorTools": [],
+      "independentVerifier": null,
+      "receipts": { "authorization": null, "execution": null, "independentVerification": null, "certification": null }
+    },
+    {
+      "targetId": "gbase-8s",
+      "exactTuple": null,
+      "disposableEnvironment": null,
+      "vendorTools": [],
+      "independentVerifier": null,
+      "receipts": { "authorization": null, "execution": null, "independentVerification": null, "certification": null }
+    },
+    {
+      "targetId": "gbase-8c",
+      "exactTuple": null,
+      "disposableEnvironment": null,
+      "vendorTools": [],
+      "independentVerifier": null,
+      "receipts": { "authorization": null, "execution": null, "independentVerification": null, "certification": null }
+    },
+    {
+      "targetId": "gbase-8a",
+      "exactTuple": null,
+      "disposableEnvironment": null,
+      "vendorTools": [],
+      "independentVerifier": null,
+      "receipts": { "authorization": null, "execution": null, "independentVerification": null, "certification": null }
+    },
+    {
+      "targetId": "highgo-hgdb",
+      "exactTuple": null,
+      "disposableEnvironment": null,
+      "vendorTools": [],
+      "independentVerifier": null,
+      "receipts": { "authorization": null, "execution": null, "independentVerification": null, "certification": null }
+    },
+    {
+      "targetId": "oceanbase-oracle",
+      "exactTuple": null,
+      "disposableEnvironment": null,
+      "vendorTools": [],
+      "independentVerifier": null,
+      "receipts": { "authorization": null, "execution": null, "independentVerification": null, "certification": null }
+    },
+    {
+      "targetId": "oceanbase-mysql",
+      "exactTuple": null,
+      "disposableEnvironment": null,
+      "vendorTools": [],
+      "independentVerifier": null,
+      "receipts": { "authorization": null, "execution": null, "independentVerification": null, "certification": null }
+    },
+    {
+      "targetId": "gaussdb-oracle",
+      "exactTuple": null,
+      "disposableEnvironment": null,
+      "vendorTools": [],
+      "independentVerifier": null,
+      "receipts": { "authorization": null, "execution": null, "independentVerification": null, "certification": null }
+    },
+    {
+      "targetId": "gaussdb-m",
+      "exactTuple": null,
+      "disposableEnvironment": null,
+      "vendorTools": [],
+      "independentVerifier": null,
+      "receipts": { "authorization": null, "execution": null, "independentVerification": null, "certification": null }
+    },
+    {
+      "targetId": "goldendb",
+      "exactTuple": null,
+      "disposableEnvironment": null,
+      "vendorTools": [],
+      "independentVerifier": null,
+      "receipts": { "authorization": null, "execution": null, "independentVerification": null, "certification": null }
+    }
+  ]
+}

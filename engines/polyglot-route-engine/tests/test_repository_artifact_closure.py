@@ -94,6 +94,22 @@ def _tamper_manifest_owned_input(assembled: Path, input_kind: str) -> None:
     victim.write_bytes(replacement + content[1:])
 
 
+def test_artifact_inventory_excludes_swiftpm_build_cache_symlinks(tmp_path: Path) -> None:
+    output = tmp_path / "output"
+    assembled = output / "assembled"
+    assembled.mkdir(parents=True)
+    (assembled / "Package.swift").write_text("// generated package\n", encoding="utf-8")
+    build_cache = assembled / ".build"
+    build_cache.mkdir()
+    release_target = build_cache / "arm64-apple-macosx"
+    release_target.mkdir()
+    (build_cache / "release").symlink_to(release_target)
+
+    inventory = pipeline_module._artifact_inventory(output)
+
+    assert [entry["path"] for entry in inventory] == ["assembled/Package.swift"]
+
+
 def test_interrupted_archive_temporary_is_cleaned_and_zip_is_byte_closed(tmp_path: Path) -> None:
     repository = tmp_path / "repository"
     cases = tmp_path / "cases"

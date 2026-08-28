@@ -1777,6 +1777,16 @@ def validate_source(
     source_name = _safe_source_name(source)
     copied_source = output / source.name
     copied_source.write_bytes(source.read_bytes())
+    source_module_name = source_name
+    if language == "python":
+        # The harness imports ``math`` for binary64 comparisons.  A source
+        # file named math.py would otherwise resolve that import to the
+        # subject module before the harness can load the subject, masking the
+        # converted function behind the standard-library module.  Keep the
+        # original artifact path for provenance, and import an exact byte copy
+        # through a private, collision-free module name.
+        source_module_name = "_elmos_source_module"
+        (output / f"{source_module_name}.py").write_bytes(copied_source.read_bytes())
     javascript_descriptor: dict[str, object] | None = None
     javascript_descriptor_report: dict[str, object] | None = None
     javascript_descriptor_observation: dict[str, object] | None = None
@@ -1808,10 +1818,17 @@ def validate_source(
         ]
     elif language == "python":
         (output / "source_harness.py").write_text(
-            _python_harness(function, cases, module=source_name), encoding="utf-8"
+            _python_harness(function, cases, module=source_module_name), encoding="utf-8"
         )
         commands = [
-            [toolchain.executable, "-m", "py_compile", source.name, "source_harness.py"],
+            [
+                toolchain.executable,
+                "-m",
+                "py_compile",
+                source.name,
+                f"{source_module_name}.py",
+                "source_harness.py",
+            ],
             [toolchain.executable, "source_harness.py"],
         ]
     elif language == "csharp":

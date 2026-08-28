@@ -171,7 +171,7 @@ chinadb-commercial-migration-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/integrate_chinadb_commercial_migration_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python -m unittest discover -s tests/chinadb-commercial-migration -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python -m unittest discover -s tests/chinadb-sql-extension-schema -p 'test_*.py'
-	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked pytest tests/test_skill_runtime.py tests/test_http_api.py
+	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked pytest tests/test_skill_runtime.py tests/test_http_api.py tests/test_production_qualification.py
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked ruff check src tests
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked mypy src
 .PHONY: database-bigdata-skills

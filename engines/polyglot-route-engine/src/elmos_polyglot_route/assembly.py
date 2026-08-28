@@ -19,8 +19,9 @@ This module closes that gap for a single already-run batch report:
    output directory).
 2. `verify_assembled_project` runs a real whole-project compile/build check
    against the assembled project using the same exact-toolchain contract the
-   per-unit harness in `validation.py` already enforces, and folds the result
-   back into the manifest on disk.
+   per-unit harness in `validation.py` already enforces. When the repository
+   behavior corpus is supplied, it also replays every included unit against
+   the final assembled target and folds both claims back into the manifest.
 
 Both functions fail closed: a missing unit source, a sha256 mismatch, a path
 that escapes its unit directory, or a failed compiler invocation raises
@@ -48,6 +49,7 @@ from collections.abc import Callable, Collection, Mapping
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any
+from xml.sax.saxutils import escape as xml_escape
 
 from .assembly_deployment_guidance import render_assembly_deployment_guidance
 from .identifier_hygiene import (
@@ -72,7 +74,26 @@ from .toolchains import (
     sanitized_subprocess_env,
     verify_flutter_build_toolchain,
 )
-from .validation import _bounded_process_diagnostic, _kotlin_jvm_bin, safe_output
+from .validation import (
+    _apple_sdk,
+    _bounded_process_diagnostic,
+    _cpp_harness,
+    _csharp_harness,
+    _dart_harness,
+    _go_source_harness,
+    _java_harness,
+    _javascript_harness,
+    _kotlin_harness,
+    _kotlin_jvm_bin,
+    _objc_harness,
+    _php_harness,
+    _python_harness,
+    _rust_harness,
+    _swift_harness,
+    _toolchain_executable_dirs,
+    _typescript_harness,
+    safe_output,
+)
 
 SCHEMA_VERSION = "1.0.0"
 MANIFEST_NAME = "assembly-manifest.json"
@@ -903,8 +924,13 @@ def _read_verified_unit_evidence(
             raise RouteError(
                 f"ASSEMBLY_UNIT_KOTLIN_TOOLCHAIN_UNAVAILABLE:{unit_id}"
             ) from error
+        source_toolchain = (
+            source_validation.get("toolchain")
+            if isinstance(source_validation, Mapping)
+            else None
+        )
         kotlin_toolchain_closed = (
-            evidence.get("toolchain") == expected_kotlin_toolchain
+            source_toolchain == expected_kotlin_toolchain
         )
     if (
         evidence.get("status") not in {"PASSED", "PASSED_LOCAL_UNCERTIFIED"}
@@ -1635,12 +1661,84 @@ def _validate_build_verification(
         raise RouteError("ASSEMBLY_CMAKE_RUNTIME_BINDING_UNEXPECTED")
 
 
+def _validate_runtime_verification(
+    manifest: Mapping[str, Any],
+    target_language: Language,
+    *,
+    require_runtime_passed: bool,
+) -> None:
+    """Validate the final assembled-project runtime claim.
+
+    The runtime replay is deliberately a separate claim from the compiler
+    claim.  A build can succeed while the assembled target is never invoked;
+    that state must remain ``NOT_RUN`` and cannot close a repository route.
+    """
+
+    status = manifest.get("runtime_verification_status", "NOT_RUN")
+    if status not in {"NOT_RUN", "PASSED"}:
+        raise RouteError("ASSEMBLY_RUNTIME_VERIFICATION_STATUS_INVALID")
+    if status != "PASSED":
+        if require_runtime_passed:
+            raise RouteError("ASSEMBLY_RUNTIME_VERIFICATION_NOT_PASSED")
+        return
+    verification = manifest.get("runtime_verification")
+    included = manifest.get("included_units")
+    if not isinstance(verification, Mapping) or not isinstance(included, list) or not included:
+        raise RouteError("ASSEMBLY_RUNTIME_VERIFICATION_INVALID")
+    try:
+        current_toolchain = exact_toolchain(target_language)
+    except RouteError as error:
+        raise RouteError("ASSEMBLY_RUNTIME_TOOLCHAIN_UNAVAILABLE") from error
+    commands = verification.get("commands")
+    unit_case_counts = verification.get("unit_case_counts")
+    unit_ids = [str(raw.get("id")) for raw in included if isinstance(raw, Mapping)]
+    unit_count = verification.get("unit_count")
+    case_count = verification.get("case_count")
+    if (
+        verification.get("toolchain_language") != target_language
+        or verification.get("toolchain_version") != current_toolchain.version
+        or verification.get("mode") not in {"compiled-assembly-artifact", "assembled-source-harness"}
+        or type(unit_count) is not int
+        or unit_count != len(included)
+        or type(case_count) is not int
+        or case_count < len(included)
+        or not isinstance(commands, list)
+        or not commands
+        or not isinstance(unit_case_counts, list)
+        or len(unit_case_counts) != len(included)
+    ):
+        raise RouteError("ASSEMBLY_RUNTIME_VERIFICATION_INVALID")
+    if [item.get("unit_id") for item in unit_case_counts if isinstance(item, Mapping)] != unit_ids:
+        raise RouteError("ASSEMBLY_RUNTIME_VERIFICATION_INVALID")
+    normalized_case_counts: list[int] = []
+    for item in unit_case_counts:
+        if not isinstance(item, Mapping):
+            raise RouteError("ASSEMBLY_RUNTIME_VERIFICATION_INVALID")
+        item_case_count = item.get("case_count")
+        if type(item_case_count) is not int or item_case_count < 1:
+            raise RouteError("ASSEMBLY_RUNTIME_VERIFICATION_INVALID")
+        normalized_case_counts.append(item_case_count)
+    if sum(normalized_case_counts) != case_count:
+        raise RouteError("ASSEMBLY_RUNTIME_VERIFICATION_INVALID")
+    for record in commands:
+        if (
+            not isinstance(record, Mapping)
+            or not isinstance(record.get("command"), list)
+            or not record["command"]
+            or any(not isinstance(part, str) or not part for part in record["command"])
+            or not isinstance(record.get("stdout"), str)
+            or not isinstance(record.get("stderr"), str)
+        ):
+            raise RouteError("ASSEMBLY_RUNTIME_VERIFICATION_INVALID")
+
+
 def _manifest_owned_bindings(
     manifest: Mapping[str, Any],
     target_language: Language,
     destination: Path | None,
     *,
     require_build_passed: bool,
+    require_runtime_passed: bool = False,
 ) -> tuple[
     dict[str, tuple[str, int, str]],
     dict[str, tuple[int, str]],
@@ -1904,6 +2002,11 @@ def _manifest_owned_bindings(
         destination,
         require_build_passed=require_build_passed,
     )
+    _validate_runtime_verification(
+        manifest,
+        target_language,
+        require_runtime_passed=require_runtime_passed,
+    )
     return included_bindings, owned_bindings, evidence_bindings
 
 
@@ -1913,6 +2016,7 @@ def _validate_assembly_manifest(
     destination: Path,
     *,
     require_build_passed: bool = False,
+    require_runtime_passed: bool = False,
 ) -> None:
     """Bind assembly claims to the exact regular target-source files on disk."""
 
@@ -1921,6 +2025,7 @@ def _validate_assembly_manifest(
         target_language,
         destination,
         require_build_passed=require_build_passed,
+        require_runtime_passed=require_runtime_passed,
     )
     for relative, (unit_id, expected_bytes, expected_sha256) in included_bindings.items():
         path = _confined_regular_file(
@@ -2643,6 +2748,7 @@ def assemble_project(
         "included_units": included,
         "excluded_units": excluded,
         "build_verification_status": "NOT_RUN",
+        "runtime_verification_status": "NOT_RUN",
         "external_verification_status": "NOT_RUN",
         "certification_status": "NOT_CERTIFIED",
         "limitations": [
@@ -2653,10 +2759,12 @@ def assemble_project(
             "same-named function with different behavior) are not resolved at the semantic level.",
             "A batch_status of PARTIAL means the source repository was not fully migrated; "
             "this project covers only the included units listed above, not the whole repository.",
-            "build_verification_status reflects a real whole-project compile/build invocation, "
-            "not a re-run of per-unit behavior cases; those already passed during the batch run "
-            "for every included unit, and assembly does not repeat them.",
+            "build_verification_status reflects a real whole-project compile/build invocation; "
+            "runtime_verification_status separately records replay of every included unit's "
+            "behavior cases against the assembled target artifact or assembled source harness.",
             "build_verification_status is NOT_RUN until verify_assembled_project is executed.",
+            "runtime_verification_status is NOT_RUN until final assembled-project runtime replay "
+            "is executed.",
             "build_inputs binds every manifest-owned source, auxiliary source, and project build file ",
             "by exact path, byte count, and sha256.",
             "verified_evidence_artifacts binds the independently parsed route, behavior, source "
@@ -2692,8 +2800,13 @@ def _read_assembly_manifest(destination: Path) -> dict[str, Any]:
     return raw_manifest
 
 
-def verify_assembly_closure(target_language: Language, destination: Path) -> dict[str, Any]:
-    """Verify final on-disk assembly inputs and require a closed passing build."""
+def verify_assembly_closure(
+    target_language: Language,
+    destination: Path,
+    *,
+    require_runtime_passed: bool = False,
+) -> dict[str, Any]:
+    """Verify final on-disk assembly inputs and required execution claims."""
 
     destination = destination.expanduser()
     if destination.is_symlink() or not destination.is_dir():
@@ -2705,6 +2818,7 @@ def verify_assembly_closure(target_language: Language, destination: Path) -> dic
         target_language,
         resolved,
         require_build_passed=True,
+        require_runtime_passed=require_runtime_passed,
     )
     return manifest
 
@@ -2715,6 +2829,7 @@ def _run(
     *,
     timeout: int = 300,
     executable_dirs: tuple[Path, ...] = (),
+    failure_prefix: str = "ASSEMBLY_BUILD_VERIFICATION_FAILED",
 ) -> subprocess.CompletedProcess[str]:
     executable = Path(command[0])
     executable = executable if executable.is_absolute() else (cwd / executable)
@@ -2764,7 +2879,7 @@ def _run(
                         process.kill()
                     process.communicate()
                 raise RouteError(
-                    f"ASSEMBLY_BUILD_VERIFICATION_FAILED:{Path(command[0]).name}:process"
+                    f"{failure_prefix}:{Path(command[0]).name}:process"
                 ) from error
             finally:
                 # A compiler/analyzer must not leave a detached helper behind.
@@ -2783,13 +2898,13 @@ def _run(
             )
     except OSError as error:
         raise RouteError(
-            f"ASSEMBLY_BUILD_VERIFICATION_FAILED:{Path(command[0]).name}:process"
+            f"{failure_prefix}:{Path(command[0]).name}:process"
         ) from error
     if completed.returncode != 0:
         stdout = _bounded_process_diagnostic(completed.stdout, cwd=cwd)
         stderr = _bounded_process_diagnostic(completed.stderr, cwd=cwd)
         raise RouteError(
-            "ASSEMBLY_BUILD_VERIFICATION_FAILED:"
+            f"{failure_prefix}:"
             f"{Path(command[0]).name}:returncode={completed.returncode}:"
             f"stdout={json.dumps(stdout, ensure_ascii=True)}:"
             f"stderr={json.dumps(stderr, ensure_ascii=True)}"
@@ -2797,6 +2912,543 @@ def _run(
     return completed
 
 
+
+
+def _read_assembled_runtime_cases(
+    cases_directory: Path,
+    cases_manifest: Mapping[str, Any],
+    unit_id: str,
+) -> list[dict[str, Any]]:
+    """Read one immutable, manifest-bound behavior-case file for replay."""
+
+    root = cases_directory.expanduser()
+    if root.is_symlink() or not root.is_dir():
+        raise RouteError("ASSEMBLY_RUNTIME_CASES_DIRECTORY_INVALID")
+    expected_entries = cases_manifest.get("expected")
+    if not isinstance(expected_entries, list):
+        raise RouteError("ASSEMBLY_RUNTIME_CASES_MANIFEST_INVALID")
+    matching = [
+        item
+        for item in expected_entries
+        if isinstance(item, Mapping) and item.get("work_unit_id") == unit_id
+    ]
+    if len(matching) != 1:
+        raise RouteError(f"ASSEMBLY_RUNTIME_CASES_ENTRY_INVALID:{unit_id}")
+    entry = matching[0]
+    relative = f"{unit_id}.json"
+    if (
+        entry.get("path") != relative
+        or entry.get("status") != "PRESENT"
+        or type(entry.get("bytes")) is not int
+        or not isinstance(entry.get("sha256"), str)
+        or _RAW_SHA256_PATTERN.fullmatch(str(entry["sha256"])) is None
+    ):
+        raise RouteError(f"ASSEMBLY_RUNTIME_CASES_ENTRY_INVALID:{unit_id}")
+    path = root / relative
+    if path.is_symlink() or not path.is_file():
+        raise RouteError(f"ASSEMBLY_RUNTIME_CASES_MISSING:{unit_id}")
+    content = _stable_file_bytes(path, f"ASSEMBLY_RUNTIME_CASES_CHANGED:{unit_id}")
+    if len(content) != entry["bytes"] or hashlib.sha256(content).hexdigest() != entry["sha256"]:
+        raise RouteError(f"ASSEMBLY_RUNTIME_CASES_DRIFTED:{unit_id}")
+    try:
+        raw_cases = json.loads(content)
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise RouteError(f"ASSEMBLY_RUNTIME_CASES_INVALID:{unit_id}") from error
+    if not isinstance(raw_cases, list) or not raw_cases:
+        raise RouteError(f"ASSEMBLY_RUNTIME_CASES_INVALID:{unit_id}")
+    cases: list[dict[str, Any]] = []
+    for case in raw_cases:
+        if not isinstance(case, dict):
+            raise RouteError(f"ASSEMBLY_RUNTIME_CASES_INVALID:{unit_id}")
+        cases.append(case)
+    return cases
+
+
+def _assembled_runtime_function(
+    destination: Path,
+    unit: Mapping[str, Any],
+    target_language: Language,
+) -> Any:
+    """Reconstruct the target-facing function from copied, bound evidence."""
+
+    unit_id = str(unit.get("id", ""))
+    source_ir = SemanticIR.from_mapping(
+        _json_object(
+            _stable_file_bytes(
+                _confined_regular_file(
+                    destination,
+                    f"{_EVIDENCE_ROOT}/{unit_id}/{_SOURCE_SEMANTIC_IR_NAME}",
+                    f"ASSEMBLY_RUNTIME_SOURCE_IR_MISSING:{unit_id}",
+                ),
+                f"ASSEMBLY_RUNTIME_SOURCE_IR_CHANGED:{unit_id}",
+            ),
+            f"ASSEMBLY_RUNTIME_SOURCE_IR_INVALID:{unit_id}",
+        )
+    )
+    plan = IdentifierPlan.from_mapping(
+        _json_object(
+            _stable_file_bytes(
+                _confined_regular_file(
+                    destination,
+                    f"{_EVIDENCE_ROOT}/{unit_id}/{_IDENTIFIER_PLAN_NAME}",
+                    f"ASSEMBLY_RUNTIME_IDENTIFIER_PLAN_MISSING:{unit_id}",
+                ),
+                f"ASSEMBLY_RUNTIME_IDENTIFIER_PLAN_CHANGED:{unit_id}",
+            ),
+            f"ASSEMBLY_RUNTIME_IDENTIFIER_PLAN_INVALID:{unit_id}",
+        )
+    )
+    raw_namespace = unit.get("identifier_unit_namespace")
+    if not isinstance(raw_namespace, dict):
+        raise RouteError(f"ASSEMBLY_RUNTIME_IDENTIFIER_NAMESPACE_INVALID:{unit_id}")
+    unit_namespace = IdentifierUnitNamespace.from_mapping(raw_namespace)
+    validate_identifier_plan(source_ir, plan, expected_unit_namespace=unit_namespace)
+    if len(source_ir.functions) != 1:
+        raise RouteError(f"ASSEMBLY_RUNTIME_FUNCTION_SET_INVALID:{unit_id}")
+    function = target_function_view(source_ir, source_ir.functions[0], plan)
+    if (
+        str(unit.get("namespace")) != _namespace(unit_id)
+        or function.name != unit.get("target_function_name")
+        or plan.target_language != target_language
+    ):
+        raise RouteError(f"ASSEMBLY_RUNTIME_IDENTIFIER_BINDING_MISMATCH:{unit_id}")
+    return function
+
+
+def _runtime_target_source(
+    destination: Path,
+    unit: Mapping[str, Any],
+    runtime_directory: Path,
+    filename: str,
+) -> bytes:
+    unit_id = str(unit.get("id", ""))
+    source = _confined_regular_file(
+        destination,
+        str(unit.get("assembled_path", "")),
+        f"ASSEMBLY_RUNTIME_TARGET_SOURCE_MISSING:{unit_id}",
+    )
+    content = _stable_file_bytes(source, f"ASSEMBLY_RUNTIME_TARGET_SOURCE_CHANGED:{unit_id}")
+    (runtime_directory / filename).write_bytes(content)
+    return content
+
+
+def verify_assembled_project_runtime(
+    target_language: Language,
+    destination: Path,
+    cases_directory: Path,
+    cases_manifest: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Replay every behavior case against the final assembled target."""
+
+    destination = destination.expanduser()
+    if destination.is_symlink() or not destination.is_dir():
+        raise RouteError("ASSEMBLY_DESTINATION_UNSAFE")
+    destination = destination.resolve(strict=True)
+    manifest = _read_assembly_manifest(destination)
+    _validate_assembly_manifest(
+        manifest,
+        target_language,
+        destination,
+        require_build_passed=True,
+    )
+    if cases_manifest.get("snapshot_sha256") != manifest.get("snapshot_sha256"):
+        raise RouteError("ASSEMBLY_RUNTIME_CASES_SNAPSHOT_MISMATCH")
+    included = manifest.get("included_units")
+    if not isinstance(included, list) or not included:
+        raise RouteError("ASSEMBLY_RUNTIME_INCLUDED_UNITS_INVALID")
+
+    toolchain = exact_toolchain(target_language)
+    toolchain_dirs = _toolchain_executable_dirs(toolchain)
+    commands: list[dict[str, Any]] = []
+    unit_case_counts: list[dict[str, Any]] = []
+    mode = "assembled-source-harness"
+
+    def run_runtime(
+        command: list[str],
+        cwd: Path,
+        *,
+        timeout: int = 300,
+    ) -> subprocess.CompletedProcess[str]:
+        completed = _run(
+            command,
+            cwd,
+            timeout=timeout,
+            executable_dirs=toolchain_dirs,
+            failure_prefix="ASSEMBLY_RUNTIME_VERIFICATION_FAILED",
+        )
+        commands.append(
+            {
+                "command": command,
+                "stdout": completed.stdout[-2_000:],
+                "stderr": completed.stderr[-2_000:],
+            }
+        )
+        return completed
+
+    with tempfile.TemporaryDirectory(prefix="elmos-assembly-runtime-") as temporary:
+        root = Path(temporary)
+        for raw_unit in included:
+            if not isinstance(raw_unit, Mapping):
+                raise RouteError("ASSEMBLY_RUNTIME_INCLUDED_UNIT_INVALID")
+            unit_id = str(raw_unit.get("id", ""))
+            namespace = str(raw_unit.get("namespace", ""))
+            cases = _read_assembled_runtime_cases(cases_directory, cases_manifest, unit_id)
+            function = _assembled_runtime_function(destination, raw_unit, target_language)
+            runtime_directory = root / namespace
+            runtime_directory.mkdir(parents=True)
+            unit_case_counts.append({"unit_id": unit_id, "case_count": len(cases)})
+
+            if target_language == "java":
+                mode = "compiled-assembly-artifact"
+                assert toolchain.auxiliary is not None
+                package_name = f"elmos.generated.{namespace}"
+                (runtime_directory / "RouteHarness.java").write_text(
+                    f"package {package_name};\n\n"
+                    + _java_harness(function, cases, owner=f"{package_name}.Migrated"),
+                    encoding="utf-8",
+                )
+                classes = runtime_directory / "classes"
+                classes.mkdir()
+                build_classes = destination / "build" / "classes"
+                run_runtime(
+                    [toolchain.auxiliary, "-cp", str(build_classes), "-d", str(classes), "RouteHarness.java"],
+                    runtime_directory,
+                )
+                run_runtime(
+                    [
+                        toolchain.executable,
+                        "-cp",
+                        os.pathsep.join((str(build_classes), str(classes))),
+                        f"{package_name}.RouteHarness",
+                    ],
+                    runtime_directory,
+                )
+            elif target_language == "csharp":
+                mode = "compiled-assembly-artifact"
+                library = _confined_regular_file(
+                    destination,
+                    "bin/Release/net10.0/Elmos.Generated.PolyglotMigratedLibrary.dll",
+                    "ASSEMBLY_RUNTIME_CSHARP_LIBRARY_MISSING",
+                )
+                owner = f"global::Elmos.Generated.{namespace.capitalize()}.Migrated"
+                (runtime_directory / "Program.cs").write_text(
+                    _csharp_harness(function, cases, owner=owner),
+                    encoding="utf-8",
+                )
+                (runtime_directory / "RuntimeHarness.csproj").write_text(
+                    '<Project Sdk="Microsoft.NET.Sdk">\n'
+                    "  <PropertyGroup>\n"
+                    "    <OutputType>Exe</OutputType>\n"
+                    "    <TargetFramework>net10.0</TargetFramework>\n"
+                    "    <ImplicitUsings>enable</ImplicitUsings>\n"
+                    "    <Nullable>enable</Nullable>\n"
+                    "    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>\n"
+                    "  </PropertyGroup>\n"
+                    "  <ItemGroup>\n"
+                    '    <Reference Include="Elmos.Generated.PolyglotMigratedLibrary">\n'
+                    f"      <HintPath>{xml_escape(str(library))}</HintPath>\n"
+                    "    </Reference>\n"
+                    "  </ItemGroup>\n"
+                    "</Project>\n",
+                    encoding="utf-8",
+                )
+                run_runtime(
+                    [toolchain.executable, "restore", "RuntimeHarness.csproj", "--ignore-failed-sources"],
+                    runtime_directory,
+                    timeout=900,
+                )
+                run_runtime(
+                    [toolchain.executable, "build", "RuntimeHarness.csproj", "-c", "Release", "--no-restore"],
+                    runtime_directory,
+                    timeout=900,
+                )
+                run_runtime(
+                    [
+                        toolchain.executable,
+                        "run",
+                        "--project",
+                        "RuntimeHarness.csproj",
+                        "-c",
+                        "Release",
+                        "--no-build",
+                        "--no-restore",
+                    ],
+                    runtime_directory,
+                    timeout=900,
+                )
+            elif target_language == "python":
+                _runtime_target_source(destination, raw_unit, runtime_directory, "migrated.py")
+                (runtime_directory / "route_harness.py").write_text(
+                    _python_harness(function, cases),
+                    encoding="utf-8",
+                )
+                run_runtime(
+                    [toolchain.executable, "-m", "py_compile", "migrated.py", "route_harness.py"],
+                    runtime_directory,
+                )
+                run_runtime([toolchain.executable, "route_harness.py"], runtime_directory)
+            elif target_language in {"typescript", "react"}:
+                mode = "compiled-assembly-artifact"
+                compiled_relative = Path(str(raw_unit["assembled_path"])).relative_to("src").with_suffix(".js")
+                compiled = _confined_regular_file(
+                    destination,
+                    f"dist/{compiled_relative.as_posix()}",
+                    f"ASSEMBLY_RUNTIME_COMPILED_TARGET_MISSING:{unit_id}",
+                )
+                compiled_runtime_directory = runtime_directory / "dist"
+                compiled_runtime_directory.mkdir()
+                (compiled_runtime_directory / "migrated.js").write_bytes(
+                    _stable_file_bytes(compiled, f"ASSEMBLY_RUNTIME_COMPILED_TARGET_CHANGED:{unit_id}")
+                )
+                declaration = compiled.with_suffix(".d.ts")
+                if declaration.is_file() and not declaration.is_symlink():
+                    declaration_content = _stable_file_bytes(
+                        declaration,
+                        f"ASSEMBLY_RUNTIME_COMPILED_DECLARATION_CHANGED:{unit_id}",
+                    )
+                    (runtime_directory / "migrated.d.ts").write_bytes(declaration_content)
+                    (compiled_runtime_directory / "migrated.d.ts").write_bytes(declaration_content)
+                (runtime_directory / "runtime_harness.ts").write_text(
+                    _typescript_harness(function, cases, module_path="./migrated.js"),
+                    encoding="utf-8",
+                )
+                compiler_options: dict[str, Any] = {
+                    "target": "ES2022",
+                    "module": "NodeNext",
+                    "moduleResolution": "NodeNext",
+                    "strict": True,
+                    "outDir": "dist",
+                }
+                if target_language == "react":
+                    compiler_options.update({"jsx": "react-jsx", "types": []})
+                (runtime_directory / "package.json").write_text(
+                    json.dumps({"private": True, "type": "module"}, sort_keys=True) + "\n",
+                    encoding="utf-8",
+                )
+                (runtime_directory / "tsconfig.json").write_text(
+                    json.dumps(
+                        {"compilerOptions": compiler_options, "include": ["runtime_harness.ts"]},
+                        indent=2,
+                        sort_keys=True,
+                    )
+                    + "\n",
+                    encoding="utf-8",
+                )
+                assert toolchain.auxiliary is not None
+                run_runtime([toolchain.auxiliary, "-p", "tsconfig.json"], runtime_directory)
+                run_runtime([toolchain.executable, "dist/runtime_harness.js"], runtime_directory)
+            elif target_language == "javascript":
+                _runtime_target_source(destination, raw_unit, runtime_directory, "migrated.mjs")
+                (runtime_directory / "route_harness.mjs").write_text(
+                    _javascript_harness(function, cases),
+                    encoding="utf-8",
+                )
+                run_runtime([toolchain.executable, "--check", "migrated.mjs"], runtime_directory)
+                run_runtime([toolchain.executable, "route_harness.mjs"], runtime_directory)
+            elif target_language == "go":
+                _runtime_target_source(destination, raw_unit, runtime_directory, "migrated.go")
+                (runtime_directory / "go.mod").write_bytes(
+                    _stable_file_bytes(
+                        _confined_regular_file(
+                            destination,
+                            "go.mod",
+                            "ASSEMBLY_RUNTIME_GO_MOD_MISSING",
+                        ),
+                        "ASSEMBLY_RUNTIME_GO_MOD_CHANGED",
+                    )
+                )
+                harness, test_name = _go_source_harness(namespace, function, cases)
+                (runtime_directory / "assembled_behavior_test.go").write_text(harness, encoding="utf-8")
+                run_runtime(
+                    [toolchain.executable, "test", "-v", "-count=1", "-run", f"^{test_name}$", "."],
+                    runtime_directory,
+                    timeout=900,
+                )
+            elif target_language == "rust":
+                _runtime_target_source(destination, raw_unit, runtime_directory, "migrated.rs")
+                (runtime_directory / "runtime_harness.rs").write_text(
+                    _rust_harness(function, cases, include_file="migrated.rs"),
+                    encoding="utf-8",
+                )
+                run_runtime(
+                    [
+                        toolchain.executable,
+                        "--edition=2021",
+                        "-D",
+                        "warnings",
+                        "-o",
+                        "runtime_harness",
+                        "runtime_harness.rs",
+                    ],
+                    runtime_directory,
+                )
+                run_runtime(["./runtime_harness"], runtime_directory)
+            elif target_language == "cpp":
+                _runtime_target_source(destination, raw_unit, runtime_directory, "migrated.cpp")
+                (runtime_directory / "runtime_harness.cpp").write_text(
+                    _cpp_harness(function, cases, include_file="migrated.cpp"),
+                    encoding="utf-8",
+                )
+                run_runtime(
+                    [
+                        toolchain.executable,
+                        "-std=c++20",
+                        "-isysroot",
+                        _apple_sdk(toolchain.profile),
+                        "-Wall",
+                        "-Wextra",
+                        "-Werror",
+                        "-o",
+                        "runtime_harness",
+                        "runtime_harness.cpp",
+                    ],
+                    runtime_directory,
+                )
+                run_runtime(["./runtime_harness"], runtime_directory)
+            elif target_language == "objc":
+                _runtime_target_source(destination, raw_unit, runtime_directory, "migrated.m")
+                (runtime_directory / "runtime_harness.m").write_text(
+                    _objc_harness(function, cases, include_file="migrated.m"),
+                    encoding="utf-8",
+                )
+                run_runtime(
+                    [
+                        toolchain.executable,
+                        "-x",
+                        "objective-c",
+                        "-std=c17",
+                        "-isysroot",
+                        _apple_sdk(toolchain.profile),
+                        "-fobjc-arc",
+                        "-Wall",
+                        "-Wextra",
+                        "-Werror",
+                        "-framework",
+                        "Foundation",
+                        "-o",
+                        "runtime_harness",
+                        "runtime_harness.m",
+                    ],
+                    runtime_directory,
+                )
+                run_runtime(["./runtime_harness"], runtime_directory)
+            elif target_language == "swift":
+                _runtime_target_source(destination, raw_unit, runtime_directory, "migrated.swift")
+                (runtime_directory / "main.swift").write_text(
+                    _swift_harness(function, cases),
+                    encoding="utf-8",
+                )
+                run_runtime(
+                    [
+                        toolchain.executable,
+                        "-swift-version",
+                        "6",
+                        "-sdk",
+                        _apple_sdk(toolchain.profile),
+                        "-warnings-as-errors",
+                        "-o",
+                        "runtime_harness",
+                        "migrated.swift",
+                        "main.swift",
+                    ],
+                    runtime_directory,
+                    timeout=900,
+                )
+                run_runtime(["./runtime_harness"], runtime_directory)
+            elif target_language == "php":
+                _runtime_target_source(destination, raw_unit, runtime_directory, "migrated.php")
+                namespace_name = f"Elmos\\Generated\\{namespace.capitalize()}"
+                harness = _php_harness(function, cases, "migrated.php").replace(
+                    "declare(strict_types=1);\n\n",
+                    f"declare(strict_types=1);\n\nnamespace {namespace_name};\n\n",
+                    1,
+                )
+                (runtime_directory / "route_harness.php").write_text(harness, encoding="utf-8")
+                common = [
+                    toolchain.executable,
+                    "-n",
+                    "-d",
+                    "error_reporting=E_ALL",
+                    "-d",
+                    "opcache.enable_cli=0",
+                ]
+                run_runtime([*common, "-l", "migrated.php"], runtime_directory)
+                run_runtime([*common, "route_harness.php"], runtime_directory)
+            elif target_language == "kotlin":
+                mode = "compiled-assembly-artifact"
+                assert toolchain.auxiliary is not None
+                package_name = f"elmos.generated.{namespace}"
+                (runtime_directory / "route_harness.kt").write_text(
+                    _kotlin_harness(
+                        function,
+                        cases,
+                        "migrated.kt",
+                        package_name=package_name,
+                    ),
+                    encoding="utf-8",
+                )
+                classes = runtime_directory / "classes"
+                classes.mkdir()
+                build_classes = destination / "build" / "classes"
+                run_runtime(
+                    [
+                        toolchain.executable,
+                        "-Werror",
+                        "-classpath",
+                        str(build_classes),
+                        "-d",
+                        str(classes),
+                        "route_harness.kt",
+                    ],
+                    runtime_directory,
+                    timeout=900,
+                )
+                run_runtime(
+                    [
+                        toolchain.auxiliary,
+                        "-classpath",
+                        os.pathsep.join((str(build_classes), str(classes))),
+                        f"{package_name}.ElmosHarness",
+                    ],
+                    runtime_directory,
+                    timeout=900,
+                )
+            elif target_language == "flutter":
+                assert toolchain.auxiliary is not None
+                target_content = _stable_file_bytes(
+                    _confined_regular_file(
+                        destination,
+                        str(raw_unit.get("assembled_path", "")),
+                        f"ASSEMBLY_RUNTIME_TARGET_SOURCE_MISSING:{unit_id}",
+                    ),
+                    f"ASSEMBLY_RUNTIME_TARGET_SOURCE_CHANGED:{unit_id}",
+                ).decode("utf-8")
+                (runtime_directory / "runtime_harness.dart").write_text(
+                    _dart_harness(function, cases, target_content),
+                    encoding="utf-8",
+                )
+                run_runtime(
+                    [toolchain.auxiliary, "analyze", "--fatal-infos", "--fatal-warnings", "runtime_harness.dart"],
+                    runtime_directory,
+                )
+                run_runtime(
+                    [toolchain.auxiliary, "compile", "kernel", "runtime_harness.dart", "-o", "runtime_harness.dill"],
+                    runtime_directory,
+                )
+                run_runtime([toolchain.auxiliary, "runtime_harness.dill"], runtime_directory)
+            else:
+                raise RouteError(f"ASSEMBLY_UNSUPPORTED_TARGET_LANGUAGE:{target_language}")
+
+    return {
+        "status": "PASSED",
+        "mode": mode,
+        "toolchain_language": toolchain.language,
+        "toolchain_version": toolchain.version,
+        "unit_count": len(unit_case_counts),
+        "case_count": sum(int(item["case_count"]) for item in unit_case_counts),
+        "unit_case_counts": unit_case_counts,
+        "commands": commands,
+    }
 
 
 def _stat_identity(value: os.stat_result) -> tuple[int, ...]:
@@ -3300,7 +3952,13 @@ def _exact_cmake(cwd: Path) -> _CMakeRuntimeBundle:
         return runtime
 
 
-def verify_assembled_project(target_language: Language, destination: Path) -> dict[str, Any]:
+def verify_assembled_project(
+    target_language: Language,
+    destination: Path,
+    *,
+    cases_directory: Path | None = None,
+    cases_manifest: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
     """Run a real whole-project compile/build check against an assembled project.
 
     Uses the same exact-toolchain contract as the per-unit harness in
@@ -3308,13 +3966,10 @@ def verify_assembled_project(target_language: Language, destination: Path) -> di
     buildable as a whole, catching cross-unit issues (e.g. a shared build
     file rejecting one unit's construct) that per-unit validation cannot see.
 
-    On success, `assembly-manifest.json` is rewritten with
-    `build_verification_status: "PASSED"` and the command log. On failure,
-    `RouteError` propagates and the manifest on disk is left untouched --
-    it is not rewritten to a failure state, because "NOT_RUN" and "the last
-    attempt failed" both correctly mean "do not treat this as buildable,"
-    and leaving the file alone avoids ever writing a manifest that claims
-    more than what actually happened.
+    When a behavior-case directory and its immutable manifest are supplied,
+    success also requires a final assembled-project runtime replay. The build
+    and runtime claims are recorded separately, so a build-only caller keeps
+    the historical `runtime_verification_status: "NOT_RUN"` boundary.
     """
     destination = destination.expanduser()
     if destination.is_symlink() or not destination.is_dir():
@@ -3665,11 +4320,28 @@ def verify_assembled_project(target_language: Language, destination: Path) -> di
                 binding.bytes for binding in cmake.source_bindings if binding.kind == "file"
             ),
             "bundle_manifest_bytes": len(cmake.manifest_bytes),
-            "bundle_manifest_sha256": cmake.manifest_sha256,
+                "bundle_manifest_sha256": cmake.manifest_sha256,
         }
     _write_manifest(destination, manifest)
+    runtime_requested = cases_directory is not None or cases_manifest is not None
+    if runtime_requested:
+        if cases_directory is None or cases_manifest is None:
+            raise RouteError("ASSEMBLY_RUNTIME_CASES_INPUT_INCOMPLETE")
+        runtime_verification = verify_assembled_project_runtime(
+            target_language,
+            destination,
+            cases_directory,
+            cases_manifest,
+        )
+        manifest["runtime_verification_status"] = "PASSED"
+        manifest["runtime_verification"] = runtime_verification
+        _write_manifest(destination, manifest)
     write_assembly_deployment_guidance(destination, target_language, int(manifest["included_unit_count"]))
-    return verify_assembly_closure(target_language, destination)
+    return verify_assembly_closure(
+        target_language,
+        destination,
+        require_runtime_passed=runtime_requested,
+    )
 
 
 def write_assembly_deployment_guidance(
