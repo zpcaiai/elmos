@@ -237,16 +237,76 @@
         "certification"
       ],
       "properties": {
-        "authorization": { "$ref": "#/$defs/nullableEnvelope" },
-        "execution": { "$ref": "#/$defs/nullableEnvelope" },
-        "independentVerification": { "$ref": "#/$defs/nullableEnvelope" },
-        "certification": { "$ref": "#/$defs/nullableEnvelope" }
+        "authorization": { "$ref": "#/$defs/nullableAuthorizationEnvelope" },
+        "execution": { "$ref": "#/$defs/nullableExecutionEnvelope" },
+        "independentVerification": { "$ref": "#/$defs/nullableVerificationEnvelope" },
+        "certification": { "$ref": "#/$defs/nullableCertificationEnvelope" }
       }
     },
     "nullableEnvelope": {
       "anyOf": [
         { "type": "null" },
         { "$ref": "#/$defs/envelope" }
+      ]
+    },
+    "nullableAuthorizationEnvelope": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "allOf": [
+            { "$ref": "#/$defs/envelope" },
+            {
+              "properties": {
+                "payload": { "$ref": "#/$defs/authorizationPayload" }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "nullableExecutionEnvelope": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "allOf": [
+            { "$ref": "#/$defs/envelope" },
+            {
+              "properties": {
+                "payload": { "$ref": "#/$defs/executionPayload" }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "nullableVerificationEnvelope": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "allOf": [
+            { "$ref": "#/$defs/envelope" },
+            {
+              "properties": {
+                "payload": { "$ref": "#/$defs/verificationPayload" }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "nullableCertificationEnvelope": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "allOf": [
+            { "$ref": "#/$defs/envelope" },
+            {
+              "properties": {
+                "payload": { "$ref": "#/$defs/certificationPayload" }
+              }
+            }
+          ]
+        }
       ]
     },
     "envelope": {
@@ -256,13 +316,293 @@
       "properties": {
         "algorithm": { "const": "ed25519" },
         "keyId": { "$ref": "#/$defs/exactToken" },
-        "payload": { "type": "object" },
+        "payload": {
+          "oneOf": [
+            { "$ref": "#/$defs/authorizationPayload" },
+            { "$ref": "#/$defs/executionPayload" },
+            { "$ref": "#/$defs/verificationPayload" },
+            { "$ref": "#/$defs/certificationPayload" }
+          ]
+        },
         "signature": {
           "type": "string",
           "minLength": 88,
           "maxLength": 88,
           "pattern": "^[A-Za-z0-9+/]{86}==$"
         }
+      }
+    },
+    "authorizationPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "recordId",
+        "scopeDigest",
+        "targetId",
+        "qualificationInputDigest",
+        "environmentId",
+        "implementerActorId",
+        "implementerOrganizationId",
+        "allowedOperations",
+        "issuedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0" },
+        "kind": { "const": "CHINADB_TARGET_EXECUTION_AUTHORIZATION" },
+        "recordId": { "$ref": "#/$defs/exactToken" },
+        "scopeDigest": { "$ref": "#/$defs/digest" },
+        "targetId": { "$ref": "#/$defs/targetId" },
+        "qualificationInputDigest": { "$ref": "#/$defs/digest" },
+        "environmentId": { "$ref": "#/$defs/exactToken" },
+        "implementerActorId": { "$ref": "#/$defs/scopeToken" },
+        "implementerOrganizationId": { "$ref": "#/$defs/scopeToken" },
+        "allowedOperations": {
+          "const": [
+            "APPLY_SANDBOX",
+            "BACKUP_RESTORE",
+            "CAPABILITY_PROBE",
+            "CAPTURE_PLAN",
+            "CDC_RECONCILIATION",
+            "CLEANUP",
+            "EXECUTE_WORKLOAD",
+            "INTROSPECT",
+            "RENDER",
+            "VERSION_PROBE"
+          ]
+        },
+        "issuedAt": { "$ref": "#/$defs/timestamp" },
+        "expiresAt": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "executionPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "recordId",
+        "authorizationRecordId",
+        "authorizationEnvelopeDigest",
+        "scopeDigest",
+        "targetId",
+        "qualificationInputDigest",
+        "environmentId",
+        "exactTupleDigest",
+        "vendorToolDigests",
+        "artifactDigests",
+        "evidenceDigests",
+        "executedAt",
+        "checks",
+        "criticalUnknowns",
+        "criticalDifferences",
+        "testIntegrityViolations"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0" },
+        "kind": { "const": "CHINADB_TARGET_EXECUTION_RECEIPT" },
+        "recordId": { "$ref": "#/$defs/exactToken" },
+        "authorizationRecordId": { "$ref": "#/$defs/exactToken" },
+        "authorizationEnvelopeDigest": { "$ref": "#/$defs/digest" },
+        "scopeDigest": { "$ref": "#/$defs/digest" },
+        "targetId": { "$ref": "#/$defs/targetId" },
+        "qualificationInputDigest": { "$ref": "#/$defs/digest" },
+        "environmentId": { "$ref": "#/$defs/exactToken" },
+        "exactTupleDigest": { "$ref": "#/$defs/digest" },
+        "vendorToolDigests": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/digest" }
+        },
+        "artifactDigests": { "$ref": "#/$defs/artifactDigests" },
+        "evidenceDigests": { "$ref": "#/$defs/evidenceDigests" },
+        "executedAt": { "$ref": "#/$defs/timestamp" },
+        "checks": { "$ref": "#/$defs/executionChecks" },
+        "criticalUnknowns": { "const": 0 },
+        "criticalDifferences": { "const": 0 },
+        "testIntegrityViolations": { "const": 0 }
+      }
+    },
+    "verificationPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "recordId",
+        "scopeDigest",
+        "targetId",
+        "qualificationInputDigest",
+        "executionRecordId",
+        "executionEnvelopeDigest",
+        "rawEvidenceDigest",
+        "holdoutCorpusDigest",
+        "representativeWorkloadDigest",
+        "decision",
+        "criticalFindings",
+        "verifiedAt"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0" },
+        "kind": { "const": "CHINADB_INDEPENDENT_VERIFICATION_RECEIPT" },
+        "recordId": { "$ref": "#/$defs/exactToken" },
+        "scopeDigest": { "$ref": "#/$defs/digest" },
+        "targetId": { "$ref": "#/$defs/targetId" },
+        "qualificationInputDigest": { "$ref": "#/$defs/digest" },
+        "executionRecordId": { "$ref": "#/$defs/exactToken" },
+        "executionEnvelopeDigest": { "$ref": "#/$defs/digest" },
+        "rawEvidenceDigest": { "$ref": "#/$defs/digest" },
+        "holdoutCorpusDigest": { "$ref": "#/$defs/digest" },
+        "representativeWorkloadDigest": { "$ref": "#/$defs/digest" },
+        "decision": { "const": "PASSED" },
+        "criticalFindings": { "const": 0 },
+        "verifiedAt": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "certificationPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "recordId",
+        "scopeDigest",
+        "targetId",
+        "qualificationInputDigest",
+        "verificationRecordId",
+        "verificationEnvelopeDigest",
+        "decision",
+        "certifiedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0" },
+        "kind": { "const": "CHINADB_PRODUCTION_CERTIFICATION_RECEIPT" },
+        "recordId": { "$ref": "#/$defs/exactToken" },
+        "scopeDigest": { "$ref": "#/$defs/digest" },
+        "targetId": { "$ref": "#/$defs/targetId" },
+        "qualificationInputDigest": { "$ref": "#/$defs/digest" },
+        "verificationRecordId": { "$ref": "#/$defs/exactToken" },
+        "verificationEnvelopeDigest": { "$ref": "#/$defs/digest" },
+        "decision": { "const": "CERTIFIED" },
+        "certifiedAt": { "$ref": "#/$defs/timestamp" },
+        "expiresAt": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "artifactDigests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceSnapshotDigest",
+        "sourceCatalogDigest",
+        "sourceDataDigest",
+        "sourceWorkloadDigest",
+        "targetSnapshotDigest",
+        "targetReleaseDigest",
+        "canonicalIrDigest",
+        "transformationDigest",
+        "compatibilityRuntimeDigest",
+        "runnerDigest",
+        "toolchainDigest",
+        "developmentCorpusDigest",
+        "negativeCorpusDigest",
+        "holdoutCorpusDigest",
+        "representativeWorkloadDigest",
+        "dataFixtureDigest",
+        "queryPlanDigest",
+        "targetSqlDigest",
+        "acceptanceProfileDigest",
+        "gateResultDigest"
+      ],
+      "properties": {
+        "sourceSnapshotDigest": { "$ref": "#/$defs/digest" },
+        "sourceCatalogDigest": { "$ref": "#/$defs/digest" },
+        "sourceDataDigest": { "$ref": "#/$defs/digest" },
+        "sourceWorkloadDigest": { "$ref": "#/$defs/digest" },
+        "targetSnapshotDigest": { "$ref": "#/$defs/digest" },
+        "targetReleaseDigest": { "$ref": "#/$defs/digest" },
+        "canonicalIrDigest": { "$ref": "#/$defs/digest" },
+        "transformationDigest": { "$ref": "#/$defs/digest" },
+        "compatibilityRuntimeDigest": { "$ref": "#/$defs/digest" },
+        "runnerDigest": { "$ref": "#/$defs/digest" },
+        "toolchainDigest": { "$ref": "#/$defs/digest" },
+        "developmentCorpusDigest": { "$ref": "#/$defs/digest" },
+        "negativeCorpusDigest": { "$ref": "#/$defs/digest" },
+        "holdoutCorpusDigest": { "$ref": "#/$defs/digest" },
+        "representativeWorkloadDigest": { "$ref": "#/$defs/digest" },
+        "dataFixtureDigest": { "$ref": "#/$defs/digest" },
+        "queryPlanDigest": { "$ref": "#/$defs/digest" },
+        "targetSqlDigest": { "$ref": "#/$defs/digest" },
+        "acceptanceProfileDigest": { "$ref": "#/$defs/digest" },
+        "gateResultDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "evidenceDigests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "versionProbeDigest",
+        "capabilityProbeDigest",
+        "renderDigest",
+        "targetApplyDigest",
+        "introspectionDigest",
+        "schemaTypeDigest",
+        "queryRoutineDigest",
+        "transactionDigest",
+        "dataReconciliationDigest",
+        "performanceDigest",
+        "securityDigest",
+        "backupRestoreDigest",
+        "cdcDigest",
+        "rollbackDigest",
+        "cleanupDigest",
+        "rawEvidenceDigest"
+      ],
+      "properties": {
+        "versionProbeDigest": { "$ref": "#/$defs/digest" },
+        "capabilityProbeDigest": { "$ref": "#/$defs/digest" },
+        "renderDigest": { "$ref": "#/$defs/digest" },
+        "targetApplyDigest": { "$ref": "#/$defs/digest" },
+        "introspectionDigest": { "$ref": "#/$defs/digest" },
+        "schemaTypeDigest": { "$ref": "#/$defs/digest" },
+        "queryRoutineDigest": { "$ref": "#/$defs/digest" },
+        "transactionDigest": { "$ref": "#/$defs/digest" },
+        "dataReconciliationDigest": { "$ref": "#/$defs/digest" },
+        "performanceDigest": { "$ref": "#/$defs/digest" },
+        "securityDigest": { "$ref": "#/$defs/digest" },
+        "backupRestoreDigest": { "$ref": "#/$defs/digest" },
+        "cdcDigest": { "$ref": "#/$defs/digest" },
+        "rollbackDigest": { "$ref": "#/$defs/digest" },
+        "cleanupDigest": { "$ref": "#/$defs/digest" },
+        "rawEvidenceDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "executionChecks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capabilityProbe",
+        "cleanup",
+        "dataReconciliation",
+        "performanceSecurityRollback",
+        "schemaTypeQueryRoutineTransaction",
+        "targetApplyIntrospection",
+        "targetRender",
+        "versionProbe"
+      ],
+      "properties": {
+        "capabilityProbe": { "const": "PASSED" },
+        "cleanup": { "const": "PASSED" },
+        "dataReconciliation": { "const": "PASSED" },
+        "performanceSecurityRollback": { "const": "PASSED" },
+        "schemaTypeQueryRoutineTransaction": { "const": "PASSED" },
+        "targetApplyIntrospection": { "const": "PASSED" },
+        "targetRender": { "const": "PASSED" },
+        "versionProbe": { "const": "PASSED" }
       }
     },
     "operation": {
