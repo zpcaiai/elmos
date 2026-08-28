@@ -93,7 +93,28 @@ public final class ProductionRuntimeModels {
             requireText(workerName, "workerName", 160);
             requireText(workerType, "workerType", 100);
             requireText(endpointUri, "endpointUri", 2_000);
+            requireText(region, "region", 120);
+            requireText(zone, "zone", 120);
             capabilities = capabilities == null ? Map.of() : Map.copyOf(capabilities);
+            Object tuples = capabilities.get("routeTuples");
+            if (!(tuples instanceof List<?> values) || values.isEmpty()
+                    || values.size() > 10_000) {
+                throw new IllegalArgumentException("worker routeTuples capability is required");
+            }
+            var distinct = new java.util.HashSet<String>();
+            for (Object value : values) {
+                if (!(value instanceof String tuple)
+                        || !tuple.matches("[A-Z][A-Z0-9_]{0,79}:[A-Za-z0-9][A-Za-z0-9_.-]{0,119}")
+                        || !distinct.add(tuple)) {
+                    throw new IllegalArgumentException("worker routeTuples capability is malformed");
+                }
+            }
+            Object concurrency = capabilities.get("maxConcurrent");
+            if (!(concurrency instanceof Number number)
+                    || number.intValue() < 1 || number.intValue() > 1024
+                    || number.doubleValue() != number.intValue()) {
+                throw new IllegalArgumentException("worker maxConcurrent capability is malformed");
+            }
         }
     }
 
@@ -125,7 +146,20 @@ public final class ProductionRuntimeModels {
             String endpointUri,
             String dispatchIdempotencyKey,
             Map<String, Object> payload
-    ) {}
+    ) {
+        public DispatchEnvelope {
+            require(tenantId, "tenantId");
+            require(workItemId, "workItemId");
+            require(attemptId, "attemptId");
+            require(workerId, "workerId");
+            if (fencingToken < 1) {
+                throw new IllegalArgumentException("fencingToken must be positive");
+            }
+            requireText(endpointUri, "endpointUri", 2_000);
+            requireText(dispatchIdempotencyKey, "dispatchIdempotencyKey", 240);
+            payload = payload == null ? Map.of() : Map.copyOf(payload);
+        }
+    }
 
     public record ReserveRequest(
             UUID tenantId,
@@ -234,17 +268,83 @@ public final class ProductionRuntimeModels {
 
     public record ToolCallReceipt(UUID toolCallId, ToolCallStatus status, String providerRequestId, UUID responseArtifactId) {}
 
-    public record Completion(UUID tenantId, UUID workItemId, UUID attemptId, UUID workerId, long fencingToken, AttemptStatus status, String errorCode, String errorMessage) {}
+    public record Completion(
+            UUID tenantId,
+            UUID workItemId,
+            UUID attemptId,
+            UUID workerId,
+            long fencingToken,
+            AttemptStatus status,
+            String errorCode,
+            String errorMessage
+    ) {
+        public Completion {
+            require(tenantId, "tenantId");
+            require(workItemId, "workItemId");
+            require(attemptId, "attemptId");
+            require(workerId, "workerId");
+            if (fencingToken < 1) {
+                throw new IllegalArgumentException("fencingToken must be positive");
+            }
+            if (status == null || (status != AttemptStatus.SUCCEEDED
+                    && status != AttemptStatus.FAILED
+                    && status != AttemptStatus.TIMED_OUT
+                    && status != AttemptStatus.LOST
+                    && status != AttemptStatus.CANCELLED)) {
+                throw new IllegalArgumentException("completion status must be terminal");
+            }
+            optionalText(errorCode, "errorCode", 200);
+            optionalText(errorMessage, "errorMessage", 2_000);
+            if (status == AttemptStatus.SUCCEEDED
+                    && (errorCode != null || errorMessage != null)) {
+                throw new IllegalArgumentException("successful completion cannot contain an error");
+            }
+        }
+    }
 
     public record Checkpoint(UUID tenantId, UUID jobId, UUID workItemId, UUID attemptId, String checkpointType, long sequenceNo, String stateObjectUri, String stateHash) {
         public Checkpoint {
             require(tenantId, "tenantId"); require(jobId, "jobId"); require(workItemId, "workItemId"); require(attemptId, "attemptId");
             requireText(checkpointType, "checkpointType", 100); requireText(stateObjectUri, "stateObjectUri", 2_000); requireText(stateHash, "stateHash", 128);
             if (sequenceNo < 1) throw new IllegalArgumentException("sequenceNo must be positive");
+            if (!stateHash.matches("[0-9a-fA-F]{64}")) {
+                throw new IllegalArgumentException("stateHash must be a SHA-256 digest");
+            }
+            stateHash = stateHash.toLowerCase(java.util.Locale.ROOT);
         }
     }
 
     public record ProgressSnapshot(UUID tenantId, UUID projectId, UUID jobId, long total, long ready, long running, long completed, long failed, BigDecimal progress, long tokensConsumed, BigDecimal creditsConsumed, Instant updatedAt) {}
+
+    /** Tenant-owned hard admission ceilings enforced under a PostgreSQL row lock. */
+    public record AdmissionPolicy(
+            UUID tenantId,
+            int maxActiveJobs,
+            int maxActiveWorkItems,
+            int maxProjectActiveWorkItems,
+            int maxConcurrentModelCalls,
+            int maxCompileTestSlots,
+            int maxProviderCallsPerMinute,
+            long dailyTokenCap,
+            BigDecimal dailyCreditCap
+    ) {
+        public AdmissionPolicy {
+            require(tenantId, "tenantId");
+            requireLimit(maxActiveJobs, "maxActiveJobs", 1_000_000);
+            requireLimit(maxActiveWorkItems, "maxActiveWorkItems", 1_000_000);
+            requireLimit(maxProjectActiveWorkItems, "maxProjectActiveWorkItems", 1_000_000);
+            requireLimit(maxConcurrentModelCalls, "maxConcurrentModelCalls", 1_000_000);
+            requireLimit(maxCompileTestSlots, "maxCompileTestSlots", 1_000_000);
+            requireLimit(maxProviderCallsPerMinute, "maxProviderCallsPerMinute", 1_000_000);
+            if (dailyTokenCap < 1 || dailyTokenCap > 9_000_000_000_000_000L) {
+                throw new IllegalArgumentException("dailyTokenCap out of range");
+            }
+            if (dailyCreditCap == null || dailyCreditCap.signum() <= 0) {
+                throw new IllegalArgumentException("dailyCreditCap must be positive");
+            }
+            dailyCreditCap = canonicalMoney(dailyCreditCap);
+        }
+    }
 
     public record TopUpRequest(UUID tenantId, UUID walletId, String provider, String providerPaymentId, BigDecimal amount, String requestHash) {
         public TopUpRequest {
@@ -261,15 +361,53 @@ public final class ProductionRuntimeModels {
 
     public record ReadyWorkItem(
             UUID tenantId,
+            UUID accountId,
             UUID projectId,
             UUID jobId,
+            UUID stageId,
             UUID workItemId,
+            UUID walletId,
+            UUID workerId,
+            String jobType,
             String workType,
+            String resourceKey,
             int priority,
+            int retryCount,
             BigDecimal estimatedCredits,
             Instant readyAt,
             Instant createdAt
-    ) {}
+    ) {
+        public ReadyWorkItem {
+            require(tenantId, "tenantId"); require(accountId, "accountId");
+            require(projectId, "projectId"); require(jobId, "jobId");
+            require(stageId, "stageId"); require(workItemId, "workItemId");
+            requireText(jobType, "jobType", 80); requireText(workType, "workType", 120);
+            requireText(resourceKey, "resourceKey", 500);
+            if (retryCount < 0 || estimatedCredits == null || estimatedCredits.signum() <= 0) {
+                throw new IllegalArgumentException("ready work item has invalid retry or credit state");
+            }
+        }
+    }
+
+    public record JobProjectionCandidate(UUID tenantId, UUID jobId) {
+        public JobProjectionCandidate {
+            require(tenantId, "tenantId"); require(jobId, "jobId");
+        }
+    }
+
+    public record ModelCallRecoveryCandidate(
+            UUID modelCallId,
+            ModelCallRequest request,
+            String providerRequestId,
+            ModelCallStatus status,
+            int reconcileAttempts
+    ) {
+        public ModelCallRecoveryCandidate {
+            require(modelCallId, "modelCallId"); Objects.requireNonNull(request, "request");
+            Objects.requireNonNull(status, "status");
+            if (reconcileAttempts < 0) throw new IllegalArgumentException("reconcileAttempts is negative");
+        }
+    }
 
     public record RepositorySnapshotRequest(
             UUID tenantId, UUID projectId, String gitCommitSha, String snapshotHash,
@@ -306,5 +444,13 @@ public final class ProductionRuntimeModels {
     public static void requireText(String value, String name, int maxLength) {
         if (value == null || value.isBlank() || value.length() > maxLength) throw new IllegalArgumentException(name + " is blank or too long");
     }
-    private static BigDecimal canonicalMoney(BigDecimal value) { return value.setScale(12, RoundingMode.UNNECESSARY); }
+    private static void optionalText(String value, String name, int maxLength) {
+        if (value != null && (value.isBlank() || value.length() > maxLength)) {
+            throw new IllegalArgumentException(name + " is blank or too long");
+        }
+    }
+    private static void requireLimit(int value, String name, int maximum) {
+        if (value < 1 || value > maximum) throw new IllegalArgumentException(name + " out of range");
+    }
+    static BigDecimal canonicalMoney(BigDecimal value) { return value.setScale(12, RoundingMode.UNNECESSARY); }
 }

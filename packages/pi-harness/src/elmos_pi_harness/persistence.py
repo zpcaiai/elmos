@@ -17,7 +17,7 @@ import uuid
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Self
+from typing import Any, Self, TypedDict, cast
 
 from .canonical import (
     canonical_bytes,
@@ -240,8 +240,15 @@ CREATE TABLE IF NOT EXISTS benchmark_run (
 """
 
 
+class _IdempotencyReplay(TypedDict):
+    response: dict[str, Any]
+    replayed: bool
+
+
 class DurableStore:
     """Thread-safe transactional store with tenant-scoped reads and writes."""
+
+    _connection: Any
 
     def __init__(self, path: str = ":memory:", artifact_root: str | Path | None = None, *, artifact_backend: Any | None = None) -> None:
         self.path = path
@@ -276,7 +283,7 @@ class DurableStore:
         self._artifact_backend = artifact_backend
 
     @contextmanager
-    def _write(self) -> Iterator[sqlite3.Connection]:
+    def _write(self) -> Iterator[Any]:
         with self._lock:
             try:
                 self._connection.execute("BEGIN IMMEDIATE")
@@ -288,7 +295,7 @@ class DurableStore:
                 self._connection.commit()
 
     @contextmanager
-    def _read(self) -> Iterator[sqlite3.Connection]:
+    def _read(self) -> Iterator[Any]:
         with self._lock:
             yield self._connection
 
@@ -334,7 +341,9 @@ class DurableStore:
             (project_id, tenant_id, name or project_id, utc_now()),
         )
 
-    def _idempotency_locked(self, tenant_id: str, scope: str, key: str, request_digest: str) -> dict[str, Any] | None:
+    def _idempotency_locked(
+        self, tenant_id: str, scope: str, key: str, request_digest: str
+    ) -> _IdempotencyReplay | None:
         row = self._connection.execute(
             "SELECT request_digest,response_json,state FROM idempotency_key WHERE tenant_id=? AND scope=? AND idempotency_key=?",
             (tenant_id, scope, key),
@@ -349,7 +358,10 @@ class DurableStore:
             raise ConflictError("idempotency key was reused with a different request")
         if row["response_json"] is None:
             raise ConflictError("an equivalent request is already in progress")
-        return {"response": self._decode(row["response_json"]), "replayed": True}
+        response = self._decode(row["response_json"])
+        if not isinstance(response, dict):
+            raise HarnessError("idempotency response is not an object")
+        return {"response": response, "replayed": True}
 
     def _finish_idempotency_locked(self, tenant_id: str, scope: str, key: str, response: Mapping[str, Any]) -> None:
         self._connection.execute(
@@ -453,7 +465,7 @@ class DurableStore:
         ).fetchone()
         if row is None:
             raise NotFoundError("task not found")
-        return row
+        return cast(sqlite3.Row, row)
 
     def get_task(self, tenant_id: str, task_id: str) -> dict[str, Any]:
         tenant_id = require_uuid(tenant_id, "tenant_id")
@@ -484,7 +496,12 @@ class DurableStore:
         target_state = TaskState(target)
         if max_running_tasks < 1:
             raise ValueError("max_running_tasks must be positive")
-        body = {"task_id": task_id, "target": target_state.value, "payload": dict(payload or {})}
+        payload_value: dict[str, Any] = dict(payload or {})
+        body: dict[str, Any] = {
+            "task_id": task_id,
+            "target": target_state.value,
+            "payload": payload_value,
+        }
         scope = f"task:{task_id}:transition"
         key = require_nonempty(idempotency_key, "idempotency_key", 256)
         with self._write():
@@ -495,7 +512,7 @@ class DurableStore:
             current = TaskState(row["state"])
             assert_transition(current, target_state)
             if target_state is TaskState.SUCCEEDED:
-                if body["payload"].get("verification_passed") is not True:
+                if payload_value.get("verification_passed") is not True:
                     raise ConflictError("successful task requires an explicit passing verification result")
                 if row["passed_verifications"] < row["required_verifications"]:
                     raise ConflictError("successful task is missing required verification gates")
@@ -507,7 +524,7 @@ class DurableStore:
                     raise QuotaExceededError("tenant running-task quota exceeded")
             now = utc_now()
             self._connection.execute("UPDATE task SET state=?,updated_at=? WHERE task_id=? AND tenant_id=?", (target_state.value, now, task_id, tenant_id))
-            event = self._append_event_locked(tenant_id, task_id, f"task.{target_state.value.lower()}", body["payload"], actor_id)
+            event = self._append_event_locked(tenant_id, task_id, f"task.{target_state.value.lower()}", payload_value, actor_id)
             response = {"task_id": task_id, "status": target_state.value, "event_sequence": event["task_sequence"], "replayed": False}
             self._finish_idempotency_locked(tenant_id, scope, key, response)
             return response

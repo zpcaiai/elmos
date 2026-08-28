@@ -23,6 +23,7 @@ import java.util.Optional;
 /** Durable runtime-owned operations. Implementations must use PostgreSQL as the source of truth. */
 public interface ProductionRuntimeStore {
     TenantAccount provisionTenant(UUID tenantId, UUID accountId, String tenantName, String currency);
+    void upsertAdmissionPolicy(ProductionRuntimeModels.AdmissionPolicy policy);
     UUID createProject(ProjectRequest request);
     UUID createJob(JobRequest request);
     UUID createWorkItem(WorkItemRequest request);
@@ -35,6 +36,7 @@ public interface ProductionRuntimeStore {
     void acknowledge(UUID tenantId, UUID attemptId, UUID workerId, long fencingToken);
     void heartbeat(UUID tenantId, UUID attemptId, UUID workerId, long fencingToken, Duration leaseDuration);
     void checkpoint(Checkpoint checkpoint);
+    void checkpoint(Checkpoint checkpoint, UUID workerId, long fencingToken);
     void complete(Completion completion);
     void applyFinalUsage(UUID tenantId, UUID workItemId, FinalUsage usage);
     List<ProductionRuntimeModels.SettlementRequest> pendingSettlementRequests(UUID tenantId, int limit);
@@ -46,6 +48,9 @@ public interface ProductionRuntimeStore {
     int abortDispatch(UUID tenantId, UUID dispatchIntentId, String reason);
     List<DispatchIntent> recoveryCandidates(int limit);
     List<ReadyWorkItem> selectFairReady(int limit);
+    List<UUID> pendingSettlementTenants(int limit);
+    List<ProductionRuntimeModels.JobProjectionCandidate> projectionCandidates(int limit);
+    Duration projectionFreshness(UUID tenantId, UUID jobId);
     ProgressSnapshot rebuildProgress(UUID tenantId, UUID jobId);
     List<OutboxMessage> claimOutbox(int limit, Duration claimDuration);
     void markOutboxPublished(UUID claimToken, long eventId);

@@ -1,0 +1,29 @@
+{
+  "authorization_verifier_required": true,
+  "binding_state": "LOCAL_RUNTIME_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "NOT_RUN",
+  "customer_evidence_status": "NOT_RUN",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "durability": "SQLITE_APPEND_ONLY_AUDIT",
+  "external_evidence_status": "NOT_RUN",
+  "public_interface": "elmos_spring_golden_route.step_budget.StepBudgetStore.execute",
+  "request_schema": "elmos_spring_golden_route/agent_step_budget_request.schema.json",
+  "response_schema": "elmos_spring_golden_route/agent_step_budget_response.schema.json",
+  "error_schema": "elmos_spring_golden_route/agent_step_budget_error.schema.json",
+  "runtime_version": "1.0.0",
+  "schema_version": "elmos.agent-step-budget.runtime-binding.v1",
+  "side_effects_authorized": false,
+  "skill_name": "agent-step-budget",
+  "source_contract_sha256": "sha256:e7c2f088cd0d1e916151d52e5360986fe60fb328cc72a8a05dfa494d3dca4bb5",
+  "source_id": "FOUNDATION-06-agent-step-budget",
+  "source_skill_sha256": "sha256:1792713fc5d78e6800f1ae0824ea3fe1d387c688df9063ddea49965666fbc7e2",
+  "supported_operations": [
+    "admit",
+    "audit",
+    "cancel",
+    "reserve",
+    "settle",
+    "status"
+  ]
+}

@@ -22,6 +22,7 @@ from typing import Any
 
 from .assembly import (
     assemble_project,
+    verify_archived_assembly_closure,
     verify_assembled_project,
     verify_assembly_closure,
 )
@@ -373,7 +374,11 @@ def _verify_zip_entries(archive: Path, entries: list[dict[str, Any]]) -> bytes:
     return content
 
 
-def _write_deterministic_zip(output: Path, paths: list[dict[str, Any]]) -> tuple[Path, int, str]:
+def _write_deterministic_zip(
+    output: Path,
+    paths: list[dict[str, Any]],
+    target_language: Language,
+) -> tuple[Path, int, str]:
     archive = output / ARTIFACT_NAME
     ordered = sorted(paths, key=lambda entry: str(entry.get("path", "")))
     path_names = [str(entry.get("path", "")) for entry in ordered]
@@ -405,13 +410,25 @@ def _write_deterministic_zip(output: Path, paths: list[dict[str, Any]]) -> tuple
                 raise RouteError("PIPELINE_ARTIFACT_COMPRESSED_LIMIT_EXCEEDED")
             _verify_zip_content(temporary_content, ordered)
         published = True
+        archive_bytes = _verify_zip_entries(archive, ordered)
+        with zipfile.ZipFile(io.BytesIO(archive_bytes), "r") as bundle:
+            names = bundle.namelist()
+            try:
+                assembly_manifest = bundle.read("assembled/assembly-manifest.json")
+            except KeyError as error:
+                raise RouteError("ASSEMBLY_ARCHIVE_MANIFEST_MISSING") from error
+            verify_archived_assembly_closure(
+                assembly_manifest,
+                target_language,
+                names,
+                bundle.read,
+            )
         current_inventory = _artifact_inventory(output)
         expected_inventory = [entry for entry in ordered if entry["path"] != ARTIFACT_MANIFEST_NAME]
         if current_inventory != expected_inventory:
             raise RouteError("PIPELINE_ARTIFACT_INVENTORY_CHANGED_DURING_ARCHIVE")
         for entry in ordered:
             _bound_artifact_bytes(output, entry)
-        archive_bytes = _verify_zip_entries(archive, ordered)
         completed = True
         return archive, len(archive_bytes), hashlib.sha256(archive_bytes).hexdigest()
     finally:
@@ -1183,7 +1200,9 @@ def _run_repository_pipeline_attempt(
                 },
             ]
             archive, artifact_size, artifact_sha256 = _write_deterministic_zip(
-                output, archive_entries
+                output,
+                archive_entries,
+                target_language,
             )
             artifact = {
                 "path": archive.name,

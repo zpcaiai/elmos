@@ -44,8 +44,23 @@ function Fancy({ items }: { items: string[] }) {
 }
 `;
 
+const temporaryDirectories = new Set<string>();
+
+function makeTemporaryDirectory(prefix: string): string {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+  temporaryDirectories.add(directory);
+  return directory;
+}
+
+afterAll(() => {
+  for (const directory of temporaryDirectories) {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+  temporaryDirectories.clear();
+});
+
 function makeSourceRepo(): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "elmos-src-"));
+  const dir = makeTemporaryDirectory("elmos-src-");
   const components = path.join(dir, "src", "components");
   fs.mkdirSync(components, { recursive: true });
   fs.writeFileSync(path.join(components, "Counter.tsx"), COUNTER);
@@ -55,7 +70,7 @@ function makeSourceRepo(): string {
 }
 
 function makeDestination(): string {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "elmos-out-"));
+  return makeTemporaryDirectory("elmos-out-");
 }
 
 describe("repository pipeline", () => {
@@ -137,7 +152,7 @@ describe("repository pipeline", () => {
     const { parseReactComponent } = await import("../src/parsers/react");
     const bundle = emitMiniProgram(parseReactComponent(COUNTER, "Counter.tsx"));
 
-    const mpRepo = fs.mkdtempSync(path.join(os.tmpdir(), "elmos-mp-"));
+    const mpRepo = makeTemporaryDirectory("elmos-mp-");
     const componentDir = path.join(mpRepo, "components", "Counter");
     fs.mkdirSync(componentDir, { recursive: true });
     for (const [ext, contents] of Object.entries(bundle)) {
@@ -151,7 +166,7 @@ describe("repository pipeline", () => {
   }, 60000);
 
   it("blocks a WeChat component whose sibling .js is missing instead of crashing", async () => {
-    const mpRepo = fs.mkdtempSync(path.join(os.tmpdir(), "elmos-mp-broken-"));
+    const mpRepo = makeTemporaryDirectory("elmos-mp-broken-");
     const componentDir = path.join(mpRepo, "components", "Orphan");
     fs.mkdirSync(componentDir, { recursive: true });
     fs.writeFileSync(path.join(componentDir, "index.wxml"), "<view>x</view>\n");

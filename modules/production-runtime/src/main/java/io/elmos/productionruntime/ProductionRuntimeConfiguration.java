@@ -3,8 +3,12 @@ package io.elmos.productionruntime;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import java.time.Clock;
+import java.time.Duration;
 
 /** Spring wiring shared by the control plane and worker-side adapters. */
 @Configuration
@@ -19,6 +23,11 @@ public class ProductionRuntimeConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty(
+            prefix = "elmos.production-runtime.billing",
+            name = "adapter",
+            havingValue = "jdbc",
+            matchIfMissing = true)
     public JdbcProductionBillingService productionBillingService(
             JdbcClient jdbc,
             TransactionTemplate transactionTemplate,
@@ -42,6 +51,14 @@ public class ProductionRuntimeConfiguration {
             TransactionTemplate transactionTemplate
     ) {
         return new JdbcProductionRepositoryArtifactService(jdbc, transactionTemplate);
+    }
+
+    @Bean
+    public JdbcProductionProviderPayloadStore productionProviderPayloadStore(
+            JdbcClient jdbc,
+            TransactionTemplate transactionTemplate
+    ) {
+        return new JdbcProductionProviderPayloadStore(jdbc, transactionTemplate);
     }
 
     @Bean
@@ -72,5 +89,22 @@ public class ProductionRuntimeConfiguration {
             ProductionBillingPort billing
     ) {
         return new ProductionRuntimeSettlementReconciler(store, billing);
+    }
+
+    @Bean
+    public ProductionModelCallExecutor productionModelCallExecutor(
+            ProductionBillingPort billing
+    ) {
+        return new ProductionModelCallExecutor(billing);
+    }
+
+    @Bean
+    public ProductionRuntimeSchedulingService productionRuntimeSchedulingService(
+            ProductionRuntimeScheduler scheduler,
+            ProductionRuntimeCoordinator coordinator,
+            Clock clock
+    ) {
+        return new ProductionRuntimeSchedulingService(
+                scheduler, coordinator, clock, Duration.ofMinutes(15), Duration.ofSeconds(30));
     }
 }

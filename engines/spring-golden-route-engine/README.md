@@ -26,6 +26,32 @@ target-repository writes. Requests for execution or side effects fail with
 `EXTERNAL_ADAPTER_REQUIRED`. Local dispatch can be reported only as
 `LOCAL_EXECUTED_SELF_ATTESTED`; it is not domain runtime evidence.
 
+## Agent Step Budget domain runtime
+
+`elmos_spring_golden_route.step_budget.StepBudgetStore` is a separate exact
+local runtime for `FOUNDATION-06-agent-step-budget`. It does not promote the
+other imported contracts and does not change the package-level
+`SPECIFICATION_IMPORTED` decision. Its machine-readable request, response, and
+error schemas are shipped beside the Python module.
+
+The runtime provides `admit`, `reserve`, `settle`, `status`, `cancel`, and
+`audit`. A step is durably reserved before execution, only one unsettled step
+is allowed per Agent/task, and an `UNKNOWN` outcome blocks retry until an
+authorized reconciliation path exists. Complexity and expected cost produce
+an effective step/turn cap bounded by hard, token, and micro-USD limits.
+Optimistic versions, idempotency identities, immutable operation receipts,
+append-only hash-chained events, state-to-chain binding, and restart recovery
+are enforced in SQLite.
+
+Every operation requires a short-lived authorization object bound to the exact
+tenant/project/run/task/Agent scope and permission. `StepBudgetStore` has no
+permissive verifier: callers must inject a trusted authorization-verifier
+adapter, and verifier absence/error/deny fails before state access. Opaque
+authorization tokens are never persisted. The runtime only grants a local
+step permit; it does not execute the step or certify its external outcome.
+Customer, independent, and certification evidence therefore remain `NOT_RUN`
+and `NOT_CERTIFIED`.
+
 The SQLite store records run state, optimistic transitions, idempotency,
 append-only hash-chained events, and digest-bound local evidence. Because the
 local engine has no independent authorization trust store, its strongest

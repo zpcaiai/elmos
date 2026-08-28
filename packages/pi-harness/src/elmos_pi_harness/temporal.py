@@ -6,7 +6,7 @@ import asyncio
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Protocol, cast
 
 from .canonical import digest, require_nonempty, require_uuid
 from .models import PolicyDeniedError
@@ -138,6 +138,27 @@ class TemporalClient(Protocol):
     ) -> WorkflowHandle: ...
 
 
+class _TemporalSDKClientAdapter:
+    """Keep SDK overloads behind the small gateway protocol used by the harness."""
+
+    def __init__(self, native_client: Any) -> None:
+        self.native_client = native_client
+
+    async def start_workflow(
+        self, workflow: str, arg: Any, **kwargs: Any
+    ) -> WorkflowHandle:
+        handle = await self.native_client.start_workflow(workflow, arg, **kwargs)
+        return cast(WorkflowHandle, handle)
+
+    def get_workflow_handle(
+        self, workflow_id: str, *, run_id: str | None = None
+    ) -> WorkflowHandle:
+        handle = self.native_client.get_workflow_handle(
+            workflow_id, run_id=run_id
+        )
+        return cast(WorkflowHandle, handle)
+
+
 class TemporalGateway:
     """Typed gateway. Every workflow id is tenant/task-bound and idempotent."""
 
@@ -232,7 +253,7 @@ async def connect_temporal(config: TemporalConfig) -> TemporalGateway:
         tls=tls,
         identity=config.worker_identity,
     )
-    return TemporalGateway(client, config)
+    return TemporalGateway(_TemporalSDKClientAdapter(client), config)
 
 
 async def run_worker(config: TemporalConfig, activities: Sequence[Any]) -> None:
@@ -248,8 +269,12 @@ async def run_worker(config: TemporalConfig, activities: Sequence[Any]) -> None:
         raise RuntimeError(
             "temporalio is required; install elmos-pi-harness[temporal]"
         ) from exc
+    client = gateway.client
+    if not isinstance(client, _TemporalSDKClientAdapter):
+        raise RuntimeError("Temporal worker requires the native SDK client adapter")
+    native_client = client.native_client
     worker = Worker(
-        gateway.client,
+        native_client,
         task_queue=config.task_queue,
         workflows=[PIHarnessTaskWorkflow],
         activities=list(activities),

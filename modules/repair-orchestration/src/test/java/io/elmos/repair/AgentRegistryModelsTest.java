@@ -51,6 +51,9 @@ class AgentRegistryModelsTest {
                 Set.of(), Set.of(), Map.of(), LIMITS, 1));
         assertCode("REGISTRY_TEXT_INVALID", () -> definition("agent", "description", "mode", "model", "x\0",
                 Set.of(), Set.of(), Map.of(), LIMITS, 1));
+        assertCode("REGISTRY_TEXT_INVALID", () -> definition(
+                "agent", "description", "mode", "model", "x\u007f",
+                Set.of(), Set.of(), Map.of(), LIMITS, 1));
         assertCode("AGENT_VERSION_INVALID", () -> agent("agent", Set.of(), Map.of(), 0));
         assertThrows(NullPointerException.class, () -> definition(
                 "agent", "description", "mode", "model", "prompt",

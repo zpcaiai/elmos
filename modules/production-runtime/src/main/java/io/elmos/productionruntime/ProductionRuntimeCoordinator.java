@@ -63,17 +63,19 @@ public final class ProductionRuntimeCoordinator {
     }
 
     public void complete(Completion completion, FinalUsage usage, String failureReason) {
-        if (completion.status() == ProductionRuntimeModels.AttemptStatus.SUCCEEDED && usage == null) {
-            throw new ProductionRuntimeException("FINAL_USAGE_REQUIRED", "successful completion requires final provider usage");
-        }
         runtime.complete(completion);
-        if (completion.status() == ProductionRuntimeModels.AttemptStatus.SUCCEEDED) {
+        if (completion.status() == ProductionRuntimeModels.AttemptStatus.SUCCEEDED && usage != null) {
             runtime.applyFinalUsage(completion.tenantId(), completion.workItemId(), usage);
             billing.settle(usage);
             runtime.markSettlementSettled(completion.tenantId(), completion.workItemId());
         } else {
             UUID reservationId = runtime.activeReservationForWorkItem(completion.tenantId(), completion.workItemId()).orElse(null);
-            if (reservationId != null) billing.release(completion.tenantId(), reservationId, failureReason == null ? "WORK_ITEM_FAILED" : failureReason);
+            if (reservationId != null) {
+                String reason = completion.status() == ProductionRuntimeModels.AttemptStatus.SUCCEEDED
+                        ? "NO_BILLABLE_PROVIDER_USAGE"
+                        : failureReason == null ? "WORK_ITEM_FAILED" : failureReason;
+                billing.release(completion.tenantId(), reservationId, reason);
+            }
         }
     }
 

@@ -79,6 +79,26 @@ variable "backup_retention_days" {
   }
 }
 
+variable "evidence_retention_days" {
+  description = "Immutable external-evidence retention period."
+  type        = number
+  default     = 365
+  validation {
+    condition     = var.evidence_retention_days >= 90 && var.evidence_retention_days <= 3650
+    error_message = "evidence retention must be between 90 and 3650 days."
+  }
+}
+
+variable "evidence_retention_mode" {
+  description = "S3 Object Lock mode. Production policy should use COMPLIANCE."
+  type        = string
+  default     = "COMPLIANCE"
+  validation {
+    condition     = contains(["COMPLIANCE", "GOVERNANCE"], var.evidence_retention_mode)
+    error_message = "evidence retention mode must be COMPLIANCE or GOVERNANCE."
+  }
+}
+
 variable "tags" {
   type    = map(string)
   default = {}

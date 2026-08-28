@@ -505,7 +505,6 @@ Map<String, Object> _analyzeFunction(
   if (expression.typeParameters != null)
     _fail('DART_GENERIC_FUNCTION_UNSUPPORTED');
   final body = expression.body;
-  if (body is! BlockFunctionBody) _fail('DART_BLOCK_BODY_REQUIRED');
   if (body.isAsynchronous ||
       body.isGenerator ||
       body.keyword != null ||
@@ -544,14 +543,37 @@ Map<String, Object> _analyzeFunction(
     declaration.returnType,
     missingCode: 'DART_EXPLICIT_RETURN_TYPE_REQUIRED',
   );
-  final liftedBody = _statements(
-    body.block.statements,
-    environment,
-    returnType,
-    fileName,
-    offsets,
-    emittedTarget,
-  );
+  final List<Map<String, Object>> liftedBody;
+  if (body is BlockFunctionBody) {
+    liftedBody = _statements(
+      body.block.statements,
+      environment,
+      returnType,
+      fileName,
+      offsets,
+      emittedTarget,
+    );
+  } else if (body is ExpressionFunctionBody) {
+    final lifted = _expression(
+      body.expression,
+      environment,
+      fileName,
+      offsets,
+      emittedTarget,
+    );
+    if (lifted.type != returnType) {
+      _fail('DART_RETURN_TYPE_MISMATCH:$returnType:${lifted.type}');
+    }
+    liftedBody = <Map<String, Object>>[
+      <String, Object>{
+        'kind': 'return',
+        'expression': lifted.mapping,
+        'source_span': _span(fileName, offsets, body),
+      },
+    ];
+  } else {
+    _fail('DART_FUNCTION_BODY_UNSUPPORTED:${body.runtimeType}');
+  }
   if (liftedBody.isEmpty) _fail('DART_FUNCTION_BODY_EMPTY');
   return <String, Object>{
     'name': declaration.name.lexeme,

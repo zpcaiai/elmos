@@ -14,7 +14,7 @@ import uuid
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Protocol, cast
 
 from .canonical import canonical_bytes, digest, require_nonempty, require_uuid, utc_now
 from .models import ConflictError, NotFoundError, PolicyDeniedError
@@ -378,7 +378,7 @@ class ProviderOperationJournal:
         ).fetchone()
         if row is None:
             raise NotFoundError("provider operation not found")
-        return row
+        return cast(sqlite3.Row, row)
 
     def _event(
         self,

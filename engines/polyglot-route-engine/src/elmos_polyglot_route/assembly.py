@@ -45,6 +45,7 @@ import struct
 import subprocess
 import tempfile
 import threading
+import time
 from collections.abc import Callable, Collection, Mapping
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
@@ -2823,6 +2824,36 @@ def verify_assembly_closure(
     return manifest
 
 
+def _kill_process_group(process_group: int, signal_number: int) -> None:
+    """Signal one owned process group without misclassifying Darwin teardown.
+
+    Darwin can briefly return ``EPERM`` after the final member has exited but
+    before the process group disappears from the kernel.  Treat that result as
+    successful cleanup only after bounded, non-signalling probes observe
+    ``ESRCH``.  A surviving, reused, or persistently inaccessible group remains
+    an error; in particular, the probes never signal a potentially reused ID.
+    """
+
+    try:
+        os.killpg(process_group, signal_number)
+        return
+    except ProcessLookupError:
+        return
+    except PermissionError as error:
+        deadline = time.monotonic() + 0.1
+        while True:
+            try:
+                os.killpg(process_group, 0)
+            except ProcessLookupError:
+                return
+            except PermissionError:
+                if time.monotonic() >= deadline:
+                    raise error from None
+                time.sleep(0.001)
+                continue
+            raise error from None
+
+
 def _run(
     command: list[str],
     cwd: Path,
@@ -2861,20 +2892,14 @@ def _run(
                 stdout, stderr = process.communicate(timeout=timeout)
             except subprocess.TimeoutExpired as error:
                 if os.name == "posix":
-                    try:
-                        os.killpg(process.pid, signal.SIGTERM)
-                    except ProcessLookupError:
-                        pass
+                    _kill_process_group(process.pid, signal.SIGTERM)
                 else:
                     process.terminate()
                 try:
                     process.communicate(timeout=2)
                 except subprocess.TimeoutExpired:
                     if os.name == "posix":
-                        try:
-                            os.killpg(process.pid, signal.SIGKILL)
-                        except ProcessLookupError:
-                            pass
+                        _kill_process_group(process.pid, signal.SIGKILL)
                     else:
                         process.kill()
                     process.communicate()
@@ -2886,10 +2911,7 @@ def _run(
                 # Every invocation owns a fresh session, so any surviving member
                 # after the direct command exits is outside the bounded build.
                 if os.name == "posix" and process is not None:
-                    try:
-                        os.killpg(process.pid, signal.SIGKILL)
-                    except ProcessLookupError:
-                        pass
+                    _kill_process_group(process.pid, signal.SIGKILL)
             completed = subprocess.CompletedProcess(
                 command,
                 process.returncode,

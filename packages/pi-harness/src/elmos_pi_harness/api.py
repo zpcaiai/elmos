@@ -223,6 +223,7 @@ class HarnessRequestHandler(BaseHTTPRequestHandler):
             body = self._body()
             if parsed.path == "/v1/tasks":
                 project_id = body.get("project_id")
+                objective = body.get("objective")
                 if body.get("tenant_id") not in (None, tenant_id):
                     return self._problem(
                         403,
@@ -237,11 +238,18 @@ class HarnessRequestHandler(BaseHTTPRequestHandler):
                         "project_id is required",
                         code="validation",
                     )
+                if not isinstance(objective, str) or not objective.strip():
+                    return self._problem(
+                        422,
+                        "Validation Failed",
+                        "objective is required",
+                        code="validation",
+                    )
                 self._assert_project(project_id)
                 result = self.server.store.create_task(
                     tenant_id,
                     project_id,
-                    body.get("objective"),
+                    objective,
                     idempotency_key=self._idempotency(),
                     request_payload=body,
                     actor_id=actor_id,
@@ -288,10 +296,18 @@ class HarnessRequestHandler(BaseHTTPRequestHandler):
                 )
                 return self._send(200, result)
             if tail == "branch":
+                branch_objective = body.get("objective")
+                if not isinstance(branch_objective, str) or not branch_objective.strip():
+                    return self._problem(
+                        422,
+                        "Validation Failed",
+                        "objective is required",
+                        code="validation",
+                    )
                 result = self.server.store.branch_task(
                     tenant_id,
                     task_id,
-                    body.get("objective"),
+                    branch_objective,
                     idempotency_key=key,
                     actor_id=actor_id,
                 )
@@ -336,6 +352,7 @@ def serve(
     resolved_artifact_root = (
         str(Path(artifact_root).resolve()) if artifact_root else None
     )
+    store: DurableStore
     if database.startswith(("postgresql://", "postgres://", "service=")):
         from .postgres import PostgresConfig, PostgresStore
 

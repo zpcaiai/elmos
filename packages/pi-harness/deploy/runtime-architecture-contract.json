@@ -9,6 +9,7 @@
     "workflow": {"engine": "temporal", "tls": "mutual", "namespace": "REQUIRED", "build_id": "REQUIRED"},
     "identity": {"human": "oidc-jwks", "workload": "mtls-spiffe", "static_token": false},
     "artifacts": {"service": "s3", "encryption": "customer-managed-kms", "public_access": false},
+    "evidence_retention": {"service": "s3-object-lock", "versioning": "enabled", "encryption": "customer-managed-kms", "retention_mode": "COMPLIANCE", "public_access": false, "administration": "independent-trust-domain"},
     "network": {"public_ingress": false, "default_egress": "deny", "private_endpoints": "required"},
     "deployment": {"strategy": "canary", "rollback_artifact_digest": "required"}
   },

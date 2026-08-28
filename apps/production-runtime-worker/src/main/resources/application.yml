@@ -1,0 +1,44 @@
+server:
+  port: ${ELMOS_PRODUCTION_WORKER_PORT:8090}
+  shutdown: graceful
+spring:
+  application:
+    name: elmos-production-runtime-worker
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+        add-additional-paths: true
+      show-details: never
+      group:
+        readiness:
+          include: readinessState,productionWorkerJournal
+        liveness:
+          include: livenessState,productionWorkerJournal
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: elmos-production-runtime-worker
+      component: worker
+elmos:
+  production-worker:
+    worker-id: ${ELMOS_PRODUCTION_WORKER_ID:}
+    identity-namespace: ${ELMOS_PRODUCTION_WORKER_IDENTITY_NAMESPACE:}
+    worker-name: ${ELMOS_PRODUCTION_WORKER_NAME:}
+    worker-type: ${ELMOS_PRODUCTION_WORKER_TYPE:POLYGLOT}
+    advertised-endpoint: ${ELMOS_PRODUCTION_WORKER_ENDPOINT:}
+    region: ${ELMOS_PRODUCTION_WORKER_REGION:}
+    zone: ${ELMOS_PRODUCTION_WORKER_ZONE:}
+    control-plane-url: ${ELMOS_PRODUCTION_RUNTIME_CONTROL_PLANE_URL:}
+    workload-token-file: ${ELMOS_PRODUCTION_RUNTIME_WORKLOAD_TOKEN_FILE:}
+    route-catalog-file: ${ELMOS_PRODUCTION_WORKER_ROUTE_CATALOG_FILE:}
+    service-mesh-http: ${ELMOS_PRODUCTION_RUNTIME_SERVICE_MESH_HTTP:false}
+    max-concurrent-attempts: ${ELMOS_PRODUCTION_WORKER_MAX_CONCURRENT:4}
+    max-retained-attempts: ${ELMOS_PRODUCTION_WORKER_MAX_RETAINED:10000}
+    state-directory: ${ELMOS_PRODUCTION_WORKER_STATE_DIRECTORY}

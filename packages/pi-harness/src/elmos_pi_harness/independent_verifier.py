@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import re
 import sqlite3
 import threading
 from collections.abc import Iterable, Mapping
@@ -14,6 +15,9 @@ from typing import Any, Protocol
 from .canonical import canonical_bytes, digest, require_nonempty, require_uuid, utc_now
 from .models import ConflictError, PolicyDeniedError
 from .production import ExternalEvidenceState
+
+
+_DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 
 
 def _time(value: str, field_name: str) -> datetime:
@@ -56,14 +60,31 @@ class EvidenceStatement:
             "executor_id",
         ):
             require_nonempty(getattr(self, name), name, 512)
-        if not self.raw_evidence_digests:
+        evidence_digests = tuple(self.raw_evidence_digests)
+        if isinstance(self.limitations, str):
+            raise ValueError("limitations must be an array")
+        limitations = tuple(self.limitations)
+        if not evidence_digests:
             raise ValueError("raw_evidence_digests cannot be empty")
+        for name in ("subject_digest", "environment_digest"):
+            if _DIGEST.fullmatch(getattr(self, name)) is None:
+                raise ValueError(f"{name} must be a lowercase SHA-256 digest")
+        if any(_DIGEST.fullmatch(value) is None for value in evidence_digests):
+            raise ValueError(
+                "raw_evidence_digests must contain lowercase SHA-256 digests"
+            )
+        if len(set(evidence_digests)) != len(evidence_digests):
+            raise ValueError("raw_evidence_digests contains duplicates")
+        for limitation in limitations:
+            require_nonempty(limitation, "limitations[]", 4096)
         if self.result not in {"PASS", "FAIL", "BLOCKED", "UNKNOWN", "NOT_RUN"}:
             raise ValueError("invalid evidence result")
         if _time(self.completed_at, "completed_at") < _time(
             self.started_at, "started_at"
         ):
             raise ValueError("evidence completion precedes start")
+        object.__setattr__(self, "raw_evidence_digests", evidence_digests)
+        object.__setattr__(self, "limitations", limitations)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -104,6 +125,12 @@ class SignedVerification:
             raise ValueError("invalid independent verifier verdict")
         if self.signature_algorithm != "Ed25519":
             raise ValueError("unsupported signature algorithm")
+        if _time(self.issued_at, "issued_at") < _time(
+            self.statement.completed_at, "statement.completed_at"
+        ):
+            raise ValueError(
+                "verification receipt cannot be issued before evidence completion"
+            )
         if _time(self.expires_at, "expires_at") <= _time(self.issued_at, "issued_at"):
             raise ValueError("verification receipt expiry must follow issuance")
 
@@ -170,8 +197,11 @@ class TrustedVerifier:
     def __post_init__(self) -> None:
         for name in ("verifier_id", "trust_domain", "key_id"):
             require_nonempty(getattr(self, name), name, 512)
-        if len(self.public_key) != 32:
+        public_key = bytes(self.public_key)
+        if len(public_key) != 32:
             raise ValueError("Ed25519 public key must contain 32 bytes")
+        object.__setattr__(self, "public_key", public_key)
+        object.__setattr__(self, "allowed_scopes", frozenset(self.allowed_scopes))
         if _time(self.not_after, "not_after") <= _time(self.not_before, "not_before"):
             raise ValueError("verifier key validity interval is invalid")
 

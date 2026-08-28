@@ -297,6 +297,9 @@ class DurableAgentRegistryTest {
                     binding, new TypeReference<>() {});
             assertEquals("io.elmos.repair.DurableAgentRegistry", document.get("runtime_class"));
             assertEquals("LOCAL_RUNTIME_IMPLEMENTED", document.get("binding_state"));
+            assertEquals(
+                    "sha256:237ef61c498f6d4c5a2dc9737121ebc66789dd0127f464bf661c8ae77314316e",
+                    document.get("source_skill_sha256"));
             assertEquals(false, document.get("side_effects_authorized"));
             assertEquals("NOT_RUN", document.get("external_evidence_status"));
             assertEquals("NOT_CERTIFIED", document.get("certification"));
@@ -517,6 +520,14 @@ class DurableAgentRegistryTest {
         envelope.put("schemaVersion", "wrong-schema");
         stateMapper().writeValue(findNamed(schemaRoot, "registry.json").toFile(), envelope);
         assertCode("REGISTRY_STATE_SCHEMA_INVALID", () -> registry(schemaRoot).view("tenant-a", "project-a", ADMIN));
+
+        Path payloadRoot = initializedRoot("missing-payload-state");
+        Path payloadState = findNamed(payloadRoot, "registry.json");
+        ObjectNode missingPayload = (ObjectNode) stateMapper().readTree(payloadState.toFile());
+        missingPayload.set("payload", null);
+        stateMapper().writeValue(payloadState.toFile(), missingPayload);
+        assertCode("REGISTRY_STATE_SCHEMA_INVALID", () -> registry(payloadRoot)
+                .view("tenant-a", "project-a", ADMIN));
     }
 
     @Test
@@ -597,6 +608,11 @@ class DurableAgentRegistryTest {
 
     @Test
     void rejectsEveryDigestBoundStateInvariantAndCapacityLimit() throws IOException {
+        Path storeSchemaRoot = initializedRoot("bad-store-schema");
+        forgePayload(storeSchemaRoot, payload -> payload.put("schemaVersion", "wrong-store-schema"));
+        assertCode("REGISTRY_STATE_SCOPE_INVALID", () -> registry(storeSchemaRoot)
+                .view("tenant-a", "project-a", ADMIN));
+
         Path projectScopeRoot = initializedRoot("bad-project-scope");
         forgePayload(projectScopeRoot, payload -> payload.put("projectId", "forged-project"));
         assertCode("REGISTRY_STATE_SCOPE_INVALID", () -> registry(projectScopeRoot)
@@ -624,6 +640,12 @@ class DurableAgentRegistryTest {
         assertCode("REGISTRY_STATE_LAYERS_INVALID", () -> registry(duplicateAgentsRoot)
                 .view("tenant-a", "project-a", ADMIN));
 
+        Path nullAgentRoot = initializedRoot("null-agent");
+        forgePayload(nullAgentRoot, payload -> ((ArrayNode) payload.path("layers").path("GLOBAL"))
+                .set(0, com.fasterxml.jackson.databind.node.NullNode.getInstance()));
+        assertCode("REGISTRY_STATE_LAYERS_INVALID", () -> registry(nullAgentRoot)
+                .view("tenant-a", "project-a", ADMIN));
+
         Path missingMutationResultRoot = initializedRoot("missing-mutation-result");
         forgePayload(missingMutationResultRoot, payload -> ((ObjectNode) payload
                 .path("mutationReceipts").path("configuration-1")).set("result", null));
@@ -646,6 +668,16 @@ class DurableAgentRegistryTest {
         forgePayload(missingSelectionDecisionRoot, payload -> ((ObjectNode) payload
                 .path("selectionReceipts").path("selection-1")).set("decision", null));
         assertCode("REGISTRY_RECEIPT_INVALID", () -> registry(missingSelectionDecisionRoot)
+                .view("tenant-a", "project-a", ADMIN));
+
+        Path invalidSelectionStatusRoot = initializedRootWithSelection("invalid-selection-status");
+        forgePayload(invalidSelectionStatusRoot, payload -> {
+            ObjectNode decision = (ObjectNode) payload
+                    .path("selectionReceipts").path("selection-1").path("decision");
+            decision.put("status", "forged");
+            decision.set("permit", null);
+        });
+        assertCode("REGISTRY_RECEIPT_INVALID", () -> registry(invalidSelectionStatusRoot)
                 .view("tenant-a", "project-a", ADMIN));
 
         Path permitDigestRoot = initializedRootWithSelection("bad-permit-digest");
@@ -679,6 +711,16 @@ class DurableAgentRegistryTest {
         Path stateCapacityRoot = initializedRoot("state-capacity");
         forgePayload(stateCapacityRoot, payload -> expandAudit(payload, 4_097));
         assertCode("REGISTRY_STATE_CAPACITY_INVALID", () -> registry(stateCapacityRoot)
+                .view("tenant-a", "project-a", ADMIN));
+
+        Path mutationCapacityRoot = initializedRoot("mutation-state-capacity");
+        forgePayload(mutationCapacityRoot, payload -> expandMutationReceipts(payload, 2_049));
+        assertCode("REGISTRY_STATE_CAPACITY_INVALID", () -> registry(mutationCapacityRoot)
+                .view("tenant-a", "project-a", ADMIN));
+
+        Path selectionCapacityRoot = initializedRootWithSelection("selection-state-capacity");
+        forgePayload(selectionCapacityRoot, payload -> expandSelectionReceipts(payload, 2_049));
+        assertCode("REGISTRY_STATE_CAPACITY_INVALID", () -> registry(selectionCapacityRoot)
                 .view("tenant-a", "project-a", ADMIN));
     }
 
@@ -730,6 +772,114 @@ class DurableAgentRegistryTest {
             Files.setPosixFilePermissions(protectedParent, original);
             Files.deleteIfExists(protectedCandidate);
         }
+    }
+
+    @Test
+    void validatesInternalFilesystemAndScopeSafetyBoundaries() throws IOException {
+        Path root = temporary.resolve("safety-root").toAbsolutePath();
+        var operation = new DurableAgentRegistry.OperationScope(root, "tenant-a", "project-a");
+        DurableAgentRegistry.requireOperationScope(operation, "tenant-a", "project-a");
+        assertCode("REGISTRY_OPERATION_SCOPE_INVALID", () -> DurableAgentRegistry.requireOperationScope(
+                null, "tenant-a", "project-a"));
+        assertCode("REGISTRY_OPERATION_SCOPE_INVALID", () -> DurableAgentRegistry.requireOperationScope(
+                operation, "tenant-b", "project-a"));
+        assertCode("REGISTRY_OPERATION_SCOPE_INVALID", () -> DurableAgentRegistry.requireOperationScope(
+                operation, "tenant-a", "project-b"));
+
+        DurableAgentRegistry.requireContainedScope(root, root.resolve("tenant/project"));
+        assertCode("REGISTRY_SCOPE_ESCAPED", () -> DurableAgentRegistry.requireContainedScope(
+                root, temporary.resolve("outside").toAbsolutePath()));
+
+        DurableAgentRegistry.requireSingleLinkCount(1, "REGISTRY_LINK_INVALID");
+        assertCode("REGISTRY_LINK_INVALID", () -> DurableAgentRegistry.requireSingleLinkCount(
+                2L, "REGISTRY_LINK_INVALID"));
+        assertCode("REGISTRY_LINK_INVALID", () -> DurableAgentRegistry.requireSingleLinkCount(
+                "not-a-number", "REGISTRY_LINK_INVALID"));
+
+        assertTrue(DurableAgentRegistry.constantTimeEquals("a", "a"));
+        assertFalse(DurableAgentRegistry.constantTimeEquals("a", "b"));
+        assertFalse(DurableAgentRegistry.constantTimeEquals(null, "a"));
+        assertFalse(DurableAgentRegistry.constantTimeEquals("a", null));
+
+        Path directory = temporary.resolve("safety-directory");
+        Files.createDirectory(directory);
+        DurableAgentRegistry.requireDirectory(directory, "REGISTRY_DIRECTORY_INVALID");
+        Path regularFile = temporary.resolve("safety-file");
+        Files.writeString(regularFile, "safe");
+        assertEquals("REGISTRY_DIRECTORY_INVALID", assertThrows(
+                AgentRegistryException.class,
+                () -> DurableAgentRegistry.requireDirectory(regularFile, "REGISTRY_DIRECTORY_INVALID")).code());
+        DurableAgentRegistry.requireRegularSingleLink(regularFile, "REGISTRY_FILE_INVALID");
+        assertCode("REGISTRY_FILE_INVALID", () -> DurableAgentRegistry.requireRegularSingleLink(
+                directory, "REGISTRY_FILE_INVALID"));
+        assertCode("REGISTRY_FILE_UNAVAILABLE", () -> DurableAgentRegistry.requireRegularSingleLink(
+                temporary.resolve("missing-file"), "REGISTRY_FILE_UNAVAILABLE"));
+
+        Path fileLink = temporary.resolve("safety-file-link");
+        try {
+            Files.createSymbolicLink(fileLink, regularFile);
+            assertCode("REGISTRY_FILE_INVALID", () -> DurableAgentRegistry.requireRegularSingleLink(
+                    fileLink, "REGISTRY_FILE_INVALID"));
+        } catch (UnsupportedOperationException ignored) {
+            // The exact filesystem cannot exercise symlink metadata; no result is inferred for that branch.
+        }
+
+        Path archive = temporary.resolve("unsupported-posix.zip");
+        try (var zip = java.nio.file.FileSystems.newFileSystem(
+                java.net.URI.create("jar:" + archive.toUri()), Map.of("create", "true"))) {
+            Path zipFile = zip.getPath("/entry.txt");
+            Files.writeString(zipFile, "entry");
+            DurableAgentRegistry.requireRegularSingleLink(zipFile, "REGISTRY_FILE_INVALID");
+            DurableAgentRegistry.setOwnerOnly(zipFile, Set.of());
+        }
+    }
+
+    @Test
+    void translatesDeterministicStorageAndSerializationFailures() throws IOException {
+        Path existingLock = temporary.resolve("existing.lock");
+        Files.writeString(existingLock, "lock");
+        DurableAgentRegistry.createLockFile(existingLock);
+        assertEquals("lock", Files.readString(existingLock));
+
+        Path state = temporary.resolve("stable-state.json");
+        Files.writeString(state, "{}");
+        assertEquals(2, DurableAgentRegistry.readStableBytes(state, 2).length);
+        assertEquals("REGISTRY_STATE_CHANGED", assertThrows(
+                AgentRegistryException.class,
+                () -> DurableAgentRegistry.readStableBytes(state, 3)).code());
+
+        assertCode("REGISTRY_TEST_SERIALIZATION_FAILED", () -> DurableAgentRegistry.serialize(
+                stateMapper(), new BrokenSerializationValue(), "REGISTRY_TEST_SERIALIZATION_FAILED"));
+
+        Path missingCandidate = temporary.resolve("missing-parent").resolve("candidate.tmp");
+        assertCode("REGISTRY_STATE_WRITE_FAILED", () -> DurableAgentRegistry.writeCandidate(
+                missingCandidate, "state".getBytes(StandardCharsets.UTF_8)));
+
+        Path atomicCandidate = temporary.resolve("atomic-candidate.tmp");
+        Files.writeString(atomicCandidate, "candidate");
+        assertCode("REGISTRY_ATOMIC_MOVE_REQUIRED", () -> DurableAgentRegistry.commitCandidate(
+                atomicCandidate,
+                temporary.resolve("atomic-target.json"),
+                temporary,
+                (source, target) -> {
+                    throw new java.nio.file.AtomicMoveNotSupportedException(
+                            source.toString(), target.toString(), "forced atomic-move boundary");
+                }));
+        assertFalse(Files.exists(atomicCandidate));
+
+        Path commitCandidate = temporary.resolve("commit-candidate.tmp");
+        Files.writeString(commitCandidate, "candidate");
+        assertCode("REGISTRY_STATE_COMMIT_FAILED", () -> DurableAgentRegistry.commitCandidate(
+                commitCandidate,
+                temporary.resolve("commit-target.json"),
+                temporary,
+                (source, target) -> {
+                    throw new IOException("forced commit boundary");
+                }));
+        assertFalse(Files.exists(commitCandidate));
+
+        assertThrows(IllegalStateException.class, () -> DurableAgentRegistry.sha256(
+                "value".getBytes(StandardCharsets.UTF_8), "ELMOS-NO-SUCH-DIGEST"));
     }
 
     private static String runConcurrent(
@@ -899,6 +1049,22 @@ class DurableAgentRegistryTest {
         }
     }
 
+    private static void expandMutationReceipts(ObjectNode payload, int size) {
+        ObjectNode receipts = (ObjectNode) payload.path("mutationReceipts");
+        ObjectNode template = (ObjectNode) receipts.path("configuration-1");
+        for (int index = 1; index < size; index++) {
+            receipts.set("mutation-" + index, template.deepCopy());
+        }
+    }
+
+    private static void expandSelectionReceipts(ObjectNode payload, int size) {
+        ObjectNode receipts = (ObjectNode) payload.path("selectionReceipts");
+        ObjectNode template = (ObjectNode) receipts.path("selection-1");
+        for (int index = 2; index <= size; index++) {
+            receipts.set("selection-" + index, template.deepCopy());
+        }
+    }
+
     private static ObjectMapper stateMapper() {
         return JsonMapper.builder()
                 .addModule(new JavaTimeModule())
@@ -996,6 +1162,12 @@ class DurableAgentRegistryTest {
         @Override
         public Instant instant() {
             return now;
+        }
+    }
+
+    private static final class BrokenSerializationValue {
+        public String getValue() {
+            throw new IllegalStateException("forced serialization boundary");
         }
     }
 }

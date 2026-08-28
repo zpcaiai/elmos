@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/agent-step-budget-request-v1.json",
+  "title": "ELMOS Agent Step Budget Request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "operation",
+    "skill_name",
+    "tenant_id",
+    "project_id",
+    "run_id",
+    "task_id",
+    "agent_id",
+    "actor_id",
+    "idempotency_key",
+    "authorization",
+    "input"
+  ],
+  "properties": {
+    "schema_version": {"const": "elmos.agent-step-budget.request.v1"},
+    "operation": {"enum": ["admit", "audit", "cancel", "reserve", "settle", "status"]},
+    "skill_name": {"const": "agent-step-budget"},
+    "tenant_id": {"$ref": "#/$defs/identifier"},
+    "project_id": {"$ref": "#/$defs/identifier"},
+    "run_id": {"$ref": "#/$defs/identifier"},
+    "task_id": {"$ref": "#/$defs/identifier"},
+    "agent_id": {"$ref": "#/$defs/identifier"},
+    "actor_id": {"$ref": "#/$defs/identifier"},
+    "idempotency_key": {"$ref": "#/$defs/identifier"},
+    "authorization": {"$ref": "#/$defs/authorization"},
+    "input": {"type": "object"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"operation": {"const": "admit"}}, "required": ["operation"]},
+      "then": {"properties": {"input": {"$ref": "#/$defs/admitInput"}}}
+    },
+    {
+      "if": {"properties": {"operation": {"const": "reserve"}}, "required": ["operation"]},
+      "then": {"properties": {"input": {"$ref": "#/$defs/reserveInput"}}}
+    },
+    {
+      "if": {"properties": {"operation": {"const": "settle"}}, "required": ["operation"]},
+      "then": {"properties": {"input": {"$ref": "#/$defs/settleInput"}}}
+    },
+    {
+      "if": {"properties": {"operation": {"const": "status"}}, "required": ["operation"]},
+      "then": {"properties": {"input": {"$ref": "#/$defs/statusInput"}}}
+    },
+    {
+      "if": {"properties": {"operation": {"const": "cancel"}}, "required": ["operation"]},
+      "then": {"properties": {"input": {"$ref": "#/$defs/cancelInput"}}}
+    },
+    {
+      "if": {"properties": {"operation": {"const": "audit"}}, "required": ["operation"]},
+      "then": {"properties": {"input": {"$ref": "#/$defs/auditInput"}}}
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$"
+    },
+    "boundedText": {"type": "string", "minLength": 1, "maxLength": 512},
+    "textList": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/boundedText"}
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorization_id",
+        "decision",
+        "permission",
+        "subject_actor_id",
+        "scope_sha256",
+        "issued_at",
+        "expires_at",
+        "token"
+      ],
+      "properties": {
+        "authorization_id": {"$ref": "#/$defs/identifier"},
+        "decision": {"enum": ["ALLOW", "DENY"]},
+        "permission": {
+          "enum": [
+            "agent-step-budget.admit",
+            "agent-step-budget.audit",
+            "agent-step-budget.cancel",
+            "agent-step-budget.reserve",
+            "agent-step-budget.settle",
+            "agent-step-budget.status"
+          ]
+        },
+        "subject_actor_id": {"$ref": "#/$defs/identifier"},
+        "scope_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "issued_at": {"type": "string", "format": "date-time", "maxLength": 64},
+        "expires_at": {"type": "string", "format": "date-time", "maxLength": 64},
+        "token": {"type": "string", "minLength": 1, "maxLength": 4096}
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base_max_steps",
+        "base_max_turns",
+        "hard_max_steps",
+        "hard_max_turns",
+        "complexity",
+        "expected_step_cost_microusd",
+        "max_cost_microusd",
+        "max_tokens",
+        "warning_remaining_steps",
+        "warning_remaining_turns",
+        "reservation_timeout_seconds"
+      ],
+      "properties": {
+        "base_max_steps": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "base_max_turns": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "hard_max_steps": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "hard_max_turns": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "complexity": {"enum": ["LOW", "MEDIUM", "HIGH", "EXTREME"]},
+        "expected_step_cost_microusd": {"type": "integer", "minimum": 1, "maximum": 1000000000000000},
+        "max_cost_microusd": {"type": "integer", "minimum": 1, "maximum": 1000000000000000000},
+        "max_tokens": {"type": "integer", "minimum": 1, "maximum": 1000000000000000},
+        "warning_remaining_steps": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "warning_remaining_turns": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "reservation_timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 86400}
+      }
+    },
+    "admitInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy"],
+      "properties": {"policy": {"$ref": "#/$defs/policy"}}
+    },
+    "reserveInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected_version",
+        "step_id",
+        "turn_id",
+        "estimated_tokens",
+        "estimated_cost_microusd",
+        "side_effect",
+        "remaining_work",
+        "blockers"
+      ],
+      "properties": {
+        "expected_version": {"type": "integer", "minimum": 1, "maximum": 1000000000000},
+        "step_id": {"$ref": "#/$defs/identifier"},
+        "turn_id": {"$ref": "#/$defs/identifier"},
+        "estimated_tokens": {"type": "integer", "minimum": 0, "maximum": 1000000000000000},
+        "estimated_cost_microusd": {"type": "integer", "minimum": 0, "maximum": 1000000000000000000},
+        "side_effect": {"type": "boolean"},
+        "remaining_work": {"$ref": "#/$defs/textList"},
+        "blockers": {"$ref": "#/$defs/textList"}
+      }
+    },
+    "settleInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected_version",
+        "step_id",
+        "outcome",
+        "actual_tokens",
+        "actual_cost_microusd",
+        "failure_type",
+        "remaining_work",
+        "blockers"
+      ],
+      "properties": {
+        "expected_version": {"type": "integer", "minimum": 1, "maximum": 1000000000000},
+        "step_id": {"$ref": "#/$defs/identifier"},
+        "outcome": {"enum": ["SUCCEEDED", "FAILED", "CANCELLED", "UNKNOWN"]},
+        "actual_tokens": {"type": "integer", "minimum": 0, "maximum": 1000000000000000},
+        "actual_cost_microusd": {"type": "integer", "minimum": 0, "maximum": 1000000000000000000},
+        "failure_type": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,127}$"}
+          ]
+        },
+        "remaining_work": {"$ref": "#/$defs/textList"},
+        "blockers": {"$ref": "#/$defs/textList"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"outcome": {"enum": ["FAILED", "UNKNOWN"]}}, "required": ["outcome"]},
+          "then": {"properties": {"failure_type": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,127}$"}}},
+          "else": {"properties": {"failure_type": {"type": "null"}}}
+        }
+      ]
+    },
+    "statusInput": {"type": "object", "additionalProperties": false, "maxProperties": 0},
+    "cancelInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_version", "reason"],
+      "properties": {
+        "expected_version": {"type": "integer", "minimum": 1, "maximum": 1000000000000},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 1024}
+      }
+    },
+    "auditInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["after_sequence", "limit"],
+      "properties": {
+        "after_sequence": {"type": "integer", "minimum": 0, "maximum": 1000000000000000000},
+        "limit": {"type": "integer", "minimum": 1, "maximum": 1000}
+      }
+    }
+  }
+}
