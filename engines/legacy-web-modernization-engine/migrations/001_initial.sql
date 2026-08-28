@@ -43,11 +43,6 @@ CREATE TABLE IF NOT EXISTS change_set (
   fencing_token INTEGER NOT NULL, payload_json TEXT NOT NULL, created_at TEXT NOT NULL,
   PRIMARY KEY (tenant_id, project_id, job_id, change_set_id)
 );
-CREATE TABLE IF NOT EXISTS benchmark_cache (
-  tenant_id TEXT NOT NULL, project_id TEXT NOT NULL, cache_key TEXT NOT NULL,
-  artifact_digest TEXT NOT NULL, payload_json TEXT NOT NULL, created_at TEXT NOT NULL,
-  PRIMARY KEY (tenant_id, project_id, cache_key)
-);
 CREATE INDEX IF NOT EXISTS idx_control_event_scope_time
   ON control_event(tenant_id, project_id, job_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_artifact_index_scope_time

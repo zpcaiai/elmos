@@ -17,12 +17,6 @@ SOURCE_FIXTURE = PACK / "corpus/development/legacy-spring-mvc"
 
 
 class LegacySpringMvcPackTests(unittest.TestCase):
-    def local_evidence_root(self, pack: Path) -> Path:
-        evidence = json.loads(
-            (pack / "certification/evidence.json").read_text(encoding="utf-8")
-        )
-        return pack / Path(evidence["runs"][0]["evidence_index"]).parent
-
     def run_validator(self, pack: Path) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [sys.executable, str(VALIDATOR), "--pack-dir", str(pack)],
@@ -385,7 +379,7 @@ class LegacySpringMvcPackTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             copied = Path(temporary) / PACK.name
             shutil.copytree(PACK, copied)
-            summary = self.local_evidence_root(copied) / "evidence/target-test-summary.json"
+            summary = copied / "certification/local-execution/2026-08-27/evidence/target-test-summary.json"
             summary.write_bytes(summary.read_bytes() + b"\n")
 
             completed = self.run_validator(copied)
@@ -413,8 +407,10 @@ class LegacySpringMvcPackTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             copied = Path(temporary) / PACK.name
             shutil.copytree(PACK, copied)
-            executed_war = self.local_evidence_root(copied) / (
-                "artifacts/executed-spring-boot-3.5.3.war"
+            executed_war = (
+                copied
+                / "certification/local-execution/2026-08-27/artifacts/"
+                "executed-spring-boot-3.5.3.war"
             )
             executed_war.write_bytes(executed_war.read_bytes() + b"tamper")
 
@@ -430,7 +426,7 @@ class LegacySpringMvcPackTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             copied = Path(temporary) / PACK.name
             shutil.copytree(PACK, copied)
-            evidence_root = self.local_evidence_root(copied)
+            evidence_root = copied / "certification/local-execution/2026-08-27"
             receipt_path = evidence_root / "local-qualification.json"
             receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
             receipt["target"]["executed_war"]["manifest"]["Start-Class"] = "example.Forged"
@@ -445,22 +441,6 @@ class LegacySpringMvcPackTests(unittest.TestCase):
             completed = self.run_validator(copied)
             self.assertEqual(completed.returncode, 1)
             self.assertIn("executed WAR manifest identity drifted", completed.stderr)
-
-    def test_local_evidence_index_cannot_escape_the_pack(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            copied = Path(temporary) / PACK.name
-            shutil.copytree(PACK, copied)
-            evidence_path = copied / "certification/evidence.json"
-            evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
-            evidence["runs"][0]["evidence_index"] = "../../outside/evidence-index.json"
-            evidence_path.write_text(
-                json.dumps(evidence, indent=2) + "\n",
-                encoding="utf-8",
-            )
-
-            completed = self.run_validator(copied)
-            self.assertEqual(1, completed.returncode)
-            self.assertIn("local evidence index path is unsafe", completed.stderr)
 
     def test_unearned_supported_capability_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:

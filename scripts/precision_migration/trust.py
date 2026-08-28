@@ -79,31 +79,8 @@ def file_digest(path: Path) -> str:
     return "sha256:" + value.hexdigest()
 
 
-@dataclass(frozen=True)
-class RegularFileSnapshot:
-    content: bytes
-    stat_result: os.stat_result
-
-
-def _file_identity(value: os.stat_result) -> tuple[int, ...]:
-    return (
-        value.st_dev,
-        value.st_ino,
-        value.st_mode,
-        value.st_nlink,
-        value.st_uid,
-        value.st_gid,
-        value.st_size,
-        value.st_mtime_ns,
-        value.st_ctime_ns,
-    )
-
-
-def read_regular_file_snapshot(
-    path: Path, *, max_bytes: int, label: str
-) -> RegularFileSnapshot:
-    """Read bytes and descriptor identity without following the final symlink."""
-
+def read_regular_file_once(path: Path, *, max_bytes: int, label: str) -> bytes:
+    """Read one bounded regular file descriptor without following its final symlink."""
     flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     descriptor = os.open(path, flags)
     try:
@@ -122,20 +99,9 @@ def read_regular_file_snapshot(
             remaining -= len(chunk)
         if os.read(descriptor, 1):
             raise ValueError(f"{label} changed while being read")
-        completed = os.fstat(descriptor)
-        if _file_identity(completed) != _file_identity(observed):
-            raise ValueError(f"{label} changed while being read")
-        return RegularFileSnapshot(b"".join(chunks), completed)
+        return b"".join(chunks)
     finally:
         os.close(descriptor)
-
-
-def read_regular_file_once(path: Path, *, max_bytes: int, label: str) -> bytes:
-    """Read one bounded regular file descriptor without following its final symlink."""
-
-    return read_regular_file_snapshot(
-        path, max_bytes=max_bytes, label=label
-    ).content
 
 
 def utc_now() -> datetime:
@@ -296,23 +262,32 @@ class TrustStore:
         """
         supplied_store = path.expanduser()
         resolved_store = supplied_store.resolve(strict=True)
-        path_stat = os.stat(supplied_store, follow_symlinks=False)
-        if stat.S_ISLNK(path_stat.st_mode):
+        store_stat = os.stat(supplied_store, follow_symlinks=False)
+        if stat.S_ISLNK(store_stat.st_mode):
             raise OSError("trust store must not be a symlink")
-        if not stat.S_ISREG(path_stat.st_mode):
+        if not stat.S_ISREG(store_stat.st_mode):
             raise ValueError("trust store must be a regular file")
-        store_snapshot = read_regular_file_snapshot(
+        store_bytes = read_regular_file_once(
             supplied_store,
             max_bytes=1024 * 1024,
             label="trust store",
         )
-        return cls._from_bytes_with_document(
-            resolved_store,
-            store_snapshot.content,
-            supplied_store=supplied_store,
-            store_path_stat=path_stat,
-            store_stat=store_snapshot.stat_result,
-        )
+        store = cls.from_bytes(resolved_store, store_bytes)
+        current_store_stat = os.stat(supplied_store, follow_symlinks=False)
+        if (
+            current_store_stat.st_dev,
+            current_store_stat.st_ino,
+            current_store_stat.st_size,
+            current_store_stat.st_mtime_ns,
+        ) != (
+            store_stat.st_dev,
+            store_stat.st_ino,
+            store_stat.st_size,
+            store_stat.st_mtime_ns,
+        ):
+            raise ValueError("trust store changed while its snapshot was loaded")
+        document = json.loads(store_bytes.decode("utf-8"))
+        return store, document
 
     @classmethod
     def from_bytes(cls, path: Path, store_bytes: bytes) -> "TrustStore":
@@ -323,41 +298,8 @@ class TrustStore:
         so metadata inspection and trust construction cannot observe different JSON
         revisions.  ``load`` remains the path-based, backward-compatible entrypoint.
         """
-        store, _document = cls._from_bytes_with_document(path, store_bytes)
-        return store
-
-    @classmethod
-    def _from_bytes_with_document(
-        cls,
-        path: Path,
-        store_bytes: bytes,
-        *,
-        supplied_store: Path | None = None,
-        store_path_stat: os.stat_result | None = None,
-        store_stat: os.stat_result | None = None,
-    ) -> tuple["TrustStore", dict[str, Any]]:
-        """Build both trust views from one byte snapshot.
-
-        ``load_with_document`` supplies the original path identity so a path
-        replacement during its read is rejected.  ``from_bytes`` intentionally
-        omits that identity: its contract is to trust the caller's immutable
-        byte snapshot even when the origin file has since changed.
-        """
         if not isinstance(store_bytes, bytes):
             raise TypeError("trust store content must be bytes")
-        store_identity_parts = (
-            supplied_store is not None,
-            store_path_stat is not None,
-            store_stat is not None,
-        )
-        if any(store_identity_parts) and not all(store_identity_parts):
-            raise ValueError("trust store path identity is incomplete")
-        if (
-            store_path_stat is not None
-            and store_stat is not None
-            and _file_identity(store_path_stat) != _file_identity(store_stat)
-        ):
-            raise ValueError("trust store changed while its snapshot was loaded")
         resolved_store = path.expanduser().resolve(strict=True)
 
         def reject_constant(value: str) -> None:
@@ -376,9 +318,7 @@ class TrustStore:
         keys: dict[str, TrustedKey] = {}
         seen_key_ids: set[str] = set()
         key_material_digests: dict[str, str] = {}
-        key_path_stats: list[
-            tuple[Path, Path, os.stat_result, os.stat_result]
-        ] = []
+        key_path_stats: dict[Path, os.stat_result] = {}
         base = resolved_store.parent
         for index, item in enumerate(records):
             if not isinstance(item, dict):
@@ -408,26 +348,12 @@ class TrustStore:
                 raise OSError(f"trust store key {key_id} must not be a symlink")
             if not stat.S_ISREG(key_stat.st_mode):
                 raise ValueError(f"trust store key {key_id} must be a regular file")
-            key_snapshot = read_regular_file_snapshot(
+            key_bytes = read_regular_file_once(
                 supplied_key_path,
                 max_bytes=64 * 1024,
                 label=f"trust store key {key_id}",
             )
-            if _file_identity(key_stat) != _file_identity(
-                key_snapshot.stat_result
-            ):
-                raise ValueError(
-                    "trust store public key changed while its snapshot was loaded"
-                )
-            key_bytes = key_snapshot.content
-            key_path_stats.append(
-                (
-                    supplied_key_path,
-                    key_path,
-                    key_stat,
-                    key_snapshot.stat_result,
-                )
-            )
+            key_path_stats[supplied_key_path] = key_stat
             key_digest = "sha256:" + hashlib.sha256(key_bytes).hexdigest()
             key_material_digests[key_id] = key_digest
             if item.get("revoked") is True:
@@ -450,29 +376,18 @@ class TrustStore:
             not isinstance(item, str) or not item for item in revoked
         ):
             raise ValueError("trust store revoked_record_ids must be a string array")
-        if (
-            supplied_store is not None
-            and store_path_stat is not None
-            and store_stat is not None
-        ):
-            current_store_stat = os.stat(supplied_store, follow_symlinks=False)
+        for key_path, expected_stat in key_path_stats.items():
+            current_key_stat = os.stat(key_path, follow_symlinks=False)
             if (
-                supplied_store.resolve(strict=True) != resolved_store
-                or _file_identity(store_path_stat) != _file_identity(store_stat)
-                or _file_identity(current_store_stat) != _file_identity(store_stat)
-            ):
-                raise ValueError("trust store changed while its snapshot was loaded")
-        for (
-            supplied_key_path,
-            resolved_key_path,
-            path_stat,
-            descriptor_stat,
-        ) in key_path_stats:
-            current_key_stat = os.stat(supplied_key_path, follow_symlinks=False)
-            if (
-                supplied_key_path.resolve(strict=True) != resolved_key_path
-                or _file_identity(path_stat) != _file_identity(descriptor_stat)
-                or _file_identity(current_key_stat) != _file_identity(descriptor_stat)
+                current_key_stat.st_dev,
+                current_key_stat.st_ino,
+                current_key_stat.st_size,
+                current_key_stat.st_mtime_ns,
+            ) != (
+                expected_stat.st_dev,
+                expected_stat.st_ino,
+                expected_stat.st_size,
+                expected_stat.st_mtime_ns,
             ):
                 raise ValueError(
                     "trust store public key changed while its snapshot was loaded"
@@ -488,7 +403,7 @@ class TrustStore:
                 }
             ),
         )
-        return store, payload
+        return store
 
     def verify_envelope(
         self,

@@ -1,0 +1,46 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:632c1523-df8a-57fe-8893-cbf451a20f05",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "bom-ref": "pkg:pypi/elmos-proof-driven-harness-engine@3.0.0",
+      "group": "ai.elmos",
+      "name": "elmos-proof-driven-harness-engine",
+      "version": "3.0.0",
+      "purl": "pkg:pypi/elmos-proof-driven-harness-engine@3.0.0",
+      "properties": [
+        {"name": "ai.elmos.implementation", "value": "repository-owned"},
+        {"name": "ai.elmos.license-review", "value": "PENDING"},
+        {"name": "ai.elmos.certification", "value": "NOT_CERTIFIED"}
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "file",
+      "bom-ref": "source-archive:sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+      "name": "elmos-proof-driven-agentic-harness-repository-semantic-compiler",
+      "version": "3.0.0",
+      "hashes": [
+        {"alg": "SHA-256", "content": "552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07"}
+      ],
+      "properties": [
+        {"name": "ai.elmos.role", "value": "untrusted-input-specification"},
+        {"name": "ai.elmos.executed", "value": "false"},
+        {"name": "ai.elmos.selective-inert-data-materialized", "value": "true"},
+        {"name": "ai.elmos.materialized-members", "value": "PACKAGE_MANIFEST.json,skills-registry.json"},
+        {"name": "ai.elmos.executable-content-materialized", "value": "false"},
+        {"name": "ai.elmos.instruction-content-materialized", "value": "false"},
+        {"name": "ai.elmos.approved-license", "value": "ABSENT"},
+        {"name": "ai.elmos.signature", "value": "ABSENT"},
+        {"name": "ai.elmos.provenance-attestation", "value": "ABSENT"}
+      ]
+    }
+  ],
+  "dependencies": [
+    {"ref": "pkg:pypi/elmos-proof-driven-harness-engine@3.0.0", "dependsOn": []}
+  ]
+}

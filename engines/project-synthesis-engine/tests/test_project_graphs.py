@@ -78,7 +78,6 @@ def _managed_paths(request: SynthesisRequest, *, production: bool = False) -> li
         DEPENDENCY_GRAPH_PATH,
         PROJECT_INSIGHTS_PATH,
         "docs/ARCHITECTURE.md",
-        "scripts/projectctl.py",
         *TARGET_MANIFEST_PATHS.values(),
     ]
     if production:
@@ -253,7 +252,6 @@ def test_production_shared_roots_are_explicitly_classified(tmp_path: Path) -> No
     assert group_kinds["database"] == "database"
     assert group_kinds["observability"] == "observability"
     assert group_kinds["operations"] == "operations"
-    assert group_kinds["scripts"] == "operations"
     assert group_kinds["security"] == "security"
     assert structure["coverage"]["status"] == "PASSED"
     assert structure["coverage"]["unclassified_paths"] == []

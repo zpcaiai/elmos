@@ -7,9 +7,7 @@ metadata:
   source_id: 51-struts1-to-springmvc-generator
   source_digest: sha256:2718d34e6b350c23828e1531a5d01e43a1d5d91db59d878d5da37912a041e3e1
   phase: transformation
-  runtime_state: CODE_COMPLETE_LOCAL
-  capability_state: LOCAL_EXECUTED
-  operation_code: STRUTS1_TARGET_GENERATED
+  runtime_state: BOUND_LOCAL_EXACT
   runtime_handler_id: legacy-web-handler:51-struts1-to-springmvc-generator
 ---
 
@@ -17,9 +15,8 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is code-complete for its bounded local contract, tenant/project/job
-scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
-It does not execute source-package instructions or mutate customer repositories.
+The handler is bounded, tenant/project/job scoped, idempotency-aware and
+does not execute source-package instructions or customer repository code.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and

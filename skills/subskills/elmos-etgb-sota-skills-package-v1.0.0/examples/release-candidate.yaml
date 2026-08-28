@@ -1,0 +1,24 @@
+release_id: elmos-rc-example
+model:
+  provider: replace-me
+  name: replace-me
+  version: immutable-id
+skills_package:
+  version: 1.0.0
+  digest: replace-me
+runtime:
+  image_digest: replace-me
+  sandbox_policy: production
+profiles:
+- release
+- golden
+corpus_lock: corpora/corpus-lock.yaml
+budget:
+  wall_clock_hours: 72
+  token_limit: 0
+  credit_limit_usd: 0
+approval:
+  required_roles:
+  - test-owner
+  - security-owner
+  - business-line-owner

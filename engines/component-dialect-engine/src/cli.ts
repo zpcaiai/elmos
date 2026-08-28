@@ -21,7 +21,7 @@ import { ALL_FRAMEWORKS, Framework, RouteError } from "./models";
 import { resolveFramework, translateComponent } from "./engine";
 import { runRepository } from "./pipeline";
 import { renderFeasibilityMarkdown, scanRepository } from "./scan";
-import { assign, bindHandoffEvidence, loadManifest, markPorted, summarize, unmark } from "./handoff";
+import { assign, loadManifest, markPorted, summarize, unmark } from "./handoff";
 import { bindEvidenceObservation, validateEvidenceLedger } from "./evidence";
 import { verifyBuild } from "./verify";
 
@@ -72,15 +72,10 @@ Commands:
   repository  --repository <dir> --source-framework <f> --target-framework <f>
               --destination <dir> [--skip-execution] [--verify]
 
-  handoff     assign      --destination <dir> --source-path <p> --assignee <who>
-                          [--component-name <name>] [--note <text>]
+  handoff     assign      --destination <dir> --source-path <p> --assignee <who> [--note <text>]
               mark-ported --destination <dir> --repository <dir> --source-path <p> --target-path <p>
-                          [--component-name <name>] [--assignee <who>] [--note <text>]
-              evidence-bind --destination <dir> --source-path <p>
-                          --role TARGET_BUILD|BROWSER_OR_DEVICE|PLATFORM_RUNTIME|INDEPENDENT_REVIEW
-                          --status PASSED|FAILED --artifact-file <path> --executor <id>
-                          [--component-name <name>] [--verifier <id>] [--independent] [--note <text>]
-              unmark      --destination <dir> --source-path <p> [--component-name <name>]
+                          [--assignee <who>] [--note <text>]
+              unmark      --destination <dir> --source-path <p>
               status      --destination <dir>
               A component marked hand-ported is never overwritten by a
               later 'repository' run, and that run reports it stale if
@@ -184,7 +179,6 @@ function commandHandoff(args: Args): number {
     const entry = assign({
       destination: required(args, "destination"),
       sourcePath: required(args, "source-path"),
-      ...(args.values["component-name"] !== undefined ? { componentName: args.values["component-name"] } : {}),
       assignee: required(args, "assignee"),
       ...(args.values["note"] !== undefined ? { note: args.values["note"] } : {}),
     });
@@ -196,7 +190,6 @@ function commandHandoff(args: Args): number {
       destination: required(args, "destination"),
       repository: required(args, "repository"),
       sourcePath: required(args, "source-path"),
-      ...(args.values["component-name"] !== undefined ? { componentName: args.values["component-name"] } : {}),
       targetPath: required(args, "target-path"),
       ...(args.values["assignee"] !== undefined ? { assignee: args.values["assignee"] } : {}),
       ...(args.values["note"] !== undefined ? { note: args.values["note"] } : {}),
@@ -205,39 +198,7 @@ function commandHandoff(args: Args): number {
     return 0;
   }
   if (sub === "unmark") {
-    console.log(JSON.stringify(unmark(
-      required(args, "destination"),
-      required(args, "source-path"),
-      args.values["component-name"],
-    ), null, 2));
-    return 0;
-  }
-  if (sub === "evidence-bind") {
-    const status = required(args, "status");
-    if (status !== "PASSED" && status !== "FAILED") {
-      throw new RouteError("HANDOFF_EVIDENCE_STATUS_INVALID: status must be PASSED or FAILED");
-    }
-    const role = required(args, "role");
-    if (role !== "TARGET_BUILD" && role !== "BROWSER_OR_DEVICE" && role !== "PLATFORM_RUNTIME" && role !== "INDEPENDENT_REVIEW") {
-      throw new RouteError("HANDOFF_EVIDENCE_ROLE_INVALID");
-    }
-    const entry = bindHandoffEvidence({
-      destination: required(args, "destination"),
-      sourcePath: required(args, "source-path"),
-      ...(args.values["component-name"] !== undefined ? { componentName: args.values["component-name"] } : {}),
-      role,
-      status,
-      artifactPath: required(args, "artifact-file"),
-      executor: required(args, "executor"),
-      ...(args.values["verifier"] !== undefined ? { verifier: args.values["verifier"] } : {}),
-      ...(args.flags.has("independent") ? { independent: true } : {}),
-      ...(args.values["note"] !== undefined ? { note: args.values["note"] } : {}),
-    });
-    console.log(JSON.stringify({
-      sourcePath: entry.sourcePath,
-      evidenceRoles: entry.evidence.map((record) => record.role),
-      certification: "NOT_CERTIFIED",
-    }, null, 2));
+    console.log(JSON.stringify(unmark(required(args, "destination"), required(args, "source-path")), null, 2));
     return 0;
   }
   if (sub === "status") {
@@ -251,7 +212,7 @@ function commandHandoff(args: Args): number {
     }, null, 2));
     return 0;
   }
-  throw new RouteError(`UNKNOWN_HANDOFF_SUBCOMMAND: ${JSON.stringify(sub)} is not assign, mark-ported, evidence-bind, unmark or status`);
+  throw new RouteError(`UNKNOWN_HANDOFF_SUBCOMMAND: ${JSON.stringify(sub)} is not assign, mark-ported, unmark or status`);
 }
 
 async function commandEvidence(args: Args): Promise<number> {

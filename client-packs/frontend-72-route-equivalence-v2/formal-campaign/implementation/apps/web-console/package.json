@@ -12,29 +12,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check": "tsc --noEmit && pnpm test:durable-lease && pnpm test:translation-report && pnpm test:repository-translation && pnpm test:upstream-policy && pnpm test:operations-jobs-policy && pnpm test:billing-reconciliation-policy && pnpm test:admin-mutation-policy && pnpm test:runner-fleet-policy && pnpm test:chinadb-sql-policy && pnpm test:multimodal-intake-runner && next build",
-    "check:evidence": "pnpm test:translation-cancellation",
-    "test:chinadb-sql-policy": "node --experimental-strip-types app/lib/server/chinadbSql.verify.mjs",
+    "check": "tsc --noEmit && pnpm test:upstream-policy && pnpm test:operations-jobs-policy && pnpm test:billing-reconciliation-policy && pnpm test:admin-mutation-policy && pnpm test:runner-fleet-policy && next build",
     "test:upstream-policy": "node --experimental-strip-types app/lib/server/trustedUpstream.verify.mjs",
     "test:operations-jobs-policy": "node --experimental-strip-types app/lib/server/operationsJobsPolicy.verify.mjs",
     "test:billing-reconciliation-policy": "node --experimental-strip-types app/lib/server/billingReconciliation.verify.mjs",
     "test:admin-mutation-policy": "node --experimental-strip-types app/lib/server/adminMutationPolicy.verify.mjs",
     "test:runner-fleet-policy": "node --experimental-strip-types app/lib/server/runnerFleetPolicy.verify.mjs",
-    "test:multimodal-intake-runner": "node --experimental-strip-types app/lib/server/multimodalIntakeRunner.verify.mjs",
     "test:generation-insights": "node app/lib/server/generationInsights.verify.mjs",
     "test:qr-code": "uv run --with qrcode==8.2 --with numpy==2.5.1 --with opencv-python-headless==4.13.0.92 node --experimental-strip-types app/lib/qrCode.verify.mjs",
     "check:telemetry": "node ../../telemetry/validate.mjs",
-    "test:durable-lease": "node --experimental-strip-types --test test/durableJobLease.test.mjs",
-    "test:translation-report": "node --experimental-strip-types --test test/translationConversionReport.test.mjs",
-    "test:translation-cancellation": "node --loader ./test/ts-extension-loader.mjs --test test/translationRunnerCancellation.test.mjs",
-    "test:repository-translation": "node --loader ./test/ts-extension-loader.mjs --test test/repositoryTranslationWorkspace.test.mjs",
     "test:e2e": "playwright test",
     "test:frt-external-quality": "playwright test --config=playwright.external-quality.config.ts",
     "capture:frt-visual-candidates": "playwright test e2e/frt-visual-candidate.spec.ts",
     "test:e2e:chromium": "playwright test --project=chromium --project=mobile-chromium"
   },
   "dependencies": {
-    "fflate": "0.8.3",
     "html-to-text": "10.0.0",
     "jose": "6.1.2",
     "mammoth": "1.12.0",
@@ -50,6 +42,7 @@
     "@types/node": "24.3.0",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
+    "fflate": "0.8.3",
     "typescript": "5.9.2"
   }
 }

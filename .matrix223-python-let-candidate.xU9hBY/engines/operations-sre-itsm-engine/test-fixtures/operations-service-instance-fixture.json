@@ -1,7 +1,0 @@
-{
-  "serviceInstanceId": "serviceInstanceId-fixture",
-  "applicationServiceId": "applicationServiceId-fixture",
-  "environment": "environment-fixture",
-  "owner": "owner-fixture",
-  "lifecycle": "lifecycle-fixture"
-}

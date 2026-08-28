@@ -1,0 +1,6 @@
+interface:
+  display_name: "Evaluation Trust Gate"
+  short_description: "Run ELMOS-V3-014 with proof-driven controls"
+  default_prompt: "Use $elmos-evaluation-trust-gate through the proof-driven harness runtime with exact source identity, least privilege, replayable evidence, and fail-closed gates."
+policy:
+  allow_implicit_invocation: true

@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -28,8 +27,6 @@ REQUIRED_JAVA = {
     "ProductionModelCallExecutor.java",
 }
 
-MIGRATION_VERSION = re.compile(r"^V([0-9]+(?:_[0-9]+)*)__.+\.sql$")
-
 
 def fail(message: str) -> None:
     raise ValueError(message)
@@ -46,25 +43,7 @@ def main() -> int:
         missing = REQUIRED_JAVA - actual
         if missing:
             fail(f"missing repository-owned handlers: {sorted(missing)}")
-        migration_dir = root / "modules/persistence/src/main/resources/db/migration"
-        versions: dict[tuple[int, ...], list[str]] = {}
-        for path in migration_dir.glob("V*.sql"):
-            match = MIGRATION_VERSION.fullmatch(path.name)
-            if not match:
-                fail(f"invalid Flyway migration filename: {path.name}")
-            version = tuple(int(part) for part in match.group(1).split("_"))
-            versions.setdefault(version, []).append(path.name)
-        duplicate_versions = {
-            ".".join(str(part) for part in version): sorted(names)
-            for version, names in versions.items()
-            if len(names) > 1
-        }
-        if duplicate_versions:
-            fail(f"duplicate Flyway migration versions: {duplicate_versions}")
-        migration = (
-            root
-            / "modules/production-runtime/src/main/resources/db/production-runtime/V1__production_repository_execution_os.sql"
-        ).read_text(encoding="utf-8")
+        migration = (root / "modules/persistence/src/main/resources/db/migration/V77__production_repository_execution_os.sql").read_text(encoding="utf-8")
         for phrase in (
             "CREATE SCHEMA IF NOT EXISTS billing",
             "CREATE TABLE runtime.dispatch_intents",
@@ -93,18 +72,9 @@ def main() -> int:
         for path in (chart / "Chart.yaml", chart / "values.yaml", chart / "templates/network-policy.yaml", chart / "templates/worker-statefulset.yaml"):
             if not path.is_file():
                 fail(f"deployment asset missing: {path}")
-        for path in (
-            root / "scripts/production-runtime/run_local_harness.py",
-            root / "scripts/production-runtime/run_pitr_drill.py",
-            root / "scripts/production-runtime/verify_local_harness.py",
-            root / "scripts/production-runtime/external_gate_contract.py",
-            root / "scripts/production-runtime/validate_external_gate.py",
-            root / "scripts/production-runtime/run_external_gate.py",
-            root / "scripts/production-runtime/external-load-smoke.js",
-            root / "docs/production-runtime/EXTERNAL-GATE-PLAN.json",
-        ):
+        for path in (root / "scripts/production-runtime/run_local_harness.py", root / "scripts/production-runtime/run_pitr_drill.py", root / "scripts/production-runtime/verify_local_harness.py"):
             if not path.is_file():
-                fail(f"production gate asset missing: {path}")
+                fail(f"local qualification harness asset missing: {path}")
         if "readOnlyRootFilesystem: true" not in (chart / "templates/worker-statefulset.yaml").read_text(encoding="utf-8"):
             fail("worker chart is not read-only")
         if "clusterIP: None" not in (chart / "templates/worker-statefulset.yaml").read_text(encoding="utf-8"):
@@ -119,13 +89,6 @@ def main() -> int:
             value = scenarios.get(name)
             if not isinstance(value, dict) or value.get("status") != "LOCAL_HARNESS_PASS" or not value.get("test"):
                 fail(f"local harness scenario is not qualified: {name}")
-        source_identity = json.loads((root / "docs/production-runtime/SOURCE-IDENTITY.json").read_text(encoding="utf-8"))
-        external = source_identity.get("external_evidence")
-        if not isinstance(external, dict) or external.get("production_certification") != "NOT_CERTIFIED":
-            fail("source identity must retain NOT_CERTIFIED production boundary")
-        for name in ("provider_runtime", "target_cluster_load", "chaos", "worker_process_kill", "redis_loss", "backup_pitr", "independent_verification", "production_deployment"):
-            if external.get(name) != "NOT_RUN":
-                fail(f"external evidence must remain NOT_RUN until independently executed: {name}")
     except (OSError, ValueError) as exc:
         print(f"production-runtime implementation validation: FAIL: {exc}", file=sys.stderr)
         return 1

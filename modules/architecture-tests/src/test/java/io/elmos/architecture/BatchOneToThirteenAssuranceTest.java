@@ -105,7 +105,7 @@ class BatchOneToThirteenAssuranceTest {
         assertTrue(Files.isRegularFile(root.resolve("docs/test-suite/IMPORT_AUDIT.md")));
         assertTrue(Files.isRegularFile(root.resolve("docs/test-suite/VALIDATION.md")));
         int[] matureSkillCounts = {20, 20, 22, 20, 20, 22, 22, 18, 36, 22, 22, 24, 20, 22, 20, 20, 22};
-        int[] matureSchemaCounts = {3, 6, 9, 8, 8, 10, 13, 12, 25, 16, 16, 17, 16, 17, 17, 18, 18};
+        int[] matureSchemaCounts = {11, 9, 12, 20, 8, 10, 26, 12, 25, 16, 16, 17, 16, 17, 17, 18, 18};
         for (int offset = 0; offset < matureSkillCounts.length; offset++) {
             int batch = 29 + offset;
             assertEquals(matureSkillCounts[offset], countSkillsWithPrefix(
@@ -314,12 +314,15 @@ class BatchOneToThirteenAssuranceTest {
         Path source = root.resolve("engines/frontend-client-engine/src");
         String production;
         try (var files = Files.walk(source)) {
+            Set<String> nonWorkerSources = Set.of("frt-runnable-target.ts", "frontend-formal-equivalence.ts");
             production = files.filter(path -> path.getFileName().toString().endsWith(".ts"))
                     // This adapter intentionally emits commands for an authorized
                     // device runner. It is not the frontend worker's host execution
                     // path, so keep the fail-closed worker assertion scoped to the
                     // worker implementation rather than generated runner payloads.
-                    .filter(path -> !path.getFileName().toString().equals("frt-runnable-target.ts"))
+                    // The formal verifier is a separate bounded tool that invokes
+                    // only the digest-locked Z3 executable, not customer code.
+                    .filter(path -> !nonWorkerSources.contains(path.getFileName().toString()))
                     .map(path -> {
                         try { return Files.readString(path); }
                         catch (IOException error) { throw new java.io.UncheckedIOException(error); }

@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools==75.8.0", "wheel==0.47.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elmos-proof-driven-harness-engine"
+version = "3.0.0"
+description = "Fail-closed proof-driven repository semantic compiler and agentic harness"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]==3.2.13"]
+
+[project.scripts]
+elmos-proof-harness = "elmos_proof_harness.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# The runtime package is accompanied by a byte-addressed, fail-closed release
+# contract.  Keep every manifest-owned non-Python asset at the same relative
+# path below ``share/elmos-proof-harness`` so wheels and installed releases
+# can be checked against the repository manifest without relying on cwd.
+[tool.setuptools.data-files]
+"share/elmos-proof-harness" = ["README.md", "pyproject.toml"]
+"share/elmos-proof-harness/schemas" = ["schemas/*.schema.json"]
+"share/elmos-proof-harness/openapi" = ["openapi/proof-harness-v3.openapi.yaml"]
+"share/elmos-proof-harness/migrations" = ["migrations/V001__proof_harness_core.sql"]
+"share/elmos-proof-harness/observability" = ["observability/metrics.yaml", "observability/alerts.yaml"]
+"share/elmos-proof-harness/supply-chain" = [
+  "supply-chain/release-policy.json",
+  "supply-chain/sbom.cdx.json",
+  "supply-chain/release-contract-manifest.json",
+]
+"share/elmos-proof-harness/deploy" = [
+  "deploy/Dockerfile",
+  "deploy/README.md",
+  "deploy/requirements-production.txt",
+]
+"share/elmos-proof-harness/deploy/helm/proof-harness" = [
+  "deploy/helm/proof-harness/Chart.yaml",
+  "deploy/helm/proof-harness/values.schema.json",
+  "deploy/helm/proof-harness/values.yaml",
+]
+"share/elmos-proof-harness/deploy/helm/proof-harness/templates" = [
+  "deploy/helm/proof-harness/templates/_helpers.tpl",
+  "deploy/helm/proof-harness/templates/deployment.yaml",
+  "deploy/helm/proof-harness/templates/networkpolicy.yaml",
+  "deploy/helm/proof-harness/templates/pdb.yaml",
+  "deploy/helm/proof-harness/templates/prometheusrule.yaml",
+  "deploy/helm/proof-harness/templates/service.yaml",
+  "deploy/helm/proof-harness/templates/serviceaccount.yaml",
+  "deploy/helm/proof-harness/templates/servicemonitor.yaml",
+]
+"share/elmos-proof-harness/tools" = [
+  "tools/apply_postgres_migration.py",
+  "tools/publish_verification_pack.py",
+  "tools/qualify_local.py",
+  "tools/release_contract.py",
+  "tools/run_structured_unittest.py",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

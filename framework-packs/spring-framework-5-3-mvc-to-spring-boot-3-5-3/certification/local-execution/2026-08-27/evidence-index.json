@@ -11,7 +11,7 @@
     {
       "path": "artifacts/executed-spring-boot-3.5.3.war",
       "bytes": 28990394,
-      "sha256": "d97a8f267d824a540e0f59763776afe0679c35945503e9935a321f59f592d4c5"
+      "sha256": "1fae241386924325e6f8099e59b2d5da19749cfd47b9fdb26f92fb7d5c857f60"
     },
     {
       "path": "artifacts/migrated-spring-boot-3.5.3.zip",
@@ -25,8 +25,8 @@
     },
     {
       "path": "evidence/control.log",
-      "bytes": 21487,
-      "sha256": "e2cf734359b391359604e626a6485cf04d7677471d3972b41efe6456f92bee83"
+      "bytes": 21519,
+      "sha256": "5cad8725f2d379bf91266be6cdf45434053f80455e9471123e6b3263b505e5d3"
     },
     {
       "path": "evidence/framework-contract-model.json",
@@ -45,8 +45,8 @@
     },
     {
       "path": "evidence/source-startup.log",
-      "bytes": 3892,
-      "sha256": "c4673106c4f8df2edd504ba10894324b5c9c36ae7e770633c8d7f9f6f1e64fc1"
+      "bytes": 3903,
+      "sha256": "a2fe42e276073a0b617ff045b7b92c0238558c252b50d306a5d688d677339c80"
     },
     {
       "path": "evidence/source-test-summary.json",
@@ -56,22 +56,22 @@
     {
       "path": "evidence/spring-mvc-http-oracle.json",
       "bytes": 3497,
-      "sha256": "9e5c313ead60dc3aefb21fb21671ccbcea53b453c42118aa30494ee00db99e8c"
+      "sha256": "b2c48aa861cb44ad909b2f7ce6e3f9bdffd34c0d6f648ffc56b27e50861505e7"
     },
     {
       "path": "evidence/target-materialization-receipt.json",
       "bytes": 5227,
-      "sha256": "df87360466def82ff3e4dea0f4bb7cf69d4866a2284b391b4249a256ae159322"
+      "sha256": "65fd7cf281a5776b94ea3de121cac035f6dd352a8cbbf22d82913c49a25215be"
     },
     {
       "path": "evidence/target-materialization-source-map.json",
       "bytes": 2071,
-      "sha256": "08980b02774abae20146f4a63e9cf8ecd497ecb1c1655a63b53681b2daef66fe"
+      "sha256": "7eb257f10a630e4f0e7f7a75295165bce95ea4334342cd040e00b01c005ec56c"
     },
     {
       "path": "evidence/target-startup.log",
-      "bytes": 3304,
-      "sha256": "3a3505b0200f349e01fc5440f39315224421e3abd291f6a9bfa483696ccf677a"
+      "bytes": 3308,
+      "sha256": "5864588005630cde6c45f5470f4c181c12a6e114de9fd648c8923ec8dba1537f"
     },
     {
       "path": "evidence/target-test-summary.json",
@@ -86,7 +86,7 @@
     {
       "path": "local-qualification.json",
       "bytes": 9175,
-      "sha256": "5676448b73886744dbc0f977d224bad61360cf0b6b7e225067747dd69535e0d4"
+      "sha256": "5769c75566bcbad65d230aa805a191cdd6a32f57d5c155d4ce53ecb3ec373461"
     }
   ]
 }

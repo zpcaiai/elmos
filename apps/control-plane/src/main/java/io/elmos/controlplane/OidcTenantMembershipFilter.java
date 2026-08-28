@@ -12,6 +12,10 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.HexFormat;
+
 /**
  * Resolves a requested tenant against the authoritative membership directory.
  *
@@ -65,10 +69,11 @@ final class OidcTenantMembershipFilter extends OncePerRequestFilter {
             if (!Boolean.TRUE.equals(verified)) {
                 throw new AccessDeniedException("ELMOS_OIDC_VERIFIED_EMAIL_REQUIRED");
             }
-            String proposedAccountId = ControlPlanePrincipal.stableAccountId(issuer, subject);
+            String accountId = "acc-" + sha256(
+                    issuer + "\u0000" + subject).substring(0, 40);
             String displayName = authentication.getToken().getClaimAsString("name");
-            String accountId = organizations.resolveOidcAccount(
-                    proposedAccountId,
+            organizations.resolveOidcAccount(
+                    accountId,
                     issuer,
                     subject,
                     normalized.normalized(),
@@ -79,7 +84,7 @@ final class OidcTenantMembershipFilter extends OncePerRequestFilter {
                     PRINCIPAL_ATTRIBUTE,
                     ControlPlanePrincipal.databaseBound(
                             requestedOrganization,
-                            accountId,
+                            subject,
                             organizations.organizations(accountId)));
         } catch (AccessDeniedException
                  | JdbcOrganizationSelfServiceStore.OrganizationStoreException rejected) {
@@ -92,4 +97,13 @@ final class OidcTenantMembershipFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    private static String sha256(String value) {
+        try {
+            return HexFormat.of().formatHex(
+                    MessageDigest.getInstance("SHA-256")
+                            .digest(value.getBytes(StandardCharsets.UTF_8)));
+        } catch (Exception error) {
+            throw new IllegalStateException("SHA-256 unavailable", error);
+        }
+    }
 }

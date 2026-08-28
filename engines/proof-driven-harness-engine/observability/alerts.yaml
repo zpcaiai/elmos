@@ -1,0 +1,59 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: elmos-proof-harness
+  labels:
+    app.kubernetes.io/name: proof-harness
+spec:
+  groups:
+    - name: proof-harness.safety
+      rules:
+        - alert: ProofHarnessStatusInflationAttempt
+          expr: increase(elmos_proof_harness_status_inflation_attempts_total[5m]) > 0
+          for: 0m
+          labels: {severity: critical}
+          annotations:
+            summary: A proof result attempted to exceed its evidence.
+            runbook: Reject the result, preserve raw evidence, and inspect the audit event.
+        - alert: ProofHarnessCrossBoundaryAuthorityDenials
+          expr: sum(increase(elmos_proof_harness_authority_denials_total{reason=~"tenant_mismatch|project_mismatch|path_escape|capability_missing"}[10m])) > 5
+          for: 5m
+          labels: {severity: critical}
+          annotations:
+            summary: Repeated authority boundary violations detected.
+            runbook: Suspend the affected execution source and review identity bindings.
+        - alert: ProofHarnessStaleFenceWrites
+          expr: increase(elmos_proof_harness_stale_fence_rejections_total[10m]) > 0
+          for: 0m
+          labels: {severity: warning}
+          annotations:
+            summary: A stale worker attempted an authoritative write.
+            runbook: Verify lease expiry, worker termination and reconciliation state.
+        - alert: ProofHarnessUnknownExternalOutcome
+          expr: max(elmos_proof_harness_reconciliation_age_seconds{state="UNKNOWN"}) > 300
+          for: 5m
+          labels: {severity: critical}
+          annotations:
+            summary: An external side effect remains UNKNOWN.
+            runbook: Block retry and completion until provider reconciliation finishes.
+        - alert: ProofHarnessOutboxBacklog
+          expr: sum(elmos_proof_harness_outbox_events{state=~"PENDING|UNKNOWN"}) > 1000
+          for: 15m
+          labels: {severity: warning}
+          annotations:
+            summary: Durable event delivery is falling behind.
+            runbook: Inspect consumers, leases and provider receipts before scaling workers.
+        - alert: ProofHarnessCriticalObligationBlocked
+          expr: sum(elmos_proof_harness_open_obligations{severity="critical",state=~"BLOCKED|REFUTED"}) > 0
+          for: 0m
+          labels: {severity: critical}
+          annotations:
+            summary: A critical proof obligation is blocked or refuted.
+            runbook: Keep E2 and completion gates closed; replay the counterexample if present.
+        - alert: ProofHarnessReadinessLost
+          expr: min_over_time(up{job="proof-harness"}[5m]) == 0
+          for: 5m
+          labels: {severity: critical}
+          annotations:
+            summary: Proof harness readiness has been unavailable for five minutes.
+            runbook: Check database, artifact store, policy and authority dependencies.

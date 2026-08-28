@@ -1,7 +1,7 @@
 # Runbook — Content-Addressed Store and Action Cache
 
 Component: `modules/cas` (`io.elmos.cas`)
-Schemas: `V65_1__content_addressed_store_and_action_cache.sql`,
+Schemas: `V65__content_addressed_store_and_action_cache.sql`,
 `V66__cas_resource_bindings_and_complete_metadata.sql`, and
 `V67__durable_action_cache_index.sql`
 Alert rules: `io.elmos.cas.CasAlerting.defaultRules()`

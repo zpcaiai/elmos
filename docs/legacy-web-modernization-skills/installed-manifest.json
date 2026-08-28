@@ -6,11 +6,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:00-modernization-orchestrator",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-00-modernization-orchestrator",
-      "operationCode": "RUN_MANIFEST_COMPILED",
       "sourceDigest": "sha256:18152414d5a569f7d791dc38b6128d7d3ded961b11982086b826441e15f174c7",
       "sourceId": "00-modernization-orchestrator",
       "sourcePath": "skills/control-plane/00-modernization-orchestrator/SKILL.md"
@@ -19,11 +16,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:01-job-contract-and-policy-resolver",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-01-job-contract-and-policy-resolver",
-      "operationCode": "JOB_CONTRACT_RESOLVED",
       "sourceDigest": "sha256:c3fe22b15a2dc4f3f484d8b7c6d08bc4721046a261ec5fefc9e1f97443d78705",
       "sourceId": "01-job-contract-and-policy-resolver",
       "sourcePath": "skills/control-plane/01-job-contract-and-policy-resolver/SKILL.md"
@@ -32,11 +26,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:02-reproducible-repository-snapshot",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-02-reproducible-repository-snapshot",
-      "operationCode": "REPOSITORY_SNAPSHOT_CAPTURED",
       "sourceDigest": "sha256:4c54a7aa48679972ff8f087376d40dbfefe470c244984ab2b115817a58630b68",
       "sourceId": "02-reproducible-repository-snapshot",
       "sourcePath": "skills/control-plane/02-reproducible-repository-snapshot/SKILL.md"
@@ -45,11 +36,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:03-checkpoint-resume-cancel",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-03-checkpoint-resume-cancel",
-      "operationCode": "CHECKPOINT_POLICY_COMPILED",
       "sourceDigest": "sha256:bc72b57029967b9232f29ae08d2c957a78f2dab3842cc2e36d59be257453fab6",
       "sourceId": "03-checkpoint-resume-cancel",
       "sourcePath": "skills/control-plane/03-checkpoint-resume-cancel/SKILL.md"
@@ -58,11 +46,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:04-wall-clock-eta-and-cost-model",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-04-wall-clock-eta-and-cost-model",
-      "operationCode": "WALL_CLOCK_ESTIMATE_COMPILED",
       "sourceDigest": "sha256:e53a02d960fa6965976c6232b00527bc9689874e7c7e88f71d27c8a80268d59a",
       "sourceId": "04-wall-clock-eta-and-cost-model",
       "sourcePath": "skills/control-plane/04-wall-clock-eta-and-cost-model/SKILL.md"
@@ -71,11 +56,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:05-tool-authority-and-sandbox",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-05-tool-authority-and-sandbox",
-      "operationCode": "AUTHORITY_PLAN_COMPILED",
       "sourceDigest": "sha256:8a6f739036aa055791119a340aa7e32702382db815513a0c654b278c1314fcfa",
       "sourceId": "05-tool-authority-and-sandbox",
       "sourcePath": "skills/control-plane/05-tool-authority-and-sandbox/SKILL.md"
@@ -84,13 +66,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "native-maven-build"
-      ],
       "handlerId": "legacy-web-handler:10-build-and-module-topology",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-10-build-and-module-topology",
-      "operationCode": "BUILD_TOPOLOGY_RECOVERED",
       "sourceDigest": "sha256:8efa25a10c31a8ca36fecdc9becc66921631e0aa0a8a84787409a30d2d79a383",
       "sourceId": "10-build-and-module-topology",
       "sourcePath": "skills/repository-forensics/10-build-and-module-topology/SKILL.md"
@@ -99,11 +76,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:11-framework-and-version-fingerprinting",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-11-framework-and-version-fingerprinting",
-      "operationCode": "FRAMEWORK_INVENTORY_RECOVERED",
       "sourceDigest": "sha256:acdb7dbdf32dda910eff733f32c11fded224e0a75dae67c82eac8f1f15653d68",
       "sourceId": "11-framework-and-version-fingerprinting",
       "sourcePath": "skills/repository-forensics/11-framework-and-version-fingerprinting/SKILL.md"
@@ -112,13 +86,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "running-container"
-      ],
       "handlerId": "legacy-web-handler:12-runtime-deployment-topology",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-12-runtime-deployment-topology",
-      "operationCode": "RUNTIME_TOPOLOGY_RECOVERED",
       "sourceDigest": "sha256:6c4930a7d8cdd359d3c6f4fc4e168e239f35c0285e364b4d0d6bc1ecc5ae1631",
       "sourceId": "12-runtime-deployment-topology",
       "sourcePath": "skills/repository-forensics/12-runtime-deployment-topology/SKILL.md"
@@ -127,11 +96,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:13-route-ownership-and-conflict-analysis",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-13-route-ownership-and-conflict-analysis",
-      "operationCode": "EFFECTIVE_ROUTE_TABLE_RECOVERED",
       "sourceDigest": "sha256:8f614066d91ec21e62485bc4ed1dd712d36b85441ed674830d512aad28949141",
       "sourceId": "13-route-ownership-and-conflict-analysis",
       "sourcePath": "skills/repository-forensics/13-route-ownership-and-conflict-analysis/SKILL.md"
@@ -140,11 +106,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:14-environment-config-overlay-analysis",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-14-environment-config-overlay-analysis",
-      "operationCode": "CONFIG_OVERLAYS_RECOVERED",
       "sourceDigest": "sha256:834255e860745051dcb40cf3a8835df67c573b9424959763cd082117042b299e",
       "sourceId": "14-environment-config-overlay-analysis",
       "sourcePath": "skills/repository-forensics/14-environment-config-overlay-analysis/SKILL.md"
@@ -153,11 +116,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:15-dependency-compatibility-and-jakarta-readiness",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-15-dependency-compatibility-and-jakarta-readiness",
-      "operationCode": "JAKARTA_READINESS_SCORED",
       "sourceDigest": "sha256:cba8d95ddaf31ef6ce3fd474b55e4d5d85df9da6d100a2e3c6bb323d29418624",
       "sourceId": "15-dependency-compatibility-and-jakarta-readiness",
       "sourcePath": "skills/repository-forensics/15-dependency-compatibility-and-jakarta-readiness/SKILL.md"
@@ -166,11 +126,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:20-struts1-lifecycle-recovery",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-20-struts1-lifecycle-recovery",
-      "operationCode": "STRUTS1_PIPELINES_RECOVERED",
       "sourceDigest": "sha256:dd4ef6e131a5078cf904a662b7cb72d7f0202d67a6cd0ea668a53f88abf6d75b",
       "sourceId": "20-struts1-lifecycle-recovery",
       "sourcePath": "skills/semantic-recovery/20-struts1-lifecycle-recovery/SKILL.md"
@@ -179,11 +136,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:21-struts2-interceptor-pipeline-recovery",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-21-struts2-interceptor-pipeline-recovery",
-      "operationCode": "STRUTS2_PIPELINES_RECOVERED",
       "sourceDigest": "sha256:80a00fc0b0937e296e3b263506bf84606f3fc21d7c2f47cade3babfd537ded85",
       "sourceId": "21-struts2-interceptor-pipeline-recovery",
       "sourcePath": "skills/semantic-recovery/21-struts2-interceptor-pipeline-recovery/SKILL.md"
@@ -192,11 +146,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:22-servlet-container-semantics-recovery",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-22-servlet-container-semantics-recovery",
-      "operationCode": "SERVLET_SEMANTICS_RECOVERED",
       "sourceDigest": "sha256:fd9340a93e4acc9b23f57dbad9c888fc05313e7bb96408aaf99f34b1cdb3b862",
       "sourceId": "22-servlet-container-semantics-recovery",
       "sourcePath": "skills/semantic-recovery/22-servlet-container-semantics-recovery/SKILL.md"
@@ -205,11 +156,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:23-jsp-taglib-and-view-semantics",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-23-jsp-taglib-and-view-semantics",
-      "operationCode": "VIEW_SEMANTICS_RECOVERED",
       "sourceDigest": "sha256:e1a2eb91210f09e8dc7f73fa83474274c440aea8a23fc4c2ef6011b4d1b32b16",
       "sourceId": "23-jsp-taglib-and-view-semantics",
       "sourcePath": "skills/semantic-recovery/23-jsp-taglib-and-view-semantics/SKILL.md"
@@ -218,11 +166,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:24-request-binding-and-type-conversion",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-24-request-binding-and-type-conversion",
-      "operationCode": "BINDING_CONVERSION_RECOVERED",
       "sourceDigest": "sha256:30bbdba351da1342a8b3032d5a7ec9feab487bd46cda477c42d1f52e0f49a173",
       "sourceId": "24-request-binding-and-type-conversion",
       "sourcePath": "skills/semantic-recovery/24-request-binding-and-type-conversion/SKILL.md"
@@ -231,11 +176,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:25-navigation-dispatch-and-error-semantics",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-25-navigation-dispatch-and-error-semantics",
-      "operationCode": "NAVIGATION_SEMANTICS_RECOVERED",
       "sourceDigest": "sha256:e1ed7e2fe3b106c1f1a24dbdfbc5bcc98b09edc8c552787d485c5141751f54b9",
       "sourceId": "25-navigation-dispatch-and-error-semantics",
       "sourcePath": "skills/semantic-recovery/25-navigation-dispatch-and-error-semantics/SKILL.md"
@@ -244,11 +186,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:26-session-state-and-scope-semantics",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-26-session-state-and-scope-semantics",
-      "operationCode": "STATE_SCOPE_RECOVERED",
       "sourceDigest": "sha256:9f6b3096d96c93459f6e14f52aa1f68a45bfe6698a7d590bbd3c703330e27e3e",
       "sourceId": "26-session-state-and-scope-semantics",
       "sourcePath": "skills/semantic-recovery/26-session-state-and-scope-semantics/SKILL.md"
@@ -257,11 +196,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:27-security-authn-authz-csrf-semantics",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-27-security-authn-authz-csrf-semantics",
-      "operationCode": "SECURITY_SEMANTICS_RECOVERED",
       "sourceDigest": "sha256:b6077f8f1c7e3767bda0d3afe69e3a059b5ae595979a5e68b36ac67450123889",
       "sourceId": "27-security-authn-authz-csrf-semantics",
       "sourcePath": "skills/semantic-recovery/27-security-authn-authz-csrf-semantics/SKILL.md"
@@ -270,11 +206,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:28-transaction-and-side-effect-topology",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-28-transaction-and-side-effect-topology",
-      "operationCode": "EFFECT_TOPOLOGY_RECOVERED",
       "sourceDigest": "sha256:df676effef4b4c4e6f2548646e84066e8f6272df1e1bc84ada93ce72518061a2",
       "sourceId": "28-transaction-and-side-effect-topology",
       "sourcePath": "skills/semantic-recovery/28-transaction-and-side-effect-topology/SKILL.md"
@@ -283,11 +216,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:29-concurrency-lifecycle-and-threadlocal",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-29-concurrency-lifecycle-and-threadlocal",
-      "operationCode": "CONCURRENCY_SEMANTICS_RECOVERED",
       "sourceDigest": "sha256:2f4baf27c73d14c16c729f162e8a77a1ca8c44e16e721fb4891e4d38206852bd",
       "sourceId": "29-concurrency-lifecycle-and-threadlocal",
       "sourcePath": "skills/semantic-recovery/29-concurrency-lifecycle-and-threadlocal/SKILL.md"
@@ -296,11 +226,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:30-repository-evidence-graph",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-30-repository-evidence-graph",
-      "operationCode": "EVIDENCE_GRAPH_BUILT",
       "sourceDigest": "sha256:e8e379548e5a5acce8e70a6747235451b62c68eb6b0da85f920b64d4363b8093",
       "sourceId": "30-repository-evidence-graph",
       "sourcePath": "skills/semantic-model/30-repository-evidence-graph/SKILL.md"
@@ -309,11 +236,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:31-legacy-web-semantic-ir",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-31-legacy-web-semantic-ir",
-      "operationCode": "LEGACY_WEB_IR_BUILT",
       "sourceDigest": "sha256:893839199d1c71773555eb4db2cc58d02eae9ec34804a11bd0940676fda040d4",
       "sourceId": "31-legacy-web-semantic-ir",
       "sourcePath": "skills/semantic-model/31-legacy-web-semantic-ir/SKILL.md"
@@ -322,11 +246,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:32-behavioral-contract-and-sequence-mining",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-32-behavioral-contract-and-sequence-mining",
-      "operationCode": "BEHAVIOR_CONTRACTS_MINED",
       "sourceDigest": "sha256:67933e23b640e5387858ea08df3848834e6d3f0ad2b3a034b57314f8c44a29a0",
       "sourceId": "32-behavioral-contract-and-sequence-mining",
       "sourcePath": "skills/semantic-model/32-behavioral-contract-and-sequence-mining/SKILL.md"
@@ -335,11 +256,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:33-unknown-semantics-ledger",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-33-unknown-semantics-ledger",
-      "operationCode": "UNKNOWN_LEDGER_BUILT",
       "sourceDigest": "sha256:640077031da0ebadd6f0a7e26b3aa9509eedea651a8989a47703e0fa2c5d881f",
       "sourceId": "33-unknown-semantics-ledger",
       "sourcePath": "skills/semantic-model/33-unknown-semantics-ledger/SKILL.md"
@@ -348,11 +266,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:34-semantic-risk-scoring",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-34-semantic-risk-scoring",
-      "operationCode": "SEMANTIC_RISKS_SCORED",
       "sourceDigest": "sha256:d136563dbd3778066e4647466402539a0a82ecd2eebbb86bbbd9a4228e9011b3",
       "sourceId": "34-semantic-risk-scoring",
       "sourcePath": "skills/semantic-model/34-semantic-risk-scoring/SKILL.md"
@@ -361,11 +276,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:40-preserve-first-migration-strategy",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-40-preserve-first-migration-strategy",
-      "operationCode": "PRESERVE_FIRST_STRATEGY_COMPILED",
       "sourceDigest": "sha256:c7fa1bb1df43cbedbc95cee1334ee95311de4514ff9d29b627fc3376c6e20d1f",
       "sourceId": "40-preserve-first-migration-strategy",
       "sourcePath": "skills/planning/40-preserve-first-migration-strategy/SKILL.md"
@@ -374,11 +286,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:41-springboot4-target-architecture",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-41-springboot4-target-architecture",
-      "operationCode": "SPRINGBOOT4_TARGET_COMPILED",
       "sourceDigest": "sha256:d41b511f838b964f3bf545d253e6f6521f9d354fe5d7c481c256ba3576987582",
       "sourceId": "41-springboot4-target-architecture",
       "sourcePath": "skills/planning/41-springboot4-target-architecture/SKILL.md"
@@ -387,11 +296,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:42-multi-module-conversion-wave-planner",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-42-multi-module-conversion-wave-planner",
-      "operationCode": "CONVERSION_WAVES_COMPILED",
       "sourceDigest": "sha256:2fce65282740e565d64c078d9b23b5d5053f22497f5f334ea1279c861bb7d045",
       "sourceId": "42-multi-module-conversion-wave-planner",
       "sourcePath": "skills/planning/42-multi-module-conversion-wave-planner/SKILL.md"
@@ -400,11 +306,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:43-compatibility-shim-synthesis",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-43-compatibility-shim-synthesis",
-      "operationCode": "COMPATIBILITY_SHIMS_COMPILED",
       "sourceDigest": "sha256:a2fcdcca0ec7370ce2a4673395f17eb88730d8b2b5a36447a9855f75bec13fc4",
       "sourceId": "43-compatibility-shim-synthesis",
       "sourcePath": "skills/planning/43-compatibility-shim-synthesis/SKILL.md"
@@ -413,129 +316,88 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:44-packaging-view-and-container-decision",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-44-packaging-view-and-container-decision",
-      "operationCode": "PACKAGING_DECISION_COMPILED",
       "sourceDigest": "sha256:2f9e4f173dd1932f49690c20464c06feeb0a4c0918ee00db797758dcd482a1d4",
       "sourceId": "44-packaging-view-and-container-decision",
       "sourcePath": "skills/planning/44-packaging-view-and-container-decision/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PLANNING_ONLY",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "production-cutover-execution"
-      ],
       "handlerId": "legacy-web-handler:45-cutover-strangler-and-dual-run-plan",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-45-cutover-strangler-and-dual-run-plan",
-      "operationCode": "CUTOVER_STATE_MACHINE_COMPILED",
       "sourceDigest": "sha256:6f23f57a3fc6e55b0a53f309bb762161b70a0912f7abaa6a6a8a319d93f28053",
       "sourceId": "45-cutover-strangler-and-dual-run-plan",
       "sourcePath": "skills/planning/45-cutover-strangler-and-dual-run-plan/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PARTIAL_LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:50-deterministic-ast-and-config-rewrite",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-50-deterministic-ast-and-config-rewrite",
-      "operationCode": "DETERMINISTIC_STRUCTURED_REWRITE_COMPILED",
       "sourceDigest": "sha256:a0d7b0ee77e421695d909a5fcac18c01179ce5dc8a24c6076865ad0b6d0da3bb",
       "sourceId": "50-deterministic-ast-and-config-rewrite",
       "sourcePath": "skills/transformation/50-deterministic-ast-and-config-rewrite/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PARTIAL_LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "target-build-execution"
-      ],
       "handlerId": "legacy-web-handler:51-struts1-to-springmvc-generator",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-51-struts1-to-springmvc-generator",
-      "operationCode": "STRUTS1_TARGET_GENERATED",
       "sourceDigest": "sha256:2718d34e6b350c23828e1531a5d01e43a1d5d91db59d878d5da37912a041e3e1",
       "sourceId": "51-struts1-to-springmvc-generator",
       "sourcePath": "skills/transformation/51-struts1-to-springmvc-generator/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PARTIAL_LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "target-build-execution"
-      ],
       "handlerId": "legacy-web-handler:52-struts2-to-springmvc-generator",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-52-struts2-to-springmvc-generator",
-      "operationCode": "STRUTS2_TARGET_GENERATED",
       "sourceDigest": "sha256:1fb70788b21050779c3dac41c8e05e20aa3201681ae1b277dee43ce201a08495",
       "sourceId": "52-struts2-to-springmvc-generator",
       "sourcePath": "skills/transformation/52-struts2-to-springmvc-generator/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PARTIAL_LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "target-build-execution"
-      ],
       "handlerId": "legacy-web-handler:53-servlet-to-springmvc-generator",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-53-servlet-to-springmvc-generator",
-      "operationCode": "SERVLET_TARGET_GENERATED",
       "sourceDigest": "sha256:947607c7823beb1b2729c2f0926aedacf891972dd8abc7b29c2797ba56c7835e",
       "sourceId": "53-servlet-to-springmvc-generator",
       "sourcePath": "skills/transformation/53-servlet-to-springmvc-generator/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PARTIAL_LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "target-build-execution"
-      ],
       "handlerId": "legacy-web-handler:54-jakarta-and-dependency-migration",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-54-jakarta-and-dependency-migration",
-      "operationCode": "JAKARTA_STRUCTURED_REWRITE_COMPILED",
       "sourceDigest": "sha256:b46b57f6b44ea69ec098ac3620400422f100fb25763c82b229db564704c9e175",
       "sourceId": "54-jakarta-and-dependency-migration",
       "sourcePath": "skills/transformation/54-jakarta-and-dependency-migration/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PARTIAL_LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "security-runtime-execution"
-      ],
       "handlerId": "legacy-web-handler:55-spring-security-validation-transaction-generator",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-55-spring-security-validation-transaction-generator",
-      "operationCode": "SECURITY_VALIDATION_TRANSACTION_TARGET_GENERATED",
       "sourceDigest": "sha256:e4a4afdfb7c94558074c940d89d1ca8efa5aa2f1bbb509ced484d5f8a22e8468",
       "sourceId": "55-spring-security-validation-transaction-generator",
       "sourcePath": "skills/transformation/55-spring-security-validation-transaction-generator/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PARTIAL_LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "browser-view-runtime-execution"
-      ],
       "handlerId": "legacy-web-handler:56-jsp-preserve-or-modernize",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-56-jsp-preserve-or-modernize",
-      "operationCode": "JSP_VIEW_TARGET_GENERATED",
       "sourceDigest": "sha256:06938364c3a51f613e1a80a71260d20c438d830d25defcbff07da38f28bc3174",
       "sourceId": "56-jsp-preserve-or-modernize",
       "sourcePath": "skills/transformation/56-jsp-preserve-or-modernize/SKILL.md"
@@ -544,26 +406,18 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:57-source-map-change-provenance",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-57-source-map-change-provenance",
-      "operationCode": "SOURCE_MAP_BUILT",
       "sourceDigest": "sha256:1899b2dbf98433fc3552fddc9c9e2d825477c2eb08ebe7a2ccff60a2f2a8683f",
       "sourceId": "57-source-map-change-provenance",
       "sourcePath": "skills/transformation/57-source-map-change-provenance/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PLANNING_ONLY",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "customer-git-mutation"
-      ],
       "handlerId": "legacy-web-handler:58-idempotent-change-set-commit",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-58-idempotent-change-set-commit",
-      "operationCode": "CHANGE_SET_STAGING_COMMIT_COMPILED",
       "sourceDigest": "sha256:55dd7ec92a930925db07099a8a6068589712451fd0c0ce81fffb92ac806fe11b",
       "sourceId": "58-idempotent-change-set-commit",
       "sourcePath": "skills/transformation/58-idempotent-change-set-commit/SKILL.md"
@@ -572,11 +426,8 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:60-static-semantic-coverage",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-60-static-semantic-coverage",
-      "operationCode": "STATIC_SEMANTIC_COVERAGE_MEASURED",
       "sourceDigest": "sha256:cdb59423b5bbcf86535b84802524d5e712d6e2da1cc93f52a172db322d00c8b6",
       "sourceId": "60-static-semantic-coverage",
       "sourcePath": "skills/verification/60-static-semantic-coverage/SKILL.md"
@@ -585,86 +436,58 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:61-test-and-scenario-generation",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-61-test-and-scenario-generation",
-      "operationCode": "SCENARIOS_GENERATED",
       "sourceDigest": "sha256:5852b0f05591811de4cdf3710e690dd4809006ce422adb951aec04438bc327cd",
       "sourceId": "61-test-and-scenario-generation",
       "sourcePath": "skills/verification/61-test-and-scenario-generation/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PARTIAL_LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "legacy-target-runtime-capture"
-      ],
       "handlerId": "legacy-web-handler:62-differential-http-and-view-oracle",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-62-differential-http-and-view-oracle",
-      "operationCode": "HTTP_VIEW_ORACLE_EVALUATED",
       "sourceDigest": "sha256:e87bec492bf4700c5319dc9783f2d4fce42e3eabcb4497f1ff645c2fe905d7c7",
       "sourceId": "62-differential-http-and-view-oracle",
       "sourcePath": "skills/verification/62-differential-http-and-view-oracle/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PARTIAL_LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "database-cdc-capture"
-      ],
       "handlerId": "legacy-web-handler:63-session-db-and-side-effect-diff",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-63-session-db-and-side-effect-diff",
-      "operationCode": "STATE_EFFECT_ORACLE_EVALUATED",
       "sourceDigest": "sha256:79001e4d68400b781e48cfa3d6db6cbff3b2c1c50cdf17f865c4cccf194ce058",
       "sourceId": "63-session-db-and-side-effect-diff",
       "sourcePath": "skills/verification/63-session-db-and-side-effect-diff/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PARTIAL_LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "independent-security-verification"
-      ],
       "handlerId": "legacy-web-handler:64-security-equivalence-and-hardening",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-64-security-equivalence-and-hardening",
-      "operationCode": "SECURITY_ORACLE_EVALUATED",
       "sourceDigest": "sha256:1d17a464429325a03360025207095333b7876dbc59717ee83a3befca7ba9cf4b",
       "sourceId": "64-security-equivalence-and-hardening",
       "sourcePath": "skills/verification/64-security-equivalence-and-hardening/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PLANNING_ONLY",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "runtime-load-fault-capture"
-      ],
       "handlerId": "legacy-web-handler:65-concurrency-performance-and-fault-verification",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-65-concurrency-performance-and-fault-verification",
-      "operationCode": "RUNTIME_STRESS_ORACLE_EVALUATED",
       "sourceDigest": "sha256:59be34881884536fe3b00a6be30d8e5ba54a19ce612f7a6dc8c65be7fcd72f9b",
       "sourceId": "65-concurrency-performance-and-fault-verification",
       "sourcePath": "skills/verification/65-concurrency-performance-and-fault-verification/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PARTIAL_LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "distributed-trace-capture"
-      ],
       "handlerId": "legacy-web-handler:66-observability-and-trace-correlation",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-66-observability-and-trace-correlation",
-      "operationCode": "TRACE_CORRELATION_EVALUATED",
       "sourceDigest": "sha256:5c44ba424b02acfd495d2bd6efd8526b4f46aa268591f04d85a89ca13a05078e",
       "sourceId": "66-observability-and-trace-correlation",
       "sourcePath": "skills/verification/66-observability-and-trace-correlation/SKILL.md"
@@ -673,26 +496,18 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:70-mismatch-classification",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-70-mismatch-classification",
-      "operationCode": "MISMATCHES_CLASSIFIED",
       "sourceDigest": "sha256:e136ea1ec449acfe1bdbebcef63189c512b20228cf3d47b360e5e90a1a3012a5",
       "sourceId": "70-mismatch-classification",
       "sourcePath": "skills/repair-certification/70-mismatch-classification/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PARTIAL_LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "automatic-write-to-customer-repository"
-      ],
       "handlerId": "legacy-web-handler:71-bounded-semantic-auto-repair",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-71-bounded-semantic-auto-repair",
-      "operationCode": "BOUNDED_REPAIR_CHANGE_SET_GENERATED",
       "sourceDigest": "sha256:aaf1f4f97eaac788faef3c5dd8a07a423a9fae63c33ea94192371d0ef9a23461",
       "sourceId": "71-bounded-semantic-auto-repair",
       "sourcePath": "skills/repair-certification/71-bounded-semantic-auto-repair/SKILL.md"
@@ -701,57 +516,38 @@
       "capabilityState": "LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [],
       "handlerId": "legacy-web-handler:72-impact-based-regression-selection",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-72-impact-based-regression-selection",
-      "operationCode": "IMPACT_REGRESSION_SELECTED",
       "sourceDigest": "sha256:bd25e8f841842deb44c8d3a045d4a5421c84f4e5a79995e64f83feb3a90e61ae",
       "sourceId": "72-impact-based-regression-selection",
       "sourcePath": "skills/repair-certification/72-impact-based-regression-selection/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PLANNING_ONLY",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "production-adapter-execution"
-      ],
       "handlerId": "legacy-web-handler:73-production-cutover-rollback",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-73-production-cutover-rollback",
-      "operationCode": "CUTOVER_ROLLBACK_STATE_EVALUATED",
       "sourceDigest": "sha256:025fd83d9c55e89e3b84989432eb379f845e97ab973acd9568cf87111e43bb24",
       "sourceId": "73-production-cutover-rollback",
       "sourcePath": "skills/repair-certification/73-production-cutover-rollback/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PLANNING_ONLY",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "independent-verifier",
-        "production-evidence"
-      ],
       "handlerId": "legacy-web-handler:74-evidence-bundle-and-e0-e5-certification",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-74-evidence-bundle-and-e0-e5-certification",
-      "operationCode": "LOCAL_E0_E4_AND_EXTERNAL_GATE_EVALUATED",
       "sourceDigest": "sha256:776ff3e90c03bab54079e74245504a21b15edb2e4c7fb701fbe5b3e8122f4b4b",
       "sourceId": "74-evidence-bundle-and-e0-e5-certification",
       "sourcePath": "skills/repair-certification/74-evidence-bundle-and-e0-e5-certification/SKILL.md"
     },
     {
-      "capabilityState": "LOCAL_EXECUTED",
+      "capabilityState": "PARTIAL_LOCAL_EXECUTED",
       "certification": "NOT_CERTIFIED",
       "externalEvidence": "NOT_RUN",
-      "externalExecutionRequirements": [
-        "independent-customer-learning-verification"
-      ],
       "handlerId": "legacy-web-handler:75-golden-route-benchmark-and-learning-cache",
-      "implementationState": "CODE_COMPLETE_LOCAL",
       "installedName": "legacy-web-75-golden-route-benchmark-and-learning-cache",
-      "operationCode": "GOLDEN_ROUTE_SCORECARD_EVALUATED",
       "sourceDigest": "sha256:e9c3bf54989e870e6e9ddb042d5d65ec2f86bb846c945ad6c02ebda5a8a3021c",
       "sourceId": "75-golden-route-benchmark-and-learning-cache",
       "sourcePath": "skills/repair-certification/75-golden-route-benchmark-and-learning-cache/SKILL.md"

@@ -7,9 +7,7 @@ metadata:
   source_id: 01-job-contract-and-policy-resolver
   source_digest: sha256:c3fe22b15a2dc4f3f484d8b7c6d08bc4721046a261ec5fefc9e1f97443d78705
   phase: control-plane
-  runtime_state: CODE_COMPLETE_LOCAL
-  capability_state: LOCAL_EXECUTED
-  operation_code: JOB_CONTRACT_RESOLVED
+  runtime_state: BOUND_LOCAL_EXACT
   runtime_handler_id: legacy-web-handler:01-job-contract-and-policy-resolver
 ---
 
@@ -17,9 +15,8 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is code-complete for its bounded local contract, tenant/project/job
-scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
-It does not execute source-package instructions or mutate customer repositories.
+The handler is bounded, tenant/project/job scoped, idempotency-aware and
+does not execute source-package instructions or customer repository code.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and

@@ -1,0 +1,35 @@
+{
+  "kind": "elmos.sql-dialect.refusal-justification-evidence",
+  "date": "2026-08-26",
+  "findings": [
+    {
+      "refusal": "CERTIFIED_DDL_COLLATION_DEPENDENT_REGEX",
+      "observed": {
+        "utf8mb4_0900_ai_ci": "ACCEPTED",
+        "utf8mb4_0900_as_cs": "REJECTED"
+      },
+      "justified": true,
+      "why": "the identical statement means different things under two collations, so the statement alone does not determine its semantics"
+    },
+    {
+      "refusal": "CERTIFIED_DDL_COLLATION_DEPENDENT_REGEX",
+      "engine_status": "BLOCKED",
+      "engine_reason_code": "CERTIFIED_DDL_COLLATION_DEPENDENT_REGEX",
+      "enforced": true
+    },
+    {
+      "refusal": "CERTIFIED_DDL_UNSUPPORTED_CHECK_MATCH_PARAMETER",
+      "source_i_accepts_uppercase": true,
+      "naive_c_accepts_uppercase": false,
+      "justified": true,
+      "why": "translating 'i' as 'c' produces a STRICTER target constraint that rejects rows the source accepts -- a migration that silently loses data"
+    },
+    {
+      "refusal": "CERTIFIED_DDL_UNSUPPORTED_CHECK_MATCH_PARAMETER",
+      "engine_status": "BLOCKED",
+      "engine_reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK_MATCH_PARAMETER",
+      "enforced": true
+    }
+  ],
+  "all_justified": true
+}

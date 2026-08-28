@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/proof-harness/v3/repository-evidence-graph.schema.json",
+  "title": "Content-addressed repository evidence graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["snapshotId", "repositoryDigest", "rootIdentity", "files", "buildTargets", "edges", "limits", "completeness", "createdAt"],
+  "properties": {
+    "snapshotId": {"$ref": "#/$defs/digest"},
+    "repositoryDigest": {"$ref": "#/$defs/digest"},
+    "rootIdentity": {"type": "object", "additionalProperties": false, "required": ["device", "inode"], "properties": {"device": {"type": "integer", "minimum": 0}, "inode": {"type": "integer", "minimum": 0}}},
+    "files": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["path", "digest", "size", "mode", "classification"], "properties": {"path": {"type": "string", "minLength": 1}, "digest": {"$ref": "#/$defs/digest"}, "size": {"type": "integer", "minimum": 0}, "mode": {"type": "string", "pattern": "^[0-7]{4}$"}, "classification": {"enum": ["source", "test", "build", "configuration", "data", "generated", "vendor", "unknown"]}}}},
+    "buildTargets": {"type": "array", "items": {"type": "object"}},
+    "edges": {"type": "array", "items": {"type": "object"}},
+    "limits": {"type": "object", "additionalProperties": false, "required": ["maxFiles", "maxTotalBytes", "maxFileBytes", "maxDepth"], "properties": {"maxFiles": {"type": "integer", "minimum": 1}, "maxTotalBytes": {"type": "integer", "minimum": 1}, "maxFileBytes": {"type": "integer", "minimum": 1}, "maxDepth": {"type": "integer", "minimum": 1}}},
+    "completeness": {"type": "object", "additionalProperties": false, "required": ["complete", "skipped", "unsupported"], "properties": {"complete": {"type": "boolean"}, "skipped": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}, "unsupported": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}}},
+    "createdAt": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"}}
+}

@@ -78,10 +78,7 @@ class EvidenceChain:
         finally:
             if os.path.exists(temporary):
                 os.unlink(temporary)
-        written = json.loads(raw)
-        if not isinstance(written, dict):
-            raise ValueError("evidence manifest must decode to an object")
-        return written
+        return json.loads(raw)
 
 
 def evaluate_certification(

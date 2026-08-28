@@ -1,0 +1,472 @@
+{
+  "artifact": "elmos-proof-driven-harness-engine@3.0.0",
+  "claimBoundary": {
+    "certification": "NOT_CERTIFIED",
+    "commercialDistribution": "BLOCKED",
+    "externalEvidence": "NOT_RUN",
+    "localEngineeringMaximum": "READY_FOR_EXTERNAL_GATE"
+  },
+  "contractRoot": "sha256:4863567c2bb39d6d61edf28ba099842e3dc268ae4ddde13137eaf733f238b854",
+  "counts": {
+    "files": 72,
+    "roles": {
+      "container-build-contract": 1,
+      "database-migration": 1,
+      "deployment-boundary": 1,
+      "helm-release-asset": 11,
+      "implementation-boundary": 1,
+      "json-schema": 18,
+      "local-qualification-producer": 1,
+      "observability-catalog": 1,
+      "observability-rule-source": 1,
+      "openapi": 1,
+      "packaging-contract": 1,
+      "postgres-migration-applicator": 1,
+      "production-dependency-lock": 1,
+      "release-contract-verifier": 1,
+      "runtime-source": 27,
+      "source-dependency-sbom": 1,
+      "structured-test-runner": 1,
+      "supply-chain-policy": 1,
+      "verification-pack-publisher": 1
+    },
+    "schemas": 18
+  },
+  "files": [
+    {
+      "bytes": 4018,
+      "path": "README.md",
+      "role": "implementation-boundary",
+      "sha256": "sha256:b61cd575f533cae7050237e2ae5995e84e2f3946ae95ac3c6cccf48833d4ede5"
+    },
+    {
+      "bytes": 1964,
+      "path": "deploy/Dockerfile",
+      "role": "container-build-contract",
+      "sha256": "sha256:8f411dad46722450d87af4a7c30f53116fb52c7af97ecbdcd45c92dca9b32b50"
+    },
+    {
+      "bytes": 3544,
+      "path": "deploy/README.md",
+      "role": "deployment-boundary",
+      "sha256": "sha256:cfc62b5f1318dd7574973c448641d2452b2f4532593bb8cb7ae564ed0142546c"
+    },
+    {
+      "bytes": 155,
+      "path": "deploy/helm/proof-harness/Chart.yaml",
+      "role": "helm-release-asset",
+      "sha256": "sha256:4e44b5f37fb0a89f5d8d20f2720f02ce0d940104435bcd998f78d2cd0c12e9dc"
+    },
+    {
+      "bytes": 796,
+      "path": "deploy/helm/proof-harness/templates/_helpers.tpl",
+      "role": "helm-release-asset",
+      "sha256": "sha256:04a506ba75769ec4e0c034d308ef80c0e86ce65500c9c7bb2c4b54553445cc0b"
+    },
+    {
+      "bytes": 7565,
+      "path": "deploy/helm/proof-harness/templates/deployment.yaml",
+      "role": "helm-release-asset",
+      "sha256": "sha256:e5cebd2bab73089262e57ca9d48d050ddc1809e314a93f419748a0bb9ccb210e"
+    },
+    {
+      "bytes": 1139,
+      "path": "deploy/helm/proof-harness/templates/networkpolicy.yaml",
+      "role": "helm-release-asset",
+      "sha256": "sha256:3d623406f65a2547d6141752f413f3ceb89d31a139a1704f62b54495c1893d18"
+    },
+    {
+      "bytes": 386,
+      "path": "deploy/helm/proof-harness/templates/pdb.yaml",
+      "role": "helm-release-asset",
+      "sha256": "sha256:0bc21421ac91f52e359c5e7180068ccfa71ca34c2e75e8f9272e64b77fe09f5f"
+    },
+    {
+      "bytes": 3243,
+      "path": "deploy/helm/proof-harness/templates/prometheusrule.yaml",
+      "role": "helm-release-asset",
+      "sha256": "sha256:ef79f6b51d9aee8baabac54c21f031f0da7e7226e0e5f934c892b87e5483c675"
+    },
+    {
+      "bytes": 330,
+      "path": "deploy/helm/proof-harness/templates/service.yaml",
+      "role": "helm-release-asset",
+      "sha256": "sha256:dba1ef472bbddeabd919748e59fb062d7df7c2a4e6e7f31df0226a1337f28fa7"
+    },
+    {
+      "bytes": 201,
+      "path": "deploy/helm/proof-harness/templates/serviceaccount.yaml",
+      "role": "helm-release-asset",
+      "sha256": "sha256:0385692a5d7a319541807512a46dc1f2ab54db6f410622a17e969ce2178ad712"
+    },
+    {
+      "bytes": 2293,
+      "path": "deploy/helm/proof-harness/templates/servicemonitor.yaml",
+      "role": "helm-release-asset",
+      "sha256": "sha256:b320b0745048b4c32c0f1ed6932f19c74ffe213f5a1881011aeb73fa032e956e"
+    },
+    {
+      "bytes": 10143,
+      "path": "deploy/helm/proof-harness/values.schema.json",
+      "role": "helm-release-asset",
+      "sha256": "sha256:9f48c097885030cc1dc021c6f7f7c481e3eaad708a686af0c23f2424ea402064"
+    },
+    {
+      "bytes": 1844,
+      "path": "deploy/helm/proof-harness/values.yaml",
+      "role": "helm-release-asset",
+      "sha256": "sha256:4dea762b1e8636f79b2507e7403eaf81196b2164d0ff0dc34df69986e3aa7d52"
+    },
+    {
+      "bytes": 180,
+      "path": "deploy/requirements-production.txt",
+      "role": "production-dependency-lock",
+      "sha256": "sha256:ad16099064a6de6d762f9bb2a077b03d5546863031606a10f7760dc825df80a0"
+    },
+    {
+      "bytes": 87382,
+      "path": "migrations/V001__proof_harness_core.sql",
+      "role": "database-migration",
+      "sha256": "sha256:a2e37c035dd4a533759204dd099997ca9b76b56a8494c000bf278c156beeb43d"
+    },
+    {
+      "bytes": 2923,
+      "path": "observability/alerts.yaml",
+      "role": "observability-rule-source",
+      "sha256": "sha256:5404a24c6e003473c229317b6de95fdf6c344560b2a24587b640f87acdde034a"
+    },
+    {
+      "bytes": 3059,
+      "path": "observability/metrics.yaml",
+      "role": "observability-catalog",
+      "sha256": "sha256:6eff095d13b1afbb9167478b0e2251b10ccd818f11c9a919be79c552b1452e4d"
+    },
+    {
+      "bytes": 9451,
+      "path": "openapi/proof-harness-v3.openapi.yaml",
+      "role": "openapi",
+      "sha256": "sha256:95902f6bfe4e9235745e4e8dc8a95a4aebbc0091d8f74a1e18827c3c467a69b7"
+    },
+    {
+      "bytes": 2597,
+      "path": "pyproject.toml",
+      "role": "packaging-contract",
+      "sha256": "sha256:8f1bafd8765986e7a696d019fd73695b808d648674e8adbbaee1f11783a4866a"
+    },
+    {
+      "bytes": 1663,
+      "path": "schemas/adapter-contract.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:8a1b6bd743d603d08bdcf588742a56bfa7af76e0942a086b4f466eb77d16437c"
+    },
+    {
+      "bytes": 917,
+      "path": "schemas/admission.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:2a9f48716393d3af6b424b0de4e6e352cc57e84ebeda9dab8cfa6b65b3aaedb0"
+    },
+    {
+      "bytes": 1873,
+      "path": "schemas/architecture-graph.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:46cd536f038ed8ff7183b4ff0018e4e883833faa921c6a183d2eed9b568a6e4d"
+    },
+    {
+      "bytes": 8423,
+      "path": "schemas/completion-certificate.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:28810c5fd6296ef2c9ea5e78f68cf22700b430479a824842c9f3761e96739b53"
+    },
+    {
+      "bytes": 5736,
+      "path": "schemas/completion-review.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:17b2164ced791da8e707ed606e7845ec6eaf055936365d021037761dc714adbe"
+    },
+    {
+      "bytes": 1941,
+      "path": "schemas/domain-pack.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:fe940ee32ca04885ef75a4aea3a7d7c45c5b0f7fd6caefa664d1fb64d9a959f0"
+    },
+    {
+      "bytes": 1838,
+      "path": "schemas/environment-authority.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:cf1e410983ea8b4f75760e96d5d2a253adb39bdc5414734fead6624a0ffe8bcc"
+    },
+    {
+      "bytes": 1565,
+      "path": "schemas/evidence.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:6ac358ce51555ec84ed0fd018a8058771010ffda0956f9249ca2f68c4de94529"
+    },
+    {
+      "bytes": 1634,
+      "path": "schemas/goal-contract.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:4a185d292e33eed13452755cf6d514d3f7293fa62e8ae7722091e02d5339ef3b"
+    },
+    {
+      "bytes": 3881,
+      "path": "schemas/invocation.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:750b3c513d723ef0c7f8adb8597c25da6d35e7a1316bb2d702e87ef050c5f55a"
+    },
+    {
+      "bytes": 2338,
+      "path": "schemas/proof-obligation-graph.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:4cd5c351072a2b3f7efb0a30b0f8ffcf6092c11ab0667d72abf032606c6ff301"
+    },
+    {
+      "bytes": 1771,
+      "path": "schemas/proof-result.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:ad32ef2eac6a8b06b090745d47d447813d198558841fde3cf90ded59aa83b063"
+    },
+    {
+      "bytes": 2161,
+      "path": "schemas/repository-evidence-graph.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:bae6f7c4ad645da2b649d6fb73f16f5485f95002e3327b036f82f752ece16a4c"
+    },
+    {
+      "bytes": 2121,
+      "path": "schemas/result.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:adbf511f9aab72f9a4f473f901ca8d8e33bcbb1bdd2134b38639b83d983e4693"
+    },
+    {
+      "bytes": 1289,
+      "path": "schemas/revision-set.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:7c892ed9421a57f7772c4d2b6be3ef90c8b07892d4e46638497d831af629511a"
+    },
+    {
+      "bytes": 2710,
+      "path": "schemas/semantic-ir.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:dd0fe0a44383699cb63a77c1bd0e193560136bc42d7c7a27af75e1573fc67ede"
+    },
+    {
+      "bytes": 1626,
+      "path": "schemas/semantic-profile.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:d384fd9f34283861925175718002fc3bbce41848d080a587793e17914183ec82"
+    },
+    {
+      "bytes": 1846,
+      "path": "schemas/workflow-ir.schema.json",
+      "role": "json-schema",
+      "sha256": "sha256:1c87e5d0599d1a5091abc39ce1cbcde30b2290a90dfd2239025dea569056a639"
+    },
+    {
+      "bytes": 1919,
+      "path": "src/elmos_proof_harness/__init__.py",
+      "role": "runtime-source",
+      "sha256": "sha256:22272f8f70f616caf6c5ec5136324e4716d999e79516582a744b5174f4ba8c7b"
+    },
+    {
+      "bytes": 49,
+      "path": "src/elmos_proof_harness/__main__.py",
+      "role": "runtime-source",
+      "sha256": "sha256:0f7d54f3fbb1f79a85eb8110f11793db99da6f3c61ee979de5abe9a1b5f3fdb3"
+    },
+    {
+      "bytes": 34693,
+      "path": "src/elmos_proof_harness/adapters.py",
+      "role": "runtime-source",
+      "sha256": "sha256:766b054c7307c89331ef83825a2eb30ed333d33c7245e73e231e7d9bb6ae3782"
+    },
+    {
+      "bytes": 17254,
+      "path": "src/elmos_proof_harness/architecture.py",
+      "role": "runtime-source",
+      "sha256": "sha256:de5aedfd5fc8d339184f0f2232ca282681fc4839ad22827cbb9dea4485fa2596"
+    },
+    {
+      "bytes": 16417,
+      "path": "src/elmos_proof_harness/authority.py",
+      "role": "runtime-source",
+      "sha256": "sha256:cc825bfada3ba8da3ccb2bc41077baeba9e33cd9bcf5ec6039ecb665fb4c71e1"
+    },
+    {
+      "bytes": 5436,
+      "path": "src/elmos_proof_harness/canonical.py",
+      "role": "runtime-source",
+      "sha256": "sha256:eae6d6d36f1ed53f358f1a700bfffa11c2e7e00bf0809497378d9109f9340cdf"
+    },
+    {
+      "bytes": 27253,
+      "path": "src/elmos_proof_harness/certification.py",
+      "role": "runtime-source",
+      "sha256": "sha256:dc44e224dc32a3213e476cb6a3bc06fbd2d36a248d10f42fe8e93e8dfb01f7ed"
+    },
+    {
+      "bytes": 36302,
+      "path": "src/elmos_proof_harness/certification_store.py",
+      "role": "runtime-source",
+      "sha256": "sha256:68e3139b07fd847324ddd7158e12062daba169f6dbd16defc387c701d3f7f3ed"
+    },
+    {
+      "bytes": 19787,
+      "path": "src/elmos_proof_harness/cli.py",
+      "role": "runtime-source",
+      "sha256": "sha256:909c3f6912ae2d6173039f5425ae13dc8c3935db946492c18a8acfeeac50f11b"
+    },
+    {
+      "bytes": 23415,
+      "path": "src/elmos_proof_harness/contracts.py",
+      "role": "runtime-source",
+      "sha256": "sha256:0da0d0d0e61a5e1c896b842f8ecd759fc517ba7ac20a156f85409c8cb05cba50"
+    },
+    {
+      "bytes": 63103,
+      "path": "src/elmos_proof_harness/control_plane.py",
+      "role": "runtime-source",
+      "sha256": "sha256:a7952074c8ad3e0f1db873e02c2b6bfc1d1ba33c48b15302192791e8a1730113"
+    },
+    {
+      "bytes": 13758,
+      "path": "src/elmos_proof_harness/domains.py",
+      "role": "runtime-source",
+      "sha256": "sha256:73b3acaf0b19f3ed69e9d5031447af8243cf571a76a290be463f6744915ec700"
+    },
+    {
+      "bytes": 3164,
+      "path": "src/elmos_proof_harness/errors.py",
+      "role": "runtime-source",
+      "sha256": "sha256:a04bfb792c2b823777f872b50091e8c9c555cb1b197ceab5ac0b7714a689c8dc"
+    },
+    {
+      "bytes": 6604,
+      "path": "src/elmos_proof_harness/evidence.py",
+      "role": "runtime-source",
+      "sha256": "sha256:b2b1987b52e4a49997ab3b0ca1db5e73cd9ee253803729f84c2c6ac3e0d94cdb"
+    },
+    {
+      "bytes": 4862,
+      "path": "src/elmos_proof_harness/observability.py",
+      "role": "runtime-source",
+      "sha256": "sha256:0286ccd7a295bcd223a0977737b575fdbe4c98070290cd44bf373d1865ae91f6"
+    },
+    {
+      "bytes": 9093,
+      "path": "src/elmos_proof_harness/policy.py",
+      "role": "runtime-source",
+      "sha256": "sha256:8f18312db6fa0eb65ba1d695a3ca206d58f97843c534e001544d543ea533407b"
+    },
+    {
+      "bytes": 18518,
+      "path": "src/elmos_proof_harness/postgres.py",
+      "role": "runtime-source",
+      "sha256": "sha256:cca301a7aea9f7a8e8c0a9bbcf0ae2a3946369b45bde524d939d8e997a366684"
+    },
+    {
+      "bytes": 14746,
+      "path": "src/elmos_proof_harness/proof_graph.py",
+      "role": "runtime-source",
+      "sha256": "sha256:5db27f83b4507acab16eed3c6b3dce423654462921ae260c6a9901ece9eb04c5"
+    },
+    {
+      "bytes": 32129,
+      "path": "src/elmos_proof_harness/repository.py",
+      "role": "runtime-source",
+      "sha256": "sha256:04498352aa58e3f64397735df799377738cc6186030da63f13f1c05b2e75e235"
+    },
+    {
+      "bytes": 9205,
+      "path": "src/elmos_proof_harness/scheduler.py",
+      "role": "runtime-source",
+      "sha256": "sha256:b34e3ece32b8564c2f41e52936ad23478650f1254b1628621d3648c57a565fdc"
+    },
+    {
+      "bytes": 42886,
+      "path": "src/elmos_proof_harness/semantic.py",
+      "role": "runtime-source",
+      "sha256": "sha256:78cd320737e572d71f4bd65abf512da289dd0d846a385074bce7b400bf847e5f"
+    },
+    {
+      "bytes": 69741,
+      "path": "src/elmos_proof_harness/service.py",
+      "role": "runtime-source",
+      "sha256": "sha256:ec51aa2d85a187b19686574ceeb7fc224d0f0d327a442cf5e2ce4d68f7c73b25"
+    },
+    {
+      "bytes": 39199,
+      "path": "src/elmos_proof_harness/skills.py",
+      "role": "runtime-source",
+      "sha256": "sha256:ba27b781ee157dbb540498018c709fc5310c9895342b45564425ee3cd8301108"
+    },
+    {
+      "bytes": 8696,
+      "path": "src/elmos_proof_harness/storage.py",
+      "role": "runtime-source",
+      "sha256": "sha256:dc4104c1c60d21ecbd521be57121c7b8d4d658156ab29850c9c132a3e8568f77"
+    },
+    {
+      "bytes": 77590,
+      "path": "src/elmos_proof_harness/store.py",
+      "role": "runtime-source",
+      "sha256": "sha256:9cd44ae2fdfbdce85df625481615fef0d2eac33692ea20df38f24d42902631c3"
+    },
+    {
+      "bytes": 32039,
+      "path": "src/elmos_proof_harness/transformation.py",
+      "role": "runtime-source",
+      "sha256": "sha256:43dc2b03492e701dae0caad37bf2686188cbfbf6dc5bd423a7ab93130d5432d1"
+    },
+    {
+      "bytes": 10491,
+      "path": "src/elmos_proof_harness/workflow.py",
+      "role": "runtime-source",
+      "sha256": "sha256:b09b4aaf852fc0307464773ca10a19c8be6f623dc2526832761d2969f39dfa56"
+    },
+    {
+      "bytes": 934,
+      "path": "supply-chain/release-policy.json",
+      "role": "supply-chain-policy",
+      "sha256": "sha256:38b5a40dda46a541bd2eed95541686b80d253020522005e9cc6301656af39553"
+    },
+    {
+      "bytes": 1908,
+      "path": "supply-chain/sbom.cdx.json",
+      "role": "source-dependency-sbom",
+      "sha256": "sha256:2a6548ca058c314848a9c892042ae8e5557e034b65f6fd663d8b4b0b0256cd4d"
+    },
+    {
+      "bytes": 7113,
+      "path": "tools/apply_postgres_migration.py",
+      "role": "postgres-migration-applicator",
+      "sha256": "sha256:236f565e8856a76977042bcdf46aa16a883b2a8fd849e4804e0d3a6121456f38"
+    },
+    {
+      "bytes": 121884,
+      "path": "tools/publish_verification_pack.py",
+      "role": "verification-pack-publisher",
+      "sha256": "sha256:114a0db5b8d0891bf43c663fbd306933d87380325c68d0f2d4aa8c2bee6d9d33"
+    },
+    {
+      "bytes": 31819,
+      "path": "tools/qualify_local.py",
+      "role": "local-qualification-producer",
+      "sha256": "sha256:db38bb10a96cded3adfa3b40068ec4a742dddf991e22e99272db2488ac635e95"
+    },
+    {
+      "bytes": 24073,
+      "path": "tools/release_contract.py",
+      "role": "release-contract-verifier",
+      "sha256": "sha256:db41974034dbc88819637ce864403d1d6ca29ad220e1b0f7b3c67da3b7096764"
+    },
+    {
+      "bytes": 9844,
+      "path": "tools/run_structured_unittest.py",
+      "role": "structured-test-runner",
+      "sha256": "sha256:2f590d1901a9d462e1d0398eb54864db6db6bc7ed6d59a4625a0733f117a5991"
+    }
+  ],
+  "hashAlgorithm": "sha256",
+  "kind": "elmos.proof-harness.release-contract",
+  "schemaVersion": "1.0.0"
+}

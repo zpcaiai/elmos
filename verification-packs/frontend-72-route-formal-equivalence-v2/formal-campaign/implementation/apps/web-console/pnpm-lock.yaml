@@ -11,9 +11,6 @@ importers:
 
   .:
     dependencies:
-      fflate:
-        specifier: 0.8.3
-        version: 0.8.3
       html-to-text:
         specifier: 10.0.0
         version: 10.0.0
@@ -54,6 +51,9 @@ importers:
       '@types/react-dom':
         specifier: 19.1.7
         version: 19.1.7(@types/react@19.1.10)
+      fflate:
+        specifier: 0.8.3
+        version: 0.8.3
       typescript:
         specifier: 5.9.2
         version: 5.9.2
@@ -365,7 +365,6 @@ packages:
   '@xmldom/xmldom@0.8.13':
     resolution: {integrity: sha512-KRYzxepc14G/CEpEGc3Yn+JKaAeT63smlDr+vjB8jRfgTBBI9wRj/nkQEO+ucV8p8I9bfKLWp37uHgFrbntPvw==}
     engines: {node: '>=10.0.0'}
-    deprecated: this version has critical issues, please update to the latest version
 
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}

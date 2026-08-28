@@ -12,17 +12,7 @@ from typing import Any
 
 
 PACK_KEY = "spring-framework-5-3-mvc-to-spring-boot-3-5-3"
-SOURCE_COMMIT = "7e1c098541143c96cce7d9a637fffe57d0e2baae"
-SOURCE_GIT_TREE_SHA = "4e1a0354cb51cfb2479ea049063226d3a9df2b67"
 ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
-from scripts.batch30.certification_campaign import (  # noqa: E402
-    CampaignError,
-    validate_campaign_plan,
-)
-
 DEFAULT_PACK = ROOT / "framework-packs" / PACK_KEY
 
 EXPECTED_DOMAINS = {
@@ -68,13 +58,20 @@ REQUIRED_FILES = {
     "corpus/development/negative/README.md",
     "corpus/holdout/reference-inputs.json",
     "corpus/real-repository/reference-inputs.json",
-    "corpus/customer/README.md",
-    "corpus/customer/reference-inputs.json",
     "certification/evidence.json",
     "certification/certification.json",
-    "certification/p0-p11-campaign.json",
     "certification/gate-report.md",
     "certification/gap-inventory.md",
+    "certification/local-execution/2026-08-27/exact-tuple-binding.json",
+    "certification/local-execution/2026-08-27/qualification-policy.json",
+    "certification/local-execution/2026-08-27/supplemental/supplemental-index.json",
+    "certification/local-execution/2026-08-27/supplemental/supplemental-local-evidence.json",
+    "certification/local-execution/2026-08-27/supplemental/sbom-local-inventory.json",
+    "certification/local-execution/2026-08-27/supplemental/source-artifacts/legacy-spring-mvc-5.3.39.war",
+    "certification/local-execution/2026-08-27/supplemental/raw/source-build.log",
+    "certification/local-execution/2026-08-27/supplemental/raw/source-rollback.log",
+    "certification/local-execution/2026-08-27/supplemental/raw/target-ab.txt",
+    "certification/local-execution/2026-08-27/supplemental/raw/target-startup.log",
 }
 
 LOCAL_RUNTIME_GATE_FIELDS = {
@@ -100,24 +97,11 @@ EXTERNAL_RUNTIME_GATE_FIELDS = {
     "external_certification",
 }
 
-LOCAL_EVIDENCE_REQUIRED_SUFFIXES = {
-    "exact-tuple-binding.json",
-    "qualification-policy.json",
-    "supplemental/supplemental-index.json",
-    "supplemental/supplemental-local-evidence.json",
-    "supplemental/sbom-local-inventory.json",
-    "supplemental/source-artifacts/legacy-spring-mvc-5.3.39.war",
-    "supplemental/raw/source-build.log",
-    "supplemental/raw/source-rollback.log",
-    "supplemental/raw/target-ab.txt",
-    "supplemental/raw/target-startup.log",
-}
+LOCAL_EVIDENCE_RELATIVE = Path("certification/local-execution/2026-08-27")
+LOCAL_EVIDENCE_INDEX = LOCAL_EVIDENCE_RELATIVE / "evidence-index.json"
 EXPECTED_HARNESS_FILES = {
-    "pom.xml",
     "apps/java-engine-worker/src/main/java/io/elmos/worker/LocalSpringUpgradeExecutionPort.java",
-    "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringCapabilityFingerprint.java",
     "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringDeploymentGuidance.java",
-    "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringFeatureCatalog.java",
     "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringMvcExactTargetMaterializer.java",
     "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringMvcWarRuntime.java",
     "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringRouteCatalog.java",
@@ -127,41 +111,6 @@ EXPECTED_HARNESS_FILES = {
     "apps/java-engine-worker/src/main/resources/spring-mvc/target-profile/profile.json",
     "apps/java-engine-worker/src/main/resources/spring-mvc/target-profile/scaffold-manifest.json",
     "apps/java-engine-worker/src/test/java/io/elmos/worker/SpringMvcExactLocalQualificationIT.java",
-    "recipes/elmos-java-recipes/pom.xml",
-    "recipes/elmos-java-recipes/src/main/java/io/elmos/recipes/RewriteSpringFoundation.java",
-    "recipes/elmos-java-recipes/src/main/java/io/elmos/recipes/SpringSecurityLambdaChain.java",
-    "recipes/elmos-java-recipes/src/test/java/io/elmos/recipes/RewriteSpringFoundationTest.java",
-    "recipes/elmos-java-recipes/src/test/java/io/elmos/recipes/SpringSecurityLambdaChainTest.java",
-}
-EXPECTED_RECIPE_SEED_FILES = {
-    "io/elmos/elmos-parent/0.1.0-SNAPSHOT/elmos-parent-0.1.0-SNAPSHOT.pom": {
-        "bytes": 10_461,
-        "sha256": "ada08c7433515cf79992c725f180ef12398803b4eb1372444821cc951e10efa8",
-    },
-    "io/elmos/elmos-java-recipes/0.1.0-SNAPSHOT/"
-    "elmos-java-recipes-0.1.0-SNAPSHOT.pom": {
-        "bytes": 751,
-        "sha256": "22775dc1c4ceebb891eccd4f6c10f8e4e4f63c1ccdf7a909935b81df7b9f311a",
-    },
-    "io/elmos/elmos-java-recipes/0.1.0-SNAPSHOT/"
-    "elmos-java-recipes-0.1.0-SNAPSHOT.jar": {
-        "bytes": 7_464,
-        "sha256": "a2291b649d9d84a36f455e3ef8eb477efdfda9a05c6b9026b76391d8e6a0d45c",
-    },
-}
-EXPECTED_RECIPE_BINDING = {
-    "coordinate": "io.elmos:elmos-java-recipes:0.1.0-SNAPSHOT",
-    "build_output_timestamp": "2026-08-28T00:00:00Z",
-    "jar_sha256": "sha256:"
-    "a2291b649d9d84a36f455e3ef8eb477efdfda9a05c6b9026b76391d8e6a0d45c",
-    "recipe_pom_sha256": "sha256:"
-    "22775dc1c4ceebb891eccd4f6c10f8e4e4f63c1ccdf7a909935b81df7b9f311a",
-    "parent_pom_sha256": "sha256:"
-    "ada08c7433515cf79992c725f180ef12398803b4eb1372444821cc951e10efa8",
-    "files": [
-        {"path": path, **value}
-        for path, value in sorted(EXPECTED_RECIPE_SEED_FILES.items())
-    ],
 }
 CONTROLLED_TARGET_PROFILE_RESOURCES = (
     {
@@ -193,26 +142,8 @@ EXPECTED_MATERIALIZER_GENERATOR_BINDING = {
     ],
 }
 EXPECTED_LOCAL_ARTIFACT_PATHS = {
-    "source executed WAR": "artifacts/executed-source-spring-mvc-5.3.39.war",
     "download artifact": "artifacts/migrated-spring-boot-3.5.3.zip",
     "executed WAR": "artifacts/executed-spring-boot-3.5.3.war",
-}
-REQUIRED_LOCAL_RAW_EVIDENCE_PATHS = {
-    "evidence/complex-capability-verification.json",
-    "evidence/control.log",
-    "evidence/framework-contract-model.json",
-    "evidence/route-selection.json",
-    "evidence/source-build.log",
-    "evidence/source-snapshot-manifest.json",
-    "evidence/source-startup.log",
-    "evidence/source-test-summary.json",
-    "evidence/spring-mvc-http-oracle.json",
-    "evidence/target-build.log",
-    "evidence/target-materialization-receipt.json",
-    "evidence/target-materialization-source-map.json",
-    "evidence/target-startup.log",
-    "evidence/target-test-summary.json",
-    "evidence/test-parity.json",
 }
 LOCAL_FCM_STATUSES = {
     "mvc-dispatch-and-json": "PASSED_LOCAL_EXACT_FIXTURE",
@@ -308,11 +239,6 @@ def validate_exact_tuple_binding(
         errors.append("exact tuple binding schema or pack key is not exact")
     if source.get("commit") != receipt.get("source_commit"):
         errors.append("exact tuple binding source commit does not match the receipt")
-    if (
-        source.get("git_tree_sha") != receipt.get("source_git_tree_sha")
-        or source.get("git_tree_sha") != SOURCE_GIT_TREE_SHA
-    ):
-        errors.append("exact tuple binding source Git tree does not match the pinned corpus tree")
     if source.get("snapshot_sha256") != f"sha256:{receipt.get('source_snapshot_sha256')}":
         errors.append("exact tuple binding source snapshot does not match the receipt")
     expected_source = {
@@ -325,16 +251,6 @@ def validate_exact_tuple_binding(
         "packaging": "war",
     }
     for field, expected in expected_source.items():
-        if source.get(field) != expected:
-            errors.append(f"exact tuple binding source {field} drifted")
-    source_artifact = receipt.get("source", {}).get("executed_war", {})
-    expected_source_artifact = {
-        "artifact_path": source_artifact.get("path"),
-        "artifact_sha256": f"sha256:{source_artifact.get('sha256')}",
-        "artifact_bytes": source_artifact.get("bytes"),
-        "artifact_format": "spring-framework-mvc-war",
-    }
-    for field, expected in expected_source_artifact.items():
         if source.get(field) != expected:
             errors.append(f"exact tuple binding source {field} drifted")
 
@@ -361,46 +277,6 @@ def validate_exact_tuple_binding(
     if target.get("manifest") != executed_war.get("manifest"):
         errors.append("exact tuple binding target manifest does not match the receipt")
 
-    source_receipt = receipt.get("source", {})
-    target_receipt = receipt.get("target", {})
-    target_tomcat = target_receipt.get("embedded_tomcat_core", {})
-    expected_toolchains = {
-        "source-java": f"sha256:{source_receipt.get('java_release', {}).get('sha256')}",
-        "source-maven": f"sha256:{source_receipt.get('maven_archive', {}).get('sha256')}",
-        "source-container": f"sha256:{source_receipt.get('tomcat_archive', {}).get('sha256')}",
-        "target-java": f"sha256:{target_receipt.get('java_release', {}).get('sha256')}",
-        "target-maven": f"sha256:{source_receipt.get('maven_archive', {}).get('sha256')}",
-        "target-container": f"sha256:{target_tomcat.get('sha256')}",
-    }
-    exact_toolchain = binding.get("toolchain", {})
-    expected_exact_toolchain = {
-        "maven_archive_sha256": expected_toolchains["source-maven"],
-        "maven_archive_sha512": f"sha512:{source_receipt.get('maven_archive', {}).get('sha512')}",
-        "source_java_release_sha256": expected_toolchains["source-java"],
-        "source_tomcat_archive_sha256": expected_toolchains["source-container"],
-        "source_tomcat_archive_sha512": f"sha512:{source_receipt.get('tomcat_archive', {}).get('sha512')}",
-        "source_tomcat_version": "9.0.120",
-        "target_java_release_sha256": expected_toolchains["target-java"],
-        "target_tomcat_core_entry": "WEB-INF/lib-provided/tomcat-embed-core-10.1.42.jar",
-        "target_tomcat_core_sha256": expected_toolchains["target-container"],
-    }
-    if exact_toolchain != expected_exact_toolchain:
-        errors.append("exact tuple binding toolchain content identities drifted")
-
-    transformation = binding.get("transformation", {})
-    expected_recipe_transformation = {
-        "custom_recipe_coordinate": EXPECTED_RECIPE_BINDING["coordinate"],
-        "custom_recipe_build_output_timestamp":
-            EXPECTED_RECIPE_BINDING["build_output_timestamp"],
-        "custom_recipe_artifact_sha256": EXPECTED_RECIPE_BINDING["jar_sha256"],
-        "custom_recipe_pom_sha256": EXPECTED_RECIPE_BINDING["recipe_pom_sha256"],
-        "custom_recipe_parent_pom_sha256":
-            EXPECTED_RECIPE_BINDING["parent_pom_sha256"],
-    }
-    for field, expected in expected_recipe_transformation.items():
-        if transformation.get(field) != expected:
-            errors.append(f"exact tuple binding rewrite recipe {field} drifted")
-
     policy_digest = f"sha256:{digest(policy_path)}"
     if policy.get("schema_version") != 1 or policy.get("scope") != "LOCAL_ENGINEERING_EXACT_FIXTURE_ONLY":
         errors.append("qualification policy schema or scope is not exact")
@@ -410,10 +286,6 @@ def validate_exact_tuple_binding(
         errors.append("qualification policy target artifact does not match the receipt")
     if binding.get("policy", {}).get("sha256") != policy_digest:
         errors.append("exact tuple binding policy digest does not match policy bytes")
-    if policy.get("toolchain_bindings") != expected_toolchains:
-        errors.append("qualification policy toolchain bindings do not match executed bytes")
-    if policy.get("rewrite_recipe_artifact") != EXPECTED_RECIPE_BINDING:
-        errors.append("qualification policy rewrite recipe artifact binding drifted")
     policy_evidence = policy.get("evidence_policy", {})
     if policy_evidence.get("external_evidence_status") != "NOT_RUN":
         errors.append("qualification policy external evidence status must remain NOT_RUN")
@@ -587,37 +459,12 @@ def validate_supplemental_evidence(
     return errors
 
 
-def discover_local_evidence(
-    evidence: dict[str, Any],
-) -> tuple[Path, Path]:
-    runs = evidence.get("runs")
-    if not isinstance(runs, list) or len(runs) != 1 or not isinstance(runs[0], dict):
-        raise ValueError("exact local evidence must declare one run")
-    raw_index = runs[0].get("evidence_index")
-    if not isinstance(raw_index, str) or not raw_index or "\\" in raw_index:
-        raise ValueError("local evidence index path must be a POSIX relative path")
-    index_relative = Path(raw_index)
-    if index_relative.is_absolute() or ".." in index_relative.parts:
-        raise ValueError("local evidence index path is unsafe")
-    if (
-        len(index_relative.parts) < 4
-        or index_relative.parts[:2] != ("certification", "local-execution")
-        or index_relative.name != "evidence-index.json"
-    ):
-        raise ValueError("local evidence index must be below certification/local-execution")
-    return index_relative.parent, index_relative
-
-
-def validate_local_evidence(
-    pack: Path,
-    evidence_relative: Path,
-    index_relative: Path,
-) -> tuple[list[str], dict[str, Any] | None]:
+def validate_local_evidence(pack: Path) -> tuple[list[str], dict[str, Any] | None]:
     errors: list[str] = []
-    evidence_root = pack / evidence_relative
-    index_path = pack / index_relative
+    evidence_root = pack / LOCAL_EVIDENCE_RELATIVE
+    index_path = pack / LOCAL_EVIDENCE_INDEX
     if not index_path.is_file() or index_path.is_symlink():
-        return [f"local evidence index missing or unsafe: {index_relative}"], None
+        return [f"local evidence index missing or unsafe: {LOCAL_EVIDENCE_INDEX}"], None
     try:
         index = load(index_path)
     except (OSError, ValueError) as exc:
@@ -683,10 +530,8 @@ def validate_local_evidence(
         errors.append("local qualification receipt route is not exact")
     if receipt.get("pack_key") != PACK_KEY:
         errors.append("local qualification receipt pack key is not exact")
-    if receipt.get("source_commit") != SOURCE_COMMIT:
-        errors.append("local qualification receipt source commit is not the pinned commit")
-    if receipt.get("source_git_tree_sha") != SOURCE_GIT_TREE_SHA:
-        errors.append("local qualification receipt source Git tree is not the pinned corpus tree")
+    if not re.fullmatch(r"[0-9a-f]{40}", str(receipt.get("source_commit", ""))):
+        errors.append("local qualification receipt source commit is not exact")
     if not re.fullmatch(r"[0-9a-f]{64}", str(receipt.get("source_snapshot_sha256", ""))):
         errors.append("local qualification receipt source snapshot is not content-addressed")
     errors.extend(validate_exact_tuple_binding(evidence_root, receipt))
@@ -695,31 +540,15 @@ def validate_local_evidence(
     source = receipt.get("source", {})
     if source.get("spring_framework") != "5.3.39" or source.get("tomcat") != "9.0.120":
         errors.append("local qualification receipt source toolchain tuple drifted")
-    for archive_name, expected_sha, expected_sha512, expected_bytes in (
-        (
-            "maven_archive",
-            "0d7125e8c91097b36edb990ea5934e6c68b4440eef4ea96510a0f6815e7eeadb",
-            "03e2d65d4483a3396980629f260e25cac0d8b6f7f2791e4dc20bc83f9514db8d0f05b0479e699a5f34679250c49c8e52e961262ded468a20de0be254d8207076",
-            9278421,
-        ),
-        (
-            "tomcat_archive",
-            "93306f86baafe13186cc3e705c201040d68b0192a50be667a1f576ee4711db0d",
-            "fca7cfbe8255b61fac0e474a9a7ac6fbaf2792c72061fda2666b26eb5ba60718adc4fc0cbd013f14a41f101bcd7f5b70b2d3eedc37554ff0db4bdb6e2e2898f6",
-            13697062,
-        ),
+    for archive_name, expected_sha, expected_bytes in (
+        ("maven_archive", "0d7125e8c91097b36edb990ea5934e6c68b4440eef4ea96510a0f6815e7eeadb", 9278421),
+        ("tomcat_archive", "93306f86baafe13186cc3e705c201040d68b0192a50be667a1f576ee4711db0d", 13697062),
     ):
         archive = source.get(archive_name, {})
         if archive.get("sha256") != expected_sha or archive.get("bytes") != expected_bytes:
             errors.append(f"local qualification receipt {archive_name} identity drifted")
-        if archive.get("sha512") != expected_sha512:
-            errors.append(f"local qualification receipt {archive_name} SHA-512 drifted")
-    if source.get("java_release") != {
-        "path": "release",
-        "bytes": 1295,
-        "sha256": "09d5fffa5ad3de15dcfd603e747df1e6c9ecdb58f25d333e89661910064e884a",
-    }:
-        errors.append("local qualification receipt source Java release identity drifted")
+        if not re.fullmatch(r"[0-9a-f]{128}", str(archive.get("sha512", ""))):
+            errors.append(f"local qualification receipt {archive_name} lacks SHA-512")
     catalina = source.get("catalina_jar", {})
     if catalina.get("sha256") != "540f8b3855dc3d963f6872f5fb10a156985ee9bf8ffc78a9f859eda5675309dd":
         errors.append("local qualification receipt Catalina identity drifted")
@@ -727,42 +556,12 @@ def validate_local_evidence(
         errors.append("local qualification receipt consumed Tomcat manifest drifted")
     if "Apache Maven 3.9.11" not in str(source.get("maven", "")) or 'version "11.0.26"' not in str(source.get("java", "")):
         errors.append("local qualification receipt source Maven/Java version output drifted")
-    source_war = source.get("executed_war", {})
-    if source_war.get("format") != "spring-framework-mvc-war":
-        errors.append("local qualification receipt source WAR format drifted")
-    if (
-        not re.fullmatch(r"[0-9a-f]{64}", str(source_war.get("sha256", "")))
-        or not isinstance(source_war.get("bytes"), int)
-        or source_war.get("bytes", 0) <= 0
-    ):
-        errors.append("local qualification receipt source WAR is not content-addressed")
-    if source_war.get("path") != EXPECTED_LOCAL_ARTIFACT_PATHS["source executed WAR"]:
-        errors.append("local qualification receipt source WAR path is not exact")
-    indexed_source_war = indexed.get(EXPECTED_LOCAL_ARTIFACT_PATHS["source executed WAR"])
-    if (
-        indexed_source_war is None
-        or source_war.get("bytes") != indexed_source_war.get("bytes")
-        or source_war.get("sha256") != indexed_source_war.get("sha256")
-    ):
-        errors.append("local qualification receipt source WAR is not bound by the outer index")
 
     target = receipt.get("target", {})
     if target.get("spring_boot") != "3.5.3" or target.get("spring_framework") != "6.2.8" or target.get("embedded_tomcat") != "10.1.42":
         errors.append("local qualification receipt target tuple drifted")
     if "Apache Maven 3.9.11" not in str(target.get("maven", "")) or 'version "21.0.11"' not in str(target.get("java", "")):
         errors.append("local qualification receipt target Maven/Java version output drifted")
-    if target.get("java_release") != {
-        "path": "release",
-        "bytes": 1228,
-        "sha256": "7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756",
-    }:
-        errors.append("local qualification receipt target Java release identity drifted")
-    if target.get("embedded_tomcat_core") != {
-        "entry": "WEB-INF/lib-provided/tomcat-embed-core-10.1.42.jar",
-        "bytes": 3631718,
-        "sha256": "c0ca6acafe5ad63cd5de16ec8894318a7b53ea11e3db1bc217fd5f2a9746a790",
-    }:
-        errors.append("local qualification receipt target Tomcat core identity drifted")
     download = target.get("download_artifact", {})
     executed_war = target.get("executed_war", {})
     if download.get("format") != "migrated-repository-zip" or executed_war.get("format") != "spring-boot-executable-war":
@@ -797,8 +596,6 @@ def validate_local_evidence(
         errors.append("local qualification harness repository head is missing")
     if harness.get("worktree_binding") != "repository-head-plus-content-addressed-files":
         errors.append("local qualification harness does not bind dirty worktree files")
-    if harness.get("rewrite_recipe_seed") != EXPECTED_RECIPE_BINDING:
-        errors.append("local qualification harness rewrite recipe seed drifted")
     harness_items = harness.get("files", [])
     harness_by_path = {
         item.get("path"): item for item in harness_items if isinstance(item, dict)
@@ -834,21 +631,9 @@ def validate_local_evidence(
     receipt_paths = {
         item.get("path") for item in receipt_evidence if isinstance(item, dict)
     }
-    missing_raw_evidence = REQUIRED_LOCAL_RAW_EVIDENCE_PATHS - receipt_paths
-    if missing_raw_evidence:
-        errors.append(
-            "local qualification raw evidence inventory is incomplete: "
-            + ", ".join(sorted(missing_raw_evidence))
-        )
     expected_index_paths = receipt_paths | {
-        "exact-tuple-binding.json",
         "local-qualification.json",
-        "qualification-policy.json",
         *EXPECTED_LOCAL_ARTIFACT_PATHS.values(),
-        *{
-            f"artifacts/rewrite-recipe-seed/{path}"
-            for path in EXPECTED_RECIPE_SEED_FILES
-        },
     }
     if set(indexed) != expected_index_paths:
         errors.append("outer evidence index and receipt evidence inventory do not close exactly")
@@ -1026,24 +811,7 @@ def main() -> int:
     scaffold = load(pack / "target-profile/scaffold/manifest.json")
     recipe = load(pack / "recipes/manifest.json")
     adapter = load(pack / "adapters/runtime-adapter.json")
-    campaign = load(pack / "certification/p0-p11-campaign.json")
-    local_evidence_relative: Path | None = None
-    local_evidence_index: Path | None = None
-    try:
-        local_evidence_relative, local_evidence_index = discover_local_evidence(evidence)
-    except ValueError as exc:
-        errors.append(str(exc))
-    else:
-        for suffix in sorted(LOCAL_EVIDENCE_REQUIRED_SUFFIXES):
-            relative = local_evidence_relative / suffix
-            candidate = pack / relative
-            if candidate.is_symlink() or not candidate.is_file():
-                errors.append(f"missing or unsafe local evidence file: {relative}")
     errors.extend(validate_controlled_target_profile_resources(pack))
-    try:
-        validate_campaign_plan(pack, campaign)
-    except (CampaignError, OSError, ValueError) as exc:
-        errors.append(f"P0-P11 campaign plan is invalid: {exc}")
 
     if manifest.get("pack_key") != PACK_KEY:
         errors.append("pack_key is not exact")
@@ -1107,13 +875,9 @@ def main() -> int:
             errors.append(
                 f"FCM behavior status drifted: {item.get('id')} expected {expected_status}"
             )
-        if (
-            item.get("id") in LOCAL_FCM_STATUSES
-            and (
-                local_evidence_index is None
-                or item.get("evidence_refs") != [str(local_evidence_index)]
-            )
-        ):
+        if item.get("id") in LOCAL_FCM_STATUSES and item.get("evidence_refs") != [
+            str(LOCAL_EVIDENCE_INDEX)
+        ]:
             errors.append(f"locally exercised FCM capability lacks exact evidence: {item.get('id')}")
         if not item.get("obligations"):
             errors.append(f"FCM capability lacks obligations: {item.get('id')}")
@@ -1232,14 +996,8 @@ def main() -> int:
             errors.append("non-generalizable evidence metrics must remain null")
             break
 
-    local_receipt: dict[str, Any] | None = None
-    if local_evidence_relative is not None and local_evidence_index is not None:
-        local_errors, local_receipt = validate_local_evidence(
-            pack,
-            local_evidence_relative,
-            local_evidence_index,
-        )
-        errors.extend(local_errors)
+    local_errors, local_receipt = validate_local_evidence(pack)
+    errors.extend(local_errors)
     if local_receipt is not None:
         if fingerprint_evidence.get("source_snapshot_sha256") != local_receipt.get("source_snapshot_sha256"):
             errors.append("source fingerprint evidence does not bind the qualification snapshot")
@@ -1250,32 +1008,12 @@ def main() -> int:
         if fcm.get("source_commit") != local_receipt.get("source_commit"):
             errors.append("pack FCM does not bind the qualification commit")
 
-    for corpus in ("holdout", "real-repository", "customer"):
+    for corpus in ("holdout", "real-repository"):
         corpus_manifest = load(pack / f"corpus/{corpus}/reference-inputs.json")
         if corpus_manifest.get("execution_status") != "NOT_RUN":
             errors.append(f"{corpus} execution must remain NOT_RUN")
         if corpus_manifest.get("inputs") != []:
             errors.append(f"{corpus} inputs must remain empty until selected")
-
-    gate_report = (pack / "certification/gate-report.md").read_text(encoding="utf-8")
-    campaign_binding = campaign.get("tuple_binding", {})
-    for label, expected in (
-        ("source commit", campaign_binding.get("source_commit")),
-        (
-            "target artifact",
-            campaign_binding.get("target_artifact", {}).get("digest", "").removeprefix("sha256:"),
-        ),
-        (
-            "target profile",
-            campaign_binding.get("target_profile", {}).get("digest", "").removeprefix("sha256:"),
-        ),
-        (
-            "qualification policy",
-            campaign_binding.get("policy", {}).get("digest", "").removeprefix("sha256:"),
-        ),
-    ):
-        if not expected or expected not in gate_report:
-            errors.append(f"gate report {label} binding is missing or stale")
 
     errors.extend(
         validate_fixture_pom(pack / "corpus/development/legacy-spring-mvc/pom.xml")

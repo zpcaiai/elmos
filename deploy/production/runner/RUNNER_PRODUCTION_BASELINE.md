@@ -98,9 +98,8 @@ Agent 启动作业时强制：
    endpoint、bucket、SSE/CMK 和 Secret Reference；脚本不接收存储凭据值。
 4. 通过管理 API 为每个节点分别签发一次性 enrollment token。
 5. 将 token 放入 owner-only/投射 Secret，渲染
-   `apps/runner-agent/deploy/runner-agent.yaml` 中的 Agent 镜像摘要、节点 ID、Pool、
-   网络策略及 `ELMOS_RUNNER_IMAGES` 工作负载 digest 清单，并在节点本地预先水合
-   清单内全部镜像；缺失镜像的节点不得注册或 claim。
+   `apps/runner-agent/deploy/runner-agent.yaml` 中的确切镜像摘要、节点 ID、Pool 和
+   网络策略。
 6. 独立验证隔离声明后再把节点转为 `READY`。
 7. 执行真实作业、取消、节点丢失、对象删除和恢复演练，保存原始证据。
 

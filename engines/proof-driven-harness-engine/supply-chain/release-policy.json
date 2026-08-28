@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "elmos.proof-harness.release-policy",
+  "artifact": "elmos-proof-driven-harness-engine@3.0.0",
+  "local_maximum": "READY_FOR_EXTERNAL_GATE",
+  "required_before_distribution": {
+    "approved_license": "NOT_RUN",
+    "dependency_license_review": "NOT_RUN",
+    "container_sbom_merge": "NOT_RUN",
+    "vulnerability_scan": "NOT_RUN",
+    "malware_scan": "NOT_RUN",
+    "source_provenance_verification": "NOT_RUN",
+    "image_signature_verification": "NOT_RUN",
+    "independent_evidence_verification": "NOT_RUN"
+  },
+  "fail_closed": [
+    "unapproved or missing license",
+    "unpinned build or runtime image",
+    "missing or invalid SBOM",
+    "missing artifact provenance",
+    "critical unresolved vulnerability",
+    "self-signed or untrusted release evidence",
+    "source or environment digest drift"
+  ],
+  "release_authority": "EXTERNAL_REQUIRED",
+  "certification": "NOT_CERTIFIED"
+}

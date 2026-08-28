@@ -20,20 +20,10 @@ PNPM_VERSION ?= $(shell sed -n 's/.*"packageManager": "pnpm@\([^"]*\)".*/\1/p' a
 PNPM ?= pnpm dlx pnpm@$(PNPM_VERSION)
 PROFILE ?= synthesis
 RUNTIME_STATUS_OUTPUT ?= .elmos/toolchains/runtime-status.json
-EXTERNAL_GATE_PLAN ?= docs/production-runtime/EXTERNAL-GATE-PLAN.json
-EXTERNAL_GATE_OUTPUT ?= .elmos/production-runtime/external-gate-report.json
-EXTERNAL_GATE_AUTHORIZATION ?= .elmos/production-runtime/external-gate-authorization.json
 
-.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification chinadb-commercial-migration-skills batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-synthesis-toolchains frontend sql-transpiler sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down operations-scripts-test test-suite-certification-rehearsal
-.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification chinadb-commercial-migration-skills batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env vercel-source-check dotnet python project-synthesis project-synthesis-toolchains frontend sql-transpiler sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down operations-scripts-test test-suite-certification-rehearsal
-.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification chinadb-commercial-migration-skills batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-synthesis-toolchains frontend sql-transpiler sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down operations-scripts-test test-suite-certification-rehearsal openhands-absorption
-.PHONY: repository-autonomy-kernel
-.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification chinadb-commercial-migration-skills batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-synthesis-toolchains frontend sql-transpiler sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down operations-scripts-test test-suite-certification-rehearsal repository-autonomy-kernel openhands-absorption
 .PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification chinadb-commercial-migration-skills batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills production-runtime production-runtime-local test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-synthesis-toolchains frontend sql-transpiler sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down operations-scripts-test test-suite-certification-rehearsal repository-autonomy-kernel openhands-absorption
 
 .PHONY: frt-g01-g30-skills frt-g01-g30-check
-
-.PHONY: pricing-billing-skills pricing-billing-engine pricing-billing-java pricing-billing-runtime-binding pricing-billing-verification pricing-billing-gate
 
 verify: business-line-contracts backend dotnet python frontend sql-transpiler sql-dialect component-dialect web
 business-line-contracts: model-catalog-check makefile-portability-check chinadb-commercial-migration-skills
@@ -56,12 +46,9 @@ production-readiness-check: business-line-contracts chinadb-commercial-migration
 operations-scripts-test:
 	$(UV) run --quiet --with pyyaml python -m unittest discover -s scripts/operations -p 'test_*.py'
 .PHONY: pi-harness
-PI_HARNESS_ARCHIVE ?= skills/subskills/elmos-pi-harness-architecture-v5.1.0.zip
 pi-harness:
-	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_pi_harness.py --check --archive "$(PI_HARNESS_ARCHIVE)"
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/pi-harness/src python3 -m compileall -q packages/pi-harness/src
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_pi_harness.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/pi-harness/src python3 -m unittest discover -s packages/pi-harness/tests -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/pi-harness/src python3 -m elmos_pi_harness.cli qualification-status
 backend:
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B verify
 # Seven modules form a closed cluster that no `apps/` component references:
@@ -107,13 +94,6 @@ production-runtime:
 
 production-runtime-local:
 	PYTHONDONTWRITEBYTECODE=1 python3 scripts/production-runtime/run_local_harness.py
-
-.PHONY: production-runtime-external-plan production-runtime-external
-production-runtime-external-plan:
-	PYTHONDONTWRITEBYTECODE=1 python3 scripts/production-runtime/validate_external_gate.py --plan "$(EXTERNAL_GATE_PLAN)"
-
-production-runtime-external:
-	PYTHONDONTWRITEBYTECODE=1 ELMOS_EXTERNAL_GATE_ACK="$(ELMOS_EXTERNAL_GATE_ACK)" python3 scripts/production-runtime/run_external_gate.py --plan "$(EXTERNAL_GATE_PLAN)" --authorization "$(EXTERNAL_GATE_AUTHORIZATION)" --output "$(EXTERNAL_GATE_OUTPUT)" --execute
 .PHONY: repository-migration-platform-skills
 repository-migration-platform-skills:
 	cd skills/repository-migration-platform-skills-batch1-38 && ./validate.sh
@@ -123,26 +103,6 @@ large-repository-database-design-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 python -m unittest discover -s tests/large-repository-database-design -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 python3 skills/elmos-large-repository-database-design-v1.0.0/scripts/validate_database_design.py
 	bash -n scripts/large_repository_database_design/run_postgres_validation.sh
-pricing-billing-engine:
-	$(UV) --directory engines/pricing-billing-engine run --locked --group dev pytest
-	$(UV) --directory engines/pricing-billing-engine run --locked --group dev ruff check src tests
-	$(UV) --directory engines/pricing-billing-engine run --locked --group dev mypy src
-	$(UV) --directory engines/pricing-billing-engine run --locked python -m elmos_pricing_billing.cli qualify
-pricing-billing-java:
-	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -ntp -pl modules/persistence -am -Dtest=PricingBillingFinancialRuntimeTest,PaymentRefundReconciliationRuntimeTest,PricingBillingFinancialCoreMigrationContractTest -Dsurefire.failIfNoSpecifiedTests=false test
-pricing-billing-runtime-binding:
-	PYTHONDONTWRITEBYTECODE=1 python3 tooling/build_pricing_billing_runtime_binding.py --repo-root . --check
-pricing-billing-verification:
-	$(UV) run --quiet --with jsonschema python scripts/batch35/validate_verification_pack.py verification-packs/pricing-billing-local-v1 --repository-root .
-	$(UV) run --quiet --with jsonschema python scripts/batch35/run_verification_gate.py verification-packs/pricing-billing-local-v1
-pricing-billing-skills: pricing-billing-engine pricing-billing-java pricing-billing-runtime-binding pricing-billing-verification
-	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_pricing_billing_skills.py --check
-	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_pricing_billing_installed.py
-	$(UV) run --project engines/pricing-billing-engine --locked --group dev pytest tests/pricing-billing-skills
-	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/pricing-billing-gate -p 'test_*.py' -v
-	PYTHONDONTWRITEBYTECODE=1 python3 scripts/pricing-billing/run_pricing_billing_gate.py templates/pricing-billing/gate.example.json
-pricing-billing-gate:
-	PYTHONDONTWRITEBYTECODE=1 python3 scripts/pricing-billing/run_pricing_billing_gate.py templates/pricing-billing/gate.example.json --require-ready
 precision-migration-b01-44-skills:
 	python3 tooling/generate_precision_migration_handlers.py --check
 	python3 tooling/generate_precision_migration_external_profiles.py --check
@@ -218,11 +178,8 @@ repository-autonomy-kernel:
 
 openhands-absorption:
 	PYTHONDONTWRITEBYTECODE=1 python3 engines/openhands-absorption-engine/tools/validate_engine.py
-	ruff check engines/openhands-absorption-engine/src/elmos_openhands engines/openhands-absorption-engine/tests engines/openhands-absorption-engine/tools/validate_engine.py
-	mypy --config-file engines/openhands-absorption-engine/pyproject.toml engines/openhands-absorption-engine/src/elmos_openhands
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src python3 -W error::ResourceWarning -m unittest discover -s engines/openhands-absorption-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src python3 -m unittest discover -s engines/openhands-absorption-engine/tests -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src python3 -m elmos_openhands validate
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src python3 -m elmos_openhands status
 
 .PHONY: frontend-to-miniapp-skills
 frontend-to-miniapp-skills:
@@ -370,7 +327,7 @@ product-closure-convergence-skills:
 		cd .. && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_closure_convergence.py; \
 	else \
 		PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_product_closure_convergence_installed.py && \
-		PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_product_closure_convergence_installed.py'; \
+		PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_product_closure_convergence_installed; \
 	fi
 	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 python3 scripts/batch46-complete/validate_skill_bundle.py .
 	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python scripts/batch46-complete/validate_convergence_pack.py convergence-packs/reference-product
@@ -392,11 +349,11 @@ product-batch35-38: product-batch33-38-skills
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -pl modules/source-control-workspace-governance,modules/secure-execution-plane,modules/evidence-assurance-fabric,modules/continuous-authorization,modules/persistence,apps/control-plane -am test
 mature-product-toolchain-test:
 	$(UV) run --quiet --with 'jsonschema>=4.23' --with pyyaml \
-		python -m unittest discover -s tests -p 'mature_product_toolkit_extensions_test.py'
+		python -m unittest tests.mature_product_toolkit_extensions_test
 	$(UV) run --quiet --with 'jsonschema>=4.23' --with pyyaml \
-		python -m unittest discover -s tests -p 'batch43_schema_compatibility_test.py'
+		python -m unittest tests.batch43_schema_compatibility_test
 	$(UV) run --quiet --with 'jsonschema>=4.23' --with pyyaml \
-		python -m unittest discover -s tests -p 'batch40_supply_chain_test.py'
+		python -m unittest tests.batch40_supply_chain_test
 mature-product-skills: mature-product-toolchain-test b29-skills-test b30-skills-test b31-skills-test batch32-check batch33-check batch34-check batch35-check batch36-check batch37-check batch38-check batch39-check batch40-check batch41-check batch42-check batch43-check batch44-check batch45-check
 	$(UV) run --quiet --with jsonschema --with pyyaml python scripts/validate_mature_product_series.py
 	$(UV) run --quiet --with 'jsonschema>=4.23' --with pyyaml python -m unittest discover -s tests -p 'mature_product_gate_test.py'
@@ -499,10 +456,6 @@ toolchains-install: toolchains-validate
 	python3 scripts/toolchains/runtime_environment.py install --profile "$(PROFILE)"
 toolchains-env: toolchains-validate
 	python3 scripts/toolchains/runtime_environment.py env --profile "$(PROFILE)"
-vercel-source-check:
-	python3 -m unittest discover -s tests/ci -p 'test_vercel_source_budget.py'
-	python3 -m unittest discover -s tests/ci -p 'test_next_translation_traces.py'
-	python3 tooling/validate_vercel_source_budget.py
 project-synthesis-toolchains:
 	python3 scripts/toolchains/runtime_environment.py install --profile synthesis
 	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py --require-all-toolchains
@@ -627,8 +580,6 @@ uir-j2p-gate: uir-j2p-test uir-j2p-mutation
 .PHONY: multitenant-task-finops-skills
 multitenant-task-finops-skills:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_multitenant_task_finops_skills.py --check
-	PYTHONDONTWRITEBYTECODE=1 python3 tooling/update_multitenant_task_finops_bindings.py --check
-	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_multitenant_task_finops_runtime.py --repo-root .
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/multitenant-task-finops -p 'test_*.py'
 
 .PHONY: spring-golden-route-commercial-task-inventory

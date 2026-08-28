@@ -32,7 +32,7 @@ from .commercial import commercial_capabilities
 from .skill_runtime import MAX_REQUEST_BYTES, parse_skill_request_json
 
 SCHEMA_VERSION = "1.0"
-PROTOCOL_VERSION = "1.1.0"
+PROTOCOL_VERSION = "1.0.0"
 TRUST_DOMAIN = "elmos.chinadb.production-qualification.v1"
 EXPECTED_TARGET_COUNT = 13
 
@@ -87,48 +87,6 @@ _EXECUTION_CHECKS = (
     "targetApplyIntrospection",
     "targetRender",
     "versionProbe",
-)
-
-REQUIRED_EXECUTION_ARTIFACT_DIGESTS = (
-    "sourceSnapshotDigest",
-    "sourceCatalogDigest",
-    "sourceDataDigest",
-    "sourceWorkloadDigest",
-    "targetSnapshotDigest",
-    "targetReleaseDigest",
-    "canonicalIrDigest",
-    "transformationDigest",
-    "compatibilityRuntimeDigest",
-    "runnerDigest",
-    "toolchainDigest",
-    "developmentCorpusDigest",
-    "negativeCorpusDigest",
-    "holdoutCorpusDigest",
-    "representativeWorkloadDigest",
-    "dataFixtureDigest",
-    "queryPlanDigest",
-    "targetSqlDigest",
-    "acceptanceProfileDigest",
-    "gateResultDigest",
-)
-
-REQUIRED_EXECUTION_EVIDENCE_DIGESTS = (
-    "versionProbeDigest",
-    "capabilityProbeDigest",
-    "renderDigest",
-    "targetApplyDigest",
-    "introspectionDigest",
-    "schemaTypeDigest",
-    "queryRoutineDigest",
-    "transactionDigest",
-    "dataReconciliationDigest",
-    "performanceDigest",
-    "securityDigest",
-    "backupRestoreDigest",
-    "cdcDigest",
-    "rollbackDigest",
-    "cleanupDigest",
-    "rawEvidenceDigest",
 )
 
 _ROLE_AUTHORIZER = "environment-authorizer"
@@ -201,21 +159,6 @@ def _exact_token(value: object, name: str) -> str:
 
 def _required_digest(value: object, name: str) -> str:
     return _required_string(value, name, pattern=_DIGEST, maximum=71)
-
-
-def _digest_set(
-    value: object,
-    name: str,
-    fields: tuple[str, ...],
-) -> dict[str, str]:
-    raw = _object(value, name)
-    _exact_fields(raw, set(fields), name)
-    result = {
-        field: _required_digest(raw[field], f"{name}.{field}") for field in fields
-    }
-    if len(set(result.values())) != len(result):
-        raise ValueError(f"{name} must use one role-specific digest per field")
-    return result
 
 
 def _timestamp(value: object, name: str) -> datetime:
@@ -310,8 +253,6 @@ def production_qualification_requirements() -> dict[str, Any]:
                 "independent-verification",
                 "certification-decision",
             ],
-            "requiredArtifactDigests": list(REQUIRED_EXECUTION_ARTIFACT_DIGESTS),
-            "requiredEvidenceDigests": list(REQUIRED_EXECUTION_EVIDENCE_DIGESTS),
             "currentState": "BLOCKED_EXTERNAL_INPUT",
         }
         for target in _catalog_targets()
@@ -946,8 +887,13 @@ def _execution(
         "environmentId",
         "exactTupleDigest",
         "vendorToolDigests",
-        "artifactDigests",
-        "evidenceDigests",
+        "runnerDigest",
+        "developmentCorpusDigest",
+        "negativeCorpusDigest",
+        "holdoutCorpusDigest",
+        "representativeWorkloadDigest",
+        "targetSqlDigest",
+        "rawEvidenceDigest",
         "executedAt",
         "checks",
         "criticalUnknowns",
@@ -968,20 +914,16 @@ def _execution(
     for field, expected_value in expected.items():
         if payload[field] != expected_value:
             raise ValueError(f"execution receipt payload {field} binding mismatch")
-    artifact_digests = _digest_set(
-        payload["artifactDigests"],
-        "execution receipt payload.artifactDigests",
-        REQUIRED_EXECUTION_ARTIFACT_DIGESTS,
-    )
-    evidence_digests = _digest_set(
-        payload["evidenceDigests"],
-        "execution receipt payload.evidenceDigests",
-        REQUIRED_EXECUTION_EVIDENCE_DIGESTS,
-    )
-    if set(artifact_digests.values()) & set(evidence_digests.values()):
-        raise ValueError("execution receipt artifact and evidence digests must not alias")
-    payload["artifactDigests"] = artifact_digests
-    payload["evidenceDigests"] = evidence_digests
+    for digest_field in (
+        "runnerDigest",
+        "developmentCorpusDigest",
+        "negativeCorpusDigest",
+        "holdoutCorpusDigest",
+        "representativeWorkloadDigest",
+        "targetSqlDigest",
+        "rawEvidenceDigest",
+    ):
+        _required_digest(payload[digest_field], f"execution receipt payload.{digest_field}")
     checks = _object(payload["checks"], "execution receipt payload.checks")
     _exact_fields(checks, set(_EXECUTION_CHECKS), "execution receipt payload.checks")
     if any(checks[field] != "PASSED" for field in _EXECUTION_CHECKS):
@@ -1059,11 +1001,9 @@ def _independent_verification(
         "qualificationInputDigest": target_input["qualificationInputDigest"],
         "executionRecordId": execution["recordId"],
         "executionEnvelopeDigest": execution_digest,
-        "rawEvidenceDigest": execution["evidenceDigests"]["rawEvidenceDigest"],
-        "holdoutCorpusDigest": execution["artifactDigests"]["holdoutCorpusDigest"],
-        "representativeWorkloadDigest": execution["artifactDigests"][
-            "representativeWorkloadDigest"
-        ],
+        "rawEvidenceDigest": execution["rawEvidenceDigest"],
+        "holdoutCorpusDigest": execution["holdoutCorpusDigest"],
+        "representativeWorkloadDigest": execution["representativeWorkloadDigest"],
         "decision": "PASSED",
         "criticalFindings": 0,
     }

@@ -1,0 +1,202 @@
+{
+  "archive": {
+    "bytes": 5601254,
+    "checksum_rows": 985,
+    "entries": 1263,
+    "files": 1007,
+    "sha256": "552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+    "uncompressed_bytes": 94803198
+  },
+  "certification_status": "NOT_CERTIFIED",
+  "counts": {
+    "commercialGoldenRoutes": 5,
+    "crossCuttingSkills": 3,
+    "domainPacks": 5,
+    "frameworkSemanticProfiles": 9,
+    "harnessAdapters": 7,
+    "inheritedEtgbCases": 46664,
+    "internalKernelComponents": 96,
+    "jsonSchemas": 15,
+    "kernels": 8,
+    "languageSemanticProfiles": 15,
+    "legacySkillsMapped": 115,
+    "legacySourceSnapshots": 115,
+    "postgresMigrations": 4,
+    "regoModules": 6,
+    "routableSkills": 16,
+    "verifierAdapters": 20
+  },
+  "external_runtime_status": "NOT_RUN",
+  "implementation_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "local_qualification": {
+    "engine_tree_sha256": "8867437afe0a73fb08657ad10fcc102a48fd83ca0eb478032cedaac06e20ef63",
+    "path": "engines/proof-driven-harness-engine/qualification/local-qualification.json",
+    "receipt_sha256": "535a63b68ea657469ec362ed914eb790107312c1f8a1fd18ca0bdd62e9706307",
+    "validation": "VALID"
+  },
+  "package": "elmos-proof-driven-agentic-harness-repository-semantic-compiler@3.0.0",
+  "schema_version": "1.0.0",
+  "security": {
+    "archive_content_executed": false,
+    "archive_executable_content_materialized": false,
+    "archive_instruction_content_materialized": false,
+    "checksum_verified_files": 985,
+    "crc_checked_files": 1007,
+    "materialized_members": [
+      {
+        "classification": "INERT_SOURCE_DATA",
+        "materialized_as": "docs/proof-driven-harness-v3/.source-data/PACKAGE_MANIFEST.json",
+        "path": "PACKAGE_MANIFEST.json",
+        "sha256": "84b963ad87baaa8753dba3c4c69e0e2f257be7071c993b12ad94e40cfcfeef43"
+      },
+      {
+        "classification": "INERT_SOURCE_DATA",
+        "materialized_as": "docs/proof-driven-harness-v3/.source-data/skills-registry.json",
+        "path": "skills/registry.json",
+        "sha256": "9fa9a89fde9b3b11e6948118b7cac34624b01175b8b67465ba0ac711ebf81a6f"
+      }
+    ],
+    "quarantined_members": [
+      {
+        "materialized": false,
+        "path": "reference-implementation/src/elmos_v3/__pycache__/__init__.cpython-313.pyc",
+        "sha256": "371a28dab97f38fee3210b17a44ad4632c46464bc4d448bdc85f93660fe0f994"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/src/elmos_v3/__pycache__/__main__.cpython-313.pyc",
+        "sha256": "5129423836f7ed647a04274d911bddfb55c64c299a7fb13efb72fe7188822f5b"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/src/elmos_v3/__pycache__/authority.cpython-313.pyc",
+        "sha256": "17f42c08e86a66d601cb1a5934ea899183f7bf82e28816a5114b5c56cf2236e2"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/src/elmos_v3/__pycache__/certifier.cpython-313.pyc",
+        "sha256": "4759ca6766bc4e374a1c8555bb19fd18bd7241294050912744968c65ca10374d"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/src/elmos_v3/__pycache__/cli.cpython-313.pyc",
+        "sha256": "65a5d3541c5690663a318344c5364aefd7307fb897d65cdd408cd75b57ee2bd1"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/src/elmos_v3/__pycache__/evidence.cpython-313.pyc",
+        "sha256": "1db21443d58ab589e32e2f938717cb117132f713473abe3a1bfda9d6339cfb25"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/src/elmos_v3/__pycache__/models.cpython-313.pyc",
+        "sha256": "bbb1096aad90f4d3a4f5470daafba21e76c9bca9dee96592525a59d67b4b79cd"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/src/elmos_v3/__pycache__/proof_graph.cpython-313.pyc",
+        "sha256": "d49ec53e70c86305f32a2b6993cac89893b8539d6bd4059b15b6911de06d48c2"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/src/elmos_v3/__pycache__/semantic_gap.cpython-313.pyc",
+        "sha256": "c1d2896f108ba62be2ef2f666648b33c44e12e802f3121007f9d8a4b87972216"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/src/elmos_v3/__pycache__/service.cpython-313.pyc",
+        "sha256": "22e3d9296f7c0d536180d2b6b6ea80a667679cc02c3db2c7bab5da0d97254993"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/src/elmos_v3/__pycache__/workflow.cpython-313.pyc",
+        "sha256": "0e09d03cc56a8ead7b6ee4e41b853e7eb1a49f6ce3023e0d16c20b52e18be65b"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/tests/__pycache__/test_authority.cpython-313.pyc",
+        "sha256": "7723ec99d6c5748ab46fe93835b465a2dabb276a65e37a53f5271618c1e4b994"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/tests/__pycache__/test_certifier.cpython-313.pyc",
+        "sha256": "40c4c659e65850141540a7cc8a2612a57b879702ebab0c1910e0e83e2be3ac86"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/tests/__pycache__/test_evidence.cpython-313.pyc",
+        "sha256": "bb4f317135368cba2c327d2a0e77476b6fb5b3a98df64113844bca0d07ca85e2"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/tests/__pycache__/test_proof_graph.cpython-313.pyc",
+        "sha256": "ba8e37e91346894f21f1a23283569a341273520ad69ce0ba0924190d1816c9b8"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/tests/__pycache__/test_semantic_gap.cpython-313.pyc",
+        "sha256": "98249160fae33e1fc475b914023bdddc57ad29b1f042ea4b54bd5f2f2a972c50"
+      },
+      {
+        "materialized": false,
+        "path": "reference-implementation/tests/__pycache__/test_workflow.cpython-313.pyc",
+        "sha256": "d6fc27c762a8f6e168668c9aeecb48e4568ee5fa56c74e624aa7ad98f2f9352b"
+      },
+      {
+        "materialized": false,
+        "path": "scripts/__pycache__/generate_checksums.cpython-313.pyc",
+        "sha256": "32250763d7a2b889a73f0b8949a18889640ed72dc8ee1ccc7939ad163ac5f259"
+      },
+      {
+        "materialized": false,
+        "path": "scripts/__pycache__/generate_registry.cpython-313.pyc",
+        "sha256": "117cbcf0a9c3ff3685e5d94120397a0c52d0a5f3cffa255faad5dac5459bd9c2"
+      },
+      {
+        "materialized": false,
+        "path": "scripts/__pycache__/validate_package.cpython-313.pyc",
+        "sha256": "0c84b38cba041f9fc9bc90b8098a79df68686aac508ce66b3c3feecdaf60544e"
+      },
+      {
+        "materialized": false,
+        "path": "scripts/__pycache__/verify_migration_coverage.cpython-313.pyc",
+        "sha256": "9ea233ac5334d5f766f52020f633f8d55f13ceb326fdf057e668654e8f5dbb4c"
+      }
+    ],
+    "quarantined_unlisted_pyc": 21,
+    "selective_inert_data_materialized": true
+  },
+  "source_assurance": {
+    "archive_digest_scope": "BYTE_IDENTITY_ONLY",
+    "archive_sha256": "552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+    "certification_status": "NOT_CERTIFIED",
+    "commercial_distribution_authorized": false,
+    "kind": "elmos.proof-driven-harness-v3.source-assurance-boundary",
+    "license": {
+      "approved_license_present": false,
+      "legal_review_status": "NOT_RUN",
+      "policy_is_approved_license": false,
+      "policy_is_execution_authority": false,
+      "policy_member": "LICENSE-POLICY.md",
+      "policy_member_bytes": 497,
+      "policy_member_sha256": "edbb0a43de88f2616bdedd59711eb4fdf35059b86e3ebdfbf6269b7f52175543"
+    },
+    "schema_version": "1.0.0",
+    "source_policy_observation": {
+      "commercial_distribution_prerequisites_declared_by_source": [
+        "REPLACE_WITH_ORGANIZATION_APPROVED_LICENSE",
+        "AUTOMATED_DEPENDENCY_LICENSE_REVIEW",
+        "SBOM",
+        "LICENSE_ALLOW_DENY_POLICY",
+        "LEGAL_REVIEW"
+      ],
+      "trusted_as_repository_instruction": false
+    },
+    "supply_chain": {
+      "independent_verification_status": "NOT_RUN",
+      "provenance_attestation_present": false,
+      "sbom_present": false,
+      "signature_present": false
+    }
+  }
+}

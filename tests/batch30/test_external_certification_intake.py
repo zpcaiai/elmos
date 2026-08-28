@@ -15,8 +15,6 @@ from scripts.batch30.validate_external_certification_intake import (
     CUSTOMER_AUTHORIZATION_ROLE,
     EVIDENCE_ROLES,
     NAMESPACE,
-    PRODUCER_EVIDENCE,
-    ROOTLESS_EVIDENCE,
     ExternalIntakeError,
     build_expected_binding,
     evaluate_external_intake,
@@ -172,9 +170,7 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
         for role in self.roles:
             if role == CUSTOMER_AUTHORIZATION_ROLE or "customer-" in role:
                 organization = self.organizations["customer_organization_id"]
-            elif role in {EVIDENCE_ROLES[name] for name in PRODUCER_EVIDENCE}:
-                organization = self.organizations["producer_organization_id"]
-            elif role in {EVIDENCE_ROLES[name] for name in ROOTLESS_EVIDENCE}:
+            elif "rootless-" in role:
                 organization = self.organizations["rootless_organization_id"]
             elif role == EVIDENCE_ROLES["external_certification"]:
                 organization = self.organizations["certification_organization_id"]
@@ -296,18 +292,22 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
         shutil.rmtree(self.case)
 
     def organization_for(self, evidence_type: str) -> str:
-        if evidence_type in PRODUCER_EVIDENCE:
-            return self.organizations["producer_organization_id"]
-        if evidence_type == "customer_acceptance":
+        if evidence_type in {
+            "authorized_customer_repository",
+            "customer_holdout",
+            "customer_acceptance",
+        }:
             return self.organizations["customer_organization_id"]
-        if evidence_type in ROOTLESS_EVIDENCE:
+        if evidence_type.startswith("rootless_"):
             return self.organizations["rootless_organization_id"]
         if evidence_type == "external_certification":
             return self.organizations["certification_organization_id"]
         return self.organizations["independent_organization_id"]
 
     def executor_organization_for(self, evidence_type: str) -> str:
-        return f"executor-org-{evidence_type}"
+        if evidence_type.startswith("rootless_"):
+            return self.organizations["rootless_organization_id"]
+        return self.organizations["producer_organization_id"]
 
     @staticmethod
     def outcome_for(evidence_type: str) -> str:
@@ -319,58 +319,20 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
 
     @staticmethod
     def claims_for(evidence_type: str) -> dict[str, object]:
-        if evidence_type in {"source_build", "target_build"}:
-            claims: dict[str, object] = {
-                "passed": True,
-                "native": True,
-                "exact_toolchain": True,
-            }
-            if evidence_type == "target_build":
-                claims.update({"rootless": True, "privileged": False})
-            return claims
-        if evidence_type in {"source_startup", "target_startup"}:
-            claims = {"passed": True, "native": True, "readiness": True}
-            if evidence_type == "target_startup":
-                claims.update({"rootless": True, "privileged": False})
-            return claims
-        if evidence_type == "behavioral_equivalence":
-            return {
-                "passed": True,
-                "critical_mismatch_count": 0,
-                "route_coverage": 1.0,
-                "independent_holdout": True,
-                "representative_repository": True,
-                "authorized_customer_repository": True,
-                "rootless": True,
-                "privileged": False,
-            }
-        if evidence_type == "security":
-            return {"passed": True, "critical_findings": 0}
-        if evidence_type == "performance":
-            return {"passed": True, "capacity_validated": True}
-        if evidence_type == "operability":
-            return {
-                "passed": True,
-                "endpoints_verified": ["/livez", "/readyz", "/metrics", "/version"],
-            }
-        if evidence_type == "sbom":
-            return {"passed": True, "artifact_bound": True}
-        if evidence_type == "rollback":
-            return {"passed": True, "rehearsed": True}
+        if evidence_type == "authorized_customer_repository":
+            return {"authorized_repository": True, "fixed_commit": True, "acceptance_subject_bound": True}
+        if evidence_type == "customer_holdout":
+            return {"independent_from_development": True, "customer_owned_acceptance": True}
         if evidence_type == "customer_acceptance":
             return {
                 "acceptance_subject_bound": True,
                 "accepted_exact_artifact_and_profile": True,
-                "customer_owned_holdout": True,
                 "customer_decision": "ACCEPTED",
             }
+        if evidence_type.startswith("rootless_"):
+            return {"rootless": True, "privileged": False, "effective_uid_nonzero": True}
         if evidence_type == "independent_review":
-            return {
-                "passed": True,
-                "organizationally_independent": True,
-                "separate_executor_and_verifier": True,
-                "all_required_evidence_reviewed": True,
-            }
+            return {"organizationally_independent": True, "separate_executor_and_verifier": True}
         return {
             "certification_scope_bound": True,
             "independent_certification_authority": True,
@@ -486,7 +448,7 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
         self.assertTrue(result["independent_review_signature_verified"])
         self.assertTrue(result["external_certification_signature_verified"])
         self.assertEqual(self.evidence_executors, result["verified_executor_principals"])
-        self.assertEqual(14, len(result["verified_roles"]))
+        self.assertEqual(9, len(result["verified_roles"]))
         self.assertEqual(before, {path: path.read_bytes() for path in self.pack.rglob("*.json")})
 
     def test_schemas_track_required_evidence_roles_and_executor_bindings(self) -> None:
@@ -621,12 +583,7 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
 
         self.assertEqual({path: 1 for path in identity_files}, reads)
         self.assertEqual(
-            canonical_digest(
-                {
-                    **json.loads(original.decode("utf-8")),
-                    "status": "CERTIFICATION_SUBJECT",
-                }
-            ),
+            "sha256:" + hashlib.sha256(original).hexdigest(),
             binding["pack_manifest_digest"],
         )
         self.assertEqual("0.3.0", binding["pack_version"])
@@ -637,9 +594,9 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
         missing["evidence"].pop("customer_acceptance")
         with self.assertRaisesRegex(ExternalIntakeError, "fields are invalid"):
             self.evaluate(missing)
-        payload = self.intake["evidence"]["performance"]["attestation"]["payload"]
+        payload = self.intake["evidence"]["customer_holdout"]["attestation"]["payload"]
         payload["outcome"] = "UNKNOWN"
-        self.resign_evidence("performance")
+        self.resign_evidence("customer_holdout")
         with self.assertRaisesRegex(ExternalIntakeError, "non-success sentinel UNKNOWN"):
             self.evaluate()
 
@@ -671,7 +628,7 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
         self.resign_authorization_chain()
         with self.assertRaisesRegex(
             ExternalIntakeError,
-            "signer organization must be separate from every evidence executor organization",
+            "independent_review signer organization must be separate",
         ):
             self.evaluate()
 
@@ -682,12 +639,12 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
         self.resign_authorization_chain()
         with self.assertRaisesRegex(
             ExternalIntakeError,
-            "external_certification signer and executor organizations must be separate",
+            "external_certification signer organization must be separate",
         ):
             self.evaluate()
 
     def test_certifier_organization_cannot_execute_another_evidence_role(self) -> None:
-        self.intake["evidence_executors"]["target_startup"][
+        self.intake["evidence_executors"]["rootless_runner"][
             "organization_id"
         ] = self.organizations["certification_organization_id"]
         self.resign_authorization_chain()
@@ -698,13 +655,13 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
             self.evaluate()
 
     def test_independent_review_organization_cannot_execute_another_role(self) -> None:
-        self.intake["evidence_executors"]["target_build"][
+        self.intake["evidence_executors"]["rootless_transformer"][
             "organization_id"
         ] = self.organizations["independent_organization_id"]
         self.resign_authorization_chain()
         with self.assertRaisesRegex(
             ExternalIntakeError,
-            "signer organization must be separate from every evidence executor organization",
+            "independent_review signer organization must be separate from every evidence executor",
         ):
             self.evaluate()
 
@@ -725,7 +682,7 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
 
     def test_self_signing_fails_closed(self) -> None:
         independent_role = EVIDENCE_ROLES["independent_review"]
-        reused_actor = f"actor-{EVIDENCE_ROLES['behavioral_equivalence']}"
+        reused_actor = f"actor-{EVIDENCE_ROLES['rootless_verifier']}"
         self.trust_record(independent_role)["actor_id"] = reused_actor
         payload = self.intake["evidence"]["independent_review"]["attestation"]["payload"]
         payload["actor_id"] = reused_actor
@@ -763,7 +720,7 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
             self.evaluate()
 
     def test_revoked_key_fails_closed(self) -> None:
-        self.trust_record(EVIDENCE_ROLES["target_startup"])["revoked"] = True
+        self.trust_record(EVIDENCE_ROLES["rootless_runner"])["revoked"] = True
         self.write_trust()
         with self.assertRaisesRegex(ExternalIntakeError, "unknown or revoked"):
             self.evaluate()
@@ -782,7 +739,7 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
 
     def test_wrong_role_signature_fails_closed(self) -> None:
         self.intake["evidence"]["independent_review"]["attestation"] = self.intake["evidence"][
-            "behavioral_equivalence"
+            "rootless_verifier"
         ]["attestation"]
         with self.assertRaisesRegex(ExternalIntakeError, "dedicated to exactly that role"):
             self.evaluate()
@@ -803,7 +760,7 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
         with self.assertRaisesRegex(ExternalIntakeError, "contains a symlink"):
             self.evaluate(linked)
 
-        content_uri = self.intake["evidence"]["target_startup"]["content"]["uri"]
+        content_uri = self.intake["evidence"]["rootless_runner"]["content"]["uri"]
         Path(content_uri.removeprefix("file://")).write_bytes(b"tampered\n")
         with self.assertRaisesRegex(ExternalIntakeError, "content .* mismatch"):
             self.evaluate()
@@ -821,36 +778,36 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
             self.evaluate(reused_primary)
 
         reused_role = copy.deepcopy(self.intake)
-        reused_role["evidence"]["target_build"] = copy.deepcopy(
-            reused_role["evidence"]["source_build"]
+        reused_role["evidence"]["customer_holdout"] = copy.deepcopy(
+            reused_role["evidence"]["authorized_customer_repository"]
         )
         with self.assertRaisesRegex(ExternalIntakeError, "distinct content bytes"):
             self.evaluate(reused_role)
 
     def test_customer_authorization_binds_every_evidence_digest(self) -> None:
-        replacement = self.evidence_root / "replacement-performance.json"
-        self.write_json(replacement, {"evidence_type": "performance", "result": "PASS", "version": 2})
+        replacement = self.evidence_root / "replacement-customer-holdout.json"
+        self.write_json(replacement, {"evidence_type": "customer_holdout", "result": "PASS", "version": 2})
         reference = self.content_ref(replacement)
-        self.intake["evidence"]["performance"]["content"] = reference
-        payload = self.intake["evidence"]["performance"]["attestation"]["payload"]
+        self.intake["evidence"]["customer_holdout"]["content"] = reference
+        payload = self.intake["evidence"]["customer_holdout"]["attestation"]["payload"]
         payload["content_digest"] = reference["digest"]
         payload["content_size_bytes"] = reference["size_bytes"]
-        self.resign_evidence("performance")
+        self.resign_evidence("customer_holdout")
         with self.assertRaisesRegex(ExternalIntakeError, "binding mismatch: scope"):
             self.evaluate()
 
     def test_attestations_bind_the_exact_customer_authorization_payload(self) -> None:
-        replacement = self.evidence_root / "replacement-performance.json"
-        self.write_json(replacement, {"evidence_type": "performance", "result": "PASS", "version": 3})
+        replacement = self.evidence_root / "replacement-customer-holdout.json"
+        self.write_json(replacement, {"evidence_type": "customer_holdout", "result": "PASS", "version": 3})
         reference = self.content_ref(replacement)
-        self.intake["evidence"]["performance"]["content"] = reference
-        evidence_payload = self.intake["evidence"]["performance"]["attestation"]["payload"]
+        self.intake["evidence"]["customer_holdout"]["content"] = reference
+        evidence_payload = self.intake["evidence"]["customer_holdout"]["attestation"]["payload"]
         evidence_payload["content_digest"] = reference["digest"]
         evidence_payload["content_size_bytes"] = reference["size_bytes"]
         authorization_payload = self.intake["customer_authorization"]["payload"]
-        authorization_payload["scope"]["evidence_content_digests"]["performance"] = reference["digest"]
+        authorization_payload["scope"]["evidence_content_digests"]["customer_holdout"] = reference["digest"]
         self.intake["customer_authorization"] = self.sign(CUSTOMER_AUTHORIZATION_ROLE, authorization_payload)
-        self.resign_evidence("performance")
+        self.resign_evidence("customer_holdout")
         with self.assertRaisesRegex(ExternalIntakeError, "binding mismatch: authorization_payload_digest"):
             self.evaluate()
         drifted = copy.deepcopy(self.intake)
@@ -863,9 +820,9 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
             self.evaluate(drifted)
 
     def test_synthetic_claim_fails_closed(self) -> None:
-        payload = self.intake["evidence"]["target_build"]["attestation"]["payload"]
+        payload = self.intake["evidence"]["rootless_transformer"]["attestation"]["payload"]
         payload["synthetic"] = True
-        self.resign_evidence("target_build")
+        self.resign_evidence("rootless_transformer")
         with self.assertRaisesRegex(ExternalIntakeError, "binding mismatch: synthetic"):
             self.evaluate()
 
@@ -891,7 +848,7 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
 
     def test_reused_key_material_fails_closed(self) -> None:
         independent_role = EVIDENCE_ROLES["independent_review"]
-        reused_role = EVIDENCE_ROLES["behavioral_equivalence"]
+        reused_role = EVIDENCE_ROLES["rootless_verifier"]
         self.trust_record(independent_role)["public_key_path"] = f"keys/{reused_role}.pem"
         self.resign_evidence("independent_review", signing_role=reused_role)
         self.write_trust()

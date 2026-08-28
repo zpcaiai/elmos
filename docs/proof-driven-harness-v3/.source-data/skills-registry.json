@@ -1,0 +1,249 @@
+{
+  "apiVersion": "elmos.ai/v3",
+  "kind": "SkillRegistry",
+  "metadata": {
+    "name": "elmos-v3",
+    "version": "3.0.0"
+  },
+  "spec": {
+    "routableCount": 16,
+    "entrypoints": [
+      {
+        "id": "ELMOS-V3-004",
+        "name": "elmos-agentic-reasoning-kernel",
+        "priority": "P0",
+        "kind": "kernel",
+        "path": "skills/P0/elmos-agentic-reasoning-kernel/SKILL.md",
+        "owner": "K4",
+        "dependencies": [
+          "elmos-goal-specification-kernel",
+          "elmos-repository-semantic-compiler-kernel"
+        ]
+      },
+      {
+        "id": "ELMOS-V3-008",
+        "name": "elmos-certification-kernel",
+        "priority": "P0",
+        "kind": "kernel",
+        "path": "skills/P0/elmos-certification-kernel/SKILL.md",
+        "owner": "K8",
+        "dependencies": [
+          "elmos-goal-specification-kernel",
+          "elmos-proof-verification-kernel",
+          "elmos-harness-runtime-kernel"
+        ]
+      },
+      {
+        "id": "ELMOS-V3-016",
+        "name": "elmos-commercial-operations-finops",
+        "priority": "P0",
+        "kind": "cross-cutting",
+        "path": "skills/P0/elmos-commercial-operations-finops/SKILL.md",
+        "owner": "platform",
+        "dependencies": [
+          "elmos-goal-specification-kernel",
+          "elmos-repository-intelligence-kernel",
+          "elmos-repository-semantic-compiler-kernel",
+          "elmos-agentic-reasoning-kernel",
+          "elmos-transformation-kernel",
+          "elmos-proof-verification-kernel",
+          "elmos-harness-runtime-kernel",
+          "elmos-certification-kernel"
+        ]
+      },
+      {
+        "id": "ELMOS-V3-010",
+        "name": "elmos-domain-cross-language-conversion",
+        "priority": "P0",
+        "kind": "domain-pack",
+        "path": "skills/P0/elmos-domain-cross-language-conversion/SKILL.md",
+        "owner": "cross-language",
+        "dependencies": [
+          "elmos-goal-specification-kernel",
+          "elmos-repository-intelligence-kernel",
+          "elmos-repository-semantic-compiler-kernel",
+          "elmos-agentic-reasoning-kernel",
+          "elmos-transformation-kernel",
+          "elmos-proof-verification-kernel",
+          "elmos-harness-runtime-kernel",
+          "elmos-certification-kernel"
+        ]
+      },
+      {
+        "id": "ELMOS-V3-011",
+        "name": "elmos-domain-multi-language-project-generation",
+        "priority": "P0",
+        "kind": "domain-pack",
+        "path": "skills/P0/elmos-domain-multi-language-project-generation/SKILL.md",
+        "owner": "project-generation",
+        "dependencies": [
+          "elmos-goal-specification-kernel",
+          "elmos-repository-intelligence-kernel",
+          "elmos-repository-semantic-compiler-kernel",
+          "elmos-agentic-reasoning-kernel",
+          "elmos-transformation-kernel",
+          "elmos-proof-verification-kernel",
+          "elmos-harness-runtime-kernel",
+          "elmos-certification-kernel"
+        ]
+      },
+      {
+        "id": "ELMOS-V3-013",
+        "name": "elmos-domain-repository-refactoring",
+        "priority": "P0",
+        "kind": "domain-pack",
+        "path": "skills/P0/elmos-domain-repository-refactoring/SKILL.md",
+        "owner": "repository-refactoring",
+        "dependencies": [
+          "elmos-goal-specification-kernel",
+          "elmos-repository-intelligence-kernel",
+          "elmos-repository-semantic-compiler-kernel",
+          "elmos-agentic-reasoning-kernel",
+          "elmos-transformation-kernel",
+          "elmos-proof-verification-kernel",
+          "elmos-harness-runtime-kernel",
+          "elmos-certification-kernel"
+        ]
+      },
+      {
+        "id": "ELMOS-V3-009",
+        "name": "elmos-domain-spring-legacy-modernization",
+        "priority": "P0",
+        "kind": "domain-pack",
+        "path": "skills/P0/elmos-domain-spring-legacy-modernization/SKILL.md",
+        "owner": "spring-modernization",
+        "dependencies": [
+          "elmos-goal-specification-kernel",
+          "elmos-repository-intelligence-kernel",
+          "elmos-repository-semantic-compiler-kernel",
+          "elmos-agentic-reasoning-kernel",
+          "elmos-transformation-kernel",
+          "elmos-proof-verification-kernel",
+          "elmos-harness-runtime-kernel",
+          "elmos-certification-kernel"
+        ]
+      },
+      {
+        "id": "ELMOS-V3-012",
+        "name": "elmos-domain-sql-dialect-routine-conversion",
+        "priority": "P0",
+        "kind": "domain-pack",
+        "path": "skills/P0/elmos-domain-sql-dialect-routine-conversion/SKILL.md",
+        "owner": "sql-conversion",
+        "dependencies": [
+          "elmos-goal-specification-kernel",
+          "elmos-repository-intelligence-kernel",
+          "elmos-repository-semantic-compiler-kernel",
+          "elmos-agentic-reasoning-kernel",
+          "elmos-transformation-kernel",
+          "elmos-proof-verification-kernel",
+          "elmos-harness-runtime-kernel",
+          "elmos-certification-kernel"
+        ]
+      },
+      {
+        "id": "ELMOS-V3-014",
+        "name": "elmos-evaluation-trust-gate",
+        "priority": "P0",
+        "kind": "cross-cutting",
+        "path": "skills/P0/elmos-evaluation-trust-gate/SKILL.md",
+        "owner": "platform",
+        "dependencies": [
+          "elmos-goal-specification-kernel",
+          "elmos-repository-intelligence-kernel",
+          "elmos-repository-semantic-compiler-kernel",
+          "elmos-agentic-reasoning-kernel",
+          "elmos-transformation-kernel",
+          "elmos-proof-verification-kernel",
+          "elmos-harness-runtime-kernel",
+          "elmos-certification-kernel"
+        ]
+      },
+      {
+        "id": "ELMOS-V3-001",
+        "name": "elmos-goal-specification-kernel",
+        "priority": "P0",
+        "kind": "kernel",
+        "path": "skills/P0/elmos-goal-specification-kernel/SKILL.md",
+        "owner": "K1",
+        "dependencies": []
+      },
+      {
+        "id": "ELMOS-V3-007",
+        "name": "elmos-harness-runtime-kernel",
+        "priority": "P0",
+        "kind": "kernel",
+        "path": "skills/P0/elmos-harness-runtime-kernel/SKILL.md",
+        "owner": "K7",
+        "dependencies": []
+      },
+      {
+        "id": "ELMOS-V3-006",
+        "name": "elmos-proof-verification-kernel",
+        "priority": "P0",
+        "kind": "kernel",
+        "path": "skills/P0/elmos-proof-verification-kernel/SKILL.md",
+        "owner": "K6",
+        "dependencies": [
+          "elmos-repository-semantic-compiler-kernel",
+          "elmos-harness-runtime-kernel"
+        ]
+      },
+      {
+        "id": "ELMOS-V3-002",
+        "name": "elmos-repository-intelligence-kernel",
+        "priority": "P0",
+        "kind": "kernel",
+        "path": "skills/P0/elmos-repository-intelligence-kernel/SKILL.md",
+        "owner": "K2",
+        "dependencies": [
+          "elmos-goal-specification-kernel"
+        ]
+      },
+      {
+        "id": "ELMOS-V3-003",
+        "name": "elmos-repository-semantic-compiler-kernel",
+        "priority": "P0",
+        "kind": "kernel",
+        "path": "skills/P0/elmos-repository-semantic-compiler-kernel/SKILL.md",
+        "owner": "K3",
+        "dependencies": [
+          "elmos-repository-intelligence-kernel"
+        ]
+      },
+      {
+        "id": "ELMOS-V3-005",
+        "name": "elmos-transformation-kernel",
+        "priority": "P0",
+        "kind": "kernel",
+        "path": "skills/P0/elmos-transformation-kernel/SKILL.md",
+        "owner": "K5",
+        "dependencies": [
+          "elmos-repository-semantic-compiler-kernel",
+          "elmos-agentic-reasoning-kernel",
+          "elmos-harness-runtime-kernel"
+        ]
+      },
+      {
+        "id": "ELMOS-V3-015",
+        "name": "elmos-self-improvement-governance",
+        "priority": "P1",
+        "kind": "cross-cutting",
+        "path": "skills/P1/elmos-self-improvement-governance/SKILL.md",
+        "owner": "platform",
+        "dependencies": [
+          "elmos-goal-specification-kernel",
+          "elmos-repository-intelligence-kernel",
+          "elmos-repository-semantic-compiler-kernel",
+          "elmos-agentic-reasoning-kernel",
+          "elmos-transformation-kernel",
+          "elmos-proof-verification-kernel",
+          "elmos-harness-runtime-kernel",
+          "elmos-certification-kernel"
+        ]
+      }
+    ],
+    "legacyRouting": "migration/legacy-alias-registry.yaml",
+    "rule": "legacy aliases may resolve to v3 entrypoints but may not execute as independent owners"
+  }
+}

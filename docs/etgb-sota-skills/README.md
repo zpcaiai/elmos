@@ -85,15 +85,6 @@ injected with `--license-reviews` plus a purpose-bound `--trust-store`.
 the complete result set and governance evidence exist, `attestation-request`
 creates the unsigned, digest-bound handoff for a separate verifier.
 
-The production ownership model, secure input locations, exact 7-adapter
-workload, candidate freeze, 256-shard execution, signed corpus review,
-independent verification, result merge, gate, and external certification
-handoff are documented in
-[`EXTERNAL_QUALIFICATION_RUNBOOK.md`](EXTERNAL_QUALIFICATION_RUNBOOK.md).
-Templates under [`external-qualification/`](external-qualification/) are
-deliberately incomplete and fail closed until external owners replace every
-missing value outside the repository.
-
 ## Evidence boundary
 
 Local unit/integration and smoke results are engineering evidence. The latest

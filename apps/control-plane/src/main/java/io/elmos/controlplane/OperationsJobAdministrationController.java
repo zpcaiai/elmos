@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Operations-console view of the durable execution queue.
@@ -70,48 +69,15 @@ public final class OperationsJobAdministrationController {
             @RequestHeader(value = "X-ELMOS-Organization-ID", required = false) String organizationId,
             @RequestHeader(value = "X-ELMOS-Actor-ID", required = false) String actorId,
             @RequestHeader(value = "X-ELMOS-Admin-Role", required = false) String role,
-            @RequestHeader(value = "X-Request-ID", required = false) String requestId,
             @RequestParam(defaultValue = "50") int limit,
             @RequestParam(required = false) String businessLine,
             @RequestParam(required = false) String status
     ) {
         authorization.requireManagement(
                 presentedKey, organizationId, actorId, role, "VIEWER");
-        return listInternal(organizationId, actorId, requestId, limit,
-                businessLine, status, true);
-    }
-
-    /** Compatibility entry point for direct callers and legacy credential adapters. */
-    public JobListView list(
-            String presentedKey,
-            String organizationId,
-            String actorId,
-            String role,
-            int limit,
-            String businessLine,
-            String status
-    ) {
-        authorization.requireManagement(
-                presentedKey, organizationId, actorId, role, "VIEWER");
-        return listInternal(organizationId, actorId, null, limit,
-                businessLine, status, false);
-    }
-
-    private JobListView listInternal(
-            String organizationId,
-            String actorId,
-            String requestId,
-            int limit,
-            String businessLine,
-            String status,
-            boolean preferSecureContext
-    ) {
         int boundedLimit = requireLimit(limit);
         ExecutionJobPort.BusinessLine line = parseBusinessLine(businessLine);
         ExecutionJobPort.Status statusFilter = parseStatus(status);
-        ExecutionJobPort.AuthenticatedContext secureContext = preferSecureContext
-                ? authenticatedContext(organizationId, actorId, requestId).orElse(null)
-                : null;
 
         List<ExecutionJobPort.JobView> selected = new ArrayList<>();
         int scanned = 0;
@@ -119,9 +85,8 @@ public final class OperationsJobAdministrationController {
         int maximumScan = statusFilter == null ? boundedLimit : MAX_STATUS_SCAN;
         while (scanned < maximumScan && selected.size() < boundedLimit) {
             int pageSize = Math.min(SCAN_PAGE_SIZE, maximumScan - scanned);
-            List<ExecutionJobPort.JobView> page = secureContext == null
-                    ? jobs.list(organizationId, line, pageSize, scanned)
-                    : jobs.list(secureContext, line, pageSize, scanned);
+            List<ExecutionJobPort.JobView> page = jobs.list(
+                    organizationId, line, pageSize, scanned);
             scanned += page.size();
             for (ExecutionJobPort.JobView job : page) {
                 if (statusFilter == null || job.status() == statusFilter) {
@@ -156,41 +121,12 @@ public final class OperationsJobAdministrationController {
             @RequestHeader(value = "X-ELMOS-Organization-ID", required = false) String organizationId,
             @RequestHeader(value = "X-ELMOS-Actor-ID", required = false) String actorId,
             @RequestHeader(value = "X-ELMOS-Admin-Role", required = false) String role,
-            @RequestHeader(value = "X-Request-ID", required = false) String requestId,
             @PathVariable String jobId
     ) {
         authorization.requireManagement(
                 presentedKey, organizationId, actorId, role, "OPERATOR");
-        return cancelInternal(organizationId, actorId, requestId, jobId, true);
-    }
-
-    /** Compatibility entry point for direct callers and legacy credential adapters. */
-    public ResponseEntity<CancellationView> cancel(
-            String presentedKey,
-            String organizationId,
-            String actorId,
-            String role,
-            String jobId
-    ) {
-        authorization.requireManagement(
-                presentedKey, organizationId, actorId, role, "OPERATOR");
-        return cancelInternal(organizationId, actorId, null, jobId, false);
-    }
-
-    private ResponseEntity<CancellationView> cancelInternal(
-            String organizationId,
-            String actorId,
-            String requestId,
-            String jobId,
-            boolean preferSecureContext
-    ) {
         requireIdentifier(jobId);
-        ExecutionJobPort.AuthenticatedContext secureContext = preferSecureContext
-                ? authenticatedContext(organizationId, actorId, requestId).orElse(null)
-                : null;
-        ExecutionJobPort.JobView job = (secureContext == null
-                ? jobs.find(organizationId, jobId)
-                : jobs.find(secureContext, jobId))
+        ExecutionJobPort.JobView job = jobs.find(organizationId, jobId)
                 .orElseThrow(() -> new ExecutionJobPort.ExecutionStateException(
                         "ELMOS_EXECUTION_JOB_UNKNOWN"));
         if (terminal(job.status())) {
@@ -201,30 +137,10 @@ public final class OperationsJobAdministrationController {
             return ResponseEntity.ok(new CancellationView(
                     "1.0.0", jobId, job.status(), true, true));
         }
-        ExecutionJobPort.Status current = secureContext == null
-                ? jobs.requestCancel(organizationId, jobId, actorId)
-                : jobs.requestCancel(secureContext, jobId);
+        ExecutionJobPort.Status current = jobs.requestCancel(
+                organizationId, jobId, actorId);
         return ResponseEntity.accepted().body(new CancellationView(
                 "1.0.0", jobId, current, true, false));
-    }
-
-    private static Optional<ExecutionJobPort.AuthenticatedContext> authenticatedContext(
-            String organizationId,
-            String actorId,
-            String requestId
-    ) {
-        return ControlPlanePrincipal.current().map(principal -> {
-            principal.require(organizationId, actorId, "admin:read");
-            String boundedRequestId = requestId == null || requestId.isBlank()
-                    ? "operations-observability" : requestId.trim();
-            if (boundedRequestId.length() > 160
-                    || boundedRequestId.chars().anyMatch(Character::isISOControl)) {
-                throw new IllegalArgumentException("requestId is invalid");
-            }
-            return new ExecutionJobPort.AuthenticatedContext(
-                    principal.organizationId(), principal.accountId(),
-                    principal.actorId(), boundedRequestId);
-        });
     }
 
     private static int requireLimit(int value) {
@@ -263,7 +179,7 @@ public final class OperationsJobAdministrationController {
     private static boolean terminal(ExecutionJobPort.Status status) {
         return switch (status) {
             case SUCCEEDED, PARTIAL, FAILED, CANCELLED, LOST -> true;
-            case QUEUED, CLAIMED, RUNNING, PAUSED, UNKNOWN_RESULT, RECONCILING -> false;
+            case QUEUED, CLAIMED, RUNNING -> false;
         };
     }
 

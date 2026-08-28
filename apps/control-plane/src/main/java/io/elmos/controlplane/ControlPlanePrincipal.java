@@ -5,11 +5,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HexFormat;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -20,7 +17,6 @@ import java.util.regex.Pattern;
 
 record ControlPlanePrincipal(
         String organizationId,
-        String accountId,
         String actorId,
         Set<String> roles,
         Set<String> permissions,
@@ -35,8 +31,6 @@ record ControlPlanePrincipal(
 
     private static final Pattern ORGANIZATION =
             Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}");
-    private static final Pattern ACCOUNT =
-            Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{0,95}");
     private static final Pattern ACTOR =
             Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}");
     private static final Set<String> KNOWN_PERMISSIONS = Set.of(
@@ -72,7 +66,6 @@ record ControlPlanePrincipal(
 
     ControlPlanePrincipal {
         if (!ORGANIZATION.matcher(organizationId).matches()
-                || !ACCOUNT.matcher(accountId).matches()
                 || !ACTOR.matcher(actorId).matches()) {
             throw new AccessDeniedException("CONTROL_PLANE_PRINCIPAL_INVALID");
         }
@@ -105,9 +98,6 @@ record ControlPlanePrincipal(
         Object boundActor = jwt.getToken().getClaims().get("elmos_actor_id");
         String actorId = boundActor instanceof String value
                 ? value : jwt.getToken().getSubject();
-        String issuer = jwt.getToken().getIssuer() == null
-                ? "" : jwt.getToken().getIssuer().toString();
-        String accountId = stableAccountId(issuer, jwt.getToken().getSubject());
         Set<String> roles = roles(jwt.getToken().getClaims());
         Set<String> permissions = effectivePermissions(
                 roles, explicitPermissions(jwt.getToken().getClaims()));
@@ -130,7 +120,7 @@ record ControlPlanePrincipal(
             }
         }
         return Optional.of(new ControlPlanePrincipal(
-                organizationId, accountId, actorId, roles, permissions, memberships));
+                organizationId, actorId, roles, permissions, memberships));
     }
 
     static ControlPlanePrincipal requireDatabaseBound(
@@ -154,7 +144,7 @@ record ControlPlanePrincipal(
 
     static ControlPlanePrincipal databaseBound(
             String selectedOrganizationId,
-            String accountId,
+            String oidcActorId,
             List<io.elmos.persistence.JdbcOrganizationSelfServiceStore.OrganizationGrant> grants
     ) {
         Map<String, TenantGrant> memberships = new java.util.LinkedHashMap<>();
@@ -173,31 +163,10 @@ record ControlPlanePrincipal(
         TenantGrant primary = memberships.get(selectedOrganizationId);
         return new ControlPlanePrincipal(
                 selectedOrganizationId,
-                accountId,
-                selected.actorId(),
+                oidcActorId,
                 primary.roles(),
                 primary.permissions(),
                 memberships);
-    }
-
-    /**
-     * Deterministic local identity used only when the verified JWT has not yet
-     * been rebound through the authoritative account directory. The issuer is
-     * part of the key so equal subjects from two identity providers cannot alias.
-     */
-    static String stableAccountId(String issuer, String subject) {
-        if (subject == null || subject.isBlank()) {
-            throw new AccessDeniedException("CONTROL_PLANE_SUBJECT_MISSING");
-        }
-        try {
-            String material = (issuer == null ? "" : issuer) + "\u0000" + subject;
-            String digest = HexFormat.of().formatHex(
-                    MessageDigest.getInstance("SHA-256")
-                            .digest(material.getBytes(StandardCharsets.UTF_8)));
-            return "acc-" + digest.substring(0, 40);
-        } catch (Exception error) {
-            throw new IllegalStateException("SHA-256 unavailable", error);
-        }
     }
 
     void require(String requestedOrganizationId, String requestedActorId, String permission) {

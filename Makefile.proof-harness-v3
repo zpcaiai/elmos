@@ -1,0 +1,75 @@
+# Proof-harness v3 local engineering workflow.
+#
+# The authoritative repository integration sequence is Q -> I -> check:
+# qualify the exact bytes, transactionally install only repository wrappers,
+# then verify the checked-in installation. No default target connects to an
+# external database, provider, registry, cluster, or production environment.
+
+.DEFAULT_GOAL := help
+.NOTPARALLEL: qic release-local
+
+PYTHON ?= python3
+ENGINE := engines/proof-driven-harness-engine
+INTEGRATOR := tooling/integrate_proof_driven_harness_v3.py
+QUALIFIER := $(ENGINE)/tools/qualify_local.py
+PUBLISHER := $(ENGINE)/tools/publish_verification_pack.py
+RELEASE_CONTRACT := $(ENGINE)/tools/release_contract.py
+PACK := verification-packs/proof-driven-harness-v3-local
+
+.PHONY: help check test postgres qualify install qic publish publish-check batch35 release-local release-contract-generate wheel-check
+
+help:
+	@echo "Proof-harness v3 local targets (distribution remains BLOCKED / NOT_CERTIFIED):"
+	@echo "  test       structured local unit/integration outcomes; no ZIP code executes"
+	@echo "  qualify    Q: create digest-bound local receipt; PostgreSQL stays NOT_RUN"
+	@echo "  install    I: install wrappers from an already-current qualification receipt"
+	@echo "  check      check: non-mutating release contract + installed wrapper verification"
+	@echo "  qic        run the required Q -> I -> check sequence, serially"
+	@echo "  postgres   opt-in disposable PostgreSQL 17.5 qualification only"
+	@echo "  publish    publish/check the limited local Batch 35 verification pack"
+	@echo "  batch35    validate and gate the limited pack; never certifies it"
+	@echo "  release-local  qic -> publish -> batch35 local evidence workflow"
+	@echo "  wheel-check WHEEL=/path/to/wheel  byte-check one built wheel"
+	@echo "No target deploys, pushes, signs, calls providers, or connects to an external DSN."
+
+test:
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$(ENGINE)/src $(PYTHON) $(ENGINE)/tools/run_structured_unittest.py --repo-root . --start-directory $(ENGINE)/tests --pattern 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$(ENGINE)/src $(PYTHON) $(ENGINE)/tools/run_structured_unittest.py --repo-root . --start-directory tests/proof-driven-harness-v3 --pattern 'test_*.py'
+
+qualify:
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(QUALIFIER) --repo-root . --postgres17-mode not-run
+
+install:
+	$(PYTHON) $(INTEGRATOR) --repo-root . --install
+
+check:
+	$(PYTHON) $(RELEASE_CONTRACT) --root $(ENGINE) --check
+	$(PYTHON) $(INTEGRATOR) --repo-root . --check
+
+qic: qualify install check
+
+postgres:
+	@test "$${ALLOW_DISPOSABLE_POSTGRES17:-}" = "1" || { echo "Refusing: set ALLOW_DISPOSABLE_POSTGRES17=1 for the repository-owned temporary-cluster runner" >&2; exit 2; }
+	@test -z "$${ELMOS_MIGRATION_OWNER_DSN:-}" || { echo "Refusing: postgres target never accepts ELMOS_MIGRATION_OWNER_DSN or an external DSN" >&2; exit 2; }
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(QUALIFIER) --repo-root . --postgres17-mode require
+
+publish:
+	$(PYTHON) $(PUBLISHER) --repo-root . --publish
+	$(PYTHON) $(PUBLISHER) --repo-root . --check
+
+publish-check:
+	$(PYTHON) $(PUBLISHER) --repo-root . --check
+
+batch35: publish
+	$(PYTHON) scripts/batch35/validate_verification_pack.py $(PACK) --repository-root .
+	$(PYTHON) scripts/batch35/run_verification_gate.py $(PACK)
+	$(PYTHON) -c 'import json,pathlib; value=json.loads(pathlib.Path("$(PACK)/certification/gate-result.json").read_text()); assert value["certification_decision"] == "NOT_CERTIFIED" and value["certification_readiness"] == "BLOCKED"'
+
+release-local: qic publish batch35
+
+release-contract-generate:
+	$(PYTHON) $(RELEASE_CONTRACT) --root $(ENGINE) --generate
+
+wheel-check:
+	@test -n "$(WHEEL)" || { echo "WHEEL=/exact/path/to/elmos_proof_driven_harness_engine-3.0.0-*.whl is required" >&2; exit 2; }
+	$(PYTHON) $(RELEASE_CONTRACT) --root $(ENGINE) --check-wheel "$(WHEEL)"

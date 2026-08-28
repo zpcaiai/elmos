@@ -1,0 +1,93 @@
+Metadata-Version: 2.2
+Name: elmos-proof-driven-harness-engine
+Version: 3.0.0
+Summary: Fail-closed proof-driven repository semantic compiler and agentic harness
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Provides-Extra: postgres
+Requires-Dist: psycopg[binary]==3.2.13; extra == "postgres"
+
+# Elmos Proof-Driven Harness Engine
+
+This stdlib-first Python engine is the repository-owned implementation for
+the 16 routable entry points in the Elmos proof-driven agentic harness and
+repository semantic compiler v3 package. It combines eight explicit kernels:
+
+1. goal and observable-contract compilation;
+2. repository evidence acquisition;
+3. repository semantic compilation;
+4. bounded agentic planning;
+5. deterministic transformation;
+6. proof-obligation verification;
+7. durable, authority-bound harness execution; and
+8. independent completion review.
+
+The source ZIP is untrusted input. Package scripts, bytecode, SQL, workflows,
+container files, prompts, and Skill instructions are never executed by this
+engine or its importer. In particular, unmanifested bytecode in the supplied
+archive is quarantined from the installed source-data view.
+
+## Safety boundary
+
+- Authenticated tenant, project, actor, environment, execution epoch, and
+  fencing generation are bound before any authoritative operation.
+- Dependency-free SQLite state is restricted to single-process
+  `local-engineering` mode. It uses tenant-qualified references, optimistic
+  versions, leases, idempotency receipts, append-only evidence/audit records,
+  and an outbox.
+- Production uses the optional `postgres` extra and an externally managed
+  PostgreSQL 17 database. Every transaction sets trusted tenant/project/actor
+  session scope; composite foreign keys plus forced RLS provide a second
+  isolation boundary. The application refuses missing drivers, DSNs,
+  migrations, unsafe roles, incomplete RLS, and every SQLite production path.
+- Evidence and checkpoints persist their exact bytes inline with a 16 MiB hard
+  bound. The production schema does not manufacture object URIs; a future
+  external object backend must implement a typed, digest-verifying ObjectStore.
+- Evidence digests bind actual bytes and exact subject revisions. A claimed
+  proof status that lacks the required evidence class, scope, assumptions,
+  toolchain, or environment cannot close an obligation.
+- LLM output is advisory. Missing frontends, verifiers, runtimes, credentials,
+  or independent evidence return `UNSUPPORTED`, `UNKNOWN`, or `NOT_RUN`.
+- Repository transforms are plan/dry-run first, confined to an explicit root,
+  digest-preconditioned, atomically written, and rollback-capable.
+- Local validation can produce at most `READY_FOR_EXTERNAL_GATE`. This engine
+  cannot issue a production or customer certification without an independently
+  authenticated verifier and external signature receipt.
+
+## Local verification
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -m unittest discover -s tests -p 'test_*.py'
+ruff check src tests tools/qualify_local.py
+```
+
+## PostgreSQL 17 production store
+
+Install the pinned optional driver and apply the migration with the repository
+owned single-FD applicator using the separate owner/application-role procedure in
+[`deploy/README.md`](deploy/README.md):
+
+```bash
+python3 -m pip install -e '.[postgres]'
+export ELMOS_MIGRATION_OWNER_DSN='postgresql://...'
+python3 tools/apply_postgres_migration.py \
+  --expected-owner-role proof_harness_owner
+export ELMOS_STORAGE_BACKEND=postgresql
+export ELMOS_POSTGRES_DSN='postgresql://...'
+```
+
+`PostgresStore.readiness()` verifies PostgreSQL 17.x, schema version 1, all
+forced-RLS runtime tables, and a `NOSUPERUSER` / `NOBYPASSRLS` application
+role. The DSN is never logged and the application role cannot migrate schema.
+The independent integration runner creates and destroys only its own temporary
+cluster; it never accepts an external DSN:
+
+```bash
+PYTHONPATH=src python3 tests/postgres17_integration.py -v
+```
+
+These commands provide self-attested local engineering evidence only. Native
+compiler, solver, OPA, container, Kubernetes, provider, large repository,
+customer Golden Route, PostgreSQL HA/failover, backup/restore, disaster
+recovery, and independent certification evidence remain `NOT_RUN` until
+separately authorized and executed.

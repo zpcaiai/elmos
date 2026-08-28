@@ -1,0 +1,97 @@
+{
+  "gates": {
+    "content_addressed_evidence_required": true,
+    "independent_verification_required_for_certification": true,
+    "legacy_alias_execution_allowed": false,
+    "self_certification_allowed": false,
+    "unknown_is_success": false
+  },
+  "kind": "elmos.proof-driven-harness-v3.compiled-skill-contract",
+  "package": {
+    "name": "elmos-proof-driven-agentic-harness-repository-semantic-compiler",
+    "version": "3.0.0"
+  },
+  "provenance": {
+    "archive_executable_content_materialized": false,
+    "archive_instruction_content_materialized": false,
+    "archive_scripts_executed": false,
+    "compiler": "tooling/integrate_proof_driven_harness_v3.py",
+    "dual_roots_required_byte_identical": [
+      ".agents/skills",
+      "agent-skills/runtime"
+    ],
+    "materialized_members": [
+      {
+        "classification": "INERT_SOURCE_DATA",
+        "materialized_as": "docs/proof-driven-harness-v3/.source-data/PACKAGE_MANIFEST.json",
+        "path": "PACKAGE_MANIFEST.json",
+        "sha256": "84b963ad87baaa8753dba3c4c69e0e2f257be7071c993b12ad94e40cfcfeef43"
+      },
+      {
+        "classification": "INERT_SOURCE_DATA",
+        "materialized_as": "docs/proof-driven-harness-v3/.source-data/skills-registry.json",
+        "path": "skills/registry.json",
+        "sha256": "9fa9a89fde9b3b11e6948118b7cac34624b01175b8b67465ba0ac711ebf81a6f"
+      }
+    ],
+    "selective_inert_data_materialized": true,
+    "source_skill_member_materialized": false,
+    "unlisted_pyc_quarantined": 21
+  },
+  "qualification": {
+    "engine_tree_sha256": "8867437afe0a73fb08657ad10fcc102a48fd83ca0eb478032cedaac06e20ef63",
+    "path": "engines/proof-driven-harness-engine/qualification/local-qualification.json",
+    "receipt_sha256": "535a63b68ea657469ec362ed914eb790107312c1f8a1fd18ca0bdd62e9706307",
+    "validation": "VALID"
+  },
+  "runtime": {
+    "engine_path": "engines/proof-driven-harness-engine/src/elmos_proof_harness/skills.py",
+    "entrypoint": "SkillRuntime.execute",
+    "module": "elmos_proof_harness.skills",
+    "registry": "SKILL_REGISTRY",
+    "registry_key": "elmos-commercial-operations-finops",
+    "required_scope": [
+      "tenant_id",
+      "project_id",
+      "actor_id",
+      "revision_digest",
+      "environment_authority_id",
+      "idempotency_key"
+    ]
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "dependencies": [
+      "elmos-goal-specification-kernel",
+      "elmos-repository-intelligence-kernel",
+      "elmos-repository-semantic-compiler-kernel",
+      "elmos-agentic-reasoning-kernel",
+      "elmos-transformation-kernel",
+      "elmos-proof-verification-kernel",
+      "elmos-harness-runtime-kernel",
+      "elmos-certification-kernel"
+    ],
+    "id": "ELMOS-V3-016",
+    "kind": "cross-cutting",
+    "name": "elmos-commercial-operations-finops",
+    "owner": "platform",
+    "priority": "P0",
+    "purpose": "Account for exact usage, cost, budget, capacity, and commercial evidence without treating estimates as reconciled facts.",
+    "title": "Commercial Operations and FinOps"
+  },
+  "source": {
+    "archive_bytes": 5601254,
+    "archive_path": "skills/subskills/elmos-proof-driven-agentic-harness-repository-semantic-compiler-v3.0.0.zip",
+    "archive_sha256": "552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+    "member": "skills/P0/elmos-commercial-operations-finops/SKILL.md",
+    "member_sha256": "212a860981d6eb09169a0933d001ac435ed3a8c17b7f445cce9aaa441adc0bc5",
+    "source_content_executed": false,
+    "source_instructions_installed": false
+  },
+  "status": {
+    "certification": "NOT_CERTIFIED",
+    "external_evidence": "NOT_RUN",
+    "external_runtime": "NOT_RUN",
+    "implementation": "LOCAL_EXECUTED_SELF_ATTESTED"
+  }
+}

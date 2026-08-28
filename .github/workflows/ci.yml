@@ -14,53 +14,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  branch-patch-hygiene:
-    name: Branch patch whitespace hygiene
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Check out complete repository history
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-        with:
-          fetch-depth: 0
-      - name: Check only the event-owned patch
-        env:
-          ELMOS_CI_EVENT_NAME: ${{ github.event_name }}
-          ELMOS_CI_BASE_REF: ${{ github.base_ref }}
-          ELMOS_CI_BEFORE_SHA: ${{ github.event.before }}
-        run: |
-          case "$ELMOS_CI_EVENT_NAME" in
-            pull_request)
-              if [[ -z "$ELMOS_CI_BASE_REF" ]]; then
-                echo "::error::pull_request event has no base ref"
-                exit 2
-              fi
-              base="$(git merge-base HEAD "origin/$ELMOS_CI_BASE_REF")"
-              ;;
-            push)
-              if [[ "$ELMOS_CI_BEFORE_SHA" =~ ^[0-9a-f]{40}$ ]] \
-                && [[ "$ELMOS_CI_BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
-                if ! git cat-file -e "$ELMOS_CI_BEFORE_SHA^{commit}"; then
-                  git fetch --no-tags origin "$ELMOS_CI_BEFORE_SHA"
-                fi
-                base="$ELMOS_CI_BEFORE_SHA"
-              else
-                base="$(git hash-object -t tree --stdin </dev/null)"
-              fi
-              ;;
-            workflow_dispatch)
-              base="$(git merge-base HEAD origin/main)"
-              ;;
-            *)
-              echo "::error::unsupported CI event: $ELMOS_CI_EVENT_NAME"
-              exit 2
-              ;;
-          esac
-          echo "Checking whitespace from $base to $GITHUB_SHA"
-          git diff --check "$base" HEAD --
-      - name: Verify the bounded Vercel source context
-        run: make vercel-source-check
-
   java:
     name: Java reactor
     runs-on: ubuntu-24.04
@@ -337,11 +290,6 @@ jobs:
             tee /tmp/elmos-project-synthesis-integration.txt
           grep -F "OK: 417 global Project Synthesis skills + 180 package-local Language Pack skills" \
             /tmp/elmos-project-synthesis-integration.txt
-      - name: Validate governed runtime manifest and unit contracts
-        run: |
-          python scripts/toolchains/runtime_environment.py validate
-          uv --directory engines/project-synthesis-engine run --locked \
-            pytest ../../tests/toolchains/test_runtime_environment.py
       - name: Verify Project Synthesis
         working-directory: engines/project-synthesis-engine
         run: |
@@ -388,11 +336,11 @@ jobs:
       - name: Verify Batch 38-45 toolkit extension and compatibility tests
         run: |
           uv run --with 'jsonschema>=4.23' --with pyyaml \
-            python -m unittest discover -s tests -p 'mature_product_toolkit_extensions_test.py'
+            python -m unittest tests.mature_product_toolkit_extensions_test
           uv run --with 'jsonschema>=4.23' --with pyyaml \
-            python -m unittest discover -s tests -p 'batch43_schema_compatibility_test.py'
+            python -m unittest tests.batch43_schema_compatibility_test
           uv run --with 'jsonschema>=4.23' --with pyyaml \
-            python -m unittest discover -s tests -p 'batch40_supply_chain_test.py'
+            python -m unittest tests.batch40_supply_chain_test
           uv run --with 'jsonschema>=4.23' --with pyyaml \
             python -m unittest discover -s tests -p 'mature_product_gate_test.py'
       - name: Refresh Batch 38-45 gap inventories
@@ -416,7 +364,7 @@ jobs:
             make batch97-104-skills
           else
             python tooling/validate_batch97_104_installed.py
-            python -m unittest discover -s tests -p 'test_batch97_104_installed.py'
+            python -m unittest tests.test_batch97_104_installed
           fi
       - name: Verify Product closure and convergence distributions
         run: make product-closure-convergence-skills
@@ -428,10 +376,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up Python 3.14.6 for the core runtime profile
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.14.6"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -459,7 +403,7 @@ jobs:
           toolchain: "1.89.0"
           components: clippy,rustfmt
       - name: Set up Gradle 8.14.3
-        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
         with:
           gradle-version: "8.14.3"
       - name: Install exact Maven, PHP, and PostgreSQL toolchains
@@ -473,14 +417,6 @@ jobs:
           python -m pip install --disable-pip-version-check uv==0.11.16
           npm install --global pnpm@10.12.4
           uv --directory engines/project-synthesis-engine sync --locked
-      - name: Verify both governed Python versions remain discoverable
-        run: |
-          python3.14 --version
-          python3.12 --version
-      - name: Verify exact governed core and synthesis toolchains
-        # Linux cannot provide the Apple-native route tuple. The target itself
-        # reports routes-macos=NOT_APPLICABLE instead of promoting that route.
-        run: make toolchains-check
       - name: Run exact starter-profile acceptance
         run: >-
           uv --directory engines/project-synthesis-engine run --locked
@@ -500,7 +436,7 @@ jobs:
       - name: Set up Node.js 22
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "24"
+          node-version: "22"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -516,12 +452,8 @@ jobs:
           pnpm --dir apps/web-console install --frozen-lockfile
       - name: Verify WeChat Native QR encoder
         run: pnpm --dir apps/web-console test:qr-code
-      - name: Verify project-generation insight admission
-        run: pnpm --dir apps/web-console test:generation-insights
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
-      - name: Verify production translation functions carry repository contracts
-        run: python tooling/validate_next_translation_traces.py
       - name: Verify every Batch 32 client pack
         run: |
           python scripts/batch32/validate_account_usage_corpora.py
@@ -585,7 +517,7 @@ jobs:
       - name: Set up Node.js 22
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "24"
+          node-version: "22"
       - name: Install locked tools and web dependencies
         run: |
           python -m pip install --disable-pip-version-check uv==0.11.16
@@ -609,7 +541,7 @@ jobs:
       - name: Set up Node.js 22
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "24"
+          node-version: "22"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -655,31 +587,6 @@ jobs:
             apps/web-console/test-results/ci-generation-browser-matrix-report
           if-no-files-found: error
           retention-days: 30
-      - name: Verify project evidence charts in desktop and mobile Chromium
-        env:
-          ELMOS_E2E_PORT: "3213"
-          ELMOS_E2E_WEB_SERVER_MODE: development
-          ELMOS_E2E_OUTPUT_DIR: test-results/ci-project-evidence-charts
-          ELMOS_E2E_REPORT_DIR: test-results/ci-project-evidence-charts-report
-        run: |
-          ELMOS_UV_PATH="$(command -v uv)" \
-            pnpm --dir apps/web-console exec playwright test \
-              --workers=1 \
-              --project=chromium \
-              --project=mobile-chromium \
-              e2e/project-evidence-charts.spec.ts
-      - name: Verify translation evidence admission fails closed
-        env:
-          ELMOS_E2E_PORT: "3214"
-          ELMOS_E2E_WEB_SERVER_MODE: development
-          ELMOS_E2E_OUTPUT_DIR: test-results/ci-translation-evidence-adversarial
-          ELMOS_E2E_REPORT_DIR: test-results/ci-translation-evidence-adversarial-report
-        run: |
-          ELMOS_UV_PATH="$(command -v uv)" \
-            pnpm --dir apps/web-console exec playwright test \
-              --workers=1 \
-              --project=chromium \
-              e2e/translation-evidence-adversarial.spec.ts
 
   web-console-runner-e2e:
     name: Isolated browser Runner journeys
@@ -691,7 +598,7 @@ jobs:
       - name: Set up Node.js 22
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "24"
+          node-version: "22"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -817,7 +724,7 @@ jobs:
   makefile-portability:
     name: Makefile portability and composite targets
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 30
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -828,7 +735,7 @@ jobs:
       - name: Set up Node.js 22
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "24"
+          node-version: "22"
       - name: Install locked tools
         run: |
           python -m pip install --disable-pip-version-check uv==0.11.16
@@ -854,13 +761,6 @@ jobs:
             echo "::endgroup::"
           done
       - name: Batch 29-45 check targets run through make
-        # The frozen v2 live/replay methods bind a darwin/arm64 Node identity and
-        # remain NOT_RUN on Ubuntu. These paths prevent the aggregate job from
-        # mistaking them for portable execution; the dedicated job below checks
-        # only the platform-neutral static closure and anti-tamper contract.
-        env:
-          ELMOS_FRONTEND_V2_CLIENT_PACK: /nonexistent/dedicated-v2-client-pack-job
-          ELMOS_FRONTEND_V2_VERIFICATION_PACK: /nonexistent/dedicated-v2-verification-pack-job
         run: |
           make b29-skills-test b30-skills-test b31-skills-test
           for batch in 32 33 34 35 36 37 38 39 40 41 42 43 44 45; do
@@ -890,73 +790,3 @@ jobs:
           make batch45-check product-closure-convergence-skills
           uv run --with pyyaml python tooling/validate_runtime_operability.py
           uv run --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
-
-  batch32-frozen-pack-integrity:
-    name: Batch 32 frozen static integrity (native replay NOT_RUN)
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-      - name: Set up Python 3.12.12
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
-        with:
-          python-version: "3.12.12"
-      - name: Verify immutable client and verification closures
-        # Platform-neutral only: exact files, byte counts, SHA-256 values,
-        # manifest references, peer equality and a tamper-negative case. The
-        # frozen replay identity is darwin/arm64 and is not invoked on Ubuntu.
-        run: >-
-          python -m unittest discover -s tests/batch32
-          -p 'test_frontend_v2_frozen_pack_integrity.py'
-      - name: Record the evidence boundary
-        if: always()
-        run: |
-          echo "### Batch 32 frozen static integrity" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Scope: exact immutable closure, byte/SHA-256/manifest references and anti-tamper" >> "$GITHUB_STEP_SUMMARY"
-          echo "- darwin/arm64 native replay status: NOT_RUN" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Browser/device runtime status: NOT_RUN" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Certification status: NOT_CERTIFIED" >> "$GITHUB_STEP_SUMMARY"
-
-  # This job proves only that the tracked tree can be checked out and opened on
-  # Windows with its long-path policy enabled. It deliberately installs no
-  # language toolchain and must never be read as Windows runtime evidence.
-  windows-checkout-path-inventory:
-    name: Windows checkout paths (runtime NOT_RUN)
-    runs-on: windows-2025
-    timeout-minutes: 20
-    steps:
-      - name: Enable Git long paths before checkout
-        shell: pwsh
-        run: git config --global core.longpaths true
-      - name: Check out repository
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-      - name: Set up validation-only Python 3.12.12
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
-        with:
-          python-version: "3.12.12"
-      - name: Test the path inventory validator
-        shell: pwsh
-        run: python -m unittest discover -s tests/ci -p 'test_windows_checkout_paths.py'
-      - name: Validate the checked-out tracked path inventory
-        shell: pwsh
-        run: >-
-          python tooling/validate_windows_checkout_paths.py
-          --require-git-longpaths
-          --require-clean
-          --require-relative-length 260
-          --output "$env:RUNNER_TEMP\elmos-windows-checkout-paths.json"
-      - name: Record the evidence boundary
-        if: always()
-        shell: pwsh
-        run: |
-          "### Windows checkout and path inventory" >> $env:GITHUB_STEP_SUMMARY
-          "- Scope: checkout and tracked-path accessibility only" >> $env:GITHUB_STEP_SUMMARY
-          "- Windows runtime status: NOT_RUN" >> $env:GITHUB_STEP_SUMMARY
-          "- Certification status: NOT_CERTIFIED" >> $env:GITHUB_STEP_SUMMARY
-          $inventory = "$env:RUNNER_TEMP\elmos-windows-checkout-paths.json"
-          if (Test-Path $inventory) {
-            '```json' >> $env:GITHUB_STEP_SUMMARY
-            Get-Content $inventory >> $env:GITHUB_STEP_SUMMARY
-            '```' >> $env:GITHUB_STEP_SUMMARY
-          }

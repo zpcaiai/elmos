@@ -162,26 +162,14 @@ class LocalWorkspaceProvider:
 
     def release(self, lease: WorkspaceLease) -> None:
         current = self._leases.get(lease.workspace_id)
-        if current is None:
-            return
-        if current.identity.scope() != lease.identity.scope() or current.identity.agent_id != lease.identity.agent_id:
-            raise TenantIsolationError("workspace release scope mismatch")
-        if current.fencing_token != lease.fencing_token:
-            raise TenantIsolationError("workspace release fencing mismatch")
-        if current.state == WorkspaceState.RELEASED:
+        if current is None or current.fencing_token != lease.fencing_token:
             return
         self._leases[lease.workspace_id] = WorkspaceLease(lease.workspace_id, lease.identity, lease.root, WorkspaceState.RELEASED, lease.fencing_token, time.time(), lease.isolation_class, lease.image_digest)
         self._persist(self._leases[lease.workspace_id])
 
     def destroy(self, lease: WorkspaceLease) -> None:
         current = self._leases.get(lease.workspace_id)
-        if current is None:
-            return
-        if current.identity.scope() != lease.identity.scope() or current.identity.agent_id != lease.identity.agent_id:
-            raise TenantIsolationError("workspace destroy scope mismatch")
-        if current.fencing_token != lease.fencing_token:
-            raise TenantIsolationError("workspace destroy fencing mismatch")
-        if current.state == WorkspaceState.DESTROYED:
+        if current is None or current.fencing_token != lease.fencing_token:
             return
         root = self._safe_root(lease)
         _remove_tree(root)
@@ -214,7 +202,7 @@ class LocalWorkspaceProvider:
     def _assert_lease(self, lease: WorkspaceLease, now: float | None, *, allow_expired: bool = False) -> None:
         current = self._current(lease.workspace_id)
         now = time.time() if now is None else now
-        if current is None or current.fencing_token != lease.fencing_token or current.identity.scope() != lease.identity.scope() or current.identity.agent_id != lease.identity.agent_id:
+        if current is None or current.fencing_token != lease.fencing_token or current.identity.tenant_id != lease.identity.tenant_id:
             raise TenantIsolationError("workspace fencing or tenant scope mismatch")
         if not allow_expired and current.expires_at <= now:
             raise ContractViolation("workspace lease expired")

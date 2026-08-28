@@ -292,7 +292,7 @@
   "source_archive_sha256": "6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e",
   "source_root": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0",
   "source_validation": {
-    "archive": "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0.tar.gz",
+    "archive": "/Users/stephen/DevProjects/AIProjects/elmos/skills/subskills/elmos-etgb-sota-skills-package-v1.1.0.tar.gz",
     "archive_entries": 290,
     "archive_matches_pin": true,
     "archive_sha256": "6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e",

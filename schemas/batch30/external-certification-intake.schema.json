@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://elmos.example/schemas/batch30/external-certification-intake.schema.json",
-  "title": "Batch 30 signed 13-class external certification evidence intake",
+  "title": "Batch 30 signed external certification evidence intake",
   "type": "object",
   "required": [
     "schema_version",
@@ -20,102 +20,40 @@
     "evidence"
   ],
   "properties": {
-    "schema_version": {
-      "const": 1
-    },
-    "namespace": {
-      "const": "batch30-framework-external-certification"
-    },
-    "intake_id": {
-      "$ref": "#/$defs/identity"
-    },
-    "producer_organization_id": {
-      "$ref": "#/$defs/identity"
-    },
-    "customer_organization_id": {
-      "$ref": "#/$defs/identity"
-    },
-    "rootless_organization_id": {
-      "$ref": "#/$defs/identity"
-    },
-    "independent_organization_id": {
-      "$ref": "#/$defs/identity"
-    },
-    "certification_organization_id": {
-      "$ref": "#/$defs/identity"
-    },
-    "binding": {
-      "$ref": "#/$defs/binding"
-    },
-    "artifact": {
-      "$ref": "#/$defs/contentReference"
-    },
-    "execution_profile": {
-      "$ref": "#/$defs/contentReference"
-    },
-    "evidence_executors": {
-      "$ref": "#/$defs/evidenceExecutors"
-    },
-    "customer_authorization": {
-      "$ref": "#/$defs/signedEnvelope"
-    },
+    "schema_version": {"const": 1},
+    "namespace": {"const": "batch30-framework-external-certification"},
+    "intake_id": {"$ref": "#/$defs/identity"},
+    "producer_organization_id": {"$ref": "#/$defs/identity"},
+    "customer_organization_id": {"$ref": "#/$defs/identity"},
+    "rootless_organization_id": {"$ref": "#/$defs/identity"},
+    "independent_organization_id": {"$ref": "#/$defs/identity"},
+    "certification_organization_id": {"$ref": "#/$defs/identity"},
+    "binding": {"$ref": "#/$defs/binding"},
+    "artifact": {"$ref": "#/$defs/contentReference"},
+    "execution_profile": {"$ref": "#/$defs/contentReference"},
+    "evidence_executors": {"$ref": "#/$defs/evidenceExecutors"},
+    "customer_authorization": {"$ref": "#/$defs/signedEnvelope"},
     "evidence": {
       "type": "object",
       "required": [
-        "source_build",
-        "target_build",
-        "source_startup",
-        "target_startup",
-        "behavioral_equivalence",
-        "security",
-        "performance",
-        "operability",
-        "sbom",
-        "rollback",
-        "independent_review",
+        "authorized_customer_repository",
+        "customer_holdout",
         "customer_acceptance",
+        "rootless_runner",
+        "rootless_transformer",
+        "rootless_verifier",
+        "independent_review",
         "external_certification"
       ],
       "properties": {
-        "source_build": {
-          "$ref": "#/$defs/evidenceItem"
-        },
-        "target_build": {
-          "$ref": "#/$defs/evidenceItem"
-        },
-        "source_startup": {
-          "$ref": "#/$defs/evidenceItem"
-        },
-        "target_startup": {
-          "$ref": "#/$defs/evidenceItem"
-        },
-        "behavioral_equivalence": {
-          "$ref": "#/$defs/evidenceItem"
-        },
-        "security": {
-          "$ref": "#/$defs/evidenceItem"
-        },
-        "performance": {
-          "$ref": "#/$defs/evidenceItem"
-        },
-        "operability": {
-          "$ref": "#/$defs/evidenceItem"
-        },
-        "sbom": {
-          "$ref": "#/$defs/evidenceItem"
-        },
-        "rollback": {
-          "$ref": "#/$defs/evidenceItem"
-        },
-        "independent_review": {
-          "$ref": "#/$defs/evidenceItem"
-        },
-        "customer_acceptance": {
-          "$ref": "#/$defs/evidenceItem"
-        },
-        "external_certification": {
-          "$ref": "#/$defs/evidenceItem"
-        }
+        "authorized_customer_repository": {"$ref": "#/$defs/evidenceItem"},
+        "customer_holdout": {"$ref": "#/$defs/evidenceItem"},
+        "customer_acceptance": {"$ref": "#/$defs/evidenceItem"},
+        "rootless_runner": {"$ref": "#/$defs/evidenceItem"},
+        "rootless_transformer": {"$ref": "#/$defs/evidenceItem"},
+        "rootless_verifier": {"$ref": "#/$defs/evidenceItem"},
+        "independent_review": {"$ref": "#/$defs/evidenceItem"},
+        "external_certification": {"$ref": "#/$defs/evidenceItem"}
       },
       "additionalProperties": false
     }
@@ -124,21 +62,10 @@
     "identity": {
       "type": "string",
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,199}$",
-      "not": {
-        "enum": [
-          "UNKNOWN",
-          "INCONCLUSIVE",
-          "NOT_RUN",
-          "NOT_EVALUATED",
-          "BLOCKED"
-        ]
-      }
+      "not": {"enum": ["UNKNOWN", "INCONCLUSIVE", "NOT_RUN", "NOT_EVALUATED", "BLOCKED"]}
     },
-    "digest": {
-      "type": "string",
-      "pattern": "^sha256:[0-9a-f]{64}$"
-    },
-    "exactTuple": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "tuple": {
       "type": "object",
       "required": [
         "framework",
@@ -149,24 +76,12 @@
         "provider_versions"
       ],
       "properties": {
-        "framework": {
-          "$ref": "#/$defs/identity"
-        },
-        "framework_version": {
-          "$ref": "#/$defs/identity"
-        },
-        "runtime": {
-          "$ref": "#/$defs/identity"
-        },
-        "runtime_version": {
-          "$ref": "#/$defs/identity"
-        },
-        "build_tool": {
-          "$ref": "#/$defs/identity"
-        },
-        "provider_versions": {
-          "type": "object"
-        }
+        "framework": {"$ref": "#/$defs/identity"},
+        "framework_version": {"$ref": "#/$defs/identity"},
+        "runtime": {"$ref": "#/$defs/identity"},
+        "runtime_version": {"$ref": "#/$defs/identity"},
+        "build_tool": {"$ref": "#/$defs/identity"},
+        "provider_versions": {"type": "object"}
       },
       "additionalProperties": false
     },
@@ -187,147 +102,62 @@
         "execution_profile_size_bytes"
       ],
       "properties": {
-        "pack_key": {
-          "$ref": "#/$defs/identity"
-        },
-        "pack_version": {
-          "$ref": "#/$defs/identity"
-        },
-        "pack_manifest_digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "source_tuple": {
-          "$ref": "#/$defs/exactTuple"
-        },
-        "target_tuple": {
-          "$ref": "#/$defs/exactTuple"
-        },
-        "version_matrix_digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "recipe_manifest_digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "target_profile_digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "artifact_digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "artifact_size_bytes": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "execution_profile_digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "execution_profile_size_bytes": {
-          "type": "integer",
-          "minimum": 1
-        }
+        "pack_key": {"$ref": "#/$defs/identity"},
+        "pack_version": {"$ref": "#/$defs/identity"},
+        "pack_manifest_digest": {"$ref": "#/$defs/digest"},
+        "source_tuple": {"$ref": "#/$defs/tuple"},
+        "target_tuple": {"$ref": "#/$defs/tuple"},
+        "version_matrix_digest": {"$ref": "#/$defs/digest"},
+        "recipe_manifest_digest": {"$ref": "#/$defs/digest"},
+        "target_profile_digest": {"$ref": "#/$defs/digest"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "artifact_size_bytes": {"type": "integer", "minimum": 1},
+        "execution_profile_digest": {"$ref": "#/$defs/digest"},
+        "execution_profile_size_bytes": {"type": "integer", "minimum": 1}
       },
       "additionalProperties": false
     },
     "contentReference": {
       "type": "object",
-      "required": [
-        "uri",
-        "digest",
-        "size_bytes",
-        "media_type"
-      ],
+      "required": ["uri", "digest", "size_bytes", "media_type"],
       "properties": {
-        "uri": {
-          "type": "string",
-          "pattern": "^file://"
-        },
-        "digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "size_bytes": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "media_type": {
-          "type": "string",
-          "minLength": 1
-        }
+        "uri": {"type": "string", "pattern": "^file://"},
+        "digest": {"$ref": "#/$defs/digest"},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "media_type": {"type": "string", "minLength": 1}
       },
       "additionalProperties": false
     },
     "evidencePrincipal": {
       "type": "object",
-      "required": [
-        "actor_id",
-        "organization_id"
-      ],
+      "required": ["actor_id", "organization_id"],
       "properties": {
-        "actor_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "organization_id": {
-          "$ref": "#/$defs/identity"
-        }
+        "actor_id": {"$ref": "#/$defs/identity"},
+        "organization_id": {"$ref": "#/$defs/identity"}
       },
       "additionalProperties": false
     },
     "evidenceExecutors": {
       "type": "object",
       "required": [
-        "source_build",
-        "target_build",
-        "source_startup",
-        "target_startup",
-        "behavioral_equivalence",
-        "security",
-        "performance",
-        "operability",
-        "sbom",
-        "rollback",
-        "independent_review",
+        "authorized_customer_repository",
+        "customer_holdout",
         "customer_acceptance",
+        "rootless_runner",
+        "rootless_transformer",
+        "rootless_verifier",
+        "independent_review",
         "external_certification"
       ],
       "properties": {
-        "source_build": {
-          "$ref": "#/$defs/evidencePrincipal"
-        },
-        "target_build": {
-          "$ref": "#/$defs/evidencePrincipal"
-        },
-        "source_startup": {
-          "$ref": "#/$defs/evidencePrincipal"
-        },
-        "target_startup": {
-          "$ref": "#/$defs/evidencePrincipal"
-        },
-        "behavioral_equivalence": {
-          "$ref": "#/$defs/evidencePrincipal"
-        },
-        "security": {
-          "$ref": "#/$defs/evidencePrincipal"
-        },
-        "performance": {
-          "$ref": "#/$defs/evidencePrincipal"
-        },
-        "operability": {
-          "$ref": "#/$defs/evidencePrincipal"
-        },
-        "sbom": {
-          "$ref": "#/$defs/evidencePrincipal"
-        },
-        "rollback": {
-          "$ref": "#/$defs/evidencePrincipal"
-        },
-        "independent_review": {
-          "$ref": "#/$defs/evidencePrincipal"
-        },
-        "customer_acceptance": {
-          "$ref": "#/$defs/evidencePrincipal"
-        },
-        "external_certification": {
-          "$ref": "#/$defs/evidencePrincipal"
-        }
+        "authorized_customer_repository": {"$ref": "#/$defs/evidencePrincipal"},
+        "customer_holdout": {"$ref": "#/$defs/evidencePrincipal"},
+        "customer_acceptance": {"$ref": "#/$defs/evidencePrincipal"},
+        "rootless_runner": {"$ref": "#/$defs/evidencePrincipal"},
+        "rootless_transformer": {"$ref": "#/$defs/evidencePrincipal"},
+        "rootless_verifier": {"$ref": "#/$defs/evidencePrincipal"},
+        "independent_review": {"$ref": "#/$defs/evidencePrincipal"},
+        "external_certification": {"$ref": "#/$defs/evidencePrincipal"}
       },
       "additionalProperties": false
     },
@@ -350,146 +180,55 @@
         "evidence_content_digests"
       ],
       "properties": {
-        "action": {
-          "const": "validate-batch30-external-certification-intake"
-        },
-        "pack_key": {
-          "$ref": "#/$defs/identity"
-        },
-        "pack_version": {
-          "$ref": "#/$defs/identity"
-        },
-        "binding_digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "artifact_digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "execution_profile_digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "producer_organization_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "customer_organization_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "rootless_organization_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "independent_organization_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "certification_organization_id": {
-          "$ref": "#/$defs/identity"
-        },
+        "action": {"const": "validate-batch30-external-certification-intake"},
+        "pack_key": {"$ref": "#/$defs/identity"},
+        "pack_version": {"$ref": "#/$defs/identity"},
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "execution_profile_digest": {"$ref": "#/$defs/digest"},
+        "producer_organization_id": {"$ref": "#/$defs/identity"},
+        "customer_organization_id": {"$ref": "#/$defs/identity"},
+        "rootless_organization_id": {"$ref": "#/$defs/identity"},
+        "independent_organization_id": {"$ref": "#/$defs/identity"},
+        "certification_organization_id": {"$ref": "#/$defs/identity"},
         "evidence_types": {
           "type": "array",
-          "minItems": 13,
-          "maxItems": 13,
+          "minItems": 8,
+          "maxItems": 8,
           "prefixItems": [
-            {
-              "const": "source_build"
-            },
-            {
-              "const": "target_build"
-            },
-            {
-              "const": "source_startup"
-            },
-            {
-              "const": "target_startup"
-            },
-            {
-              "const": "behavioral_equivalence"
-            },
-            {
-              "const": "security"
-            },
-            {
-              "const": "performance"
-            },
-            {
-              "const": "operability"
-            },
-            {
-              "const": "sbom"
-            },
-            {
-              "const": "rollback"
-            },
-            {
-              "const": "independent_review"
-            },
-            {
-              "const": "customer_acceptance"
-            },
-            {
-              "const": "external_certification"
-            }
+            {"const": "authorized_customer_repository"},
+            {"const": "customer_holdout"},
+            {"const": "customer_acceptance"},
+            {"const": "rootless_runner"},
+            {"const": "rootless_transformer"},
+            {"const": "rootless_verifier"},
+            {"const": "independent_review"},
+            {"const": "external_certification"}
           ],
           "items": false
         },
-        "evidence_executors": {
-          "$ref": "#/$defs/evidenceExecutors"
-        },
+        "evidence_executors": {"$ref": "#/$defs/evidenceExecutors"},
         "evidence_content_digests": {
           "type": "object",
           "required": [
-            "source_build",
-            "target_build",
-            "source_startup",
-            "target_startup",
-            "behavioral_equivalence",
-            "security",
-            "performance",
-            "operability",
-            "sbom",
-            "rollback",
-            "independent_review",
+            "authorized_customer_repository",
+            "customer_holdout",
             "customer_acceptance",
+            "rootless_runner",
+            "rootless_transformer",
+            "rootless_verifier",
+            "independent_review",
             "external_certification"
           ],
           "properties": {
-            "source_build": {
-              "$ref": "#/$defs/digest"
-            },
-            "target_build": {
-              "$ref": "#/$defs/digest"
-            },
-            "source_startup": {
-              "$ref": "#/$defs/digest"
-            },
-            "target_startup": {
-              "$ref": "#/$defs/digest"
-            },
-            "behavioral_equivalence": {
-              "$ref": "#/$defs/digest"
-            },
-            "security": {
-              "$ref": "#/$defs/digest"
-            },
-            "performance": {
-              "$ref": "#/$defs/digest"
-            },
-            "operability": {
-              "$ref": "#/$defs/digest"
-            },
-            "sbom": {
-              "$ref": "#/$defs/digest"
-            },
-            "rollback": {
-              "$ref": "#/$defs/digest"
-            },
-            "independent_review": {
-              "$ref": "#/$defs/digest"
-            },
-            "customer_acceptance": {
-              "$ref": "#/$defs/digest"
-            },
-            "external_certification": {
-              "$ref": "#/$defs/digest"
-            }
+            "authorized_customer_repository": {"$ref": "#/$defs/digest"},
+            "customer_holdout": {"$ref": "#/$defs/digest"},
+            "customer_acceptance": {"$ref": "#/$defs/digest"},
+            "rootless_runner": {"$ref": "#/$defs/digest"},
+            "rootless_transformer": {"$ref": "#/$defs/digest"},
+            "rootless_verifier": {"$ref": "#/$defs/digest"},
+            "independent_review": {"$ref": "#/$defs/digest"},
+            "external_certification": {"$ref": "#/$defs/digest"}
           },
           "additionalProperties": false
         }
@@ -514,51 +253,47 @@
         "not_run"
       ],
       "properties": {
-        "record_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "issued_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "expires_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "actor_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "organization_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "role": {
-          "const": "batch30-customer-authorizer"
-        },
-        "intake_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "binding_digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "scope": {
-          "$ref": "#/$defs/authorizationScope"
-        },
-        "outcome": {
-          "const": "AUTHORIZED"
-        },
-        "synthetic": {
-          "const": false
-        },
-        "unknowns": {
-          "type": "array",
-          "maxItems": 0
-        },
-        "not_run": {
-          "type": "array",
-          "maxItems": 0
-        }
+        "record_id": {"$ref": "#/$defs/identity"},
+        "issued_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "actor_id": {"$ref": "#/$defs/identity"},
+        "organization_id": {"$ref": "#/$defs/identity"},
+        "role": {"const": "batch30-customer-authorizer"},
+        "intake_id": {"$ref": "#/$defs/identity"},
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "scope": {"$ref": "#/$defs/authorizationScope"},
+        "outcome": {"const": "AUTHORIZED"},
+        "synthetic": {"const": false},
+        "unknowns": {"type": "array", "maxItems": 0},
+        "not_run": {"type": "array", "maxItems": 0}
       },
       "additionalProperties": false
+    },
+    "customerRepositoryClaims": {
+      "const": {"authorized_repository": true, "fixed_commit": true, "acceptance_subject_bound": true}
+    },
+    "customerHoldoutClaims": {
+      "const": {"independent_from_development": true, "customer_owned_acceptance": true}
+    },
+    "customerAcceptanceClaims": {
+      "const": {
+        "acceptance_subject_bound": true,
+        "accepted_exact_artifact_and_profile": true,
+        "customer_decision": "ACCEPTED"
+      }
+    },
+    "rootlessClaims": {
+      "const": {"rootless": true, "privileged": false, "effective_uid_nonzero": true}
+    },
+    "independentClaims": {
+      "const": {"organizationally_independent": true, "separate_executor_and_verifier": true}
+    },
+    "externalCertificationClaims": {
+      "const": {
+        "certification_scope_bound": true,
+        "independent_certification_authority": true,
+        "certificate_decision": "CERTIFIED"
+      }
     },
     "attestationPayload": {
       "type": "object",
@@ -586,349 +321,91 @@
         "claims"
       ],
       "properties": {
-        "record_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "issued_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "expires_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "actor_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "organization_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "role": {
-          "$ref": "#/$defs/identity"
-        },
-        "intake_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "binding_digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "authorization_record_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "authorization_payload_digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "evidence_type": {
-          "$ref": "#/$defs/identity"
-        },
-        "content_digest": {
-          "$ref": "#/$defs/digest"
-        },
-        "content_size_bytes": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "executor_actor_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "executor_organization_id": {
-          "$ref": "#/$defs/identity"
-        },
-        "outcome": {
-          "enum": [
-            "PASS",
-            "ACCEPTED",
-            "CERTIFIED"
-          ]
-        },
-        "evidence_class": {
-          "const": "EXTERNAL_NON_SYNTHETIC"
-        },
-        "synthetic": {
-          "const": false
-        },
-        "unknowns": {
-          "type": "array",
-          "maxItems": 0
-        },
-        "not_run": {
-          "type": "array",
-          "maxItems": 0
-        },
-        "claims": {
-          "type": "object"
-        }
+        "record_id": {"$ref": "#/$defs/identity"},
+        "issued_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "actor_id": {"$ref": "#/$defs/identity"},
+        "organization_id": {"$ref": "#/$defs/identity"},
+        "role": {"$ref": "#/$defs/identity"},
+        "intake_id": {"$ref": "#/$defs/identity"},
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "authorization_record_id": {"$ref": "#/$defs/identity"},
+        "authorization_payload_digest": {"$ref": "#/$defs/digest"},
+        "evidence_type": {"$ref": "#/$defs/identity"},
+        "content_digest": {"$ref": "#/$defs/digest"},
+        "content_size_bytes": {"type": "integer", "minimum": 1},
+        "executor_actor_id": {"$ref": "#/$defs/identity"},
+        "executor_organization_id": {"$ref": "#/$defs/identity"},
+        "outcome": {"enum": ["PASS", "ACCEPTED", "CERTIFIED"]},
+        "evidence_class": {"const": "EXTERNAL_NON_SYNTHETIC"},
+        "synthetic": {"const": false},
+        "unknowns": {"type": "array", "maxItems": 0},
+        "not_run": {"type": "array", "maxItems": 0},
+        "claims": {"type": "object"}
       },
       "oneOf": [
         {
           "properties": {
-            "evidence_type": {
-              "const": "source_build"
-            },
-            "role": {
-              "const": "batch30-source-build-verifier"
-            },
-            "outcome": {
-              "const": "PASS"
-            },
-            "claims": {
-              "const": {
-                "passed": true,
-                "native": true,
-                "exact_toolchain": true
-              }
-            }
+            "evidence_type": {"const": "authorized_customer_repository"},
+            "role": {"const": "batch30-customer-repository-verifier"},
+            "outcome": {"const": "PASS"},
+            "claims": {"$ref": "#/$defs/customerRepositoryClaims"}
           }
         },
         {
           "properties": {
-            "evidence_type": {
-              "const": "target_build"
-            },
-            "role": {
-              "const": "batch30-target-build-verifier"
-            },
-            "outcome": {
-              "const": "PASS"
-            },
-            "claims": {
-              "const": {
-                "passed": true,
-                "native": true,
-                "exact_toolchain": true,
-                "rootless": true,
-                "privileged": false
-              }
-            }
+            "evidence_type": {"const": "customer_holdout"},
+            "role": {"const": "batch30-customer-holdout-verifier"},
+            "outcome": {"const": "PASS"},
+            "claims": {"$ref": "#/$defs/customerHoldoutClaims"}
           }
         },
         {
           "properties": {
-            "evidence_type": {
-              "const": "source_startup"
-            },
-            "role": {
-              "const": "batch30-source-runtime-verifier"
-            },
-            "outcome": {
-              "const": "PASS"
-            },
-            "claims": {
-              "const": {
-                "passed": true,
-                "native": true,
-                "readiness": true
-              }
-            }
+            "evidence_type": {"const": "customer_acceptance"},
+            "role": {"const": "batch30-customer-acceptance-approver"},
+            "outcome": {"const": "ACCEPTED"},
+            "claims": {"$ref": "#/$defs/customerAcceptanceClaims"}
           }
         },
         {
           "properties": {
-            "evidence_type": {
-              "const": "target_startup"
-            },
-            "role": {
-              "const": "batch30-target-runtime-verifier"
-            },
-            "outcome": {
-              "const": "PASS"
-            },
-            "claims": {
-              "const": {
-                "passed": true,
-                "native": true,
-                "readiness": true,
-                "rootless": true,
-                "privileged": false
-              }
-            }
+            "evidence_type": {"const": "rootless_runner"},
+            "role": {"const": "batch30-rootless-runner-attestor"},
+            "outcome": {"const": "PASS"},
+            "claims": {"$ref": "#/$defs/rootlessClaims"}
           }
         },
         {
           "properties": {
-            "evidence_type": {
-              "const": "behavioral_equivalence"
-            },
-            "role": {
-              "const": "batch30-behavior-verifier"
-            },
-            "outcome": {
-              "const": "PASS"
-            },
-            "claims": {
-              "const": {
-                "passed": true,
-                "critical_mismatch_count": 0,
-                "route_coverage": 1,
-                "independent_holdout": true,
-                "representative_repository": true,
-                "authorized_customer_repository": true,
-                "rootless": true,
-                "privileged": false
-              }
-            }
+            "evidence_type": {"const": "rootless_transformer"},
+            "role": {"const": "batch30-rootless-transformer-attestor"},
+            "outcome": {"const": "PASS"},
+            "claims": {"$ref": "#/$defs/rootlessClaims"}
           }
         },
         {
           "properties": {
-            "evidence_type": {
-              "const": "security"
-            },
-            "role": {
-              "const": "batch30-security-verifier"
-            },
-            "outcome": {
-              "const": "PASS"
-            },
-            "claims": {
-              "const": {
-                "passed": true,
-                "critical_findings": 0
-              }
-            }
+            "evidence_type": {"const": "rootless_verifier"},
+            "role": {"const": "batch30-rootless-verifier-attestor"},
+            "outcome": {"const": "PASS"},
+            "claims": {"$ref": "#/$defs/rootlessClaims"}
           }
         },
         {
           "properties": {
-            "evidence_type": {
-              "const": "performance"
-            },
-            "role": {
-              "const": "batch30-performance-verifier"
-            },
-            "outcome": {
-              "const": "PASS"
-            },
-            "claims": {
-              "const": {
-                "passed": true,
-                "capacity_validated": true
-              }
-            }
+            "evidence_type": {"const": "independent_review"},
+            "role": {"const": "batch30-independent-verifier"},
+            "outcome": {"const": "PASS"},
+            "claims": {"$ref": "#/$defs/independentClaims"}
           }
         },
         {
           "properties": {
-            "evidence_type": {
-              "const": "operability"
-            },
-            "role": {
-              "const": "batch30-operability-verifier"
-            },
-            "outcome": {
-              "const": "PASS"
-            },
-            "claims": {
-              "const": {
-                "passed": true,
-                "endpoints_verified": [
-                  "/livez",
-                  "/readyz",
-                  "/metrics",
-                  "/version"
-                ]
-              }
-            }
-          }
-        },
-        {
-          "properties": {
-            "evidence_type": {
-              "const": "sbom"
-            },
-            "role": {
-              "const": "batch30-sbom-verifier"
-            },
-            "outcome": {
-              "const": "PASS"
-            },
-            "claims": {
-              "const": {
-                "passed": true,
-                "artifact_bound": true
-              }
-            }
-          }
-        },
-        {
-          "properties": {
-            "evidence_type": {
-              "const": "rollback"
-            },
-            "role": {
-              "const": "batch30-rollback-verifier"
-            },
-            "outcome": {
-              "const": "PASS"
-            },
-            "claims": {
-              "const": {
-                "passed": true,
-                "rehearsed": true
-              }
-            }
-          }
-        },
-        {
-          "properties": {
-            "evidence_type": {
-              "const": "independent_review"
-            },
-            "role": {
-              "const": "batch30-independent-reviewer"
-            },
-            "outcome": {
-              "const": "PASS"
-            },
-            "claims": {
-              "const": {
-                "passed": true,
-                "organizationally_independent": true,
-                "separate_executor_and_verifier": true,
-                "all_required_evidence_reviewed": true
-              }
-            }
-          }
-        },
-        {
-          "properties": {
-            "evidence_type": {
-              "const": "customer_acceptance"
-            },
-            "role": {
-              "const": "batch30-customer-acceptance-approver"
-            },
-            "outcome": {
-              "const": "ACCEPTED"
-            },
-            "claims": {
-              "const": {
-                "acceptance_subject_bound": true,
-                "accepted_exact_artifact_and_profile": true,
-                "customer_owned_holdout": true,
-                "customer_decision": "ACCEPTED"
-              }
-            }
-          }
-        },
-        {
-          "properties": {
-            "evidence_type": {
-              "const": "external_certification"
-            },
-            "role": {
-              "const": "batch30-external-certifier"
-            },
-            "outcome": {
-              "const": "CERTIFIED"
-            },
-            "claims": {
-              "const": {
-                "certification_scope_bound": true,
-                "independent_certification_authority": true,
-                "certificate_decision": "CERTIFIED"
-              }
-            }
+            "evidence_type": {"const": "external_certification"},
+            "role": {"const": "batch30-external-certifier"},
+            "outcome": {"const": "CERTIFIED"},
+            "claims": {"$ref": "#/$defs/externalCertificationClaims"}
           }
         }
       ],
@@ -936,50 +413,26 @@
     },
     "signedEnvelope": {
       "type": "object",
-      "required": [
-        "algorithm",
-        "key_id",
-        "payload",
-        "signature"
-      ],
+      "required": ["algorithm", "key_id", "payload", "signature"],
       "properties": {
-        "algorithm": {
-          "const": "ed25519"
-        },
-        "key_id": {
-          "$ref": "#/$defs/identity"
-        },
+        "algorithm": {"const": "ed25519"},
+        "key_id": {"$ref": "#/$defs/identity"},
         "payload": {
           "oneOf": [
-            {
-              "$ref": "#/$defs/authorizationPayload"
-            },
-            {
-              "$ref": "#/$defs/attestationPayload"
-            }
+            {"$ref": "#/$defs/authorizationPayload"},
+            {"$ref": "#/$defs/attestationPayload"}
           ]
         },
-        "signature": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "^[A-Za-z0-9_+/=-]+$"
-        }
+        "signature": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9_+/=-]+$"}
       },
       "additionalProperties": false
     },
     "evidenceItem": {
       "type": "object",
-      "required": [
-        "content",
-        "attestation"
-      ],
+      "required": ["content", "attestation"],
       "properties": {
-        "content": {
-          "$ref": "#/$defs/contentReference"
-        },
-        "attestation": {
-          "$ref": "#/$defs/signedEnvelope"
-        }
+        "content": {"$ref": "#/$defs/contentReference"},
+        "attestation": {"$ref": "#/$defs/signedEnvelope"}
       },
       "additionalProperties": false
     }

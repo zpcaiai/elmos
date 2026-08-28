@@ -102,7 +102,7 @@ def _run_translate(args: argparse.Namespace) -> int:
 def _scan_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
     p = subparsers.add_parser(
         "scan",
-        help="scan SQL units: automatic candidates plus 100%% explicit disposition coverage",
+        help="scan SQL units: automatic candidates plus 100% explicit disposition coverage",
     )
     p.add_argument("--repository", required=True, type=Path)
     p.add_argument("--source-dialect", required=True, choices=[d.value for d in Dialect])

@@ -69,12 +69,12 @@ class ProductionRuntimePostgresTest {
     @BeforeAll
     static void migrate() {
         dataSource = new DriverManagerDataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword());
-        Flyway.configure().dataSource(dataSource)
-                .locations("classpath:db/production-runtime")
-                .baselineOnMigrate(false)
-                .outOfOrder(false)
-                .load()
-                .migrate();
+        Path migration = locateMigration();
+        Flyway flyway = Flyway.configure().dataSource(dataSource).locations("filesystem:" + migration.getParent().toAbsolutePath())
+                .baselineOnMigrate(false).baselineVersion("76").baselineDescription("existing ELMOS schema")
+                .outOfOrder(false).load();
+        flyway.baseline();
+        flyway.migrate();
         jdbc = JdbcClient.create(dataSource);
         transactions = new TransactionTemplate(new DataSourceTransactionManager(dataSource));
         ObjectMapper objectMapper = new ObjectMapper();
@@ -470,6 +470,16 @@ class ProductionRuntimePostgresTest {
         UUID worker = UUID.randomUUID();
         runtime.registerWorker(new WorkerRegistration(worker, "worker-" + worker, "SPRING", "http://worker.invalid/" + worker, "local", "local-1", Map.of("jobType", "SPRING_MODERNIZATION")));
         return new Fixture(tenant, account, tenantAccount.walletId(), project, job, stage, item, worker);
+    }
+
+    private static Path locateMigration() {
+        Path current = Path.of("").toAbsolutePath();
+        while (current != null) {
+            Path candidate = current.resolve("modules/persistence/src/main/resources/db/migration/V77__production_repository_execution_os.sql");
+            if (Files.isRegularFile(candidate)) return candidate;
+            current = current.getParent();
+        }
+        throw new IllegalStateException("V77 migration not found");
     }
 
     private record Fixture(UUID tenantId, UUID accountId, UUID walletId, UUID projectId, UUID jobId, UUID stageId, UUID workItemId, UUID workerId) {}

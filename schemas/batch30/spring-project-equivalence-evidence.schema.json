@@ -88,9 +88,7 @@
               {
                 "properties": {
                   "supporting_evidence_digests": {
-                    "required": ["independent_review", "customer_acceptance"],
-                    "minProperties": 2,
-                    "maxProperties": 2
+                    "required": ["customer_acceptance"]
                   }
                 }
               }
@@ -113,11 +111,7 @@
               {"$ref": "#/$defs/externalBindings"},
               {
                 "properties": {
-                  "supporting_evidence_digests": {
-                    "required": ["independent_review"],
-                    "minProperties": 1,
-                    "maxProperties": 1
-                  }
+                  "supporting_evidence_digests": {"maxProperties": 0}
                 }
               }
             ]
@@ -152,19 +146,17 @@
         "execution_profile_digest": {"$ref": "#/$defs/digest"},
         "runnable_evidence_digests": {
           "type": "object",
-          "required": ["source_build", "target_build", "source_startup", "target_startup"],
+          "required": ["rootless_runner", "rootless_transformer", "rootless_verifier"],
           "properties": {
-            "source_build": {"$ref": "#/$defs/digest"},
-            "target_build": {"$ref": "#/$defs/digest"},
-            "source_startup": {"$ref": "#/$defs/digest"},
-            "target_startup": {"$ref": "#/$defs/digest"}
+            "rootless_runner": {"$ref": "#/$defs/digest"},
+            "rootless_transformer": {"$ref": "#/$defs/digest"},
+            "rootless_verifier": {"$ref": "#/$defs/digest"}
           },
           "additionalProperties": false
         },
         "supporting_evidence_digests": {
           "type": "object",
           "properties": {
-            "independent_review": {"$ref": "#/$defs/digest"},
             "customer_acceptance": {"$ref": "#/$defs/digest"}
           },
           "additionalProperties": false

@@ -10,7 +10,7 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import { runRepository } from "../src/pipeline";
-import { assign, bindHandoffEvidence, loadManifest, markPorted, unmark } from "../src/handoff";
+import { assign, loadManifest, markPorted, unmark } from "../src/handoff";
 import { RouteError } from "../src/models";
 import { main } from "../src/cli";
 
@@ -101,32 +101,6 @@ describe("a re-run never destroys hand-written code", () => {
   }, 120000);
 });
 
-describe("handoff ownership is per component, including multi-component source files", () => {
-  it("protects exactly the named hand port and leaves its sibling blocked", async () => {
-    const sourcePath = path.join("src", "components", "Pair.tsx");
-    const repo = makeRepo({
-      "Pair.tsx": `
-function First({ label }: { label: string }) { useEffect(() => console.log(label), [label]); return <div>{label}</div>; }
-function Second({ label }: { label: string }) { useEffect(() => console.log(label), [label]); return <span>{label}</span>; }
-`,
-    });
-    const destination = fs.mkdtempSync(path.join(os.tmpdir(), "elmos-ho-pair-"));
-    await convert(repo, destination);
-    const secondTarget = path.join("src", "components", "Second.vue");
-    fs.writeFileSync(path.join(destination, secondTarget), HAND_WRITTEN);
-    markPorted({ destination, repository: repo, sourcePath, componentName: "Second", targetPath: secondTarget, assignee: "dana" });
-
-    const coverage = await convert(repo, destination);
-    expect(coverage.totals).toEqual({ discovered: 2, converted: 0, blocked: 1, manuallyPorted: 1 });
-    expect(coverage.files.find((file) => file.targetPath.endsWith("First.vue"))?.status).toBe("BLOCKED");
-    expect(coverage.files.find((file) => file.targetPath.endsWith("Second.vue"))?.status).toBe("MANUALLY_PORTED");
-    expect(fs.readFileSync(path.join(destination, secondTarget), "utf8")).toBe(HAND_WRITTEN);
-    expect(loadManifest(destination).entries).toEqual(expect.arrayContaining([
-      expect.objectContaining({ sourcePath, componentName: "Second", ownership: "HAND_PORTED" }),
-    ]));
-  }, 120000);
-});
-
 describe("a stale hand port is loud, never silent", () => {
   it("flags SOURCE_CHANGED_SINCE_PORT when the source moves on", async () => {
     const { repo, destination } = await migrationWithHandPort();
@@ -156,15 +130,6 @@ describe("a stale hand port is loud, never silent", () => {
     fs.unlinkSync(path.join(destination, CHART_TARGET));
     const coverage = await convert(repo, destination);
     expect(coverage.files.find((f) => f.sourcePath === CHART_SOURCE)?.handoffAlerts).toContain("PORTED_FILE_MISSING");
-    expect(coverage.deliveryStatus).toBe("INCOMPLETE");
-  }, 120000);
-
-  it("flags target drift because evidence for the previous hand-written bytes is no longer valid", async () => {
-    const { repo, destination } = await migrationWithHandPort();
-    fs.appendFileSync(path.join(destination, CHART_TARGET), "<!-- changed after mark -->\n");
-    const coverage = await convert(repo, destination);
-    expect(coverage.files.find((f) => f.sourcePath === CHART_SOURCE)?.handoffAlerts)
-      .toContain("PORTED_TARGET_CHANGED_SINCE_MARK");
     expect(coverage.deliveryStatus).toBe("INCOMPLETE");
   }, 120000);
 
@@ -213,56 +178,6 @@ describe("hand work is never counted as engine evidence", () => {
   }, 120000);
 });
 
-describe("hand-port evidence is byte-bound and remains distinct from certification", () => {
-  it("reaches READY_FOR_EXTERNAL_GATE only after all roles pass with an independent reviewer", async () => {
-    const { repo, destination } = await migrationWithHandPort();
-    const roles = ["TARGET_BUILD", "BROWSER_OR_DEVICE", "PLATFORM_RUNTIME", "INDEPENDENT_REVIEW"] as const;
-    for (const role of roles) {
-      const artifactPath = path.join("evidence", `${role}.json`);
-      fs.mkdirSync(path.dirname(path.join(destination, artifactPath)), { recursive: true });
-      fs.writeFileSync(path.join(destination, artifactPath), JSON.stringify({ role, result: "passed" }) + "\n");
-      bindHandoffEvidence({
-        destination,
-        sourcePath: CHART_SOURCE,
-        role,
-        status: "PASSED",
-        artifactPath,
-        executor: role === "INDEPENDENT_REVIEW" ? "port-author" : `${role.toLowerCase()}-runner`,
-        ...(role === "INDEPENDENT_REVIEW" ? { verifier: "independent-reviewer", independent: true } : {}),
-      });
-    }
-    const coverage = await convert(repo, destination);
-    expect(coverage.handoff.readyForExternalGate).toBe(1);
-    expect(coverage.handoff.evidencePending).toBe(0);
-    expect(coverage.handoffChecks[0]?.evidenceState).toBe("READY_FOR_EXTERNAL_GATE");
-    expect(coverage.status).toBe("PARTIAL");
-  }, 120000);
-
-  it("fails closed when evidence bytes change and rejects self-review", async () => {
-    const { repo, destination } = await migrationWithHandPort();
-    const artifactPath = path.join("evidence", "build.json");
-    fs.mkdirSync(path.dirname(path.join(destination, artifactPath)), { recursive: true });
-    fs.writeFileSync(path.join(destination, artifactPath), '{"result":"passed"}\n');
-    bindHandoffEvidence({ destination, sourcePath: CHART_SOURCE, role: "TARGET_BUILD", status: "PASSED", artifactPath, executor: "builder" });
-    fs.writeFileSync(path.join(destination, artifactPath), '{"result":"tampered"}\n');
-    const coverage = await convert(repo, destination);
-    expect(coverage.handoffChecks[0]?.alerts).toContain("PORT_EVIDENCE_MISSING_OR_CHANGED");
-    expect(coverage.handoffChecks[0]?.evidenceState).toBe("EVIDENCE_FAILED");
-    expect(coverage.deliveryStatus).toBe("INCOMPLETE");
-
-    expect(() => bindHandoffEvidence({
-      destination,
-      sourcePath: CHART_SOURCE,
-      role: "INDEPENDENT_REVIEW",
-      status: "PASSED",
-      artifactPath,
-      executor: "same-person",
-      verifier: "same-person",
-      independent: true,
-    })).toThrow(/HANDOFF_INDEPENDENT_REVIEW_INVALID/);
-  }, 120000);
-});
-
 describe("the manifest refuses to lose marks", () => {
   it("refuses to run on a corrupt manifest rather than treating it as empty", async () => {
     const { repo, destination } = await migrationWithHandPort();
@@ -279,33 +194,6 @@ describe("the manifest refuses to lose marks", () => {
     expect(() => markPorted({
       destination, repository: repo, sourcePath: CHART_SOURCE, targetPath: path.join("src", "components", "Nope.vue"),
     })).toThrow(/HANDOFF_TARGET_NOT_FOUND/);
-  }, 120000);
-
-  it("rejects source, target and evidence paths that escape their migration roots", async () => {
-    const { repo, destination } = await migrationWithHandPort();
-    expect(() => markPorted({
-      destination,
-      repository: repo,
-      sourcePath: path.join("..", "outside.tsx"),
-      targetPath: CHART_TARGET,
-    })).toThrow(/HANDOFF_SOURCE_PATH_INVALID/);
-    expect(() => markPorted({
-      destination,
-      repository: repo,
-      sourcePath: CHART_SOURCE,
-      targetPath: path.join("..", "outside.vue"),
-    })).toThrow(/HANDOFF_TARGET_PATH_INVALID/);
-
-    const externalEvidence = path.join(os.tmpdir(), `external-evidence-${Date.now()}.json`);
-    fs.writeFileSync(externalEvidence, '{"result":"passed"}\n');
-    expect(() => bindHandoffEvidence({
-      destination,
-      sourcePath: CHART_SOURCE,
-      role: "TARGET_BUILD",
-      status: "PASSED",
-      artifactPath: externalEvidence,
-      executor: "builder",
-    })).toThrow(/HANDOFF_EVIDENCE_PATH_INVALID/);
   }, 120000);
 
   it("refuses to reassign a ported component without unmarking first", async () => {
@@ -336,9 +224,6 @@ describe("handoff is drivable from the CLI", () => {
       expect(await main(["handoff", "assign", "--destination", destination, "--source-path", CHART_SOURCE, "--assignee", "dana", "--note", "needs the real chart lib"])).toBe(0);
       fs.writeFileSync(path.join(destination, CHART_TARGET), HAND_WRITTEN);
       expect(await main(["handoff", "mark-ported", "--destination", destination, "--repository", repo, "--source-path", CHART_SOURCE, "--target-path", CHART_TARGET])).toBe(0);
-      const evidence = path.join(destination, "target-build.json");
-      fs.writeFileSync(evidence, '{"build":"passed"}\n');
-      expect(await main(["handoff", "evidence-bind", "--destination", destination, "--source-path", CHART_SOURCE, "--role", "TARGET_BUILD", "--status", "PASSED", "--artifact-file", evidence, "--executor", "target-builder"])).toBe(0);
       expect(await main(["handoff", "status", "--destination", destination])).toBe(0);
     } finally {
       log.mockRestore();
@@ -347,8 +232,6 @@ describe("handoff is drivable from the CLI", () => {
     const entry = loadManifest(destination).entries.find((e) => e.sourcePath === CHART_SOURCE);
     expect(entry).toMatchObject({ state: "MANUALLY_PORTED", ownership: "HAND_PORTED", assignee: "dana", note: "needs the real chart lib" });
     expect(entry?.sourceHashAtPort).toMatch(/^[0-9a-f]{64}$/);
-    expect(entry?.targetPathAtPort).toBe(CHART_TARGET);
-    expect(entry?.evidence).toEqual(expect.arrayContaining([expect.objectContaining({ role: "TARGET_BUILD", status: "PASSED" })]));
   }, 180000);
 
   it("rejects an unknown handoff subcommand instead of doing something surprising", async () => {

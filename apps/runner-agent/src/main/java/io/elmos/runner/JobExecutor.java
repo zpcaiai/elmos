@@ -43,7 +43,7 @@ public final class JobExecutor {
         this.metrics = metrics;
     }
 
-    public enum Outcome { SUCCEEDED, FAILED, CANCELLED, PAUSED, ABANDONED }
+    public enum Outcome { SUCCEEDED, FAILED, CANCELLED, ABANDONED }
 
     public Outcome execute(ControlPlaneClient.Lease lease) {
         metrics.increment(AgentMetrics.JOBS_CLAIMED);
@@ -61,7 +61,7 @@ public final class JobExecutor {
         HeartbeatPump pump = new HeartbeatPump(client, lease, config, metrics);
 
         try {
-            containers.requireImageAvailableLocally(lease.runnerImage());
+            ContainerRuntime.validateImage(lease.runnerImage());
 
             workspace = JobWorkspace.create(config.workRoot(), lease.jobId(),
                     config.workloadUid(), config.workloadGid());
@@ -90,16 +90,6 @@ public final class JobExecutor {
             if (exitCode == null) {
                 containers.stop(execution, config.cancelGraceSeconds());
                 return report(lease, pump, Outcome.FAILED, "WORKLOAD_DID_NOT_EXIT");
-            }
-
-            // Close the narrow race where the workload exits between the
-            // supervision poll and the heartbeat response. Control requests
-            // still win before any artifact publication or terminal success.
-            if (pump.cancelRequested()) {
-                return report(lease, pump, Outcome.CANCELLED, null);
-            }
-            if (pump.pauseRequested()) {
-                return report(lease, pump, Outcome.PAUSED, null);
             }
 
             if (exitCode != 0) {
@@ -165,14 +155,6 @@ public final class JobExecutor {
                 return report(lease, pump, Outcome.CANCELLED, null);
             }
 
-            if (pump.pauseRequested()) {
-                // The heartbeat carrying the pause signal committed the current
-                // checkpoint before returning. Stop gracefully, publish nothing,
-                // and acknowledge only after the workload is no longer running.
-                containers.stop(execution, config.cancelGraceSeconds());
-                return report(lease, pump, Outcome.PAUSED, null);
-            }
-
             if (Instant.now().isAfter(deadline)) {
                 containers.stop(execution, config.cancelGraceSeconds());
                 return report(lease, pump, Outcome.FAILED, "WALL_CLOCK_BUDGET_EXCEEDED");
@@ -191,13 +173,11 @@ public final class JobExecutor {
         String status = switch (outcome) {
             case SUCCEEDED -> "SUCCEEDED";
             case CANCELLED -> "CANCELLED";
-            case PAUSED -> "PAUSED";
             default -> "FAILED";
         };
         String resultStatus = switch (outcome) {
             case SUCCEEDED -> "PASSED";
             case CANCELLED -> "BLOCKED";
-            case PAUSED -> "NOT_RUN";
             default -> "FAILED";
         };
         try {
@@ -215,7 +195,6 @@ public final class JobExecutor {
         switch (outcome) {
             case SUCCEEDED -> metrics.increment(AgentMetrics.JOBS_SUCCEEDED);
             case CANCELLED -> metrics.increment(AgentMetrics.JOBS_CANCELLED);
-            case PAUSED -> { /* A pause is neither a failure nor a cancellation. */ }
             default -> metrics.increment(AgentMetrics.JOBS_FAILED);
         }
         return outcome;

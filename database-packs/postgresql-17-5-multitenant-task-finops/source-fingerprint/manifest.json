@@ -1,8 +1,0 @@
-{
-  "schema_version": 1,
-  "pack_key": "postgresql-17-5-multitenant-task-finops",
-  "discovery_mode": "repository-authoritative-migration-fingerprint",
-  "coverage": 1.0,
-  "snapshot_digest": "sha256:3072ebb93af8e543953e8c39ae7f8be9fb48a70c46fa470f32cf79b1b6a36658",
-  "production_discovery": "NOT_RUN"
-}

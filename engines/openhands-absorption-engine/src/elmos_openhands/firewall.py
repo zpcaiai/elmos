@@ -197,8 +197,8 @@ class ActionFirewall:
         compact = " ".join(tokens)
         patterns = (
             r"(^|\s)rm\s+-[a-z]*r[a-z]*f",
+            r"(^|\s)git\s+push\b",
             r"(^|\s)git\s+reset\s+--hard",
-            r"(^|\s)git\s+push\b.*(?:--force(?:-with-lease)?|-f)(?:\s|$)",
             r"force[-_ ]push",
             r"\bdrop\s+(database|table|schema)\b",
             r"\btruncate\s+table\b",

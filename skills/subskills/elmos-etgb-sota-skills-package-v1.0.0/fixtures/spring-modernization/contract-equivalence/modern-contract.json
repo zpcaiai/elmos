@@ -1,0 +1,28 @@
+{
+  "implementation": "spring-boot-4",
+  "routes": [
+    {"method": "GET", "path": "/owners/{id}", "status": 200, "content_type": "text/html;charset=UTF-8"},
+    {"method": "POST", "path": "/owners", "status": 302, "redirect": "/owners/{id}"},
+    {"method": "POST", "path": "/login", "status": 302, "session_rotation": true}
+  ],
+  "binding": {
+    "owner.name": {"trim": true, "required": true, "max_length": 80},
+    "owner.birthDate": {"format": "yyyy-MM-dd", "timezone": "UTC"}
+  },
+  "session": {"attributes": ["AUTHENTICATED_USER", "FLASH_MESSAGE"], "timeout_seconds": 1800},
+  "filters": ["request-id", "character-encoding", "security", "audit"],
+  "transactions": {
+    "createOwner": {"propagation": "REQUIRED", "rollback_on": ["RuntimeException"]},
+    "transferVisit": {"propagation": "REQUIRES_NEW", "isolation": "READ_COMMITTED"}
+  },
+  "security": {
+    "csrf": true,
+    "anonymous_paths": ["/login", "/assets/**"],
+    "role_rules": [{"path": "/admin/**", "roles": ["ADMIN"]}],
+    "headers": ["X-Content-Type-Options", "Content-Security-Policy"]
+  },
+  "errors": [
+    {"exception": "OwnerNotFound", "status": 404, "view": "errors/404"},
+    {"exception": "ValidationException", "status": 400, "model_key": "errors"}
+  ]
+}

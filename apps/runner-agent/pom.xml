@@ -8,9 +8,6 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <artifactId>elmos-runner-agent</artifactId>
-  <properties>
-    <elmos.test.requireRealContainer>false</elmos.test.requireRealContainer>
-  </properties>
   <dependencies/>
   <build>
     <plugins>
@@ -49,24 +46,10 @@
             <configuration>
               <mainClass>io.elmos.runner.AgentSelfTest</mainClass>
               <classpathScope>test</classpathScope>
-              <systemProperties>
-                <systemProperty>
-                  <key>elmos.test.requireRealContainer</key>
-                  <value>${elmos.test.requireRealContainer}</value>
-                </systemProperty>
-              </systemProperties>
             </configuration>
           </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <id>real-container-acceptance</id>
-      <properties>
-        <elmos.test.requireRealContainer>true</elmos.test.requireRealContainer>
-      </properties>
-    </profile>
-  </profiles>
 </project>

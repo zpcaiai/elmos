@@ -7,9 +7,7 @@ metadata:
   source_id: 34-semantic-risk-scoring
   source_digest: sha256:d136563dbd3778066e4647466402539a0a82ecd2eebbb86bbbd9a4228e9011b3
   phase: semantic-model
-  runtime_state: CODE_COMPLETE_LOCAL
-  capability_state: LOCAL_EXECUTED
-  operation_code: SEMANTIC_RISKS_SCORED
+  runtime_state: BOUND_LOCAL_EXACT
   runtime_handler_id: legacy-web-handler:34-semantic-risk-scoring
 ---
 
@@ -17,9 +15,8 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is code-complete for its bounded local contract, tenant/project/job
-scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
-It does not execute source-package instructions or mutate customer repositories.
+The handler is bounded, tenant/project/job scoped, idempotency-aware and
+does not execute source-package instructions or customer repository code.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and

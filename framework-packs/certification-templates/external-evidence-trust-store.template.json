@@ -7,9 +7,7 @@
       "key_id": "UNKNOWN",
       "actor_id": "UNKNOWN",
       "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-customer-authorizer"
-      ],
+      "roles": ["batch30-customer-authorizer"],
       "public_key_path": "keys/customer-authorizer.pem",
       "not_before": "UNKNOWN",
       "not_after": "UNKNOWN",
@@ -19,10 +17,8 @@
       "key_id": "UNKNOWN",
       "actor_id": "UNKNOWN",
       "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-source-build-verifier"
-      ],
-      "public_key_path": "keys/source-build-verifier.pem",
+      "roles": ["batch30-customer-repository-verifier"],
+      "public_key_path": "keys/customer-repository-verifier.pem",
       "not_before": "UNKNOWN",
       "not_after": "UNKNOWN",
       "revoked": true
@@ -31,10 +27,8 @@
       "key_id": "UNKNOWN",
       "actor_id": "UNKNOWN",
       "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-target-build-verifier"
-      ],
-      "public_key_path": "keys/target-build-verifier.pem",
+      "roles": ["batch30-customer-holdout-verifier"],
+      "public_key_path": "keys/customer-holdout-verifier.pem",
       "not_before": "UNKNOWN",
       "not_after": "UNKNOWN",
       "revoked": true
@@ -43,117 +37,7 @@
       "key_id": "UNKNOWN",
       "actor_id": "UNKNOWN",
       "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-source-runtime-verifier"
-      ],
-      "public_key_path": "keys/source-runtime-verifier.pem",
-      "not_before": "UNKNOWN",
-      "not_after": "UNKNOWN",
-      "revoked": true
-    },
-    {
-      "key_id": "UNKNOWN",
-      "actor_id": "UNKNOWN",
-      "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-target-runtime-verifier"
-      ],
-      "public_key_path": "keys/target-runtime-verifier.pem",
-      "not_before": "UNKNOWN",
-      "not_after": "UNKNOWN",
-      "revoked": true
-    },
-    {
-      "key_id": "UNKNOWN",
-      "actor_id": "UNKNOWN",
-      "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-behavior-verifier"
-      ],
-      "public_key_path": "keys/behavior-verifier.pem",
-      "not_before": "UNKNOWN",
-      "not_after": "UNKNOWN",
-      "revoked": true
-    },
-    {
-      "key_id": "UNKNOWN",
-      "actor_id": "UNKNOWN",
-      "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-security-verifier"
-      ],
-      "public_key_path": "keys/security-verifier.pem",
-      "not_before": "UNKNOWN",
-      "not_after": "UNKNOWN",
-      "revoked": true
-    },
-    {
-      "key_id": "UNKNOWN",
-      "actor_id": "UNKNOWN",
-      "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-performance-verifier"
-      ],
-      "public_key_path": "keys/performance-verifier.pem",
-      "not_before": "UNKNOWN",
-      "not_after": "UNKNOWN",
-      "revoked": true
-    },
-    {
-      "key_id": "UNKNOWN",
-      "actor_id": "UNKNOWN",
-      "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-operability-verifier"
-      ],
-      "public_key_path": "keys/operability-verifier.pem",
-      "not_before": "UNKNOWN",
-      "not_after": "UNKNOWN",
-      "revoked": true
-    },
-    {
-      "key_id": "UNKNOWN",
-      "actor_id": "UNKNOWN",
-      "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-sbom-verifier"
-      ],
-      "public_key_path": "keys/sbom-verifier.pem",
-      "not_before": "UNKNOWN",
-      "not_after": "UNKNOWN",
-      "revoked": true
-    },
-    {
-      "key_id": "UNKNOWN",
-      "actor_id": "UNKNOWN",
-      "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-rollback-verifier"
-      ],
-      "public_key_path": "keys/rollback-verifier.pem",
-      "not_before": "UNKNOWN",
-      "not_after": "UNKNOWN",
-      "revoked": true
-    },
-    {
-      "key_id": "UNKNOWN",
-      "actor_id": "UNKNOWN",
-      "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-independent-reviewer"
-      ],
-      "public_key_path": "keys/independent-reviewer.pem",
-      "not_before": "UNKNOWN",
-      "not_after": "UNKNOWN",
-      "revoked": true
-    },
-    {
-      "key_id": "UNKNOWN",
-      "actor_id": "UNKNOWN",
-      "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-customer-acceptance-approver"
-      ],
+      "roles": ["batch30-customer-acceptance-approver"],
       "public_key_path": "keys/customer-acceptance-approver.pem",
       "not_before": "UNKNOWN",
       "not_after": "UNKNOWN",
@@ -163,9 +47,47 @@
       "key_id": "UNKNOWN",
       "actor_id": "UNKNOWN",
       "organization_id": "UNKNOWN",
-      "roles": [
-        "batch30-external-certifier"
-      ],
+      "roles": ["batch30-rootless-runner-attestor"],
+      "public_key_path": "keys/rootless-runner-attestor.pem",
+      "not_before": "UNKNOWN",
+      "not_after": "UNKNOWN",
+      "revoked": true
+    },
+    {
+      "key_id": "UNKNOWN",
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN",
+      "roles": ["batch30-rootless-transformer-attestor"],
+      "public_key_path": "keys/rootless-transformer-attestor.pem",
+      "not_before": "UNKNOWN",
+      "not_after": "UNKNOWN",
+      "revoked": true
+    },
+    {
+      "key_id": "UNKNOWN",
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN",
+      "roles": ["batch30-rootless-verifier-attestor"],
+      "public_key_path": "keys/rootless-verifier-attestor.pem",
+      "not_before": "UNKNOWN",
+      "not_after": "UNKNOWN",
+      "revoked": true
+    },
+    {
+      "key_id": "UNKNOWN",
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN",
+      "roles": ["batch30-independent-verifier"],
+      "public_key_path": "keys/independent-verifier.pem",
+      "not_before": "UNKNOWN",
+      "not_after": "UNKNOWN",
+      "revoked": true
+    },
+    {
+      "key_id": "UNKNOWN",
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN",
+      "roles": ["batch30-external-certifier"],
       "public_key_path": "keys/external-certifier.pem",
       "not_before": "UNKNOWN",
       "not_after": "UNKNOWN",

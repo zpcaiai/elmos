@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/proof-harness/v3/completion-certificate.schema.json",
+  "title": "Digest-bound completion certificate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "certificateId",
+    "tenantId",
+    "projectId",
+    "goalId",
+    "runId",
+    "revisionSetId",
+    "revisionSetDigest",
+    "revisionSetRevisions",
+    "proofGraphDigest",
+    "certifiedEnvelope",
+    "gateResults",
+    "statusCounts",
+    "evidenceIds",
+    "evidenceRoot",
+    "signer",
+    "issuedAt",
+    "status",
+    "payloadDigest",
+    "productionAssessment",
+    "signatureReceiptId",
+    "signatureReceiptSha256",
+    "unresolvedRisks"
+  ],
+  "properties": {
+    "certificateId": {"type": "string", "minLength": 1},
+    "tenantId": {"type": "string", "minLength": 1},
+    "projectId": {"type": "string", "minLength": 1},
+    "goalId": {"type": "string", "minLength": 1},
+    "runId": {"type": ["string", "null"], "minLength": 1},
+    "revisionSetId": {"type": "string", "minLength": 1},
+    "revisionSetDigest": {"$ref": "#/$defs/digest"},
+    "revisionSetRevisions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_repository", "baseline_repository", "requirements", "policy", "workflow", "model_route", "toolchain", "environment", "domain_pack"],
+      "properties": {
+        "source_repository": {"$ref": "#/$defs/digest"},
+        "baseline_repository": {"$ref": "#/$defs/digest"},
+        "requirements": {"$ref": "#/$defs/digest"},
+        "policy": {"$ref": "#/$defs/digest"},
+        "workflow": {"$ref": "#/$defs/digest"},
+        "model_route": {"$ref": "#/$defs/digest"},
+        "toolchain": {"$ref": "#/$defs/digest"},
+        "environment": {"$ref": "#/$defs/digest"},
+        "domain_pack": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "proofGraphDigest": {"$ref": "#/$defs/digest"},
+    "certifiedEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "scope", "assumptions"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "scope": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "assumptions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "gateResults": {
+      "type": "array",
+      "maxItems": 7,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gate", "decision", "evidenceIds", "reasons"],
+        "properties": {
+          "gate": {"enum": ["P05", "E0", "E1", "E2", "E3", "E4", "E5"]},
+          "decision": {"enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "UNKNOWN", "NOT_APPLICABLE"]},
+          "evidenceIds": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "reasons": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {"decision": {"const": "PASS"}},
+              "required": ["decision"]
+            },
+            "then": {"properties": {"evidenceIds": {"minItems": 1}}}
+          }
+        ]
+      }
+    },
+    "statusCounts": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "enum": [
+          "PENDING",
+          "READY",
+          "RUNNING",
+          "BLOCKED",
+          "PROVED_CERTIFIED",
+          "PROVED_INDUCTIVE",
+          "PROVED_SOLVER_TRUSTED",
+          "PROVED_FOR_SUPPORTED_FRAGMENT",
+          "BOUNDED_NO_COUNTEREXAMPLE",
+          "REFUTED_WITH_COUNTEREXAMPLE",
+          "UNKNOWN_TIMEOUT",
+          "UNKNOWN_RESOURCE_LIMIT",
+          "UNSUPPORTED",
+          "ASSUMPTION_REQUIRED",
+          "RUNTIME_MONITORED",
+          "WAIVED_BY_APPROVER"
+        ]
+      },
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "evidenceRoot": {"$ref": "#/$defs/digest"},
+    "evidenceIds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "signer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "keyId", "independent"],
+      "properties": {
+        "identity": {"type": ["string", "null"], "minLength": 1},
+        "keyId": {"type": ["string", "null"], "minLength": 1},
+        "independent": {"type": "boolean"}
+      }
+    },
+    "issuedAt": {"type": "string", "format": "date-time"},
+    "status": {
+      "enum": [
+        "BLOCKED",
+        "FAILED_ASSURANCE",
+        "READY_FOR_EXTERNAL_GATE",
+        "EXTERNALLY_VERIFIED",
+        "CERTIFIED",
+        "EXPIRED",
+        "REVOKED"
+      ]
+    },
+    "payloadDigest": {"$ref": "#/$defs/digest"},
+    "productionAssessment": {"type": "boolean"},
+    "signatureReceiptId": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "signatureReceiptSha256": {
+      "oneOf": [
+        {"$ref": "#/$defs/digest"},
+        {"type": "null"}
+      ]
+    },
+    "unresolvedRisks": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {"enum": ["EXTERNALLY_VERIFIED", "CERTIFIED"]}
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "signer": {
+            "properties": {
+              "identity": {"type": "string", "minLength": 1},
+              "independent": {"const": true},
+              "keyId": {"type": "string", "minLength": 1}
+            }
+          },
+          "signatureReceiptId": {"type": "string", "minLength": 1},
+          "signatureReceiptSha256": {"$ref": "#/$defs/digest"},
+          "runId": {"type": "string", "minLength": 1},
+          "unresolvedRisks": {"maxItems": 0}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "CERTIFIED"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "productionAssessment": {"const": true},
+          "runId": {"type": "string", "minLength": 1},
+          "gateResults": {
+            "minItems": 7,
+            "maxItems": 7,
+            "allOf": [
+              {"contains": {"$ref": "#/$defs/passingP05"}, "minContains": 1, "maxContains": 1},
+              {"contains": {"$ref": "#/$defs/passingE0"}, "minContains": 1, "maxContains": 1},
+              {"contains": {"$ref": "#/$defs/passingE1"}, "minContains": 1, "maxContains": 1},
+              {"contains": {"$ref": "#/$defs/passingE2"}, "minContains": 1, "maxContains": 1},
+              {"contains": {"$ref": "#/$defs/passingE3"}, "minContains": 1, "maxContains": 1},
+              {"contains": {"$ref": "#/$defs/passingE4"}, "minContains": 1, "maxContains": 1},
+              {"contains": {"$ref": "#/$defs/passingE5"}, "minContains": 1, "maxContains": 1}
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "passingP05": {"type": "object", "required": ["gate", "decision"], "properties": {"gate": {"const": "P05"}, "decision": {"const": "PASS"}}},
+    "passingE0": {"type": "object", "required": ["gate", "decision"], "properties": {"gate": {"const": "E0"}, "decision": {"const": "PASS"}}},
+    "passingE1": {"type": "object", "required": ["gate", "decision"], "properties": {"gate": {"const": "E1"}, "decision": {"const": "PASS"}}},
+    "passingE2": {"type": "object", "required": ["gate", "decision"], "properties": {"gate": {"const": "E2"}, "decision": {"const": "PASS"}}},
+    "passingE3": {"type": "object", "required": ["gate", "decision"], "properties": {"gate": {"const": "E3"}, "decision": {"const": "PASS"}}},
+    "passingE4": {"type": "object", "required": ["gate", "decision"], "properties": {"gate": {"const": "E4"}, "decision": {"const": "PASS"}}},
+    "passingE5": {"type": "object", "required": ["gate", "decision"], "properties": {"gate": {"const": "E5"}, "decision": {"const": "PASS"}}}
+  }
+}

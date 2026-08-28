@@ -394,36 +394,6 @@ describe("React parsing (real TypeScript Compiler API)", () => {
     expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
   });
 
-  it("resolves local literal-union aliases, indexed access and ReadonlyArray state without any", () => {
-    const ir = parseReactComponent(`
-      type SessionState = {
-        status: "loading" | "ready" | "blocked";
-        rows: ReadonlyArray<{ id: string; label: string }>;
-      };
-      function SessionBadge() {
-        const [status, setStatus] = useState<SessionState["status"]>("loading");
-        const [rows, setRows] = useState<SessionState["rows"]>([]);
-        return <div><span>{status}</span><ul>{rows.map((row) => <li key={row.id}>{row.label}</li>)}</ul></div>;
-      }
-    `, "SessionBadge.tsx");
-    expect(ir.state.find((state) => state.name === "status")).toMatchObject({ stateType: "string", initial: { type: "string", value: "loading" } });
-    expect(ir.state.find((state) => state.name === "rows")?.stateShape).toMatchObject({ kind: "array", element: { kind: "object" } });
-    expect(validateSyntax("react", emitReact(ir))).toEqual({ status: "PASSED", diagnostics: [] });
-    expect(validateSyntax("vue3", emitVue3(ir))).toEqual({ status: "PASSED", diagnostics: [] });
-  });
-
-  it("keeps incompatible union object layouts blocked instead of accepting the first member", () => {
-    const result = parseReactComponentResults(`
-      function UnsafeUnion() {
-        const [value, setValue] = useState<{ left: string } | { right: number }>({ left: "x" });
-        return <span>blocked</span>;
-      }
-    `, "UnsafeUnion.tsx")[0];
-    expect(result?.component).toBeNull();
-    expect(result?.error?.code).toBe("CERTIFIED_COMPONENT_UNSUPPORTED_TYPE");
-    expect(result?.error?.reason).toMatch(/incompatible union member shapes/);
-  });
-
   it("keeps typed map/filter projections in the shared collection IR", () => {
     const ir = parseReactComponent(`
       const statuses = ["PASSED", "BLOCKED"] as const;

@@ -8,7 +8,7 @@ import java.util.Set;
 
 /**
  * The authoritative, transactional record of what the store holds — the schema created by
- * {@code V65_1__content_addressed_store_and_action_cache.sql} plus the resource-binding,
+ * {@code V65__content_addressed_store_and_action_cache.sql} plus the resource-binding,
  * complete-metadata, durable-index, and atomic-deletion migrations through V76.
  *
  * <p>Separated from {@link CasStore} on purpose. The store answers "do these bytes exist"; the

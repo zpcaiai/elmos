@@ -30,8 +30,6 @@ from scripts.batch30.validate_external_certification_intake import (  # noqa: E4
     CUSTOMER_AUTHORIZATION_ROLE,
     EVIDENCE_ROLES,
     ExternalIntakeError,
-    _approved_roots,
-    _verify_reference as _verify_external_reference,
     evaluate_external_intake_file,
 )
 
@@ -54,16 +52,10 @@ CHECK_NAMES = (
     "test_integrity",
 )
 PROJECT_EVIDENCE_TYPES = {
-    "holdout": "behavioral_equivalence",
-    "representative": "behavioral_equivalence",
-    "customer": "behavioral_equivalence",
+    "holdout": "customer_holdout",
+    "representative": "independent_review",
+    "customer": "authorized_customer_repository",
 }
-RUNNABLE_EVIDENCE_TYPES = (
-    "source_build",
-    "target_build",
-    "source_startup",
-    "target_startup",
-)
 EXTERNAL_INTAKE_STATUSES = {"SUBMITTED", "NOT_RUN"}
 IDENTITY = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/+\-]{1,199}$")
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
@@ -504,7 +496,7 @@ def _validate_project_evidence(value: Any, project: dict[str, Any]) -> dict[str,
         )
         _exact_fields(
             runnable,
-            set(RUNNABLE_EVIDENCE_TYPES),
+            {"rootless_runner", "rootless_transformer", "rootless_verifier"},
             "project outcome evidence runnable_evidence_digests",
         )
         for evidence_type, digest in runnable.items():
@@ -516,9 +508,9 @@ def _validate_project_evidence(value: Any, project: dict[str, Any]) -> dict[str,
             bindings["supporting_evidence_digests"],
             "project outcome evidence supporting_evidence_digests",
         )
-        expected_supporting = {"independent_review"}
-        if project["corpus_role"] == "customer":
-            expected_supporting.add("customer_acceptance")
+        expected_supporting = (
+            {"customer_acceptance"} if project["corpus_role"] == "customer" else set()
+        )
         _exact_fields(
             supporting,
             expected_supporting,
@@ -708,88 +700,7 @@ def _not_evaluated_external(status: str, reason: str) -> dict[str, Any]:
         "reason": reason,
         "_intake": None,
         "_result": None,
-        "_project_outcome_digests": {},
     }
-
-
-def _signed_project_outcome_digests(
-    intake: dict[str, Any],
-    result: dict[str, Any],
-    evidence_root: Path,
-    pack_dir: Path,
-) -> dict[str, str]:
-    reference = intake["evidence"]["behavioral_equivalence"]["content"]
-    try:
-        observed = _verify_external_reference(
-            reference,
-            _approved_roots([evidence_root]),
-            "behavioral equivalence signed content",
-        )
-        raw = read_regular_file_once(
-            Path(observed["resolved_path"]),
-            max_bytes=MAX_JSON_BYTES,
-            label="behavioral equivalence signed content",
-        )
-        document = _object(json.loads(raw.decode("utf-8")), "behavioral equivalence signed content")
-    except (ExternalIntakeError, OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
-        raise CorpusEquivalenceError(
-            f"behavioral equivalence signed content is invalid: {exc}"
-        ) from exc
-    if observed["digest"] != result["verified_content_digests"]["behavioral_equivalence"]:
-        raise CorpusEquivalenceError("behavioral equivalence signed content digest drifted")
-    if (
-        document.get("schema_version") != "elmos.batch30.external-evidence.v1"
-        or document.get("evidence_type") != "behavioral_equivalence"
-        or document.get("binding_digest") != result["binding_digest"]
-    ):
-        raise CorpusEquivalenceError("behavioral equivalence signed content identity drifted")
-    document_campaign_digest = _digest(
-        document.get("campaign_digest"),
-        "behavioral equivalence signed campaign digest",
-    )
-    campaign_path = pack_dir / "certification" / "p0-p11-campaign.json"
-    if campaign_path.exists():
-        try:
-            campaign_raw = read_regular_file_once(
-                campaign_path,
-                max_bytes=MAX_JSON_BYTES,
-                label="P0-P11 certification campaign",
-            )
-        except (OSError, ValueError) as exc:
-            raise CorpusEquivalenceError(
-                f"P0-P11 certification campaign is unsafe: {exc}"
-            ) from exc
-        if "sha256:" + hashlib.sha256(campaign_raw).hexdigest() != document_campaign_digest:
-            raise CorpusEquivalenceError(
-                "behavioral equivalence signed content is bound to a different campaign"
-            )
-    metrics = _object(document.get("metrics"), "behavioral equivalence signed metrics")
-    digests = _object(
-        metrics.get("project_outcome_evidence_digests"),
-        "behavioral equivalence project outcome evidence digests",
-    )
-    _exact_fields(
-        digests,
-        set(AGGREGATE_ROLES),
-        "behavioral equivalence project outcome evidence digests",
-    )
-    normalized = {
-        role: _digest(value, f"behavioral equivalence project outcome digest {role}")
-        for role, value in digests.items()
-    }
-    if len(set(normalized.values())) != len(normalized):
-        raise CorpusEquivalenceError("signed project outcome digests must be content-distinct")
-    raw_references = document.get("raw_evidence")
-    if not isinstance(raw_references, list) or not raw_references:
-        raise CorpusEquivalenceError("behavioral equivalence raw evidence references are empty")
-    bound_raw_digests = {
-        item.get("digest")
-        for item in raw_references
-        if isinstance(item, dict) and isinstance(item.get("digest"), str)
-    }
-    if not set(normalized.values()) <= bound_raw_digests:
-        raise CorpusEquivalenceError("signed project outcomes are not bound as raw evidence")
-    return normalized
 
 
 def _verify_external_bundle(
@@ -853,9 +764,6 @@ def _verify_external_bundle(
         if set(result.get("verified_content_digests", {})) != expected_content:
             raise CorpusEquivalenceError("external intake did not verify every runnable evidence role")
         _validate_external_tuple_binding(manifest["tuple"], intake, pack_dir)
-        project_outcome_digests = _signed_project_outcome_digests(
-            intake, result, evidence_root, pack_dir
-        )
     except (
         ExternalIntakeError,
         CorpusEquivalenceError,
@@ -874,7 +782,6 @@ def _verify_external_bundle(
         "reason": "All content-bound external authorization, execution, and verification roles passed.",
         "_intake": intake,
         "_result": result,
-        "_project_outcome_digests": project_outcome_digests,
     }
 
 
@@ -915,26 +822,22 @@ def _apply_signed_project_binding(
         for field, expected_value in expected.items():
             if bindings[field] != expected_value:
                 reasons.append(f"SIGNED_PROJECT_BINDING_MISMATCH_{field.upper()}")
-        signed_content_digest = external["_project_outcome_digests"].get(
-            project["corpus_role"]
-        )
+        signed_content_digest = external_result["verified_content_digests"][evidence_type]
         if project["artifacts"]["outcome_evidence"]["sha256"] != signed_content_digest:
             reasons.append("PROJECT_OUTCOME_NOT_SIGNED_FOR_ROLE")
         expected_runnable = {
             evidence_name: external_result["verified_content_digests"][evidence_name]
-            for evidence_name in RUNNABLE_EVIDENCE_TYPES
+            for evidence_name in ("rootless_runner", "rootless_transformer", "rootless_verifier")
         }
         if bindings["runnable_evidence_digests"] != expected_runnable:
             reasons.append("RUNNABLE_EVIDENCE_DIGESTS_NOT_BOUND")
-        expected_supporting = {
-            "independent_review": external_result["verified_content_digests"][
-                "independent_review"
-            ]
-        }
+        expected_supporting = {}
         if project["corpus_role"] == "customer":
-            expected_supporting["customer_acceptance"] = external_result[
-                "verified_content_digests"
-            ]["customer_acceptance"]
+            expected_supporting = {
+                "customer_acceptance": external_result["verified_content_digests"][
+                    "customer_acceptance"
+                ]
+            }
         if bindings["supporting_evidence_digests"] != expected_supporting:
             reasons.append("SUPPORTING_EVIDENCE_DIGESTS_NOT_BOUND")
         separate_subjects = executor["actor_id"] != attestation["actor_id"]

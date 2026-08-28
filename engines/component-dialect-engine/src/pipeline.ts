@@ -307,7 +307,7 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
       // Already reported as BLOCKED above; reference data is a bonus.
     }
 
-    const ported = findEntry(manifest, relative, primaryName);
+    const ported = findEntry(manifest, relative);
     const isPorted = ported?.state === "MANUALLY_PORTED";
 
     if (targetFramework === "miniprogram") {
@@ -398,24 +398,8 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
 
   // Additional components declared in the same source file.
   for (const extra of extraOutcomes) {
-    const ported = findEntry(manifest, extra.relative, extra.name);
-    const isPorted = ported?.state === "MANUALLY_PORTED";
     if (targetFramework === "miniprogram") {
       const dir = path.join(destination, "components", extra.name);
-      if (isPorted && ported) {
-        const check = checkPortedEntry(ported, {
-          repository, destination, targetPath: path.relative(destination, dir),
-          engineCouldConvertNow: extra.report.status === "PASSED",
-        });
-        handoffChecks.push(check);
-        outcomes.push({
-          sourcePath: extra.relative, targetPath: path.relative(destination, dir),
-          ownership: "HAND_PORTED", status: "MANUALLY_PORTED",
-          reasonCode: extra.report.reasonCode, reason: extra.report.reason,
-          syntaxStatus: null, executionStatus: null, notes: check.detail, handoffAlerts: check.alerts,
-        });
-        continue;
-      }
       if (extra.report.status === "PASSED" && extra.report.emittedFiles) {
         for (const [ext, contents] of Object.entries(extra.report.emittedFiles)) {
           writeFileEnsuringDir(path.join(dir, `index.${ext}`), contents);
@@ -437,20 +421,6 @@ export async function runRepository(options: RepositoryRunOptions): Promise<Cove
       continue;
     }
     const extraFile = targetComponentPath(destination, targetFramework, extra.name);
-    if (isPorted && ported) {
-      const check = checkPortedEntry(ported, {
-        repository, destination, targetPath: path.relative(destination, extraFile),
-        engineCouldConvertNow: extra.report.status === "PASSED",
-      });
-      handoffChecks.push(check);
-      outcomes.push({
-        sourcePath: extra.relative, targetPath: path.relative(destination, extraFile),
-        ownership: "HAND_PORTED", status: "MANUALLY_PORTED",
-        reasonCode: extra.report.reasonCode, reason: extra.report.reason,
-        syntaxStatus: null, executionStatus: null, notes: check.detail, handoffAlerts: check.alerts,
-      });
-      continue;
-    }
     writeFileEnsuringDir(extraFile, extra.report.status === "PASSED" && extra.report.emitted !== null
       ? extra.report.emitted
       : blockedPlaceholder(targetFramework, extra.name, extra.report.reasonCode ?? "UNKNOWN", extra.report.reason ?? ""));

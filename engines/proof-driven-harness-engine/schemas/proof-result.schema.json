@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/proof-harness/v3/proof-result.schema.json",
+  "title": "Proof result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["resultId", "obligationId", "status", "subjectRevision", "scopeDigest", "tool", "encoderDigest", "environmentDigest", "evidence", "assumptions", "bounds", "createdAt"],
+  "properties": {
+    "resultId": {"type": "string"},
+    "obligationId": {"type": "string"},
+    "status": {"enum": ["PROVED_CERTIFIED", "PROVED_INDUCTIVE", "PROVED_SOLVER_TRUSTED", "PROVED_FOR_SUPPORTED_FRAGMENT", "BOUNDED_NO_COUNTEREXAMPLE", "REFUTED_WITH_COUNTEREXAMPLE", "UNKNOWN_TIMEOUT", "UNKNOWN_RESOURCE_LIMIT", "UNSUPPORTED", "ASSUMPTION_REQUIRED", "RUNTIME_MONITORED", "WAIVED_BY_APPROVER"]},
+    "subjectRevision": {"$ref": "#/$defs/digest"},
+    "scopeDigest": {"$ref": "#/$defs/digest"},
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "binaryDigest", "version", "optionsDigest"],
+      "properties": {
+        "name": {"type": "string"},
+        "binaryDigest": {"$ref": "#/$defs/digest"},
+        "version": {"type": "string"},
+        "optionsDigest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "encoderDigest": {"$ref": "#/$defs/digest"},
+    "environmentDigest": {"$ref": "#/$defs/digest"},
+    "evidence": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+    "assumptions": {"type": "array", "items": {"type": "string"}},
+    "bounds": {"type": "object"},
+    "counterexampleEvidenceId": {"type": "string"},
+    "createdAt": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}
+}
+

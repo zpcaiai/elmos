@@ -1,6 +1,0 @@
-{
-  "schema_version": 1,
-  "case": "independent-high-contention-race-not-run",
-  "status": "NOT_RUN",
-  "required_environment": "at-least-two-scheduler-replicas-and-independent-verifier"
-}
