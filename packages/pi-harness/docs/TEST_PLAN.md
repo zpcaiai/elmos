@@ -2,7 +2,7 @@
 
 版本：`5.1.0`
 
-测试基线：代码实现已完成；外部环境尚未执行
+测试基线：八项代码实现已完成；外部门禁环境尚未执行
 
 外部执行证据：`NOT_RUN`
 
@@ -20,10 +20,14 @@
 
 这些结果只证明 repository-owned local engineering behavior：
 
-- `make pi-harness`：ZIP 不执行安全校验、编译和 18 个单元/集成测试全部通过。
+- 包级测试：37 个默认单元、集成、负向与失败关闭测试全部通过；另有 1 个真实 PostgreSQL profile 用例在未配置时明确 skip/`NOT_RUN`。
 - `make -C packages/pi-harness check`：Python compileall 通过。
 - Ruff 静态检查通过。
 - CLI disposable demo、HTTP API 认证/幂等/租户隔离、typed result replay、executor fencing、workspace takeover、sandbox default deny 均有测试。
+- 一次性 PostgreSQL 17.5：001/002 迁移、`NOSUPERUSER NOBYPASSRLS` 服务角色、任务/事件/环境/执行器/工具结果/artifact 全路径通过；结果为本地自证工程证据。
+- 生产 SDK 导入/API：Temporal SDK 1.32.0 workflow/worker versioning 与 sandbox prepare、PyJWT 2.10.1、boto3 1.43.82、真实 Ed25519 与 X.509 SPIFFE decode 通过；没有连接外部服务。
+- 容器构建使用 digest-pinned Python base 和带 SHA-256 的完整 Python production dependency lock；本地镜像 manifest digest 为 `sha256:4a2e8581b58d2faafa94f6bfe1369d841baf3557d18b22a07f5d306a90d17699`，以 UID/GID 65532 非 root 运行，且内置 001/002 PostgreSQL migrations。该 digest 只记录当前本地自证构建，不是已发布或已签名的生产制品。
+- AWS Terraform 模块在临时目录完成 format/init/validate；没有执行 plan/apply，云证据仍为 `NOT_RUN`。
 
 上述结果不改变下列外部状态：真实 PostgreSQL/Temporal/云 Provider、IdP/mTLS、独立验证器、灾备、客户验收、生产部署均为 `NOT_RUN`；认证为 `NOT_CERTIFIED`。
 

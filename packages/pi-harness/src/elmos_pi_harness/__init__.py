@@ -1,8 +1,9 @@
 """Elmos PI Harness 5.1.
 
 The package contains the repository-owned runtime boundary for the attached
-architecture package.  It deliberately keeps provider adapters, external
-verifiers, and production certification outside the kernel.
+architecture package. Production adapters and evidence-verification interfaces
+are implemented, while external execution and production certification remain
+outside the authority of this package.
 """
 
 from .models import (
@@ -16,6 +17,8 @@ from .models import (
     WorkspaceLease,
 )
 from .persistence import DurableStore
+from .postgres import PostgresConfig, PostgresMigrator, PostgresStore
+from .qualification import implementation_inventory
 
 __all__ = [
     "AuthoritySnapshot",
@@ -23,8 +26,12 @@ __all__ = [
     "EnvironmentRef",
     "ExecutorIdentity",
     "InstructionEnvelope",
+    "PostgresConfig",
+    "PostgresMigrator",
+    "PostgresStore",
     "ProtocolCapabilities",
     "ToolInvocation",
     "ToolResult",
     "WorkspaceLease",
+    "implementation_inventory",
 ]

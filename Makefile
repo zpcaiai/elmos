@@ -53,9 +53,12 @@ production-readiness-check: business-line-contracts chinadb-commercial-migration
 operations-scripts-test:
 	$(UV) run --quiet --with pyyaml python -m unittest discover -s scripts/operations -p 'test_*.py'
 .PHONY: pi-harness
+PI_HARNESS_ARCHIVE ?= skills/subskills/elmos-pi-harness-architecture-v5.1.0.zip
 pi-harness:
-	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_pi_harness.py --check
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_pi_harness.py --check --archive "$(PI_HARNESS_ARCHIVE)"
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/pi-harness/src python3 -m compileall -q packages/pi-harness/src
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/pi-harness/src python3 -m unittest discover -s packages/pi-harness/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/pi-harness/src python3 -m elmos_pi_harness.cli qualification-status
 backend:
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B verify
 # Seven modules form a closed cluster that no `apps/` component references:

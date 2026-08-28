@@ -18,15 +18,40 @@ Implemented runtime guarantees:
 - provider-neutral benchmark campaigns where only an external verifier can set success;
 - conservative evidence decisions that never manufacture certification.
 
+Production-facing code surfaces are also implemented:
+
+- PostgreSQL 16+ pooling, checksum-locked migrations, transaction-local tenant
+  RLS, full kernel-store parity, and managed S3/KMS artifact storage;
+- Temporal TLS client/worker, deterministic pause/cancel/resume signals,
+  durable idempotent activity replay, bounded retry, generation fencing, and
+  history replay;
+- exact-target cloud operation journal, separate approval, provider-native
+  evidence, `UNKNOWN` reconciliation, rollback, destroy, and orphan handling;
+- OIDC/JWKS plus verified mTLS SPIFFE tenant/project identity binding, CRL
+  enforcement, and no authoritative caller-supplied tenant header;
+- independent Ed25519 verifier trust store, signed UAT, encrypted backup and
+  isolated restore rehearsal, and canary/promotion/rollback deployment control.
+
 Run locally:
 
 ```bash
 make -C packages/pi-harness test
 make -C packages/pi-harness demo
+PYTHONPATH=packages/pi-harness/src python3 -m elmos_pi_harness.cli qualification-status
 ```
 
-The standard-library HTTP server is suitable for a single-node controlled
-deployment. Production installations must provide a non-empty API token and a
-TLS/mTLS-capable ingress, use a managed database/object store, and supply real
-independent verifier, provider, disaster-recovery, and customer-acceptance
-evidence. Those external gates remain `NOT_RUN` here by design.
+Install real adapters with `pip install '.[production]'`. PostgreSQL schema
+migration is explicit and checksum locked:
+
+```bash
+elmos-pi-harness postgres-migrate \
+  --database 'service=pi_harness_migration' \
+  --migration-root /absolute/path/to/packages/pi-harness/sql
+```
+
+The standard-library HTTP server remains suitable for a single-node controlled
+deployment. The production profile disables static API tokens and requires
+OIDC plus direct TLS client-certificate verification, PostgreSQL, Temporal and
+a managed object store. Code availability does not prove those systems were
+run: real cloud/IdP/Temporal/DR/customer/deployment and independent evidence
+remain `NOT_RUN`; certification remains `NOT_CERTIFIED`.

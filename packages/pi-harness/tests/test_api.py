@@ -60,12 +60,14 @@ class ApiTests(unittest.TestCase):
         with self.assertRaises(urllib.error.HTTPError) as error:
             self.request(f"/v1/tasks/{task_id}", tenant=self.other_tenant)
         self.assertEqual(error.exception.code, 404)
+        error.exception.close()
 
     def test_missing_bearer_is_rejected(self) -> None:
         req = urllib.request.Request(self.base + "/v1/tasks", method="GET")
         with self.assertRaises(urllib.error.HTTPError) as error:
             urllib.request.urlopen(req, timeout=3)
         self.assertEqual(error.exception.code, 401)
+        error.exception.close()
 
 
 if __name__ == "__main__":
