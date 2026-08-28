@@ -125,6 +125,14 @@ class StoreAndGateTests(unittest.TestCase):
         self.assertEqual(decision.decision, "DENY")
         self.assertEqual(decision.readiness, "BLOCKED")
 
+    def test_gate_rejects_empty_obligation_coverage(self) -> None:
+        decision = evaluate_release_gate([], {})
+        self.assertEqual(decision.decision, "DENY")
+        self.assertIn(
+            "no required proof obligations were evaluated",
+            decision.blocking_reasons,
+        )
+
     def test_p05_and_e5_require_their_named_external_evidence(self) -> None:
         result = ProofResult(
             "run-1",

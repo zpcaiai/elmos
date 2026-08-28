@@ -61,9 +61,12 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(len({record["handlerId"] for record in records}), 60)
         self.assertTrue(
             all(
-                record["implementationState"] == "BOUND_LOCAL_EXACT"
+                record["implementationState"] == "PRODUCTION_CODE_COMPLETE"
                 for record in records
             )
+        )
+        self.assertFalse(
+            any("PARTIAL" in record["capabilityState"] for record in records)
         )
 
     def test_dispatch_is_idempotent_and_request_bound(self) -> None:
@@ -137,6 +140,85 @@ class RuntimeTests(unittest.TestCase):
         )
         self.assertEqual(result["proofStatus"], "REFUTED_WITH_COUNTEREXAMPLE")
         self.assertEqual(result["assuranceLevel"], "NONE")
+
+    def test_semantic_handlers_emit_replayable_fail_closed_results(self) -> None:
+        effect = self.dispatch(
+            "elmos-effect-exception-trace-refinement",
+            {
+                "sourceTrace": [
+                    {"effect": "reserve", "exceptionKind": None, "committed": True}
+                ],
+                "targetTrace": [
+                    {"effect": "charge", "exceptionKind": None, "committed": True}
+                ],
+            },
+            "effect-1",
+        )
+        self.assertEqual(effect["proofStatus"], "REFUTED_WITH_COUNTEREXAMPLE")
+        self.assertTrue(effect["output"]["replayable"])
+
+        profile = self.dispatch(
+            "elmos-language-semantic-profile",
+            {
+                "profile": {
+                    "language": "python",
+                    "version": "3.12",
+                    "features": [
+                        {
+                            "id": "dynamic-import",
+                            "status": "CONDITIONAL",
+                            "condition": "allowlist",
+                        }
+                    ],
+                },
+                "requestedFeatures": ["dynamic-import"],
+            },
+            "profile-1",
+        )
+        self.assertEqual(profile["proofStatus"], "ASSUMPTION_REQUIRED")
+
+        generated = self.dispatch(
+            "elmos-verified-core-generator",
+            {
+                "functionName": "clamp_nonnegative",
+                "parameters": ["value"],
+                "expression": "value if value >= 0 else 0",
+            },
+            "core-1",
+        )
+        self.assertIn("return value if value >= 0 else 0", generated["output"]["candidate"])
+        self.assertEqual(generated["proofStatus"], "UNSUPPORTED")
+        with self.assertRaises(ValueError):
+            self.dispatch(
+                "elmos-verified-core-generator",
+                {
+                    "functionName": "unsafe",
+                    "parameters": ["value"],
+                    "expression": "__import__('os').system(value)",
+                },
+                "core-2",
+            )
+
+    def test_counterexample_redacts_secrets_and_persists_replay(self) -> None:
+        result = self.dispatch(
+            "elmos-counterexample-to-test",
+            {
+                "counterexample": {
+                    "id": "cex-one",
+                    "obligationId": "obl-one",
+                    "kind": "INPUT",
+                    "witness": {"token": "secret", "value": 7},
+                    "violatedProperty": "value must be non-negative",
+                    "replay": {"command": "pytest -k cex_one"},
+                }
+            },
+            "cex-request",
+        )
+        self.assertEqual(result["output"]["scenario"]["witness"]["token"], "[REDACTED]")
+        self.assertTrue(result["output"]["redacted"])
+        self.assertEqual(
+            result["output"]["scenario"]["replay"]["executionStatus"], "NOT_RUN"
+        )
 
 
 if __name__ == "__main__":

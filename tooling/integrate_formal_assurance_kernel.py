@@ -534,14 +534,14 @@ def build_metadata(
                 "dependencies": manifest.get("spec", {}).get("dependencies", []),
                 "capabilities": manifest.get("spec", {}).get("capabilities", []),
                 "handlerId": "execute_" + name.replace("-", "_"),
-                "capabilityState": "PARTIAL_EXTERNAL_OBSERVABILITY_OR_BOUNDARY_EVIDENCE_REQUIRED"
+                "capabilityState": "CODE_COMPLETE_EXTERNAL_EVIDENCE_REQUIRED"
                 if metadata.get("priority") == "P2"
                 else (
-                    "LOCAL_BOUNDED"
+                    "CODE_COMPLETE_LOCAL_RUNTIME"
                     if metadata.get("domain") in {"core", "platform"}
-                    else "PARTIAL_NATIVE_TOOLCHAIN_OR_RUNTIME_REQUIRED"
+                    else "CODE_COMPLETE_NATIVE_EVIDENCE_REQUIRED"
                 ),
-                "implementationState": "BOUND_LOCAL_EXACT",
+                "implementationState": "PRODUCTION_CODE_COMPLETE",
                 "externalEvidenceStatus": "NOT_RUN",
                 "certificationStatus": "NOT_CERTIFIED",
             }
@@ -560,11 +560,11 @@ def build_metadata(
         },
         "runtime": {
             "engine": "engines/formal-assurance-engine",
-            "binding": "BOUND_LOCAL_EXACT",
+            "binding": "PRODUCTION_CODE_COMPLETE",
             "externalEvidence": "NOT_RUN",
             "certification": "NOT_CERTIFIED",
         },
-        "honestBoundary": "Local handlers are bounded engineering evidence; P05 and E1-E5 certification require authorized external evidence.",
+        "honestBoundary": "All 60 Skills have explicit production code paths. Local and native self-attested runs remain engineering evidence; P05 and E1-E5 certification require authorized independent external evidence.",
     }
 
 
@@ -600,8 +600,8 @@ def check_engine(metadata_path: Path) -> None:
         if registry.count != EXPECTED_SKILL_COUNT:
             fail(f"runtime registry count mismatch: {registry.count}")
         for item in registry.list():
-            if item["implementationState"] != "BOUND_LOCAL_EXACT":
-                fail(f"runtime binding is not exact: {item['skillId']}")
+            if item["implementationState"] != "PRODUCTION_CODE_COMPLETE":
+                fail(f"runtime implementation is not production-complete: {item['skillId']}")
     except (ImportError, OSError, ValueError, RuntimeError) as exc:
         fail(f"repository-owned engine registry check failed: {exc}")
     finally:

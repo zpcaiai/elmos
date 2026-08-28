@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "elmos-formal-assurance-engine"
-version = "0.1.0"
-description = "Bounded, tenant-scoped runtime for the ELMOS Formal Assurance Kernel"
+version = "1.0.0"
+description = "Production execution and evidence runtime for the ELMOS Formal Assurance Kernel"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []

@@ -68,12 +68,26 @@ def verify_manifest(manifest: dict[str, Any], base_dir: Path) -> list[str]:
     unsigned = {
         key: value for key, value in manifest.items() if key != "manifestSha256"
     }
-    if manifest.get("manifestSha256") != digest_value(unsigned):
+    try:
+        expected_manifest_hash = validate_digest(
+            manifest.get("manifestSha256"), "manifestSha256"
+        )
+    except ValueError as exc:
+        errors.append(str(exc))
+        expected_manifest_hash = None
+    if expected_manifest_hash != digest_value(unsigned):
         errors.append("manifest hash mismatch")
+    entries = manifest.get("files")
+    if not isinstance(entries, list):
+        return errors + ["evidence manifest files must be an array"]
     root = base_dir.resolve(strict=True)
     seen: set[str] = set()
-    for entry in manifest.get("files", []):
-        if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
+    for entry in entries:
+        if (
+            not isinstance(entry, dict)
+            or not isinstance(entry.get("path"), str)
+            or not entry.get("path")
+        ):
             errors.append("invalid evidence file entry")
             continue
         relative = entry["path"]
@@ -97,7 +111,13 @@ def verify_manifest(manifest: dict[str, Any], base_dir: Path) -> list[str]:
             continue
         if expected != digest_bytes(data):
             errors.append(f"sha256 mismatch: {relative}")
-        if entry.get("sizeBytes") != len(data):
+        if (
+            not isinstance(entry.get("sizeBytes"), int)
+            or isinstance(entry.get("sizeBytes"), bool)
+            or entry["sizeBytes"] < 0
+        ):
+            errors.append(f"invalid size: {relative}")
+        elif entry["sizeBytes"] != len(data):
             errors.append(f"size mismatch: {relative}")
     return errors
 

@@ -5,6 +5,9 @@ The pinned source archive is imported as untrusted declarative material:
 - archive SHA-256: `sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e`
 - exact source Skills: 60
 - repository-owned exact local bindings: 60
+- repository-owned engine/API version: `1.0.0`
+- local execution: data-only bounded equality/sample/trace evaluators
+- durable local aggregates: scope-bound, immutable, digest-addressed
 - external evidence: `NOT_RUN`
 - certification: `NOT_CERTIFIED`
 

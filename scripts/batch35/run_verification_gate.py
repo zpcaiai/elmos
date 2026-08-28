@@ -451,7 +451,7 @@ def certification_blockers(
                         f"fuzz {field} ref must be a safe pack-local file: {ref!r}",
                     )
     thresholds = dict(ALWAYS_REQUIRED_THRESHOLDS)
-    for technique in techniques:
+    for technique in sorted(techniques):
         threshold = TECHNIQUE_THRESHOLDS.get(technique)
         if threshold:
             thresholds[threshold[0]] = threshold[1]
@@ -481,7 +481,7 @@ def certification_blockers(
             continue
         zero_tolerance[key] = value
     required_zero_fields = set(ALWAYS_ZERO_TOLERANCE_FIELDS)
-    for technique in techniques:
+    for technique in sorted(techniques):
         required_zero_fields.update(TECHNIQUE_ZERO_TOLERANCE_FIELDS.get(technique, ()))
     for key in sorted(required_zero_fields):
         value = zero_tolerance.get(key, 1)

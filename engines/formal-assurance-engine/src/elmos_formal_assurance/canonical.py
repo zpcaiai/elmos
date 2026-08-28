@@ -75,3 +75,32 @@ def normalized_text(value: Any, path: str = "text") -> str:
     if not isinstance(value, str):
         raise CanonicalizationError(f"{path}: expected string")
     return " ".join(value.split())
+
+
+_PROOF_CACHE_PARTS = (
+    "formulaHash",
+    "semanticProfileHash",
+    "semanticModelHash",
+    "assumptionHash",
+    "tcbHash",
+    "engine",
+    "engineVersion",
+    "engineDigest",
+    "engineOptions",
+    "bound",
+    "sourceHash",
+    "targetHash",
+)
+
+
+def proof_cache_key(parts: Mapping[str, Any]) -> str:
+    """Create an exact cache identity for one proof execution tuple."""
+    if not isinstance(parts, Mapping):
+        raise CanonicalizationError("proof cache key parts must be an object")
+    missing = [key for key in _PROOF_CACHE_PARTS if key not in parts]
+    if missing:
+        raise CanonicalizationError(
+            "missing proof-cache key parts: " + ", ".join(missing)
+        )
+    normalized = {key: parts[key] for key in _PROOF_CACHE_PARTS}
+    return digest_value(normalized)

@@ -173,8 +173,25 @@ class ProofResult:
             validate_digest(self.formula_hash, "proofResult.formulaHash")
         if self.bound is not None and not isinstance(self.bound, dict):
             raise ValueError("proofResult.bound must be an object")
-        if any(not isinstance(value, dict) for value in self.artifact_refs):
-            raise ValueError("proofResult.artifacts must contain objects")
+        if self.bound is not None:
+            for key, value in self.bound.items():
+                if key in {"scope", "loopUnroll", "steps", "rows", "threads"} and (
+                    not isinstance(value, int) or isinstance(value, bool) or value < 0
+                ):
+                    raise ValueError(f"proofResult.bound.{key} must be a non-negative integer")
+        for artifact in self.artifact_refs:
+            if not isinstance(artifact, dict):
+                raise ValueError("proofResult.artifacts must contain objects")
+            for field_name in ("uri", "mediaType"):
+                if not isinstance(artifact.get(field_name), str) or not artifact[field_name]:
+                    raise ValueError(f"proofResult.artifact.{field_name} is required")
+            validate_digest(artifact.get("sha256"), "proofResult.artifact.sha256")
+            if "sizeBytes" in artifact and (
+                not isinstance(artifact["sizeBytes"], int)
+                or isinstance(artifact["sizeBytes"], bool)
+                or artifact["sizeBytes"] < 0
+            ):
+                raise ValueError("proofResult.artifact.sizeBytes must be non-negative")
         if self.counterexample_id is not None:
             validate_identifier(self.counterexample_id, "proofResult.counterexampleId")
         if any(not isinstance(value, str) for value in self.diagnostics):
@@ -189,6 +206,21 @@ class Waiver:
     approvals: tuple[str, ...]
     compensating_controls: tuple[str, ...]
     expires_at: str
+
+    def __post_init__(self) -> None:
+        validate_identifier(self.obligation_id, "waiver.obligationId")
+        if self.status not in {"PROPOSED", "APPROVED", "REJECTED", "EXPIRED", "REVOKED"}:
+            raise ValueError("waiver.status is invalid")
+        if self.risk not in {"LOW", "MEDIUM", "HIGH", "CRITICAL"}:
+            raise ValueError("waiver.risk is invalid")
+        if any(not isinstance(value, str) or not value for value in self.approvals):
+            raise ValueError("waiver.approvals must contain non-empty identifiers")
+        if any(
+            not isinstance(value, str) or not value for value in self.compensating_controls
+        ):
+            raise ValueError("waiver.compensatingControls must contain non-empty values")
+        if not isinstance(self.expires_at, str) or not self.expires_at:
+            raise ValueError("waiver.expiresAt is required")
 
 
 @dataclass(frozen=True)
