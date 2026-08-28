@@ -151,12 +151,20 @@ digest-bound record. `target-adapters.ts` is the only target dispatch surface;
 the existing framework emitters are invoked behind their named adapter, so a
 target cannot be treated as complete merely because it can print source text.
 
-Source constructs that the canonical parser cannot represent do not receive a
-fabricated IR. `scan` emits a `manualPortPlan` with the semantic category,
-reason code and required evidence. Once a human has implemented the target,
-`handoff mark-ported` records `ownership: "HAND_PORTED"`; later repository
-runs preserve that file and report stale source changes instead of overwriting
-the work. A hand port is delivery progress, not automatic engine evidence.
+Source constructs that the automatic canonical parser cannot represent do not
+receive a fabricated `ComponentDef`. React-family blockers instead receive a
+separate, loss-aware `elmos.source-component-semantic-ir`: exact source ranges,
+imports, Hook ownership, effects/resources, structured data, collections,
+slots/document semantics, and an explicit decision from every one of the ten
+target adapters. `scan` carries that digest-bound record into each
+`manualPortPlan`. Capturing a semantic obligation does not make it automatically
+translatable; `BLOCKED`, `ADAPTER`, and `HAND_PORTED` remain distinct.
+
+Once a human has implemented the target, `handoff mark-ported` records
+component-level `ownership: "HAND_PORTED"`, the exact source/target byte
+digests, and the target path. Later repository runs preserve that file and
+report source, target, path, or evidence drift instead of overwriting the work.
+A hand port is delivery progress, not automatic engine evidence.
 
 The translation report carries an evidence ledger for the exact source/target
 tuple. It starts `NOT_RUN` and `NOT_CERTIFIED`. Real runners can bind artifact
@@ -305,10 +313,13 @@ really parsed.
 ### What it says about real code
 
 At the latest local run against this monorepo's `apps/web-console` — a genuine
-Next.js application nobody shaped for the subset — the scan reports **28 of 65
-components in subset (43.1%)**, **37 explicitly blocked**, and **0 scan errors**.
-The ratio is a live upper-bound measurement, not runtime, production, or
-certification evidence.
+Next.js application nobody shaped for the subset — the scan reports **31 of 62
+components in subset (50.0%)**, **31 explicitly blocked**, and **0 scan
+errors**. All **31 of 31** blocked components have source-ranged semantic IR;
+none is unrepresented or silently dropped. The 62-component denominator is the
+current application inventory (older 65-component measurements are stale).
+The ratio is a live automatic upper-bound measurement, not runtime, production,
+or certification evidence.
 
 The first run of this scan reported **0 of 28**, and reading it is what
 produced every subset expansion since. It showed that
@@ -321,10 +332,12 @@ and same-file props types followed directly, and the measured number is
 what moved.
 
 The remaining blockers are honest ones: external/effect hooks and async state,
-unknown or union-shaped data, complex `Map`/`Set` derivations, and platform
-semantics such as slots, tables, disclosure elements, SVG and document roots.
-Those require new typed cross-platform IR and target validation; weakening the
-blocker rule would only hide semantic loss.
+unknown or incompatible union-shaped data, complex `Map`/`Set` derivations,
+and platform semantics such as slots, tables, disclosure elements, SVG and
+document roots. Their source semantics and per-target obligations are now
+typed, but automatic promotion still requires the named adapter implementation
+and target validation; weakening the blocker rule would only hide semantic
+loss.
 
 The dogfood scan runs in the test suite and asserts zero engine errors on
 that real code — but deliberately does **not** assert the coverage
@@ -388,7 +401,15 @@ node dist/cli.js handoff assign \
 # ...they write src/components/Chart.vue by hand, then:
 node dist/cli.js handoff mark-ported \
   --destination ./my-vue-app --repository ./my-react-app \
-  --source-path src/components/Chart.tsx --target-path src/components/Chart.vue
+  --source-path src/components/Chart.tsx --component-name Chart \
+  --target-path src/components/Chart.vue
+
+# Bind real artifact bytes produced by each required runner/reviewer.
+node dist/cli.js handoff evidence-bind \
+  --destination ./my-vue-app --source-path src/components/Chart.tsx \
+  --component-name Chart --role TARGET_BUILD --status PASSED \
+  --artifact-file ./my-vue-app/evidence/chart-target-build.json \
+  --executor target-builder
 
 node dist/cli.js handoff status --destination ./my-vue-app
 ```
@@ -406,12 +427,20 @@ Three guarantees make this safe to rely on:
   overwriting, it is the opposite: `Chart.tsx` changes upstream and the
   hand-written `Chart.vue` silently keeps rendering last month's
   behavior. Every mark records the SHA-256 of the source it was ported
-  from, so a later run reports `SOURCE_CHANGED_SINCE_PORT` and holds
+  from, so a later run reports `SOURCE_CHANGED_SINCE_PORT`. It also binds the
+  target bytes/path and reports target or path drift. Any of these holds
   delivery `INCOMPLETE` instead of quietly shipping a stale component.
 - **Hand work is never counted as engine evidence.** A hand-ported
   component has been through no parser, no target compiler and no SSR
   comparison, so it records no `syntaxStatus` and no `executionStatus`,
   and it can never make a run read `COMPLETE`.
+
+Four byte-bound evidence roles are tracked independently for a hand port:
+`TARGET_BUILD`, `BROWSER_OR_DEVICE`, `PLATFORM_RUNTIME`, and
+`INDEPENDENT_REVIEW`. All must pass, and independent review must name a
+distinct verifier, before the entry can become `READY_FOR_EXTERNAL_GATE`.
+Missing, changed, failed, self-reviewed, or path-escaping evidence fails
+closed. Even this state is not runtime certification or production approval.
 
 That last point is why `coverage-report.json` carries two statuses:
 

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-17-5-multitenant-task-finops",
+  "status": "passed",
+  "pack_status": "experimental",
+  "scope": "HISTORICAL_V73_LOCAL_ONLY",
+  "current_migration_family": ["V77", "V77.1", "V77.2"],
+  "current_qualification": "NOT_RUN",
+  "failures": []
+}

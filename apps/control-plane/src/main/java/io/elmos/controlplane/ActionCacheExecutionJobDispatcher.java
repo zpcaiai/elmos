@@ -190,10 +190,43 @@ public final class ActionCacheExecutionJobDispatcher {
             String runnerImage,
             short priority,
             int budgetWallSeconds,
-            short maxAttempts
+            short maxAttempts,
+            String accountId,
+            String requestId,
+            String workloadClass,
+            int resourceUnits
     ) {
+        public DispatchSpec(
+                String actorId,
+                ExecutionJobPort.BusinessLine businessLine,
+                String jobKind,
+                String idempotencyKey,
+                Map<String, Object> payload,
+                String requiredCapability,
+                String runnerImage,
+                short priority,
+                int budgetWallSeconds,
+                short maxAttempts
+        ) {
+            this(actorId, businessLine, jobKind, idempotencyKey, payload,
+                    requiredCapability, runnerImage, priority, budgetWallSeconds,
+                    maxAttempts, "", "", defaultWorkloadClass(businessLine),
+                    defaultResourceUnits(businessLine));
+        }
+
         public DispatchSpec {
             actorId = boundedText(actorId, 128, "actorId");
+            accountId = optionalBoundedText(accountId, 96, "accountId");
+            requestId = optionalBoundedText(requestId, 160, "requestId");
+            workloadClass = boundedMachineCode(
+                    workloadClass == null || workloadClass.isBlank()
+                            ? "GENERATION" : workloadClass,
+                    32, "workloadClass");
+            if (!Set.of("PARSING", "GENERATION", "CONVERSION", "VALIDATION",
+                    "RENDERING", "MODEL_GPU").contains(workloadClass)
+                    || resourceUnits < 1 || resourceUnits > 64) {
+                throw new IllegalArgumentException("workload profile is invalid");
+            }
             Objects.requireNonNull(businessLine, "businessLine");
             jobKind = boundedText(jobKind, 64, "jobKind");
             idempotencyKey = boundedText(idempotencyKey, 160, "idempotencyKey");
@@ -216,6 +249,23 @@ public final class ActionCacheExecutionJobDispatcher {
                 throw new IllegalArgumentException(
                         "maxAttempts must be exactly 1 for ActionCache dispatch");
             }
+        }
+
+        private static String defaultWorkloadClass(ExecutionJobPort.BusinessLine line) {
+            return switch (Objects.requireNonNull(line, "businessLine")) {
+                case GENERATION -> "GENERATION";
+                case TRANSLATION, SPRING_UPGRADE -> "CONVERSION";
+                case REPOSITORY_WORKSPACE -> "PARSING";
+                case MODERNIZATION_PROOF -> "VALIDATION";
+            };
+        }
+
+        private static int defaultResourceUnits(ExecutionJobPort.BusinessLine line) {
+            return switch (Objects.requireNonNull(line, "businessLine")) {
+                case GENERATION, MODERNIZATION_PROOF -> 2;
+                case TRANSLATION, SPRING_UPGRADE -> 3;
+                case REPOSITORY_WORKSPACE -> 1;
+            };
         }
     }
 
@@ -474,6 +524,10 @@ public final class ActionCacheExecutionJobDispatcher {
         }
         AuthorizationGrant grant = execution.grant().orElseThrow();
         DispatchSpec spec = request.dispatch();
+        if (spec.accountId().isBlank() || spec.requestId().isBlank()) {
+            return reconciliation.blockedOrPending(
+                    "EXECUTION_IDENTITY_CONTEXT_REQUIRED", cacheOutcome);
+        }
 
         DispatchMaterial material;
         try {
@@ -497,7 +551,10 @@ public final class ActionCacheExecutionJobDispatcher {
             try {
                 existing = Objects.requireNonNull(
                         jobs.findByIdempotencyKey(
-                                grant.tenantId(), spec.idempotencyKey()),
+                                new ExecutionJobPort.AuthenticatedContext(
+                                        grant.tenantId(), spec.accountId(),
+                                        grant.actorId(), spec.requestId()),
+                                spec.idempotencyKey()),
                         "idempotency lookup result");
             } catch (RuntimeException unavailable) {
                 return reconciliation.pending(
@@ -531,9 +588,10 @@ public final class ActionCacheExecutionJobDispatcher {
         String requestedJobId = "job-" + UUID.randomUUID();
         String persisted;
         try {
-            persisted = jobs.enqueue(new ExecutionJobPort.EnqueueCommand(
+                persisted = jobs.enqueue(new ExecutionJobPort.EnqueueCommand(
                     requestedJobId,
                     grant.tenantId(),
+                    spec.accountId(),
                     grant.actorId(),
                     spec.businessLine(),
                     spec.jobKind(),
@@ -544,7 +602,10 @@ public final class ActionCacheExecutionJobDispatcher {
                     spec.runnerImage(),
                     spec.priority(),
                     spec.budgetWallSeconds(),
-                    (short) 1));
+                    (short) 1,
+                    spec.requestId(),
+                    spec.workloadClass(),
+                    spec.resourceUnits()));
         } catch (ExecutionJobPort.ExecutionStateException rejected) {
             if ("ELMOS_EXECUTION_IDEMPOTENCY_CONFLICT".equals(rejected.code())) {
                 return reconciliation.uncertainQueueOutcome(
@@ -616,6 +677,7 @@ public final class ActionCacheExecutionJobDispatcher {
         Map<String, Object> digestSubject = new LinkedHashMap<>();
         digestSubject.put("schemaVersion", CANONICAL_REQUEST_SCHEMA);
         digestSubject.put("organizationId", grant.tenantId());
+        digestSubject.put("accountId", spec.accountId());
         digestSubject.put("actorId", grant.actorId());
         digestSubject.put("projectId", grant.projectId());
         digestSubject.put("authorizationPolicyVersion", grant.policyVersion());
@@ -628,6 +690,8 @@ public final class ActionCacheExecutionJobDispatcher {
         digestSubject.put("priority", spec.priority());
         digestSubject.put("budgetWallSeconds", spec.budgetWallSeconds());
         digestSubject.put("maxAttempts", spec.maxAttempts());
+        digestSubject.put("workloadClass", spec.workloadClass());
+        digestSubject.put("resourceUnits", spec.resourceUnits());
         byte[] canonical = canonicalJsonBytes(digestSubject);
         if (canonical.length > MAX_PAYLOAD_BYTES) {
             throw new IllegalArgumentException(
@@ -790,6 +854,13 @@ public final class ActionCacheExecutionJobDispatcher {
             }
         }
         return candidate;
+    }
+
+    private static String optionalBoundedText(String value, int maximum, String field) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+        return boundedText(value, maximum, field);
     }
 
     private static String boundedMachineCode(String value, int maximum, String field) {

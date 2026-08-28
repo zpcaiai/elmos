@@ -8,19 +8,19 @@
 
  :: Spring Boot ::                (v3.5.3)
 
-2026-08-27T12:03:51.321+08:00  INFO 19055 --- [           main] io.elmos.legacy.LegacyMvcApplication     : Starting LegacyMvcApplication v1.0.0 using Java 21.0.11 with PID 19055 (/Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/certification/local-execution/2026-08-27/artifacts/executed-spring-boot-3.5.3.war started by stephen in /Users/stephen/DevProjects/AIProjects/elmos)
-2026-08-27T12:03:51.322+08:00  INFO 19055 --- [           main] io.elmos.legacy.LegacyMvcApplication     : No active profile set, falling back to 1 default profile: "default"
-2026-08-27T12:03:51.825+08:00  INFO 19055 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 55847 (http)
-2026-08-27T12:03:51.831+08:00  INFO 19055 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-27T12:03:51.831+08:00  INFO 19055 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
-2026-08-27T12:03:52.071+08:00  INFO 19055 --- [           main] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
-2026-08-27T12:03:52.125+08:00  INFO 19055 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-08-27T12:03:52.125+08:00  INFO 19055 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 785 ms
-2026-08-27T12:03:52.364+08:00  INFO 19055 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
-2026-08-27T12:03:52.400+08:00  INFO 19055 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 55847 (http) with context path '/'
-2026-08-27T12:03:52.413+08:00  INFO 19055 --- [           main] io.elmos.legacy.LegacyMvcApplication     : Started LegacyMvcApplication in 1.336 seconds (process running for 1.672)
-2026-08-27T12:03:52.517+08:00  INFO 19055 --- [.1-55847-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-08-27T12:03:52.517+08:00  INFO 19055 --- [.1-55847-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2026-08-27T12:03:52.518+08:00  INFO 19055 --- [.1-55847-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
-2026-08-27T12:03:53.198+08:00  INFO 19055 --- [ionShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
-2026-08-27T12:03:53.200+08:00  INFO 19055 --- [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2026-08-27T12:46:37.251+08:00  INFO 30725 --- [           main] io.elmos.legacy.LegacyMvcApplication     : Starting LegacyMvcApplication v1.0.0 using Java 21.0.11 with PID 30725 (/Users/stephen/DevProjects/AIProjects/elmos-multitenant-task-finops-runtime/framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/certification/local-execution/2026-08-27/artifacts/executed-spring-boot-3.5.3.war started by stephen in /Users/stephen/DevProjects/AIProjects/elmos-multitenant-task-finops-runtime)
+2026-08-27T12:46:37.252+08:00  INFO 30725 --- [           main] io.elmos.legacy.LegacyMvcApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-08-27T12:46:37.727+08:00  INFO 30725 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 49455 (http)
+2026-08-27T12:46:37.734+08:00  INFO 30725 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-08-27T12:46:37.734+08:00  INFO 30725 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
+2026-08-27T12:46:37.951+08:00  INFO 30725 --- [           main] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2026-08-27T12:46:38.001+08:00  INFO 30725 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-08-27T12:46:38.001+08:00  INFO 30725 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 725 ms
+2026-08-27T12:46:38.226+08:00  INFO 30725 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-08-27T12:46:38.265+08:00  INFO 30725 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 49455 (http) with context path '/'
+2026-08-27T12:46:38.278+08:00  INFO 30725 --- [           main] io.elmos.legacy.LegacyMvcApplication     : Started LegacyMvcApplication in 1.212 seconds (process running for 1.465)
+2026-08-27T12:46:38.376+08:00  INFO 30725 --- [.1-49455-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-27T12:46:38.376+08:00  INFO 30725 --- [.1-49455-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-08-27T12:46:38.376+08:00  INFO 30725 --- [.1-49455-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2026-08-27T12:46:38.934+08:00  INFO 30725 --- [ionShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2026-08-27T12:46:38.937+08:00  INFO 30725 --- [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete

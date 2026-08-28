@@ -1,0 +1,346 @@
+{
+  "schema_version": 1,
+  "package_namespace": "elmos.pricing-billing.v1",
+  "scope": {
+    "skills": [
+      "elmos-payments-reconciliation",
+      "elmos-refunds-disputes"
+    ],
+    "requirement_count": 20,
+    "source_ranges": [
+      "EB-10-001..EB-10-010",
+      "EB-11-001..EB-11-010"
+    ]
+  },
+  "authority_boundary": {
+    "kind": "bounded-local-reference-runtime",
+    "source": "modules/commercial-operations/src/main/java/io/elmos/commercial/PaymentRefundReconciliationRuntime.java",
+    "does_not_execute_provider_or_bank_operations": true,
+    "does_not_persist_tokens": true,
+    "does_not_post_invoice_or_wallet_entries": true,
+    "does_not_certify_payment_accounting_or_refund_behavior": true
+  },
+  "evidence_state": {
+    "test_execution": "LOCAL_EXECUTED",
+    "provider_sandbox": "NOT_RUN",
+    "bank_or_settlement_file": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "requirements": [
+    {
+      "id": "EB-10-001",
+      "canonical_id": "elmos.pricing-billing.v1/EB-10-001",
+      "priority": "P0",
+      "contract": "支付层必须通过统一适配器支持多渠道而不污染核心域。",
+      "symbols": [
+        "PaymentProviderAdapter",
+        "ProviderEvent",
+        "WebhookGateway.accept"
+      ],
+      "tests": [
+        "providerDtoIsNormalizedBehindVerifiedSecretReferenceBoundary"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-10-002",
+      "canonical_id": "elmos.pricing-billing.v1/EB-10-002",
+      "priority": "P0",
+      "contract": "支付密钥必须位于 secret manager 并可轮换。",
+      "symbols": [
+        "SecretReference",
+        "SecretReference.rotateTo",
+        "PaymentProviderAdapter.authenticate"
+      ],
+      "tests": [
+        "providerDtoIsNormalizedBehindVerifiedSecretReferenceBoundary"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-10-003",
+      "canonical_id": "elmos.pricing-billing.v1/EB-10-003",
+      "priority": "P0",
+      "contract": "webhook 必须验证签名、时间窗、环境和事件唯一性。",
+      "symbols": [
+        "WebhookEnvelope",
+        "WebhookGateway.accept",
+        "WebhookDecision"
+      ],
+      "tests": [
+        "webhookAuthenticationEnvironmentFreshnessIdempotencyAndOrderingFailClosed"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-10-004",
+      "canonical_id": "elmos.pricing-billing.v1/EB-10-004",
+      "priority": "P0",
+      "contract": "重复、乱序、延迟和缺失 webhook 必须安全处理。",
+      "symbols": [
+        "WebhookGateway.accept",
+        "WebhookStatus.DUPLICATE",
+        "WebhookStatus.OUT_OF_ORDER"
+      ],
+      "tests": [
+        "webhookAuthenticationEnvironmentFreshnessIdempotencyAndOrderingFailClosed"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-10-005",
+      "canonical_id": "elmos.pricing-billing.v1/EB-10-005",
+      "priority": "P0",
+      "contract": "支付成功只能产生一次发票结清或钱包入账。",
+      "symbols": [
+        "PaymentAggregate.postingInstruction",
+        "PostingInstruction",
+        "PostingTarget"
+      ],
+      "tests": [
+        "paymentStateMachineSupportsExactPartialCaptureCancelSettleAndOnceOnlyPostings"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-10-006",
+      "canonical_id": "elmos.pricing-billing.v1/EB-10-006",
+      "priority": "P0",
+      "contract": "支持授权、捕获、部分捕获、取消和结算语义。",
+      "symbols": [
+        "PaymentAggregate.authorize",
+        "PaymentAggregate.capture",
+        "PaymentAggregate.cancel",
+        "PaymentAggregate.settle",
+        "PaymentStatus"
+      ],
+      "tests": [
+        "paymentStateMachineSupportsExactPartialCaptureCancelSettleAndOnceOnlyPostings"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-10-007",
+      "canonical_id": "elmos.pricing-billing.v1/EB-10-007",
+      "priority": "P1",
+      "contract": "记录手续费、汇率、净额和到账日期。",
+      "symbols": [
+        "SettlementFacts",
+        "Money"
+      ],
+      "tests": [
+        "settlementRequiresExactFeeFxNetCurrencyAndEffectiveDate"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-10-008",
+      "canonical_id": "elmos.pricing-billing.v1/EB-10-008",
+      "priority": "P1",
+      "contract": "每日执行 provider、invoice、ledger 和结算对账。",
+      "symbols": [
+        "ReconciliationInput",
+        "ReconciliationEngine.reconcile"
+      ],
+      "tests": [
+        "fourWayReconciliationMatchesOrCreatesOwnedSuspenseWithoutSilentRepair"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-10-009",
+      "canonical_id": "elmos.pricing-billing.v1/EB-10-009",
+      "priority": "P1",
+      "contract": "不一致必须进入 suspense 账户和可分派工作队列。",
+      "symbols": [
+        "ReconciliationCase",
+        "ReconciliationEngine.openWorkQueue",
+        "ReconciliationEngine.resolve"
+      ],
+      "tests": [
+        "fourWayReconciliationMatchesOrCreatesOwnedSuspenseWithoutSilentRepair",
+        "unknownProviderOrBankResultRemainsBlockedInOwnedSuspense"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-10-010",
+      "canonical_id": "elmos.pricing-billing.v1/EB-10-010",
+      "priority": "P1",
+      "contract": "前端成功页不得作为确认支付的唯一证据。",
+      "symbols": [
+        "PaymentConfirmationEvidence",
+        "PaymentConfirmationSource.FRONTEND_SUCCESS_PAGE",
+        "PaymentConfirmationPolicy.requireAuthoritative"
+      ],
+      "tests": [
+        "frontendSuccessIsNeverAuthoritativePaymentEvidence"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-11-001",
+      "canonical_id": "elmos.pricing-billing.v1/EB-11-001",
+      "priority": "P0",
+      "contract": "退款必须基于平台、用户、第三方、范围和验收等责任分类。",
+      "symbols": [
+        "Responsibility",
+        "ScopeDisposition",
+        "AcceptanceDisposition",
+        "RefundAssessment",
+        "RefundPolicy.decide"
+      ],
+      "tests": [
+        "refundPolicySeparatesResponsibilityValueModesAndEvidence"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-11-002",
+      "canonical_id": "elmos.pricing-billing.v1/EB-11-002",
+      "priority": "P0",
+      "contract": "平台故障造成且用户未获得价值的消耗必须自动免收或退回。",
+      "symbols": [
+        "CustomerValue.NONE",
+        "RefundDecision.recommendedMode",
+        "RefundPolicy.decide"
+      ],
+      "tests": [
+        "refundSagaEnforcesCumulativeCeilingMakerCheckerAndIndependentLegRecovery"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-11-003",
+      "canonical_id": "elmos.pricing-billing.v1/EB-11-003",
+      "priority": "P0",
+      "contract": "模型在任务预算内的正常自我修复不得无限追加收费。",
+      "symbols": [
+        "RepairChargeRequest",
+        "RepairChargeDecision",
+        "RepairChargeGuard.authorize"
+      ],
+      "tests": [
+        "normalModelSelfRepairNeverAddsUnboundedCustomerCharges"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-11-004",
+      "canonical_id": "elmos.pricing-billing.v1/EB-11-004",
+      "priority": "P0",
+      "contract": "退款必须关联原 quote、用量、账本、支付和成果证据。",
+      "symbols": [
+        "RefundEvidenceType",
+        "RefundEvidenceLink",
+        "RefundEvidenceBundle",
+        "RefundEvidenceBundle.link",
+        "RefundCommand.evidence"
+      ],
+      "tests": [
+        "refundEvidenceRequiresTypedQuoteUsageLedgerPaymentAndOutcomeLinks"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-11-005",
+      "canonical_id": "elmos.pricing-billing.v1/EB-11-005",
+      "priority": "P0",
+      "contract": "支持全额、部分、额度补偿、credit note 和 chargeback。",
+      "symbols": [
+        "RefundMode",
+        "RefundCommand.amount",
+        "RefundBook.open",
+        "DisputeResolution.ACCEPT_CHARGEBACK",
+        "DisputeBook"
+      ],
+      "tests": [
+        "refundPolicySeparatesResponsibilityValueModesAndEvidence",
+        "refundSagaEnforcesCumulativeCeilingMakerCheckerAndIndependentLegRecovery",
+        "disputesAreEvidenceBoundUnknownSafeAndMakerCheckerApproved"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-11-006",
+      "canonical_id": "elmos.pricing-billing.v1/EB-11-006",
+      "priority": "P0",
+      "contract": "原交易不得删除；退款使用反向交易表达。",
+      "symbols": [
+        "RefundCommand.paymentId",
+        "RefundSaga",
+        "RefundLeg"
+      ],
+      "tests": [
+        "refundSagaEnforcesCumulativeCeilingMakerCheckerAndIndependentLegRecovery"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-11-007",
+      "canonical_id": "elmos.pricing-billing.v1/EB-11-007",
+      "priority": "P1",
+      "contract": "累计退款不得超过原可退款基数。",
+      "symbols": [
+        "RefundDecision.maximumRefund",
+        "RefundBook.open",
+        "RefundBook.reservedForPayment"
+      ],
+      "tests": [
+        "refundSagaEnforcesCumulativeCeilingMakerCheckerAndIndependentLegRecovery"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-11-008",
+      "canonical_id": "elmos.pricing-billing.v1/EB-11-008",
+      "priority": "P1",
+      "contract": "支付退款和钱包回退必须具备 saga 补偿。",
+      "symbols": [
+        "RefundSaga",
+        "RefundBook.recordLeg",
+        "RefundBook.reconcileUnknownLeg",
+        "RefundSagaStatus.BLOCKED_UNKNOWN"
+      ],
+      "tests": [
+        "refundSagaEnforcesCumulativeCeilingMakerCheckerAndIndependentLegRecovery"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-11-009",
+      "canonical_id": "elmos.pricing-billing.v1/EB-11-009",
+      "priority": "P1",
+      "contract": "大额和人工调整必须双人审批。",
+      "symbols": [
+        "RefundBook.largeRefundThreshold",
+        "RefundSaga.approve",
+        "DisputeCase.approve"
+      ],
+      "tests": [
+        "refundSagaEnforcesCumulativeCeilingMakerCheckerAndIndependentLegRecovery",
+        "disputesAreEvidenceBoundUnknownSafeAndMakerCheckerApproved"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    },
+    {
+      "id": "EB-11-010",
+      "canonical_id": "elmos.pricing-billing.v1/EB-11-010",
+      "priority": "P1",
+      "contract": "退款、争议和对账状态必须完整审计。",
+      "symbols": [
+        "AuditEntry",
+        "RefundSaga.audit",
+        "DisputeCase.audit",
+        "ReconciliationCase"
+      ],
+      "tests": [
+        "refundSagaEnforcesCumulativeCeilingMakerCheckerAndIndependentLegRecovery",
+        "disputesAreEvidenceBoundUnknownSafeAndMakerCheckerApproved",
+        "fourWayReconciliationMatchesOrCreatesOwnedSuspenseWithoutSilentRepair"
+      ],
+      "implementation_state": "LOCAL_CODE_ADDED_UNVERIFIED"
+    }
+  ]
+}

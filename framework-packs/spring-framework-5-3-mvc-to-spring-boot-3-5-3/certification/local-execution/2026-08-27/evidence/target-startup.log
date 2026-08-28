@@ -8,19 +8,19 @@
 
  :: Spring Boot ::                (v3.5.3)
 
-2026-08-27T09:29:35.561+08:00  INFO 83282 --- [           main] io.elmos.legacy.LegacyMvcApplication     : Starting LegacyMvcApplication v1.0.0 using Java 21.0.11 with PID 83282 (/private/tmp/elmos-mvc-qualification.current.4xFbT1/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot.war started by stephen in /private/tmp/elmos-mvc-qualification.current.4xFbT1/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated)
-2026-08-27T09:29:35.562+08:00  INFO 83282 --- [           main] io.elmos.legacy.LegacyMvcApplication     : No active profile set, falling back to 1 default profile: "default"
-2026-08-27T09:29:36.252+08:00  INFO 83282 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 57880 (http)
-2026-08-27T09:29:36.260+08:00  INFO 83282 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-27T09:29:36.260+08:00  INFO 83282 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
-2026-08-27T09:29:36.509+08:00  INFO 83282 --- [           main] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
-2026-08-27T09:29:36.560+08:00  INFO 83282 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-08-27T09:29:36.561+08:00  INFO 83282 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 978 ms
-2026-08-27T09:29:36.799+08:00  INFO 83282 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
-2026-08-27T09:29:36.833+08:00  INFO 83282 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 57880 (http) with context path '/'
-2026-08-27T09:29:36.844+08:00  INFO 83282 --- [           main] io.elmos.legacy.LegacyMvcApplication     : Started LegacyMvcApplication in 1.566 seconds (process running for 1.777)
-2026-08-27T09:29:36.964+08:00  INFO 83282 --- [.1-57880-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-08-27T09:29:36.964+08:00  INFO 83282 --- [.1-57880-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2026-08-27T09:29:36.965+08:00  INFO 83282 --- [.1-57880-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
-2026-08-27T09:29:37.485+08:00  INFO 83282 --- [ionShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
-2026-08-27T09:29:37.488+08:00  INFO 83282 --- [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2026-08-27T12:41:51.842+08:00  INFO 30245 --- [           main] io.elmos.legacy.LegacyMvcApplication     : Starting LegacyMvcApplication v1.0.0 using Java 21.0.11 with PID 30245 (/private/tmp/elmos-mvc-exact-main-20260827.YrdsyY/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot.war started by stephen in /private/tmp/elmos-mvc-exact-main-20260827.YrdsyY/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated)
+2026-08-27T12:41:51.843+08:00  INFO 30245 --- [           main] io.elmos.legacy.LegacyMvcApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-08-27T12:41:52.352+08:00  INFO 30245 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 65281 (http)
+2026-08-27T12:41:52.358+08:00  INFO 30245 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-08-27T12:41:52.359+08:00  INFO 30245 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
+2026-08-27T12:41:52.578+08:00  INFO 30245 --- [           main] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2026-08-27T12:41:52.629+08:00  INFO 30245 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-08-27T12:41:52.629+08:00  INFO 30245 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 767 ms
+2026-08-27T12:41:52.859+08:00  INFO 30245 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-08-27T12:41:52.887+08:00  INFO 30245 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 65281 (http) with context path '/'
+2026-08-27T12:41:52.898+08:00  INFO 30245 --- [           main] io.elmos.legacy.LegacyMvcApplication     : Started LegacyMvcApplication in 1.249 seconds (process running for 1.462)
+2026-08-27T12:41:53.095+08:00  INFO 30245 --- [.1-65281-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-27T12:41:53.095+08:00  INFO 30245 --- [.1-65281-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-08-27T12:41:53.096+08:00  INFO 30245 --- [.1-65281-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-08-27T12:41:53.910+08:00  INFO 30245 --- [ionShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2026-08-27T12:41:53.912+08:00  INFO 30245 --- [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete

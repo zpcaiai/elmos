@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -90,7 +91,23 @@ public class ActionCacheExecutionController {
     ) {}
 
     @PostMapping
-    public ResponseEntity<?> dispatch(@RequestBody DispatchRequest request) {
+    public ResponseEntity<?> dispatch(
+            @RequestBody DispatchRequest request,
+            @RequestHeader(value = "X-ELMOS-Request-ID", required = false) String requestId
+    ) {
+        return dispatchInternal(request, requestId, true);
+    }
+
+    /** Compatibility entry point for direct callers; HTTP requests use the header-bound method. */
+    public ResponseEntity<?> dispatch(DispatchRequest request) {
+        return dispatchInternal(request, "", false);
+    }
+
+    private ResponseEntity<?> dispatchInternal(
+            DispatchRequest request,
+            String requestId,
+            boolean requireRequestId
+    ) {
         if (request == null || request.actionKey() == null) {
             throw invalid("ELMOS_ACTION_CACHE_REQUEST_INVALID");
         }
@@ -136,7 +153,14 @@ public class ActionCacheExecutionController {
                     request.payload(), requiredCapability, image,
                     request.priority() == null ? (short) 100 : request.priority(),
                     request.budgetWallSeconds() == null ? 3600 : request.budgetWallSeconds(),
-                    request.maxAttempts() == null ? (short) 1 : request.maxAttempts());
+                    request.maxAttempts() == null ? (short) 1 : request.maxAttempts(),
+                    principal.accountId(),
+                    requireRequestId
+                            ? require(requestId, 160,
+                                    "ELMOS_ACTION_CACHE_REQUEST_ID_INVALID")
+                            : "",
+                    workloadClassFor(line),
+                    resourceUnitsFor(line));
         } catch (IllegalArgumentException error) {
             throw invalid("ELMOS_ACTION_CACHE_DISPATCH_SPEC_INVALID");
         }
@@ -220,6 +244,23 @@ public class ActionCacheExecutionController {
             case SPRING_UPGRADE -> "spring:upgrade";
             case REPOSITORY_WORKSPACE -> "repository:workspace";
             case MODERNIZATION_PROOF -> "modernization:proof-loop";
+        };
+    }
+
+    private static String workloadClassFor(ExecutionJobPort.BusinessLine line) {
+        return switch (line) {
+            case GENERATION -> "GENERATION";
+            case TRANSLATION, SPRING_UPGRADE -> "CONVERSION";
+            case REPOSITORY_WORKSPACE -> "PARSING";
+            case MODERNIZATION_PROOF -> "VALIDATION";
+        };
+    }
+
+    private static int resourceUnitsFor(ExecutionJobPort.BusinessLine line) {
+        return switch (line) {
+            case GENERATION, MODERNIZATION_PROOF -> 2;
+            case TRANSLATION, SPRING_UPGRADE -> 3;
+            case REPOSITORY_WORKSPACE -> 1;
         };
     }
 

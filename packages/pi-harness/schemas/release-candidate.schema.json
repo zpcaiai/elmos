@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/pi-harness/release-candidate-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "release_id", "source_git_sha", "package_version", "source_archive_digest", "artifact_digests", "implementation_trust_domain", "created_at", "frozen_by", "limitations"],
+  "properties": {
+    "schema_version": {"const": "elmos.pi-harness.release-candidate/v1"},
+    "release_id": {"type": "string", "format": "uuid"},
+    "source_git_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "package_version": {"type": "string", "minLength": 1},
+    "source_archive_digest": {"$ref": "#/$defs/digest"},
+    "artifact_digests": {"type": "object", "minProperties": 1, "additionalProperties": {"$ref": "#/$defs/digest"}, "propertyNames": {"minLength": 1}},
+    "implementation_trust_domain": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "format": "date-time"},
+    "frozen_by": {"type": "string", "minLength": 1},
+    "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}
+}

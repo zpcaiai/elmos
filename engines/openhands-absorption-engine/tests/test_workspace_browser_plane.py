@@ -23,6 +23,7 @@ class WorkspaceBrowserPlaneTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             artifacts = ContentAddressedStore(Path(root) / "cas")
             provider = LocalWorkspaceProvider(Path(root) / "workspaces", artifacts)
+            self.addCleanup(provider.close)
             identity = Identity("tenant-a", "project-a", "task-a", "run-a")
             lease = provider.activate(provider.allocate(WorkspaceRequest(identity)))
             result = Path(lease.root) / "out" / "result.txt"
@@ -52,6 +53,7 @@ class WorkspaceBrowserPlaneTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             artifacts = ContentAddressedStore(Path(root) / "cas")
             provider = LocalWorkspaceProvider(Path(root) / "workspaces", artifacts)
+            self.addCleanup(provider.close)
             identity = Identity("tenant-a", "project-a", "task-a", "run-a")
             with self.assertRaises(NotConfigured):
                 provider.allocate(WorkspaceRequest(identity, isolation_class=IsolationClass.L2, image_digest="sha256:" + "a" * 64))

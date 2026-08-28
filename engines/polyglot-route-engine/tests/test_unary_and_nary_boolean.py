@@ -156,7 +156,7 @@ def test_negative_zero_keeps_its_sign(tmp_path: Path) -> None:
 
 
 def test_minus_true_is_not_a_signed_literal(tmp_path: Path) -> None:
-    """`bool` is an `int` subclass in Python; `-True` is 
+    """`bool` is an `int` subclass in Python; `-True` is
     arithmetic on a boolean, not a literal."""
 
     with pytest.raises(RouteError) as raised:

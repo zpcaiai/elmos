@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "corpus_key": "pricing-billing-money-conservation-development-v1",
+  "cases": [
+    {
+      "case_id": "DEV-CLEAN-001",
+      "expected_codes": [],
+      "observation": {
+        "ledger_postings": [
+          {
+            "tenant_id": "tenant-a",
+            "transaction_id": "txn-clean",
+            "posting_id": "posting-debit",
+            "currency": "USD",
+            "side": "DEBIT",
+            "amount": "10.000000"
+          },
+          {
+            "tenant_id": "tenant-a",
+            "transaction_id": "txn-clean",
+            "posting_id": "posting-credit",
+            "currency": "USD",
+            "side": "CREDIT",
+            "amount": "10.000000"
+          }
+        ],
+        "allocation_pools": [
+          {
+            "tenant_id": "tenant-a",
+            "source_id": "cost-1",
+            "currency": "USD",
+            "source_amount": "10.000000",
+            "allocations": ["4.000000", "6.000000"]
+          }
+        ],
+        "payment_refunds": [
+          {
+            "tenant_id": "tenant-a",
+            "payment_id": "payment-1",
+            "currency": "USD",
+            "charged_amount": "10.000000",
+            "refund_amounts": ["2.000000", "3.000000"]
+          }
+        ],
+        "idempotent_effects": [
+          {
+            "tenant_id": "tenant-a",
+            "operation": "capture",
+            "idempotency_key": "idem-clean",
+            "effect_id": "effect-1",
+            "payload_digest": "sha256:clean"
+          }
+        ],
+        "invoices": [
+          {
+            "tenant_id": "tenant-a",
+            "invoice_id": "invoice-1",
+            "currency": "USD",
+            "line_amounts": ["6.000000", "4.000000"],
+            "declared_subtotal": "10.000000",
+            "tax_amount": "1.000000",
+            "declared_total": "11.000000"
+          }
+        ]
+      }
+    }
+  ]
+}

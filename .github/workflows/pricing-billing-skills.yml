@@ -1,0 +1,118 @@
+name: Pricing and billing skills
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".agents/skills/elmos-billing-*/**"
+      - ".agents/skills/elmos-cost-margin-analytics/**"
+      - ".agents/skills/elmos-credit-wallet-ledger/**"
+      - ".agents/skills/elmos-enterprise-byok/**"
+      - ".agents/skills/elmos-payments-reconciliation/**"
+      - ".agents/skills/elmos-plan-catalog-entitlements/**"
+      - ".agents/skills/elmos-pricing-product-model/**"
+      - ".agents/skills/elmos-project-pricing-contracts/**"
+      - ".agents/skills/elmos-quote-budget-guard/**"
+      - ".agents/skills/elmos-refunds-disputes/**"
+      - ".agents/skills/elmos-rollout-migration/**"
+      - ".agents/skills/elmos-security-compliance/**"
+      - ".agents/skills/elmos-subscription-invoicing/**"
+      - ".agents/skills/elmos-task-cost-estimation/**"
+      - ".agents/skills/elmos-usage-metering/**"
+      - ".elmos-billing-kit/**"
+      - "agent-skills/runtime/elmos-*/**"
+      - "docs/pricing-billing-skills/**"
+      - "engines/pricing-billing-engine/**"
+      - "modules/commercial-operations/src/main/java/io/elmos/commercial/PaymentRefundReconciliationRuntime.java"
+      - "modules/commercial-operations/src/main/java/io/elmos/commercial/PricingBillingFinancialRuntime.java"
+      - "modules/commercial-operations/src/test/java/io/elmos/commercial/PaymentRefundReconciliationRuntimeTest.java"
+      - "modules/commercial-operations/src/test/java/io/elmos/commercial/PricingBillingFinancialRuntimeTest.java"
+      - "modules/persistence/src/main/resources/db/migration/V65__pricing_billing_financial_core.sql"
+      - "modules/persistence/src/test/java/io/elmos/persistence/PricingBillingFinancialCoreMigrationContractTest.java"
+      - "scripts/pricing-billing/**"
+      - "skills/elmos-pricing-billing-skills-v1.0.0/**"
+      - "skills/subskills/elmos-pricing-billing-skills-v1.0.0.zip"
+      - "templates/pricing-billing/**"
+      - "tests/pricing-billing-gate/**"
+      - "tests/pricing-billing-skills/**"
+      - "tooling/integrate_pricing_billing_skills.py"
+      - "tooling/build_pricing_billing_runtime_binding.py"
+      - "tooling/validate_pricing_billing_installed.py"
+      - "verification-packs/pricing-billing-local-v1/**"
+      - "AGENTS.md"
+      - "Makefile"
+      - ".github/workflows/pricing-billing-skills.yml"
+  push:
+    paths:
+      - ".agents/skills/elmos-billing-*/**"
+      - ".agents/skills/elmos-cost-margin-analytics/**"
+      - ".agents/skills/elmos-credit-wallet-ledger/**"
+      - ".agents/skills/elmos-enterprise-byok/**"
+      - ".agents/skills/elmos-payments-reconciliation/**"
+      - ".agents/skills/elmos-plan-catalog-entitlements/**"
+      - ".agents/skills/elmos-pricing-product-model/**"
+      - ".agents/skills/elmos-project-pricing-contracts/**"
+      - ".agents/skills/elmos-quote-budget-guard/**"
+      - ".agents/skills/elmos-refunds-disputes/**"
+      - ".agents/skills/elmos-rollout-migration/**"
+      - ".agents/skills/elmos-security-compliance/**"
+      - ".agents/skills/elmos-subscription-invoicing/**"
+      - ".agents/skills/elmos-task-cost-estimation/**"
+      - ".agents/skills/elmos-usage-metering/**"
+      - ".elmos-billing-kit/**"
+      - "agent-skills/runtime/elmos-*/**"
+      - "docs/pricing-billing-skills/**"
+      - "engines/pricing-billing-engine/**"
+      - "modules/commercial-operations/src/main/java/io/elmos/commercial/PaymentRefundReconciliationRuntime.java"
+      - "modules/commercial-operations/src/main/java/io/elmos/commercial/PricingBillingFinancialRuntime.java"
+      - "modules/commercial-operations/src/test/java/io/elmos/commercial/PaymentRefundReconciliationRuntimeTest.java"
+      - "modules/commercial-operations/src/test/java/io/elmos/commercial/PricingBillingFinancialRuntimeTest.java"
+      - "modules/persistence/src/main/resources/db/migration/V65__pricing_billing_financial_core.sql"
+      - "modules/persistence/src/test/java/io/elmos/persistence/PricingBillingFinancialCoreMigrationContractTest.java"
+      - "scripts/pricing-billing/**"
+      - "skills/elmos-pricing-billing-skills-v1.0.0/**"
+      - "skills/subskills/elmos-pricing-billing-skills-v1.0.0.zip"
+      - "templates/pricing-billing/**"
+      - "tests/pricing-billing-gate/**"
+      - "tests/pricing-billing-skills/**"
+      - "tooling/integrate_pricing_billing_skills.py"
+      - "tooling/build_pricing_billing_runtime_binding.py"
+      - "tooling/validate_pricing_billing_installed.py"
+      - "verification-packs/pricing-billing-local-v1/**"
+      - "AGENTS.md"
+      - "Makefile"
+      - ".github/workflows/pricing-billing-skills.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pricing-billing-skills-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  local-qualification:
+    name: Validate import, engine, and fail-closed gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.11"
+
+      - name: Set up Java 21.0.11
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: "21.0.11"
+          cache: maven
+
+      - name: Install locked uv tool
+        run: python -m pip install --disable-pip-version-check uv==0.11.16
+
+      - name: Run local pricing and billing qualification
+        run: make pricing-billing-skills

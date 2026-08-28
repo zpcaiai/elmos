@@ -5,6 +5,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -26,6 +27,7 @@ public record AgentConfig(
         String poolId,
         String enrolmentToken,
         List<String> capabilities,
+        List<String> runnerImages,
         int maxConcurrency,
         Path workRoot,
         String containerEngine,
@@ -89,6 +91,30 @@ public record AgentConfig(
             throw new ConfigException("ELMOS_RUNNER_CAPABILITIES must declare 1..32 capabilities");
         }
 
+        LinkedHashSet<String> runnerImages = new LinkedHashSet<>();
+        String[] configuredImages = required(env, "ELMOS_RUNNER_IMAGES").split(",", -1);
+        if (configuredImages.length > 32) {
+            throw new ConfigException("ELMOS_RUNNER_IMAGES must declare 1..32 unique images");
+        }
+        for (String raw : configuredImages) {
+            String value = raw.trim();
+            if (value.isEmpty()) {
+                throw new ConfigException("ELMOS_RUNNER_IMAGES must not contain empty entries");
+            }
+            try {
+                ContainerRuntime.validateImage(value);
+            } catch (IllegalArgumentException ex) {
+                throw new ConfigException(
+                        "ELMOS_RUNNER_IMAGES must contain digest-pinned image references only");
+            }
+            if (!runnerImages.add(value)) {
+                throw new ConfigException("ELMOS_RUNNER_IMAGES must not contain duplicate entries");
+            }
+        }
+        if (runnerImages.isEmpty() || runnerImages.size() > 32) {
+            throw new ConfigException("ELMOS_RUNNER_IMAGES must declare 1..32 unique images");
+        }
+
         int maxConcurrency = bounded(env, "ELMOS_RUNNER_MAX_CONCURRENCY", 2, 1, 16);
 
         Path workRoot = Path.of(required(env, "ELMOS_RUNNER_WORK_ROOT")).toAbsolutePath().normalize();
@@ -119,6 +145,7 @@ public record AgentConfig(
                 required(env, "ELMOS_RUNNER_POOL_ID"),
                 enrolment,
                 List.copyOf(capabilities),
+                List.copyOf(runnerImages),
                 maxConcurrency,
                 workRoot,
                 engine,
@@ -298,6 +325,7 @@ public record AgentConfig(
         Objects.requireNonNull(controlPlaneBaseUrl);
         Objects.requireNonNull(runnerNodeId);
         Objects.requireNonNull(capabilities);
+        Objects.requireNonNull(runnerImages);
         Objects.requireNonNull(workRoot);
     }
 }

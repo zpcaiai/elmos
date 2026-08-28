@@ -92,6 +92,10 @@ spec:
               value: "30"
             - name: ELMOS_RUNNER_CONTAINER_ENGINE
               value: /usr/bin/podman
+            # Comma-separated exact refs already hydrated on every node. The
+            # agent verifies them at startup and immediately before each claim.
+            - name: ELMOS_RUNNER_IMAGES
+              value: registry.example.com/elmos/generation@sha256:REPLACE_WITH_APPROVED_WORKLOAD_DIGEST
             - name: ELMOS_RUNNER_IMAGE_ALLOWLIST_VERSION
               value: allow-2026-07-28
             - name: ELMOS_ENVIRONMENT

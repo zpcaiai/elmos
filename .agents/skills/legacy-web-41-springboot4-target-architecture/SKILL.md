@@ -7,7 +7,9 @@ metadata:
   source_id: 41-springboot4-target-architecture
   source_digest: sha256:d41b511f838b964f3bf545d253e6f6521f9d354fe5d7c481c256ba3576987582
   phase: planning
-  runtime_state: BOUND_LOCAL_EXACT
+  runtime_state: CODE_COMPLETE_LOCAL
+  capability_state: LOCAL_EXECUTED
+  operation_code: SPRINGBOOT4_TARGET_COMPILED
   runtime_handler_id: legacy-web-handler:41-springboot4-target-architecture
 ---
 
@@ -15,8 +17,9 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is bounded, tenant/project/job scoped, idempotency-aware and
-does not execute source-package instructions or customer repository code.
+The handler is code-complete for its bounded local contract, tenant/project/job
+scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
+It does not execute source-package instructions or mutate customer repositories.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and

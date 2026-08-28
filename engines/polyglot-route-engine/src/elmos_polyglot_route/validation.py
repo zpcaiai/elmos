@@ -20,6 +20,14 @@ from .toolchains import ExactToolchain, exact_toolchain, sanitized_subprocess_en
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 
+# A compiler killed by the host (rather than by its own diagnostic path) can
+# transiently return SIGTERM/SIGKILL with no output when several independent
+# local qualification jobs share a workstation.  Retry exactly once only for
+# that empty-diagnostic shape.  A real compiler diagnostic, a timeout, or a
+# repeated signal remains a normal failed obligation and is never promoted.
+_TRANSIENT_EMPTY_SIGNAL_RETURN_CODES = frozenset({-9, -15, 137, 143})
+_TRANSIENT_EMPTY_SIGNAL_RETRIES = 1
+
 
 def _run(
     command: list[str],
@@ -30,29 +38,38 @@ def _run(
 ) -> subprocess.CompletedProcess[str]:
     executable = Path(command[0])
     executable = executable if executable.is_absolute() else (cwd / executable)
-    try:
-        with tempfile.TemporaryDirectory(prefix="elmos-validation-process-") as temporary:
-            root = Path(temporary)
-            home = root / "home"
-            scratch = root / "tmp"
-            home.mkdir(mode=0o700)
-            scratch.mkdir(mode=0o700)
-            completed = subprocess.run(
-                command,
-                cwd=cwd,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=timeout,
-                env=sanitized_subprocess_env(
-                    home=home,
-                    temp_dir=scratch,
-                    executable_dirs=(executable.resolve().parent, *executable_dirs),
-                ),
-            )
-    except (OSError, subprocess.TimeoutExpired) as error:
-        raise RouteError(f"TARGET_VALIDATION_FAILED:{Path(command[0]).name}:process") from error
-    if completed.returncode != 0:
+    for attempt in range(_TRANSIENT_EMPTY_SIGNAL_RETRIES + 1):
+        try:
+            with tempfile.TemporaryDirectory(prefix="elmos-validation-process-") as temporary:
+                root = Path(temporary)
+                home = root / "home"
+                scratch = root / "tmp"
+                home.mkdir(mode=0o700)
+                scratch.mkdir(mode=0o700)
+                completed = subprocess.run(
+                    command,
+                    cwd=cwd,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=timeout,
+                    env=sanitized_subprocess_env(
+                        home=home,
+                        temp_dir=scratch,
+                        executable_dirs=(executable.resolve().parent, *executable_dirs),
+                    ),
+                )
+        except (OSError, subprocess.TimeoutExpired) as error:
+            raise RouteError(f"TARGET_VALIDATION_FAILED:{Path(command[0]).name}:process") from error
+        if completed.returncode == 0:
+            return completed
+        if (
+            attempt < _TRANSIENT_EMPTY_SIGNAL_RETRIES
+            and completed.returncode in _TRANSIENT_EMPTY_SIGNAL_RETURN_CODES
+            and not (completed.stdout or "").strip()
+            and not (completed.stderr or "").strip()
+        ):
+            continue
         stdout = _bounded_process_diagnostic(completed.stdout, cwd=cwd)
         stderr = _bounded_process_diagnostic(completed.stderr, cwd=cwd)
         raise RouteError(
@@ -61,7 +78,7 @@ def _run(
             f"stdout={json.dumps(stdout, ensure_ascii=True)}:"
             f"stderr={json.dumps(stderr, ensure_ascii=True)}"
         )
-    return completed
+    raise RouteError(f"TARGET_VALIDATION_FAILED:{Path(command[0]).name}:process")
 
 
 #: Disclosure policy for external-toolchain failure diagnostics.

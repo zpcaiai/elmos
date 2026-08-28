@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "pack_key": "pricing-billing-local-v1",
+  "capabilities": [
+    {
+      "key": "deterministic-data-money-invariant-harness",
+      "status": "experimental",
+      "owner": "ELMOS pricing-billing engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "coverage/invariant-coverage.json"
+      ],
+      "limitations": [
+        "Bounded dependency-free local observations only.",
+        "No PostgreSQL, provider, or production execution was performed."
+      ]
+    },
+    {
+      "key": "seeded-negative-counterexample-replay",
+      "status": "experimental",
+      "owner": "ELMOS pricing-billing engineering",
+      "evidence_refs": [
+        "counterexamples/replay-result.json",
+        "corpus/negative/cases.json"
+      ],
+      "limitations": [
+        "Five repository-authored seeded defects are local self-attested engineering evidence only."
+      ]
+    },
+    {
+      "key": "independent-holdout",
+      "status": "blocked",
+      "owner": "independent verifier unassigned",
+      "evidence_refs": [
+        "corpus/holdout/manifest.json"
+      ],
+      "limitations": [
+        "No holdout corpus has been supplied, executed, or independently verified."
+      ]
+    },
+    {
+      "key": "representative-production-workload",
+      "status": "blocked",
+      "owner": "production evidence owner unassigned",
+      "evidence_refs": [
+        "corpus/representative-workloads/manifest.json"
+      ],
+      "limitations": [
+        "No authorized production-derived workload exists in this pack."
+      ]
+    },
+    {
+      "key": "external-certification",
+      "status": "blocked",
+      "owner": "independent certification authority unassigned",
+      "evidence_refs": [
+        "certification/certification.json"
+      ],
+      "limitations": [
+        "Independent review, approvals, and external evidence are NOT_RUN."
+      ]
+    }
+  ]
+}

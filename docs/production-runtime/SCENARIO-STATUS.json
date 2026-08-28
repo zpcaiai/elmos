@@ -31,6 +31,7 @@
     "worker-process-kill",
     "backup-pitr-restore",
     "chaos-matrix",
-    "independent-verification"
+    "independent-verification",
+    "production-deployment"
   ]
 }

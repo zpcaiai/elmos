@@ -63,7 +63,12 @@ public class RunnerFleetController {
             boolean networkDefaultDeny,
             String imageAllowlistVersion) {}
 
-    public record ClaimRequest(String runnerNodeId, List<String> capabilities, int limit, int leaseSeconds) {}
+    public record ClaimRequest(
+            String runnerNodeId,
+            List<String> capabilities,
+            List<String> availableImages,
+            int limit,
+            int leaseSeconds) {}
 
     public record HeartbeatRequest(
             String runnerNodeId, String stage, Short progress,
@@ -127,13 +132,19 @@ public class RunnerFleetController {
     /**
      * Long-poll friendly claim. An empty list is a normal answer and means "nothing
      * for your capabilities right now" - the agent backs off and retries.
+     *
+     * <p>{@code capabilities} remains on the wire for older agents, but it is only
+     * a compatibility hint. The V77 claim wrapper binds scheduling to the
+     * independently registered runner capabilities for {@code runnerNodeId}; it
+     * never grants work from this self-declared request field.</p>
      */
     @PostMapping("/leases/claim")
     public ResponseEntity<?> claim(@RequestBody ClaimRequest request,
                                    @RequestHeader("X-Elmos-Runner-Token") String nodeToken) {
         fleet.authorizeNode(request.runnerNodeId(), nodeToken);
         List<LeaseGrant> grants = jobs.claim(
-                request.runnerNodeId(), request.capabilities(), request.limit(), request.leaseSeconds());
+                request.runnerNodeId(), request.capabilities(), request.availableImages(),
+                request.limit(), request.leaseSeconds());
         return ResponseEntity.ok(Map.of("leases", grants.stream().map(RunnerFleetController::toWire).toList()));
     }
 
@@ -145,10 +156,12 @@ public class RunnerFleetController {
                 leaseId, request.runnerNodeId(), leaseToken, request.stage(),
                 request.progress(), request.checkpoint(),
                 clamp(request.leaseSeconds(), 30, 600)));
-        // cancelRequested is how a user-initiated cancel reaches the container. The
-        // agent is expected to SIGTERM its workload and report CANCELLED.
+        // Cancellation and pause are pull signals. The agent stops its workload
+        // before acknowledging either transition; pause retains the last durable
+        // checkpoint and reports PAUSED/NOT_RUN.
         return ResponseEntity.ok(Map.of(
                 "cancelRequested", result.cancelRequested(),
+                "pauseRequested", result.pauseRequested(),
                 "leaseExpiresAt", result.leaseExpiresAt().toString()));
     }
 

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "source_digest": "sha256:aa08e08a83dbfcef06119a8973b81be1af1bfa9c32cef6c94f0210ef62628d7b",
+  "dataset_digest": "sha256:c6bbc0117111ca7278b3a22854cb66e534b8529994c16762e5183f069597e796",
+  "evidence_refs": [
+    "corpus/development/seed.json",
+    "certification/local-test-result.json"
+  ],
+  "limitations": [
+    "Repository-authored deterministic vectors only."
+  ]
+}

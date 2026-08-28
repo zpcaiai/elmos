@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "coverage_key": "pricing-billing-money-invariant-coverage-v1",
+  "scope": "bounded-local-seeded-corpus",
+  "execution_state": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "declared_p0_invariants": 5,
+  "implemented_p0_invariants": 5,
+  "negative_detection_cases": 5,
+  "negative_detections_observed": 5,
+  "clean_development_cases": 1,
+  "clean_development_cases_passed": 1,
+  "mappings": [
+    {
+      "claim_id": "claim.ledger-conservation",
+      "invariant_id": "INV-MONEY-LEDGER-001",
+      "negative_case": "NEG-LEDGER-001",
+      "violation_code": "LEDGER_UNBALANCED"
+    },
+    {
+      "claim_id": "claim.allocation-conservation",
+      "invariant_id": "INV-MONEY-ALLOCATION-001",
+      "negative_case": "NEG-ALLOCATION-001",
+      "violation_code": "ALLOCATION_LEAKAGE"
+    },
+    {
+      "claim_id": "claim.refund-ceiling",
+      "invariant_id": "INV-MONEY-REFUND-001",
+      "negative_case": "NEG-REFUND-001",
+      "violation_code": "REFUND_EXCEEDS_PAYMENT"
+    },
+    {
+      "claim_id": "claim.idempotent-effect-uniqueness",
+      "invariant_id": "INV-MONEY-IDEMPOTENCY-001",
+      "negative_case": "NEG-IDEMPOTENCY-001",
+      "violation_code": "DUPLICATE_IDEMPOTENCY_EFFECT"
+    },
+    {
+      "claim_id": "claim.invoice-detail-reconciliation",
+      "invariant_id": "INV-MONEY-INVOICE-001",
+      "negative_case": "NEG-INVOICE-001",
+      "violation_code": "INVOICE_TOTAL_MISMATCH"
+    }
+  ],
+  "not_covered": [
+    "independent holdout",
+    "representative production workload",
+    "PostgreSQL persistence",
+    "provider settlement",
+    "concurrency schedule exploration",
+    "production execution"
+  ],
+  "certification": "NOT_CERTIFIED"
+}

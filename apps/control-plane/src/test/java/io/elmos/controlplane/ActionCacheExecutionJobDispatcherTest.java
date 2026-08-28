@@ -453,7 +453,10 @@ class ActionCacheExecutionJobDispatcherTest {
                 fixture.request(fixture.reader("tenant-a"),
                         ActionCacheExecutionJobDispatcher.Mode.CACHE_OR_ENQUEUE));
         CasDigest expected = first.requestDigest().orElseThrow();
-        when(jobs.findByIdempotencyKey("tenant-a", "action-cache:test-1"))
+        when(jobs.findByIdempotencyKey(
+                new ExecutionJobPort.AuthenticatedContext(
+                        "tenant-a", "account-a", "actor-a", "test-request"),
+                "action-cache:test-1"))
                 .thenReturn(Optional.of(new ExecutionJobPort.IdempotencyLookup(
                         "job-reconciled", expected.hex(), ExecutionJobPort.Status.QUEUED)));
 
@@ -482,7 +485,10 @@ class ActionCacheExecutionJobDispatcherTest {
                 fixture.request(fixture.reader("tenant-a"),
                         ActionCacheExecutionJobDispatcher.Mode.CACHE_OR_ENQUEUE));
         CasDigest expected = first.requestDigest().orElseThrow();
-        when(jobs.findByIdempotencyKey("tenant-a", "action-cache:test-1"))
+        when(jobs.findByIdempotencyKey(
+                new ExecutionJobPort.AuthenticatedContext(
+                        "tenant-a", "account-a", "actor-a", "test-request"),
+                "action-cache:test-1"))
                 .thenReturn(Optional.of(new ExecutionJobPort.IdempotencyLookup(
                         "job-reconciled", digest("different-request").hex(),
                         ExecutionJobPort.Status.QUEUED)));
@@ -1058,7 +1064,8 @@ class ActionCacheExecutionJobDispatcherTest {
             return new ActionCacheExecutionJobDispatcher.DispatchSpec(
                     "actor-a", ExecutionJobPort.BusinessLine.GENERATION,
                     "compile", "action-cache:test-1", payload,
-                    "generation:multi", image, (short) 100, 3600, maxAttempts);
+                    "generation:multi", image, (short) 100, 3600, maxAttempts,
+                    "account-a", "test-request", "GENERATION", 2);
         }
 
         private static ActionKey key() {

@@ -20,7 +20,7 @@ class CasMigrationContractTest {
 
     private static String migration() throws Exception {
         Path root = Path.of(System.getProperty("basedir"), "src", "main", "resources", "db", "migration");
-        return Files.readString(root.resolve("V65__content_addressed_store_and_action_cache.sql"));
+        return Files.readString(root.resolve("V65_1__content_addressed_store_and_action_cache.sql"));
     }
 
     @Test void everyCasTableIsTenantIsolatedWithForcedRowLevelSecurity() throws Exception {

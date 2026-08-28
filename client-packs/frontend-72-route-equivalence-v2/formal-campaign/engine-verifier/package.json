@@ -9,6 +9,7 @@
     "test": "pnpm run build && node --test --test-concurrency=1 dist/test/*.test.js",
     "check": "pnpm run test",
     "frt": "node dist/src/frt-cli.js",
+    "miniapp": "node dist/src/miniapp-cli.js",
     "polyglot": "node dist/src/polyglot-cli.js",
     "project:generate": "node dist/src/project-cli.js",
     "frontend:formal": "node dist/src/frontend-formal-cli.js",

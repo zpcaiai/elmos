@@ -678,10 +678,10 @@ class ExternalGateIntakeTest(unittest.TestCase):
     def test_trust_store_path_swap_is_rejected(self) -> None:
         replacement = self.root / "replacement-trust-store.json"
         replacement.write_bytes(self.trust_path.read_bytes())
-        original_reader = trust_module.read_regular_file_once
+        original_reader = trust_module.read_regular_file_snapshot
         swapped = False
 
-        def swap_after_store_read(path: Path, *, max_bytes: int, label: str) -> bytes:
+        def swap_after_store_read(path: Path, *, max_bytes: int, label: str):
             nonlocal swapped
             content = original_reader(path, max_bytes=max_bytes, label=label)
             if label == "trust store" and not swapped:
@@ -690,19 +690,94 @@ class ExternalGateIntakeTest(unittest.TestCase):
             return content
 
         with mock.patch.object(
-            trust_module, "read_regular_file_once", side_effect=swap_after_store_read
+            trust_module, "read_regular_file_snapshot", side_effect=swap_after_store_read
         ):
             with self.assertRaisesRegex(ValueError, "trust store changed"):
                 TrustStore.load_with_document(self.trust_path)
+
+    def test_trust_store_descriptor_identity_blocks_aba_substitution(self) -> None:
+        replacement = self.root / "aba-replacement-trust-store.json"
+        replacement.write_bytes(self.trust_path.read_bytes())
+        real_open = trust_module.os.open
+        redirected = False
+
+        def redirect_store_open(path, flags, mode=0o777, *, dir_fd=None):
+            nonlocal redirected
+            if Path(path) == self.trust_path and not redirected:
+                redirected = True
+                return real_open(replacement, flags, mode)
+            if dir_fd is None:
+                return real_open(path, flags, mode)
+            return real_open(path, flags, mode, dir_fd=dir_fd)
+
+        with mock.patch.object(
+            trust_module.os, "open", side_effect=redirect_store_open
+        ):
+            with self.assertRaisesRegex(ValueError, "trust store changed"):
+                TrustStore.load_with_document(self.trust_path)
+
+    def test_trust_store_preopen_persistent_replacement_is_rejected(self) -> None:
+        replacement = self.root / "persistent-replacement-trust-store.json"
+        replacement.write_bytes(self.trust_path.read_bytes())
+        real_open = trust_module.os.open
+        replaced = False
+
+        def replace_store_before_open(path, flags, mode=0o777, *, dir_fd=None):
+            nonlocal replaced
+            if Path(path) == self.trust_path and not replaced:
+                os.replace(replacement, self.trust_path)
+                replaced = True
+            if dir_fd is None:
+                return real_open(path, flags, mode)
+            return real_open(path, flags, mode, dir_fd=dir_fd)
+
+        with mock.patch.object(
+            trust_module.os, "open", side_effect=replace_store_before_open
+        ):
+            with self.assertRaisesRegex(ValueError, "trust store changed"):
+                TrustStore.load_with_document(self.trust_path)
+
+    def test_trust_store_ancestor_swap_is_rejected(self) -> None:
+        first = self.root / "trust-root-a"
+        second = self.root / "trust-root-b"
+        first.mkdir()
+        second.mkdir()
+        for source in (*self.root.glob("*.public.pem"), self.trust_path):
+            (first / source.name).write_bytes(source.read_bytes())
+            (second / source.name).write_bytes(source.read_bytes())
+        alias = self.root / "trust-root-current"
+        alias.symlink_to(first, target_is_directory=True)
+        replacement_alias = self.root / "trust-root-next"
+        replacement_alias.symlink_to(second, target_is_directory=True)
+        original_reader = trust_module.read_regular_file_snapshot
+        swapped = False
+
+        def swap_ancestor_after_store_read(
+            path: Path, *, max_bytes: int, label: str
+        ):
+            nonlocal swapped
+            content = original_reader(path, max_bytes=max_bytes, label=label)
+            if label == "trust store" and not swapped:
+                os.replace(replacement_alias, alias)
+                swapped = True
+            return content
+
+        with mock.patch.object(
+            trust_module,
+            "read_regular_file_snapshot",
+            side_effect=swap_ancestor_after_store_read,
+        ):
+            with self.assertRaisesRegex(ValueError, "trust store changed"):
+                TrustStore.load_with_document(alias / self.trust_path.name)
 
     def test_trust_store_public_key_path_swap_is_rejected(self) -> None:
         public_key = self.root / "external-executor.public.pem"
         replacement = self.root / "replacement-public-key.pem"
         replacement.write_bytes(public_key.read_bytes())
-        original_reader = trust_module.read_regular_file_once
+        original_reader = trust_module.read_regular_file_snapshot
         swapped = False
 
-        def swap_after_key_read(path: Path, *, max_bytes: int, label: str) -> bytes:
+        def swap_after_key_read(path: Path, *, max_bytes: int, label: str):
             nonlocal swapped
             content = original_reader(path, max_bytes=max_bytes, label=label)
             if label == "trust store key key-external-executor" and not swapped:
@@ -711,10 +786,86 @@ class ExternalGateIntakeTest(unittest.TestCase):
             return content
 
         with mock.patch.object(
-            trust_module, "read_regular_file_once", side_effect=swap_after_key_read
+            trust_module, "read_regular_file_snapshot", side_effect=swap_after_key_read
         ):
             with self.assertRaisesRegex(ValueError, "public key changed"):
                 TrustStore.load_with_document(self.trust_path)
+
+    def test_public_key_descriptor_identity_blocks_aba_substitution(self) -> None:
+        public_key = self.root / "external-executor.public.pem"
+        replacement = self.root / "aba-replacement-public-key.pem"
+        replacement.write_bytes(public_key.read_bytes())
+        real_open = trust_module.os.open
+        redirected = False
+
+        def redirect_key_open(path, flags, mode=0o777, *, dir_fd=None):
+            nonlocal redirected
+            if Path(path).resolve() == public_key.resolve() and not redirected:
+                redirected = True
+                return real_open(replacement, flags, mode)
+            if dir_fd is None:
+                return real_open(path, flags, mode)
+            return real_open(path, flags, mode, dir_fd=dir_fd)
+
+        with mock.patch.object(
+            trust_module.os, "open", side_effect=redirect_key_open
+        ):
+            with self.assertRaisesRegex(ValueError, "public key changed"):
+                TrustStore.load_with_document(self.trust_path)
+
+    def test_public_key_preopen_persistent_replacement_is_rejected(self) -> None:
+        public_key = self.root / "external-executor.public.pem"
+        replacement = self.root / "persistent-replacement-public-key.pem"
+        replacement.write_bytes(public_key.read_bytes())
+        real_open = trust_module.os.open
+        replaced = False
+
+        def replace_key_before_open(path, flags, mode=0o777, *, dir_fd=None):
+            nonlocal replaced
+            if Path(path).resolve() == public_key.resolve() and not replaced:
+                os.replace(replacement, public_key)
+                replaced = True
+            if dir_fd is None:
+                return real_open(path, flags, mode)
+            return real_open(path, flags, mode, dir_fd=dir_fd)
+
+        with mock.patch.object(
+            trust_module.os, "open", side_effect=replace_key_before_open
+        ):
+            with self.assertRaisesRegex(ValueError, "public key changed"):
+                TrustStore.load_with_document(self.trust_path)
+
+    def test_reused_public_key_path_preserves_each_snapshot_identity(self) -> None:
+        document = json.loads(self.trust_path.read_text(encoding="utf-8"))
+        first_record, second_record = document["keys"][:2]
+        shared_relative = first_record["public_key_path"]
+        original_second = self.root / second_record["public_key_path"]
+        second_record["public_key_path"] = shared_relative
+        duplicate_store = self.root / "duplicate-path-trust-store.json"
+        duplicate_store.write_text(json.dumps(document), encoding="utf-8")
+        shared_key = self.root / shared_relative
+        replacement = self.root / "duplicate-path-replacement-key.pem"
+        replacement.write_bytes(original_second.read_bytes())
+        original_reader = trust_module.read_regular_file_snapshot
+        replaced = False
+
+        def replace_after_first_shared_read(
+            path: Path, *, max_bytes: int, label: str
+        ):
+            nonlocal replaced
+            content = original_reader(path, max_bytes=max_bytes, label=label)
+            if Path(path).resolve() == shared_key.resolve() and not replaced:
+                os.replace(replacement, shared_key)
+                replaced = True
+            return content
+
+        with mock.patch.object(
+            trust_module,
+            "read_regular_file_snapshot",
+            side_effect=replace_after_first_shared_read,
+        ):
+            with self.assertRaisesRegex(ValueError, "public key changed"):
+                TrustStore.load_with_document(duplicate_store)
 
     def test_not_run_stage_remains_blocked(self) -> None:
         intake = self.build_intake(35)

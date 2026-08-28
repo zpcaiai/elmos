@@ -25,7 +25,7 @@ except ModuleNotFoundError as missing:  # pragma: no cover - environment guard
         "while running the other reports success and still fails here.\n"
         "`scripts/cas/finish-mac-verification.sh` picks a consistent one for you.")
 
-MIGRATION_NAME = "V65__content_addressed_store_and_action_cache.sql"
+MIGRATION_NAME = "V65_1__content_addressed_store_and_action_cache.sql"
 
 
 def locate_migration() -> pathlib.Path:

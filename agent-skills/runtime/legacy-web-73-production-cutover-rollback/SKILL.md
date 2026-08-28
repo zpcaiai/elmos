@@ -7,7 +7,9 @@ metadata:
   source_id: 73-production-cutover-rollback
   source_digest: sha256:025fd83d9c55e89e3b84989432eb379f845e97ab973acd9568cf87111e43bb24
   phase: repair-certification
-  runtime_state: BOUND_LOCAL_EXACT
+  runtime_state: CODE_COMPLETE_LOCAL
+  capability_state: LOCAL_EXECUTED
+  operation_code: CUTOVER_ROLLBACK_STATE_EVALUATED
   runtime_handler_id: legacy-web-handler:73-production-cutover-rollback
 ---
 
@@ -15,8 +17,9 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is bounded, tenant/project/job scoped, idempotency-aware and
-does not execute source-package instructions or customer repository code.
+The handler is code-complete for its bounded local contract, tenant/project/job
+scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
+It does not execute source-package instructions or mutate customer repositories.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-multitenant-task-finops-invariants",
+  "metrics": {
+    "local_tests": 56,
+    "local_test_pass_rate": 1.0
+  },
+  "zero_tolerance": {},
+  "evidence_refs": [
+    "certification/local-test-result.json",
+    "certification/target-source-manifest.json",
+    "certification/local-environment.json",
+    "counterexamples/sample.json"
+  ],
+  "repository_binding_records": [
+    "certification/local-test-result.json"
+  ],
+  "notes": [
+    "Local self-attested engineering evidence only; it does not update the 144 source product task execution states.",
+    "Independent holdout, representative workloads, external dependencies and production certification remain open."
+  ]
+}

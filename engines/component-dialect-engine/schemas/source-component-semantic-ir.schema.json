@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/source-component-semantic-ir.schema.json",
+  "title": "ELMOS Source Component Semantic IR",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "kind",
+    "componentId",
+    "source",
+    "blocker",
+    "captureStatus",
+    "imports",
+    "hooks",
+    "effects",
+    "dataContracts",
+    "collections",
+    "slots",
+    "features",
+    "targetPlans",
+    "obligations",
+    "irDigest"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "kind": { "const": "elmos.source-component-semantic-ir" },
+    "componentId": { "type": "string", "minLength": 1 },
+    "source": {
+      "type": "object",
+      "required": ["framework", "file", "componentName", "componentDigest", "sourceRange"],
+      "properties": {
+        "framework": { "type": "string", "minLength": 1 },
+        "file": { "type": "string", "minLength": 1 },
+        "componentName": { "type": "string", "minLength": 1 },
+        "componentDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "sourceRange": { "$ref": "#/$defs/range" }
+      },
+      "additionalProperties": false
+    },
+    "blocker": {
+      "type": "object",
+      "required": ["reasonCode", "reason"],
+      "properties": {
+        "reasonCode": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "captureStatus": { "enum": ["REPRESENTED", "PARTIAL"] },
+    "imports": { "type": "array", "items": { "type": "object", "required": ["module", "bindings", "typeOnly", "sourceRange"] } },
+    "hooks": { "type": "array", "items": { "type": "object", "required": ["name", "ownerModule", "role", "asyncCallback", "dependencyCount", "sourceRange"] } },
+    "effects": { "type": "array", "items": { "type": "object", "required": ["id", "owner", "trigger", "resources", "cleanup", "cancellation", "status", "sourceRange"] } },
+    "dataContracts": { "type": "array", "items": { "type": "object", "required": ["name", "ownership", "typeText", "shape", "nullable", "initializerKind", "sourceRange"] } },
+    "collections": { "type": "array", "items": { "type": "object", "required": ["id", "collection", "operation", "mutation", "sourceRange"] } },
+    "slots": { "type": "array", "items": { "type": "object", "required": ["name", "sourceForm", "evaluationOwner", "sourceRange"] } },
+    "features": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "detail", "sourceRange", "sourceExcerpt"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "kind": { "$ref": "#/$defs/semanticFeatureKind" },
+          "detail": { "type": "string", "minLength": 1 },
+          "sourceRange": { "$ref": "#/$defs/range" },
+          "sourceExcerpt": { "type": "string", "maxLength": 240 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "targetPlans": {
+      "type": "object",
+      "required": ["react", "typescript", "vue3", "vue2", "angular", "svelte", "react-native", "miniprogram", "arkui", "flutter"],
+      "properties": {
+        "react": { "$ref": "#/$defs/targetPlan" },
+        "typescript": { "$ref": "#/$defs/targetPlan" },
+        "vue3": { "$ref": "#/$defs/targetPlan" },
+        "vue2": { "$ref": "#/$defs/targetPlan" },
+        "angular": { "$ref": "#/$defs/targetPlan" },
+        "svelte": { "$ref": "#/$defs/targetPlan" },
+        "react-native": { "$ref": "#/$defs/targetPlan" },
+        "miniprogram": { "$ref": "#/$defs/targetPlan" },
+        "arkui": { "$ref": "#/$defs/targetPlan" },
+        "flutter": { "$ref": "#/$defs/targetPlan" }
+      },
+      "additionalProperties": false
+    },
+    "obligations": { "type": "array", "items": { "$ref": "#/$defs/obligation" } },
+    "irDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  },
+  "$defs": {
+    "range": {
+      "type": "object",
+      "required": ["start", "end", "startLine", "startColumn", "endLine", "endColumn"],
+      "properties": {
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 1 },
+        "startLine": { "type": "integer", "minimum": 1 },
+        "startColumn": { "type": "integer", "minimum": 1 },
+        "endLine": { "type": "integer", "minimum": 1 },
+        "endColumn": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "semanticMode": { "enum": ["NATIVE", "ADAPTER", "HAND_PORTED", "BLOCKED"] },
+    "semanticFeatureKind": {
+      "enum": [
+        "EXTERNAL_HOOK", "ASYNC_EFFECT", "NETWORK_RESOURCE", "TIMER_RESOURCE",
+        "SUBSCRIPTION_RESOURCE", "STORAGE_RESOURCE", "NATIVE_RESOURCE", "WORKER_RESOURCE",
+        "OBJECT_STATE", "LITERAL_UNION_TYPE", "UNKNOWN_OR_INCOMPATIBLE_TYPE",
+        "MAP_COLLECTION", "SET_COLLECTION", "DERIVED_COLLECTION", "SLOT_PROJECTION",
+        "COMPONENT_COMPOSITION", "HTML_SEMANTIC", "TABLE_SEMANTIC", "DISCLOSURE_SEMANTIC",
+        "SVG_SEMANTIC", "DOCUMENT_ROOT_SEMANTIC", "CSS_MODULE", "UNMODELED_SOURCE_SEMANTIC"
+      ]
+    },
+    "decision": {
+      "type": "object",
+      "required": ["featureId", "featureKind", "mode", "reason", "requiredEvidence"],
+      "properties": {
+        "featureId": { "type": "string", "minLength": 1 },
+        "featureKind": { "$ref": "#/$defs/semanticFeatureKind" },
+        "mode": { "$ref": "#/$defs/semanticMode" },
+        "reason": { "type": "string", "minLength": 1 },
+        "requiredEvidence": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      },
+      "additionalProperties": false
+    },
+    "targetPlan": {
+      "type": "object",
+      "required": ["targetFramework", "adapterId", "disposition", "decisions", "requiredEvidence"],
+      "properties": {
+        "targetFramework": { "enum": ["react", "typescript", "vue3", "vue2", "angular", "svelte", "react-native", "miniprogram", "arkui", "flutter"] },
+        "adapterId": { "type": "string", "minLength": 1 },
+        "disposition": { "enum": ["ADAPTER_REQUIRED", "HAND_PORTED", "BLOCKED"] },
+        "decisions": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/decision" } },
+        "requiredEvidence": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      },
+      "additionalProperties": false
+    },
+    "obligation": {
+      "type": "object",
+      "required": ["id", "featureId", "targetFramework", "mode", "reason", "requiredEvidence"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "featureId": { "type": "string", "minLength": 1 },
+        "targetFramework": { "enum": ["react", "typescript", "vue3", "vue2", "angular", "svelte", "react-native", "miniprogram", "arkui", "flutter"] },
+        "mode": { "enum": ["ADAPTER", "HAND_PORTED", "BLOCKED"] },
+        "reason": { "type": "string", "minLength": 1 },
+        "requiredEvidence": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

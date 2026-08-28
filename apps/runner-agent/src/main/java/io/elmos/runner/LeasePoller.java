@@ -19,6 +19,7 @@ public final class LeasePoller implements AutoCloseable {
 
     private final AgentConfig config;
     private final ControlPlaneClient client;
+    private final ContainerRuntime containers;
     private final JobExecutor executor;
     private final AgentMetrics metrics;
 
@@ -29,9 +30,11 @@ public final class LeasePoller implements AutoCloseable {
     private final Backoff idleBackoff = new Backoff(1_000, 5_000);
     private final Backoff errorBackoff = new Backoff(2_000, 60_000);
 
-    public LeasePoller(AgentConfig config, ControlPlaneClient client, JobExecutor executor, AgentMetrics metrics) {
+    public LeasePoller(AgentConfig config, ControlPlaneClient client,
+                       ContainerRuntime containers, JobExecutor executor, AgentMetrics metrics) {
         this.config = config;
         this.client = client;
+        this.containers = containers;
         this.executor = executor;
         this.metrics = metrics;
         this.slots = new Semaphore(config.maxConcurrency());
@@ -93,7 +96,13 @@ public final class LeasePoller implements AutoCloseable {
 
         List<ControlPlaneClient.Lease> leases;
         try {
-            leases = client.claim(Math.min(free, config.claimBatchSize()));
+            List<String> availableImages = containers.locallyAvailableImages();
+            if (availableImages.isEmpty()) {
+                metrics.markUnhealthy("runner_image_not_local");
+                Thread.sleep(errorBackoff.nextDelayMillis());
+                return;
+            }
+            leases = client.claim(Math.min(free, config.claimBatchSize()), availableImages);
             errorBackoff.reset();
         } catch (RuntimeException ex) {
             metrics.increment(AgentMetrics.CLAIM_FAILURES);

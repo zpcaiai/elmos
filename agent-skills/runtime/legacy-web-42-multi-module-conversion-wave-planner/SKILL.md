@@ -7,7 +7,9 @@ metadata:
   source_id: 42-multi-module-conversion-wave-planner
   source_digest: sha256:2fce65282740e565d64c078d9b23b5d5053f22497f5f334ea1279c861bb7d045
   phase: planning
-  runtime_state: BOUND_LOCAL_EXACT
+  runtime_state: CODE_COMPLETE_LOCAL
+  capability_state: LOCAL_EXECUTED
+  operation_code: CONVERSION_WAVES_COMPILED
   runtime_handler_id: legacy-web-handler:42-multi-module-conversion-wave-planner
 ---
 
@@ -15,8 +17,9 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is bounded, tenant/project/job scoped, idempotency-aware and
-does not execute source-package instructions or customer repository code.
+The handler is code-complete for its bounded local contract, tenant/project/job
+scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
+It does not execute source-package instructions or mutate customer repositories.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and

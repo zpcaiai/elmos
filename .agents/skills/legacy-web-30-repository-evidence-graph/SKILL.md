@@ -7,7 +7,9 @@ metadata:
   source_id: 30-repository-evidence-graph
   source_digest: sha256:e8e379548e5a5acce8e70a6747235451b62c68eb6b0da85f920b64d4363b8093
   phase: semantic-model
-  runtime_state: BOUND_LOCAL_EXACT
+  runtime_state: CODE_COMPLETE_LOCAL
+  capability_state: LOCAL_EXECUTED
+  operation_code: EVIDENCE_GRAPH_BUILT
   runtime_handler_id: legacy-web-handler:30-repository-evidence-graph
 ---
 
@@ -15,8 +17,9 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is bounded, tenant/project/job scoped, idempotency-aware and
-does not execute source-package instructions or customer repository code.
+The handler is code-complete for its bounded local contract, tenant/project/job
+scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
+It does not execute source-package instructions or mutate customer repositories.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and

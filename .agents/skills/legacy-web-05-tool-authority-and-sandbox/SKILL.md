@@ -7,7 +7,9 @@ metadata:
   source_id: 05-tool-authority-and-sandbox
   source_digest: sha256:8a6f739036aa055791119a340aa7e32702382db815513a0c654b278c1314fcfa
   phase: control-plane
-  runtime_state: BOUND_LOCAL_EXACT
+  runtime_state: CODE_COMPLETE_LOCAL
+  capability_state: LOCAL_EXECUTED
+  operation_code: AUTHORITY_PLAN_COMPILED
   runtime_handler_id: legacy-web-handler:05-tool-authority-and-sandbox
 ---
 
@@ -15,8 +17,9 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is bounded, tenant/project/job scoped, idempotency-aware and
-does not execute source-package instructions or customer repository code.
+The handler is code-complete for its bounded local contract, tenant/project/job
+scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
+It does not execute source-package instructions or mutate customer repositories.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and

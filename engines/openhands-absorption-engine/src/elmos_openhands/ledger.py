@@ -21,6 +21,7 @@ from .models import (
     new_id,
     utc_now,
 )
+from .persistence import OutboxRecord
 
 
 @dataclass(frozen=True, slots=True)
@@ -172,6 +173,8 @@ class EventLedger:
                     "SELECT * FROM execution_runs WHERE tenant_id=? AND run_id=? AND node_id=?",
                     (identity.tenant_id, identity.run_id, identity.node_id),
                 ).fetchone()
+                if row is not None and (row["project_id"], row["task_id"]) != (identity.project_id, identity.task_id):
+                    raise TenantIsolationError("run identifier is already bound to another project/task")
                 if row is None or row["manifest_hash"] != manifest_hash:
                     raise IdempotencyConflict("run already exists with a different manifest")
                 return self._run_record(row)
@@ -319,6 +322,14 @@ class EventLedger:
             raise KeyError(run_id)
         return self._run_record(row)
 
+    def assert_identity(self, identity: Identity) -> RunRecord:
+        """Bind a run lookup to the full authenticated project/task scope."""
+
+        record = self.run(identity.tenant_id, identity.run_id, identity.node_id)
+        if record.identity.scope() != identity.scope():
+            raise TenantIsolationError("run does not belong to the authenticated project/task scope")
+        return record
+
     def acquire_lease(self, identity: Identity, owner: str, ttl_seconds: float, now: float) -> FencedLease:
         if not owner or ttl_seconds <= 0:
             raise ContractViolation("lease owner and positive TTL are required")
@@ -398,14 +409,18 @@ class EventLedger:
         return checkpoint_id
 
     def latest_checkpoint(self, tenant_id: str, run_id: str, node_id: str = "root") -> dict[str, Any] | None:
-        self._require_tenant_run(tenant_id, run_id)
-        row = self._connection.execute(
-            "SELECT * FROM checkpoints WHERE tenant_id=? AND run_id=? AND node_id=? ORDER BY event_seq DESC LIMIT 1",
-            (tenant_id, run_id, node_id),
-        ).fetchone()
-        if row is None:
-            return None
-        return dict(row)
+        rows = self.checkpoints(tenant_id, run_id, node_id=node_id, limit=1)
+        return None if not rows else rows[0]
+
+    def checkpoints(self, tenant_id: str, run_id: str, *, node_id: str = "root", limit: int = 100, verify: bool = True) -> tuple[dict[str, Any], ...]:
+        self._require_tenant_run(tenant_id, run_id, node_id)
+        if limit < 1 or limit > 10_000:
+            raise ContractViolation("checkpoint page limit is out of bounds")
+        rows = self._connection.execute(
+            "SELECT * FROM checkpoints WHERE tenant_id=? AND run_id=? AND node_id=? ORDER BY event_seq DESC,created_at DESC LIMIT ?",
+            (tenant_id, run_id, node_id, limit),
+        ).fetchall()
+        return tuple(self._checkpoint_from_row(row, verify=verify) for row in rows)
 
     def rebuild_projection(self, tenant_id: str, run_id: str) -> dict[str, Any]:
         current: dict[str, Any] = {"status": "queued", "last_event_seq": -1, "actions": {}, "usage": {"input_tokens": 0, "output_tokens": 0, "cost_micros": 0}}
@@ -440,18 +455,82 @@ class EventLedger:
             expected_seq += 1
         return True
 
-    def pending_outbox(self, limit: int = 1000) -> list[dict[str, Any]]:
+    def append_correction(
+        self,
+        identity: Identity,
+        *,
+        corrected_event_id: str,
+        reason: str,
+        replacement: dict[str, Any],
+        idempotency_key: str,
+    ) -> Event:
+        """Append a correction fact without mutating immutable history."""
+
+        if not corrected_event_id or not reason:
+            raise ContractViolation("correction requires an event and reason")
+        original = self._connection.execute(
+            "SELECT 1 FROM execution_events WHERE tenant_id=? AND run_id=? AND event_id=?",
+            (identity.tenant_id, identity.run_id, corrected_event_id),
+        ).fetchone()
+        if original is None:
+            raise TenantIsolationError("corrected event is not in the authenticated run scope")
+        return self.append(
+            identity,
+            "event.corrected",
+            {
+                "corrected_event_id": corrected_event_id,
+                "reason": reason[:1000],
+                "replacement": replacement,
+            },
+            idempotency_key=idempotency_key,
+            causation_event_id=corrected_event_id,
+        )
+
+    def projection_matches_rebuild(self, tenant_id: str, run_id: str) -> bool:
+        rebuilt = self.rebuild_projection(tenant_id, run_id)
+        row = self._connection.execute(
+            "SELECT projection_json,event_seq,head_digest FROM projections WHERE tenant_id=? AND run_id=? AND projection_name='runtime'",
+            (tenant_id, run_id),
+        ).fetchone()
+        if row is None:
+            return False
+        stored = json.loads(row["projection_json"])
+        return (
+            stored == rebuilt
+            and int(row["event_seq"]) == int(rebuilt["last_event_seq"])
+            and row["head_digest"] == rebuilt.get("last_event_digest", "genesis")
+        )
+
+    def pending_outbox(self, limit: int = 1000) -> tuple[OutboxRecord, ...]:
+        if limit < 1 or limit > 10_000:
+            raise ContractViolation("outbox page limit is out of bounds")
         rows = self._connection.execute(
             "SELECT * FROM outbox WHERE published_at IS NULL ORDER BY outbox_id LIMIT ?", (limit,)
         ).fetchall()
-        return [dict(row) for row in rows]
+        return tuple(
+            OutboxRecord(
+                int(row["outbox_id"]),
+                str(row["tenant_id"]),
+                str(row["run_id"]),
+                int(row["seq"]),
+                json.loads(row["event_json"]),
+            )
+            for row in rows
+        )
 
-    def mark_outbox_published(self, outbox_id: int, published_at: str | None = None) -> None:
+    def mark_outbox_published(self, outbox_ids: int | Iterator[int] | list[int] | tuple[int, ...], published_at: str | None = None) -> None:
+        identifiers = (outbox_ids,) if isinstance(outbox_ids, int) else tuple(outbox_ids)
+        if not identifiers or any(not isinstance(identifier, int) or identifier <= 0 for identifier in identifiers):
+            raise ContractViolation("outbox identifiers must be positive integers")
         with self._transaction() as connection:
-            connection.execute("UPDATE outbox SET published_at=? WHERE outbox_id=? AND published_at IS NULL", (published_at or utc_now(), outbox_id))
+            timestamp = published_at or utc_now()
+            connection.executemany(
+                "UPDATE outbox SET published_at=? WHERE outbox_id=? AND published_at IS NULL",
+                ((timestamp, identifier) for identifier in identifiers),
+            )
 
     def _require_run(self, identity: Identity) -> None:
-        self._require_tenant_run(identity.tenant_id, identity.run_id, identity.node_id)
+        self.assert_identity(identity)
 
     def _require_tenant_run(self, tenant_id: str, run_id: str, node_id: str = "root") -> None:
         row = self._connection.execute(
@@ -465,6 +544,32 @@ class EventLedger:
     def _run_record(row: sqlite3.Row) -> RunRecord:
         identity = Identity(row["tenant_id"], row["project_id"], row["task_id"], row["run_id"], row["node_id"])
         return RunRecord(identity, row["status"], row["manifest_hash"], row["created_at"])
+
+    @staticmethod
+    def _checkpoint_from_row(row: sqlite3.Row, *, verify: bool = True) -> dict[str, Any]:
+        value = dict(row)
+        try:
+            state = json.loads(value["state_json"])
+        except (TypeError, json.JSONDecodeError):
+            if verify:
+                raise CorruptState("checkpoint state is not valid JSON")
+            state = None
+        body = {
+            "tenant_id": value["tenant_id"],
+            "run_id": value["run_id"],
+            "node_id": value["node_id"],
+            "event_seq": value["event_seq"],
+            "manifest_hash": value["manifest_hash"],
+            "state": state,
+            "workspace_ref": value["workspace_ref"],
+            "context_fingerprint": value["context_fingerprint"],
+        }
+        from .models import digest_of
+
+        if verify and digest_of(body) != value["digest"]:
+            raise CorruptState("checkpoint digest verification failed")
+        value["state"] = state
+        return value
 
     @staticmethod
     def _event_from_row(row: sqlite3.Row) -> Event:

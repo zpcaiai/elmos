@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-17-5-multitenant-task-finops",
+  "qualification": {
+    "current_migration_family": ["V77", "V77.1", "V77.2"],
+    "current_state": "NOT_RUN",
+    "historical_v73_receipt": "HISTORICAL_ONLY_NOT_CURRENT_COVERAGE"
+  },
+  "capabilities": [
+    {
+      "id": "postgresql-17-5-empty-schema-flyway-replay",
+      "status": "experimental",
+      "owner": "ELMOS Database Platform",
+      "evidence_refs": [
+        "modules/persistence/src/test/java/io/elmos/persistence/FlywayMigrationTest.java"
+      ],
+      "reason": "Current V77/V77.1/V77.2 disposable PostgreSQL qualification is NOT_RUN; the historical V73 receipt is not current coverage."
+    },
+    {
+      "id": "account-three-slot-and-generation-fencing",
+      "status": "experimental",
+      "owner": "ELMOS Task FinOps Runtime",
+      "evidence_refs": [
+        "modules/persistence/src/main/resources/db/migration/V77__account_task_control_and_finops_runtime.sql",
+        "modules/persistence/src/test/java/io/elmos/persistence/TaskFinopsOperationsMigrationContractTest.java"
+      ],
+      "reason": "Repository implementation is present; high-contention representative execution remains NOT_RUN."
+    },
+    {
+      "id": "exact-decimal-cost-revenue-conservation",
+      "status": "experimental",
+      "owner": "ELMOS Product Finance Data Owner",
+      "evidence_refs": [
+        "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsPolicy.java",
+        "modules/workflow/src/main/java/io/elmos/workflow/PaymentSettlementReconciler.java",
+        "modules/persistence/src/main/resources/db/migration/V77_1__task_finops_recovery_lifecycle_and_settlement.sql",
+        "modules/persistence/src/test/java/io/elmos/persistence/TaskFinopsFinancialSemanticsContractTest.java"
+      ],
+      "reason": "Local invariants do not resolve provider invoices, settlements, tax, or external review."
+    },
+    {
+      "id": "checkpoint-lifecycle-settlement-and-analytics-projections",
+      "status": "experimental",
+      "owner": "ELMOS Task FinOps Runtime",
+      "evidence_refs": [
+        "modules/persistence/src/main/resources/db/migration/V77_1__task_finops_recovery_lifecycle_and_settlement.sql",
+        "modules/persistence/src/main/resources/db/migration/V77_2__task_finops_analytics_rebuild_and_exports.sql",
+        "modules/persistence/src/test/java/io/elmos/persistence/TaskFinopsOperationsMigrationContractTest.java",
+        "modules/workflow/src/test/java/io/elmos/workflow/CheckpointForkPolicyTest.java",
+        "modules/workflow/src/test/java/io/elmos/workflow/TenantLifecyclePolicyTest.java",
+        "modules/workflow/src/test/java/io/elmos/workflow/PaymentSettlementReconcilerTest.java",
+        "modules/workflow/src/test/java/io/elmos/workflow/TaskFinopsAnalyticsTest.java"
+      ],
+      "reason": "Repository implementation is bound; Temporal, object/payment providers, representative workloads, independent verification and current PostgreSQL execution remain NOT_RUN."
+    },
+    {
+      "id": "production-cutover-and-rollback",
+      "status": "blocked",
+      "owner": "ELMOS Database Platform",
+      "evidence_refs": [],
+      "reason": "No production database, approved window, rollback authorization, or independent verifier is in scope."
+    }
+  ]
+}
