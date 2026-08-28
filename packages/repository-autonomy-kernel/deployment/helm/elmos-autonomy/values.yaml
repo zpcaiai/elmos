@@ -1,7 +1,9 @@
-replicaCount: 2
+replicaCount: 1
+terminationGracePeriodSeconds: 60
 image:
   repository: elmos/repository-autonomy-kernel
-  tag: "2.0.0"
+  # Required at render time; tags never satisfy the production deployment gate.
+  digest: ""
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
@@ -16,3 +18,6 @@ networkPolicy:
   enabled: true
   ingress: []
   egress: []
+controlStore:
+  # A libpq service name only. Credentials remain in the external Secrets Broker.
+  postgresService: ""

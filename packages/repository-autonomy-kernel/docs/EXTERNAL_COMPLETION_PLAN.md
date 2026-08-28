@@ -8,6 +8,17 @@
 
 当前已完成的是本地工程基础：31 个 Skill handler、SQLite 事件与租约、内容寻址制品、fail-closed authority/policy、HTTP/CLI、PostgreSQL 目标迁移、OpenAPI/OPA/Docker/Kubernetes/Helm 资产。它们只能支撑 `LOCAL_ENGINEERING_VALIDATED`，不能替代本计划中的外部证据。
 
+截至当前实现，适合在无客户凭据和无生产权限条件下编码的部分已经落地：外部操作 SPI 与状态机、HMAC 授权验证、幂等/补偿/未知结果 reconciliation、外部收据与 transactional outbox、S3/Event Bus/Secrets Broker 传输边界、真实本地 Git exact-commit 适配器、7 个 Provider canonical adapter、84 单元语义 conformance、PostgreSQL V001–V006/RLS/迁移锁/备份恢复 API、Kubernetes digest-bound apply/rollback/cleanup、客户仓库绑定、Golden Route 验收、T00–T08/E1–E5/P05 保守聚合器。它们的本地测试结果仍是工程证据；下表所列真实环境执行状态不因代码存在而变化。
+
+| 波次 | 代码状态 | 真实环境状态 | 认证状态 |
+|---|---|---|---|
+| Wave 0 | `IMPLEMENTED_LOCAL_ENGINEERING` | `NOT_RUN` | `NOT_CERTIFIED` |
+| Wave 1 | `IMPLEMENTED_ADAPTER_AND_MIGRATION_BOUNDARIES` | `NOT_RUN` | `NOT_CERTIFIED` |
+| Wave 2 | `IMPLEMENTED_7_ADAPTERS_84_LOCAL_UNITS` | `NOT_RUN` | `NOT_CERTIFIED` |
+| Wave 3 | `IMPLEMENTED_DEPLOY_ROLLBACK_RECOVERY_BOUNDARY` | `NOT_RUN` | `NOT_CERTIFIED` |
+| Wave 4 | `IMPLEMENTED_BINDING_AND_ACCEPTANCE_BOUNDARY` | `NOT_RUN` | `NOT_CERTIFIED` |
+| Wave 5 | `IMPLEMENTED_FAIL_CLOSED_EVALUATOR` | `NOT_RUN` | `NOT_CERTIFIED` |
+
 ## 2. 统一状态与证据规则
 
 每个外部能力按独立的 `capability_id + provider_instance + version + region + tenant + artifact_digest` 记录状态：
@@ -40,7 +51,7 @@
 
 这些能力先完成，因为它们是运行、证据、异步投递和凭据安全的共同基础。
 
-1. PostgreSQL 17：按 `sql/migrations/V001__...sql` 至 `V004__...sql` 迁移；启用 tenant RLS；配置备份、恢复、连接池、迁移锁和只读审计角色。验证同一事务设置的 `app.tenant_id` 来自认证身份，不能由请求体覆盖。
+1. PostgreSQL 17：按 `sql/migrations/V001__...sql` 至 `V006__...sql` 迁移；启用 tenant RLS；配置备份、恢复、连接池、迁移锁和只读审计角色。验证同一事务设置的 `app.tenant_id` 来自认证身份，不能由请求体覆盖。
 2. S3/兼容对象存储：实现内容寻址写入、SHA-256 read-back、短期签名 URL、租户前缀、服务端加密、版本化、保留/Legal Hold 和 GC 审计。禁止 public ACL、跨租户 key 重用和把对象 URL 当作完整证据。
 3. Event Bus：实现 outbox、发布确认、幂等 consumer、顺序键、重试上限、DLQ、消费位点、重复投递检测和 pause/resume/cancel 事件重放。生产者成功但确认未知时必须进入 `UNKNOWN` 并由 reconciliation 处理。
 4. Secrets Broker：使用短期、最小 scope、可撤销 lease；只向执行沙箱注入临时引用；日志、制品、异常和缓存永不落 secret value。验证轮换、撤销、过期、越权 scope 和 broker 不可用时的 fail-closed。
@@ -67,7 +78,7 @@
 - 在隔离集群中执行 PostgreSQL migration、Secret 注入、Service/Ingress、NetworkPolicy、PodDisruptionBudget、滚动升级和数据库连接健康检查。
 - 发布镜像必须绑定 immutable image digest、SBOM、来源和签名；Pod 使用 non-root、read-only root filesystem、drop ALL capabilities、RuntimeDefault seccomp、无 service-account token 自动挂载。
 - 默认 deny ingress/egress；访问 SCM、S3、Event Bus、Secrets Broker 的每条 egress 都必须有明确目标和策略证据。
-- 证明两副本下事件消费、租约接管、pause/resume/cancel、节点驱逐、数据库故障、对象存储故障和回滚可恢复；清理 orphan PVC、Job、lease 和临时对象。
+- PostgreSQL 生产 profile 才允许多副本；SQLite 本地 profile 固定单副本。证明多副本下事件消费、租约接管、pause/resume/cancel、节点驱逐、数据库故障、对象存储故障和回滚可恢复；清理 orphan PVC、Job、lease 和临时对象。
 
 退出条件：真实集群 deploy/health/rollback/restore/chaos evidence 完整，并由独立验证者复核；本地 Helm template 不能替代。
 
@@ -88,11 +99,11 @@
 | E2 | PostgreSQL 17、对象存储、事件总线、adapter conformance | Wave 1/2 所有强制能力有真实独立证据 |
 | E3 | Golden Route、语义等价、完整 validation DAG | 代表性仓库上源/目标/契约/运行行为证据完整 |
 | E4 | chaos、recovery、red-team、tenant isolation、rollback | 故障后无重复副作用，越权和注入 fail-closed |
-| E5 | 大仓库、重复性、cost/ETA/SLO、客户验收、P05 | 商业生产样本和客户结果证据完整，且先满足 P05 |
+| E5 | 大仓库、重复性、cost/ETA/SLO、客户验收 | 商业生产样本和客户结果证据完整；E5 通过后才进入 P05 决策 |
 
 ## 4. P05 签发前硬条件
 
-现有 [evidence.py](../src/elmos_repository_autonomy/evidence.py) 的 `release_gate` 必须接收并验证：所有强制 gates 为 `PASS`、无开放 P0/P1、rollback ready、`livez/readyz/metrics/version` 全部真实健康、所有 release artifact 完整性通过、独立 approval 通过，以及非空 deployment evidence。任何一项缺失都保持 `P05_DEPLOYMENT_COMPLETE_NOT_ISSUED`。
+现有 [certification.py](../src/elmos_repository_autonomy/certification.py) 的 P05 gate 必须接收并验证：E1–E5 全部为 `PASS`、无开放 P0/P1、rollback ready、restore replay 通过、`livez/readyz/metrics/version` 全部真实健康、所有 release artifact 完整性通过、独立 approval、T07 deployment evidence，以及持久化客户验收。审批、部署和客户证据必须按真实 case、候选 digest、生产者/验证者和内容 hash 交叉绑定；任意其他 evidence ID 重新贴标签不得通过。任何一项缺失都保持 `P05_DEPLOYMENT_COMPLETE_NOT_ISSUED`。
 
 P05 只表示已完成一次有证据的部署门禁，不代表永久安全、客户成功或不受版本/区域/Provider 约束的通用认证。证据过期、撤销、镜像 digest 变化、策略变化或租户边界变化后必须重新验证。
 

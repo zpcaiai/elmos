@@ -2,15 +2,18 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
-from .adapters import adapter_conformance
+from .adapters import ConformanceHarness
 from .analysis import census, change_graph, compile_ir, contract_diff, semantic_index, validation_plan
 from .catalog import SKILL_NAMES, SKILL_SPECS
+from .certification import CertificationEngine, EvidenceTrustStore, TestMatrixEvaluator
 from .errors import ContractError, ErrorInfo, KernelError
 from .evidence import create_artifact, release_gate, security_assurance, verification_mesh
+from .external import AuthorizationVerifier, ExternalAdapter, ExternalOperationCoordinator
+from .golden import CustomerAcceptanceRegistry, GoldenRouteEvaluator
 from .learning import arena, demonstration, elo, gym, improvement, package_registry
 from .models import (
     DispatchResult,
@@ -42,11 +45,32 @@ class DispatchContext:
 
 
 class AutonomyRuntime:
-    def __init__(self, store: DurableStore | None = None) -> None:
+    def __init__(
+        self,
+        store: DurableStore | None = None,
+        *,
+        control_store: Any | None = None,
+        authorizer: AuthorizationVerifier | None = None,
+        evidence_trust_store: EvidenceTrustStore | None = None,
+        conformance_receipt_verifier: Callable[[Mapping[str, Any]], bool] | None = None,
+        external_receipt_verifier: Callable[[Mapping[str, Any]], bool] | None = None,
+        customer_acceptance_verifier: Callable[[Mapping[str, Any]], bool] | None = None,
+        golden_evidence_verifier: Callable[[Mapping[str, Any]], bool] | None = None,
+    ) -> None:
         self.store = store or DurableStore()
+        self.control_store = control_store or self.store
         self.policy_engine = PolicyEngine()
         self.tool_runtime = ToolRuntime(self.store)
         self.schema_registry = SchemaRegistry()
+        self.external = ExternalOperationCoordinator(
+            self.control_store, authorizer=authorizer, receipt_verifier=external_receipt_verifier
+        )
+        self.certification = CertificationEngine(self.control_store, evidence_trust_store)
+        self.golden_routes = GoldenRouteEvaluator(customer_acceptance_verifier, golden_evidence_verifier)
+        self.customer_acceptance = CustomerAcceptanceRegistry(
+            self.control_store, customer_acceptance_verifier
+        )
+        self.conformance_harness = ConformanceHarness(conformance_receipt_verifier)
         self._handlers = {name: getattr(self, "_handle_" + name.replace("-", "_")) for name in SKILL_NAMES}
         if len(self._handlers) != 31:
             raise RuntimeError("all 31 autonomy handlers must be bound")
@@ -56,7 +80,15 @@ class AutonomyRuntime:
         return SKILL_NAMES
 
     def conformance(self, adapter_id: str, adapter_version: str = "2.0.0", responses: Mapping[str, Any] | None = None) -> dict[str, Any]:
-        return adapter_conformance(adapter_id, adapter_version, responses)
+        return self.conformance_harness.evaluate(adapter_id, adapter_version, responses)
+
+    def register_external_adapter(self, adapter: ExternalAdapter) -> None:
+        self.external.register(adapter)
+
+    def certification_matrix(self, *, tenant_id: str) -> dict[str, Any]:
+        return TestMatrixEvaluator().evaluate(
+            self.control_store.list_certification_evidence(tenant_id=tenant_id)
+        )
 
     def execute(self, skill: str, payload: Mapping[str, Any] | None = None, *, context: DispatchContext | None = None) -> DispatchResult:
         if skill not in self._handlers:
@@ -183,7 +215,7 @@ class AutonomyRuntime:
     def _handle_evidence_release_gate(self, p: dict[str, Any], c: DispatchContext):
         result = release_gate(p)
         decision = result["acceptance_decision"]["decision"]
-        status = Status.P05_DEPLOYMENT_COMPLETE if decision == Status.P05_DEPLOYMENT_COMPLETE.value else Status.REJECTED if decision == Status.REJECTED.value else Status.BLOCKED
+        status = Status.REJECTED if decision == Status.REJECTED.value else Status.BLOCKED
         return status, result, result["acceptance_decision"]["reasons"], False
 
     def _handle_contract_compatibility_engine(self, p: dict[str, Any], c: DispatchContext):

@@ -44,6 +44,16 @@ def bytes_digest(value: bytes) -> str:
     return "sha256:" + hashlib.sha256(value).hexdigest()
 
 
+def is_sha256_digest(value: Any) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"sha256:[0-9a-f]{64}", value) is not None
+
+
+def require_sha256_digest(value: Any, name: str) -> str:
+    if not is_sha256_digest(value):
+        raise ContractError("DIGEST_INVALID", f"{name} must be sha256 followed by 64 lowercase hex characters")
+    return str(value)
+
+
 def require_mapping(value: Any, name: str) -> dict[str, Any]:
     if not isinstance(value, Mapping):
         raise ContractError("INVALID_INPUT", f"{name} must be an object")

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import sqlite3
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 from urllib.parse import unquote, urlparse
@@ -46,6 +45,10 @@ def make_handler(runtime: AutonomyRuntime, *, require_verified_identity: bool = 
                 return None
             return tenant, account
 
+        def _actor(self) -> str | None:
+            actor = self.headers.get("X-Elmos-Actor-Id", "").strip()
+            return actor or None
+
         def do_GET(self) -> None:
             path = urlparse(self.path).path
             if path == "/livez":
@@ -54,8 +57,21 @@ def make_handler(runtime: AutonomyRuntime, *, require_verified_identity: bool = 
             if path == "/readyz":
                 try:
                     runtime.store.metrics()
-                    self._write(200, {"status": "ready", "backend": "sqlite-local"})
-                except sqlite3.Error:
+                    if runtime.control_store is not runtime.store:
+                        runtime.control_store.metrics()
+                    self._write(
+                        200,
+                        {
+                            "status": "ready",
+                            "runtime_backend": "sqlite-local",
+                            "control_backend": (
+                                "external-control-store"
+                                if runtime.control_store is not runtime.store
+                                else "sqlite-local"
+                            ),
+                        },
+                    )
+                except Exception:  # noqa: BLE001 - readiness must degrade without exposing backend details
                     self._write(503, {"status": "not-ready"})
                 return
             if path == "/version":
@@ -73,6 +89,24 @@ def make_handler(runtime: AutonomyRuntime, *, require_verified_identity: bool = 
                 return
             if path == "/v1/skills":
                 self._write(200, {"skills": _catalog()})
+                return
+            if path == "/v2/certification/matrix":
+                identity = self._identity()
+                if identity is None:
+                    self._write(401, {"error": {"code": "IDENTITY_REQUIRED"}})
+                    return
+                self._write(200, runtime.certification_matrix(tenant_id=identity[0]))
+                return
+            if path.startswith("/v2/external/operations/"):
+                identity = self._identity()
+                if identity is None:
+                    self._write(401, {"error": {"code": "IDENTITY_REQUIRED"}})
+                    return
+                operation_id = unquote(path[len("/v2/external/operations/"):])
+                try:
+                    self._write(200, runtime.external.get(operation_id, tenant_id=identity[0]))
+                except ContractError as exc:
+                    self._write(404, {"error": exc.info.to_dict()})
                 return
             run_prefix = "/v2/runs/" if path.startswith("/v2/runs/") else "/v1/runs/"
             if path.startswith(run_prefix) and path.endswith("/events"):
@@ -108,6 +142,83 @@ def make_handler(runtime: AutonomyRuntime, *, require_verified_identity: bool = 
                     payload = self._body()
                     result = runtime.execute("durable-run-orchestrator", payload, context=DispatchContext(tenant_id=identity[0], account_id=identity[1], store=runtime.store, tool_runtime=runtime.tool_runtime, policy_engine=runtime.policy_engine, trusted=True))
                     self._write(202 if result.status not in {Status.BLOCKED, Status.REJECTED} else 422, result.to_dict())
+                    return
+                if path == "/v2/external/operations":
+                    payload = self._body()
+                    payload["tenant_id"], payload["account_id"] = identity
+                    planned = runtime.external.plan(payload)
+                    self._write(202, planned)
+                    return
+                if path.startswith("/v2/external/operations/"):
+                    parts = path.split("/")
+                    if len(parts) == 6 and parts[5] in {"authorize", "execute", "reconcile", "compensate"}:
+                        operation_id, action = unquote(parts[4]), parts[5]
+                        payload = self._body()
+                        if action == "authorize":
+                            result = runtime.external.authorize(
+                                operation_id, tenant_id=identity[0], grant=payload.get("grant", payload)
+                            )
+                        elif action == "execute":
+                            result = runtime.external.execute(
+                                operation_id, tenant_id=identity[0], payload=payload.get("payload"),
+                                producer_id=str(payload.get("producer_id", "kernel-executor")),
+                            )
+                        elif action == "reconcile":
+                            result = runtime.external.reconcile(
+                                operation_id, tenant_id=identity[0],
+                                verifier_id=str(payload.get("verifier_id", "")),
+                            )
+                        else:
+                            result = runtime.external.compensate(
+                                operation_id, tenant_id=identity[0],
+                                producer_id=str(payload.get("producer_id", "kernel-executor")),
+                            )
+                        self._write(202, result)
+                        return
+                if path == "/v2/certification/evidence":
+                    payload = self._body()
+                    payload.setdefault("tenant_id", identity[0])
+                    self._write(201, runtime.certification.ingest(tenant_id=identity[0], record=payload))
+                    return
+                if path == "/v2/certification/evaluate":
+                    payload = self._body()
+                    result = runtime.certification.evaluate(
+                        tenant_id=identity[0], candidate_digest=str(payload.get("candidate_digest", "")),
+                        release_context=payload.get("release_context", {}),
+                    )
+                    self._write(200 if result["p05"]["issued"] else 422, result)
+                    return
+                if path.startswith("/v2/golden-routes/") and path.endswith("/evaluate"):
+                    route_id = unquote(path[len("/v2/golden-routes/"):-len("/evaluate")])
+                    payload = self._body()
+                    binding = dict(payload.get("binding", {}))
+                    if binding.get("tenant_id") not in {None, identity[0]}:
+                        raise ContractError("TENANT_SCOPE_DENIED", "repository binding tenant differs from identity")
+                    binding["tenant_id"] = identity[0]
+                    result = runtime.golden_routes.evaluate(
+                        binding=binding, route_id=route_id,
+                        candidate_digest=str(payload.get("candidate_digest", "")),
+                        evidence=payload.get("evidence", {}),
+                        executor_id=str(payload.get("executor_id", "")),
+                    )
+                    self._write(200 if result["status"] == "PASS" else 422, result)
+                    return
+                if path == "/v2/customer-acceptance":
+                    actor = self._actor()
+                    if actor is None:
+                        raise ContractError("CUSTOMER_IDENTITY_REQUIRED", "verified customer actor header is required")
+                    payload = self._body()
+                    binding = dict(payload.get("binding", {}))
+                    if binding.get("tenant_id") not in {None, identity[0]}:
+                        raise ContractError("TENANT_SCOPE_DENIED", "repository binding tenant differs from identity")
+                    binding["tenant_id"] = identity[0]
+                    result = runtime.customer_acceptance.record(
+                        binding=binding, route_id=str(payload.get("route_id", "")),
+                        candidate_digest=str(payload.get("candidate_digest", "")),
+                        executor_id=str(payload.get("executor_id", "")),
+                        decision=payload.get("decision", {}), authenticated_customer_actor_id=actor,
+                    )
+                    self._write(201, result)
                     return
                 if path.startswith("/v2/runs/") and path.rsplit("/", 1)[-1] in {"pause", "resume", "cancel"}:
                     parts = path.split("/")

@@ -47,6 +47,27 @@ paths:
         - {in: path, name: runId, required: true, schema: {type: string, format: uuid}}
         - {in: path, name: action, required: true, schema: {type: string, enum: [pause, resume, cancel]}}
       responses: {"202": {description: Transition requested}, "401": {description: Identity required}, "422": {description: Invalid transition}}
+  /v2/external/operations:
+    post:
+      operationId: planExternalOperation
+      security: [{verifiedIdentity: []}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/ExternalOperationRequest"}}}}
+      responses: {"202": {description: Dry-run operation persisted}, "401": {description: Identity required}, "422": {description: Invalid or conflicting request}}
+  /v2/external/operations/{operationId}:
+    get:
+      operationId: getExternalOperation
+      security: [{verifiedIdentity: []}]
+      parameters: [{in: path, name: operationId, required: true, schema: {type: string, format: uuid}}]
+      responses: {"200": {description: Tenant-scoped operation and receipts}, "404": {description: Not visible}}
+  /v2/external/operations/{operationId}/{action}:
+    post:
+      operationId: transitionExternalOperation
+      security: [{verifiedIdentity: []}]
+      parameters:
+        - {in: path, name: operationId, required: true, schema: {type: string, format: uuid}}
+        - {in: path, name: action, required: true, schema: {type: string, enum: [authorize, execute, reconcile, compensate]}}
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/TypedObject"}}}}
+      responses: {"202": {description: Transition accepted}, "422": {description: "Denied, unknown or stale"}}
 components:
   securitySchemes:
     verifiedIdentity:
@@ -60,3 +81,19 @@ components:
       type: object
       required: [package, version]
       properties: {package: {type: string}, version: {type: string}}
+    ExternalOperationRequest:
+      type: object
+      additionalProperties: false
+      required: [capability, adapter_id, adapter_version, provider_instance, region, native_resource_id, action, idempotency_key, side_effects, payload]
+      properties:
+        capability: {type: string, enum: [scm, object-store, event-bus, secrets-broker, provider, kubernetes, customer-repository]}
+        adapter_id: {type: string, minLength: 1}
+        adapter_version: {type: string, minLength: 1}
+        provider_instance: {type: string, minLength: 1}
+        region: {type: string, minLength: 1}
+        native_resource_id: {type: string, minLength: 1}
+        action: {type: string, minLength: 1}
+        idempotency_key: {type: string, minLength: 1}
+        side_effects: {type: boolean}
+        run_id: {type: string, format: uuid}
+        payload: {$ref: "#/components/schemas/TypedObject"}

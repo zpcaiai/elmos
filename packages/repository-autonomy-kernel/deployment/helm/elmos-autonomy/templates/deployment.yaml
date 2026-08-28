@@ -1,3 +1,6 @@
+{{- if not (regexMatch "^sha256:[a-f0-9]{64}$" .Values.image.digest) }}
+{{- fail "image.digest must be sha256 followed by 64 lowercase hex characters" }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,6 +19,7 @@ spec:
         app.kubernetes.io/name: {{ include "elmos-autonomy.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
@@ -24,9 +28,20 @@ spec:
         seccompProfile: {type: RuntimeDefault}
       containers:
         - name: autonomy-kernel
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}@{{ .Values.image.digest }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: ["serve", "--db", "/var/lib/elmos-autonomy/autonomy.sqlite", "--host", "0.0.0.0", "--port", "8080"]
+          args:
+            - serve
+            - --db
+            - /var/lib/elmos-autonomy/autonomy.sqlite
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8080"
+            {{- if .Values.controlStore.postgresService }}
+            - --postgres-control-service
+            - {{ .Values.controlStore.postgresService | quote }}
+            {{- end }}
           ports: [{name: http, containerPort: 8080}]
           securityContext:
             allowPrivilegeEscalation: false
@@ -35,6 +50,7 @@ spec:
           volumeMounts:
             - {name: autonomy-data, mountPath: /var/lib/elmos-autonomy}
           livenessProbe: {httpGet: {path: /livez, port: http}, periodSeconds: 30, timeoutSeconds: 3}
+          startupProbe: {httpGet: {path: /livez, port: http}, failureThreshold: 30, periodSeconds: 2}
           readinessProbe: {httpGet: {path: /readyz, port: http}, periodSeconds: 10, timeoutSeconds: 3}
           resources: {{- toYaml .Values.resources | nindent 12 }}
       volumes:

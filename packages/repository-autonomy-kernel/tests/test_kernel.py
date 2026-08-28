@@ -112,6 +112,34 @@ def test_release_gate_never_certifies_missing_external_evidence():
     assert result.output["acceptance_decision"]["decision"] != "P05_DEPLOYMENT_COMPLETE"
 
 
+def test_legacy_release_gate_cannot_issue_p05_from_caller_supplied_passes():
+    result = AutonomyRuntime().execute(
+        "evidence-release-gate",
+        {
+            "acceptance_criteria": [{"id": "build"}],
+            "validation_results": [{"id": "build", "status": "PASS"}],
+            "findings": [],
+            "artifacts": [
+                {"content_hash": "sha256:" + "a" * 64, "integrity_verified": True}
+            ],
+            "approvals": [{"status": "APPROVED"}],
+            "deployment_results": {
+                "health": {"livez": True, "readyz": True, "metrics": True, "version": True},
+                "rollback_ready": True,
+                "deployment_evidence": [{"caller_claim": "PASS"}],
+            },
+        },
+    )
+    assert result.status == Status.BLOCKED
+    assert result.output["release_bundle"]["status"] == "READY_FOR_EXTERNAL_GATE"
+    assert result.output["deployment_complete_attestation"] == {
+        "status": "BLOCKED",
+        "attested": False,
+        "gate": "P05_DEPLOYMENT_COMPLETE_NOT_ISSUED",
+    }
+    assert "trusted-certification-engine-required" in result.reasons
+
+
 def test_artifact_tenant_isolation_and_security_scan():
     runtime = AutonomyRuntime()
     result = runtime.execute("artifact-evidence-protocol", {"producer_step": {"id": "step"}, "content": {"ok": True}}, context=DispatchContext(tenant_id="tenant-a", store=runtime.store))
@@ -159,6 +187,11 @@ def test_schema_registry_and_adapter_conformance_are_closed_world():
     result = AutonomyRuntime().conformance("openai-codex")
     assert result["status"] == "BLOCKED"
     assert len(result["cases"]) == 12
+    fabricated = AutonomyRuntime().conformance(
+        "openai-codex", responses={case["case"]: True for case in result["cases"]}
+    )
+    assert fabricated["engineering_status"] == "BLOCKED"
+    assert fabricated["external_evidence"] == "NOT_RUN"
 
 
 def test_http_control_plane_enforces_identity_and_run_lifecycle():
@@ -193,6 +226,30 @@ def test_http_control_plane_enforces_identity_and_run_lifecycle():
         with request(f"/v2/runs/{run_id}/pause", payload={}) as response:
             assert response.status == 202
             assert json.loads(response.read())["run"]["state"] == "PAUSED"
+        with request("/v2/certification/matrix") as response:
+            matrix = json.loads(response.read())
+            assert response.status == 200
+            assert matrix["t06_conformance_units"] == 84
+            assert matrix["certification"] == "NOT_CERTIFIED"
+        external_request = {
+            "capability": "provider",
+            "adapter_id": "openai-codex",
+            "adapter_version": "2.0.0",
+            "provider_instance": "provider-test",
+            "region": "test-1",
+            "native_resource_id": "provider-resource-1",
+            "action": "invoke",
+            "idempotency_key": "http-external-1",
+            "side_effects": True,
+            "payload": {"input_ref": "artifact:sha256:test"},
+        }
+        with request("/v2/external/operations", payload=external_request) as response:
+            operation = json.loads(response.read())
+            assert response.status == 202
+            assert operation["state"] == "DRY_RUN"
+            assert operation["external_evidence"] == "NOT_RUN"
+        with request(f"/v2/external/operations/{operation['operation_id']}") as response:
+            assert json.loads(response.read())["state"] == "DRY_RUN"
     finally:
         server.shutdown()
         server.server_close()
