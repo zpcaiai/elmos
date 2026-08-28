@@ -20,7 +20,7 @@ import base64
 import binascii
 import json
 import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from hashlib import sha256
 from typing import Any, Literal
@@ -695,6 +695,7 @@ def _target_input(
     catalog_target: Mapping[str, str],
     implementer: Mapping[str, str],
     scope_digest: str,
+    capability_snapshot_digest: str,
     now: datetime,
 ) -> tuple[dict[str, Any] | None, list[dict[str, str]]]:
     blockers: list[dict[str, str]] = []
@@ -760,6 +761,8 @@ def _target_input(
         raise RuntimeError("qualification target input normalization failed")
     tool_digests = [_digest(tool) for tool in tools]
     normalized = {
+        "protocolVersion": PROTOCOL_VERSION,
+        "capabilitySnapshotDigest": capability_snapshot_digest,
         "targetId": catalog_target["targetId"],
         "adapterId": catalog_target["adapterId"],
         "scopeDigest": scope_digest,
@@ -1100,6 +1103,7 @@ def _target_result(
     index: int,
     catalog_target: Mapping[str, str],
     scope_digest: str,
+    capability_snapshot_digest: str,
     implementer: Mapping[str, str],
     trust_keys: Mapping[str, Mapping[str, Any]],
     trust_ready: bool,
@@ -1111,6 +1115,7 @@ def _target_result(
         catalog_target=catalog_target,
         implementer=implementer,
         scope_digest=scope_digest,
+        capability_snapshot_digest=capability_snapshot_digest,
         now=now,
     )
     result: dict[str, Any] = {
@@ -1363,6 +1368,7 @@ def evaluate_production_qualification(
             index=index,
             catalog_target=catalog_targets[index],
             scope_digest=scope_digest,
+            capability_snapshot_digest=current_snapshot,
             implementer=implementer,
             trust_keys=trust_keys,
             trust_ready=trust_ready,
@@ -1465,35 +1471,15 @@ def target_qualification_input_digest(
 ) -> str:
     """Return the digest an external authorization must bind for one target."""
 
-    raw = _object(request, "qualification request")
-    scope = _scope(raw.get("scope"))
-    implementer_raw = _object(raw.get("implementer"), "implementer")
-    implementer = {
-        "actorId": str(implementer_raw.get("actorId")),
-        "organizationId": str(implementer_raw.get("organizationId")),
-    }
-    catalog_targets = {item["targetId"]: item for item in _catalog_targets()}
-    catalog_target = catalog_targets.get(target_id)
-    if catalog_target is None:
-        raise ValueError(f"unknown ChinaDB target id: {target_id}")
-    targets_raw = raw.get("targets")
-    if not isinstance(targets_raw, Sequence) or isinstance(targets_raw, str | bytes):
-        raise ValueError("qualification request targets must be an array")
-    for index, raw_target in enumerate(targets_raw):
-        target = _object(raw_target, f"targets[{index}]")
-        if target.get("targetId") == target_id:
-            normalized, blockers = _target_input(
-                target,
-                index=index,
-                catalog_target=catalog_target,
-                implementer=implementer,
-                scope_digest=_digest(scope),
-                now=now.astimezone(UTC),
+    result = evaluate_production_qualification(request, now=now)
+    for target in result["targets"]:
+        if target["targetId"] != target_id:
+            continue
+        digest = target["qualificationInputDigest"]
+        if digest is None:
+            raise ValueError(
+                "target qualification input is incomplete: "
+                + ", ".join(str(item["code"]) for item in target["blockers"])
             )
-            if normalized is None:
-                raise ValueError(
-                    "target qualification input is incomplete: "
-                    + ", ".join(str(item["code"]) for item in blockers)
-                )
-            return str(normalized["qualificationInputDigest"])
-    raise ValueError(f"qualification request has no target entry for {target_id}")
+        return str(digest)
+    raise ValueError(f"unknown ChinaDB target id: {target_id}")
