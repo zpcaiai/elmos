@@ -1,6 +1,6 @@
 {
   "schema_version": "elmos.frontend-to-miniapp.local-runtime-evidence.v1",
-  "implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+  "implementation_digest": "sha256:cc19dc561c9b3bd5780b784f79e2a6f742d85653fafad1aa55e714e9f1ac53b2",
   "state": "DECLARED",
   "scope": "bounded-local-engineering",
   "receipt": {
@@ -32,7 +32,7 @@
       "command": "cd engines/frontend-client-engine && node --test --test-concurrency=1 dist/test/miniapp-contract-validation.test.js dist/test/miniapp-inventory.test.js dist/test/miniapp-semantic-ir.test.js dist/test/miniapp-four-platform-generation.test.js dist/test/miniapp-skill-runtime.test.js dist/test/miniapp-validation.test.js dist/test/miniapp-package-contract.test.js dist/test/miniapp-output-contracts.test.js",
       "state": "NOT_RUN",
       "claim": "contracts, inventory, semantic IR, source labels, target generators, Skill handlers, checkpoints and evidence gates",
-      "expected_test_count": 58
+      "expected_test_count": 60
     },
     {
       "id": "integration-tests",
