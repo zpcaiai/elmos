@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "SemanticGapObligation",
+  "metadata": {
+    "id": "semantic-gap-obligation-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "dimension": "example-dimension",
+    "classification": "example-classification",
+    "severity": "example-severity",
+    "requiredEvidence": []
+  }
+}

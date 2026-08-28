@@ -1,0 +1,19 @@
+{
+  "artifactId": "content-1",
+  "modality": "text",
+  "generatedByAI": true,
+  "visibleLabel": "AI-generated",
+  "machineMark": "c2pa-or-policy-marker",
+  "jurisdictions": [
+    "EU",
+    "CN"
+  ],
+  "transformTests": [
+    {
+      "transform": "copy-paste",
+      "markerSurvives": false,
+      "visibleLabelSurvives": true
+    }
+  ],
+  "provenanceHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+}

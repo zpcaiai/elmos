@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "LocalizationConformance",
+  "metadata": {
+    "id": "localization-conformance-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "locales": [],
+    "unicodeResults": [],
+    "timezoneResults": [],
+    "rtlResults": []
+  }
+}

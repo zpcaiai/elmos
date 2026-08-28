@@ -1,0 +1,11 @@
+{
+  "policy": "statistical_release_gate",
+  "positive": {
+    "sample_size_sufficient": true,
+    "confidence_threshold_met": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

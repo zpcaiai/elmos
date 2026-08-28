@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ResourceDiscoveryDecision",
+  "type": "object",
+  "required": [
+    "resourceId",
+    "resourceType",
+    "source",
+    "verification",
+    "decision"
+  ],
+  "properties": {
+    "resourceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resourceType": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "verification": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "verified",
+        "bounded",
+        "blocked"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "decision": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "allow",
+        "deny",
+        "manual-review"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

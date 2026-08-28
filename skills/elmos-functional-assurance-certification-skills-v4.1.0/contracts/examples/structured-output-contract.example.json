@@ -1,0 +1,10 @@
+{
+  "schemaId": "contract-review",
+  "schemaVersion": "1",
+  "semanticConstraints": [
+    "citations non-empty when conclusion exists"
+  ],
+  "repairLimit": 1,
+  "invalidAction": "reject",
+  "toolExecutionRequiresValid": true
+}

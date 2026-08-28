@@ -1,0 +1,13 @@
+{
+  "id": "ev-1",
+  "revisionSetId": "rev-1",
+  "producer": "adapter-conformance",
+  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "mediaType": "application/json",
+  "createdAt": "2026-08-28T00:00:00Z",
+  "toolDigest": "sha256:release-pin-required",
+  "inputs": [
+    "generated-tree:abc"
+  ],
+  "status": "TESTED"
+}

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CapabilityNegotiationResult",
+  "type": "object",
+  "required": [
+    "requirements",
+    "decisions",
+    "overall"
+  ],
+  "properties": {
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "requirement",
+          "target",
+          "status",
+          "critical"
+        ],
+        "properties": {
+          "requirement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "supported",
+              "conditional",
+              "emulated",
+              "external-runtime",
+              "external-policy",
+              "unsupported",
+              "blocked"
+            ]
+          },
+          "critical": {
+            "type": "boolean"
+          },
+          "obligations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "overall": {
+      "type": "string",
+      "enum": [
+        "SUPPORTED",
+        "BOUNDED",
+        "BLOCKED"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

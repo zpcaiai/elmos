@@ -1,0 +1,20 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetPortfolio
+metadata:
+  name: enterprise-contract-assistant
+spec:
+  targets:
+  - id: dify
+    role: prototype
+    status: planned
+  - id: langgraph-python
+    role: production-workflow
+    status: planned
+  - id: spring-ai-java
+    role: enterprise-service
+    status: planned
+  - id: openclaw
+    role: channel-gateway
+    status: planned
+  releaseDecision: BLOCKED
+  reason: native conformance and proof evidence not executed

@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "api-sdk-codegen-conformance-result-example",
+  "status": "READY",
+  "content_hash": "e01ae53f191264fbe4365d3156d27f2e7e1eb1c4f5b3e73c2b1a502417f89dd3",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

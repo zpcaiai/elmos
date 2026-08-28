@@ -1,0 +1,22 @@
+{
+  "stores": [
+    {
+      "id": "session",
+      "scope": "session",
+      "retention": "30d",
+      "tenantScoped": true
+    },
+    {
+      "id": "repo",
+      "scope": "repository",
+      "retention": "revision-bound",
+      "tenantScoped": true
+    }
+  ],
+  "governance": {
+    "writePolicy": "explicit-extractor",
+    "deletePropagation": true,
+    "conflictPolicy": "newest-evidence-wins",
+    "piiAllowed": false
+  }
+}

@@ -1,0 +1,29 @@
+apiVersion: elmos.ai/v3alpha1
+kind: VersionSupportProfile
+metadata:
+  name: elmos-certification-confidentiality-information-security-governor
+  version: 4.0.0
+spec:
+  packageVersion: 4.0.0
+  sourceTargetPolicy:
+    detected: may be analyzed only
+    experimental: no production certificate
+    conditional: requires named limitation and compensating evidence
+    certified: exact version+digest+conformance evidence
+    blocked: must fail closed
+  defaultVersion: release-time exact version
+  pins:
+  - source commit/tree
+  - adapter digest
+  - runtime/container digest
+  - schema/protocol version
+  - model resolved version or fingerprint
+  - verifier digest
+  - policy bundle digest
+  driftTriggers:
+  - API/DSL/schema/protocol change
+  - model/provider behavior drift
+  - security advisory or revoked signer
+  - policy/data residency change
+  - native conformance corpus change
+  releasePlaceholders: must be replaced after real build/sign/conformance; never invented

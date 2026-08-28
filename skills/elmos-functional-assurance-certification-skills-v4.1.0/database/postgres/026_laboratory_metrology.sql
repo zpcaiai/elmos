@@ -1,0 +1,6 @@
+BEGIN;
+CREATE TABLE IF NOT EXISTS laboratory_method (id uuid PRIMARY KEY, tenant_id uuid NOT NULL, project_id uuid NOT NULL, goal_id uuid NOT NULL, revision_set_id text NOT NULL, method_id text NOT NULL, exact_version text NOT NULL, measurand jsonb NOT NULL, validation_status text NOT NULL, authorized_scope jsonb NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS uncertainty_budget (id uuid PRIMARY KEY, tenant_id uuid NOT NULL, project_id uuid NOT NULL, goal_id uuid NOT NULL, revision_set_id text NOT NULL, measurement_model jsonb NOT NULL, components jsonb NOT NULL, covariance jsonb NOT NULL, standard_uncertainty numeric, expanded_uncertainty numeric, coverage_factor numeric, created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS proficiency_round (id uuid PRIMARY KEY, tenant_id uuid NOT NULL, project_id uuid NOT NULL, goal_id uuid NOT NULL, revision_set_id text NOT NULL, scheme_id text NOT NULL, assigned_value jsonb NOT NULL, participants jsonb NOT NULL, statistics jsonb NOT NULL, status text NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+ALTER TABLE laboratory_method ENABLE ROW LEVEL SECURITY; ALTER TABLE uncertainty_budget ENABLE ROW LEVEL SECURITY; ALTER TABLE proficiency_round ENABLE ROW LEVEL SECURITY;
+COMMIT;

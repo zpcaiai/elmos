@@ -1,0 +1,119 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableCertificationWorkflow
+metadata:
+  name: proficiency-interlaboratory
+  version: 4.0.0
+spec:
+  routeOwner: domain-pack.project-generation
+  execution: durable-event-sourced
+  steps:
+  - id: 01-scheme-design
+    dependsOn: []
+    command: SchemeDesign
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 02-sample-allocation
+    dependsOn:
+    - 01-scheme-design
+    command: SampleAllocation
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 03-participant-run
+    dependsOn:
+    - 02-sample-allocation
+    command: ParticipantRun
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 04-statistics
+    dependsOn:
+    - 03-participant-run
+    command: Statistics
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 05-outlier-review
+    dependsOn:
+    - 04-statistics
+    command: OutlierReview
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 06-performance
+    dependsOn:
+    - 05-outlier-review
+    command: Performance
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 07-corrective-action
+    dependsOn:
+    - 06-performance
+    command: CorrectiveAction
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  terminalStates:
+  - COMPLETED
+  - BLOCKED
+  - FAILED
+  - CANCELLED
+  completion: independent K8 decision bound to exact RevisionSet and sealed evidence root

@@ -1,0 +1,13 @@
+{
+  "id": "po-1",
+  "subject": "generated-langgraph",
+  "claim": "external writes require approved authority",
+  "criticality": "critical",
+  "assumptions": [],
+  "dependencies": [],
+  "acceptedEvidence": [
+    "policy-test",
+    "integration-test"
+  ],
+  "requiredAssurance": "A3"
+}

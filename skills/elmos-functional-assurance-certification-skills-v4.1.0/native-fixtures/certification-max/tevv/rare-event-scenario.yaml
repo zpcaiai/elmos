@@ -1,0 +1,3 @@
+scenario: recursive agent delegation under provider degradation
+repetitions: 1000
+critical: true

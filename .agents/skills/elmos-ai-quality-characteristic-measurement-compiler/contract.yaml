@@ -1,0 +1,86 @@
+apiVersion: elmos.ai/v3alpha1
+kind: SkillContract
+metadata:
+  name: elmos-ai-quality-characteristic-measurement-compiler
+  version: 4.0.0
+spec:
+  routeOwner: domain-pack.project-generation
+  routable: false
+  priority: P0
+  risk: critical
+  group: ai-quality-measurement
+  kernelAuthorities:
+  - K1
+  - K2
+  - K4
+  - K6
+  - K7
+  - K8
+  canonicalInputs:
+  - type: GoalContract
+    required: true
+    binding: goal_id
+  - type: RevisionSet
+    required: true
+    binding: revision_set_id
+  - type: EnvironmentAuthority
+    required: true
+    binding: execution_epoch+authority_digest
+  - type: ProofObligationGraph
+    required: true
+    binding: proof_graph_id
+  - type: BudgetAndPolicyEnvelope
+    required: true
+    binding: policy_bundle_digest
+  outputs:
+  - path: artifacts/elmos-ai-quality-characteristic-measurement-compiler/profile.yaml
+    type: YamlArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  - path: artifacts/elmos-ai-quality-characteristic-measurement-compiler/plan.json
+    type: JsonArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  - path: artifacts/elmos-ai-quality-characteristic-measurement-compiler/result.json
+    type: JsonArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  - path: artifacts/elmos-ai-quality-characteristic-measurement-compiler/evidence/
+    type: ArtifactDirectory
+    immutable: true
+    evidenceBound: true
+    schemaRequired: false
+  - path: artifacts/elmos-ai-quality-characteristic-measurement-compiler/assurance-case.json
+    type: JsonArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  dependencies:
+  - elmos-ai-quality-model-evaluation-compiler
+  - elmos-digital-metrology-measurand-definition-compiler
+  failureMode: fail-closed
+  ownership:
+    intent: K1
+    semantic: K2/K3
+    reasoning: K4
+    transformation: K5
+    verification: K6
+    execution: K7
+    completion: K8
+  invariants:
+  - every terminal result binds one exact RevisionSet
+  - every write validates tenant, execution epoch, lease generation and fencing token
+  - every side effect has idempotency and reconciliation state
+  - critical UNKNOWN or UNSUPPORTED cannot become COMPLETE
+  - generator, repairer and certifier are independently attributable
+  terminalStates:
+  - COMPLETED
+  - BLOCKED
+  - FAILED
+  - CANCELLED
+  externalDependencies: []
+  packageRole: certification
+  standaloneCompletionCeiling: K8_CERTIFICATION_DECISION

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "masking-tokenization-policy-example",
+  "status": "READY",
+  "content_hash": "38621ee9056b7372f6223d7f4e3943a4efaee5a6ad15dfd9ae5a7b166b14fcee",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "rules": [
+    {
+      "id": "R1",
+      "effect": "deny",
+      "condition": "authority_missing"
+    }
+  ],
+  "exceptions": []
+}

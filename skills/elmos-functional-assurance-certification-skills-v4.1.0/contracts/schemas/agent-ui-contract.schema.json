@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgentUIContract",
+  "type": "object",
+  "required": [
+    "protocol",
+    "surfaceId",
+    "components",
+    "actions"
+  ],
+  "properties": {
+    "protocol": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "mcp-apps",
+        "ag-ui",
+        "a2ui"
+      ]
+    },
+    "surfaceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "minItems": 1
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "accessibility": {
+      "type": "object"
+    },
+    "recovery": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

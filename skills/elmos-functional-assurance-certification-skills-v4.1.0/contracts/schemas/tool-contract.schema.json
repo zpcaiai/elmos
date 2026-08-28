@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ToolContract",
+  "type": "object",
+  "required": [
+    "tools",
+    "defaultPolicy"
+  ],
+  "properties": {
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "protocol",
+          "inputSchema",
+          "effect",
+          "authority"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "protocol": {
+            "type": "string",
+            "enum": [
+              "function",
+              "mcp",
+              "a2a",
+              "openapi",
+              "cli",
+              "database",
+              "browser",
+              "filesystem",
+              "code-exec",
+              "computer-use"
+            ]
+          },
+          "inputSchema": {
+            "type": "object"
+          },
+          "outputSchema": {
+            "type": "object"
+          },
+          "effect": {
+            "type": "string",
+            "enum": [
+              "none",
+              "read",
+              "write",
+              "external-write"
+            ]
+          },
+          "authority": {
+            "type": "object",
+            "required": [
+              "scope",
+              "approval"
+            ],
+            "properties": {
+              "scope": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "approval": {
+                "type": "string",
+                "enum": [
+                  "never",
+                  "policy",
+                  "always"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "idempotencyRequired": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "defaultPolicy": {
+      "type": "string",
+      "enum": [
+        "deny",
+        "allow"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "online-schema-change-plan-example",
+  "status": "READY",
+  "content_hash": "cf500fc6b0b8e93aaaaf5687cecd61c7ff7af4236ffbac82d81e5779d0eac87f",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "steps": [
+    {
+      "id": "S1",
+      "action": "freeze exact versions",
+      "depends_on": []
+    }
+  ],
+  "rollback_steps": [
+    "restore prior signed artifact"
+  ],
+  "proof_obligations": [
+    "PO-example"
+  ]
+}

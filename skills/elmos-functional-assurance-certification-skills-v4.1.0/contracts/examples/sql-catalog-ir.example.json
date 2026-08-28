@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "SqlCatalogIR",
+  "metadata": {
+    "id": "sql-catalog-ir-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "schemas": [],
+    "tables": [],
+    "constraints": [],
+    "indexes": []
+  }
+}

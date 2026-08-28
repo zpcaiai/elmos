@@ -1,0 +1,1343 @@
+apiVersion: elmos.ai/v3alpha1
+kind: SplitImplementationPlan
+metadata:
+  version: 4.1.0
+  packageRole: certification
+spec:
+  executionMode: durable, checkpointed, fail-closed
+  batches:
+  - id: CERT-00
+    title: Certification implementation batch 1
+    dependsOn: []
+    tasks:
+    - id: CERT-00-T01
+      skill: elmos-accessibility-conformance-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-00-T02
+      skill: elmos-accreditation-evidence-readiness-exporter
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-00-T03
+      skill: elmos-accreditation-scope-competence-matrix-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-00-T04
+      skill: elmos-accredited-once-accepted-everywhere-evidence-packager
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-00-T05
+      skill: elmos-agent-skill-mcp-supply-chain-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-00-T06
+      skill: elmos-ai-adversarial-robustness-evasion-poisoning-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-00-T07
+      skill: elmos-ai-conformal-coverage-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-00-T08
+      skill: elmos-ai-controllability-override-fail-safe-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-00-T09
+      skill: elmos-ai-counterfactual-fairness-causal-stability-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-00-T10
+      skill: elmos-ai-distribution-shift-ood-robustness-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-01
+    title: Certification implementation batch 2
+    dependsOn:
+    - CERT-00
+    tasks:
+    - id: CERT-01-T01
+      skill: elmos-ai-e0-e5-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-01-T02
+      skill: elmos-ai-evaluation-measurement-model-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-01-T03
+      skill: elmos-ai-evaluation-power-sample-size-planner
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-01-T04
+      skill: elmos-ai-explainability-fidelity-stability-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-01-T05
+      skill: elmos-ai-fairness-bias-intersectional-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-01-T06
+      skill: elmos-ai-golden-route-continuous-agent-certification
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-01-T07
+      skill: elmos-ai-human-factors-automation-bias-overreliance-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-01-T08
+      skill: elmos-ai-impact-harm-benefit-distribution-assessor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-01-T09
+      skill: elmos-ai-incident-regulatory-reporting-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-01-T10
+      skill: elmos-ai-multiple-comparison-sequential-test-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-02
+    title: Certification implementation batch 3
+    dependsOn:
+    - CERT-01
+    tasks:
+    - id: CERT-02-T01
+      skill: elmos-ai-provider-behavior-fingerprint-recertifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-02-T02
+      skill: elmos-ai-quality-characteristic-measurement-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-02-T03
+      skill: elmos-ai-quality-model-evaluation-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-02-T04
+      skill: elmos-ai-rag-retrieval-grounding-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-02-T05
+      skill: elmos-ai-rare-event-tail-risk-estimator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-02-T06
+      skill: elmos-ai-sociotechnical-context-validity-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-02-T07
+      skill: elmos-ai-supply-chain-performance-resilience-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-02-T08
+      skill: elmos-ai-test-laboratory-competence-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-02-T09
+      skill: elmos-ai-tevv-athlon-scenario-orchestrator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-02-T10
+      skill: elmos-ai-tevv-program-architecture-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-03
+    title: Certification implementation batch 4
+    dependsOn:
+    - CERT-02
+    tasks:
+    - id: CERT-03-T01
+      skill: elmos-ai-uncertainty-calibration-selective-prediction-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-03-T02
+      skill: elmos-api-sdk-codegen-conformance-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-03-T03
+      skill: elmos-assurance-case-confidence-quantifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-03-T04
+      skill: elmos-audit-duration-sampling-risk-planner
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-03-T05
+      skill: elmos-audit-evidence-sufficiency-appropriateness-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-03-T06
+      skill: elmos-auditor-evaluator-competence-authorization-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-03-T07
+      skill: elmos-automotive-cybersecurity-update-assurance-profile
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-03-T08
+      skill: elmos-automotive-functional-safety-sotif-profile
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-03-T09
+      skill: elmos-autonomous-system-safety-case-profile
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-03-T10
+      skill: elmos-aviation-software-tool-formal-assurance-profile
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-04
+    title: Certification implementation batch 5
+    dependsOn:
+    - CERT-03
+    tasks:
+    - id: CERT-04-T01
+      skill: elmos-benchmark-integrity-large-repository-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-04-T02
+      skill: elmos-browser-computer-use-safety-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-04-T03
+      skill: elmos-capacity-soak-efficiency-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-04-T04
+      skill: elmos-certificate-cross-border-jurisdiction-acceptance-planner
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-04-T05
+      skill: elmos-certificate-deployment-admission-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-04-T06
+      skill: elmos-certificate-drift-revocation-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-04-T07
+      skill: elmos-certificate-maintenance-scope-change-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-04-T08
+      skill: elmos-certificate-portability-transfer-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-04-T09
+      skill: elmos-certificate-public-directory-transparency-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-04-T10
+      skill: elmos-certificate-relying-party-policy-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-05
+    title: Certification implementation batch 6
+    dependsOn:
+    - CERT-04
+    tasks:
+    - id: CERT-05-T01
+      skill: elmos-certificate-status-list-revocation-service
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-05-T02
+      skill: elmos-certificate-trust-registry-federation-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-05-T03
+      skill: elmos-certification-audit-program-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-05-T04
+      skill: elmos-certification-body-financial-liability-risk-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-05-T05
+      skill: elmos-certification-confidentiality-information-security-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-05-T06
+      skill: elmos-certification-decision-independent-review-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-05-T07
+      skill: elmos-certification-ethics-whistleblower-protection-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-05-T08
+      skill: elmos-certification-function-separation-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-05-T09
+      skill: elmos-certification-key-ceremony-hsm-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-05-T10
+      skill: elmos-certification-mark-claim-usage-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-06
+    title: Certification implementation batch 7
+    dependsOn:
+    - CERT-05
+    tasks:
+    - id: CERT-06-T01
+      skill: elmos-certification-policy-practice-authority
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-06-T02
+      skill: elmos-certification-scheme-ownership-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-06-T03
+      skill: elmos-certification-scheme-surveillance-planner
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-06-T04
+      skill: elmos-certification-scope-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-06-T05
+      skill: elmos-certification-transfer-suspension-withdrawal-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-06-T06
+      skill: elmos-certification-transparency-log-notary
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-06-T07
+      skill: elmos-certifier-independence-competence-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-06-T08
+      skill: elmos-clean-room-reproducible-builder
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-06-T09
+      skill: elmos-common-criteria-evaluation-assurance-level-planner
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-06-T10
+      skill: elmos-common-criteria-protection-profile-mapper
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-07
+    title: Certification implementation batch 8
+    dependsOn:
+    - CERT-06
+    tasks:
+    - id: CERT-07-T01
+      skill: elmos-common-criteria-security-target-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-07-T02
+      skill: elmos-common-criteria-vulnerability-analysis-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-07-T03
+      skill: elmos-compiler-frontend-conformance-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-07-T04
+      skill: elmos-complaint-appeal-dispute-resolution-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-07-T05
+      skill: elmos-confidential-ai-inference-receipt-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-07-T06
+      skill: elmos-conformity-assessment-impartiality-risk-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-07-T07
+      skill: elmos-conformity-assessment-scheme-architecture-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-07-T08
+      skill: elmos-conformity-decision-guard-band-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-07-T09
+      skill: elmos-critical-infrastructure-ai-resilience-profile
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-07-T10
+      skill: elmos-cross-scheme-claim-mapping-equivalence-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-08
+    title: Certification implementation batch 9
+    dependsOn:
+    - CERT-07
+    tasks:
+    - id: CERT-08-T01
+      skill: elmos-cryptographic-algorithm-test-vector-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-08-T02
+      skill: elmos-cryptographic-module-validation-readiness-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-08-T03
+      skill: elmos-customer-holdout-acceptance-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-08-T04
+      skill: elmos-customer-vpc-runner-attestation-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-08-T05
+      skill: elmos-database-backup-pitr-failover-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-08-T06
+      skill: elmos-database-cutover-rollback-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-08-T07
+      skill: elmos-database-performance-plan-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-08-T08
+      skill: elmos-digital-metrology-measurand-definition-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-08-T09
+      skill: elmos-disaster-recovery-business-continuity-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-08-T10
+      skill: elmos-document-record-control-certification-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-09
+    title: Certification implementation batch 10
+    dependsOn:
+    - CERT-08
+    tasks:
+    - id: CERT-09-T01
+      skill: elmos-enterprise-assurance-dossier-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-09-T02
+      skill: elmos-environment-parity-config-drift-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-09-T03
+      skill: elmos-eu-ai-act-post-market-monitoring-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-09-T04
+      skill: elmos-event-replay-idempotency-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-09-T05
+      skill: elmos-evidence-trusted-timestamp-authority-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-09-T06
+      skill: elmos-evidence-worm-merkle-sealer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-09-T07
+      skill: elmos-external-audit-oscal-evidence-exporter
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-09-T08
+      skill: elmos-ffi-abi-native-boundary-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-09-T09
+      skill: elmos-financial-model-risk-validation-profile
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-09-T10
+      skill: elmos-formal-proof-maintenance-drift-recertifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-10
+    title: Certification implementation batch 11
+    dependsOn:
+    - CERT-09
+    tasks:
+    - id: CERT-10-T01
+      skill: elmos-generated-repository-maintainability-evolution-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-10-T02
+      skill: elmos-global-recognition-scope-resolver
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-10-T03
+      skill: elmos-graphrag-pipeline-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-10-T04
+      skill: elmos-hardware-root-of-trust-measured-boot-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-10-T05
+      skill: elmos-hermetic-build-environment-attestation-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-10-T06
+      skill: elmos-hybrid-signature-certificate-transition-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-10-T07
+      skill: elmos-i18n-l10n-conformance-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-10-T08
+      skill: elmos-incident-postmortem-recertification-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-10-T09
+      skill: elmos-independent-k8-certificate-signer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-10-T10
+      skill: elmos-industrial-control-security-safety-coassurance-profile
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-11
+    title: Certification implementation batch 12
+    dependsOn:
+    - CERT-10
+    tasks:
+    - id: CERT-11-T01
+      skill: elmos-inspection-validation-verification-mode-selector
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-11-T02
+      skill: elmos-interlaboratory-comparison-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-11-T03
+      skill: elmos-internal-audit-management-review-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-11-T04
+      skill: elmos-lab-environment-validity-monitor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-11-T05
+      skill: elmos-lab-reproducibility-repeatability-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-11-T06
+      skill: elmos-machine-checkable-proof-replay-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-11-T07
+      skill: elmos-machine-verifiable-certificate-profile-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-11-T08
+      skill: elmos-measurement-uncertainty-budget-engine
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-11-T09
+      skill: elmos-medical-device-ai-software-lifecycle-risk-profile
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-11-T10
+      skill: elmos-method-sensitivity-specificity-detection-limit-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-12
+    title: Certification implementation batch 13
+    dependsOn:
+    - CERT-11
+    tasks:
+    - id: CERT-12-T01
+      skill: elmos-model-checking-state-space-coverage-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-12-T02
+      skill: elmos-model-quantization-hardware-compatibility-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-12-T03
+      skill: elmos-model-weight-artifact-provenance-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-12-T04
+      skill: elmos-multi-region-active-active-failover-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-12-T05
+      skill: elmos-multi-verifier-attestation-consensus-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-12-T06
+      skill: elmos-mutual-recognition-arrangement-scope-resolver
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-12-T07
+      skill: elmos-native-conformance-lab-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-12-T08
+      skill: elmos-network-egress-data-exfiltration-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-12-T09
+      skill: elmos-nonconformity-corrective-action-capa-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-12-T10
+      skill: elmos-open-source-license-ip-compliance-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-13
+    title: Certification implementation batch 14
+    dependsOn:
+    - CERT-12
+    tasks:
+    - id: CERT-13-T01
+      skill: elmos-operability-support-readiness-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-13-T02
+      skill: elmos-outsourced-certification-activity-control-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-13-T03
+      skill: elmos-peer-assessment-witness-audit-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-13-T04
+      skill: elmos-polyglot-route-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-13-T05
+      skill: elmos-post-market-surveillance-signal-detection-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-13-T06
+      skill: elmos-post-quantum-cryptographic-agility-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-13-T07
+      skill: elmos-privacy-impact-consent-purpose-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-13-T08
+      skill: elmos-production-change-control-recertification-gate
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-13-T09
+      skill: elmos-production-deployment-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-13-T10
+      skill: elmos-productivity-value-stream-scorecard
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-14
+    title: Certification implementation batch 15
+    dependsOn:
+    - CERT-13
+    tasks:
+    - id: CERT-14-T01
+      skill: elmos-proficiency-testing-scheme-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-14-T02
+      skill: elmos-proof-assumption-defeater-ledger
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-14-T03
+      skill: elmos-proof-carrying-artifact-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-14-T04
+      skill: elmos-proof-checker-diversity-cross-validation-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-14-T05
+      skill: elmos-public-sector-high-impact-ai-assurance-profile
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-14-T06
+      skill: elmos-railway-software-safety-case-profile
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-14-T07
+      skill: elmos-rats-eat-corim-attestation-appraisal-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-14-T08
+      skill: elmos-reference-dataset-material-producer-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-14-T09
+      skill: elmos-regulatory-obligation-effective-date-monitor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-14-T10
+      skill: elmos-risk-acceptance-residual-risk-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-15
+    title: Certification implementation batch 16
+    dependsOn:
+    - CERT-14
+    tasks:
+    - id: CERT-15-T01
+      skill: elmos-root-cause-effectiveness-verification-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-15-T02
+      skill: elmos-runtime-admission-attestation-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-15-T03
+      skill: elmos-runtime-policy-continuous-compliance-monitor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-15-T04
+      skill: elmos-safety-integrity-level-assurance-profile-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-15-T05
+      skill: elmos-sampling-plan-representativeness-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-15-T06
+      skill: elmos-scitt-evidence-transparency-receipt-publisher
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-15-T07
+      skill: elmos-sector-profile-applicability-tailoring-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-15-T08
+      skill: elmos-security-evaluation-methodology-work-unit-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-15-T09
+      skill: elmos-security-incident-psirt-disclosure-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-15-T10
+      skill: elmos-self-improvement-change-isolation-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-16
+    title: Certification implementation batch 17
+    dependsOn:
+    - CERT-15
+    tasks:
+    - id: CERT-16-T01
+      skill: elmos-sensitive-data-masking-tokenization-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-16-T02
+      skill: elmos-slo-error-budget-release-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-16-T03
+      skill: elmos-structured-assurance-case-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-16-T04
+      skill: elmos-sustainable-ai-energy-carbon-efficiency-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-16-T05
+      skill: elmos-tcb-attack-surface-closure-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-16-T06
+      skill: elmos-test-data-privacy-synthetic-generation-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-16-T07
+      skill: elmos-test-equipment-software-calibration-traceability-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-16-T08
+      skill: elmos-test-method-validation-verification-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-16-T09
+      skill: elmos-third-party-mark-conformity-license-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-16-T10
+      skill: elmos-trusted-computing-base-minimization-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CERT-17
+    title: Certification implementation batch 18
+    dependsOn:
+    - CERT-16
+    tasks:
+    - id: CERT-17-T01
+      skill: elmos-ui-visual-regression-journey-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-17-T02
+      skill: elmos-verifiable-credential-assurance-certificate-emitter
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-17-T03
+      skill: elmos-verification-tool-validation-corpus-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-17-T04
+      skill: elmos-verifier-tool-qualification-classifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-17-T05
+      skill: elmos-vulnerability-vex-kev-response-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-17-T06
+      skill: elmos-waiver-expiry-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-17-T07
+      skill: elmos-warehouse-lakehouse-migration-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CERT-17-T08
+      skill: elmos-wasi-sandbox-capability-certifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion

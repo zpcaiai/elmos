@@ -1,0 +1,500 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CrossPackageDependencyRegistry
+metadata:
+  package: elmos-functional-assurance-certification-skills
+  version: 4.1.0
+spec:
+  companionPackage: elmos-ai-capability-enhancement-skills
+  edges:
+  - fromSkill: elmos-accessibility-conformance-certifier
+    toSkill: elmos-mcp-apps-a2ui-generator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-agent-skill-mcp-supply-chain-certifier
+    toSkill: elmos-agent-skill-ir-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-adversarial-robustness-evasion-poisoning-certifier
+    toSkill: elmos-adversarial-model-tool-memory-redteam-orchestrator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-controllability-override-fail-safe-certifier
+    toSkill: elmos-human-oversight-consent-contract-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-controllability-override-fail-safe-certifier
+    toSkill: elmos-ai-runaway-loop-economic-dos-guard
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-e0-e5-certifier
+    toSkill: elmos-ai-cross-framework-differential-validator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-e0-e5-certifier
+    toSkill: elmos-ai-graph-liveness-side-effect-verifier
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-e0-e5-certifier
+    toSkill: elmos-ai-prompt-tool-security-redteam
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-evaluation-power-sample-size-planner
+    toSkill: elmos-performance-statistical-gate
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-explainability-fidelity-stability-certifier
+    toSkill: elmos-ai-regulated-decision-explainability-packager
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-fairness-bias-intersectional-certifier
+    toSkill: elmos-ai-system-impact-assessment-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-golden-route-continuous-agent-certification
+    toSkill: elmos-ai-online-shadow-eval-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-golden-route-continuous-agent-certification
+    toSkill: elmos-ai-eval-dataset-governor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-human-factors-automation-bias-overreliance-verifier
+    toSkill: elmos-human-oversight-consent-contract-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-impact-harm-benefit-distribution-assessor
+    toSkill: elmos-ai-system-impact-assessment-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-provider-behavior-fingerprint-recertifier
+    toSkill: elmos-ai-judge-calibration-stochastic-assurance
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-provider-behavior-fingerprint-recertifier
+    toSkill: elmos-ai-compatibility-drift-monitor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-quality-model-evaluation-compiler
+    toSkill: elmos-ai-assurance-contract-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-quality-model-evaluation-compiler
+    toSkill: elmos-performance-statistical-gate
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-quality-model-evaluation-compiler
+    toSkill: elmos-ai-system-impact-assessment-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-rag-retrieval-grounding-certifier
+    toSkill: elmos-ai-cross-framework-differential-validator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-rag-retrieval-grounding-certifier
+    toSkill: elmos-ai-rag-semantic-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-rare-event-tail-risk-estimator
+    toSkill: elmos-adversarial-model-tool-memory-redteam-orchestrator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-supply-chain-performance-resilience-certifier
+    toSkill: elmos-ai-deployment-pack-generator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-supply-chain-performance-resilience-certifier
+    toSkill: elmos-ai-generated-project-conformance-validator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-tevv-program-architecture-compiler
+    toSkill: elmos-proof-to-validation-dag-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ai-uncertainty-calibration-selective-prediction-verifier
+    toSkill: elmos-ai-judge-calibration-stochastic-assurance
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-api-sdk-codegen-conformance-certifier
+    toSkill: elmos-openapi-arazzo-workflow-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-api-sdk-codegen-conformance-certifier
+    toSkill: elmos-generated-api-event-schema-evolution-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-automotive-cybersecurity-update-assurance-profile
+    toSkill: elmos-software-update-trust-root-governor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-aviation-software-tool-formal-assurance-profile
+    toSkill: elmos-formal-model-runtime-refinement-verifier
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-benchmark-integrity-large-repository-certifier
+    toSkill: elmos-test-matrix-covering-array-planner
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-benchmark-integrity-large-repository-certifier
+    toSkill: elmos-performance-statistical-gate
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-browser-computer-use-safety-certifier
+    toSkill: elmos-ai-prompt-tool-security-redteam
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-browser-computer-use-safety-certifier
+    toSkill: elmos-human-oversight-consent-contract-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-capacity-soak-efficiency-certifier
+    toSkill: elmos-performance-statistical-gate
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-certificate-cross-border-jurisdiction-acceptance-planner
+    toSkill: elmos-ai-compliance-profile-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-certificate-drift-revocation-controller
+    toSkill: elmos-ai-compatibility-drift-monitor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-certification-confidentiality-information-security-governor
+    toSkill: elmos-zero-trust-service-identity-policy-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-certification-mark-claim-usage-governor
+    toSkill: elmos-ai-content-provenance-labeling-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-certification-scope-compiler
+    toSkill: elmos-ai-assurance-contract-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-certification-scope-compiler
+    toSkill: elmos-ai-compliance-profile-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-certification-transparency-log-notary
+    toSkill: elmos-software-update-trust-root-governor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-certifier-independence-competence-governor
+    toSkill: elmos-human-oversight-consent-contract-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-clean-room-reproducible-builder
+    toSkill: elmos-ai-revision-set-freezer
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-common-criteria-vulnerability-analysis-controller
+    toSkill: elmos-adversarial-model-tool-memory-redteam-orchestrator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-compiler-frontend-conformance-certifier
+    toSkill: elmos-language-semantic-profile-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-compiler-frontend-conformance-certifier
+    toSkill: elmos-ai-generated-project-conformance-validator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-confidential-ai-inference-receipt-certifier
+    toSkill: elmos-confidential-computing-attestation-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-customer-holdout-acceptance-controller
+    toSkill: elmos-ai-eval-dataset-governor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-customer-vpc-runner-attestation-certifier
+    toSkill: elmos-agent-workload-delegated-identity-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-database-cutover-rollback-certifier
+    toSkill: elmos-data-snapshot-cdc-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-database-cutover-rollback-certifier
+    toSkill: elmos-transaction-locking-equivalence-verifier
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-database-performance-plan-certifier
+    toSkill: elmos-sql-dual-execution-oracle
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-database-performance-plan-certifier
+    toSkill: elmos-performance-statistical-gate
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-disaster-recovery-business-continuity-certifier
+    toSkill: elmos-chaos-recovery-verification-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-enterprise-assurance-dossier-generator
+    toSkill: elmos-ai-system-impact-assessment-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-environment-parity-config-drift-certifier
+    toSkill: elmos-ai-compatibility-drift-monitor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-eu-ai-act-post-market-monitoring-controller
+    toSkill: elmos-ai-system-impact-assessment-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-event-replay-idempotency-certifier
+    toSkill: elmos-deterministic-record-replay-model-tool-harness
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-event-replay-idempotency-certifier
+    toSkill: elmos-ai-durable-runtime-integrator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-evidence-worm-merkle-sealer
+    toSkill: elmos-ai-artifact-provenance-packager
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-external-audit-oscal-evidence-exporter
+    toSkill: elmos-ai-compliance-profile-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ffi-abi-native-boundary-certifier
+    toSkill: elmos-language-semantic-profile-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-generated-repository-maintainability-evolution-certifier
+    toSkill: elmos-polyglot-route-matrix-governor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-generated-repository-maintainability-evolution-certifier
+    toSkill: elmos-ai-generated-project-upgrader
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-graphrag-pipeline-certifier
+    toSkill: elmos-knowledge-graph-ontology-ir-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-hardware-root-of-trust-measured-boot-verifier
+    toSkill: elmos-confidential-computing-attestation-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-hermetic-build-environment-attestation-controller
+    toSkill: elmos-agent-workload-delegated-identity-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-i18n-l10n-conformance-verifier
+    toSkill: elmos-language-semantic-profile-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-i18n-l10n-conformance-verifier
+    toSkill: elmos-ai-interaction-channel-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-incident-postmortem-recertification-controller
+    toSkill: elmos-ai-incident-kill-switch-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-incident-postmortem-recertification-controller
+    toSkill: elmos-counterexample-regression-promoter
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-industrial-control-security-safety-coassurance-profile
+    toSkill: elmos-zero-trust-service-identity-policy-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-measurement-uncertainty-budget-engine
+    toSkill: elmos-performance-statistical-gate
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-medical-device-ai-software-lifecycle-risk-profile
+    toSkill: elmos-ai-system-impact-assessment-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-medical-device-ai-software-lifecycle-risk-profile
+    toSkill: elmos-ai-data-contract-quality-governor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-model-checking-state-space-coverage-certifier
+    toSkill: elmos-formal-model-runtime-refinement-verifier
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-model-quantization-hardware-compatibility-certifier
+    toSkill: elmos-model-serving-runtime-profile-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-model-weight-artifact-provenance-certifier
+    toSkill: elmos-ai-bom-provenance-generator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-model-weight-artifact-provenance-certifier
+    toSkill: elmos-model-license-usage-restriction-governor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-multi-region-active-active-failover-certifier
+    toSkill: elmos-ai-provider-data-residency-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-native-conformance-lab-controller
+    toSkill: elmos-ai-generated-project-conformance-validator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-network-egress-data-exfiltration-certifier
+    toSkill: elmos-ai-provider-data-residency-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-network-egress-data-exfiltration-certifier
+    toSkill: elmos-ai-prompt-tool-security-redteam
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-open-source-license-ip-compliance-certifier
+    toSkill: elmos-ai-bom-provenance-generator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-open-source-license-ip-compliance-certifier
+    toSkill: elmos-ai-data-contract-quality-governor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-operability-support-readiness-certifier
+    toSkill: elmos-ai-operator-console-generator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-polyglot-route-certifier
+    toSkill: elmos-polyglot-differential-runtime
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-polyglot-route-certifier
+    toSkill: elmos-polyglot-upgrade-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-post-quantum-cryptographic-agility-controller
+    toSkill: elmos-software-update-trust-root-governor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-privacy-impact-consent-purpose-verifier
+    toSkill: elmos-ai-provider-data-residency-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-privacy-impact-consent-purpose-verifier
+    toSkill: elmos-ai-retention-erasure-verifier
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-privacy-impact-consent-purpose-verifier
+    toSkill: elmos-human-oversight-consent-contract-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-production-change-control-recertification-gate
+    toSkill: elmos-proof-to-validation-dag-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-production-deployment-certifier
+    toSkill: elmos-ai-deployment-pack-generator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-productivity-value-stream-scorecard
+    toSkill: elmos-ai-observability-finops-generator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-proof-carrying-artifact-compiler
+    toSkill: elmos-proof-assistant-lean-dafny-bridge
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-reference-dataset-material-producer-governor
+    toSkill: elmos-ai-eval-dataset-governor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-regulatory-obligation-effective-date-monitor
+    toSkill: elmos-ai-compliance-profile-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-runtime-admission-attestation-controller
+    toSkill: elmos-software-update-trust-root-governor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-runtime-admission-attestation-controller
+    toSkill: elmos-ai-tool-authority-policy-generator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-runtime-policy-continuous-compliance-monitor
+    toSkill: elmos-ai-policy-as-code-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-sampling-plan-representativeness-certifier
+    toSkill: elmos-ai-eval-dataset-governor
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-scitt-evidence-transparency-receipt-publisher
+    toSkill: elmos-ai-artifact-provenance-packager
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-sector-profile-applicability-tailoring-governor
+    toSkill: elmos-ai-compliance-profile-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-security-incident-psirt-disclosure-controller
+    toSkill: elmos-ai-incident-kill-switch-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-security-incident-psirt-disclosure-controller
+    toSkill: elmos-ai-system-model-card-generator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-self-improvement-change-isolation-certifier
+    toSkill: elmos-counterexample-to-rule-skill-promotion-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-sensitive-data-masking-tokenization-certifier
+    toSkill: elmos-test-fixture-data-factory
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-slo-error-budget-release-governor
+    toSkill: elmos-ai-observability-finops-generator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-sustainable-ai-energy-carbon-efficiency-certifier
+    toSkill: elmos-carbon-energy-efficiency-profiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-sustainable-ai-energy-carbon-efficiency-certifier
+    toSkill: elmos-model-serving-runtime-profile-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-test-data-privacy-synthetic-generation-certifier
+    toSkill: elmos-test-fixture-data-factory
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-trusted-computing-base-minimization-governor
+    toSkill: elmos-ai-bom-provenance-generator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-ui-visual-regression-journey-certifier
+    toSkill: elmos-contract-integration-e2e-controller
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-verification-tool-validation-corpus-governor
+    toSkill: elmos-counterexample-regression-promoter
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-verifier-tool-qualification-classifier
+    toSkill: elmos-formal-method-selection-router
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-vulnerability-vex-kev-response-governor
+    toSkill: elmos-ai-bom-provenance-generator
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-waiver-expiry-governor
+    toSkill: elmos-ai-policy-as-code-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-warehouse-lakehouse-migration-certifier
+    toSkill: elmos-lakehouse-table-format-ir-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-wasi-sandbox-capability-certifier
+    toSkill: elmos-wasm-component-wit-portability-compiler
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer
+  - fromSkill: elmos-wasi-sandbox-capability-certifier
+    toSkill: elmos-runtime-sandbox-ebpf-behavior-verifier
+    package: elmos-ai-capability-enhancement-skills
+    mode: required-base-evidence-producer

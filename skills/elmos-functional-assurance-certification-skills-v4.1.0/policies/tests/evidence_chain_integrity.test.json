@@ -1,0 +1,13 @@
+{
+  "policy": "evidence_chain_integrity",
+  "positive": {
+    "hash_chain_valid": true,
+    "merkle_root_valid": true,
+    "signature_valid": true,
+    "evidence_fresh": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

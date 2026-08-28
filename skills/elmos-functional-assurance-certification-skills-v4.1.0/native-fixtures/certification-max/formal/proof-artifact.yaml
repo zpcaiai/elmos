@@ -1,0 +1,4 @@
+claim: side-effect exactly once
+checker: independent-small-checker
+assumptions:
+- durable outbox

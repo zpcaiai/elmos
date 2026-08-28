@@ -1,0 +1,24 @@
+{
+  "level": "A3",
+  "obligations": [
+    {
+      "id": "po-grounding",
+      "claim": "answers cite supporting tenant-authorized evidence",
+      "criticality": "critical",
+      "acceptedStatuses": [
+        "PROVED",
+        "TESTED"
+      ]
+    }
+  ],
+  "thresholds": {
+    "citation_precision": 0.95,
+    "retrieval_recall": 0.85
+  },
+  "acceptedEvidence": [
+    "native-test",
+    "differential-trace",
+    "security-test"
+  ],
+  "independentCertifier": true
+}

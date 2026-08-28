@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "CustomerHoldoutResult",
+  "metadata": {
+    "id": "customer-holdout-result-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "holdoutSet": "example-holdoutSet",
+    "contaminationCheck": {},
+    "scenarioResults": [],
+    "acceptance": "example-acceptance"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "certificateId": "cert-1",
+  "revisionSetId": "rev-1",
+  "evidenceRoot": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "decision": "BLOCKED",
+  "gates": {
+    "E0": "PASS",
+    "E1": "PASS",
+    "E2": "PASS",
+    "E3": "PASS",
+    "E4": "BLOCKED",
+    "E5": "BLOCKED"
+  },
+  "assumptions": [],
+  "waivers": [],
+  "issuedAt": "2026-08-28T00:00:00Z",
+  "expiresAt": "2026-09-28T00:00:00Z",
+  "certifier": {
+    "independent": true,
+    "signer": "elmos-k8",
+    "signature": "example-not-production"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "database-extension-profile-example",
+  "status": "READY",
+  "content_hash": "3f1858faa3dad0cae21a1ce391ff0e4151749dd90a30a2261eda04568000d3c3",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "version_pins": {
+    "runtime": "RELEASE_TIME_EXACT"
+  },
+  "capabilities": [
+    "detect",
+    "validate"
+  ],
+  "constraints": [
+    "fail-closed"
+  ]
+}

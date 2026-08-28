@@ -1,0 +1,1135 @@
+apiVersion: elmos.ai/v3alpha1
+kind: SplitAdapterClassification
+metadata:
+  sourcePackage: elmos-ai-native-project-factory-total-skills-v4.0.0
+  version: 4.1.0
+spec:
+  adapters:
+  - adapter: a2a
+    kind: protocol
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: a2a-v1
+    kind: protocol
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: a2ui-v1
+    kind: interactive-ui
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: acp-v1
+    kind: protocol
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: ag-ui
+    kind: interaction-protocol
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: agent-skills-standard
+    kind: skill-format
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: agentic-resource-discovery
+    kind: registry
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: agno
+    kind: agent-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: aicpa-soc2-trust-services
+    kind: assurance-report-profile
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: aider
+    kind: coding-agent
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: airflow
+    kind: data-orchestration
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: alloy
+    kind: formal-verifier
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: apache-avro
+    kind: wire-schema
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: apache-calcite
+    kind: sql-tool
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: apache-druid
+    kind: realtime-analytics
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: apache-flink
+    kind: stream-processing
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: apache-hudi
+    kind: table-format
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: apache-iceberg
+    kind: table-format
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: apache-pinot
+    kind: realtime-analytics
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: apache-pulsar
+    kind: messaging
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: apache-thrift
+    kind: rpc-schema
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: apicurio-registry
+    kind: schema-registry
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: arazzo-1.1
+    kind: api-workflow
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: argocd
+    kind: gitops
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: arize-phoenix
+    kind: eval-observability
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: asyncapi-3.1
+    kind: event-contract
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: atlas-schema
+    kind: schema-migration
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: autogen-compat
+    kind: migration-source
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: aws-bedrock-agentcore
+    kind: managed-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: aws-msk
+    kind: managed-messaging
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: azure-event-hubs
+    kind: managed-messaging
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: bazel
+    kind: build-system
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: bentoml
+    kind: model-serving
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: bigquery-dialect
+    kind: database-dialect
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: browser-computer-use
+    kind: tool-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: buf-schema-registry
+    kind: schema-registry
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: camel-ai
+    kind: multi-agent-framework
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: cassandra-scylla
+    kind: wide-column
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: cbmc-klee
+    kind: symbolic-execution
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: ccra-cpp-recognition
+    kind: recognition-arrangement
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: cedar-policy
+    kind: authorization
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: ceph
+    kind: distributed-storage
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: cert-manager
+    kind: certificate-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: chaos-mesh
+    kind: chaos
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: chatgpt-apps-sdk
+    kind: plugin-ui
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: chroma
+    kind: vector-database
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: cilium
+    kind: network-security
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: claude-code
+    kind: coding-agent
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: clickhouse-dialect
+    kind: database-dialect
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: clickhouse-server
+    kind: analytics-database
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: cline-roo
+    kind: coding-agent
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: cloudevents-1.0
+    kind: event-contract
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: cockroachdb
+    kind: distributed-sql
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: codeql
+    kind: static-analysis
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: codex
+    kind: coding-agent
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: common-criteria-2022
+    kind: security-evaluation-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: confidential-computing-arm-cca
+    kind: confidential-computing
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: confidential-computing-sev-snp
+    kind: confidential-computing
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: confidential-computing-tdx
+    kind: confidential-computing
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: confluent-schema-registry
+    kind: schema-registry
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: continue
+    kind: coding-agent
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: coreml
+    kind: edge-inference
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: coze-studio
+    kind: visual-agent-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: crewai
+    kind: multi-agent-framework
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: crossplane
+    kind: infrastructure-control-plane
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: cyclonedx-v1.7
+    kind: bom-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: dafny
+    kind: formal-verifier
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: dagster
+    kind: data-orchestration
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: dameng
+    kind: sql-dialect
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: databricks-agents
+    kind: managed-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: databricks-sql
+    kind: warehouse
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: datahub
+    kind: data-catalog
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: db2-dialect
+    kind: database-dialect
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: dbt
+    kind: analytics-tool
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: debezium
+    kind: cdc-tool
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: deepseek-harness
+    kind: coding-harness
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: delta-lake
+    kind: table-format
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: devcontainer
+    kind: dev-environment
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: dify
+    kind: visual-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: dotnet-roslyn
+    kind: language-compiler
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: dspy
+    kind: programming-optimization-framework
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: duckdb
+    kind: analytics-dialect
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: dynamodb
+    kind: key-value
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: elasticsearch
+    kind: search
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: en-50126
+    kind: sector-rail-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: en-50129
+    kind: sector-rail-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: en-50716
+    kind: sector-rail-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: envoy-gateway
+    kind: api-gateway
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: falco
+    kind: runtime-security
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: fastgpt
+    kind: visual-rag-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: fda-ai-enabled-device-pccp
+    kind: sector-medical-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: fda-ai-ml-gmlp
+    kind: sector-medical-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: fips-140-3-cmvp
+    kind: cryptographic-validation-program
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: fips-203-ml-kem
+    kind: post-quantum-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: fips-204-ml-dsa
+    kind: post-quantum-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: fips-205-slh-dsa
+    kind: post-quantum-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: firecracker
+    kind: microvm
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: flowise-compat
+    kind: migration-source
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: flux
+    kind: gitops
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: flyway
+    kind: migration-tool
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: gatekeeper
+    kind: policy-engine
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: gaussdb
+    kind: sql-dialect
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: gemini-cli
+    kind: coding-agent
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: gh-ost
+    kind: online-schema-change
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: global-accreditation-cooperation-mra-2026
+    kind: recognition-arrangement
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: go-compiler
+    kind: language-compiler
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: google-adk-go
+    kind: agent-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: google-adk-java
+    kind: agent-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: google-adk-python
+    kind: agent-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: google-adk-typescript
+    kind: agent-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: google-gemini-enterprise-agent-platform
+    kind: managed-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: google-pubsub
+    kind: managed-messaging
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: grafana
+    kind: observability-ui
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: grafeas
+    kind: artifact-metadata
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: graphql
+    kind: api-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: great-expectations
+    kind: data-quality
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: grpc
+    kind: rpc-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: guac-supply-chain
+    kind: supply-chain-intelligence
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: gvisor
+    kind: sandbox
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: hashicorp-vault
+    kind: secret-key-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: haystack-python
+    kind: pipeline-framework
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: huggingface-tgi
+    kind: model-serving
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: iec-61508
+    kind: sector-safety-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iec-62304
+    kind: sector-medical-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iec-62366-1
+    kind: sector-medical-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iec-62443-3-3
+    kind: sector-industrial-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iec-62443-4-1
+    kind: sector-industrial-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iec-62443-4-2
+    kind: sector-industrial-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: ieee-1012
+    kind: verification-validation-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: ietf-corim
+    kind: attestation-protocol
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: ietf-eat
+    kind: attestation-protocol
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: ietf-rats-rfc9334
+    kind: attestation-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: ilac-g17-2021
+    kind: accreditation-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: ilac-g8-2019
+    kind: accreditation-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: in-toto-attestation
+    kind: assurance-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: influxdb
+    kind: time-series
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: iso-13528-2022
+    kind: proficiency-statistics-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-14971
+    kind: sector-medical-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-17034-2016
+    kind: reference-material-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-19011-2018
+    kind: audit-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-21448
+    kind: sector-automotive-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-26262
+    kind: sector-automotive-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-12792-2025
+    kind: ai-transparency-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-15026-series
+    kind: assurance-case-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-15408-2022
+    kind: security-evaluation-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17000-2020
+    kind: conformity-assessment-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17007-2009
+    kind: conformity-assessment-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17011-2017
+    kind: accreditation-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17020-2026
+    kind: conformity-assessment-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17021-1-2015
+    kind: conformity-assessment-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17024-2026
+    kind: conformity-assessment-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17025-2017
+    kind: laboratory-competence-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17029-2019
+    kind: conformity-assessment-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17030-2021
+    kind: conformity-mark-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17040-2005
+    kind: peer-assessment-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17043-2023
+    kind: proficiency-testing-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17050-1-2004
+    kind: supplier-declaration-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17050-2-2004
+    kind: supplier-declaration-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17060-2022
+    kind: conformity-assessment-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17065-2012
+    kind: product-certification-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-17067-2013
+    kind: product-certification-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-18045-2022
+    kind: security-evaluation-methodology
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-23894-2023
+    kind: ai-risk-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-24029-1-2021
+    kind: ai-robustness-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-24029-2
+    kind: ai-formal-robustness-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-25010-25040
+    kind: quality-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-25058-2024
+    kind: ai-quality-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-25059
+    kind: ai-quality-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-27006-1
+    kind: certification-body-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-42001-42006
+    kind: management-system-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-42005-2025
+    kind: ai-assurance-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-42006-2025
+    kind: ai-certification-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-4213-2022
+    kind: ai-measurement-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-5259-series
+    kind: ai-data-quality-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-5338-2023
+    kind: ai-lifecycle-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-dis-42007
+    kind: draft-ai-assurance-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-tr-24027-2021
+    kind: ai-bias-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-tr-24028-2020
+    kind: ai-trustworthiness-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-tr-42106-2026
+    kind: ai-management-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-tr-5469-2024
+    kind: ai-safety-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-ts-12791-2024
+    kind: ai-bias-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-ts-17035-2024
+    kind: conformity-program-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-ts-6254-2025
+    kind: ai-explainability-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-iec-ts-8200-2024
+    kind: ai-control-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: iso-sae-21434
+    kind: sector-automotive-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: istio
+    kind: service-mesh
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: java-21-compiler
+    kind: language-compiler
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: jcgm-100-amd1-2026
+    kind: metrology-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: jcgm-101-2008
+    kind: metrology-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: jcgm-102-2011
+    kind: metrology-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: jcgm-104-2009
+    kind: metrology-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: jcgm-106-2012
+    kind: metrology-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: jcgm-gum-1-2023
+    kind: metrology-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: jcgm-gum-5-2026
+    kind: metrology-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: jcgm-gum-6-2020
+    kind: metrology-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: jcgm-vim-200-2012
+    kind: metrology-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: jooq-parser
+    kind: sql-tool
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: json-schema-2020-12
+    kind: schema-contract
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: k6
+    kind: load-testing
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: kafka
+    kind: messaging
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: kata-containers
+    kind: sandbox
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: keycloak
+    kind: identity
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: kingbase
+    kind: sql-dialect
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: kotlin-analysis
+    kind: language-compiler
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: kserve
+    kind: model-serving
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: kyverno
+    kind: policy-engine
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: langchain-python
+    kind: agent-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: langchain-typescript
+    kind: agent-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: langchain4j
+    kind: enterprise-ai-framework
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: langflow
+    kind: visual-agent-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: langgraph-python
+    kind: graph-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: langgraph-typescript
+    kind: graph-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: langsmith
+    kind: eval-observability
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: lean4
+    kind: proof-assistant
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: liquibase
+    kind: migration-tool
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: litellm
+    kind: model-gateway
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: litmuschaos
+    kind: chaos
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: llama-cpp
+    kind: edge-inference
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: llama-stack
+    kind: ai-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: llamaindex-python
+    kind: data-agent-framework
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: llamaindex-typescript
+    kind: data-agent-framework
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: loki
+    kind: log-store
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: mastra
+    kind: agent-workflow-framework
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: mcp
+    kind: protocol
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: mcp-2026-07-28
+    kind: protocol
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: mcp-apps
+    kind: interactive-ui
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: microsoft-agent-framework-dotnet
+    kind: agent-framework
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: microsoft-agent-framework-python
+    kind: agent-framework
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: microsoft-foundry-agent-service
+    kind: managed-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: microsoft-graphrag
+    kind: graph-rag
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: milvus
+    kind: vector-store
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: mimir
+    kind: metrics-store
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: minio
+    kind: object-storage
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: mlflow-genai
+    kind: eval-observability
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: mongodb
+    kind: document-database
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: mutmut
+    kind: mutation-testing
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: mysql-mariadb-dialect
+    kind: database-dialect
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: n8n-ai
+    kind: automation-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: nats-jetstream
+    kind: messaging
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: neo4j-database
+    kind: graph-database
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: neo4j-graphrag
+    kind: graph-rag
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: nist-acvp
+    kind: cryptographic-test-protocol
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: nist-ai-100-2e2025
+    kind: ai-security-guidance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: nist-ai-600-1
+    kind: ai-risk-profile
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: nist-ai-rmf-1-0
+    kind: ai-risk-framework
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: nist-ai-rmf-genai
+    kind: governance-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: nist-csf-privacy-ssdf
+    kind: security-privacy-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: nist-sp-800-160v1v2
+    kind: security-engineering-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: nist-sp-800-218a
+    kind: ai-secure-development-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: nist-sp-800-53r5
+    kind: security-controls-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: nist-tevv-athlon-2026
+    kind: ai-tevv-framework
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: nistir-8596-ai-csf-profile
+    kind: ai-cybersecurity-profile
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: nix
+    kind: hermetic-environment
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: nvidia-triton
+    kind: model-serving
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: oceanbase-mysql
+    kind: distributed-sql
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: oceanbase-oracle
+    kind: distributed-sql
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: ollama
+    kind: local-model-serving
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: onnx-runtime
+    kind: edge-inference
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: opa
+    kind: policy-engine
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openai-agents-python
+    kind: agent-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openai-agents-typescript
+    kind: agent-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openai-plugins
+    kind: plugin-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openai-realtime
+    kind: realtime-ai
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openapi-3.1
+    kind: api-contract
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openapi-3.2
+    kind: api-contract
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openapi-tools
+    kind: tool-protocol
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openclaw
+    kind: assistant-gateway
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: opencode
+    kind: coding-agent
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openfeature
+    kind: feature-management
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openfga
+    kind: authorization
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openhands
+    kind: coding-agent-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openharness
+    kind: coding-harness
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openinference-compatible
+    kind: telemetry
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openlineage
+    kind: data-lineage
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openmetadata
+    kind: data-catalog
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openrouter
+    kind: model-gateway
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: opensearch
+    kind: search
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: openssf-scorecard
+    kind: supply-chain-assessment
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: opentelemetry
+    kind: observability
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: oracle-dialect
+    kind: database-dialect
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: oscal-v1.1.2
+    kind: compliance-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: osv-openvex
+    kind: vulnerability-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: otel-collector
+    kind: telemetry-pipeline
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: pact
+    kind: contract-testing
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: pgbackrest
+    kind: database-backup
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: pgbouncer
+    kind: database-proxy
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: pgvector
+    kind: vector-store
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: pi
+    kind: coding-harness
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: pinecone
+    kind: vector-database
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: pitest
+    kind: mutation-testing
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: pkcs11-hsm
+    kind: hardware-key
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: playwright
+    kind: ui-testing
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: postgresql-dialect
+    kind: database-dialect
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: prefect
+    kind: data-orchestration
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: prometheus
+    kind: metrics
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: protobuf-editions
+    kind: wire-schema
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: pt-online-schema-change
+    kind: online-schema-change
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: pulumi
+    kind: infrastructure-as-code
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: pydanticai-python
+    kind: typed-agent-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: python-3-semantic
+    kind: language-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: qdrant
+    kind: vector-store
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: questdb
+    kind: time-series
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: qwen-agent
+    kind: agent-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: rabbitmq
+    kind: messaging
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: ragflow
+    kind: visual-rag-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: ray-serve
+    kind: model-serving
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: redis
+    kind: key-value
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: redpanda
+    kind: messaging
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: redshift
+    kind: warehouse
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: rekor-transparency-log
+    kind: transparency
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: rest-assured
+    kind: api-testing
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: rfc3161-timestamp
+    kind: trusted-time-protocol
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: rtca-do-178c
+    kind: sector-aviation-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: rtca-do-330
+    kind: sector-aviation-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: rtca-do-333
+    kind: sector-aviation-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: rustc-mir
+    kind: language-compiler
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: sacm-v2.3
+    kind: assurance-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: sae-arp4754a
+    kind: sector-aviation-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: schemathesis
+    kind: api-fuzzing
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: scitt-rfc9943
+    kind: transparency
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: semantic-kernel-compat
+    kind: migration-source
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: semgrep
+    kind: static-analysis
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: sglang
+    kind: model-serving
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: sigstore-cosign-v3
+    kind: signing
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: sigstore-slsa
+    kind: supply-chain
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: singlestore
+    kind: distributed-sql
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: slsa-v1.2
+    kind: assurance-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: smolagents
+    kind: lightweight-agent-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: snowflake-dialect
+    kind: database-dialect
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: soda-core
+    kind: data-quality
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: sonarqube
+    kind: code-quality
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: spark-sql
+    kind: analytics-engine
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: spdx-v3.0
+    kind: bom-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: spicedb
+    kind: authorization
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: spiffe-spire
+    kind: workload-identity
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: spring-ai-java
+    kind: enterprise-ai-framework
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: sqlglot
+    kind: sql-tool
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: sqlite
+    kind: sql-dialect
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: sqlserver-dialect
+    kind: database-dialect
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: strands-agents
+    kind: lightweight-agent-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: swarm-compat
+    kind: migration-source
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: syft-grype
+    kind: supply-chain-scanner
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: symphony
+    kind: coding-orchestrator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: tempo
+    kind: trace-store
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: temporal-durable-execution
+    kind: durable-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: tensorflow-lite
+    kind: edge-inference
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: terraform
+    kind: infrastructure-as-code
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: testcontainers
+    kind: test-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: tidb
+    kind: distributed-sql
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: timescaledb
+    kind: time-series
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: tla-plus
+    kind: formal-verifier
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: toxiproxy
+    kind: fault-injection
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: trino-presto
+    kind: federated-sql
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: trivy
+    kind: security-scanner
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: trusted-computing-group-tpm-2
+    kind: hardware-root-of-trust
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: tuf-v1.0.33
+    kind: update-security
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: typescript-compiler
+    kind: language-compiler
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: unece-r155
+    kind: sector-automotive-regulation
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: unece-r156
+    kind: sector-automotive-regulation
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: universal-rag
+    kind: solution-architecture
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: vercel-ai-sdk
+    kind: ai-ui-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: vespa
+    kind: search-vector
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: vitess
+    kind: distributed-sql
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: vllm
+    kind: model-serving
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: w3c-verifiable-credentials-2
+    kind: verifiable-credential-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: wasi-preview2
+    kind: sandbox-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: wasm-component-model
+    kind: component-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: wasmedge
+    kind: wasm-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: wasmtime
+    kind: wasm-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: wcag-2.2
+    kind: quality-standard
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - adapter: weaviate
+    kind: vector-store
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: webhook
+    kind: event-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: webrtc-sip
+    kind: realtime-transport
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: wiremock
+    kind: service-virtualization
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: yugabytedb
+    kind: distributed-sql
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - adapter: z3
+    kind: formal-verifier
+    assignedPackage: elmos-ai-capability-enhancement-skills

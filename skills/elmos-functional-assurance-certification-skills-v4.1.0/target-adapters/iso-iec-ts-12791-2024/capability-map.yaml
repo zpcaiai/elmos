@@ -1,0 +1,27 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetCapabilityProfile
+metadata:
+  adapter: iso-iec-ts-12791-2024
+  version: 4.0.0
+spec:
+  statusLegend:
+  - supported
+  - conditional
+  - emulated
+  - external-runtime
+  - external-policy
+  - unsupported
+  - blocked
+  features:
+    source_import: conditional
+    target_generation: supported
+    round_trip: conditional
+    native_conformance: required
+    durable_execution: conditional
+    human_approval: conditional
+    multi_tenant: external-runtime-or-native
+    tool_authority: external-policy-or-native
+    observability: supported-via-elmos
+    evidence_binding: required
+  claimsAreBoundedBy: exact upstream version + adapter digest + native conformance evidence
+  unsupportedBehavior: ledger and block critical

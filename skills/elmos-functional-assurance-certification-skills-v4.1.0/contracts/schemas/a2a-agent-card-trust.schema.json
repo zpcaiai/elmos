@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "A2AAgentCardTrust",
+  "type": "object",
+  "required": [
+    "agentId",
+    "protocolVersion",
+    "interfaces",
+    "signatureStatus"
+  ],
+  "properties": {
+    "agentId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "protocolVersion": {
+      "const": "1.0"
+    },
+    "tenant": {
+      "type": "string",
+      "minLength": 1
+    },
+    "interfaces": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "minItems": 1
+    },
+    "signatureStatus": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "verified",
+        "unverified",
+        "invalid",
+        "revoked"
+      ]
+    },
+    "expiresAt": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

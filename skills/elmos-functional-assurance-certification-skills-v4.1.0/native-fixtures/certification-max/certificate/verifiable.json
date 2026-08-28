@@ -1,0 +1,7 @@
+{
+  "issuer": "did:example:certifier",
+  "status": "SUSPENDED",
+  "scope": [
+    "fixture-only"
+  ]
+}

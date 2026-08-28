@@ -1,0 +1,4 @@
+{
+  "question": "Describe disaster recovery evidence",
+  "expectedStatus": "SUPPORTED-or-UNKNOWN"
+}

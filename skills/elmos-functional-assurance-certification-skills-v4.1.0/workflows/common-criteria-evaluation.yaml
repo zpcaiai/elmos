@@ -1,0 +1,119 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableCertificationWorkflow
+metadata:
+  name: common-criteria-evaluation
+  version: 4.0.0
+spec:
+  routeOwner: domain-pack.project-generation
+  execution: durable-event-sourced
+  steps:
+  - id: 01-toe-boundary
+    dependsOn: []
+    command: ToeBoundary
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 02-security-target
+    dependsOn:
+    - 01-toe-boundary
+    command: SecurityTarget
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 03-protection-profile
+    dependsOn:
+    - 02-security-target
+    command: ProtectionProfile
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 04-work-units
+    dependsOn:
+    - 03-protection-profile
+    command: WorkUnits
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 05-vulnerability-analysis
+    dependsOn:
+    - 04-work-units
+    command: VulnerabilityAnalysis
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 06-review
+    dependsOn:
+    - 05-vulnerability-analysis
+    command: Review
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 07-decision
+    dependsOn:
+    - 06-review
+    command: Decision
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  terminalStates:
+  - COMPLETED
+  - BLOCKED
+  - FAILED
+  - CANCELLED
+  completion: independent K8 decision bound to exact RevisionSet and sealed evidence root

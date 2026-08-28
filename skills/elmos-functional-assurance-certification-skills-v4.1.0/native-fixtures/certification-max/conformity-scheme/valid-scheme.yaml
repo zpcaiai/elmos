@@ -1,0 +1,9 @@
+scheme: product-certification
+functions:
+- selection
+- determination
+- review
+- decision
+- attestation
+- surveillance
+independentDecision: true

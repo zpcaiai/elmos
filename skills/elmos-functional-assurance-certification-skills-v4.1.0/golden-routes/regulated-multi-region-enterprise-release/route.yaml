@@ -1,0 +1,48 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CommercialGoldenRoute
+metadata:
+  name: regulated-multi-region-enterprise-release
+  version: 4.0.0
+  status: not-certified
+spec:
+  skill: elmos-enterprise-assurance-dossier-generator
+  workflow: workflows/product-quality-certification.yaml
+  source: Regulated multi-tenant AI system
+  targets:
+  - multi-region deployment
+  - enterprise assurance dossier
+  eligibility:
+  - exact source/target versions and digests available
+  - observable acceptance and rollback declared
+  - critical semantic/data/security boundaries modeled
+  requiredEvidence:
+  - privacy impact
+  - accessibility/i18n
+  - SLO/DR drills
+  - supply-chain attestations
+  - OSCAL/control evidence
+  - customer acceptance
+  - machine wall-clock and cost ledger
+  - customer acceptance where applicable
+  benchmark:
+    independentRepetitions: 3
+    holdoutRequired: true
+    faultInjectionRequired: true
+    machineWallClockRequired: true
+    costLedgerRequired: true
+  releaseGate:
+    E0toE5: true
+    P05ForProduction: true
+    criticalUnknown: BLOCK
+    sideEffectsSettled: true
+    exactRevisionSet: true
+    evidenceFreshnessRequired: true
+    independentCertifier: true
+  routeOwner: domain-pack.project-generation
+  routable: false
+  holdoutScenarios:
+  - unseen repository/data variant
+  - upstream version drift
+  - worker or dependency failure
+  - rollback after partial progress
+  nonClaim: This route remains a contract until exact native runs, customer evidence and independent certification are complete.

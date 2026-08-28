@@ -1,0 +1,119 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableCertificationWorkflow
+metadata:
+  name: sector-safety-profile
+  version: 4.0.0
+spec:
+  routeOwner: domain-pack.project-generation
+  execution: durable-event-sourced
+  steps:
+  - id: 01-applicability
+    dependsOn: []
+    command: Applicability
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 02-hazard-risk
+    dependsOn:
+    - 01-applicability
+    command: HazardRisk
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 03-assurance-plan
+    dependsOn:
+    - 02-hazard-risk
+    command: AssurancePlan
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 04-independent-verification
+    dependsOn:
+    - 03-assurance-plan
+    command: IndependentVerification
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 05-operational-validation
+    dependsOn:
+    - 04-independent-verification
+    command: OperationalValidation
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 06-safety-case
+    dependsOn:
+    - 05-operational-validation
+    command: SafetyCase
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 07-surveillance
+    dependsOn:
+    - 06-safety-case
+    command: Surveillance
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  terminalStates:
+  - COMPLETED
+  - BLOCKED
+  - FAILED
+  - CANCELLED
+  completion: independent K8 decision bound to exact RevisionSet and sealed evidence root

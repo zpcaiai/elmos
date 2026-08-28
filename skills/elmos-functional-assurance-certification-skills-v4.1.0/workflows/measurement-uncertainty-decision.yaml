@@ -1,0 +1,119 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableCertificationWorkflow
+metadata:
+  name: measurement-uncertainty-decision
+  version: 4.0.0
+spec:
+  routeOwner: domain-pack.project-generation
+  execution: durable-event-sourced
+  steps:
+  - id: 01-measurement-model
+    dependsOn: []
+    command: MeasurementModel
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 02-input-distributions
+    dependsOn:
+    - 01-measurement-model
+    command: InputDistributions
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 03-propagation
+    dependsOn:
+    - 02-input-distributions
+    command: Propagation
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 04-coverage
+    dependsOn:
+    - 03-propagation
+    command: Coverage
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 05-guard-band
+    dependsOn:
+    - 04-coverage
+    command: GuardBand
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 06-decision
+    dependsOn:
+    - 05-guard-band
+    command: Decision
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  - id: 07-evidence
+    dependsOn:
+    - 06-decision
+    command: Evidence
+    checkpoint: true
+    retry:
+      maxAttempts: 2
+      backoff: exponential
+    authority: environment-owned
+    requiredEvidence:
+    - input-hash
+    - tool/version-digest
+    - result-hash
+    - trace-id
+    failure: critical UNKNOWN, stale authority or unsettled side effect => BLOCKED
+  terminalStates:
+  - COMPLETED
+  - BLOCKED
+  - FAILED
+  - CANCELLED
+  completion: independent K8 decision bound to exact RevisionSet and sealed evidence root

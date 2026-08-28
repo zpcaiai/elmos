@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "ReleaseAttestationPolicy",
+  "metadata": {
+    "id": "release-attestation-policy-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "requiredPredicates": [],
+    "trustedBuilders": [],
+    "minimumSignatures": 1,
+    "decision": "example-decision"
+  }
+}

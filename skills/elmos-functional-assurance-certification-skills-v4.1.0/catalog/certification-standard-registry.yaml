@@ -1,0 +1,515 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CertificationStandardRegistry
+metadata:
+  version: 4.0.0
+  generatedAt: '2026-08-28'
+spec:
+  copyrightBoundary: Store only identifiers, profile metadata, mappings and user-authorized interpretations; do not reproduce
+    copyrighted normative text.
+  releaseRule: Resolve current edition/effective date from authoritative source and pin exact edition before use.
+  adapters:
+  - name: iso-iec-17000-2020
+    title: ISO/IEC 17000:2020 Conformity Assessment Vocabulary
+    kind: conformity-assessment-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17007-2009
+    title: ISO/IEC 17007:2009 Conformity Assessment Normative Document Guidance
+    kind: conformity-assessment-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17011-2017
+    title: ISO/IEC 17011:2017 Accreditation Bodies
+    kind: accreditation-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17020-2026
+    title: ISO/IEC 17020:2026 Inspection Bodies
+    kind: conformity-assessment-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17021-1-2015
+    title: ISO/IEC 17021-1:2015 Management System Certification Bodies
+    kind: conformity-assessment-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17024-2026
+    title: ISO/IEC 17024:2026 Persons Certification Bodies
+    kind: conformity-assessment-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17025-2017
+    title: ISO/IEC 17025:2017 Testing and Calibration Laboratories
+    kind: laboratory-competence-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17029-2019
+    title: ISO/IEC 17029:2019 Validation and Verification Bodies
+    kind: conformity-assessment-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17030-2021
+    title: ISO/IEC 17030:2021 Third-party Marks of Conformity
+    kind: conformity-mark-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-17034-2016
+    title: ISO 17034:2016 Reference Material Producers
+    kind: reference-material-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-ts-17035-2024
+    title: ISO/IEC TS 17035:2024 Validation and Verification Programmes
+    kind: conformity-program-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17040-2005
+    title: ISO/IEC 17040:2005 Peer Assessment
+    kind: peer-assessment-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17043-2023
+    title: ISO/IEC 17043:2023 Proficiency Testing Providers
+    kind: proficiency-testing-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17050-1-2004
+    title: ISO/IEC 17050-1 Supplier Declaration of Conformity
+    kind: supplier-declaration-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17050-2-2004
+    title: ISO/IEC 17050-2 Supporting Documentation
+    kind: supplier-declaration-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17060-2022
+    title: ISO/IEC 17060:2022 Good Conformity Assessment Practice
+    kind: conformity-assessment-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17065-2012
+    title: ISO/IEC 17065:2012 Product Process and Service Certification Bodies
+    kind: product-certification-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-17067-2013
+    title: ISO/IEC 17067:2013 Product Certification Scheme Fundamentals
+    kind: product-certification-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-19011-2018
+    title: ISO 19011:2018 Management System Auditing Guidance
+    kind: audit-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-13528-2022
+    title: ISO 13528:2022 Statistical Methods for Proficiency Testing
+    kind: proficiency-statistics-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: ilac-g8-2019
+    title: ILAC G8:09/2019 Decision Rules and Statements of Conformity
+    kind: accreditation-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: ilac-g17-2021
+    title: ILAC G17:01/2021 Measurement Uncertainty in Testing
+    kind: accreditation-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: global-accreditation-cooperation-mra-2026
+    title: Global Accreditation Cooperation Multilateral Recognition Arrangement 2026
+    kind: recognition-arrangement
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: jcgm-vim-200-2012
+    title: JCGM 200 International Vocabulary of Metrology
+    kind: metrology-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: jcgm-gum-1-2023
+    title: JCGM GUM-1:2023 Measurement Uncertainty Introduction
+    kind: metrology-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: jcgm-gum-5-2026
+    title: JCGM GUM-5:2026 Measurement Models
+    kind: metrology-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: jcgm-gum-6-2020
+    title: JCGM GUM-6:2020 Measurement Models
+    kind: metrology-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: jcgm-100-amd1-2026
+    title: JCGM 100 Amendment 1:2026 Measurement Uncertainty
+    kind: metrology-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: jcgm-101-2008
+    title: JCGM 101 Monte Carlo Propagation
+    kind: metrology-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: jcgm-102-2011
+    title: JCGM 102 Multiple Output Quantities
+    kind: metrology-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: jcgm-104-2009
+    title: JCGM 104 Role of Measurement Uncertainty in Conformity Assessment
+    kind: metrology-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: jcgm-106-2012
+    title: JCGM 106 Decision Rules in Conformity Assessment
+    kind: metrology-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-42005-2025
+    title: ISO/IEC 42005:2025 AI System Impact Assessment
+    kind: ai-assurance-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-42006-2025
+    title: ISO/IEC 42006:2025 Bodies Auditing and Certifying AI Management Systems
+    kind: ai-certification-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-dis-42007
+    title: ISO/IEC DIS 42007 AI Conformity Assessment Scheme Framework
+    kind: draft-ai-assurance-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-23894-2023
+    title: ISO/IEC 23894:2023 AI Risk Management
+    kind: ai-risk-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-tr-24027-2021
+    title: ISO/IEC TR 24027:2021 Bias in AI Systems and AI Aided Decision Making
+    kind: ai-bias-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-tr-24028-2020
+    title: ISO/IEC TR 24028:2020 Trustworthiness in AI
+    kind: ai-trustworthiness-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-24029-1-2021
+    title: ISO/IEC 24029-1:2021 Neural Network Robustness Assessment
+    kind: ai-robustness-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-24029-2
+    title: ISO/IEC 24029-2 Formal Methods for Neural Network Robustness
+    kind: ai-formal-robustness-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-25058-2024
+    title: ISO/IEC 25058:2024 Quality Evaluation of AI Systems
+    kind: ai-quality-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-25059
+    title: ISO/IEC 25059 AI System Quality Model
+    kind: ai-quality-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-4213-2022
+    title: ISO/IEC 4213:2022 Machine Learning Classification Performance Assessment
+    kind: ai-measurement-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-tr-42106-2026
+    title: ISO/IEC TR 42106:2026 Guidance for AI Management System Application
+    kind: ai-management-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-5259-series
+    title: ISO/IEC 5259 Data Quality for Analytics and Machine Learning Series
+    kind: ai-data-quality-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-5338-2023
+    title: ISO/IEC 5338:2023 AI System Life Cycle Processes
+    kind: ai-lifecycle-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-tr-5469-2024
+    title: ISO/IEC TR 5469:2024 Functional Safety and AI Systems
+    kind: ai-safety-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-ts-6254-2025
+    title: ISO/IEC TS 6254:2025 Objectives and Approaches for Explainability
+    kind: ai-explainability-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-ts-8200-2024
+    title: ISO/IEC TS 8200:2024 Controllability of Automated AI Systems
+    kind: ai-control-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-ts-12791-2024
+    title: ISO/IEC TS 12791:2024 Treatment of Unwanted Bias in Classification and Regression
+    kind: ai-bias-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-12792-2025
+    title: ISO/IEC 12792:2025 Transparency Taxonomy of AI Systems
+    kind: ai-transparency-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: nist-ai-rmf-1-0
+    title: NIST AI Risk Management Framework 1.0
+    kind: ai-risk-framework
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: nist-ai-600-1
+    title: NIST AI 600-1 Generative AI Profile
+    kind: ai-risk-profile
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: nist-ai-100-2e2025
+    title: NIST AI 100-2e2025 Adversarial Machine Learning Taxonomy
+    kind: ai-security-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: nist-tevv-athlon-2026
+    title: NIST TEVV-Athlon 2026
+    kind: ai-tevv-framework
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: nist-sp-800-218a
+    title: NIST SP 800-218A Secure Software Development for Generative AI and Dual-use Foundation Models
+    kind: ai-secure-development-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: nistir-8596-ai-csf-profile
+    title: NISTIR 8596 Cybersecurity Framework Profile for AI
+    kind: ai-cybersecurity-profile
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: common-criteria-2022
+    title: Common Criteria 2022
+    kind: security-evaluation-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-15408-2022
+    title: ISO/IEC 15408:2022 Common Criteria Series
+    kind: security-evaluation-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-18045-2022
+    title: ISO/IEC 18045:2022 Common Methodology for IT Security Evaluation
+    kind: security-evaluation-methodology
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: ccra-cpp-recognition
+    title: Common Criteria Recognition Arrangement and Collaborative Protection Profiles
+    kind: recognition-arrangement
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: fips-140-3-cmvp
+    title: FIPS 140-3 Cryptographic Module Validation Program
+    kind: cryptographic-validation-program
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: nist-acvp
+    title: NIST Automated Cryptographic Validation Protocol
+    kind: cryptographic-test-protocol
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: fips-203-ml-kem
+    title: FIPS 203 ML-KEM
+    kind: post-quantum-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: fips-204-ml-dsa
+    title: FIPS 204 ML-DSA
+    kind: post-quantum-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: fips-205-slh-dsa
+    title: FIPS 205 SLH-DSA
+    kind: post-quantum-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: ietf-eat
+    title: IETF Entity Attestation Token
+    kind: attestation-protocol
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: ietf-corim
+    title: IETF CoRIM Reference Integrity Manifests
+    kind: attestation-protocol
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: rfc3161-timestamp
+    title: RFC 3161 Time-Stamp Protocol
+    kind: trusted-time-protocol
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: w3c-verifiable-credentials-2
+    title: W3C Verifiable Credentials Data Model 2.0
+    kind: verifiable-credential-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: trusted-computing-group-tpm-2
+    title: Trusted Computing Group TPM 2.0
+    kind: hardware-root-of-trust
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: confidential-computing-tdx
+    title: Intel Trust Domain Extensions
+    kind: confidential-computing
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: confidential-computing-sev-snp
+    title: AMD SEV-SNP
+    kind: confidential-computing
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: confidential-computing-arm-cca
+    title: Arm Confidential Compute Architecture
+    kind: confidential-computing
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iec-61508
+    title: IEC 61508 Functional Safety
+    kind: sector-safety-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-26262
+    title: ISO 26262 Road Vehicles Functional Safety
+    kind: sector-automotive-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-21448
+    title: ISO 21448 Safety of the Intended Functionality
+    kind: sector-automotive-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-sae-21434
+    title: ISO/SAE 21434 Road Vehicles Cybersecurity Engineering
+    kind: sector-automotive-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: unece-r155
+    title: UNECE Regulation 155 Cyber Security Management System
+    kind: sector-automotive-regulation
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: unece-r156
+    title: UNECE Regulation 156 Software Update Management System
+    kind: sector-automotive-regulation
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iec-62304
+    title: IEC 62304 Medical Device Software Life Cycle
+    kind: sector-medical-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-14971
+    title: ISO 14971 Medical Device Risk Management
+    kind: sector-medical-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iec-62366-1
+    title: IEC 62366-1 Medical Device Usability Engineering
+    kind: sector-medical-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: fda-ai-ml-gmlp
+    title: FDA Good Machine Learning Practice Guiding Principles
+    kind: sector-medical-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: fda-ai-enabled-device-pccp
+    title: FDA Predetermined Change Control Plan for AI-enabled Device Software Functions
+    kind: sector-medical-guidance
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: rtca-do-178c
+    title: RTCA DO-178C Software Considerations in Airborne Systems
+    kind: sector-aviation-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: rtca-do-330
+    title: RTCA DO-330 Software Tool Qualification Considerations
+    kind: sector-aviation-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: rtca-do-333
+    title: RTCA DO-333 Formal Methods Supplement
+    kind: sector-aviation-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: sae-arp4754a
+    title: SAE ARP4754A Development of Civil Aircraft and Systems
+    kind: sector-aviation-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: en-50126
+    title: EN 50126 Railway RAMS
+    kind: sector-rail-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: en-50716
+    title: EN 50716 Railway Software Development
+    kind: sector-rail-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: en-50129
+    title: EN 50129 Railway Safety-related Electronic Systems
+    kind: sector-rail-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iec-62443-3-3
+    title: IEC 62443-3-3 Industrial System Security Requirements
+    kind: sector-industrial-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iec-62443-4-1
+    title: IEC 62443-4-1 Secure Product Development Lifecycle
+    kind: sector-industrial-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iec-62443-4-2
+    title: IEC 62443-4-2 Industrial Component Security Requirements
+    kind: sector-industrial-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-15026-series
+    title: ISO/IEC 15026 Systems and Software Assurance
+    kind: assurance-case-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: ieee-1012
+    title: IEEE 1012 System Software and Hardware Verification and Validation
+    kind: verification-validation-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: nist-sp-800-53r5
+    title: NIST SP 800-53 Revision 5 Security and Privacy Controls
+    kind: security-controls-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: nist-sp-800-160v1v2
+    title: NIST SP 800-160 Systems Security Engineering and Cyber Resiliency
+    kind: security-engineering-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: iso-iec-27006-1
+    title: ISO/IEC 27006-1 Requirements for ISMS Certification Bodies
+    kind: certification-body-standard
+    status: profile-contract
+    nativeEvidence: not-executed
+  - name: aicpa-soc2-trust-services
+    title: AICPA SOC 2 Trust Services Criteria Profile
+    kind: assurance-report-profile
+    status: profile-contract
+    nativeEvidence: not-executed

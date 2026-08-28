@@ -1,0 +1,47 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CommercialGoldenRoute
+metadata:
+  name: clean-room-customer-holdout-release
+  version: 4.0.0
+  status: not-certified
+spec:
+  skill: elmos-independent-k8-certificate-signer
+  workflow: workflows/clean-room-production-certification.yaml
+  source: Signed candidate artifacts and customer acceptance contract
+  targets:
+  - clean-room lab
+  - customer holdout
+  eligibility:
+  - exact source/target versions and digests available
+  - observable acceptance and rollback declared
+  - critical semantic/data/security boundaries modeled
+  requiredEvidence:
+  - reproducible build
+  - native conformance
+  - hidden holdout
+  - independent certifier
+  - certificate transparency
+  - machine wall-clock and cost ledger
+  - customer acceptance where applicable
+  benchmark:
+    independentRepetitions: 3
+    holdoutRequired: true
+    faultInjectionRequired: true
+    machineWallClockRequired: true
+    costLedgerRequired: true
+  releaseGate:
+    E0toE5: true
+    P05ForProduction: true
+    criticalUnknown: BLOCK
+    sideEffectsSettled: true
+    exactRevisionSet: true
+    evidenceFreshnessRequired: true
+    independentCertifier: true
+  routeOwner: domain-pack.project-generation
+  routable: false
+  holdoutScenarios:
+  - unseen repository/data variant
+  - upstream version drift
+  - worker or dependency failure
+  - rollback after partial progress
+  nonClaim: This route remains a contract until exact native runs, customer evidence and independent certification are complete.

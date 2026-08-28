@@ -1,0 +1,27 @@
+{
+  "channels": [
+    {
+      "id": "web",
+      "kind": "ag-ui",
+      "authRequired": true,
+      "accessibility": true
+    },
+    {
+      "id": "api",
+      "kind": "sse",
+      "authRequired": true,
+      "accessibility": false
+    }
+  ],
+  "streaming": {
+    "events": [
+      "run.started",
+      "message.delta",
+      "tool.pending",
+      "approval.required",
+      "run.completed"
+    ],
+    "resume": true,
+    "backpressure": true
+  }
+}

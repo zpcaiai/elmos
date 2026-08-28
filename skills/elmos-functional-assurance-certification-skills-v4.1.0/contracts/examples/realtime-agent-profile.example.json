@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "realtime-agent-profile-example",
+  "status": "READY",
+  "content_hash": "8c9a2ec3e2c1793de901b47d999d96301ebcf16b8a5c8ead50129bb6f4be72d3",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "version_pins": {
+    "runtime": "RELEASE_TIME_EXACT"
+  },
+  "capabilities": [
+    "detect",
+    "validate"
+  ],
+  "constraints": [
+    "fail-closed"
+  ]
+}

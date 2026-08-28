@@ -1,0 +1,6 @@
+BEGIN;
+CREATE TABLE IF NOT EXISTS conformity_scheme (id uuid PRIMARY KEY, tenant_id uuid NOT NULL, project_id uuid NOT NULL, goal_id uuid NOT NULL, revision_set_id text NOT NULL, scheme_type text NOT NULL, scope jsonb NOT NULL, criteria_version text NOT NULL, status text NOT NULL, content_hash text NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS accreditation_scope (id uuid PRIMARY KEY, tenant_id uuid NOT NULL, project_id uuid NOT NULL, goal_id uuid NOT NULL, revision_set_id text NOT NULL, body_identity text NOT NULL, technical_scope jsonb NOT NULL, competence_evidence jsonb NOT NULL, valid_until timestamptz, status text NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS impartiality_risk (id uuid PRIMARY KEY, tenant_id uuid NOT NULL, project_id uuid NOT NULL, goal_id uuid NOT NULL, revision_set_id text NOT NULL, threat_type text NOT NULL, score numeric NOT NULL, safeguards jsonb NOT NULL, disposition text NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+ALTER TABLE conformity_scheme ENABLE ROW LEVEL SECURITY; ALTER TABLE accreditation_scope ENABLE ROW LEVEL SECURITY; ALTER TABLE impartiality_risk ENABLE ROW LEVEL SECURITY;
+COMMIT;

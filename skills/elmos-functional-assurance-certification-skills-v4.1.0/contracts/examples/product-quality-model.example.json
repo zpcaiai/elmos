@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "ProductQualityModel",
+  "metadata": {
+    "id": "product-quality-model-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "characteristics": [],
+    "measures": [],
+    "thresholds": {},
+    "tradeoffs": []
+  }
+}

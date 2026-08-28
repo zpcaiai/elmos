@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "deterministic-replay-manifest-example",
+  "status": "READY",
+  "content_hash": "e957244d97fbf1c3cffb22394bd74f842deeceda4685b885de88f912f53f20eb",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "artifacts": [
+    {
+      "uri": "cas://artifact",
+      "digest": "995ed8941cdd508d1f31a20c07836018fd228b02b10617d8f4741d28f8077318"
+    }
+  ],
+  "provenance": {
+    "producer": "elmos-reference"
+  }
+}

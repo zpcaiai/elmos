@@ -1,0 +1,16 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "PolyglotRouteProfile",
+  "metadata": {
+    "id": "polyglot-route-profile-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "sourceProfile": "example-sourceProfile",
+    "targetProfile": "example-targetProfile",
+    "preserve": [],
+    "allowedDelta": [],
+    "gates": []
+  }
+}

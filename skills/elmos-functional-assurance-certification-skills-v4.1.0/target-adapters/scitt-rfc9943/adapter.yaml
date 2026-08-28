@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: scitt-rfc9943
+  ecosystem: IETF SCITT Architecture RFC 9943
+  version: 4.0.0
+spec:
+  adapterKind: transparency
+  maturity: P1
+  modes:
+  - statement
+  - receipt
+  - verify
+  - revoke
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - scitt-rfc9943 exact-version profile
+  - scitt-rfc9943 capability and semantic-gap map
+  - scitt-rfc9943 native conformance evidence
+  - scitt-rfc9943 deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

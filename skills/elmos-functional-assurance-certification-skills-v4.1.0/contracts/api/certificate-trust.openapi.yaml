@@ -1,0 +1,67 @@
+openapi: 3.1.0
+info:
+  title: Verify certificate and recognition scope
+  version: 4.0.0
+servers:
+- url: https://elmos.example.invalid
+components:
+  securitySchemes:
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://identity.example.invalid/.well-known/openid-configuration
+  schemas:
+    Command:
+      type: object
+      required:
+      - tenantId
+      - goalId
+      - revisionSetId
+      - idempotencyKey
+      properties:
+        tenantId:
+          type: string
+        goalId:
+          type: string
+        revisionSetId:
+          type: string
+        idempotencyKey:
+          type: string
+        payload:
+          type: object
+          additionalProperties: true
+    Run:
+      type: object
+      required:
+      - runId
+      - status
+      properties:
+        runId:
+          type: string
+        status:
+          type: string
+        evidenceRoot:
+          type:
+          - string
+          - 'null'
+security:
+- oidc: []
+paths:
+  /v1/certificates/verify:
+    post:
+      summary: Verify certificate and recognition scope
+      operationId: CertificateTrust
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Command'
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Run'
+        '409':
+          description: Blocked by scope, authority or evidence policy

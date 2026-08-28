@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SystemModelCard",
+  "type": "object",
+  "required": [
+    "systemId",
+    "revisionSetId",
+    "intendedUses",
+    "limitations",
+    "evaluationClaims",
+    "evidenceRoot"
+  ],
+  "properties": {
+    "systemId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revisionSetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "intendedUses": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "prohibitedUses": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "evaluationClaims": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "riskControls": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "evidenceRoot": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

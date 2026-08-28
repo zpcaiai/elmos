@@ -1,0 +1,35 @@
+{
+  "models": [
+    {
+      "id": "reasoner",
+      "role": "reasoning",
+      "capabilities": [
+        "tools",
+        "structured-output"
+      ],
+      "providerSelector": "policy:enterprise-reasoner"
+    },
+    {
+      "id": "embedder",
+      "role": "embedding",
+      "capabilities": [
+        "multilingual"
+      ],
+      "providerSelector": "policy:private-embedding"
+    }
+  ],
+  "routing": {
+    "fallback": [
+      "reasoner"
+    ],
+    "budgetEnforced": true,
+    "structuredOutputRequired": true
+  },
+  "dataPolicy": {
+    "classification": "confidential",
+    "residency": [
+      "JP"
+    ],
+    "zeroRetentionRequired": true
+  }
+}

@@ -1,0 +1,58 @@
+asyncapi: 3.1.0
+info:
+  title: Event Contract and Evidence Bus
+  version: 4.0.0
+servers:
+  production:
+    host: RELEASE_TIME_EVENT_BUS
+    protocol: kafka
+channels:
+  contractChanged:
+    address: elmos.contract.changed
+    messages:
+      contractChanged:
+        $ref: '#/components/messages/ContractChanged'
+  proofResult:
+    address: elmos.proof.result
+    messages:
+      proofResult:
+        $ref: '#/components/messages/ProofResult'
+operations:
+  publishContractChanged:
+    action: send
+    channel:
+      $ref: '#/channels/contractChanged'
+  receiveProofResult:
+    action: receive
+    channel:
+      $ref: '#/channels/proofResult'
+components:
+  messages:
+    ContractChanged:
+      payload:
+        type: object
+        required:
+        - tenant_id
+        - revision_set_id
+        - contract_digest
+        properties:
+          tenant_id:
+            type: string
+          revision_set_id:
+            type: string
+          contract_digest:
+            type: string
+    ProofResult:
+      payload:
+        type: object
+        required:
+        - obligation_id
+        - status
+        - evidence_hash
+        properties:
+          obligation_id:
+            type: string
+          status:
+            type: string
+          evidence_hash:
+            type: string

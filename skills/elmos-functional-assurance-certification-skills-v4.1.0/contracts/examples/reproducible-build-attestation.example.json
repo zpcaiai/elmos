@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "ReproducibleBuildAttestation",
+  "metadata": {
+    "id": "reproducible-build-attestation-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "sourceDigest": "example-sourceDigest",
+    "builderIdentity": "example-builderIdentity",
+    "environmentDigest": "example-environmentDigest",
+    "artifactDigests": []
+  }
+}

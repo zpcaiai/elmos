@@ -1,0 +1,33 @@
+policy: policies/rego/accreditation_scope_gate.rego
+intent: certificate body and laboratory competence must cover the exact claimed technical scope
+cases:
+- name: allow-complete-independent-current
+  input:
+    critical: true
+    status: TESTED
+    revision_bound: true
+    independent: true
+    evidence_fresh: true
+    side_effects_settled: true
+    method_rule_satisfied: true
+  allow: true
+- name: deny-critical-unknown
+  input:
+    critical: true
+    status: UNKNOWN
+    revision_bound: true
+    independent: true
+    evidence_fresh: true
+    side_effects_settled: true
+    method_rule_satisfied: true
+  allow: false
+- name: deny-self-certification
+  input:
+    critical: true
+    status: TESTED
+    revision_bound: true
+    independent: false
+    evidence_fresh: true
+    side_effects_settled: true
+    method_rule_satisfied: true
+  allow: false

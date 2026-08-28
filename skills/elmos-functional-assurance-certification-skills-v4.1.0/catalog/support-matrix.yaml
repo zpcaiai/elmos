@@ -1,0 +1,1023 @@
+apiVersion: elmos.ai/v3alpha1
+kind: AISupportMatrix
+metadata:
+  version: 4.0.0
+spec:
+  generatedAt: '2026-08-28'
+  rows:
+  - adapter: a2a
+    ecosystem: Agent2Agent Protocol
+    kind: protocol
+    maturity: P0
+    languages:
+    - json
+    - python
+    - typescript
+    - java
+    - go
+    protocolVersion: release-time-pin
+    defaultFor:
+    - agent-protocol
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: a2a-v1
+    ecosystem: Agent2Agent Protocol
+    kind: agent-protocol
+    maturity: P0
+    languages:
+    - json
+    - protobuf
+    - typescript
+    - python
+    - java
+    - go
+    protocolVersion: '1.0'
+    defaultFor:
+    - cross-organization-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: a2ui-v1
+    ecosystem: A2UI
+    kind: agent-ui-protocol
+    maturity: P0
+    languages:
+    - jsonl
+    - typescript
+    - dart
+    protocolVersion: release-time-pin
+    defaultFor:
+    - cross-platform-agent-ui
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: ag-ui
+    ecosystem: AG-UI
+    kind: interaction-protocol
+    maturity: P1
+    languages:
+    - json
+    - typescript
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - agent-ui-protocol
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: agent-skills-standard
+    ecosystem: Agent Skills open format
+    kind: skill-format
+    maturity: P0
+    languages:
+    - markdown
+    - yaml
+    protocolVersion: current-open-spec
+    defaultFor:
+    - portable-agent-skill
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: agentic-resource-discovery
+    ecosystem: Agentic Resource Discovery
+    kind: discovery-protocol
+    maturity: P0
+    languages:
+    - json
+    protocolVersion: release-time-pin
+    defaultFor:
+    - federated-agent-discovery
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: agno
+    ecosystem: Agno
+    kind: agent-platform
+    maturity: P1
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - python-agent-platform
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: aider
+    ecosystem: Aider
+    kind: coding-agent
+    maturity: P1
+    languages:
+    - yaml
+    - markdown
+    protocolVersion: release-time-pin
+    defaultFor:
+    - git-coding-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: arize-phoenix
+    ecosystem: Arize Phoenix
+    kind: evaluation-observability
+    maturity: P1
+    languages:
+    - python
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - open-source-agent-evaluation
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: autogen-compat
+    ecosystem: Microsoft AutoGen
+    kind: migration-source
+    maturity: compatibility
+    languages:
+    - python
+    - csharp
+    protocolVersion: release-time-pin
+    defaultFor:
+    - migration-source
+    greenfieldDefault: false
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: aws-bedrock-agentcore
+    ecosystem: Amazon Bedrock AgentCore
+    kind: managed-agent-platform
+    maturity: P1
+    languages:
+    - python
+    - typescript
+    - container
+    protocolVersion: release-time-pin
+    defaultFor:
+    - aws-managed-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: browser-computer-use
+    ecosystem: Browser / computer-use adapters
+    kind: tool-runtime
+    maturity: P0
+    languages:
+    - json
+    - python
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - computer-use
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: camel-ai
+    ecosystem: CAMEL-AI
+    kind: multi-agent-framework
+    maturity: P2
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - research-multi-agent
+    greenfieldDefault: false
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: claude-code
+    ecosystem: Claude Code
+    kind: coding-agent
+    maturity: P0
+    languages:
+    - markdown
+    - json
+    - yaml
+    protocolVersion: release-time-pin
+    defaultFor:
+    - claude-code-host
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: cline-roo
+    ecosystem: Cline / Roo Code
+    kind: coding-agent
+    maturity: P1
+    languages:
+    - markdown
+    - json
+    protocolVersion: release-time-pin
+    defaultFor:
+    - ide-coding-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: codex
+    ecosystem: OpenAI Codex
+    kind: coding-agent
+    maturity: P0
+    languages:
+    - markdown
+    - json
+    - yaml
+    protocolVersion: release-time-pin
+    defaultFor:
+    - codex-host
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: continue
+    ecosystem: Continue
+    kind: coding-agent
+    maturity: P1
+    languages:
+    - yaml
+    - json
+    - markdown
+    protocolVersion: release-time-pin
+    defaultFor:
+    - ide-assistant
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: coze-studio
+    ecosystem: Coze Studio
+    kind: visual-agent-platform
+    maturity: P1
+    languages:
+    - json
+    - typescript
+    - go
+    protocolVersion: release-time-pin
+    defaultFor:
+    - china-agent-platform
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: crewai
+    ecosystem: CrewAI
+    kind: multi-agent-framework
+    maturity: P1
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - role-based-multi-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: databricks-agents
+    ecosystem: Databricks Agents
+    kind: managed-agent-platform
+    maturity: P1
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - lakehouse-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: deepseek-harness
+    ecosystem: DeepSeek Harness
+    kind: coding-harness
+    maturity: P0
+    languages:
+    - typescript
+    - yaml
+    protocolVersion: release-time-pin
+    defaultFor:
+    - plugin-native-harness
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: dify
+    ecosystem: Dify
+    kind: visual-platform
+    maturity: P0
+    languages:
+    - yaml
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - business-prototype
+    - operations-config
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: dspy
+    ecosystem: DSPy
+    kind: programming-optimization-framework
+    maturity: P1
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - prompt-program-optimization
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: fastgpt
+    ecosystem: FastGPT
+    kind: visual-rag-platform
+    maturity: P1
+    languages:
+    - json
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - visual-knowledge-app
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: flowise-compat
+    ecosystem: Flowise
+    kind: migration-source
+    maturity: compatibility
+    languages:
+    - json
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - migration-source
+    greenfieldDefault: false
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: gemini-cli
+    ecosystem: Gemini CLI
+    kind: coding-agent
+    maturity: P1
+    languages:
+    - markdown
+    - json
+    - yaml
+    protocolVersion: release-time-pin
+    defaultFor:
+    - gemini-cli-host
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: google-adk-go
+    ecosystem: Google ADK
+    kind: agent-sdk
+    maturity: P1
+    languages:
+    - go
+    protocolVersion: release-time-pin
+    defaultFor:
+    - google-go-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: google-adk-java
+    ecosystem: Google ADK
+    kind: agent-sdk
+    maturity: P1
+    languages:
+    - java
+    - kotlin
+    protocolVersion: release-time-pin
+    defaultFor:
+    - google-jvm-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: google-adk-python
+    ecosystem: Google ADK
+    kind: agent-sdk
+    maturity: P0
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - google-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: google-adk-typescript
+    ecosystem: Google ADK
+    kind: agent-sdk
+    maturity: P1
+    languages:
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - google-typescript-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: google-gemini-enterprise-agent-platform
+    ecosystem: Gemini Enterprise Agent Platform
+    kind: managed-agent-platform
+    maturity: P1
+    languages:
+    - python
+    - container
+    protocolVersion: release-time-pin
+    defaultFor:
+    - gcp-managed-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: haystack-python
+    ecosystem: Haystack
+    kind: pipeline-framework
+    maturity: P0
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - enterprise-search-pipeline
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: langchain-python
+    ecosystem: LangChain
+    kind: agent-sdk
+    maturity: P0
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - short-horizon-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: langchain-typescript
+    ecosystem: LangChain
+    kind: agent-sdk
+    maturity: P0
+    languages:
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - typescript-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: langchain4j
+    ecosystem: LangChain4j
+    kind: enterprise-ai-framework
+    maturity: P1
+    languages:
+    - java
+    protocolVersion: release-time-pin
+    defaultFor:
+    - java-ai-alternative
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: langflow
+    ecosystem: Langflow
+    kind: visual-agent-platform
+    maturity: P1
+    languages:
+    - json
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - visual-agent-prototype
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: langgraph-python
+    ecosystem: LangGraph
+    kind: graph-runtime
+    maturity: P0
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - durable-agent-workflow
+    - agentic-rag
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: langgraph-typescript
+    ecosystem: LangGraph
+    kind: graph-runtime
+    maturity: P0
+    languages:
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - durable-typescript-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: langsmith
+    ecosystem: LangSmith
+    kind: evaluation-observability
+    maturity: P1
+    languages:
+    - python
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - langchain-langgraph-ops
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: litellm
+    ecosystem: LiteLLM
+    kind: model-gateway
+    maturity: P1
+    languages:
+    - python
+    - yaml
+    protocolVersion: release-time-pin
+    defaultFor:
+    - model-gateway
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: llamaindex-python
+    ecosystem: LlamaIndex
+    kind: data-agent-framework
+    maturity: P0
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - document-intelligence
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: llamaindex-typescript
+    ecosystem: LlamaIndex
+    kind: data-agent-framework
+    maturity: P1
+    languages:
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - typescript-document-ai
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: mastra
+    ecosystem: Mastra
+    kind: agent-workflow-framework
+    maturity: P1
+    languages:
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - typescript-agent-workflow
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: mcp
+    ecosystem: Model Context Protocol
+    kind: protocol
+    maturity: P0
+    languages:
+    - json
+    - typescript
+    - python
+    - java
+    protocolVersion: release-time-pin
+    defaultFor:
+    - tool-protocol
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: mcp-2026-07-28
+    ecosystem: Model Context Protocol
+    kind: protocol
+    maturity: P0
+    languages:
+    - json
+    - typescript
+    - python
+    - java
+    protocolVersion: '2026-07-28'
+    defaultFor:
+    - mcp-production
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: mcp-apps
+    ecosystem: MCP Apps
+    kind: agent-ui-protocol
+    maturity: P0
+    languages:
+    - json
+    - typescript
+    protocolVersion: 2026-07-28-extension
+    defaultFor:
+    - mcp-interactive-ui
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: microsoft-agent-framework-dotnet
+    ecosystem: Microsoft Agent Framework
+    kind: agent-framework
+    maturity: P0
+    languages:
+    - csharp
+    protocolVersion: release-time-pin
+    defaultFor:
+    - microsoft-dotnet-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: microsoft-agent-framework-python
+    ecosystem: Microsoft Agent Framework
+    kind: agent-framework
+    maturity: P0
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - microsoft-python-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: microsoft-foundry-agent-service
+    ecosystem: Microsoft Foundry Agent Service
+    kind: managed-agent-platform
+    maturity: P1
+    languages:
+    - python
+    - dotnet
+    - container
+    protocolVersion: release-time-pin
+    defaultFor:
+    - azure-managed-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: microsoft-graphrag
+    ecosystem: Microsoft GraphRAG
+    kind: graph-rag
+    maturity: P1
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - graph-rag
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: milvus
+    ecosystem: Milvus
+    kind: vector-store
+    maturity: P1
+    languages:
+    - go
+    - cpp
+    - multiple
+    protocolVersion: release-time-pin
+    defaultFor:
+    - large-vector-store
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: mlflow-genai
+    ecosystem: MLflow GenAI
+    kind: evaluation-observability
+    maturity: P1
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - portable-genai-evaluation
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: n8n-ai
+    ecosystem: n8n AI
+    kind: automation-platform
+    maturity: P1
+    languages:
+    - json
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - ai-automation
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: neo4j-graphrag
+    ecosystem: Neo4j GraphRAG
+    kind: graph-rag
+    maturity: P1
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - neo4j-graph-rag
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: ollama
+    ecosystem: Ollama
+    kind: local-model-serving
+    maturity: P1
+    languages:
+    - yaml
+    - json
+    protocolVersion: release-time-pin
+    defaultFor:
+    - local-serving
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: openai-agents-python
+    ecosystem: OpenAI Agents SDK
+    kind: agent-sdk
+    maturity: P0
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - openai-native-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: openai-agents-typescript
+    ecosystem: OpenAI Agents SDK
+    kind: agent-sdk
+    maturity: P0
+    languages:
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - openai-native-typescript-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: openai-plugins
+    ecosystem: OpenAI Plugins
+    kind: plugin-platform
+    maturity: P0
+    languages:
+    - markdown
+    - typescript
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - chatgpt-codex-plugin
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: openapi-tools
+    ecosystem: OpenAPI tool adapters
+    kind: tool-protocol
+    maturity: P0
+    languages:
+    - yaml
+    - json
+    - multiple
+    protocolVersion: release-time-pin
+    defaultFor:
+    - api-tooling
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: openclaw
+    ecosystem: OpenClaw
+    kind: assistant-gateway
+    maturity: P0
+    languages:
+    - json
+    - typescript
+    - markdown
+    protocolVersion: release-time-pin
+    defaultFor:
+    - personal-assistant
+    - channel-gateway
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: opencode
+    ecosystem: OpenCode
+    kind: coding-agent
+    maturity: P1
+    languages:
+    - typescript
+    - json
+    - markdown
+    protocolVersion: release-time-pin
+    defaultFor:
+    - open-coding-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: openhands
+    ecosystem: OpenHands
+    kind: coding-agent-platform
+    maturity: P1
+    languages:
+    - python
+    - typescript
+    - yaml
+    protocolVersion: release-time-pin
+    defaultFor:
+    - coding-agent-control-center
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: openharness
+    ecosystem: OpenHarness
+    kind: coding-harness
+    maturity: P0
+    languages:
+    - python
+    - yaml
+    protocolVersion: release-time-pin
+    defaultFor:
+    - inspectable-python-harness
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: openinference-compatible
+    ecosystem: OpenInference
+    kind: telemetry-profile
+    maturity: P1
+    languages:
+    - python
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - portable-ai-telemetry
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: openrouter
+    ecosystem: OpenRouter
+    kind: model-gateway
+    maturity: P1
+    languages:
+    - typescript
+    - python
+    - go
+    protocolVersion: release-time-pin
+    defaultFor:
+    - model-router
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: opentelemetry
+    ecosystem: OpenTelemetry
+    kind: observability
+    maturity: P0
+    languages:
+    - multiple
+    protocolVersion: release-time-pin
+    defaultFor:
+    - observability
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: pgvector
+    ecosystem: pgvector
+    kind: vector-store
+    maturity: P0
+    languages:
+    - sql
+    - multiple
+    protocolVersion: release-time-pin
+    defaultFor:
+    - enterprise-rag-store
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: pi
+    ecosystem: Pi coding agent
+    kind: coding-harness
+    maturity: P0
+    languages:
+    - typescript
+    - markdown
+    protocolVersion: release-time-pin
+    defaultFor:
+    - lightweight-coding-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: pydanticai-python
+    ecosystem: PydanticAI
+    kind: typed-agent-sdk
+    maturity: P0
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - typed-python-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: qdrant
+    ecosystem: Qdrant
+    kind: vector-store
+    maturity: P1
+    languages:
+    - rust
+    - multiple
+    protocolVersion: release-time-pin
+    defaultFor:
+    - vector-store
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: qwen-agent
+    ecosystem: Qwen-Agent
+    kind: agent-sdk
+    maturity: P1
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - qwen-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: ragflow
+    ecosystem: RAGFlow
+    kind: visual-rag-platform
+    maturity: P1
+    languages:
+    - python
+    - typescript
+    - yaml
+    protocolVersion: release-time-pin
+    defaultFor:
+    - document-rag-platform
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: semantic-kernel-compat
+    ecosystem: Microsoft Semantic Kernel
+    kind: migration-source
+    maturity: compatibility
+    languages:
+    - csharp
+    - python
+    - java
+    protocolVersion: release-time-pin
+    defaultFor:
+    - migration-source
+    greenfieldDefault: false
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: sglang
+    ecosystem: SGLang
+    kind: model-serving
+    maturity: P1
+    languages:
+    - python
+    - yaml
+    protocolVersion: release-time-pin
+    defaultFor:
+    - self-hosted-serving
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: smolagents
+    ecosystem: smolagents
+    kind: lightweight-agent-sdk
+    maturity: P1
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - lightweight-code-agent
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: spiffe-spire
+    ecosystem: SPIFFE/SPIRE
+    kind: workload-identity
+    maturity: P0
+    languages:
+    - x509
+    - jwt
+    - yaml
+    protocolVersion: release-time-pin
+    defaultFor:
+    - agent-workload-identity
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: spring-ai-java
+    ecosystem: Spring AI
+    kind: enterprise-ai-framework
+    maturity: P0
+    languages:
+    - java
+    protocolVersion: release-time-pin
+    defaultFor:
+    - java-enterprise-ai
+    - spring-modernization-ai
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: strands-agents
+    ecosystem: Strands Agents
+    kind: lightweight-agent-sdk
+    maturity: P1
+    languages:
+    - python
+    - typescript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - aws-agent-sdk
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: swarm-compat
+    ecosystem: OpenAI Swarm
+    kind: migration-source
+    maturity: compatibility
+    languages:
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - migration-source
+    greenfieldDefault: false
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: symphony
+    ecosystem: OpenAI Symphony
+    kind: coding-orchestrator
+    maturity: P0
+    languages:
+    - markdown
+    - yaml
+    - typescript
+    - python
+    protocolVersion: release-time-pin
+    defaultFor:
+    - coding-work-orchestration
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: universal-rag
+    ecosystem: Elmos Universal RAG
+    kind: solution-architecture
+    maturity: P0
+    languages:
+    - python
+    - typescript
+    - java
+    protocolVersion: release-time-pin
+    defaultFor:
+    - enterprise-rag
+    - agentic-rag
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: vercel-ai-sdk
+    ecosystem: Vercel AI SDK
+    kind: ai-ui-sdk
+    maturity: P0
+    languages:
+    - typescript
+    - javascript
+    protocolVersion: release-time-pin
+    defaultFor:
+    - ai-native-web
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: vllm
+    ecosystem: vLLM
+    kind: model-serving
+    maturity: P1
+    languages:
+    - python
+    - yaml
+    protocolVersion: release-time-pin
+    defaultFor:
+    - self-hosted-serving
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence
+  - adapter: weaviate
+    ecosystem: Weaviate
+    kind: vector-store
+    maturity: P1
+    languages:
+    - go
+    - multiple
+    protocolVersion: release-time-pin
+    defaultFor:
+    - vector-search-platform
+    greenfieldDefault: true
+    releaseClaim: requires exact release-time pins, adapter digest, native conformance, security profile and current evidence

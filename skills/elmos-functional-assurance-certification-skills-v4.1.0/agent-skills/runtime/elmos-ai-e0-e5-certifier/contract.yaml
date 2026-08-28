@@ -1,0 +1,88 @@
+apiVersion: elmos.ai/v3alpha1
+kind: SkillContract
+metadata:
+  name: elmos-ai-e0-e5-certifier
+  version: 4.0.0
+spec:
+  routeOwner: domain-pack.project-generation
+  routable: false
+  priority: P0
+  risk: critical
+  group: certification
+  kernelAuthorities:
+  - K8
+  canonicalInputs:
+  - type: GoalContract
+    required: true
+    binding: goal_id
+  - type: RevisionSet
+    required: true
+    binding: revision_set_id
+  - type: EnvironmentAuthority
+    required: true
+    binding: execution_epoch+authority_digest
+  - type: ProofObligationGraph
+    required: true
+    binding: proof_graph_id
+  - type: BudgetAndPolicyEnvelope
+    required: true
+    binding: policy_bundle_digest
+  outputs:
+  - path: completion-certificate.json
+    type: JsonArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  - path: certification-report.md
+    type: MarkdownArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  - path: gate-decisions.json
+    type: JsonArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  - path: residual-risk-register.json
+    type: JsonArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  dependencies:
+  - elmos-ai-rag-retrieval-grounding-certifier
+  - elmos-ai-supply-chain-performance-resilience-certifier
+  failureMode: fail-closed
+  ownership:
+    intent: K1
+    semantic: K2/K3
+    reasoning: K4
+    transformation: K5
+    verification: K6
+    execution: K7
+    completion: K8
+  invariants:
+  - every terminal result binds one exact RevisionSet
+  - every write validates tenant, execution epoch, lease generation and fencing token
+  - every side effect has idempotency and reconciliation state
+  - critical UNKNOWN or UNSUPPORTED cannot become COMPLETE
+  - generator, repairer and certifier are independently attributable
+  terminalStates:
+  - COMPLETED
+  - BLOCKED
+  - FAILED
+  - CANCELLED
+  externalDependencies:
+  - skill: elmos-ai-cross-framework-differential-validator
+    package: elmos-ai-capability-enhancement-skills
+    versionConstraint: '>=4.1.0,<4.2.0'
+    mode: required-base-evidence-producer
+  - skill: elmos-ai-graph-liveness-side-effect-verifier
+    package: elmos-ai-capability-enhancement-skills
+    versionConstraint: '>=4.1.0,<4.2.0'
+    mode: required-base-evidence-producer
+  - skill: elmos-ai-prompt-tool-security-redteam
+    package: elmos-ai-capability-enhancement-skills
+    versionConstraint: '>=4.1.0,<4.2.0'
+    mode: required-base-evidence-producer
+  packageRole: certification
+  standaloneCompletionCeiling: K8_CERTIFICATION_DECISION

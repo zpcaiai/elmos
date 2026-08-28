@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elmos-ai-native-project-factory-reference"
+version = "4.0.0"
+description = "Reference policy kernel for the Elmos AI-Native Project Factory skills package"
+requires-python = ">=3.11"
+
+[project.scripts]
+elmos-ai-factory-reference = "elmos_ai_factory.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+packages = ["elmos_ai_factory"]

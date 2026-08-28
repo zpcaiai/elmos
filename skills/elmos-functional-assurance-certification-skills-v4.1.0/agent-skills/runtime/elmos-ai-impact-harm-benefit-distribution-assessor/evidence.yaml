@@ -1,0 +1,57 @@
+apiVersion: elmos.ai/v3alpha1
+kind: EvidenceContract
+metadata:
+  name: elmos-ai-impact-harm-benefit-distribution-assessor
+  version: 4.0.0
+spec:
+  requiredClasses:
+  - input-snapshot
+  - version-and-digest
+  - authority-decision
+  - native-execution
+  - negative-test
+  - security-test
+  - recovery-or-rollback
+  - resource-and-cost
+  - proof-result
+  - gate-decision
+  artifactEnvelope:
+    required:
+    - tenant_id
+    - project_id
+    - goal_id
+    - revision_set_id
+    - run_id
+    - producer
+    - schema_version
+    - content_hash
+    - created_at
+    - source_lineage
+    - tool_digest
+    - status
+    hash: sha256 or stronger
+    storage: immutable content-addressed/WORM
+  independence:
+    candidateProducerCannotCertify: true
+    llmJudgeAuthoritative: false
+    criticalReviewSeparation: true
+  freshness:
+    adapterOrProtocolChange: invalidate affected evidence
+    providerBehaviorDrift: recertify
+    policyChange: reevaluate
+    maxAge: defined by assurance profile, never implicit
+  proofStatuses:
+  - PROVED
+  - TESTED
+  - BOUNDED
+  - RUNTIME_MONITORED
+  - WAIVED
+  - UNKNOWN
+  - UNSUPPORTED
+  - REFUTED
+  forbiddenClaims:
+  - file exists therefore implemented
+  - mock passed therefore native conformant
+  - LLM approved therefore certified
+  - old evidence applied to changed RevisionSet
+  completion: sealed Evidence Bundle plus independent K8 GateEvaluation or typed Blocked Result

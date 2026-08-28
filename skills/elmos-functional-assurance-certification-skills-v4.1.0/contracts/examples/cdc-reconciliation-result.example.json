@@ -1,0 +1,16 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "CdcReconciliationResult",
+  "metadata": {
+    "id": "cdc-reconciliation-result-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "sourceOffset": "example-sourceOffset",
+    "targetOffset": "example-targetOffset",
+    "gapCount": 1,
+    "duplicateCount": 1,
+    "decision": "example-decision"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RAGCorpusSync",
+  "type": "object",
+  "required": [
+    "sourceId",
+    "snapshotVersion",
+    "cursor",
+    "eventsApplied",
+    "tombstonesApplied",
+    "reconciliationGaps",
+    "state"
+  ],
+  "properties": {
+    "sourceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshotVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "eventsApplied": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tombstonesApplied": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reconciliationGaps": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "state": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "snapshotting",
+        "streaming",
+        "reconciling",
+        "complete",
+        "blocked"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

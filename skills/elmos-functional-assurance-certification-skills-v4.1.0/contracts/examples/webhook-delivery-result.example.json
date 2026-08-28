@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "webhook-delivery-result-example",
+  "status": "READY",
+  "content_hash": "b696ad85a28b1c98f0345a4e0fbb4aca6d6366bbaafda4cdc5fef35acea7d779",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

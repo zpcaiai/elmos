@@ -1,0 +1,6 @@
+BEGIN;
+CREATE TABLE IF NOT EXISTS certification_audit (id uuid PRIMARY KEY, tenant_id uuid NOT NULL, project_id uuid NOT NULL, goal_id uuid NOT NULL, revision_set_id text NOT NULL, audit_type text NOT NULL, team jsonb NOT NULL, scope jsonb NOT NULL, sampling_plan jsonb NOT NULL, findings jsonb NOT NULL, status text NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS capa_case (id uuid PRIMARY KEY, tenant_id uuid NOT NULL, project_id uuid NOT NULL, goal_id uuid NOT NULL, revision_set_id text NOT NULL, finding_id text NOT NULL, severity text NOT NULL, containment jsonb NOT NULL, root_cause jsonb NOT NULL, corrective_action jsonb NOT NULL, effectiveness jsonb, due_at timestamptz, status text NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS surveillance_signal (id uuid PRIMARY KEY, tenant_id uuid NOT NULL, project_id uuid NOT NULL, goal_id uuid NOT NULL, revision_set_id text NOT NULL, certificate_id text NOT NULL, signal_type text NOT NULL, risk_score numeric NOT NULL, payload jsonb NOT NULL, disposition text NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+ALTER TABLE certification_audit ENABLE ROW LEVEL SECURITY; ALTER TABLE capa_case ENABLE ROW LEVEL SECURITY; ALTER TABLE surveillance_signal ENABLE ROW LEVEL SECURITY;
+COMMIT;

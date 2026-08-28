@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "citation-provenance-chain-example",
+  "status": "READY",
+  "content_hash": "44c2a611aff7b0f38c51c2285b82e381bb11d3232c6ca06c4742889916b016be",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "artifacts": [
+    {
+      "uri": "cas://artifact",
+      "digest": "da04bb417e2d328d7b9fa99666efda1b7ab827e57fef1726129ed98505deef19"
+    }
+  ],
+  "provenance": {
+    "producer": "elmos-reference"
+  }
+}

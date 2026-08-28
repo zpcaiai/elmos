@@ -1,0 +1,8 @@
+{
+  "protocol": "mcp",
+  "cases": [
+    "invalid-frame",
+    "oversized-payload",
+    "cancel-race"
+  ]
+}

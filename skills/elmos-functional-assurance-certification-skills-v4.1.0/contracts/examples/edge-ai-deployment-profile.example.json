@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "edge-ai-deployment-profile-example",
+  "status": "READY",
+  "content_hash": "c5117f37cc19e475046ebc30135239d3ce0b484a7bfe4d67b1a4293f73a1e26b",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "version_pins": {
+    "runtime": "RELEASE_TIME_EXACT"
+  },
+  "capabilities": [
+    "detect",
+    "validate"
+  ],
+  "constraints": [
+    "fail-closed"
+  ]
+}

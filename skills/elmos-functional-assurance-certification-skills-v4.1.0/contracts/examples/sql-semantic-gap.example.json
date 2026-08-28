@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "SqlSemanticGap",
+  "metadata": {
+    "id": "sql-semantic-gap-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "sourceDialect": "example-sourceDialect",
+    "targetDialect": "example-targetDialect",
+    "dimension": "example-dimension",
+    "resolution": "example-resolution"
+  }
+}

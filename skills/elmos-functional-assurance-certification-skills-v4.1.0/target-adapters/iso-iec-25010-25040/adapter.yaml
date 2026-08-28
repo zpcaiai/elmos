@@ -1,0 +1,40 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: iso-iec-25010-25040
+  ecosystem: ISO/IEC SQuaRE 25010/25040
+  version: 4.0.0
+spec:
+  adapterKind: quality-standard
+  maturity: P1
+  modes:
+  - quality-model
+  - measure
+  - evaluate
+  - report
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - software product quality and evaluation process profiles
+  releaseBoundary: adapter package presence is not native conformance

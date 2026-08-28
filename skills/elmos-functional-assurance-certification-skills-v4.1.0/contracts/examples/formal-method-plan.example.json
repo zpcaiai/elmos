@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "formal-method-plan-example",
+  "status": "READY",
+  "content_hash": "e09ea41363b955e2db81390f717e42b5696a5223b0743a56e0bfb0f2716e54c1",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "steps": [
+    {
+      "id": "S1",
+      "action": "freeze exact versions",
+      "depends_on": []
+    }
+  ],
+  "rollback_steps": [
+    "restore prior signed artifact"
+  ],
+  "proof_obligations": [
+    "PO-example"
+  ]
+}

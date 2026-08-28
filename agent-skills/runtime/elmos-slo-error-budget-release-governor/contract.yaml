@@ -1,0 +1,81 @@
+apiVersion: elmos.ai/v3alpha1
+kind: SkillContract
+metadata:
+  name: elmos-slo-error-budget-release-governor
+  version: 4.0.0
+spec:
+  routeOwner: domain-pack.project-generation
+  routable: false
+  priority: P0
+  risk: critical
+  group: operations-reliability
+  kernelAuthorities:
+  - K1
+  - K6
+  - K8
+  canonicalInputs:
+  - type: GoalContract
+    required: true
+    binding: goal_id
+  - type: RevisionSet
+    required: true
+    binding: revision_set_id
+  - type: EnvironmentAuthority
+    required: true
+    binding: execution_epoch+authority_digest
+  - type: ProofObligationGraph
+    required: true
+    binding: proof_graph_id
+  - type: BudgetAndPolicyEnvelope
+    required: true
+    binding: policy_bundle_digest
+  outputs:
+  - path: slo-contract.yaml
+    type: YamlArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  - path: error-budget-status.json
+    type: JsonArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  - path: release-reliability-decision.json
+    type: JsonArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  - path: burn-rate-alerts.json
+    type: JsonArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  dependencies:
+  - elmos-production-deployment-certifier
+  failureMode: fail-closed
+  ownership:
+    intent: K1
+    semantic: K2/K3
+    reasoning: K4
+    transformation: K5
+    verification: K6
+    execution: K7
+    completion: K8
+  invariants:
+  - every terminal result binds one exact RevisionSet
+  - every write validates tenant, execution epoch, lease generation and fencing token
+  - every side effect has idempotency and reconciliation state
+  - critical UNKNOWN or UNSUPPORTED cannot become COMPLETE
+  - generator, repairer and certifier are independently attributable
+  terminalStates:
+  - COMPLETED
+  - BLOCKED
+  - FAILED
+  - CANCELLED
+  externalDependencies:
+  - skill: elmos-ai-observability-finops-generator
+    package: elmos-ai-capability-enhancement-skills
+    versionConstraint: '>=4.1.0,<4.2.0'
+    mode: required-base-evidence-producer
+  packageRole: certification
+  standaloneCompletionCeiling: K8_CERTIFICATION_DECISION

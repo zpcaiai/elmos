@@ -1,0 +1,73 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableWorkflow
+metadata:
+  name: continuous-agent-certification
+  version: 4.0.0
+spec:
+  authority: Environment-owned
+  failureMode: fail-closed
+  steps:
+  - id: curate-eval-dataset
+    ordinal: 1
+    dependsOn: []
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: calibrate-judges
+    ordinal: 2
+    dependsOn:
+    - curate-eval-dataset
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: capture-provider-fingerprint
+    ordinal: 3
+    dependsOn:
+    - calibrate-judges
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: run-shadow-eval
+    ordinal: 4
+    dependsOn:
+    - capture-provider-fingerprint
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: detect-drift
+    ordinal: 5
+    dependsOn:
+    - run-shadow-eval
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: recertify-or-rollback
+    ordinal: 6
+    dependsOn:
+    - detect-drift
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: seal-certificate
+    ordinal: 7
+    dependsOn:
+    - recertify-or-rollback
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  terminalGate: independent K8 evaluation
+  machineEtaRequired: true

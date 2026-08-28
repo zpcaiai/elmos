@@ -1,0 +1,13 @@
+{
+  "policy": "release_attestation_admission",
+  "positive": {
+    "source_provenance_valid": true,
+    "build_provenance_valid": true,
+    "artifact_signature_valid": true,
+    "vex_policy_satisfied": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

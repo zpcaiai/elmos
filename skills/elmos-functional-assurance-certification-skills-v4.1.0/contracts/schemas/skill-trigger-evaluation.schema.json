@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SkillTriggerEvaluation",
+  "type": "object",
+  "required": [
+    "skill",
+    "datasetVersion",
+    "tp",
+    "fp",
+    "tn",
+    "fn",
+    "precision",
+    "recall"
+  ],
+  "properties": {
+    "skill": {
+      "type": "string",
+      "minLength": 1
+    },
+    "datasetVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tp": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "fp": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tn": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "fn": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "precision": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "recall": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "taskSuccessLift": {
+      "type": "number"
+    }
+  },
+  "additionalProperties": false
+}

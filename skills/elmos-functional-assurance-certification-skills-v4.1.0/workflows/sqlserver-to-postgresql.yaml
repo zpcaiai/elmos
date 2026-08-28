@@ -1,0 +1,99 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableCertificationWorkflow
+metadata:
+  name: sqlserver-to-postgresql
+  version: 4.0.0
+spec:
+  routeOwner: domain-pack.project-generation
+  routable: false
+  skill: elmos-database-cutover-rollback-certifier
+  stateStore: PostgreSQL durable event journal
+  execution:
+    pauseResumeCancel: true
+    leaseFencing: true
+    sideEffectReconciliation: true
+  stages:
+  - id: S01
+    name: sqlserver-profile
+    dependsOn: []
+    checkpoint: true
+    authority: environment-owned
+    failurePolicy: BLOCK critical; retry only idempotent/reconciled operations
+    evidence:
+    - input-hash
+    - tool-and-version-digest
+    - command-or-policy-result
+    - trace-reference
+  - id: S02
+    name: tsql-import
+    dependsOn:
+    - S01
+    checkpoint: true
+    authority: environment-owned
+    failurePolicy: BLOCK critical; retry only idempotent/reconciled operations
+    evidence:
+    - input-hash
+    - tool-and-version-digest
+    - command-or-policy-result
+    - trace-reference
+  - id: S03
+    name: postgres-lowering
+    dependsOn:
+    - S02
+    checkpoint: true
+    authority: environment-owned
+    failurePolicy: BLOCK critical; retry only idempotent/reconciled operations
+    evidence:
+    - input-hash
+    - tool-and-version-digest
+    - command-or-policy-result
+    - trace-reference
+  - id: S04
+    name: transaction-lock-tests
+    dependsOn:
+    - S03
+    checkpoint: true
+    authority: environment-owned
+    failurePolicy: BLOCK critical; retry only idempotent/reconciled operations
+    evidence:
+    - input-hash
+    - tool-and-version-digest
+    - command-or-policy-result
+    - trace-reference
+  - id: S05
+    name: data-reconciliation
+    dependsOn:
+    - S04
+    checkpoint: true
+    authority: environment-owned
+    failurePolicy: BLOCK critical; retry only idempotent/reconciled operations
+    evidence:
+    - input-hash
+    - tool-and-version-digest
+    - command-or-policy-result
+    - trace-reference
+  - id: S06
+    name: rollback
+    dependsOn:
+    - S05
+    checkpoint: true
+    authority: environment-owned
+    failurePolicy: BLOCK critical; retry only idempotent/reconciled operations
+    evidence:
+    - input-hash
+    - tool-and-version-digest
+    - command-or-policy-result
+    - trace-reference
+  - id: S07
+    name: certify
+    dependsOn:
+    - S06
+    checkpoint: true
+    authority: environment-owned
+    failurePolicy: BLOCK critical; retry only idempotent/reconciled operations
+    evidence:
+    - input-hash
+    - tool-and-version-digest
+    - command-or-policy-result
+    - trace-reference
+  terminalRule: COMPLETED only after independent K8 decision; otherwise typed BLOCKED/FAILED/CANCELLED
