@@ -165,7 +165,7 @@
         },
         "signed_evidence_type": {
           "oneOf": [
-            {"enum": ["customer_holdout", "independent_review", "authorized_customer_repository"]},
+            {"const": "behavioral_equivalence"},
             {"type": "null"}
           ]
         },
@@ -243,7 +243,7 @@
             "properties": {"corpus_role": {"const": "holdout"}}
           },
           "then": {
-            "properties": {"signed_evidence_type": {"const": "customer_holdout"}}
+            "properties": {"signed_evidence_type": {"const": "behavioral_equivalence"}}
           }
         },
         {
@@ -252,7 +252,7 @@
             "properties": {"corpus_role": {"const": "representative"}}
           },
           "then": {
-            "properties": {"signed_evidence_type": {"const": "independent_review"}}
+            "properties": {"signed_evidence_type": {"const": "behavioral_equivalence"}}
           }
         },
         {
@@ -262,7 +262,7 @@
           },
           "then": {
             "properties": {
-              "signed_evidence_type": {"const": "authorized_customer_repository"}
+              "signed_evidence_type": {"const": "behavioral_equivalence"}
             }
           }
         }

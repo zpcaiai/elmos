@@ -394,7 +394,19 @@ class SpringCapabilityFingerprintTest {
                 new SpringUpgradeModels.Fingerprint(
                         "3.5.3", "21", "maven", List.of(), List.of(), List.of(), Map.of()),
                 analysis);
-        assertEquals("spring-boot-4.1.1", SpringFeatureCatalog.render(enriched.features()).get(0).get("target"));
+        Map<String, Object> boot411 = SpringFeatureCatalog.render(
+                enriched.features(), "4.1.1", "21").get(0);
+        assertEquals("spring-boot-4.1.1", boot411.get("target"));
+        assertTrue(list(boot411.get("obligations")).contains(
+                "bind-to-exact-spring-boot-4.1.1-java-21-profile"));
+
+        Map<String, Object> boot353 = SpringFeatureCatalog.render(
+                enriched.features(), "3.5.3", "21").get(0);
+        assertEquals("spring-boot-3.5.3", boot353.get("target"));
+        assertTrue(list(boot353.get("obligations")).contains(
+                "bind-to-exact-spring-boot-3.5.3-java-21-profile"));
+        assertFalse(list(boot353.get("obligations")).stream()
+                .anyMatch(value -> value.contains("4.1.1")));
         assertTrue(enriched.features().stream()
                 .anyMatch(feature -> feature.id().equals("boot-config-data")
                         && feature.targetStrategy().contains("config-data")));
