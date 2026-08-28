@@ -31,7 +31,7 @@ def _evidence_complete(result: dict[str, Any]) -> bool:
     return isinstance(artifacts, list) and {"case-input", "environment", "evidence-manifest"}.issubset(roles)
 
 
-def score_results(results: list[dict[str, Any]], root: Path, *, expected_count: int | None = None, complete: bool | None = None, corpus_release: bool = False, trust_store: dict[str, Any] | None = None) -> dict[str, Any]:
+def score_results(results: list[dict[str, Any]], root: Path, *, expected_count: int | None = None, complete: bool | None = None, corpus_release: bool = False, trust_store: dict[str, Any] | None = None, license_reviews_path: Path | None = None) -> dict[str, Any]:
     statuses = Counter(str(result.get("status", "error")) for result in results)
     by_line: dict[str, Counter[str]] = defaultdict(Counter)
     by_priority = {key: {"total_weight": 0.0, "passed_weight": 0.0, "weighted_pass_rate": 0.0} for key in WEIGHT}
@@ -73,7 +73,7 @@ def score_results(results: list[dict[str, Any]], root: Path, *, expected_count: 
         total_cost["token_input"] += int(cost.get("token_input", 0) or 0); total_cost["token_output"] += int(cost.get("token_output", 0) or 0); total_cost["credit_usd"] += float(cost.get("credit_usd", 0.0) or 0.0); total_cost["wall_clock_ms"] += int(cost.get("wall_clock_ms", result.get("duration_ms", 0)) or 0)
     for values in by_priority.values():
         if values["total_weight"]: values["weighted_pass_rate"] = values["passed_weight"] / values["total_weight"]
-    corpus = verify_lock(root, release=corpus_release, trust_store=trust_store)
+    corpus = verify_lock(root, release=corpus_release, trust_store=trust_store, license_reviews_path=license_reviews_path)
     inferred_complete = expected_count is not None and len(results) == expected_count and not any(status in {"skipped", "unavailable"} for status in statuses)
     complete_run = inferred_complete if complete is None else bool(complete)
     stability = multi_seed_stability(executable, only_probabilistic=True)

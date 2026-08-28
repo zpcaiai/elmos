@@ -7,8 +7,6 @@ import subprocess
 import json
 from pathlib import Path
 from typing import Any, Mapping
-from urllib.parse import urlparse
-
 import yaml
 
 from .attestation import AttestationError, load_json_object, verify_signed_record
@@ -81,7 +79,7 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
     return records
 
 
-def verify_license_reviews(root: Path, *, release: bool = False, trust_store: Mapping[str, Any] | None = None) -> dict[str, Any]:
+def verify_license_reviews(root: Path, *, release: bool = False, trust_store: Mapping[str, Any] | None = None, records_path: Path | None = None) -> dict[str, Any]:
     """Verify signed, commit-bound corpus license review records.
 
     The lock remains the source of corpus identity. A review record can satisfy
@@ -92,12 +90,13 @@ def verify_license_reviews(root: Path, *, release: bool = False, trust_store: Ma
     errors: list[str] = []
     warnings: list[str] = []
     lock = load_lock(root)
-    review_path = root / "corpora" / "license-reviews.jsonl"
+    supplied_review_path = records_path if records_path is not None else root / "corpora" / "license-reviews.jsonl"
     required_ids = {str(repo.get("id")) for repo in lock["repositories"]}
-    if not review_path.is_file():
+    if supplied_review_path.is_symlink() or not supplied_review_path.is_file():
         messages = [f"license review evidence missing: {identifier}" for identifier in sorted(required_ids)]
         (errors if release else warnings).extend(messages)
         return {"valid": not errors, "records": 0, "approved": 0, "unapproved": len(required_ids), "errors": errors, "warnings": warnings}
+    review_path = supplied_review_path.resolve(strict=True)
     try:
         records = _load_jsonl(review_path)
     except (OSError, ValueError) as exc:
@@ -113,11 +112,15 @@ def verify_license_reviews(root: Path, *, release: bool = False, trust_store: Ma
         else:
             trust_store = {}
     by_id: dict[str, dict[str, Any]] = {}
+    verified_approved: set[str] = set()
     for record in records:
         payload = record.get("payload") if isinstance(record, dict) else None
         identifier = str(payload.get("corpus_id")) if isinstance(payload, dict) else ""
         if identifier in by_id:
             errors.append(f"duplicate license review record: {identifier}")
+            continue
+        if identifier not in required_ids:
+            errors.append(f"license review record is not present in corpus lock: {identifier}")
             continue
         by_id[identifier] = record
         verification = verify_signed_record(record, trust_store, record_type="license-review")
@@ -127,8 +130,27 @@ def verify_license_reviews(root: Path, *, release: bool = False, trust_store: Ma
         if not isinstance(payload, dict):
             errors.append(f"license review {identifier}: payload must be an object")
             continue
+        required_payload = {
+            "corpus_id",
+            "repository",
+            "commit",
+            "license_spdx",
+            "patent_and_trademark_scope",
+            "data_and_export_control_scope",
+            "redistribution_decision",
+            "review_status",
+        }
+        missing_payload = required_payload - set(payload)
+        if missing_payload:
+            errors.append(f"license review {identifier}: missing payload fields {sorted(missing_payload)}")
+            continue
+        if not isinstance(payload.get("license_spdx"), list) or not payload["license_spdx"] or any(not isinstance(item, str) or not item for item in payload["license_spdx"]):
+            errors.append(f"license review {identifier}: license_spdx must be a non-empty string array")
+            continue
         if payload.get("review_status") != "approved":
             errors.append(f"license review {identifier}: review_status is not approved")
+            continue
+        verified_approved.add(identifier)
     approved = 0
     for repo in lock["repositories"]:
         identifier = str(repo.get("id"))
@@ -140,7 +162,7 @@ def verify_license_reviews(root: Path, *, release: bool = False, trust_store: Ma
         if payload.get("repository") != repo.get("repository") or payload.get("commit") != repo.get("commit"):
             errors.append(f"license review is not bound to locked repository/commit: {identifier}")
             continue
-        if payload.get("review_status") == "approved":
+        if identifier in verified_approved and payload.get("review_status") == "approved":
             approved += 1
     unresolved = len(required_ids) - approved
     if unresolved:
@@ -149,7 +171,7 @@ def verify_license_reviews(root: Path, *, release: bool = False, trust_store: Ma
     return {"valid": not errors, "records": len(records), "approved": approved, "unapproved": unresolved, "errors": errors, "warnings": warnings}
 
 
-def verify_lock(root: Path, *, release: bool = False, trust_store: Mapping[str, Any] | None = None) -> dict[str, Any]:
+def verify_lock(root: Path, *, release: bool = False, trust_store: Mapping[str, Any] | None = None, license_reviews_path: Path | None = None) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
     try:
@@ -170,7 +192,7 @@ def verify_lock(root: Path, *, release: bool = False, trust_store: Mapping[str, 
         policy = repo.get("policy", {})
         if policy.get("network") != "allowlisted" or policy.get("secrets") != "none":
             errors.append(f"unsafe corpus policy: {identifier}")
-    license_reviews = verify_license_reviews(root, release=release, trust_store=trust_store)
+    license_reviews = verify_license_reviews(root, release=release, trust_store=trust_store, records_path=license_reviews_path)
     errors.extend(license_reviews["errors"])
     warnings.extend(license_reviews["warnings"])
     approved = license_reviews["approved"]

@@ -155,7 +155,7 @@ class RuntimeTests(unittest.TestCase):
             record = {
                 "schema_version": "1.0",
                 "record_type": "license-review",
-                "payload": {"corpus_id": "sample-corpus", "repository": "example/sample", "commit": commit, "license_spdx": ["Apache-2.0"], "review_status": "approved"},
+                "payload": {"corpus_id": "sample-corpus", "repository": "example/sample", "commit": commit, "license_spdx": ["Apache-2.0"], "patent_and_trademark_scope": "reviewed", "data_and_export_control_scope": "reviewed", "redistribution_decision": "metadata-only", "review_status": "approved"},
                 "issuer_id": "license-reviewer-1",
                 "key_id": "license-key-1",
                 "algorithm": "ed25519",
@@ -164,7 +164,7 @@ class RuntimeTests(unittest.TestCase):
             }
             record["signature"] = base64.urlsafe_b64encode(private_key.sign(canonical_json(unsigned_payload(record)))).decode().rstrip("=")
             (root / "corpora/license-reviews.jsonl").write_text(json.dumps(record) + "\n", encoding="utf-8")
-            trust_store = {"schema_version": "1.0", "keys": [{"key_id": "license-key-1", "algorithm": "ed25519", "status": "active", "public_key": base64.urlsafe_b64encode(public_key).decode().rstrip("="), "not_before": (now - dt.timedelta(hours=1)).isoformat(), "not_after": (now + dt.timedelta(hours=2)).isoformat()}]}
+            trust_store = {"schema_version": "1.0", "keys": [{"key_id": "license-key-1", "algorithm": "ed25519", "status": "active", "record_types": ["license-review"], "public_key": base64.urlsafe_b64encode(public_key).decode().rstrip("="), "not_before": (now - dt.timedelta(hours=1)).isoformat(), "not_after": (now + dt.timedelta(hours=2)).isoformat()}]}
             result = verify_license_reviews(root, release=True, trust_store=trust_store)
             self.assertTrue(result["valid"])
             self.assertEqual(result["approved"], 1)

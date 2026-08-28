@@ -19,21 +19,24 @@ from .benchmark import validate_hidden_test_boundary
 from .budget import BudgetLedger, estimate_machine_eta
 from .campaigns import metamorphic_relation, mutation_summary
 from .candidate import freeze_candidate, load_spec
+from .campaign import merge_release_results
 from .checkpoint import CheckpointStore
 from .contracts import compile_requirement, validate_domain_case
-from .corpus import build_license_review_request, verify_lock
+from .attestation import load_json_object
+from .corpus import build_license_review_request, verify_license_reviews, verify_lock
 from .evidence import EvidenceStore
+from .external_harness import ExternalExecutionContext, ExternalHarnessRouter
 from .harness import phase_plan
 from .incidents import regression_from_incident
 from .materializer import materialize
 from .oracles import compare_json, compare_trace
-from .orchestrator import build_plan, gate_profile, release_preflight, run_profile, select_cases
+from .orchestrator import build_plan, gate_profile, release_attestation_request, release_preflight, run_profile, select_cases
+from .planner import select_plan_shard, validate_plan
 from .performance import evaluate_performance
 from .policy import authorize, authority_digest
 from .risk import select_risk_plan
 from .scheduling import FairScheduler, TaskRequest
 from .scoring import score_results
-from .skills import audit_skills
 from .statistics import multi_seed_stability, non_inferiority, wilson_interval
 from .supply_chain import inspect_tree
 from .triage import cluster_failures
@@ -51,7 +54,7 @@ class SkillRegistry:
     """Bind all 24 exact v1.1 source names to repository-owned handlers."""
 
     _OPERATIONS: dict[str, tuple[str, ...]] = {
-        "etgb-orchestrator": ("plan", "run", "score", "gate", "eta", "stability", "triage"),
+        "etgb-orchestrator": ("plan", "run", "merge_results", "score", "gate", "preflight", "attestation_request", "eta", "stability", "triage"),
         "test-case-authoring": ("validate", "coverage", "materialized", "validate_case"),
         "spring-modernization-validation": ("validate_case", "capability"),
         "repository-translation-validation": ("validate_case", "capability"),
@@ -59,9 +62,9 @@ class SkillRegistry:
         "sql-dialect-routine-validation": ("validate_case", "capability"),
         "differential-oracle-engine": ("compare_json", "compare_trace"),
         "metamorphic-fuzz-mutation": ("metamorphic", "mutation_summary", "property_campaign"),
-        "corpus-governance": ("verify", "review_request"),
-        "release-certification": ("gate",),
-        "production-harness-integration": ("phase_plan",),
+        "corpus-governance": ("verify", "review_request", "review_verify"),
+        "release-certification": ("gate", "preflight", "attestation_request"),
+        "production-harness-integration": ("phase_plan", "harness_preflight"),
         "environment-authority-sandbox": ("authorize", "authority_digest", "hidden_boundary"),
         "checkpoint-resume-recovery": ("verify_checkpoint", "resume_contract"),
         "evidence-provenance-ledger": ("verify_evidence",),
@@ -73,7 +76,7 @@ class SkillRegistry:
         "statistical-validity-reproducibility": ("stability", "wilson", "non_inferiority"),
         "supply-chain-artifact-security": ("inspect",),
         "incident-regression-learning": ("regression",),
-        "multi-tenant-scheduling-isolation": ("schedule",),
+        "multi-tenant-scheduling-isolation": ("schedule", "validate_plan", "select_shard"),
         "release-candidate-integrity": ("freeze",),
     }
 
@@ -117,7 +120,7 @@ class SkillRegistry:
             raise ValueError(f"operation '{operation}' is not allowed for {skill}")
         data = dict(payload or {})
         if operation == "validate":
-            return validate_package(self.package_root, release=bool(data.get("release")), archive=Path(data["archive"]) if data.get("archive") else None, extracted=Path(data["extracted"]) if data.get("extracted") else None)
+            return validate_package(self.package_root, release=bool(data.get("release")), archive=Path(data["archive"]) if data.get("archive") else None, extracted=Path(data["extracted"]) if data.get("extracted") else None, trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None)
         if operation == "coverage":
             return coverage_report(self.package_root)
         if operation == "materialized":
@@ -133,9 +136,18 @@ class SkillRegistry:
         if operation == "capability":
             return self._unavailable(skill, "real source/target runtime evidence is not provided by the offline package")
         if operation == "verify":
-            return verify_lock(self.package_root, release=bool(data.get("release")))
+            return verify_lock(self.package_root, release=bool(data.get("release")), trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None)
         if operation == "review_request":
             return build_license_review_request(self.package_root)
+        if operation == "review_verify":
+            if not data.get("records_path") or not data.get("trust_store_path"):
+                raise ValueError("review_verify requires records_path and trust_store_path")
+            return verify_license_reviews(
+                self.package_root,
+                release=True,
+                trust_store=load_json_object(Path(str(data["trust_store_path"]))),
+                records_path=Path(str(data["records_path"])),
+            )
         if operation == "compare_json":
             return compare_json(data.get("left"), data.get("right"), ignore_paths=data.get("ignore_paths", []), unordered_paths=data.get("unordered_paths", []), absolute_tolerance=float(data.get("absolute_tolerance", 0.0)), relative_tolerance=float(data.get("relative_tolerance", 0.0)))
         if operation == "compare_trace":
@@ -148,26 +160,79 @@ class SkillRegistry:
             return mutation_summary(list(data.get("mutants", [])), [bool(value) for value in data.get("killed", [])])
         if operation == "plan":
             repo_root = Path(str(data.get("repo_root", self.package_root.parents[2])))
-            return build_plan(self.package_root, changed_from=data.get("changed_from"), root_for_git=repo_root, history_path=Path(data["history"]) if data.get("history") else None, max_cases=int(data.get("max_cases", 500)), seed=int(data.get("seed", 17)), shard_count=int(data.get("shards", 8)), candidate_digest=data.get("candidate_digest"))
+            return build_plan(self.package_root, changed_from=data.get("changed_from"), root_for_git=repo_root, history_path=Path(data["history"]) if data.get("history") else None, max_cases=int(data.get("max_cases", 500)), seed=int(data.get("seed", 17)), shard_count=int(data.get("shards", 8)), candidate_digest=data.get("candidate_digest"), profile=data.get("profile"))
         if operation == "run":
             output = data.get("output")
             if not output:
                 raise ValueError("run requires an explicit output path")
-            selected = select_cases(self.package_root, profile=str(data.get("profile", "smoke")), business_line=data.get("business_line"), priority=data.get("priority"), case_id=data.get("case_id"), plan_ids=set(str(value) for value in data.get("case_ids", [])) or None, limit=int(data["limit"]) if data.get("limit") is not None else None)
+            plan_value = None
+            plan_ids = set(str(value) for value in data.get("case_ids", [])) or None
+            if data.get("plan_path"):
+                plan_value = json.loads(Path(str(data["plan_path"])).read_text(encoding="utf-8"))
+                plan_errors = validate_plan(plan_value)
+                if plan_errors:
+                    raise ValueError("invalid run plan: " + "; ".join(plan_errors))
+                plan_ids = select_plan_shard(plan_value, int(data["shard_id"])) if data.get("shard_id") is not None else set(plan_value["case_ids"])
+            selected = select_cases(self.package_root, profile=str(data.get("profile", "smoke")), business_line=data.get("business_line"), priority=data.get("priority"), case_id=data.get("case_id"), plan_ids=plan_ids, limit=int(data["limit"]) if data.get("limit") is not None else None)
             candidate = load_spec(Path(str(data["candidate"]))) if data.get("candidate") else None
-            results, score = run_profile(self.package_root, selected, profile=str(data.get("profile", "smoke")), output=Path(str(output)).resolve(), state_db=Path(str(data["state_db"])).resolve() if data.get("state_db") else None, artifact_root=Path(str(data["artifact_root"])).resolve() if data.get("artifact_root") else None, allow_unavailable=bool(data.get("allow_unavailable")), owner=data.get("owner"), run_id=data.get("run_id"), resume=bool(data.get("resume")), candidate=candidate)
+            trust_store = load_json_object(Path(str(data["trust_store_path"]))) if data.get("trust_store_path") else None
+            external_router = None
+            external_context = None
+            if data.get("harness_config"):
+                context = data.get("external_context")
+                if not isinstance(context, Mapping) or not isinstance(plan_value, Mapping) or not isinstance(candidate, Mapping):
+                    raise ValueError("external run requires plan_path, candidate, and external_context")
+                if plan_value.get("candidate_digest") != candidate.get("candidate_digest"):
+                    raise ValueError("plan and frozen candidate digest do not match")
+                external_router = ExternalHarnessRouter.load(Path(str(data["harness_config"])))
+                external_context = ExternalExecutionContext(
+                    tenant_id=str(context["tenant_id"]),
+                    project_id=str(context["project_id"]),
+                    task_id=str(context["task_id"]),
+                    candidate_digest=str(candidate["candidate_digest"]),
+                    plan_digest=str(plan_value["plan_digest"]),
+                    environment_id=str(context["environment_id"]),
+                    authority_id=str(context["authority_id"]),
+                    owner_id=str(context["owner_id"]),
+                    fencing_token=int(context["fencing_token"]),
+                    checkpoint_digest=str(context["checkpoint_digest"]),
+                )
+            results, score = run_profile(
+                self.package_root,
+                selected,
+                profile=str(data.get("profile", "smoke")),
+                output=Path(str(output)).resolve(),
+                state_db=Path(str(data["state_db"])).resolve() if data.get("state_db") else None,
+                artifact_root=Path(str(data["artifact_root"])).resolve() if data.get("artifact_root") else None,
+                allow_unavailable=bool(data.get("allow_unavailable")),
+                owner=data.get("owner"),
+                run_id=data.get("run_id"),
+                resume=bool(data.get("resume")),
+                candidate=candidate,
+                external_router=external_router,
+                external_context=external_context,
+                trust_store=trust_store,
+                license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None,
+            )
             return {"selected": len(selected), "results": results, "score": score}
         if operation == "score":
             results = self._results(data)
             errors = validate_results(results, self.package_root)
             if errors:
                 raise ValueError(f"invalid results: {errors[:3]}")
-            return score_results(results, self.package_root, expected_count=int(data["expected_count"]) if data.get("expected_count") is not None else None, complete=bool(data["complete"]) if "complete" in data else None, corpus_release=bool(data.get("release")))
+            return score_results(results, self.package_root, expected_count=int(data["expected_count"]) if data.get("expected_count") is not None else None, complete=bool(data["complete"]) if "complete" in data else None, corpus_release=bool(data.get("release")), trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None)
+        if operation == "merge_results":
+            if not isinstance(data.get("plan"), Mapping) or not isinstance(data.get("result_paths"), list) or not isinstance(data.get("trust_store"), Mapping):
+                raise ValueError("merge_results requires plan, result_paths, and trust_store")
+            _, receipt = merge_release_results(self.package_root, data["plan"], [Path(str(value)) for value in data["result_paths"]], candidate_digest=str(data["candidate_digest"]), trust_store=data["trust_store"])
+            return receipt
         if operation == "gate":
             results = self._results(data)
-            return gate_profile(self.package_root, results, profile=str(data.get("profile", "release")), external_attested=bool(data.get("external_attested")), independent_verifier=data.get("independent_verifier"), external_attestation=dict(data["external_attestation"]) if isinstance(data.get("external_attestation"), Mapping) else None, trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, candidate_digest=data.get("candidate_digest"))
+            return gate_profile(self.package_root, results, profile=str(data.get("profile", "release")), external_attested=bool(data.get("external_attested")), independent_verifier=data.get("independent_verifier"), external_attestation=dict(data["external_attestation"]) if isinstance(data.get("external_attestation"), Mapping) else None, trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, candidate_digest=data.get("candidate_digest"), license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None, plan=dict(data["plan"]) if isinstance(data.get("plan"), Mapping) else None)
         if operation == "preflight":
-            return release_preflight(self.package_root, profile=str(data.get("profile", "release")), results=self._results(data) if data.get("results") is not None or data.get("results_path") else None, candidate_digest=data.get("candidate_digest"), trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None)
+            return release_preflight(self.package_root, profile=str(data.get("profile", "release")), results=self._results(data) if data.get("results") is not None or data.get("results_path") else None, candidate_digest=data.get("candidate_digest"), trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None, plan=dict(data["plan"]) if isinstance(data.get("plan"), Mapping) else None)
+        if operation == "attestation_request":
+            return release_attestation_request(self.package_root, self._results(data), profile=str(data.get("profile", "release")), candidate_digest=data.get("candidate_digest"), trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None, plan=dict(data["plan"]) if isinstance(data.get("plan"), Mapping) else None)
         if operation == "eta":
             cases = data.get("cases")
             if cases is None and data.get("plan_path"):
@@ -184,6 +249,10 @@ class SkillRegistry:
             return cluster_failures(self._results(data))
         if operation == "phase_plan":
             return [{"from": source.value, "phase": phase, "to": target.value} for source, phase, target in phase_plan(data)]
+        if operation == "harness_preflight":
+            if not data.get("config_path"):
+                raise ValueError("harness_preflight requires config_path")
+            return ExternalHarnessRouter.load(Path(str(data["config_path"]))).capability_report()
         if operation == "authorize":
             authority = data.get("authority")
             request = data.get("request")
@@ -247,6 +316,11 @@ class SkillRegistry:
                     break
                 dispatched.append(item)
             return {"dispatched": dispatched, "snapshot": scheduler.snapshot()}
+        if operation == "validate_plan":
+            errors = validate_plan(data.get("plan"))
+            return {"valid": not errors, "errors": errors}
+        if operation == "select_shard":
+            return {"case_ids": sorted(select_plan_shard(data.get("plan"), int(data["shard_id"])))}
         if operation == "freeze":
             candidate = data.get("candidate")
             if not isinstance(candidate, Mapping):

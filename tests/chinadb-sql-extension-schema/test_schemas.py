@@ -187,15 +187,113 @@ def preflight_result():
     }
 
 
+def skill_ids():
+    status_path = (
+        ROOT
+        / "skills"
+        / "chinadb-commercial-migration-skills-v1.0.0"
+        / "IMPLEMENTATION_STATUS.json"
+    )
+    return sorted(json.loads(status_path.read_text(encoding="utf-8")))
+
+
+def skill_capability_document():
+    bindings = [
+        {
+            "skillId": skill_id,
+            "alias": f"chinadb-{skill_id}",
+            "handlerId": f"handler:{skill_id}",
+            "category": "bounded-local",
+            "dependencies": [],
+            "externalEffects": [],
+            "localCodeStatus": "CODE_IMPLEMENTED",
+            "externalExecution": "NOT_RUN",
+            "independentVerification": "NOT_RUN",
+            "certification": "NOT_CERTIFIED",
+        }
+        for skill_id in skill_ids()
+    ]
+    return {
+        "schemaVersion": "1.0",
+        "package": "chinadb-commercial-migration-skills",
+        "runtimeVersion": "1.0.0",
+        "skillCount": 47,
+        "codeImplementedCount": 47,
+        "boundedLocalHandlerCoverage": {
+            "implemented": 47,
+            "total": 47,
+            "rate": 1.0,
+        },
+        "importedSpecificationStatus": "SPEC_ONLY",
+        "productionDefinitionOfDoneCount": 0,
+        "productionDefinitionOfDone": "BLOCKED_EXTERNAL_EVIDENCE",
+        "bindings": bindings,
+        "bindingDigest": DIGEST,
+        "externalExecution": "NOT_RUN",
+        "independentVerification": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
+        "claim": "Repository-owned bounded local handlers; external execution is not run.",
+    }
+
+
+def skill_request():
+    return {
+        "scope": {
+            "tenantId": "tenant-1",
+            "projectId": "project-1",
+            "actorId": "actor-1",
+        },
+        "objects": [],
+    }
+
+
+def skill_result():
+    return {
+        "schemaVersion": "1.0",
+        "package": "chinadb-commercial-migration-skills",
+        "runtimeVersion": "1.0.0",
+        "skillId": "01-estate-inventory-assessment",
+        "alias": "chinadb-01-estate-inventory-assessment",
+        "handlerId": "inventory",
+        "scope": skill_request()["scope"],
+        "state": "LOCAL_COMPLETED",
+        "localCodeStatus": "CODE_IMPLEMENTED",
+        "requestDigest": DIGEST,
+        "artifactDigest": DIGEST,
+        "artifacts": {},
+        "checks": [],
+        "blockers": [],
+        "effects": {
+            "declaredExternalEffects": [],
+            "externalEffectsExecuted": [],
+        },
+        "verification": {
+            "localHandler": "PASSED",
+            "externalExecution": "NOT_RUN",
+            "independentVerification": "NOT_RUN",
+        },
+        "certification": "NOT_CERTIFIED",
+        "resultDigest": DIGEST,
+    }
+
+
 class ChinaDbSqlExtensionSchemaTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.capability_schema = load_schema("chinadb-commercial-capabilities.schema.json")
         cls.request_schema = load_schema("chinadb-sql-preflight-request.schema.json")
         cls.result_schema = load_schema("chinadb-sql-preflight-result.schema.json")
+        cls.skill_capability_schema = load_schema("chinadb-skill-capabilities.schema.json")
+        cls.skill_request_schema = load_schema("chinadb-skill-request.schema.json")
+        cls.skill_result_schema = load_schema("chinadb-skill-result.schema.json")
         cls.capability_validator = jsonschema.Draft202012Validator(cls.capability_schema)
         cls.request_validator = jsonschema.Draft202012Validator(cls.request_schema)
         cls.result_validator = jsonschema.Draft202012Validator(cls.result_schema)
+        cls.skill_capability_validator = jsonschema.Draft202012Validator(
+            cls.skill_capability_schema
+        )
+        cls.skill_request_validator = jsonschema.Draft202012Validator(cls.skill_request_schema)
+        cls.skill_result_validator = jsonschema.Draft202012Validator(cls.skill_result_schema)
 
     def assertValid(self, validator, instance):
         errors = sorted(validator.iter_errors(instance), key=lambda error: list(error.path))
@@ -205,8 +303,33 @@ class ChinaDbSqlExtensionSchemaTests(unittest.TestCase):
         self.assertTrue(list(validator.iter_errors(instance)), "instance unexpectedly validated")
 
     def test_schemas_are_valid_draft_2020_12(self):
-        for schema in (self.capability_schema, self.request_schema, self.result_schema):
+        for schema in (
+            self.capability_schema,
+            self.request_schema,
+            self.result_schema,
+            self.skill_capability_schema,
+            self.skill_request_schema,
+            self.skill_result_schema,
+        ):
             jsonschema.Draft202012Validator.check_schema(schema)
+
+    def test_skill_runtime_schemas_preserve_exact_local_and_external_boundaries(self):
+        self.assertEqual(47, len(skill_ids()))
+        self.assertValid(self.skill_capability_validator, skill_capability_document())
+        self.assertValid(self.skill_request_validator, skill_request())
+        self.assertValid(self.skill_result_validator, skill_result())
+
+        missing_scope = skill_request()
+        missing_scope.pop("scope")
+        self.assertInvalid(self.skill_request_validator, missing_scope)
+
+        false_external_claim = skill_result()
+        false_external_claim["verification"]["externalExecution"] = "PASSED"
+        self.assertInvalid(self.skill_result_validator, false_external_claim)
+
+        fabricated_effect = skill_result()
+        fabricated_effect["effects"]["externalEffectsExecuted"] = ["target-write"]
+        self.assertInvalid(self.skill_result_validator, fabricated_effect)
 
     def test_capability_snapshot_accepts_exact_planning_boundary(self):
         document = capability_document()

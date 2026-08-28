@@ -120,7 +120,7 @@ def coverage_report(package_root: Path) -> dict[str, Any]:
     return {"complete": not duplicate_ids and not missing and not unexpected, "declared_model": "ETGB-COVERAGE-1.0", "case_count": total, "lines": lines, "missing_case_count": len(missing), "missing_case_examples": missing[:20], "unexpected_case_count": len(unexpected), "unexpected_case_examples": unexpected[:20], "duplicate_case_ids": duplicate_ids[:20]}
 
 
-def validate_package(package_root: Path, *, release: bool = False, archive: Path | None = None, extracted: Path | None = None, trust_store: dict[str, Any] | None = None, max_errors: int = 50) -> dict[str, Any]:
+def validate_package(package_root: Path, *, release: bool = False, archive: Path | None = None, extracted: Path | None = None, trust_store: dict[str, Any] | None = None, license_reviews_path: Path | None = None, max_errors: int = 50) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
     package_root = package_root.resolve(strict=True)
@@ -185,7 +185,7 @@ def validate_package(package_root: Path, *, release: bool = False, archive: Path
             path = package_root / relative
             if not path.is_file():
                 errors.append(f"missing integration contract: {relative}")
-        corpus = verify_lock(package_root, release=release, trust_store=trust_store)
+        corpus = verify_lock(package_root, release=release, trust_store=trust_store, license_reviews_path=license_reviews_path)
         errors.extend(f"corpus: {message}" for message in corpus["errors"])
         warnings.extend(f"corpus: {message}" for message in corpus["warnings"])
         source_package = verify_source_package(archive, extracted=extracted) if archive else None

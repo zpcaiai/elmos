@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -21,7 +20,7 @@ from elmos_etgb.skills import audit_skills
 from elmos_etgb.statistics import multi_seed_stability
 from elmos_etgb.supply_chain import inspect_tree
 from elmos_etgb.triage import cluster_failures
-from elmos_etgb.orchestrator import release_preflight
+from elmos_etgb.orchestrator import release_attestation_request, release_preflight
 from elmos_etgb.validation import coverage_report, validate_package
 
 
@@ -67,10 +66,20 @@ class V11RuntimeTests(unittest.TestCase):
         result = release_preflight(PACKAGE, results=[])
         self.assertEqual(result["status"], "BLOCKED")
         self.assertEqual(result["scope"]["expected_cases"], 46664)
+        self.assertEqual(result["scope"]["expected_case_runs"], 131452)
         self.assertEqual(result["scope"]["observed_results"], 0)
         self.assertEqual(result["scope"]["external_adapter_cases"], 46660)
+        self.assertEqual(result["scope"]["external_adapter_case_runs"], 131448)
         self.assertEqual(result["corpus"]["unapproved"], 17)
         self.assertTrue(any("full release scope" in blocker for blocker in result["blockers"]))
+
+    def test_attestation_request_is_unsigned_and_blocked_until_inputs_are_complete(self) -> None:
+        request = release_attestation_request(PACKAGE, [], profile="release", candidate_digest="sha256:" + "a" * 64)
+        self.assertEqual(request["status"], "BLOCKED")
+        self.assertFalse(request["signing_authorized"])
+        self.assertEqual(request["certification_status"], "NOT_CERTIFIED")
+        self.assertNotIn("signature", request)
+        self.assertTrue(any("release result scope" in blocker for blocker in request["blockers"]))
 
     def test_candidate_and_hidden_boundary_fail_closed(self) -> None:
         frozen = freeze_candidate(candidate())

@@ -29,3 +29,13 @@ uv run elmos-sql-transpiler verify-local-matrix /tmp/elmos-local-sql-matrix
 ```
 
 The local syntax gate requires at least 99.5% success and currently passes its checked-in eligible corpus. The disposable runtime Runner additionally executes all six directed routes among exact PostgreSQL 17.5, SQLite 3.53.3, and DuckDB 1.5.4 profiles against the same deterministic data. It compares rows, logical types, cardinality, duplicates, order, errors, rollback/atomicity, lock conflicts, plans, and local p95 performance. Each execution emits content-addressed evidence. Profiles without an exact local runtime stay `BLOCKED` / `NOT_RUN`; independent holdout, production-like, security, and certification evidence remain `NOT_RUN` / `NOT_CERTIFIED`.
+
+The transpiler also provides a repository-owned bounded runtime for all 47
+exact ChinaDB commercial migration Skill identities. Every handler is callable
+through the CLI and internal sidecar API, requires tenant/project/actor scope,
+rejects inline secrets, and produces content-addressed local artifacts without
+executing declared external effects. This is 100% local handler coverage, not
+100% vendor route implementation: the immutable source package and all 78
+commercial routes remain `SPEC_ONLY`; live vendor adapters, databases, CDC,
+repository mutation, independent verification, and certification remain
+`NOT_RUN` / `NOT_CERTIFIED`.

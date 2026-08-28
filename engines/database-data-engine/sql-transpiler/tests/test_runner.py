@@ -6,11 +6,65 @@ from pathlib import Path
 
 import pytest
 
+import elmos_sql_transpiler.runner as runner_module
 from elmos_sql_transpiler.runner import (
     RunnerBlockedError,
     runner_capabilities,
     verify_route,
 )
+
+
+def _performance_attempt(state: str, p95: float) -> dict[str, object]:
+    return {
+        "state": state,
+        "warmups": 5,
+        "iterations": 40,
+        "source": {
+            "p50Milliseconds": 1.0,
+            "p95Milliseconds": p95,
+            "samplesMilliseconds": [p95],
+        },
+        "target": {
+            "p50Milliseconds": 1.0,
+            "p95Milliseconds": p95,
+            "samplesMilliseconds": [p95],
+        },
+        "targetToSourceP95Ratio": 1.0,
+    }
+
+
+def test_shared_host_performance_confirmation_preserves_initial_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class FakeRunner:
+        profile_id = "sqlite-3.53.3"
+
+        def analyze(self, _: object) -> None:
+            pass
+
+    target = FakeRunner()
+    target.profile_id = "duckdb-1.5.4"
+    attempts = iter(
+        [
+            _performance_attempt("FAILED", 90.0),
+            _performance_attempt("PASSED", 20.0),
+            *[_performance_attempt("PASSED", 20.0) for _ in range(5)],
+        ]
+    )
+    monkeypatch.setattr(
+        runner_module,
+        "_measure_performance_attempt",
+        lambda *_args: next(attempts),
+    )
+
+    evidence = runner_module._performance_evidence(FakeRunner(), target, object(), object())
+    first = evidence["queries"][0]
+
+    assert evidence["state"] == "PASSED"
+    assert first["measurementAttempts"] == 2
+    assert first["confirmationUsed"] is True
+    assert [attempt["state"] for attempt in first["attempts"]] == ["FAILED", "PASSED"]
+    assert first["sloP95Milliseconds"] == 75.0
 
 
 def test_runner_capabilities_are_exact_and_fail_closed() -> None:

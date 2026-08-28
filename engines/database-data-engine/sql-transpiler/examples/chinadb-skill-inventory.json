@@ -1,0 +1,16 @@
+{
+  "scope": {
+    "tenantId": "tenant-example",
+    "projectId": "project-example",
+    "actorId": "actor-example"
+  },
+  "objects": [
+    {
+      "objectId": "public.orders",
+      "kind": "table",
+      "definitionDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "dependencies": [],
+      "support": "UNKNOWN"
+    }
+  ]
+}

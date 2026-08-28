@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterator
+from contextlib import contextmanager
 from typing import Any
 
 import pytest
@@ -26,9 +28,20 @@ def _request(**changes: object) -> dict[str, object]:
         "targetTimeZone": "Asia/Shanghai",
         "capabilitySnapshotDigest": commercial_capabilities()["capabilitySnapshotDigest"],
         "sql": "SELECT id FROM orders WHERE tenant_id = :tenant_id ORDER BY id",
-        "parameters": [
-            {"name": "tenant_id", "logicalType": "unicode-text", "nullable": False}
-        ],
+        "parameters": [{"name": "tenant_id", "logicalType": "unicode-text", "nullable": False}],
+    }
+    value.update(changes)
+    return value
+
+
+def _skill_request(**changes: object) -> dict[str, object]:
+    value: dict[str, object] = {
+        "scope": {
+            "tenantId": "tenant-1",
+            "projectId": "project-1",
+            "actorId": "actor-1",
+        },
+        "objects": [],
     }
     value.update(changes)
     return value
@@ -66,6 +79,7 @@ def test_health_and_capabilities_are_bounded_fail_closed_contracts(
         "service": "chinadb-sql-preflight",
         "targetCount": 13,
         "plannedRouteCount": 78,
+        "skillHandlerCount": 47,
     }
     assert health.headers["cache-control"] == "private, no-store"
 
@@ -79,6 +93,80 @@ def test_health_and_capabilities_are_bounded_fail_closed_contracts(
     assert value["externalExecution"] == "NOT_RUN"
     assert value["certification"] == "NOT_CERTIFIED"
     assert value["boundaries"]["targetSqlMayBeEmitted"] is False
+
+    skill_response = client.get("/internal/v1/chinadb-skills/capabilities")
+    skills = skill_response.json()
+    assert skill_response.status_code == 200
+    assert skills["skillCount"] == skills["codeImplementedCount"] == 47
+    assert skills["boundedLocalHandlerCoverage"]["rate"] == 1.0
+    assert skills["productionDefinitionOfDoneCount"] == 0
+    assert skills["externalExecution"] == "NOT_RUN"
+    assert skills["independentVerification"] == "NOT_RUN"
+    assert skills["certification"] == "NOT_CERTIFIED"
+
+
+def test_skill_http_execution_is_scope_bound_and_fail_closed(client: TestClient) -> None:
+    response = client.post(
+        "/internal/v1/chinadb-skills/01-estate-inventory-assessment/execute",
+        json=_skill_request(),
+    )
+    value = response.json()
+
+    assert response.status_code == 200
+    assert value["skillId"] == "01-estate-inventory-assessment"
+    assert value["state"] == "LOCAL_COMPLETED"
+    assert value["scope"]["tenantId"] == "tenant-1"
+    assert value["effects"]["externalEffectsExecuted"] == []
+    assert value["verification"]["externalExecution"] == "NOT_RUN"
+    assert value["verification"]["independentVerification"] == "NOT_RUN"
+    assert value["certification"] == "NOT_CERTIFIED"
+
+
+def test_skill_http_rejects_unknown_duplicate_secret_and_stale_inputs(
+    client: TestClient,
+) -> None:
+    unknown = client.post(
+        "/internal/v1/chinadb-skills/not-a-skill/execute",
+        json=_skill_request(),
+    )
+    assert unknown.status_code == 404
+    assert unknown.json()["errorCode"] == "CHINADB_SKILL_UNKNOWN"
+
+    secret = client.post(
+        "/internal/v1/chinadb-skills/01-estate-inventory-assessment/execute",
+        json=_skill_request(password="inline-secret"),
+    )
+    assert secret.status_code == 422
+    assert secret.json()["errorCode"] == "CHINADB_SKILL_EXECUTION_REJECTED"
+
+    duplicate = (
+        '{"scope":{"tenantId":"tenant-1","projectId":"project-1",'
+        '"actorId":"actor-1"},"objects":[],"objects":[]}'
+    )
+    duplicate_response = client.post(
+        "/internal/v1/chinadb-skills/01-estate-inventory-assessment/execute",
+        content=duplicate.encode(),
+        headers={"content-type": "application/json"},
+    )
+    assert duplicate_response.status_code == 422
+    assert duplicate_response.json()["errorCode"] == "CHINADB_SKILL_REQUEST_REJECTED"
+
+    stale_target = client.post(
+        "/internal/v1/chinadb-skills/40-target-dm8/execute",
+        json={
+            "scope": _skill_request()["scope"],
+            "target": {
+                "id": "dm8",
+                "version": "8.1.3.140",
+                "edition": "enterprise",
+                "compatibilityMode": "native-explicit",
+                "driver": "dm-jdbc-8.1.3.140",
+                "capabilitySnapshotDigest": "sha256:" + "0" * 64,
+            },
+        },
+    )
+    assert stale_target.status_code == 422
+    assert stale_target.json()["errorCode"] == "CHINADB_SKILL_EXECUTION_REJECTED"
 
 
 def test_valid_typed_preflight_returns_http_200_but_never_target_sql(
@@ -255,6 +343,18 @@ def test_declared_length_and_fail_closed_result_guards_reject_drift() -> None:
         http_api._assert_fail_closed_assessment(missing_value)
 
 
+def test_sidecar_failure_preserves_original_exception_through_context_manager() -> None:
+    @contextmanager
+    def boundary() -> Iterator[None]:
+        yield
+
+    with pytest.raises(http_api.SidecarFailure) as captured, boundary():
+        raise http_api.SidecarFailure(504, "TIMEOUT", "bounded timeout", True)
+
+    assert captured.value.status_code == 504
+    assert captured.value.error_code == "TIMEOUT"
+
+
 def test_unknown_http_route_uses_fail_closed_error_envelope(client: TestClient) -> None:
     response = client.get("/internal/v1/chinadb-sql/not-found")
     value = response.json()
@@ -267,9 +367,7 @@ def test_unknown_http_route_uses_fail_closed_error_envelope(client: TestClient) 
 
 
 def test_isolated_assessment_process_returns_only_bounded_blocked_json() -> None:
-    request = parse_commercial_request_json(
-        json.dumps(_request(), separators=(",", ":")).encode()
-    )
+    request = parse_commercial_request_json(json.dumps(_request(), separators=(",", ":")).encode())
     payload = http_api._run_assessment_isolated(request)
     value = json.loads(payload)
 

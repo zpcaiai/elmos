@@ -20,9 +20,23 @@ checks, content-addressed redacted evidence, differential/metamorphic oracles,
 statistics, performance budgets, failure triage, incident regressions, supply
 chain inventory, and tenant-isolated fair scheduling.
 
+The seven external case families now have a production caller SDK rather than
+an unavailable-only placeholder. It accepts only exact adapter names, sends a
+candidate/plan/tenant/project/task/run/case/environment/authority/fencing/
+checkpoint-bound request over bounded HTTPS, references credentials through
+environment variables, supports explicit CA and mTLS files, retries only
+classified transient transport failures with the same idempotency key, rejects
+redirects and ambient proxies by default, verifies an expiring Ed25519 response
+against a purpose-bound public trust store, and stores the signed response as
+content-addressed evidence. A missing configuration, token, signature, binding,
+critical oracle, or evidence digest fails closed.
+
 The v1.1 materialization contains 46,664 cases with complete declared coverage:
 cross-cutting 800, cross-language 29,535, project-generation 1,451,
 spring-modernization 3,117, and sql-conversion 11,761.
+Release/golden execution expands declared random seeds to 131,452 exact
+case-runs; completeness is evaluated on `(case_id, seed)`, not file-row count or
+case ID alone. The 46,660 external cases account for 131,448 of those case-runs.
 
 The runtime now exposes two release-preparation commands that do not mutate the
 immutable source package or execute external projects:
@@ -42,6 +56,34 @@ The first command creates 17 deterministic, unsigned review requests bound to
 the locked repository commits. The second reports the exact release scope,
 missing results, external-adapter count, corpus status, and candidate
 requirement. Both are handoff artifacts; neither can approve, sign, or certify.
+
+For a complete external campaign, first freeze a candidate and create a
+candidate-bound full plan. The plan contains all 46,664 case identities and an
+exact, duplicate-free digest-bound partition suitable for independent workers:
+
+```bash
+PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb \
+  --repo-root . plan --profile release --shards 256 \
+  --candidate-digest <candidate-sha256> \
+  --output .elmos/etgb/release-plan-v11.json
+
+PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb \
+  --repo-root . harness-preflight \
+  --config <admin-owned-harness-config.json>
+```
+
+Each worker executes one `--shard-id` with the same plan and frozen candidate,
+an explicit tenant/project/task/environment/authority/owner/fencing context,
+and an exact checkpoint digest. See
+[`HARNESS_PROTOCOL.md`](HARNESS_PROTOCOL.md) for the complete command and
+response contract. The runtime never reads private signing keys; executor and
+reviewer signatures are produced outside this repository process.
+
+Independent corpus records may be kept outside the immutable package and
+injected with `--license-reviews` plus a purpose-bound `--trust-store`.
+`corpus-review-verify` checks all 17 records before release validation. Once
+the complete result set and governance evidence exist, `attestation-request`
+creates the unsigned, digest-bound handoff for a separate verifier.
 
 ## Evidence boundary
 

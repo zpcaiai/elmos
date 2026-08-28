@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "trust_store": "/secure/admin/harness-public-trust-store.json",
+  "policy": {
+    "request_timeout_seconds": 1800,
+    "max_attempts": 3,
+    "initial_backoff_ms": 500,
+    "max_request_bytes": 16777216,
+    "max_response_bytes": 16777216,
+    "allow_loopback_http": false,
+    "allow_environment_proxy": false
+  },
+  "adapters": {
+    "external-transformation-harness": {
+      "endpoint": "https://translation-harness.example.invalid/v1/cases:execute",
+      "executor_id": "translation-executor",
+      "auth_token_env": "ETGB_TRANSLATION_TOKEN"
+    },
+    "external-repository-translation-harness": {
+      "endpoint": "https://repository-harness.example.invalid/v1/cases:execute",
+      "executor_id": "repository-executor",
+      "auth_token_env": "ETGB_REPOSITORY_TOKEN"
+    },
+    "external-project-generation-harness": {
+      "endpoint": "https://generation-harness.example.invalid/v1/cases:execute",
+      "executor_id": "generation-executor",
+      "auth_token_env": "ETGB_GENERATION_TOKEN"
+    },
+    "external-project-evolution-harness": {
+      "endpoint": "https://evolution-harness.example.invalid/v1/cases:execute",
+      "executor_id": "evolution-executor",
+      "auth_token_env": "ETGB_EVOLUTION_TOKEN"
+    },
+    "external-requirement-reasoning-harness": {
+      "endpoint": "https://reasoning-harness.example.invalid/v1/cases:execute",
+      "executor_id": "reasoning-executor",
+      "auth_token_env": "ETGB_REASONING_TOKEN"
+    },
+    "external-dual-database-harness": {
+      "endpoint": "https://database-harness.example.invalid/v1/cases:execute",
+      "executor_id": "database-executor",
+      "auth_token_env": "ETGB_DATABASE_TOKEN"
+    },
+    "external-fault-injection-harness": {
+      "endpoint": "https://fault-harness.example.invalid/v1/cases:execute",
+      "executor_id": "fault-executor",
+      "auth_token_env": "ETGB_FAULT_TOKEN"
+    }
+  }
+}
