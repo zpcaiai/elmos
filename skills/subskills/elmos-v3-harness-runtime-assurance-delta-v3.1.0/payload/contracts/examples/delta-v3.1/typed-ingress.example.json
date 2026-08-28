@@ -1,0 +1,16 @@
+{
+  "ingressId": "ing-1",
+  "kind": "TOOL_RESULT",
+  "producerExecutionId": "exec-tool",
+  "originatingCallId": "c-1",
+  "eventId": "event-1",
+  "causationId": "c-1",
+  "correlationId": "goal-1",
+  "content": [
+    {
+      "type": "input_text",
+      "text": "tests passed"
+    }
+  ],
+  "deduplicationKey": "t-1/exec-tool/event-1"
+}

@@ -1,0 +1,31 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "external_evidence_status": "NOT_RUN",
+  "implementation_status": "DECLARED_RUNTIME_UNQUALIFIED",
+  "kind": "elmos.v3.1.delta-skill-contract",
+  "name": "elmos-skill-trust-domain-provenance",
+  "owners": [
+    "K7",
+    "K8"
+  ],
+  "permissions": {
+    "network": "default-deny",
+    "secrets": "never-in-prompts-or-logs",
+    "side_effects": "typed-authority-required"
+  },
+  "priority": "P0",
+  "routable": false,
+  "runtime": {
+    "entrypoint": "DeltaSkillRuntime.execute",
+    "module": "elmos_proof_harness.delta",
+    "registry": "DELTA_SKILL_REGISTRY"
+  },
+  "schema_version": "1.0.0",
+  "skill_id": "ELMOS-V3D-010",
+  "source": {
+    "package": "elmos-v3-harness-runtime-assurance-delta-v3.1.0",
+    "path": "P0/elmos-skill-trust-domain-provenance/SKILL.md",
+    "sha256": "sha256:6c9c9a03e68b690da799c4e0f7e1c0003c4bb6b82450a16b540cb261affcfcc1"
+  },
+  "version": "3.1.0"
+}

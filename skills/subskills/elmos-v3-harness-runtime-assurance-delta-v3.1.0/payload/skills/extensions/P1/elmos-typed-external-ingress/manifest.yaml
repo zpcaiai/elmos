@@ -1,0 +1,63 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionSkill
+metadata:
+  id: ELMOS-V3D-012
+  name: elmos-typed-external-ingress
+  version: 3.1.0
+  priority: P1
+  labels:
+    routable: 'false'
+    architecture: eight-kernel
+    commercialTier: production
+spec:
+  summary: UserInput、ToolResultIngress、ExternalEventIngress、ApprovalInput 和 ControlInput 是不同的一等 Turn/Steering 输入。
+  ownerKernels:
+  - K7
+  - K1
+  extends:
+  - elmos-harness-runtime-kernel
+  - elmos-goal-specification-kernel
+  dependencies:
+  - name: elmos-harness-runtime-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-goal-specification-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-tool-result-interception-commit
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  - name: elmos-registered-durable-plugin-events
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  components:
+  - IngressRouter
+  - CausalityBinder
+  - DeduplicationLedger
+  - TypedContentNormalizer
+  - ResumeIngressProjector
+  invariants:
+  - one ingress envelope has one semantic kind
+  - authoritative external result must reference a valid pending or reconciled origin
+  - content type and security classification survive adapter conversion
+  - deduplication key is scoped by tenant, execution and producer
+  upstreamEvidence:
+  - openai/codex#41002
+  - openai/codex#40737
+  runtime:
+    durable: true
+    multiTenant: true
+    idempotencyRequired: true
+    outboxRequired: true
+    environmentAuthorityRequired: true
+    proofObligationAware: true
+    failMode: fail-closed
+  security:
+    llmAuthoritativeOracle: DENY
+    selfCertification: DENY
+    authorityWidening: DENY
+    providerTypesInCore: DENY
+  lifecycle:
+    initial: CANDIDATE
+    activationGate: DELTA_TARGET_CONFORMANCE
+    immutableVersions: true

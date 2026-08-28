@@ -1,0 +1,76 @@
+{
+  "$id": "https://elmos.ai/schemas/v3.1/step-execution-plan.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authoritySnapshotId": {
+      "type": "string"
+    },
+    "capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "environmentSnapshotId": {
+      "type": "string"
+    },
+    "modelSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "reasoningEffort": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "revision": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "model",
+        "revision"
+      ],
+      "type": "object"
+    },
+    "planHash": {
+      "type": "string"
+    },
+    "planId": {
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "CANDIDATE",
+        "FINALIZED",
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    "toolMode": {
+      "type": "string"
+    },
+    "toolPlan": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "planId",
+    "planHash",
+    "modelSnapshot",
+    "toolPlan",
+    "environmentSnapshotId",
+    "authoritySnapshotId",
+    "state"
+  ],
+  "title": "Finalized Step Execution Plan",
+  "type": "object"
+}

@@ -1,0 +1,10 @@
+{
+  "evidenceRefs": [
+    "cas:sha256:abc"
+  ],
+  "invocationId": "i-9",
+  "proofObligationRefs": [
+    "PO-RUNTIME-1"
+  ],
+  "status": "COMMITTED"
+}

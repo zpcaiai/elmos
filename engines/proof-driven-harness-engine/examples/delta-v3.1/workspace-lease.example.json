@@ -1,0 +1,11 @@
+{
+  "baseRevision": "git:abc",
+  "generation": 3,
+  "ownerExecutionId": "exec-1",
+  "repositoryId": "repo-1",
+  "state": "ACTIVE",
+  "workspaceId": "ws-1",
+  "writeScopes": [
+    "/workspace/repo"
+  ]
+}

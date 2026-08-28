@@ -279,7 +279,8 @@ class ServiceSurfaceTests(unittest.TestCase):
                 principal.authority,
                 ("proof-harness.invoke", "proof-harness.read"),
             )
-            tampered = _jwt({**claims, "tenant_id": "tenant-2"})[:-1] + "A"
+            raw_jwt = _jwt({**claims, "tenant_id": "tenant-2"})
+            tampered = raw_jwt[:-1] + ("B" if raw_jwt.endswith("A") else "A")
             with self.assertRaises(AuthenticationError):
                 authenticator.authenticate({"authorization": "Bearer " + tampered})
             for changed in (

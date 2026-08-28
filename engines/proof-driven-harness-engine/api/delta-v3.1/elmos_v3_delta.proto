@@ -1,0 +1,7 @@
+syntax = "proto3";
+package elmos.v3.delta;
+
+message ExecutionPlanRef { string plan_id = 1; string plan_hash = 2; }
+message CapabilityLeaseRef { string lease_id = 1; string invocation_id = 2; int64 execution_epoch = 3; }
+message FencedCommitContext { string environment_id = 1; int64 executor_generation = 2; int64 connection_epoch = 3; string workspace_id = 4; int64 workspace_generation = 5; }
+message TypedIngressRef { string ingress_id = 1; string kind = 2; string causation_id = 3; string correlation_id = 4; }

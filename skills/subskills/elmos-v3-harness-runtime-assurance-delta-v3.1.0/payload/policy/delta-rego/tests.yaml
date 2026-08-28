@@ -1,0 +1,17 @@
+apiVersion: elmos.ai/v3delta1
+kind: PolicyTestPlan
+metadata:
+  version: 3.1.0
+spec:
+  modules:
+  - result_commit.rego
+  - capability_authority.rego
+  - permission_replay.rego
+  - skill_trust.rego
+  - event_ingress.rego
+  requiredNegativeCases:
+  - identity mutation
+  - expired lease
+  - lossy permission replay
+  - repository skill forgery
+  - unknown required event

@@ -1,0 +1,31 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "external_evidence_status": "NOT_RUN",
+  "implementation_status": "DECLARED_RUNTIME_UNQUALIFIED",
+  "kind": "elmos.v3.1.delta-skill-contract",
+  "name": "elmos-typed-external-ingress",
+  "owners": [
+    "K7",
+    "K1"
+  ],
+  "permissions": {
+    "network": "default-deny",
+    "secrets": "never-in-prompts-or-logs",
+    "side_effects": "typed-authority-required"
+  },
+  "priority": "P1",
+  "routable": false,
+  "runtime": {
+    "entrypoint": "DeltaSkillRuntime.execute",
+    "module": "elmos_proof_harness.delta",
+    "registry": "DELTA_SKILL_REGISTRY"
+  },
+  "schema_version": "1.0.0",
+  "skill_id": "ELMOS-V3D-012",
+  "source": {
+    "package": "elmos-v3-harness-runtime-assurance-delta-v3.1.0",
+    "path": "P1/elmos-typed-external-ingress/SKILL.md",
+    "sha256": "sha256:20a07758c943e8a55259987f6fcc90971b0d0c5b500215a059cd737eda81eec2"
+  },
+  "version": "3.1.0"
+}

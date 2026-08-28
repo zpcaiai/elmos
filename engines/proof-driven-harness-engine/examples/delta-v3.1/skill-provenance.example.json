@@ -1,0 +1,14 @@
+{
+  "authorizationSemantics": [
+    "filesystem:read"
+  ],
+  "canonicalUri": "file:///trusted/skills/skill-1",
+  "installScope": "tenant:t-1",
+  "origin": "managed",
+  "packageDigest": "sha256:pkg",
+  "publisher": "enterprise",
+  "signature": "sig",
+  "skillId": "skill-1",
+  "trustDomain": "ENTERPRISE",
+  "verified": true
+}

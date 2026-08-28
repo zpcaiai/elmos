@@ -1,0 +1,12 @@
+{
+  "archive_content_executed": false,
+  "archive_sha256": "13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
+  "base_version": "3.0.0",
+  "certification_status": "NOT_CERTIFIED",
+  "composite_version": "3.1.0",
+  "external_runtime_status": "NOT_RUN",
+  "instruction_content_materialized": false,
+  "local_qualification": "DECLARED_RUNTIME_UNQUALIFIED",
+  "reference_implementation_materialized": false,
+  "schema_version": "1.0.0"
+}

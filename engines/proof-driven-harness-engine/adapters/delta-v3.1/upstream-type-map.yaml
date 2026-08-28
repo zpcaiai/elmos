@@ -1,0 +1,21 @@
+apiVersion: elmos.ai/v3delta1
+kind: UpstreamTypeIsolationMap
+metadata:
+  version: 3.1.0
+spec:
+  canonical:
+    ToolCallId:
+      deepseek-0.1.1-rc.2: CallId
+      deepseek-0.1.2-alpha.1: ToolCallId
+      codex: runtime_tool_call_id
+    ToolPresentationMode:
+      deepseek-0.1.1-rc.2: code
+      deepseek-0.1.2-alpha.1: ptc
+      codex: tool_mode
+    TransportKind:
+      deepseek-0.1.2-alpha.1: Remote
+      codex: app-server-or-hosted
+    InstructionEnvelope:
+      codex-pre-40709: UserInstructions
+      codex-post-40709: Instructions
+  rule: upstream symbols are adapter-private and never persisted as canonical domain types

@@ -1,0 +1,15 @@
+apiVersion: elmos.ai/v3delta1
+kind: DatabaseMigrationManifest
+metadata:
+  version: 3.1.0
+spec:
+  database: PostgreSQL 17
+  migrations:
+  - id: V304
+    path: V304__harness_runtime_assurance_delta.sql
+    transactional: true
+  requiredLiveChecks:
+  - apply on clean v3.0 schema
+  - rollback rehearsal using backup/restore
+  - RLS policies bound to production tenant context
+  - concurrent unique-active-owner tests

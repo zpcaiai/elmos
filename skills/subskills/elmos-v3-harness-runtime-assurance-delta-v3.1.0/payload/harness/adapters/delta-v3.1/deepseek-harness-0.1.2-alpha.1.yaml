@@ -1,0 +1,31 @@
+apiVersion: elmos.ai/v3delta1
+kind: HarnessAdapterProfile
+metadata:
+  name: deepseek-harness-0.1.2-alpha.1
+  version: 3.1.0
+spec:
+  provider: deepseek-harness
+  versionRange: =0.1.2-alpha.1
+  stability: official-prerelease
+  capabilities:
+    transport: REMOTE_GATEWAY
+    authScheme: one-time-token-for-network-web
+    profileLauncher: dsh-profile
+    presentationMode: PTC_MODE
+    subagentModelSelection:
+    - provider
+    - model
+    - reasoningEffort
+    - maxOutputTokens
+    runtimeCallIdExport: ToolCallId
+    acp:
+    - session-control
+    - model-settings
+    - MCP
+    - permissions
+    - cancellation
+  policy:
+    ApiProxy: UNSUPPORTED
+    codeConfigValue: REJECT
+    exactVersionIsolation: true
+    securityIsolationClaim: DENY_WITHOUT_EXTERNAL_SANDBOX_ASSURANCE

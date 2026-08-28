@@ -1,0 +1,15 @@
+{
+  "provider": "deepseek-harness",
+  "version": "0.1.2-alpha.1",
+  "transport": "REMOTE_GATEWAY",
+  "authScheme": "one-time-token",
+  "historyMode": "PAGINATED",
+  "typedToolResult": true,
+  "schemaDialect": "json-schema",
+  "consistencyModel": "EVENTUAL",
+  "features": [
+    "PTC_MODE",
+    "SUBAGENT_MODEL_SELECTION"
+  ],
+  "unsupportedRequired": []
+}

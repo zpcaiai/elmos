@@ -34,7 +34,7 @@ help:
 
 test:
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$(ENGINE)/src $(PYTHON) $(ENGINE)/tools/run_structured_unittest.py --repo-root . --start-directory $(ENGINE)/tests --pattern 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$(ENGINE)/src $(PYTHON) $(ENGINE)/tools/run_structured_unittest.py --repo-root . --start-directory tests/proof-driven-harness-v3 --pattern 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:$(ENGINE)/src $(PYTHON) $(ENGINE)/tools/run_structured_unittest.py --repo-root . --start-directory tests/proof-driven-harness-v3 --pattern 'test_*.py'
 
 qualify:
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(QUALIFIER) --repo-root . --postgres17-mode not-run

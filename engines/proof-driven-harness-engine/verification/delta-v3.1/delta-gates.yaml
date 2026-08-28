@@ -1,0 +1,19 @@
+apiVersion: elmos.ai/v3delta1
+kind: DeltaReleaseGates
+metadata:
+  version: 3.1.0
+spec:
+  hard:
+  - all delta schemas/examples valid
+  - all P0 acceptance scenarios pass
+  - no routable skill count change
+  - no authority widening in replay/fallback/replacement
+  - install/uninstall roundtrip restores exact base
+  - provider target conformance before PROD
+  certificationImpact:
+    invalidatesOn:
+    - adapter version change
+    - permission mapping change
+    - interceptor chain change
+    - event schema change
+    - executor/workspace ownership anomaly

@@ -1,0 +1,103 @@
+apiVersion: elmos.ai/v3delta1
+kind: MetricCatalog
+metadata:
+  version: 3.1.0
+spec:
+  requiredLabels:
+  - tenant_id
+  - goal_id
+  - run_id
+  - execution_epoch
+  - step_id
+  - invocation_id
+  - environment_id
+  - authority_snapshot_id
+  - adapter
+  - adapter_version
+  metrics:
+  - name: elmos_adapter_unsupported_capability_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_adapter_version_mismatch_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_authority_owner_resolution_failure_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_authority_widening_blocked_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_caller_security_metadata_stripped_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_candidate_plan_isolation_violation_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_capability_lease_active
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_capability_revocation_latency_seconds
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_capability_use_after_revoke_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_event_upgrade_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_execution_plan_finalize_seconds
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_executor_generation
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_executor_live_probe_failure_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_executor_replacement_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_ingress_causality_failure_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_ingress_duplicate_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_ingress_received_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_permission_lossy_rejected_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_permission_projection_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_permission_replay_equivalence_failure_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_plan_dispatch_hash_mismatch_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_plugin_event_validation_failure_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_protocol_negotiation_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_runtime_authority_republish_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_security_context_unknown_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_skill_digest_drift_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_skill_provenance_verified_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_skill_symlink_escape_blocked_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_stale_executor_result_rejected_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_subagent_authority_widening_blocked_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_subagent_budget_rejection_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_subagent_model_selection_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_tool_result_commit_conflict_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_tool_result_commit_latency_seconds
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_tool_result_mutation_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_tool_result_replay_mismatch_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_transport_auth_failure_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_typed_content_loss_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_unknown_required_event_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_verified_context_mint_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_workspace_lease_active
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_workspace_owner_conflict_total
+    type: counter-or-histogram-as-declared-by-runtime
+  - name: elmos_workspace_stale_owner_rejected_total
+    type: counter-or-histogram-as-declared-by-runtime

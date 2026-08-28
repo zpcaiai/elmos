@@ -1,0 +1,104 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionAcceptance
+metadata:
+  skill: elmos-registered-durable-plugin-events
+  version: 3.1.0
+spec:
+  hardGates:
+  - every durable plugin event has owner, schema version, semantics, validator, upgrader and projections
+  - required-state unknown events fail closed on replay
+  - optional observations may be skipped only with an explicit compatibility rule
+  - plugin uninstall and downgrade run a preflight recovery analysis
+  - fork and migration preserve event causality and schema lineage
+  scenarios:
+  - id: ELMOS-V3D-011-A01
+    title: every durable plugin event has owner, schema version, semantics, validator, upgrader and projections
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-registered-durable-plugin-events processes a production lifecycle transition
+    then:
+    - every durable plugin event has owner, schema version, semantics, validator, upgrader and projections is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P1
+  - id: ELMOS-V3D-011-A02
+    title: required-state unknown events fail closed on replay
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-registered-durable-plugin-events processes a production lifecycle transition
+    then:
+    - required-state unknown events fail closed on replay is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P1
+  - id: ELMOS-V3D-011-A03
+    title: optional observations may be skipped only with an explicit compatibility rule
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-registered-durable-plugin-events processes a production lifecycle transition
+    then:
+    - optional observations may be skipped only with an explicit compatibility rule is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P1
+  - id: ELMOS-V3D-011-A04
+    title: plugin uninstall and downgrade run a preflight recovery analysis
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-registered-durable-plugin-events processes a production lifecycle transition
+    then:
+    - plugin uninstall and downgrade run a preflight recovery analysis is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P1
+  - id: ELMOS-V3D-011-A05
+    title: fork and migration preserve event causality and schema lineage
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-registered-durable-plugin-events processes a production lifecycle transition
+    then:
+    - fork and migration preserve event causality and schema lineage is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P1
+  - id: ELMOS-V3D-011-NEG-STALE
+    title: Reject stale authority, generation or lease
+    given:
+    - stale execution context
+    when: an authoritative effect or commit is attempted
+    then:
+    - operation is rejected
+    - audit event is emitted
+    - no completion evidence is accepted
+    priority: P0
+  - id: ELMOS-V3D-011-NEG-REPLAY
+    title: Reject replay divergence
+    given:
+    - committed journal and artifacts
+    when: the execution is replayed or resumed
+    then:
+    - same effective state is reconstructed
+    - provider loss is explicit
+    - divergence blocks certification
+    priority: P0
+  - id: ELMOS-V3D-011-RECOVERY
+    title: Recover after worker, connection or plugin interruption
+    given:
+    - durable checkpoint and fencing state
+    when: a replacement worker resumes
+    then:
+    - committed side effects are not duplicated
+    - stale actors are fenced
+    - lineage remains complete
+    priority: P0
+  releaseRequirement: all P0 scenarios pass in target environment

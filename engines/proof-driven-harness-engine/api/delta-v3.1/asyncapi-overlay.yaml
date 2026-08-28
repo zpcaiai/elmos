@@ -1,0 +1,16 @@
+asyncapi: 3.0.0
+info:
+  title: Elmos v3.1 Runtime Lifecycle Events
+  version: 3.1.0
+channels:
+  toolResultLifecycle:
+    address: elmos.v3.tool-result.lifecycle
+    messages:
+      rawCaptured: {payload: {type: object}}
+      interceptCompleted: {payload: {type: object}}
+      resultCommitted: {payload: {type: object}}
+  executorLifecycle:
+    address: elmos.v3.executor.lifecycle
+    messages:
+      generationActivated: {payload: {type: object}}
+      staleResultRejected: {payload: {type: object}}

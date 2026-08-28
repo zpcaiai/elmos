@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/v3.1/subagent-execution-spec.schema.json",
+  "title": "Subagent Model Execution Spec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "provider",
+    "model",
+    "reasoningEffort",
+    "maxOutputTokens",
+    "parentExecutionId",
+    "environmentId",
+    "authoritySnapshotId",
+    "budgetReservationId"
+  ],
+  "properties": {
+    "provider": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "reasoningEffort": {
+      "type": "string"
+    },
+    "maxOutputTokens": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "parentExecutionId": {
+      "type": "string"
+    },
+    "environmentId": {
+      "type": "string"
+    },
+    "authoritySnapshotId": {
+      "type": "string"
+    },
+    "budgetReservationId": {
+      "type": "string"
+    },
+    "toolPlanHash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

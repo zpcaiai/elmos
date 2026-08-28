@@ -1,0 +1,61 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionImplementationPlan
+metadata:
+  skill: elmos-environment-attachment-authority
+  version: 3.1.0
+spec:
+  ports:
+  - name: DurableJournal
+    mode: append-only-transactional-outbox
+    required: true
+  - name: ArtifactStore
+    mode: content-addressed
+    required: true
+  - name: PolicyDecisionPoint
+    mode: ALLOW_DENY_REVIEW
+    required: true
+  - name: EnvironmentAuthority
+    mode: owner-revisioned
+    required: true
+  - name: ProofObligationService
+    mode: graph
+    required: true
+  - name: AdapterCapabilityNegotiator
+    mode: version-isolated-fail-closed
+    required: true
+  components:
+  - name: AuthorityOwnerResolver
+    deployment: control-plane-or-execution-plane-as-declared
+    state: database-or-content-addressed-artifact
+  - name: EnvironmentAuthoritySnapshot
+    deployment: control-plane-or-execution-plane-as-declared
+    state: database-or-content-addressed-artifact
+  - name: AttachmentAuthorityBinder
+    deployment: control-plane-or-execution-plane-as-declared
+    state: database-or-content-addressed-artifact
+  - name: EffectivePolicyCalculator
+    deployment: control-plane-or-execution-plane-as-declared
+    state: database-or-content-addressed-artifact
+  - name: RuntimeRepublisher
+    deployment: control-plane-or-execution-plane-as-declared
+    state: database-or-content-addressed-artifact
+  workflow:
+    compiler: Workflow IR v3
+    retries: typed-idempotent
+    checkpoint: before-and-after-authoritative-boundary
+    compensation: required-for-side-effects
+    termination: bounded-with-no-progress-detection
+  data:
+    tenantIsolation: RLS-plus-object-prefix
+    lineage: mandatory
+    retention: policy-governed
+    sensitiveValues: never-in-logs-or-prompts
+  rollout:
+    shadow: true
+    canary: true
+    dualRead: true
+    automaticRollbackOn:
+    - authority widening
+    - replay mismatch
+    - stale-generation acceptance
+    - result commit divergence

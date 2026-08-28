@@ -1,0 +1,31 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "external_evidence_status": "NOT_RUN",
+  "implementation_status": "DECLARED_RUNTIME_UNQUALIFIED",
+  "kind": "elmos.v3.1.delta-skill-contract",
+  "name": "elmos-step-finalized-execution-plan",
+  "owners": [
+    "K7",
+    "K4"
+  ],
+  "permissions": {
+    "network": "default-deny",
+    "secrets": "never-in-prompts-or-logs",
+    "side_effects": "typed-authority-required"
+  },
+  "priority": "P0",
+  "routable": false,
+  "runtime": {
+    "entrypoint": "DeltaSkillRuntime.execute",
+    "module": "elmos_proof_harness.delta",
+    "registry": "DELTA_SKILL_REGISTRY"
+  },
+  "schema_version": "1.0.0",
+  "skill_id": "ELMOS-V3D-002",
+  "source": {
+    "package": "elmos-v3-harness-runtime-assurance-delta-v3.1.0",
+    "path": "P0/elmos-step-finalized-execution-plan/SKILL.md",
+    "sha256": "sha256:e5144d0f0ede446e2c13889399d6d647d38369100e37e4a5509ae92b824ac2ec"
+  },
+  "version": "3.1.0"
+}

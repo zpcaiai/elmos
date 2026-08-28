@@ -1,0 +1,31 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "external_evidence_status": "NOT_RUN",
+  "implementation_status": "DECLARED_RUNTIME_UNQUALIFIED",
+  "kind": "elmos.v3.1.delta-skill-contract",
+  "name": "elmos-lossless-permission-replay",
+  "owners": [
+    "K7",
+    "K8"
+  ],
+  "permissions": {
+    "network": "default-deny",
+    "secrets": "never-in-prompts-or-logs",
+    "side_effects": "typed-authority-required"
+  },
+  "priority": "P0",
+  "routable": false,
+  "runtime": {
+    "entrypoint": "DeltaSkillRuntime.execute",
+    "module": "elmos_proof_harness.delta",
+    "registry": "DELTA_SKILL_REGISTRY"
+  },
+  "schema_version": "1.0.0",
+  "skill_id": "ELMOS-V3D-003",
+  "source": {
+    "package": "elmos-v3-harness-runtime-assurance-delta-v3.1.0",
+    "path": "P0/elmos-lossless-permission-replay/SKILL.md",
+    "sha256": "sha256:f1218cf6949a78cd7f7c1347dc6dbb48280686a2c3cd17cf5285816f3add24ee"
+  },
+  "version": "3.1.0"
+}

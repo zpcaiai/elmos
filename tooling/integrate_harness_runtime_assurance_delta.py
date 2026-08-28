@@ -20,6 +20,7 @@ import fcntl
 import hashlib
 import io
 import json
+import math
 import os
 from pathlib import Path, PurePosixPath
 import re
@@ -36,7 +37,7 @@ PACKAGE_VERSION = "3.1.0"
 ARCHIVE_ROOT = f"{PACKAGE_NAME}-v{PACKAGE_VERSION}"
 ARCHIVE_RELATIVE_PATH = Path("skills/subskills") / f"{ARCHIVE_ROOT}.zip"
 ARCHIVE_SHA256 = "13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37"
-ARCHIVE_BYTES = 339_731
+ARCHIVE_BYTES = 173_228
 EXPECTED_ENTRIES = 150
 EXPECTED_FILES = 150
 EXPECTED_UNCOMPRESSED_BYTES = 339_731
@@ -558,7 +559,10 @@ def _parent_fd(root_fd: int, relative: Path, *, create: bool) -> tuple[int, str]
 
 
 def _read_at(root_fd: int, relative: Path) -> tuple[bytes, int] | None:
-    parent, name = _parent_fd(root_fd, relative, create=False)
+    try:
+        parent, name = _parent_fd(root_fd, relative, create=False)
+    except IntegrationError:
+        return None
     try:
         try:
             fd = os.open(name, os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0), dir_fd=parent)

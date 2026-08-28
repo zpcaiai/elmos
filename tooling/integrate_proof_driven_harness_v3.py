@@ -2227,7 +2227,7 @@ def _walk_managed_directory_at(
     for name in sorted(os.listdir(directory_fd)):
         if name in {"", ".", ".."} or "/" in name or "\x00" in name:
             raise IntegrationError(f"unsafe managed output name: {name!r}")
-        if base == DOCS_ROOT and name == ".transactions":
+        if base == DOCS_ROOT and name in {".transactions", "delta-v3.1"}:
             continue
         relative = base / name
         metadata = os.stat(name, dir_fd=directory_fd, follow_symlinks=False)

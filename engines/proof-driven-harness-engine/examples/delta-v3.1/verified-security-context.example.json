@@ -1,0 +1,18 @@
+{
+  "bindings": {
+    "accountId": "a-1",
+    "environmentId": "env-1",
+    "invocationId": "i-9",
+    "pluginId": "p-1",
+    "policyVersion": "pol-7",
+    "tenantId": "t-1",
+    "toolId": "tool-1"
+  },
+  "contextId": "ctx-1",
+  "entitlements": {
+    "program": "active"
+  },
+  "issuer": "elmos-policy-broker",
+  "signature": "sig",
+  "status": "VERIFIED"
+}

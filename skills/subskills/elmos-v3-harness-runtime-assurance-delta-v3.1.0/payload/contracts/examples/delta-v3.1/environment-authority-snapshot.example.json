@@ -1,0 +1,10 @@
+{
+  "snapshotId": "auth-1",
+  "ownerId": "attachment-1",
+  "environmentId": "env-1",
+  "attachmentId": "att-1",
+  "permissionProfileVersion": "pp-v4",
+  "effectivePolicyHash": "sha256:pol",
+  "parentSnapshotId": null,
+  "widening": false
+}
