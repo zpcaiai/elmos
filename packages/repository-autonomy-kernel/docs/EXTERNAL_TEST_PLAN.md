@@ -4,6 +4,8 @@
 
 本计划验证真实外部能力，不把静态文件、mock、health endpoint、`LOCAL_ENGINEERING_VALIDATED` 或手工填写的 response 当成生产证据。所有测试都绑定 exact package/adapter/image/migration/provider/region/tenant/commit digest，并保存原始输出和可重放命令。
 
+仓库现已物化 T00–T08 的 125 个强制 case，其中 T06 精确包含 7 × 12 = 84 个 Provider conformance 单元。`CertificationEvidenceIngestor` 只接受 allowlist case，外部 PASS 必须由 host trust store 验签并绑定真实来源、授权 receipt、原始制品、环境和 replay；生产者与验证者必须不同。当前仓库测试只执行本地工程 fixtures，因此矩阵外部项继续报告 `NOT_RUN`，E1–E5 与 P05 继续报告 `NOT_CERTIFIED`。
+
 测试数据分为四套且必须独立：
 
 1. development：可重复的安全样例；
@@ -34,7 +36,7 @@
 
 ### T01：PostgreSQL 17、迁移和 RLS
 
-- `V001` 到 `V004` 在全新 PostgreSQL 17 数据库按序执行；重复执行、迁移锁竞争、中途失败恢复和向前/回滚脚本分别测试。
+- `V001` 到 `V006` 在全新 PostgreSQL 17 数据库按序执行；重复执行、迁移锁竞争、中途失败恢复和向前/回滚脚本分别测试。
 - 设置合法 tenant context 时只能读写本租户；缺少、伪造、过期或格式非法的 `app.tenant_id` 必须拒绝。
 - parent/child run、artifact、evidence、tool、finding、cache、cost、eval 和 ELO 全链路跨租户 negative。
 - 事务提交前断电/连接断开后重连，验证 outbox/event/checkpoint/lease 状态和唯一约束。
@@ -131,10 +133,10 @@
 | E2 | E1 + T01/T03/T04/T05/T06 | 真实基础设施与适配器 conformance | 任一 `NOT_RUN/UNKNOWN` 保持 E2 `NOT_RUN` |
 | E3 | E2 + T02/T08 | Golden Route、语义/契约等价、完整 DAG | 只要有未知语义或 holdout 缺失即 `BLOCKED` |
 | E4 | E3 + T05/T07 + red-team | chaos/recovery/tenant/security/rollback | 任何 P0/P1 或重复副作用拒绝升级 |
-| E5 | E4 + representative acceptance | 大仓库、重复性、cost/ETA/SLO、客户结果、P05 | 缺客户签字、部署证据或独立复核保持 `NOT_CERTIFIED` |
+| E5 | E4 + representative acceptance | 大仓库、重复性、cost/ETA/SLO、客户结果 | 缺客户签字或独立复核保持 `NOT_CERTIFIED`；E5 通过后才进入 P05 |
 
 ## 5. 退出与报告格式
 
 最终报告按能力和 E 级别分别给出：`status`、evidence IDs/digests、未执行项、阻塞原因、风险 owner、重放命令、过期时间和下一步。不得只给一个总 PASS 数字。
 
-只有在所有强制 E1-E5 证据真实、独立、可重放，且 [release gate](../src/elmos_repository_autonomy/evidence.py) 的所有硬条件满足时，才允许产生 `P05_DEPLOYMENT_COMPLETE`；本测试计划本身永远不会改变认证状态。
+只有在所有强制 E1-E5 证据真实、独立、可重放，且 [P05 gate](../src/elmos_repository_autonomy/certification.py) 按持久化 case、候选 digest、证据 hash、审批角色、T07 部署证据和客户验收记录完成交叉绑定时，才允许产生 `P05_DEPLOYMENT_COMPLETE`；Provider 或其他 evidence ID 重新贴标签必须失败，本测试计划本身永远不会改变认证状态。

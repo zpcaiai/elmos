@@ -14,6 +14,37 @@ paths:
       parameters: [{in: path, name: suite, required: true, schema: {type: string}}]
       requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/EvaluationRequest"}}}}
       responses: {"202": {description: Golden route status}, "422": {description: Blocked}}
+  /v2/golden-routes/{route}/evaluate:
+    post:
+      operationId: evaluateCustomerGoldenRoute
+      security: [{verifiedIdentity: []}]
+      parameters: [{in: path, name: route, required: true, schema: {type: string}}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/EvaluationRequest"}}}}
+      responses: {"200": {description: Independently evidenced route passed}, "422": {description: Route remains blocked}}
+  /v2/customer-acceptance:
+    post:
+      operationId: recordCustomerAcceptance
+      security: [{verifiedIdentity: []}]
+      parameters: [{in: header, name: X-Elmos-Actor-Id, required: true, schema: {type: string}}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/EvaluationRequest"}}}}
+      responses: {"201": {description: Independent customer decision recorded}, "422": {description: Self approval or evidence rejected}}
+  /v2/certification/evidence:
+    post:
+      operationId: ingestCertificationEvidence
+      security: [{verifiedIdentity: []}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/EvaluationRequest"}}}}
+      responses: {"201": {description: Signed evidence recorded}, "422": {description: Untrusted or malformed evidence}}
+  /v2/certification/matrix:
+    get:
+      operationId: getCertificationMatrix
+      security: [{verifiedIdentity: []}]
+      responses: {"200": {description: T00-T08 fail-closed matrix}}
+  /v2/certification/evaluate:
+    post:
+      operationId: evaluateCertification
+      security: [{verifiedIdentity: []}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/EvaluationRequest"}}}}
+      responses: {"200": {description: P05 hard gate issued}, "422": {description: NOT_CERTIFIED with missing evidence}}
 components:
   securitySchemes:
     verifiedIdentity: {type: apiKey, in: header, name: X-Elmos-Identity-Verified}

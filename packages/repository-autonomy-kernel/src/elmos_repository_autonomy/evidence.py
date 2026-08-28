@@ -96,15 +96,20 @@ def release_gate(payload: Mapping[str, Any]) -> dict[str, Any]:
     if not health_ok: missing.append("deployment-health")
     if not artifact_valid: missing.append("artifact-integrity")
     if not approved: missing.append("independent-approval")
-    if not isinstance(deployment.get("deployment_evidence"), list): missing.append("deployment-evidence")
-    if not missing:
-        decision, attested = Status.P05_DEPLOYMENT_COMPLETE.value, True
-    elif any(item["status"] in {"FAIL", "FAILED", "REJECTED"} for item in gate_results) or critical_open:
-        decision, attested = Status.REJECTED.value, False
+    deployment_evidence = deployment.get("deployment_evidence")
+    if not isinstance(deployment_evidence, list) or not deployment_evidence:
+        missing.append("deployment-evidence")
+    # This Skill consumes caller-supplied summaries and therefore cannot issue
+    # P05. Only CertificationEngine can bind current signed evidence, persisted
+    # customer acceptance and T00-T08 case identities to the candidate digest.
+    missing.append("trusted-certification-engine-required")
+    if any(item["status"] in {"FAIL", "FAILED", "REJECTED"} for item in gate_results) or critical_open:
+        decision = Status.REJECTED.value
     else:
-        decision, attested = Status.BLOCKED.value, False
+        decision = Status.BLOCKED.value
     acceptance = {"decision": decision, "independent": True, "decided_at": utc_now(), "reasons": missing, "completion_claim_ignored_for_acceptance": True}
-    return {"acceptance_decision": acceptance, "gate_results": gate_results, "release_bundle": {"status": "READY" if attested else "NOT_READY", "artifact_hashes": [item.get("content_hash") for item in artifacts if isinstance(item, Mapping)]}, "rollback_bundle": {"status": "READY" if rollback_ready else "NOT_READY", "required": True}, "deployment_complete_attestation": {"status": decision, "attested": attested, "gate": "P05_DEPLOYMENT_COMPLETE" if attested else "P05_DEPLOYMENT_COMPLETE_NOT_ISSUED"}}
+    ready_for_external_gate = set(missing) == {"trusted-certification-engine-required"}
+    return {"acceptance_decision": acceptance, "gate_results": gate_results, "release_bundle": {"status": "READY_FOR_EXTERNAL_GATE" if ready_for_external_gate else "NOT_READY", "artifact_hashes": [item.get("content_hash") for item in artifacts if isinstance(item, Mapping)]}, "rollback_bundle": {"status": "READY" if rollback_ready else "NOT_READY", "required": True}, "deployment_complete_attestation": {"status": decision, "attested": False, "gate": "P05_DEPLOYMENT_COMPLETE_NOT_ISSUED"}}
 
 
 def security_assurance(change: Mapping[str, Any], diff: Any, index: Mapping[str, Any], policy: Mapping[str, Any], deployment_artifact: Any) -> dict[str, Any]:

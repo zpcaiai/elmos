@@ -13,22 +13,35 @@ PYTHONPATH=src python -m elmos_repository_autonomy.cli catalog
 PYTHONPATH=src python -m elmos_repository_autonomy.cli dispatch \
   task-spec-delta-compiler '{"requirements":{"objective":"add health endpoint"}}'
 PYTHONPATH=src python -m elmos_repository_autonomy.cli serve --db /tmp/elmos-autonomy.db
+PYTHONPATH=src python -m elmos_repository_autonomy.cli local-conformance
+PYTHONPATH=src python -m elmos_repository_autonomy.cli matrix --tenant local
+# After an approved PostgreSQL service is configured and before serving:
+PYTHONPATH=src python -m elmos_repository_autonomy.cli postgres-migrate \
+  --service elmos-autonomy --operator migration-operator \
+  --authorization-receipt "$APPROVED_RECEIPT_DIGEST"
+PYTHONPATH=src python -m elmos_repository_autonomy.cli serve \
+  --db /var/lib/elmos-autonomy/autonomy.sqlite \
+  --postgres-control-service elmos-autonomy
 ```
 
 The HTTP service exposes `/livez`, `/readyz`, `/metrics`, `/version`,
 `/v1/skills`, `/v1/skills/{skill}:run`, `/v1/runs/{run_id}` and
 `/v1/runs/{run_id}/events`, plus the lifecycle and integration endpoints
 `/v2/runs`, `/v2/runs/{run_id}/{pause|resume|cancel}`, `/v2/tool-calls`,
-`/v2/packages`, `/v2/adapters/{adapter}/conformance`, `/v2/arena/runs` and
-`/v2/gym/suites/{suite}/run`. Mutating requests require verified tenant and
+`/v2/packages`, `/v2/adapters/{adapter}/conformance`, `/v2/arena/runs`,
+`/v2/gym/suites/{suite}/run`, `/v2/external/operations`,
+`/v2/certification/{evidence|matrix|evaluate}`, `/v2/golden-routes/{route}/evaluate`
+and `/v2/customer-acceptance`. Mutating requests require verified tenant and
 account headers; request payloads cannot manufacture execution authority.
 
 ## Production boundary
 
 SQLite is a deterministic local backend for contract and integration tests.
-`sql/migrations/V001__...sql` through `V004__...sql` are the ordered PostgreSQL
+`sql/migrations/V001__...sql` through `V006__...sql` are the ordered PostgreSQL
 target migrations; `sql/001_autonomy_kernel.sql` is the single-file equivalent
-for controlled bootstrap environments. The package does not claim PostgreSQL,
+for controlled bootstrap environments. The optional `postgres` extra supplies
+the PostgreSQL driver; migration and disaster-recovery APIs use service references
+so credentials are not placed in command arguments. The package does not claim PostgreSQL,
 object-storage, event-bus, provider, Kubernetes, customer or
 independent-certification evidence merely because local tests pass.
 Unknown tools, missing authority, stale fencing, partial results, unverified

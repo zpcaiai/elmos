@@ -144,6 +144,73 @@ CREATE TABLE IF NOT EXISTS cache_entries (
 CREATE TABLE IF NOT EXISTS metrics (
   metric TEXT PRIMARY KEY, value REAL NOT NULL
 );
+CREATE TABLE IF NOT EXISTS external_operations (
+  operation_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, account_id TEXT NOT NULL,
+  run_id TEXT, capability TEXT NOT NULL, adapter_id TEXT NOT NULL, adapter_version TEXT NOT NULL,
+  provider_instance TEXT NOT NULL, region TEXT NOT NULL, native_resource_id TEXT NOT NULL,
+  action TEXT NOT NULL, state TEXT NOT NULL, side_effects INTEGER NOT NULL,
+  idempotency_key TEXT NOT NULL, request_hash TEXT NOT NULL, request_metadata TEXT NOT NULL,
+  authority_hash TEXT, result TEXT, error TEXT, unknown_outcome INTEGER NOT NULL DEFAULT 0,
+  compensation_token TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+  UNIQUE(tenant_id, capability, adapter_id, idempotency_key)
+);
+CREATE TABLE IF NOT EXISTS external_receipts (
+  receipt_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
+  operation_id TEXT NOT NULL REFERENCES external_operations(operation_id) ON DELETE CASCADE,
+  receipt_type TEXT NOT NULL, status TEXT NOT NULL, producer_id TEXT NOT NULL,
+  verifier_id TEXT, evidence_class TEXT NOT NULL, raw_evidence TEXT NOT NULL,
+  content_hash TEXT NOT NULL, created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS outbox_events (
+  event_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, operation_id TEXT,
+  topic TEXT NOT NULL, ordering_key TEXT NOT NULL, event_type TEXT NOT NULL,
+  payload TEXT NOT NULL, payload_hash TEXT NOT NULL, state TEXT NOT NULL,
+  attempts INTEGER NOT NULL DEFAULT 0, idempotency_key TEXT NOT NULL,
+  available_at TEXT NOT NULL, created_at TEXT NOT NULL, published_at TEXT,
+  UNIQUE(tenant_id, topic, idempotency_key)
+);
+CREATE TABLE IF NOT EXISTS outbox_receipts (
+  receipt_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
+  event_id TEXT NOT NULL REFERENCES outbox_events(event_id) ON DELETE CASCADE,
+  status TEXT NOT NULL, producer_id TEXT NOT NULL, verifier_id TEXT,
+  evidence_class TEXT NOT NULL, raw_evidence TEXT NOT NULL,
+  content_hash TEXT NOT NULL, created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS inbox_events (
+  tenant_id TEXT NOT NULL, consumer_id TEXT NOT NULL, event_id TEXT NOT NULL,
+  payload_hash TEXT NOT NULL, ordering_key TEXT NOT NULL, state TEXT NOT NULL,
+  attempts INTEGER NOT NULL DEFAULT 0, side_effects INTEGER NOT NULL,
+  result TEXT, error TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+  PRIMARY KEY(tenant_id, consumer_id, event_id)
+);
+CREATE TABLE IF NOT EXISTS secret_leases (
+  lease_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, broker_id TEXT NOT NULL,
+  secret_ref TEXT NOT NULL, scope_hash TEXT NOT NULL, state TEXT NOT NULL,
+  native_lease_id TEXT, evidence_class TEXT NOT NULL, expires_at TEXT NOT NULL,
+  receipt_hash TEXT NOT NULL, revoke_receipt_hash TEXT, created_at TEXT NOT NULL, revoked_at TEXT
+);
+CREATE TABLE IF NOT EXISTS certification_evidence (
+  evidence_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, case_id TEXT NOT NULL,
+  capability TEXT NOT NULL, level TEXT NOT NULL, status TEXT NOT NULL,
+  evidence_class TEXT NOT NULL, source_kind TEXT NOT NULL, producer_id TEXT NOT NULL,
+  verifier_id TEXT, independent INTEGER NOT NULL, payload TEXT NOT NULL,
+  signed_document TEXT NOT NULL, signature TEXT, key_id TEXT,
+  content_hash TEXT NOT NULL, signature_verified INTEGER NOT NULL,
+  captured_at TEXT NOT NULL, expires_at TEXT
+);
+CREATE TABLE IF NOT EXISTS certification_runs (
+  certification_run_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
+  candidate_digest TEXT NOT NULL, state TEXT NOT NULL, level_results TEXT NOT NULL,
+  matrix_result TEXT NOT NULL, p05_issued INTEGER NOT NULL DEFAULT 0,
+  decision_hash TEXT NOT NULL, created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS customer_acceptance (
+  acceptance_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, repository_binding_hash TEXT NOT NULL,
+  route_id TEXT NOT NULL, candidate_digest TEXT NOT NULL, customer_actor_id TEXT NOT NULL,
+  executor_id TEXT NOT NULL, decision TEXT NOT NULL, evidence_ids TEXT NOT NULL,
+  signature_verified INTEGER NOT NULL, content_hash TEXT NOT NULL, created_at TEXT NOT NULL,
+  UNIQUE(tenant_id, repository_binding_hash, route_id, candidate_digest)
+);
 """
 
 
@@ -188,7 +255,11 @@ class DurableStore:
         if row is None:
             return None
         value = dict(row)
-        for key in ("payload", "state_snapshot", "metadata", "source", "result", "error", "provenance"):
+        for key in (
+            "payload", "state_snapshot", "metadata", "source", "result", "error", "provenance",
+            "request_metadata", "raw_evidence", "level_results", "matrix_result", "evidence_ids",
+            "signed_document",
+        ):
             if key in value and isinstance(value[key], str):
                 try:
                     value[key] = json.loads(value[key])
@@ -497,6 +568,493 @@ class DurableStore:
         with self.transaction() as db:
             db.execute("INSERT INTO cache_entries(tenant_id,cache_layer,key_hash,content_hash,value,provenance,expires_at,created_at) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(tenant_id,cache_layer,key_hash) DO UPDATE SET content_hash=excluded.content_hash,value=excluded.value,provenance=excluded.provenance,expires_at=excluded.expires_at,created_at=excluded.created_at", (tenant_id, layer, key_hash, content_hash, self._json(value), self._json(provenance), expires_at, created_at))
         return {"tenant_id": tenant_id, "cache_layer": layer, "key_hash": key_hash, "content_hash": content_hash, "provenance": dict(provenance), "expires_at": expires_at, "created_at": created_at}
+
+    def create_external_operation(
+        self, *, tenant_id: str, account_id: str, capability: str, adapter_id: str,
+        adapter_version: str, provider_instance: str, region: str, native_resource_id: str,
+        action: str, side_effects: bool, idempotency_key: str, request_hash: str,
+        request_metadata: Mapping[str, Any], run_id: str | None = None,
+    ) -> dict[str, Any]:
+        now = utc_now()
+        with self.transaction() as db:
+            existing = db.execute(
+                "SELECT * FROM external_operations WHERE tenant_id=? AND capability=? AND adapter_id=? AND idempotency_key=?",
+                (tenant_id, capability, adapter_id, idempotency_key),
+            ).fetchone()
+            if existing:
+                decoded = self._decode(existing) or {}
+                if decoded.get("request_hash") != request_hash:
+                    raise ContractError("IDEMPOTENCY_CONFLICT", "idempotency key was reused with a different request")
+                return decoded
+            operation_id = str(uuid.uuid4())
+            db.execute(
+                "INSERT INTO external_operations(operation_id,tenant_id,account_id,run_id,capability,adapter_id,adapter_version,provider_instance,region,native_resource_id,action,state,side_effects,idempotency_key,request_hash,request_metadata,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    operation_id, tenant_id, account_id, run_id, capability, adapter_id, adapter_version,
+                    provider_instance, region, native_resource_id, action, "DRY_RUN", int(side_effects),
+                    idempotency_key, request_hash, self._json(request_metadata), now, now,
+                ),
+            )
+            self._inc_metric_locked(db, "external_operations_created")
+            row = db.execute("SELECT * FROM external_operations WHERE operation_id=?", (operation_id,)).fetchone()
+        return self._decode(row) or {}
+
+    def get_external_operation(self, operation_id: str, *, tenant_id: str) -> dict[str, Any] | None:
+        with self._lock:
+            row = self._connection.execute(
+                "SELECT * FROM external_operations WHERE operation_id=? AND tenant_id=?", (operation_id, tenant_id)
+            ).fetchone()
+        return self._decode(row)
+
+    def transition_external_operation(
+        self, operation_id: str, *, tenant_id: str, expected_states: set[str], target: str,
+        authority_hash: str | None = None, result: Any = None, error: Any = None,
+        unknown_outcome: bool | None = None, compensation_token: str | None = None,
+    ) -> dict[str, Any]:
+        with self.transaction() as db:
+            row = db.execute(
+                "SELECT * FROM external_operations WHERE operation_id=? AND tenant_id=?", (operation_id, tenant_id)
+            ).fetchone()
+            if row is None:
+                raise ContractError("EXTERNAL_OPERATION_NOT_FOUND", "operation is not visible in the requested tenant")
+            if row["state"] not in expected_states:
+                raise StaleStateError(
+                    "EXTERNAL_OPERATION_STATE_CONFLICT",
+                    f"cannot transition external operation from {row['state']} to {target}",
+                )
+            values = {
+                "state": target,
+                "authority_hash": authority_hash if authority_hash is not None else row["authority_hash"],
+                "result": self._json(result) if result is not None else row["result"],
+                "error": self._json(error) if error is not None else row["error"],
+                "unknown_outcome": int(unknown_outcome) if unknown_outcome is not None else row["unknown_outcome"],
+                "compensation_token": compensation_token if compensation_token is not None else row["compensation_token"],
+                "updated_at": utc_now(),
+            }
+            db.execute(
+                "UPDATE external_operations SET state=?,authority_hash=?,result=?,error=?,unknown_outcome=?,compensation_token=?,updated_at=? WHERE operation_id=? AND tenant_id=?",
+                (*values.values(), operation_id, tenant_id),
+            )
+            self._inc_metric_locked(db, f"external_state_{target.lower()}")
+            updated = db.execute("SELECT * FROM external_operations WHERE operation_id=?", (operation_id,)).fetchone()
+        return self._decode(updated) or {}
+
+    def record_external_receipt(
+        self, *, tenant_id: str, operation_id: str, receipt_type: str, status: str,
+        producer_id: str, verifier_id: str | None, evidence_class: str,
+        raw_evidence: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        if self.get_external_operation(operation_id, tenant_id=tenant_id) is None:
+            raise ContractError("EXTERNAL_OPERATION_NOT_FOUND", "operation is not visible in the requested tenant")
+        created_at = utc_now()
+        body = {
+            "operation_id": operation_id, "receipt_type": receipt_type, "status": status,
+            "producer_id": producer_id, "verifier_id": verifier_id,
+            "evidence_class": evidence_class, "raw_evidence": dict(raw_evidence), "created_at": created_at,
+        }
+        row = {"receipt_id": str(uuid.uuid4()), "tenant_id": tenant_id, **body, "content_hash": digest(body)}
+        with self.transaction() as db:
+            db.execute(
+                "INSERT INTO external_receipts(receipt_id,tenant_id,operation_id,receipt_type,status,producer_id,verifier_id,evidence_class,raw_evidence,content_hash,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    row["receipt_id"], tenant_id, operation_id, receipt_type, status, producer_id, verifier_id,
+                    evidence_class, self._json(raw_evidence), row["content_hash"], created_at,
+                ),
+            )
+        return row
+
+    def list_external_receipts(self, operation_id: str, *, tenant_id: str) -> list[dict[str, Any]]:
+        with self._lock:
+            rows = self._connection.execute(
+                "SELECT * FROM external_receipts WHERE operation_id=? AND tenant_id=? ORDER BY created_at,receipt_id",
+                (operation_id, tenant_id),
+            ).fetchall()
+        return [self._decode(row) or {} for row in rows]
+
+    def enqueue_outbox(
+        self, *, tenant_id: str, topic: str, ordering_key: str, event_type: str,
+        payload: Mapping[str, Any], idempotency_key: str, operation_id: str | None = None,
+        available_at: str | None = None,
+    ) -> dict[str, Any]:
+        created_at = utc_now()
+        payload_hash = digest(payload)
+        with self.transaction() as db:
+            existing = db.execute(
+                "SELECT * FROM outbox_events WHERE tenant_id=? AND topic=? AND idempotency_key=?",
+                (tenant_id, topic, idempotency_key),
+            ).fetchone()
+            if existing:
+                decoded = self._decode(existing) or {}
+                if decoded.get("payload_hash") != payload_hash:
+                    raise ContractError("IDEMPOTENCY_CONFLICT", "outbox idempotency key was reused")
+                return decoded
+            row = {
+                "event_id": str(uuid.uuid4()), "tenant_id": tenant_id, "operation_id": operation_id,
+                "topic": topic, "ordering_key": ordering_key, "event_type": event_type,
+                "payload": dict(payload), "payload_hash": payload_hash, "state": "PENDING", "attempts": 0,
+                "idempotency_key": idempotency_key, "available_at": available_at or created_at,
+                "created_at": created_at, "published_at": None,
+            }
+            db.execute(
+                "INSERT INTO outbox_events(event_id,tenant_id,operation_id,topic,ordering_key,event_type,payload,payload_hash,state,attempts,idempotency_key,available_at,created_at,published_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    row["event_id"], tenant_id, operation_id, topic, ordering_key, event_type,
+                    self._json(payload), payload_hash, "PENDING", 0, idempotency_key,
+                    row["available_at"], created_at, None,
+                ),
+            )
+        return row
+
+    def claim_outbox(self, *, tenant_id: str, limit: int = 100) -> list[dict[str, Any]]:
+        if limit < 1 or limit > 1000:
+            raise ContractError("INVALID_INPUT", "outbox claim limit must be between 1 and 1000")
+        with self.transaction() as db:
+            rows = db.execute(
+                "SELECT * FROM outbox_events WHERE tenant_id=? AND state IN ('PENDING','RETRY') AND available_at<=? ORDER BY ordering_key,created_at,event_id LIMIT ?",
+                (tenant_id, utc_now(), limit),
+            ).fetchall()
+            ids = [row["event_id"] for row in rows]
+            for event_id in ids:
+                db.execute("UPDATE outbox_events SET state='PUBLISHING',attempts=attempts+1 WHERE event_id=?", (event_id,))
+            claimed = [db.execute("SELECT * FROM outbox_events WHERE event_id=?", (event_id,)).fetchone() for event_id in ids]
+        return [self._decode(row) or {} for row in claimed if row is not None]
+
+    def complete_outbox(self, event_id: str, *, tenant_id: str, outcome: str) -> dict[str, Any]:
+        if outcome not in {"PUBLISHED", "RETRY", "UNKNOWN", "DEAD_LETTER"}:
+            raise ContractError("INVALID_INPUT", "unsupported outbox outcome")
+        with self.transaction() as db:
+            row = db.execute("SELECT * FROM outbox_events WHERE event_id=? AND tenant_id=?", (event_id, tenant_id)).fetchone()
+            if row is None:
+                raise ContractError("EVENT_NOT_FOUND", "outbox event is not visible in the requested tenant")
+            if row["state"] != "PUBLISHING":
+                raise StaleStateError("EVENT_STATE_CONFLICT", "outbox event is not currently claimed")
+            published_at = utc_now() if outcome == "PUBLISHED" else None
+            db.execute(
+                "UPDATE outbox_events SET state=?,published_at=? WHERE event_id=? AND tenant_id=?",
+                (outcome, published_at, event_id, tenant_id),
+            )
+            updated = db.execute("SELECT * FROM outbox_events WHERE event_id=?", (event_id,)).fetchone()
+        return self._decode(updated) or {}
+
+    def get_outbox_event(self, event_id: str, *, tenant_id: str) -> dict[str, Any] | None:
+        with self._lock:
+            row = self._connection.execute(
+                "SELECT * FROM outbox_events WHERE event_id=? AND tenant_id=?", (event_id, tenant_id)
+            ).fetchone()
+        return self._decode(row)
+
+    def reconcile_outbox(self, event_id: str, *, tenant_id: str, published: bool | None) -> dict[str, Any]:
+        """Resolve an unknown publish without treating uncertainty as success."""
+
+        with self.transaction() as db:
+            row = db.execute(
+                "SELECT * FROM outbox_events WHERE event_id=? AND tenant_id=?", (event_id, tenant_id)
+            ).fetchone()
+            if row is None:
+                raise ContractError("EVENT_NOT_FOUND", "outbox event is not visible in the requested tenant")
+            if row["state"] != "UNKNOWN":
+                raise StaleStateError("EVENT_STATE_CONFLICT", "only unknown events can be reconciled")
+            if published is True:
+                state, published_at = "PUBLISHED", utc_now()
+            elif published is False:
+                state, published_at = "RETRY", None
+            else:
+                state, published_at = "UNKNOWN", None
+            db.execute(
+                "UPDATE outbox_events SET state=?,published_at=? WHERE event_id=? AND tenant_id=?",
+                (state, published_at, event_id, tenant_id),
+            )
+            updated = db.execute("SELECT * FROM outbox_events WHERE event_id=?", (event_id,)).fetchone()
+        return self._decode(updated) or {}
+
+    def record_outbox_receipt(
+        self, *, event_id: str, tenant_id: str, status: str, producer_id: str,
+        verifier_id: str | None, evidence_class: str, raw_evidence: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        if self.get_outbox_event(event_id, tenant_id=tenant_id) is None:
+            raise ContractError("EVENT_NOT_FOUND", "outbox event is not visible in the requested tenant")
+        created_at = utc_now()
+        body = {
+            "event_id": event_id,
+            "status": status,
+            "producer_id": producer_id,
+            "verifier_id": verifier_id,
+            "evidence_class": evidence_class,
+            "raw_evidence": dict(raw_evidence),
+            "created_at": created_at,
+        }
+        row = {
+            "receipt_id": str(uuid.uuid4()),
+            "tenant_id": tenant_id,
+            **body,
+            "content_hash": digest(body),
+        }
+        with self.transaction() as db:
+            db.execute(
+                "INSERT INTO outbox_receipts(receipt_id,tenant_id,event_id,status,producer_id,verifier_id,evidence_class,raw_evidence,content_hash,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)",
+                (
+                    row["receipt_id"], tenant_id, event_id, status, producer_id, verifier_id,
+                    evidence_class, self._json(raw_evidence), row["content_hash"], created_at,
+                ),
+            )
+        return row
+
+    def list_outbox_receipts(self, event_id: str, *, tenant_id: str) -> list[dict[str, Any]]:
+        with self._lock:
+            rows = self._connection.execute(
+                "SELECT * FROM outbox_receipts WHERE event_id=? AND tenant_id=? ORDER BY created_at,receipt_id",
+                (event_id, tenant_id),
+            ).fetchall()
+        return [self._decode(row) or {} for row in rows]
+
+    def begin_inbox_event(
+        self, *, tenant_id: str, consumer_id: str, event_id: str, payload: Mapping[str, Any],
+        ordering_key: str, side_effects: bool,
+    ) -> dict[str, Any]:
+        payload_hash = digest(payload)
+        now = utc_now()
+        with self.transaction() as db:
+            existing = db.execute(
+                "SELECT * FROM inbox_events WHERE tenant_id=? AND consumer_id=? AND event_id=?",
+                (tenant_id, consumer_id, event_id),
+            ).fetchone()
+            if existing is not None:
+                decoded = self._decode(existing) or {}
+                if decoded.get("payload_hash") != payload_hash:
+                    raise ContractError("EVENT_ID_CONFLICT", "event ID was reused with a different payload")
+                if decoded.get("state") in {"PROCESSING", "UNKNOWN"}:
+                    raise StaleStateError(
+                        "EVENT_RECONCILIATION_REQUIRED",
+                        "event is already processing or has an unknown side-effect outcome",
+                    )
+                if decoded.get("state") == "PROCESSED":
+                    return {**decoded, "replayed": True}
+                db.execute(
+                    "UPDATE inbox_events SET state='PROCESSING',attempts=attempts+1,updated_at=? WHERE tenant_id=? AND consumer_id=? AND event_id=?",
+                    (now, tenant_id, consumer_id, event_id),
+                )
+            else:
+                db.execute(
+                    "INSERT INTO inbox_events(tenant_id,consumer_id,event_id,payload_hash,ordering_key,state,attempts,side_effects,created_at,updated_at) VALUES(?,?,?,?,?,'PROCESSING',1,?,?,?)",
+                    (tenant_id, consumer_id, event_id, payload_hash, ordering_key, int(side_effects), now, now),
+                )
+            row = db.execute(
+                "SELECT * FROM inbox_events WHERE tenant_id=? AND consumer_id=? AND event_id=?",
+                (tenant_id, consumer_id, event_id),
+            ).fetchone()
+        return {**(self._decode(row) or {}), "replayed": False}
+
+    def complete_inbox_event(
+        self, *, tenant_id: str, consumer_id: str, event_id: str, state: str,
+        result: Mapping[str, Any] | None = None, error: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        if state not in {"PROCESSED", "RETRY", "UNKNOWN", "DEAD_LETTER"}:
+            raise ContractError("INVALID_INPUT", "unsupported inbox outcome")
+        with self.transaction() as db:
+            current = db.execute(
+                "SELECT * FROM inbox_events WHERE tenant_id=? AND consumer_id=? AND event_id=?",
+                (tenant_id, consumer_id, event_id),
+            ).fetchone()
+            if current is None:
+                raise ContractError("EVENT_NOT_FOUND", "inbox event is not visible in the requested tenant")
+            if current["state"] != "PROCESSING":
+                raise StaleStateError("EVENT_STATE_CONFLICT", "inbox event is not being processed")
+            db.execute(
+                "UPDATE inbox_events SET state=?,result=?,error=?,updated_at=? WHERE tenant_id=? AND consumer_id=? AND event_id=?",
+                (
+                    state,
+                    self._json(result) if result is not None else None,
+                    self._json(error) if error is not None else None,
+                    utc_now(),
+                    tenant_id,
+                    consumer_id,
+                    event_id,
+                ),
+            )
+            updated = db.execute(
+                "SELECT * FROM inbox_events WHERE tenant_id=? AND consumer_id=? AND event_id=?",
+                (tenant_id, consumer_id, event_id),
+            ).fetchone()
+        return self._decode(updated) or {}
+
+    def reconcile_inbox_event(
+        self, *, tenant_id: str, consumer_id: str, event_id: str, processed: bool | None,
+        evidence: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        with self.transaction() as db:
+            current = db.execute(
+                "SELECT * FROM inbox_events WHERE tenant_id=? AND consumer_id=? AND event_id=?",
+                (tenant_id, consumer_id, event_id),
+            ).fetchone()
+            if current is None:
+                raise ContractError("EVENT_NOT_FOUND", "inbox event is not visible in the requested tenant")
+            if current["state"] not in {"UNKNOWN", "PROCESSING"}:
+                raise StaleStateError("EVENT_STATE_CONFLICT", "inbox event is not reconcilable")
+            state = "PROCESSED" if processed is True else "RETRY" if processed is False else "UNKNOWN"
+            db.execute(
+                "UPDATE inbox_events SET state=?,result=?,updated_at=? WHERE tenant_id=? AND consumer_id=? AND event_id=?",
+                (state, self._json({"reconciliation_evidence": dict(evidence)}), utc_now(), tenant_id, consumer_id, event_id),
+            )
+            updated = db.execute(
+                "SELECT * FROM inbox_events WHERE tenant_id=? AND consumer_id=? AND event_id=?",
+                (tenant_id, consumer_id, event_id),
+            ).fetchone()
+        return self._decode(updated) or {}
+
+    def record_secret_lease(
+        self, *, tenant_id: str, broker_id: str, secret_ref: str, scope: Mapping[str, Any],
+        expires_at: str, receipt_hash: str, native_lease_id: str | None = None,
+        evidence_class: str = "LOCAL_ENGINEERING_VALIDATED",
+    ) -> dict[str, Any]:
+        if any(key.casefold() in {"value", "secret", "token", "password"} for key in scope):
+            raise ContractError("SECRET_EXPOSURE", "secret lease scope must contain references, not secret values")
+        row = {
+            "lease_id": str(uuid.uuid4()), "tenant_id": tenant_id, "broker_id": broker_id,
+            "secret_ref": secret_ref, "scope_hash": digest(scope), "state": "ACTIVE",
+            "native_lease_id": native_lease_id, "evidence_class": evidence_class,
+            "expires_at": expires_at, "receipt_hash": receipt_hash, "revoke_receipt_hash": None,
+            "created_at": utc_now(), "revoked_at": None,
+        }
+        with self.transaction() as db:
+            db.execute(
+                "INSERT INTO secret_leases(lease_id,tenant_id,broker_id,secret_ref,scope_hash,state,native_lease_id,evidence_class,expires_at,receipt_hash,revoke_receipt_hash,created_at,revoked_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                tuple(row.values()),
+            )
+        return row
+
+    def revoke_secret_lease(
+        self, lease_id: str, *, tenant_id: str, state: str = "REVOKED",
+        revoke_receipt_hash: str | None = None,
+    ) -> dict[str, Any]:
+        if state not in {"REVOKED", "REVOKE_UNKNOWN"}:
+            raise ContractError("INVALID_INPUT", "unsupported secret revoke state")
+        with self.transaction() as db:
+            row = db.execute("SELECT * FROM secret_leases WHERE lease_id=? AND tenant_id=?", (lease_id, tenant_id)).fetchone()
+            if row is None:
+                raise ContractError("SECRET_LEASE_NOT_FOUND", "secret lease is not visible in the requested tenant")
+            if row["state"] == "REVOKED":
+                return self._decode(row) or {}
+            revoked_at = row["revoked_at"] or utc_now()
+            db.execute(
+                "UPDATE secret_leases SET state=?,revoke_receipt_hash=?,revoked_at=? WHERE lease_id=?",
+                (state, revoke_receipt_hash or row["revoke_receipt_hash"], revoked_at, lease_id),
+            )
+            updated = db.execute("SELECT * FROM secret_leases WHERE lease_id=?", (lease_id,)).fetchone()
+        return self._decode(updated) or {}
+
+    def record_certification_evidence(self, *, tenant_id: str, record: Mapping[str, Any]) -> dict[str, Any]:
+        required = (
+            "evidence_id", "case_id", "capability", "level", "status", "evidence_class", "source_kind",
+            "producer_id", "independent", "content_hash", "signature_verified", "captured_at",
+        )
+        missing = [key for key in required if key not in record]
+        if missing:
+            raise ContractError("EVIDENCE_INVALID", f"certification evidence is missing fields: {missing}")
+        with self.transaction() as db:
+            existing = db.execute(
+                "SELECT * FROM certification_evidence WHERE evidence_id=?", (record["evidence_id"],)
+            ).fetchone()
+            if existing is not None:
+                decoded = self._decode(existing) or {}
+                if decoded.get("tenant_id") != tenant_id or decoded.get("content_hash") != record["content_hash"]:
+                    raise ContractError("EVIDENCE_ID_CONFLICT", "evidence ID was reused with different bytes or tenant")
+                return decoded
+            db.execute(
+                "INSERT INTO certification_evidence(evidence_id,tenant_id,case_id,capability,level,status,evidence_class,source_kind,producer_id,verifier_id,independent,payload,signed_document,signature,key_id,content_hash,signature_verified,captured_at,expires_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    record["evidence_id"], tenant_id, record["case_id"], record["capability"], record["level"],
+                    record["status"], record["evidence_class"], record["source_kind"], record["producer_id"],
+                    record.get("verifier_id"), int(bool(record["independent"])), self._json(record.get("payload", {})),
+                    self._json(record.get("signed_document", {})), record.get("signature"), record.get("key_id"),
+                    record["content_hash"], int(bool(record["signature_verified"])), record["captured_at"],
+                    record.get("expires_at"),
+                ),
+            )
+        return dict(record)
+
+    def list_certification_evidence(self, *, tenant_id: str) -> list[dict[str, Any]]:
+        with self._lock:
+            rows = self._connection.execute(
+                "SELECT * FROM certification_evidence WHERE tenant_id=? ORDER BY case_id,captured_at,evidence_id", (tenant_id,)
+            ).fetchall()
+        return [self._decode(row) or {} for row in rows]
+
+    def record_certification_run(
+        self, *, tenant_id: str, candidate_digest: str, state: str,
+        level_results: Mapping[str, Any], matrix_result: Mapping[str, Any], p05_issued: bool,
+    ) -> dict[str, Any]:
+        created_at = utc_now()
+        body = {
+            "candidate_digest": candidate_digest, "state": state, "level_results": dict(level_results),
+            "matrix_result": dict(matrix_result), "p05_issued": bool(p05_issued), "created_at": created_at,
+        }
+        row = {"certification_run_id": str(uuid.uuid4()), "tenant_id": tenant_id, **body, "decision_hash": digest(body)}
+        with self.transaction() as db:
+            db.execute(
+                "INSERT INTO certification_runs(certification_run_id,tenant_id,candidate_digest,state,level_results,matrix_result,p05_issued,decision_hash,created_at) VALUES(?,?,?,?,?,?,?,?,?)",
+                (
+                    row["certification_run_id"], tenant_id, candidate_digest, state,
+                    self._json(level_results), self._json(matrix_result), int(p05_issued), row["decision_hash"], created_at,
+                ),
+            )
+        return row
+
+    def record_customer_acceptance(
+        self, *, tenant_id: str, repository_binding_hash: str, route_id: str, candidate_digest: str,
+        customer_actor_id: str, executor_id: str, decision: str, evidence_ids: list[str],
+        signature_verified: bool,
+    ) -> dict[str, Any]:
+        if customer_actor_id == executor_id:
+            raise ContractError("SELF_APPROVAL_DENIED", "customer acceptance must be independent from the executor")
+        if decision == "ACCEPTED" and (not signature_verified or not evidence_ids):
+            raise ContractError("ACCEPTANCE_EVIDENCE_MISSING", "accepted decisions require verified evidence")
+        body = {
+            "tenant_id": tenant_id,
+            "repository_binding_hash": repository_binding_hash, "route_id": route_id,
+            "candidate_digest": candidate_digest, "customer_actor_id": customer_actor_id,
+            "executor_id": executor_id, "decision": decision, "evidence_ids": list(evidence_ids),
+            "signature_verified": bool(signature_verified), "created_at": utc_now(),
+        }
+        row = {"acceptance_id": str(uuid.uuid4()), **body, "content_hash": digest(body)}
+        with self.transaction() as db:
+            existing = db.execute(
+                "SELECT * FROM customer_acceptance WHERE tenant_id=? AND repository_binding_hash=? AND route_id=? AND candidate_digest=?",
+                (tenant_id, repository_binding_hash, route_id, candidate_digest),
+            ).fetchone()
+            if existing is not None:
+                decoded = self._decode(existing) or {}
+                same = (
+                    decoded.get("customer_actor_id") == customer_actor_id
+                    and decoded.get("executor_id") == executor_id
+                    and decoded.get("decision") == decision
+                    and decoded.get("evidence_ids") == evidence_ids
+                    and bool(decoded.get("signature_verified")) == bool(signature_verified)
+                )
+                if not same:
+                    raise ContractError("ACCEPTANCE_CONFLICT", "acceptance key was reused with a different decision")
+                return decoded
+            db.execute(
+                "INSERT INTO customer_acceptance(acceptance_id,tenant_id,repository_binding_hash,route_id,candidate_digest,customer_actor_id,executor_id,decision,evidence_ids,signature_verified,content_hash,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    row["acceptance_id"], tenant_id, repository_binding_hash, route_id, candidate_digest,
+                    customer_actor_id, executor_id, decision, self._json(evidence_ids), int(signature_verified),
+                    row["content_hash"], row["created_at"],
+                ),
+            )
+        return row
+
+    def list_customer_acceptances(
+        self, *, tenant_id: str, candidate_digest: str | None = None
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM customer_acceptance WHERE tenant_id=?"
+        parameters: tuple[Any, ...] = (tenant_id,)
+        if candidate_digest is not None:
+            query += " AND candidate_digest=?"
+            parameters += (candidate_digest,)
+        query += " ORDER BY created_at,acceptance_id"
+        with self._lock:
+            rows = self._connection.execute(query, parameters).fetchall()
+        return [self._decode(row) or {} for row in rows]
 
     def _inc_metric_locked(self, db: sqlite3.Connection, name: str, amount: float = 1) -> None:
         db.execute("INSERT INTO metrics(metric,value) VALUES(?,?) ON CONFLICT(metric) DO UPDATE SET value=value+excluded.value", (name, amount))

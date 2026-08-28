@@ -24,6 +24,15 @@ EXPECTED_SQL_TABLES = {
     "semantic_indices", "change_nodes", "change_edges", "tool_calls", "policy_decisions", "approvals",
     "validations", "findings", "acceptance_decisions", "cache_entries", "cost_events", "capability_packages",
     "adapter_conformance", "eval_runs", "elo_ratings",
+    "external_operations", "external_receipts", "outbox_events", "outbox_receipts", "inbox_events", "secret_leases",
+    "certification_evidence", "certification_runs", "customer_acceptance",
+}
+
+RELEASED_MIGRATION_DIGESTS = {
+    "V001__autonomy_run_core.sql": "8e7936cd5099aad191c687d8b90789349745785f9b6d3eb298ecfad7f1e55c61",
+    "V002__autonomy_artifact_repository.sql": "dc432a63a20630f986f8b6e1b7520c6373fd00a8821d9d69a379fd6f52df15ce",
+    "V003__autonomy_tool_policy_verification.sql": "f92730ada3ad6e0130dced968bf97579f1912e1209b555a30d51dfbdd0926703",
+    "V004__autonomy_cache_cost_registry_eval.sql": "55b950131d8cf1ec788b8172a7d23e71ee7bc37168b5dbd5eb318f2dae8f914b",
 }
 
 
@@ -55,10 +64,14 @@ def validate(archive: Path) -> dict[str, object]:
     missing_tables = sorted(f"autonomy_{table}" for table in EXPECTED_SQL_TABLES if f"create table if not exists autonomy_{table}" not in sql)
     if missing_tables:
         raise ValueError(f"repository migration is missing tables: {missing_tables}")
+    for name, expected_digest in RELEASED_MIGRATION_DIGESTS.items():
+        observed = hashlib.sha256((package_root / "sql" / "migrations" / name).read_bytes()).hexdigest()
+        if observed != expected_digest:
+            raise ValueError(f"released migration drifted: {name}")
     asset_requirements = {
         "contracts/openapi/*.yaml": 4,
         "policies/rego/*.rego": 4,
-        "sql/migrations/V*.sql": 4,
+        "sql/migrations/V*.sql": 6,
         "deployment/kubernetes/*.yaml": 3,
     }
     for pattern, expected_count in asset_requirements.items():
