@@ -6,7 +6,7 @@ import sqlite3
 from dataclasses import dataclass
 from typing import Any, Mapping
 
-from .artifact_store import ContentAddressedArtifactStore
+from .artifact_store import ArtifactStore
 from .canonical import canonical_json, digest_bytes, digest_value
 from .contracts import AssuranceLevel, ProofStatus, Scope, TrustedIdentity, utc_now
 from .execution import (
@@ -121,7 +121,7 @@ class SQLiteDifferentialExecutor:
         self,
         *,
         store: StateStore,
-        artifact_store: ContentAddressedArtifactStore | None,
+        artifact_store: ArtifactStore | None,
         permit_signer: ExecutionPermitSigner | None,
         limits: ResourceLimits,
     ) -> None:

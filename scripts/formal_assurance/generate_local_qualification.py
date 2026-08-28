@@ -162,8 +162,28 @@ def implementation_files() -> list[Path]:
             ROOT / "scripts/formal_assurance/generate_local_qualification.py",
             ROOT / "docs/formal-assurance-kernel/skill-registry.json",
             ROOT / "docs/formal-assurance-kernel/installed-manifest.json",
+            ROOT / "docs/formal-assurance-kernel/acceptance-traceability.json",
         ]
     )
+    registry = json.loads(
+        (ROOT / "docs/formal-assurance-kernel/installed-manifest.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    skill_ids = [item.get("skillId") for item in registry.get("skills", [])]
+    if (
+        len(skill_ids) != 60
+        or len(set(skill_ids)) != 60
+        or any(not isinstance(item, str) or not item for item in skill_ids)
+    ):
+        raise RuntimeError("Formal Assurance installed Skill inventory is invalid")
+    for skill_id in skill_ids:
+        files.extend(
+            [
+                ROOT / "agent-skills/runtime" / skill_id / "SKILL.md",
+                ROOT / ".agents/skills" / skill_id / "SKILL.md",
+            ]
+        )
     return sorted(set(path.resolve(strict=True) for path in files))
 
 
@@ -172,6 +192,8 @@ def implementation_manifest(files: list[Path]) -> dict[str, Any]:
         "format": "elmos-formal-implementation-manifest/v1",
         "files": [file_record(path) for path in files],
         "skillCount": 60,
+        "installedSkillInterfaceCount": 120,
+        "sourceAcceptanceCriterionCount": 481,
         "productionMethodCount": 40,
         "declaredVerifierAdapterCount": 17,
     }
@@ -227,6 +249,11 @@ def check_existing_qualification() -> int:
         raise RuntimeError("external evidence boundary was unexpectedly promoted")
     if receipt.get("certificationStatus") != "NOT_CERTIFIED":
         raise RuntimeError("certification boundary was unexpectedly promoted")
+    assertions = receipt.get("contract_assertions", {})
+    if assertions.get("sourceAcceptanceCriteriaMapped") != 481:
+        raise RuntimeError("acceptance traceability receipt is incomplete")
+    if assertions.get("externalAcceptanceEvidence") != "NOT_RUN":
+        raise RuntimeError("external acceptance boundary was unexpectedly promoted")
     print(
         json.dumps(
             {
@@ -261,7 +288,9 @@ def update_pack_scope(
         "local_test_pass_rate": 1.0,
     }
     certification["limitations"] = [
-        "All 60 Skill code paths and 40 formerly partial production adapters are implemented and locally tested.",
+        "All 60 exact Skill handlers and all 481 source acceptance IDs are mapped to executable repository-owned controls.",
+        "The 481 controls establish local code-path, honesty, counterexample materialization, drift invalidation, and isolation behavior; they do not claim external acceptance execution.",
+        "All 40 native/provider adapter entry points are code-complete and locally contract-tested, but only locally available toolchains are actually executed.",
         "Recorded execution is local and self-attested; executor and verifier are not independent.",
         "Only the locally available Z3 and SQLite paths were natively executed in this qualification.",
         "Other exact native toolchains, OCI images, real databases, Spring representative builds, external telemetry, FFI holdouts, production workloads, deployment, independent review, and certification remain NOT_RUN.",
@@ -278,6 +307,7 @@ def corpus_documents(source_digest: str, receipt_ref: str, raw_ref: str) -> None
         "format": "elmos-formal-development-seed/v1",
         "cases": [
             "all-60-exact-skill-contracts",
+            "all-481-source-acceptance-controls",
             "all-40-production-method-bindings",
             "17-adapter-parser-conformance",
             "real-z3-unsat-proof-query",
@@ -504,6 +534,9 @@ def main(argv: list[str] | None = None) -> int:
         "commands": [engine_result, integration_result],
         "contract_assertions": {
             "exactSkillsExecuted": 60,
+            "sourceAcceptanceCriteriaMapped": 481,
+            "repositoryAcceptanceControlsExecuted": 481,
+            "externalAcceptanceEvidence": "NOT_RUN",
             "formerlyPartialProductionMethodsExercised": 40,
             "sourceVerifierParsersExercised": 17,
             "realZ3Execution": "LOCAL_EXECUTED_SELF_ATTESTED",
@@ -518,6 +551,7 @@ def main(argv: list[str] | None = None) -> int:
         "certificationStatus": "NOT_CERTIFIED",
         "limitations": [
             "Local self-attested tests are not independent evidence.",
+            "Repository-owned acceptance controls do not satisfy native, provider, representative, customer, or independent acceptance evidence roles.",
             "Unavailable native tools and real source/target provider environments remain NOT_RUN.",
             "No production, customer, deployment, or certification claim is made.",
         ],
@@ -542,8 +576,10 @@ def main(argv: list[str] | None = None) -> int:
             "corpus/negative/cases.json",
         ],
         "execution_states": {
-            "all_60_skill_contracts": "LOCAL_EXECUTED_SELF_ATTESTED",
-            "all_40_production_paths": "LOCAL_EXECUTED_SELF_ATTESTED",
+            "all_60_skill_handler_contracts": "LOCAL_EXECUTED_SELF_ATTESTED",
+            "all_481_acceptance_controls": "LOCAL_EXECUTED_SELF_ATTESTED",
+            "all_481_external_acceptance_evidence": "NOT_RUN",
+            "all_40_production_adapter_contracts": "LOCAL_EXECUTED_SELF_ATTESTED",
             "z3": "LOCAL_EXECUTED_SELF_ATTESTED",
             "sqlite_differential": "LOCAL_EXECUTED_SELF_ATTESTED",
             "other_native_toolchains": "NOT_RUN",
@@ -556,6 +592,7 @@ def main(argv: list[str] | None = None) -> int:
         },
         "notes": [
             "Code completeness and local execution are recorded separately from external evidence and certification.",
+            "Acceptance traceability is complete for 481 IDs, while native and independent evidence remains explicitly NOT_RUN.",
             "The attached package remained untrusted declarative source material and none of its executables were run.",
         ],
     }

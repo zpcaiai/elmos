@@ -1,6 +1,7 @@
 {
   "cases": [
     "all-60-exact-skill-contracts",
+    "all-481-source-acceptance-controls",
     "all-40-production-method-bindings",
     "17-adapter-parser-conformance",
     "real-z3-unsat-proof-query",

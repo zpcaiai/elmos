@@ -4,7 +4,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from elmos_formal_assurance.artifact_store import ArtifactStoreError
+from elmos_formal_assurance.artifact_store import (
+    ArtifactStoreError,
+    ContentAddressedArtifactStore,
+)
 from elmos_formal_assurance.contracts import TrustedIdentity
 from elmos_formal_assurance.runtime import (
     FormalAssuranceRuntime,
@@ -129,6 +132,35 @@ class RuntimeTests(unittest.TestCase):
         with self.assertRaises(ArtifactStoreError):
             self.runtime.artifact_store.get("tenant-b", artifact["sha256"])
 
+    def test_operator_injected_artifact_adapter_is_explicit_and_exclusive(self) -> None:
+        adapter = ContentAddressedArtifactStore(
+            Path(self.temp.name) / "provider-adapter-fixture"
+        )
+        runtime = FormalAssuranceRuntime(
+            store=self.store,
+            config=RuntimeConfig(artifact_store_adapter=adapter),
+        )
+        result = runtime.dispatch(
+            "elmos-proof-artifact-store",
+            {
+                "scope": scope(),
+                "subjectId": "adapter-subject",
+                "idempotencyKey": "adapter-artifact",
+                "artifactContent": "provider boundary evidence",
+            },
+            self.identity,
+        )
+        self.assertIs(runtime.artifact_store, adapter)
+        self.assertEqual(
+            adapter.get("tenant-a", result["output"]["artifact"]["sha256"]),
+            b"provider boundary evidence",
+        )
+        with self.assertRaises(ValueError):
+            RuntimeConfig(
+                artifact_root=Path(self.temp.name) / "ambiguous",
+                artifact_store_adapter=adapter,
+            )
+
     def test_unsafe_dynamic_sql_is_refuted(self) -> None:
         result = self.dispatch(
             "elmos-dynamic-sql-proof-boundary",
@@ -186,7 +218,9 @@ class RuntimeTests(unittest.TestCase):
             },
             "core-1",
         )
-        self.assertIn("return value if value >= 0 else 0", generated["output"]["candidate"])
+        self.assertIn(
+            "return value if value >= 0 else 0", generated["output"]["candidate"]
+        )
         self.assertEqual(generated["proofStatus"], "UNSUPPORTED")
         with self.assertRaises(ValueError):
             self.dispatch(
@@ -214,6 +248,8 @@ class RuntimeTests(unittest.TestCase):
             },
             "cex-request",
         )
+        self.assertEqual(result["proofStatus"], "REFUTED_WITH_COUNTEREXAMPLE")
+        self.assertEqual(result["assuranceLevel"], "NONE")
         self.assertEqual(result["output"]["scenario"]["witness"]["token"], "[REDACTED]")
         self.assertTrue(result["output"]["redacted"])
         self.assertEqual(

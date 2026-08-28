@@ -1,5 +1,6 @@
 {
   "counts": {
+    "acceptanceCriteria": 481,
     "domains": {
       "core": 10,
       "cross-language": 10,
@@ -8,6 +9,7 @@
       "spring-modernization": 10,
       "sql-conversion": 10
     },
+    "installedInterfaces": 120,
     "priority": {
       "P0": 48,
       "P1": 10,
@@ -27,6 +29,7 @@
   "schemaVersion": 1,
   "skills": [
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "contract refinement",
         "schema inclusion",
@@ -46,9 +49,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-api-contract-verifier",
+      "sourceSkillPath": "skills/P0/elmos-api-contract-verifier/SKILL.md",
+      "sourceSkillSha256": "sha256:1be0ef5c5f2bbfec3827c6d3b3623438cea0d767e30aa07d069a529051861571",
+      "summary": "验证 OpenAPI/AsyncAPI 与实现之间的输入、输出、错误、鉴权、幂等和兼容性关系。",
       "title": "API Contract Verifier"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "graph constraints",
         "relational logic",
@@ -68,9 +75,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-architecture-constraint-checker",
+      "sourceSkillPath": "skills/P0/elmos-architecture-constraint-checker/SKILL.md",
+      "sourceSkillSha256": "sha256:d0838edc6177347bafbd32c5e83381ae60b99b4456594691a58f4927d9a92686",
+      "summary": "验证生成项目的分层、模块依赖、租户字段、数据访问、Secret、Outbox、幂等和适配器边界。",
       "title": "Architecture Constraint Checker"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "assumption contracts",
         "dependency fingerprinting",
@@ -88,9 +99,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-assumption-ledger",
+      "sourceSkillPath": "skills/P0/elmos-assumption-ledger/SKILL.md",
+      "sourceSkillSha256": "sha256:ee553107827932edaf1dc4b82172e7ce40184bef3ecbdebb17d5cd1ae8f662a0",
+      "summary": "集中登记证明依赖的环境、数据库、编译器、运行时、外部 API、闭世界和数值假设，并在假设漂移时使证据失效。",
       "title": "Assumption Ledger"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "weak bisimulation",
         "linearizability",
@@ -111,9 +126,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P1",
       "skillId": "elmos-concurrency-async-refinement",
+      "sourceSkillPath": "skills/P1/elmos-concurrency-async-refinement/SKILL.md",
+      "sourceSkillSha256": "sha256:cef362099d0b4958734c9f53d3fd9c39c0e1a1edb2d92c8901622059fe8efeea",
+      "summary": "验证线程、锁、原子变量、async/await、channel、任务取消和内存可见性在语言转换中的安全精化。",
       "title": "Concurrency and Async Refinement"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "counterexample minimization",
         "trace concretization",
@@ -134,9 +153,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-counterexample-to-test",
+      "sourceSkillPath": "skills/P0/elmos-counterexample-to-test/SKILL.md",
+      "sourceSkillSha256": "sha256:73c64195cb779616c20415b3751734e212b721ca0e506cc6593aad2ff984fca8",
+      "summary": "把 SMT 模型、TLA+ Trace、Alloy Instance、SQL 反例数据库和符号执行路径最小化并生成多语言回归测试。",
       "title": "Counterexample-to-Test Compiler"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "conservation invariants",
         "idempotent ledger model",
@@ -155,9 +178,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-credit-billing-invariant-model",
+      "sourceSkillPath": "skills/P0/elmos-credit-billing-invariant-model/SKILL.md",
+      "sourceSkillSha256": "sha256:bbdad573a9d6f5391f21183266d17ea3bbcce48a991a354c0428dc5f6a4bf220",
+      "summary": "证明预充 token/credit 的预留、消费、退款、收入确认和事件去重在并发与故障下保持守恒。",
       "title": "Credit and Billing Invariant Model"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "product programs",
         "self-composition",
@@ -178,9 +205,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-cross-language-product-program",
+      "sourceSkillPath": "skills/P0/elmos-cross-language-product-program/SKILL.md",
+      "sourceSkillSha256": "sha256:f15c5c936e6889a806e7a74bff03b2a563ce839ff78ff83e6ccab95d747e436b",
+      "summary": "把源函数与目标函数组合为单一关系程序，自动证明相同输入关系下的输出、异常、Heap 与效应关系。",
       "title": "Cross-language Product Program Verifier"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "inductive invariants",
         "transactional Hoare logic",
@@ -199,9 +230,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-data-invariant-verifier",
+      "sourceSkillPath": "skills/P0/elmos-data-invariant-verifier/SKILL.md",
+      "sourceSkillSha256": "sha256:e9afc67a5626047a92cf6f6ea2563351867e43625723a1c15399d066d24c4091",
+      "summary": "证明生成实体、数据库约束、服务写路径和事件处理共同保持跨表、状态与时间不变量。",
       "title": "Data Invariant Verifier"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "constraint implication",
         "relational model finding",
@@ -220,9 +255,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-ddl-constraint-preservation",
+      "sourceSkillPath": "skills/P0/elmos-ddl-constraint-preservation/SKILL.md",
+      "sourceSkillSha256": "sha256:762c12464a2dcfdaf0799aa3f5fb06edc92ef1e16b2db683a9f2ac5358fa81fa",
+      "summary": "证明 PK、FK、UNIQUE、CHECK、NOT NULL、DEFAULT、生成列和索引语义在目标方言中得到等价或更强保障。",
       "title": "DDL Constraint Preservation"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "state relational verification",
         "affected-row equivalence",
@@ -242,9 +281,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-dml-state-equivalence",
+      "sourceSkillPath": "skills/P0/elmos-dml-state-equivalence/SKILL.md",
+      "sourceSkillSha256": "sha256:a674838de1f7379eb1cd267100df652d20ef578e7a6b52924200dcc608da069d",
+      "summary": "证明 INSERT/UPDATE/DELETE/MERGE/UPSERT 转换后的受影响行、最终数据库状态、返回值和冲突处理等价。",
       "title": "DML State Equivalence"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "string analysis",
         "grammar abstraction",
@@ -264,9 +307,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-dynamic-sql-proof-boundary",
+      "sourceSkillPath": "skills/P0/elmos-dynamic-sql-proof-boundary/SKILL.md",
+      "sourceSkillSha256": "sha256:d05c8c57f350edd647310e9e307e284683be573b6f5d7b031a7d60a028c22081",
+      "summary": "分析字符串构造的 SQL 模板集合、Grammar 和参数化安全，决定可枚举证明、语法抽象或运行时监控。",
       "title": "Dynamic SQL Proof Boundary"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "effect systems",
         "trace inclusion",
@@ -286,9 +333,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-effect-exception-trace-refinement",
+      "sourceSkillPath": "skills/P0/elmos-effect-exception-trace-refinement/SKILL.md",
+      "sourceSkillSha256": "sha256:535520245a93558fe5e74950cd7aa4a9c643470a42ff371de189f8f1e6a2778a",
+      "summary": "证明文件、网络、数据库、消息、日志和异常的可观察 Trace 顺序、数量、参数和补偿关系保持。",
       "title": "Effect and Exception Trace Refinement"
     },
     {
+      "acceptanceCriterionCount": 9,
       "capabilities": [
         "durable workflow",
         "idempotent execution",
@@ -310,9 +361,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-formal-assurance-orchestrator",
+      "sourceSkillPath": "skills/P0/elmos-formal-assurance-orchestrator/SKILL.md",
+      "sourceSkillSha256": "sha256:e7fc782757aed8d6f6694f76f655edbe4a582c73d6fbc04a1fe1e7fa8bce4aa2",
+      "summary": "执行证明 DAG，管理配额、并发、超时、暂停恢复、重试、证据提交和失败隔离，是形式化可信层的控制平面。",
       "title": "Formal Assurance Orchestrator"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "evidence-backed reporting",
         "coverage stratification",
@@ -331,9 +386,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-formal-assurance-report",
+      "sourceSkillPath": "skills/P0/elmos-formal-assurance-report/SKILL.md",
+      "sourceSkillSha256": "sha256:04dedd945e3fe8b9e5ee9f059182cea6fb2eba56f56c3856888aa2687caa8d71",
+      "summary": "生成面向工程、审计、客户和管理层的答案优先报告，准确展示证明范围、边界、假设、反例和残余风险。",
       "title": "Formal Assurance Report"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "semantic versioning",
         "model migration",
@@ -353,9 +412,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P1",
       "skillId": "elmos-formal-model-versioning",
+      "sourceSkillPath": "skills/P1/elmos-formal-model-versioning/SKILL.md",
+      "sourceSkillSha256": "sha256:8c323eb6f2de8c0fe2dbd371091e64c2572d36833005521efda841fc9e91b67c",
+      "summary": "管理形式模型、语义 Profile、规格和证明基线的兼容性，支持变更差异、回滚和历史证据重放。",
       "title": "Formal Model Versioning"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "OpenTelemetry",
         "SLO/error budgets",
@@ -375,9 +438,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P2",
       "skillId": "elmos-formal-observability-slo",
+      "sourceSkillPath": "skills/P2/elmos-formal-observability-slo/SKILL.md",
+      "sourceSkillSha256": "sha256:6ad0e5850e521b025070b54015eb7950d9002f852eae673d82c37704fcbbc9a5",
+      "summary": "为证明队列、求解器运行、缓存、未知率、证据新鲜度、反例修复和门禁建立指标、Trace、告警与容量模型。",
       "title": "Formal Assurance Observability and SLO"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "policy-as-code",
         "evidence aggregation",
@@ -396,9 +463,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-formal-release-gate",
+      "sourceSkillPath": "skills/P0/elmos-formal-release-gate/SKILL.md",
+      "sourceSkillSha256": "sha256:b2483b3e23215c7d446eac4568b5202c6c0942d8667395038cdfcfafda6800c6",
+      "summary": "依据风险、证明状态、覆盖率、假设、豁免、证据新鲜度和商业认证等级作出 fail-closed 发布决策。",
       "title": "Formal Release Gate"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "typed first-order logic",
         "relational contracts",
@@ -414,9 +485,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-formal-spec-ir",
+      "sourceSkillPath": "skills/P0/elmos-formal-spec-ir/SKILL.md",
+      "sourceSkillSha256": "sha256:484d2d53a944f4bdf2a5e02404e738ea5bcaff9377805b0fc46c5064877e602b",
+      "summary": "把自然语言、代码、架构、工作流和数据库约束统一编译为可版本化、可寻址、可生成证明义务的形式规格中间表示。",
       "title": "Formal Specification IR"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "TLA+ model checking",
         "symbolic model checking",
@@ -436,9 +511,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-generated-workflow-model-checker",
+      "sourceSkillPath": "skills/P0/elmos-generated-workflow-model-checker/SKILL.md",
+      "sourceSkillSha256": "sha256:3670427897703d978903155d1144985892b0eb4215df6757932b2f652a33cf35",
+      "summary": "把订单、支付、任务、审批、补偿、重试和取消工作流转换为 TLA+/状态机并检查安全与活性。",
       "title": "Generated Workflow Model Checker"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "Hoare logic",
         "weakest preconditions",
@@ -458,9 +537,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-java-jml-contract-verifier",
+      "sourceSkillPath": "skills/P0/elmos-java-jml-contract-verifier/SKILL.md",
+      "sourceSkillSha256": "sha256:d5d3db41e9678eaef34fb435e69c58d6e1ee98b9dcab90ff64290e8918bc604d",
+      "summary": "为金额、额度、权限、库存、状态机和关键数据转换方法生成/校验 JML 契约并执行静态或运行时断言检查。",
       "title": "Java JML Contract Verifier"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "formal language profiles",
         "feature capability lattice",
@@ -478,9 +561,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-language-semantic-profile",
+      "sourceSkillPath": "skills/P0/elmos-language-semantic-profile/SKILL.md",
+      "sourceSkillSha256": "sha256:d2b8e1f530328377b03ddf33d28346a92edac6021aedd9c4a67dc653729fdff5",
+      "summary": "为每种源/目标语言定义 Elmos 可证明子集、数值模型、内存模型、异常、并发、I/O、反射和未定义行为边界。",
       "title": "Language Semantic Profile"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "linearizability",
         "monotonic tokens",
@@ -499,9 +586,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-lease-fencing-verifier",
+      "sourceSkillPath": "skills/P0/elmos-lease-fencing-verifier/SKILL.md",
+      "sourceSkillSha256": "sha256:cd5af2d419a01e26ce7b0d4313e98324751613a8de5a85ca3d9d74334abf14b7",
+      "summary": "验证 Worker ownership、Lease 续租、故障转移和 fencing token，阻止陈旧 Worker 提交结果。",
       "title": "Lease and Fencing Verifier"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "differential execution",
         "trace alignment",
@@ -522,9 +613,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-legacy-modernization-trace-validator",
+      "sourceSkillPath": "skills/P0/elmos-legacy-modernization-trace-validator/SKILL.md",
+      "sourceSkillSha256": "sha256:b830e36f9a3488c8bbe18e312585dea864d4de0d2827c5f7c7e6f7382b0b763e",
+      "summary": "对旧系统和 Spring Boot 4 目标系统执行受控双运行，按观察契约比较 HTTP、Session、数据库、消息、外调和异常 Trace。",
       "title": "Legacy Modernization Trace Validator"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "LTL liveness",
         "weak/strong fairness",
@@ -544,9 +639,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P1",
       "skillId": "elmos-liveness-fairness-verifier",
+      "sourceSkillPath": "skills/P1/elmos-liveness-fairness-verifier/SKILL.md",
+      "sourceSkillSha256": "sha256:19173b1a1a7402ce57b8c86301582c5987955f8c5ccaf99b6bd45a4122cb4327",
+      "summary": "检查生成系统在明确环境假设下不会永久卡住、饿死租户或无限重试。",
       "title": "Liveness and Fairness Verifier"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "trace semantics",
         "normalization functions",
@@ -564,9 +663,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-observable-behavior-contract",
+      "sourceSkillPath": "skills/P0/elmos-observable-behavior-contract/SKILL.md",
+      "sourceSkillSha256": "sha256:ea633c62b8a93b1e69137e9ec18b87055cb26a8d6b4f46a5c5287f24c4d1461b",
+      "summary": "定义源系统与目标系统之间真正可比较的观察面，避免只比较返回值而遗漏状态、副作用、异常、事务和安全决策。",
       "title": "Observable Behavior Contract"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "content-addressed storage",
         "append-only metadata",
@@ -587,9 +690,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-proof-artifact-store",
+      "sourceSkillPath": "skills/P0/elmos-proof-artifact-store/SKILL.md",
+      "sourceSkillSha256": "sha256:bc5297d9ddafc29b8e0c116f2b2121dbd8b9fd188d7dcecc75140abe2ccc37a5",
+      "summary": "以不可变内容寻址方式保存公式、模型、日志、证书、反例、覆盖率、签名和重放环境。",
       "title": "Proof Artifact Store"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "content-addressed caching",
         "Merkle dependency graph",
@@ -608,9 +715,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-proof-cache-invalidation",
+      "sourceSkillPath": "skills/P0/elmos-proof-cache-invalidation/SKILL.md",
+      "sourceSkillSha256": "sha256:eaeaf12228ba4dcd58d3be407aa25bed275c3fa4f2c58defda34a88f9d701b44",
+      "summary": "以公式、语义模型、假设、工具链、选项和边界的内容寻址键复用证明，同时保证任何语义漂移都不会误命中。",
       "title": "Proof Cache and Invalidation"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "proof-carrying artifacts",
         "signed manifests",
@@ -630,9 +741,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P1",
       "skillId": "elmos-proof-carrying-conversion",
+      "sourceSkillPath": "skills/P1/elmos-proof-carrying-conversion/SKILL.md",
+      "sourceSkillSha256": "sha256:530b5c7340b9d239853b7326d8bc18c4196329502a53113289c02aed6a06fa9e",
+      "summary": "让每次仓库转换交付可校验的证明清单、证书、假设、边界、反例、覆盖率和 TCB 摘要。",
       "title": "Proof-Carrying Conversion"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "change impact graph",
         "runtime conformance monitors",
@@ -652,9 +767,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P1",
       "skillId": "elmos-proof-drift-monitor",
+      "sourceSkillPath": "skills/P1/elmos-proof-drift-monitor/SKILL.md",
+      "sourceSkillSha256": "sha256:7f8d9d8bba5b4d80f301ebf9c614a65fbf278be0cdb73515bd4baa0b039a5e16",
+      "summary": "持续监测源码、模型、假设、依赖、编译器、数据库、策略和运行时事件变化，撤销陈旧可信状态。",
       "title": "Proof Drift Monitor"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "reproducible bundles",
         "manifest signing",
@@ -674,9 +793,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P1",
       "skillId": "elmos-proof-evidence-bundle",
+      "sourceSkillPath": "skills/P1/elmos-proof-evidence-bundle/SKILL.md",
+      "sourceSkillSha256": "sha256:2f0e16cadc3397b7d502414ca1d7d5c2b30c35fe67d91a0c893be42cffd65389",
+      "summary": "打包签名的离线审计材料，包括规格、义务、结果、证书、TCB、SBOM、模型、反例、报告和重放命令。",
       "title": "Proof Evidence Bundle"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "weakest-precondition planning",
         "assume-guarantee decomposition",
@@ -695,9 +818,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-proof-obligation-planner",
+      "sourceSkillPath": "skills/P0/elmos-proof-obligation-planner/SKILL.md",
+      "sourceSkillSha256": "sha256:7570e2bb1f3cd80719dd121b21d05e63a5beb1b53265660563eb354acc80b28f",
+      "summary": "按业务线、变更影响、风险等级、语言特征和证明预算，把规格分解为可执行、可缓存、可组合的证明义务 DAG。",
       "title": "Proof Obligation Planner"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "lattice-based status model",
         "evidence-strength ordering",
@@ -715,9 +842,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-proof-status-policy",
+      "sourceSkillPath": "skills/P0/elmos-proof-status-policy/SKILL.md",
+      "sourceSkillSha256": "sha256:37009c8864036e32590d6eec7210a70d5e2ea429b5cdded2b794a1b85caaa3ce",
+      "summary": "统一证明状态语义，强制区分机械证明、求解器可信证明、有界无反例、未知、不支持和人工豁免。",
       "title": "Proof Status Policy"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "closed-world enumeration",
         "contract stubs",
@@ -738,9 +869,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P2",
       "skillId": "elmos-reflection-ffi-boundary-verifier",
+      "sourceSkillPath": "skills/P2/elmos-reflection-ffi-boundary-verifier/SKILL.md",
+      "sourceSkillSha256": "sha256:3c627a621f0859c6abdba348e90ca695df37f96a6daeba6ae9adef7ab6740b4a",
+      "summary": "对反射、动态加载、native/FFI、宏生成和外部运行时建立闭世界清单、契约桩和运行时监控边界。",
       "title": "Reflection and FFI Boundary Verifier"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "assume-guarantee reasoning",
         "interface contracts",
@@ -760,9 +895,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-repository-refinement-composer",
+      "sourceSkillPath": "skills/P0/elmos-repository-refinement-composer/SKILL.md",
+      "sourceSkillSha256": "sha256:2e36fb17add39d46faddcc34a31a629890db1617831f6491c4023580654ed6da",
+      "summary": "用 Assume–Guarantee 把函数、模块、服务和 API 层证明组合为仓库级可观察行为精化结论。",
       "title": "Repository Refinement Composer"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "controlled natural language",
         "schema synthesis",
@@ -782,9 +921,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-requirement-to-formal-spec",
+      "sourceSkillPath": "skills/P0/elmos-requirement-to-formal-spec/SKILL.md",
+      "sourceSkillSha256": "sha256:c961dcc17cda8d10805307cb504082412442f7262f9e7b0d7fd8cd4da0e70ab0",
+      "summary": "把需求编译为 Data/API/Workflow/Security/Resource 五类正式规格，并把歧义显式化为阻断项或批准假设。",
       "title": "Requirement-to-Formal-Spec Compiler"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "ranking functions",
         "abstract interpretation",
@@ -804,9 +947,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-resource-termination-verifier",
+      "sourceSkillPath": "skills/P0/elmos-resource-termination-verifier/SKILL.md",
+      "sourceSkillSha256": "sha256:f8e1ba84dfc7154dd6ef9f61db287960be7ce4031815a566743455ba852db061",
+      "summary": "验证 Agent 循环、自动修复、递归转换、图遍历、批处理和重试受终止度量与资源预算约束。",
       "title": "Resource and Termination Verifier"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "Hoare logic",
         "Boogie VC generation",
@@ -826,9 +973,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-routine-contract-verifier",
+      "sourceSkillPath": "skills/P0/elmos-routine-contract-verifier/SKILL.md",
+      "sourceSkillSha256": "sha256:140db422273432cf11504b39698f68efe099988ecfd17e17b8e6934066a5ce27",
+      "summary": "把存储过程/函数编译为 CFG/SSA 和数据库状态转换，证明前置、后置、修改集、异常、事务与终止性。",
       "title": "SQL Routine Contract Verifier"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "relational Hoare logic",
         "induction on syntax",
@@ -848,9 +999,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-rule-preservation-prover",
+      "sourceSkillPath": "skills/P0/elmos-rule-preservation-prover/SKILL.md",
+      "sourceSkillSha256": "sha256:c33c5a2ae4ebe3ce9fa3fbb030cf7e79406f7bd3942bd25dde29c963f21a6e49",
+      "summary": "对每条 Rule DSL 转换规则证明在适用前提下保持 Semantic IR 语义，并产出可独立检查证书。",
       "title": "Transformation Rule Preservation Prover"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "lossless join",
         "dependency preservation",
@@ -871,9 +1026,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-schema-losslessness-proof",
+      "sourceSkillPath": "skills/P0/elmos-schema-losslessness-proof/SKILL.md",
+      "sourceSkillSha256": "sha256:f6c215d9cdefdf5ec0c4995ac6477a763c76dbc8df0ea8a7b10a31bdeafaf7f9",
+      "summary": "证明表拆分、合并、重命名、编码与数据搬迁保持键、函数依赖、约束和所需信息。",
       "title": "Schema Losslessness Proof"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "range analysis",
         "type relation synthesis",
@@ -893,9 +1052,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-semantic-gap-obligation-generator",
+      "sourceSkillPath": "skills/P0/elmos-semantic-gap-obligation-generator/SKILL.md",
+      "sourceSkillSha256": "sha256:d448a0d0d2f2802797d76b77a42f33a52830356e35da176af5c1814e856083f8",
+      "summary": "识别整数范围、溢出、Null/Option、Unicode、Map 顺序、浮点、时间、序列化和取消语义差距并生成证明义务。",
       "title": "Semantic Gap Obligation Generator"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "operational semantics",
         "effect traces",
@@ -915,9 +1078,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-semantic-ir-formal-semantics",
+      "sourceSkillPath": "skills/P0/elmos-semantic-ir-formal-semantics/SKILL.md",
+      "sourceSkillSha256": "sha256:3e496e5f39e41218d9510bf8e9e709183c3b63bf1e7d25831efea0580835eb6e",
+      "summary": "为表达式、控制流、Heap、异常、异步、线程、I/O 和外部效应定义可执行的小步/大步语义。",
       "title": "Semantic IR Formal Semantics"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "schema refinement",
         "lossless mappings",
@@ -937,9 +1104,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P1",
       "skillId": "elmos-spring-data-migration-refinement",
+      "sourceSkillPath": "skills/P1/elmos-spring-data-migration-refinement/SKILL.md",
+      "sourceSkillSha256": "sha256:b1689478ddd8a34eeaf5adffc264da343362b5b948270237e37c7a727ad508cf",
+      "summary": "证明实体、ORM 映射、Schema 变更和批量数据迁移保持键、约束、值域、关系与可逆性要求。",
       "title": "Spring Data Migration Refinement"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "sum-type equivalence",
         "decision-table completeness",
@@ -958,9 +1129,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-spring-exception-mapping-refinement",
+      "sourceSkillPath": "skills/P0/elmos-spring-exception-mapping-refinement/SKILL.md",
+      "sourceSkillSha256": "sha256:47132233a53a7d09d0be8fc41ffe7019cf5e185c713ad5a1518ab99e6938a3f8",
+      "summary": "证明异常类型到 HTTP 状态、错误码、响应体、日志等级和事务回滚决策的映射保持。",
       "title": "Spring Exception Mapping Refinement"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "partial-order constraints",
         "happens-before graph",
@@ -980,9 +1155,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-spring-filter-interceptor-order-proof",
+      "sourceSkillPath": "skills/P0/elmos-spring-filter-interceptor-order-proof/SKILL.md",
+      "sourceSkillSha256": "sha256:91528a3188202e3c29d0d5226904aefc33adbb062ab56328169a58f3e86ccf28",
+      "summary": "验证 Servlet Filter、Spring Security FilterChain、HandlerInterceptor 和 AOP Advice 的顺序、一次性执行与异常路径。",
       "title": "Spring Filter and Interceptor Order Proof"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "call-graph dominance",
         "pointcut set equivalence",
@@ -1001,9 +1180,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P1",
       "skillId": "elmos-spring-proxy-aop-semantic-checker",
+      "sourceSkillPath": "skills/P1/elmos-spring-proxy-aop-semantic-checker/SKILL.md",
+      "sourceSkillSha256": "sha256:f19096d609feb6c6870eee95fd0b10c3c3081510e00e850f0cc8e72753c997a3",
+      "summary": "静态证明事务、缓存、鉴权和审计 Advice 不因 self-invocation、final/private 方法、代理类型或 pointcut 漂移而失效。",
       "title": "Spring Proxy and AOP Semantic Checker"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "regular-language inclusion",
         "SMT overlap detection",
@@ -1023,9 +1206,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-spring-route-binding-proof",
+      "sourceSkillPath": "skills/P0/elmos-spring-route-binding-proof/SKILL.md",
+      "sourceSkillSha256": "sha256:4306a89239c7b442e57a99faed94ec9b7a3cd0877c8bd8bf0eab3cabdbc11db8",
+      "summary": "证明 Struts 1/2、Servlet 与 Spring Boot 4 之间路由语言、优先级、请求绑定、默认值和校验行为的覆盖与一致性。",
       "title": "Spring Route and Binding Proof"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "state-machine reachability",
         "authorization dominance",
@@ -1045,9 +1232,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-spring-security-chain-model",
+      "sourceSkillPath": "skills/P0/elmos-spring-security-chain-model/SKILL.md",
+      "sourceSkillSha256": "sha256:f9379b735e81724a63c44a92681d12ec84307f3452c51c44a6ab6b9184a96680",
+      "summary": "把 Filter、Interceptor、Spring Security、CSRF、方法鉴权和错误 dispatch 建模为安全状态机，证明不存在绕过。",
       "title": "Spring Security Chain Model"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "finite-state refinement",
         "linearizability checks",
@@ -1066,9 +1257,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-spring-session-state-refinement",
+      "sourceSkillPath": "skills/P0/elmos-spring-session-state-refinement/SKILL.md",
+      "sourceSkillSha256": "sha256:ea5f996d0cc6228f5114e93f2ba44f6b02daa381109924b013f7ecdb00a4a125",
+      "summary": "验证 HttpSession、登录态、属性生命周期、并发更新、超时和注销在迁移前后保持允许的状态迁移。",
       "title": "Spring Session State Refinement"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "trace refinement",
         "transaction state machines",
@@ -1089,9 +1284,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-spring-transaction-refinement",
+      "sourceSkillPath": "skills/P0/elmos-spring-transaction-refinement/SKILL.md",
+      "sourceSkillSha256": "sha256:5716ba750ba65474c03d95a7a3dea2ebc285e7b6426fcab7163985fa5e312f2f",
+      "summary": "证明旧事务边界、传播、隔离、回滚规则、重试与 outbox 行为在 Spring Boot 4 中被精化。",
       "title": "Spring Transaction Refinement"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "unbounded query equivalence",
         "SMT-based bounded checking",
@@ -1112,9 +1311,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-sql-query-equivalence",
+      "sourceSkillPath": "skills/P0/elmos-sql-query-equivalence/SKILL.md",
+      "sourceSkillSha256": "sha256:ec815c157efc97a1ab4f58d15cd7d20c28f563acfcadbb358d379b7fc344294e",
+      "summary": "在 PK/FK/UNIQUE/CHECK/NOT NULL 等约束下证明源、目标查询的 Bag、Set 或有序结果等价。",
       "title": "SQL Query Equivalence"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "denotational SQL semantics",
         "bag relational algebra",
@@ -1133,9 +1336,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-sql-semantic-ir",
+      "sourceSkillPath": "skills/P0/elmos-sql-semantic-ir/SKILL.md",
+      "sourceSkillSha256": "sha256:f2d74c49544512e988d564bba4c987093b6bd539362b71881af39e86c6968fdf",
+      "summary": "统一表示 Bag/Set、NULL 三值逻辑、Join、聚合、窗口、排序、DML、事务、异常、Routine 和 Trigger 语义。",
       "title": "SQL Semantic IR"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "transaction state machines",
         "trace refinement",
@@ -1155,9 +1362,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P1",
       "skillId": "elmos-sql-transaction-exception-refinement",
+      "sourceSkillPath": "skills/P1/elmos-sql-transaction-exception-refinement/SKILL.md",
+      "sourceSkillSha256": "sha256:ed91eff51b558969416b5ba435dc449c76035f36e994893c8d479c67b5a15a26",
+      "summary": "验证 savepoint、隔离级别、锁、超时、错误码、原子性和回滚行为跨数据库方言保持允许的精化。",
       "title": "SQL Transaction and Exception Refinement"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "range proofs",
         "rounding semantics",
@@ -1177,9 +1388,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-sql-type-precision-verifier",
+      "sourceSkillPath": "skills/P0/elmos-sql-type-precision-verifier/SKILL.md",
+      "sourceSkillSha256": "sha256:a01cc35a8c47c8067595a789edafc1fac8e7e96ac9860f3cbc40eb21cd66748a",
+      "summary": "证明数值范围/Scale、字符集、Collation、时间、JSON、二进制和布尔映射不会丢失业务语义。",
       "title": "SQL Type and Precision Verifier"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "noninterference",
         "self-composition",
@@ -1200,9 +1415,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-tenant-noninterference-verifier",
+      "sourceSkillPath": "skills/P0/elmos-tenant-noninterference-verifier/SKILL.md",
+      "sourceSkillSha256": "sha256:1ee12aeec1623fcd538a8efe0bf7d6da2827125a2f45898b31e3b50c06195ad3",
+      "summary": "证明租户 A 的 Secret、数据、缓存、Artifact 和上下文变化不能影响租户 B 可观察结果。",
       "title": "Tenant Noninterference Verifier"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "TLA+ safety/liveness",
         "state refinement",
@@ -1221,9 +1440,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-tla-task-runtime-model",
+      "sourceSkillPath": "skills/P0/elmos-tla-task-runtime-model/SKILL.md",
+      "sourceSkillSha256": "sha256:36e4460dae00345de5c7a0ff09b48ac43375f4abe61ad5c8d4210245a65a5fac",
+      "summary": "对 Elmos 任务队列、每账号并发、暂停恢复取消、Checkpoint、重试、终态和副作用提交建模。",
       "title": "Elmos Task Runtime TLA+ Model"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "trace refinement",
         "termination analysis",
@@ -1243,9 +1466,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-trigger-trace-verifier",
+      "sourceSkillPath": "skills/P0/elmos-trigger-trace-verifier/SKILL.md",
+      "sourceSkillSha256": "sha256:d68af40c33f9ea06e7be21ca1599a636b1a5e75d40b22c9193161f752a177ce8",
+      "summary": "证明 Trigger 触发条件、顺序、递归、写集合和异常传播在方言转换后保持。",
       "title": "Trigger Trace Verifier"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "TCB minimization",
         "component attestation",
@@ -1264,9 +1491,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-trusted-computing-base-registry",
+      "sourceSkillPath": "skills/P0/elmos-trusted-computing-base-registry/SKILL.md",
+      "sourceSkillSha256": "sha256:0a3c2d55bdfbe9577975701f2eba473960e8952461a6ff6e688531c467fb0623",
+      "summary": "登记解析器、语义适配器、证明内核、求解器、编译器、数据库行为和外部契约等可信基，并计算证据影响范围。",
       "title": "Trusted Computing Base Registry"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "correct-by-construction code",
         "contract extraction",
@@ -1286,9 +1517,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P1",
       "skillId": "elmos-verified-core-generator",
+      "sourceSkillPath": "skills/P1/elmos-verified-core-generator/SKILL.md",
+      "sourceSkillSha256": "sha256:2e80f3dde2567de743b92a3782e4f237d61ac78ad0672a7f4247b662dbd4ace4",
+      "summary": "为金额、额度、权限、状态机、调度和转换算法生成 Dafny/JML/Lean 可验证核心及语言适配层。",
       "title": "Verified Core Generator"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "capability matching",
         "portfolio solving",
@@ -1308,9 +1543,13 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-verifier-portfolio-router",
+      "sourceSkillPath": "skills/P0/elmos-verifier-portfolio-router/SKILL.md",
+      "sourceSkillSha256": "sha256:441e57f428843c3eed1a1399e81ffec39f1b18d5205f273a9ef75bc645ff6980",
+      "summary": "根据逻辑片段、语言语义、并发特征、许可证、资源预算和证据强度选择单个或组合证明器。",
       "title": "Verifier Portfolio Router"
     },
     {
+      "acceptanceCriterionCount": 8,
       "capabilities": [
         "risk acceptance workflow",
         "four-eyes approval",
@@ -1330,6 +1569,9 @@
       "implementationState": "PRODUCTION_CODE_COMPLETE",
       "priority": "P0",
       "skillId": "elmos-waiver-governance",
+      "sourceSkillPath": "skills/P0/elmos-waiver-governance/SKILL.md",
+      "sourceSkillSha256": "sha256:2e9509d109c269b3d291ec3d0a20381648f88c9a4cd67a15f040cd3fc874bef4",
+      "summary": "管理无法证明、超时或临时不支持义务的期限、风险、补偿控制、审批和自动失效。",
       "title": "Proof Waiver Governance"
     }
   ],

@@ -8,9 +8,12 @@ from typing import Any
 
 from .canonical import canonical_json, digest_value, validate_identifier
 from .contracts import ProofRunState, Scope, TrustedIdentity
-from .artifact_store import ContentAddressedArtifactStore
+from .artifact_store import ArtifactStore, ContentAddressedArtifactStore
+from .bundles import EvidenceBundleService, EvidenceBundleSigner
 from .executor import LocalBoundedExecutor
 from .execution import ExecutionPermitSigner, ResourceLimits, ToolchainRegistration
+from .events import EventPublisher, OutboxDispatcher
+from .governance import GovernanceAuthorizationError, GovernanceService
 from .handlers import HandlerContext
 from .observability import FormalObservabilityService, TelemetryExporter
 from .production import ProductionSkillExecutor
@@ -31,11 +34,15 @@ class RuntimeConfig:
     account_concurrency: int = 3
     max_request_bytes: int = 2 * 1024 * 1024
     artifact_root: Path | None = None
+    artifact_store_adapter: ArtifactStore | None = None
     execution_root: Path | None = None
     execution_limits: ResourceLimits = field(default_factory=ResourceLimits)
     execution_permit_signer: ExecutionPermitSigner | None = None
     toolchains: tuple[ToolchainRegistration, ...] = ()
     telemetry_exporter: TelemetryExporter | None = None
+    bundle_signer: EvidenceBundleSigner | None = None
+    event_publisher: EventPublisher | None = None
+    outbox_max_attempts: int = 10
 
     def __post_init__(self) -> None:
         if not isinstance(self.account_concurrency, int) or isinstance(
@@ -52,10 +59,31 @@ class RuntimeConfig:
             raise ValueError("max_request_bytes is outside the allowed bound")
         if not isinstance(self.execution_limits, ResourceLimits):
             raise ValueError("execution_limits must be ResourceLimits")
+        if self.artifact_root is not None and self.artifact_store_adapter is not None:
+            raise ValueError(
+                "artifact_root and artifact_store_adapter are mutually exclusive"
+            )
+        if self.artifact_store_adapter is not None and any(
+            not callable(getattr(self.artifact_store_adapter, method, None))
+            for method in ("put", "get", "metadata", "delete")
+        ):
+            raise ValueError(
+                "artifact_store_adapter does not implement the CAS contract"
+            )
         if not isinstance(self.toolchains, tuple) or any(
             not isinstance(item, ToolchainRegistration) for item in self.toolchains
         ):
             raise ValueError("toolchains must be a tuple of ToolchainRegistration")
+        if self.event_publisher is not None and not callable(
+            getattr(self.event_publisher, "publish", None)
+        ):
+            raise ValueError("event_publisher must implement publish")
+        if (
+            not isinstance(self.outbox_max_attempts, int)
+            or isinstance(self.outbox_max_attempts, bool)
+            or not 1 <= self.outbox_max_attempts <= 100
+        ):
+            raise ValueError("outbox_max_attempts must be between 1 and 100")
 
 
 class FormalAssuranceRuntime:
@@ -70,11 +98,11 @@ class FormalAssuranceRuntime:
     ) -> None:
         self.config = config or RuntimeConfig()
         self.store = store or StateStore()
-        self.artifact_store = (
-            ContentAddressedArtifactStore(self.config.artifact_root)
-            if self.config.artifact_root is not None
-            else None
-        )
+        self.artifact_store = self.config.artifact_store_adapter
+        if self.artifact_store is None and self.config.artifact_root is not None:
+            self.artifact_store = ContentAddressedArtifactStore(
+                self.config.artifact_root
+            )
         if registry is None:
             repository_root = Path(__file__).resolve().parents[4]
             metadata = (
@@ -85,6 +113,19 @@ class FormalAssuranceRuntime:
         self.local_executor = LocalBoundedExecutor(self.store, self.artifact_store)
         self.observability = FormalObservabilityService(
             self.store, self.config.telemetry_exporter
+        )
+        self.governance = GovernanceService(self.store)
+        self.evidence_bundles = EvidenceBundleService(
+            self.store, self.artifact_store, self.config.bundle_signer
+        )
+        self.outbox_dispatcher = (
+            OutboxDispatcher(
+                self.store,
+                self.config.event_publisher,
+                max_attempts=self.config.outbox_max_attempts,
+            )
+            if self.config.event_publisher is not None
+            else None
         )
         self.production_executor = ProductionSkillExecutor(
             store=self.store,
@@ -111,16 +152,16 @@ class FormalAssuranceRuntime:
         if not isinstance(payload, dict):
             raise RuntimeRequestError("request payload must be an object")
         binding = self.registry.get(skill_id)
-        scope = self._scope(payload.get("scope"), identity)
+        scope = self._authorized_scope(
+            payload.get("scope"), identity, action="dispatch-skill"
+        )
         subject = validate_identifier(
             subject_id or payload.get("subjectId"), "subjectId"
         )
         key = validate_identifier(
             idempotency_key or payload.get("idempotencyKey"), "idempotencyKey"
         )
-        storage_key = digest_value(
-            {"scope": scope.to_dict(), "idempotencyKey": key}
-        )
+        storage_key = digest_value({"scope": scope.to_dict(), "idempotencyKey": key})
         request_payload = dict(payload)
         request_payload.pop("scope", None)
         request_payload.pop("subjectId", None)
@@ -134,9 +175,7 @@ class FormalAssuranceRuntime:
             "payload": request_payload,
         }
         request_digest = digest_value(request_document)
-        replay = self.store.get_idempotent(
-            scope.tenant_id, storage_key, request_digest
-        )
+        replay = self.store.get_idempotent(scope.tenant_id, storage_key, request_digest)
         if replay is not None:
             return replay
         context = HandlerContext(
@@ -177,7 +216,9 @@ class FormalAssuranceRuntime:
     ) -> dict[str, Any]:
         if not isinstance(payload, dict):
             raise RuntimeRequestError("run payload must be an object")
-        scope = self._scope(payload.get("scope"), identity)
+        scope = self._authorized_scope(
+            payload.get("scope"), identity, action="submit-proof-run"
+        )
         try:
             concurrency = int(
                 payload.get("accountConcurrency", self.config.account_concurrency)
@@ -203,11 +244,15 @@ class FormalAssuranceRuntime:
         )
         return self._run_document(run)
 
-    def get_run(self, payload: dict[str, Any], identity: TrustedIdentity) -> dict[str, Any]:
+    def get_run(
+        self, payload: dict[str, Any], identity: TrustedIdentity
+    ) -> dict[str, Any]:
         if not isinstance(payload, dict):
             raise RuntimeRequestError("run lookup payload must be an object")
         run = self.store.get_run(
-            self._scope(payload.get("scope"), identity),
+            self._authorized_scope(
+                payload.get("scope"), identity, action="read-proof-run"
+            ),
             validate_identifier(payload.get("runId"), "runId"),
         )
         return self._run_document(run)
@@ -219,7 +264,9 @@ class FormalAssuranceRuntime:
     ) -> dict[str, Any]:
         if not isinstance(payload, dict):
             raise RuntimeRequestError("run action payload must be an object")
-        scope = self._scope(payload.get("scope"), identity)
+        scope = self._authorized_scope(
+            payload.get("scope"), identity, action="control-proof-run"
+        )
         run_id = validate_identifier(payload.get("runId"), "runId")
         action = str(payload.get("action", ""))
         transitions = {
@@ -254,12 +301,8 @@ class FormalAssuranceRuntime:
         request_digest = digest_value(
             {"scope": scope.to_dict(), "runId": run_id, "action": action}
         )
-        storage_key = digest_value(
-            {"scope": scope.to_dict(), "idempotencyKey": key}
-        )
-        replay = self.store.get_idempotent(
-            scope.tenant_id, storage_key, request_digest
-        )
+        storage_key = digest_value({"scope": scope.to_dict(), "idempotencyKey": key})
+        replay = self.store.get_idempotent(scope.tenant_id, storage_key, request_digest)
         if replay is not None:
             return replay
         response = self._run_document(self.store.control_run(scope, run_id, action))
@@ -288,7 +331,9 @@ class FormalAssuranceRuntime:
         if not isinstance(assumption_hash, str) or not isinstance(tcb_hash, str):
             raise RuntimeRequestError("assumptionHash and tcbHash are required")
         run = self.local_executor.execute(
-            self._scope(payload.get("scope"), identity),
+            self._authorized_scope(
+                payload.get("scope"), identity, action="execute-local-proof-run"
+            ),
             validate_identifier(payload.get("runId"), "runId"),
             validate_identifier(payload.get("workerId"), "workerId"),
             token,
@@ -297,6 +342,231 @@ class FormalAssuranceRuntime:
             tcb_hash=tcb_hash,
         )
         return self._run_document(run)
+
+    def register_assumption(
+        self, payload: dict[str, Any], identity: TrustedIdentity
+    ) -> dict[str, Any]:
+        return self._governed_mutation(
+            payload,
+            identity,
+            "register-assumption",
+            lambda scope, body: self.governance.register_assumption(
+                scope, identity, body
+            ),
+        )
+
+    def register_trusted_component(
+        self, payload: dict[str, Any], identity: TrustedIdentity
+    ) -> dict[str, Any]:
+        return self._governed_mutation(
+            payload,
+            identity,
+            "register-trusted-component",
+            lambda scope, body: self.governance.register_trusted_component(
+                scope, identity, body
+            ),
+        )
+
+    def propose_waiver(
+        self, payload: dict[str, Any], identity: TrustedIdentity
+    ) -> dict[str, Any]:
+        return self._governed_mutation(
+            payload,
+            identity,
+            "propose-waiver",
+            lambda scope, body: self.governance.propose_waiver(scope, identity, body),
+        )
+
+    def approve_waiver(
+        self, payload: dict[str, Any], identity: TrustedIdentity
+    ) -> dict[str, Any]:
+        def mutation(scope: Scope, body: dict[str, Any]) -> dict[str, Any]:
+            self._require_exact_body(body, {"waiverId", "approvalRole"})
+            return self.governance.approve_waiver(
+                scope,
+                identity,
+                validate_identifier(body.get("waiverId"), "waiverId"),
+                str(body.get("approvalRole", "")),
+            )
+
+        return self._governed_mutation(payload, identity, "approve-waiver", mutation)
+
+    def revoke_waiver(
+        self, payload: dict[str, Any], identity: TrustedIdentity
+    ) -> dict[str, Any]:
+        def mutation(scope: Scope, body: dict[str, Any]) -> dict[str, Any]:
+            self._require_exact_body(body, {"waiverId", "reason"})
+            return self.governance.revoke_waiver(
+                scope,
+                identity,
+                validate_identifier(body.get("waiverId"), "waiverId"),
+                str(body.get("reason", "")),
+            )
+
+        return self._governed_mutation(payload, identity, "revoke-waiver", mutation)
+
+    def report_drift(
+        self, payload: dict[str, Any], identity: TrustedIdentity
+    ) -> dict[str, Any]:
+        return self._governed_mutation(
+            payload,
+            identity,
+            "report-proof-drift",
+            lambda scope, body: self.governance.report_drift(scope, identity, body),
+        )
+
+    def build_evidence_bundle(
+        self, payload: dict[str, Any], identity: TrustedIdentity
+    ) -> dict[str, Any]:
+        def mutation(scope: Scope, body: dict[str, Any]) -> dict[str, Any]:
+            self._require_exact_body(body, {"subjectId", "redactionPolicy", "sign"})
+            return self.evidence_bundles.build(
+                scope,
+                identity,
+                subject_id=validate_identifier(body.get("subjectId"), "subjectId"),
+                redaction_policy=str(body.get("redactionPolicy", "")),
+                sign=body.get("sign", True),
+            )
+
+        return self._governed_mutation(
+            payload, identity, "build-evidence-bundle", mutation
+        )
+
+    def verify_evidence_bundle(
+        self, payload: dict[str, Any], identity: TrustedIdentity
+    ) -> dict[str, Any]:
+        def mutation(scope: Scope, body: dict[str, Any]) -> dict[str, Any]:
+            self._require_exact_body(body, {"bundleId"})
+            return self.evidence_bundles.verify(
+                scope,
+                bundle_id=validate_identifier(body.get("bundleId"), "bundleId"),
+            )
+
+        return self._governed_mutation(
+            payload, identity, "verify-evidence-bundle", mutation
+        )
+
+    def dispatch_outbox(
+        self, payload: dict[str, Any], identity: TrustedIdentity
+    ) -> dict[str, Any]:
+        """Deliver one bounded outbox batch through an operator-supplied adapter."""
+        if not isinstance(payload, dict):
+            raise RuntimeRequestError("outbox dispatch payload must be an object")
+        scope = self._authorized_scope(
+            payload.get("scope"), identity, action="dispatch-event-outbox"
+        )
+        if not set(identity.roles) & {
+            "formal-assurance-event-publisher",
+            "formal-assurance-admin",
+            "admin",
+        }:
+            error = RuntimeAuthorizationError(
+                "outbox dispatch requires an explicit event-publisher role"
+            )
+            self.store.record_security_audit(
+                identity,
+                action="dispatch-event-outbox",
+                decision="DENY",
+                reason=str(error),
+                request_metadata={"scopeDigest": digest_value(scope.to_dict())},
+            )
+            setattr(error, "audit_recorded", True)
+            raise error
+        if self.outbox_dispatcher is None:
+            raise RuntimeRequestError("event publisher is not configured")
+        unknown = set(payload) - {"scope", "limit"}
+        if unknown:
+            raise RuntimeRequestError(
+                "outbox dispatch contains unknown fields: " + ", ".join(sorted(unknown))
+            )
+        limit = payload.get("limit", 100)
+        if not isinstance(limit, int) or isinstance(limit, bool):
+            raise RuntimeRequestError("outbox dispatch limit must be an integer")
+        result = self.outbox_dispatcher.dispatch(scope, limit=limit).to_dict()
+        self.store.record_security_audit(
+            identity,
+            action="dispatch-event-outbox",
+            decision="ALLOW",
+            reason="bounded outbox batch dispatched",
+            request_metadata={
+                "scopeDigest": digest_value(scope.to_dict()),
+                "resultDigest": digest_value(result),
+            },
+        )
+        return {
+            **result,
+            "deliveryEvidenceStatus": "LOCAL_EXECUTED_SELF_ATTESTED",
+            "externalEvidenceStatus": "NOT_RUN",
+            "certificationStatus": "NOT_CERTIFIED",
+        }
+
+    def _governed_mutation(
+        self,
+        payload: dict[str, Any],
+        identity: TrustedIdentity,
+        action: str,
+        callback: Any,
+    ) -> dict[str, Any]:
+        if not isinstance(payload, dict):
+            raise RuntimeRequestError("governance payload must be an object")
+        scope = self._authorized_scope(payload.get("scope"), identity, action=action)
+        key = validate_identifier(payload.get("idempotencyKey"), "idempotencyKey")
+        body = dict(payload)
+        body.pop("scope", None)
+        body.pop("idempotencyKey", None)
+        if len(canonical_json(body)) > self.config.max_request_bytes:
+            raise RuntimeRequestError("governance payload exceeds local bound")
+        request_digest = digest_value(
+            {"action": action, "scope": scope.to_dict(), "body": body}
+        )
+        storage_key = digest_value(
+            {
+                "action": action,
+                "scope": scope.to_dict(),
+                "idempotencyKey": key,
+            }
+        )
+        replay = self.store.get_idempotent(scope.tenant_id, storage_key, request_digest)
+        if replay is not None:
+            return replay
+        try:
+            response = callback(scope, body)
+        except GovernanceAuthorizationError as exc:
+            self.store.record_security_audit(
+                identity,
+                action=action,
+                decision="DENY",
+                reason=str(exc),
+                request_metadata={
+                    "action": action,
+                    "requestDigest": request_digest,
+                },
+            )
+            setattr(exc, "audit_recorded", True)
+            raise
+        if not isinstance(response, dict):
+            raise RuntimeRequestError(
+                "governance mutation returned an invalid response"
+            )
+        self.store.record_security_audit(
+            identity,
+            action=action,
+            decision="ALLOW",
+            reason="authorized governance mutation committed",
+            request_metadata={"action": action, "requestDigest": request_digest},
+        )
+        self.store.put_idempotent(
+            scope.tenant_id, storage_key, request_digest, response
+        )
+        return response
+
+    @staticmethod
+    def _require_exact_body(body: dict[str, Any], allowed: set[str]) -> None:
+        unknown = sorted(set(body) - allowed)
+        if unknown:
+            raise RuntimeRequestError(
+                "governance mutation contains unknown fields: " + ", ".join(unknown)
+            )
 
     @staticmethod
     def _run_document(run: dict[str, Any]) -> dict[str, Any]:
@@ -357,6 +627,34 @@ class FormalAssuranceRuntime:
             )
         except (KeyError, ValueError) as exc:
             raise RuntimeRequestError(str(exc)) from exc
+
+    def _authorized_scope(
+        self,
+        value: Any,
+        identity: TrustedIdentity,
+        *,
+        action: str,
+    ) -> Scope:
+        """Resolve trusted scope and durably audit identity-boundary denials."""
+        try:
+            return self._scope(value, identity)
+        except RuntimeAuthorizationError as exc:
+            self.store.record_security_audit(
+                identity,
+                action=action,
+                decision="DENY",
+                reason=str(exc),
+                request_metadata={
+                    "action": action,
+                    "claimedTenantDigest": digest_value(
+                        str(value.get("tenantId"))
+                        if isinstance(value, dict)
+                        else type(value).__name__
+                    ),
+                },
+            )
+            setattr(exc, "audit_recorded", True)
+            raise
 
 
 __all__ = [

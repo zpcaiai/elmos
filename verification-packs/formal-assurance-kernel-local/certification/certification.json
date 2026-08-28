@@ -2,15 +2,17 @@
   "approved_at": null,
   "evidence_refs": [],
   "exact_scope": {
-    "environment_digest": "sha256:12bc4f02184e3f9a197201d35615d7841a1f9e30f0c903a8dbeed8f56b0a18a8",
+    "environment_digest": "sha256:74a18f60878588efb2d3ef924febb383f28d8557dd4f7d872d85e2a5a06c1b39",
     "migration_route": "formal-assurance-kernel-local-runtime",
     "risk_tier": "P1",
     "source_artifact_digest": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
-    "target_artifact_digest": "sha256:f454636fe266a57fe173be495e884985f539cf8745d4ebb8d615f86467037352",
+    "target_artifact_digest": "sha256:cc0bda32d32fcbde167844dcf5d550e84ea6a86c4c983f7ab1d7cff7c1473727",
     "workload_key": "formal-assurance-kernel-60-skills"
   },
   "limitations": [
-    "All 60 Skill code paths and 40 formerly partial production adapters are implemented and locally tested.",
+    "All 60 exact Skill handlers and all 481 source acceptance IDs are mapped to executable repository-owned controls.",
+    "The 481 controls establish local code-path, honesty, counterexample materialization, drift invalidation, and isolation behavior; they do not claim external acceptance execution.",
+    "All 40 native/provider adapter entry points are code-complete and locally contract-tested, but only locally available toolchains are actually executed.",
     "Recorded execution is local and self-attested; executor and verifier are not independent.",
     "Only the locally available Z3 and SQLite paths were natively executed in this qualification.",
     "Other exact native toolchains, OCI images, real databases, Spring representative builds, external telemetry, FFI holdouts, production workloads, deployment, independent review, and certification remain NOT_RUN.",
@@ -18,7 +20,7 @@
   ],
   "metrics": {
     "local_test_pass_rate": 1.0,
-    "local_tests": 42
+    "local_tests": 536
   },
   "owner": "elmos-formal-assurance-engineering",
   "pack_key": "formal-assurance-kernel-local",

@@ -2,19 +2,624 @@
   "declaredVerifierAdapterCount": 17,
   "files": [
     {
-      "byte_size": 46156,
+      "byte_size": 4696,
+      "path": ".agents/skills/elmos-api-contract-verifier/SKILL.md",
+      "sha256": "sha256:9a34402d847fba6a92bd6c37d474bd6f737fecadc8841058dec35419d95648ce"
+    },
+    {
+      "byte_size": 4812,
+      "path": ".agents/skills/elmos-architecture-constraint-checker/SKILL.md",
+      "sha256": "sha256:09b0bf6ef71bee9a0536f5185487a35b6666038e48e48eb30ad28bec97d72e3b"
+    },
+    {
+      "byte_size": 4629,
+      "path": ".agents/skills/elmos-assumption-ledger/SKILL.md",
+      "sha256": "sha256:4aa6f57ada73fd0311ec94357a63a34e0b02d845f48cdc85fdfa2f1007f58e4a"
+    },
+    {
+      "byte_size": 4839,
+      "path": ".agents/skills/elmos-concurrency-async-refinement/SKILL.md",
+      "sha256": "sha256:1f530c2e0ad3793526c1b9e54e242666d590c4b6aa916c8c8629cdac04c8ac51"
+    },
+    {
+      "byte_size": 4773,
+      "path": ".agents/skills/elmos-counterexample-to-test/SKILL.md",
+      "sha256": "sha256:911f1ad4dc0afc977cc2f23af6c662d9ceae48996277fbd5aa2620ea07966655"
+    },
+    {
+      "byte_size": 4775,
+      "path": ".agents/skills/elmos-credit-billing-invariant-model/SKILL.md",
+      "sha256": "sha256:c105657bd2cf54bdfce62b8f3392c65907879e34111a24c2a25f0fd33a1496bd"
+    },
+    {
+      "byte_size": 4877,
+      "path": ".agents/skills/elmos-cross-language-product-program/SKILL.md",
+      "sha256": "sha256:c3c6bc838ffbcaead12bbb327b38d21aa0baac1bbe2bd9a13bfc2b28476fa630"
+    },
+    {
+      "byte_size": 4709,
+      "path": ".agents/skills/elmos-data-invariant-verifier/SKILL.md",
+      "sha256": "sha256:3a4eda67afca9f74f39e18b9ca87154bce14a9d3fddfc6a2ea59fd79f4444e6c"
+    },
+    {
+      "byte_size": 4754,
+      "path": ".agents/skills/elmos-ddl-constraint-preservation/SKILL.md",
+      "sha256": "sha256:65d41e02e53f5a38329ea0c07d8309f14b1f6ed1a75f29e529edc18cc39fbcdd"
+    },
+    {
+      "byte_size": 4731,
+      "path": ".agents/skills/elmos-dml-state-equivalence/SKILL.md",
+      "sha256": "sha256:d3dbf7aa4dcfc6b3422100bf4f05ce8ffcec1eed13f97595f8fab946f5acbcf8"
+    },
+    {
+      "byte_size": 4759,
+      "path": ".agents/skills/elmos-dynamic-sql-proof-boundary/SKILL.md",
+      "sha256": "sha256:308fd34f8cda01d9e8e277fc0ac043c8ba79a6233a52738a247cd0f2a9238451"
+    },
+    {
+      "byte_size": 4848,
+      "path": ".agents/skills/elmos-effect-exception-trace-refinement/SKILL.md",
+      "sha256": "sha256:d88ea1f35e434c128bf277bdeff1bf7357831853fbea0198c6a0d8041704ddc1"
+    },
+    {
+      "byte_size": 4871,
+      "path": ".agents/skills/elmos-formal-assurance-orchestrator/SKILL.md",
+      "sha256": "sha256:d23f53105a7e3eb65c6e73515f9fa0b514395f768a4f5824b51bda16d7246646"
+    },
+    {
+      "byte_size": 4729,
+      "path": ".agents/skills/elmos-formal-assurance-report/SKILL.md",
+      "sha256": "sha256:c53df11a134290d84559ca02dffaa74722e87c736c02e193c63b112de42c4a96"
+    },
+    {
+      "byte_size": 4679,
+      "path": ".agents/skills/elmos-formal-model-versioning/SKILL.md",
+      "sha256": "sha256:38457c0f33d4f7a1a782ae83560a2746a2fdf3689548f4300118fa393371fc81"
+    },
+    {
+      "byte_size": 4790,
+      "path": ".agents/skills/elmos-formal-observability-slo/SKILL.md",
+      "sha256": "sha256:2fce1e9cba6fc5a5a47a5a4bd3f2ed805b3ecde1dc3c09adc33a2a964cc7c23d"
+    },
+    {
+      "byte_size": 4658,
+      "path": ".agents/skills/elmos-formal-release-gate/SKILL.md",
+      "sha256": "sha256:8c9426ec5b82b2b11d0948dc54c559ad26009f699dec4750c9eb139bbea4d42d"
+    },
+    {
+      "byte_size": 4627,
+      "path": ".agents/skills/elmos-formal-spec-ir/SKILL.md",
+      "sha256": "sha256:c0db26c7239592b8fd895c35c5ab275f9abbb3261195cd250b21b1aa946e0cdb"
+    },
+    {
+      "byte_size": 4829,
+      "path": ".agents/skills/elmos-generated-workflow-model-checker/SKILL.md",
+      "sha256": "sha256:85716f7344bf8a45ce68e2c00671f2cdea6a18d71835d0631c4ad792307b319d"
+    },
+    {
+      "byte_size": 4799,
+      "path": ".agents/skills/elmos-java-jml-contract-verifier/SKILL.md",
+      "sha256": "sha256:8cdf003c100deaa8314987852ee745821d828bcbfd06b179c80a51fb463cbe04"
+    },
+    {
+      "byte_size": 4736,
+      "path": ".agents/skills/elmos-language-semantic-profile/SKILL.md",
+      "sha256": "sha256:b322457cbab173dfea37634efe9b3c230a2c800225311901897f7dc4c46d81d8"
+    },
+    {
+      "byte_size": 4660,
+      "path": ".agents/skills/elmos-lease-fencing-verifier/SKILL.md",
+      "sha256": "sha256:0f2312f40680bee625bbb125f2f4f73644774f600f3229e4a24c723e49feed16"
+    },
+    {
+      "byte_size": 4963,
+      "path": ".agents/skills/elmos-legacy-modernization-trace-validator/SKILL.md",
+      "sha256": "sha256:b6c1a7d4705d3d4ec2510160b48f300e299175937668c0118fb74a3824e13c43"
+    },
+    {
+      "byte_size": 4716,
+      "path": ".agents/skills/elmos-liveness-fairness-verifier/SKILL.md",
+      "sha256": "sha256:84cfd682b7096c3cd26b55e1c42618ab8bd19e8395dc23dd0af94143e4e5da4f"
+    },
+    {
+      "byte_size": 4750,
+      "path": ".agents/skills/elmos-observable-behavior-contract/SKILL.md",
+      "sha256": "sha256:6f7c7e46038381992a67c8302f8ee3e99cfddb3515ccc6031e515602a4e73f28"
+    },
+    {
+      "byte_size": 4717,
+      "path": ".agents/skills/elmos-proof-artifact-store/SKILL.md",
+      "sha256": "sha256:b05da57ad71470ba015dee01d8fb51a60783e9626d25d7dca866ff8ecf265b1c"
+    },
+    {
+      "byte_size": 4766,
+      "path": ".agents/skills/elmos-proof-cache-invalidation/SKILL.md",
+      "sha256": "sha256:6bd59de089b71e742a6842a298c62c02d40dc525e29df1d66f20db0bfd40899c"
+    },
+    {
+      "byte_size": 4756,
+      "path": ".agents/skills/elmos-proof-carrying-conversion/SKILL.md",
+      "sha256": "sha256:e12a23f4e2677cc5af504a0f396f31ae836ba999e19055c6d1c39b56e570b8b9"
+    },
+    {
+      "byte_size": 4703,
+      "path": ".agents/skills/elmos-proof-drift-monitor/SKILL.md",
+      "sha256": "sha256:a1882770744f948c3d9a2a751b6671c18a50b60d519e3c293fe8b7df82b77b81"
+    },
+    {
+      "byte_size": 4705,
+      "path": ".agents/skills/elmos-proof-evidence-bundle/SKILL.md",
+      "sha256": "sha256:11f94393d89636eeb1e7fe4d52f97f24b8ae56044b5a4aff02eab2d6863d13fa"
+    },
+    {
+      "byte_size": 4752,
+      "path": ".agents/skills/elmos-proof-obligation-planner/SKILL.md",
+      "sha256": "sha256:686a4ccd3d310e1dfaa4d8296d813dad94b1b51986fc9e85da0350a244e6280e"
+    },
+    {
+      "byte_size": 4640,
+      "path": ".agents/skills/elmos-proof-status-policy/SKILL.md",
+      "sha256": "sha256:f2dbbb717bba0762abc11f82000b5b96210f3dc7dd08521c6efe2931dbdd2353"
+    },
+    {
+      "byte_size": 4876,
+      "path": ".agents/skills/elmos-reflection-ffi-boundary-verifier/SKILL.md",
+      "sha256": "sha256:c737f294b8cbc23ee09bc26eb1044666da40d1a424fc4a074ab64cc104ba9cac"
+    },
+    {
+      "byte_size": 4811,
+      "path": ".agents/skills/elmos-repository-refinement-composer/SKILL.md",
+      "sha256": "sha256:53c0ca075fa18c937216407be2d863d6e5dc2d5caddaf1ccee1cbd805b9ca730"
+    },
+    {
+      "byte_size": 4777,
+      "path": ".agents/skills/elmos-requirement-to-formal-spec/SKILL.md",
+      "sha256": "sha256:c18b604ad8efb85094e40fedd4675edf8c6f125a02d8e04f034cb42b0ec05b5b"
+    },
+    {
+      "byte_size": 4806,
+      "path": ".agents/skills/elmos-resource-termination-verifier/SKILL.md",
+      "sha256": "sha256:aa26f4eb70dac0ea7348942f839a75f67b34905e64fcdf1c66d2c748416c6d35"
+    },
+    {
+      "byte_size": 4758,
+      "path": ".agents/skills/elmos-routine-contract-verifier/SKILL.md",
+      "sha256": "sha256:e8f96157ab219e7e887c6b822f9643be3f40d3aef837b72113f6525f97222b92"
+    },
+    {
+      "byte_size": 4760,
+      "path": ".agents/skills/elmos-rule-preservation-prover/SKILL.md",
+      "sha256": "sha256:e528121923df5aca10adaafaf9f4b6048f07c0884e39785a7dcc853f506dd1e4"
+    },
+    {
+      "byte_size": 4737,
+      "path": ".agents/skills/elmos-schema-losslessness-proof/SKILL.md",
+      "sha256": "sha256:47486ec1be16e462802c6c028ab83b743f21b499bc7b48457f418be50b4ad29c"
+    },
+    {
+      "byte_size": 4862,
+      "path": ".agents/skills/elmos-semantic-gap-obligation-generator/SKILL.md",
+      "sha256": "sha256:b5cdde78c753b6e23278416598dcb896fba3f893ff62dd8e1214a37d4c715d36"
+    },
+    {
+      "byte_size": 4772,
+      "path": ".agents/skills/elmos-semantic-ir-formal-semantics/SKILL.md",
+      "sha256": "sha256:8794039349a787736fe0fcbc9709f6969f2dfc069c9ecc27c13353268bde10d5"
+    },
+    {
+      "byte_size": 4803,
+      "path": ".agents/skills/elmos-spring-data-migration-refinement/SKILL.md",
+      "sha256": "sha256:6369faa2c45fc0ff4d23bcef8cce6af9a1d7aa694cf95eeba855a88130eeedab"
+    },
+    {
+      "byte_size": 4824,
+      "path": ".agents/skills/elmos-spring-exception-mapping-refinement/SKILL.md",
+      "sha256": "sha256:3926b0092191c3f583cd626d4c122a87d937de3113209b27cc4de730e972d5fa"
+    },
+    {
+      "byte_size": 4910,
+      "path": ".agents/skills/elmos-spring-filter-interceptor-order-proof/SKILL.md",
+      "sha256": "sha256:0229710cd6eed48f00dfc420be9c87a4bf7b42d2880dcc68107388bed392c71a"
+    },
+    {
+      "byte_size": 4879,
+      "path": ".agents/skills/elmos-spring-proxy-aop-semantic-checker/SKILL.md",
+      "sha256": "sha256:864d9c59d75bb288799c594ba836fcf8ae6de97cf1c95881a310e024cc106ed7"
+    },
+    {
+      "byte_size": 4843,
+      "path": ".agents/skills/elmos-spring-route-binding-proof/SKILL.md",
+      "sha256": "sha256:e2cb15c2b479bf1e854bab01d29078f4fec3db666ff2e8c62b6277af4a343a5a"
+    },
+    {
+      "byte_size": 4796,
+      "path": ".agents/skills/elmos-spring-security-chain-model/SKILL.md",
+      "sha256": "sha256:21eb9f6bd56e7dc90f789bcba28864dd358dc6043018ca2630ec7a4d180727ba"
+    },
+    {
+      "byte_size": 4826,
+      "path": ".agents/skills/elmos-spring-session-state-refinement/SKILL.md",
+      "sha256": "sha256:c77f4f72dc2bdef82332a81e711868d938d7e0c82b8bf9664a28d26fa985f1b6"
+    },
+    {
+      "byte_size": 4804,
+      "path": ".agents/skills/elmos-spring-transaction-refinement/SKILL.md",
+      "sha256": "sha256:2c22764db1e439a94ff4c42ac60b1bbfca65f8f2b194045717cecf692205947c"
+    },
+    {
+      "byte_size": 4742,
+      "path": ".agents/skills/elmos-sql-query-equivalence/SKILL.md",
+      "sha256": "sha256:3c92a0a900e179723ce647c350556e2353d2fe4e338fcc67cdbc246104cd96e6"
+    },
+    {
+      "byte_size": 4631,
+      "path": ".agents/skills/elmos-sql-semantic-ir/SKILL.md",
+      "sha256": "sha256:89c9ce1e47cb606d4826309f9390cc81d17090ba4ab85bce71e454320ad79d96"
+    },
+    {
+      "byte_size": 4894,
+      "path": ".agents/skills/elmos-sql-transaction-exception-refinement/SKILL.md",
+      "sha256": "sha256:cdfe63282e40f2e8e8f1c9c0e7c2abc795eebd21d8efd04c2073e07355083f41"
+    },
+    {
+      "byte_size": 4749,
+      "path": ".agents/skills/elmos-sql-type-precision-verifier/SKILL.md",
+      "sha256": "sha256:27883d1e99146bacef7567f4eba28d91bc3cb0795259b7ed4b6ee7b0f40a41dc"
+    },
+    {
+      "byte_size": 4845,
+      "path": ".agents/skills/elmos-tenant-noninterference-verifier/SKILL.md",
+      "sha256": "sha256:79225b2a21a6c671389af2d50ede9c664ac1ed342d783b37c06616d449d7f14b"
+    },
+    {
+      "byte_size": 4689,
+      "path": ".agents/skills/elmos-tla-task-runtime-model/SKILL.md",
+      "sha256": "sha256:cf449e9d3f5b4b1824f039e80097332f67e6e7dc9132426fd3e2c6b2123d49ec"
+    },
+    {
+      "byte_size": 4689,
+      "path": ".agents/skills/elmos-trigger-trace-verifier/SKILL.md",
+      "sha256": "sha256:ce1b0e7c9d2769b4e8d0a8ba2949c2c542032a08caf62137b8af33ff13af0599"
+    },
+    {
+      "byte_size": 4797,
+      "path": ".agents/skills/elmos-trusted-computing-base-registry/SKILL.md",
+      "sha256": "sha256:34e8bc48f55106b34ea672cbea4cbb506a23db677e6690aee11c0117bc94708c"
+    },
+    {
+      "byte_size": 4750,
+      "path": ".agents/skills/elmos-verified-core-generator/SKILL.md",
+      "sha256": "sha256:7ee0bc7b03a610091f123f526217f188654797062f44b8a197a3bc11c4209df6"
+    },
+    {
+      "byte_size": 4723,
+      "path": ".agents/skills/elmos-verifier-portfolio-router/SKILL.md",
+      "sha256": "sha256:d59bd8b05156906a1e5c3e624fb70b93da9799f5c475b176d393b9c9230eb35f"
+    },
+    {
+      "byte_size": 4629,
+      "path": ".agents/skills/elmos-waiver-governance/SKILL.md",
+      "sha256": "sha256:1c295e66a4dfab83c17c63d9b027127ef0368dbfc94868b058476de09310b1f2"
+    },
+    {
+      "byte_size": 4696,
+      "path": "agent-skills/runtime/elmos-api-contract-verifier/SKILL.md",
+      "sha256": "sha256:9a34402d847fba6a92bd6c37d474bd6f737fecadc8841058dec35419d95648ce"
+    },
+    {
+      "byte_size": 4812,
+      "path": "agent-skills/runtime/elmos-architecture-constraint-checker/SKILL.md",
+      "sha256": "sha256:09b0bf6ef71bee9a0536f5185487a35b6666038e48e48eb30ad28bec97d72e3b"
+    },
+    {
+      "byte_size": 4629,
+      "path": "agent-skills/runtime/elmos-assumption-ledger/SKILL.md",
+      "sha256": "sha256:4aa6f57ada73fd0311ec94357a63a34e0b02d845f48cdc85fdfa2f1007f58e4a"
+    },
+    {
+      "byte_size": 4839,
+      "path": "agent-skills/runtime/elmos-concurrency-async-refinement/SKILL.md",
+      "sha256": "sha256:1f530c2e0ad3793526c1b9e54e242666d590c4b6aa916c8c8629cdac04c8ac51"
+    },
+    {
+      "byte_size": 4773,
+      "path": "agent-skills/runtime/elmos-counterexample-to-test/SKILL.md",
+      "sha256": "sha256:911f1ad4dc0afc977cc2f23af6c662d9ceae48996277fbd5aa2620ea07966655"
+    },
+    {
+      "byte_size": 4775,
+      "path": "agent-skills/runtime/elmos-credit-billing-invariant-model/SKILL.md",
+      "sha256": "sha256:c105657bd2cf54bdfce62b8f3392c65907879e34111a24c2a25f0fd33a1496bd"
+    },
+    {
+      "byte_size": 4877,
+      "path": "agent-skills/runtime/elmos-cross-language-product-program/SKILL.md",
+      "sha256": "sha256:c3c6bc838ffbcaead12bbb327b38d21aa0baac1bbe2bd9a13bfc2b28476fa630"
+    },
+    {
+      "byte_size": 4709,
+      "path": "agent-skills/runtime/elmos-data-invariant-verifier/SKILL.md",
+      "sha256": "sha256:3a4eda67afca9f74f39e18b9ca87154bce14a9d3fddfc6a2ea59fd79f4444e6c"
+    },
+    {
+      "byte_size": 4754,
+      "path": "agent-skills/runtime/elmos-ddl-constraint-preservation/SKILL.md",
+      "sha256": "sha256:65d41e02e53f5a38329ea0c07d8309f14b1f6ed1a75f29e529edc18cc39fbcdd"
+    },
+    {
+      "byte_size": 4731,
+      "path": "agent-skills/runtime/elmos-dml-state-equivalence/SKILL.md",
+      "sha256": "sha256:d3dbf7aa4dcfc6b3422100bf4f05ce8ffcec1eed13f97595f8fab946f5acbcf8"
+    },
+    {
+      "byte_size": 4759,
+      "path": "agent-skills/runtime/elmos-dynamic-sql-proof-boundary/SKILL.md",
+      "sha256": "sha256:308fd34f8cda01d9e8e277fc0ac043c8ba79a6233a52738a247cd0f2a9238451"
+    },
+    {
+      "byte_size": 4848,
+      "path": "agent-skills/runtime/elmos-effect-exception-trace-refinement/SKILL.md",
+      "sha256": "sha256:d88ea1f35e434c128bf277bdeff1bf7357831853fbea0198c6a0d8041704ddc1"
+    },
+    {
+      "byte_size": 4871,
+      "path": "agent-skills/runtime/elmos-formal-assurance-orchestrator/SKILL.md",
+      "sha256": "sha256:d23f53105a7e3eb65c6e73515f9fa0b514395f768a4f5824b51bda16d7246646"
+    },
+    {
+      "byte_size": 4729,
+      "path": "agent-skills/runtime/elmos-formal-assurance-report/SKILL.md",
+      "sha256": "sha256:c53df11a134290d84559ca02dffaa74722e87c736c02e193c63b112de42c4a96"
+    },
+    {
+      "byte_size": 4679,
+      "path": "agent-skills/runtime/elmos-formal-model-versioning/SKILL.md",
+      "sha256": "sha256:38457c0f33d4f7a1a782ae83560a2746a2fdf3689548f4300118fa393371fc81"
+    },
+    {
+      "byte_size": 4790,
+      "path": "agent-skills/runtime/elmos-formal-observability-slo/SKILL.md",
+      "sha256": "sha256:2fce1e9cba6fc5a5a47a5a4bd3f2ed805b3ecde1dc3c09adc33a2a964cc7c23d"
+    },
+    {
+      "byte_size": 4658,
+      "path": "agent-skills/runtime/elmos-formal-release-gate/SKILL.md",
+      "sha256": "sha256:8c9426ec5b82b2b11d0948dc54c559ad26009f699dec4750c9eb139bbea4d42d"
+    },
+    {
+      "byte_size": 4627,
+      "path": "agent-skills/runtime/elmos-formal-spec-ir/SKILL.md",
+      "sha256": "sha256:c0db26c7239592b8fd895c35c5ab275f9abbb3261195cd250b21b1aa946e0cdb"
+    },
+    {
+      "byte_size": 4829,
+      "path": "agent-skills/runtime/elmos-generated-workflow-model-checker/SKILL.md",
+      "sha256": "sha256:85716f7344bf8a45ce68e2c00671f2cdea6a18d71835d0631c4ad792307b319d"
+    },
+    {
+      "byte_size": 4799,
+      "path": "agent-skills/runtime/elmos-java-jml-contract-verifier/SKILL.md",
+      "sha256": "sha256:8cdf003c100deaa8314987852ee745821d828bcbfd06b179c80a51fb463cbe04"
+    },
+    {
+      "byte_size": 4736,
+      "path": "agent-skills/runtime/elmos-language-semantic-profile/SKILL.md",
+      "sha256": "sha256:b322457cbab173dfea37634efe9b3c230a2c800225311901897f7dc4c46d81d8"
+    },
+    {
+      "byte_size": 4660,
+      "path": "agent-skills/runtime/elmos-lease-fencing-verifier/SKILL.md",
+      "sha256": "sha256:0f2312f40680bee625bbb125f2f4f73644774f600f3229e4a24c723e49feed16"
+    },
+    {
+      "byte_size": 4963,
+      "path": "agent-skills/runtime/elmos-legacy-modernization-trace-validator/SKILL.md",
+      "sha256": "sha256:b6c1a7d4705d3d4ec2510160b48f300e299175937668c0118fb74a3824e13c43"
+    },
+    {
+      "byte_size": 4716,
+      "path": "agent-skills/runtime/elmos-liveness-fairness-verifier/SKILL.md",
+      "sha256": "sha256:84cfd682b7096c3cd26b55e1c42618ab8bd19e8395dc23dd0af94143e4e5da4f"
+    },
+    {
+      "byte_size": 4750,
+      "path": "agent-skills/runtime/elmos-observable-behavior-contract/SKILL.md",
+      "sha256": "sha256:6f7c7e46038381992a67c8302f8ee3e99cfddb3515ccc6031e515602a4e73f28"
+    },
+    {
+      "byte_size": 4717,
+      "path": "agent-skills/runtime/elmos-proof-artifact-store/SKILL.md",
+      "sha256": "sha256:b05da57ad71470ba015dee01d8fb51a60783e9626d25d7dca866ff8ecf265b1c"
+    },
+    {
+      "byte_size": 4766,
+      "path": "agent-skills/runtime/elmos-proof-cache-invalidation/SKILL.md",
+      "sha256": "sha256:6bd59de089b71e742a6842a298c62c02d40dc525e29df1d66f20db0bfd40899c"
+    },
+    {
+      "byte_size": 4756,
+      "path": "agent-skills/runtime/elmos-proof-carrying-conversion/SKILL.md",
+      "sha256": "sha256:e12a23f4e2677cc5af504a0f396f31ae836ba999e19055c6d1c39b56e570b8b9"
+    },
+    {
+      "byte_size": 4703,
+      "path": "agent-skills/runtime/elmos-proof-drift-monitor/SKILL.md",
+      "sha256": "sha256:a1882770744f948c3d9a2a751b6671c18a50b60d519e3c293fe8b7df82b77b81"
+    },
+    {
+      "byte_size": 4705,
+      "path": "agent-skills/runtime/elmos-proof-evidence-bundle/SKILL.md",
+      "sha256": "sha256:11f94393d89636eeb1e7fe4d52f97f24b8ae56044b5a4aff02eab2d6863d13fa"
+    },
+    {
+      "byte_size": 4752,
+      "path": "agent-skills/runtime/elmos-proof-obligation-planner/SKILL.md",
+      "sha256": "sha256:686a4ccd3d310e1dfaa4d8296d813dad94b1b51986fc9e85da0350a244e6280e"
+    },
+    {
+      "byte_size": 4640,
+      "path": "agent-skills/runtime/elmos-proof-status-policy/SKILL.md",
+      "sha256": "sha256:f2dbbb717bba0762abc11f82000b5b96210f3dc7dd08521c6efe2931dbdd2353"
+    },
+    {
+      "byte_size": 4876,
+      "path": "agent-skills/runtime/elmos-reflection-ffi-boundary-verifier/SKILL.md",
+      "sha256": "sha256:c737f294b8cbc23ee09bc26eb1044666da40d1a424fc4a074ab64cc104ba9cac"
+    },
+    {
+      "byte_size": 4811,
+      "path": "agent-skills/runtime/elmos-repository-refinement-composer/SKILL.md",
+      "sha256": "sha256:53c0ca075fa18c937216407be2d863d6e5dc2d5caddaf1ccee1cbd805b9ca730"
+    },
+    {
+      "byte_size": 4777,
+      "path": "agent-skills/runtime/elmos-requirement-to-formal-spec/SKILL.md",
+      "sha256": "sha256:c18b604ad8efb85094e40fedd4675edf8c6f125a02d8e04f034cb42b0ec05b5b"
+    },
+    {
+      "byte_size": 4806,
+      "path": "agent-skills/runtime/elmos-resource-termination-verifier/SKILL.md",
+      "sha256": "sha256:aa26f4eb70dac0ea7348942f839a75f67b34905e64fcdf1c66d2c748416c6d35"
+    },
+    {
+      "byte_size": 4758,
+      "path": "agent-skills/runtime/elmos-routine-contract-verifier/SKILL.md",
+      "sha256": "sha256:e8f96157ab219e7e887c6b822f9643be3f40d3aef837b72113f6525f97222b92"
+    },
+    {
+      "byte_size": 4760,
+      "path": "agent-skills/runtime/elmos-rule-preservation-prover/SKILL.md",
+      "sha256": "sha256:e528121923df5aca10adaafaf9f4b6048f07c0884e39785a7dcc853f506dd1e4"
+    },
+    {
+      "byte_size": 4737,
+      "path": "agent-skills/runtime/elmos-schema-losslessness-proof/SKILL.md",
+      "sha256": "sha256:47486ec1be16e462802c6c028ab83b743f21b499bc7b48457f418be50b4ad29c"
+    },
+    {
+      "byte_size": 4862,
+      "path": "agent-skills/runtime/elmos-semantic-gap-obligation-generator/SKILL.md",
+      "sha256": "sha256:b5cdde78c753b6e23278416598dcb896fba3f893ff62dd8e1214a37d4c715d36"
+    },
+    {
+      "byte_size": 4772,
+      "path": "agent-skills/runtime/elmos-semantic-ir-formal-semantics/SKILL.md",
+      "sha256": "sha256:8794039349a787736fe0fcbc9709f6969f2dfc069c9ecc27c13353268bde10d5"
+    },
+    {
+      "byte_size": 4803,
+      "path": "agent-skills/runtime/elmos-spring-data-migration-refinement/SKILL.md",
+      "sha256": "sha256:6369faa2c45fc0ff4d23bcef8cce6af9a1d7aa694cf95eeba855a88130eeedab"
+    },
+    {
+      "byte_size": 4824,
+      "path": "agent-skills/runtime/elmos-spring-exception-mapping-refinement/SKILL.md",
+      "sha256": "sha256:3926b0092191c3f583cd626d4c122a87d937de3113209b27cc4de730e972d5fa"
+    },
+    {
+      "byte_size": 4910,
+      "path": "agent-skills/runtime/elmos-spring-filter-interceptor-order-proof/SKILL.md",
+      "sha256": "sha256:0229710cd6eed48f00dfc420be9c87a4bf7b42d2880dcc68107388bed392c71a"
+    },
+    {
+      "byte_size": 4879,
+      "path": "agent-skills/runtime/elmos-spring-proxy-aop-semantic-checker/SKILL.md",
+      "sha256": "sha256:864d9c59d75bb288799c594ba836fcf8ae6de97cf1c95881a310e024cc106ed7"
+    },
+    {
+      "byte_size": 4843,
+      "path": "agent-skills/runtime/elmos-spring-route-binding-proof/SKILL.md",
+      "sha256": "sha256:e2cb15c2b479bf1e854bab01d29078f4fec3db666ff2e8c62b6277af4a343a5a"
+    },
+    {
+      "byte_size": 4796,
+      "path": "agent-skills/runtime/elmos-spring-security-chain-model/SKILL.md",
+      "sha256": "sha256:21eb9f6bd56e7dc90f789bcba28864dd358dc6043018ca2630ec7a4d180727ba"
+    },
+    {
+      "byte_size": 4826,
+      "path": "agent-skills/runtime/elmos-spring-session-state-refinement/SKILL.md",
+      "sha256": "sha256:c77f4f72dc2bdef82332a81e711868d938d7e0c82b8bf9664a28d26fa985f1b6"
+    },
+    {
+      "byte_size": 4804,
+      "path": "agent-skills/runtime/elmos-spring-transaction-refinement/SKILL.md",
+      "sha256": "sha256:2c22764db1e439a94ff4c42ac60b1bbfca65f8f2b194045717cecf692205947c"
+    },
+    {
+      "byte_size": 4742,
+      "path": "agent-skills/runtime/elmos-sql-query-equivalence/SKILL.md",
+      "sha256": "sha256:3c92a0a900e179723ce647c350556e2353d2fe4e338fcc67cdbc246104cd96e6"
+    },
+    {
+      "byte_size": 4631,
+      "path": "agent-skills/runtime/elmos-sql-semantic-ir/SKILL.md",
+      "sha256": "sha256:89c9ce1e47cb606d4826309f9390cc81d17090ba4ab85bce71e454320ad79d96"
+    },
+    {
+      "byte_size": 4894,
+      "path": "agent-skills/runtime/elmos-sql-transaction-exception-refinement/SKILL.md",
+      "sha256": "sha256:cdfe63282e40f2e8e8f1c9c0e7c2abc795eebd21d8efd04c2073e07355083f41"
+    },
+    {
+      "byte_size": 4749,
+      "path": "agent-skills/runtime/elmos-sql-type-precision-verifier/SKILL.md",
+      "sha256": "sha256:27883d1e99146bacef7567f4eba28d91bc3cb0795259b7ed4b6ee7b0f40a41dc"
+    },
+    {
+      "byte_size": 4845,
+      "path": "agent-skills/runtime/elmos-tenant-noninterference-verifier/SKILL.md",
+      "sha256": "sha256:79225b2a21a6c671389af2d50ede9c664ac1ed342d783b37c06616d449d7f14b"
+    },
+    {
+      "byte_size": 4689,
+      "path": "agent-skills/runtime/elmos-tla-task-runtime-model/SKILL.md",
+      "sha256": "sha256:cf449e9d3f5b4b1824f039e80097332f67e6e7dc9132426fd3e2c6b2123d49ec"
+    },
+    {
+      "byte_size": 4689,
+      "path": "agent-skills/runtime/elmos-trigger-trace-verifier/SKILL.md",
+      "sha256": "sha256:ce1b0e7c9d2769b4e8d0a8ba2949c2c542032a08caf62137b8af33ff13af0599"
+    },
+    {
+      "byte_size": 4797,
+      "path": "agent-skills/runtime/elmos-trusted-computing-base-registry/SKILL.md",
+      "sha256": "sha256:34e8bc48f55106b34ea672cbea4cbb506a23db677e6690aee11c0117bc94708c"
+    },
+    {
+      "byte_size": 4750,
+      "path": "agent-skills/runtime/elmos-verified-core-generator/SKILL.md",
+      "sha256": "sha256:7ee0bc7b03a610091f123f526217f188654797062f44b8a197a3bc11c4209df6"
+    },
+    {
+      "byte_size": 4723,
+      "path": "agent-skills/runtime/elmos-verifier-portfolio-router/SKILL.md",
+      "sha256": "sha256:d59bd8b05156906a1e5c3e624fb70b93da9799f5c475b176d393b9c9230eb35f"
+    },
+    {
+      "byte_size": 4629,
+      "path": "agent-skills/runtime/elmos-waiver-governance/SKILL.md",
+      "sha256": "sha256:1c295e66a4dfab83c17c63d9b027127ef0368dbfc94868b058476de09310b1f2"
+    },
+    {
+      "byte_size": 525376,
+      "path": "docs/formal-assurance-kernel/acceptance-traceability.json",
+      "sha256": "sha256:99cb1eb393f4505b51e52ba693d0c67e488b1257dd0b13c2da6bd5629b58ffac"
+    },
+    {
+      "byte_size": 68255,
       "path": "docs/formal-assurance-kernel/installed-manifest.json",
-      "sha256": "sha256:7fd64c2ea1f4d9e84d1dbdd174140fb3f7745c439e01df52d045aed196570574"
+      "sha256": "sha256:bb1f43edd6a06045a811de016807425b652cab304cb6ea2ef9fc7514cdf8abf6"
     },
     {
-      "byte_size": 45338,
+      "byte_size": 67471,
       "path": "docs/formal-assurance-kernel/skill-registry.json",
-      "sha256": "sha256:f00d2f785c9ea7ff7027812ea47940c44268e293c18adc62882e6713092c6edb"
+      "sha256": "sha256:d960d950e97d6601daabb848ce725db38bf7c1642d1d043954f6ccaecc815424"
     },
     {
-      "byte_size": 4008,
+      "byte_size": 5857,
       "path": "engines/formal-assurance-engine/README.md",
-      "sha256": "sha256:d8c679ffb1773defad203f5166db8a890f0b2d5e1247e44be0e9f1f6bc2066fd"
+      "sha256": "sha256:ce67fbcbe0e723e325a2ca4d638f121bd4257858d7ee79d8595a35fe3eb94842"
     },
     {
       "byte_size": 552,
@@ -22,19 +627,29 @@
       "sha256": "sha256:1cd845fb1aa84b8017ea95fc43ec1df369420b25ed115bb45b05f572b8caba09"
     },
     {
-      "byte_size": 1768,
+      "byte_size": 7666,
+      "path": "engines/formal-assurance-engine/sql/postgresql/V005__formal_assurance_runtime_extensions.sql",
+      "sha256": "sha256:38f7e13c3c6162d6535e91c606842e27b2cb4a03f3b2d1406168af567fece637"
+    },
+    {
+      "byte_size": 2237,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/__init__.py",
-      "sha256": "sha256:7b6e6ef20406c6ce8f091ad0f19dddf284101d7b8f362daab04f2236c53ef49e"
+      "sha256": "sha256:4eaebc15fafee141e5a01f5ce224ff19de224f94a7cba25e82fab94bc18e0ce5"
     },
     {
-      "byte_size": 18285,
+      "byte_size": 25033,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/api.py",
-      "sha256": "sha256:4bb74e6a6b5610c13132b21b7254e72a9290bbdcd1efa9d1476be783df74cf96"
+      "sha256": "sha256:e3ff7f6ced27c6befcfd079aab69289b85ce2792e9a7ae742818adc3e2934c34"
     },
     {
-      "byte_size": 8824,
+      "byte_size": 9452,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/artifact_store.py",
-      "sha256": "sha256:63dadcd188e4dc87919bd7849c72bb453bab4a6db77f1c9597a200f02373e0eb"
+      "sha256": "sha256:59be7af6209def29726cc8aa030c33304056411704be961a9d38dbd6955374ec"
+    },
+    {
+      "byte_size": 13676,
+      "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/bundles.py",
+      "sha256": "sha256:8095f2128b3aad466418455952d2166c1c8d8cb03646d2285ee36728625280e3"
     },
     {
       "byte_size": 3236,
@@ -42,9 +657,9 @@
       "sha256": "sha256:4aca6b9bb586f7bf64307fcf889f0cb5cca92617ca07cbc4a2b7be1875969255"
     },
     {
-      "byte_size": 4786,
+      "byte_size": 5306,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/cli.py",
-      "sha256": "sha256:df5432eb93a06822d76609e88632a1b24383f867d00dc3bdfd57d9b1f34c9ce2"
+      "sha256": "sha256:d80bb1a10e8085d05585eefc802d7e29a1ee8149eac0c582e47c6dc8aac79dee"
     },
     {
       "byte_size": 10065,
@@ -52,9 +667,14 @@
       "sha256": "sha256:ca5fb3ad239a5b54cd6093879a141d6a8cb14277a0cc48478a8ad93f47e1e5b2"
     },
     {
-      "byte_size": 16158,
+      "byte_size": 16126,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/database.py",
-      "sha256": "sha256:cbf423c8b28d56242d77afda3a849f6ebf85654314af2e19ff0a5bc8f13afe68"
+      "sha256": "sha256:46b423d6d099ea15bea00ca767a06fd23b33d3a3ccdc893239d0875c7887df13"
+    },
+    {
+      "byte_size": 6724,
+      "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/events.py",
+      "sha256": "sha256:7b42eb696426dccedfed0f2e0cac39acedde1b51ab67bd00920c7f7478ccecd2"
     },
     {
       "byte_size": 4973,
@@ -62,14 +682,14 @@
       "sha256": "sha256:2939884f7c978674336a927a863f2e4b6b2495fa3e210f9429eb7172ee69c887"
     },
     {
-      "byte_size": 52611,
+      "byte_size": 52579,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/execution.py",
-      "sha256": "sha256:4d730929277407cbb910b74797911ac82e9a7183524a657bd045a5217c223ac1"
+      "sha256": "sha256:f05deaf3244a5d12e5414044c2aada5beffd577fa1b1f3f03a0602154c5ce9a9"
     },
     {
-      "byte_size": 8734,
+      "byte_size": 8702,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/executor.py",
-      "sha256": "sha256:a11e85a9aa63e36605f161fc36abab68b49794961cf8cb5b4616c8aba07ed536"
+      "sha256": "sha256:5a0a6d49efc36427cf264cefbffecb6b6c6db25efc28a3dcfa3ebba6651851bf"
     },
     {
       "byte_size": 8178,
@@ -77,9 +697,14 @@
       "sha256": "sha256:991248ff357d17909c3508974ab374a2dd2979617b50d40d7fa24d7b430971c0"
     },
     {
-      "byte_size": 109345,
+      "byte_size": 22933,
+      "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/governance.py",
+      "sha256": "sha256:235730f4826344f260a382989132d6bcc886224b102744bcc7a81e999c64a8c0"
+    },
+    {
+      "byte_size": 110588,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/handlers.py",
-      "sha256": "sha256:eca7414f00bb0eed751e4a09f8848c322f7aad5aa2cf98d474771a88a053d0d7"
+      "sha256": "sha256:8a52541694f3d5da6b0c0d1baedfb16c2ff6e668a7ebbb471d60f66f9fb9c700"
     },
     {
       "byte_size": 7672,
@@ -92,9 +717,14 @@
       "sha256": "sha256:ec180e0dee6eb84f79e37a84d1d3dc44df2df9b961264411be903546f84c0f65"
     },
     {
-      "byte_size": 17316,
+      "byte_size": 6606,
+      "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/postgres.py",
+      "sha256": "sha256:cd2e1290dd9d31714e22fb730518a4aef90e6d342435ee624c009446ed06da37"
+    },
+    {
+      "byte_size": 17284,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/production.py",
-      "sha256": "sha256:a85e241e994e7aa48accb11b611bfde9d973f19118d51570bfd9c334a5ddb693"
+      "sha256": "sha256:814ad66a501fe96e5516e24b58345162c84e0e46468b33274035aec958bdd7f9"
     },
     {
       "byte_size": 8545,
@@ -102,24 +732,29 @@
       "sha256": "sha256:3b184ae2a21fac75d5177af8df02f6548fa046f27e6e45e387a65fa39b7e4fb2"
     },
     {
-      "byte_size": 15342,
+      "byte_size": 27159,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/runtime.py",
-      "sha256": "sha256:c2f6debd4afbaf5223351696de75a9545a8d4afd467000ade36da80c8eb2b81e"
+      "sha256": "sha256:443b056979e6561eaea4f777ac317755f1863c476170bc956d7a467659dde8a7"
     },
     {
-      "byte_size": 52265,
+      "byte_size": 78095,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/store.py",
-      "sha256": "sha256:6f42924b50c03985c871dc6ac05881bd90390156aa5e5b20699724e4c10e723a"
+      "sha256": "sha256:c78d8b6a3274939f69da5eb9d7957b54f58839ad8c529df28afc0b46de5b15a2"
     },
     {
-      "byte_size": 9692,
+      "byte_size": 12471,
+      "path": "engines/formal-assurance-engine/tests/test_acceptance_criteria.py",
+      "sha256": "sha256:76b7f22285af91f0b0d861ece015de46858f26d098f2ca41943ccd5cb2a200c3"
+    },
+    {
+      "byte_size": 27502,
       "path": "engines/formal-assurance-engine/tests/test_all_skill_contracts.py",
-      "sha256": "sha256:7f730a800af888f41d17a0aa8f9f695ee50a62bbeefda79007044f6e11e82cbc"
+      "sha256": "sha256:ab7b857fec1d5521007db06794d7c416b3830a9a96c7060eccdb76b2c9e4fb45"
     },
     {
-      "byte_size": 10568,
+      "byte_size": 11383,
       "path": "engines/formal-assurance-engine/tests/test_api.py",
-      "sha256": "sha256:bef18462e82d40c69901d7b0e53b1ce385d04bb79bf4eaac60c6f06a57897a09"
+      "sha256": "sha256:d09cfa547db1ff0ce5daba5ceb7dd7c8f259965bc2ecf66c85f30ac4f6a750bd"
     },
     {
       "byte_size": 2750,
@@ -132,14 +767,24 @@
       "sha256": "sha256:0f2115c204e75ec9c2d6cd4c64e11a9ab81f0863c6610c4091282a33edcbfcff"
     },
     {
+      "byte_size": 22718,
+      "path": "engines/formal-assurance-engine/tests/test_governance_bundles_events.py",
+      "sha256": "sha256:ef16b7409b168ca2a1cc1676fdddfe3997fd2a3397d20a71907e9ce3401f6a1d"
+    },
+    {
+      "byte_size": 3554,
+      "path": "engines/formal-assurance-engine/tests/test_postgres_migration.py",
+      "sha256": "sha256:7cb42a1d53b9dd3b2e7a25be98a0c9715c57a75e9a1ba80d10e03f167466d14e"
+    },
+    {
       "byte_size": 28582,
       "path": "engines/formal-assurance-engine/tests/test_production_execution.py",
       "sha256": "sha256:f7039c8d9c034d6573b4c203a05f153b447a3b4096425db61b2a3877dfb3af40"
     },
     {
-      "byte_size": 8059,
+      "byte_size": 9376,
       "path": "engines/formal-assurance-engine/tests/test_runtime.py",
-      "sha256": "sha256:d79937a3a5370df1cd0b468a55c89f63014c5ffc4d1fafcab50a3a428ebf5fb7"
+      "sha256": "sha256:01834a1e34fed4f5f3f06f1959e2004e2dbecdeb0fd01c2a154e0aa639659a24"
     },
     {
       "byte_size": 6254,
@@ -147,22 +792,24 @@
       "sha256": "sha256:fb86258745cf4e4717e1727e6a26b8dcf87b7fe64acb72f13c3b7884abcd4142"
     },
     {
-      "byte_size": 25149,
+      "byte_size": 27383,
       "path": "scripts/formal_assurance/generate_local_qualification.py",
-      "sha256": "sha256:63c15742c34982130ca5434ed27c7e87a7ecfad16e42ec8895a6b2f6b96ddc24"
+      "sha256": "sha256:d2b61d445e52408b0aeb456efb7209024206d085588122d2a197df974d515328"
     },
     {
-      "byte_size": 3119,
+      "byte_size": 5298,
       "path": "tests/formal-assurance-kernel/test_integration.py",
-      "sha256": "sha256:d2735e42bc32673df6b5fa7f9d1df0421e890d5d3ec05d30363de0e470cf355a"
+      "sha256": "sha256:84b3e5aa12f530e4955cceacfaaf91bc8c75e31d02bc7a43593a38abb186cb52"
     },
     {
-      "byte_size": 24479,
+      "byte_size": 41907,
       "path": "tooling/integrate_formal_assurance_kernel.py",
-      "sha256": "sha256:c4d79f73113497bb655dc379bd98fda81813d40d9a894c610f776de494e43ff5"
+      "sha256": "sha256:000de703202851650f335cb79980a3e8c96acd992140df6471ee7b06efb41f99"
     }
   ],
   "format": "elmos-formal-implementation-manifest/v1",
+  "installedSkillInterfaceCount": 120,
   "productionMethodCount": 40,
-  "skillCount": 60
+  "skillCount": 60,
+  "sourceAcceptanceCriterionCount": 481
 }

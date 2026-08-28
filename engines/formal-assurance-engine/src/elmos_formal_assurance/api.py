@@ -5,9 +5,11 @@ from io import BytesIO
 from typing import Any, Callable
 from urllib.parse import parse_qs
 
-from .canonical import digest_value
+from .artifact_store import ArtifactStoreError
+from .bundles import EvidenceBundleError
 from .contracts import TrustedIdentity
 from .execution import ExecutionAuthorizationError, ExecutionContractError
+from .governance import GovernanceAuthorizationError, GovernanceError
 from .observability import ObservabilityError
 from .runtime import (
     FormalAssuranceRuntime,
@@ -117,42 +119,61 @@ class FormalAssuranceApi:
                             "proof run account does not match trusted resource scope"
                         )
                 if payload.get("state", "QUEUED") != "QUEUED":
-                    raise RuntimeRequestError("new proof runs must begin in QUEUED state")
+                    raise RuntimeRequestError(
+                        "new proof runs must begin in QUEUED state"
+                    )
                 if int(payload.get("fencingToken", 1)) != 1:
-                    raise RuntimeRequestError("new proof runs must begin with fencingToken 1")
+                    raise RuntimeRequestError(
+                        "new proof runs must begin with fencingToken 1"
+                    )
                 result = self.runtime.submit_run(payload, identity)
                 return _response(start_response, "202 Accepted", result)
             if method == "GET" and path.startswith("/v1/proof-runs/"):
                 run_id = path[len("/v1/proof-runs/") :].strip("/")
                 if not run_id or "/" in run_id:
-                    return _response(start_response, "404 Not Found", {"error": "not found"})
+                    return _response(
+                        start_response, "404 Not Found", {"error": "not found"}
+                    )
                 identity = self._identity(environ)
                 result = self.runtime.get_run(
-                    {"scope": self._scope_from_headers(environ, identity), "runId": run_id},
+                    {
+                        "scope": self._scope_from_headers(environ, identity),
+                        "runId": run_id,
+                    },
                     identity,
                 )
                 return _response(start_response, "200 OK", result)
             if method == "GET" and path.startswith("/v1/executions/"):
                 execution_id = path[len("/v1/executions/") :].strip("/")
                 if not execution_id or "/" in execution_id:
-                    return _response(start_response, "404 Not Found", {"error": "not found"})
+                    return _response(
+                        start_response, "404 Not Found", {"error": "not found"}
+                    )
                 identity = self._identity(environ)
                 scope = self.runtime._scope(
                     self._scope_from_headers(environ, identity), identity
                 )
                 result = self.runtime.store.get_execution_receipt(scope, execution_id)
                 return _response(start_response, "200 OK", result)
-            if method == "POST" and path.startswith("/v1/proof-runs/") and path.endswith("/execute-local"):
-                run_id = path[
-                    len("/v1/proof-runs/") : -len("/execute-local")
-                ].strip("/")
+            if (
+                method == "POST"
+                and path.startswith("/v1/proof-runs/")
+                and path.endswith("/execute-local")
+            ):
+                run_id = path[len("/v1/proof-runs/") : -len("/execute-local")].strip(
+                    "/"
+                )
                 identity = self._identity(environ)
                 payload = self._payload(environ)
                 payload["runId"] = run_id
                 payload["scope"] = self._scope_from_headers(environ, identity)
                 result = self.runtime.execute_local_run(payload, identity)
                 return _response(start_response, "200 OK", result)
-            if method == "POST" and path.startswith("/v1/proof-runs/") and path.endswith("/actions"):
+            if (
+                method == "POST"
+                and path.startswith("/v1/proof-runs/")
+                and path.endswith("/actions")
+            ):
                 run_id = path[len("/v1/proof-runs/") : -len("/actions")].strip("/")
                 identity = self._identity(environ)
                 payload = self._payload(environ)
@@ -219,46 +240,140 @@ class FormalAssuranceApi:
             if method == "POST" and path == "/v1/evidence-bundles":
                 identity = self._identity(environ)
                 request = self._payload(environ)
-                subject_id = str(request.get("subjectId", ""))
-                scope = self.runtime._scope(
-                    self._scope_from_headers(environ, identity), identity
+                result = self.runtime.build_evidence_bundle(
+                    self._governance_envelope(environ, identity, request), identity
                 )
-                bundle_id = "bundle-" + self.runtime.store.put_document(
-                    scope,
-                    "evidence_bundle_request",
-                    subject_id,
-                    request,
-                    version="request-"
-                    + digest_value(request).removeprefix("sha256:")[:24],
-                )["contentDigest"].removeprefix("sha256:")[:24]
                 return _response(
                     start_response,
                     "202 Accepted",
-                    {
-                        "bundleId": bundle_id,
-                        "subjectId": subject_id,
-                        "state": "QUEUED",
-                        "capabilityState": "BLOCKED_EVIDENCE_FILES_REQUIRED",
-                        "externalEvidenceStatus": "NOT_RUN",
-                        "certification": "NOT_CERTIFIED",
-                    },
+                    result,
                 )
-            if method == "GET" and path.startswith("/v1/gates/") and path.endswith("/latest"):
+            if (
+                method == "POST"
+                and path.startswith("/v1/evidence-bundles/")
+                and path.endswith("/verify")
+            ):
+                bundle_id = path[len("/v1/evidence-bundles/") : -len("/verify")].strip(
+                    "/"
+                )
+                if not bundle_id or "/" in bundle_id:
+                    return _response(
+                        start_response, "404 Not Found", {"error": "not found"}
+                    )
+                identity = self._identity(environ)
+                request = self._payload(environ)
+                if request:
+                    raise RuntimeRequestError("bundle verification body must be empty")
+                try:
+                    result = self.runtime.verify_evidence_bundle(
+                        self._governance_envelope(
+                            environ, identity, {"bundleId": bundle_id}
+                        ),
+                        identity,
+                    )
+                except (EvidenceBundleError, ArtifactStoreError, StoreError) as exc:
+                    return _response(
+                        start_response, "422 Unprocessable Entity", {"error": str(exc)}
+                    )
+                status = (
+                    "200 OK"
+                    if result.get("integrityStatus") == "VERIFIED"
+                    else "422 Unprocessable Entity"
+                )
+                return _response(start_response, status, result)
+            if method == "POST" and path == "/v1/assumptions":
+                identity = self._identity(environ)
+                document = self._payload(environ)
+                result = self.runtime.register_assumption(
+                    self._governance_envelope(environ, identity, document), identity
+                )
+                return _response(start_response, "201 Created", result)
+            if method == "POST" and path == "/v1/trusted-components":
+                identity = self._identity(environ)
+                document = self._payload(environ)
+                result = self.runtime.register_trusted_component(
+                    self._governance_envelope(environ, identity, document), identity
+                )
+                return _response(start_response, "201 Created", result)
+            if method == "POST" and path == "/v1/waivers":
+                identity = self._identity(environ)
+                document = self._payload(environ)
+                result = self.runtime.propose_waiver(
+                    self._governance_envelope(environ, identity, document), identity
+                )
+                return _response(start_response, "201 Created", result)
+            if (
+                method == "POST"
+                and path.startswith("/v1/waivers/")
+                and path.endswith("/approvals")
+            ):
+                waiver_id = path[len("/v1/waivers/") : -len("/approvals")].strip("/")
+                if not waiver_id or "/" in waiver_id:
+                    return _response(
+                        start_response, "404 Not Found", {"error": "not found"}
+                    )
+                identity = self._identity(environ)
+                request = self._payload(environ)
+                request["waiverId"] = waiver_id
+                result = self.runtime.approve_waiver(
+                    self._governance_envelope(environ, identity, request), identity
+                )
+                return _response(start_response, "202 Accepted", result)
+            if (
+                method == "POST"
+                and path.startswith("/v1/waivers/")
+                and path.endswith("/revoke")
+            ):
+                waiver_id = path[len("/v1/waivers/") : -len("/revoke")].strip("/")
+                if not waiver_id or "/" in waiver_id:
+                    return _response(
+                        start_response, "404 Not Found", {"error": "not found"}
+                    )
+                identity = self._identity(environ)
+                request = self._payload(environ)
+                request["waiverId"] = waiver_id
+                result = self.runtime.revoke_waiver(
+                    self._governance_envelope(environ, identity, request), identity
+                )
+                return _response(start_response, "202 Accepted", result)
+            if method == "POST" and path == "/v1/drift/events":
+                identity = self._identity(environ)
+                document = self._payload(environ)
+                result = self.runtime.report_drift(
+                    self._governance_envelope(environ, identity, document), identity
+                )
+                return _response(start_response, "202 Accepted", result)
+            if (
+                method == "GET"
+                and path.startswith("/v1/gates/")
+                and path.endswith("/latest")
+            ):
                 identity = self._identity(environ)
                 subject_id = path[len("/v1/gates/") : -len("/latest")].strip("/")
                 query = parse_qs(str(environ.get("QUERY_STRING", "")))
                 gate = query.get("gate", [None])[0]
                 if not gate:
                     raise RuntimeRequestError("gate query parameter is required")
-                scope = self.runtime._scope(
-                    self._scope_from_headers(environ, identity), identity
+                scope = self.runtime._authorized_scope(
+                    self._scope_from_headers(environ, identity),
+                    identity,
+                    action="read-latest-gate",
                 )
-                document = self.runtime.store.get_document(
-                    scope, "gate_decision", subject_id
-                )
-                if document["document"].get("requiredGate") != gate:
+                matching = [
+                    record
+                    for record in self.runtime.store.list_documents(
+                        scope, subject_id=subject_id
+                    )
+                    if record["documentType"] == "gate_decision"
+                    and record["document"].get("gate") == gate
+                ]
+                if not matching:
                     raise StoreError("no latest decision exists for the requested gate")
-                return _response(start_response, "200 OK", document["document"])
+                return _response(
+                    start_response,
+                    "200 OK",
+                    max(matching, key=lambda item: item["createdAt"])["document"],
+                )
             if method == "POST" and path == "/v1/gates/evaluate":
                 identity = self._identity(environ)
                 payload = self._payload(environ)
@@ -267,7 +382,9 @@ class FormalAssuranceApi:
                     **payload,
                     "obligations": payload.get("obligations", []),
                     "results": payload.get("results", []),
-                    "requiredGate": payload.get("gate", payload.get("requiredGate", "E2_MODEL")),
+                    "requiredGate": payload.get(
+                        "gate", payload.get("requiredGate", "E2_MODEL")
+                    ),
                 }
                 result = self.runtime.dispatch(
                     "elmos-formal-release-gate",
@@ -282,18 +399,69 @@ class FormalAssuranceApi:
                 return _response(start_response, "200 OK", result)
         except KeyError as exc:
             return _response(start_response, "404 Not Found", {"error": str(exc)})
-        except (RuntimeAuthorizationError, ExecutionAuthorizationError) as exc:
+        except (
+            RuntimeAuthorizationError,
+            ExecutionAuthorizationError,
+            GovernanceAuthorizationError,
+        ) as exc:
+            self._audit_denial(environ, method, path, exc)
             return _response(start_response, "403 Forbidden", {"error": str(exc)})
         except (
             RuntimeRequestError,
             ExecutionContractError,
             ObservabilityError,
+            GovernanceError,
+            EvidenceBundleError,
+            ArtifactStoreError,
             StoreError,
             ValueError,
             json.JSONDecodeError,
         ) as exc:
             return _response(start_response, "400 Bad Request", {"error": str(exc)})
         return _response(start_response, "404 Not Found", {"error": "not found"})
+
+    def _governance_envelope(
+        self,
+        environ: dict[str, Any],
+        identity: TrustedIdentity,
+        document: dict[str, Any],
+    ) -> dict[str, Any]:
+        if "scope" in document or "idempotencyKey" in document:
+            raise RuntimeAuthorizationError(
+                "governance body cannot override trusted scope or idempotency"
+            )
+        idempotency_key = environ.get("HTTP_X_ELMOS_IDEMPOTENCY_KEY")
+        if not idempotency_key:
+            raise RuntimeRequestError("X-Elmos-Idempotency-Key is required")
+        return {
+            **document,
+            "scope": self._scope_from_headers(environ, identity),
+            "idempotencyKey": idempotency_key,
+        }
+
+    def _audit_denial(
+        self,
+        environ: dict[str, Any],
+        method: str,
+        path: str,
+        error: Exception,
+    ) -> None:
+        if getattr(error, "audit_recorded", False):
+            return
+        try:
+            identity = self._identity(environ)
+            action = f"{method}:{path}"[:200]
+            self.runtime.store.record_security_audit(
+                identity,
+                action=action,
+                decision="DENY",
+                reason=str(error)[:1000],
+                request_metadata={"method": method, "path": path},
+            )
+        except (RuntimeAuthorizationError, StoreError, ValueError):
+            # A missing trusted identity cannot be assigned to a tenant-local
+            # audit stream; the transport remains responsible for that denial.
+            return
 
     def _payload(self, environ: dict[str, Any]) -> dict[str, Any]:
         raw_length = environ.get("CONTENT_LENGTH")
@@ -343,7 +511,9 @@ class FormalAssuranceApi:
             "environmentDigest": "HTTP_X_ELMOS_ENVIRONMENT_DIGEST",
             "workloadKey": "HTTP_X_ELMOS_WORKLOAD_KEY",
         }
-        missing = [header for key, header in required.items() if not environ.get(header)]
+        missing = [
+            header for key, header in required.items() if not environ.get(header)
+        ]
         if missing:
             raise RuntimeRequestError(
                 "resource scope headers are required: " + ", ".join(missing)
