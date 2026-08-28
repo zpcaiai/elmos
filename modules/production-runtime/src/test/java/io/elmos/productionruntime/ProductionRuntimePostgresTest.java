@@ -94,6 +94,10 @@ class ProductionRuntimePostgresTest {
                 .param("id", providerPricing).param("name", "test-provider-" + providerPricing).update();
         jdbc.sql("insert into billing.commercial_pricing_versions (id, name, effective_from) values (:id, :name, now())")
                 .param("id", commercialPricing).param("name", "test-commercial-" + commercialPricing).update();
+        jdbc.sql("insert into billing.provider_model_prices (pricing_version_id, provider, model, input_per_million) values (:id, 'test-provider', 'test-model', 100000)")
+                .param("id", providerPricing).update();
+        jdbc.sql("insert into billing.commercial_model_prices (pricing_version_id, provider, model, credit_per_input_million) values (:id, 'test-provider', 'test-model', 300000)")
+                .param("id", commercialPricing).update();
     }
 
     @Test
@@ -105,10 +109,20 @@ class ProductionRuntimePostgresTest {
         var outcome = coordinator.dispatch(new DispatchRequest(fixture.tenantId, fixture.projectId, fixture.jobId, fixture.workItemId, fixture.walletId, fixture.workerId, BigDecimal.valueOf(4), Instant.now().plusSeconds(300), Duration.ofSeconds(30), "reserve-" + fixture.workItemId, "dispatch-" + fixture.workItemId, Map.of("snapshotHash", "a".repeat(64))), envelope -> WorkerGatewayResult.ACKED);
         assertEquals(ProductionRuntimeCoordinator.DispatchStatus.ACKED, outcome.status());
         var call = billing.beginModelCall(new ModelCallRequest(fixture.tenantId, fixture.accountId, fixture.projectId, fixture.jobId, fixture.stageId, fixture.workItemId, outcome.envelope().attemptId(), "test-provider", "test-model", "model-call-" + fixture.workItemId, "request-hash"));
+        billing.claimProviderDispatch(fixture.tenantId, call.modelCallId());
         billing.markProviderAccepted(fixture.tenantId, call.modelCallId(), "provider-request-1");
         MeterSnapshot meter = new MeterSnapshot(fixture.tenantId, outcome.intent().reservationId(), call.modelCallId(), 1, 10, 2, 5, 1, BigDecimal.ONE, BigDecimal.valueOf(3));
         assertEquals(meter, billing.recordMeter(meter));
         assertEquals(meter, billing.recordMeter(meter));
+        UUID providerArtifact = artifacts.registerArtifact(
+                new ProductionRuntimeModels.ArtifactRequest(
+                        fixture.tenantId, fixture.projectId, fixture.jobId,
+                        fixture.workItemId, "MODEL_PROVIDER_RESPONSE",
+                        "cas://provider-response/" + call.modelCallId(),
+                        "f".repeat(64), 256));
+        billing.completeModelCall(
+                fixture.tenantId, call.modelCallId(),
+                "provider-request-1", providerArtifact);
         FinalUsage usage = new FinalUsage(fixture.tenantId, outcome.intent().reservationId(), call.modelCallId(), "test-provider", "test-model", "provider-usage-1", providerPricing, commercialPricing, 10, 2, 5, 1, BigDecimal.ONE, BigDecimal.valueOf(3));
         coordinator.complete(new ProductionRuntimeModels.Completion(fixture.tenantId, fixture.workItemId, outcome.envelope().attemptId(), fixture.workerId, outcome.envelope().fencingToken(), AttemptStatus.SUCCEEDED, null, null), usage, null);
         assertDoesNotThrow(() -> billing.settle(usage));
@@ -174,7 +188,20 @@ class ProductionRuntimePostgresTest {
         var first = billing.beginModelCall(request);
         assertEquals(first.modelCallId(), billing.beginModelCall(request).modelCallId());
         assertThrows(ProductionRuntimeException.class, () -> billing.beginModelCall(new ModelCallRequest(fixture.tenantId, fixture.accountId, fixture.projectId, fixture.jobId, fixture.stageId, fixture.workItemId, outcome.envelope().attemptId(), "test-provider", "test-model", request.idempotencyKey(), "different-hash")));
+        billing.claimProviderDispatch(fixture.tenantId, first.modelCallId());
+        ProductionRuntimeException duplicateClaim = assertThrows(
+                ProductionRuntimeException.class,
+                () -> billing.claimProviderDispatch(
+                        fixture.tenantId, first.modelCallId()));
+        assertEquals("MODEL_CALL_RECONCILIATION_REQUIRED", duplicateClaim.code());
         billing.markProviderAccepted(fixture.tenantId, first.modelCallId(), "provider-request-replay");
+        assertDoesNotThrow(() -> billing.markProviderAccepted(
+                fixture.tenantId, first.modelCallId(), "provider-request-replay"));
+        ProductionRuntimeException providerConflict = assertThrows(
+                ProductionRuntimeException.class,
+                () -> billing.markProviderAccepted(
+                        fixture.tenantId, first.modelCallId(), "provider-request-different"));
+        assertEquals("MODEL_CALL_PROVIDER_ID_CONFLICT", providerConflict.code());
         ProductionRuntimeException uncertain = assertThrows(ProductionRuntimeException.class, () -> billing.beginModelCall(request));
         assertEquals("MODEL_CALL_RECONCILIATION_REQUIRED", uncertain.code());
     }
@@ -196,7 +223,7 @@ class ProductionRuntimePostgresTest {
         Fixture fixture = fixture();
         billing.applyVerifiedTopUp(new TopUpRequest(fixture.tenantId, fixture.walletId, "test-pay", "payment-" + fixture.tenantId, BigDecimal.TEN, "hash-outbox"));
         var outcome = coordinator.dispatch(new DispatchRequest(fixture.tenantId, fixture.projectId, fixture.jobId, fixture.workItemId, fixture.walletId, fixture.workerId, BigDecimal.ONE, Instant.now().plusSeconds(300), Duration.ofSeconds(30), "reserve-" + fixture.workItemId, "dispatch-" + fixture.workItemId, Map.of()), envelope -> WorkerGatewayResult.ACKED);
-        Checkpoint checkpoint = new Checkpoint(fixture.tenantId, fixture.jobId, fixture.workItemId, outcome.envelope().attemptId(), "WORKSPACE", 1, "cas://checkpoint/1", "hash-checkpoint");
+        Checkpoint checkpoint = new Checkpoint(fixture.tenantId, fixture.jobId, fixture.workItemId, outcome.envelope().attemptId(), "WORKSPACE", 1, "cas://checkpoint/1", "d".repeat(64));
         runtime.checkpoint(checkpoint);
         runtime.checkpoint(checkpoint);
         var publisher = new TransactionalOutboxPublisher(runtime, event -> { });
@@ -221,6 +248,14 @@ class ProductionRuntimePostgresTest {
         Fixture fixture = fixture();
         var waiting = coordinator.dispatch(new DispatchRequest(fixture.tenantId, fixture.projectId, fixture.jobId, fixture.workItemId, fixture.walletId, fixture.workerId, BigDecimal.ONE, Instant.now().plusSeconds(300), Duration.ofSeconds(30), "reserve-" + fixture.workItemId, "dispatch-" + fixture.workItemId, Map.of()), envelope -> WorkerGatewayResult.ACKED);
         assertEquals(ProductionRuntimeCoordinator.DispatchStatus.WAITING_FOR_CREDIT, waiting.status());
+        long waitingEvents = jdbc.sql("select count(*) from observability.project_events where tenant_id = :tenantId and work_item_id = :workItemId and event_type = 'WAITING_FOR_CREDIT'")
+                .param("tenantId", fixture.tenantId).param("workItemId", fixture.workItemId)
+                .query(Long.class).single();
+        assertDoesNotThrow(() -> runtime.markWaitingForCredit(
+                fixture.tenantId, fixture.workItemId, "CREDIT_EXHAUSTED"));
+        assertEquals(waitingEvents, jdbc.sql("select count(*) from observability.project_events where tenant_id = :tenantId and work_item_id = :workItemId and event_type = 'WAITING_FOR_CREDIT'")
+                .param("tenantId", fixture.tenantId).param("workItemId", fixture.workItemId)
+                .query(Long.class).single());
         billing.applyVerifiedTopUp(new TopUpRequest(fixture.tenantId, fixture.walletId, "test-pay", "payment-" + fixture.tenantId, BigDecimal.TEN, "hash-resume"));
         assertEquals(1, runtime.resumeCreditWaiting(fixture.tenantId, 10));
         var resumed = coordinator.dispatch(new DispatchRequest(fixture.tenantId, fixture.projectId, fixture.jobId, fixture.workItemId, fixture.walletId, fixture.workerId, BigDecimal.ONE, Instant.now().plusSeconds(300), Duration.ofSeconds(30), "reserve-" + fixture.workItemId, "dispatch-" + fixture.workItemId, Map.of()), envelope -> WorkerGatewayResult.ACKED);
@@ -235,9 +270,26 @@ class ProductionRuntimePostgresTest {
         var request = new ProductionRuntimeModels.ToolCallRequest(fixture.tenantId, fixture.accountId, fixture.projectId, fixture.jobId, fixture.stageId, fixture.workItemId, outcome.envelope().attemptId(), "compiler", "tool-call-" + fixture.workItemId, "tool-request-hash");
         var first = toolCalls.begin(request);
         assertEquals(first.toolCallId(), toolCalls.begin(request).toolCallId());
+        toolCalls.claimProviderDispatch(fixture.tenantId, first.toolCallId());
+        ProductionRuntimeException duplicateClaim = assertThrows(
+                ProductionRuntimeException.class,
+                () -> toolCalls.claimProviderDispatch(fixture.tenantId, first.toolCallId()));
+        assertEquals("TOOL_CALL_RECONCILIATION_REQUIRED", duplicateClaim.code());
         toolCalls.markProviderAccepted(fixture.tenantId, first.toolCallId(), "tool-provider-request");
-        UUID artifactId = UUID.randomUUID();
+        assertDoesNotThrow(() -> toolCalls.markProviderAccepted(
+                fixture.tenantId, first.toolCallId(), "tool-provider-request"));
+        ProductionRuntimeException providerConflict = assertThrows(
+                ProductionRuntimeException.class,
+                () -> toolCalls.markProviderAccepted(
+                        fixture.tenantId, first.toolCallId(), "different-provider-request"));
+        assertEquals("TOOL_CALL_PROVIDER_ID_CONFLICT", providerConflict.code());
+        UUID artifactId = artifacts.registerArtifact(new ProductionRuntimeModels.ArtifactRequest(
+                fixture.tenantId, fixture.projectId, fixture.jobId, fixture.workItemId,
+                "TOOL_RESPONSE", "cas://tool-response/" + first.toolCallId(),
+                "e".repeat(64), 128));
         toolCalls.complete(fixture.tenantId, first.toolCallId(), artifactId);
+        assertDoesNotThrow(() -> toolCalls.complete(
+                fixture.tenantId, first.toolCallId(), artifactId));
         var completed = jdbc.sql("select status from ai_usage.tool_calls where tenant_id = :tenantId and id = :id").param("tenantId", fixture.tenantId).param("id", first.toolCallId()).query(String.class).single();
         assertEquals("COMPLETE", completed);
     }
@@ -253,6 +305,63 @@ class ProductionRuntimePostgresTest {
         assertEquals(snapshotId, jdbc.sql("select input_snapshot_id from orchestration.jobs where tenant_id = :tenantId and id = :jobId").param("tenantId", fixture.tenantId).param("jobId", fixture.jobId).query(UUID.class).single());
         assertEquals("PASSED", jdbc.sql("select status from validation.validation_runs where tenant_id = :tenantId and id = :id").param("tenantId", fixture.tenantId).param("id", validationId).query(String.class).single());
         assertEquals(1, jdbc.sql("select count(*) from artifact.artifacts where tenant_id = :tenantId and id = :id").param("tenantId", fixture.tenantId).param("id", artifactId).query(Long.class).single());
+    }
+
+    @Test
+    void contentAddressedObjectMetadataIsTenantBoundAndFailClosed() {
+        Fixture first = fixture();
+        Fixture second = fixture();
+        var metadata = new JdbcProductionObjectStorageMetadata(jdbc, transactions);
+        String digest = "9".repeat(64);
+        String firstId = metadata.registerPendingObject(
+                first.tenantId.toString(), digest, 128,
+                "application/json", "qualification-s3",
+                first.tenantId + "/obj/" + digest);
+        assertEquals(firstId, metadata.registerPendingObject(
+                first.tenantId.toString(), digest, 128,
+                "application/json", "qualification-s3",
+                first.tenantId + "/obj/" + digest));
+        ProductionRuntimeException conflict = assertThrows(
+                ProductionRuntimeException.class,
+                () -> metadata.registerPendingObject(
+                        first.tenantId.toString(), digest, 129,
+                        "application/json", "qualification-s3",
+                        first.tenantId + "/obj/" + digest));
+        assertEquals("CONTENT_OBJECT_IDEMPOTENCY_CONFLICT", conflict.code());
+
+        metadata.markAvailable(first.tenantId.toString(), firstId);
+        assertDoesNotThrow(() -> metadata.markAvailable(
+                first.tenantId.toString(), firstId));
+        assertThrows(ProductionRuntimeException.class, () -> metadata.markQuarantined(
+                first.tenantId.toString(), firstId, "LATE_QUARANTINE"));
+
+        String secondId = metadata.registerPendingObject(
+                second.tenantId.toString(), digest, 128,
+                "application/json", "qualification-s3",
+                second.tenantId + "/obj/" + digest);
+        assertTrue(!firstId.equals(secondId));
+    }
+
+    @Test
+    void workerIdentityCannotBeReboundByAnotherRegistration() {
+        Fixture fixture = fixture();
+        WorkerRegistration exact = new WorkerRegistration(
+                fixture.workerId, "worker-" + fixture.workerId, "SPRING",
+                "http://worker.invalid/" + fixture.workerId, "local", "local-1",
+                Map.of(
+                        "routeTuples", List.of("SPRING_MODERNIZATION:inventory"),
+                        "maxConcurrent", 8));
+        assertDoesNotThrow(() -> runtime.registerWorker(exact));
+        ProductionRuntimeException conflict = assertThrows(
+                ProductionRuntimeException.class,
+                () -> runtime.registerWorker(new WorkerRegistration(
+                        exact.workerId(), exact.workerName(), exact.workerType(),
+                        "http://attacker.invalid/" + exact.workerId(),
+                        exact.region(), exact.zone(), exact.capabilities())));
+        assertEquals("WORKER_IDENTITY_CONFLICT", conflict.code());
+        assertEquals(exact.endpointUri(), jdbc.sql(
+                        "select endpoint_uri from runtime.workers where id = :id")
+                .param("id", exact.workerId()).query(String.class).single());
     }
 
     @Test
@@ -328,7 +437,10 @@ class ProductionRuntimePostgresTest {
         billing.applyVerifiedTopUp(new TopUpRequest(fixture.tenantId, fixture.walletId, "test-pay", "payment-" + fixture.tenantId, BigDecimal.TEN, "hash-provider-adapter"));
         var outcome = coordinator.dispatch(new DispatchRequest(fixture.tenantId, fixture.projectId, fixture.jobId, fixture.workItemId, fixture.walletId, fixture.workerId, BigDecimal.ONE, Instant.now().plusSeconds(300), Duration.ofSeconds(30), "reserve-" + fixture.workItemId, "dispatch-" + fixture.workItemId, Map.of()), envelope -> WorkerGatewayResult.ACKED);
         ModelCallRequest request = new ModelCallRequest(fixture.tenantId, fixture.accountId, fixture.projectId, fixture.jobId, fixture.stageId, fixture.workItemId, outcome.envelope().attemptId(), "test-provider", "test-model", "provider-adapter-" + fixture.workItemId, "provider-request-hash");
-        UUID responseArtifactId = UUID.randomUUID();
+        UUID responseArtifactId = artifacts.registerArtifact(new ProductionRuntimeModels.ArtifactRequest(
+                fixture.tenantId, fixture.projectId, fixture.jobId, fixture.workItemId,
+                "MODEL_RESPONSE", "cas://model-response/" + fixture.workItemId,
+                "f".repeat(64), 256));
         AtomicInteger calls = new AtomicInteger();
         ProductionModelProviderPort completeProvider = new ProductionModelProviderPort() {
             @Override public ProviderResult execute(ModelCallRequest ignored) { calls.incrementAndGet(); return ProviderResult.complete("provider-request-complete", responseArtifactId); }
@@ -350,6 +462,42 @@ class ProductionRuntimePostgresTest {
         assertEquals(ProductionRuntimeModels.ModelCallStatus.UNKNOWN, executor.execute(unknownRequest, unknownProvider).status());
         ProductionRuntimeException blocked = assertThrows(ProductionRuntimeException.class, () -> executor.execute(unknownRequest, completeProvider));
         assertEquals("MODEL_CALL_RECONCILIATION_REQUIRED", blocked.code());
+    }
+
+    @Test
+    void providerPayloadIsByteExactDurableAndTenantBound() {
+        Fixture fixture = fixture();
+        billing.applyVerifiedTopUp(new TopUpRequest(fixture.tenantId, fixture.walletId,
+                "test-pay", "payment-" + fixture.tenantId, BigDecimal.TEN,
+                "hash-provider-payload"));
+        var outcome = coordinator.dispatch(new DispatchRequest(
+                fixture.tenantId, fixture.projectId, fixture.jobId, fixture.workItemId,
+                fixture.walletId, fixture.workerId, BigDecimal.ONE,
+                Instant.now().plusSeconds(300), Duration.ofSeconds(30),
+                "reserve-" + fixture.workItemId, "dispatch-" + fixture.workItemId,
+                Map.of()), envelope -> WorkerGatewayResult.ACKED);
+        byte[] body = "{\"model\":\"test-model\",\"input\":\"durable\"}"
+                .getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        String digest = JdbcProductionProviderPayloadStore.sha256(body);
+        ModelCallRequest request = new ModelCallRequest(
+                fixture.tenantId, fixture.accountId, fixture.projectId, fixture.jobId,
+                fixture.stageId, fixture.workItemId, outcome.envelope().attemptId(),
+                "test-provider", "test-model", "payload-" + fixture.workItemId, digest);
+        var payloadStore = new JdbcProductionProviderPayloadStore(jdbc, transactions);
+
+        payloadStore.persist(request, body);
+        payloadStore.persist(request, body);
+
+        assertTrue(java.security.MessageDigest.isEqual(
+                body, payloadStore.materialize(request).bytes()));
+        assertThrows(ProductionRuntimeException.class,
+                () -> payloadStore.persist(request, "{}".getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+        ModelCallRequest wrongProvider = new ModelCallRequest(
+                request.tenantId(), request.accountId(), request.projectId(), request.jobId(),
+                request.stageId(), request.workItemId(), request.attemptId(), "other-provider",
+                request.model(), request.idempotencyKey(), request.requestHash());
+        assertThrows(ProductionRuntimeException.class,
+                () -> payloadStore.materialize(wrongProvider));
     }
 
     @Test
@@ -459,6 +607,26 @@ class ProductionRuntimePostgresTest {
         }
     }
 
+    @Test
+    void fairSchedulerResolvesOneWalletAndExactCompatibleWorker() {
+        Fixture fixture = fixture();
+        billing.applyVerifiedTopUp(new TopUpRequest(
+                fixture.tenantId, fixture.walletId, "test-pay", "payment-" + fixture.tenantId,
+                BigDecimal.TEN, "hash-fair-scheduler"));
+        var service = new ProductionRuntimeSchedulingService(
+                new ProductionRuntimeScheduler(runtime), coordinator,
+                java.time.Clock.systemUTC(), Duration.ofMinutes(5), Duration.ofSeconds(30));
+
+        var report = service.schedule(10, envelope -> WorkerGatewayResult.ACKED);
+
+        assertTrue(report.acknowledged() >= 1,
+                "the global fair scheduler may also acknowledge ready work left by earlier fixtures");
+        assertEquals(0, report.blocked());
+        assertEquals("ACKED", jdbc.sql("select state from runtime.dispatch_intents where tenant_id = :tenantId and work_item_id = :workItemId")
+                .param("tenantId", fixture.tenantId).param("workItemId", fixture.workItemId)
+                .query(String.class).single());
+    }
+
     private Fixture fixture() {
         UUID tenant = UUID.randomUUID();
         UUID account = UUID.randomUUID();
@@ -468,7 +636,12 @@ class ProductionRuntimePostgresTest {
         UUID stage = jdbc.sql("select id from orchestration.job_stages where tenant_id = :tenantId and job_id = :jobId").param("tenantId", tenant).param("jobId", job).query(UUID.class).single();
         UUID item = runtime.createWorkItem(new WorkItemRequest(tenant, job, stage, "inventory", "repo/root", 100, BigDecimal.ONE, 2, "item-" + tenant));
         UUID worker = UUID.randomUUID();
-        runtime.registerWorker(new WorkerRegistration(worker, "worker-" + worker, "SPRING", "http://worker.invalid/" + worker, "local", "local-1", Map.of("jobType", "SPRING_MODERNIZATION")));
+        runtime.registerWorker(new WorkerRegistration(
+                worker, "worker-" + worker, "SPRING",
+                "http://worker.invalid/" + worker, "local", "local-1",
+                Map.of(
+                        "routeTuples", List.of("SPRING_MODERNIZATION:inventory"),
+                        "maxConcurrent", 8)));
         return new Fixture(tenant, account, tenantAccount.walletId(), project, job, stage, item, worker);
     }
 

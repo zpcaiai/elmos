@@ -78,6 +78,8 @@
         <module>apps/java-engine-transformer</module>
         <module>apps/java-engine-verifier</module>
         <module>apps/control-plane</module>
+        <module>apps/production-runtime-control-plane</module>
+        <module>apps/production-runtime-worker</module>
         <module>apps/runner-agent</module>
         <module>apps/workspace-service</module>
         <module>apps/egress-proxy</module>

@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -60,7 +61,45 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
             UUID walletId = jdbc.sql("insert into billing.wallets (tenant_id, billing_account_id, currency) values (:tenantId, :billingAccountId, :currency) on conflict (billing_account_id, currency) do update set status = 'ACTIVE' returning id")
                     .param("tenantId", tenantId).param("billingAccountId", billingAccountId).param("currency", currency).query(UUID.class).single();
             jdbc.sql("insert into billing.wallet_balances (wallet_id, tenant_id) values (:walletId, :tenantId) on conflict (wallet_id) do nothing").param("walletId", walletId).param("tenantId", tenantId).update();
+            jdbc.sql("insert into orchestration.admission_policies (tenant_id) values (:tenantId) on conflict (tenant_id) do nothing")
+                    .param("tenantId", tenantId).update();
             return new TenantAccount(tenantId, accountId, billingAccountId, walletId, currency);
+        });
+    }
+
+    @Override
+    public void upsertAdmissionPolicy(ProductionRuntimeModels.AdmissionPolicy policy) {
+        inTenant(policy.tenantId(), () -> {
+            jdbc.sql("""
+                    insert into orchestration.admission_policies
+                      (tenant_id, max_active_jobs, max_active_work_items,
+                       max_project_active_work_items, max_concurrent_model_calls,
+                       max_compile_test_slots, max_provider_calls_per_minute,
+                       daily_token_cap, daily_credit_cap, updated_at)
+                    values (:tenantId, :jobs, :work, :projectWork, :modelCalls,
+                            :compileTest, :providerCalls, :tokens, :credits, now())
+                    on conflict (tenant_id) do update set
+                      max_active_jobs = excluded.max_active_jobs,
+                      max_active_work_items = excluded.max_active_work_items,
+                      max_project_active_work_items = excluded.max_project_active_work_items,
+                      max_concurrent_model_calls = excluded.max_concurrent_model_calls,
+                      max_compile_test_slots = excluded.max_compile_test_slots,
+                      max_provider_calls_per_minute = excluded.max_provider_calls_per_minute,
+                      daily_token_cap = excluded.daily_token_cap,
+                      daily_credit_cap = excluded.daily_credit_cap,
+                      updated_at = now()
+                    """)
+                    .param("tenantId", policy.tenantId())
+                    .param("jobs", policy.maxActiveJobs())
+                    .param("work", policy.maxActiveWorkItems())
+                    .param("projectWork", policy.maxProjectActiveWorkItems())
+                    .param("modelCalls", policy.maxConcurrentModelCalls())
+                    .param("compileTest", policy.maxCompileTestSlots())
+                    .param("providerCalls", policy.maxProviderCallsPerMinute())
+                    .param("tokens", policy.dailyTokenCap())
+                    .param("credits", policy.dailyCreditCap())
+                    .update();
+            return null;
         });
     }
 
@@ -126,9 +165,38 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
     public void registerWorker(WorkerRegistration registration) {
         transactions.execute(status -> {
             try {
-                jdbc.sql("insert into runtime.workers (id, worker_name, worker_type, endpoint_uri, region, zone, capabilities, status, last_heartbeat_at) values (:id, :name, :type, :endpoint, :region, :zone, cast(:capabilities as jsonb), 'ACTIVE', now()) on conflict (id) do update set endpoint_uri = excluded.endpoint_uri, worker_type = excluded.worker_type, capabilities = excluded.capabilities, status = 'ACTIVE', last_heartbeat_at = now()")
-                        .param("id", registration.workerId()).param("name", registration.workerName()).param("type", registration.workerType()).param("endpoint", registration.endpointUri()).param("region", registration.region()).param("zone", registration.zone()).param("capabilities", json.writeValueAsString(registration.capabilities())).update();
+                int changed = jdbc.sql("""
+                        insert into runtime.workers
+                            (id, worker_name, worker_type, endpoint_uri, region, zone,
+                             capabilities, status, last_heartbeat_at)
+                        values
+                            (:id, :name, :type, :endpoint, :region, :zone,
+                             cast(:capabilities as jsonb), 'ACTIVE', now())
+                        on conflict (id) do update
+                           set status = 'ACTIVE', last_heartbeat_at = now()
+                         where runtime.workers.worker_name = excluded.worker_name
+                           and runtime.workers.worker_type = excluded.worker_type
+                           and runtime.workers.endpoint_uri = excluded.endpoint_uri
+                           and runtime.workers.region is not distinct from excluded.region
+                           and runtime.workers.zone is not distinct from excluded.zone
+                           and runtime.workers.capabilities = excluded.capabilities
+                        """)
+                        .param("id", registration.workerId())
+                        .param("name", registration.workerName())
+                        .param("type", registration.workerType())
+                        .param("endpoint", registration.endpointUri())
+                        .param("region", registration.region())
+                        .param("zone", registration.zone())
+                        .param("capabilities", json.writeValueAsString(registration.capabilities()))
+                        .update();
+                if (changed != 1) {
+                    throw new ProductionRuntimeException(
+                            "WORKER_IDENTITY_CONFLICT",
+                            "worker id is already bound to different immutable registration data");
+                }
                 return null;
+            } catch (ProductionRuntimeException ex) {
+                throw ex;
             } catch (Exception ex) {
                 throw new ProductionRuntimeException("WORKER_REGISTRATION_INVALID", "worker capabilities are not valid JSON", ex);
             }
@@ -141,6 +209,7 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
             var existing = jdbc.sql("select * from runtime.dispatch_intents where tenant_id = :tenantId and work_item_id = :workItemId and dispatch_idempotency_key = :key for update")
                     .param("tenantId", tenantId).param("workItemId", workItemId).param("key", dispatchIdempotencyKey).query(this::readIntent).optional();
             if (existing.isPresent()) return existing.get();
+            assertAdmissionAvailable(tenantId, projectId, jobId, workItemId);
             String status = jdbc.sql("select status from orchestration.work_items where tenant_id = :tenantId and id = :id for update").param("tenantId", tenantId).param("id", workItemId).query(String.class).optional().orElseThrow(() -> new ProductionRuntimeException("WORK_ITEM_NOT_FOUND", "work item not found"));
             if (!status.equals("READY") && !status.equals("RETRY_WAIT")) throw new ProductionRuntimeException("WORK_ITEM_NOT_READY", "work item is not eligible for reservation: " + status);
             UUID intentId = UUID.randomUUID();
@@ -160,6 +229,17 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
     @Override
     public void markWaitingForCredit(UUID tenantId, UUID workItemId, String reason) {
         inTenant(tenantId, () -> {
+            String current = jdbc.sql("select status from orchestration.work_items where tenant_id = :tenantId and id = :id for update")
+                    .param("tenantId", tenantId).param("id", workItemId)
+                    .query(String.class).optional()
+                    .orElseThrow(() -> new ProductionRuntimeException(
+                            "WORK_ITEM_NOT_FOUND", "work item not found"));
+            if ("WAITING_FOR_CREDIT".equals(current)) return null;
+            if (!"RESERVING".equals(current)) {
+                throw new ProductionRuntimeException(
+                        "STALE_WORK_ITEM_CREDIT_WAIT",
+                        "only the current RESERVING owner may pause for credit");
+            }
             updateOrThrow("STALE_WORK_ITEM_CREDIT_WAIT", jdbc.sql("update orchestration.work_items set status = 'WAITING_FOR_CREDIT', ready_at = null, updated_at = now() where tenant_id = :tenantId and id = :id and status = 'RESERVING'")
                     .param("tenantId", tenantId).param("id", workItemId));
             event(tenantId, "WORK_ITEM", workItemId, "WAITING_FOR_CREDIT", Map.of("reason", reason == null ? "CREDIT_EXHAUSTED" : reason));
@@ -198,11 +278,14 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
                 intent = lockIntent(tenantId, dispatchIntentId);
             }
             if (intent.state() != DispatchState.RESERVED) throw new ProductionRuntimeException("DISPATCH_INTENT_STATE_CONFLICT", "intent is not reserved");
-            var worker = jdbc.sql("select endpoint_uri, status from runtime.workers where id = :workerId for update").param("workerId", workerId).query((rs, row) -> new WorkerRow(rs.getString("endpoint_uri"), rs.getString("status"))).optional().orElseThrow(() -> new ProductionRuntimeException("WORKER_NOT_FOUND", "worker is not registered"));
+            var worker = jdbc.sql("select endpoint_uri, status, capabilities from runtime.workers where id = :workerId for update").param("workerId", workerId).query((rs, row) -> new WorkerRow(rs.getString("endpoint_uri"), rs.getString("status"), rs.getString("capabilities"))).optional().orElseThrow(() -> new ProductionRuntimeException("WORKER_NOT_FOUND", "worker is not registered"));
             if (!worker.status().equals("ACTIVE")) throw new ProductionRuntimeException("WORKER_NOT_ACTIVE", "worker is not active");
+            assertWorkerCapacity(workerId, worker.capabilitiesJson());
             long fence = jdbc.sql("select runtime.allocate_fence(:workItemId)").param("workItemId", intent.workItemId()).query(Long.class).single();
             int attemptNo = jdbc.sql("select coalesce(max(attempt_no), 0) + 1 from runtime.execution_attempts where tenant_id = :tenantId and work_item_id = :workItemId").param("tenantId", tenantId).param("workItemId", intent.workItemId()).query(Integer.class).single();
             UUID attemptId = UUID.randomUUID();
+            Map<String, Object> attemptPayload = resumePayload(
+                    tenantId, intent.workItemId(), payload);
             jdbc.sql("insert into runtime.execution_attempts (id, tenant_id, work_item_id, attempt_no, worker_id, fencing_token) values (:id, :tenantId, :workItemId, :attemptNo, :workerId, :fence)").param("id", attemptId).param("tenantId", tenantId).param("workItemId", intent.workItemId()).param("attemptNo", attemptNo).param("workerId", workerId).param("fence", fence).update();
             jdbc.sql("insert into runtime.worker_leases (work_item_id, tenant_id, worker_id, attempt_id, fencing_token, leased_at, expires_at, heartbeat_at) values (:workItemId, :tenantId, :workerId, :attemptId, :fence, now(), now() + cast(:leaseDuration as interval), now())")
                     .param("workItemId", intent.workItemId()).param("tenantId", tenantId).param("workerId", workerId).param("attemptId", attemptId).param("fence", fence).param("leaseDuration", leaseDuration.toSeconds() + " seconds").update();
@@ -211,7 +294,7 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
             updateOrThrow("STALE_WORK_ITEM", jdbc.sql("update orchestration.work_items set status = 'DISPATCHING', started_at = coalesce(started_at, now()), updated_at = now() where id = :id and tenant_id = :tenantId and status = 'RESERVED'")
                     .param("id", intent.workItemId()).param("tenantId", tenantId));
             event(tenantId, "WORK_ITEM", intent.workItemId(), "DISPATCHING", Map.of("attemptId", attemptId, "workerId", workerId, "fencingToken", fence));
-            return new DispatchEnvelope(tenantId, intent.workItemId(), attemptId, workerId, fence, worker.endpointUri(), intent.dispatchIdempotencyKey(), payload == null ? Map.of() : Map.copyOf(payload));
+            return new DispatchEnvelope(tenantId, intent.workItemId(), attemptId, workerId, fence, worker.endpointUri(), intent.dispatchIdempotencyKey(), attemptPayload);
         });
     }
 
@@ -243,19 +326,109 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
     @Override
     public void checkpoint(Checkpoint checkpoint) {
         inTenant(checkpoint.tenantId(), () -> {
-            if (checkpoint.sequenceNo() < 1) throw new IllegalArgumentException("checkpoint sequence must be positive");
-            jdbc.sql("insert into runtime.checkpoints (tenant_id, job_id, work_item_id, attempt_id, checkpoint_type, sequence_no, state_object_uri, state_hash) values (:tenantId, :jobId, :workItemId, :attemptId, :type, :sequence, :uri, :hash) on conflict (attempt_id, sequence_no) do nothing")
-                    .param("tenantId", checkpoint.tenantId()).param("jobId", checkpoint.jobId()).param("workItemId", checkpoint.workItemId()).param("attemptId", checkpoint.attemptId()).param("type", checkpoint.checkpointType()).param("sequence", checkpoint.sequenceNo()).param("uri", checkpoint.stateObjectUri()).param("hash", checkpoint.stateHash()).update();
-            String stored = jdbc.sql("select state_hash from runtime.checkpoints where tenant_id = :tenantId and attempt_id = :attemptId and sequence_no = :sequence")
-                    .param("tenantId", checkpoint.tenantId()).param("attemptId", checkpoint.attemptId()).param("sequence", checkpoint.sequenceNo()).query(String.class).single();
-            if (!stored.equals(checkpoint.stateHash())) throw new ProductionRuntimeException("CHECKPOINT_CONFLICT", "checkpoint sequence was replayed with a different state hash");
+            commitCheckpoint(checkpoint);
             return null;
         });
     }
 
     @Override
+    public void checkpoint(Checkpoint checkpoint, UUID workerId, long fencingToken) {
+        ProductionRuntimeModels.require(workerId, "workerId");
+        if (fencingToken < 1) throw new IllegalArgumentException("fencingToken must be positive");
+        inTenant(checkpoint.tenantId(), () -> {
+            long owned = jdbc.sql("""
+                    select count(*)
+                      from runtime.execution_attempts ea
+                      join runtime.worker_leases wl
+                        on wl.tenant_id = ea.tenant_id
+                       and wl.work_item_id = ea.work_item_id
+                       and wl.attempt_id = ea.id
+                       and wl.worker_id = ea.worker_id
+                       and wl.fencing_token = ea.fencing_token
+                     where ea.tenant_id = :tenantId
+                       and ea.id = :attemptId
+                       and ea.work_item_id = :workItemId
+                       and ea.worker_id = :workerId
+                       and ea.fencing_token = :fence
+                       and ea.status = 'RUNNING'
+                       and wl.expires_at > now()
+                    """)
+                    .param("tenantId", checkpoint.tenantId())
+                    .param("attemptId", checkpoint.attemptId())
+                    .param("workItemId", checkpoint.workItemId())
+                    .param("workerId", workerId)
+                    .param("fence", fencingToken)
+                    .query(Long.class).single();
+            if (owned != 1) {
+                throw new ProductionRuntimeException(
+                        "STALE_CHECKPOINT_FENCE",
+                        "checkpoint rejected because the worker no longer owns the live lease");
+            }
+            commitCheckpoint(checkpoint);
+            return null;
+        });
+    }
+
+    private void commitCheckpoint(Checkpoint checkpoint) {
+        if (!checkpoint.stateHash().matches("[0-9a-f]{64}")) {
+            throw new IllegalArgumentException("checkpoint stateHash must be lowercase SHA-256");
+        }
+        jdbc.sql("insert into runtime.checkpoints (tenant_id, job_id, work_item_id, attempt_id, checkpoint_type, sequence_no, state_object_uri, state_hash) values (:tenantId, :jobId, :workItemId, :attemptId, :type, :sequence, :uri, :hash) on conflict (attempt_id, sequence_no) do nothing")
+                .param("tenantId", checkpoint.tenantId()).param("jobId", checkpoint.jobId())
+                .param("workItemId", checkpoint.workItemId()).param("attemptId", checkpoint.attemptId())
+                .param("type", checkpoint.checkpointType()).param("sequence", checkpoint.sequenceNo())
+                .param("uri", checkpoint.stateObjectUri()).param("hash", checkpoint.stateHash()).update();
+        var stored = jdbc.sql("select checkpoint_type, state_object_uri, state_hash from runtime.checkpoints where tenant_id = :tenantId and attempt_id = :attemptId and sequence_no = :sequence")
+                .param("tenantId", checkpoint.tenantId()).param("attemptId", checkpoint.attemptId())
+                .param("sequence", checkpoint.sequenceNo())
+                .query((rs, row) -> List.of(
+                        rs.getString("checkpoint_type"),
+                        rs.getString("state_object_uri"),
+                        rs.getString("state_hash"))).single();
+        if (!stored.equals(List.of(
+                checkpoint.checkpointType(), checkpoint.stateObjectUri(), checkpoint.stateHash()))) {
+            throw new ProductionRuntimeException(
+                    "CHECKPOINT_CONFLICT",
+                    "checkpoint sequence was replayed with different durable state");
+        }
+    }
+
+    @Override
     public void complete(Completion completion) {
         inTenant(completion.tenantId(), () -> {
+            var existing = jdbc.sql("""
+                    select status, work_item_id, worker_id, fencing_token,
+                           error_code, error_message
+                      from runtime.execution_attempts
+                     where tenant_id = :tenantId and id = :attemptId
+                     for update
+                    """)
+                    .param("tenantId", completion.tenantId())
+                    .param("attemptId", completion.attemptId())
+                    .query((rs, row) -> new ExistingCompletion(
+                            AttemptStatus.valueOf(rs.getString("status")),
+                            rs.getObject("work_item_id", UUID.class),
+                            rs.getObject("worker_id", UUID.class),
+                            rs.getLong("fencing_token"),
+                            rs.getString("error_code"),
+                            rs.getString("error_message")))
+                    .optional().orElseThrow(() -> new ProductionRuntimeException(
+                            "STALE_FENCE_CONFLICT", "terminal commit references an unknown attempt"));
+            if (switch (existing.status()) {
+                case SUCCEEDED, FAILED, TIMED_OUT, LOST, CANCELLED -> true;
+                default -> false;
+            }) {
+                boolean exactReplay = existing.status() == completion.status()
+                        && existing.workItemId().equals(completion.workItemId())
+                        && existing.workerId().equals(completion.workerId())
+                        && existing.fencingToken() == completion.fencingToken()
+                        && Objects.equals(existing.errorCode(), completion.errorCode())
+                        && Objects.equals(existing.errorMessage(), completion.errorMessage());
+                if (exactReplay) return null;
+                throw new ProductionRuntimeException(
+                        "TERMINAL_COMPLETION_CONFLICT",
+                        "attempt terminal state was replayed with different fields");
+            }
             String terminal = completion.status() == AttemptStatus.SUCCEEDED ? "SUCCEEDED" : completion.status() == AttemptStatus.CANCELLED ? "CANCELLED" : "FAILED";
             int updated = jdbc.sql("""
                     update runtime.execution_attempts ea
@@ -405,15 +578,61 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
                 .param("limit", bounded)
                 .query((rs, row) -> new ReadyWorkItem(
                         rs.getObject("tenant_id", UUID.class),
+                        rs.getObject("account_id", UUID.class),
                         rs.getObject("project_id", UUID.class),
                         rs.getObject("job_id", UUID.class),
+                        rs.getObject("stage_id", UUID.class),
                         rs.getObject("work_item_id", UUID.class),
+                        rs.getObject("wallet_id", UUID.class),
+                        rs.getObject("worker_id", UUID.class),
+                        rs.getString("job_type"),
                         rs.getString("work_type"),
+                        rs.getString("resource_key"),
                         rs.getInt("priority"),
+                        rs.getInt("retry_count"),
                         rs.getBigDecimal("estimated_credits"),
                         rs.getObject("ready_at", OffsetDateTime.class).toInstant(),
                         rs.getObject("created_at", OffsetDateTime.class).toInstant()))
                 .list();
+    }
+
+    @Override
+    public List<UUID> pendingSettlementTenants(int limit) {
+        int bounded = Math.max(1, Math.min(limit, 1_000));
+        return jdbc.sql("select tenant_id from runtime.pending_settlement_tenants(:limit)")
+                .param("limit", bounded).query(UUID.class).list();
+    }
+
+    @Override
+    public List<ProductionRuntimeModels.JobProjectionCandidate> projectionCandidates(int limit) {
+        int bounded = Math.max(1, Math.min(limit, 1_000));
+        return jdbc.sql("select * from observability.projection_candidates(:limit)")
+                .param("limit", bounded)
+                .query((rs, row) -> new ProductionRuntimeModels.JobProjectionCandidate(
+                        rs.getObject("tenant_id", UUID.class),
+                        rs.getObject("job_id", UUID.class)))
+                .list();
+    }
+
+    @Override
+    public Duration projectionFreshness(UUID tenantId, UUID jobId) {
+        return inTenant(tenantId, () -> jdbc.sql("""
+                        select greatest(0, extract(epoch from (
+                                   greatest(j.updated_at, coalesce(max(wi.updated_at), j.updated_at))
+                                   - ps.updated_at
+                               )) * 1000)
+                          from orchestration.jobs j
+                          left join orchestration.work_items wi
+                            on wi.tenant_id = j.tenant_id and wi.job_id = j.id
+                          left join observability.progress_snapshots ps
+                            on ps.tenant_id = j.tenant_id and ps.job_id = j.id
+                         where j.tenant_id = :tenantId and j.id = :jobId
+                         group by j.updated_at, ps.updated_at
+                        """)
+                .param("tenantId", tenantId).param("jobId", jobId)
+                .query(BigDecimal.class).optional()
+                .map(value -> Duration.ofMillis(value.longValue()))
+                .orElse(Duration.ofDays(36500)));
     }
 
     @Override
@@ -488,22 +707,50 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
 
     @Override
     public List<String> invariantViolations(UUID tenantId) {
-        return inTenant(tenantId, () -> {
-            List<String> violations = new ArrayList<>();
-            addIfAny(violations, "NEGATIVE_WALLET", "select count(*) from billing.wallet_balances wb join billing.wallets w on w.id = wb.wallet_id where w.tenant_id = :tenantId and (available_balance < 0 or reserved_balance < 0)", tenantId);
-            addIfAny(violations, "EXPIRED_ACTIVE_RESERVATION", "select count(*) from billing.credit_reservations where tenant_id = :tenantId and status = 'ACTIVE' and expires_at < now()", tenantId);
-            addIfAny(violations, "RUNNING_ATTEMPT_WITHOUT_LEASE", "select count(*) from runtime.execution_attempts ea left join runtime.worker_leases wl on wl.attempt_id = ea.id where ea.tenant_id = :tenantId and ea.status = 'RUNNING' and wl.attempt_id is null", tenantId);
-            addIfAny(violations, "RUNNING_WORK_WITHOUT_LEASE", "select count(*) from orchestration.work_items wi left join runtime.worker_leases wl on wl.work_item_id = wi.id where wi.tenant_id = :tenantId and wi.status = 'RUNNING' and wl.work_item_id is null", tenantId);
-            addIfAny(violations, "UNBALANCED_JOURNAL", "select count(*) from (select jl.journal_id, jl.currency from billing.billing_journal_lines jl where jl.tenant_id = :tenantId group by jl.journal_id, jl.currency having sum(jl.debit) <> sum(jl.credit)) x", tenantId);
-            addIfAny(violations, "DUPLICATE_PROVIDER_USAGE", "select count(*) from (select provider, provider_usage_id from billing.token_usage_events where tenant_id = :tenantId and provider_usage_id is not null group by provider, provider_usage_id having count(*) > 1) x", tenantId);
-            return violations;
-        });
+        return inTenant(tenantId, () -> jdbc.sql(
+                        "select code, violation_count from observability.tenant_invariant_violations(:tenantId)")
+                .param("tenantId", tenantId)
+                .query((rs, row) -> rs.getString("code") + ":" + rs.getLong("violation_count"))
+                .list());
     }
 
     private DispatchEnvelope existingEnvelope(UUID tenantId, DispatchIntent intent, Map<String, Object> payload) {
         if (intent.attemptId() == null || intent.workerId() == null) throw new ProductionRuntimeException("DISPATCH_INTENT_INCOMPLETE", "dispatching intent has no attempt");
         String endpoint = jdbc.sql("select endpoint_uri from runtime.workers where id = :workerId").param("workerId", intent.workerId()).query(String.class).single();
         return new DispatchEnvelope(tenantId, intent.workItemId(), intent.attemptId(), intent.workerId(), intent.fencingToken(), endpoint, intent.dispatchIdempotencyKey(), payload == null ? Map.of() : Map.copyOf(payload));
+    }
+
+    private Map<String, Object> resumePayload(
+            UUID tenantId,
+            UUID workItemId,
+            Map<String, Object> payload
+    ) {
+        Map<String, Object> result = new LinkedHashMap<>(
+                payload == null ? Map.of() : payload);
+        // A caller cannot manufacture a trusted resume pointer. Only the
+        // latest PostgreSQL-committed checkpoint may populate this field.
+        result.remove("resumeCheckpoint");
+        jdbc.sql("""
+                select attempt_id, checkpoint_type, sequence_no,
+                       state_object_uri, state_hash, created_at
+                  from runtime.checkpoints
+                 where tenant_id = :tenantId and work_item_id = :workItemId
+                 order by created_at desc, sequence_no desc, attempt_id desc
+                 limit 1
+                """)
+                .param("tenantId", tenantId)
+                .param("workItemId", workItemId)
+                .query((rs, row) -> Map.<String, Object>of(
+                        "sourceAttemptId", rs.getObject("attempt_id", UUID.class).toString(),
+                        "checkpointType", rs.getString("checkpoint_type"),
+                        "sequenceNo", rs.getLong("sequence_no"),
+                        "stateObjectUri", rs.getString("state_object_uri"),
+                        "stateHash", rs.getString("state_hash"),
+                        "committedAt", rs.getObject("created_at", OffsetDateTime.class)
+                                .toInstant().toString()))
+                .optional()
+                .ifPresent(checkpoint -> result.put("resumeCheckpoint", checkpoint));
+        return Map.copyOf(result);
     }
 
     private DispatchIntent lockIntent(UUID tenantId, UUID intentId) { return jdbc.sql("select * from runtime.dispatch_intents where tenant_id = :tenantId and id = :id for update").param("tenantId", tenantId).param("id", intentId).query(this::readIntent).single(); }
@@ -517,16 +764,60 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
     private void assertStageJob(UUID tenantId, UUID jobId, UUID stageId) { jdbc.sql("select 1 from orchestration.job_stages where tenant_id = :tenantId and job_id = :jobId and id = :stageId").param("tenantId", tenantId).param("jobId", jobId).param("stageId", stageId).query(Integer.class).optional().orElseThrow(() -> new ProductionRuntimeException("STAGE_JOB_MISMATCH", "stage is not owned by job and tenant")); }
     private void assertWorkItemTenant(UUID tenantId, UUID id) { jdbc.sql("select 1 from orchestration.work_items where tenant_id = :tenantId and id = :id").param("tenantId", tenantId).param("id", id).query(Integer.class).optional().orElseThrow(() -> new ProductionRuntimeException("WORK_ITEM_TENANT_MISMATCH", "work item is not owned by tenant")); }
 
+    private void assertAdmissionAvailable(
+            UUID tenantId, UUID projectId, UUID jobId, UUID workItemId
+    ) {
+        jdbc.sql("select tenant_id from orchestration.admission_policies where tenant_id = :tenantId for update")
+                .param("tenantId", tenantId).query(UUID.class).optional()
+                .orElseThrow(() -> new ProductionRuntimeException(
+                        "ADMISSION_POLICY_MISSING", "tenant has no durable admission policy"));
+        List<String> blockers = jdbc.sql(
+                        "select code from orchestration.admission_blockers(:tenantId, :projectId, :jobId, :workItemId)")
+                .param("tenantId", tenantId).param("projectId", projectId)
+                .param("jobId", jobId).param("workItemId", workItemId)
+                .query(String.class).list();
+        if (!blockers.isEmpty()) {
+            throw new ProductionRuntimeException(
+                    "ADMISSION_LIMIT_EXCEEDED", String.join(",", blockers));
+        }
+    }
+
+    private void assertWorkerCapacity(UUID workerId, String capabilitiesJson) {
+        try {
+            int maximum = json.readTree(capabilitiesJson).path("maxConcurrent").asInt(0);
+            if (maximum < 1 || maximum > 1024) {
+                throw new ProductionRuntimeException(
+                        "WORKER_CAPACITY_INVALID", "worker maxConcurrent is missing or invalid");
+            }
+            long active = jdbc.sql("select count(*) from runtime.worker_leases where worker_id = :workerId")
+                    .param("workerId", workerId).query(Long.class).single();
+            if (active >= maximum) {
+                throw new ProductionRuntimeException(
+                        "WORKER_CAPACITY_EXHAUSTED", "worker has no available lease slot");
+            }
+        } catch (com.fasterxml.jackson.core.JsonProcessingException ex) {
+            throw new ProductionRuntimeException(
+                    "WORKER_CAPACITY_INVALID", "worker capability document is invalid", ex);
+        }
+    }
+
     private void event(UUID tenantId, String aggregateType, UUID aggregateId, String type, Map<String, Object> payload) {
         try { jdbc.sql("insert into observability.outbox_events (tenant_id, aggregate_type, aggregate_id, event_type, payload) values (:tenantId, :aggregateType, :aggregateId, :type, cast(:payload as jsonb))").param("tenantId", tenantId).param("aggregateType", aggregateType).param("aggregateId", aggregateId).param("type", type).param("payload", json.writeValueAsString(payload)).update(); }
         catch (Exception ex) { throw new ProductionRuntimeException("OUTBOX_SERIALIZATION_FAILED", "could not serialize runtime event", ex); }
     }
 
-    private void addIfAny(List<String> violations, String code, String query, UUID tenantId) { long count = jdbc.sql(query).param("tenantId", tenantId).query(Long.class).single(); if (count > 0) violations.add(code + ":" + count); }
     private void updateOrThrow(String code, JdbcClient.StatementSpec statement) { if (statement.update() != 1) throw new ProductionRuntimeException(code, "expected exactly one current owner row"); }
     private <T> T inTenant(UUID tenantId, java.util.function.Supplier<T> body) { return transactions.execute(status -> { jdbc.sql("select set_config('app.tenant_id', :tenantId, true)").param("tenantId", tenantId.toString()).query(String.class).single(); return body.get(); }); }
 
-    private record WorkerRow(String endpointUri, String status) {}
+    private record WorkerRow(String endpointUri, String status, String capabilitiesJson) {}
+    private record ExistingCompletion(
+            AttemptStatus status,
+            UUID workItemId,
+            UUID workerId,
+            long fencingToken,
+            String errorCode,
+            String errorMessage
+    ) {}
     private record ExpiredLease(UUID tenantId, UUID workItemId, UUID attemptId, UUID workerId, long fencingToken) {}
     private record ProgressCounts(UUID projectId, long total, long ready, long running, long completed, long failed, long tokens, BigDecimal credits) {}
 }

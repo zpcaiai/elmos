@@ -1,0 +1,155 @@
+{{- if .Values.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-control-plane
+  labels:
+    {{- include "elmos-runtime.labels" . | nindent 4 }}
+    {{- with .Values.monitoring.podMonitorLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  namespaceSelector:
+    matchNames: [{{ .Release.Namespace | quote }}]
+  selector:
+    matchLabels:
+      {{- include "elmos-runtime.selectorLabels" . | nindent 6 }}
+    matchExpressions:
+      - key: app.kubernetes.io/component
+        operator: In
+        values: [scheduler, billing, projector]
+  podTargetLabels:
+    - app.kubernetes.io/name
+    - app.kubernetes.io/component
+  podMetricsEndpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: {{ .Values.monitoring.interval | quote }}
+      scrapeTimeout: {{ .Values.monitoring.scrapeTimeout | quote }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-worker
+  labels:
+    {{- include "elmos-runtime.labels" . | nindent 4 }}
+    {{- with .Values.monitoring.podMonitorLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  namespaceSelector:
+    matchNames: [{{ .Release.Namespace | quote }}]
+  selector:
+    matchLabels:
+      {{- include "elmos-runtime.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: worker
+  podTargetLabels:
+    - app.kubernetes.io/name
+    - app.kubernetes.io/component
+  podMetricsEndpoints:
+    - port: worker
+      path: /actuator/prometheus
+      interval: {{ .Values.monitoring.interval | quote }}
+      scrapeTimeout: {{ .Values.monitoring.scrapeTimeout | quote }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "elmos-runtime.name" . }}
+  labels:
+    {{- include "elmos-runtime.labels" . | nindent 4 }}
+    {{- with .Values.monitoring.prometheusRuleLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  groups:
+    - name: elmos-production-runtime
+      interval: {{ .Values.monitoring.interval | quote }}
+      rules:
+        - alert: ElmosRuntimeComponentDown
+          expr: up{namespace={{ .Release.Namespace | quote }},pod=~"{{ include "elmos-runtime.name" . }}-(scheduler|billing|projector)-.*"} == 0
+          for: 2m
+          labels: {severity: page}
+          annotations:
+            summary: "ELMOS runtime control-plane component is down"
+            runbook: "docs/production-runtime/OPERATIONS.md#availability"
+        - alert: ElmosRuntimeWorkerDown
+          expr: up{namespace={{ .Release.Namespace | quote }},pod=~"{{ include "elmos-runtime.name" . }}-worker-[0-9]+"} == 0
+          for: 2m
+          labels: {severity: page}
+          annotations:
+            summary: "ELMOS runtime worker is not scrapeable"
+            runbook: "docs/production-runtime/OPERATIONS.md#availability"
+        - alert: ElmosRuntimeScrapeAbsent
+          expr: absent(up{namespace={{ .Release.Namespace | quote }},pod=~"{{ include "elmos-runtime.name" . }}-.*"})
+          for: 5m
+          labels: {severity: page}
+          annotations:
+            summary: "ELMOS runtime scrape series is absent"
+            runbook: "docs/production-runtime/OPERATIONS.md#availability"
+        - alert: ElmosRuntimeHttp5xx
+          expr: sum by (pod) (rate(http_server_requests_seconds_count{namespace={{ .Release.Namespace | quote }},pod=~"{{ include "elmos-runtime.name" . }}-.*",status=~"5.."}[10m])) / clamp_min(sum by (pod) (rate(http_server_requests_seconds_count{namespace={{ .Release.Namespace | quote }},pod=~"{{ include "elmos-runtime.name" . }}-.*"}[10m])), 0.001) > 0.05
+          for: 10m
+          labels: {severity: page}
+          annotations:
+            summary: "ELMOS runtime HTTP 5xx rate exceeds 5%"
+            runbook: "docs/production-runtime/OPERATIONS.md#availability"
+        - alert: ElmosRuntimeLoopFailures
+          expr: increase(elmos_production_runtime_loop_runs_total{namespace={{ .Release.Namespace | quote }},pod=~"{{ include "elmos-runtime.name" . }}-(scheduler|billing|projector)-.*",outcome="failure"}[10m]) > 0
+          for: 5m
+          labels: {severity: page}
+          annotations:
+            summary: "ELMOS runtime scheduled loop is failing"
+            runbook: "docs/production-runtime/OPERATIONS.md#recovery"
+        - alert: ElmosRuntimeLoopMetricAbsent
+          expr: absent(elmos_production_runtime_loop_runs_total{namespace={{ .Release.Namespace | quote }},pod=~"{{ include "elmos-runtime.name" . }}-(scheduler|billing|projector)-.*"})
+          for: 10m
+          labels: {severity: page}
+          annotations:
+            summary: "ELMOS runtime loop metric is absent"
+            runbook: "docs/production-runtime/OPERATIONS.md#recovery"
+        - alert: ElmosRuntimeWorkerJournalUnhealthy
+          expr: elmos_production_runtime_worker_journal_healthy{namespace={{ .Release.Namespace | quote }},pod=~"{{ include "elmos-runtime.name" . }}-worker-[0-9]+"} < 1
+          for: 1m
+          labels: {severity: page}
+          annotations:
+            summary: "ELMOS worker durable journal is unhealthy"
+            runbook: "docs/production-runtime/OPERATIONS.md#worker-journal"
+        - alert: ElmosRuntimeWorkerJournalMetricAbsent
+          expr: absent(elmos_production_runtime_worker_journal_healthy{namespace={{ .Release.Namespace | quote }}})
+          for: 10m
+          labels: {severity: page}
+          annotations:
+            summary: "ELMOS worker journal metric is absent"
+            runbook: "docs/production-runtime/OPERATIONS.md#worker-journal"
+        - alert: ElmosRuntimePersistentVolumeFilling
+          expr: kubelet_volume_stats_used_bytes{namespace={{ .Release.Namespace | quote }},persistentvolumeclaim=~"{{ include "elmos-runtime.name" . }}-worker-.*"} / kubelet_volume_stats_capacity_bytes{namespace={{ .Release.Namespace | quote }},persistentvolumeclaim=~"{{ include "elmos-runtime.name" . }}-worker-.*"} > 0.85
+          for: 15m
+          labels: {severity: ticket}
+          annotations:
+            summary: "ELMOS worker journal PVC exceeds 85% usage"
+            runbook: "docs/production-runtime/OPERATIONS.md#worker-journal"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-dashboard
+  labels:
+    {{- include "elmos-runtime.labels" . | nindent 4 }}
+    {{- with .Values.monitoring.dashboardLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+data:
+  elmos-production-runtime.json: |-
+    {
+      "title": "ELMOS Production Runtime",
+      "schemaVersion": 39,
+      "version": 1,
+      "editable": false,
+      "panels": [
+        {"type":"timeseries","title":"HTTP 5xx ratio","targets":[{"expr":"sum by (pod) (rate(http_server_requests_seconds_count{namespace=\"{{ .Release.Namespace }}\",pod=~\"{{ include "elmos-runtime.name" . }}-.*\",status=~\"5..\"}[10m])) / clamp_min(sum by (pod) (rate(http_server_requests_seconds_count{namespace=\"{{ .Release.Namespace }}\",pod=~\"{{ include "elmos-runtime.name" . }}-.*\"}[10m])), 0.001)"}]},
+        {"type":"timeseries","title":"Control-plane loop failures","targets":[{"expr":"increase(elmos_production_runtime_loop_runs_total{namespace=\"{{ .Release.Namespace }}\",pod=~\"{{ include "elmos-runtime.name" . }}-(scheduler|billing|projector)-.*\",outcome=\"failure\"}[10m])"}]},
+        {"type":"timeseries","title":"Worker durable journal","targets":[{"expr":"elmos_production_runtime_worker_journal_healthy{namespace=\"{{ .Release.Namespace }}\",pod=~\"{{ include "elmos-runtime.name" . }}-worker-[0-9]+\"}"}]}
+      ]
+    }
+{{- end }}

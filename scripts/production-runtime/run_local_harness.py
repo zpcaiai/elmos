@@ -71,8 +71,12 @@ def main() -> int:
         steps.append(run_command("production-runtime", ["make", "production-runtime"], output_dir))
         steps.append(run_command("helm-lint", ["helm", "lint", "deploy/helm/elmos-runtime"], output_dir))
         rendered = output_dir / "helm-rendered.yaml"
+        template_command = [
+            "helm", "template", "elmos-runtime", "deploy/helm/elmos-runtime",
+            "--values", "tests/production-runtime/helm-production-values.yaml",
+        ]
         template_result = subprocess.run(
-            ["helm", "template", "elmos-runtime", "deploy/helm/elmos-runtime", "--set", "image.repository=registry.example.invalid/elmos/runtime", "--set", "image.tag=sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"],
+            template_command,
             cwd=ROOT,
             text=True,
             capture_output=True,
@@ -81,7 +85,7 @@ def main() -> int:
         rendered.write_text(template_result.stdout + template_result.stderr, encoding="utf-8")
         if template_result.returncode != 0:
             raise HarnessError(f"helm-template failed with exit code {template_result.returncode}")
-        steps.append({"name": "helm-template", "status": "PASS", "command": ["helm", "template"], "log": rendered.name, "log_sha256": file_digest(rendered)})
+        steps.append({"name": "helm-template", "status": "PASS", "command": template_command, "log": rendered.name, "log_sha256": file_digest(rendered)})
 
         pitr_report = output_dir / "pitr-report.json"
         steps.append(run_command("pitr-drill", ["python3", "scripts/production-runtime/run_pitr_drill.py", "--output", str(pitr_report)], output_dir))

@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -70,6 +71,7 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
                     """).param("walletId", request.walletId()).param("tenantId", request.tenantId())
                     .query((rs, row) -> new Balance(rs.getBigDecimal("available_balance"), rs.getBigDecimal("reserved_balance"))).optional()
                     .orElseThrow(() -> new ProductionRuntimeException("BILLING_WALLET_NOT_FOUND", "wallet is not bound to tenant"));
+            assertReservationAdmission(request.tenantId(), request.amount());
             if (balance.available().compareTo(request.amount()) < 0) {
                 failIdempotency(request.tenantId(), RESERVE_OPERATION, request.idempotencyKey(), "CREDIT_EXHAUSTED");
                 throw new ProductionRuntimeException("CREDIT_EXHAUSTED", "available credit is insufficient");
@@ -158,6 +160,8 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
             if (reservation.status() == ReservationStatus.SETTLED) return null;
             if (reservation.status() != ReservationStatus.ACTIVE) throw new ProductionRuntimeException("BILLING_RESERVATION_NOT_ACTIVE", "only active reservations can settle");
             validateFinalUsage(usage, reservation.reservedAmount());
+            assertFinalUsageAdmission(usage);
+            validateUsageBindingsAndPricing(usage);
             if (usage.providerUsageId() != null) {
                 var duplicate = jdbc.sql("select model_call_id, customer_credit_cost from billing.token_usage_events where provider = :provider and provider_usage_id = :usageId")
                         .param("provider", usage.provider()).param("usageId", usage.providerUsageId()).query((rs, row) -> new ExistingUsage(rs.getObject("model_call_id", UUID.class), rs.getBigDecimal("customer_credit_cost"))).optional();
@@ -221,6 +225,7 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
             latest.ifPresent(value -> {
                 if (meter.sequenceNo() <= value.sequenceNo() || meter.cumulativeInputTokens() < value.inputTokens() || meter.cumulativeCachedInputTokens() < value.cachedTokens() || meter.cumulativeOutputTokens() < value.outputTokens() || meter.cumulativeReasoningTokens() < value.reasoningTokens() || meter.meteredProviderCost().compareTo(value.providerCost()) < 0 || meter.meteredCreditCost().compareTo(value.creditCost()) < 0) throw new ProductionRuntimeException("USAGE_METER_NOT_MONOTONIC", "meter snapshots must be cumulative and monotonic");
             });
+            assertMeterAdmission(meter);
             jdbc.sql("""
                     insert into billing.usage_meter_events
                       (tenant_id, reservation_id, model_call_id, sequence_no,
@@ -231,7 +236,7 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
                             :inputTokens, :cachedTokens, :outputTokens, :reasoningTokens,
                             :providerCost, :creditCost)
                     """).param("tenantId", meter.tenantId()).param("reservationId", meter.reservationId()).param("modelCallId", meter.modelCallId()).param("sequenceNo", meter.sequenceNo()).param("inputTokens", meter.cumulativeInputTokens()).param("cachedTokens", meter.cumulativeCachedInputTokens()).param("outputTokens", meter.cumulativeOutputTokens()).param("reasoningTokens", meter.cumulativeReasoningTokens()).param("providerCost", meter.meteredProviderCost()).param("creditCost", meter.meteredCreditCost()).update();
-            jdbc.sql("update ai_usage.model_calls set status = 'RUNNING' where id = :id and tenant_id = :tenantId and status in ('CREATED','PROVIDER_ACCEPTED')")
+            jdbc.sql("update ai_usage.model_calls set status = 'RUNNING' where id = :id and tenant_id = :tenantId and status in ('UNKNOWN','PROVIDER_ACCEPTED','RUNNING')")
                     .param("id", meter.modelCallId()).param("tenantId", meter.tenantId()).update();
             return meter;
         });
@@ -253,6 +258,7 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
                 if (call.status() == ModelCallStatus.UNKNOWN || call.status() == ModelCallStatus.PROVIDER_ACCEPTED) throw new ProductionRuntimeException("MODEL_CALL_RECONCILIATION_REQUIRED", "provider outcome must be reconciled before retry");
                 return new ModelCallReceipt(call.id(), call.status(), call.providerRequestId(), receipt.responseArtifactId());
             }
+            assertModelCallAdmission(request);
             UUID callId = UUID.randomUUID();
             jdbc.sql("""
                     insert into ai_usage.model_calls
@@ -266,25 +272,106 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
     }
 
     @Override
+    public void claimProviderDispatch(UUID tenantId, UUID modelCallId) {
+        inTenant(tenantId, () -> {
+            int callChanged = jdbc.sql("""
+                    update ai_usage.model_calls
+                       set status = 'UNKNOWN'
+                     where tenant_id = :tenantId and id = :id and status = 'CREATED'
+                    """)
+                    .param("tenantId", tenantId).param("id", modelCallId).update();
+            if (callChanged != 1) {
+                ModelCallState current = modelCallForUpdate(tenantId, modelCallId);
+                throw new ProductionRuntimeException(
+                        current == null ? "MODEL_CALL_NOT_FOUND" : "MODEL_CALL_RECONCILIATION_REQUIRED",
+                        current == null
+                                ? "model call does not exist for this tenant"
+                                : "provider dispatch was already claimed and must not be sent again");
+            }
+            int receiptChanged = jdbc.sql("""
+                    update ai_usage.model_call_receipts
+                       set receipt_state = 'UNKNOWN',
+                           last_provider_status = 'PROVIDER_SEND_CLAIMED',
+                           next_reconcile_at = now() + interval '30 seconds',
+                           updated_at = now()
+                     where tenant_id = :tenantId and model_call_id = :id
+                       and receipt_state = 'CREATED'
+                    """)
+                    .param("tenantId", tenantId).param("id", modelCallId).update();
+            if (receiptChanged != 1) {
+                throw new ProductionRuntimeException(
+                        "MODEL_CALL_RECEIPT_STATE_CONFLICT",
+                        "provider dispatch claim has no matching CREATED receipt");
+            }
+            return null;
+        });
+    }
+
+    @Override
     public void markProviderAccepted(UUID tenantId, UUID modelCallId, String providerRequestId) {
         inTenant(tenantId, () -> {
-            if (providerRequestId == null || providerRequestId.isBlank() || providerRequestId.length() > 500) throw new IllegalArgumentException("providerRequestId is required");
-            int updated = jdbc.sql("update ai_usage.model_calls set status = 'PROVIDER_ACCEPTED', provider_request_id = :providerRequestId where tenant_id = :tenantId and id = :id and status in ('CREATED','PROVIDER_ACCEPTED')")
+            requireProviderRequestId(providerRequestId);
+            ModelCallState current = requireModelCallForUpdate(tenantId, modelCallId);
+            assertProviderRequestBinding(current, providerRequestId);
+            if (current.status() == ModelCallStatus.PROVIDER_ACCEPTED
+                    && "PROVIDER_ACCEPTED".equals(current.receiptState())) {
+                return null;
+            }
+            if (current.status() != ModelCallStatus.UNKNOWN
+                    || !"UNKNOWN".equals(current.receiptState())) {
+                throw new ProductionRuntimeException(
+                        "MODEL_CALL_STATE_CONFLICT",
+                        "model call is not accepting a provider acknowledgement");
+            }
+            int updated = jdbc.sql("update ai_usage.model_calls set status = 'PROVIDER_ACCEPTED', provider_request_id = :providerRequestId where tenant_id = :tenantId and id = :id and status = 'UNKNOWN' and (provider_request_id is null or provider_request_id = :providerRequestId)")
                     .param("tenantId", tenantId).param("id", modelCallId).param("providerRequestId", providerRequestId).update();
             if (updated != 1) throw new ProductionRuntimeException("MODEL_CALL_STATE_CONFLICT", "model call is not accepting a provider acknowledgement");
-            jdbc.sql("update ai_usage.model_call_receipts set receipt_state = 'PROVIDER_ACCEPTED', provider_request_id = :providerRequestId, updated_at = now() where tenant_id = :tenantId and model_call_id = :id")
+            int receiptUpdated = jdbc.sql("update ai_usage.model_call_receipts set receipt_state = 'PROVIDER_ACCEPTED', provider_request_id = :providerRequestId, next_reconcile_at = now() + interval '30 seconds', updated_at = now() where tenant_id = :tenantId and model_call_id = :id and receipt_state = 'UNKNOWN' and (provider_request_id is null or provider_request_id = :providerRequestId)")
                     .param("tenantId", tenantId).param("id", modelCallId).param("providerRequestId", providerRequestId).update();
+            if (receiptUpdated != 1) {
+                throw new ProductionRuntimeException(
+                        "MODEL_CALL_RECEIPT_STATE_CONFLICT",
+                        "model call receipt did not accept the provider acknowledgement");
+            }
             return null;
         });
     }
 
     @Override
     public void markProviderUnknown(UUID tenantId, UUID modelCallId, String providerStatus) {
+        markProviderUnknown(tenantId, modelCallId, null, providerStatus);
+    }
+
+    @Override
+    public void markProviderUnknown(
+            UUID tenantId,
+            UUID modelCallId,
+            String providerRequestId,
+            String providerStatus
+    ) {
         inTenant(tenantId, () -> {
-            jdbc.sql("update ai_usage.model_calls set status = 'UNKNOWN' where tenant_id = :tenantId and id = :id and status in ('CREATED','PROVIDER_ACCEPTED','RUNNING')")
-                    .param("tenantId", tenantId).param("id", modelCallId).update();
-            jdbc.sql("update ai_usage.model_call_receipts set receipt_state = 'UNKNOWN', last_provider_status = :status, updated_at = now() where tenant_id = :tenantId and model_call_id = :id")
-                    .param("tenantId", tenantId).param("id", modelCallId).param("status", boundedReason(providerStatus)).update();
+            if (providerRequestId != null) requireProviderRequestId(providerRequestId);
+            ModelCallState current = requireModelCallForUpdate(tenantId, modelCallId);
+            if (current.status() != ModelCallStatus.UNKNOWN
+                    && current.status() != ModelCallStatus.PROVIDER_ACCEPTED
+                    && current.status() != ModelCallStatus.RUNNING) {
+                throw new ProductionRuntimeException(
+                        "MODEL_CALL_STATE_CONFLICT",
+                        "terminal or unclaimed model call cannot become uncertain");
+            }
+            assertProviderRequestBinding(current, providerRequestId);
+            int callUpdated = jdbc.sql("update ai_usage.model_calls set status = 'UNKNOWN', provider_request_id = coalesce(:providerRequestId, provider_request_id) where tenant_id = :tenantId and id = :id and status in ('PROVIDER_ACCEPTED','RUNNING','UNKNOWN')")
+                    .param("tenantId", tenantId).param("id", modelCallId)
+                    .param("providerRequestId", providerRequestId).update();
+            int receiptUpdated = jdbc.sql("update ai_usage.model_call_receipts set receipt_state = 'UNKNOWN', provider_request_id = coalesce(:providerRequestId, provider_request_id), last_provider_status = :status, reconcile_attempts = reconcile_attempts + 1, next_reconcile_at = now() + make_interval(secs => least(3600, 30 * power(2, least(reconcile_attempts, 7))::integer)), updated_at = now() where tenant_id = :tenantId and model_call_id = :id and receipt_state in ('PROVIDER_ACCEPTED','UNKNOWN')")
+                    .param("tenantId", tenantId).param("id", modelCallId)
+                    .param("providerRequestId", providerRequestId)
+                    .param("status", boundedReason(providerStatus)).update();
+            if (callUpdated != 1 || receiptUpdated != 1) {
+                throw new ProductionRuntimeException(
+                        "MODEL_CALL_STATE_CONFLICT",
+                        "model call uncertainty transition did not update both durable records");
+            }
             return null;
         });
     }
@@ -292,14 +379,40 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
     @Override
     public void completeModelCall(UUID tenantId, UUID modelCallId, String providerRequestId, UUID responseArtifactId) {
         inTenant(tenantId, () -> {
-            if (providerRequestId == null || providerRequestId.isBlank() || responseArtifactId == null) {
-                throw new IllegalArgumentException("provider completion requires request and artifact ids");
+            requireProviderRequestId(providerRequestId);
+            if (responseArtifactId == null) {
+                throw new IllegalArgumentException("provider completion requires a response artifact id");
             }
-            int updated = jdbc.sql("update ai_usage.model_calls set status = 'COMPLETE', provider_request_id = :providerRequestId, completed_at = now() where tenant_id = :tenantId and id = :id and status in ('CREATED','PROVIDER_ACCEPTED','RUNNING','UNKNOWN')")
+            ModelCallState current = requireModelCallForUpdate(tenantId, modelCallId);
+            assertProviderRequestBinding(current, providerRequestId);
+            if (current.status() == ModelCallStatus.COMPLETE) {
+                if (providerRequestId.equals(current.callProviderRequestId())
+                        && providerRequestId.equals(current.receiptProviderRequestId())
+                        && responseArtifactId.equals(current.responseArtifactId())
+                        && "COMPLETE".equals(current.receiptState())) {
+                    return null;
+                }
+                throw new ProductionRuntimeException(
+                        "MODEL_CALL_COMPLETION_CONFLICT",
+                        "completed model call was replayed with different provider evidence");
+            }
+            if (current.status() != ModelCallStatus.UNKNOWN
+                    && current.status() != ModelCallStatus.PROVIDER_ACCEPTED
+                    && current.status() != ModelCallStatus.RUNNING) {
+                throw new ProductionRuntimeException(
+                        "MODEL_CALL_STATE_CONFLICT",
+                        "model call is not ready for provider completion");
+            }
+            int updated = jdbc.sql("update ai_usage.model_calls set status = 'COMPLETE', provider_request_id = :providerRequestId, completed_at = now() where tenant_id = :tenantId and id = :id and status in ('PROVIDER_ACCEPTED','RUNNING','UNKNOWN')")
                     .param("tenantId", tenantId).param("id", modelCallId).param("providerRequestId", providerRequestId).update();
             if (updated != 1) throw new ProductionRuntimeException("MODEL_CALL_STATE_CONFLICT", "model call is not ready for provider completion");
-            jdbc.sql("update ai_usage.model_call_receipts set receipt_state = 'COMPLETE', provider_request_id = :providerRequestId, response_artifact_id = :artifactId, updated_at = now() where tenant_id = :tenantId and model_call_id = :id")
+            int receiptUpdated = jdbc.sql("update ai_usage.model_call_receipts set receipt_state = 'COMPLETE', provider_request_id = :providerRequestId, response_artifact_id = :artifactId, next_reconcile_at = null, updated_at = now() where tenant_id = :tenantId and model_call_id = :id and receipt_state in ('PROVIDER_ACCEPTED','UNKNOWN')")
                     .param("tenantId", tenantId).param("id", modelCallId).param("providerRequestId", providerRequestId).param("artifactId", responseArtifactId).update();
+            if (receiptUpdated != 1) {
+                throw new ProductionRuntimeException(
+                        "MODEL_CALL_RECEIPT_STATE_CONFLICT",
+                        "model call receipt is not ready for provider completion");
+            }
             return null;
         });
     }
@@ -307,11 +420,26 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
     @Override
     public void markProviderFailed(UUID tenantId, UUID modelCallId, String providerStatus) {
         inTenant(tenantId, () -> {
-            int updated = jdbc.sql("update ai_usage.model_calls set status = 'FAILED', completed_at = now() where tenant_id = :tenantId and id = :id and status in ('CREATED','PROVIDER_ACCEPTED','RUNNING','UNKNOWN')")
+            ModelCallState current = requireModelCallForUpdate(tenantId, modelCallId);
+            if (current.status() == ModelCallStatus.FAILED
+                    && "FAILED".equals(current.receiptState())) return null;
+            if (current.status() != ModelCallStatus.UNKNOWN
+                    && current.status() != ModelCallStatus.PROVIDER_ACCEPTED
+                    && current.status() != ModelCallStatus.RUNNING) {
+                throw new ProductionRuntimeException(
+                        "MODEL_CALL_STATE_CONFLICT",
+                        "unclaimed or completed model call cannot become failed");
+            }
+            int updated = jdbc.sql("update ai_usage.model_calls set status = 'FAILED', completed_at = now() where tenant_id = :tenantId and id = :id and status in ('PROVIDER_ACCEPTED','RUNNING','UNKNOWN')")
                     .param("tenantId", tenantId).param("id", modelCallId).update();
             if (updated != 1) throw new ProductionRuntimeException("MODEL_CALL_STATE_CONFLICT", "model call is not ready for provider failure");
-            jdbc.sql("update ai_usage.model_call_receipts set receipt_state = 'FAILED', last_provider_status = :status, updated_at = now() where tenant_id = :tenantId and model_call_id = :id")
+            int receiptUpdated = jdbc.sql("update ai_usage.model_call_receipts set receipt_state = 'FAILED', last_provider_status = :status, next_reconcile_at = null, updated_at = now() where tenant_id = :tenantId and model_call_id = :id and receipt_state in ('PROVIDER_ACCEPTED','UNKNOWN')")
                     .param("tenantId", tenantId).param("id", modelCallId).param("status", boundedReason(providerStatus)).update();
+            if (receiptUpdated != 1) {
+                throw new ProductionRuntimeException(
+                        "MODEL_CALL_RECEIPT_STATE_CONFLICT",
+                        "model call receipt is not ready for provider failure");
+            }
             return null;
         });
     }
@@ -340,6 +468,70 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
         });
     }
 
+    @Override
+    public int expireReservations(int limit) {
+        int bounded = Math.max(1, Math.min(limit, 1_000));
+        var candidates = jdbc.sql("select * from billing.expired_reservation_candidates(:limit)")
+                .param("limit", bounded)
+                .query((rs, row) -> new ExpiredReservation(
+                        rs.getObject("tenant_id", UUID.class),
+                        rs.getObject("reservation_id", UUID.class)))
+                .list();
+        int expired = 0;
+        for (var candidate : candidates) {
+            Boolean changed = inTenant(candidate.tenantId(), () -> {
+                var reservation = jdbc.sql("""
+                        select id, wallet_id, reserved_amount, consumed_amount, status
+                          from billing.credit_reservations
+                         where tenant_id = :tenantId and id = :id for update
+                        """)
+                        .param("tenantId", candidate.tenantId())
+                        .param("id", candidate.reservationId())
+                        .query((rs, row) -> new ReservationRow(
+                                rs.getObject("id", UUID.class), rs.getObject("wallet_id", UUID.class),
+                                rs.getBigDecimal("reserved_amount"), rs.getBigDecimal("consumed_amount"),
+                                ReservationStatus.valueOf(rs.getString("status"))))
+                        .optional().orElse(null);
+                if (reservation == null || reservation.status() != ReservationStatus.ACTIVE) return false;
+                BigDecimal unused = reservation.reservedAmount().subtract(reservation.consumedAmount());
+                jdbc.sql("update billing.wallet_balances set available_balance = available_balance + :unused, reserved_balance = reserved_balance - :unused, version = version + 1, updated_at = now() where tenant_id = :tenantId and wallet_id = :walletId")
+                        .param("unused", unused).param("tenantId", candidate.tenantId())
+                        .param("walletId", reservation.walletId()).update();
+                int updated = jdbc.sql("update billing.credit_reservations set status = 'EXPIRED', settled_at = now(), last_transition_reason = 'RESERVATION_TTL_EXPIRED' where tenant_id = :tenantId and id = :id and status = 'ACTIVE'")
+                        .param("tenantId", candidate.tenantId()).param("id", candidate.reservationId()).update();
+                if (updated == 1) outbox(candidate.tenantId(), "CREDIT_RESERVATION",
+                        candidate.reservationId(), "CREDIT_RESERVATION_EXPIRED", Map.of("released", unused));
+                return updated == 1;
+            });
+            if (Boolean.TRUE.equals(changed)) expired++;
+        }
+        return expired;
+    }
+
+    @Override
+    public List<ProductionRuntimeModels.ModelCallRecoveryCandidate> uncertainModelCalls(int limit) {
+        int bounded = Math.max(1, Math.min(limit, 1_000));
+        return jdbc.sql("select * from ai_usage.uncertain_model_call_candidates(:limit)")
+                .param("limit", bounded)
+                .query((rs, row) -> {
+                    var request = new ProductionRuntimeModels.ModelCallRequest(
+                            rs.getObject("tenant_id", UUID.class),
+                            rs.getObject("account_id", UUID.class),
+                            rs.getObject("project_id", UUID.class),
+                            rs.getObject("job_id", UUID.class),
+                            rs.getObject("stage_id", UUID.class),
+                            rs.getObject("work_item_id", UUID.class),
+                            rs.getObject("attempt_id", UUID.class),
+                            rs.getString("provider"), rs.getString("model"),
+                            rs.getString("idempotency_key"), rs.getString("request_hash"));
+                    return new ProductionRuntimeModels.ModelCallRecoveryCandidate(
+                            rs.getObject("model_call_id", UUID.class), request,
+                            rs.getString("provider_request_id"),
+                            ModelCallStatus.valueOf(rs.getString("call_status")),
+                            rs.getInt("reconcile_attempts"));
+                }).list();
+    }
+
     private ReservationResult reservationById(UUID id) {
         return jdbc.sql("select id, status, reserved_amount, wallet_id from billing.credit_reservations where id = :id")
                 .param("id", id).query((rs, row) -> {
@@ -359,6 +551,266 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
         if (usage.customerCreditCost().compareTo(reserved) > 0) throw new ProductionRuntimeException("FINAL_USAGE_EXCEEDS_RESERVATION", "final customer charge exceeds reserved credit");
     }
 
+    private AdmissionLimits lockAdmission(UUID tenantId) {
+        return jdbc.sql("""
+                select max_concurrent_model_calls, max_provider_calls_per_minute,
+                       daily_token_cap, daily_credit_cap
+                  from orchestration.admission_policies
+                 where tenant_id = :tenantId for update
+                """).param("tenantId", tenantId)
+                .query((rs, row) -> new AdmissionLimits(
+                        rs.getInt("max_concurrent_model_calls"),
+                        rs.getInt("max_provider_calls_per_minute"),
+                        rs.getLong("daily_token_cap"),
+                        rs.getBigDecimal("daily_credit_cap")))
+                .optional().orElseThrow(() -> new ProductionRuntimeException(
+                        "ADMISSION_POLICY_MISSING", "tenant has no durable admission policy"));
+    }
+
+    private void assertReservationAdmission(UUID tenantId, BigDecimal requested) {
+        AdmissionLimits limits = lockAdmission(tenantId);
+        BigDecimal committed = jdbc.sql("""
+                select coalesce((select sum(customer_credit_cost)
+                                  from billing.token_usage_events
+                                 where tenant_id = :tenantId
+                                   and created_at >= date_trunc('day', now())), 0)
+                     + coalesce((select sum(reserved_amount)
+                                  from billing.credit_reservations
+                                 where tenant_id = :tenantId and status = 'ACTIVE'), 0)
+                """).param("tenantId", tenantId).query(BigDecimal.class).single();
+        if (committed.add(requested).compareTo(limits.dailyCreditCap()) > 0) {
+            throw new ProductionRuntimeException(
+                    "DAILY_CREDIT_CAP_EXCEEDED", "reservation exceeds the tenant daily credit cap");
+        }
+    }
+
+    private void assertModelCallAdmission(ProductionRuntimeModels.ModelCallRequest request) {
+        AdmissionLimits limits = lockAdmission(request.tenantId());
+        long active = jdbc.sql("""
+                select count(*) from ai_usage.model_calls
+                 where tenant_id = :tenantId
+                   and status in ('CREATED','PROVIDER_ACCEPTED','RUNNING','UNKNOWN')
+                """).param("tenantId", request.tenantId()).query(Long.class).single();
+        if (active >= limits.maxConcurrentModelCalls()) {
+            throw new ProductionRuntimeException(
+                    "MODEL_CALL_CONCURRENCY_EXHAUSTED", "tenant model-call concurrency is exhausted");
+        }
+        long recent = jdbc.sql("""
+                select count(*) from ai_usage.model_calls
+                 where tenant_id = :tenantId and provider = :provider
+                   and created_at >= now() - interval '1 minute'
+                """).param("tenantId", request.tenantId())
+                .param("provider", request.provider()).query(Long.class).single();
+        if (recent >= limits.maxProviderCallsPerMinute()) {
+            throw new ProductionRuntimeException(
+                    "PROVIDER_RATE_LIMIT_EXHAUSTED", "tenant provider-call rate is exhausted");
+        }
+    }
+
+    private void assertMeterAdmission(MeterSnapshot meter) {
+        AdmissionLimits limits = lockAdmission(meter.tenantId());
+        DailyUsage used = jdbc.sql("""
+                with final_usage as (
+                    select coalesce(sum(input_tokens::numeric + output_tokens::numeric + reasoning_tokens::numeric), 0) tokens,
+                           coalesce(sum(customer_credit_cost), 0) credits
+                      from billing.token_usage_events
+                     where tenant_id = :tenantId
+                       and created_at >= date_trunc('day', now())
+                ), latest_active as (
+                    select distinct on (ume.model_call_id)
+                           ume.model_call_id,
+                           ume.cumulative_input_tokens::numeric + ume.cumulative_output_tokens::numeric
+                             + ume.cumulative_reasoning_tokens::numeric tokens,
+                           ume.metered_credit_cost credits
+                      from billing.usage_meter_events ume
+                      join ai_usage.model_calls mc
+                        on mc.tenant_id = ume.tenant_id and mc.id = ume.model_call_id
+                     where ume.tenant_id = :tenantId
+                       and ume.model_call_id <> :modelCallId
+                       and mc.status in ('CREATED','PROVIDER_ACCEPTED','RUNNING','UNKNOWN')
+                     order by ume.model_call_id, ume.sequence_no desc
+                )
+                select f.tokens + coalesce(sum(a.tokens), 0),
+                       f.credits + coalesce(sum(a.credits), 0)
+                  from final_usage f left join latest_active a on true
+                 group by f.tokens, f.credits
+                """).param("tenantId", meter.tenantId())
+                .param("modelCallId", meter.modelCallId())
+                .query((rs, row) -> new DailyUsage(
+                        rs.getBigDecimal(1), rs.getBigDecimal(2))).single();
+        BigDecimal candidateTokens = BigDecimal.valueOf(meter.cumulativeInputTokens())
+                .add(BigDecimal.valueOf(meter.cumulativeOutputTokens()))
+                .add(BigDecimal.valueOf(meter.cumulativeReasoningTokens()));
+        if (used.tokens().add(candidateTokens)
+                .compareTo(BigDecimal.valueOf(limits.dailyTokenCap())) > 0) {
+            throw new ProductionRuntimeException(
+                    "DAILY_TOKEN_CAP_EXCEEDED", "meter exceeds the tenant daily token cap");
+        }
+        if (used.credits().add(meter.meteredCreditCost())
+                .compareTo(limits.dailyCreditCap()) > 0) {
+            throw new ProductionRuntimeException(
+                    "DAILY_CREDIT_CAP_EXCEEDED", "meter exceeds the tenant daily credit cap");
+        }
+    }
+
+    private void assertFinalUsageAdmission(FinalUsage usage) {
+        AdmissionLimits limits = lockAdmission(usage.tenantId());
+        DailyUsage used = jdbc.sql("""
+                select coalesce(sum(input_tokens::numeric + output_tokens::numeric + reasoning_tokens::numeric), 0),
+                       coalesce(sum(customer_credit_cost), 0)
+                  from billing.token_usage_events
+                 where tenant_id = :tenantId
+                   and created_at >= date_trunc('day', now())
+                """).param("tenantId", usage.tenantId())
+                .query((rs, row) -> new DailyUsage(
+                        rs.getBigDecimal(1), rs.getBigDecimal(2))).single();
+        BigDecimal tokens = BigDecimal.valueOf(usage.inputTokens())
+                .add(BigDecimal.valueOf(usage.outputTokens()))
+                .add(BigDecimal.valueOf(usage.reasoningTokens()));
+        if (used.tokens().add(tokens)
+                .compareTo(BigDecimal.valueOf(limits.dailyTokenCap())) > 0) {
+            throw new ProductionRuntimeException(
+                    "DAILY_TOKEN_CAP_EXCEEDED", "final usage exceeds the tenant daily token cap");
+        }
+        if (used.credits().add(usage.customerCreditCost())
+                .compareTo(limits.dailyCreditCap()) > 0) {
+            throw new ProductionRuntimeException(
+                    "DAILY_CREDIT_CAP_EXCEEDED", "final usage exceeds the tenant daily credit cap");
+        }
+    }
+
+    private void validateUsageBindingsAndPricing(FinalUsage usage) {
+        long bound = jdbc.sql("""
+                select count(*)
+                  from ai_usage.model_calls mc
+                  join ai_usage.model_call_receipts receipt
+                    on receipt.tenant_id = mc.tenant_id
+                   and receipt.model_call_id = mc.id
+                  join billing.credit_reservations cr
+                    on cr.tenant_id = mc.tenant_id
+                   and cr.work_item_id = mc.work_item_id
+                 where mc.tenant_id = :tenantId
+                   and mc.id = :modelCallId
+                   and cr.id = :reservationId
+                   and mc.provider = :provider
+                   and mc.model = :model
+                   and mc.status = 'COMPLETE'
+                   and receipt.receipt_state = 'COMPLETE'
+                   and receipt.provider_request_id is not null
+                   and receipt.response_artifact_id is not null
+                """)
+                .param("tenantId", usage.tenantId())
+                .param("modelCallId", usage.modelCallId())
+                .param("reservationId", usage.reservationId())
+                .param("provider", usage.provider())
+                .param("model", usage.model())
+                .query(Long.class).single();
+        if (bound != 1) {
+            throw new ProductionRuntimeException(
+                    "FINAL_USAGE_OWNERSHIP_MISMATCH",
+                    "usage requires one tenant-owned reservation and a completed, artifact-backed provider call");
+        }
+
+        PriceTuple providerPrice = jdbc.sql("""
+                select p.input_per_million, p.cached_input_per_million,
+                       p.output_per_million, p.reasoning_per_million
+                  from billing.provider_pricing_versions v
+                  join billing.provider_model_prices p
+                    on p.pricing_version_id = v.id
+                  join ai_usage.model_calls mc
+                    on mc.tenant_id = :tenantId and mc.id = :modelCallId
+                 where v.id = :versionId
+                   and p.provider = :provider
+                   and p.model = :model
+                   and v.effective_from <= mc.created_at
+                   and (v.effective_to is null or v.effective_to > mc.created_at)
+                """)
+                .param("versionId", usage.providerPricingVersionId())
+                .param("tenantId", usage.tenantId())
+                .param("modelCallId", usage.modelCallId())
+                .param("provider", usage.provider()).param("model", usage.model())
+                .query((rs, row) -> new PriceTuple(
+                        rs.getBigDecimal("input_per_million"),
+                        rs.getBigDecimal("cached_input_per_million"),
+                        rs.getBigDecimal("output_per_million"),
+                        rs.getBigDecimal("reasoning_per_million")))
+                .optional().orElseThrow(() -> new ProductionRuntimeException(
+                        "PROVIDER_PRICE_NOT_EFFECTIVE",
+                        "no exact effective provider/model price exists"));
+        PriceTuple commercialPrice = jdbc.sql("""
+                select p.credit_per_input_million, p.credit_per_cached_million,
+                       p.credit_per_output_million, p.credit_per_reasoning_million
+                  from billing.commercial_pricing_versions v
+                  join billing.commercial_model_prices p
+                    on p.pricing_version_id = v.id
+                  join ai_usage.model_calls mc
+                    on mc.tenant_id = :tenantId and mc.id = :modelCallId
+                 where v.id = :versionId
+                   and p.provider = :provider
+                   and p.model = :model
+                   and v.effective_from <= mc.created_at
+                   and (v.effective_to is null or v.effective_to > mc.created_at)
+                """)
+                .param("versionId", usage.commercialPricingVersionId())
+                .param("tenantId", usage.tenantId())
+                .param("modelCallId", usage.modelCallId())
+                .param("provider", usage.provider()).param("model", usage.model())
+                .query((rs, row) -> new PriceTuple(
+                        rs.getBigDecimal("credit_per_input_million"),
+                        rs.getBigDecimal("credit_per_cached_million"),
+                        rs.getBigDecimal("credit_per_output_million"),
+                        rs.getBigDecimal("credit_per_reasoning_million")))
+                .optional().orElseThrow(() -> new ProductionRuntimeException(
+                        "COMMERCIAL_PRICE_NOT_EFFECTIVE",
+                        "no exact effective commercial provider/model price exists"));
+        if (price(providerPrice, usage).compareTo(usage.providerTotalCost()) != 0
+                || price(commercialPrice, usage).compareTo(usage.customerCreditCost()) != 0) {
+            throw new ProductionRuntimeException(
+                    "FINAL_USAGE_PRICE_MISMATCH",
+                    "supplied final totals do not equal the immutable pricing versions");
+        }
+
+        jdbc.sql("""
+                select sequence_no, cumulative_input_tokens,
+                       cumulative_cached_input_tokens, cumulative_output_tokens,
+                       cumulative_reasoning_tokens, metered_provider_cost,
+                       metered_credit_cost
+                  from billing.usage_meter_events
+                 where tenant_id = :tenantId and model_call_id = :modelCallId
+                 order by sequence_no desc limit 1
+                """)
+                .param("tenantId", usage.tenantId())
+                .param("modelCallId", usage.modelCallId())
+                .query((rs, row) -> new MeterValues(
+                        rs.getLong("sequence_no"), rs.getLong("cumulative_input_tokens"),
+                        rs.getLong("cumulative_cached_input_tokens"),
+                        rs.getLong("cumulative_output_tokens"),
+                        rs.getLong("cumulative_reasoning_tokens"),
+                        rs.getBigDecimal("metered_provider_cost"),
+                        rs.getBigDecimal("metered_credit_cost")))
+                .optional().ifPresent(meter -> {
+                    if (meter.inputTokens() > usage.inputTokens()
+                            || meter.cachedTokens() > usage.cachedInputTokens()
+                            || meter.outputTokens() > usage.outputTokens()
+                            || meter.reasoningTokens() > usage.reasoningTokens()
+                            || meter.providerCost().compareTo(usage.providerTotalCost()) > 0
+                            || meter.creditCost().compareTo(usage.customerCreditCost()) > 0) {
+                        throw new ProductionRuntimeException(
+                                "FINAL_USAGE_BELOW_STREAM_METER",
+                                "final usage cannot move below a committed cumulative meter");
+                    }
+                });
+    }
+
+    private static BigDecimal price(PriceTuple price, FinalUsage usage) {
+        BigDecimal total = price.input().multiply(BigDecimal.valueOf(usage.inputTokens()))
+                .add(price.cached().multiply(BigDecimal.valueOf(usage.cachedInputTokens())))
+                .add(price.output().multiply(BigDecimal.valueOf(usage.outputTokens())))
+                .add(price.reasoning().multiply(BigDecimal.valueOf(usage.reasoningTokens())))
+                .divide(BigDecimal.valueOf(1_000_000L), 12, java.math.RoundingMode.HALF_UP);
+        return ProductionRuntimeModels.canonicalMoney(total);
+    }
+
     private void ledgerAndJournal(UUID tenantId, UUID walletId, String entryType, UUID referenceId, BigDecimal amount, String idempotencyKey) {
         if (amount.signum() == 0) return;
         jdbc.sql("insert into billing.ledger_entries (id, tenant_id, wallet_id, entry_type, reference_type, reference_id, amount, idempotency_key) values (:id, :tenantId, :walletId, :entryType, 'BILLING', :referenceId, :amount, :key)")
@@ -369,8 +821,13 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
         boolean usage = entryType.equals("USAGE");
         String currency = jdbc.sql("select currency from billing.wallets where id = :walletId and tenant_id = :tenantId")
                 .param("walletId", walletId).param("tenantId", tenantId).query(String.class).single();
-        journalLine(tenantId, journalId, usage ? "PLATFORM_REVENUE" : "CASH_CLEARING", currency, amount, BigDecimal.ZERO, walletId);
-        journalLine(tenantId, journalId, "CUSTOMER_WALLET", currency, BigDecimal.ZERO, amount, walletId);
+        if (usage) {
+            journalLine(tenantId, journalId, "CUSTOMER_WALLET", currency, amount, BigDecimal.ZERO, walletId);
+            journalLine(tenantId, journalId, "PLATFORM_REVENUE", currency, BigDecimal.ZERO, amount, walletId);
+        } else {
+            journalLine(tenantId, journalId, "CASH_CLEARING", currency, amount, BigDecimal.ZERO, walletId);
+            journalLine(tenantId, journalId, "CUSTOMER_WALLET", currency, BigDecimal.ZERO, amount, walletId);
+        }
     }
 
     private void journalLine(UUID tenantId, UUID journalId, String account, String currency, BigDecimal debit, BigDecimal credit, UUID walletId) {
@@ -413,6 +870,61 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
         if (!Objects.equals(stored, incoming)) throw new ProductionRuntimeException("IDEMPOTENCY_CONFLICT", "idempotency key was reused with a different request");
     }
 
+    private ModelCallState requireModelCallForUpdate(UUID tenantId, UUID modelCallId) {
+        ModelCallState state = modelCallForUpdate(tenantId, modelCallId);
+        if (state == null) {
+            throw new ProductionRuntimeException(
+                    "MODEL_CALL_NOT_FOUND", "model call does not exist for this tenant");
+        }
+        return state;
+    }
+
+    private ModelCallState modelCallForUpdate(UUID tenantId, UUID modelCallId) {
+        return jdbc.sql("""
+                select mc.status,
+                       mc.provider_request_id as call_provider_request_id,
+                       receipt.provider_request_id as receipt_provider_request_id,
+                       receipt.response_artifact_id,
+                       receipt.receipt_state
+                  from ai_usage.model_calls mc
+                  join ai_usage.model_call_receipts receipt
+                    on receipt.tenant_id = mc.tenant_id
+                   and receipt.model_call_id = mc.id
+                 where mc.tenant_id = :tenantId and mc.id = :id
+                 for update of mc, receipt
+                """)
+                .param("tenantId", tenantId).param("id", modelCallId)
+                .query((rs, row) -> new ModelCallState(
+                        ModelCallStatus.valueOf(rs.getString("status")),
+                        rs.getString("call_provider_request_id"),
+                        rs.getString("receipt_provider_request_id"),
+                        rs.getObject("response_artifact_id", UUID.class),
+                        rs.getString("receipt_state")))
+                .optional().orElse(null);
+    }
+
+    private static void requireProviderRequestId(String providerRequestId) {
+        if (providerRequestId == null
+                || !providerRequestId.matches("[A-Za-z0-9._:-]{1,500}")) {
+            throw new IllegalArgumentException("providerRequestId is malformed");
+        }
+    }
+
+    private static void assertProviderRequestBinding(
+            ModelCallState current,
+            String providerRequestId
+    ) {
+        if (providerRequestId == null) return;
+        if ((current.callProviderRequestId() != null
+                && !providerRequestId.equals(current.callProviderRequestId()))
+                || (current.receiptProviderRequestId() != null
+                && !providerRequestId.equals(current.receiptProviderRequestId()))) {
+            throw new ProductionRuntimeException(
+                    "MODEL_CALL_PROVIDER_ID_CONFLICT",
+                    "model call is already bound to a different provider request");
+        }
+    }
+
     private <T> T inTenant(UUID tenantId, java.util.function.Supplier<T> body) {
         Objects.requireNonNull(tenantId, "tenantId");
         return transactions.execute(status -> {
@@ -443,7 +955,23 @@ public final class JdbcProductionBillingService implements ProductionBillingPort
     private record ReservationRow(UUID id, UUID walletId, BigDecimal reservedAmount, BigDecimal consumedAmount, ReservationStatus status) {}
     private record IdempotencyRow(String requestHash, IdempotencyState state, UUID resourceId) {}
     private record ExistingUsage(UUID modelCallId, BigDecimal amount) {}
+    private record PriceTuple(BigDecimal input, BigDecimal cached, BigDecimal output, BigDecimal reasoning) {}
     private record MeterValues(long sequenceNo, long inputTokens, long cachedTokens, long outputTokens, long reasoningTokens, BigDecimal providerCost, BigDecimal creditCost) {}
+    private record AdmissionLimits(
+            int maxConcurrentModelCalls,
+            int maxProviderCallsPerMinute,
+            long dailyTokenCap,
+            BigDecimal dailyCreditCap
+    ) {}
+    private record DailyUsage(BigDecimal tokens, BigDecimal credits) {}
     private record ExistingModelCall(UUID id, ModelCallStatus status, String providerRequestId) {}
     private record ExistingReceipt(String requestHash, String responseArtifactId) {}
+    private record ModelCallState(
+            ModelCallStatus status,
+            String callProviderRequestId,
+            String receiptProviderRequestId,
+            UUID responseArtifactId,
+            String receiptState
+    ) {}
+    private record ExpiredReservation(UUID tenantId, UUID reservationId) {}
 }

@@ -100,7 +100,11 @@ migration-pack-admission:
 production-runtime:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 python scripts/production-runtime/validate_package.py
 	PYTHONDONTWRITEBYTECODE=1 python3 scripts/production-runtime/validate_implementation.py
-	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -pl modules/production-runtime -am test
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/production-runtime -p 'test_*.py'
+	helm lint deploy/helm/elmos-runtime --strict
+	helm lint deploy/helm/elmos-runtime --strict --values tests/production-runtime/helm-production-values.yaml
+	helm template qualification deploy/helm/elmos-runtime --values tests/production-runtime/helm-production-values.yaml >/dev/null
+	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -pl modules/production-runtime,apps/production-runtime-control-plane,apps/production-runtime-worker -am test
 
 production-runtime-local:
 	PYTHONDONTWRITEBYTECODE=1 python3 scripts/production-runtime/run_local_harness.py

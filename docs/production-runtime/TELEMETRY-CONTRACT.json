@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "service": "elmos-production-runtime",
+  "classification": "operational",
+  "retention": "30d_metrics_90d_alert_history",
+  "labels_policy": {
+    "allow": ["application", "component", "loop", "outcome", "status", "method", "uri"],
+    "deny": ["tenant_id", "account_id", "project_id", "job_id", "work_item_id", "attempt_id", "request_id", "provider_request_id"],
+    "max_series_per_metric": 128
+  },
+  "metrics": [
+    {
+      "name": "elmos.production.runtime.loop.runs",
+      "unit": "counter",
+      "labels": ["component", "loop", "outcome"],
+      "owner": "runtime-oncall",
+      "runbook": "docs/production-runtime/OPERATIONS.md#recovery"
+    },
+    {
+      "name": "elmos.production.runtime.loop.duration",
+      "unit": "seconds",
+      "labels": ["component", "loop"],
+      "owner": "runtime-oncall",
+      "runbook": "docs/production-runtime/OPERATIONS.md#performance"
+    },
+    {
+      "name": "elmos.production.runtime.worker.journal.healthy",
+      "unit": "boolean_gauge",
+      "labels": [],
+      "owner": "runtime-oncall",
+      "runbook": "docs/production-runtime/OPERATIONS.md#worker-journal"
+    },
+    {
+      "name": "elmos.production.runtime.worker.attempts",
+      "unit": "gauge",
+      "labels": ["status"],
+      "owner": "runtime-oncall",
+      "runbook": "docs/production-runtime/OPERATIONS.md#worker-journal"
+    },
+    {
+      "name": "http.server.requests",
+      "unit": "seconds_histogram",
+      "labels": ["application", "component", "method", "status", "uri"],
+      "owner": "runtime-oncall",
+      "runbook": "docs/production-runtime/OPERATIONS.md#availability"
+    }
+  ],
+  "collection": {
+    "protocol": "Prometheus",
+    "endpoint": "/actuator/prometheus",
+    "scrape_interval": "30s",
+    "scrape_timeout": "10s",
+    "network": "in-cluster-only",
+    "credentials": "none",
+    "secret_redaction": "application logs and metric labels must not contain credentials or payloads"
+  },
+  "slo": [
+    {"name": "scheduler_claim_p95", "threshold_ms": 100, "source": "external_load_gate"},
+    {"name": "billing_reserve_settle_p95", "threshold_ms": 150, "source": "external_load_gate"},
+    {"name": "projection_freshness_p95", "threshold_ms": 2000, "source": "external_load_gate"}
+  ],
+  "verification": {
+    "static_contract": "LOCAL_TEST_PASS",
+    "target_scrape": "NOT_RUN",
+    "alert_trigger_recovery": "NOT_RUN",
+    "retention_cost_calibration": "NOT_RUN"
+  }
+}

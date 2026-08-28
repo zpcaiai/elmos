@@ -12,13 +12,6 @@
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-scm</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-persistence</artifactId><version>${project.version}</version></dependency>
     <!--
-      The production repository execution kernel is explicit here so its
-      PostgreSQL-backed stores and recovery/billing beans are available to the
-      control-plane application context. HTTP tenant mapping remains owned by
-      control-plane authentication and is not inferred from request payloads.
-    -->
-    <dependency><groupId>io.elmos</groupId><artifactId>elmos-production-runtime</artifactId><version>${project.version}</version></dependency>
-    <!--
       Declared directly because TenantQuotaConfiguration imports
       io.elmos.commercial.SelfServiceBillingPort. It also arrives transitively
       through elmos-persistence, but relying on that would make this module stop

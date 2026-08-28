@@ -11,6 +11,23 @@ import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
+
+from external_provider_adapter import (
+    SUPPORTED_PROVIDER_ADAPTERS,
+    ProviderAdapterError,
+    validate_provider_binding,
+)
+from hosted_pitr_adapter import (
+    SUPPORTED_PITR_DRIVERS,
+    PitrAdapterError,
+    validate_pitr_binding,
+)
+from external_verifier_crypto import (
+    VerifierCryptoError,
+    validate_receipt_time,
+    verify_receipt_signature,
+)
 
 
 EXPECTED_PACKAGE_SHA256 = "7685f34453d896747c177b9299c01f1a101c94a1ea4808ae6dc92fec51203c37"
@@ -19,6 +36,7 @@ OPERATIONS = (
     "provider_runtime",
     "target_cluster_load",
     "chaos",
+    "worker_process_kill",
     "redis_loss",
     "backup_pitr",
     "independent_verification",
@@ -30,6 +48,7 @@ OCI_IMAGE_AT_DIGEST = re.compile(
     r"^[a-z0-9][a-z0-9._-]*(?::[0-9]+)?(?:/[a-z0-9._-]+)+@sha256:[0-9a-f]{64}$"
 )
 HELM_TIMEOUT = re.compile(r"^[1-9][0-9]*(?:s|m|h)$")
+SHA256 = re.compile(r"[0-9a-f]{64}")
 PLACEHOLDER_PREFIXES = ("REQUIRED", "REPLACE_WITH_")
 
 
@@ -98,8 +117,17 @@ def _walk_values(value: Any, path: str = ""):
 
 def _reject_inline_secrets(plan: dict[str, Any]) -> None:
     for path, value in _walk_values(plan):
-        lowered = path.lower()
-        if any(marker in lowered for marker in ("token", "password", "private_key", "secret_value")):
+        leaf = re.sub(r"\[[0-9]+\]$", "", path.rsplit(".", 1)[-1]).lower()
+        if leaf in {
+            "token",
+            "api_token",
+            "access_token",
+            "refresh_token",
+            "password",
+            "private_key",
+            "secret_value",
+            "client_secret",
+        }:
             raise ContractError(f"{path} must not contain inline secret material")
         if isinstance(value, str) and value.startswith("Bearer "):
             raise ContractError(f"{path} contains inline authorization material")
@@ -145,9 +173,14 @@ def validate_plan(plan: dict[str, Any], root: Path) -> None:
 
     provider = operations["provider_runtime"]
     require_env_name(provider.get("credential_env"), "operations.provider_runtime.credential_env")
+    try:
+        validate_provider_binding(provider)
+    except ProviderAdapterError as exc:
+        raise ContractError(str(exc)) from exc
 
     target_load = operations["target_cluster_load"]
-    require_env_name(target_load.get("base_url_env"), "operations.target_cluster_load.base_url_env")
+    for field in ("scheduler_base_url_env", "billing_base_url_env", "gate_token_env"):
+        require_env_name(target_load.get(field), f"operations.target_cluster_load.{field}")
     relative_repo_path(root, target_load.get("script"), "operations.target_cluster_load.script")
     if not isinstance(target_load.get("vus"), int) or not 1 <= target_load["vus"] <= 1_000:
         raise ContractError("operations.target_cluster_load.vus must be between 1 and 1000")
@@ -164,11 +197,37 @@ def validate_plan(plan: dict[str, Any], root: Path) -> None:
             raise ContractError(f"operations.chaos.cases[{index}] has an unsupported action")
         if not isinstance(case.get("resource") or case.get("selector"), str):
             raise ContractError(f"operations.chaos.cases[{index}] lacks a target")
+        if not isinstance(case.get("recovery_resource"), str) or not case["recovery_resource"]:
+            raise ContractError(f"operations.chaos.cases[{index}] lacks a recovery_resource")
+
+    worker_kill = operations["worker_process_kill"]
+    for field in ("context", "namespace", "selector", "recovery_resource"):
+        if not isinstance(worker_kill.get(field), str) or not worker_kill[field]:
+            raise ContractError(f"operations.worker_process_kill.{field} is required")
+    if not isinstance(worker_kill.get("minimum_ready_replicas"), int) \
+            or not 2 <= worker_kill["minimum_ready_replicas"] <= 1_000:
+        raise ContractError("worker process kill minimum_ready_replicas must be between 2 and 1000")
 
     redis_loss = operations["redis_loss"]
     require_env_name(redis_loss.get("redis_url_env"), "operations.redis_loss.redis_url_env")
     if not isinstance(redis_loss.get("allow_flush"), bool):
         raise ContractError("operations.redis_loss.allow_flush must be boolean")
+    if not isinstance(redis_loss.get("dedicated_ephemeral_cache"), bool):
+        raise ContractError("operations.redis_loss.dedicated_ephemeral_cache must be boolean")
+    if not isinstance(redis_loss.get("database_index"), int) or not 0 <= redis_loss["database_index"] <= 15:
+        raise ContractError("operations.redis_loss.database_index must be between 0 and 15")
+    if not isinstance(redis_loss.get("resource_id"), str) or not redis_loss["resource_id"]:
+        raise ContractError("operations.redis_loss.resource_id is required")
+    redis_digest = redis_loss.get("endpoint_sha256")
+    if not is_placeholder(redis_digest) and (
+        not isinstance(redis_digest, str) or not re.fullmatch(r"[0-9a-f]{64}", redis_digest)
+    ):
+        raise ContractError("operations.redis_loss.endpoint_sha256 must be lowercase SHA-256")
+
+    try:
+        validate_pitr_binding(operations["backup_pitr"])
+    except PitrAdapterError as exc:
+        raise ContractError(str(exc)) from exc
 
     independent = operations["independent_verification"]
     require_env_name(independent.get("endpoint_env"), "operations.independent_verification.endpoint_env")
@@ -178,11 +237,40 @@ def validate_plan(plan: dict[str, Any], root: Path) -> None:
             raise ContractError(f"operations.independent_verification.{field} is required")
     if independent["producer_actor"] == independent["verifier_actor"]:
         raise ContractError("producer and independent verifier actors must differ")
+    require_env_name(independent.get("public_key_env"), "operations.independent_verification.public_key_env")
+    key_digest = independent.get("public_key_sha256")
+    if not is_placeholder(key_digest) and (
+        not isinstance(key_digest, str) or not re.fullmatch(r"[0-9a-f]{64}", key_digest)
+    ):
+        raise ContractError("independent verifier public_key_sha256 must be lowercase SHA-256")
+    if independent.get("signature_algorithm") != "SHA256_WITH_PEM_KEY":
+        raise ContractError("independent verifier signature_algorithm is unsupported")
+    maximum_age = independent.get("max_receipt_age_seconds")
+    if not isinstance(maximum_age, int) or not 60 <= maximum_age <= 3600:
+        raise ContractError("independent verifier max_receipt_age_seconds must be between 60 and 3600")
 
     deployment = operations["production_deployment"]
-    for field in ("context", "namespace", "release"):
+    for field in ("context", "namespace", "release", "resource_prefix"):
         if not isinstance(deployment.get(field), str) or not deployment[field]:
             raise ContractError(f"operations.production_deployment.{field} is required")
+    resource_prefix = deployment["resource_prefix"]
+    if not is_placeholder(resource_prefix) and not re.fullmatch(
+        r"[a-z0-9](?:[-a-z0-9]{0,51}[a-z0-9])?", resource_prefix
+    ):
+        raise ContractError(
+            "production deployment resource_prefix must be a Kubernetes DNS label of at most 53 characters"
+        )
+    if not is_placeholder(resource_prefix):
+        expected_scheduler = f"deployment/{resource_prefix}-scheduler"
+        expected_worker = f"statefulset/{resource_prefix}-worker"
+        if any(
+            case.get("resource") != expected_scheduler
+            or case.get("recovery_resource") != expected_scheduler
+            for case in chaos["cases"]
+        ):
+            raise ContractError("chaos resources do not bind the production resource prefix")
+        if worker_kill.get("recovery_resource") != expected_worker:
+            raise ContractError("worker-kill resource does not bind the production resource prefix")
     relative_repo_dir(root, deployment.get("chart"), "operations.production_deployment.chart")
     images = deployment.get("image_digests")
     if not isinstance(images, dict) or set(images) != {"controlPlane", "worker"}:
@@ -192,12 +280,40 @@ def validate_plan(plan: dict[str, Any], root: Path) -> None:
             continue
         if not isinstance(digest, str) or not OCI_IMAGE_AT_DIGEST.fullmatch(digest):
             raise ContractError(f"production deployment OCI image reference is not digest-pinned: {name}")
+    supply_chain = deployment.get("supply_chain")
+    if not isinstance(supply_chain, dict):
+        raise ContractError("production deployment must bind a supply-chain verification contract")
+    require_env_name(
+        supply_chain.get("signing_key_env"),
+        "operations.production_deployment.supply_chain.signing_key_env")
+    key_digest = supply_chain.get("signing_key_sha256")
+    if not is_placeholder(key_digest) and (
+            not isinstance(key_digest, str) or not SHA256.fullmatch(key_digest)):
+        raise ContractError("supply-chain signing_key_sha256 must be lowercase SHA-256")
+    if supply_chain.get("signature_verification") != "cosign-key-v1":
+        raise ContractError("unsupported supply-chain signature verification contract")
+    if supply_chain.get("sbom_predicate_type") != "https://cyclonedx.org/bom":
+        raise ContractError("supply-chain SBOM predicate must be CycloneDX")
+    if supply_chain.get("provenance_predicate_type") != "https://slsa.dev/provenance/v1":
+        raise ContractError("supply-chain provenance predicate must be SLSA v1")
+    require_env_name(
+        deployment.get("values_file_env"),
+        "operations.production_deployment.values_file_env")
+    values_digest = deployment.get("values_file_sha256")
+    if not is_placeholder(values_digest) and (
+        not isinstance(values_digest, str) or not re.fullmatch(r"[0-9a-f]{64}", values_digest)
+    ):
+        raise ContractError("production deployment values_file_sha256 must be lowercase SHA-256")
     if deployment.get("atomic") is not True or deployment.get("wait") is not True:
         raise ContractError("production deployment must be atomic and wait for readiness")
     if not isinstance(deployment.get("timeout"), str) or not HELM_TIMEOUT.fullmatch(deployment["timeout"]):
         raise ContractError("production deployment timeout must be a positive Helm duration")
     if chaos.get("context") != deployment.get("context") or chaos.get("namespace") != deployment.get("namespace"):
         raise ContractError("chaos and production deployment must bind the same cluster context and namespace")
+    if worker_kill.get("context") != deployment.get("context") or worker_kill.get("namespace") != deployment.get("namespace"):
+        raise ContractError("worker kill and production deployment must bind the same cluster context and namespace")
+    if deployment.get("disable_gate_after_validation") is not True:
+        raise ContractError("production deployment must disable the gate after validation")
 
     if plan.get("production_certification") != "NOT_CERTIFIED":
         raise ContractError("external gate plan may not certify production")
@@ -234,29 +350,135 @@ def preflight(plan: dict[str, Any], root: Path, environ: dict[str, str] | None =
 
     for operation, field in (
         ("provider_runtime", "credential_env"),
-        ("target_cluster_load", "base_url_env"),
         ("redis_loss", "redis_url_env"),
         ("independent_verification", "endpoint_env"),
         ("independent_verification", "credential_env"),
+        ("independent_verification", "public_key_env"),
+        ("production_deployment", "supply_chain.signing_key_env"),
     ):
-        env_name = operations[operation].get(field)
+        if "." in field:
+            parent, child = field.split(".", 1)
+            env_name = operations[operation].get(parent, {}).get(child)
+        else:
+            env_name = operations[operation].get(field)
         if isinstance(env_name, str) and not is_placeholder(env_name) and not env.get(env_name):
             blockers[operation].append(f"environment variable {env_name} is not set")
 
-    binaries = {
-        "target_cluster_load": "k6",
-        "chaos": "kubectl",
-        "redis_loss": "redis-cli",
-        "production_deployment": "helm",
-    }
-    for operation, binary in binaries.items():
-        if shutil.which(binary) is None:
-            blockers[operation].append(f"required binary {binary} is not installed")
+    target_load = operations["target_cluster_load"]
+    shared_gate_fields = ("scheduler_base_url_env", "gate_token_env")
+    for operation in ("target_cluster_load", "chaos", "worker_process_kill", "redis_loss"):
+        fields = ("scheduler_base_url_env", "billing_base_url_env", "gate_token_env") \
+            if operation == "target_cluster_load" else shared_gate_fields
+        for field in fields:
+            env_name = target_load.get(field)
+            if isinstance(env_name, str) and not is_placeholder(env_name) and not env.get(env_name):
+                blockers[operation].append(f"environment variable {env_name} is not set")
+    for field in ("scheduler_base_url_env", "billing_base_url_env"):
+        env_name = target_load.get(field)
+        value = env.get(env_name, "") if isinstance(env_name, str) else ""
+        if value:
+            parsed = urlparse(value)
+            if parsed.scheme != "https" or not parsed.hostname or parsed.username \
+                    or parsed.password or parsed.query or parsed.fragment:
+                blockers["target_cluster_load"].append(
+                    f"environment variable {env_name} must be a credential-free HTTPS base URL")
 
-    blockers["provider_runtime"].append("provider-specific adapter implementation is required")
-    blockers["backup_pitr"].append("backup-provider PITR adapter and restore target are required")
+    binaries = {
+        "target_cluster_load": ("k6",),
+        "chaos": ("kubectl",),
+        "worker_process_kill": ("kubectl",),
+        "redis_loss": ("redis-cli",),
+        "production_deployment": ("helm", "cosign", "kubectl"),
+    }
+    for operation, required in binaries.items():
+        for binary in required:
+            if shutil.which(binary) is None:
+                blockers[operation].append(f"required binary {binary} is not installed")
+
+    provider_adapter = operations["provider_runtime"].get("adapter")
+    if not is_placeholder(provider_adapter) and provider_adapter not in SUPPORTED_PROVIDER_ADAPTERS:
+        blockers["provider_runtime"].append("provider adapter is not repository-supported")
+    pitr_driver = operations["backup_pitr"].get("driver")
+    if not is_placeholder(pitr_driver):
+        if pitr_driver not in SUPPORTED_PITR_DRIVERS:
+            blockers["backup_pitr"].append("PITR driver is not repository-supported")
+        else:
+            binary = {
+                "aws-rds-postgresql-v1": "aws",
+                "gcp-cloudsql-postgresql-v1": "gcloud",
+                "azure-postgresql-flexible-v1": "az",
+            }[pitr_driver]
+            if shutil.which(binary) is None:
+                blockers["backup_pitr"].append(f"required binary {binary} is not installed")
+            if shutil.which("psql") is None:
+                blockers["backup_pitr"].append("required binary psql is not installed")
+            for field in (
+                "source_database_url_env",
+                "restore_username_env",
+                "restore_password_env",
+            ):
+                env_name = operations["backup_pitr"].get(field)
+                if isinstance(env_name, str) and not is_placeholder(env_name) and not env.get(env_name):
+                    blockers["backup_pitr"].append(f"environment variable {env_name} is not set")
     if not operations["redis_loss"].get("allow_flush", False):
         blockers["redis_loss"].append("destructive Redis flush is not explicitly authorized in the plan")
+    if not operations["redis_loss"].get("dedicated_ephemeral_cache", False):
+        blockers["redis_loss"].append("Redis target is not declared as a dedicated ephemeral cache")
+    redis_env = operations["redis_loss"].get("redis_url_env")
+    redis_url = env.get(redis_env, "") if isinstance(redis_env, str) else ""
+    if redis_url:
+        parsed = urlparse(redis_url)
+        expected_db = operations["redis_loss"].get("database_index")
+        try:
+            actual_db = int((parsed.path or "/0").lstrip("/") or "0")
+        except ValueError:
+            actual_db = -1
+        if parsed.scheme != "rediss" or not parsed.hostname or actual_db != expected_db:
+            blockers["redis_loss"].append(
+                "Redis URL must use rediss and bind the exact planned database index")
+        else:
+            canonical = f"rediss://{parsed.hostname}:{parsed.port or 6379}/{actual_db}"
+            digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+            if digest != operations["redis_loss"].get("endpoint_sha256"):
+                blockers["redis_loss"].append("Redis endpoint digest does not match the plan")
+    deployment = operations["production_deployment"]
+    values_env = deployment.get("values_file_env")
+    if isinstance(values_env, str) and not is_placeholder(values_env):
+        values_path_value = env.get(values_env)
+        if not values_path_value:
+            blockers["production_deployment"].append(
+                f"environment variable {values_env} is not set")
+        else:
+            values_path = Path(values_path_value)
+            if values_path.is_symlink() or not values_path.is_file():
+                blockers["production_deployment"].append(
+                    "Helm values file is not a regular non-symlink file")
+            elif sha256(values_path) != deployment.get("values_file_sha256"):
+                blockers["production_deployment"].append(
+                    "Helm values file digest does not match the plan")
+    public_key_env = operations["independent_verification"].get("public_key_env")
+    if isinstance(public_key_env, str) and env.get(public_key_env):
+        public_key = Path(env[public_key_env])
+        if public_key.is_symlink() or not public_key.is_file():
+            blockers["independent_verification"].append("verifier public key is not a regular non-symlink file")
+        elif sha256(public_key) != operations["independent_verification"].get("public_key_sha256"):
+            blockers["independent_verification"].append("verifier public key digest does not match the plan")
+    supply_key = operations["production_deployment"]["supply_chain"]
+    supply_key_env = supply_key.get("signing_key_env")
+    if isinstance(supply_key_env, str) and env.get(supply_key_env):
+        signing_key = Path(env[supply_key_env])
+        if signing_key.is_symlink() or not signing_key.is_file():
+            blockers["production_deployment"].append(
+                "supply-chain signing key is not a regular non-symlink file")
+        elif sha256(signing_key) != supply_key.get("signing_key_sha256"):
+            blockers["production_deployment"].append(
+                "supply-chain signing key digest does not match the plan")
+    verifier_key = operations["independent_verification"].get("public_key_sha256")
+    signing_key_digest = supply_key.get("signing_key_sha256")
+    if not is_placeholder(verifier_key) and not is_placeholder(signing_key_digest) \
+            and verifier_key == signing_key_digest:
+        blockers["production_deployment"].append(
+            "image signing key and independent verifier key must be distinct")
     return {key: sorted(set(value)) for key, value in blockers.items() if value}
 
 
@@ -280,7 +502,7 @@ def validate_authorization(authorization: dict[str, Any], plan: dict[str, Any], 
     allowed = authorization.get("operations")
     if not isinstance(allowed, list) or not requested.issubset(set(allowed)):
         raise ContractError("authorization does not cover every requested operation")
-    if requested & {"chaos", "redis_loss", "production_deployment"} and authorization.get("allow_destructive_operations") is not True:
+    if requested & {"chaos", "worker_process_kill", "redis_loss", "backup_pitr", "production_deployment"} and authorization.get("allow_destructive_operations") is not True:
         raise ContractError("destructive operation requires allow_destructive_operations=true")
     verifier = plan["operations"]["independent_verification"]["verifier_actor"]
     if authorization["actor"] == verifier:
@@ -299,10 +521,11 @@ def validate_verifier_receipt(
     receipt: Any,
     operation: dict[str, Any],
     report_sha256: str,
+    environ: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     if not isinstance(receipt, dict):
         raise ContractError("independent verifier response is not a JSON object")
-    for field in ("verification_id", "verified_at", "signature"):
+    for field in ("verification_id", "verified_at", "signature", "signing_key_sha256"):
         if not isinstance(receipt.get(field), str) or not receipt[field]:
             raise ContractError(f"independent verifier receipt is missing {field}")
     if receipt.get("status") != "PASS":
@@ -315,4 +538,18 @@ def validate_verifier_receipt(
         raise ContractError("independent verifier actor binding mismatch")
     if receipt["producer_actor"] == receipt["verifier_actor"]:
         raise ContractError("producer and verifier actors are not independent")
+    env = os.environ if environ is None else environ
+    public_key_name = operation["public_key_env"]
+    public_key_value = env.get(public_key_name)
+    if not public_key_value:
+        raise ContractError(f"environment variable {public_key_name} is not set")
+    try:
+        validate_receipt_time(receipt, operation["max_receipt_age_seconds"])
+        verify_receipt_signature(
+            receipt,
+            Path(public_key_value),
+            operation["public_key_sha256"],
+        )
+    except VerifierCryptoError as exc:
+        raise ContractError(str(exc)) from exc
     return receipt
