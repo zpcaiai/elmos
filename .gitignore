@@ -26,6 +26,7 @@ __pycache__/
 **/.pytest_cache/
 .mypy_cache/
 **/.mypy_cache/
+/engines/openhands-absorption-engine/src/elmos_openhands_absorption_engine.egg-info/
 .ruff_cache/
 **/.ruff_cache/
 .coverage

@@ -27,6 +27,25 @@
 UNKNOWN、INCONCLUSIVE、过期、冲突、无 digest、无 replay 或自验证的结果均
 不得降级成 PASS。
 
+## 1.1 2026-08-28 执行补全与状态解释
+
+本次已补齐并执行可重复的本地工程探针，结果和 replay 入口见
+[`evidence/QUALIFICATION_EXECUTION_2026-08-28.md`](evidence/QUALIFICATION_EXECUTION_2026-08-28.md)：
+
+| 探针 | 本地结果 | 仍未闭合的认证边界 |
+|---|---|---|
+| disposable PostgreSQL 17.5 + RLS | `PASS` | 生产拓扑、真正故障切换、独立 verifier `NOT_RUN` |
+| Temporal 1.29.7 worker replacement + history Replay | `PASS` | 多节点/生产部署、独立 verifier `NOT_RUN` |
+| Docker sandbox | `PASS`（仅 L1） | 生产 L3/L4、secret broker、独立 escape review `NOT_RUN` |
+| 外部 Provider | `FAIL`（429 quota / 520 endpoint） | Provider owner 修复凭据/配额/endpoint 后重跑 |
+| Playwright browser matrix | `PASS`（3 engines + mobile emulation） | physical device lab、独立验收 `NOT_RUN` |
+| Golden Repo | `PASS`（公开仓库自证） | independent holdout、customer acceptance `NOT_RUN` |
+| load / Chaos | `PASS`（bounded local；15/15 Chaos） | representative soak、生产拓扑/多区域 DR、独立 verifier `NOT_RUN` |
+| local Bandit | `PASS`（0 high / 0 medium；30 low） | 独立 security review、red team、supply-chain attestation `NOT_RUN` |
+
+因此“尚未执行”在 release gate 中明确指生产等价、外部成功和独立审查，不能
+用本地 disposable `PASS` 冒充生产认证；总体仍为 `NOT_CERTIFIED` / `NOT_GA`。
+
 ## 2. 测试治理原则
 
 ### 2.1 证据角色分离

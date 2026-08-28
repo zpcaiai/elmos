@@ -3,5 +3,5 @@ boto3>=1.40,<2
 cryptography>=45,<47
 psycopg[binary,pool]>=3.2,<3.4
 PyJWT[crypto]>=2.10,<3
-setuptools==80.9.0
+setuptools==83.0.0
 temporalio>=1.16,<2

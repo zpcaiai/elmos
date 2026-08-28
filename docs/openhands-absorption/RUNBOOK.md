@@ -6,7 +6,8 @@
 命令中的环境、租户、凭据、数据库、集群和 Provider 必须由部署负责人显式提供。
 在没有变更单、隔离测试环境和回滚责任人时停止执行。
 
-当前状态：所有真实环境步骤均为 `NOT_RUN`，认证为 `NOT_CERTIFIED`。
+当前状态：本地 disposable 工程探针已有局部 `PASS`/`FAIL` 结果；生产等价环境、
+外部成功和独立审查仍为 `NOT_RUN`，认证为 `NOT_CERTIFIED`，发布为 `NOT_GA`。
 
 ## 进入条件
 
@@ -134,5 +135,12 @@ Browser/device：
 每个 campaign 都必须生成 content-addressed raw evidence、环境 digest、授权、执行人、
 独立 verifier、replay、cleanup 和 findings。全部外部门禁通过后，系统最多报告
 `READY_FOR_EXTERNAL_GATE`；生产认证和 GA 只能由授权的外部决策流程作出。
+
+2026-08-28 的执行记录位于
+[`evidence/QUALIFICATION_EXECUTION_2026-08-28.md`](evidence/QUALIFICATION_EXECUTION_2026-08-28.md)。
+它明确区分本地自证与生产资格：本地 PostgreSQL/Temporal、L1 sandbox、浏览器
+矩阵、Golden Repo、bounded load/Chaos 和 Bandit 可作为工程 evidence；Provider
+真实调用当前失败；生产 sandbox、physical device、代表性 soak、多节点/多区域
+恢复、独立 holdout 和独立 security review 不能从这些结果推导。
 
 代码实现已完成，但真实 Temporal/PostgreSQL、生产 sandbox、外部 Provider、浏览器设备、Golden Repo、负载/Chaos、独立安全审查尚未执行，因此当前仍保持 `NOT_RUN / NOT_CERTIFIED`，不能冒充生产认证或 GA。

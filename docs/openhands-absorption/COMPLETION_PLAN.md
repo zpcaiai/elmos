@@ -203,3 +203,17 @@ EVIDENCE_PENDING/NOT_CERTIFIED，不发布 GA 声明。
 不是继续用静态代码或模型文字制造完成度。真实 Temporal/PostgreSQL、生产
 sandbox、外部 Provider、浏览器设备、Golden Repo、负载/Chaos、独立安全审查
 完成前，系统状态必须继续显示 NOT_RUN / NOT_CERTIFIED，不能宣称生产认证或 GA。
+
+## 2026-08-28 执行补全记录
+
+代码级执行器已补齐：`run_qualification_probe.py` 现在提供 postgres、provider、
+security、browser、sandbox、golden、load、chaos 八类显式探针；Temporal 有真实
+worker replacement/history replay 探针；安全评审有独立签名报告 intake；依赖告警
+有 digest-bound exception validator 和受控 GitHub remediation tool。
+
+本次只完成 disposable/local engineering evidence：PostgreSQL、Temporal、L1
+sandbox、browser matrix、Golden Repo、bounded load 和 15/15 local Chaos 的结论
+写入 `evidence/QUALIFICATION_EXECUTION_2026-08-28.md`。Provider 真实调用因配额/
+endpoint 失败而保持 `FAIL`。生产等价拓扑、生产 sandbox、physical device、
+representative soak、多区域 DR、独立 holdout、独立 security review 和客户验收
+仍为 `NOT_RUN`；总状态仍为 `NOT_CERTIFIED` / `NOT_GA`。
