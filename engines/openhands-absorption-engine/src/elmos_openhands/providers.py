@@ -8,7 +8,7 @@ from dataclasses import dataclass, field, replace
 from typing import Any, Iterable, Mapping, Protocol
 
 from .errors import ContractViolation, NotConfigured
-from .models import Action, CompletionProposal, Identity, Usage
+from .models import Action, ArtifactRef, CompletionProposal, Identity, Usage
 
 
 @dataclass(frozen=True, slots=True)
@@ -20,6 +20,22 @@ class ProviderCapabilities:
     supports_tool_calls: bool = True
     supported_tools: frozenset[str] = frozenset()
     regions: frozenset[str] = frozenset({"local"})
+    supports_file_edit: bool = True
+    supports_shell: bool = True
+    supports_browser: bool = False
+    supports_mcp_acp: bool = False
+    reasoning_visibility: str = "hidden"
+    supports_model_selection: bool = True
+    max_context_tokens: int = 128_000
+    max_parallelism: int = 1
+    external_network_required: bool = False
+    privacy_classes: frozenset[str] = frozenset({"internal"})
+
+    def __post_init__(self) -> None:
+        if not self.provider or self.max_context_tokens < 1 or self.max_parallelism < 1:
+            raise ContractViolation("provider capability contract is invalid")
+        if self.reasoning_visibility not in {"hidden", "summary", "full"}:
+            raise ContractViolation("provider reasoning visibility is invalid")
 
 
 @dataclass(frozen=True, slots=True)
@@ -29,6 +45,11 @@ class ProviderRequest:
     context: Mapping[str, Any]
     tool_schemas: tuple[Mapping[str, Any], ...] = ()
     checkpoint: Mapping[str, Any] | None = None
+    idempotency_key: str | None = None
+
+    def __post_init__(self) -> None:
+        if not self.model or self.idempotency_key == "":
+            raise ContractViolation("provider request model/idempotency contract is invalid")
 
 
 @dataclass(frozen=True, slots=True)
@@ -109,6 +130,7 @@ class JsonProviderAdapter:
             "context": dict(request.context),
             "tool_schemas": [dict(schema) for schema in request.tool_schemas],
             "checkpoint": request.checkpoint,
+            "idempotency_key": request.idempotency_key,
         }
         result = self._transport(self._provider, payload)
         return replace(normalize_provider_response(result, request.identity), provider=self._provider)
@@ -166,6 +188,10 @@ class RouteConstraints:
     required_region: str = "local"
     require_checkpoint: bool = False
     max_cost_micros: int | None = None
+    required_capabilities: frozenset[str] = frozenset()
+    privacy_class: str = "internal"
+    benchmark_floor: float = 0.0
+    max_latency_ms: int | None = None
 
 
 class ProviderRouter:
@@ -186,6 +212,19 @@ class ProviderRouter:
             if constraints.required_region not in capabilities.regions:
                 continue
             if constraints.require_checkpoint and not capabilities.supports_checkpoints:
+                continue
+            if constraints.privacy_class not in getattr(capabilities, "privacy_classes", frozenset({"internal"})):
+                continue
+            available = {
+                "tool_use" if getattr(capabilities, "supports_tool_calls", True) else "",
+                "file_edit" if getattr(capabilities, "supports_file_edit", True) else "",
+                "shell" if getattr(capabilities, "supports_shell", True) else "",
+                "browser" if getattr(capabilities, "supports_browser", False) else "",
+                "mcp_acp" if getattr(capabilities, "supports_mcp_acp", False) else "",
+                "streaming" if getattr(capabilities, "supports_streaming", False) else "",
+                "checkpoint" if capabilities.supports_checkpoints else "",
+            }
+            if not constraints.required_capabilities.issubset(available):
                 continue
             with self._lock:
                 if self._open_until.get(name, 0) > time.time():
@@ -222,9 +261,7 @@ class ProviderRouter:
             return replace(response, provider=response.provider or provider)
 
 
-def _artifact_ref(value: Any):
-    from .models import ArtifactRef
-
+def _artifact_ref(value: Any) -> ArtifactRef:
     if not isinstance(value, Mapping):
         raise ContractViolation("provider evidence_refs must contain artifact objects")
     return ArtifactRef(**dict(value))

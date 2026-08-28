@@ -2,15 +2,17 @@
 
 from __future__ import annotations
 
+import threading
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Mapping, Protocol
+from typing import Any, Mapping, Protocol, cast
 
 from .artifacts import ContentAddressedStore
 from .errors import ContractViolation, IdempotencyConflict
 from .firewall import ActionFirewall, FirewallContext
 from .ledger import EventLedger
 from .models import Action, ActionStatus, ArtifactRef, Identity, Observation
+from .models import canonical_json
 from .workspace import LocalWorkspaceProvider, WorkspaceLease
 
 
@@ -55,6 +57,31 @@ class ToolExecutor(Protocol):
     def reconcile(self, action: Action) -> ToolResult | None: ...
 
 
+class CancellationToken:
+    """Cooperative cancellation signal shared across gateway and executors."""
+
+    def __init__(self) -> None:
+        self._event = threading.Event()
+        self._reason = "cancelled"
+
+    def cancel(self, reason: str) -> None:
+        if not reason.strip():
+            raise ContractViolation("cancellation reason is required")
+        self._reason = reason[:500]
+        self._event.set()
+
+    @property
+    def cancelled(self) -> bool:
+        return self._event.is_set()
+
+    @property
+    def reason(self) -> str:
+        return self._reason
+
+    def wait(self, timeout: float | None = None) -> bool:
+        return self._event.wait(timeout)
+
+
 class ToolRegistry:
     def __init__(self) -> None:
         self._specs: dict[str, ToolSpec] = {}
@@ -90,7 +117,15 @@ class ToolGateway:
         self.registry = registry
         self.artifacts = artifacts
 
-    def execute(self, identity: Identity, action: Action, context: FirewallContext, *, approved_by: str | None = None) -> Observation:
+    def execute(
+        self,
+        identity: Identity,
+        action: Action,
+        context: FirewallContext,
+        *,
+        approved_by: str | None = None,
+        cancellation: CancellationToken | None = None,
+    ) -> Observation:
         spec = self.registry.spec(action.tool)
         if set(action.required_capabilities) - set(spec.capabilities):
             raise ContractViolation("action asks for capabilities not declared by its tool")
@@ -101,12 +136,18 @@ class ToolGateway:
         if spec.allowed_operations and operation not in spec.allowed_operations:
             raise ContractViolation("tool operation is not declared by its registry contract")
         proposed = self.ledger.event_by_idempotency(identity.tenant_id, identity.run_id, "action:" + action.idempotency_key)
-        if proposed is not None and dict(proposed.payload) != action.as_dict():
+        replaying_unfinished_action = proposed is not None
+        if proposed is not None and canonical_json(dict(proposed.payload)) != canonical_json(action.as_dict()):
             raise IdempotencyConflict("action idempotency key was reused for different content")
         previous = self.ledger.event_by_idempotency(identity.tenant_id, identity.run_id, "observation:" + action.idempotency_key)
         if previous is not None:
             return _observation_from_payload(previous.payload)
-        self.ledger.append(identity, "action.proposed", action.as_dict(), idempotency_key="action:" + action.idempotency_key)
+        if proposed is None:
+            self.ledger.append(identity, "action.proposed", action.as_dict(), idempotency_key="action:" + action.idempotency_key)
+        if cancellation is not None and cancellation.cancelled:
+            observation = Observation(action.action_id, ActionStatus.CANCELLED, error={"code": "TOOL_CANCELLED", "reason": cancellation.reason})
+            self._record_observation(identity, action, observation)
+            return observation
         decision = self.firewall.decide(action, context, approved_by=approved_by).decision
         self.ledger.append(identity, "policy.decided", {"action_id": action.action_id, **decision.as_dict()}, idempotency_key="policy:" + action.idempotency_key, policy_decision=decision.as_dict())
         if decision.decision != "allow":
@@ -122,12 +163,19 @@ class ToolGateway:
             self._record_observation(identity, action, observation)
             return observation
         try:
-            reconciled = executor.reconcile(action) if spec.mutating else None
-            result = reconciled if reconciled is not None else executor.execute(action, timeout_seconds=action.timeout_seconds)
+            reconciled = executor.reconcile(action) if spec.mutating and replaying_unfinished_action else None
+            if reconciled is not None:
+                result = reconciled
+            elif cancellation is not None and callable(getattr(executor, "execute_cancellable", None)):
+                result = cast(Any, executor).execute_cancellable(action, timeout_seconds=action.timeout_seconds, cancellation=cancellation)
+            else:
+                result = executor.execute(action, timeout_seconds=action.timeout_seconds)
         except TimeoutError:
             result = ToolResult(ActionStatus.TIMEOUT, error={"code": "TOOL_TIMEOUT"}, reconciliation_hint="reconcile before retry")
         except Exception as error:  # executor failure is an observation, not a gateway crash
             result = ToolResult(ActionStatus.FAILURE, error={"code": "TOOL_EXECUTION_FAILED", "message": str(error)[:500]}, reconciliation_hint="inspect executor state")
+        if cancellation is not None and cancellation.cancelled and result.status == ActionStatus.SUCCESS:
+            result = ToolResult(ActionStatus.CANCELLED, result=result.result, stdout=result.stdout, stderr=result.stderr, changed_resources=result.changed_resources, metrics=result.metrics, error={"code": "TOOL_CANCELLED", "reason": cancellation.reason}, reconciliation_hint=result.reconciliation_hint or "reconcile mutations before retry")
         observation = self._to_observation(action, spec, result, identity.tenant_id, context.secret_values)
         self._record_observation(identity, action, observation)
         return observation
@@ -220,9 +268,22 @@ class LocalWorkspaceToolExecutor:
         raise ContractViolation("unsupported workspace operation")
 
     def reconcile(self, action: Action) -> ToolResult | None:
+        operation = str(action.args.get("operation", ""))
+        if operation == "write":
+            path = self._path(str(action.args.get("path", "")))
+            if not path.exists():
+                return None
+            if not path.is_file() or path.is_symlink():
+                return ToolResult(ActionStatus.FAILURE, error={"code": "WORKSPACE_RECONCILIATION_CONFLICT"}, reconciliation_hint="target is not a regular file")
+            expected = str(action.args.get("content", ""))
+            if path.read_text(encoding="utf-8") == expected:
+                return ToolResult(ActionStatus.SUCCESS, {"path": str(path.relative_to(self.lease.root)), "reconciled": True}, changed_resources=(str(path),))
+            return ToolResult(ActionStatus.FAILURE, error={"code": "WORKSPACE_RECONCILIATION_CONFLICT"}, reconciliation_hint="target content differs; do not overwrite without a new approved action")
+        if operation == "shell":
+            return ToolResult(ActionStatus.FAILURE, error={"code": "SIDE_EFFECT_STATE_UNKNOWN"}, reconciliation_hint="inspect sandbox/process state before issuing a new action")
         return None
 
-    def _path(self, relative: str):
+    def _path(self, relative: str) -> Path:
         if not relative or relative.startswith("/") or ".." in relative.split("/"):
             raise ContractViolation("workspace tool path must be relative")
         root = Path(self.lease.root) / relative

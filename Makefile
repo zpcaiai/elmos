@@ -218,8 +218,11 @@ repository-autonomy-kernel:
 
 openhands-absorption:
 	PYTHONDONTWRITEBYTECODE=1 python3 engines/openhands-absorption-engine/tools/validate_engine.py
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src python3 -m unittest discover -s engines/openhands-absorption-engine/tests -p 'test_*.py'
+	ruff check engines/openhands-absorption-engine/src/elmos_openhands engines/openhands-absorption-engine/tests engines/openhands-absorption-engine/tools/validate_engine.py
+	mypy --config-file engines/openhands-absorption-engine/pyproject.toml engines/openhands-absorption-engine/src/elmos_openhands
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src python3 -W error::ResourceWarning -m unittest discover -s engines/openhands-absorption-engine/tests -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src python3 -m elmos_openhands validate
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src python3 -m elmos_openhands status
 
 .PHONY: frontend-to-miniapp-skills
 frontend-to-miniapp-skills:

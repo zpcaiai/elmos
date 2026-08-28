@@ -1,37 +1,76 @@
 # ELMOS OpenHands Absorption Engine
 
-This is the repository-owned implementation of the supplied
-`elmos-openhands-absorption-p0-p1-v1.0.0` specification package. It is a
-dependency-free reference runtime with durable SQLite/CAS persistence and
-replaceable production adapters.
+Repository-owned code implementation of all 14 capabilities in the supplied
+`elmos-openhands-absorption-p0-p1-v1.0.0` specification package. The ZIP is
+digest-pinned, inspected as untrusted data, and never imported or executed.
 
-Implemented boundaries:
+The implementation includes:
 
-- P0-01 stateless turn runtime with fenced leases and budgets;
-- P0-02 hash-chained immutable event ledger, outbox and projections;
-- P0-03 typed action/observation protocol and tool gateway;
-- P0-04 checkpoints, CAS snapshots, resume and audit replay;
-- P0-05 tenant-scoped workspace and sandbox provider abstraction;
-- P0-06 worker leases, admission control and resumable event streams;
-- P0-07 evidence-aware context ranking, retention and token packing;
-- P0-08 fail-closed action firewall with secret, path, network and destructive
-  command checks;
-- P0-09 deterministic hooks, verification gates and traceability graph;
-- P1-01 staged Skill disclosure and permission-aware routing;
-- P1-02 signed capability package registry with pin/revoke/rollback lifecycle;
-- P1-03 durable multi-agent DAG with fan-out/fan-in and fencing;
-- P1-04 native, Codex-compatible, Claude-compatible and OpenHands-compatible
-  provider adapters plus circuit breaking;
-- P1-05 browser scenario validation, privacy masking, evidence capture and
-  semantic replay contracts.
+- stateless turns, durable supervision, cancellation, budgets and fail-closed
+  completion;
+- SQLite engineering persistence and real PostgreSQL/RLS/outbox/CAS adapter
+  code with forward and rollback migrations;
+- typed Action/Observation protocols, workspace APIs, reconciliation and a
+  governed Tool Gateway;
+- local, Docker, Kubernetes, Firecracker and attested enterprise-SSH sandbox
+  backends with explicit isolation classes and secret leases;
+- durable worker/admission/event-stream APIs, REST/WebSocket/gRPC gateways and
+  Temporal workflow definitions with dynamic DAG updates, compensation and
+  continue-as-new state transfer;
+- evidence-aware context projections, immutable signed evidence packs,
+  retention/export/deletion governance and OTel/FinOps adapters;
+- policy DSL, taint tracking, scoped approvals, kill switches and completion
+  gates;
+- progressive Skill routing/disclosure, deterministic signed capability
+  bundles, registry lifecycle, pin/revoke/rollback and conformance contracts;
+- durable Codex, Claude, OpenHands, OpenCode, Gemini and Junie provider session
+  adapters with normalized streams, checkpoints, cancellation, usage and
+  policy/cost/privacy routing;
+- Playwright browser/device drivers, semantic locators, privacy masking,
+  binary-safe evidence capture, allowlist governance and flake blocking;
+- executable qualification control for real PostgreSQL/Temporal, sandbox,
+  Provider, browser/device, Golden Repo, load, Chaos and independent-security
+  campaigns.
 
-The local provider is intentionally limited to trusted local development. L2+
-isolation and real external provider/browser execution require an explicitly
-configured adapter and are reported as `NOT_RUN` when unavailable. No module
-executes package-provided scripts or treats model prose as authority.
+The exact Skill-to-module-to-test bindings and fail-closed external status are
+machine-readable in
+`src/elmos_openhands/implementation_manifest.json` and enforced by
+`tools/validate_engine.py`.
+
+## Install
+
+The deterministic local engine uses the Python standard library. Production
+integrations are explicit optional dependencies:
 
 ```bash
-PYTHONPATH=engines/openhands-absorption-engine/src \
-  python -m unittest discover -s engines/openhands-absorption-engine/tests -p 'test_*.py'
-python3 engines/openhands-absorption-engine/tools/validate_engine.py
+python -m pip install -e 'engines/openhands-absorption-engine[production]'
+playwright install --with-deps
 ```
+
+Installing dependencies does not execute or qualify any external environment.
+
+## Validate
+
+From the repository root:
+
+```bash
+make openhands-absorption
+PYTHONPATH=engines/openhands-absorption-engine/src python -m elmos_openhands status
+```
+
+To materialize—but not execute—a digest-bound qualification plan:
+
+```bash
+PYTHONPATH=engines/openhands-absorption-engine/src python -m elmos_openhands \
+  qualification-plan \
+  --target-digest sha256:<64-lowercase-hex> \
+  --environment-digest sha256:<64-lowercase-hex>
+```
+
+## Evidence boundary
+
+代码实现已完成，但真实 Temporal/PostgreSQL、生产 sandbox、外部 Provider、浏览器设备、Golden Repo、负载/Chaos、独立安全审查尚未执行，因此当前仍保持 `NOT_RUN / NOT_CERTIFIED`，不能冒充生产认证或 GA。
+
+Local unit, contract, lint, type and static integration results are engineering
+evidence only. The code never promotes those results to external qualification,
+production certification or GA.
