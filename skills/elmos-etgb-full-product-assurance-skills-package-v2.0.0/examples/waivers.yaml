@@ -1,0 +1,6 @@
+waivers:
+  - waiver_id: WAIVER-EXAMPLE-001
+    gate_ids: [G-P2]
+    reason: Example only; production waivers require linked risk acceptance.
+    approved_by: qa-owner@example.invalid
+    expires_at: '2026-12-31T00:00:00Z'

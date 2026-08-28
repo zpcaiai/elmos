@@ -13,11 +13,23 @@ from typing import Any
 import yaml
 
 
-EXPECTED_ARCHIVE_SHA256 = "6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e"
-PACKAGE_ROOT_NAME = "elmos-etgb-sota-skills-package-v1.1.0"
-PACKAGE_VERSION = "1.1.0"
-PACKAGE_ID = "elmos-etgb-sota-skills-package"
-SKILL_NAMES = (
+EXPECTED_ARCHIVE_SHA256_V11 = "6c95898310e1b9052e5431c7996e1f397b54612084ef70761d9bb5a78760fe1e"
+EXPECTED_ARCHIVE_SHA256_V20 = "b11a487b63a0aee7ffb03a247d9439e8c6b9ee19f10c22aca2f7a3dd8bf0072e"
+EXPECTED_ARCHIVE_SHA256 = EXPECTED_ARCHIVE_SHA256_V20
+
+PACKAGE_ROOT_NAME_V11 = "elmos-etgb-sota-skills-package-v1.1.0"
+PACKAGE_ROOT_NAME_V20 = "elmos-etgb-full-product-assurance-skills-package-v2.0.0"
+PACKAGE_ROOT_NAME = PACKAGE_ROOT_NAME_V20
+
+PACKAGE_VERSION_V11 = "1.1.0"
+PACKAGE_VERSION_V20 = "2.0.0"
+PACKAGE_VERSION = PACKAGE_VERSION_V20
+
+PACKAGE_ID_V11 = "elmos-etgb-sota-skills-package"
+PACKAGE_ID_V20 = "elmos-etgb-full-product-assurance-skills-package"
+PACKAGE_ID = PACKAGE_ID_V20
+
+SKILL_NAMES_V11 = (
     "etgb-orchestrator",
     "test-case-authoring",
     "spring-modernization-validation",
@@ -43,6 +55,61 @@ SKILL_NAMES = (
     "multi-tenant-scheduling-isolation",
     "release-candidate-integrity",
 )
+
+SKILL_NAMES_V20 = (
+    "etgb-orchestrator",
+    "test-case-authoring",
+    "spring-modernization-validation",
+    "repository-translation-validation",
+    "project-generation-validation",
+    "sql-dialect-routine-validation",
+    "differential-oracle-engine",
+    "metamorphic-fuzz-mutation",
+    "corpus-governance",
+    "release-certification",
+    "production-harness-integration",
+    "environment-authority-sandbox",
+    "checkpoint-resume-recovery",
+    "evidence-provenance-ledger",
+    "budget-cost-eta-governance",
+    "risk-based-test-selection",
+    "benchmark-integrity-hidden-tests",
+    "observability-failure-triage",
+    "performance-scale-certification",
+    "statistical-validity-reproducibility",
+    "supply-chain-artifact-security",
+    "incident-regression-learning",
+    "multi-tenant-scheduling-isolation",
+    "release-candidate-integrity",
+    "identity-access-tenant-validation",
+    "platform-control-plane-validation",
+    "repository-ingestion-context-validation",
+    "multimodal-document-processing-validation",
+    "ai-runtime-model-routing-validation",
+    "agent-protocol-tooling-validation",
+    "rag-memory-knowledge-validation",
+    "project-intelligence-validation",
+    "online-ide-debug-validation",
+    "artifact-document-diagram-validation",
+    "collaboration-integrations-validation",
+    "billing-entitlements-validation",
+    "payment-finance-validation",
+    "api-sdk-webhook-validation",
+    "storage-search-cache-validation",
+    "deployment-operations-validation",
+    "security-privacy-compliance-validation",
+    "ui-accessibility-localization-validation",
+    "analytics-admin-support-validation",
+    "notifications-scheduler-validation",
+    "ai-solution-factory-validation",
+    "data-bigdata-solution-validation",
+    "commercial-delivery-certification-validation",
+    "product-journey-validation",
+    "standards-assurance-validation",
+    "full-product-coverage-governance",
+)
+
+SKILL_NAMES = SKILL_NAMES_V20
 _CHECKSUM_LINE = re.compile(r"^([0-9a-f]{64})  (.+)$")
 
 
@@ -57,6 +124,7 @@ def file_sha256(path: Path) -> str:
 def _safe_member(name: str) -> bool:
     path = PurePosixPath(name)
     return bool(name) and "\x00" not in name and "//" not in name and not path.is_absolute() and all(part not in {".", ".."} for part in path.parts)
+
 
 
 def _checksum_rows(content: str) -> dict[str, str]:
@@ -110,13 +178,22 @@ def _archive_members(archive: Path, kind: str) -> tuple[list[str], dict[str, byt
     return names, files, links
 
 
-def verify_source_package(archive: Path, *, extracted: Path | None = None, expected_archive_sha256: str = EXPECTED_ARCHIVE_SHA256) -> dict[str, Any]:
+def verify_source_package(archive: Path, *, extracted: Path | None = None, expected_archive_sha256: str | None = None) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
     archive = archive.resolve(strict=True)
     actual_digest = file_sha256(archive)
-    if expected_archive_sha256 and actual_digest != expected_archive_sha256:
-        errors.append(f"archive digest mismatch: expected {expected_archive_sha256}, got {actual_digest}")
+    
+    # Determine version from archive name or content
+    is_v11 = "v1.1.0" in archive.name or actual_digest == EXPECTED_ARCHIVE_SHA256_V11
+    package_root_name = PACKAGE_ROOT_NAME_V11 if is_v11 else PACKAGE_ROOT_NAME_V20
+    package_version = PACKAGE_VERSION_V11 if is_v11 else PACKAGE_VERSION_V20
+    package_id = PACKAGE_ID_V11 if is_v11 else PACKAGE_ID_V20
+    skill_names = SKILL_NAMES_V11 if is_v11 else SKILL_NAMES_V20
+    expected_digest = expected_archive_sha256 or (EXPECTED_ARCHIVE_SHA256_V11 if is_v11 else EXPECTED_ARCHIVE_SHA256_V20)
+
+    if expected_digest and actual_digest != expected_digest:
+        errors.append(f"archive digest mismatch: expected {expected_digest}, got {actual_digest}")
     names: list[str] = []
     checksums: dict[str, str] = {}
     try:
@@ -126,8 +203,8 @@ def verify_source_package(archive: Path, *, extracted: Path | None = None, expec
         errors.extend(f"duplicate archive member: {name}" for name in duplicate_names)
         errors.extend(f"unsafe archive member: {name}" for name in names if not _safe_member(name))
         errors.extend(f"link archive member is forbidden: {name}" for name in links)
-        prefix = PACKAGE_ROOT_NAME + "/"
-        if not all(name == PACKAGE_ROOT_NAME or name.startswith(prefix) for name in names):
+        prefix = package_root_name + "/"
+        if not all(name == package_root_name or name.startswith(prefix) for name in names):
             errors.append("archive contains a member outside the pinned package root")
         relative = {name[len(prefix):]: name for name in payloads if name.startswith(prefix)}
         required = {"PACKAGE_MANIFEST.json", "SHA256SUMS", "skills/manifest.yaml", "suites/suite.yaml", "schemas/test-case.schema.json"}
@@ -151,7 +228,7 @@ def verify_source_package(archive: Path, *, extracted: Path | None = None, expec
         except (KeyError, json.JSONDecodeError, UnicodeDecodeError) as exc:
             errors.append(f"invalid PACKAGE_MANIFEST.json: {exc}")
         if manifest:
-            if manifest.get("package") != PACKAGE_ID or manifest.get("version") != PACKAGE_VERSION:
+            if manifest.get("package") != package_id or manifest.get("version") != package_version:
                 errors.append("package manifest identity or version mismatch")
             checksum_file_count = len(checksums) - (1 if "PACKAGE_MANIFEST.json" in checksums else 0)
             if manifest.get("file_count") != checksum_file_count:
@@ -159,7 +236,7 @@ def verify_source_package(archive: Path, *, extracted: Path | None = None, expec
         try:
             skill_manifest = yaml.safe_load(payloads[relative["skills/manifest.yaml"]])
             declared = [item.get("name") for item in skill_manifest.get("skills", [])]
-            if tuple(declared) != SKILL_NAMES:
+            if tuple(declared) != skill_names:
                 errors.append(f"skill registry mismatch: {declared}")
             declared_names = set(declared)
             edges = [(item.get("name"), dependency) for item in skill_manifest.get("skills", []) for dependency in item.get("depends_on", [])]
@@ -202,11 +279,11 @@ def verify_source_package(archive: Path, *, extracted: Path | None = None, expec
         "valid": not errors,
         "archive": str(archive),
         "archive_sha256": actual_digest,
-        "archive_matches_pin": actual_digest == expected_archive_sha256,
+        "archive_matches_pin": actual_digest == expected_digest,
         "archive_entries": len(names),
         "checksum_entries": len(checksums),
-        "package_version": PACKAGE_VERSION,
-        "skills": list(SKILL_NAMES),
+        "package_version": package_version,
+        "skills": list(skill_names),
         "errors": errors,
         "warnings": warnings,
     }

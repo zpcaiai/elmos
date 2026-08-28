@@ -1,0 +1,2018 @@
+schema_version: '1.0'
+matrix_id: ETGB-SQL-1
+business_line: sql-conversion
+pairs:
+- id: mysql-to-postgresql
+  source: mysql
+  target: postgresql
+  tier: P0
+  kind: transactional
+- id: sqlserver-to-postgresql
+  source: sqlserver
+  target: postgresql
+  tier: P0
+  kind: transactional
+- id: oracle-to-postgresql
+  source: oracle
+  target: postgresql
+  tier: P0
+  kind: transactional
+- id: postgresql-to-mysql
+  source: postgresql
+  target: mysql
+  tier: P1
+  kind: transactional
+- id: oracle-to-sqlserver
+  source: oracle
+  target: sqlserver
+  tier: P1
+  kind: transactional
+- id: sqlserver-to-mysql
+  source: sqlserver
+  target: mysql
+  tier: P1
+  kind: transactional
+- id: db2-to-postgresql
+  source: db2
+  target: postgresql
+  tier: P1
+  kind: transactional
+- id: mariadb-to-postgresql
+  source: mariadb
+  target: postgresql
+  tier: P1
+  kind: transactional
+- id: sqlite-to-postgresql
+  source: sqlite
+  target: postgresql
+  tier: P1
+  kind: transactional
+- id: postgresql-to-sqlserver
+  source: postgresql
+  target: sqlserver
+  tier: P1
+  kind: transactional
+- id: postgresql-to-oracle
+  source: postgresql
+  target: oracle
+  tier: P2
+  kind: transactional
+- id: mysql-to-sqlserver
+  source: mysql
+  target: sqlserver
+  tier: P1
+  kind: transactional
+- id: snowflake-to-bigquery
+  source: snowflake
+  target: bigquery
+  tier: P0
+  kind: analytics
+- id: bigquery-to-snowflake
+  source: bigquery
+  target: snowflake
+  tier: P1
+  kind: analytics
+- id: redshift-to-snowflake
+  source: redshift
+  target: snowflake
+  tier: P1
+  kind: analytics
+- id: snowflake-to-redshift
+  source: snowflake
+  target: redshift
+  tier: P1
+  kind: analytics
+- id: spark-sql-to-trino
+  source: spark-sql
+  target: trino
+  tier: P0
+  kind: analytics
+- id: trino-to-spark-sql
+  source: trino
+  target: spark-sql
+  tier: P1
+  kind: analytics
+- id: databricks-sql-to-snowflake
+  source: databricks-sql
+  target: snowflake
+  tier: P1
+  kind: analytics
+- id: snowflake-to-databricks-sql
+  source: snowflake
+  target: databricks-sql
+  tier: P1
+  kind: analytics
+- id: hive-to-spark-sql
+  source: hive
+  target: spark-sql
+  tier: P1
+  kind: analytics
+- id: presto-to-trino
+  source: presto
+  target: trino
+  tier: P1
+  kind: analytics
+- id: athena-to-trino
+  source: athena
+  target: trino
+  tier: P1
+  kind: analytics
+- id: clickhouse-to-postgresql
+  source: clickhouse
+  target: postgresql
+  tier: P2
+  kind: analytics
+- id: postgresql-to-clickhouse
+  source: postgresql
+  target: clickhouse
+  tier: P2
+  kind: analytics
+- id: teradata-to-snowflake
+  source: teradata
+  target: snowflake
+  tier: P1
+  kind: analytics
+- id: teradata-to-bigquery
+  source: teradata
+  target: bigquery
+  tier: P1
+  kind: analytics
+- id: oracle-to-snowflake
+  source: oracle
+  target: snowflake
+  tier: P1
+  kind: analytics
+- id: sqlserver-to-snowflake
+  source: sqlserver
+  target: snowflake
+  tier: P1
+  kind: analytics
+- id: mysql-to-bigquery
+  source: mysql
+  target: bigquery
+  tier: P2
+  kind: analytics
+variants:
+- nominal
+- edge-adversarial
+features:
+- id: lexical-type.identifier-quoting
+  title: identifier quoting
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.reserved-identifier
+  title: reserved identifier
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.case-folding
+  title: case folding
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.parameter-placeholder
+  title: parameter placeholder
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.statement-delimiter
+  title: statement delimiter
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.line-and-block-comment
+  title: line and block comment
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.unicode-string-literal
+  title: Unicode string literal
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.binary-literal
+  title: binary literal
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.boolean-type
+  title: boolean type
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.integer-widths
+  title: integer widths
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.unsigned-integer-adaptation
+  title: unsigned integer adaptation
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.decimal-precision-scale
+  title: decimal precision scale
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.float-special-values
+  title: float special values
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.character-and-text
+  title: character and text
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.binary-large-object
+  title: binary large object
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.uuid
+  title: UUID
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.json
+  title: JSON
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.xml
+  title: XML
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.array
+  title: array
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.enum
+  title: enum
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.domain
+  title: domain
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.date
+  title: date
+  group: lexical-type
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.time
+  title: time
+  group: lexical-type
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.timestamp
+  title: timestamp
+  group: lexical-type
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.timestamp-with-timezone
+  title: timestamp with timezone
+  group: lexical-type
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.interval
+  title: interval
+  group: lexical-type
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.collation
+  title: collation
+  group: lexical-type
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.default-expression
+  title: default expression
+  group: lexical-type
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.implicit-cast
+  title: implicit cast
+  group: lexical-type
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: lexical-type.null-ordering
+  title: null ordering
+  group: lexical-type
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - parse-and-value-equivalence
+  - unsupported-feature-disclosure
+- id: query.select-projection
+  title: select projection
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.where-three-valued-logic
+  title: where three valued logic
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.join-inner-left-right-full
+  title: join inner left right full
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.cross-join
+  title: cross join
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.natural-join-disclosure
+  title: natural join disclosure
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.group-by
+  title: group by
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.having
+  title: having
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.distinct
+  title: distinct
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.union-intersect-except
+  title: union intersect except
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.order-by-alias-ordinal
+  title: order by alias ordinal
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.limit-offset-top-fetch
+  title: limit offset top fetch
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.correlated-subquery
+  title: correlated subquery
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.scalar-subquery-cardinality
+  title: scalar subquery cardinality
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.exists-and-not-exists
+  title: exists and not exists
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.common-table-expression
+  title: common table expression
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.recursive-cte
+  title: recursive CTE
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.window-partition-order
+  title: window partition order
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.window-rows-frame
+  title: window rows frame
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.window-range-frame
+  title: window range frame
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.window-groups-frame
+  title: window groups frame
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.qualify
+  title: qualify
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.lateral-join
+  title: lateral join
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.cross-apply
+  title: cross apply
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.outer-apply
+  title: outer apply
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.pivot
+  title: pivot
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.unpivot
+  title: unpivot
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.hierarchical-connect-by
+  title: hierarchical connect by
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.model-clause-disclosure
+  title: model clause disclosure
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.regular-expression
+  title: regular expression
+  group: query
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.full-text-search
+  title: full text search
+  group: query
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.json-path-query
+  title: JSON path query
+  group: query
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.array-unnest
+  title: array unnest
+  group: query
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.table-sampling
+  title: table sampling
+  group: query
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.locking-select-for-update
+  title: locking select for update
+  group: query
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.time-travel-query
+  title: time travel query
+  group: query
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.system-versioned-query
+  title: system versioned query
+  group: query
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.query-hint-preservation
+  title: query hint preservation
+  group: query
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.nondeterministic-function-control
+  title: nondeterministic function control
+  group: query
+  priority: P2
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.timezone-and-dst-query
+  title: timezone and DST query
+  group: query
+  priority: P2
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: query.collation-sensitive-comparison
+  title: collation sensitive comparison
+  group: query
+  priority: P2
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-set-equivalence
+  - unsupported-feature-disclosure
+- id: dml.insert-values
+  title: insert values
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.insert-select
+  title: insert select
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.multi-row-insert
+  title: multi row insert
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.update-from-join
+  title: update from join
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.delete-using-join
+  title: delete using join
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.merge-matched-unmatched
+  title: merge matched unmatched
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.upsert-conflict-target
+  title: upsert conflict target
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.returning-clause
+  title: returning clause
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.output-clause
+  title: output clause
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.identity-generated-key
+  title: identity generated key
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.sequence-next-value
+  title: sequence next value
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.bulk-load-semantics
+  title: bulk load semantics
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.copy-command-adaptation
+  title: copy command adaptation
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.duplicate-key-error
+  title: duplicate key error
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.constraint-violation-error
+  title: constraint violation error
+  group: dml
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.row-count-semantics
+  title: row count semantics
+  group: dml
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.default-values-insert
+  title: default values insert
+  group: dml
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.json-update
+  title: JSON update
+  group: dml
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: dml.array-update
+  title: array update
+  group: dml
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - result-and-db-state-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.create-table
+  title: create table
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.alter-add-drop-rename-column
+  title: alter add drop rename column
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.primary-key
+  title: primary key
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.foreign-key-actions
+  title: foreign key actions
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.unique-constraint
+  title: unique constraint
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.check-constraint
+  title: check constraint
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.identity-column
+  title: identity column
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.sequence
+  title: sequence
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.generated-column
+  title: generated column
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.temporary-table
+  title: temporary table
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.global-temporary-table
+  title: global temporary table
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.partitioned-table
+  title: partitioned table
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.index-basic
+  title: index basic
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.unique-index
+  title: unique index
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.partial-filtered-index
+  title: partial filtered index
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.function-expression-index
+  title: function expression index
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.included-columns
+  title: included columns
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.clustered-index-adaptation
+  title: clustered index adaptation
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.view
+  title: view
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.materialized-view
+  title: materialized view
+  group: ddl
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.schema-namespace
+  title: schema namespace
+  group: ddl
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.synonym-adaptation
+  title: synonym adaptation
+  group: ddl
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.comment-metadata
+  title: comment metadata
+  group: ddl
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.grant-revoke
+  title: grant revoke
+  group: ddl
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.row-level-security
+  title: row level security
+  group: ddl
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.masking-policy
+  title: masking policy
+  group: ddl
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: ddl.ddl-transactional-behavior
+  title: DDL transactional behavior
+  group: ddl
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - schema-and-policy-equivalence
+  - unsupported-feature-disclosure
+- id: routine.scalar-function
+  title: scalar function
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.table-valued-function
+  title: table valued function
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.stored-procedure
+  title: stored procedure
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.in-parameter
+  title: IN parameter
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.out-parameter
+  title: OUT parameter
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.inout-parameter
+  title: INOUT parameter
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.default-parameter
+  title: default parameter
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.named-parameter-invocation
+  title: named parameter invocation
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.local-variable
+  title: local variable
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.nested-block
+  title: nested block
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.if-elsif-case
+  title: if elsif case
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.loop-while-for
+  title: loop while for
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.explicit-cursor
+  title: explicit cursor
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.implicit-cursor
+  title: implicit cursor
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.cursor-attributes
+  title: cursor attributes
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.exception-handler
+  title: exception handler
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.custom-error-code-mapping
+  title: custom error code mapping
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.raise-and-rethrow
+  title: raise and rethrow
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.dynamic-sql
+  title: dynamic SQL
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.bind-variables
+  title: bind variables
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.temporary-table-in-routine
+  title: temporary table in routine
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.transaction-in-procedure
+  title: transaction in procedure
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.savepoint-in-routine
+  title: savepoint in routine
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.trigger-before-row
+  title: trigger before row
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.trigger-after-row
+  title: trigger after row
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.statement-trigger
+  title: statement trigger
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.instead-of-trigger
+  title: instead of trigger
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.recursive-function
+  title: recursive function
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.pipelined-table-function
+  title: pipelined table function
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.autonomous-transaction-adaptation
+  title: autonomous transaction adaptation
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.package-specification
+  title: package specification
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.package-body
+  title: package body
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.package-state-adaptation
+  title: package state adaptation
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.percent-type
+  title: percent type
+  group: routine
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.percent-rowtype
+  title: percent rowtype
+  group: routine
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.bulk-collect
+  title: bulk collect
+  group: routine
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.forall-bulk-dml
+  title: forall bulk DML
+  group: routine
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.dbms-output-adaptation
+  title: DBMS output adaptation
+  group: routine
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.scheduler-job-adaptation
+  title: scheduler job adaptation
+  group: routine
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.sequence-and-identity-in-routine
+  title: sequence and identity in routine
+  group: routine
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.security-definer-invoker
+  title: security definer invoker
+  group: routine
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.routine-volatility-determinism
+  title: routine volatility determinism
+  group: routine
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.routine-result-caching
+  title: routine result caching
+  group: routine
+  priority: P2
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.compound-trigger-adaptation
+  title: compound trigger adaptation
+  group: routine
+  priority: P2
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: routine.mutating-table-behavior
+  title: mutating table behavior
+  group: routine
+  priority: P2
+  level: L2
+  requires_any: []
+  default_oracles:
+  - routine-trace-result-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.autocommit-behavior
+  title: autocommit behavior
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.begin-commit-rollback
+  title: begin commit rollback
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.savepoint-rollback-to
+  title: savepoint rollback to
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.read-committed-anomaly
+  title: read committed anomaly
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.repeatable-read-anomaly
+  title: repeatable read anomaly
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.serializable-behavior
+  title: serializable behavior
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.snapshot-isolation
+  title: snapshot isolation
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.read-only-transaction
+  title: read only transaction
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.ddl-commit-boundary
+  title: DDL commit boundary
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.deadlock-victim-behavior
+  title: deadlock victim behavior
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.lock-timeout
+  title: lock timeout
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.statement-timeout
+  title: statement timeout
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.advisory-lock-adaptation
+  title: advisory lock adaptation
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.optimistic-version-column
+  title: optimistic version column
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.two-session-write-skew
+  title: two session write skew
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.lost-update-prevention
+  title: lost update prevention
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.phantom-read
+  title: phantom read
+  group: transaction-concurrency
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.sequence-rollback-behavior
+  title: sequence rollback behavior
+  group: transaction-concurrency
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.trigger-rollback-behavior
+  title: trigger rollback behavior
+  group: transaction-concurrency
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: transaction-concurrency.error-abort-scope
+  title: error abort scope
+  group: transaction-concurrency
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - multi-session-transaction-trace
+  - unsupported-feature-disclosure
+- id: analytic-platform.database-schema-dataset-qualification
+  title: database schema dataset qualification
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: &id001
+  - analytics
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.warehouse-compute-selection
+  title: warehouse compute selection
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.partition-pruning
+  title: partition pruning
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.clustering-key
+  title: clustering key
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.distribution-key
+  title: distribution key
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.sort-key
+  title: sort key
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.external-table
+  title: external table
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.stage-and-file-format
+  title: stage and file format
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.copy-into
+  title: copy into
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.unload-export
+  title: unload export
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.semi-structured-flatten
+  title: semi structured flatten
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.variant-object
+  title: variant object
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.geospatial-function
+  title: geospatial function
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.approximate-aggregate
+  title: approximate aggregate
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.ml-function-disclosure
+  title: ML function disclosure
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.incremental-model
+  title: incremental model
+  group: analytic-platform
+  priority: P0
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.snapshot-table
+  title: snapshot table
+  group: analytic-platform
+  priority: P1
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.stream-task
+  title: stream task
+  group: analytic-platform
+  priority: P1
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.materialized-incremental-view
+  title: materialized incremental view
+  group: analytic-platform
+  priority: P1
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.cost-scan-bytes-budget
+  title: cost scan bytes budget
+  group: analytic-platform
+  priority: P1
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.result-cache-behavior
+  title: result cache behavior
+  group: analytic-platform
+  priority: P1
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.late-arriving-data
+  title: late arriving data
+  group: analytic-platform
+  priority: P1
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.watermark
+  title: watermark
+  group: analytic-platform
+  priority: P1
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.merge-partition-overwrite
+  title: merge partition overwrite
+  group: analytic-platform
+  priority: P1
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+- id: analytic-platform.catalog-permissions
+  title: catalog permissions
+  group: analytic-platform
+  priority: P2
+  level: L2
+  requires_any: *id001
+  default_oracles:
+  - analytic-result-cost-and-state-equivalence
+  - unsupported-feature-disclosure
+public_corpus_ids:
+- jooq-sakila
+- sqlancer
+- sqlglot
+- aws-db-migration-tester

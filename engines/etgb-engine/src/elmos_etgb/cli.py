@@ -73,6 +73,9 @@ def main(argv: list[str] | None = None) -> int:
     validate.add_argument("--trust-store", type=Path)
     validate.add_argument("--license-reviews", type=Path)
     sub.add_parser("coverage")
+    sub.add_parser("feature-coverage")
+    surface_parser = sub.add_parser("surface-audit")
+    surface_parser.add_argument("--surface", type=Path, required=True)
     sub.add_parser("skills")
     plan = sub.add_parser("plan")
     plan.add_argument("--changed-from")
@@ -187,9 +190,16 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     repo_root = args.repo_root.resolve()
-    package_root = (args.package_root or repo_root / "skills/subskills" / PACKAGE_ROOT_NAME).resolve(strict=True)
+    if getattr(args, "package_root", None):
+        package_root = args.package_root.resolve(strict=True)
+    elif getattr(args, "extracted", None):
+        package_root = args.extracted.resolve(strict=True)
+    elif (repo_root / "skills" / PACKAGE_ROOT_NAME).is_dir():
+        package_root = (repo_root / "skills" / PACKAGE_ROOT_NAME).resolve(strict=True)
+    else:
+        package_root = (repo_root / "skills/subskills" / PACKAGE_ROOT_NAME).resolve(strict=True)
     if args.command == "validate":
-        archive = args.archive.resolve() if args.archive else repo_root / "skills/subskills" / f"{PACKAGE_ROOT_NAME}.zip"
+        archive = args.archive.resolve() if args.archive else (repo_root / "skills/subskills" / f"{PACKAGE_ROOT_NAME}.zip")
         extracted = args.extracted.resolve() if args.extracted else None
         if not archive.exists():
             archive = repo_root / "skills/subskills" / f"{PACKAGE_ROOT_NAME}.tar.gz"
@@ -199,6 +209,17 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if result["valid"] else 2
     if args.command == "coverage":
         result = coverage_report(package_root)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["complete"] else 2
+    if args.command == "feature-coverage":
+        from .features import feature_coverage_report
+        result = feature_coverage_report(package_root)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["complete"] else 2
+    if args.command == "surface-audit":
+        from .discovery import load_surface, surface_coverage_report
+        surface_data = load_surface(args.surface)
+        result = surface_coverage_report(package_root, surface_data)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result["complete"] else 2
     if args.command == "skills":

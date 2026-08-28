@@ -1,0 +1,283 @@
+openapi: 3.1.0
+info:
+  title: Elmos ETGB Control Plane API
+  version: 1.1.0
+  description: Durable benchmark planning, execution control, evidence, budget, and release certification.
+servers:
+  - url: /api
+security:
+  - bearerAuth: []
+paths:
+  /v1/etgb/release-candidates:
+    post:
+      operationId: freezeReleaseCandidate
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReleaseCandidateInput'}
+      responses:
+        '201':
+          description: Candidate frozen
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReleaseCandidate'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /v1/etgb/run-plans:
+    post:
+      operationId: createRunPlan
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RunPlanRequest'}
+      responses:
+        '201':
+          description: Immutable run plan
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RunPlan'}
+  /v1/etgb/runs:
+    post:
+      operationId: createRun
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateRunRequest'}
+      responses:
+        '202':
+          description: Run accepted
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Run'}
+  /v1/etgb/runs/{runId}:
+    get:
+      operationId: getRun
+      parameters:
+        - $ref: '#/components/parameters/RunId'
+      responses:
+        '200':
+          description: Run state
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Run'}
+    patch:
+      operationId: compareAndSetRunState
+      parameters:
+        - $ref: '#/components/parameters/RunId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - name: If-Match
+          in: header
+          required: true
+          schema: {type: string}
+          description: Expected run revision ETag.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/StateTransitionRequest'}
+      responses:
+        '200':
+          description: State transitioned
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Run'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /v1/etgb/runs/{runId}:pause:
+    post:
+      operationId: pauseRun
+      parameters:
+        - $ref: '#/components/parameters/RunId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '202': {description: Pause requested}
+  /v1/etgb/runs/{runId}:resume:
+    post:
+      operationId: resumeRun
+      parameters:
+        - $ref: '#/components/parameters/RunId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [checkpointDigest]
+              properties:
+                checkpointDigest: {type: string}
+      responses:
+        '202': {description: Resume requested}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /v1/etgb/runs/{runId}:cancel:
+    post:
+      operationId: cancelRun
+      parameters:
+        - $ref: '#/components/parameters/RunId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '202': {description: Cancellation requested}
+  /v1/etgb/runs/{runId}/usage:
+    post:
+      operationId: recordUsage
+      parameters:
+        - $ref: '#/components/parameters/RunId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/UsageEvent'}
+      responses:
+        '200': {description: Usage recorded or original idempotent response returned}
+        '402': {description: Budget exhausted}
+  /v1/etgb/runs/{runId}/evidence:
+    get:
+      operationId: listEvidence
+      parameters:
+        - $ref: '#/components/parameters/RunId'
+      responses:
+        '200':
+          description: Evidence manifest
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/EvidenceManifest'}
+  /v1/etgb/runs/{runId}:certify:
+    post:
+      operationId: certifyRun
+      parameters:
+        - $ref: '#/components/parameters/RunId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Release decision
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/GateDecision'}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    RunId:
+      name: runId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: {type: string, minLength: 8, maxLength: 200}
+  responses:
+    Conflict:
+      description: Revision, ownership, fencing, digest, or idempotency conflict.
+  schemas:
+    ReleaseCandidateInput:
+      type: object
+      required: [candidateId, sourceCommit, model, modelRevision, promptDigest, skillManifestDigest, ruleBundleDigest, toolchainImageDigest, oracleVersion, normalizationVersion]
+      properties:
+        candidateId: {type: string}
+        sourceCommit: {type: string, pattern: '^[0-9a-f]{40}$'}
+        model: {type: string}
+        modelRevision: {type: string}
+        promptDigest: {type: string}
+        skillManifestDigest: {type: string}
+        ruleBundleDigest: {type: string}
+        toolchainImageDigest: {type: string}
+        oracleVersion: {type: string}
+        normalizationVersion: {type: string}
+    ReleaseCandidate:
+      allOf:
+        - $ref: '#/components/schemas/ReleaseCandidateInput'
+        - type: object
+          required: [candidateDigest, frozenAt]
+          properties:
+            candidateDigest: {type: string}
+            frozenAt: {type: string, format: date-time}
+    RunPlanRequest:
+      type: object
+      required: [candidateDigest, suiteVersion, profile, budget]
+      properties:
+        candidateDigest: {type: string}
+        suiteVersion: {type: string}
+        profile: {enum: [smoke, pr, nightly, weekly, release, golden, exhaustive]}
+        changedFrom: {type: string}
+        maxCases: {type: integer, minimum: 1}
+        shardCount: {type: integer, minimum: 1}
+        seed: {type: integer}
+        budget: {$ref: '#/components/schemas/Budget'}
+    RunPlan:
+      type: object
+      required: [planDigest, caseIds, shards]
+      properties:
+        planDigest: {type: string}
+        caseIds: {type: array, items: {type: string}}
+        shards: {type: array, items: {type: object}}
+    CreateRunRequest:
+      type: object
+      required: [planDigest, environmentAuthorityId]
+      properties:
+        planDigest: {type: string}
+        environmentAuthorityId: {type: string}
+    Run:
+      type: object
+      required: [runId, status, revision, fencingToken]
+      properties:
+        runId: {type: string, format: uuid}
+        status: {type: string}
+        revision: {type: integer}
+        ownerId: {type: [string, 'null']}
+        fencingToken: {type: integer}
+        checkpointDigest: {type: [string, 'null']}
+        budget: {$ref: '#/components/schemas/Budget'}
+    StateTransitionRequest:
+      type: object
+      required: [expectedState, targetState, ownerId, fencingToken, reason]
+      properties:
+        expectedState: {type: string}
+        targetState: {type: string}
+        ownerId: {type: string}
+        fencingToken: {type: integer}
+        reason: {type: string}
+        checkpointDigest: {type: string}
+    Budget:
+      type: object
+      required: [maxInputTokens, maxOutputTokens, maxCreditUsd, maxWallClockMs]
+      properties:
+        maxInputTokens: {type: integer, minimum: 0}
+        maxOutputTokens: {type: integer, minimum: 0}
+        maxCreditUsd: {type: number, minimum: 0}
+        maxWallClockMs: {type: integer, minimum: 0}
+    UsageEvent:
+      type: object
+      required: [phase]
+      properties:
+        caseRunId: {type: string, format: uuid}
+        phase: {type: string}
+        inputTokens: {type: integer, minimum: 0}
+        outputTokens: {type: integer, minimum: 0}
+        creditUsd: {type: number, minimum: 0}
+        wallClockMs: {type: integer, minimum: 0}
+        providerUsage: {type: object}
+    EvidenceManifest:
+      type: object
+      properties:
+        rootDigest: {type: string}
+        signatureStatus: {type: string}
+        artifacts: {type: array, items: {type: object}}
+    GateDecision:
+      type: object
+      required: [decision, gateResults]
+      properties:
+        decision: {enum: [PROMOTE, REJECT, BLOCKED, PROMOTE_WITH_WAIVER]}
+        gateResults: {type: array, items: {type: object}}

@@ -1,6 +1,6 @@
 interface:
   display_name: "ETGB Test Case Authoring"
-  short_description: "Run ETGB assurance with evidence controls"
+  short_description: "Run ETGB full product assurance with evidence controls"
   default_prompt: "Use $etgb-test-case-authoring to run this ETGB capability with fail-closed evidence."
 policy:
   allow_implicit_invocation: true

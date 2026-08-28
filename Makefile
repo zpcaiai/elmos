@@ -606,3 +606,18 @@ etgb-sota-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) run --profile smoke --output .elmos/etgb/smoke-results-v11.jsonl --artifact-root .elmos/etgb/evidence-v11
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) score .elmos/etgb/smoke-results-v11.jsonl --expected-count 4 --output .elmos/etgb/smoke-score-v11.json
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) gate .elmos/etgb/smoke-results-v11.jsonl --profile smoke --output .elmos/etgb/smoke-gate-v11.json
+
+.PHONY: etgb-full-product-skills etgb-skills
+etgb-skills: etgb-full-product-skills
+
+etgb-full-product-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 tooling/integrate_etgb_full_product_skills.py
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m unittest discover -s engines/etgb-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) validate --archive skills/subskills/elmos-etgb-full-product-assurance-skills-package-v2.0.0.zip --extracted skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) coverage
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) feature-coverage
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) materialize --output .elmos/etgb/materialized-v20.json
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) run --profile smoke --output .elmos/etgb/smoke-results-v20.jsonl --artifact-root .elmos/etgb/evidence-v20
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) score .elmos/etgb/smoke-results-v20.jsonl --expected-count 4 --output .elmos/etgb/smoke-score-v20.json
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' env PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb --repo-root $(CURDIR) gate .elmos/etgb/smoke-results-v20.jsonl --profile smoke --output .elmos/etgb/smoke-gate-v20.json
+

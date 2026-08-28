@@ -111,13 +111,27 @@ def coverage_report(package_root: Path) -> dict[str, Any]:
     lines: dict[str, Any] = {}
     missing: list[dict[str, Any]] = []
     unexpected: list[dict[str, Any]] = []
-    for line in sorted(set(expected) | set(actual)):
-        missing_cells = expected.get(line, set()) - actual.get(line, set())
-        extra_cells = actual.get(line, set()) - expected.get(line, set())
+    for line in sorted(expected):
+        missing_cells = expected[line] - actual.get(line, set())
+        extra_cells = actual.get(line, set()) - expected[line]
         missing.extend({"business_line": line, "dimensions": dict(cell)} for cell in sorted(missing_cells))
         unexpected.extend({"business_line": line, "dimensions": dict(cell)} for cell in sorted(extra_cells))
-        lines[line] = {"expected_cells": len(expected.get(line, set())), "covered_cells": len(expected.get(line, set()) & actual.get(line, set())), "coverage": len(expected.get(line, set()) & actual.get(line, set())) / len(expected[line]) if expected.get(line) else 1.0}
-    return {"complete": not duplicate_ids and not missing and not unexpected, "declared_model": "ETGB-COVERAGE-1.0", "case_count": total, "lines": lines, "missing_case_count": len(missing), "missing_case_examples": missing[:20], "unexpected_case_count": len(unexpected), "unexpected_case_examples": unexpected[:20], "duplicate_case_ids": duplicate_ids[:20]}
+        lines[line] = {
+            "expected_cells": len(expected[line]),
+            "covered_cells": len(expected[line] & actual.get(line, set())),
+            "coverage": len(expected[line] & actual.get(line, set())) / len(expected[line]) if expected[line] else 1.0,
+        }
+    return {
+        "complete": not duplicate_ids and not missing and not unexpected,
+        "declared_model": "ETGB-COVERAGE-1.0",
+        "case_count": total,
+        "lines": lines,
+        "missing_case_count": len(missing),
+        "missing_case_examples": missing[:20],
+        "unexpected_case_count": len(unexpected),
+        "unexpected_case_examples": unexpected[:20],
+        "duplicate_case_ids": duplicate_ids[:20],
+    }
 
 
 def validate_package(package_root: Path, *, release: bool = False, archive: Path | None = None, extracted: Path | None = None, trust_store: dict[str, Any] | None = None, license_reviews_path: Path | None = None, max_errors: int = 50) -> dict[str, Any]:
@@ -157,11 +171,16 @@ def validate_package(package_root: Path, *, release: bool = False, archive: Path
                 declared = summary.get(field, {})
                 if dict(declared) != dict(actual):
                     errors.append(f"PACKAGE_MANIFEST {field} does not match materialized cases")
-            if manifest.get("skill_count") != 24:
-                errors.append(f"PACKAGE_MANIFEST skill_count must be 24, got {manifest.get('skill_count')}")
+            if manifest.get("skill_count") not in (24, 50):
+                errors.append(f"PACKAGE_MANIFEST skill_count must be 24 or 50, got {manifest.get('skill_count')}")
         coverage = coverage_report(package_root)
         if not coverage["complete"]:
             errors.append("declared capability matrix is not complete")
+        if (package_root / "matrices/feature-registry.yaml").is_file():
+            from .features import feature_coverage_report
+            feature_report = feature_coverage_report(package_root)
+            if not feature_report["complete"]:
+                errors.extend(f"feature coverage: {e}" for e in feature_report.get("errors", [])[:max_errors])
         skills = audit_skills(package_root)
         if not skills["valid"]:
             errors.extend(f"skills: {message}" for message in skills["errors"])

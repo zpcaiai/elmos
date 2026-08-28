@@ -1,0 +1,146 @@
+asyncapi: 3.0.0
+info:
+  title: Elmos ETGB Events
+  version: 1.1.0
+  description: Transactional-outbox events for benchmark lifecycle, evidence, budget, and certification.
+defaultContentType: application/json
+channels:
+  runStateChanged:
+    address: etgb.run.state-changed.v1
+    messages:
+      runStateChanged: {$ref: '#/components/messages/RunStateChanged'}
+  caseCompleted:
+    address: etgb.case.completed.v1
+    messages:
+      caseCompleted: {$ref: '#/components/messages/CaseCompleted'}
+  checkpointCreated:
+    address: etgb.run.checkpoint-created.v1
+    messages:
+      checkpointCreated: {$ref: '#/components/messages/CheckpointCreated'}
+  evidenceSealed:
+    address: etgb.evidence.sealed.v1
+    messages:
+      evidenceSealed: {$ref: '#/components/messages/EvidenceSealed'}
+  budgetThreshold:
+    address: etgb.budget.threshold.v1
+    messages:
+      budgetThreshold: {$ref: '#/components/messages/BudgetThreshold'}
+  releaseDecided:
+    address: etgb.release.decided.v1
+    messages:
+      releaseDecided: {$ref: '#/components/messages/ReleaseDecided'}
+operations:
+  publishRunStateChanged:
+    action: send
+    channel: {$ref: '#/channels/runStateChanged'}
+  publishCaseCompleted:
+    action: send
+    channel: {$ref: '#/channels/caseCompleted'}
+  publishCheckpointCreated:
+    action: send
+    channel: {$ref: '#/channels/checkpointCreated'}
+  publishEvidenceSealed:
+    action: send
+    channel: {$ref: '#/channels/evidenceSealed'}
+  publishBudgetThreshold:
+    action: send
+    channel: {$ref: '#/channels/budgetThreshold'}
+  publishReleaseDecided:
+    action: send
+    channel: {$ref: '#/channels/releaseDecided'}
+components:
+  messages:
+    RunStateChanged:
+      name: RunStateChanged
+      headers: {$ref: '#/components/schemas/EventHeaders'}
+      payload:
+        type: object
+        required: [runId, revision, fromState, toState, fencingToken, occurredAt]
+        properties:
+          runId: {type: string, format: uuid}
+          revision: {type: integer}
+          fromState: {type: [string, 'null']}
+          toState: {type: string}
+          ownerId: {type: string}
+          fencingToken: {type: integer}
+          reason: {type: string}
+          checkpointDigest: {type: [string, 'null']}
+          occurredAt: {type: string, format: date-time}
+    CaseCompleted:
+      name: CaseCompleted
+      headers: {$ref: '#/components/schemas/EventHeaders'}
+      payload:
+        type: object
+        required: [runId, caseRunId, caseId, status, resultDigest]
+        properties:
+          runId: {type: string, format: uuid}
+          caseRunId: {type: string, format: uuid}
+          caseId: {type: string}
+          status: {type: string}
+          silentSemanticError: {type: boolean}
+          failureClass: {type: [string, 'null']}
+          resultDigest: {type: string}
+          usage: {type: object}
+    CheckpointCreated:
+      name: CheckpointCreated
+      headers: {$ref: '#/components/schemas/EventHeaders'}
+      payload:
+        type: object
+        required: [runId, phase, revision, checkpointDigest, fencingToken]
+        properties:
+          runId: {type: string, format: uuid}
+          phase: {type: string}
+          revision: {type: integer}
+          checkpointDigest: {type: string}
+          previousCheckpointDigest: {type: [string, 'null']}
+          fencingToken: {type: integer}
+    EvidenceSealed:
+      name: EvidenceSealed
+      headers: {$ref: '#/components/schemas/EventHeaders'}
+      payload:
+        type: object
+        required: [runId, manifestDigest, verificationStatus, sealedAt]
+        properties:
+          runId: {type: string, format: uuid}
+          manifestDigest: {type: string}
+          signatureAlgorithm: {type: string}
+          signature: {type: [string, 'null']}
+          verificationStatus: {enum: [VALID, INVALID, UNVERIFIED]}
+          sealedAt: {type: string, format: date-time}
+    BudgetThreshold:
+      name: BudgetThreshold
+      headers: {$ref: '#/components/schemas/EventHeaders'}
+      payload:
+        type: object
+        required: [runId, dimension, used, limit, ratio]
+        properties:
+          runId: {type: string, format: uuid}
+          dimension: {enum: [input_tokens, output_tokens, credit_usd, wall_clock_ms]}
+          used: {type: number}
+          limit: {type: number}
+          ratio: {type: number}
+          action: {enum: [WARN, CHECKPOINT_AND_PAUSE, STOP]}
+    ReleaseDecided:
+      name: ReleaseDecided
+      headers: {$ref: '#/components/schemas/EventHeaders'}
+      payload:
+        type: object
+        required: [runId, candidateDigest, decision, gateSummary, evidenceManifestDigest]
+        properties:
+          runId: {type: string, format: uuid}
+          candidateDigest: {type: string}
+          decision: {enum: [PROMOTE, REJECT, BLOCKED, PROMOTE_WITH_WAIVER]}
+          gateSummary: {type: object}
+          evidenceManifestDigest: {type: string}
+  schemas:
+    EventHeaders:
+      type: object
+      required: [eventId, eventVersion, tenantId, idempotencyKey, correlationId, causationId]
+      properties:
+        eventId: {type: string, format: uuid}
+        eventVersion: {type: string}
+        tenantId: {type: string, format: uuid}
+        idempotencyKey: {type: string}
+        correlationId: {type: string}
+        causationId: {type: string}
+        traceparent: {type: string}

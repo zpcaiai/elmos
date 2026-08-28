@@ -16,7 +16,12 @@ def package_root() -> Path:
     configured = os.environ.get("ELMOS_ETGB_PACKAGE_ROOT")
     if configured:
         return Path(configured).resolve(strict=True)
-    return Path(__file__).resolve().parents[4] / "skills" / "subskills" / PACKAGE_ROOT_NAME
+    repo = Path(__file__).resolve().parents[4]
+    for parent in (repo / "skills", repo / "skills" / "subskills"):
+        candidate = parent / PACKAGE_ROOT_NAME
+        if candidate.is_dir():
+            return candidate.resolve()
+    return (repo / "skills" / "subskills" / PACKAGE_ROOT_NAME).resolve()
 
 
 def suite_manifest(root: Path | None = None) -> dict[str, Any]:

@@ -1,0 +1,281 @@
+{
+  "schema_version": "2.0",
+  "total_results": 12,
+  "executable_results": 12,
+  "statuses": {
+    "passed": 12
+  },
+  "by_business_line": {
+    "spring-modernization": {
+      "passed": 1
+    },
+    "cross-language": {
+      "passed": 1
+    },
+    "project-generation": {
+      "passed": 1
+    },
+    "sql-conversion": {
+      "passed": 1
+    },
+    "identity-access-tenant": {
+      "passed": 1
+    },
+    "platform-control-plane": {
+      "passed": 1
+    },
+    "ai-runtime-model-routing": {
+      "passed": 1
+    },
+    "rag-memory-knowledge": {
+      "passed": 1
+    },
+    "project-intelligence": {
+      "passed": 1
+    },
+    "billing-entitlements": {
+      "passed": 1
+    },
+    "payment-finance": {
+      "passed": 1
+    },
+    "online-ide-debug": {
+      "passed": 1
+    }
+  },
+  "metrics": {
+    "weighted_pass_rate": 1.0,
+    "p0_weighted_pass_rate": 1.0,
+    "p1_weighted_pass_rate": null,
+    "p2_weighted_pass_rate": null,
+    "silent_semantic_error_rate": 0.0,
+    "p0_silent_semantic_error_rate": 0.0,
+    "critical_oracle_pass_rate": 1.0,
+    "p0_critical_oracle_pass_rate": 1.0,
+    "evidence_completeness": 1.0,
+    "data_corruption_count": 0,
+    "security_regression_count": 0,
+    "transaction_mismatch_count": 0,
+    "flaky_case_count": 0,
+    "authority_violation_count": 0,
+    "evidence_integrity_failure_count": 0,
+    "unsupported_undisclosed_count": 0,
+    "recovery_failure_count": 0,
+    "budget_overrun_count": 0,
+    "supply_chain_failure_count": 0,
+    "performance_regression_count": 0,
+    "integrity_drift_count": 0,
+    "human_intervention_rate": 0.0,
+    "mutation_kill_rate": null,
+    "unapproved_corpus_count": 17,
+    "multi_seed_unstable_case_count": 0,
+    "insufficient_seed_case_count": 0,
+    "feature_coverage_ratio": 1.0,
+    "undeclared_feature_count": 0,
+    "unavailable_adapter_count": 0,
+    "unavailable_case_count": 0,
+    "cross_tenant_leak_count": 0,
+    "unexplained_financial_delta_count": 0,
+    "duplicate_charge_or_credit_count": 0,
+    "p0_journey_pass_rate": null,
+    "failed_mandatory_control_count": 0,
+    "critical_accessibility_failure_count": 0,
+    "hidden_test_authority_violation_count": 0,
+    "stale_evidence_count": 0
+  },
+  "cost": {
+    "token_input": 0,
+    "token_output": 0,
+    "credit_usd": 0.0,
+    "wall_clock_ms": 10591
+  },
+  "stability": {
+    "case_count": 12,
+    "unstable_case_count": 0,
+    "insufficient_seed_case_count": 0,
+    "cases": [
+      {
+        "case_id": "AIR-SMOKE-ROUTE-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "BILL-SMOKE-LEDGER-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "CTRL-SMOKE-STATE-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "DBG-SMOKE-REPLAY-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "IAM-SMOKE-POLICY-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "PAY-SMOKE-WEBHOOK-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "PG-SMOKE-PY-SQLITE-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "PI-SMOKE-EVID-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "RAG-SMOKE-CITE-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "SM-SMOKE-CONTRACT-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "SQL-SMOKE-SQLITE-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      },
+      {
+        "case_id": "XLC-SMOKE-JAVA-PY-001",
+        "runs": 1,
+        "distinct_seeds": 0,
+        "pass_rate": 1.0,
+        "pass_rate_95ci": {
+          "lower": 0.20654931437723742,
+          "upper": 1.0
+        },
+        "status_stable": true,
+        "duration_cv": 0.0,
+        "seed_required": false,
+        "required_seed_count": 1,
+        "minimum_seeds_met": true
+      }
+    ]
+  },
+  "partial_run": false,
+  "interpretation": "Release gates are authoritative only for a complete release/golden run. Counts are derived from explicit Oracle/evidence classifications; missing release metrics block certification."
+}

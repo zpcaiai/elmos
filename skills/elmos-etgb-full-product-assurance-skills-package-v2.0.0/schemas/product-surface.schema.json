@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/etgb/schemas/product-surface.schema.json",
+  "title": "Elmos Implemented Product Surface Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "surface_id", "candidate_digest"],
+  "properties": {
+    "schema_version": {"const": "2.0"},
+    "surface_id": {"type": "string", "minLength": 3},
+    "candidate_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "api_operations": {"$ref": "#/$defs/surfaces"},
+    "ui_actions": {"$ref": "#/$defs/surfaces"},
+    "commands": {"$ref": "#/$defs/surfaces"},
+    "jobs": {"$ref": "#/$defs/surfaces"},
+    "event_types": {"$ref": "#/$defs/surfaces"},
+    "webhooks": {"$ref": "#/$defs/surfaces"},
+    "feature_flags": {"$ref": "#/$defs/surfaces"},
+    "entitlements": {"$ref": "#/$defs/surfaces"},
+    "billing_meters": {"$ref": "#/$defs/surfaces"},
+    "admin_operations": {"$ref": "#/$defs/surfaces"},
+    "agent_routes": {"$ref": "#/$defs/surfaces"},
+    "artifact_formats": {"$ref": "#/$defs/surfaces"},
+    "deployment_modes": {"$ref": "#/$defs/surfaces"}
+  },
+  "$defs": {
+    "surfaces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "feature_id"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "feature_id": {"type": "string", "pattern": "^[a-z0-9-]+\\.[a-z0-9-]+$"},
+          "release_policy": {"enum": ["must-pass", "manual-approval"]},
+          "source": {"type": "string"}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+interface:
+  display_name: "ETGB Ai Runtime Model Routing Validation"
+  short_description: "Run ETGB full product assurance with evidence controls"
+  default_prompt: "Use $etgb-ai-runtime-model-routing-validation to run this ETGB capability with fail-closed evidence."
+policy:
+  allow_implicit_invocation: true

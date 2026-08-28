@@ -1,0 +1,574 @@
+schema_version: '1.1'
+package: elmos-etgb-full-product-assurance-skills-package
+version: 2.0.0
+skills:
+- name: etgb-orchestrator
+  path: skills/etgb-orchestrator/SKILL.md
+  description: Plan, execute, pause, resume, aggregate and certify full-product ETGB runs across all Elmos business, platform
+    and assurance domains.
+  category: orchestration
+  maturity: production-contract
+  depends_on:
+  - risk-based-test-selection
+  - production-harness-integration
+  - spring-modernization-validation
+  - repository-translation-validation
+  - project-generation-validation
+  - sql-dialect-routine-validation
+  - observability-failure-triage
+  - incident-regression-learning
+  - release-certification
+  - full-product-coverage-governance
+- name: test-case-authoring
+  path: skills/test-case-authoring/SKILL.md
+  description: Create, review, materialize and maintain executable ETGB cases, capability matrices and independent Oracles.
+  category: assurance
+  maturity: production-contract
+  depends_on:
+  - differential-oracle-engine
+  - benchmark-integrity-hidden-tests
+  - statistical-validity-reproducibility
+- name: spring-modernization-validation
+  path: skills/spring-modernization-validation/SKILL.md
+  description: Validate repository-level Servlet, JSP, Struts, Spring Framework and Spring Boot modernization to Spring Boot
+    4.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - differential-oracle-engine
+  - metamorphic-fuzz-mutation
+  - corpus-governance
+  - performance-scale-certification
+  - supply-chain-artifact-security
+- name: repository-translation-validation
+  path: skills/repository-translation-validation/SKILL.md
+  description: Validate whole-repository cross-language conversion, architecture adaptation, dependency handling and hidden
+    semantics.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - differential-oracle-engine
+  - metamorphic-fuzz-mutation
+  - corpus-governance
+  - performance-scale-certification
+  - supply-chain-artifact-security
+- name: project-generation-validation
+  path: skills/project-generation-validation/SKILL.md
+  description: Validate multilingual greenfield and evolutionary project generation from executable requirement contracts.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - differential-oracle-engine
+  - metamorphic-fuzz-mutation
+  - benchmark-integrity-hidden-tests
+  - performance-scale-certification
+  - supply-chain-artifact-security
+- name: sql-dialect-routine-validation
+  path: skills/sql-dialect-routine-validation/SKILL.md
+  description: Validate SQL dialect, DDL, DML, routine, trigger, transaction and analytics conversion by dual execution.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - differential-oracle-engine
+  - metamorphic-fuzz-mutation
+  - corpus-governance
+  - performance-scale-certification
+- name: differential-oracle-engine
+  path: skills/differential-oracle-engine/SKILL.md
+  description: Capture, normalize, compare and explain source/target behavior, state, side effects, traces, security and performance.
+  category: assurance
+  maturity: production-contract
+  depends_on:
+  - evidence-provenance-ledger
+  - statistical-validity-reproducibility
+- name: metamorphic-fuzz-mutation
+  path: skills/metamorphic-fuzz-mutation/SKILL.md
+  description: Generate property, metamorphic, grammar fuzz, mutation and fault-injection campaigns with minimized reproductions.
+  category: assurance
+  maturity: production-contract
+  depends_on:
+  - differential-oracle-engine
+  - statistical-validity-reproducibility
+- name: corpus-governance
+  path: skills/corpus-governance/SKILL.md
+  description: Select, pin, license-review, sandbox, time-split and maintain public/private ETGB corpora reproducibly.
+  category: governance
+  maturity: production-contract
+  depends_on:
+  - benchmark-integrity-hidden-tests
+  - supply-chain-artifact-security
+- name: release-certification
+  path: skills/release-certification/SKILL.md
+  description: Evaluate hard gates, evidence, statistics, waivers and promotion decisions for immutable Elmos candidates.
+  category: certification
+  maturity: production-contract
+  depends_on:
+  - release-candidate-integrity
+  - evidence-provenance-ledger
+  - statistical-validity-reproducibility
+  - performance-scale-certification
+  - supply-chain-artifact-security
+- name: production-harness-integration
+  path: skills/production-harness-integration/SKILL.md
+  description: Integrate ETGB with durable Elmos execution, adapter SDK, state machine, idempotency, outbox and control-plane
+    contracts.
+  category: runtime-control
+  maturity: production-contract
+  depends_on:
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - evidence-provenance-ledger
+  - budget-cost-eta-governance
+  - multi-tenant-scheduling-isolation
+  - release-candidate-integrity
+- name: environment-authority-sandbox
+  path: skills/environment-authority-sandbox/SKILL.md
+  description: Enforce Environment-owned or Attachment-owned least-privilege authority, hidden-test isolation, leases and
+    fencing.
+  category: runtime-control
+  maturity: production-contract
+  depends_on: []
+- name: checkpoint-resume-recovery
+  path: skills/checkpoint-resume-recovery/SKILL.md
+  description: Provide digest-verified checkpoints, pause, resume, cancellation, compensation and crash recovery for long
+    runs.
+  category: runtime-control
+  maturity: production-contract
+  depends_on:
+  - environment-authority-sandbox
+  - evidence-provenance-ledger
+- name: evidence-provenance-ledger
+  path: skills/evidence-provenance-ledger/SKILL.md
+  description: Store raw and normalized ETGB evidence in a content-addressed, redacted, signed and tamper-evident ledger.
+  category: governance
+  maturity: production-contract
+  depends_on:
+  - environment-authority-sandbox
+  - supply-chain-artifact-security
+- name: budget-cost-eta-governance
+  path: skills/budget-cost-eta-governance/SKILL.md
+  description: Reserve and reconcile token, credit, compute and machine wall-clock budgets and produce calibrated Elmos ETAs.
+  category: runtime-control
+  maturity: production-contract
+  depends_on:
+  - multi-tenant-scheduling-isolation
+- name: risk-based-test-selection
+  path: skills/risk-based-test-selection/SKILL.md
+  description: Build immutable plans from change impact, P0 scope, incidents, coverage gaps, uncertainty and randomized controls.
+  category: orchestration
+  maturity: production-contract
+  depends_on:
+  - statistical-validity-reproducibility
+  - release-candidate-integrity
+- name: benchmark-integrity-hidden-tests
+  path: skills/benchmark-integrity-hidden-tests/SKILL.md
+  description: Prevent memorization, leakage, self-authored Oracles, cherry-picking and temporal contamination in ETGB evaluations.
+  category: governance
+  maturity: production-contract
+  depends_on:
+  - environment-authority-sandbox
+  - release-candidate-integrity
+- name: observability-failure-triage
+  path: skills/observability-failure-triage/SKILL.md
+  description: Instrument ETGB, classify and cluster failures, detect flakes and provide evidence-linked operational drill-down.
+  category: operations
+  maturity: production-contract
+  depends_on:
+  - evidence-provenance-ledger
+  - statistical-validity-reproducibility
+- name: performance-scale-certification
+  path: skills/performance-scale-certification/SKILL.md
+  description: Certify large-repository, data-volume, concurrency, soak, stress, resource, cost and latency scalability.
+  category: certification
+  maturity: production-contract
+  depends_on:
+  - statistical-validity-reproducibility
+  - budget-cost-eta-governance
+- name: statistical-validity-reproducibility
+  path: skills/statistical-validity-reproducibility/SKILL.md
+  description: Make probabilistic ETGB evaluation reproducible with fixed seeds, confidence intervals, stability and non-inferiority.
+  category: assurance
+  maturity: production-contract
+  depends_on: []
+- name: supply-chain-artifact-security
+  path: skills/supply-chain-artifact-security/SKILL.md
+  description: Safely ingest untrusted repositories and verify dependencies, SBOM, provenance, signatures and artifacts.
+  category: governance
+  maturity: production-contract
+  depends_on: []
+- name: incident-regression-learning
+  path: skills/incident-regression-learning/SKILL.md
+  description: Convert every production defect and near miss into minimal, realistic, hidden, mutant and planner regressions.
+  category: operations
+  maturity: production-contract
+  depends_on:
+  - observability-failure-triage
+  - metamorphic-fuzz-mutation
+- name: multi-tenant-scheduling-isolation
+  path: skills/multi-tenant-scheduling-isolation/SKILL.md
+  description: Enforce tenant isolation, three-task account concurrency, fair scheduling, quotas, leases, cache safety and
+    backpressure.
+  category: runtime-control
+  maturity: production-contract
+  depends_on:
+  - environment-authority-sandbox
+- name: release-candidate-integrity
+  path: skills/release-candidate-integrity/SKILL.md
+  description: Freeze model, Prompt, Skill, rule, source, toolchain, Oracle and normalization into an immutable candidate
+    digest.
+  category: governance
+  maturity: production-ready
+  depends_on: []
+- name: identity-access-tenant-validation
+  path: skills/identity-access-tenant-validation/SKILL.md
+  description: Validate all Identity, Access, Organization and Tenant Governance capabilities through the production adapter,
+    independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: platform-control-plane-validation
+  path: skills/platform-control-plane-validation/SKILL.md
+  description: Validate all Elmos Product Control Plane, Projects, Jobs and Administration capabilities through the production
+    adapter, independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: repository-ingestion-context-validation
+  path: skills/repository-ingestion-context-validation/SKILL.md
+  description: Validate all Repository, Archive and Context Ingestion capabilities through the production adapter, independent
+    Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: multimodal-document-processing-validation
+  path: skills/multimodal-document-processing-validation/SKILL.md
+  description: Validate all Multimodal File and Document Processing capabilities through the production adapter, independent
+    Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: ai-runtime-model-routing-validation
+  path: skills/ai-runtime-model-routing-validation/SKILL.md
+  description: Validate all AI Runtime, Model Routing and Context Management capabilities through the production adapter,
+    independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: agent-protocol-tooling-validation
+  path: skills/agent-protocol-tooling-validation/SKILL.md
+  description: Validate all Agent, Tool, MCP, A2A, AG-UI and Harness Protocols capabilities through the production adapter,
+    independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: rag-memory-knowledge-validation
+  path: skills/rag-memory-knowledge-validation/SKILL.md
+  description: Validate all RAG, Knowledge Base, Search, Reranking and Memory capabilities through the production adapter,
+    independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: project-intelligence-validation
+  path: skills/project-intelligence-validation/SKILL.md
+  description: Validate all Repository Intelligence, Code Reading and Architecture Understanding capabilities through the
+    production adapter, independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: online-ide-debug-validation
+  path: skills/online-ide-debug-validation/SKILL.md
+  description: Validate all Online IDE, Build, Debug and Record-Replay capabilities through the production adapter, independent
+    Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: artifact-document-diagram-validation
+  path: skills/artifact-document-diagram-validation/SKILL.md
+  description: Validate all Diagrams, Documents, Presentations and Delivery Artifacts capabilities through the production
+    adapter, independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: collaboration-integrations-validation
+  path: skills/collaboration-integrations-validation/SKILL.md
+  description: Validate all Collaboration, Git, Connectors and Enterprise Integrations capabilities through the production
+    adapter, independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: billing-entitlements-validation
+  path: skills/billing-entitlements-validation/SKILL.md
+  description: Validate all Billing, Credits, Subscription, Pricing and Entitlements capabilities through the production adapter,
+    independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: payment-finance-validation
+  path: skills/payment-finance-validation/SKILL.md
+  description: Validate all Payment Providers, Refunds, Fraud Controls and Financial Consistency capabilities through the
+    production adapter, independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: api-sdk-webhook-validation
+  path: skills/api-sdk-webhook-validation/SKILL.md
+  description: Validate all Public APIs, SDKs, CLI, Streaming and Webhooks capabilities through the production adapter, independent
+    Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: storage-search-cache-validation
+  path: skills/storage-search-cache-validation/SKILL.md
+  description: Validate all Durable Storage, Object Artifacts, Search and Cache capabilities through the production adapter,
+    independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: deployment-operations-validation
+  path: skills/deployment-operations-validation/SKILL.md
+  description: Validate all Deployment, Kubernetes, Private Cloud, Observability and Disaster Recovery capabilities through
+    the production adapter, independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: security-privacy-compliance-validation
+  path: skills/security-privacy-compliance-validation/SKILL.md
+  description: Validate all Application, AI, Agentic, Supply-Chain, Privacy and Compliance Assurance capabilities through
+    the production adapter, independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: ui-accessibility-localization-validation
+  path: skills/ui-accessibility-localization-validation/SKILL.md
+  description: Validate all Web User Experience, Accessibility, Responsive Design and Localization capabilities through the
+    production adapter, independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: analytics-admin-support-validation
+  path: skills/analytics-admin-support-validation/SKILL.md
+  description: Validate all Analytics, Administration, Support and Business Operations capabilities through the production
+    adapter, independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: notifications-scheduler-validation
+  path: skills/notifications-scheduler-validation/SKILL.md
+  description: Validate all Notifications, Scheduled Jobs and Delivery Reliability capabilities through the production adapter,
+    independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: ai-solution-factory-validation
+  path: skills/ai-solution-factory-validation/SKILL.md
+  description: Validate all AI-Native Project Factory and Cross-Framework Agent Solution Compiler capabilities through the
+    production adapter, independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: data-bigdata-solution-validation
+  path: skills/data-bigdata-solution-validation/SKILL.md
+  description: Validate all Data Engineering, Streaming, Lakehouse and Analytics Project Capabilities capabilities through
+    the production adapter, independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: commercial-delivery-certification-validation
+  path: skills/commercial-delivery-certification-validation/SKILL.md
+  description: Validate all Commercial Packaging, Evidence, Golden Routes and Customer Acceptance capabilities through the
+    production adapter, independent Oracles and fail-closed release evidence.
+  category: domain-validation
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - differential-oracle-engine
+  - evidence-provenance-ledger
+- name: product-journey-validation
+  path: skills/product-journey-validation/SKILL.md
+  description: Validate complete cross-domain Elmos journeys with state, security, finance, artifact, retry and audit reconciliation.
+  category: assurance
+  maturity: production-contract
+  depends_on:
+  - production-harness-integration
+  - environment-authority-sandbox
+  - checkpoint-resume-recovery
+  - evidence-provenance-ledger
+  - multi-tenant-scheduling-isolation
+- name: standards-assurance-validation
+  path: skills/standards-assurance-validation/SKILL.md
+  description: Execute mapped security, AI, supply-chain, accessibility, payment, mobile and observability control evidence
+    without false certification claims.
+  category: certification
+  maturity: production-contract
+  depends_on:
+  - benchmark-integrity-hidden-tests
+  - supply-chain-artifact-security
+  - evidence-provenance-ledger
+  - release-candidate-integrity
+- name: full-product-coverage-governance
+  path: skills/full-product-coverage-governance/SKILL.md
+  description: Govern full-product feature traceability and block any release with uncovered, unavailable or unproven Elmos
+    functionality.
+  category: governance
+  maturity: production-contract
+  depends_on:
+  - identity-access-tenant-validation
+  - platform-control-plane-validation
+  - repository-ingestion-context-validation
+  - multimodal-document-processing-validation
+  - ai-runtime-model-routing-validation
+  - agent-protocol-tooling-validation
+  - rag-memory-knowledge-validation
+  - project-intelligence-validation
+  - online-ide-debug-validation
+  - artifact-document-diagram-validation
+  - collaboration-integrations-validation
+  - billing-entitlements-validation
+  - payment-finance-validation
+  - api-sdk-webhook-validation
+  - storage-search-cache-validation
+  - deployment-operations-validation
+  - security-privacy-compliance-validation
+  - ui-accessibility-localization-validation
+  - analytics-admin-support-validation
+  - notifications-scheduler-validation
+  - ai-solution-factory-validation
+  - data-bigdata-solution-validation
+  - commercial-delivery-certification-validation
+  - product-journey-validation
+  - standards-assurance-validation
+  - spring-modernization-validation
+  - repository-translation-validation
+  - project-generation-validation
+  - sql-dialect-routine-validation
+entry_skill: etgb-orchestrator
+capability_model: ETGB-FULL-PRODUCT-COVERAGE-2.0
+cli: etgb
+integration_contracts:
+- integrations/harness/adapter-contract.yaml
+- integrations/postgres/001_etgb_schema.sql
+- integrations/postgres/002_etgb_rls.sql
+- integrations/openapi/etgb-control-plane.openapi.yaml
+- integrations/events/etgb-events.asyncapi.yaml
+- integrations/otel/semantic-conventions.yaml
+- integrations/harness/full-product-adapters.yaml
+- matrices/feature-registry.yaml
+- matrices/product-journeys.yaml
+- matrices/standards-controls.yaml
+- integrations/postgres/003_full_product_assurance.sql

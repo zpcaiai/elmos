@@ -51,7 +51,7 @@ class SkillDescriptor:
 
 
 class SkillRegistry:
-    """Bind all 24 exact v1.1 source names to repository-owned handlers."""
+    """Bind all 50 exact source names to repository-owned handlers."""
 
     _OPERATIONS: dict[str, tuple[str, ...]] = {
         "etgb-orchestrator": ("plan", "run", "merge_results", "score", "gate", "preflight", "attestation_request", "eta", "stability", "triage"),
@@ -78,6 +78,32 @@ class SkillRegistry:
         "incident-regression-learning": ("regression",),
         "multi-tenant-scheduling-isolation": ("schedule", "validate_plan", "select_shard"),
         "release-candidate-integrity": ("freeze",),
+        "identity-access-tenant-validation": ("validate_case", "capability"),
+        "platform-control-plane-validation": ("validate_case", "capability"),
+        "repository-ingestion-context-validation": ("validate_case", "capability"),
+        "multimodal-document-processing-validation": ("validate_case", "capability"),
+        "ai-runtime-model-routing-validation": ("validate_case", "capability"),
+        "agent-protocol-tooling-validation": ("validate_case", "capability"),
+        "rag-memory-knowledge-validation": ("validate_case", "capability"),
+        "project-intelligence-validation": ("validate_case", "capability"),
+        "online-ide-debug-validation": ("validate_case", "capability"),
+        "artifact-document-diagram-validation": ("validate_case", "capability"),
+        "collaboration-integrations-validation": ("validate_case", "capability"),
+        "billing-entitlements-validation": ("validate_case", "capability"),
+        "payment-finance-validation": ("validate_case", "capability"),
+        "api-sdk-webhook-validation": ("validate_case", "capability"),
+        "storage-search-cache-validation": ("validate_case", "capability"),
+        "deployment-operations-validation": ("validate_case", "capability"),
+        "security-privacy-compliance-validation": ("validate_case", "capability"),
+        "ui-accessibility-localization-validation": ("validate_case", "capability"),
+        "analytics-admin-support-validation": ("validate_case", "capability"),
+        "notifications-scheduler-validation": ("validate_case", "capability"),
+        "ai-solution-factory-validation": ("validate_case", "capability"),
+        "data-bigdata-solution-validation": ("validate_case", "capability"),
+        "commercial-delivery-certification-validation": ("validate_case", "capability"),
+        "product-journey-validation": ("validate_case", "capability"),
+        "standards-assurance-validation": ("validate_case", "capability"),
+        "full-product-coverage-governance": ("coverage", "feature_coverage", "surface_audit"),
     }
 
     def __init__(self, package_root: Path) -> None:
@@ -123,6 +149,17 @@ class SkillRegistry:
             return validate_package(self.package_root, release=bool(data.get("release")), archive=Path(data["archive"]) if data.get("archive") else None, extracted=Path(data["extracted"]) if data.get("extracted") else None, trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None)
         if operation == "coverage":
             return coverage_report(self.package_root)
+        if operation == "feature_coverage":
+            from .features import feature_coverage_report
+            return feature_coverage_report(self.package_root)
+        if operation == "surface_audit":
+            from .discovery import load_surface, surface_coverage_report
+            surface_data = data.get("surface")
+            if not surface_data and data.get("surface_path"):
+                surface_data = load_surface(Path(str(data["surface_path"])))
+            if not isinstance(surface_data, dict):
+                raise ValueError("surface_audit requires surface dict or surface_path")
+            return surface_coverage_report(self.package_root, surface_data)
         if operation == "materialized":
             return materialize(self.package_root)
         if operation == "validate_case":

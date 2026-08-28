@@ -1,0 +1,487 @@
+schema_version: '2.0'
+contract_id: elmos.etgb.full-product-adapter-catalog
+failure_mode: fail-closed
+release_rules:
+  unavailable_adapter_count: 0
+  unresolved_environment_profile_count: 0
+  hidden_test_authority_isolated: true
+  exact_toolchain_and_provider_revisions_required: true
+  allow_unavailable_in_release: false
+common_requirements:
+- tenant-bound environment and artifact authority
+- idempotency keys on every mutating phase
+- lease, generation and fencing validation
+- durable phase checkpoint and resume compatibility
+- raw evidence persisted before normalization
+- OpenTelemetry trace correlation from UI/API through worker and provider
+- cleanup receipt without deleting sealed evidence
+adapters:
+- id: external-identity-access-harness
+  domain: identity-access-tenant
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: identity-policy-security-session-and-audit
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-control-plane-harness
+  domain: platform-control-plane
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: control-plane-state-idempotency-observability-and-audit
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-ingestion-harness
+  domain: repository-ingestion-context
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: ingestion-provenance-sandbox-integrity-and-completeness
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-multimodal-processing-harness
+  domain: multimodal-document-processing
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: multimodal-extraction-provenance-safety-and-quality
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-ai-runtime-harness
+  domain: ai-runtime-model-routing
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: ai-runtime-quality-cost-safety-trace-and-reproducibility
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-agent-protocol-harness
+  domain: agent-protocol-tooling
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: agent-protocol-authority-side-effect-trace-and-security
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-rag-memory-harness
+  domain: rag-memory-knowledge
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: rag-retrieval-faithfulness-citation-memory-and-security
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-project-intelligence-harness
+  domain: project-intelligence
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: project-intelligence-evidence-coverage-traceability-and-accuracy
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-online-ide-debug-harness
+  domain: online-ide-debug
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: ide-debug-state-causality-sandbox-and-user-content-integrity
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-artifact-render-harness
+  domain: artifact-document-diagram
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: artifact-content-rendering-provenance-version-and-accessibility
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-collaboration-integration-harness
+  domain: collaboration-integrations
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: collaboration-authorization-sync-delivery-and-audit
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-billing-ledger-harness
+  domain: billing-entitlements
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: billing-ledger-entitlement-idempotency-and-reconciliation
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-payment-sandbox-harness
+  domain: payment-finance
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: payment-provider-ledger-security-idempotency-and-reconciliation
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-api-sdk-harness
+  domain: api-sdk-webhook
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: api-contract-compatibility-idempotency-security-and-developer-experience
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-storage-search-cache-harness
+  domain: storage-search-cache
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: storage-durability-consistency-isolation-integrity-and-recovery
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-deployment-chaos-harness
+  domain: deployment-operations
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: deployment-slo-recovery-security-capacity-and-operability
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-security-compliance-harness
+  domain: security-privacy-compliance
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: security-privacy-compliance-control-and-negative-testing
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-ui-accessibility-harness
+  domain: ui-accessibility-localization
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: ui-functional-accessibility-visual-localization-and-performance
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-analytics-admin-harness
+  domain: analytics-admin-support
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: analytics-data-quality-admin-authorization-and-audit
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-notification-scheduler-harness
+  domain: notifications-scheduler
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: notification-delivery-idempotency-preference-and-audit
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-ai-solution-factory-harness
+  domain: ai-solution-factory
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: ai-solution-native-conformance-graph-rag-tool-security-and-proof
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-data-platform-harness
+  domain: data-bigdata-solution
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: data-platform-correctness-quality-lineage-security-and-operations
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-commercial-certification-harness
+  domain: commercial-delivery-certification
+  status: implementation-required
+  phases:
+  - prepare
+  - seed
+  - execute
+  - observe
+  - negative-or-fault
+  - recover
+  - assert
+  - publish-evidence
+  required_oracle: commercial-delivery-entitlement-evidence-reproducibility-and-acceptance
+  conformance_profiles:
+  - nominal
+  - boundary
+  - negative-security
+  - concurrent-recovery
+  release_blocking: true
+- id: external-product-journey-harness
+  domain: product-journey
+  status: implementation-required
+  phases:
+  - provision-persona
+  - seed-tenant
+  - execute-ui-api-event-flow
+  - inject-variant
+  - reconcile
+  - audit
+  - publish-evidence
+  required_oracle: end-to-end-state-security-financial-artifact-and-audit-consistency
+  conformance_profiles:
+  - happy-path
+  - partial-failure
+  - concurrent-retry
+  release_blocking: true
+- id: external-standards-assurance-harness
+  domain: standards-assurance
+  status: implementation-required
+  phases:
+  - map-control
+  - execute-negative
+  - collect-configuration
+  - observe-runtime
+  - seal-evidence
+  required_oracle: objective-control-evidence-without-certification-claim
+  conformance_profiles:
+  - automated-negative
+  - configuration-evidence
+  - runtime-observation
+  release_blocking: true
