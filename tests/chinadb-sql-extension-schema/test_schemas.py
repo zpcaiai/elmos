@@ -277,6 +277,195 @@ def skill_result():
     }
 
 
+def production_request():
+    return {
+        "schemaVersion": "1.0",
+        "scope": {
+            "tenantId": "tenant-1",
+            "projectId": "project-1",
+            "actorId": "actor-1",
+        },
+        "capabilitySnapshotDigest": DIGEST,
+        "trustStoreDigest": None,
+        "implementer": {
+            "actorId": "actor-1",
+            "organizationId": "elmos-engineering",
+        },
+        "targets": [
+            {
+                "targetId": target_id,
+                "exactTuple": None,
+                "disposableEnvironment": None,
+                "vendorTools": [],
+                "independentVerifier": None,
+                "receipts": {
+                    "authorization": None,
+                    "execution": None,
+                    "independentVerification": None,
+                    "certification": None,
+                },
+            }
+            for target_id, _ in TARGETS
+        ],
+    }
+
+
+def exact_tuple():
+    return {
+        "productId": "dm8",
+        "productVersion": "8.1.3.140",
+        "edition": "enterprise-exact",
+        "compatibilityMode": "native-explicit",
+        "deploymentTopology": "single-node-disposable",
+        "provider": "vendor-dm8",
+        "serviceTier": "licensed-sandbox",
+        "region": "cn-test-1",
+        "driver": {
+            "name": "dm-jdbc",
+            "version": "8.1.3.140",
+            "artifactDigest": DIGEST,
+        },
+        "charset": "UTF-8",
+        "collation": "BINARY-EXACT",
+        "timeZone": "Asia/Shanghai",
+        "timeZoneDataVersion": "2026b",
+        "sqlMode": "native-default-explicit",
+        "extensions": [],
+        "runtimeArtifactDigest": DIGEST,
+    }
+
+
+def production_requirements():
+    operations = [
+        "APPLY_SANDBOX",
+        "BACKUP_RESTORE",
+        "CAPABILITY_PROBE",
+        "CAPTURE_PLAN",
+        "CDC_RECONCILIATION",
+        "CLEANUP",
+        "EXECUTE_WORKLOAD",
+        "INTROSPECT",
+        "RENDER",
+        "VERSION_PROBE",
+    ]
+    return {
+        "schemaVersion": "1.0",
+        "protocolVersion": "1.0.0",
+        "package": "chinadb-commercial-migration-skills",
+        "capabilitySnapshotDigest": DIGEST,
+        "targetCount": 13,
+        "targets": [
+            {
+                "targetId": target_id,
+                "label": label,
+                "adapterId": f"chinadb.{target_id}.target-adapter.v1",
+                "requiredOperations": operations,
+                "requiredEvidenceChain": [
+                    "environment-authorization",
+                    "external-target-execution",
+                    "independent-verification",
+                    "certification-decision",
+                ],
+                "currentState": "BLOCKED_EXTERNAL_INPUT",
+            }
+            for target_id, label in TARGETS
+        ],
+        "trust": {
+            "domain": "elmos.chinadb.production-qualification.v1",
+            "algorithm": "ed25519",
+            "requiredRoles": [
+                "certification-authority",
+                "environment-authorizer",
+                "external-target-executor",
+                "independent-verifier",
+            ],
+            "operatorPinnedTrustStoreRequired": True,
+        },
+        "productionBoundaries": {
+            "externalExecution": "NOT_RUN",
+            "independentVerification": "NOT_RUN",
+            "certification": "NOT_CERTIFIED",
+            "targetSql": None,
+            "productionDefinitionOfDoneCount": 0,
+        },
+        "requirementsDigest": DIGEST,
+    }
+
+
+def production_result():
+    return {
+        "schemaVersion": "1.0",
+        "protocolVersion": "1.0.0",
+        "package": "chinadb-commercial-migration-skills",
+        "scope": production_request()["scope"],
+        "scopeDigest": DIGEST,
+        "capabilitySnapshotDigest": DIGEST,
+        "trustStoreDigest": None,
+        "requestDigest": DIGEST,
+        "evaluatedAt": "2026-08-28T12:00:00Z",
+        "targets": [
+            {
+                "targetId": target_id,
+                "label": label,
+                "adapterId": f"chinadb.{target_id}.target-adapter.v1",
+                "state": "BLOCKED_INPUT",
+                "qualificationInputDigest": None,
+                "exactTupleDigest": None,
+                "environmentDigest": None,
+                "vendorToolDigests": [],
+                "authorization": "NOT_RUN",
+                "externalExecution": "NOT_RUN",
+                "independentVerification": "NOT_RUN",
+                "certification": "NOT_CERTIFIED",
+                "targetSql": None,
+                "evidenceEnvelopeDigests": [],
+                "blockers": [
+                    {
+                        "code": "EXACT_TARGET_TUPLE_REQUIRED",
+                        "severity": "ERROR",
+                        "message": f"{target_id} is missing exactTuple.",
+                    }
+                ],
+            }
+            for target_id, label in TARGETS
+        ],
+        "summary": {
+            "targetCount": 13,
+            "inputCompleteTargetCount": 0,
+            "authorizationVerifiedTargetCount": 0,
+            "externalExecutionPassedTargetCount": 0,
+            "independentlyVerifiedTargetCount": 0,
+            "productionDefinitionOfDoneCount": 0,
+        },
+        "externalExecution": "NOT_RUN",
+        "independentVerification": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
+        "targetSql": None,
+        "productionDefinitionOfDoneCount": 0,
+        "effects": {"externalCallsExecuted": []},
+        "resultDigest": DIGEST,
+    }
+
+
+def production_trust_store():
+    return {
+        "schemaVersion": "1.0",
+        "trustDomain": "elmos.chinadb.production-qualification.v1",
+        "keys": [
+            {
+                "keyId": "authorizer-key-1",
+                "role": "environment-authorizer",
+                "actorId": "customer-owner",
+                "organizationId": "customer-org",
+                "publicKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                "notBefore": "2026-01-01T00:00:00Z",
+                "notAfter": "2027-01-01T00:00:00Z",
+                "revoked": False,
+            }
+        ],
+    }
+
+
 class ChinaDbSqlExtensionSchemaTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -286,6 +475,18 @@ class ChinaDbSqlExtensionSchemaTests(unittest.TestCase):
         cls.skill_capability_schema = load_schema("chinadb-skill-capabilities.schema.json")
         cls.skill_request_schema = load_schema("chinadb-skill-request.schema.json")
         cls.skill_result_schema = load_schema("chinadb-skill-result.schema.json")
+        cls.production_request_schema = load_schema(
+            "chinadb-production-qualification-request.schema.json"
+        )
+        cls.production_result_schema = load_schema(
+            "chinadb-production-qualification-result.schema.json"
+        )
+        cls.production_requirements_schema = load_schema(
+            "chinadb-production-qualification-requirements.schema.json"
+        )
+        cls.production_trust_schema = load_schema(
+            "chinadb-production-trust-store.schema.json"
+        )
         cls.capability_validator = jsonschema.Draft202012Validator(cls.capability_schema)
         cls.request_validator = jsonschema.Draft202012Validator(cls.request_schema)
         cls.result_validator = jsonschema.Draft202012Validator(cls.result_schema)
@@ -294,6 +495,18 @@ class ChinaDbSqlExtensionSchemaTests(unittest.TestCase):
         )
         cls.skill_request_validator = jsonschema.Draft202012Validator(cls.skill_request_schema)
         cls.skill_result_validator = jsonschema.Draft202012Validator(cls.skill_result_schema)
+        cls.production_request_validator = jsonschema.Draft202012Validator(
+            cls.production_request_schema
+        )
+        cls.production_result_validator = jsonschema.Draft202012Validator(
+            cls.production_result_schema
+        )
+        cls.production_requirements_validator = jsonschema.Draft202012Validator(
+            cls.production_requirements_schema
+        )
+        cls.production_trust_validator = jsonschema.Draft202012Validator(
+            cls.production_trust_schema
+        )
 
     def assertValid(self, validator, instance):
         errors = sorted(validator.iter_errors(instance), key=lambda error: list(error.path))
@@ -310,8 +523,64 @@ class ChinaDbSqlExtensionSchemaTests(unittest.TestCase):
             self.skill_capability_schema,
             self.skill_request_schema,
             self.skill_result_schema,
+            self.production_request_schema,
+            self.production_result_schema,
+            self.production_requirements_schema,
+            self.production_trust_schema,
         ):
             jsonschema.Draft202012Validator.check_schema(schema)
+
+    def test_production_qualification_schemas_preserve_exact_13_target_boundary(self):
+        self.assertValid(self.production_request_validator, production_request())
+        checked_in_draft = json.loads(
+            (
+                ROOT
+                / "engines"
+                / "database-data-engine"
+                / "sql-transpiler"
+                / "examples"
+                / "chinadb-production-qualification-draft.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertValid(self.production_request_validator, checked_in_draft)
+        self.assertValid(self.production_result_validator, production_result())
+        self.assertValid(
+            self.production_requirements_validator,
+            production_requirements(),
+        )
+        self.assertValid(self.production_trust_validator, production_trust_store())
+
+        missing_target = production_request()
+        missing_target["targets"].pop()
+        self.assertInvalid(self.production_request_validator, missing_target)
+
+        floating = production_request()
+        floating["targets"][0]["exactTuple"] = exact_tuple()
+        floating["targets"][0]["exactTuple"]["productVersion"] = "latest"
+        self.assertInvalid(self.production_request_validator, floating)
+
+        production_write = production_request()
+        production_write["targets"][0]["disposableEnvironment"] = {
+            "environmentId": "sandbox-dm8",
+            "kind": "DISPOSABLE_INSTANCE",
+            "endpointRef": "endpoint-ref-dm8",
+            "credentialRef": "credential-ref-dm8",
+            "providerResourceRef": "resource-ref-dm8",
+            "dataProfile": "SYNTHETIC",
+            "productionData": True,
+            "writeScope": "DISPOSABLE_ONLY",
+            "expiresAt": "2026-10-01T00:00:00Z",
+            "cleanupDeadline": "2026-10-02T00:00:00Z",
+        }
+        self.assertInvalid(self.production_request_validator, production_write)
+
+        leaked_sql = production_result()
+        leaked_sql["targetSql"] = "SELECT 1"
+        self.assertInvalid(self.production_result_validator, leaked_sql)
+
+        fabricated_effect = production_result()
+        fabricated_effect["effects"]["externalCallsExecuted"] = ["target-write"]
+        self.assertInvalid(self.production_result_validator, fabricated_effect)
 
     def test_skill_runtime_schemas_preserve_exact_local_and_external_boundaries(self):
         self.assertEqual(47, len(skill_ids()))

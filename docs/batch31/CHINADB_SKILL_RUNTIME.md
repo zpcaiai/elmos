@@ -44,3 +44,9 @@ Accordingly:
 - production certification: `NOT_CERTIFIED`.
 
 These categories must remain separate in UI, APIs, reports, and release gates.
+
+The next production stage is implemented as a separate signed qualification
+control plane described in `docs/batch31/CHINADB_PRODUCTION_QUALIFICATION.md`.
+It validates all 13 exact target inputs and a four-receipt Ed25519 chain, but
+does not call databases or vendor tools. With no authorized external receipts,
+the checked-in state remains `productionDefinitionOfDoneCount = 0`.

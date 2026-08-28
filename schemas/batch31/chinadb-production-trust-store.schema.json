@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch31/chinadb-production-trust-store.schema.json",
+  "title": "ELMOS ChinaDB production qualification trust store",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "trustDomain", "keys"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "trustDomain": { "const": "elmos.chinadb.production-qualification.v1" },
+    "keys": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "keyId",
+          "role",
+          "actorId",
+          "organizationId",
+          "publicKey",
+          "notBefore",
+          "notAfter",
+          "revoked"
+        ],
+        "properties": {
+          "keyId": { "$ref": "#/$defs/token" },
+          "role": {
+            "enum": [
+              "environment-authorizer",
+              "external-target-executor",
+              "independent-verifier",
+              "certification-authority"
+            ]
+          },
+          "actorId": { "$ref": "#/$defs/scopeToken" },
+          "organizationId": { "$ref": "#/$defs/scopeToken" },
+          "publicKey": {
+            "type": "string",
+            "minLength": 44,
+            "maxLength": 44,
+            "pattern": "^[A-Za-z0-9+/]{43}=$"
+          },
+          "notBefore": { "$ref": "#/$defs/timestamp" },
+          "notAfter": { "$ref": "#/$defs/timestamp" },
+          "revoked": { "type": "boolean" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "token": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/+~-]{0,255}$"
+    },
+    "scopeToken": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    }
+  }
+}

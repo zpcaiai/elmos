@@ -1,0 +1,315 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch31/chinadb-production-qualification-request.schema.json",
+  "title": "ELMOS ChinaDB production qualification request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "scope",
+    "capabilitySnapshotDigest",
+    "trustStoreDigest",
+    "implementer",
+    "targets"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "scope": { "$ref": "#/$defs/scope" },
+    "capabilitySnapshotDigest": { "$ref": "#/$defs/digest" },
+    "trustStoreDigest": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/digest" }
+      ]
+    },
+    "implementer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actorId", "organizationId"],
+      "properties": {
+        "actorId": { "$ref": "#/$defs/scopeToken" },
+        "organizationId": { "$ref": "#/$defs/scopeToken" }
+      }
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 13,
+      "maxItems": 13,
+      "items": { "$ref": "#/$defs/target" }
+    }
+  },
+  "$defs": {
+    "targetId": {
+      "enum": [
+        "dm8",
+        "kingbasees",
+        "opengauss",
+        "tidb",
+        "gbase-8s",
+        "gbase-8c",
+        "gbase-8a",
+        "highgo-hgdb",
+        "oceanbase-oracle",
+        "oceanbase-mysql",
+        "gaussdb-oracle",
+        "gaussdb-m",
+        "goldendb"
+      ]
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetId",
+        "exactTuple",
+        "disposableEnvironment",
+        "vendorTools",
+        "independentVerifier",
+        "receipts"
+      ],
+      "properties": {
+        "targetId": { "$ref": "#/$defs/targetId" },
+        "exactTuple": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/exactTuple" }
+          ]
+        },
+        "disposableEnvironment": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/environment" }
+          ]
+        },
+        "vendorTools": {
+          "type": "array",
+          "maxItems": 32,
+          "items": { "$ref": "#/$defs/vendorTool" }
+        },
+        "independentVerifier": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/verifier" }
+          ]
+        },
+        "receipts": { "$ref": "#/$defs/receipts" }
+      }
+    },
+    "exactTuple": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "productId",
+        "productVersion",
+        "edition",
+        "compatibilityMode",
+        "deploymentTopology",
+        "provider",
+        "serviceTier",
+        "region",
+        "driver",
+        "charset",
+        "collation",
+        "timeZone",
+        "timeZoneDataVersion",
+        "sqlMode",
+        "extensions",
+        "runtimeArtifactDigest"
+      ],
+      "properties": {
+        "productId": { "$ref": "#/$defs/targetId" },
+        "productVersion": { "$ref": "#/$defs/exactToken" },
+        "edition": { "$ref": "#/$defs/exactToken" },
+        "compatibilityMode": { "$ref": "#/$defs/exactToken" },
+        "deploymentTopology": { "$ref": "#/$defs/exactToken" },
+        "provider": { "$ref": "#/$defs/exactToken" },
+        "serviceTier": { "$ref": "#/$defs/exactToken" },
+        "region": { "$ref": "#/$defs/exactToken" },
+        "driver": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version", "artifactDigest"],
+          "properties": {
+            "name": { "$ref": "#/$defs/exactToken" },
+            "version": { "$ref": "#/$defs/exactToken" },
+            "artifactDigest": { "$ref": "#/$defs/digest" }
+          }
+        },
+        "charset": { "$ref": "#/$defs/exactToken" },
+        "collation": { "$ref": "#/$defs/exactToken" },
+        "timeZone": { "$ref": "#/$defs/exactToken" },
+        "timeZoneDataVersion": { "$ref": "#/$defs/exactToken" },
+        "sqlMode": { "$ref": "#/$defs/exactToken" },
+        "extensions": {
+          "type": "array",
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "version"],
+            "properties": {
+              "name": { "$ref": "#/$defs/exactToken" },
+              "version": { "$ref": "#/$defs/exactToken" }
+            }
+          }
+        },
+        "runtimeArtifactDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "environmentId",
+        "kind",
+        "endpointRef",
+        "credentialRef",
+        "providerResourceRef",
+        "dataProfile",
+        "productionData",
+        "writeScope",
+        "expiresAt",
+        "cleanupDeadline"
+      ],
+      "properties": {
+        "environmentId": { "$ref": "#/$defs/exactToken" },
+        "kind": {
+          "enum": [
+            "DISPOSABLE_INSTANCE",
+            "DISPOSABLE_SCHEMA",
+            "APPROVED_LICENSED_SANDBOX"
+          ]
+        },
+        "endpointRef": { "$ref": "#/$defs/exactToken" },
+        "credentialRef": { "$ref": "#/$defs/exactToken" },
+        "providerResourceRef": { "$ref": "#/$defs/exactToken" },
+        "dataProfile": { "enum": ["SYNTHETIC", "MASKED", "APPROVED_SNAPSHOT"] },
+        "productionData": { "const": false },
+        "writeScope": { "const": "DISPOSABLE_ONLY" },
+        "expiresAt": { "$ref": "#/$defs/timestamp" },
+        "cleanupDeadline": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "vendorTool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "toolId",
+        "version",
+        "artifactDigest",
+        "licenseRef",
+        "adapterId",
+        "operations"
+      ],
+      "properties": {
+        "toolId": { "$ref": "#/$defs/exactToken" },
+        "version": { "$ref": "#/$defs/exactToken" },
+        "artifactDigest": { "$ref": "#/$defs/digest" },
+        "licenseRef": { "$ref": "#/$defs/exactToken" },
+        "adapterId": { "$ref": "#/$defs/exactToken" },
+        "operations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/operation" }
+        }
+      }
+    },
+    "verifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verifierId", "actorId", "organizationId", "engagementRef"],
+      "properties": {
+        "verifierId": { "$ref": "#/$defs/scopeToken" },
+        "actorId": { "$ref": "#/$defs/scopeToken" },
+        "organizationId": { "$ref": "#/$defs/scopeToken" },
+        "engagementRef": { "$ref": "#/$defs/scopeToken" }
+      }
+    },
+    "receipts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorization",
+        "execution",
+        "independentVerification",
+        "certification"
+      ],
+      "properties": {
+        "authorization": { "$ref": "#/$defs/nullableEnvelope" },
+        "execution": { "$ref": "#/$defs/nullableEnvelope" },
+        "independentVerification": { "$ref": "#/$defs/nullableEnvelope" },
+        "certification": { "$ref": "#/$defs/nullableEnvelope" }
+      }
+    },
+    "nullableEnvelope": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/envelope" }
+      ]
+    },
+    "envelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "keyId", "payload", "signature"],
+      "properties": {
+        "algorithm": { "const": "ed25519" },
+        "keyId": { "$ref": "#/$defs/exactToken" },
+        "payload": { "type": "object" },
+        "signature": {
+          "type": "string",
+          "minLength": 88,
+          "maxLength": 88,
+          "pattern": "^[A-Za-z0-9+/]{86}==$"
+        }
+      }
+    },
+    "operation": {
+      "enum": [
+        "APPLY_SANDBOX",
+        "BACKUP_RESTORE",
+        "CAPABILITY_PROBE",
+        "CAPTURE_PLAN",
+        "CDC_RECONCILIATION",
+        "CLEANUP",
+        "EXECUTE_WORKLOAD",
+        "INTROSPECT",
+        "RENDER",
+        "VERSION_PROBE"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "projectId", "actorId"],
+      "properties": {
+        "tenantId": { "$ref": "#/$defs/scopeToken" },
+        "projectId": { "$ref": "#/$defs/scopeToken" },
+        "actorId": { "$ref": "#/$defs/scopeToken" }
+      }
+    },
+    "scopeToken": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$"
+    },
+    "exactToken": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/+~-]{0,255}$",
+      "not": { "enum": ["latest", "current", "unknown", "unspecified", "unset", "*", "x"] }
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    }
+  }
+}
