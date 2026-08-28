@@ -57,7 +57,12 @@ import { parseTemplate } from "@angular/compiler";
 
 function project(node) {
   const ctor = node.constructor && node.constructor.name;
-  if (ctor && ctor.startsWith("Text$")) return { kind: "text", value: String(node.value) };
+  // Angular 20+ exposes the public AST class name as Text; older bundled
+  // compiler builds suffix it (for example Text$3). Both are the same
+  // literal-text node. No other unnamed AST node is promoted to an element.
+  if (ctor === "Text" || (ctor && ctor.startsWith("Text$"))) {
+    return { kind: "text", value: String(node.value) };
+  }
   if (ctor === "BoundText") return { kind: "boundText", value: String(node.value.source ?? "") };
   const base = {
     name: node.name,
