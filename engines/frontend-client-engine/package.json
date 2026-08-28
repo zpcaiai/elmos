@@ -4,6 +4,11 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.12.4",
+  "pnpm": {
+    "overrides": {
+      "nanoid@<3.3.18": "3.3.18"
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "pnpm run build && node --test --test-concurrency=1 dist/test/*.test.js",

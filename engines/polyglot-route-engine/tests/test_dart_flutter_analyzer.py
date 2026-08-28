@@ -74,6 +74,31 @@ def test_flutter_inventory_is_ast_owned_and_marks_ui_non_analyzable() -> None:
     assert ui_import["analyzable"] is False
 
 
+def test_flutter_expression_function_body_is_inventory_and_ir_analyzable(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "add.dart"
+    source.write_text(
+        "int add(int left, int right) => left + right;\n",
+        encoding="utf-8",
+    )
+    toolchain = exact_toolchain("flutter")
+
+    inventory = inventory_flutter(source, toolchain)
+    subject = inventory["subjects"][0]
+    assert subject["name"] == "add"
+    assert subject["analyzable"] is True
+    assert [parameter["name"] for parameter in subject["signature"]["parameters"]] == [
+        "left",
+        "right",
+    ]
+
+    function = analyze_flutter(source, "add", toolchain).functions[0]
+    assert function.body[0].kind == "return"
+    assert function.body[0].expression is not None
+    assert function.body[0].expression.operator == "+"
+
+
 @pytest.mark.parametrize(
     ("relative", "function_name", "diagnostic"),
     [

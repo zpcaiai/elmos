@@ -1,0 +1,341 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/agent-step-budget-response-v1.json",
+  "title": "ELMOS Agent Step Budget Response v1",
+  "oneOf": [
+    {"$ref": "#/$defs/snapshot"},
+    {"$ref": "#/$defs/auditResponse"}
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$"
+    },
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenant_id", "project_id", "run_id", "task_id", "agent_id"],
+      "properties": {
+        "tenant_id": {"$ref": "#/$defs/identifier"},
+        "project_id": {"$ref": "#/$defs/identifier"},
+        "run_id": {"$ref": "#/$defs/identifier"},
+        "task_id": {"$ref": "#/$defs/identifier"},
+        "agent_id": {"$ref": "#/$defs/identifier"}
+      }
+    },
+    "textList": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 512}
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base_max_steps",
+        "base_max_turns",
+        "hard_max_steps",
+        "hard_max_turns",
+        "complexity",
+        "expected_step_cost_microusd",
+        "max_cost_microusd",
+        "max_tokens",
+        "warning_remaining_steps",
+        "warning_remaining_turns",
+        "reservation_timeout_seconds",
+        "complexity_multiplier_bps",
+        "effective_max_steps",
+        "effective_max_turns"
+      ],
+      "properties": {
+        "base_max_steps": {"type": "integer", "minimum": 1},
+        "base_max_turns": {"type": "integer", "minimum": 1},
+        "hard_max_steps": {"type": "integer", "minimum": 1},
+        "hard_max_turns": {"type": "integer", "minimum": 1},
+        "complexity": {"enum": ["LOW", "MEDIUM", "HIGH", "EXTREME"]},
+        "expected_step_cost_microusd": {"type": "integer", "minimum": 1},
+        "max_cost_microusd": {"type": "integer", "minimum": 1},
+        "max_tokens": {"type": "integer", "minimum": 1},
+        "warning_remaining_steps": {"type": "integer", "minimum": 0},
+        "warning_remaining_turns": {"type": "integer", "minimum": 0},
+        "reservation_timeout_seconds": {"type": "integer", "minimum": 1},
+        "complexity_multiplier_bps": {"enum": [7500, 10000, 15000, 20000]},
+        "effective_max_steps": {"type": "integer", "minimum": 1},
+        "effective_max_turns": {"type": "integer", "minimum": 1}
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consumed_steps",
+        "consumed_turns",
+        "reserved_tokens",
+        "reserved_cost_microusd",
+        "actual_tokens",
+        "actual_cost_microusd"
+      ],
+      "properties": {
+        "consumed_steps": {"type": "integer", "minimum": 0},
+        "consumed_turns": {"type": "integer", "minimum": 0},
+        "reserved_tokens": {"type": "integer", "minimum": 0},
+        "reserved_cost_microusd": {"type": "integer", "minimum": 0},
+        "actual_tokens": {"type": "integer", "minimum": 0},
+        "actual_cost_microusd": {"type": "integer", "minimum": 0}
+      }
+    },
+    "remaining": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["steps", "turns", "tokens", "cost_microusd"],
+      "properties": {
+        "steps": {"type": "integer", "minimum": 0},
+        "turns": {"type": "integer", "minimum": 0},
+        "tokens": {"type": "integer", "minimum": 0},
+        "cost_microusd": {"type": "integer", "minimum": 0}
+      }
+    },
+    "pendingStep": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "step_id",
+            "turn_id",
+            "reservation_sha256",
+            "side_effect",
+            "reserved_at",
+            "age_seconds",
+            "timed_out"
+          ],
+          "properties": {
+            "step_id": {"$ref": "#/$defs/identifier"},
+            "turn_id": {"$ref": "#/$defs/identifier"},
+            "reservation_sha256": {"$ref": "#/$defs/digest"},
+            "side_effect": {"type": "boolean"},
+            "reserved_at": {"type": "string", "format": "date-time"},
+            "age_seconds": {"type": "integer", "minimum": 0},
+            "timed_out": {"type": "boolean"}
+          }
+        }
+      ]
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "settled_steps",
+        "success_count",
+        "outcomes",
+        "failure_types",
+        "elapsed_ms",
+        "tokens",
+        "cost_microusd"
+      ],
+      "properties": {
+        "settled_steps": {"type": "integer", "minimum": 0},
+        "success_count": {"type": "integer", "minimum": 0},
+        "outcomes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "SUCCEEDED": {"type": "integer", "minimum": 0},
+            "FAILED": {"type": "integer", "minimum": 0},
+            "CANCELLED": {"type": "integer", "minimum": 0},
+            "UNKNOWN": {"type": "integer", "minimum": 0}
+          }
+        },
+        "failure_types": {
+          "type": "object",
+          "patternProperties": {"^[A-Z][A-Z0-9_]{0,127}$": {"type": "integer", "minimum": 1}},
+          "additionalProperties": false
+        },
+        "elapsed_ms": {"type": "integer", "minimum": 0},
+        "tokens": {"type": "integer", "minimum": 0},
+        "cost_microusd": {"type": "integer", "minimum": 0}
+      }
+    },
+    "permit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id",
+        "turn_id",
+        "reservation_sha256",
+        "side_effect_registered",
+        "execute_authorized",
+        "stop_after_step"
+      ],
+      "properties": {
+        "step_id": {"$ref": "#/$defs/identifier"},
+        "turn_id": {"$ref": "#/$defs/identifier"},
+        "reservation_sha256": {"$ref": "#/$defs/digest"},
+        "side_effect_registered": {"type": "boolean"},
+        "execute_authorized": {"const": true},
+        "stop_after_step": {"type": "boolean"}
+      }
+    },
+    "settlement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["step_id", "outcome", "failure_type", "external_step_outcome_recorded"],
+      "properties": {
+        "step_id": {"$ref": "#/$defs/identifier"},
+        "outcome": {"enum": ["SUCCEEDED", "FAILED", "CANCELLED", "UNKNOWN"]},
+        "failure_type": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,127}$"}
+          ]
+        },
+        "external_step_outcome_recorded": {"const": true}
+      }
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "runtime_version",
+        "skill_name",
+        "operation",
+        "request_sha256",
+        "decision",
+        "stop_reason",
+        "state",
+        "scope",
+        "policy_sha256",
+        "policy",
+        "usage",
+        "remaining",
+        "near_limit",
+        "remaining_work",
+        "blockers",
+        "pending_step",
+        "version",
+        "audit",
+        "metrics",
+        "replayed",
+        "control_plane_execution_status",
+        "domain_runtime_evidence_status",
+        "customer_evidence_status",
+        "external_evidence_status",
+        "certification",
+        "side_effects_performed"
+      ],
+      "properties": {
+        "schema_version": {"const": "elmos.agent-step-budget.response.v1"},
+        "runtime_version": {"const": "1.0.0"},
+        "skill_name": {"const": "agent-step-budget"},
+        "operation": {"enum": ["admit", "cancel", "reserve", "settle", "status"]},
+        "request_sha256": {"$ref": "#/$defs/digest"},
+        "decision": {"enum": ["CONTINUE", "WAIT_FOR_SETTLEMENT", "BLOCKED", "STOP"]},
+        "stop_reason": {"oneOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+        "state": {"enum": ["ACTIVE", "EXHAUSTED", "CANCELLED", "BLOCKED_RECONCILIATION"]},
+        "scope": {"$ref": "#/$defs/scope"},
+        "policy_sha256": {"$ref": "#/$defs/digest"},
+        "policy": {"$ref": "#/$defs/policy"},
+        "usage": {"$ref": "#/$defs/usage"},
+        "remaining": {"$ref": "#/$defs/remaining"},
+        "near_limit": {"type": "boolean"},
+        "remaining_work": {"$ref": "#/$defs/textList"},
+        "blockers": {"$ref": "#/$defs/textList"},
+        "pending_step": {"$ref": "#/$defs/pendingStep"},
+        "version": {"type": "integer", "minimum": 1},
+        "audit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["event_count", "head_sha256"],
+          "properties": {
+            "event_count": {"type": "integer", "minimum": 1},
+            "head_sha256": {"$ref": "#/$defs/digest"}
+          }
+        },
+        "metrics": {"$ref": "#/$defs/metrics"},
+        "permit": {"$ref": "#/$defs/permit"},
+        "settlement": {"$ref": "#/$defs/settlement"},
+        "replayed": {"type": "boolean"},
+        "control_plane_execution_status": {"const": "LOCAL_EXECUTED_SELF_ATTESTED"},
+        "domain_runtime_evidence_status": {"const": "LOCAL_EXECUTED_SELF_ATTESTED"},
+        "customer_evidence_status": {"const": "NOT_RUN"},
+        "external_evidence_status": {"const": "NOT_RUN"},
+        "certification": {"const": "NOT_CERTIFIED"},
+        "side_effects_performed": {"const": false}
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sequence",
+        "scope",
+        "event_type",
+        "actor_id",
+        "authorization_id",
+        "budget_version",
+        "occurred_at",
+        "previous_sha256",
+        "payload",
+        "event_sha256"
+      ],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 1},
+        "scope": {"$ref": "#/$defs/scope"},
+        "event_type": {"enum": ["BUDGET_ADMITTED", "STEP_RESERVED", "STEP_SETTLED", "BUDGET_CANCELLED"]},
+        "actor_id": {"$ref": "#/$defs/identifier"},
+        "authorization_id": {"$ref": "#/$defs/identifier"},
+        "budget_version": {"type": "integer", "minimum": 1},
+        "occurred_at": {"type": "string", "format": "date-time"},
+        "previous_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "payload": {"type": "object"},
+        "event_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "auditResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "runtime_version",
+        "skill_name",
+        "operation",
+        "request_sha256",
+        "decision",
+        "scope",
+        "events",
+        "has_more",
+        "replayed",
+        "control_plane_execution_status",
+        "domain_runtime_evidence_status",
+        "customer_evidence_status",
+        "external_evidence_status",
+        "certification",
+        "side_effects_performed"
+      ],
+      "properties": {
+        "schema_version": {"const": "elmos.agent-step-budget.response.v1"},
+        "runtime_version": {"const": "1.0.0"},
+        "skill_name": {"const": "agent-step-budget"},
+        "operation": {"const": "audit"},
+        "request_sha256": {"$ref": "#/$defs/digest"},
+        "decision": {"const": "READ_ONLY"},
+        "scope": {"$ref": "#/$defs/scope"},
+        "events": {"type": "array", "maxItems": 1000, "items": {"$ref": "#/$defs/event"}},
+        "has_more": {"type": "boolean"},
+        "replayed": {"const": false},
+        "control_plane_execution_status": {"const": "LOCAL_EXECUTED_SELF_ATTESTED"},
+        "domain_runtime_evidence_status": {"const": "LOCAL_EXECUTED_SELF_ATTESTED"},
+        "customer_evidence_status": {"const": "NOT_RUN"},
+        "external_evidence_status": {"const": "NOT_RUN"},
+        "certification": {"const": "NOT_CERTIFIED"},
+        "side_effects_performed": {"const": false}
+      }
+    }
+  }
+}

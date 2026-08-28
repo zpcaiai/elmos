@@ -59,3 +59,31 @@ class EvidenceValidationError(GoldenRouteError):
 
 class SchemaMigrationRequired(GoldenRouteError):
     code = "STATE_SCHEMA_MIGRATION_REQUIRED"
+
+
+class StepBudgetValidationError(GoldenRouteError):
+    code = "STEP_BUDGET_VALIDATION_FAILED"
+
+
+class StepBudgetAuthorizationDenied(GoldenRouteError):
+    code = "STEP_BUDGET_AUTHORIZATION_DENIED"
+
+
+class StepBudgetNotFound(GoldenRouteError):
+    code = "STEP_BUDGET_NOT_FOUND"
+
+
+class StepBudgetConflict(GoldenRouteError):
+    code = "STEP_BUDGET_CONFLICT"
+
+
+class StepBudgetExhausted(GoldenRouteError):
+    code = "STEP_BUDGET_EXHAUSTED"
+
+
+class StepSettlementRequired(GoldenRouteError):
+    code = "STEP_SETTLEMENT_REQUIRED"
+
+
+class StepBudgetSchemaMigrationRequired(GoldenRouteError):
+    code = "STEP_BUDGET_SCHEMA_MIGRATION_REQUIRED"
