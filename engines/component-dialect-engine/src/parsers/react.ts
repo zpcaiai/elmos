@@ -758,14 +758,48 @@ function valueShapeFromChecker(
 
 const IDENTIFIER_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
 
-function shapeFromTypeNode(node: ts.TypeNode | undefined, what: string, localTypes: LocalTypes): ValueShape {
+function shapeFromTypeNode(
+  node: ts.TypeNode | undefined,
+  what: string,
+  localTypes: LocalTypes,
+  resolving: ReadonlySet<string> = new Set(),
+): ValueShape {
   if (!node) fail("CERTIFIED_COMPONENT_MISSING_TYPE", `${what} is missing an explicit type`);
   const text = node.getText();
   if (text === "string" || text === "number" || text === "boolean") return { kind: "primitive", primitive: text };
-  if (ts.isArrayTypeNode(node)) return { kind: "array", element: shapeFromTypeNode(node.elementType, `${what} element`, localTypes) };
+  if (ts.isLiteralTypeNode(node)) {
+    if (ts.isStringLiteral(node.literal)) return { kind: "primitive", primitive: "string" };
+    if (ts.isNumericLiteral(node.literal)) return { kind: "primitive", primitive: "number" };
+    if (node.literal.kind === ts.SyntaxKind.TrueKeyword || node.literal.kind === ts.SyntaxKind.FalseKeyword) return { kind: "primitive", primitive: "boolean" };
+  }
+  if (ts.isParenthesizedTypeNode(node)) return shapeFromTypeNode(node.type, what, localTypes, resolving);
+  if (ts.isTypeOperatorNode(node) && node.operator === ts.SyntaxKind.ReadonlyKeyword) return shapeFromTypeNode(node.type, what, localTypes, resolving);
+  if (ts.isArrayTypeNode(node)) return { kind: "array", element: shapeFromTypeNode(node.elementType, `${what} element`, localTypes, resolving) };
   if (ts.isTypeReferenceNode(node) && ts.isIdentifier(node.typeName)) {
-    const resolved = localTypes.get(node.typeName.text);
-    if (resolved !== undefined) return shapeFromTypeNode(resolved, what, localTypes);
+    const name = node.typeName.text;
+    if ((name === "Array" || name === "ReadonlyArray") && node.typeArguments?.length === 1) {
+      return { kind: "array", element: shapeFromTypeNode(node.typeArguments[0], `${what} element`, localTypes, resolving) };
+    }
+    const resolved = localTypes.get(name);
+    if (resolved !== undefined) {
+      require_(!resolving.has(name), "CERTIFIED_COMPONENT_RECURSIVE_TYPE", `${what} resolves recursively through ${name}`);
+      return shapeFromTypeNode(resolved, what, localTypes, new Set([...resolving, name]));
+    }
+  }
+  if (ts.isIndexedAccessTypeNode(node) && ts.isTypeReferenceNode(node.objectType)
+    && ts.isIdentifier(node.objectType.typeName) && ts.isLiteralTypeNode(node.indexType)
+    && ts.isStringLiteral(node.indexType.literal)) {
+    const owner = node.objectType.typeName.text;
+    const resolved = localTypes.get(owner);
+    require_(resolved !== undefined && ts.isTypeLiteralNode(resolved), "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE", `${what} cannot resolve indexed owner ${owner}`);
+    const fieldName = node.indexType.literal.text;
+    const member = resolved.members.find((candidate): candidate is ts.PropertySignature =>
+      ts.isPropertySignature(candidate) && candidate.name !== undefined
+        && (ts.isIdentifier(candidate.name) || ts.isStringLiteral(candidate.name))
+        && candidate.name.text === fieldName);
+    require_(member !== undefined, "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE", `${what} cannot resolve ${owner}[${JSON.stringify(fieldName)}]`);
+    const shape = shapeFromTypeNode(member.type, what, localTypes, new Set([...resolving, owner]));
+    return member.questionToken === undefined ? shape : { ...shape, nullable: true };
   }
   if (ts.isUnionTypeNode(node)) {
     const isNullish = (member: ts.TypeNode): boolean => member.kind === ts.SyntaxKind.NullKeyword
@@ -774,14 +808,18 @@ function shapeFromTypeNode(node: ts.TypeNode | undefined, what: string, localTyp
     const nonNull = node.types.filter((member) => !isNullish(member));
     const nullable = nonNull.length !== node.types.length;
     const first = at(nonNull, 0, "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE", `${what} is null/undefined only`);
-    const shape = shapeFromTypeNode(first, what, localTypes);
+    const shape = shapeFromTypeNode(first, what, localTypes, resolving);
+    for (const member of nonNull.slice(1)) {
+      const candidate = shapeFromTypeNode(member, what, localTypes, resolving);
+      require_(JSON.stringify(candidate) === JSON.stringify(shape), "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE", `${what} has incompatible union member shapes`);
+    }
     return nullable ? { ...shape, nullable: true } : shape;
   }
   if (ts.isTypeLiteralNode(node)) {
     const fields: Record<string, { shape: ValueShape; optional: boolean }> = {};
     for (const member of node.members) {
       require_(ts.isPropertySignature(member) && ts.isIdentifier(member.name), "CERTIFIED_COMPONENT_UNSUPPORTED_PROPS_TYPE", `${what} must contain plain property signatures`);
-      fields[member.name.text] = { shape: shapeFromTypeNode(member.type, `${what}.${member.name.text}`, localTypes), optional: member.questionToken !== undefined };
+      fields[member.name.text] = { shape: shapeFromTypeNode(member.type, `${what}.${member.name.text}`, localTypes, resolving), optional: member.questionToken !== undefined };
     }
     require_(Object.keys(fields).length > 0, "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE", `${what} has no object fields`);
     return { kind: "object", fields };
@@ -1271,8 +1309,8 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
       return { kind: "regexTest", pattern: regex.pattern, flags: regex.flags, operand: parseExpr(at(node.arguments, 0, "CERTIFIED_COMPONENT_REGEX_TEST_ARITY", "regex test is missing its argument"), staticMaps, eventParameter, pureFunctionStack) };
     }
     const method = methodName as StringMethod;
-    require_(["toUpperCase", "toLowerCase", "toLocaleLowerCase", "trim", "replaceAll", "includes", "startsWith", "endsWith", "slice"].includes(method), "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `string method ${method} is outside certified-component-v1`);
-      const args = node.arguments.map((argument) => parseExpr(argument, staticMaps, eventParameter, pureFunctionStack));
+    require_(["toUpperCase", "toLowerCase", "toLocaleLowerCase", "trim", "replaceAll", "includes", "startsWith", "endsWith", "slice"].includes(method), "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `string method ${method} is outside certified-component-v1 in ${boundedExpression(node)}`);
+    const args = node.arguments.map((argument) => parseExpr(argument, staticMaps, eventParameter, pureFunctionStack, bindings));
     const expectedArgs = method === "replaceAll" ? 2 : method === "includes" || method === "startsWith" || method === "endsWith" || method === "toLocaleLowerCase" ? 1 : method === "slice" ? 1 : 0;
     require_(method === "slice" ? args.length <= 2 && args.length >= 1 : args.length === expectedArgs, "CERTIFIED_COMPONENT_STRING_METHOD_ARITY", `${method} expects ${method === "slice" ? "one or two" : expectedArgs} argument(s)`);
     const argumentType = method === "slice" ? "number" : "string";
@@ -1402,7 +1440,14 @@ function parseExpr(node: ts.Expression, staticMaps: StaticStringMaps = new Map()
   if (ts.isConditionalExpression(node)) {
     return { kind: "ternary", condition: parseExpr(node.condition, staticMaps, eventParameter), then: parseExpr(node.whenTrue, staticMaps, eventParameter), else: parseExpr(node.whenFalse, staticMaps, eventParameter) };
   }
-  fail("CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `expression kind ${ts.SyntaxKind[node.kind]} is outside certified-component-v1`);
+  fail("CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION", `expression kind ${ts.SyntaxKind[node.kind]} is outside certified-component-v1: ${boundedExpression(node)}`);
+}
+
+/** Keep failure reports actionable without copying an arbitrarily large or
+ * multiline source expression into reports and logs. */
+function boundedExpression(node: ts.Node): string {
+  const text = node.getText().replace(/\s+/g, " ").trim();
+  return JSON.stringify(text.length <= 180 ? text : `${text.slice(0, 177)}...`);
 }
 
 function collectionFilterExpression(
@@ -2032,11 +2077,13 @@ export function parseReactComponent(source: string, fileName = "Component.tsx", 
   return at(components, 0, "CERTIFIED_COMPONENT_EXPECTED_ONE_FUNCTION", "no function component found");
 }
 
-/** Type aliases and interfaces declared in this file, by name. */
-type LocalTypes = ReadonlyMap<string, ts.TypeLiteralNode>;
+/** Type aliases and interfaces declared in this file, by name. Keeping the
+ * complete TypeNode lets state aliases such as string literal unions and
+ * indexed access types resolve without a working external type checker. */
+type LocalTypes = ReadonlyMap<string, ts.TypeNode>;
 
 function collectLocalTypes(sourceFile: ts.SourceFile): LocalTypes {
-  const map = new Map<string, ts.TypeLiteralNode>();
+  const map = new Map<string, ts.TypeNode>();
   for (const statement of sourceFile.statements) {
     if (ts.isInterfaceDeclaration(statement)) {
       // An interface body IS a type literal for our purposes; re-parsing
@@ -2046,7 +2093,7 @@ function collectLocalTypes(sourceFile: ts.SourceFile): LocalTypes {
       // from the original declaration instead.
       void synthetic;
       map.set(statement.name.text, ts.factory.createTypeLiteralNode(statement.members));
-    } else if (ts.isTypeAliasDeclaration(statement) && ts.isTypeLiteralNode(statement.type)) {
+    } else if (ts.isTypeAliasDeclaration(statement)) {
       map.set(statement.name.text, statement.type);
     }
   }
@@ -2539,6 +2586,10 @@ function parseFunctionComponent(
       const initial = closedStateValue(at(initializer.arguments, 0, "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT", "missing useState argument"), staticMaps);
       const checker = options.project?.checker;
       const checkerType = checker?.getTypeAtLocation(getterEl.name);
+      const explicitTypeNode = initializer.typeArguments?.[0];
+      const explicitCheckerType = checker !== undefined && explicitTypeNode !== undefined
+        ? checker.getTypeFromTypeNode(explicitTypeNode)
+        : undefined;
       // A synthetic single-file project has no React declaration for
       // `useState`, so TypeScript can report `any` even when the source has an
       // explicit type argument. Never let that tooling absence erase a
@@ -2547,8 +2598,11 @@ function parseFunctionComponent(
       const declared = checker !== undefined && checkerType !== undefined
         && (checkerType.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) === 0
         ? valueShapeFromChecker(checkerType, checker, getterEl.name, `state ${getterName}`)
-        : initializer.typeArguments?.[0] !== undefined
-          ? shapeFromTypeNode(initializer.typeArguments[0], `state ${getterName}`, localTypes)
+        : checker !== undefined && explicitCheckerType !== undefined
+          && (explicitCheckerType.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) === 0
+          ? valueShapeFromChecker(explicitCheckerType, checker, explicitTypeNode as ts.TypeNode, `state ${getterName}`)
+        : explicitTypeNode !== undefined
+          ? shapeFromTypeNode(explicitTypeNode, `state ${getterName}`, localTypes)
           : undefined;
       const initialLiteral = "type" in initial ? initial : undefined;
       const structured = declared !== undefined && declared.kind !== "primitive";
