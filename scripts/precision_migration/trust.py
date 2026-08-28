@@ -488,7 +488,7 @@ class TrustStore:
                 }
             ),
         )
-        return store
+        return store, payload
 
     def verify_envelope(
         self,
