@@ -48,25 +48,87 @@ public final class JdbcProductionToolCallService implements ProductionToolCallPo
     }
 
     @Override
+    public void claimProviderDispatch(UUID tenantId, UUID toolCallId) {
+        inTenant(tenantId, () -> {
+            int callChanged = jdbc.sql("update ai_usage.tool_calls set status = 'UNKNOWN' where tenant_id = :tenantId and id = :id and status = 'CREATED'")
+                    .param("tenantId", tenantId).param("id", toolCallId).update();
+            if (callChanged != 1) {
+                ExistingState current = stateForUpdate(tenantId, toolCallId);
+                throw new ProductionRuntimeException(
+                        current == null ? "TOOL_CALL_NOT_FOUND" : "TOOL_CALL_RECONCILIATION_REQUIRED",
+                        current == null
+                                ? "tool call does not exist for this tenant"
+                                : "provider dispatch was already claimed and must not be sent again");
+            }
+            int receiptChanged = jdbc.sql("update ai_usage.tool_call_receipts set receipt_state = 'UNKNOWN', last_provider_status = 'PROVIDER_SEND_CLAIMED', updated_at = now() where tenant_id = :tenantId and tool_call_id = :id and receipt_state = 'CREATED'")
+                    .param("tenantId", tenantId).param("id", toolCallId).update();
+            if (receiptChanged != 1) {
+                throw new ProductionRuntimeException(
+                        "TOOL_CALL_RECEIPT_STATE_CONFLICT",
+                        "provider dispatch claim has no matching CREATED receipt");
+            }
+            return null;
+        });
+    }
+
+    @Override
     public void markProviderAccepted(UUID tenantId, UUID toolCallId, String providerRequestId) {
         inTenant(tenantId, () -> {
             requireProviderRequestId(providerRequestId);
-            int count = jdbc.sql("update ai_usage.tool_calls set status = 'PROVIDER_ACCEPTED', provider_request_id = :providerId where tenant_id = :tenantId and id = :id and status = 'CREATED'")
+            ExistingState current = requireStateForUpdate(tenantId, toolCallId);
+            assertProviderRequestBinding(current, providerRequestId);
+            if (current.status() == ToolCallStatus.PROVIDER_ACCEPTED
+                    && "PROVIDER_ACCEPTED".equals(current.receiptState())) return null;
+            if (current.status() != ToolCallStatus.UNKNOWN
+                    || !"UNKNOWN".equals(current.receiptState())) {
+                throw new ProductionRuntimeException(
+                        "TOOL_CALL_STATE_CONFLICT",
+                        "tool call is not accepting a provider acknowledgement");
+            }
+            int callChanged = jdbc.sql("update ai_usage.tool_calls set status = 'PROVIDER_ACCEPTED', provider_request_id = :providerId where tenant_id = :tenantId and id = :id and status = 'UNKNOWN' and (provider_request_id is null or provider_request_id = :providerId)")
                     .param("providerId", providerRequestId).param("tenantId", tenantId).param("id", toolCallId).update();
-            if (count != 1) throw new ProductionRuntimeException("TOOL_CALL_STATE_CONFLICT", "tool call is not accepting a provider acknowledgement");
-            jdbc.sql("update ai_usage.tool_call_receipts set receipt_state = 'PROVIDER_ACCEPTED', provider_request_id = :providerId, updated_at = now() where tenant_id = :tenantId and tool_call_id = :id")
+            int receiptChanged = jdbc.sql("update ai_usage.tool_call_receipts set receipt_state = 'PROVIDER_ACCEPTED', provider_request_id = :providerId, updated_at = now() where tenant_id = :tenantId and tool_call_id = :id and receipt_state = 'UNKNOWN' and (provider_request_id is null or provider_request_id = :providerId)")
                     .param("providerId", providerRequestId).param("tenantId", tenantId).param("id", toolCallId).update();
+            if (callChanged != 1 || receiptChanged != 1) {
+                throw new ProductionRuntimeException(
+                        "TOOL_CALL_STATE_CONFLICT",
+                        "tool call acknowledgement did not update both durable records");
+            }
             return null;
         });
     }
 
     @Override
     public void markProviderUnknown(UUID tenantId, UUID toolCallId, String providerStatus) {
+        markProviderUnknown(tenantId, toolCallId, null, providerStatus);
+    }
+
+    @Override
+    public void markProviderUnknown(
+            UUID tenantId,
+            UUID toolCallId,
+            String providerRequestId,
+            String providerStatus
+    ) {
         inTenant(tenantId, () -> {
-            jdbc.sql("update ai_usage.tool_calls set status = 'UNKNOWN' where tenant_id = :tenantId and id = :id and status in ('CREATED','PROVIDER_ACCEPTED')")
-                    .param("tenantId", tenantId).param("id", toolCallId).update();
-            jdbc.sql("update ai_usage.tool_call_receipts set receipt_state = 'UNKNOWN', last_provider_status = :status, updated_at = now() where tenant_id = :tenantId and tool_call_id = :id")
-                    .param("tenantId", tenantId).param("id", toolCallId).param("status", bounded(providerStatus)).update();
+            if (providerRequestId != null) requireProviderRequestId(providerRequestId);
+            ExistingState current = requireStateForUpdate(tenantId, toolCallId);
+            if (current.status() != ToolCallStatus.UNKNOWN
+                    && current.status() != ToolCallStatus.PROVIDER_ACCEPTED) {
+                throw new ProductionRuntimeException(
+                        "TOOL_CALL_STATE_CONFLICT",
+                        "terminal or unclaimed tool call cannot become uncertain");
+            }
+            assertProviderRequestBinding(current, providerRequestId);
+            int callChanged = jdbc.sql("update ai_usage.tool_calls set status = 'UNKNOWN', provider_request_id = coalesce(:providerId, provider_request_id) where tenant_id = :tenantId and id = :id and status in ('UNKNOWN','PROVIDER_ACCEPTED')")
+                    .param("tenantId", tenantId).param("id", toolCallId).param("providerId", providerRequestId).update();
+            int receiptChanged = jdbc.sql("update ai_usage.tool_call_receipts set receipt_state = 'UNKNOWN', provider_request_id = coalesce(:providerId, provider_request_id), last_provider_status = :status, updated_at = now() where tenant_id = :tenantId and tool_call_id = :id and receipt_state in ('UNKNOWN','PROVIDER_ACCEPTED')")
+                    .param("tenantId", tenantId).param("id", toolCallId).param("providerId", providerRequestId).param("status", bounded(providerStatus)).update();
+            if (callChanged != 1 || receiptChanged != 1) {
+                throw new ProductionRuntimeException(
+                        "TOOL_CALL_STATE_CONFLICT",
+                        "tool call uncertainty transition did not update both durable records");
+            }
             return null;
         });
     }
@@ -74,12 +136,58 @@ public final class JdbcProductionToolCallService implements ProductionToolCallPo
     @Override
     public void complete(UUID tenantId, UUID toolCallId, UUID responseArtifactId) {
         inTenant(tenantId, () -> {
-            int count = jdbc.sql("update ai_usage.tool_calls set status = 'COMPLETE', completed_at = now() where tenant_id = :tenantId and id = :id and status = 'PROVIDER_ACCEPTED'")
+            if (responseArtifactId == null) throw new IllegalArgumentException("tool response artifact id is required");
+            ExistingState current = requireStateForUpdate(tenantId, toolCallId);
+            if (current.status() == ToolCallStatus.COMPLETE) {
+                if ("COMPLETE".equals(current.receiptState())
+                        && responseArtifactId.equals(current.responseArtifactId())) return null;
+                throw new ProductionRuntimeException(
+                        "TOOL_CALL_COMPLETION_CONFLICT",
+                        "completed tool call was replayed with different provider evidence");
+            }
+            if ((current.status() != ToolCallStatus.PROVIDER_ACCEPTED
+                    && current.status() != ToolCallStatus.UNKNOWN)
+                    || current.callProviderRequestId() == null
+                    || !current.callProviderRequestId().equals(current.receiptProviderRequestId())) {
+                throw new ProductionRuntimeException(
+                        "TOOL_CALL_STATE_CONFLICT",
+                        "tool call is not ready for artifact-bound completion");
+            }
+            int callChanged = jdbc.sql("update ai_usage.tool_calls set status = 'COMPLETE', completed_at = now() where tenant_id = :tenantId and id = :id and status in ('PROVIDER_ACCEPTED','UNKNOWN')")
                     .param("tenantId", tenantId).param("id", toolCallId).update();
-            if (count != 1) throw new ProductionRuntimeException("TOOL_CALL_STATE_CONFLICT", "tool call is not ready for completion");
-            jdbc.sql("update ai_usage.tool_call_receipts set receipt_state = 'COMPLETE', response_artifact_id = :artifactId, updated_at = now() where tenant_id = :tenantId and tool_call_id = :id")
+            int receiptChanged = jdbc.sql("update ai_usage.tool_call_receipts set receipt_state = 'COMPLETE', response_artifact_id = :artifactId, updated_at = now() where tenant_id = :tenantId and tool_call_id = :id and receipt_state in ('PROVIDER_ACCEPTED','UNKNOWN')")
                     .param("tenantId", tenantId).param("id", toolCallId).param("artifactId", responseArtifactId).update();
+            if (callChanged != 1 || receiptChanged != 1) {
+                throw new ProductionRuntimeException(
+                        "TOOL_CALL_STATE_CONFLICT",
+                        "tool call completion did not update both durable records");
+            }
             outbox(tenantId, toolCallId, responseArtifactId);
+            return null;
+        });
+    }
+
+    @Override
+    public void markProviderFailed(UUID tenantId, UUID toolCallId, String providerStatus) {
+        inTenant(tenantId, () -> {
+            ExistingState current = requireStateForUpdate(tenantId, toolCallId);
+            if (current.status() == ToolCallStatus.FAILED
+                    && "FAILED".equals(current.receiptState())) return null;
+            if (current.status() != ToolCallStatus.UNKNOWN
+                    && current.status() != ToolCallStatus.PROVIDER_ACCEPTED) {
+                throw new ProductionRuntimeException(
+                        "TOOL_CALL_STATE_CONFLICT",
+                        "unclaimed or completed tool call cannot become failed");
+            }
+            int callChanged = jdbc.sql("update ai_usage.tool_calls set status = 'FAILED', completed_at = now() where tenant_id = :tenantId and id = :id and status in ('UNKNOWN','PROVIDER_ACCEPTED')")
+                    .param("tenantId", tenantId).param("id", toolCallId).update();
+            int receiptChanged = jdbc.sql("update ai_usage.tool_call_receipts set receipt_state = 'FAILED', last_provider_status = :status, updated_at = now() where tenant_id = :tenantId and tool_call_id = :id and receipt_state in ('UNKNOWN','PROVIDER_ACCEPTED')")
+                    .param("tenantId", tenantId).param("id", toolCallId).param("status", bounded(providerStatus)).update();
+            if (callChanged != 1 || receiptChanged != 1) {
+                throw new ProductionRuntimeException(
+                        "TOOL_CALL_STATE_CONFLICT",
+                        "tool call failure did not update both durable records");
+            }
             return null;
         });
     }
@@ -98,8 +206,63 @@ public final class JdbcProductionToolCallService implements ProductionToolCallPo
         });
     }
 
-    private static void requireProviderRequestId(String value) { if (value == null || value.isBlank() || value.length() > 500) throw new IllegalArgumentException("providerRequestId is required"); }
+    private ExistingState requireStateForUpdate(UUID tenantId, UUID toolCallId) {
+        ExistingState state = stateForUpdate(tenantId, toolCallId);
+        if (state == null) {
+            throw new ProductionRuntimeException("TOOL_CALL_NOT_FOUND", "tool call does not exist for this tenant");
+        }
+        return state;
+    }
+
+    private ExistingState stateForUpdate(UUID tenantId, UUID toolCallId) {
+        return jdbc.sql("""
+                        select tc.status,
+                               tc.provider_request_id as call_provider_request_id,
+                               receipt.receipt_state,
+                               receipt.provider_request_id as receipt_provider_request_id,
+                               receipt.response_artifact_id
+                          from ai_usage.tool_calls tc
+                          join ai_usage.tool_call_receipts receipt
+                            on receipt.tenant_id = tc.tenant_id
+                           and receipt.tool_call_id = tc.id
+                         where tc.tenant_id = :tenantId and tc.id = :id
+                         for update of tc, receipt
+                        """)
+                .param("tenantId", tenantId).param("id", toolCallId)
+                .query((rs, row) -> new ExistingState(
+                        ToolCallStatus.valueOf(rs.getString("status")),
+                        rs.getString("call_provider_request_id"),
+                        rs.getString("receipt_state"),
+                        rs.getString("receipt_provider_request_id"),
+                        rs.getObject("response_artifact_id", UUID.class)))
+                .optional().orElse(null);
+    }
+
+    private static void assertProviderRequestBinding(ExistingState state, String providerRequestId) {
+        if (providerRequestId == null) return;
+        if ((state.callProviderRequestId() != null
+                && !providerRequestId.equals(state.callProviderRequestId()))
+                || (state.receiptProviderRequestId() != null
+                && !providerRequestId.equals(state.receiptProviderRequestId()))) {
+            throw new ProductionRuntimeException(
+                    "TOOL_CALL_PROVIDER_ID_CONFLICT",
+                    "tool call is already bound to a different provider request");
+        }
+    }
+
+    private static void requireProviderRequestId(String value) {
+        if (value == null || !value.matches("[A-Za-z0-9._:-]{1,500}")) {
+            throw new IllegalArgumentException("providerRequestId must use the bounded safe identifier alphabet");
+        }
+    }
     private static String bounded(String value) { return value == null || value.isBlank() ? "UNSPECIFIED" : value.substring(0, Math.min(value.length(), 500)); }
     private record Existing(UUID id, ToolCallStatus status, String providerRequestId) {}
     private record ExistingReceipt(String requestHash, UUID responseArtifactId) {}
+    private record ExistingState(
+            ToolCallStatus status,
+            String callProviderRequestId,
+            String receiptState,
+            String receiptProviderRequestId,
+            UUID responseArtifactId
+    ) {}
 }

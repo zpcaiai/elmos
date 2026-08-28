@@ -1,46 +1,237 @@
 {{- if .Values.networkPolicy.enabled }}
+{{- if .Values.monitoring.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: elmos-runtime-default-deny
-  labels:
-    app.kubernetes.io/name: elmos-runtime
+  name: {{ include "elmos-runtime.name" . }}-monitoring-ingress
+  labels: {{- include "elmos-runtime.labels" . | nindent 4 }}
 spec:
   podSelector:
-    matchLabels:
-      app.kubernetes.io/name: elmos-runtime
-  policyTypes: [Ingress, Egress]
+    matchLabels: {{- include "elmos-runtime.selectorLabels" . | nindent 6 }}
+  policyTypes: [Ingress]
   ingress:
     - from:
         - namespaceSelector:
-            matchLabels:
-{{ toYaml .Values.networkPolicy.ingressNamespaceLabels | indent 14 }}
+            {{- toYaml .Values.monitoring.namespaceSelector | nindent 12 }}
+          podSelector:
+            {{- toYaml .Values.monitoring.podSelector | nindent 12 }}
+      ports:
+        - {protocol: TCP, port: 8080}
+        - {protocol: TCP, port: 8090}
+---
+{{- end }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-default-deny
+  labels: {{- include "elmos-runtime.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {{- include "elmos-runtime.selectorLabels" . | nindent 6 }}
+  policyTypes: [Ingress, Egress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-dns
+  labels: {{- include "elmos-runtime.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {{- include "elmos-runtime.selectorLabels" . | nindent 6 }}
+  policyTypes: [Egress]
   egress:
     - to:
-        - namespaceSelector: {}
+        - namespaceSelector:
+            {{- toYaml .Values.networkPolicy.dns.namespaceSelector | nindent 12 }}
+          podSelector:
+            {{- toYaml .Values.networkPolicy.dns.podSelector | nindent 12 }}
       ports:
-        - protocol: UDP
-          port: 53
-        - protocol: TCP
-          port: 53
-{{- if .Values.networkPolicy.databaseCidrs }}
+        {{- range .Values.networkPolicy.dns.ports }}
+        - {protocol: UDP, port: {{ . }}}
+        - {protocol: TCP, port: {{ . }}}
+        {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-scheduler
+  labels: {{- include "elmos-runtime.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "elmos-runtime.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: scheduler
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              {{- include "elmos-runtime.selectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: worker
+        {{- if not (empty .Values.networkPolicy.ingressNamespaceSelector.matchLabels) }}
+        - namespaceSelector:
+            {{- toYaml .Values.networkPolicy.ingressNamespaceSelector | nindent 12 }}
+          podSelector:
+            {{- toYaml .Values.networkPolicy.ingressPodSelector | nindent 12 }}
+        {{- end }}
+      ports: [{protocol: TCP, port: {{ .Values.components.scheduler.port }}}]
+  egress:
     - to:
-{{- range .Values.networkPolicy.databaseCidrs }}
-        - ipBlock:
-            cidr: {{ . | quote }}
-{{- end }}
-      ports:
-        - protocol: TCP
-          port: 5432
-{{- end }}
-{{- if .Values.networkPolicy.providerCidrs }}
+        - podSelector:
+            matchLabels:
+              {{- include "elmos-runtime.selectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: billing
+      ports: [{protocol: TCP, port: {{ .Values.components.billing.port }}}]
     - to:
-{{- range .Values.networkPolicy.providerCidrs }}
-        - ipBlock:
-            cidr: {{ . | quote }}
-{{- end }}
+        - podSelector:
+            matchLabels:
+              {{- include "elmos-runtime.selectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: worker
+      ports: [{protocol: TCP, port: 8090}]
+    {{- if .Values.networkPolicy.databaseCidrs }}
+    - to:
+        {{- range .Values.networkPolicy.databaseCidrs }}
+        - ipBlock: {cidr: {{ . | quote }}}
+        {{- end }}
+      ports: [{protocol: TCP, port: {{ .Values.database.port }}}]
+    {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-billing
+  labels: {{- include "elmos-runtime.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "elmos-runtime.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: billing
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              {{- include "elmos-runtime.selectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: scheduler
+        {{- if not (empty .Values.networkPolicy.ingressNamespaceSelector.matchLabels) }}
+        - namespaceSelector:
+            {{- toYaml .Values.networkPolicy.ingressNamespaceSelector | nindent 12 }}
+          podSelector:
+            {{- toYaml .Values.networkPolicy.ingressPodSelector | nindent 12 }}
+        {{- end }}
+      ports: [{protocol: TCP, port: {{ .Values.components.billing.port }}}]
+  {{- if or .Values.networkPolicy.databaseCidrs (and .Values.provider.enabled (or .Values.networkPolicy.providerCidrs .Values.networkPolicy.objectStorageCidrs)) }}
+  egress:
+    {{- if .Values.networkPolicy.databaseCidrs }}
+    - to:
+        {{- range .Values.networkPolicy.databaseCidrs }}
+        - ipBlock: {cidr: {{ . | quote }}}
+        {{- end }}
+      ports: [{protocol: TCP, port: {{ .Values.database.port }}}]
+    {{- end }}
+    {{- if and .Values.provider.enabled .Values.networkPolicy.providerCidrs }}
+    - to:
+        {{- range .Values.networkPolicy.providerCidrs }}
+        - ipBlock: {cidr: {{ . | quote }}}
+        {{- end }}
+      ports: [{protocol: TCP, port: 443}]
+    {{- end }}
+    {{- if and .Values.provider.enabled .Values.networkPolicy.objectStorageCidrs }}
+    - to:
+        {{- range .Values.networkPolicy.objectStorageCidrs }}
+        - ipBlock: {cidr: {{ . | quote }}}
+        {{- end }}
+      ports: [{protocol: TCP, port: 443}]
+    {{- end }}
+  {{- else }}
+  egress: []
+  {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-projector
+  labels: {{- include "elmos-runtime.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "elmos-runtime.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: projector
+  policyTypes: [Egress]
+  {{- if or .Values.networkPolicy.databaseCidrs (and .Values.outbox.enabled .Values.networkPolicy.outboxCidrs) }}
+  egress:
+    {{- if .Values.networkPolicy.databaseCidrs }}
+    - to:
+        {{- range .Values.networkPolicy.databaseCidrs }}
+        - ipBlock: {cidr: {{ . | quote }}}
+        {{- end }}
+      ports: [{protocol: TCP, port: {{ .Values.database.port }}}]
+    {{- end }}
+    {{- if and .Values.outbox.enabled .Values.networkPolicy.outboxCidrs }}
+    - to:
+        {{- range .Values.networkPolicy.outboxCidrs }}
+        - ipBlock: {cidr: {{ . | quote }}}
+        {{- end }}
+      ports: [{protocol: TCP, port: 443}]
+    {{- end }}
+  {{- else }}
+  egress: []
+  {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-worker
+  labels: {{- include "elmos-runtime.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "elmos-runtime.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: worker
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              {{- include "elmos-runtime.selectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: scheduler
+      ports: [{protocol: TCP, port: 8090}]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              {{- include "elmos-runtime.selectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: scheduler
+      ports: [{protocol: TCP, port: {{ .Values.components.scheduler.port }}}]
+    {{- if .Values.networkPolicy.workerEngineCidrs }}
+    - to:
+        {{- range .Values.networkPolicy.workerEngineCidrs }}
+        - ipBlock: {cidr: {{ . | quote }}}
+        {{- end }}
       ports:
-        - protocol: TCP
-          port: 443
-{{- end }}
+        - {protocol: TCP, port: 443}
+        - {protocol: TCP, port: 8080}
+    {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-migration
+  labels: {{- include "elmos-runtime.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "elmos-runtime.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: migration
+  policyTypes: [Egress]
+  {{- if .Values.networkPolicy.databaseCidrs }}
+  egress:
+    - to:
+        {{- range .Values.networkPolicy.databaseCidrs }}
+        - ipBlock: {cidr: {{ . | quote }}}
+        {{- end }}
+      ports: [{protocol: TCP, port: {{ .Values.database.port }}}]
+  {{- else }}
+  egress: []
+  {{- end }}
 {{- end }}

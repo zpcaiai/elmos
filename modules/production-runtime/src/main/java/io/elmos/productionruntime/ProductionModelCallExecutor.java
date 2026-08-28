@@ -23,6 +23,9 @@ public final class ProductionModelCallExecutor {
         Objects.requireNonNull(provider, "provider");
         ModelCallReceipt existing = billing.beginModelCall(request);
         if (existing.status() != ModelCallStatus.CREATED) return existing;
+        // This durable transition must commit before any network side effect.
+        // Concurrent/replayed callers cannot both claim a CREATED row.
+        billing.claimProviderDispatch(request.tenantId(), existing.modelCallId());
         ProductionModelProviderPort.ProviderResult result = provider.execute(request);
         return apply(request.tenantId(), existing.modelCallId(), existing, result);
     }
@@ -34,6 +37,23 @@ public final class ProductionModelCallExecutor {
         Objects.requireNonNull(provider, "provider");
         ProductionModelProviderPort.ProviderResult result = provider.reconcile(providerRequestId);
         return apply(tenantId, modelCallId, new ModelCallReceipt(modelCallId, ModelCallStatus.UNKNOWN, providerRequestId, null), result);
+    }
+
+    public ModelCallReceipt reconcile(
+            ModelCallRequest originalRequest,
+            UUID modelCallId,
+            String providerRequestId,
+            ProductionModelProviderPort provider
+    ) {
+        Objects.requireNonNull(originalRequest, "originalRequest");
+        ProductionRuntimeModels.require(modelCallId, "modelCallId");
+        ProductionRuntimeModels.requireText(providerRequestId, "providerRequestId", 500);
+        Objects.requireNonNull(provider, "provider");
+        var reconciliation = new ProductionModelProviderPort.ProviderReconciliationRequest(
+                originalRequest, modelCallId, providerRequestId);
+        ProductionModelProviderPort.ProviderResult result = provider.reconcile(reconciliation);
+        return apply(originalRequest.tenantId(), modelCallId,
+                new ModelCallReceipt(modelCallId, ModelCallStatus.UNKNOWN, providerRequestId, null), result);
     }
 
     private ModelCallReceipt apply(UUID tenantId, UUID modelCallId, ModelCallReceipt prior, ProductionModelProviderPort.ProviderResult result) {
@@ -51,8 +71,12 @@ public final class ProductionModelCallExecutor {
                 yield new ModelCallReceipt(modelCallId, ModelCallStatus.FAILED, null, null);
             }
             case UNKNOWN -> {
-                billing.markProviderUnknown(tenantId, modelCallId, result.providerStatus());
-                yield new ModelCallReceipt(modelCallId, ModelCallStatus.UNKNOWN, prior.providerRequestId(), null);
+                String providerRequestId = result.providerRequestId() == null
+                        ? prior.providerRequestId() : result.providerRequestId();
+                billing.markProviderUnknown(
+                        tenantId, modelCallId, providerRequestId, result.providerStatus());
+                yield new ModelCallReceipt(
+                        modelCallId, ModelCallStatus.UNKNOWN, providerRequestId, null);
             }
         };
     }

@@ -1,58 +1,162 @@
-{{- range $name, $component := dict "scheduler" .Values.scheduler "billing" .Values.billing "projector" .Values.projector }}
+{{- range $component := list "scheduler" "billing" "projector" }}
+{{- $settings := index $.Values.components $component }}
+{{- $db := index $.Values.database.keys $component }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: elmos-{{ $name }}
+  name: {{ include "elmos-runtime.name" $ }}-{{ $component }}
   labels:
-    app.kubernetes.io/name: elmos-runtime
-    app.kubernetes.io/component: {{ $component.component }}
+    {{- include "elmos-runtime.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $component }}
 spec:
-  replicas: {{ $component.replicas }}
+  replicas: {{ $settings.replicas }}
+  revisionHistoryLimit: 5
+  minReadySeconds: 10
   strategy:
     type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
+    rollingUpdate: {maxUnavailable: 0, maxSurge: 1}
   selector:
     matchLabels:
-      app.kubernetes.io/name: elmos-runtime
-      app.kubernetes.io/component: {{ $component.component }}
+      {{- include "elmos-runtime.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: {{ $component }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: elmos-runtime
-        app.kubernetes.io/component: {{ $component.component }}
+        {{- include "elmos-runtime.selectorLabels" $ | nindent 8 }}
+        app.kubernetes.io/component: {{ $component }}
+      annotations:
+        checksum/runtime-config: {{ include (print $.Template.BasePath "/runtime-config.yaml") $ | sha256sum }}
     spec:
+      serviceAccountName: {{ include "elmos-runtime.name" $ }}-{{ $component }}
       automountServiceAccountToken: false
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds }}
       securityContext:
-{{ toYaml $.Values.podSecurityContext | indent 8 }}
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.topologySpread.enabled }}
+      topologySpreadConstraints:
+        - maxSkew: {{ $.Values.topologySpread.maxSkew }}
+          topologyKey: {{ $.Values.topologySpread.topologyKey | quote }}
+          whenUnsatisfiable: {{ $.Values.topologySpread.whenUnsatisfiable }}
+          labelSelector:
+            matchLabels:
+              {{- include "elmos-runtime.selectorLabels" $ | nindent 14 }}
+              app.kubernetes.io/component: {{ $component }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    {{- include "elmos-runtime.selectorLabels" $ | nindent 20 }}
+                    app.kubernetes.io/component: {{ $component }}
       containers:
-        - name: {{ $name }}
+        - name: {{ $component }}
           image: {{ $.Values.images.controlPlane | quote }}
           imagePullPolicy: {{ $.Values.images.pullPolicy }}
-          args: ["--component={{ $component.component }}"]
+          args: ["--component={{ $component }}"]
+          ports:
+            - name: http
+              containerPort: {{ $settings.port }}
+              protocol: TCP
           env:
-            - name: SPRING_PROFILES_ACTIVE
-              value: production-runtime
-            - name: SPRING_DATASOURCE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ $.Values.database.secretName }}
-                  key: {{ $.Values.database.jdbcUrlKey }}
+            - {name: SERVER_PORT, value: {{ $settings.port | quote }}}
+            - {name: SPRING_DATASOURCE_URL, valueFrom: {secretKeyRef: {name: {{ $.Values.database.existingSecret }}, key: {{ $db.url }}}}}
+            - {name: SPRING_DATASOURCE_USERNAME, valueFrom: {secretKeyRef: {name: {{ $.Values.database.existingSecret }}, key: {{ $db.username }}}}}
+            - {name: SPRING_DATASOURCE_PASSWORD, valueFrom: {secretKeyRef: {name: {{ $.Values.database.existingSecret }}, key: {{ $db.password }}}}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_WORKLOAD_TOKEN_FILE, value: /var/run/elmos/credentials/workload-token}
+            {{- if eq $component "billing" }}
+            - {name: ELMOS_PRODUCTION_RUNTIME_TOPUP_TOKEN_FILE, value: /var/run/elmos/credentials/topup-token}
+            {{- end }}
+            - {name: ELMOS_PRODUCTION_RUNTIME_SERVICE_MESH_HTTP, value: {{ $.Values.serviceMeshHttp | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_MIGRATION_ENABLED, value: "false"}
+            - {name: ELMOS_PRODUCTION_RUNTIME_BILLING_ADAPTER, value: {{ ternary "jdbc" "http" (eq $component "billing") | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_BILLING_ENDPOINT, value: {{ printf "http://%s-billing.%s.svc.cluster.local:%v" (include "elmos-runtime.name" $) $.Release.Namespace $.Values.components.billing.port | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_GATE_ENABLED, value: {{ and $.Values.gate.enabled (or (eq $component "scheduler") (eq $component "billing")) | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_GATE_TOKEN_FILE, value: /var/run/elmos/credentials/gate-token}
+            - {name: ELMOS_PRODUCTION_RUNTIME_GATE_FIXTURE_FILE, value: /var/run/elmos/config/gate-fixture.json}
+            - {name: ELMOS_PRODUCTION_RUNTIME_PROVIDER_ENABLED, value: {{ and $.Values.provider.enabled (eq $component "billing") | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_PROVIDER_PROFILE_FILE, value: /var/run/elmos/config/provider-profiles.json}
+            - {name: ELMOS_PRODUCTION_RUNTIME_OUTBOX_ENABLED, value: {{ and $.Values.outbox.enabled (eq $component "projector") | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_OUTBOX_ENDPOINT, value: {{ $.Values.outbox.endpoint | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_OUTBOX_TOKEN_FILE, value: /var/run/elmos/credentials/outbox-token}
+            {{- if and $.Values.provider.enabled (eq $component "billing") }}
+            - {name: ELMOS_PRODUCTION_RUNTIME_OBJECT_URI_PREFIX, value: {{ $.Values.provider.objectStorage.objectUriPrefix | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_PROVIDER_OBJECT_STORAGE_BACKEND_ID, value: {{ $.Values.provider.objectStorage.backendId | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_PROVIDER_OBJECT_STORAGE_ENDPOINT, value: {{ $.Values.provider.objectStorage.endpoint | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_PROVIDER_OBJECT_STORAGE_BUCKET, value: {{ $.Values.provider.objectStorage.bucket | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_PROVIDER_OBJECT_STORAGE_REGION, value: {{ $.Values.provider.objectStorage.region | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_PROVIDER_OBJECT_STORAGE_PATH_STYLE, value: {{ $.Values.provider.objectStorage.pathStyle | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_PROVIDER_OBJECT_STORAGE_SERVER_SIDE_ENCRYPTION, value: {{ $.Values.provider.objectStorage.serverSideEncryption | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_PROVIDER_OBJECT_STORAGE_CMK_REFERENCE, value: {{ $.Values.provider.objectStorage.cmkReference | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_PROVIDER_OBJECT_STORAGE_MAX_OBJECT_BYTES, value: {{ $.Values.provider.objectStorage.maxObjectBytes | quote }}}
+            - {name: ELMOS_PRODUCTION_RUNTIME_PROVIDER_OBJECT_STORAGE_ACCESS_KEY_FILE, value: /var/run/elmos/provider/object-storage-access-key}
+            - {name: ELMOS_PRODUCTION_RUNTIME_PROVIDER_OBJECT_STORAGE_SECRET_KEY_FILE, value: /var/run/elmos/provider/object-storage-secret-key}
+            - {name: ELMOS_PRODUCTION_RUNTIME_PROVIDER_OBJECT_STORAGE_SESSION_TOKEN_FILE, value: {{ ternary "/var/run/elmos/provider/object-storage-session-token" "" (ne $.Values.provider.objectStorage.sessionTokenKey "") | quote }}}
+            {{- end }}
+          volumeMounts:
+            - {name: runtime-credentials, mountPath: /var/run/elmos/credentials/workload-token, subPath: {{ $.Values.credentials.workloadTokenKey }}, readOnly: true}
+            {{- if eq $component "billing" }}
+            - {name: runtime-credentials, mountPath: /var/run/elmos/credentials/topup-token, subPath: {{ $.Values.credentials.topupTokenKey }}, readOnly: true}
+            {{- end }}
+            - {name: tmp, mountPath: /tmp}
+            {{- if and $.Values.gate.enabled (or (eq $component "scheduler") (eq $component "billing")) }}
+            - {name: runtime-credentials, mountPath: /var/run/elmos/credentials/gate-token, subPath: {{ $.Values.credentials.gateTokenKey }}, readOnly: true}
+            - {name: gate-fixture, mountPath: /var/run/elmos/config/gate-fixture.json, subPath: fixture.json, readOnly: true}
+            {{- end }}
+            {{- if and $.Values.outbox.enabled (eq $component "projector") }}
+            - {name: runtime-credentials, mountPath: /var/run/elmos/credentials/outbox-token, subPath: {{ $.Values.credentials.outboxTokenKey }}, readOnly: true}
+            {{- end }}
+            {{- if and $.Values.provider.enabled (eq $component "billing") }}
+            - {name: provider-profiles, mountPath: /var/run/elmos/config/provider-profiles.json, subPath: profiles.json, readOnly: true}
+            {{- range $.Values.provider.profiles }}
+            - {name: provider-credentials, mountPath: {{ printf "/var/run/elmos/provider/%s" .credentialKey }}, subPath: {{ .credentialKey }}, readOnly: true}
+            {{- end }}
+            - {name: provider-credentials, mountPath: /var/run/elmos/provider/object-storage-access-key, subPath: {{ $.Values.provider.objectStorage.accessKeyKey }}, readOnly: true}
+            - {name: provider-credentials, mountPath: /var/run/elmos/provider/object-storage-secret-key, subPath: {{ $.Values.provider.objectStorage.secretKeyKey }}, readOnly: true}
+            {{- if ne $.Values.provider.objectStorage.sessionTokenKey "" }}
+            - {name: provider-credentials, mountPath: /var/run/elmos/provider/object-storage-session-token, subPath: {{ $.Values.provider.objectStorage.sessionTokenKey }}, readOnly: true}
+            {{- end }}
+            {{- end }}
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop: [ALL]
+            {{- toYaml $.Values.containerSecurityContext | nindent 12 }}
           resources:
-{{ toYaml $.Values.resources | indent 12 }}
+            {{- toYaml $settings.resources | nindent 12 }}
+          startupProbe:
+            httpGet: {path: /actuator/health/liveness, port: http}
+            failureThreshold: 30
+            periodSeconds: 5
           readinessProbe:
-            httpGet:
-              path: /actuator/health/readiness
-              port: 8080
+            httpGet: {path: /actuator/health/readiness, port: http}
+            periodSeconds: 5
+            failureThreshold: 3
           livenessProbe:
-            httpGet:
-              path: /actuator/health/liveness
-              port: 8080
+            httpGet: {path: /actuator/health/liveness, port: http}
+            periodSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: runtime-credentials
+          secret:
+            secretName: {{ $.Values.credentials.existingSecret }}
+            defaultMode: 0440
+        - name: tmp
+          emptyDir: {sizeLimit: 256Mi}
+        {{- if and $.Values.gate.enabled (or (eq $component "scheduler") (eq $component "billing")) }}
+        - name: gate-fixture
+          configMap: {name: {{ include "elmos-runtime.name" $ }}-gate-fixture, defaultMode: 0440}
+        {{- end }}
+        {{- if and $.Values.provider.enabled (eq $component "billing") }}
+        - name: provider-profiles
+          configMap: {name: {{ include "elmos-runtime.name" $ }}-provider-profiles, defaultMode: 0440}
+        - name: provider-credentials
+          secret: {secretName: {{ $.Values.provider.credentialSecret }}, defaultMode: 0440}
+        {{- end }}
 ---
 {{- end }}

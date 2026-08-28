@@ -1,21 +1,18 @@
+{{- if .Values.pdb.enabled }}
+{{- range $component := list "scheduler" "billing" "projector" "worker" }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: elmos-scheduler
+  name: {{ include "elmos-runtime.name" $ }}-{{ $component }}
+  labels:
+    {{- include "elmos-runtime.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $component }}
 spec:
-  minAvailable: 2
+  minAvailable: {{ index $.Values.pdb.minAvailable $component }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: elmos-runtime
-      app.kubernetes.io/component: scheduler
+      {{- include "elmos-runtime.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: {{ $component }}
 ---
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: elmos-billing
-spec:
-  minAvailable: 2
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: elmos-runtime
-      app.kubernetes.io/component: billing
+{{- end }}
+{{- end }}

@@ -17,11 +17,15 @@
       "adapter": "REQUIRED_PROVIDER_ADAPTER",
       "provider": "REQUIRED_PROVIDER",
       "model": "REQUIRED_TEST_MODEL",
-      "credential_env": "ELMOS_PROVIDER_API_KEY"
+      "credential_env": "ELMOS_PROVIDER_API_KEY",
+      "probe_input": "Return exactly ELMOS_PROVIDER_RUNTIME_OK.",
+      "max_output_tokens": 32
     },
     "target_cluster_load": {
       "status": "NOT_RUN",
-      "base_url_env": "ELMOS_RUNTIME_BASE_URL",
+      "scheduler_base_url_env": "ELMOS_RUNTIME_SCHEDULER_BASE_URL",
+      "billing_base_url_env": "ELMOS_RUNTIME_BILLING_BASE_URL",
+      "gate_token_env": "ELMOS_RUNTIME_GATE_TOKEN",
       "script": "scripts/production-runtime/external-load-smoke.js",
       "vus": 20,
       "duration": "60s"
@@ -34,29 +38,56 @@
         {
           "id": "scheduler-restart",
           "action": "rollout_restart",
-          "resource": "deployment/elmos-scheduler"
-        },
-        {
-          "id": "worker-process-kill",
-          "action": "delete_pod",
-          "selector": "app.kubernetes.io/component=worker"
+          "resource": "deployment/REQUIRED_RUNTIME_RESOURCE_PREFIX-scheduler",
+          "recovery_resource": "deployment/REQUIRED_RUNTIME_RESOURCE_PREFIX-scheduler"
         }
       ]
+    },
+    "worker_process_kill": {
+      "status": "NOT_RUN",
+      "context": "REQUIRED_TARGET_CLUSTER_CONTEXT",
+      "namespace": "REQUIRED_RUNTIME_NAMESPACE",
+      "selector": "app.kubernetes.io/component=worker",
+      "recovery_resource": "statefulset/REQUIRED_RUNTIME_RESOURCE_PREFIX-worker",
+      "minimum_ready_replicas": 2
     },
     "redis_loss": {
       "status": "NOT_RUN",
       "redis_url_env": "ELMOS_REDIS_URL",
+      "resource_id": "REQUIRED_DEDICATED_REDIS_RESOURCE_ID",
+      "endpoint_sha256": "REQUIRED_REDIS_ENDPOINT_SHA256",
+      "database_index": 0,
+      "dedicated_ephemeral_cache": false,
       "allow_flush": false
     },
     "backup_pitr": {
       "status": "NOT_RUN",
       "driver": "REQUIRED_BACKUP_PROVIDER_ADAPTER",
-      "restore_target": "REQUIRED_ISOLATED_RESTORE_TARGET"
+      "source_instance": "REQUIRED_SOURCE_POSTGRES_INSTANCE",
+      "restore_target": "REQUIRED_ISOLATED_RESTORE_TARGET",
+      "restore_database": "elmos",
+      "source_database_url_env": "ELMOS_PITR_SOURCE_DATABASE_URL",
+      "restore_username_env": "ELMOS_PITR_RESTORE_USERNAME",
+      "restore_password_env": "ELMOS_PITR_RESTORE_PASSWORD",
+      "restore_ssl_root_cert_env": "ELMOS_PITR_SSL_ROOT_CERT",
+      "marker_tenant_id": "REQUIRED_PITR_MARKER_TENANT_UUID",
+      "marker_id": "REQUIRED_PITR_MARKER_UUID",
+      "marker_sha256": "REQUIRED_PITR_MARKER_SHA256",
+      "archive_delay_seconds": 60,
+      "cleanup_after_verification": true,
+      "region": "REQUIRED_PROVIDER_REGION",
+      "project": "REQUIRED_GCP_PROJECT",
+      "subscription": "REQUIRED_AZURE_SUBSCRIPTION",
+      "resource_group": "REQUIRED_AZURE_RESOURCE_GROUP"
     },
     "independent_verification": {
       "status": "NOT_RUN",
       "endpoint_env": "ELMOS_EXTERNAL_VERIFIER_ENDPOINT",
       "credential_env": "ELMOS_EXTERNAL_VERIFIER_TOKEN",
+      "public_key_env": "ELMOS_EXTERNAL_VERIFIER_PUBLIC_KEY",
+      "public_key_sha256": "REQUIRED_EXTERNAL_VERIFIER_PUBLIC_KEY_SHA256",
+      "signature_algorithm": "SHA256_WITH_PEM_KEY",
+      "max_receipt_age_seconds": 600,
       "producer_actor": "PRODUCTION_RUNTIME_EXECUTOR",
       "verifier_actor": "INDEPENDENT_VERIFIER"
     },
@@ -65,14 +96,25 @@
       "context": "REQUIRED_TARGET_CLUSTER_CONTEXT",
       "namespace": "REQUIRED_RUNTIME_NAMESPACE",
       "release": "elmos-runtime",
+      "resource_prefix": "REQUIRED_RUNTIME_RESOURCE_PREFIX",
       "chart": "deploy/helm/elmos-runtime",
       "image_digests": {
         "controlPlane": "REQUIRED_REVIEWED_CONTROL_PLANE_IMAGE_AT_DIGEST",
         "worker": "REQUIRED_REVIEWED_WORKER_IMAGE_AT_DIGEST"
       },
+      "supply_chain": {
+        "signing_key_env": "ELMOS_RUNTIME_COSIGN_PUBLIC_KEY",
+        "signing_key_sha256": "REQUIRED_COSIGN_PUBLIC_KEY_SHA256",
+        "signature_verification": "cosign-key-v1",
+        "sbom_predicate_type": "https://cyclonedx.org/bom",
+        "provenance_predicate_type": "https://slsa.dev/provenance/v1"
+      },
+      "values_file_env": "ELMOS_RUNTIME_HELM_VALUES_FILE",
+      "values_file_sha256": "REQUIRED_RUNTIME_HELM_VALUES_SHA256",
       "atomic": true,
       "wait": true,
-      "timeout": "10m"
+      "timeout": "10m",
+      "disable_gate_after_validation": true
     }
   },
   "production_certification": "NOT_CERTIFIED"

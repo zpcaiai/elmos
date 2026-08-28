@@ -12,13 +12,15 @@
     "java_21_compile": "PASS",
     "control_plane_dependency_compile": "PASS",
     "postgresql_17_5_testcontainers": "PASS",
-    "tests": 23,
+    "tests": 51,
     "empty_database_v77_apply": "PASS",
     "database_role_installation": "PASS",
     "helm_lint_and_template": "PASS",
     "local_harness": "PASS",
     "local_pitr_wal_replay": "PASS",
-    "local_independent_verifier": "PASS"
+    "local_independent_verifier": "PASS",
+    "telemetry_contract_and_local_metrics": "PASS",
+    "deployment_supply_chain_contract": "PASS"
   },
   "external_evidence": {
     "provider_runtime": "NOT_RUN",

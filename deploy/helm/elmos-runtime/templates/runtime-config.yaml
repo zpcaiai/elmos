@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-worker-routes
+  labels:
+    {{- include "elmos-runtime.labels" . | nindent 4 }}
+data:
+  routes.json: |
+    {{- $routes := list -}}
+    {{- range .Values.worker.routes -}}
+      {{- $routes = append $routes (dict "job_type" .jobType "work_type" .workType "endpoint" .endpoint "reconciliation_endpoint" .reconciliationEndpoint "timeout_seconds" .timeoutSeconds) -}}
+    {{- end -}}
+    {{ dict "schema_version" 1 "routes" $routes | toJson | nindent 4 }}
+{{- if .Values.provider.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-provider-profiles
+  labels:
+    {{- include "elmos-runtime.labels" . | nindent 4 }}
+data:
+  profiles.json: |
+    {{- $profiles := list -}}
+    {{- range .Values.provider.profiles -}}
+      {{- $profiles = append $profiles (dict "provider" .provider "model" .model "protocol" .protocol "endpoint" .endpoint "credential_file" (printf "/var/run/elmos/provider/%s" .credentialKey) "request_timeout_seconds" .requestTimeoutSeconds "max_response_bytes" .maxResponseBytes) -}}
+    {{- end -}}
+    {{ dict "schema_version" 1 "profiles" $profiles | toJson | nindent 4 }}
+{{- end }}
+{{- if .Values.gate.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-gate-fixture
+  labels:
+    {{- include "elmos-runtime.labels" . | nindent 4 }}
+data:
+  fixture.json: |
+    {{ toJson .Values.gate.fixture | nindent 4 }}
+{{- end }}

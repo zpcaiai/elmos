@@ -22,7 +22,7 @@
     "StaleFence": {"status": "LOCAL_TEST_PASS", "test": "staleFenceCannotCommitTerminalResult"},
     "StreamingUsageReconciliation": {"status": "LOCAL_TEST_PASS", "test": "provisionsAggregateAndCompletesPrepaidDispatchSaga"},
     "TopUpReplay": {"status": "LOCAL_TEST_PASS", "test": "provisionsAggregateAndCompletesPrepaidDispatchSaga"},
-    "WorkerCrashCheckpointResume": {"status": "LOCAL_HARNESS_PASS", "test": "workerProcessKillResumesFromLatestDurableCheckpoint"}
+    "WorkerCrashCheckpointResume": {"status": "LOCAL_TEST_PASS", "test": "ProductionWorkerRestartRecoveryTest"}
   },
   "external_required": [
     "provider-runtime",
