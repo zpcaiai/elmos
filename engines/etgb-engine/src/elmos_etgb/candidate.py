@@ -17,7 +17,10 @@ _DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 
 
 def load_spec(path: Path) -> dict[str, Any]:
-    value = yaml.safe_load(path.read_text(encoding="utf-8")) if path.suffix.lower() in {".yaml", ".yml"} else __import__("json").loads(path.read_text(encoding="utf-8"))
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("candidate specification must be a regular file")
+    resolved = path.resolve(strict=True)
+    value = yaml.safe_load(resolved.read_text(encoding="utf-8")) if resolved.suffix.lower() in {".yaml", ".yml"} else __import__("json").loads(resolved.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
         raise ValueError("candidate specification must be an object")
     return value

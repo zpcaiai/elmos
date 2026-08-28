@@ -221,6 +221,66 @@ def evidence_binding(results: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
     ]
 
 
+def build_attestation_request(
+    *,
+    profile: str,
+    candidate_digest: str | None,
+    score: Mapping[str, Any],
+    validation: Mapping[str, Any],
+    coverage: Mapping[str, Any],
+    corpus: Mapping[str, Any],
+    evidence: Any,
+) -> dict[str, Any]:
+    """Build an unsigned, content-bound request for an independent verifier.
+
+    The request intentionally contains neither verifier identity nor signature.
+    It becomes eligible for external verification only after every local input
+    prerequisite is complete; it never creates an attestation itself.
+    """
+
+    if profile not in {"release", "golden"}:
+        raise AttestationError("attestation requests require release or golden profile")
+    subject = {
+        "candidate_digest": candidate_digest,
+        "score_digest": digest_json(score),
+        "validation_digest": digest_json(validation),
+        "coverage_digest": digest_json(coverage),
+        "corpus_digest": digest_json(corpus),
+        "evidence_digest": digest_json(evidence),
+    }
+    blockers: list[str] = []
+    if not isinstance(candidate_digest, str) or not _CANDIDATE_DIGEST.fullmatch(candidate_digest):
+        blockers.append("frozen candidate digest is missing or invalid")
+    if not bool(validation.get("valid")):
+        blockers.append("release package validation is not valid")
+    if not bool(coverage.get("complete")):
+        blockers.append("declared coverage is incomplete")
+    if not bool(score.get("complete_run")):
+        blockers.append("full release result scope is incomplete")
+    metrics = score.get("metrics")
+    if not isinstance(metrics, Mapping) or int(metrics.get("unapproved_corpus_count", 1)) != 0:
+        blockers.append("corpus license review evidence is incomplete")
+    if not evidence:
+        blockers.append("content-bound case evidence is missing")
+    request: dict[str, Any] = {
+        "schema_version": "1.0",
+        "request_type": "etgb-independent-release-attestation-request",
+        "profile": profile,
+        "status": "BLOCKED" if blockers else "READY_FOR_INDEPENDENT_VERIFICATION",
+        "signing_authorized": not blockers,
+        "subject": subject,
+        "required_separation": {
+            "executor_and_verifier_must_differ": True,
+            "verifier_key_must_be_active_and_non_revoked": True,
+            "attestation_must_be_expiring": True,
+        },
+        "blockers": blockers,
+        "certification_status": "NOT_CERTIFIED",
+    }
+    request["request_digest"] = digest_json(request)
+    return request
+
+
 def verify_signed_record(record: Mapping[str, Any], trust_store: Mapping[str, Any], *, record_type: str, now: dt.datetime | None = None, clock_skew_seconds: int = 300) -> dict[str, Any]:
     """Verify a generic signed governance record without accepting extra fields."""
 
@@ -257,6 +317,9 @@ def verify_signed_record(record: Mapping[str, Any], trust_store: Mapping[str, An
     try:
         signature = _decode_base64url(record.get("signature"), field="signed-record.signature")
         key = _key_record(trust_store, str(record.get("key_id")))
+        record_types = key.get("record_types")
+        if not isinstance(record_types, list) or record_type not in record_types or any(not isinstance(item, str) for item in record_types):
+            raise AttestationError(f"trust key is not authorized for signed record type {record_type}")
         not_before = _parse_time(key["not_before"], field="trust-key.not_before")
         not_after = _parse_time(key["not_after"], field="trust-key.not_after")
         if not_before > current or not_after <= current:

@@ -4,16 +4,21 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import tempfile
 from pathlib import Path
 from typing import Any
 
 from .attestation import load_json_object
 from .budget import estimate_machine_eta
 from .candidate import freeze_candidate_file, load_spec
+from .campaign import merge_release_results
 from .evidence import create_deterministic_bundle
-from .corpus import build_license_review_request
-from .orchestrator import build_plan, gate_profile, release_preflight, run_profile, select_cases
+from .corpus import build_license_review_request, verify_license_reviews
+from .external_harness import ExternalExecutionContext, ExternalHarnessRouter
+from .orchestrator import build_plan, gate_profile, release_attestation_request, release_preflight, run_profile, select_cases
 from .package import PACKAGE_ROOT_NAME
+from .planner import select_plan_shard, validate_plan
 from .policy import authorize, load_document
 from .registry import SkillRegistry
 from .scoring import score_results
@@ -41,6 +46,21 @@ def _write_json(path: Path, value: Any) -> None:
     temporary.replace(path)
 
 
+def _write_jsonl(path: Path, values: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            for value in values:
+                handle.write(json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="elmos-etgb")
     parser.add_argument("--package-root", type=Path, help="immutable extracted ETGB source package")
@@ -51,8 +71,9 @@ def main(argv: list[str] | None = None) -> int:
     validate.add_argument("--archive", type=Path)
     validate.add_argument("--extracted", type=Path)
     validate.add_argument("--trust-store", type=Path)
+    validate.add_argument("--license-reviews", type=Path)
     sub.add_parser("coverage")
-    skills = sub.add_parser("skills")
+    sub.add_parser("skills")
     plan = sub.add_parser("plan")
     plan.add_argument("--changed-from")
     plan.add_argument("--history", type=Path)
@@ -60,6 +81,7 @@ def main(argv: list[str] | None = None) -> int:
     plan.add_argument("--seed", type=int, default=17)
     plan.add_argument("--shards", type=int, default=8)
     plan.add_argument("--candidate-digest")
+    plan.add_argument("--profile", choices=["release", "golden"])
     plan.add_argument("--output", type=Path, required=True)
     run = sub.add_parser("run")
     run.add_argument("--profile", choices=["smoke", "pr", "nightly", "weekly", "release", "golden", "exhaustive"], required=True)
@@ -67,6 +89,7 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--priority", choices=["P0", "P1", "P2"])
     run.add_argument("--case-id")
     run.add_argument("--plan", type=Path)
+    run.add_argument("--shard-id", type=int)
     run.add_argument("--limit", type=int)
     run.add_argument("--allow-unavailable", action="store_true")
     run.add_argument("--output", type=Path, required=True)
@@ -76,6 +99,23 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--owner")
     run.add_argument("--resume", action="store_true")
     run.add_argument("--candidate", type=Path)
+    run.add_argument("--trust-store", type=Path)
+    run.add_argument("--license-reviews", type=Path)
+    run.add_argument("--harness-config", type=Path)
+    run.add_argument("--tenant-id")
+    run.add_argument("--project-id")
+    run.add_argument("--task-id")
+    run.add_argument("--environment-id")
+    run.add_argument("--authority-id")
+    run.add_argument("--fencing-token", type=int)
+    run.add_argument("--checkpoint-digest")
+    merge = sub.add_parser("merge-results")
+    merge.add_argument("--plan", type=Path, required=True)
+    merge.add_argument("--result", type=Path, action="append", required=True)
+    merge.add_argument("--candidate-digest", required=True)
+    merge.add_argument("--trust-store", type=Path, required=True)
+    merge.add_argument("--output", type=Path, required=True)
+    merge.add_argument("--receipt", type=Path, required=True)
     score = sub.add_parser("score")
     score.add_argument("results", type=Path)
     score.add_argument("--output", type=Path)
@@ -83,6 +123,7 @@ def main(argv: list[str] | None = None) -> int:
     score.add_argument("--complete", action="store_true")
     score.add_argument("--release", action="store_true")
     score.add_argument("--trust-store", type=Path)
+    score.add_argument("--license-reviews", type=Path)
     gate = sub.add_parser("gate")
     gate.add_argument("results", type=Path)
     gate.add_argument("--profile", choices=["smoke", "pr", "nightly", "weekly", "release", "golden", "exhaustive"], required=True)
@@ -92,14 +133,33 @@ def main(argv: list[str] | None = None) -> int:
     gate.add_argument("--attestation", type=Path)
     gate.add_argument("--trust-store", type=Path)
     gate.add_argument("--candidate-digest")
+    gate.add_argument("--license-reviews", type=Path)
+    gate.add_argument("--plan", type=Path)
     preflight = sub.add_parser("preflight")
     preflight.add_argument("--profile", choices=["release", "golden"], default="release")
     preflight.add_argument("--results", type=Path)
     preflight.add_argument("--candidate-digest")
     preflight.add_argument("--trust-store", type=Path)
+    preflight.add_argument("--license-reviews", type=Path)
+    preflight.add_argument("--plan", type=Path)
     preflight.add_argument("--output", type=Path, required=True)
     review_request = sub.add_parser("corpus-review-request")
     review_request.add_argument("--output", type=Path, required=True)
+    review_verify = sub.add_parser("corpus-review-verify")
+    review_verify.add_argument("--records", type=Path, required=True)
+    review_verify.add_argument("--trust-store", type=Path, required=True)
+    review_verify.add_argument("--output", type=Path)
+    attestation_request = sub.add_parser("attestation-request")
+    attestation_request.add_argument("results", type=Path)
+    attestation_request.add_argument("--profile", choices=["release", "golden"], default="release")
+    attestation_request.add_argument("--candidate-digest", required=True)
+    attestation_request.add_argument("--trust-store", type=Path)
+    attestation_request.add_argument("--license-reviews", type=Path)
+    attestation_request.add_argument("--plan", type=Path, required=True)
+    attestation_request.add_argument("--output", type=Path, required=True)
+    harness_preflight = sub.add_parser("harness-preflight")
+    harness_preflight.add_argument("--config", type=Path, required=True)
+    harness_preflight.add_argument("--output", type=Path)
     freeze = sub.add_parser("freeze-candidate")
     freeze.add_argument("input", type=Path)
     freeze.add_argument("--output", type=Path, required=True)
@@ -133,8 +193,8 @@ def main(argv: list[str] | None = None) -> int:
         extracted = args.extracted.resolve() if args.extracted else None
         if not archive.exists():
             archive = repo_root / "skills/subskills" / f"{PACKAGE_ROOT_NAME}.tar.gz"
-        trust_store = load_json_object(args.trust_store.resolve()) if getattr(args, "trust_store", None) else None
-        result = validate_package(package_root, release=args.release, archive=archive if archive.exists() else None, extracted=extracted, trust_store=trust_store)
+        trust_store = load_json_object(args.trust_store) if getattr(args, "trust_store", None) else None
+        result = validate_package(package_root, release=args.release, archive=archive if archive.exists() else None, extracted=extracted, trust_store=trust_store, license_reviews_path=args.license_reviews if args.license_reviews else None)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result["valid"] else 2
     if args.command == "coverage":
@@ -146,28 +206,97 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     if args.command == "plan":
-        result = build_plan(package_root, changed_from=args.changed_from, root_for_git=repo_root, history_path=args.history, max_cases=args.max_cases, seed=args.seed, shard_count=args.shards, candidate_digest=args.candidate_digest)
+        result = build_plan(package_root, changed_from=args.changed_from, root_for_git=repo_root, history_path=args.history, max_cases=args.max_cases, seed=args.seed, shard_count=args.shards, candidate_digest=args.candidate_digest, profile=args.profile)
         _write_json(args.output, result)
         print(json.dumps({"output": str(args.output), "selected": len(result["case_ids"]), "affected": result["affected_business_lines"], "plan_digest": result["plan_digest"]}, ensure_ascii=False, indent=2))
         return 0
     if args.command == "run":
         plan_ids = None
+        plan_value = None
         if args.plan:
-            plan_value = json.loads(args.plan.read_text(encoding="utf-8"))
-            plan_ids = set(plan_value.get("case_ids", []))
+            plan_value = load_json_object(args.plan)
+            plan_errors = validate_plan(plan_value)
+            if plan_errors:
+                raise ValueError("invalid run plan: " + "; ".join(plan_errors))
+            if plan_value.get("profile") and plan_value.get("profile") != args.profile:
+                raise ValueError("run profile does not match the digest-bound plan profile")
+            plan_ids = select_plan_shard(plan_value, args.shard_id) if args.shard_id is not None else set(plan_value.get("case_ids", []))
+        elif args.shard_id is not None:
+            raise ValueError("--shard-id requires --plan")
         cases = select_cases(package_root, profile=args.profile, business_line=args.business_line, priority=args.priority, case_id=args.case_id, plan_ids=plan_ids, limit=args.limit)
-        candidate = load_spec(args.candidate.resolve()) if args.candidate else None
-        results, score_value = run_profile(package_root, cases, profile=args.profile, output=args.output.resolve(), state_db=args.state_db.resolve() if args.state_db else None, artifact_root=args.artifact_root.resolve() if args.artifact_root else repo_root / ".etgb" / "evidence", allow_unavailable=args.allow_unavailable, owner=args.owner, run_id=args.run_id, resume=args.resume, candidate=candidate)
+        candidate = load_spec(args.candidate) if args.candidate else None
+        trust_store = load_json_object(args.trust_store) if args.trust_store else None
+        external_router = None
+        external_context = None
+        if args.harness_config:
+            required_context = {
+                "--plan": args.plan,
+                "--candidate": args.candidate,
+                "--tenant-id": args.tenant_id,
+                "--project-id": args.project_id,
+                "--task-id": args.task_id,
+                "--environment-id": args.environment_id,
+                "--authority-id": args.authority_id,
+                "--owner": args.owner,
+                "--fencing-token": args.fencing_token,
+                "--checkpoint-digest": args.checkpoint_digest,
+            }
+            missing = sorted(key for key, value in required_context.items() if value is None)
+            if missing:
+                raise ValueError("external Harness execution requires " + ", ".join(missing))
+            if not isinstance(plan_value, dict) or not isinstance(candidate, dict):
+                raise ValueError("external Harness execution requires loaded plan and candidate objects")
+            if plan_value.get("candidate_digest") != candidate.get("candidate_digest"):
+                raise ValueError("run plan and frozen candidate digest do not match")
+            external_router = ExternalHarnessRouter.load(args.harness_config)
+            external_context = ExternalExecutionContext(
+                tenant_id=str(args.tenant_id),
+                project_id=str(args.project_id),
+                task_id=str(args.task_id),
+                candidate_digest=str(candidate["candidate_digest"]),
+                plan_digest=str(plan_value["plan_digest"]),
+                environment_id=str(args.environment_id),
+                authority_id=str(args.authority_id),
+                owner_id=str(args.owner),
+                fencing_token=int(args.fencing_token),
+                checkpoint_digest=str(args.checkpoint_digest),
+            )
+        results, score_value = run_profile(
+            package_root,
+            cases,
+            profile=args.profile,
+            output=args.output.resolve(),
+            state_db=args.state_db.resolve() if args.state_db else None,
+            artifact_root=args.artifact_root.resolve() if args.artifact_root else repo_root / ".etgb" / "evidence",
+            allow_unavailable=args.allow_unavailable,
+            owner=args.owner,
+            run_id=args.run_id,
+            resume=args.resume,
+            candidate=candidate,
+            external_router=external_router,
+            external_context=external_context,
+            trust_store=trust_store,
+            license_reviews_path=args.license_reviews if args.license_reviews else None,
+        )
         print(json.dumps({"selected": len(cases), "results": len(results), "output": str(args.output), "score": score_value}, ensure_ascii=False, indent=2))
         return 0 if all(result["status"] in {"passed", "unavailable", "skipped"} for result in results) and (args.allow_unavailable or all(result["status"] == "passed" for result in results)) else 2
+    if args.command == "merge-results":
+        plan_value = load_json_object(args.plan)
+        trust_store = load_json_object(args.trust_store)
+        results, receipt = merge_release_results(package_root, plan_value, args.result, candidate_digest=args.candidate_digest, trust_store=trust_store)
+        _write_json(args.receipt, receipt)
+        if receipt["status"] == "MERGED":
+            _write_jsonl(args.output, results)
+        print(json.dumps({"output": str(args.output), "receipt": str(args.receipt), **receipt}, ensure_ascii=False, indent=2))
+        return 0 if receipt["status"] == "MERGED" else 2
     if args.command == "score":
         results = _read_jsonl(args.results)
         errors = validate_results(results, package_root)
         if errors:
             print(json.dumps({"valid": False, "errors": errors[:50]}, ensure_ascii=False, indent=2))
             return 2
-        trust_store = load_json_object(args.trust_store.resolve()) if args.trust_store else None
-        result = score_results(results, package_root, expected_count=args.expected_count, complete=True if args.complete else None, corpus_release=args.release, trust_store=trust_store)
+        trust_store = load_json_object(args.trust_store) if args.trust_store else None
+        result = score_results(results, package_root, expected_count=args.expected_count, complete=True if args.complete else None, corpus_release=args.release, trust_store=trust_store, license_reviews_path=args.license_reviews if args.license_reviews else None)
         if args.output:
             _write_json(args.output, result)
         print(json.dumps(result, ensure_ascii=False, indent=2))
@@ -177,7 +306,7 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps({"output": str(args.output), "candidate_digest": result["candidate_digest"]}, ensure_ascii=False, indent=2))
         return 0
     if args.command == "eta":
-        plan = json.loads(args.plan.read_text(encoding="utf-8")); ids = set(plan.get("case_ids", [])); cases = select_cases(package_root, plan_ids=ids)
+        plan = load_json_object(args.plan); ids = set(plan.get("case_ids", [])); cases = select_cases(package_root, plan_ids=ids)
         history = _read_jsonl(args.history) if args.history else []
         result = estimate_machine_eta(cases, history, concurrency=args.concurrency)
         if args.output: _write_json(args.output, result)
@@ -200,17 +329,19 @@ def main(argv: list[str] | None = None) -> int:
         result = decision.as_dict(); print(json.dumps(result, ensure_ascii=False, indent=2)); return 0 if decision.allowed else 2
     if args.command == "gate":
         results = _read_jsonl(args.results)
-        attestation = load_json_object(args.attestation.resolve()) if args.attestation else None
-        trust_store = load_json_object(args.trust_store.resolve()) if args.trust_store else None
-        result = gate_profile(package_root, results, profile=args.profile, external_attested=args.external_attested, independent_verifier=args.independent_verifier, external_attestation=attestation, trust_store=trust_store, candidate_digest=args.candidate_digest)
+        attestation = load_json_object(args.attestation) if args.attestation else None
+        trust_store = load_json_object(args.trust_store) if args.trust_store else None
+        plan_value = load_json_object(args.plan) if args.plan else None
+        result = gate_profile(package_root, results, profile=args.profile, external_attested=args.external_attested, independent_verifier=args.independent_verifier, external_attestation=attestation, trust_store=trust_store, candidate_digest=args.candidate_digest, license_reviews_path=args.license_reviews if args.license_reviews else None, plan=plan_value)
         if args.output:
             _write_json(args.output, result)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result["decision"] in {"PROMOTE", "READY_FOR_EXTERNAL_GATE"} else 2
     if args.command == "preflight":
         results = _read_jsonl(args.results) if args.results else None
-        trust_store = load_json_object(args.trust_store.resolve()) if args.trust_store else None
-        result = release_preflight(package_root, profile=args.profile, results=results, candidate_digest=args.candidate_digest, trust_store=trust_store)
+        trust_store = load_json_object(args.trust_store) if args.trust_store else None
+        plan_value = load_json_object(args.plan) if args.plan else None
+        result = release_preflight(package_root, profile=args.profile, results=results, candidate_digest=args.candidate_digest, trust_store=trust_store, license_reviews_path=args.license_reviews if args.license_reviews else None, plan=plan_value)
         _write_json(args.output, result)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result["status"] == "READY_FOR_EXTERNAL_GATE" else 2
@@ -219,6 +350,26 @@ def main(argv: list[str] | None = None) -> int:
         _write_json(args.output, result)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
+    if args.command == "corpus-review-verify":
+        trust_store = load_json_object(args.trust_store)
+        result = verify_license_reviews(package_root, release=True, trust_store=trust_store, records_path=args.records)
+        if args.output:
+            _write_json(args.output, result)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["valid"] and result["unapproved"] == 0 else 2
+    if args.command == "attestation-request":
+        results = _read_jsonl(args.results)
+        trust_store = load_json_object(args.trust_store) if args.trust_store else None
+        result = release_attestation_request(package_root, results, profile=args.profile, candidate_digest=args.candidate_digest, trust_store=trust_store, license_reviews_path=args.license_reviews if args.license_reviews else None, plan=load_json_object(args.plan))
+        _write_json(args.output, result)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["status"] == "READY_FOR_INDEPENDENT_VERIFICATION" else 2
+    if args.command == "harness-preflight":
+        result = ExternalHarnessRouter.load(args.config).capability_report()
+        if args.output:
+            _write_json(args.output, result)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["status"] == "READY_FOR_EXTERNAL_EXECUTION_CONFIG" else 2
     if args.command == "bundle":
         result = create_deterministic_bundle(args.source, args.output)
         print(json.dumps(result, ensure_ascii=False, indent=2))
