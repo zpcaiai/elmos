@@ -337,20 +337,24 @@ class FlywayMigrationTest {
 
         var executionStore = new JdbcExecutionJobStore(
                 jdbc, transactions, new com.fasterxml.jackson.databind.ObjectMapper());
+        var executionContext = new io.elmos.workflow.ExecutionJobPort.AuthenticatedContext(
+                organization, ownerAccount, ownerActor, "request-v74-image-read");
         String availableImage = "registry.example.test/elmos/generation@sha256:" + "1".repeat(64);
         String absentImage = "registry.example.test/elmos/generation@sha256:" + "2".repeat(64);
         executionStore.enqueue(new io.elmos.workflow.ExecutionJobPort.EnqueueCommand(
-                "job-v74-image-local", organization, ownerActor,
+                "job-v74-image-local", organization, ownerAccount, ownerActor,
                 io.elmos.workflow.ExecutionJobPort.BusinessLine.GENERATION,
                 "project-generation", "idem-v74-image-local", "3".repeat(64),
                 java.util.Map.of("target", "java"), "generation:multi", availableImage,
-                (short) 100, 600, (short) 3));
+                (short) 100, 600, (short) 3,
+                "request-v74-image-local", "GENERATION", 2));
         executionStore.enqueue(new io.elmos.workflow.ExecutionJobPort.EnqueueCommand(
-                "job-v74-image-absent", organization, ownerActor,
+                "job-v74-image-absent", organization, ownerAccount, ownerActor,
                 io.elmos.workflow.ExecutionJobPort.BusinessLine.GENERATION,
                 "project-generation", "idem-v74-image-absent", "4".repeat(64),
                 java.util.Map.of("target", "python"), "generation:multi", absentImage,
-                (short) 100, 600, (short) 3));
+                (short) 100, 600, (short) 3,
+                "request-v74-image-absent", "GENERATION", 2));
 
         var imageBoundLeases = executionStore.claim(
                 "runner-test-1", java.util.List.of("generation:multi"),
@@ -358,11 +362,27 @@ class FlywayMigrationTest {
         assertEquals(1, imageBoundLeases.size());
         assertEquals("job-v74-image-local", imageBoundLeases.getFirst().jobId());
         assertEquals(io.elmos.workflow.ExecutionJobPort.Status.QUEUED,
-                executionStore.find(organization, "job-v74-image-absent").orElseThrow().status(),
+                executionStore.find(executionContext, "job-v74-image-absent")
+                        .orElseThrow().status(),
                 "an image absent from the runner must remain queued and unleased");
         assertEquals((short) 0,
-                executionStore.find(organization, "job-v74-image-absent").orElseThrow().attempt(),
+                executionStore.find(executionContext, "job-v74-image-absent")
+                        .orElseThrow().attempt(),
                 "a rejected placement must not consume an attempt");
+        assertEquals(1, jdbc.sql("""
+                SELECT count(*)
+                  FROM pg_proc
+                 WHERE proname = 'elmos_mtf_claim_execution_jobs'
+                   AND pronargs = 7
+                """).query(Integer.class).single(),
+                "V77.4 must install the image-bound MTF claim function");
+        assertEquals(0, jdbc.sql("""
+                SELECT count(*)
+                  FROM pg_proc
+                 WHERE proname = 'elmos_mtf_claim_execution_jobs'
+                   AND pronargs = 6
+                """).query(Integer.class).single(),
+                "the legacy MTF claim function must not bypass local-image placement");
         assertThrows(io.elmos.workflow.ExecutionJobPort.ExecutionStateException.class,
                 () -> executionStore.claim(
                         "runner-test-1", java.util.List.of("generation:multi"),

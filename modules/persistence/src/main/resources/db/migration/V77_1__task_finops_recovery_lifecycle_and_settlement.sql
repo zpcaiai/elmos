@@ -1744,9 +1744,9 @@ BEGIN
            OR v_existing.period_start IS DISTINCT FROM p_period_start
            OR v_existing.period_end IS DISTINCT FROM p_period_end
            OR v_existing.currency IS DISTINCT FROM p_currency::char(3)
-           OR v_existing.provider_reported_minor IS DISTINCT FROM CASE
+           OR v_existing.provider_reported_minor IS DISTINCT FROM (CASE
                 WHEN p_provider_reported_minor IS NULL THEN NULL
-                ELSE elmos_mtf_round_half_even(p_provider_reported_minor, 6) END
+                ELSE elmos_mtf_round_half_even(p_provider_reported_minor, 6) END)
            OR v_existing.ledger_recorded_minor IS DISTINCT FROM
                 elmos_mtf_round_half_even(p_ledger_recorded_minor, 6)
            OR v_existing.difference_minor IS DISTINCT FROM v_difference

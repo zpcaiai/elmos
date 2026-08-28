@@ -1,4 +1,4 @@
--- ELMOS V65: authoritative state for the content-addressed store and the action cache.
+-- ELMOS V65.1: authoritative state for the content-addressed store and the action cache.
 --
 -- The content itself lives in object storage; this schema holds only what must be
 -- transactional, queryable, or authorising:

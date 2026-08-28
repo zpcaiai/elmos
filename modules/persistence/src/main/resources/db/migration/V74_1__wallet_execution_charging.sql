@@ -1,4 +1,4 @@
--- ELMOS V74: charge execution jobs against the prepaid wallet.
+-- ELMOS V74.1: charge execution jobs against the prepaid wallet.
 --
 -- Why this migration exists
 -- -------------------------
@@ -46,7 +46,7 @@ CREATE TABLE wallet_enforcement_settings (
     catalog_version varchar(64) NOT NULL,
     reservation_ttl_seconds integer NOT NULL DEFAULT 14400
         CHECK (reservation_ttl_seconds BETWEEN 300 AND 172800),
-    updated_by varchar(128) NOT NULL DEFAULT 'migration:V74',
+    updated_by varchar(128) NOT NULL DEFAULT 'migration:V74.1',
     updated_at timestamptz NOT NULL DEFAULT now()
 );
 
@@ -343,7 +343,7 @@ BEGIN
         RAISE EXCEPTION 'ELMOS_EXECUTION_QUEUE_DEPTH_EXCEEDED';
     END IF;
 
-    -- ---- V74: the charge -------------------------------------------------
+    -- ---- V74.1: the charge -----------------------------------------------
     -- Deliberately after the idempotency check, so a retried enqueue returns
     -- the existing job without taking a second hold; and before every insert,
     -- so a refusal leaves no job, no dispatch row and no event behind.
@@ -352,7 +352,7 @@ BEGIN
     PERFORM elmos_wallet_admit_job(
         p_organization_id, p_job_id, p_actor_id,
         p_business_line, p_job_kind, p_budget_wall_seconds);
-    -- ---- end V74 ---------------------------------------------------------
+    -- ---- end V74.1 -------------------------------------------------------
 
     INSERT INTO execution_jobs (
         job_id, organization_id, actor_id, business_line, job_kind,

@@ -1,4 +1,4 @@
--- ELMOS Production Repository Execution OS v1.2.0
+-- ELMOS isolated production-runtime Flyway V1, runtime contract v1.2.0
 -- PostgreSQL is authoritative. Redis/cache providers are intentionally absent
 -- from this migration because losing them must not lose work or money.
 

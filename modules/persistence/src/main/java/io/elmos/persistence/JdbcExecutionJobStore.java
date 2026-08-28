@@ -247,11 +247,13 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
         return transactions.execute(status -> mapDomainErrors(() -> {
             List<LeaseGrant> grants = jdbc.sql("""
                     SELECT * FROM elmos_mtf_claim_execution_jobs(
-                        :runnerNodeId, cast(:capabilities AS text[]), :limit, :leaseSeconds,
+                        :runnerNodeId, cast(:capabilities AS text[]),
+                        cast(:availableImages AS text[]), :limit, :leaseSeconds,
                         cast(:leaseIds AS text[]), cast(:tokenHashes AS text[]))
                     """)
                     .param("runnerNodeId", runnerNodeId)
                     .param("capabilities", toPgArray(capabilities))
+                    .param("availableImages", toPgArray(availableImages))
                     .param("limit", bounded)
                     .param("leaseSeconds", leaseSeconds)
                     .param("leaseIds", toPgArray(leaseIds))

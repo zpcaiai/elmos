@@ -170,8 +170,12 @@ public final class JdbcTaskFinopsOperationsStore implements TaskFinopsOperations
                        requested_at, completed_at
                   from task_tenant_lifecycle_jobs
                  where lifecycle_job_id = :jobId
+                   and organization_id = :organization
+                   and account_id = :account
                 """)
                 .param("jobId", lifecycleJobId)
+                .param("organization", context.organizationId())
+                .param("account", context.accountId())
                 .query(this::readLifecycleStatus)
                 .optional());
     }

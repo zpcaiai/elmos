@@ -19,6 +19,7 @@ REQUIRED_EXTERNAL_KEYS = {
     "redis_loss",
     "backup_pitr",
     "independent_verification",
+    "production_deployment",
     "production_certification",
 }
 REQUIRED_LOCAL_SCENARIOS = {

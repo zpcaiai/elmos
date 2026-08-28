@@ -51,6 +51,8 @@ class MultitenantTaskFinopsRuntimeIntegrationTest {
     private static final String MEMBER_ACTOR = "actor-mtf-runtime-member";
     private static final String RUNNER = "runner-mtf-runtime-1";
     private static final String REGISTERED_CAPABILITY = "generation:multi";
+    private static final String RUNNER_IMAGE =
+            "registry.integration.test/elmos/generation@sha256:" + "a".repeat(64);
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES =
@@ -158,7 +160,7 @@ class MultitenantTaskFinopsRuntimeIntegrationTest {
         // runner capabilities instead. V77 owns this repository compatibility
         // boundary; the packaged V100-V102 references remain NOT_APPLIED.
         var firstClaims = jobs.claim(
-                RUNNER, List.of("translation:multi"), 4, 120);
+                RUNNER, List.of("translation:multi"), List.of(RUNNER_IMAGE), 4, 120);
         assertEquals(3, firstClaims.size(),
                 "an account may occupy exactly three root-task slots");
         assertEquals(
@@ -240,7 +242,8 @@ class MultitenantTaskFinopsRuntimeIntegrationTest {
         assertEquals(2, afterRelease.activeRootTasks());
         assertEquals(1, afterRelease.waitingRootTasks());
         assertEquals(1, afterRelease.availableRootSlots());
-        var fourthClaim = jobs.claim(RUNNER, List.of("untrusted:body-value"), 1, 120);
+        var fourthClaim = jobs.claim(
+                RUNNER, List.of("untrusted:body-value"), List.of(RUNNER_IMAGE), 1, 120);
         assertEquals(1, fourthClaim.size());
         assertEquals(jobIds.get(3), fourthClaim.getFirst().jobId(),
                 "releasing a slot must admit the fourth account task");
@@ -467,7 +470,7 @@ class MultitenantTaskFinopsRuntimeIntegrationTest {
                 true,
                 true,
                 "allowlist-mtf-runtime-v1").runnerNodeId());
-        runners.verifyAttestation(RUNNER, verifierActorId);
+        runners.verifyAttestation(ORGANIZATION, RUNNER, verifierActorId);
         assertFalse(runners.heartbeat(RUNNER, nodeToken));
         assertEquals(REGISTERED_CAPABILITY, jdbc.sql("""
                 select capabilities[1]
@@ -495,7 +498,7 @@ class MultitenantTaskFinopsRuntimeIntegrationTest {
                 sha256("request:" + jobId),
                 Map.of("fixture", "synthetic", "jobId", jobId),
                 REGISTERED_CAPABILITY,
-                "registry.integration.test/elmos/generation@sha256:" + "a".repeat(64),
+                RUNNER_IMAGE,
                 (short) 100,
                 3600,
                 (short) 1,

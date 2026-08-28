@@ -238,11 +238,11 @@ public final class TaskFinopsAdmissionPolicy {
                 return delay(request.context(), Reason.TENANT_ACTIVE_ROOT_QUOTA_EXCEEDED);
             }
             projectedAccountActive++;
-            if (projectedAccountActive > limits.accountActiveRootLimit()) {
-                return delay(request.context(), Reason.ACCOUNT_ACTIVE_ROOT_QUOTA_EXCEEDED);
-            }
             if (projectedAccountActive > limits.platformActiveRootLimit()) {
                 return delay(request.context(), Reason.PLATFORM_ACTIVE_ROOT_QUOTA_EXCEEDED);
+            }
+            if (projectedAccountActive > limits.accountActiveRootLimit()) {
+                return delay(request.context(), Reason.ACCOUNT_ACTIVE_ROOT_QUOTA_EXCEEDED);
             }
         } else {
             long projectedTenantQueued = (long) usage.tenantQueuedRootTasks() + 1;

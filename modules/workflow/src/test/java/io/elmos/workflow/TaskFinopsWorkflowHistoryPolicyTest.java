@@ -2,7 +2,6 @@ package io.elmos.workflow;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.time.Instant;
 import org.junit.jupiter.api.Test;
 
 class TaskFinopsWorkflowHistoryPolicyTest {
@@ -24,7 +23,7 @@ class TaskFinopsWorkflowHistoryPolicyTest {
     void duplicateStartWithUnknownOutcomeRequiresReconciliation() {
         TaskFinopsPort.AuthenticatedContext context =
                 new TaskFinopsPort.AuthenticatedContext(
-                        "org-1", "acct-1", "actor-1", "req-1", "SESSION");
+                        "org-1", "acct-1", "actor-1", "req-1");
         TaskFinopsWorkflowStartPayload payload = TaskFinopsWorkflowStartPayload.forTask(
                 context, "task-1", 1, TaskFinopsPolicy.WorkloadClass.PARSING,
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");

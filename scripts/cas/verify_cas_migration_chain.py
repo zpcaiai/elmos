@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Applies the whole CAS migration chain (V65 -> V66 -> V67 -> V69) to a real PostgreSQL
+"""Applies the whole CAS migration chain (V65.1 -> V66 -> V67 -> V69) to a real PostgreSQL
 and asserts the invariants that only a live database can show.
 
 Why this exists separately from verify_v65_migration.py: V66, V67 and V69 each turn
@@ -28,7 +28,7 @@ except ModuleNotFoundError as missing:  # pragma: no cover - environment guard
         "(no Docker and no running server required)")
 
 CHAIN = [
-    "V65__content_addressed_store_and_action_cache.sql",
+    "V65_1__content_addressed_store_and_action_cache.sql",
     "V66__cas_resource_bindings_and_complete_metadata.sql",
     "V67__durable_action_cache_index.sql",
     "V69__action_cache_detached_signature_bytes.sql",

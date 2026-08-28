@@ -25,19 +25,19 @@ class TaskFinopsWorkflowStartPayloadTest {
         assertEquals(DIGEST, payload.payload().requestDigest());
         assertEquals(payload.payloadDigest(), payload.searchAttributes().get(
                 TaskFinopsWorkflowStartPayload.PAYLOAD_DIGEST_ATTRIBUTE));
-        assertEquals(Map.of(
-                "organization_id", "org-a",
-                "account_id", "account-a",
-                "actor_id", "actor-a",
-                "request_id", "request-a",
-                "task_id", "task-a",
-                "run_number", "1",
-                "workflow_id", "mtf-task-a",
-                "workload_class", "GENERATION",
-                "policy_version", WorkloadAwareScheduler.POLICY_VERSION,
-                "schema_version", TaskFinopsWorkflowStartPayload.SCHEMA_VERSION,
-                "payload_version", "1",
-                "payload_digest", payload.payloadDigest()),
+        assertEquals(Map.ofEntries(
+                Map.entry("organization_id", "org-a"),
+                Map.entry("account_id", "account-a"),
+                Map.entry("actor_id", "actor-a"),
+                Map.entry("request_id", "request-a"),
+                Map.entry("task_id", "task-a"),
+                Map.entry("run_number", "1"),
+                Map.entry("workflow_id", "mtf-task-a"),
+                Map.entry("workload_class", "GENERATION"),
+                Map.entry("policy_version", WorkloadAwareScheduler.POLICY_VERSION),
+                Map.entry("schema_version", TaskFinopsWorkflowStartPayload.SCHEMA_VERSION),
+                Map.entry("payload_version", "1"),
+                Map.entry("payload_digest", payload.payloadDigest())),
                 payload.searchAttributes());
         assertThrows(UnsupportedOperationException.class, () ->
                 payload.searchAttributes().put("task_id", "other-task"));
