@@ -20,6 +20,7 @@ const PREFERENCE_KEY = "elmos:telemetry-enabled:v1";
 const MAX_QUEUE = 200;
 const BATCH_SIZE = 20;
 const FLUSH_INTERVAL_MS = 2_000;
+const MAX_RETRY_DELAY_MS = 60_000;
 
 let collectorInstalled = false;
 
@@ -184,6 +185,8 @@ export function UserActivityCollector() {
     let queue = loadQueue();
     let inFlight = false;
     let stopped = false;
+    let retryNotBefore = 0;
+    let retryAttempt = 0;
     let enabled = true;
     try {
       enabled = localStorage.getItem(PREFERENCE_KEY) !== "off";
@@ -217,7 +220,7 @@ export function UserActivityCollector() {
     }
 
     async function flush() {
-      if (stopped || inFlight || queue.length === 0) return;
+      if (stopped || inFlight || queue.length === 0 || Date.now() < retryNotBefore) return;
       inFlight = true;
       const batch = queue.slice(0, BATCH_SIZE);
       try {
@@ -232,9 +235,49 @@ export function UserActivityCollector() {
           const sent = new Set(batch.map((event) => event.eventId));
           queue = queue.filter((event) => !sent.has(event.eventId));
           saveQueue(queue);
+          retryAttempt = 0;
+          retryNotBefore = 0;
+        } else {
+          let retryable = response.status >= 500 || response.status === 429;
+          let retryAfterMs: number | undefined;
+          try {
+            const retryAfter = response.headers.get("Retry-After");
+            if (retryAfter && /^\d+$/.test(retryAfter)) {
+              retryAfterMs = Math.min(MAX_RETRY_DELAY_MS, Number(retryAfter) * 1_000);
+            }
+            const body = await response.clone().json() as { retryable?: unknown };
+            if (typeof body.retryable === "boolean") retryable = body.retryable;
+          } catch {
+            // A non-JSON upstream response still follows the status fallback above.
+          }
+          if (!retryable) {
+            // Validation, authentication and missing-configuration failures cannot
+            // be repaired by replaying the same client batch. Drop the bounded
+            // queue and pause this page instance so the collector does not turn a
+            // fail-closed response into a request storm. An explicit preference
+            // event or a new page load can re-enable collection later.
+            enabled = false;
+            queue = [];
+            saveQueue(queue);
+            retryAttempt = 0;
+            retryNotBefore = 0;
+          } else {
+            const exponentialDelay = Math.min(
+              MAX_RETRY_DELAY_MS,
+              1_000 * 2 ** Math.min(retryAttempt, 6),
+            );
+            retryNotBefore = Date.now() + Math.max(retryAfterMs ?? 0, exponentialDelay);
+            retryAttempt += 1;
+          }
         }
       } catch {
-        // Keep the bounded queue for a later retry. Never log the telemetry failure through itself.
+        // Keep the bounded queue for a later retry, but back off so a down
+        // telemetry dependency cannot amplify its own outage.
+        retryNotBefore = Date.now() + Math.min(
+          MAX_RETRY_DELAY_MS,
+          1_000 * 2 ** Math.min(retryAttempt, 6),
+        );
+        retryAttempt += 1;
       } finally {
         inFlight = false;
       }
