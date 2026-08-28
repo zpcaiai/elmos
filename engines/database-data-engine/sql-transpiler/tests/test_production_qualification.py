@@ -12,6 +12,7 @@ import pytest
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
+import elmos_sql_transpiler.production_qualification as qualification_module
 from elmos_sql_transpiler.cli import main
 from elmos_sql_transpiler.production_qualification import (
     REQUIRED_EXTERNAL_OPERATIONS,
@@ -24,6 +25,7 @@ from elmos_sql_transpiler.production_qualification import (
     production_trust_store_digest,
     qualification_result_is_currently_fail_closed,
     signed_envelope,
+    target_qualification_input_digest,
 )
 
 NOW = datetime(2026, 8, 28, 12, 0, tzinfo=UTC)
@@ -347,6 +349,38 @@ def test_all_13_targets_require_a_valid_four_envelope_chain() -> None:
     assert {target["state"] for target in result["targets"]} == {
         "PRODUCTION_DEFINITION_OF_DONE"
     }
+
+
+def test_capability_snapshot_drift_invalidates_the_signed_chain(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    request, trust_store, keys = _complete_inputs()
+    _sign_all_receipts(request, trust_store, keys)
+    original_digest = target_qualification_input_digest(request, "dm8", now=NOW)
+    capabilities = deepcopy(qualification_module.commercial_capabilities())
+    replacement_snapshot = "sha256:" + "b" * 64
+    capabilities["capabilitySnapshotDigest"] = replacement_snapshot
+    monkeypatch.setattr(
+        qualification_module,
+        "commercial_capabilities",
+        lambda: deepcopy(capabilities),
+    )
+
+    with pytest.raises(ValueError, match="capability snapshot is stale"):
+        target_qualification_input_digest(request, "dm8", now=NOW)
+
+    request["capabilitySnapshotDigest"] = replacement_snapshot
+    replacement_digest = target_qualification_input_digest(request, "dm8", now=NOW)
+    result = evaluate_production_qualification(request, trust_store=trust_store, now=NOW)
+
+    assert replacement_digest != original_digest
+    assert result["summary"]["authorizationVerifiedTargetCount"] == 0
+    assert result["summary"]["productionDefinitionOfDoneCount"] == 0
+    assert {target["state"] for target in result["targets"]} == {"BLOCKED_EVIDENCE"}
+    assert all(
+        target["blockers"][-1]["code"] == "AUTHORIZATION_RECEIPT_INVALID"
+        for target in result["targets"]
+    )
 
 
 def test_tampered_execution_receipt_fails_one_target_without_hiding_partial_state() -> None:

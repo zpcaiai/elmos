@@ -49,6 +49,11 @@ operations, failed checks, or nonzero critical counters fail closed for that
 target. Partial results are reported as partial and are not hidden by an
 aggregate success rate.
 
+The target qualification-input digest includes the protocol version and the
+exact commercial capability-snapshot digest. A capability registry or protocol
+change therefore invalidates earlier authorizations and every downstream
+receipt instead of replaying evidence across a recertification boundary.
+
 ## Exact input required for every target
 
 The request contract requires all 13 catalog identities in deterministic
