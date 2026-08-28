@@ -1,22 +1,27 @@
 {
-  "schema_version": 1,
-  "pack_key": "formal-assurance-kernel-local",
-  "status": "experimental",
-  "owner": "elmos-formal-assurance-engineering",
-  "exact_scope": {
-    "migration_route": "formal-assurance-kernel-local-runtime",
-    "source_artifact_digest": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
-    "target_artifact_digest": "sha256:3674ece422d24bb7764d3693e4cfb58c03c1c8a8f37def8ef316a8394cc95552",
-    "workload_key": "formal-assurance-kernel-60-skills",
-    "risk_tier": "P1",
-    "environment_digest": "sha256:d35a2705350502eedfcc63fbb5c67fc0a2b7b0272126b1229c1917708cbb5a19"
-  },
-  "metrics": {},
+  "approved_at": null,
   "evidence_refs": [],
+  "exact_scope": {
+    "environment_digest": "sha256:12bc4f02184e3f9a197201d35615d7841a1f9e30f0c903a8dbeed8f56b0a18a8",
+    "migration_route": "formal-assurance-kernel-local-runtime",
+    "risk_tier": "P1",
+    "source_artifact_digest": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
+    "target_artifact_digest": "sha256:f454636fe266a57fe173be495e884985f539cf8745d4ebb8d615f86467037352",
+    "workload_key": "formal-assurance-kernel-60-skills"
+  },
   "limitations": [
-    "The repository runtime is bounded local evidence only.",
-    "Native solver, database, compiler, independent replay, holdout and representative production evidence are NOT_RUN.",
-    "No certification evidence or approval exists."
+    "All 60 Skill code paths and 40 formerly partial production adapters are implemented and locally tested.",
+    "Recorded execution is local and self-attested; executor and verifier are not independent.",
+    "Only the locally available Z3 and SQLite paths were natively executed in this qualification.",
+    "Other exact native toolchains, OCI images, real databases, Spring representative builds, external telemetry, FFI holdouts, production workloads, deployment, independent review, and certification remain NOT_RUN.",
+    "Finite passing tests and solver examples are not universal proof or certification."
   ],
-  "approved_at": null
+  "metrics": {
+    "local_test_pass_rate": 1.0,
+    "local_tests": 42
+  },
+  "owner": "elmos-formal-assurance-engineering",
+  "pack_key": "formal-assurance-kernel-local",
+  "schema_version": 1,
+  "status": "experimental"
 }

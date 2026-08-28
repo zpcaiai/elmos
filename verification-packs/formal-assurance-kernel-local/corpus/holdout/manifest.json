@@ -1,0 +1,15 @@
+{
+  "dataset_digest": "sha256:9915204c1a57051acc7e734a99ed1a6d66461e201001bd47d99c36cf9b1a2f1e",
+  "evidence_refs": [
+    "corpus/holdout/not-run.json"
+  ],
+  "executor": null,
+  "independence": "NOT_RUN",
+  "independent_verifier": null,
+  "limitations": [
+    "INDEPENDENT_HOLDOUT_NOT_RUN"
+  ],
+  "schema_version": 1,
+  "source_digest": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
+  "status": "not-run"
+}

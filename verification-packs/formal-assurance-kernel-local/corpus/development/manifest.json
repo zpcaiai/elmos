@@ -1,0 +1,15 @@
+{
+  "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "dataset_digest": "sha256:70f2249e457246fafe38321da050cccd3ca1909a70554a3dcfd2fb21d5288d2f",
+  "evidence_refs": [
+    "corpus/development/seed.json",
+    "qualification/local-qualification.json",
+    "qualification/raw/engine-tests.txt"
+  ],
+  "limitations": [
+    "Repository-owned development inputs; not an independent holdout."
+  ],
+  "schema_version": 1,
+  "source_digest": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
+  "status": "passed"
+}

@@ -1,15 +1,75 @@
 {
-  "schema_version": 1,
-  "pack_key": "formal-assurance-kernel-local",
   "capabilities": [
     {
-      "key": "property-based-testing",
-      "status": "experimental",
-      "owner": "elmos-formal-assurance-engineering",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "qualification/local-qualification.json"
+      ],
+      "key": "exact-60-skill-runtime",
       "limitations": [
-        "Add executable evidence."
-      ]
+        "Local self-attested engineering evidence only."
+      ],
+      "owner": "elmos-formal-assurance-engineering",
+      "status": "supported"
+    },
+    {
+      "evidence_refs": [
+        "qualification/local-qualification.json",
+        "qualification/raw/engine-tests.txt"
+      ],
+      "key": "signed-native-toolchain-execution",
+      "limitations": [
+        "Requires exact digest-pinned host registrations, one-use permits, and OCI for project code."
+      ],
+      "owner": "elmos-formal-assurance-engineering",
+      "status": "conditional"
+    },
+    {
+      "evidence_refs": [
+        "qualification/local-qualification.json",
+        "qualification/raw/engine-tests.txt"
+      ],
+      "key": "database-differential-execution",
+      "limitations": [
+        "SQLite executed locally; exact external source/target providers remain NOT_RUN."
+      ],
+      "owner": "elmos-formal-assurance-engineering",
+      "status": "conditional"
+    },
+    {
+      "evidence_refs": [
+        "qualification/local-qualification.json"
+      ],
+      "key": "spring-offline-verification",
+      "limitations": [
+        "Code path implemented; representative OCI Maven/Gradle execution remains NOT_RUN."
+      ],
+      "owner": "elmos-formal-assurance-engineering",
+      "status": "conditional"
+    },
+    {
+      "evidence_refs": [
+        "qualification/local-qualification.json",
+        "qualification/raw/engine-tests.txt"
+      ],
+      "key": "formal-observability-export",
+      "limitations": [
+        "Loopback export contract tested; production collector evidence remains NOT_RUN."
+      ],
+      "owner": "elmos-formal-assurance-engineering",
+      "status": "conditional"
+    },
+    {
+      "evidence_refs": [
+        "qualification/local-qualification.json"
+      ],
+      "key": "reflection-ffi-boundary-inventory",
+      "limitations": [
+        "Digest-bound nm/otool/readelf/javap path implemented; representative binary holdout remains NOT_RUN."
+      ],
+      "owner": "elmos-formal-assurance-engineering",
+      "status": "conditional"
     }
-  ]
+  ],
+  "pack_key": "formal-assurance-kernel-local",
+  "schema_version": 1
 }
