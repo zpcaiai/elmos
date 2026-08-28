@@ -13,9 +13,16 @@ const WINDOW_MS = 60_000;
 const MAX_EVENTS_PER_WINDOW = 120;
 
 function reject(status: number, reason: string): Response {
+  const retryable = status === 429;
   return Response.json(
-    { status: "BLOCKED", reason },
-    { status, headers: { "Cache-Control": "no-store" } },
+    { status: "BLOCKED", reason, retryable },
+    {
+      status,
+      headers: {
+        "Cache-Control": "no-store",
+        ...(status === 429 ? { "Retry-After": "60" } : {}),
+      },
+    },
   );
 }
 
