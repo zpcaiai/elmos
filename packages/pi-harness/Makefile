@@ -1,7 +1,7 @@
 PY ?= python3
 PYTHONPATH := src
 
-.PHONY: check test demo
+.PHONY: check test demo qualification
 
 check:
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$(PYTHONPATH) $(PY) -m compileall -q src
@@ -11,3 +11,6 @@ test:
 
 demo:
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$(PYTHONPATH) $(PY) -m elmos_pi_harness.cli demo
+
+qualification:
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$(PYTHONPATH) $(PY) -m elmos_pi_harness.cli qualification-status

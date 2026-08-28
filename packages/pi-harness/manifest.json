@@ -2,7 +2,7 @@
   "name": "elmos-pi-harness",
   "version": "5.1.0",
   "source_package": "elmos-pi-harness-architecture-v5.1.0",
-  "implementation_status": "LOCAL_ENGINEERING_IMPLEMENTATION",
+  "implementation_status": "CODE_COMPLETE_EXTERNAL_EVIDENCE_PENDING",
   "implemented": [
     "environment-owned authority and immutable snapshots",
     "executor generation fencing",
@@ -13,8 +13,25 @@
     "idempotent state-changing requests",
     "content-addressed artifacts",
     "external-verifier-owned benchmark success",
+    "PostgreSQL 16+ pooled durable store, digest-locked migrations, RLS and managed artifacts",
+    "Temporal TLS client, versioned workflow worker, cancellable signals, durable idempotent activity, generation fencing and replay runner",
+    "approval-bound AWS provider operations with unknown-result identity recovery, reconciliation, rollback and destroy",
+    "OIDC JWKS identity plus verified mTLS SPIFFE workload binding",
+    "Ed25519 independent-verifier trust store, revocation, expiry and anti-self-verification",
+    "encrypted backup capture, integrity validation, isolated restore and RPO/RTO rehearsal",
+    "executable customer journeys with externally signed acceptance",
+    "digest-bound canary, SLO observation, promotion, rollback and unknown-result reconciliation controller",
+    "hash-locked production Python dependency set and digest-pinned container base",
     "conservative evidence/certification state"
   ],
+  "local_engineering_evidence": {
+    "unit_negative_tests": "EXECUTED",
+    "postgresql_17_5_disposable_engine": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "temporal_1_32_0_sandbox_prepare": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "terraform_aws_6_62_0_validate": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "hash_locked_nonroot_container_build": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "optional_sdk_imports": "LOCAL_EXECUTED_SELF_ATTESTED"
+  },
   "external_evidence": "NOT_RUN",
   "certification": "NOT_CERTIFIED"
 }

@@ -243,7 +243,7 @@ CREATE TABLE IF NOT EXISTS benchmark_run (
 class DurableStore:
     """Thread-safe transactional store with tenant-scoped reads and writes."""
 
-    def __init__(self, path: str = ":memory:", artifact_root: str | Path | None = None) -> None:
+    def __init__(self, path: str = ":memory:", artifact_root: str | Path | None = None, *, artifact_backend: Any | None = None) -> None:
         self.path = path
         self._lock = threading.RLock()
         if path != ":memory:":
@@ -273,6 +273,7 @@ class DurableStore:
             raise ValueError("artifact_root must be absolute")
         root.mkdir(parents=True, exist_ok=True)
         self._artifact_root = root.resolve()
+        self._artifact_backend = artifact_backend
 
     @contextmanager
     def _write(self) -> Iterator[sqlite3.Connection]:
@@ -294,6 +295,11 @@ class DurableStore:
     def close(self) -> None:
         with self._lock:
             self._connection.close()
+
+    def health(self) -> dict[str, Any]:
+        with self._read():
+            self._connection.execute("SELECT 1").fetchone()
+        return {"status": "ready", "backend": "sqlite", "production_profile": False}
 
     def __enter__(self) -> Self:
         return self
@@ -843,26 +849,36 @@ class DurableStore:
             existing = self._connection.execute("SELECT * FROM artifact WHERE tenant_id=? AND task_id=? AND sha256=?", (tenant_id, task_id, sha)).fetchone()
             if existing:
                 return self._artifact_dict(existing) | {"replayed": True}
-            relative = Path(tenant_id) / sha[7:9] / sha[7:]
-            target = self._artifact_root / relative
-            target.parent.mkdir(parents=True, exist_ok=True)
-            if target.exists():
-                if target.is_symlink() or target.stat().st_size != len(content):
-                    raise HarnessError("artifact content-addressed path is unsafe")
+            if self._artifact_backend is not None:
+                storage_uri = self._artifact_backend.put(
+                    tenant_id,
+                    sha,
+                    content,
+                    media_type=media_type,
+                    metadata=dict(metadata or {}),
+                )
             else:
-                fd, temp_name = tempfile.mkstemp(prefix=".artifact-", dir=str(target.parent))
-                try:
-                    with os.fdopen(fd, "wb") as handle:
-                        handle.write(content)
-                        handle.flush()
-                        os.fsync(handle.fileno())
-                    os.replace(temp_name, target)
-                finally:
-                    if os.path.exists(temp_name):
-                        os.unlink(temp_name)
+                relative = Path(tenant_id) / sha[7:9] / sha[7:]
+                target = self._artifact_root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                if target.exists():
+                    if target.is_symlink() or target.stat().st_size != len(content):
+                        raise HarnessError("artifact content-addressed path is unsafe")
+                else:
+                    fd, temp_name = tempfile.mkstemp(prefix=".artifact-", dir=str(target.parent))
+                    try:
+                        with os.fdopen(fd, "wb") as handle:
+                            handle.write(content)
+                            handle.flush()
+                            os.fsync(handle.fileno())
+                        os.replace(temp_name, target)
+                    finally:
+                        if os.path.exists(temp_name):
+                            os.unlink(temp_name)
+                storage_uri = str(target)
             now = utc_now()
             artifact_id = str(uuid.uuid4())
-            self._connection.execute("INSERT INTO artifact(artifact_id,tenant_id,task_id,logical_name,media_type,size_bytes,sha256,storage_uri,metadata_json,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)", (artifact_id, tenant_id, task_id, logical_name, media_type, len(content), sha, str(target), self._json(dict(metadata or {})), now))
+            self._connection.execute("INSERT INTO artifact(artifact_id,tenant_id,task_id,logical_name,media_type,size_bytes,sha256,storage_uri,metadata_json,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)", (artifact_id, tenant_id, task_id, logical_name, media_type, len(content), sha, storage_uri, self._json(dict(metadata or {})), now))
             self._append_event_locked(tenant_id, task_id, "artifact.created", {"artifact_id": artifact_id, "sha256": sha, "size_bytes": len(content)}, "runtime")
             row = self._connection.execute("SELECT * FROM artifact WHERE artifact_id=?", (artifact_id,)).fetchone()
             return self._artifact_dict(row) | {"replayed": False}
