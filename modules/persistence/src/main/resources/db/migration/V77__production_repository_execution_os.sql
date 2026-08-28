@@ -252,6 +252,44 @@ CREATE TABLE runtime.settlement_requests (
     UNIQUE (tenant_id, model_call_id)
 );
 
+-- V44 imported a specification-only evidence projection at this exact name.
+-- Preserve that append-only relation and its rows under an explicit name before
+-- the production runtime claims artifact.artifacts for its strongly typed API.
+-- Refuse an unknown relation shape: silently renaming a customer-owned table
+-- would turn a namespace collision into data loss at the application boundary.
+DO $$
+DECLARE
+    has_imported_shape boolean;
+BEGIN
+    IF to_regclass('artifact.artifacts') IS NOT NULL THEN
+        SELECT count(*) = 16 AND
+            count(*) FILTER (WHERE column_name IN (
+                'record_id', 'organization_id', 'domain_run_id',
+                'subject_digest', 'context_snapshot_digest', 'policy_version',
+                'status', 'independent_verifier_id', 'critical_open_risks',
+                'evidence_refs', 'payload', 'external_operation_executed',
+                'human_approval_ref', 'idempotency_key', 'observed_at', 'created_at'
+            )) = 16
+        INTO has_imported_shape
+        FROM information_schema.columns
+        WHERE table_schema = 'artifact' AND table_name = 'artifacts';
+
+        IF has_imported_shape THEN
+            IF to_regclass('artifact.specification_imported_artifacts') IS NOT NULL THEN
+                RAISE EXCEPTION
+                    'artifact namespace migration blocked: specification_imported_artifacts already exists';
+            END IF;
+            ALTER TABLE artifact.artifacts RENAME TO specification_imported_artifacts;
+            COMMENT ON TABLE artifact.specification_imported_artifacts IS
+                'Append-only V44 SPECIFICATION_IMPORTED evidence projection retained during the V77 production runtime expansion.';
+        ELSE
+            RAISE EXCEPTION
+                'artifact namespace migration blocked: artifact.artifacts has an unknown shape';
+        END IF;
+    END IF;
+END;
+$$;
+
 CREATE TABLE artifact.artifacts (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id uuid NOT NULL REFERENCES identity.tenants(id),

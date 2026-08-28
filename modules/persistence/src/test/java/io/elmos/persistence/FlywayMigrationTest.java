@@ -116,7 +116,36 @@ class FlywayMigrationTest {
         assertEquals(6, jdbc.sql("select count(*) from information_schema.tables where table_schema='migration_pack_certification'").query(Integer.class).single());
         assertEquals(664, jdbc.sql("select count(*) from pg_policies where schemaname in ('technology_business_management','organization_workforce','transformation_execution','autonomous_control_tower','mvp_engineering','mvp_gap_review','secure_java_vertical','identity_access_governance') and policyname='tenant_isolation'").query(Integer.class).single());
         String productSchemas = "'scm','catalog','delivery','workspace','execution','sandbox','artifact','evidence','attestation','signing','provenance','sbom','oci','verification','retention','privacy','analytics','assurance','risk','control','audit','portfolio','cockpit','forecast','performance','security','test','policy','authorization','deployment','runtime','admission','remediation','policy_decision','policy_rollout','cache','transfer','operations'";
-        assertEquals(1416, jdbc.sql("select count(*) from information_schema.tables where table_schema in (" + productSchemas + ")").query(Integer.class).single());
+        assertEquals(1424, jdbc.sql("select count(*) from information_schema.tables where table_schema in (" + productSchemas + ")").query(Integer.class).single());
+        assertEquals(10, jdbc.sql("""
+                select count(*)
+                  from information_schema.columns
+                 where table_schema = 'artifact'
+                   and table_name = 'artifacts'
+                   and column_name in ('id','tenant_id','project_id','job_id','work_item_id',
+                                       'artifact_type','object_uri','sha256','size_bytes','created_at')
+                """).query(Integer.class).single(),
+                "V77 must own the canonical artifact.artifacts runtime shape");
+        assertEquals(16, jdbc.sql("""
+                select count(*)
+                  from information_schema.columns
+                 where table_schema = 'artifact'
+                   and table_name = 'specification_imported_artifacts'
+                   and column_name in ('record_id','organization_id','domain_run_id','subject_digest',
+                                       'context_snapshot_digest','policy_version','status',
+                                       'independent_verifier_id','critical_open_risks','evidence_refs',
+                                       'payload','external_operation_executed','human_approval_ref',
+                                       'idempotency_key','observed_at','created_at')
+                """).query(Integer.class).single(),
+                "V44 specification records must survive the V77 namespace expansion");
+        assertEquals(2, jdbc.sql("""
+                select count(*)
+                  from pg_policies
+                 where schemaname = 'artifact'
+                   and tablename in ('artifacts', 'specification_imported_artifacts')
+                   and policyname in ('tenant_isolation', 'product_b37a_tenant_isolation')
+                """).query(Integer.class).single(),
+                "both the imported evidence relation and runtime artifact relation must remain tenant isolated");
         assertEquals(1417, jdbc.sql("select count(*) from pg_policies where policyname like 'product_b%_tenant_isolation'").query(Integer.class).single());
 
         // V55-V60 are a product loop, not only schema presence. Exercise the
