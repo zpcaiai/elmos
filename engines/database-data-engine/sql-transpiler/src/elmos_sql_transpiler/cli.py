@@ -10,6 +10,14 @@ from .commercial import assess_commercial, commercial_capabilities
 from .commercial_request import parse_commercial_request_json
 from .materialize import materialize
 from .models import ParameterContract, TranspileRequest
+from .production_qualification import (
+    evaluate_production_qualification,
+    parse_production_qualification_json,
+    parse_production_trust_store_json,
+    production_qualification_draft,
+    production_qualification_requirements,
+    production_trust_store_digest,
+)
 from .profiles import capabilities
 from .qualification import run_qualification
 from .runner import (
@@ -81,6 +89,24 @@ def _parser() -> argparse.ArgumentParser:
     commercial_skill_run_parser.add_argument("request", type=Path)
     commercial_skill_run_parser.add_argument("--output", type=Path)
 
+    production_requirements_parser = subparsers.add_parser(
+        "commercial-production-requirements"
+    )
+    production_requirements_parser.add_argument("--output", type=Path)
+
+    production_template_parser = subparsers.add_parser("commercial-production-template")
+    production_template_parser.add_argument("--tenant-id", required=True)
+    production_template_parser.add_argument("--project-id", required=True)
+    production_template_parser.add_argument("--actor-id", required=True)
+    production_template_parser.add_argument("--implementer-organization-id", required=True)
+    production_template_parser.add_argument("--output", type=Path)
+
+    production_plan_parser = subparsers.add_parser("commercial-production-plan")
+    production_plan_parser.add_argument("request", type=Path)
+    production_plan_parser.add_argument("--trust-store", type=Path)
+    production_plan_parser.add_argument("--trust-store-digest")
+    production_plan_parser.add_argument("--output", type=Path)
+
     runner_capability_parser = subparsers.add_parser("runner-capabilities")
     runner_capability_parser.add_argument("--output", type=Path)
 
@@ -145,6 +171,55 @@ def main(argv: list[str] | None = None) -> int:
                     "READY_FOR_HUMAN_DECISION",
                     "READY_FOR_EXTERNAL_GATE",
                 }
+                else 3
+            )
+        if args.command == "commercial-production-requirements":
+            rendered = _json(production_qualification_requirements()) + "\n"
+            _create_only_output(
+                args.output,
+                rendered,
+                label="commercial production requirements",
+            )
+            return 0
+        if args.command == "commercial-production-template":
+            draft = production_qualification_draft(
+                tenant_id=args.tenant_id,
+                project_id=args.project_id,
+                actor_id=args.actor_id,
+                implementer_organization_id=args.implementer_organization_id,
+            )
+            _create_only_output(
+                args.output,
+                _json(draft) + "\n",
+                label="commercial production template",
+            )
+            return 0
+        if args.command == "commercial-production-plan":
+            if (args.trust_store is None) != (args.trust_store_digest is None):
+                raise ValueError(
+                    "--trust-store and --trust-store-digest must be supplied together"
+                )
+            trust_store = None
+            if args.trust_store is not None:
+                trust_store = parse_production_trust_store_json(args.trust_store.read_bytes())
+                observed_digest = production_trust_store_digest(trust_store)
+                if observed_digest != args.trust_store_digest:
+                    raise ValueError("operator trust store digest does not match the file")
+            qualification_request = parse_production_qualification_json(
+                args.request.read_bytes()
+            )
+            result = evaluate_production_qualification(
+                qualification_request,
+                trust_store=trust_store,
+            )
+            _create_only_output(
+                args.output,
+                _json(result) + "\n",
+                label="commercial production qualification plan",
+            )
+            return (
+                0
+                if result["summary"]["productionDefinitionOfDoneCount"] == 13
                 else 3
             )
         if args.command == "runner-capabilities":

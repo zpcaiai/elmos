@@ -36,6 +36,17 @@ class IntegrationTests(unittest.TestCase):
         self.tool.verify_internal_checksums(files)
         package = self.tool.validate_package(files)
         self.assertEqual(len(package["skills"]), 60)
+        self.assertEqual(package["acceptanceCount"], 481)
+        self.assertEqual(
+            len(
+                {
+                    test["id"]
+                    for tests in package["acceptance"].values()
+                    for test in tests
+                }
+            ),
+            481,
+        )
         self.assertEqual(len(package["workflows"]), 10)
         self.assertEqual(package["schemaCount"], 17)
 
@@ -80,6 +91,52 @@ class IntegrationTests(unittest.TestCase):
             all(
                 item["certificationStatus"] == "NOT_CERTIFIED"
                 for item in document["skills"]
+            )
+        )
+        expected = self.tool.expected_installed_skills(document)
+        self.assertEqual(len(expected), 120)
+        for target, content in expected.items():
+            with self.subTest(target=target):
+                self.assertTrue(target.is_file())
+                self.assertFalse(target.is_symlink())
+                self.assertEqual(target.read_bytes(), content)
+        self.tool.check_installed_skills(document)
+
+    def test_all_481_acceptance_criteria_have_honest_executable_trace_rows(
+        self,
+    ) -> None:
+        files, _, archive_digest = self.tool.read_archive(
+            ROOT / self.tool.ARCHIVE_RELATIVE
+        )
+        package = self.tool.validate_package(files)
+        metadata = self.tool.build_metadata(
+            ROOT / self.tool.SOURCE_RELATIVE, archive_digest, package
+        )
+        expected = self.tool.build_acceptance_traceability(package, metadata)
+        actual = json.loads(
+            (ROOT / self.tool.ACCEPTANCE_TRACEABILITY_RELATIVE).read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(actual, expected)
+        self.assertEqual(actual["criterionCount"], 481)
+        self.assertEqual(len(actual["criteria"]), 481)
+        self.assertEqual(
+            {row["scenario"] for row in actual["criteria"]},
+            {
+                "skill-specific-contract",
+                "bounded-honesty-gate",
+                "counterexample-replay",
+                "dependency-drift-invalidation",
+                "tenant-fencing-audit-denial",
+            },
+        )
+        self.assertTrue(
+            all(
+                row["externalEvidenceStatus"] == "NOT_RUN"
+                and row["independentVerificationStatus"] == "NOT_RUN"
+                and row["certificationStatus"] == "NOT_CERTIFIED"
+                for row in actual["criteria"]
             )
         )
 

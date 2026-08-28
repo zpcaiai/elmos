@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import tempfile
 import unittest
 from pathlib import Path
 
+from elmos_etgb.attestation import (
+    validate_attestation_structure,
+    verify_signed_record,
+)
 from elmos_etgb.benchmark import validate_hidden_test_boundary
 from elmos_etgb.budget import BudgetExceeded, BudgetLedger
 from elmos_etgb.candidate import freeze_candidate, validate_candidate
@@ -88,6 +93,39 @@ class V11RuntimeTests(unittest.TestCase):
         self.assertTrue(any("mutable alias" in item for item in validate_candidate(bad)))
         self.assertFalse(validate_hidden_test_boundary(["public/a"], ["hidden/a"], worker_role="transform-worker")["valid"])
         self.assertFalse(validate_hidden_test_boundary(["same"], ["same"], worker_role="validation-worker")["valid"])
+
+    def test_external_qualification_templates_are_never_gate_evidence(self) -> None:
+        template_root = ROOT / "docs/etgb-sota-skills/external-qualification"
+        candidate_template = json.loads(
+            (template_root / "candidate-input.template.json").read_text(encoding="utf-8")
+        )
+        trust_template = json.loads(
+            (template_root / "public-trust-store.template.json").read_text(encoding="utf-8")
+        )
+        review_template = json.loads(
+            (template_root / "license-review-record.template.json").read_text(encoding="utf-8")
+        )
+        attestation_template = json.loads(
+            (template_root / "independent-attestation.template.json").read_text(encoding="utf-8")
+        )
+        roles_template = json.loads(
+            (template_root / "role-assignments.template.json").read_text(encoding="utf-8")
+        )
+
+        self.assertTrue(validate_candidate(candidate_template))
+        self.assertEqual(trust_template, {"schema_version": "1.0", "keys": []})
+        self.assertFalse(
+            verify_signed_record(
+                review_template,
+                trust_template,
+                record_type="license-review",
+            )["valid"]
+        )
+        self.assertTrue(validate_attestation_structure(attestation_template))
+        self.assertEqual(roles_template["status"], "PENDING_EXTERNAL_ASSIGNMENT")
+        self.assertTrue(
+            all(value is None for value in roles_template["roles"].values())
+        )
 
     def test_budget_is_idempotent_and_overrun_is_not_allowed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

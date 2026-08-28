@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch31/chinadb-production-qualification-requirements.schema.json",
+  "title": "ELMOS ChinaDB production qualification requirements",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "protocolVersion",
+    "package",
+    "capabilitySnapshotDigest",
+    "targetCount",
+    "targets",
+    "trust",
+    "productionBoundaries",
+    "requirementsDigest"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "protocolVersion": { "const": "1.1.0" },
+    "package": { "const": "chinadb-commercial-migration-skills" },
+    "capabilitySnapshotDigest": { "$ref": "#/$defs/digest" },
+    "targetCount": { "const": 13 },
+    "targets": {
+      "type": "array",
+      "minItems": 13,
+      "maxItems": 13,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "targetId",
+          "label",
+          "adapterId",
+          "requiredOperations",
+          "requiredEvidenceChain",
+          "requiredArtifactDigests",
+          "requiredEvidenceDigests",
+          "currentState"
+        ],
+        "properties": {
+          "targetId": { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
+          "adapterId": { "type": "string", "minLength": 1 },
+          "requiredOperations": {
+            "type": "array",
+            "minItems": 10,
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "requiredEvidenceChain": {
+            "const": [
+              "environment-authorization",
+              "external-target-execution",
+              "independent-verification",
+              "certification-decision"
+            ]
+          },
+          "requiredArtifactDigests": {
+            "const": [
+              "sourceSnapshotDigest",
+              "sourceCatalogDigest",
+              "sourceDataDigest",
+              "sourceWorkloadDigest",
+              "targetSnapshotDigest",
+              "targetReleaseDigest",
+              "canonicalIrDigest",
+              "transformationDigest",
+              "compatibilityRuntimeDigest",
+              "runnerDigest",
+              "toolchainDigest",
+              "developmentCorpusDigest",
+              "negativeCorpusDigest",
+              "holdoutCorpusDigest",
+              "representativeWorkloadDigest",
+              "dataFixtureDigest",
+              "queryPlanDigest",
+              "targetSqlDigest",
+              "acceptanceProfileDigest",
+              "gateResultDigest"
+            ]
+          },
+          "requiredEvidenceDigests": {
+            "const": [
+              "versionProbeDigest",
+              "capabilityProbeDigest",
+              "renderDigest",
+              "targetApplyDigest",
+              "introspectionDigest",
+              "schemaTypeDigest",
+              "queryRoutineDigest",
+              "transactionDigest",
+              "dataReconciliationDigest",
+              "performanceDigest",
+              "securityDigest",
+              "backupRestoreDigest",
+              "cdcDigest",
+              "rollbackDigest",
+              "cleanupDigest",
+              "rawEvidenceDigest"
+            ]
+          },
+          "currentState": { "const": "BLOCKED_EXTERNAL_INPUT" }
+        }
+      }
+    },
+    "trust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain", "algorithm", "requiredRoles", "operatorPinnedTrustStoreRequired"],
+      "properties": {
+        "domain": { "const": "elmos.chinadb.production-qualification.v1" },
+        "algorithm": { "const": "ed25519" },
+        "requiredRoles": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "operatorPinnedTrustStoreRequired": { "const": true }
+      }
+    },
+    "productionBoundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "externalExecution",
+        "independentVerification",
+        "certification",
+        "targetSql",
+        "productionDefinitionOfDoneCount"
+      ],
+      "properties": {
+        "externalExecution": { "const": "NOT_RUN" },
+        "independentVerification": { "const": "NOT_RUN" },
+        "certification": { "const": "NOT_CERTIFIED" },
+        "targetSql": { "type": "null" },
+        "productionDefinitionOfDoneCount": { "const": 0 }
+      }
+    },
+    "requirementsDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

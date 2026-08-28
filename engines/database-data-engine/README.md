@@ -39,3 +39,11 @@ executing declared external effects. This is 100% local handler coverage, not
 commercial routes remain `SPEC_ONLY`; live vendor adapters, databases, CDC,
 repository mutation, independent verification, and certification remain
 `NOT_RUN` / `NOT_CERTIFIED`.
+
+The repository also includes a production qualification intake for all 13
+ChinaDB targets. It requires exact tuples, disposable environments, pinned
+vendor tools, a digest-bound authorization, real execution evidence,
+independent verification, and a separate Ed25519 certification decision. The
+planner has no external side effects and returns no target SQL; the checked-in
+draft therefore remains `productionDefinitionOfDoneCount = 0`. See
+`docs/batch31/CHINADB_PRODUCTION_QUALIFICATION.md`.

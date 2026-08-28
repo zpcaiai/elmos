@@ -1,7 +1,8 @@
 """Repository-owned runtime for the ELMOS Formal Assurance Kernel."""
 
 from .canonical import canonical_json, digest_bytes, digest_value, proof_cache_key
-from .artifact_store import ContentAddressedArtifactStore
+from .artifact_store import ArtifactStore, ContentAddressedArtifactStore
+from .bundles import EvidenceBundleService, HmacEvidenceBundleSigner
 from .contracts import (
     AssuranceLevel,
     Criticality,
@@ -25,7 +26,10 @@ from .execution import (
     load_toolchain_registry,
 )
 from .database import SQLiteDifferentialExecutor
+from .events import DigestReceiptPublisher, EventPublisher, OutboxDispatcher
+from .governance import GovernanceService
 from .observability import FormalObservabilityService, OtlpHttpJsonExporter
+from .postgres import Postgres17MigrationManager
 from .registry import SkillRegistry
 from .runtime import FormalAssuranceRuntime, RuntimeConfig
 
@@ -33,8 +37,12 @@ __version__ = "1.0.0"
 
 __all__ = [
     "AssuranceLevel",
+    "ArtifactStore",
     "ContentAddressedArtifactStore",
     "Criticality",
+    "DigestReceiptPublisher",
+    "EvidenceBundleService",
+    "EventPublisher",
     "FormalAssuranceRuntime",
     "RuntimeConfig",
     "LocalBoundedExecutor",
@@ -42,8 +50,12 @@ __all__ = [
     "ExecutionPermit",
     "ExecutionPermitSigner",
     "FormalObservabilityService",
+    "GovernanceService",
+    "HmacEvidenceBundleSigner",
     "NativeVerificationExecutor",
     "OtlpHttpJsonExporter",
+    "OutboxDispatcher",
+    "Postgres17MigrationManager",
     "ProofResult",
     "ProofRunState",
     "ProofStatus",

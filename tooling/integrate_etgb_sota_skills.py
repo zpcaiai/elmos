@@ -37,6 +37,24 @@ def _digest(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def _portable_source_validation(result: dict) -> dict:
+    """Remove checkout-specific absolute paths from persisted validation."""
+
+    portable = dict(result)
+    for field in ("archive", "extracted"):
+        value = portable.get(field)
+        if not isinstance(value, str) or not value:
+            continue
+        path = Path(value).resolve()
+        try:
+            portable[field] = str(path.relative_to(ROOT))
+        except ValueError:
+            # A source outside this checkout is unexpected but preserving its
+            # exact path is safer than silently rebinding it.
+            portable[field] = str(path)
+    return portable
+
+
 def _write_if_changed(path: Path, content: str, *, write: bool) -> bool:
     if path.is_file() and path.read_text(encoding="utf-8") == content:
         return False
@@ -140,6 +158,7 @@ def integrate(*, write: bool) -> dict:
     source_result = verify_source_package(ARCHIVE, extracted=PACKAGE_ROOT)
     if not source_result["valid"]:
         raise SystemExit(json.dumps(source_result, ensure_ascii=False))
+    source_result = _portable_source_validation(source_result)
     import yaml
     source_manifest = yaml.safe_load(_archive_member(f"{PACKAGE_NAME}/skills/manifest.yaml"))
     archive_digest = source_result["archive_sha256"]

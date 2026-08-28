@@ -20,19 +20,19 @@ PARTIAL、BLOCKED、EVIDENCE_PENDING、NOT_RUN 和 NOT_CERTIFIED 都是有效状
 
 | 范围 | 已有实现/证据 | 当前状态 |
 |---|---|---|
-| P0/P1 运行时 | engines/openhands-absorption-engine/ 下的 typed contracts、runtime、ledger、CAS、workspace、firewall、gates、DAG、provider、browser、observability | IMPLEMENTED |
-| 本地验证 | 22 个单元/安全/恢复/生命周期测试；make openhands-absorption；ruff、mypy、pyright；CLI demo；wheel 内容校验 | LOCAL_ENGINEERING_EVIDENCE |
-| 数据库 | PostgreSQL migration 已提供；实际 PostgreSQL 连接、RLS、故障切换和恢复演练尚未执行 | NOT_RUN |
-| 工作流 | Durable DAG 和适配器契约已提供；真实 Temporal worker/history/retry/continue-as-new 尚未执行 | NOT_RUN |
-| 隔离 | L0 本地 provider 和 L1/L2 hardened container command builder；生产 Firecracker/gVisor/Kata 等尚未执行 | NOT_RUN |
-| Provider | Native、Codex-compatible、Claude-compatible、OpenHands-compatible 注入式 adapter；真实外部 Provider 尚未执行 | NOT_RUN |
-| UI | Browser scenario、脱敏、证据 capture/replay contract；真实浏览器/设备矩阵尚未执行 | NOT_RUN |
+| P0/P1 运行时 | 38 个 Python 组件、两阶段 PostgreSQL migration/down、Schema、机器可校验 14-Skill manifest 和 11 个测试文件 | IMPLEMENTED |
+| 本地验证 | 57 个单元/合同/安全/恢复/生命周期测试通过且 ResourceWarning 视为错误；Ruff、strict mypy、静态 importer/manifest 和 CLI status 通过 | LOCAL_ENGINEERING_EVIDENCE |
+| 数据库 | PostgreSQL/RLS/advisory-lock/outbox/checkpoint/projection adapter 与 migration 代码已完成；实际 PostgreSQL 连接、故障切换和恢复演练尚未执行 | NOT_RUN |
+| 工作流 | Temporal workflow/update/child/retry/heartbeat/cancel/compensation/continue-as-new 代码已完成；真实 worker/history/replay 尚未执行 | NOT_RUN |
+| 隔离 | Local/Docker/Kubernetes/Firecracker/attested SSH backend 和 Secret Broker 代码已完成；生产 gVisor/Kata/microVM/SSH 隔离尚未执行 | NOT_RUN |
+| Provider | Codex、Claude、OpenHands、OpenCode、Gemini、Junie HTTP/stream/session adapter 代码已完成；真实外部 Provider 尚未执行 | NOT_RUN |
+| UI | Playwright/设备矩阵、semantic locator、二进制证据、脱敏、allowlist、flake gate 代码已完成；真实浏览器/设备矩阵尚未执行 | NOT_RUN |
 | 规模与安全 | 测试计划和故障模型待执行；Golden Repo、load/Chaos、独立安全审查尚未执行 | NOT_RUN |
 | 生产认证/GA | 没有独立验证、客户结果和命名环境证据 | NOT_CERTIFIED |
 
-QA 控制面契约校验只证明请求结构被正确拒绝/降级；它返回
-TRUSTED_CONTROL_PLANE_BINDER_REQUIRED、persisted=false、
-external_evidence=NOT_RUN、certification=NOT_CERTIFIED，不构成生产执行证据。
+`implementation_manifest.json` 和 CLI `status` 将七类外部门禁固定为 `NOT_RUN`，
+并将认证/发布固定为 `NOT_CERTIFIED` / `NOT_GA`。本地控制面合同校验只证明代码、
+拒绝和降级路径，不构成真实生产执行证据。
 
 ## 3. 补全阶段与出口条件
 

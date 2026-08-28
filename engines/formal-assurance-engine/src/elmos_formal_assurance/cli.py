@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import stat
 
+from .bundles import HmacEvidenceBundleSigner
 from .contracts import TrustedIdentity
 from .execution import (
     ExecutionContractError,
@@ -55,7 +56,9 @@ def _read_permit_key(path: Path) -> bytes:
         os.close(descriptor)
 
 
-def _runtime_config(args: argparse.Namespace, parser: argparse.ArgumentParser) -> RuntimeConfig:
+def _runtime_config(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> RuntimeConfig:
     registry_path = args.toolchain_registry
     registry_digest = args.toolchain_registry_sha256
     if bool(registry_path) != bool(registry_digest):
@@ -73,11 +76,20 @@ def _runtime_config(args: argparse.Namespace, parser: argparse.ArgumentParser) -
             if args.permit_key_file is not None
             else None
         )
+        bundle_signer = (
+            HmacEvidenceBundleSigner(
+                _read_permit_key(args.bundle_signing_key_file),
+                key_id=args.bundle_signing_key_id,
+            )
+            if args.bundle_signing_key_file is not None
+            else None
+        )
         return RuntimeConfig(
             artifact_root=args.artifact_root,
             execution_root=args.execution_root,
             execution_permit_signer=signer,
             toolchains=toolchains,
+            bundle_signer=bundle_signer,
         )
     except (ExecutionContractError, OSError, ValueError) as exc:
         parser.error(str(exc))
@@ -93,6 +105,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--artifact-root", type=Path)
     parser.add_argument("--execution-root", type=Path)
     parser.add_argument("--permit-key-file", type=Path)
+    parser.add_argument("--bundle-signing-key-file", type=Path)
+    parser.add_argument("--bundle-signing-key-id", default="local-qualification")
     parser.add_argument("--toolchain-registry", type=Path)
     parser.add_argument("--toolchain-registry-sha256")
     sub = parser.add_subparsers(dest="command", required=True)

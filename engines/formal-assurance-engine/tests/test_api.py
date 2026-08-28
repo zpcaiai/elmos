@@ -26,9 +26,11 @@ class ApiTests(unittest.TestCase):
         identity: TrustedIdentity | None = None,
         trusted: bool = True,
         headers: dict[str, str] | None = None,
+        query: str = "",
     ) -> tuple[str, dict[str, object] | list[object]]:
         environ = make_environ(path, method, payload, identity)
         environ["elmos.trusted_transport"] = trusted
+        environ["QUERY_STRING"] = query
         environ.update(headers or {})
         captured: list[str] = []
         body = b"".join(
@@ -186,6 +188,31 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(status, "200 OK")
         self.assertEqual(gate["output"]["gateDecision"]["decision"], "DENY")
         self.assertEqual(gate["output"]["certification"], "NOT_CERTIFIED")
+        gate_document = gate["output"]["gateDocument"]
+        self.assertEqual(
+            set(gate_document),
+            {
+                "id",
+                "tenant",
+                "subjectId",
+                "gate",
+                "decision",
+                "policyRevision",
+                "evaluatedAt",
+                "blockingReasons",
+                "evidenceHash",
+            },
+        )
+        self.assertEqual(len(gate_document["evidenceHash"]), 64)
+        status, latest = self.call(
+            "/v1/gates/release-api/latest",
+            "GET",
+            identity=self.identity,
+            headers=self.resource_headers(),
+            query="gate=E2_MODEL",
+        )
+        self.assertEqual(status, "200 OK")
+        self.assertEqual(latest, gate_document)
 
     def test_native_execution_receipt_route_is_full_scope_bound(self) -> None:
         current_scope = Scope(
@@ -204,9 +231,7 @@ class ApiTests(unittest.TestCase):
             "externalEvidenceStatus": "NOT_RUN",
             "certificationStatus": "NOT_CERTIFIED",
         }
-        self.store.put_execution_receipt(
-            current_scope, "exec-api", "d" * 64, receipt
-        )
+        self.store.put_execution_receipt(current_scope, "exec-api", "d" * 64, receipt)
         status, result = self.call(
             "/v1/executions/exec-api",
             "GET",
@@ -241,9 +266,7 @@ class ApiTests(unittest.TestCase):
             self.identity,
         )
         trusted_scope = self.api.runtime._scope(scope, self.identity)
-        leased = self.store.lease_run(
-            trusted_scope, "run-control", "worker-a", 1
-        )
+        leased = self.store.lease_run(trusted_scope, "run-control", "worker-a", 1)
         self.store.start_run(
             trusted_scope,
             "run-control",

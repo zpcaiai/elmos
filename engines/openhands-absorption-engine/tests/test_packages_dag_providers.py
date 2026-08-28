@@ -1,7 +1,7 @@
 import unittest
 
 from elmos_openhands.dag import DurableAgentDag
-from elmos_openhands.errors import ContractViolation, LeaseLost, NotConfigured
+from elmos_openhands.errors import ContractViolation, LeaseLost, NotConfigured, TenantIsolationError
 from elmos_openhands.models import Identity
 from elmos_openhands.packages import CapabilityPackageRegistry, HmacPackageSigner
 from elmos_openhands.providers import CodexCompatibleAdapter, ProviderRequest, ProviderRouter, RouteConstraints, normalize_provider_response
@@ -11,6 +11,7 @@ class PackagesDagProviderTests(unittest.TestCase):
     def test_signed_package_lifecycle_and_revocation(self):
         signer = HmacPackageSigner({"publisher-a": b"test-key"})
         registry = CapabilityPackageRegistry(signer=signer)
+        self.addCleanup(registry.close)
         manifest = {"name": "skill-a", "version": "1.0.0", "publisher": "publisher-a", "permissions": ["workspace.read"], "dependencies": [], "files": [{"path": "sha256:" + "a" * 64}]}
         package = registry.publish(manifest, trust_level="trusted")
         registry.install(package)
@@ -23,6 +24,7 @@ class PackagesDagProviderTests(unittest.TestCase):
     def test_untrusted_package_cannot_be_activated(self):
         signer = HmacPackageSigner({"publisher-a": b"test-key"})
         registry = CapabilityPackageRegistry(signer=signer)
+        self.addCleanup(registry.close)
         manifest = {"name": "skill-b", "version": "1.0.0", "publisher": "publisher-a", "permissions": [], "dependencies": [], "files": [{"path": "sha256:" + "b" * 64}]}
         package = registry.publish(manifest)
         registry.install(package)
@@ -32,6 +34,7 @@ class PackagesDagProviderTests(unittest.TestCase):
     def test_package_approval_and_deprecation_are_explicit_lifecycle_states(self):
         signer = HmacPackageSigner({"publisher-a": b"test-key"})
         registry = CapabilityPackageRegistry(signer=signer)
+        self.addCleanup(registry.close)
         manifest = {"name": "skill-c", "version": "1.0.0", "publisher": "publisher-a", "permissions": [], "dependencies": [], "files": [{"path": "sha256:" + "c" * 64}]}
         package = registry.publish(manifest)
         registry.install(package)
@@ -44,10 +47,17 @@ class PackagesDagProviderTests(unittest.TestCase):
     def test_dag_fanout_fanin_and_fencing(self):
         identity = Identity("tenant-a", "project-a", "task-a", "run-a")
         dag = DurableAgentDag()
+        self.addCleanup(dag.close)
         dag.add(identity, "plan")
+        self.assertEqual(dag.add(identity, "plan").node_id, "plan")
         dag.add(identity, "left", ("plan",), budget_micros=10)
         dag.add(identity, "right", ("plan",), budget_micros=10)
-        dag.complete(identity, "plan", "planner", dag.claim(identity, "plan", "planner").fencing_token, "artifact-plan")
+        with self.assertRaises(TenantIsolationError):
+            dag.get(Identity("tenant-a", "project-b", "task-a", "run-a"), "plan")
+        plan_claim = dag.claim(identity, "plan", "planner")
+        self.assertEqual(dag.claim(identity, "plan", "planner").fencing_token, plan_claim.fencing_token)
+        plan_result = dag.complete(identity, "plan", "planner", plan_claim.fencing_token, "artifact-plan")
+        self.assertEqual(dag.complete(identity, "plan", "planner", plan_claim.fencing_token, "artifact-plan"), plan_result)
         ready = dag.ready(identity)
         self.assertEqual({node.node_id for node in ready}, {"left", "right"})
         left_claim = dag.claim(identity, "left", "worker-a")
@@ -63,6 +73,7 @@ class PackagesDagProviderTests(unittest.TestCase):
             dag.amend(identity, "cycle-a", depends_on=("cycle-b",))
         dag.add(identity, "removable")
         dag.remove(identity, "removable", "planner revision")
+        dag.remove(identity, "removable", "planner revision replay")
         with self.assertRaises(KeyError):
             dag.get(identity, "removable")
 

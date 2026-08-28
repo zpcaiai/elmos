@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 import elmos_sql_transpiler.http_api as http_api
 from elmos_sql_transpiler.commercial import assess_commercial, commercial_capabilities
 from elmos_sql_transpiler.commercial_request import parse_commercial_request_json
+from elmos_sql_transpiler.production_qualification import production_qualification_draft
 
 
 def _request(**changes: object) -> dict[str, object]:
@@ -62,6 +63,8 @@ def _inline_isolated(request: Any) -> bytes:
 @pytest.fixture
 def client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
     monkeypatch.setattr(http_api, "_run_assessment_isolated", _inline_isolated)
+    monkeypatch.delenv("ELMOS_CHINADB_QUALIFICATION_TRUST_STORE", raising=False)
+    monkeypatch.delenv("ELMOS_CHINADB_QUALIFICATION_TRUST_STORE_DIGEST", raising=False)
     return TestClient(http_api.app, raise_server_exceptions=False)
 
 
@@ -103,6 +106,49 @@ def test_health_and_capabilities_are_bounded_fail_closed_contracts(
     assert skills["externalExecution"] == "NOT_RUN"
     assert skills["independentVerification"] == "NOT_RUN"
     assert skills["certification"] == "NOT_CERTIFIED"
+
+    production_response = client.get("/internal/v1/chinadb-production/requirements")
+    production = production_response.json()
+    assert production_response.status_code == 200
+    assert production["targetCount"] == 13
+    assert production["productionBoundaries"] == {
+        "externalExecution": "NOT_RUN",
+        "independentVerification": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
+        "targetSql": None,
+        "productionDefinitionOfDoneCount": 0,
+    }
+
+
+def test_production_plan_http_is_bounded_and_cannot_execute_external_work(
+    client: TestClient,
+) -> None:
+    draft = production_qualification_draft(
+        tenant_id="tenant-1",
+        project_id="project-1",
+        actor_id="actor-1",
+        implementer_organization_id="elmos-engineering",
+    )
+    response = client.post("/internal/v1/chinadb-production/plan", json=draft)
+    value = response.json()
+
+    assert response.status_code == 200
+    assert value["summary"]["targetCount"] == 13
+    assert value["summary"]["productionDefinitionOfDoneCount"] == 0
+    assert value["externalExecution"] == "NOT_RUN"
+    assert value["independentVerification"] == "NOT_RUN"
+    assert value["certification"] == "NOT_CERTIFIED"
+    assert value["targetSql"] is None
+    assert value["productionDefinitionOfDoneCount"] == 0
+    assert value["effects"] == {"externalCallsExecuted": []}
+    assert {target["state"] for target in value["targets"]} == {"BLOCKED_INPUT"}
+
+    secret = client.post(
+        "/internal/v1/chinadb-production/plan",
+        json={**draft, "password": "inline-secret"},
+    )
+    assert secret.status_code == 422
+    assert secret.json()["errorCode"] == "CHINADB_PRODUCTION_REQUEST_REJECTED"
 
 
 def test_skill_http_execution_is_scope_bound_and_fail_closed(client: TestClient) -> None:
