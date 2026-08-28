@@ -13,6 +13,7 @@ import yaml
 
 from .attestation import AttestationError, load_json_object, verify_signed_record
 from .security import SecurityBoundaryError, resolve_within
+from .canonical import digest_json
 
 
 def load_lock(root: Path) -> dict[str, Any]:
@@ -21,6 +22,47 @@ def load_lock(root: Path) -> dict[str, Any]:
     if not isinstance(value, dict) or not isinstance(value.get("repositories"), list):
         raise ValueError("corpus lock must contain repositories")
     return value
+
+
+def build_license_review_request(root: Path) -> dict[str, Any]:
+    """Build a deterministic, unsigned request for independent corpus review.
+
+    This is an intake artifact, not an approval. It deliberately contains no
+    reviewer identity, signature, or ``approved`` state so a local process
+    cannot manufacture the evidence required by the release gate.
+    """
+
+    lock = load_lock(root)
+    repositories = []
+    for repository in sorted(lock["repositories"], key=lambda item: str(item.get("id", ""))):
+        repositories.append({
+            "corpus_id": str(repository["id"]),
+            "repository": str(repository["repository"]),
+            "commit": str(repository["commit"]),
+            "business_lines": sorted(str(value) for value in repository.get("business_lines", [])),
+            "purpose": str(repository.get("purpose", "")),
+            "redistribution": str(repository.get("redistribution", "")),
+            "requested_review": [
+                "license_spdx",
+                "patent_and_trademark_scope",
+                "data_and_export_control_scope",
+                "redistribution_decision",
+                "review_status",
+            ],
+            "required_record_binding": {"record_type": "license-review", "repository": str(repository["repository"]), "commit": str(repository["commit"])},
+            "status": "PENDING_EXTERNAL_REVIEW",
+        })
+    request = {
+        "schema_version": "1.0",
+        "request_type": "corpus-license-review-request",
+        "status": "PENDING_EXTERNAL_REVIEW",
+        "lock_digest": digest_json(lock),
+        "repository_count": len(repositories),
+        "repositories": repositories,
+        "release_effect": "release remains BLOCKED until every request has an approved, non-expired, independently signed review record",
+    }
+    request["request_digest"] = digest_json(request)
+    return request
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:

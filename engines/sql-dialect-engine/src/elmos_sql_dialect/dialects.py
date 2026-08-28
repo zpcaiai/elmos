@@ -18,6 +18,7 @@ from __future__ import annotations
 from .models import (
     CanonicalType,
     CanonicalTypeRef,
+    CheckLiteral,
     CheckOperator,
     ColumnDefault,
     DefaultKind,
@@ -266,6 +267,8 @@ def render_type(type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
         }[dialect]
     if t == CanonicalType.JSON:
         if type_ref.json_binary:
+            if dialect is Dialect.POSTGRES:
+                return "JSONB"
             raise DialectError(
                 "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED",
                 "JSONB storage/index/operator semantics cannot be represented as a common JSON type",
@@ -277,6 +280,13 @@ def render_type(type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
             f"{dialect.value} JSON mapping requires a versioned provider capability and is not inferred",
         )
     if t == CanonicalType.ARRAY:
+        if dialect is Dialect.POSTGRES:
+            if type_ref.element_type is None:
+                raise DialectError(
+                    "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+                    "PostgreSQL ARRAY types require a typed element type",
+                )
+            return f"{render_type(type_ref.element_type, dialect)}[]"
         raise DialectError(
             "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED",
             "array element/storage/operator semantics need a target-specific collection route; "
@@ -368,6 +378,35 @@ def render_default(default: ColumnDefault, type_ref: CanonicalTypeRef, dialect: 
         # profile renders. SYSDATETIME() returns datetime2(7) and matches
         # CURRENT_TIMESTAMP on the other three dialects.
         return "SYSDATETIME()" if dialect == Dialect.TSQL else "CURRENT_TIMESTAMP"
+    if default.kind == DefaultKind.ARRAY:
+        if dialect is not Dialect.POSTGRES:
+            raise DialectError(
+                "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED",
+                "typed PostgreSQL ARRAY defaults have no exact target collection mapping",
+            )
+        if type_ref.canonical_type is not CanonicalType.ARRAY:
+            raise DialectError(
+                "CERTIFIED_DDL_DEFAULT_TYPE_MISMATCH",
+                "ARRAY defaults require an ARRAY column",
+            )
+        def render_member(member: CheckLiteral) -> str:
+            if member.is_null:
+                return "NULL"
+            if member.is_special_float:
+                raise DialectError(
+                    "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET",
+                    "non-finite ARRAY default members are not emitted without an exact target profile",
+                )
+            if member.is_boolean:
+                return "TRUE" if member.value == "true" else "FALSE"
+            if member.is_string:
+                return "'" + member.value.replace("'", "''") + "'"
+            return member.value
+
+        rendered = "ARRAY[" + ", ".join(render_member(item) for item in default.array_elements) + "]"
+        if default.cast_type is not None:
+            rendered += f"::{render_type(default.cast_type, dialect)}"
+        return rendered
     if default.kind == DefaultKind.NUMBER:
         assert default.literal is not None
         return default.literal

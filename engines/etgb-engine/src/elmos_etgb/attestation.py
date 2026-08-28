@@ -23,6 +23,7 @@ class AttestationError(ValueError):
 
 
 _DIGEST = re.compile(r"^[0-9a-f]{64}$")
+_CANDIDATE_DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 _IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:/-]{1,127}$")
 _ATTESTATION_FIELDS = frozenset({
     "schema_version", "attestation_id", "profile", "subject", "executor_id",
@@ -87,8 +88,10 @@ def validate_attestation_structure(attestation: Mapping[str, Any]) -> list[str]:
         errors.extend(f"missing subject field: {field}" for field in sorted(_SUBJECT_FIELDS - set(subject)))
         errors.extend(f"unexpected subject field: {field}" for field in sorted(set(subject) - _SUBJECT_FIELDS))
         for field in sorted(_SUBJECT_FIELDS):
-            if field in subject and (not isinstance(subject[field], str) or not _DIGEST.fullmatch(subject[field])):
-                errors.append(f"subject.{field} must be a lowercase SHA-256 digest")
+            pattern = _CANDIDATE_DIGEST if field == "candidate_digest" else _DIGEST
+            if field in subject and (not isinstance(subject[field], str) or not pattern.fullmatch(subject[field])):
+                expected = "sha256:<64 hex>" if field == "candidate_digest" else "64 lowercase hex"
+                errors.append(f"subject.{field} must be {expected}")
     try:
         issued = _parse_time(attestation.get("issued_at"), field="issued_at")
         expires = _parse_time(attestation.get("expires_at"), field="expires_at")
@@ -189,7 +192,7 @@ def verify_attestation_binding(
     """Verify an attestation and bind it to the exact gate inputs."""
 
     result = verify_attestation(attestation, trust_store)
-    if candidate_digest is None or not _DIGEST.fullmatch(candidate_digest):
+    if candidate_digest is None or not _CANDIDATE_DIGEST.fullmatch(candidate_digest):
         result["valid"] = False
         result.setdefault("errors", []).append("candidate_digest is required to verify release binding")
     expected = {

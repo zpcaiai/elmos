@@ -1018,7 +1018,7 @@ def _classify(
         elif (
             isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "POLICY"
         ) or (raw_sql is not None and raw_sql.lstrip().upper().startswith("CREATE POLICY")):
-            parse_row_policy(raw_sql or statement, dialect)
+            parse_row_policy(raw_sql or statement, dialect, namespace_map)
         elif isinstance(statement, exp.Alter):
             # certified-alter-v1. Routed here so the coverage number tracks
             # what the engine can really do rather than one profile of it.

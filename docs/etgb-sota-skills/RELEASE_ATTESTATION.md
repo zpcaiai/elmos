@@ -14,6 +14,10 @@ of the following to be true:
 - executor and verifier identities are different and the attestation is still
   within its validity window.
 
+The candidate digest uses the release-candidate form `sha256:<64 lowercase hex>`.
+The other attestation subject digests use 64 lowercase hexadecimal characters;
+all six subject values must bind the exact gate inputs.
+
 The attestation is supplied to the gate instead of a trusted boolean:
 
 ```bash

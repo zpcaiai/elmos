@@ -6,6 +6,7 @@ import hashlib
 import os
 import subprocess
 import tempfile
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +16,7 @@ from .candidate import verify_frozen_candidate
 from .gates import evaluate_gate
 from .planner import build_plan as build_risk_plan
 from .runner import run_cases
+from .adapters import EXTERNAL_ADAPTERS
 from .scoring import score_results
 from .validation import coverage_report, load_cases, validate_package
 
@@ -127,4 +129,57 @@ def gate_profile(package_root: Path, results: list[dict[str, Any]], *, profile: 
             corpus=score.get("corpus", {}),
             evidence=evidence_binding(results),
         )
-    return evaluate_gate(score=score, validation=validation, coverage=coverage, profile=profile, external_attested=external_attested, independent_verifier=independent_verifier, external_attestation=external_attestation, attestation_verification=attestation_verification)
+    return evaluate_gate(score=score, validation=validation, coverage=coverage, profile=profile, external_attested=external_attested, independent_verifier=independent_verifier, external_attestation=external_attestation, attestation_verification=attestation_verification, candidate_digest=candidate_digest)
+
+
+def release_preflight(package_root: Path, *, profile: str = "release", results: list[dict[str, Any]] | None = None, candidate_digest: str | None = None, trust_store: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Report release-scope readiness without executing or fabricating cases.
+
+    The preflight makes the distinction between four native smoke routes and
+    the full release corpus explicit. It is intentionally not a certification
+    gate and never changes external evidence state.
+    """
+
+    if profile not in {"release", "golden"}:
+        raise ValueError("release preflight requires release or golden profile")
+    expected = select_cases(package_root, profile=profile)
+    result_rows = list(results or [])
+    expected_ids = {str(case["id"]) for case in expected}
+    result_ids = [str(result.get("case_id")) for result in result_rows]
+    missing = sorted(expected_ids - set(result_ids))
+    duplicates = sorted(case_id for case_id, count in Counter(result_ids).items() if count > 1)
+    adapters = Counter(str(case.get("execution", {}).get("adapter", "")) for case in expected)
+    external_cases = sum(count for adapter, count in adapters.items() if adapter in EXTERNAL_ADAPTERS)
+    validation = validate_package(package_root, release=True, trust_store=trust_store)
+    corpus = validation.get("corpus", {})
+    blockers: list[str] = []
+    if not validation.get("valid"):
+        blockers.append("release package validation is not valid")
+    if len(result_rows) != len(expected) or missing or duplicates:
+        blockers.append(f"full {profile} scope requires {len(expected)} distinct case results; received {len(result_rows)}")
+    if external_cases:
+        blockers.append(f"{external_cases} {profile} cases require independently attested external adapters")
+    if corpus.get("unapproved", 0):
+        blockers.append(f"{corpus['unapproved']} corpus license reviews remain unapproved or unverified")
+    if not candidate_digest or not str(candidate_digest).startswith("sha256:"):
+        blockers.append("a content-bound frozen candidate digest must be supplied")
+    blockers.append("independent verifier and external signed attestation remain required")
+    return {
+        "schema_version": "1.1",
+        "profile": profile,
+        "status": "BLOCKED" if blockers else "READY_FOR_EXTERNAL_GATE",
+        "certification_status": "NOT_CERTIFIED",
+        "scope": {
+            "expected_cases": len(expected),
+            "observed_results": len(result_rows),
+            "missing_cases": len(missing),
+            "duplicate_case_ids": duplicates,
+            "adapter_counts": dict(sorted(adapters.items())),
+            "external_adapter_cases": external_cases,
+        },
+        "corpus": {"repositories": corpus.get("repositories", 0), "approved": corpus.get("approved", 0), "unapproved": corpus.get("unapproved", 0), "errors": corpus.get("errors", []), "warnings": corpus.get("warnings", [])},
+        "candidate_digest": candidate_digest,
+        "blockers": blockers,
+        "missing_case_examples": missing[:20],
+        "interpretation": "This preflight is an engineering handoff artifact; it cannot certify, sign, or approve a release.",
+    }

@@ -27,6 +27,7 @@ from elmos_sql_dialect.advanced import (
     emit_comment,
     emit_privilege,
     emit_procedure,
+    emit_row_policy,
     emit_table_function,
     emit_trigger,
     emit_view,
@@ -35,6 +36,7 @@ from elmos_sql_dialect.advanced import (
     parse_create_view,
     parse_privilege,
     parse_procedure,
+    parse_row_policy,
     parse_table_function,
     parse_trigger,
 )
@@ -188,6 +190,11 @@ def emit_to(
             target,
             comment_catalog,
             source_catalog,
+        )
+    if isinstance(statement, exp.Command) and statement.sql().lstrip().upper().startswith("CREATE POLICY"):
+        return emit_row_policy(
+            parse_row_policy(statement.sql(), source, namespace_map),
+            target,
         )
     if isinstance(statement, exp.Create):
         kind = str(statement.args.get("kind", "")).upper()
