@@ -363,12 +363,7 @@ public final class DurableAgentRegistry {
         processLock.lock();
         try {
             if (!Files.exists(lockPath, LinkOption.NOFOLLOW_LINKS)) {
-                try {
-                    Files.createFile(lockPath);
-                    setOwnerOnly(lockPath, OWNER_FILE);
-                } catch (java.nio.file.FileAlreadyExistsException ignored) {
-                    // A concurrent process created the exact lock file.
-                }
+                createLockFile(lockPath);
             }
             requireRegularSingleLink(lockPath, "REGISTRY_LOCK_INVALID");
             try (FileChannel channel = FileChannel.open(lockPath, StandardOpenOption.WRITE);
@@ -402,8 +397,7 @@ public final class DurableAgentRegistry {
             if (size < 2 || size > MAXIMUM_STATE_BYTES) {
                 throw rejected("REGISTRY_STATE_SIZE_INVALID", "registry state size is outside the bounded range");
             }
-            byte[] bytes = Files.readAllBytes(statePath);
-            if (bytes.length != size) throw rejected("REGISTRY_STATE_CHANGED", "registry state changed while reading");
+            byte[] bytes = readStableBytes(statePath, size);
             Envelope envelope = json.readValue(bytes, Envelope.class);
             if (!ENVELOPE_SCHEMA.equals(envelope.schemaVersion()) || envelope.payload() == null) {
                 throw rejected("REGISTRY_STATE_SCHEMA_INVALID", "registry state envelope schema is invalid");
@@ -425,24 +419,20 @@ public final class DurableAgentRegistry {
 
     private void writeState(PersistedState state) {
         OperationScope operation = OPERATION_SCOPE.get();
-        if (operation == null
-                || !operation.tenantId().equals(state.tenantId())
-                || !operation.projectId().equals(state.projectId())) {
-            throw rejected("REGISTRY_OPERATION_SCOPE_INVALID", "registry write escaped its locked scope");
-        }
+        requireOperationScope(operation, state.tenantId(), state.projectId());
         validateState(state, operation.tenantId(), operation.projectId());
         Envelope envelope = new Envelope(ENVELOPE_SCHEMA, state, digest(state));
-        final byte[] bytes;
-        try {
-            bytes = json.writeValueAsBytes(envelope);
-        } catch (JsonProcessingException error) {
-            throw unavailable("REGISTRY_STATE_SERIALIZATION_FAILED", error);
-        }
+        byte[] bytes = serialize(json, envelope, "REGISTRY_STATE_SERIALIZATION_FAILED");
         if (bytes.length > MAXIMUM_STATE_BYTES) {
             throw rejected("REGISTRY_STATE_SIZE_INVALID", "registry state exceeds the bounded byte limit");
         }
         Path candidate = operation.scope().resolve("registry-" + UUID.randomUUID() + ".tmp");
         Path target = operation.scope().resolve(STATE_FILE);
+        writeCandidate(candidate, bytes);
+        commitCandidate(candidate, target, operation.scope());
+    }
+
+    static void writeCandidate(Path candidate, byte[] bytes) {
         try (FileChannel output = FileChannel.open(
                 candidate, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
             setOwnerOnly(candidate, OWNER_FILE);
@@ -453,10 +443,22 @@ public final class DurableAgentRegistry {
             deleteCandidate(candidate);
             throw unavailable("REGISTRY_STATE_WRITE_FAILED", error);
         }
+    }
+
+    private static void commitCandidate(Path candidate, Path target, Path scope) {
+        commitCandidate(
+                candidate,
+                target,
+                scope,
+                (source, destination) -> Files.move(
+                        source, destination, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING));
+    }
+
+    static void commitCandidate(Path candidate, Path target, Path scope, AtomicMover mover) {
         try {
             requireRegularSingleLink(candidate, "REGISTRY_STATE_CANDIDATE_INVALID");
-            Files.move(candidate, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-            syncDirectory(operation.scope());
+            mover.move(candidate, target);
+            syncDirectory(scope);
             requireRegularSingleLink(target, "REGISTRY_STATE_INVALID");
         } catch (AtomicMoveNotSupportedException error) {
             deleteCandidate(candidate);
@@ -475,10 +477,9 @@ public final class DurableAgentRegistry {
         try {
             createPrivateDirectory(tenantRoot);
             createPrivateDirectory(projectRoot);
-            if (!projectRoot.toRealPath(LinkOption.NOFOLLOW_LINKS).startsWith(root)) {
-                throw rejected("REGISTRY_SCOPE_ESCAPED", "registry scope escaped its configured root");
-            }
-            return projectRoot;
+            Path realProjectRoot = projectRoot.toRealPath(LinkOption.NOFOLLOW_LINKS);
+            requireContainedScope(root, realProjectRoot);
+            return realProjectRoot;
         } catch (IOException error) {
             throw unavailable("REGISTRY_SCOPE_UNAVAILABLE", error);
         }
@@ -494,26 +495,24 @@ public final class DurableAgentRegistry {
         setOwnerOnly(path, OWNER_DIRECTORY);
     }
 
-    private static void requireDirectory(Path path, String code) throws IOException {
+    static void requireDirectory(Path path, String code) throws IOException {
         BasicFileAttributes attributes = Files.readAttributes(
                 path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-        if (!attributes.isDirectory() || attributes.isSymbolicLink()) {
+        if (attributes.isSymbolicLink() || !attributes.isDirectory()) {
             throw rejected(code, "registry path must be a non-symlink directory");
         }
     }
 
-    private static void requireRegularSingleLink(Path path, String code) {
+    static void requireRegularSingleLink(Path path, String code) {
         try {
             BasicFileAttributes attributes = Files.readAttributes(
                     path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-            if (!attributes.isRegularFile() || attributes.isSymbolicLink()) {
+            if (attributes.isSymbolicLink() || !attributes.isRegularFile()) {
                 throw rejected(code, "registry path must be a non-symlink regular file");
             }
             try {
                 Object links = Files.getAttribute(path, "unix:nlink", LinkOption.NOFOLLOW_LINKS);
-                if (links instanceof Number number && number.longValue() != 1L) {
-                    throw rejected(code, "registry file must have exactly one hard link");
-                }
+                requireSingleLinkCount(links, code);
             } catch (UnsupportedOperationException ignored) {
                 // The exact platform does not expose nlink; all other no-follow checks remain active.
             }
@@ -522,7 +521,7 @@ public final class DurableAgentRegistry {
         }
     }
 
-    private static void setOwnerOnly(Path path, Set<PosixFilePermission> permissions) throws IOException {
+    static void setOwnerOnly(Path path, Set<PosixFilePermission> permissions) throws IOException {
         try {
             Files.setPosixFilePermissions(path, permissions);
         } catch (UnsupportedOperationException ignored) {
@@ -545,6 +544,51 @@ public final class DurableAgentRegistry {
         }
     }
 
+    static void createLockFile(Path lockPath) throws IOException {
+        try {
+            Files.createFile(lockPath);
+            setOwnerOnly(lockPath, OWNER_FILE);
+        } catch (java.nio.file.FileAlreadyExistsException ignored) {
+            // A concurrent process created the exact lock file.
+        }
+    }
+
+    static byte[] readStableBytes(Path statePath, long expectedSize) throws IOException {
+        byte[] bytes = Files.readAllBytes(statePath);
+        if (bytes.length != expectedSize) {
+            throw rejected("REGISTRY_STATE_CHANGED", "registry state changed while reading");
+        }
+        return bytes;
+    }
+
+    static byte[] serialize(ObjectMapper mapper, Object value, String failureCode) {
+        try {
+            return mapper.writeValueAsBytes(value);
+        } catch (JsonProcessingException error) {
+            throw unavailable(failureCode, error);
+        }
+    }
+
+    static void requireOperationScope(OperationScope operation, String tenantId, String projectId) {
+        if (operation == null
+                || !operation.tenantId().equals(tenantId)
+                || !operation.projectId().equals(projectId)) {
+            throw rejected("REGISTRY_OPERATION_SCOPE_INVALID", "registry write escaped its locked scope");
+        }
+    }
+
+    static void requireContainedScope(Path root, Path candidate) {
+        if (!candidate.startsWith(root)) {
+            throw rejected("REGISTRY_SCOPE_ESCAPED", "registry scope escaped its configured root");
+        }
+    }
+
+    static void requireSingleLinkCount(Object links, String code) {
+        if (!(links instanceof Number number) || number.longValue() != 1L) {
+            throw rejected(code, "registry file must have exactly one hard link");
+        }
+    }
+
     private void validateState(PersistedState state, String tenantId, String projectId) {
         if (!STORE_SCHEMA.equals(state.schemaVersion())
                 || !tenantId.equals(state.tenantId())
@@ -556,7 +600,7 @@ public final class DurableAgentRegistry {
             throw rejected("REGISTRY_STATE_LAYERS_INVALID", "registry state must contain the three exact layers");
         }
         state.layers().forEach((source, agents) -> {
-            if (agents == null || agents.size() > 256) {
+            if (agents.size() > 256) {
                 throw rejected("REGISTRY_STATE_LAYERS_INVALID", "registry layer is invalid");
             }
             String previous = null;
@@ -574,7 +618,7 @@ public final class DurableAgentRegistry {
         }
         state.mutationReceipts().forEach((key, receipt) -> {
             AgentRegistryModels.identifier(key, "mutation receipt key");
-            if (receipt == null || receipt.result() == null) {
+            if (receipt.result() == null) {
                 throw rejected("REGISTRY_RECEIPT_INVALID", "mutation receipt is incomplete");
             }
             AgentRegistryModels.digest(receipt.requestDigest(), "mutation receipt requestDigest");
@@ -585,7 +629,7 @@ public final class DurableAgentRegistry {
         });
         state.selectionReceipts().forEach((key, receipt) -> {
             AgentRegistryModels.identifier(key, "selection receipt key");
-            if (receipt == null || receipt.decision() == null) {
+            if (receipt.decision() == null) {
                 throw rejected("REGISTRY_RECEIPT_INVALID", "selection receipt is incomplete");
             }
             AgentRegistryModels.digest(receipt.requestDigest(), "selection receipt requestDigest");
@@ -671,21 +715,15 @@ public final class DurableAgentRegistry {
     private static boolean matchesDurableSelectionReceipt(PersistedState state, SelectionPermit permit) {
         return state.selectionReceipts().values().stream().anyMatch(receipt -> {
             SelectionDecision persisted = receipt.decision();
-            SelectionPermit persistedPermit = persisted == null ? null : persisted.permit();
-            return persisted != null
-                    && persisted.allowed()
-                    && persistedPermit != null
+            SelectionPermit persistedPermit = persisted.permit();
+            return persisted.allowed()
                     && constantTimeEquals(persistedPermit.permitDigest(), permit.permitDigest())
                     && persistedPermit.equals(permit);
         });
     }
 
     private String digest(Object value) {
-        try {
-            return sha256(json.writeValueAsBytes(value));
-        } catch (JsonProcessingException error) {
-            throw unavailable("REGISTRY_DIGEST_SERIALIZATION_FAILED", error);
-        }
+        return sha256(serialize(json, value, "REGISTRY_DIGEST_SERIALIZATION_FAILED"));
     }
 
     private static String sha256(String value) {
@@ -693,8 +731,12 @@ public final class DurableAgentRegistry {
     }
 
     private static String sha256(byte[] value) {
+        return sha256(value, "SHA-256");
+    }
+
+    static String sha256(byte[] value, String algorithm) {
         try {
-            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(value));
+            return HexFormat.of().formatHex(MessageDigest.getInstance(algorithm).digest(value));
         } catch (NoSuchAlgorithmException error) {
             throw new IllegalStateException("SHA-256 is unavailable", error);
         }
@@ -750,7 +792,7 @@ public final class DurableAgentRegistry {
         }
     }
 
-    private static boolean constantTimeEquals(String expected, String actual) {
+    static boolean constantTimeEquals(String expected, String actual) {
         return expected != null && actual != null && MessageDigest.isEqual(
                 expected.getBytes(StandardCharsets.US_ASCII), actual.getBytes(StandardCharsets.US_ASCII));
     }
@@ -780,13 +822,18 @@ public final class DurableAgentRegistry {
         T apply(PersistedState state);
     }
 
+    @FunctionalInterface
+    interface AtomicMover {
+        void move(Path source, Path target) throws IOException;
+    }
+
     private record Envelope(String schemaVersion, PersistedState payload, String payloadDigest) {}
 
     private record MutationReceipt(String requestDigest, MutationResult result) {}
 
     private record SelectionReceipt(String requestDigest, SelectionDecision decision) {}
 
-    private record OperationScope(Path scope, String tenantId, String projectId) {}
+    static record OperationScope(Path scope, String tenantId, String projectId) {}
 
     private record PersistedState(
             String schemaVersion,

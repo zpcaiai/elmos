@@ -11,6 +11,7 @@
   "skill_name": "agent-registry",
   "source_contract_sha256": "sha256:4070de48b8889ada3addc6fff08c9042fc00edbf3b3d2cafb4b6a12bba5a3341",
   "source_id": "FOUNDATION-06-agent-registry",
+  "source_skill_sha256": "sha256:237ef61c498f6d4c5a2dc9737121ebc66789dd0127f464bf661c8ae77314316e",
   "supported_operations": [
     "audit",
     "capability",
