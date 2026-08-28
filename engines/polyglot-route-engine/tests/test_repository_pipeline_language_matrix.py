@@ -48,6 +48,50 @@ _ASSEMBLY_AUXILIARY_INPUTS: dict[Language, tuple[str, ...]] = {
     "flutter": ("lib/main.dart",),
 }
 
+
+def _write_react_project_descriptors(repository: Path) -> None:
+    (repository / "package.json").write_text(
+        json.dumps(
+            {
+                "private": True,
+                "type": "module",
+                "dependencies": {
+                    "react": "19.2.7",
+                    "react-dom": "19.2.7",
+                },
+                "devDependencies": {
+                    "@types/react": "19.1.10",
+                    "@types/react-dom": "19.1.7",
+                    "typescript": "5.9.2",
+                },
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (repository / "tsconfig.json").write_text(
+        json.dumps(
+            {
+                "compilerOptions": {
+                    "target": "ES2022",
+                    "module": "NodeNext",
+                    "moduleResolution": "NodeNext",
+                    "strict": True,
+                    "jsx": "react-jsx",
+                    "noEmit": True,
+                    "types": [],
+                },
+                "include": ["**/*.ts", "**/*.tsx"],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
 _BEHAVIOR_CASES: tuple[list[dict[str, object]], ...] = (
     [
         {"args": [2, 3], "expected": 5},
@@ -783,6 +827,8 @@ def _write_repository_and_cases(
     cases = root / "cases"
     repository.mkdir()
     cases.mkdir()
+    if source_language == "react":
+        _write_react_project_descriptors(repository)
 
     source_files = _route_source_files(source_language, target_language)
     assert len(source_files) == 3
@@ -831,6 +877,8 @@ def _write_medium_repository_and_cases(
     cases = root / "cases"
     repository.mkdir()
     cases.mkdir()
+    if source_language == "react":
+        _write_react_project_descriptors(repository)
 
     source_files = sorted(_route_medium_source_files(source_language, target_language))
     assert len(source_files) == 5
@@ -1088,6 +1136,11 @@ def _assert_assembly_closure(
     assert manifest["build_verification"]["toolchain_language"] == target_language
     assert manifest["build_verification"]["toolchain_version"]
     assert manifest["build_verification"]["commands"]
+    assert manifest["runtime_verification_status"] == "PASSED"
+    assert manifest["runtime_verification"]["toolchain_language"] == target_language
+    assert manifest["runtime_verification"]["unit_count"] == expected_unit_count
+    assert manifest["runtime_verification"]["case_count"] >= expected_unit_count
+    assert manifest["runtime_verification"]["commands"]
     assert manifest["external_verification_status"] == "NOT_RUN"
     assert manifest["certification_status"] == "NOT_CERTIFIED"
 
@@ -1165,7 +1218,12 @@ def _assert_artifact_closure(
     observed_paths = {
         path.relative_to(output).as_posix()
         for path in output.rglob("*")
-        if path.is_file() and not path.is_symlink() and path.relative_to(output).as_posix() not in controls
+        if (
+            path.is_file()
+            and not path.is_symlink()
+            and ".build" not in path.relative_to(output).parts
+            and path.relative_to(output).as_posix() not in controls
+        )
     }
     assert set(declared) == observed_paths
 
@@ -1276,6 +1334,12 @@ def test_repository_pipeline_converts_three_file_repository_for_every_directed_p
     assert report["status_counts"] == {"PASSED": 3}
     assert report["included_unit_count"] == 3
     assert report["build_verification"]["status"] == "PASSED"
+    assert report["runtime_verification"]["status"] == "PASSED"
+    assert report["runtime_verification"]["toolchain"]["language"] == target_language
+    assert report["runtime_verification"]["commands"]
+    assert report["runtime_verification"]["status"] == "PASSED"
+    assert report["runtime_verification"]["toolchain"]["language"] == target_language
+    assert report["runtime_verification"]["commands"]
     assert report["project_graph"]["repository_complete"] is True
     assert report["project_graph"]["completeness_status"] == "COMPLETE"
     assert report["project_graph"]["obligation_count"] == 0
@@ -1342,6 +1406,9 @@ def test_repository_pipeline_converts_medium_repository_for_every_directed_pair(
     assert report["status_counts"] == {"PASSED": 5}
     assert report["included_unit_count"] == 5
     assert report["build_verification"]["status"] == "PASSED"
+    assert report["runtime_verification"]["status"] == "PASSED"
+    assert report["runtime_verification"]["toolchain"]["language"] == target_language
+    assert report["runtime_verification"]["commands"]
     assert report["project_graph"]["repository_complete"] is True
     assert report["project_graph"]["completeness_status"] == "COMPLETE"
     assert report["project_graph"]["obligation_count"] == 0

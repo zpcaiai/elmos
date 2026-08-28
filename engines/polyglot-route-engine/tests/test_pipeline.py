@@ -302,8 +302,19 @@ def test_repository_pipeline_rejects_project_graph_drift_during_execution(
     output = tmp_path / "pipeline"
     original_verify = pipeline_module.verify_assembled_project
 
-    def verify_then_mutate(target_language: str, destination: Path):
-        result = original_verify(target_language, destination)
+    def verify_then_mutate(
+        target_language: str,
+        destination: Path,
+        *,
+        cases_directory: Path | None = None,
+        cases_manifest: dict[str, object] | None = None,
+    ):
+        result = original_verify(
+            target_language,
+            destination,
+            cases_directory=cases_directory,
+            cases_manifest=cases_manifest,
+        )
         (repository / "late-resource.json").write_text('{"changed": true}', encoding="utf-8")
         return result
 

@@ -67,6 +67,11 @@ _MAX_CASE_BYTES = 64 * 1024 * 1024
 MAX_ARTIFACT_UNCOMPRESSED_BYTES = 256 * 1024 * 1024
 MAX_ARTIFACT_COMPRESSED_BYTES = 256 * 1024 * 1024
 _MAX_PIPELINE_JSON_BYTES = 64 * 1024 * 1024
+# SwiftPM's `.build` tree is a disposable compiler cache.  It can contain
+# toolchain-owned symlinks (for example `.build/release`) and is never part of
+# the published migration artifact.  Other symlinks in the artifact tree
+# remain unsafe and are still rejected below.
+_ARTIFACT_CACHE_DIRECTORIES = frozenset({".build"})
 
 
 
@@ -270,6 +275,8 @@ def _artifact_inventory(output: Path) -> list[dict[str, Any]]:
             candidate = current_path / name
             if candidate.is_symlink():
                 raise RouteError("PIPELINE_ARTIFACT_SOURCE_UNSAFE")
+            if name in _ARTIFACT_CACHE_DIRECTORIES:
+                continue
             safe_directories.append(name)
         directories[:] = safe_directories
         for name in sorted(names):
@@ -421,6 +428,7 @@ def _reportable_assembly_failure(error: RouteError) -> bool:
             "ASSEMBLY_UNSUPPORTED_TARGET_LANGUAGE",
             "ASSEMBLY_BUILD_VERIFICATION_FAILED",
             "ASSEMBLY_BUILD_TIMEOUT",
+            "ASSEMBLY_RUNTIME_",
             "EXACT_TOOLCHAIN_",
         )
     )
@@ -971,6 +979,7 @@ def _run_repository_pipeline_attempt(
     assembly: dict[str, Any] | None = None
     assembly_failure: str | None = discovery_incident
     build_status = "NOT_RUN"
+    runtime_status = "NOT_RUN"
     # Assembly is derived exclusively from digest-verified batch bytes, and is
     # built in a staging directory so a mid-run failure leaves the previous
     # `assembled` tree intact rather than half-overwritten.
@@ -979,13 +988,32 @@ def _run_repository_pipeline_attempt(
         try:
             assembly = assemble_project(batch, batch_output, assembly_staging)
             try:
-                assembly = verify_assembled_project(target_language, assembly_staging)
+                assembly = verify_assembled_project(
+                    target_language,
+                    assembly_staging,
+                    cases_directory=cases,
+                    cases_manifest=cases_manifest,
+                )
                 build_status = "PASSED"
+                runtime_status = str(assembly.get("runtime_verification_status", "NOT_RUN"))
             except RouteError as error:
                 if not _reportable_assembly_failure(error):
                     raise
                 assembly_failure = str(error)[:4_000]
-                build_status = _assembly_failure_status(error)
+                if str(error).startswith("ASSEMBLY_RUNTIME_"):
+                    # The build manifest is persisted before runtime replay,
+                    # so a runtime-only failure still carries truthful build
+                    # evidence while remaining ineligible for completion.
+                    build_status = "PASSED"
+                    runtime_status = _assembly_failure_status(error)
+                    try:
+                        assembly = json.loads(
+                            (assembly_staging / "assembly-manifest.json").read_text(encoding="utf-8")
+                        )
+                    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as manifest_error:
+                        raise RouteError("PIPELINE_ASSEMBLY_MANIFEST_UNREADABLE") from manifest_error
+                else:
+                    build_status = _assembly_failure_status(error)
         except RouteError as error:
             if not _reportable_assembly_failure(error):
                 raise
@@ -1018,7 +1046,11 @@ def _run_repository_pipeline_attempt(
         # reportable assembly failure leaves a partial tree on purpose; running
         # the closure gate over it would convert a diagnosable PARTIAL into an
         # unrelated raise.
-        assembly = verify_assembly_closure(target_language, assembled_output)
+        assembly = verify_assembly_closure(
+            target_language,
+            assembled_output,
+            require_runtime_passed=runtime_status == "PASSED",
+        )
 
     semantic_graph = build_project_graph(root, repository_ref, discovery)
     if (
@@ -1035,6 +1067,7 @@ def _run_repository_pipeline_attempt(
         and conversion_coverage["complete"] is True
         and behavior_coverage["complete"] is True
         and build_status == "PASSED"
+        and runtime_status == "PASSED"
     )
 
     function_report = build_conversion_report(
@@ -1045,6 +1078,7 @@ def _run_repository_pipeline_attempt(
         build_status=build_status,
         build_reason=assembly_failure,
         cases_manifest_sha256=cases_manifest_sha256,
+        runtime_status=runtime_status,
     )
 
     # Re-inventory both independent inputs after all analysis, target execution
@@ -1064,6 +1098,12 @@ def _run_repository_pipeline_attempt(
 
     functional_conversion = write_conversion_reports(function_report, output)
     status = str(function_report["status"])
+    if status == "COMPLETE" and not repository_complete:
+        # Functional obligations can all pass while the project graph still
+        # has unresolved repository-scope obligations.  Keep the top-level
+        # project result partial so callers cannot mistake function coverage
+        # for whole-repository conversion completion.
+        status = "PARTIAL"
 
     def _shared_claim(current_status: str) -> dict[str, Any]:
         """Fields the report and the manifest must agree on, byte for byte.
@@ -1089,6 +1129,7 @@ def _run_repository_pipeline_attempt(
             "conversion_coverage": conversion_coverage,
             "behavior_coverage": behavior_coverage,
             "repository_complete": repository_complete,
+            "runtime_verification_status": runtime_status,
             "local_execution_evidence": "PASSED" if complete else "LIMITED",
             "repository_execution_status": "PASSED_LOCAL" if complete else "LIMITED",
             "independent_verification_status": "NOT_RUN",
@@ -1217,6 +1258,21 @@ def _run_repository_pipeline_attempt(
                 else None,
             },
             "reason": assembly_failure,
+        },
+        "runtime_verification": {
+            "status": runtime_status,
+            "commands": (assembly.get("runtime_verification", {}) or {}).get("commands", [])
+            if assembly
+            else [],
+            "toolchain": {
+                "language": (assembly.get("runtime_verification", {}) or {}).get("toolchain_language")
+                if assembly
+                else None,
+                "version": (assembly.get("runtime_verification", {}) or {}).get("toolchain_version")
+                if assembly
+                else None,
+            },
+            "reason": assembly_failure if runtime_status != "PASSED" else None,
         },
         "functional_conversion": functional_conversion,
         "cases_manifest_sha256": cases_manifest_sha256,

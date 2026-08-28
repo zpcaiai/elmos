@@ -672,6 +672,7 @@ def build_conversion_report(
     build_reason: str | None = None,
     cases_manifest_sha256: str | None = None,
     code_artifact_ready: bool | None = None,
+    runtime_status: str | None = None,
 ) -> dict[str, Any]:
     """Build the complete logical report before selecting single/sharded storage."""
     results, outcomes = _validate_inputs(discovery, batch)
@@ -686,6 +687,8 @@ def build_conversion_report(
         raise RouteError("FUNCTION_REPORT_LANGUAGE_INVALID")
     if build_status not in {"PASSED", "FAILED", "NOT_RUN"}:
         raise RouteError("FUNCTION_REPORT_BUILD_STATUS_INVALID")
+    if runtime_status is not None and runtime_status not in {"PASSED", "FAILED", "NOT_RUN"}:
+        raise RouteError("FUNCTION_REPORT_RUNTIME_STATUS_INVALID")
     if cases_manifest_sha256 is not None and not re.fullmatch(r"[0-9a-f]{64}", cases_manifest_sha256):
         raise RouteError("CASES_MANIFEST_DIGEST_INVALID")
     root = repository_root.resolve(strict=True)
@@ -815,7 +818,13 @@ def build_conversion_report(
     display = f"{basis_points / 100:.2f}%"
     measurement_status = "MEASURED" if denominator_complete else "INDETERMINATE"
     project_display = display if denominator_complete else "0.00%–100.00% (INDETERMINATE)"
-    if numerator == len(functions) and denominator_complete and build_status == "PASSED":
+    runtime_gate_passed = runtime_status is None or runtime_status == "PASSED"
+    if (
+        numerator == len(functions)
+        and denominator_complete
+        and build_status == "PASSED"
+        and runtime_gate_passed
+    ):
         status = "COMPLETE"
     elif numerator == 0:
         status = "BLOCKED"
@@ -853,6 +862,8 @@ def build_conversion_report(
     }
     if cases_manifest_sha256 is not None:
         evidence_boundary["cases_manifest_sha256"] = cases_manifest_sha256
+    if runtime_status is not None:
+        evidence_boundary["assembled_project_runtime"] = runtime_status
     report: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "kind": "elmos.project-language-conversion-report",
@@ -873,7 +884,7 @@ def build_conversion_report(
         "code_artifact_ready": (
             code_artifact_ready
             if code_artifact_ready is not None
-            else build_status == "PASSED" and numerator > 0
+            else build_status == "PASSED" and numerator > 0 and runtime_gate_passed
         ),
         "functions": functions,
         "exclusions": [],
@@ -1170,8 +1181,18 @@ def validate_conversion_report(report: dict[str, Any]) -> None:
         raise RouteError("METRIC_INCONSISTENT")
     if report.get("blockers") != [item["failure"]["reason_code"] for item in functions if item["failure"]]:
         raise RouteError("FUNCTION_REPORT_BLOCKERS_INVALID")
+    evidence_boundary = report.get("evidence_boundary")
+    assembled_runtime = (
+        evidence_boundary.get("assembled_project_runtime")
+        if isinstance(evidence_boundary, dict)
+        else None
+    )
+    if assembled_runtime is not None and assembled_runtime not in {"PASSED", "FAILED", "NOT_RUN"}:
+        raise RouteError("FUNCTION_REPORT_RUNTIME_STATUS_INVALID")
     if report["code_artifact_ready"] and (
-        report.get("build_verification", {}).get("status") != "PASSED" or numerator == 0
+        report.get("build_verification", {}).get("status") != "PASSED"
+        or numerator == 0
+        or (assembled_runtime is not None and assembled_runtime != "PASSED")
     ):
         raise RouteError("FUNCTION_REPORT_CODE_ARTIFACT_READINESS_INVALID")
     if report.get("report_id") != _report_id(report):

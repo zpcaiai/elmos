@@ -383,6 +383,29 @@ def test_assembly_copies_and_binds_verified_behavior_evidence(tmp_path: Path) ->
         assert _digest(copied.read_bytes()) == record["sha256"]
 
 
+def test_kotlin_assembly_binds_nested_source_validation_toolchain(tmp_path: Path) -> None:
+    report, batch = _fixture(
+        tmp_path,
+        source_language="kotlin",
+        source_path="src/identity.kt",
+    )
+    expected_toolchain = assembly_module._exact_toolchain_identity(
+        exact_toolchain("kotlin")
+    )
+    _rewrite_route_evidence(
+        report,
+        batch,
+        lambda evidence: evidence["source_validation"].update(
+            {"toolchain": expected_toolchain}
+        ),
+    )
+
+    manifest = assemble_project(report, batch, tmp_path / "assembled")
+
+    assert manifest["included_unit_count"] == 1
+    assert manifest["source_language"] == "kotlin"
+
+
 def test_assembly_accepts_typed_number_evidence_from_json_integer_oracle() -> None:
     function = SemanticIR.from_mapping(
         {
