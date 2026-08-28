@@ -1,0 +1,131 @@
+{
+  "capturedAt": "2026-08-28T03:58:03Z",
+  "format": "elmos-formal-local-environment/v1",
+  "machine": "arm64",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:34:53) [Clang 19.1.7 ]",
+  "pythonExecutable": "/Users/stephen/Downloads/ENTER/bin/python3.12",
+  "sqliteVersion": "3.51.1",
+  "toolchains": [
+    {
+      "name": "z3",
+      "path": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+      "sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+      "status": "AVAILABLE",
+      "versionOutput": "Z3 version 4.16.0 - 64 bit",
+      "versionOutputDigest": "sha256:b5a56c4665985ee7fe2444f5e4264a71463d7f635c992b47e85587d74c26cac5"
+    },
+    {
+      "name": "java",
+      "path": "/opt/homebrew/Cellar/openjdk/26.0.1/libexec/openjdk.jdk/Contents/Home/bin/java",
+      "sha256": "sha256:2da49bf8bd5f40f858f99debf4dc0d4a318f5aa1046c5f465ee778de1fbac4e3",
+      "status": "AVAILABLE",
+      "versionOutput": "openjdk version \"26.0.1\" 2026-04-21\nOpenJDK Runtime Environment Homebrew (build 26.0.1)\nOpenJDK 64-Bit Server VM Homebrew (build 26.0.1, mixed mode, sharing)",
+      "versionOutputDigest": "sha256:2a02c980fe45a3091b255c752166dbec53cff2e08f4ed6f07134089dd9580cd2"
+    },
+    {
+      "name": "mvn",
+      "path": "/opt/homebrew/Cellar/maven/3.9.10/bin/mvn",
+      "sha256": "sha256:028b56796c2b82784b832caf63bd8c0a94efc131dd32f39fe55c853a2df7a939",
+      "status": "AVAILABLE",
+      "versionOutput": "Apache Maven 3.9.10 (5f519b97e944483d878815739f519b2eade0a91d)\nMaven home: /opt/homebrew/Cellar/maven/3.9.10/libexec\nJava version: 26.0.1, vendor: Homebrew, runtime: /opt/homebrew/Cellar/openjdk/26.0.1/libexec/openjdk.jdk/Contents/Home\nDefault locale: en_US, platform encoding: UTF-8\nOS name: \"mac os x\", version: \"26.6.2\", arch: \"aarch64\", family: \"mac\"",
+      "versionOutputDigest": "sha256:792f69a2d190b67726a2dea8e522467dd44db5e183d93df69863821217dd0793"
+    },
+    {
+      "name": "gradle",
+      "path": "/opt/homebrew/Cellar/gradle/9.5.1/bin/gradle",
+      "sha256": "sha256:a7c4dfa7d4a23eb18fe41de39764d90ceb2bae05fd2ca3f55ffe459daad30d6a",
+      "status": "AVAILABLE",
+      "versionOutput": "------------------------------------------------------------\nGradle 9.5.1\n------------------------------------------------------------\n\nBuild time:    2026-05-12 13:19:42 UTC\nRevision:      fd78213f09782e62ca4957f9cfd3d90c6c3f1767\n\nKotlin:        2.3.20\nGroovy:        4.0.29\nAnt:           Apache Ant(TM) version 1.10.15 compiled on August 25 2024\nLauncher JVM:  26.0.1 (Homebrew 26.0.1)\nDaemon JVM:    /opt/homebrew/Cellar/openjdk/26.0.1/libexec/openjdk.jdk/Contents/Home (no Daemon JVM specified, using current Java home)\nOS:            Mac OS X 26.6.2 aarch64",
+      "versionOutputDigest": "sha256:28f0a6bbba0afadcac7901b5486a423ed7056187e80a0ee72349cd21e9e35fba"
+    },
+    {
+      "name": "dotnet",
+      "path": "/opt/homebrew/Cellar/dotnet/10.0.301/bin/dotnet",
+      "sha256": "sha256:135ed085e642e17a1cf55cd61a039c53d79998579b5fafa607e8e731d18ab85e",
+      "status": "AVAILABLE",
+      "versionOutput": "10.0.301",
+      "versionOutputDigest": "sha256:202ea52fa65123109563284e542d3944c792f04956f52b582043789d90988778"
+    },
+    {
+      "name": "node",
+      "path": "/opt/homebrew/Cellar/node/26.0.0/bin/node",
+      "sha256": "sha256:73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb",
+      "status": "AVAILABLE",
+      "versionOutput": "v26.0.0",
+      "versionOutputDigest": "sha256:4ba81b51ceb2a5121a3018c8d23adc26a59dd3e470a2a6c7e75eb7c31327adfd"
+    },
+    {
+      "name": "go",
+      "path": "/Users/stephen/.local/share/elmos/toolchains/go/1.25.0/bin/go",
+      "sha256": "sha256:c812de5f1e8307431c5bce8ebc4887c180827abc5834a72cd640a8a14200a93b",
+      "status": "AVAILABLE",
+      "versionOutput": "go version go1.25.0 darwin/arm64",
+      "versionOutputDigest": "sha256:2e13f287eba3d1fa15b1d8dc82c2b80ac9d8a6d7443acfe04422e57b5d6a9e76"
+    },
+    {
+      "name": "rustc",
+      "path": "/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/bin/rustc",
+      "sha256": "sha256:8863b3ea9823e4aac9562b1b8e0c374ee611cefd95569d165fcb8f7209774228",
+      "status": "AVAILABLE",
+      "versionOutput": "rustc 1.89.0 (29483883e 2025-08-04)",
+      "versionOutputDigest": "sha256:62b5c37aaa2182e71e4741c0b003df6fd1d30cdbc5d2f25ac17d1a42ecc2f02c"
+    },
+    {
+      "name": "sqlite3",
+      "path": "/opt/local/bin/sqlite3",
+      "sha256": "sha256:75919546a50d661eaa2ecf4596af5dff910e5e9296a76d5e14834b603bf5383e",
+      "status": "AVAILABLE",
+      "versionOutput": "3.50.4 2025-07-30 19:33:53 4d8adfb30e03f9cf27f800a2c1ba3c48fb4ca1b08b0f5ed59a4d5ecbf45e20a3 (64-bit)",
+      "versionOutputDigest": "sha256:bc8103e24b162865e7fb8cb30ca9fd8caf65b15e023d6fe8deaa79908c97ba53"
+    },
+    {
+      "name": "psql",
+      "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/psql",
+      "sha256": "sha256:4770a125f9ecf370d1d02a06883bbc5d320128936f8fb433e0a13d7811d043ac",
+      "status": "AVAILABLE",
+      "versionOutput": "psql (PostgreSQL) 17.5 (Homebrew)",
+      "versionOutputDigest": "sha256:c3b0b59c890b6c9fe48e320acb7235fa9315957bd947d6c5cbf8e3030dc5a5c1"
+    },
+    {
+      "name": "mysql",
+      "path": "/opt/homebrew/Cellar/mysql/9.6.0_3/bin/mysql",
+      "sha256": "sha256:5db214d264fcbf184fb999751f13b5cc5c6b5f080ba709198a8376b8342e2ed3",
+      "status": "AVAILABLE",
+      "versionOutput": "/opt/homebrew/Cellar/mysql/9.6.0_3/bin/mysql  Ver 9.6.0 for macos15.7 on arm64 (Homebrew)",
+      "versionOutputDigest": "sha256:5df2494b4932c4416f87c7bcb3f04711b3865d1b48490b09cdea589a6d45f22c"
+    },
+    {
+      "name": "docker",
+      "path": "/Applications/OrbStack.app/Contents/MacOS/xbin/docker-tools",
+      "sha256": "sha256:70d5a06adf388bd09b652f47ddc9ca31663a3e5353d24188bdb0054b3014ab3e",
+      "status": "PROBE_NONZERO",
+      "versionOutput": "unsupported argv0 \"docker-tools\"",
+      "versionOutputDigest": "sha256:ee1dd0ef1275858ecd791d04f54c4275b7297f84ace026fabdfd52f4fe55d493"
+    },
+    {
+      "name": "podman",
+      "path": "/opt/homebrew/Cellar/podman/6.1.0/bin/podman-remote",
+      "sha256": "sha256:d7860fac6a49e582430ae2387e03df18eb8588a11d158645c59c3dcbd961be7b",
+      "status": "AVAILABLE",
+      "versionOutput": "podman-remote version 6.1.0",
+      "versionOutputDigest": "sha256:5b83e0d1e8bb7c59925102489a3addc09098ccbd0505fb9c352a7d685ab3d051"
+    },
+    {
+      "name": "nm",
+      "path": "/usr/bin/nm",
+      "sha256": "sha256:b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9",
+      "status": "PROBE_NONZERO",
+      "versionOutput": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: error: : unknown argument '-e'",
+      "versionOutputDigest": "sha256:c8edde2d3cfd1e9aa09bc0fd1d1865040a8e894abc8f8ec09d1644909919771a"
+    },
+    {
+      "name": "otool",
+      "path": "/usr/bin/otool",
+      "sha256": "sha256:b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9",
+      "status": "PROBE_NONZERO",
+      "versionOutput": "error: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/otool: at least one file must be specified\nUsage: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/otool [-arch arch_type] [-fahlLDtdorSTMRIHGvVcXmqQjCP] [-mcpu=arg] [--version] <object file> ...\n\t-f print the fat headers\n\t-a print the archive header\n\t-h print the mach header\n\t-l print the load commands\n\t-L print shared libraries used\n\t-D print shared library id name\n\t-t print the text section (disassemble with -v)\n\t-x print all text sections (disassemble with -v)\n\t-p <routine name>  start dissassemble from routine name\n\t-s <segname> <sectname> print contents of section\n\t-d print the data section\n\t-o print the Objective-C segment\n\t-r print the relocation entries\n\t-S print the table of contents of a library (obsolete)\n\t-T print the table of contents of a dynamic shared library (obsolete)\n\t-M print the module table of a dynamic shared library (obsolete)\n\t-R print the reference table of a dynamic shared library (obsolete)\n\t-I print the indirect symbol table\n\t-H print the two-level hints table (obsolete)\n\t-G print the data in code table\n\t-v print verbosely (symbolically) when possible\n\t-V print disassembled operands symbolically\n\t-c print argument strings of a core file\n\t-X print no leading addresses or headers\n\t-m don't use archive(member) syntax\n\t-B force Thumb disassembly (ARM objects only)\n\t-q use llvm's disassembler (the default)\n\t-Q use otool(1)'s disassembler\n\t-mcpu=arg use `arg' as the cpu for disassembly\n\t-j print opcode bytes\n\t-P print the info plist section as strings\n\t-C print linker optimization hints\n\t--version print the version of /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/otool",
+      "versionOutputDigest": "sha256:2cb36dffba9c40b987de67c73ee9e8715403d4d1992a85346f5cdbab4e4a0d8e"
+    }
+  ]
+}

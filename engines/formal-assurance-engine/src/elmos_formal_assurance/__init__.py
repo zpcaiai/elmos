@@ -27,7 +27,7 @@ from .execution import (
 from .database import SQLiteDifferentialExecutor
 from .observability import FormalObservabilityService, OtlpHttpJsonExporter
 from .registry import SkillRegistry
-from .runtime import FormalAssuranceRuntime
+from .runtime import FormalAssuranceRuntime, RuntimeConfig
 
 __version__ = "1.0.0"
 
@@ -36,6 +36,7 @@ __all__ = [
     "ContentAddressedArtifactStore",
     "Criticality",
     "FormalAssuranceRuntime",
+    "RuntimeConfig",
     "LocalBoundedExecutor",
     "LocalEvaluationError",
     "ExecutionPermit",

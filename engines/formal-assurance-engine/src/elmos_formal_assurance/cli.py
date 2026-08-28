@@ -2,11 +2,86 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
+import stat
 
 from .contracts import TrustedIdentity
-from .runtime import FormalAssuranceRuntime
+from .execution import (
+    ExecutionContractError,
+    ExecutionPermitSigner,
+    load_toolchain_registry,
+)
+from .runtime import FormalAssuranceRuntime, RuntimeConfig
 from .store import StateStore
+
+
+def _read_permit_key(path: Path) -> bytes:
+    """Read a deployment secret without following links or accepting broad modes."""
+    flags = os.O_RDONLY
+    if hasattr(os, "O_CLOEXEC"):
+        flags |= os.O_CLOEXEC
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        descriptor = os.open(path.expanduser(), flags)
+    except OSError as exc:
+        raise ExecutionContractError("execution permit key path is unsafe") from exc
+    try:
+        metadata = os.fstat(descriptor)
+        if not stat.S_ISREG(metadata.st_mode):
+            raise ExecutionContractError("execution permit key must be a regular file")
+        if metadata.st_mode & (stat.S_IRWXG | stat.S_IRWXO):
+            raise ExecutionContractError(
+                "execution permit key must not be accessible by group or others"
+            )
+        if metadata.st_size < 32 or metadata.st_size > 4096:
+            raise ExecutionContractError(
+                "execution permit key must contain between 32 and 4096 bytes"
+            )
+        chunks: list[bytes] = []
+        remaining = metadata.st_size
+        while remaining:
+            chunk = os.read(descriptor, min(remaining, 4096))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        key = b"".join(chunks)
+        if len(key) != metadata.st_size:
+            raise ExecutionContractError("execution permit key changed while reading")
+        return key
+    finally:
+        os.close(descriptor)
+
+
+def _runtime_config(args: argparse.Namespace, parser: argparse.ArgumentParser) -> RuntimeConfig:
+    registry_path = args.toolchain_registry
+    registry_digest = args.toolchain_registry_sha256
+    if bool(registry_path) != bool(registry_digest):
+        parser.error(
+            "--toolchain-registry and --toolchain-registry-sha256 must be supplied together"
+        )
+    try:
+        toolchains = (
+            load_toolchain_registry(registry_path, registry_digest)
+            if registry_path is not None and registry_digest is not None
+            else ()
+        )
+        signer = (
+            ExecutionPermitSigner(_read_permit_key(args.permit_key_file))
+            if args.permit_key_file is not None
+            else None
+        )
+        return RuntimeConfig(
+            artifact_root=args.artifact_root,
+            execution_root=args.execution_root,
+            execution_permit_signer=signer,
+            toolchains=toolchains,
+        )
+    except (ExecutionContractError, OSError, ValueError) as exc:
+        parser.error(str(exc))
+    raise AssertionError("argparse.error must terminate")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -15,6 +90,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--tenant")
     parser.add_argument("--actor", default="local-operator")
     parser.add_argument("--project")
+    parser.add_argument("--artifact-root", type=Path)
+    parser.add_argument("--execution-root", type=Path)
+    parser.add_argument("--permit-key-file", type=Path)
+    parser.add_argument("--toolchain-registry", type=Path)
+    parser.add_argument("--toolchain-registry-sha256")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("skills")
     execute = sub.add_parser("execute")
@@ -23,7 +103,9 @@ def main(argv: list[str] | None = None) -> int:
     execute.add_argument("--subject", required=True)
     execute.add_argument("--idempotency-key", required=True)
     args = parser.parse_args(argv)
-    runtime = FormalAssuranceRuntime(store=StateStore(args.state))
+    runtime = FormalAssuranceRuntime(
+        store=StateStore(args.state), config=_runtime_config(args, parser)
+    )
     if args.command == "skills":
         print(
             json.dumps({"skills": runtime.list_skills()}, ensure_ascii=False, indent=2)

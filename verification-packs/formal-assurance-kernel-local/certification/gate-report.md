@@ -4,11 +4,10 @@
 - Structural gate status: `passed`
 - Certification decision: `NOT_CERTIFIED`
 - Certification readiness: `BLOCKED`
-- Evaluated pack digest: `sha256:9aac00988b678b8be688e834b1f51dc90f8096dc80e3fb20a022fd201aefce6b`
+- Evaluated pack digest: `sha256:9f33ef84c5df5308e5302122373e609eaaa6354d49dadfd14174f7fb166d2a11`
 
 ## Certification blockers
 - pack and certification status must both request certified
-- fuzz seed_corpus ref must be a safe pack-local file: 'corpus/development/seed.json'
 - representative_workload_pass_rate below 1.0
 - source_map_coverage below 0.95
 - evidence_trace_coverage below 0.95
@@ -30,12 +29,11 @@
 - unapproved_tolerance_changes must be explicitly zero
 - unresolved_oracle_conflicts must be explicitly zero
 - unsupported_p0_claims must be explicitly zero
-- negative corpus manifest missing
-- holdout corpus manifest missing
+- holdout corpus status must be passed
 - holdout corpus is not independently verified
 - holdout corpus independent verifier missing
 - holdout corpus executor missing
-- representative-workloads corpus manifest missing
+- representative-workloads corpus status must be passed
 - representative workload corpus is not production-derived
 - representative workload authorization record is missing, invalid, or not content-bound locally
 - assurance claim claim.behavior is not fully supported
@@ -47,6 +45,3 @@
 - scope controlled_public_dns_rebinding_campaign must be passed (found None)
 - scope independent_holdout must be passed (found None)
 - scope representative_production_workload must be passed (found None)
-- content-addressed evidence manifest is required
-- repository binding records are required for readiness
-- certification evidence refs empty

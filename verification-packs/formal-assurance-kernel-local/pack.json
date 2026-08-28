@@ -1,34 +1,34 @@
 {
-  "schema_version": 1,
-  "pack_key": "formal-assurance-kernel-local",
-  "version": "0.1.0",
-  "status": "experimental",
-  "owner": "elmos-formal-assurance-engineering",
-  "maintenance_owner": "elmos-formal-assurance-engineering",
-  "scope": {
-    "migration_route": "formal-assurance-kernel-local-runtime",
-    "source_artifact_digest": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
-    "target_artifact_digest": "sha256:3674ece422d24bb7764d3693e4cfb58c03c1c8a8f37def8ef316a8394cc95552",
-    "workload_key": "formal-assurance-kernel-60-skills",
-    "risk_tier": "P1",
-    "environment_digest": "sha256:d35a2705350502eedfcc63fbb5c67fc0a2b7b0272126b1229c1917708cbb5a19"
-  },
-  "contracts": {
-    "validation_profile": "validation-profile.json",
-    "oracle_registry": "oracle-registry.json",
-    "assurance_case": "assurance/assurance-case.json"
-  },
-  "corpus": {
-    "development": "corpus/development",
-    "negative": "corpus/negative",
-    "holdout": "corpus/holdout",
-    "representative_workloads": "corpus/representative-workloads"
-  },
   "certification": {
     "evidence_path": "certification/evidence.json",
     "result_path": "certification/gate-result.json"
   },
+  "contracts": {
+    "assurance_case": "assurance/assurance-case.json",
+    "oracle_registry": "oracle-registry.json",
+    "validation_profile": "validation-profile.json"
+  },
+  "corpus": {
+    "development": "corpus/development",
+    "holdout": "corpus/holdout",
+    "negative": "corpus/negative",
+    "representative_workloads": "corpus/representative-workloads"
+  },
+  "maintenance_owner": "elmos-formal-assurance-engineering",
+  "owner": "elmos-formal-assurance-engineering",
+  "pack_key": "formal-assurance-kernel-local",
+  "schema_version": 1,
+  "scope": {
+    "environment_digest": "sha256:12bc4f02184e3f9a197201d35615d7841a1f9e30f0c903a8dbeed8f56b0a18a8",
+    "migration_route": "formal-assurance-kernel-local-runtime",
+    "risk_tier": "P1",
+    "source_artifact_digest": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
+    "target_artifact_digest": "sha256:f454636fe266a57fe173be495e884985f539cf8745d4ebb8d615f86467037352",
+    "workload_key": "formal-assurance-kernel-60-skills"
+  },
+  "status": "experimental",
   "tags": [
     "advanced-verification"
-  ]
+  ],
+  "version": "1.0.0"
 }

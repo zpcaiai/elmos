@@ -50,6 +50,32 @@ Run the complete repository qualification target with:
 make formal-assurance-kernel
 ```
 
+Intentional implementation changes require a fresh local receipt before the
+read-only validation target will pass:
+
+```sh
+make formal-assurance-kernel-qualify
+```
+
+For an operator-managed CLI deployment, provide durable state/artifact roots,
+a private (mode `0600`) permit key file, and a complete digest-pinned toolchain
+registry:
+
+```sh
+elmos-formal-assurance \
+  --state /var/lib/elmos/formal-assurance.sqlite3 \
+  --artifact-root /var/lib/elmos/formal-artifacts \
+  --execution-root /var/lib/elmos/formal-executions \
+  --permit-key-file /run/secrets/elmos-formal-permit-key \
+  --toolchain-registry /etc/elmos/formal-toolchains.json \
+  --toolchain-registry-sha256 sha256:<exact-registry-digest> \
+  skills
+```
+
+The CLI never accepts the permit secret directly on the command line. Native
+requests still require an independently issued, short-lived, one-use permit
+bound to the exact authenticated scope and canonical execution request.
+
 The local handlers and any configured native/database adapters provide
 engineering evidence only. External signing, independent replay, exact
 production-provider runs, customer golden routes, deployment evidence and

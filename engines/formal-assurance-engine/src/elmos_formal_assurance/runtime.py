@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 from pathlib import Path
 import time
@@ -32,7 +32,7 @@ class RuntimeConfig:
     max_request_bytes: int = 2 * 1024 * 1024
     artifact_root: Path | None = None
     execution_root: Path | None = None
-    execution_limits: ResourceLimits = ResourceLimits()
+    execution_limits: ResourceLimits = field(default_factory=ResourceLimits)
     execution_permit_signer: ExecutionPermitSigner | None = None
     toolchains: tuple[ToolchainRegistration, ...] = ()
     telemetry_exporter: TelemetryExporter | None = None

@@ -1,0 +1,10 @@
+{
+  "cases": [
+    "all-60-exact-skill-contracts",
+    "all-40-production-method-bindings",
+    "17-adapter-parser-conformance",
+    "real-z3-unsat-proof-query",
+    "sqlite-source-target-differential"
+  ],
+  "format": "elmos-formal-development-seed/v1"
+}

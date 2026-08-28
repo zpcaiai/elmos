@@ -1,0 +1,8 @@
+test_generated_registry_matches_runtime_contract (test_integration.IntegrationTests.test_generated_registry_matches_runtime_contract) ... ok
+test_immutable_source_mirror_has_no_drift_or_symlink (test_integration.IntegrationTests.test_immutable_source_mirror_has_no_drift_or_symlink) ... ok
+test_pinned_archive_and_internal_checksums (test_integration.IntegrationTests.test_pinned_archive_and_internal_checksums) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 10.315s
+
+OK
