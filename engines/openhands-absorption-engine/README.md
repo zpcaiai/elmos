@@ -69,7 +69,12 @@ PYTHONPATH=engines/openhands-absorption-engine/src python -m elmos_openhands \
 
 ## Evidence boundary
 
-代码实现已完成，但真实 Temporal/PostgreSQL、生产 sandbox、外部 Provider、浏览器设备、Golden Repo、负载/Chaos、独立安全审查尚未执行，因此当前仍保持 `NOT_RUN / NOT_CERTIFIED`，不能冒充生产认证或 GA。
+代码实现已完成；本地 disposable PostgreSQL/Temporal、L1 sandbox、browser
+matrix、Golden Repo、bounded load/Chaos 和 Bandit 已有工程 evidence，但生产等价
+拓扑、生产 sandbox、外部 Provider 成功、physical device、独立 holdout、代表性
+soak、独立安全审查和客户验收仍为 `NOT_RUN`。Provider 当前真实探针为 `FAIL`
+（quota/endpoint），总体保持 `NOT_CERTIFIED / NOT_GA`，不能冒充生产认证或 GA。
+详见 `docs/openhands-absorption/evidence/QUALIFICATION_EXECUTION_2026-08-28.md`。
 
 Local unit, contract, lint, type and static integration results are engineering
 evidence only. The code never promotes those results to external qualification,

@@ -276,7 +276,7 @@ describe("controlled mini-app JSON worker", () => {
     const response = handleMiniAppWorkerRequest({
       action: "analyze",
       sourceFramework: "vue3",
-      sourceFrameworkVersion: "3.5.13",
+      sourceFrameworkVersion: "3.5.42",
       sourceLanguageVersion: "5.9.2",
       source: emitVue3(canonical),
       fileName: "Counter.vue",
@@ -653,7 +653,7 @@ describe("controlled mini-app JSON worker", () => {
     const vue = jsonError({
       action: "analyze",
       sourceFramework: "vue3",
-      sourceFrameworkVersion: "3.5.13",
+      sourceFrameworkVersion: "3.5.42",
       sourceLanguageVersion: "5.9.2",
       source: `<script setup lang="ts">const appSecret = ["vue-secret-123456789"];</script><template><div>safe</div></template>`,
       fileName: "C.vue",
@@ -665,7 +665,7 @@ describe("controlled mini-app JSON worker", () => {
     const vueTemplateProp = jsonError({
       action: "analyze",
       sourceFramework: "vue3",
-      sourceFrameworkVersion: "3.5.13",
+      sourceFrameworkVersion: "3.5.42",
       sourceLanguageVersion: "5.9.2",
       source: `<script setup lang="ts">import { ref } from "vue"; const ready = ref(false);</script><template><StatusChip access-token="short" /></template>`,
       fileName: "C.vue",

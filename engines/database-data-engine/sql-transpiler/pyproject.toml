@@ -31,7 +31,7 @@ packages = ["src/elmos_sql_transpiler"]
 dev = [
   "httpx==0.28.1",
   "mypy==2.3.0",
-  "pytest==8.4.2",
+  "pytest==9.0.3",
   "ruff==0.16.0",
 ]
 

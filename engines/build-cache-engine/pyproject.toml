@@ -25,7 +25,7 @@ elmos-cache = "elmos_build_cache.cli:main"
 [dependency-groups]
 dev = [
   "mypy==1.17.0",
-  "pytest==8.4.1",
+  "pytest==9.0.3",
   "ruff==0.12.5",
   # The certification suites drive live services and real toolchains; they are
   # part of the dev group so that ``mypy --strict`` sees the same types CI does.

@@ -83,8 +83,8 @@
       "name": "Hooks & Verification Gates",
       "source_slug": "P0-09-hooks-verification-gates",
       "code_status": "IMPLEMENTED",
-      "modules": ["gates.py", "evidence.py", "qualification.py"],
-      "tests": ["test_security_context_gates.py", "test_plane_context_policy_gates.py", "test_provider_browser_evidence_qualification.py"]
+      "modules": ["gates.py", "evidence.py", "qualification.py", "command_campaigns.py", "qualification_probes.py", "security_review.py", "temporal_qualification.py", "temporal_workflows.py"],
+      "tests": ["test_security_context_gates.py", "test_plane_context_policy_gates.py", "test_provider_browser_evidence_qualification.py", "test_security_review_intake.py"]
     },
     {
       "id": "P1-01",
@@ -115,7 +115,7 @@
       "name": "Agent Provider Adapter / ACP Layer",
       "source_slug": "P1-04-agent-provider-adapters",
       "code_status": "IMPLEMENTED",
-      "modules": ["providers.py", "provider_sessions.py"],
+      "modules": ["providers.py", "provider_sessions.py", "live_providers.py"],
       "tests": ["test_packages_dag_providers.py", "test_provider_browser_evidence_qualification.py"]
     },
     {

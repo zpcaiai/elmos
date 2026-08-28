@@ -97,10 +97,10 @@ export const MINI_APP_SOURCE_PARSER_PROFILES = {
     semanticStatus: "IMPLEMENTED",
   },
   vue3: {
-    sourceFrameworkVersion: "3.5.13",
+    sourceFrameworkVersion: "3.5.42",
     sourceLanguageVersion: "5.9.2",
     parser: "@vue/compiler-sfc",
-    parserVersion: "3.5.13",
+    parserVersion: "3.5.42",
     expressionParser: "typescript",
     expressionParserVersion: "5.9.2",
     semanticAdapter: "vue3-component-v1",

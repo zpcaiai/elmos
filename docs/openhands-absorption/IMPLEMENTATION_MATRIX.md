@@ -40,4 +40,8 @@ Golden Repo 和 rollback runbook。只有本地可执行项可由本地门禁给
 
 ## 固定结论
 
-代码实现已完成，但真实 Temporal/PostgreSQL、生产 sandbox、外部 Provider、浏览器设备、Golden Repo、负载/Chaos、独立安全审查尚未执行，因此当前仍保持 `NOT_RUN / NOT_CERTIFIED`，不能冒充生产认证或 GA。
+代码实现已完成；本地 disposable 探针已有局部工程 evidence，但真实生产等价
+Temporal/PostgreSQL、生产 sandbox、外部 Provider 成功、浏览器 physical device、
+独立 Golden holdout、representative load/Chaos、独立安全审查尚未闭合，因此当前
+仍保持 `NOT_CERTIFIED / NOT_GA`，不能冒充生产认证或 GA。详见
+`evidence/QUALIFICATION_EXECUTION_2026-08-28.md`。

@@ -57,9 +57,9 @@ import { parseTemplate } from "@angular/compiler";
 
 function project(node) {
   const ctor = node.constructor && node.constructor.name;
-  // Angular 20+ exposes the public AST class name as Text; older bundled
-  // compiler builds suffix it (for example Text$3). Both are the same
-  // literal-text node. No other unnamed AST node is promoted to an element.
+  // Angular 22 renamed the public AST constructor from Text$1/Text$2 to
+  // Text. Accept both exact compiler shapes so the version upgrade cannot
+  // silently turn literal text into an empty element tag.
   if (ctor === "Text" || (ctor && ctor.startsWith("Text$"))) {
     return { kind: "text", value: String(node.value) };
   }

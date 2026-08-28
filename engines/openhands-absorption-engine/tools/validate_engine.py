@@ -9,7 +9,6 @@ import zipfile
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = ROOT.parents[1]
 PACKAGE = REPOSITORY / "skills/subskills/elmos-openhands-absorption-p0-p1-v1.0.0 (1).zip"
@@ -32,15 +31,59 @@ EXPECTED_SKILLS = {
     "P1-05": ("Browser / UI Evidence & Replay", "P1-05-browser-evidence-replay"),
 }
 EXPECTED_COMPONENTS = {
-    "__init__", "__main__", "api", "artifacts", "browser", "browser_drivers", "cli", "context",
-    "dag", "errors", "evidence", "firewall", "gates", "governance", "ledger", "models",
-    "observability", "orchestration", "packages", "persistence", "plane", "policy", "postgres",
-    "projections", "protocol", "provider_sessions", "providers", "qualification", "replay", "runtime",
-    "sandbox", "service", "skill_routing", "skills", "supervisor", "tools", "workspace", "workspace_api",
+    "__init__",
+    "__main__",
+    "api",
+    "artifacts",
+    "browser",
+    "browser_drivers",
+    "cli",
+    "context",
+    "dag",
+    "errors",
+    "evidence",
+    "firewall",
+    "gates",
+    "governance",
+    "ledger",
+    "models",
+    "observability",
+    "orchestration",
+    "packages",
+    "persistence",
+    "plane",
+    "policy",
+    "postgres",
+    "projections",
+    "protocol",
+    "provider_sessions",
+    "providers",
+    "qualification",
+    "replay",
+    "runtime",
+    "sandbox",
+    "service",
+    "skill_routing",
+    "skills",
+    "supervisor",
+    "tools",
+    "workspace",
+    "workspace_api",
+    "command_campaigns",
+    "live_providers",
+    "qualification_probes",
+    "security_review",
+    "temporal_qualification",
+    "temporal_workflows",
 }
 EXPECTED_EXTERNAL_GATES = {
-    "real_temporal_postgresql", "production_sandbox", "external_providers", "browser_devices",
-    "golden_repositories", "load_chaos", "independent_security_review",
+    "real_temporal_postgresql",
+    "production_sandbox",
+    "external_providers",
+    "browser_devices",
+    "golden_repositories",
+    "load_chaos",
+    "independent_security_review",
 }
 
 
@@ -144,7 +187,9 @@ def _validate_schemas_and_migrations(errors: list[str]) -> None:
         if not path.is_file() or not path.read_text(encoding="utf-8").strip():
             errors.append(f"migration/rollback is missing: {relative}")
     grpc_contract = ROOT / "contracts/runtime-gateway-v1.proto"
-    if not grpc_contract.is_file() or "package elmos.openhands.v1;" not in grpc_contract.read_text(encoding="utf-8"):
+    if not grpc_contract.is_file() or "package elmos.openhands.v1;" not in grpc_contract.read_text(
+        encoding="utf-8"
+    ):
         errors.append("versioned gRPC runtime contract is missing")
 
 
@@ -152,7 +197,12 @@ def _validate_manifest(manifest: dict[str, Any], archive_slugs: set[str], errors
     if not manifest:
         return
     source = manifest.get("source_package")
-    if not isinstance(source, dict) or source.get("sha256") != EXPECTED_ZIP_SHA256 or source.get("member_count") != 50 or source.get("trust_boundary") != "UNTRUSTED_SPECIFICATION_NEVER_EXECUTED":
+    if (
+        not isinstance(source, dict)
+        or source.get("sha256") != EXPECTED_ZIP_SHA256
+        or source.get("member_count") != 50
+        or source.get("trust_boundary") != "UNTRUSTED_SPECIFICATION_NEVER_EXECUTED"
+    ):
         errors.append("implementation manifest source provenance is invalid")
     implementation = manifest.get("implementation")
     if not isinstance(implementation, dict) or implementation.get("code_status") != "IMPLEMENTED":
@@ -167,12 +217,17 @@ def _validate_manifest(manifest: dict[str, Any], archive_slugs: set[str], errors
             errors.append("implementation manifest contains a non-object Skill")
             continue
         skill_id = row.get("id")
+        if not isinstance(skill_id, str):
+            errors.append(f"implementation manifest has an invalid Skill id: {skill_id}")
+            continue
         expected = EXPECTED_SKILLS.get(skill_id)
         if expected is None or skill_id in seen:
             errors.append(f"implementation manifest has an unknown/duplicate Skill: {skill_id}")
             continue
         seen.add(skill_id)
-        if (row.get("name"), row.get("source_slug")) != expected or row.get("source_slug") not in archive_slugs:
+        if (row.get("name"), row.get("source_slug")) != expected or row.get(
+            "source_slug"
+        ) not in archive_slugs:
             errors.append(f"Skill identity/provenance mismatch: {skill_id}")
         if row.get("code_status") != "IMPLEMENTED":
             errors.append(f"Skill code is not marked IMPLEMENTED: {skill_id}")
@@ -189,7 +244,11 @@ def _validate_manifest(manifest: dict[str, Any], archive_slugs: set[str], errors
     if seen != set(EXPECTED_SKILLS):
         errors.append("implementation manifest exact Skill set is incomplete")
     external = manifest.get("external_qualification")
-    if not isinstance(external, dict) or set(external) != EXPECTED_EXTERNAL_GATES or any(value != "NOT_RUN" for value in external.values()):
+    if (
+        not isinstance(external, dict)
+        or set(external) != EXPECTED_EXTERNAL_GATES
+        or any(value != "NOT_RUN" for value in external.values())
+    ):
         errors.append("external qualification must contain the exact fail-closed NOT_RUN gate set")
     if manifest.get("certification") != "NOT_CERTIFIED" or manifest.get("release_status") != "NOT_GA":
         errors.append("certification or release status is not fail-closed")

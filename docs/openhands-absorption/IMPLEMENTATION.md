@@ -50,4 +50,8 @@ Further operational artifacts:
 - [生产接入、故障与回滚 Runbook](RUNBOOK.md)
 - [威胁模型](THREAT_MODEL.md)
 
-代码实现已完成，但真实 Temporal/PostgreSQL、生产 sandbox、外部 Provider、浏览器设备、Golden Repo、负载/Chaos、独立安全审查尚未执行，因此当前仍保持 `NOT_RUN / NOT_CERTIFIED`，不能冒充生产认证或 GA。
+代码实现已完成；本地 disposable 探针已产生局部工程 evidence，但真实生产等价
+Temporal/PostgreSQL、生产 sandbox、外部 Provider 成功、physical device、独立
+holdout、代表性 load/Chaos 和独立安全审查尚未闭合，因此总体保持
+`NOT_CERTIFIED / NOT_GA`，不能冒充生产认证或 GA。执行明细见
+`evidence/QUALIFICATION_EXECUTION_2026-08-28.md`。

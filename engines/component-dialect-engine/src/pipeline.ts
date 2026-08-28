@@ -553,7 +553,7 @@ function writeProjectScaffold(destination: string, framework: Framework, outcome
     writeFileEnsuringDir(path.join(destination, "package.json"), JSON.stringify({
       name: "elmos-translated-app", private: true, version: "0.1.0", type: "module",
       scripts: { dev: "vite", build: "vue-tsc -b && vite build", preview: "vite preview" },
-      dependencies: { vue: "^3.5.13" },
+      dependencies: { vue: "^3.5.42" },
       devDependencies: { "@vitejs/plugin-vue": "^5.2.1", typescript: "^5.9.2", vite: "^6.0.7", "vue-tsc": "^2.2.0" },
     }, null, 2) + "\n");
     writeFileEnsuringDir(path.join(destination, "tsconfig.json"), JSON.stringify({
