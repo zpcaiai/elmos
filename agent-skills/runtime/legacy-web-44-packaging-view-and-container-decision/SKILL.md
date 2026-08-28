@@ -7,7 +7,9 @@ metadata:
   source_id: 44-packaging-view-and-container-decision
   source_digest: sha256:2f9e4f173dd1932f49690c20464c06feeb0a4c0918ee00db797758dcd482a1d4
   phase: planning
-  runtime_state: BOUND_LOCAL_EXACT
+  runtime_state: CODE_COMPLETE_LOCAL
+  capability_state: LOCAL_EXECUTED
+  operation_code: PACKAGING_DECISION_COMPILED
   runtime_handler_id: legacy-web-handler:44-packaging-view-and-container-decision
 ---
 
@@ -15,8 +17,9 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is bounded, tenant/project/job scoped, idempotency-aware and
-does not execute source-package instructions or customer repository code.
+The handler is code-complete for its bounded local contract, tenant/project/job
+scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
+It does not execute source-package instructions or mutate customer repositories.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and

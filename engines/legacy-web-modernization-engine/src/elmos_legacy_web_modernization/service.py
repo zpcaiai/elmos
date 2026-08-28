@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 from .contracts import RuntimeRequest
 from .persistence import PersistenceError, StateStore
@@ -14,7 +15,9 @@ class ModernizationService:
     def __init__(self, state_dir: str | Path) -> None:
         state_dir = Path(state_dir)
         state_dir.mkdir(parents=True, exist_ok=True)
-        self.store = StateStore(state_dir / "control-plane.sqlite3", state_dir / "artifacts")
+        self.store = StateStore(
+            state_dir / "control-plane.sqlite3", state_dir / "artifacts"
+        )
 
     def execute(self, request_value: Mapping[str, Any]) -> dict[str, Any]:
         request = RuntimeRequest.from_dict(request_value)
@@ -25,27 +28,69 @@ class ModernizationService:
             return cached
         lease_id, fencing_token = self.store.acquire_lease(request)
         self.store.record_run(request, state="RUNNING", phase=request.skill_id)
-        self.store.append_event(request, "skill.started", {"skillId": request.skill_id, "requestId": request.request_id})
+        self.store.append_event(
+            request,
+            "skill.started",
+            {"skillId": request.skill_id, "requestId": request.request_id},
+        )
         try:
             result = dispatch(request_value)
             if result.get("state") == "BLOCKED":
                 self.store.record_run(request, state="BLOCKED", phase=request.skill_id)
-                self.store.append_event(request, "skill.failed", {"skillId": request.skill_id, "code": result.get("code")})
+                self.store.append_event(
+                    request,
+                    "skill.failed",
+                    {"skillId": request.skill_id, "code": result.get("code")},
+                )
             else:
+                materializations: list[dict[str, Any]] = []
                 for artifact in result.get("artifacts", []):
                     envelope = _artifact_from_result(artifact)
                     self.store.publish_artifact(request, envelope)
                     if envelope.artifact_type == "change-set":
-                        self.store.save_change_set(request, envelope.payload, fencing_token=fencing_token)
-                self.store.checkpoint(request, state="committed", cursor={"skillId": request.skill_id, "inputDigest": result.get("inputDigest")}, lease_id=lease_id, fencing_token=fencing_token)
-                self.store.record_run(request, state="COMPLETED", phase=request.skill_id)
-                self.store.append_event(request, "skill.completed", {"skillId": request.skill_id, "artifactCount": len(result.get("artifacts", []))})
+                        materializations.append(
+                            self.store.commit_change_set(
+                                request,
+                                envelope.payload,
+                                lease_id=lease_id,
+                                fencing_token=fencing_token,
+                            )
+                        )
+                    if envelope.artifact_type == "golden-route-scorecard":
+                        self.store.publish_benchmark_cache(
+                            request, envelope.payload, artifact_digest=envelope.digest
+                        )
+                self.store.checkpoint(
+                    request,
+                    state="committed",
+                    cursor={
+                        "skillId": request.skill_id,
+                        "inputDigest": result.get("inputDigest"),
+                    },
+                    lease_id=lease_id,
+                    fencing_token=fencing_token,
+                )
+                self.store.record_run(
+                    request, state="COMPLETED", phase=request.skill_id
+                )
+                self.store.append_event(
+                    request,
+                    "skill.completed",
+                    {
+                        "skillId": request.skill_id,
+                        "artifactCount": len(result.get("artifacts", [])),
+                    },
+                )
             response = dict(result)
+            if result.get("state") != "BLOCKED" and materializations:
+                response["changeSetCommits"] = materializations
             response["idempotency"] = "CREATED"
             self.store.store_idempotency(request, response)
             return response
         finally:
-            self.store.release_lease(request, lease_id=lease_id, fencing_token=fencing_token)
+            self.store.release_lease(
+                request, lease_id=lease_id, fencing_token=fencing_token
+            )
 
     def run_readonly(self, request_value: Mapping[str, Any]) -> dict[str, Any]:
         """Run the pinned DAG with one immutable source root.
@@ -66,7 +111,16 @@ class ModernizationService:
             child["idempotency_key"] = f"{request.idempotency_key}-{ordinal:02d}"
             results.append(self.execute(child))
         succeeded = sum(item.get("state") != "BLOCKED" for item in results)
-        return {"jobId": request.job_id, "state": "COMPLETED_WITH_BOUNDARIES", "skills": len(results), "succeeded": succeeded, "blocked": len(results) - succeeded, "externalEvidence": "NOT_RUN", "certification": "NOT_CERTIFIED", "results": results}
+        return {
+            "jobId": request.job_id,
+            "state": "COMPLETED_WITH_BOUNDARIES",
+            "skills": len(results),
+            "succeeded": succeeded,
+            "blocked": len(results) - succeeded,
+            "externalEvidence": "NOT_RUN",
+            "certification": "NOT_CERTIFIED",
+            "results": results,
+        }
 
 
 def _artifact_from_result(value: Mapping[str, Any]):

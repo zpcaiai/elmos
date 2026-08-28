@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
+import re
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-import re
-from typing import Any, Mapping
+from typing import Any
 
 from .canonical import canonical_digest, finite_json, validate_digest
-
 
 _IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
 
@@ -35,13 +35,23 @@ class Authority:
 
     def __post_init__(self) -> None:
         identifier(self.environment_id, "environment_id")
-        if self.profile not in {"scan-readonly", "transform", "build-sandbox", "test-sandbox", "production-cutover"}:
+        if self.profile not in {
+            "scan-readonly",
+            "transform",
+            "build-sandbox",
+            "test-sandbox",
+            "production-cutover",
+        }:
             raise ValueError("unsupported authority profile")
         if not isinstance(self.scopes, tuple):
             raise ValueError("authority scopes must be a tuple")
         if any(not isinstance(scope, str) or not scope for scope in self.scopes):
             raise ValueError("authority scopes must be non-empty strings")
-        if isinstance(self.fencing_token, bool) or not isinstance(self.fencing_token, int) or self.fencing_token < 0:
+        if (
+            isinstance(self.fencing_token, bool)
+            or not isinstance(self.fencing_token, int)
+            or self.fencing_token < 0
+        ):
             raise ValueError("fencing_token must be non-negative")
         if not isinstance(self.approved, bool):
             raise ValueError("approved must be a boolean")
@@ -63,10 +73,20 @@ class RuntimeRequest:
     trace_id: str
 
     @classmethod
-    def from_dict(cls, value: Mapping[str, Any]) -> "RuntimeRequest":
+    def from_dict(cls, value: Mapping[str, Any]) -> RuntimeRequest:
         if not isinstance(value, Mapping):
             raise ValueError("request must be an object")
-        required = {"request_id", "tenant_id", "project_id", "job_id", "skill_id", "inputs", "policy", "authority", "idempotency_key"}
+        required = {
+            "request_id",
+            "tenant_id",
+            "project_id",
+            "job_id",
+            "skill_id",
+            "inputs",
+            "policy",
+            "authority",
+            "idempotency_key",
+        }
         missing = sorted(required - set(value))
         if missing:
             raise ValueError(f"request is missing required fields: {missing}")
@@ -83,7 +103,9 @@ class RuntimeRequest:
         if not isinstance(approved_value, bool):
             raise ValueError("authority.approved must be a boolean")
         authority = Authority(
-            environment_id=identifier(authority_value.get("environment_id"), "authority.environment_id"),
+            environment_id=identifier(
+                authority_value.get("environment_id"), "authority.environment_id"
+            ),
             profile=authority_value.get("profile"),
             scopes=tuple(scopes_value),
             fencing_token=fencing_value,
@@ -97,11 +119,18 @@ class RuntimeRequest:
             "skill_id": identifier(value["skill_id"], "skill_id"),
             "idempotency_key": identifier(value["idempotency_key"], "idempotency_key"),
         }
-        if not isinstance(value["inputs"], Mapping) or not isinstance(value["policy"], Mapping):
+        if not isinstance(value["inputs"], Mapping) or not isinstance(
+            value["policy"], Mapping
+        ):
             raise ValueError("inputs and policy must be objects")
         inputs = finite_json(dict(value["inputs"]))
         policy = finite_json(dict(value["policy"]))
-        trace_id = value.get("trace_id") or canonical_digest({"request_id": values["request_id"], "job_id": values["job_id"]})[7:39]
+        trace_id = (
+            value.get("trace_id")
+            or canonical_digest(
+                {"request_id": values["request_id"], "job_id": values["job_id"]}
+            )[7:39]
+        )
         values["trace_id"] = identifier(trace_id, "trace_id")
         return cls(inputs=inputs, policy=policy, authority=authority, **values)
 
@@ -134,7 +163,17 @@ class ArtifactEnvelope:
             validate_digest(item)
         object.__setattr__(self, "payload", finite_json(dict(self.payload)))
         if not self.artifact_id:
-            object.__setattr__(self, "artifact_id", canonical_digest({"type": self.artifact_type, "payload": self.payload, "producer": self.producer_skill}))
+            object.__setattr__(
+                self,
+                "artifact_id",
+                canonical_digest(
+                    {
+                        "type": self.artifact_type,
+                        "payload": self.payload,
+                        "producer": self.producer_skill,
+                    }
+                ),
+            )
 
     @property
     def digest(self) -> str:
@@ -176,10 +215,12 @@ class CapabilityResult:
     def __post_init__(self) -> None:
         identifier(self.skill_id, "skill_id")
         identifier(self.handler_id, "handler_id")
-        if self.state not in {"LOCAL_EXECUTED", "PARTIAL_LOCAL_EXECUTED", "PLANNING_ONLY", "BLOCKED"}:
+        if self.state not in {"LOCAL_EXECUTED", "BLOCKED"}:
             raise ValueError("invalid capability state")
         if self.external_evidence != "NOT_RUN" or self.certification != "NOT_CERTIFIED":
-            raise ValueError("local runtime cannot manufacture external evidence or certification")
+            raise ValueError(
+                "local runtime cannot manufacture external evidence or certification"
+            )
         if self.side_effects:
             raise ValueError("local engine side effects must be false")
 

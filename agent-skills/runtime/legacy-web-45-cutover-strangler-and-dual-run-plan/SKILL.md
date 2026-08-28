@@ -7,7 +7,9 @@ metadata:
   source_id: 45-cutover-strangler-and-dual-run-plan
   source_digest: sha256:6f23f57a3fc6e55b0a53f309bb762161b70a0912f7abaa6a6a8a319d93f28053
   phase: planning
-  runtime_state: BOUND_LOCAL_EXACT
+  runtime_state: CODE_COMPLETE_LOCAL
+  capability_state: LOCAL_EXECUTED
+  operation_code: CUTOVER_STATE_MACHINE_COMPILED
   runtime_handler_id: legacy-web-handler:45-cutover-strangler-and-dual-run-plan
 ---
 
@@ -15,8 +17,9 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is bounded, tenant/project/job scoped, idempotency-aware and
-does not execute source-package instructions or customer repository code.
+The handler is code-complete for its bounded local contract, tenant/project/job
+scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
+It does not execute source-package instructions or mutate customer repositories.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and

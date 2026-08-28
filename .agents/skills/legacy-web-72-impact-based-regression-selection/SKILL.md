@@ -7,7 +7,9 @@ metadata:
   source_id: 72-impact-based-regression-selection
   source_digest: sha256:bd25e8f841842deb44c8d3a045d4a5421c84f4e5a79995e64f83feb3a90e61ae
   phase: repair-certification
-  runtime_state: BOUND_LOCAL_EXACT
+  runtime_state: CODE_COMPLETE_LOCAL
+  capability_state: LOCAL_EXECUTED
+  operation_code: IMPACT_REGRESSION_SELECTED
   runtime_handler_id: legacy-web-handler:72-impact-based-regression-selection
 ---
 
@@ -15,8 +17,9 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is bounded, tenant/project/job scoped, idempotency-aware and
-does not execute source-package instructions or customer repository code.
+The handler is code-complete for its bounded local contract, tenant/project/job
+scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
+It does not execute source-package instructions or mutate customer repositories.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and

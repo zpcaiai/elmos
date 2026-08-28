@@ -5,16 +5,23 @@ This repository-owned engine binds all 55 exact Skills from
 bounded handlers. It statically recovers Struts 1/2, Servlet/JSP, build,
 route, state, security, transaction, dependency, and effect facts from a
 symlink-safe immutable snapshot, projects them into the package's semantic
-contracts, generates staged IR-driven target candidates, and evaluates caller-
-supplied observations with strict differential oracles.
+contracts, performs syntax-aware Java/XML/config rewrites, generates staged
+IR-driven target candidates, commits fenced change sets to tenant-private
+content-addressed workspaces, and evaluates caller-supplied observations with
+strict or explicitly normalized differential, runtime, fault, and trace
+oracles. It also implements bounded repair, cutover/rollback state machines,
+the local E0-E4 evidence gate, and a durable tenant-scoped benchmark cache.
 
-The local runtime never executes repository content, Maven/Gradle plugins,
-source-package scripts, browser/device code, production databases, providers,
-Git, deployment, or cutover. It persists tenant/project/job-scoped state in
-SQLite and content-addressed artifacts locally. Unknowns, missing authority,
-missing runtime evidence, and critical mismatches fail closed. Local results
-are engineering evidence only; external evidence remains `NOT_RUN` and
-certification remains `NOT_CERTIFIED`.
+All 55 exact bounded local contracts are code-complete and independently
+allowlisted. The local runtime never executes untrusted repository content,
+Maven/Gradle plugins, source-package scripts, browser/device code, production
+databases or providers, and it never mutates customer Git, deployment, or
+cutover state. It persists tenant/project/job-scoped state, private staged
+workspaces, and content-addressed artifacts locally. Unknowns, missing
+authority, missing runtime evidence, and critical mismatches fail closed.
+Code completion is not external execution: local results are engineering
+evidence only; external evidence remains `NOT_RUN` and certification remains
+`NOT_CERTIFIED`.
 
 Useful commands from the repository root:
 

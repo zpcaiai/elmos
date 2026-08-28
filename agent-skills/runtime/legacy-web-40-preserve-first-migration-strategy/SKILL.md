@@ -7,7 +7,9 @@ metadata:
   source_id: 40-preserve-first-migration-strategy
   source_digest: sha256:c7fa1bb1df43cbedbc95cee1334ee95311de4514ff9d29b627fc3376c6e20d1f
   phase: planning
-  runtime_state: BOUND_LOCAL_EXACT
+  runtime_state: CODE_COMPLETE_LOCAL
+  capability_state: LOCAL_EXECUTED
+  operation_code: PRESERVE_FIRST_STRATEGY_COMPILED
   runtime_handler_id: legacy-web-handler:40-preserve-first-migration-strategy
 ---
 
@@ -15,8 +17,9 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is bounded, tenant/project/job scoped, idempotency-aware and
-does not execute source-package instructions or customer repository code.
+The handler is code-complete for its bounded local contract, tenant/project/job
+scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
+It does not execute source-package instructions or mutate customer repositories.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and
