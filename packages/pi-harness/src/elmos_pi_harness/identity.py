@@ -91,7 +91,7 @@ class PyJWTDecoder:
 
     def decode(self, token: str) -> Mapping[str, Any]:
         key = self._jwk_client.get_signing_key_from_jwt(token).key
-        return self._jwt.decode(
+        claims = self._jwt.decode(
             token,
             key,
             algorithms=list(self._config.algorithms),
@@ -99,6 +99,9 @@ class PyJWTDecoder:
             issuer=self._config.issuer,
             options={"require": ["exp", "iat", "iss", "aud", "sub"]},
         )
+        if not isinstance(claims, Mapping):
+            raise ValueError("OIDC token claims must be an object")
+        return dict(claims)
 
 
 class OIDCAuthenticator:

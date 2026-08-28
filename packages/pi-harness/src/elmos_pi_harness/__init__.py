@@ -16,6 +16,11 @@ from .models import (
     ToolResult,
     WorkspaceLease,
 )
+from .external_gates import ExternalGateLedger, GateExecution, ReleaseCandidate
+from .immutable_evidence import (
+    S3ImmutableEvidenceArchive,
+    S3ImmutableEvidenceConfig,
+)
 from .persistence import DurableStore
 from .postgres import PostgresConfig, PostgresMigrator, PostgresStore
 from .qualification import implementation_inventory
@@ -23,13 +28,18 @@ from .qualification import implementation_inventory
 __all__ = [
     "AuthoritySnapshot",
     "DurableStore",
+    "ExternalGateLedger",
     "EnvironmentRef",
     "ExecutorIdentity",
     "InstructionEnvelope",
+    "GateExecution",
     "PostgresConfig",
     "PostgresMigrator",
     "PostgresStore",
     "ProtocolCapabilities",
+    "ReleaseCandidate",
+    "S3ImmutableEvidenceArchive",
+    "S3ImmutableEvidenceConfig",
     "ToolInvocation",
     "ToolResult",
     "WorkspaceLease",

@@ -69,6 +69,38 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(error.exception.code, 401)
         error.exception.close()
 
+    def test_task_and_branch_objectives_fail_closed(self) -> None:
+        project_id = uid()
+        for objective in (None, 7, "   "):
+            with self.subTest(endpoint="create", objective=objective):
+                with self.assertRaises(urllib.error.HTTPError) as error:
+                    self.request(
+                        "/v1/tasks",
+                        method="POST",
+                        body={"project_id": project_id, "objective": objective},
+                        key=f"invalid-create-{objective!r}",
+                    )
+                self.assertEqual(error.exception.code, 422)
+                error.exception.close()
+
+        _, created = self.request(
+            "/v1/tasks",
+            method="POST",
+            body={"project_id": project_id, "objective": "valid parent"},
+            key="valid-parent",
+        )
+        for objective in (None, 7, "   "):
+            with self.subTest(endpoint="branch", objective=objective):
+                with self.assertRaises(urllib.error.HTTPError) as error:
+                    self.request(
+                        f"/v1/tasks/{created['task_id']}/branch",
+                        method="POST",
+                        body={"objective": objective},
+                        key=f"invalid-branch-{objective!r}",
+                    )
+                self.assertEqual(error.exception.code, 422)
+                error.exception.close()
+
 
 if __name__ == "__main__":
     unittest.main()

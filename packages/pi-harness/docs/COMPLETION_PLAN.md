@@ -113,6 +113,8 @@
 
 ## 5. 每个门禁的证据包格式
 
+仓库已提供 [EXTERNAL_QUALIFICATION_RUNBOOK.md](EXTERNAL_QUALIFICATION_RUNBOOK.md) 和 `qualification-init`、`qualification-record`、`qualification-verify`、`qualification-accept`、`qualification-status` 操作入口。它们将冻结 RC、原始证据、执行事件、独立签名和客户/发布接受写入不可变 hash chain；实时状态检查会重新计算对象 digest 并使用当前 trust store 检查 key、scope、role、有效期和撤销状态。该实现只记录真实外部事实，不执行或制造任何外部门禁结果。
+
 每项证据至少包含：
 
 - `evidence_id`、`requirement_id`、`test_id`、`release_sha`、artifact digest；
@@ -125,4 +127,4 @@
 
 ## 6. 当前决策
 
-八项代码实现已完成并通过本地测试，允许继续进行外部 gate；一次性 PostgreSQL 17.5 和 SDK 本地验证仅为 `LOCAL_EXECUTED_SELF_ATTESTED`。真实 PostgreSQL staging/Temporal/云 Provider、IdP/mTLS、独立验证器、灾备、客户验收和生产部署证据仍为 `NOT_RUN`。认证状态保持 `NOT_CERTIFIED`，本计划不构成生产批准或认证。
+八项代码实现已完成并通过本地测试，允许继续进行外部 gate；一次性 PostgreSQL 17.5、Temporal Server 1.31.2 + SDK 1.32.0 原生 workflow、本地 RS256/JWKS/CA/CRL/mTLS，以及 SDK/IaC 验证仅为 `LOCAL_EXECUTED_SELF_ATTESTED`。真实 PostgreSQL staging/Temporal 集群/云 Provider、IdP/mTLS、独立验证器、灾备、客户验收和生产部署证据仍为 `NOT_RUN`。认证状态保持 `NOT_CERTIFIED`，本计划不构成生产批准或认证。

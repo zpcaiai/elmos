@@ -13,6 +13,18 @@ output "artifact_bucket" {
   }
 }
 
+output "immutable_evidence_bucket" {
+  value = {
+    name           = aws_s3_bucket.evidence.id
+    account_id     = data.aws_caller_identity.current.account_id
+    region         = data.aws_region.current.region
+    kms_key_arn    = aws_kms_key.data.arn
+    retention_days = var.evidence_retention_days
+    retention_mode = var.evidence_retention_mode
+    object_lock    = aws_s3_bucket.evidence.object_lock_enabled
+  }
+}
+
 output "database" {
   value = {
     arn                     = aws_db_instance.database.arn

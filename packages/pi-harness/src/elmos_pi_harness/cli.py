@@ -143,7 +143,36 @@ def build_parser() -> argparse.ArgumentParser:
     migrate.add_argument("--database", default=os.environ.get("ELMOS_PI_DATABASE", ""))
     migrate.add_argument("--migration-root", default=_default_migration_root())
 
-    sub.add_parser("qualification-status")
+    qualification_status = sub.add_parser("qualification-status")
+    qualification_status.add_argument("--ledger-root")
+    qualification_status.add_argument("--trust-store")
+
+    qualification_init = sub.add_parser("qualification-init")
+    qualification_init.add_argument("--ledger-root", required=True)
+    qualification_init.add_argument("--release-manifest", required=True)
+
+    qualification_record = sub.add_parser("qualification-record")
+    qualification_record.add_argument("--ledger-root", required=True)
+    qualification_record.add_argument("--result", required=True)
+    qualification_record.add_argument(
+        "--raw-evidence", action="append", required=True, dest="raw_evidence"
+    )
+
+    qualification_verify = sub.add_parser("qualification-verify")
+    qualification_verify.add_argument("--ledger-root", required=True)
+    qualification_verify.add_argument("--receipt", required=True)
+    qualification_verify.add_argument("--trust-store", required=True)
+
+    qualification_accept = sub.add_parser("qualification-accept")
+    qualification_accept.add_argument("--ledger-root", required=True)
+    qualification_accept.add_argument("--receipt", required=True)
+    qualification_accept.add_argument("--trust-store", required=True)
+
+    qualification_archive = sub.add_parser("qualification-archive")
+    qualification_archive.add_argument("--ledger-root", required=True)
+    qualification_archive.add_argument("--configuration", required=True)
+    qualification_archive.add_argument("--authorization-id", required=True)
+    qualification_archive.add_argument("--actor-id", required=True)
 
     sub.add_parser("demo", help="run a disposable local lifecycle smoke")
 
@@ -169,13 +198,92 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 print(json.dumps({"status": "ok", "task": result}, ensure_ascii=False))
         return 0
-    if args.command == "qualification-status":
-        from .qualification import implementation_inventory
+    if args.command.startswith("qualification-"):
+        try:
+            from .external_gates import (
+                ExternalGateLedger,
+                gate_execution_from_file,
+                release_candidate_from_file,
+                signed_verification_from_file,
+                trust_store_from_file,
+            )
 
-        print(
-            json.dumps(implementation_inventory(), ensure_ascii=False, sort_keys=True)
-        )
-        return 0
+            if args.command == "qualification-status":
+                from .qualification import implementation_inventory
+
+                trust_store = (
+                    trust_store_from_file(Path(args.trust_store))
+                    if args.trust_store
+                    else None
+                )
+                result = implementation_inventory(
+                    Path(args.ledger_root) if args.ledger_root else None,
+                    trust_store=trust_store,
+                )
+            elif args.command == "qualification-init":
+                ledger = ExternalGateLedger.initialize(
+                    Path(args.ledger_root),
+                    release_candidate_from_file(Path(args.release_manifest)),
+                )
+                status = ledger.status()
+                result = {
+                    "status": "INITIALIZED",
+                    "release_digest": status["release_digest"],
+                    "external_evidence": status["external_evidence"],
+                    "certification": "NOT_CERTIFIED",
+                    "certified": False,
+                }
+            elif args.command == "qualification-record":
+                ledger = ExternalGateLedger(Path(args.ledger_root))
+                result = ledger.record_execution(
+                    gate_execution_from_file(Path(args.result)),
+                    [Path(path) for path in args.raw_evidence],
+                )
+            elif args.command == "qualification-verify":
+                ledger = ExternalGateLedger(Path(args.ledger_root))
+                result = ledger.verify_execution(
+                    signed_verification_from_file(Path(args.receipt)),
+                    trust_store_from_file(Path(args.trust_store)),
+                )
+            elif args.command == "qualification-accept":
+                ledger = ExternalGateLedger(Path(args.ledger_root))
+                result = ledger.accept_gate(
+                    signed_verification_from_file(Path(args.receipt)),
+                    trust_store_from_file(Path(args.trust_store)),
+                )
+            else:
+                from .immutable_evidence import (
+                    S3ImmutableEvidenceArchive,
+                    s3_immutable_config_from_file,
+                )
+
+                ledger = ExternalGateLedger(Path(args.ledger_root))
+                backend = S3ImmutableEvidenceArchive(
+                    s3_immutable_config_from_file(Path(args.configuration))
+                )
+                result = ledger.archive(
+                    backend,
+                    authorization_id=args.authorization_id,
+                    actor_id=args.actor_id,
+                )
+            print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+            return 0
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
+            print(
+                json.dumps(
+                    {
+                        "status": "FAILED",
+                        "certification": "NOT_CERTIFIED",
+                        "certified": False,
+                        "error_type": type(exc).__name__,
+                        "message": str(exc),
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                ),
+                file=sys.stderr,
+            )
+            return 2
     if args.command == "postgres-migrate":
         from .postgres import PostgresConfig, PostgresMigrator
 

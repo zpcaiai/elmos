@@ -18,6 +18,7 @@ class PIHarnessTaskWorkflow:
         self.paused = False
         self.cancel_requested = False
         self.pause_reason: str | None = None
+        self.resume_requested = False
         self.executor_generation = -1
         self.phase = "CREATED"
         self.control_sequence = 0
@@ -57,11 +58,11 @@ class PIHarnessTaskWorkflow:
                 ),
                 cancellation_type=ActivityCancellationType.WAIT_CANCELLATION_COMPLETED,
             )
-            await workflow.wait_condition(
-                lambda handle=handle: (
-                    handle.done() or self.paused or self.cancel_requested
-                )
-            )
+
+            def activity_completed_or_interrupted() -> bool:
+                return handle.done() or self.paused or self.cancel_requested
+
+            await workflow.wait_condition(activity_completed_or_interrupted)
             if self.cancel_requested:
                 handle.cancel()
                 try:
@@ -85,6 +86,10 @@ class PIHarnessTaskWorkflow:
                 pass
             await self._control(value, "PAUSE")
             self.phase = "PAUSED"
+            if self.resume_requested:
+                self.resume_requested = False
+                self.paused = False
+                self.pause_reason = None
             await workflow.wait_condition(
                 lambda: not self.paused or self.cancel_requested
             )
@@ -97,6 +102,10 @@ class PIHarnessTaskWorkflow:
                     "executor_generation": self.executor_generation,
                 }
             await self._control(value, "RESUME")
+        if not isinstance(result, dict):
+            raise ApplicationError(
+                "activity result must be an object", non_retryable=True
+            )
         if int(result.get("executor_generation", -1)) != self.executor_generation:
             raise ApplicationError(
                 "activity returned a stale executor generation", non_retryable=True
@@ -145,16 +154,19 @@ class PIHarnessTaskWorkflow:
         if self.phase == "RUNNING":
             self.paused = True
             self.pause_reason = reason
-            self.phase = "PAUSED"
+            self.phase = "PAUSE_REQUESTED"
 
     @workflow.signal(name="resume")
     async def resume(self, expected_executor_generation: int) -> None:
         if expected_executor_generation != self.executor_generation:
             raise ApplicationError("resume generation is stale", non_retryable=True)
         if self.paused:
-            self.paused = False
-            self.pause_reason = None
-            self.phase = "RUNNING"
+            if self.phase == "PAUSE_REQUESTED":
+                self.resume_requested = True
+            else:
+                self.paused = False
+                self.pause_reason = None
+                self.phase = "RUNNING"
 
     @workflow.signal(name="request_cancel")
     async def request_cancel(self, _reason: str) -> None:
@@ -168,6 +180,7 @@ class PIHarnessTaskWorkflow:
             "phase": self.phase,
             "paused": self.paused,
             "pause_reason": self.pause_reason,
+            "resume_requested": self.resume_requested,
             "cancel_requested": self.cancel_requested,
             "executor_generation": self.executor_generation,
             "control_sequence": self.control_sequence,

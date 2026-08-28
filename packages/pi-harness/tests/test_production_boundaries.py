@@ -23,6 +23,8 @@ from elmos_pi_harness.deployment import (
 from elmos_pi_harness.disaster_recovery import (
     BackupObject,
     DisasterRecoveryOrchestrator,
+    PostgresBackupConfig,
+    PostgresLogicalBackupAdapter,
 )
 from elmos_pi_harness.identity import (
     CertificateIdentity,
@@ -660,7 +662,9 @@ class VerifierTests(unittest.TestCase):
             b"k" * 32,
             when(timedelta(hours=-1)),
             when(timedelta(hours=1)),
-            allowed_scopes=frozenset({"postgresql", "customer_acceptance"}),
+            allowed_scopes=frozenset(
+                {"postgresql", "external_gate_acceptance:P1-G07"}
+            ),
         )
         return VerifierTrustStore([trusted], backend=FakeEd25519())
 
@@ -733,7 +737,7 @@ class DisasterRecoveryTests(unittest.TestCase):
     ) -> None:
         orchestrator = DisasterRecoveryOrchestrator([FakeBackupAdapter()])
         with tempfile.TemporaryDirectory(prefix="pi-dr-") as root:
-            destination = Path(root) / "backup"
+            destination = Path(root).resolve() / "backup"
             manifest = orchestrator.capture(
                 backup_id=uid(),
                 source=target("source"),
@@ -778,6 +782,76 @@ class DisasterRecoveryTests(unittest.TestCase):
                     maximum_rto_seconds=60,
                 )
 
+    def test_postgres_restore_is_bound_to_exact_target_and_private_identity(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory(prefix="pi-dr-config-") as temporary:
+            root = Path(temporary).resolve()
+            identity = root / "age.key"
+            identity.write_text("AGE-SECRET-KEY-TEST", encoding="utf-8")
+            identity.chmod(0o600)
+            services = root / "pg_service.conf"
+            services.write_text("[source]\n[restore]\n", encoding="utf-8")
+            services.chmod(0o600)
+            approved_target = target("dr-rehearsal")
+            executable_digest = digest_bytes(Path("/usr/bin/true").read_bytes())
+            service_digest = digest_bytes(services.read_bytes())
+            config = PostgresBackupConfig(
+                source_service="source",
+                restore_service="restore",
+                pg_dump=Path("/usr/bin/true"),
+                pg_restore=Path("/usr/bin/true"),
+                age_binary=Path("/usr/bin/true"),
+                age_recipient="age1testrecipient",
+                age_identity=identity,
+                pg_service_file=services,
+                restore_target_digest=digest(approved_target.to_dict()),
+                pg_dump_digest=executable_digest,
+                pg_restore_digest=executable_digest,
+                age_binary_digest=executable_digest,
+                pg_service_file_digest=service_digest,
+                key_reference="secret://age/dr-key",
+            )
+            encrypted = root / "backup.age"
+            encrypted.write_bytes(b"age-encryption.org/v1\nfixture")
+            backup = BackupObject(
+                "postgresql",
+                "database",
+                encrypted,
+                digest_bytes(encrypted.read_bytes()),
+                encrypted.stat().st_size,
+                utc_now(),
+                True,
+                config.key_reference,
+            )
+            adapter = object.__new__(PostgresLogicalBackupAdapter)
+            adapter.config = config
+            with self.assertRaises(PolicyDeniedError):
+                adapter.restore(
+                    (backup,),
+                    target("different-dr-target"),
+                    authorization_id="AUTH-RESTORE",
+                )
+
+            identity.chmod(0o644)
+            with self.assertRaises(PolicyDeniedError):
+                PostgresBackupConfig(
+                    source_service="source",
+                    restore_service="restore",
+                    pg_dump=Path("/usr/bin/true"),
+                    pg_restore=Path("/usr/bin/true"),
+                    age_binary=Path("/usr/bin/true"),
+                    age_recipient="age1testrecipient",
+                    age_identity=identity,
+                    pg_service_file=services,
+                    restore_target_digest=digest(approved_target.to_dict()),
+                    pg_dump_digest=executable_digest,
+                    pg_restore_digest=executable_digest,
+                    age_binary_digest=executable_digest,
+                    pg_service_file_digest=service_digest,
+                    key_reference="secret://age/dr-key",
+                )
+
 
 class FakeDeploymentAdapter:
     def __init__(self):
@@ -785,12 +859,14 @@ class FakeDeploymentAdapter:
 
     def deploy_canary(self, manifest, *, idempotency_key):
         return {
+            "status": "SUCCEEDED",
             "native_release_id": "release-native-1",
             "raw_evidence_digest": "sha256:" + "1" * 64,
         }
 
     def observe(self, native_release_id, required_slos):
         return {
+            "status": "SUCCEEDED",
             "metrics": {"availability_min": 1.0, "error_rate_max": 0.001},
             "raw_evidence_digest": "sha256:" + "2" * 64,
         }
@@ -821,6 +897,16 @@ class UnknownCanaryDeploymentAdapter(FakeDeploymentAdapter):
         }
 
 
+class CrashCanaryDeploymentAdapter(FakeDeploymentAdapter):
+    def deploy_canary(self, manifest, *, idempotency_key):
+        raise KeyboardInterrupt("simulated process termination")
+
+
+class UnknownPromotionDeploymentAdapter(FakeDeploymentAdapter):
+    def promote(self, native_release_id, *, idempotency_key):
+        raise TimeoutError("provider response lost")
+
+
 class AcceptanceAndDeploymentTests(VerifierTests):
     def test_uat_requires_external_customer_signoff(self) -> None:
         run = AcceptanceRunner().run(
@@ -835,16 +921,58 @@ class AcceptanceAndDeploymentTests(VerifierTests):
                 "evidence_digest": "sha256:" + "a" * 64,
             },
             authorization_id="AUTH-UAT",
+            executor_id="customer-uat-runner",
+            producer_trust_domain="engineering.example",
         )
-        receipt = self.sign(self.statement("customer_acceptance", run["result_digest"]))
+        statement = EvidenceStatement(
+            uid(),
+            "external_gate_acceptance:P1-G07",
+            run["executor_id"],
+            run["producer_trust_domain"],
+            run["result_digest"],
+            run["environment_digest"],
+            tuple(item["evidence_digest"] for item in run["results"]),
+            run["authorization_id"],
+            run["executor_id"],
+            run["started_at"],
+            run["completed_at"],
+            "PASS",
+        )
+        signer = IndependentVerifierSigner(
+            verifier_id="verifier",
+            trust_domain="audit.example",
+            key_id="key-1",
+            private_key=b"k" * 32,
+            backend=FakeEd25519(),
+        )
+        receipt = signer.sign(
+            statement,
+            receipt_id=uid(),
+            verdict="VERIFIED",
+            issued_at=run["completed_at"],
+            expires_at=when(timedelta(hours=1)),
+        )
         accepted = accept_customer_signoff(
             run,
             receipt,
             self.trust(),
             implementation_trust_domain="engineering.example",
+            customer_authority_id="verifier",
+            customer_trust_domain="audit.example",
         )
         self.assertEqual(accepted["status"], "ACCEPTED")
         self.assertFalse(accepted["certified"])
+        tampered = dict(run)
+        tampered["authorization_id"] = "AUTH-TAMPERED"
+        with self.assertRaises(PolicyDeniedError):
+            accept_customer_signoff(
+                tampered,
+                receipt,
+                self.trust(),
+                implementation_trust_domain="engineering.example",
+                customer_authority_id="verifier",
+                customer_trust_domain="audit.example",
+            )
 
     def test_canary_observation_and_promotion_are_separate_approved_steps(self) -> None:
         adapter = FakeDeploymentAdapter()
@@ -908,6 +1036,50 @@ class AcceptanceAndDeploymentTests(VerifierTests):
         )
         self.assertFalse(bad["valid"])
         self.assertIn("static_api_token_must_be_disabled", bad["policy_denials"])
+        exact_store = {
+            "bucket": "pi-harness-production",
+            "region": "ap-southeast-1",
+            "account_id": "123456789012",
+            "kms_key_arn": "arn:aws:kms:ap-southeast-1:123456789012:key/key-1",
+            "public_access": False,
+        }
+        valid = validate_production_configuration(
+            {
+                "postgres_dsn_reference": "aws-secretsmanager://pi-harness/postgres",
+                "temporal_target": {
+                    "endpoint": "temporal.internal:7233",
+                    "namespace": "pi-production",
+                    "server_version": "1.31.2",
+                    "mtls": True,
+                },
+                "oidc_issuer": "https://idp.example.test/",
+                "oidc_audience": "pi-harness",
+                "mtls_trust_domain": "mesh.example",
+                "artifact_store": exact_store,
+                "immutable_evidence_store": exact_store
+                | {
+                    "object_lock": True,
+                    "versioning": True,
+                    "retention_mode": "COMPLIANCE",
+                    "retention_days": 365,
+                },
+                "cloud_provider": "aws",
+                "region": "ap-southeast-1",
+                "account_id": "123456789012",
+                "backup_policy_id": "backup-policy-v1",
+                "verifier_trust_store": "trust-store-v1",
+                "slo_profile": "slo-v1",
+                "private_endpoints": ["s3", "kms", "secretsmanager", "temporal"],
+                "database_backend": "postgresql",
+                "static_api_token_enabled": False,
+                "tls_mode": "mutual",
+                "allow_public_ingress": False,
+                "default_network_egress": "deny",
+                "secrets_inline": False,
+            }
+        )
+        self.assertTrue(valid["valid"])
+        self.assertFalse(valid["certified"])
 
     def test_unknown_canary_requires_reconciliation_before_observation(self) -> None:
         adapter = UnknownCanaryDeploymentAdapter()
@@ -945,6 +1117,157 @@ class AcceptanceAndDeploymentTests(VerifierTests):
         self.assertEqual(
             (reconciled["state"], reconciled["native_release_id"]),
             ("CANARY", "release-recovered-1"),
+        )
+        controller.close()
+
+    def test_release_identity_is_tenant_bound_and_slo_contract_is_strict(self) -> None:
+        adapter = FakeDeploymentAdapter()
+        manifest = DeploymentManifest(
+            uid(),
+            "sha256:" + "a" * 64,
+            "sha256:" + "b" * 64,
+            "sha256:" + "c" * 64,
+            "sha256:" + "d" * 64,
+            "sha256:" + "e" * 64,
+            "5.1.0+tenant",
+            adapter.target,
+            "sha256:" + "f" * 64,
+            {"availability_min": 0.999},
+        )
+        controller = DeploymentController(adapter)
+        tenant = uid()
+        controller.start_canary(
+            tenant_id=tenant,
+            actor_id="release-operator",
+            manifest=manifest,
+            approval=approval(
+                manifest.release_id,
+                manifest.manifest_digest,
+                adapter.target,
+                "deploy_canary",
+            ),
+        )
+        with self.assertRaises(ConflictError):
+            controller.start_canary(
+                tenant_id=uid(),
+                actor_id="release-operator",
+                manifest=manifest,
+                approval=approval(
+                    manifest.release_id,
+                    manifest.manifest_digest,
+                    adapter.target,
+                    "deploy_canary",
+                ),
+            )
+        with self.assertRaises(ValueError):
+            DeploymentManifest(
+                uid(),
+                "sha256:" + "a" * 64,
+                "sha256:" + "b" * 64,
+                "sha256:" + "c" * 64,
+                "sha256:" + "d" * 64,
+                "sha256:" + "e" * 64,
+                "5.1.0+invalid-slo",
+                adapter.target,
+                "sha256:" + "f" * 64,
+                {"availability": float("nan")},
+            )
+        controller.close()
+
+    def test_crashed_submission_and_unknown_promotion_require_reconciliation(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory(prefix="pi-deploy-") as temporary:
+            journal = Path(temporary).resolve() / "deployment.db"
+            crash_adapter = CrashCanaryDeploymentAdapter()
+            manifest = DeploymentManifest(
+                uid(),
+                "sha256:" + "a" * 64,
+                "sha256:" + "b" * 64,
+                "sha256:" + "c" * 64,
+                "sha256:" + "d" * 64,
+                "sha256:" + "e" * 64,
+                "5.1.0+crash",
+                crash_adapter.target,
+                "sha256:" + "f" * 64,
+                {"availability_min": 0.999},
+            )
+            tenant = uid()
+            controller = DeploymentController(crash_adapter, str(journal))
+            with self.assertRaises(KeyboardInterrupt):
+                controller.start_canary(
+                    tenant_id=tenant,
+                    actor_id="release-operator",
+                    manifest=manifest,
+                    approval=approval(
+                        manifest.release_id,
+                        manifest.manifest_digest,
+                        crash_adapter.target,
+                        "deploy_canary",
+                    ),
+                )
+            self.assertEqual(
+                controller.get(tenant, manifest.release_id)["state"],
+                "SUBMITTING_CANARY",
+            )
+            controller.close()
+
+            recovered = DeploymentController(
+                UnknownCanaryDeploymentAdapter(), str(journal)
+            )
+            self.assertEqual(
+                recovered.reconcile(
+                    tenant, manifest.release_id, actor_id="reconciler"
+                )["state"],
+                "CANARY",
+            )
+            recovered.close()
+
+        adapter = UnknownPromotionDeploymentAdapter()
+        manifest = DeploymentManifest(
+            uid(),
+            "sha256:" + "1" * 64,
+            "sha256:" + "2" * 64,
+            "sha256:" + "3" * 64,
+            "sha256:" + "4" * 64,
+            "sha256:" + "5" * 64,
+            "5.1.0+promotion",
+            adapter.target,
+            "sha256:" + "6" * 64,
+            {"availability_min": 0.999},
+        )
+        tenant = uid()
+        controller = DeploymentController(adapter)
+        controller.start_canary(
+            tenant_id=tenant,
+            actor_id="release-operator",
+            manifest=manifest,
+            approval=approval(
+                manifest.release_id,
+                manifest.manifest_digest,
+                adapter.target,
+                "deploy_canary",
+            ),
+        )
+        controller.observe_canary(tenant, manifest.release_id, actor_id="observer")
+        unknown = controller.promote(
+            tenant,
+            manifest.release_id,
+            approval(
+                manifest.release_id,
+                manifest.manifest_digest,
+                adapter.target,
+                "promote_release",
+            ),
+            actor_id="release-operator",
+        )
+        self.assertEqual(unknown["state"], "RECONCILIATION_REQUIRED")
+        self.assertEqual(unknown["pending_state"], "PROMOTED")
+        self.assertEqual(
+            controller.reconcile(
+                tenant, manifest.release_id, actor_id="reconciler"
+            )["state"],
+            "PROMOTED",
         )
         controller.close()
 

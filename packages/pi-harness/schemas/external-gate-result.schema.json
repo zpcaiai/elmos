@@ -4,19 +4,17 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "gap_id",
-    "target",
-    "authorization_id",
-    "executor_id",
-    "independent_verifier",
-    "started_at",
-    "completed_at",
-    "raw_evidence_digests",
-    "status",
-    "certified"
+    "schema_version", "result_id", "gap_id", "release_digest", "target",
+    "authorization_id", "executor_id", "producer_trust_domain",
+    "environment_digest", "started_at", "completed_at",
+    "raw_evidence_digests", "replay_reference", "status", "certified",
+    "limitations"
   ],
   "properties": {
+    "schema_version": {"const": "elmos.pi-harness.external-gate-result/v1"},
+    "result_id": {"type": "string", "format": "uuid"},
     "gap_id": {"enum": ["P0-G01", "P0-G02", "P0-G03", "P0-G04", "P0-G05", "P0-G06", "P1-G07", "P0-G08"]},
+    "release_digest": {"$ref": "#/$defs/digest"},
     "target": {
       "type": "object",
       "additionalProperties": false,
@@ -32,12 +30,15 @@
     },
     "authorization_id": {"type": "string", "minLength": 1},
     "executor_id": {"type": "string", "minLength": 1},
-    "independent_verifier": {"type": ["string", "null"]},
+    "producer_trust_domain": {"type": "string", "minLength": 1},
+    "environment_digest": {"$ref": "#/$defs/digest"},
     "started_at": {"type": "string", "format": "date-time"},
     "completed_at": {"type": "string", "format": "date-time"},
-    "raw_evidence_digests": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}},
-    "status": {"enum": ["EXECUTED", "INDEPENDENTLY_VERIFIED", "ACCEPTED", "FAILED", "UNKNOWN"]},
+    "raw_evidence_digests": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+    "replay_reference": {"type": "string", "minLength": 1},
+    "status": {"enum": ["EXECUTED", "FAILED", "UNKNOWN"]},
     "certified": {"const": false},
-    "limitations": {"type": "array", "items": {"type": "string"}}
-  }
+    "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}
 }

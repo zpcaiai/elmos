@@ -35,7 +35,9 @@ Production-facing code surfaces are also implemented:
 Run locally:
 
 ```bash
+python3 -m pip install -e 'packages/pi-harness[production,dev]'
 make -C packages/pi-harness test
+make -C packages/pi-harness typecheck
 make -C packages/pi-harness demo
 PYTHONPATH=packages/pi-harness/src python3 -m elmos_pi_harness.cli qualification-status
 ```
@@ -48,6 +50,29 @@ elmos-pi-harness postgres-migrate \
   --database 'service=pi_harness_migration' \
   --migration-root /absolute/path/to/packages/pi-harness/sql
 ```
+
+External qualification uses a frozen-release, append-only evidence ledger.
+It content-addresses raw outputs and separates execution, independent
+verification, customer/release acceptance, and certification authority:
+
+```bash
+elmos-pi-harness qualification-init \
+  --ledger-root /absolute/immutable/ledger \
+  --release-manifest /absolute/input/release-candidate.json
+elmos-pi-harness qualification-status \
+  --ledger-root /absolute/immutable/ledger \
+  --trust-store /absolute/trust/verifier-trust-store.json
+elmos-pi-harness qualification-archive \
+  --ledger-root /absolute/immutable/ledger \
+  --configuration /absolute/config/immutable-evidence-s3.json \
+  --authorization-id '<approved-archive-operation>' \
+  --actor-id '<archive-workload-identity>'
+```
+
+See [EXTERNAL_QUALIFICATION_RUNBOOK.md](docs/EXTERNAL_QUALIFICATION_RUNBOOK.md)
+for the exact one-by-one procedure and machine-readable schemas. The operator
+always emits `certified:false`; its maximum decision is
+`READY_FOR_HUMAN_DECISION`, which still requires external release authority.
 
 The standard-library HTTP server remains suitable for a single-node controlled
 deployment. The production profile disables static API tokens and requires
