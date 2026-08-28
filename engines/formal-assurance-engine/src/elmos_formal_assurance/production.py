@@ -4,7 +4,7 @@ import json
 from dataclasses import replace
 from typing import Any, Protocol
 
-from .artifact_store import ContentAddressedArtifactStore
+from .artifact_store import ArtifactStore
 from .canonical import digest_value
 from .contracts import AssuranceLevel, ProofStatus, Scope, SkillOutcome, TrustedIdentity, utc_now
 from .database import SQLiteDifferentialExecutor
@@ -43,7 +43,7 @@ class ProductionSkillExecutor:
         self,
         *,
         store: StateStore,
-        artifact_store: ContentAddressedArtifactStore | None,
+        artifact_store: ArtifactStore | None,
         permit_signer: ExecutionPermitSigner | None,
         toolchains: tuple[ToolchainRegistration, ...],
         limits: ResourceLimits,

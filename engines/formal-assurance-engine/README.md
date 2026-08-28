@@ -2,6 +2,12 @@
 
 This repository-owned engine binds all 60 Skills from
 `elmos-formal-assurance-kernel-v1.0.0` to explicit, deterministic handlers.
+It also binds all 481 source acceptance criteria to executable repository-owned
+controls; the generated traceability ledger preserves the exact source IDs,
+handler references and unresolved external-evidence state.
+All 60 exact names are installed as digest-identical, repository-owned wrappers
+under `.agents/skills/` and `agent-skills/runtime/`; those wrappers preserve the
+untrusted-source boundary and route only to allowlisted handlers.
 It provides local contract compilation, bounded analyses, content-addressed
 evidence, tenant-scoped idempotent state, lease/fencing state transitions and
 the conservative release gate.
@@ -13,6 +19,18 @@ gate evaluation. Formal specifications, plans, artifacts, counterexamples and
 gate decisions are stored as immutable, digest-bound aggregates. Reads and
 mutations require the full authenticated tenant/account/project/artifact/
 environment/workload scope.
+
+Production lifecycle extensions cover assumption and TCB registration,
+four-eyes waiver approval and revocation, proof-dependency drift invalidation,
+revalidation queues, append-only security audit, and a transactional event
+outbox. Event delivery is explicitly at-least-once with provider idempotency and
+reconciliation; it is never described as exactly once.
+
+Evidence bundles use tenant-scoped content-addressed storage, strict or internal
+redaction, deterministic manifests and offline digest verification. An optional
+private HMAC key can create local self-attested signatures. A requested but
+missing or unverifiable signature fails verification closed. External asymmetric
+signing and independent verification remain separate evidence requirements.
 
 `LocalBoundedExecutor` supplies a repository-owned execution path for exact
 equality, finite predicate samples and finite trace equivalence. It accepts
@@ -59,7 +77,8 @@ make formal-assurance-kernel-qualify
 
 For an operator-managed CLI deployment, provide durable state/artifact roots,
 a private (mode `0600`) permit key file, and a complete digest-pinned toolchain
-registry:
+registry. A separate private key may be supplied for local evidence-bundle
+signing:
 
 ```sh
 elmos-formal-assurance \
@@ -67,6 +86,8 @@ elmos-formal-assurance \
   --artifact-root /var/lib/elmos/formal-artifacts \
   --execution-root /var/lib/elmos/formal-executions \
   --permit-key-file /run/secrets/elmos-formal-permit-key \
+  --bundle-signing-key-file /run/secrets/elmos-formal-bundle-key \
+  --bundle-signing-key-id local-qualification \
   --toolchain-registry /etc/elmos/formal-toolchains.json \
   --toolchain-registry-sha256 sha256:<exact-registry-digest> \
   skills
@@ -75,6 +96,14 @@ elmos-formal-assurance \
 The CLI never accepts the permit secret directly on the command line. Native
 requests still require an independently issued, short-lived, one-use permit
 bound to the exact authenticated scope and canonical execution request.
+
+Deployments may inject a tenant-aware `ArtifactStore` adapter for S3, GCS or
+MinIO and an idempotent `EventPublisher` for Kafka, NATS or Redpanda. The
+repository includes provider contracts and fault-tested orchestration, not
+provider credentials or fabricated acknowledgements. The authorized
+`Postgres17MigrationManager` applies V005 transactionally, verifies exact
+relations and rolls back on ambiguity; a real PostgreSQL 17 run is still
+external evidence.
 
 The local handlers and any configured native/database adapters provide
 engineering evidence only. External signing, independent replay, exact

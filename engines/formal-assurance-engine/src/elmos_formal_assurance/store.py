@@ -9,7 +9,14 @@ from pathlib import Path
 from typing import Any
 
 from .canonical import canonical_json, digest_value, validate_identifier
-from .contracts import ProofResult, ProofRunState, Scope, TERMINAL_RUN_STATES, utc_now
+from .contracts import (
+    ProofResult,
+    ProofRunState,
+    Scope,
+    TERMINAL_RUN_STATES,
+    TrustedIdentity,
+    utc_now,
+)
 from .gate import validate_result
 
 
@@ -177,9 +184,88 @@ class StateStore:
             );
             CREATE INDEX IF NOT EXISTS telemetry_scope_time
               ON telemetry_events(tenant_id, scope_digest, observed_at);
+            CREATE TABLE IF NOT EXISTS proof_dependencies (
+              tenant_id TEXT NOT NULL,
+              scope_digest TEXT NOT NULL,
+              subject_type TEXT NOT NULL,
+              subject_id TEXT NOT NULL,
+              dependency_kind TEXT NOT NULL,
+              dependency_id TEXT NOT NULL,
+              dependency_hash TEXT NOT NULL,
+              stale INTEGER NOT NULL DEFAULT 0,
+              created_at TEXT NOT NULL,
+              PRIMARY KEY (
+                tenant_id,
+                scope_digest,
+                subject_type,
+                subject_id,
+                dependency_kind,
+                dependency_id,
+                dependency_hash
+              )
+            );
+            CREATE INDEX IF NOT EXISTS proof_dependencies_lookup
+              ON proof_dependencies(
+                tenant_id, scope_digest, dependency_kind, dependency_id, stale
+              );
+            CREATE TABLE IF NOT EXISTS reproof_queue (
+              tenant_id TEXT NOT NULL,
+              scope_digest TEXT NOT NULL,
+              subject_type TEXT NOT NULL,
+              subject_id TEXT NOT NULL,
+              dependency_kind TEXT NOT NULL,
+              dependency_id TEXT NOT NULL,
+              old_hash TEXT NOT NULL,
+              new_hash TEXT NOT NULL,
+              state TEXT NOT NULL,
+              created_at TEXT NOT NULL,
+              PRIMARY KEY (
+                tenant_id,
+                scope_digest,
+                subject_type,
+                subject_id,
+                dependency_kind,
+                dependency_id,
+                new_hash
+              )
+            );
+            CREATE TABLE IF NOT EXISTS security_audit_events (
+              sequence INTEGER PRIMARY KEY AUTOINCREMENT,
+              tenant_id TEXT NOT NULL,
+              actor_id TEXT NOT NULL,
+              project_id TEXT,
+              action TEXT NOT NULL,
+              decision TEXT NOT NULL,
+              reason TEXT NOT NULL,
+              request_digest TEXT NOT NULL,
+              created_at TEXT NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS security_audit_tenant_time
+              ON security_audit_events(tenant_id, created_at);
+            CREATE TABLE IF NOT EXISTS event_outbox (
+              event_id TEXT PRIMARY KEY,
+              tenant_id TEXT NOT NULL,
+              scope_digest TEXT NOT NULL,
+              topic TEXT NOT NULL,
+              aggregate_type TEXT NOT NULL,
+              aggregate_id TEXT NOT NULL,
+              sequence INTEGER NOT NULL,
+              event_json TEXT NOT NULL,
+              state TEXT NOT NULL,
+              attempts INTEGER NOT NULL DEFAULT 0,
+              available_at TEXT NOT NULL,
+              published_at TEXT,
+              delivery_receipt TEXT,
+              last_error TEXT,
+              created_at TEXT NOT NULL,
+              UNIQUE (tenant_id, aggregate_type, aggregate_id, sequence)
+            );
+            CREATE INDEX IF NOT EXISTS event_outbox_pending
+              ON event_outbox(tenant_id, scope_digest, state, available_at, created_at);
             """
         )
         self._ensure_legacy_columns()
+        self._ensure_support_columns()
 
     def close(self) -> None:
         with self._lock:
@@ -215,6 +301,18 @@ class StateStore:
                     self._connection.execute(
                         f"ALTER TABLE proof_runs ADD COLUMN {name} {definition}"
                     )
+
+    def _ensure_support_columns(self) -> None:
+        """Upgrade repository-owned support tables without touching source SQL."""
+        outbox_columns = {
+            row[1]
+            for row in self._connection.execute("PRAGMA table_info(event_outbox)")
+        }
+        with self._lock, self._connection:
+            if "delivery_receipt" not in outbox_columns:
+                self._connection.execute(
+                    "ALTER TABLE event_outbox ADD COLUMN delivery_receipt TEXT"
+                )
 
     def consume_execution_permit(
         self,
@@ -261,7 +359,9 @@ class StateStore:
                     },
                 )
         except sqlite3.IntegrityError as exc:
-            raise StoreError("execution permit or nonce has already been consumed") from exc
+            raise StoreError(
+                "execution permit or nonce has already been consumed"
+            ) from exc
 
     def put_execution_receipt(
         self,
@@ -323,9 +423,7 @@ class StateStore:
             "immutable": True,
         }
 
-    def get_execution_receipt(
-        self, scope: Scope, execution_id: str
-    ) -> dict[str, Any]:
+    def get_execution_receipt(self, scope: Scope, execution_id: str) -> dict[str, Any]:
         validate_identifier(execution_id, "executionId")
         with self._lock:
             row = self._connection.execute(
@@ -387,10 +485,12 @@ class StateStore:
                 raise StoreError("telemetry event insert did not return a sequence")
             return cursor.lastrowid
 
-    def telemetry(
-        self, scope: Scope, *, limit: int = 1000
-    ) -> list[dict[str, Any]]:
-        if not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= 10_000:
+    def telemetry(self, scope: Scope, *, limit: int = 1000) -> list[dict[str, Any]]:
+        if (
+            not isinstance(limit, int)
+            or isinstance(limit, bool)
+            or not 1 <= limit <= 10_000
+        ):
             raise StoreError("telemetry limit is outside policy")
         with self._lock:
             rows = self._connection.execute(
@@ -404,6 +504,73 @@ class StateStore:
                 "labels": json.loads(row["labels_json"]),
                 "traceId": row["trace_id"],
                 "observedAt": row["observed_at"],
+            }
+            for row in rows
+        ]
+
+    def record_security_audit(
+        self,
+        identity: TrustedIdentity,
+        *,
+        action: str,
+        decision: str,
+        reason: str,
+        request_metadata: dict[str, Any] | None = None,
+    ) -> int:
+        """Append a tenant-local authorization audit without target payload data."""
+        action = validate_identifier(action, "audit.action")
+        if decision not in {"ALLOW", "DENY"}:
+            raise StoreError("security audit decision must be ALLOW or DENY")
+        if not isinstance(reason, str) or not reason.strip() or len(reason) > 1000:
+            raise StoreError("security audit reason is invalid")
+        metadata = request_metadata or {}
+        if not isinstance(metadata, dict):
+            raise StoreError("security audit request metadata must be an object")
+        request_digest = digest_value(metadata)
+        with self._lock, self._connection:
+            cursor = self._connection.execute(
+                "INSERT INTO security_audit_events(tenant_id,actor_id,project_id,action,decision,reason,request_digest,created_at) VALUES(?,?,?,?,?,?,?,?)",
+                (
+                    identity.tenant_id,
+                    identity.actor_id,
+                    identity.project_id,
+                    action,
+                    decision,
+                    " ".join(reason.split()),
+                    request_digest,
+                    utc_now(),
+                ),
+            )
+            if cursor.lastrowid is None:
+                raise StoreError("security audit insert did not return a sequence")
+            return int(cursor.lastrowid)
+
+    def security_audit(
+        self, identity: TrustedIdentity, *, limit: int = 1000
+    ) -> list[dict[str, Any]]:
+        if (
+            not isinstance(limit, int)
+            or isinstance(limit, bool)
+            or not 1 <= limit <= 10_000
+        ):
+            raise StoreError("security audit limit is outside policy")
+        with self._lock:
+            rows = self._connection.execute(
+                "SELECT sequence,actor_id,project_id,action,decision,reason,request_digest,created_at "
+                "FROM security_audit_events WHERE tenant_id=? ORDER BY sequence DESC LIMIT ?",
+                (identity.tenant_id, limit),
+            ).fetchall()
+        return [
+            {
+                "sequence": row["sequence"],
+                "tenantId": identity.tenant_id,
+                "actorId": row["actor_id"],
+                "projectId": row["project_id"],
+                "action": row["action"],
+                "decision": row["decision"],
+                "reason": row["reason"],
+                "requestDigest": row["request_digest"],
+                "createdAt": row["created_at"],
             }
             for row in rows
         ]
@@ -510,18 +677,21 @@ class StateStore:
                         created_at,
                     ),
                 )
+                event_payload: dict[str, Any] = {
+                    "documentType": document_type,
+                    "documentId": document_id,
+                    "version": version,
+                    "contentDigest": content_digest,
+                    "scopeDigest": scope_digest,
+                }
+                if document_type == "gate_decision":
+                    event_payload["gateDecision"] = document
                 self._append_event_locked(
                     scope,
                     "assurance_document",
                     f"{document_type}:{document_id}:{version}",
                     "registered",
-                    {
-                        "documentType": document_type,
-                        "documentId": document_id,
-                        "version": version,
-                        "contentDigest": content_digest,
-                        "scopeDigest": scope_digest,
-                    },
+                    event_payload,
                 )
         return {
             "documentType": document_type,
@@ -544,9 +714,7 @@ class StateStore:
         validate_identifier(document_type, "documentType")
         validate_identifier(document_id, "documentId")
         parameters: list[Any] = [scope.tenant_id, document_type, document_id]
-        query = (
-            "SELECT * FROM assurance_documents WHERE tenant_id=? AND document_type=? AND document_id=?"
-        )
+        query = "SELECT * FROM assurance_documents WHERE tenant_id=? AND document_type=? AND document_id=?"
         if version is not None:
             validate_identifier(version, "documentVersion")
             query += " AND document_version=?"
@@ -569,6 +737,291 @@ class StateStore:
             "createdAt": row["created_at"],
             "document": document,
         }
+
+    def list_documents(
+        self,
+        scope: Scope,
+        *,
+        subject_id: str | None = None,
+        limit: int = 10_000,
+    ) -> list[dict[str, Any]]:
+        """Return integrity-checked documents for one exact trusted scope.
+
+        ``subject_id`` matches the aggregate identifier or an explicit
+        ``subjectId``, ``runId`` or ``obligationId`` field in the document.
+        It is intentionally evaluated after the full-scope database filter so
+        an identifier guess can never broaden a tenant/account/project read.
+        """
+        if subject_id is not None:
+            validate_identifier(subject_id, "subjectId")
+        if (
+            not isinstance(limit, int)
+            or isinstance(limit, bool)
+            or not 1 <= limit <= 10_000
+        ):
+            raise StoreError("document list limit is outside policy")
+        scope_digest = digest_value(scope.to_dict())
+        with self._lock:
+            rows = self._connection.execute(
+                "SELECT * FROM assurance_documents WHERE tenant_id=? AND scope_digest=? "
+                "ORDER BY created_at,document_type,document_id,document_version LIMIT ?",
+                (scope.tenant_id, scope_digest, limit),
+            ).fetchall()
+        result: list[dict[str, Any]] = []
+        for row in rows:
+            document = json.loads(row["content_json"])
+            if digest_value(document) != row["content_digest"]:
+                raise StoreError("assurance document integrity check failed")
+            if subject_id is not None and not (
+                row["document_id"] == subject_id
+                or any(
+                    document.get(field) == subject_id
+                    for field in ("subjectId", "runId", "obligationId")
+                )
+            ):
+                continue
+            result.append(
+                {
+                    "documentType": row["document_type"],
+                    "documentId": row["document_id"],
+                    "version": row["document_version"],
+                    "contentDigest": row["content_digest"],
+                    "createdAt": row["created_at"],
+                    "document": document,
+                }
+            )
+        return result
+
+    def register_dependency(
+        self,
+        scope: Scope,
+        *,
+        subject_type: str,
+        subject_id: str,
+        dependency_kind: str,
+        dependency_id: str,
+        dependency_hash: str,
+    ) -> dict[str, Any]:
+        """Bind proof/cache evidence to one immutable dependency revision."""
+        for value, path in (
+            (subject_type, "subjectType"),
+            (subject_id, "subjectId"),
+            (dependency_kind, "dependencyKind"),
+            (dependency_id, "dependencyId"),
+        ):
+            validate_identifier(value, path)
+        from .canonical import validate_digest
+
+        dependency_hash = validate_digest(dependency_hash, "dependencyHash")
+        scope_digest = digest_value(scope.to_dict())
+        created_at = utc_now()
+        with self._lock, self._connection:
+            self._connection.execute(
+                "INSERT INTO proof_dependencies(tenant_id,scope_digest,subject_type,subject_id,dependency_kind,dependency_id,dependency_hash,stale,created_at) "
+                "VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(tenant_id,scope_digest,subject_type,subject_id,dependency_kind,dependency_id,dependency_hash) DO NOTHING",
+                (
+                    scope.tenant_id,
+                    scope_digest,
+                    subject_type,
+                    subject_id,
+                    dependency_kind,
+                    dependency_id,
+                    dependency_hash,
+                    0,
+                    created_at,
+                ),
+            )
+        return {
+            "subjectType": subject_type,
+            "subjectId": subject_id,
+            "dependencyKind": dependency_kind,
+            "dependencyId": dependency_id,
+            "dependencyHash": dependency_hash,
+            "scopeDigest": scope_digest,
+        }
+
+    def mark_dependency_drift(
+        self,
+        scope: Scope,
+        *,
+        dependency_kind: str,
+        dependency_id: str,
+        new_hash: str,
+    ) -> dict[str, Any]:
+        """Invalidate dependent evidence and enqueue the minimal replay set.
+
+        This operation is transactional: dependency rows, persisted proof
+        results, local caches, the replay queue and the drift event either all
+        advance together or none do.
+        """
+        validate_identifier(dependency_kind, "dependencyKind")
+        validate_identifier(dependency_id, "dependencyId")
+        from .canonical import validate_digest
+
+        new_hash = validate_digest(new_hash, "newHash")
+        scope_digest = digest_value(scope.to_dict())
+        affected_subjects: list[dict[str, str]] = []
+        old_hashes: set[str] = set()
+        cache_count = 0
+        proof_run_count = 0
+        with self._lock, self._connection:
+            rows = self._connection.execute(
+                "SELECT subject_type,subject_id,dependency_hash FROM proof_dependencies "
+                "WHERE tenant_id=? AND scope_digest=? AND dependency_kind=? AND dependency_id=? AND dependency_hash<>? AND stale=0",
+                (
+                    scope.tenant_id,
+                    scope_digest,
+                    dependency_kind,
+                    dependency_id,
+                    new_hash,
+                ),
+            ).fetchall()
+            for row in rows:
+                subject_type = str(row["subject_type"])
+                subject_id = str(row["subject_id"])
+                old_hash = str(row["dependency_hash"])
+                old_hashes.add(old_hash)
+                self._connection.execute(
+                    "UPDATE proof_dependencies SET stale=1 WHERE tenant_id=? AND scope_digest=? AND subject_type=? AND subject_id=? AND dependency_kind=? AND dependency_id=? AND dependency_hash=?",
+                    (
+                        scope.tenant_id,
+                        scope_digest,
+                        subject_type,
+                        subject_id,
+                        dependency_kind,
+                        dependency_id,
+                        old_hash,
+                    ),
+                )
+                self._connection.execute(
+                    "INSERT INTO reproof_queue(tenant_id,scope_digest,subject_type,subject_id,dependency_kind,dependency_id,old_hash,new_hash,state,created_at) "
+                    "VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT(tenant_id,scope_digest,subject_type,subject_id,dependency_kind,dependency_id,new_hash) DO NOTHING",
+                    (
+                        scope.tenant_id,
+                        scope_digest,
+                        subject_type,
+                        subject_id,
+                        dependency_kind,
+                        dependency_id,
+                        old_hash,
+                        new_hash,
+                        "QUEUED",
+                        utc_now(),
+                    ),
+                )
+                affected_subjects.append(
+                    {"subjectType": subject_type, "subjectId": subject_id}
+                )
+                if subject_type == "proof_run":
+                    run = self._connection.execute(
+                        "SELECT result_json FROM proof_runs WHERE tenant_id=? AND run_id=?",
+                        (scope.tenant_id, subject_id),
+                    ).fetchone()
+                    if run is not None and run["result_json"]:
+                        result = json.loads(run["result_json"])
+                        if not result.get("stale", False):
+                            result["stale"] = True
+                            self._connection.execute(
+                                "UPDATE proof_runs SET result_json=?,updated_at=? WHERE tenant_id=? AND run_id=?",
+                                (
+                                    canonical_json(result).decode("utf-8"),
+                                    utc_now(),
+                                    scope.tenant_id,
+                                    subject_id,
+                                ),
+                            )
+                            proof_run_count += 1
+
+            cache_rows = self._connection.execute(
+                "SELECT cache_key,result_json FROM cache_entries WHERE tenant_id=? AND stale=0",
+                (scope.tenant_id,),
+            ).fetchall()
+            for row in cache_rows:
+                stored = json.loads(row["result_json"])
+                if (
+                    not isinstance(stored, dict)
+                    or stored.get("scopeDigest") != scope_digest
+                    or not isinstance(stored.get("result"), dict)
+                ):
+                    continue
+                result = stored["result"]
+                bindings = result.get("dependencyBindings", {})
+                identifiers = result.get("dependencies", [])
+                bound_hash = (
+                    bindings.get(dependency_id) if isinstance(bindings, dict) else None
+                )
+                if dependency_id in identifiers or (
+                    bound_hash is not None and bound_hash != new_hash
+                ):
+                    self._connection.execute(
+                        "UPDATE cache_entries SET stale=1 WHERE tenant_id=? AND cache_key=?",
+                        (scope.tenant_id, row["cache_key"]),
+                    )
+                    cache_count += 1
+
+            sorted_old_hashes = sorted(old_hashes)
+            old_hash = (
+                sorted_old_hashes[0]
+                if len(sorted_old_hashes) == 1
+                else digest_value({"oldHashes": sorted_old_hashes})
+            )
+            event = self._append_event_locked(
+                scope,
+                "proof_drift",
+                dependency_id,
+                "dependency_changed",
+                {
+                    "dependencyKind": dependency_kind,
+                    "dependencyId": dependency_id,
+                    "oldHash": old_hash,
+                    "oldHashes": sorted_old_hashes,
+                    "newHash": new_hash,
+                    "affectedSubjects": affected_subjects,
+                    "cacheEntriesInvalidated": cache_count,
+                    "proofResultsMarkedStale": proof_run_count,
+                },
+            )
+        return {
+            "dependencyKind": dependency_kind,
+            "dependencyId": dependency_id,
+            "oldHash": old_hash,
+            "oldHashes": sorted_old_hashes,
+            "newHash": new_hash,
+            "affectedSubjects": affected_subjects,
+            "cacheEntriesInvalidated": cache_count,
+            "proofResultsMarkedStale": proof_run_count,
+            "reproofPlan": affected_subjects,
+            "event": event,
+        }
+
+    def pending_reproofs(
+        self, scope: Scope, *, limit: int = 1000
+    ) -> list[dict[str, Any]]:
+        if (
+            not isinstance(limit, int)
+            or isinstance(limit, bool)
+            or not 1 <= limit <= 10_000
+        ):
+            raise StoreError("reproof queue limit is outside policy")
+        with self._lock:
+            rows = self._connection.execute(
+                "SELECT subject_type,subject_id,dependency_kind,dependency_id,old_hash,new_hash,state,created_at "
+                "FROM reproof_queue WHERE tenant_id=? AND scope_digest=? ORDER BY created_at,subject_type,subject_id LIMIT ?",
+                (scope.tenant_id, digest_value(scope.to_dict()), limit),
+            ).fetchall()
+        return [
+            {
+                "subjectType": row["subject_type"],
+                "subjectId": row["subject_id"],
+                "dependencyKind": row["dependency_kind"],
+                "dependencyId": row["dependency_id"],
+                "oldHash": row["old_hash"],
+                "newHash": row["new_hash"],
+                "state": row["state"],
+                "createdAt": row["created_at"],
+            }
+            for row in rows
+        ]
 
     def complete_idempotent_invocation(
         self,
@@ -668,6 +1121,74 @@ class StateStore:
                 event["createdAt"],
             ),
         )
+        if aggregate_type == "proof_drift":
+            topic = "driftEvents"
+        elif aggregate_type == "gate_decision" or (
+            aggregate_type == "assurance_document"
+            and payload.get("documentType") == "gate_decision"
+        ):
+            topic = "gateEvents"
+        else:
+            topic = "proofEvents"
+        event_id = digest_value(
+            {
+                "tenantId": scope.tenant_id,
+                "aggregateType": aggregate_type,
+                "aggregateId": aggregate_id,
+                "sequence": sequence,
+                "eventHash": event_hash,
+            }
+        )
+        if topic == "driftEvents":
+            message = {
+                "dependencyKind": payload.get("dependencyKind"),
+                "dependencyId": payload.get("dependencyId"),
+                "oldHash": str(payload.get("oldHash", "")).removeprefix("sha256:"),
+                "newHash": str(payload.get("newHash", "")).removeprefix("sha256:"),
+            }
+        elif topic == "gateEvents":
+            gate_decision = payload.get("gateDecision")
+            if not isinstance(gate_decision, dict):
+                raise StoreError("gate event requires an exact gate decision payload")
+            message = gate_decision
+        else:
+            message = {
+                "eventId": event_id,
+                "eventType": event_type,
+                "tenantId": scope.tenant_id,
+                "aggregateId": aggregate_id,
+                "occurredAt": event["createdAt"],
+                "payload": payload,
+            }
+        outbox_document = {
+            "format": "elmos-formal-assurance-event/v1",
+            "eventId": event_id,
+            "topic": topic,
+            "scopeDigest": digest_value(scope.to_dict()),
+            "message": message,
+            **event,
+        }
+        self._connection.execute(
+            "INSERT INTO event_outbox(event_id,tenant_id,scope_digest,topic,aggregate_type,aggregate_id,sequence,event_json,state,attempts,available_at,published_at,delivery_receipt,last_error,created_at) "
+            "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                event_id,
+                scope.tenant_id,
+                digest_value(scope.to_dict()),
+                topic,
+                aggregate_type,
+                aggregate_id,
+                sequence,
+                canonical_json(outbox_document).decode("utf-8"),
+                "PENDING",
+                0,
+                event["createdAt"],
+                None,
+                None,
+                None,
+                event["createdAt"],
+            ),
+        )
         return event
 
     def append_event(
@@ -708,6 +1229,105 @@ class StateStore:
             for row in rows
         ]
 
+    def pending_outbox(self, scope: Scope, *, limit: int = 100) -> list[dict[str, Any]]:
+        """Read a bounded scope-local batch for at-least-once delivery."""
+        if (
+            not isinstance(limit, int)
+            or isinstance(limit, bool)
+            or not 1 <= limit <= 1000
+        ):
+            raise StoreError("outbox batch limit is outside policy")
+        with self._lock:
+            rows = self._connection.execute(
+                "SELECT event_id,topic,event_json,attempts,created_at FROM event_outbox "
+                "WHERE tenant_id=? AND scope_digest=? AND state='PENDING' AND available_at<=? "
+                "ORDER BY created_at,event_id LIMIT ?",
+                (scope.tenant_id, digest_value(scope.to_dict()), utc_now(), limit),
+            ).fetchall()
+        return [
+            {
+                "eventId": row["event_id"],
+                "topic": row["topic"],
+                "event": json.loads(row["event_json"]),
+                "attempts": row["attempts"],
+                "createdAt": row["created_at"],
+            }
+            for row in rows
+        ]
+
+    def mark_outbox_published(
+        self, scope: Scope, event_id: str, *, delivery_receipt: str
+    ) -> None:
+        from .canonical import validate_digest
+
+        validate_digest(event_id, "eventId")
+        validate_digest(delivery_receipt, "deliveryReceipt")
+        with self._lock, self._connection:
+            updated = self._connection.execute(
+                "UPDATE event_outbox SET state='PUBLISHED',published_at=?,delivery_receipt=?,last_error=NULL "
+                "WHERE event_id=? AND tenant_id=? AND scope_digest=? AND state='PENDING'",
+                (
+                    utc_now(),
+                    delivery_receipt,
+                    event_id,
+                    scope.tenant_id,
+                    digest_value(scope.to_dict()),
+                ),
+            )
+            if updated.rowcount != 1:
+                row = self._connection.execute(
+                    "SELECT state FROM event_outbox WHERE event_id=? AND tenant_id=? AND scope_digest=?",
+                    (event_id, scope.tenant_id, digest_value(scope.to_dict())),
+                ).fetchone()
+                if row is None:
+                    raise StoreError("unknown outbox event")
+                if row["state"] != "PUBLISHED":
+                    raise StoreError("outbox event is not publishable")
+
+    def mark_outbox_failed(
+        self,
+        scope: Scope,
+        event_id: str,
+        *,
+        error: str,
+        max_attempts: int = 10,
+    ) -> dict[str, Any]:
+        from .canonical import validate_digest
+
+        validate_digest(event_id, "eventId")
+        if not isinstance(error, str) or not error.strip():
+            raise StoreError("outbox failure reason is required")
+        if (
+            not isinstance(max_attempts, int)
+            or isinstance(max_attempts, bool)
+            or not 1 <= max_attempts <= 100
+        ):
+            raise StoreError("outbox max attempts is outside policy")
+        with self._lock, self._connection:
+            row = self._connection.execute(
+                "SELECT attempts,state FROM event_outbox WHERE event_id=? AND tenant_id=? AND scope_digest=?",
+                (event_id, scope.tenant_id, digest_value(scope.to_dict())),
+            ).fetchone()
+            if row is None:
+                raise StoreError("unknown outbox event")
+            if row["state"] == "PUBLISHED":
+                raise StoreError("published outbox event cannot fail")
+            attempts = int(row["attempts"]) + 1
+            state = "DEAD" if attempts >= max_attempts else "PENDING"
+            self._connection.execute(
+                "UPDATE event_outbox SET attempts=?,state=?,available_at=?,last_error=? WHERE event_id=? AND tenant_id=? AND scope_digest=?",
+                (
+                    attempts,
+                    state,
+                    utc_now(),
+                    " ".join(error.split())[:1000],
+                    event_id,
+                    scope.tenant_id,
+                    digest_value(scope.to_dict()),
+                ),
+            )
+        return {"eventId": event_id, "attempts": attempts, "state": state}
+
     def submit_run(
         self,
         scope: Scope,
@@ -725,7 +1345,9 @@ class StateStore:
     ) -> dict[str, Any]:
         validate_identifier(run_id, "runId")
         validate_identifier(obligation_id, "obligationId")
-        if not isinstance(account_concurrency, int) or isinstance(account_concurrency, bool):
+        if not isinstance(account_concurrency, int) or isinstance(
+            account_concurrency, bool
+        ):
             raise StoreError("account concurrency must be an integer")
         if account_concurrency < 1 or account_concurrency > 3:
             raise StoreError("top-level account concurrency must be between 1 and 3")
@@ -791,7 +1413,9 @@ class StateStore:
                     engine_version,
                     formula_hash,
                     mode,
-                    canonical_json(bound).decode("utf-8") if bound is not None else None,
+                    canonical_json(bound).decode("utf-8")
+                    if bound is not None
+                    else None,
                     canonical_json(options or {}).decode("utf-8"),
                     ProofRunState.QUEUED.value,
                     None,
@@ -931,9 +1555,7 @@ class StateStore:
             )
         return self.get_run(scope, run_id)
 
-    def control_run(
-        self, scope: Scope, run_id: str, action: str
-    ) -> dict[str, Any]:
+    def control_run(self, scope: Scope, run_id: str, action: str) -> dict[str, Any]:
         """Apply an authenticated control-plane action without worker authority.
 
         This path never commits evidence.  Resuming an expired paused lease
@@ -946,7 +1568,10 @@ class StateStore:
             row = self._run_row(scope, run_id)
             current = ProofRunState(row["state"])
             if action == "CANCEL":
-                if current in TERMINAL_RUN_STATES or current == ProofRunState.CANCEL_REQUESTED:
+                if (
+                    current in TERMINAL_RUN_STATES
+                    or current == ProofRunState.CANCEL_REQUESTED
+                ):
                     return dict(row)
                 if current in {ProofRunState.QUEUED, ProofRunState.PAUSED}:
                     target = ProofRunState.CANCELLED
@@ -1042,7 +1667,10 @@ class StateStore:
             run = self._run_row(scope, run_id)
             if result.obligation_id != run["obligation_id"]:
                 raise StoreError("result obligation mismatch")
-            if run["formula_hash"] is not None and result.formula_hash != run["formula_hash"]:
+            if (
+                run["formula_hash"] is not None
+                and result.formula_hash != run["formula_hash"]
+            ):
                 raise StoreError("result formula does not match proof run")
             row = self._connection.execute(
                 "SELECT state,owner_id,fencing_token,lease_expires_at FROM proof_runs WHERE tenant_id=? AND run_id=?",
@@ -1063,7 +1691,9 @@ class StateStore:
                     str(run["started_at"]).replace("Z", "+00:00")
                 )
                 completed = datetime.fromisoformat(completed_at.replace("Z", "+00:00"))
-                wall_clock_ms = max(0, int((completed - started).total_seconds() * 1000))
+                wall_clock_ms = max(
+                    0, int((completed - started).total_seconds() * 1000)
+                )
             updated = self._connection.execute(
                 "UPDATE proof_runs SET state=?, result_json=?, completed_at=?, wall_clock_ms=?, lease_expires_at=NULL, updated_at=? WHERE tenant_id=? AND run_id=? AND owner_id=? AND fencing_token=? AND state=?",
                 (
@@ -1106,7 +1736,9 @@ class StateStore:
                 raise StoreError("worker lease has expired")
             current = ProofRunState(row["state"])
             if new_state not in _ALLOWED_TRANSITIONS[current]:
-                raise StoreError(f"invalid transition {current.value}->{new_state.value}")
+                raise StoreError(
+                    f"invalid transition {current.value}->{new_state.value}"
+                )
             updated = self._connection.execute(
                 "UPDATE proof_runs SET state=?, started_at=CASE WHEN ?=? AND started_at IS NULL THEN ? ELSE started_at END, updated_at=? WHERE tenant_id=? AND run_id=? AND owner_id=? AND fencing_token=? AND state=?",
                 (

@@ -4,13 +4,39 @@ import json
 import os
 import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 from .canonical import canonical_json, digest_bytes, validate_digest, validate_identifier
 
 
 class ArtifactStoreError(ValueError):
     """Raised when a content-addressed artifact cannot be safely stored/read."""
+
+
+class ArtifactStore(Protocol):
+    """Tenant-bound immutable CAS boundary for local or provider adapters."""
+
+    def put(
+        self,
+        tenant_id: str,
+        data: bytes,
+        *,
+        media_type: str,
+        retention_class: str,
+    ) -> dict[str, Any]: ...
+
+    def get(self, tenant_id: str, digest: str) -> bytes: ...
+
+    def metadata(self, tenant_id: str, digest: str) -> dict[str, Any]: ...
+
+    def delete(
+        self,
+        tenant_id: str,
+        digest: str,
+        *,
+        retention_class: str | None = None,
+        legal_hold: bool = False,
+    ) -> None: ...
 
 
 class ContentAddressedArtifactStore:
@@ -196,4 +222,4 @@ class ContentAddressedArtifactStore:
                 )
 
 
-__all__ = ["ArtifactStoreError", "ContentAddressedArtifactStore"]
+__all__ = ["ArtifactStore", "ArtifactStoreError", "ContentAddressedArtifactStore"]

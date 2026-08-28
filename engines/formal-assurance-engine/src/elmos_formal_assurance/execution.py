@@ -21,7 +21,7 @@ try:  # pragma: no cover - POSIX is used in production and CI
 except ImportError:  # pragma: no cover
     resource = None  # type: ignore[assignment]
 
-from .artifact_store import ContentAddressedArtifactStore
+from .artifact_store import ArtifactStore
 from .canonical import canonical_json, digest_bytes, digest_value, validate_digest, validate_identifier
 from .contracts import AssuranceLevel, ProofStatus, Scope, TrustedIdentity, utc_now
 from .store import StateStore
@@ -992,7 +992,7 @@ class NativeVerificationExecutor:
         self,
         *,
         store: StateStore,
-        artifact_store: ContentAddressedArtifactStore | None,
+        artifact_store: ArtifactStore | None,
         permit_signer: ExecutionPermitSigner | None,
         toolchains: tuple[ToolchainRegistration, ...],
         limits: ResourceLimits,
