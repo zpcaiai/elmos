@@ -1,0 +1,144 @@
+apiVersion: elmos.ai/v3alpha1
+kind: ThreatModel
+metadata:
+  name: elmos-secretless-broker-breakglass-controller
+  version: 4.0.0
+spec:
+  trustBoundaries:
+  - user/tenant to control plane
+  - control plane to sandboxed execution
+  - execution to model/tool/provider
+  - runtime to evidence/certification
+  - tenant to shared infrastructure
+  assets:
+  - Goal and RevisionSet integrity
+  - tenant data and memory
+  - tool and deployment authority
+  - generated artifacts
+  - proof and certificate integrity
+  - availability and budget
+  threats:
+  - id: T01
+    threat: credential written to workspace
+    asset: tenant data
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: broker workload-bound credentials'
+  - id: T02
+    threat: break-glass never expires
+    asset: authority
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: enforce purpose, path and parameter scope'
+  - id: T03
+    threat: scope expands on refresh
+    asset: evidence
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: rotate and revoke automatically'
+  - id: T04
+    threat: audit trail editable
+    asset: availability
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: implement dual-control break-glass'
+  - id: T05
+    threat: emergency account becomes routine
+    asset: semantic correctness
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: reconcile and review every emergency action'
+  assurance:
+  - OWASP-style agentic abuse campaign where applicable
+  - supply-chain and provenance verification
+  - incident kill-switch drill for critical Skills

@@ -1,0 +1,8 @@
+{
+  "collection": "orders",
+  "invariants": [
+    "order_id unique",
+    "tenant_id mandatory"
+  ],
+  "deletion": "tombstone-propagated"
+}

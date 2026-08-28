@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StructuredOutputContract",
+  "type": "object",
+  "required": [
+    "schemaId",
+    "schemaVersion",
+    "semanticConstraints",
+    "repairLimit",
+    "invalidAction",
+    "toolExecutionRequiresValid"
+  ],
+  "properties": {
+    "schemaId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "semanticConstraints": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "repairLimit": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "invalidAction": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "reject",
+        "retry-bounded",
+        "human-review"
+      ]
+    },
+    "toolExecutionRequiresValid": {
+      "const": true
+    }
+  },
+  "additionalProperties": false
+}

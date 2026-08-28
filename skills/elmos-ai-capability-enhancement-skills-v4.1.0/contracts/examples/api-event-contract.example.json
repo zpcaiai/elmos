@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "api-event-contract-example",
+  "status": "READY",
+  "content_hash": "fbef0b7fdc9d06dfcb598c4cf2dc1ef70f8dd3a40199fd775ba378190cc776eb",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "requirements": [
+    "typed and version-bound"
+  ],
+  "invariants": [
+    "critical unknown blocks"
+  ],
+  "compatibility": "conditional"
+}

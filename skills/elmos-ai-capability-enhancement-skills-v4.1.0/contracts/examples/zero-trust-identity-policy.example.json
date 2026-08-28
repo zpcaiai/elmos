@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "zero-trust-identity-policy-example",
+  "status": "READY",
+  "content_hash": "8019d9a4ee882a5cace559ae351422491f74397cfd36c9a0c1e70ab7001c86cd",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "rules": [
+    {
+      "id": "R1",
+      "effect": "deny",
+      "condition": "authority_missing"
+    }
+  ],
+  "exceptions": []
+}

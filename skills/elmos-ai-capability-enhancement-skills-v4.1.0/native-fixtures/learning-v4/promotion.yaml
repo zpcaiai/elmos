@@ -1,0 +1,5 @@
+candidate: rule-v2
+holdoutPass: true
+securityPass: true
+independentApproval: false
+expected: BLOCK

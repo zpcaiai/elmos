@@ -1,0 +1,18 @@
+BEGIN;
+CREATE TABLE IF NOT EXISTS ai_compliance_profile (tenant_id uuid NOT NULL, profile_id text NOT NULL, version text NOT NULL, effective_at date NOT NULL, profile jsonb NOT NULL, status text NOT NULL CHECK (status IN ('DRAFT','APPROVED','BLOCKED','EXPIRED')), PRIMARY KEY (tenant_id, profile_id, version));
+CREATE TABLE IF NOT EXISTS ai_bom (tenant_id uuid NOT NULL, bom_id uuid PRIMARY KEY DEFAULT gen_random_uuid(), revision_set_id uuid NOT NULL REFERENCES ai_solution_revision(id), document jsonb NOT NULL, evidence_hash text NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS ai_retention_erasure_job (tenant_id uuid NOT NULL, job_id uuid PRIMARY KEY DEFAULT gen_random_uuid(), subject_id text, policy_id text NOT NULL, status text NOT NULL CHECK (status IN ('PENDING','RUNNING','BOUNDED','COMPLETE','BLOCKED')), result jsonb, created_at timestamptz NOT NULL DEFAULT now(), completed_at timestamptz);
+CREATE TABLE IF NOT EXISTS ai_incident_control (tenant_id uuid NOT NULL, incident_id uuid NOT NULL, control_id text NOT NULL, scope text NOT NULL, target text NOT NULL, generation bigint NOT NULL, state text NOT NULL, evidence jsonb NOT NULL DEFAULT '{}'::jsonb, updated_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (tenant_id, incident_id, control_id));
+ALTER TABLE ai_compliance_profile ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_ai_compliance_profile ON ai_compliance_profile;
+CREATE POLICY tenant_isolation_ai_compliance_profile ON ai_compliance_profile USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+ALTER TABLE ai_bom ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_ai_bom ON ai_bom;
+CREATE POLICY tenant_isolation_ai_bom ON ai_bom USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+ALTER TABLE ai_retention_erasure_job ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_ai_retention_erasure_job ON ai_retention_erasure_job;
+CREATE POLICY tenant_isolation_ai_retention_erasure_job ON ai_retention_erasure_job USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+ALTER TABLE ai_incident_control ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_ai_incident_control ON ai_incident_control;
+CREATE POLICY tenant_isolation_ai_incident_control ON ai_incident_control USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+COMMIT;

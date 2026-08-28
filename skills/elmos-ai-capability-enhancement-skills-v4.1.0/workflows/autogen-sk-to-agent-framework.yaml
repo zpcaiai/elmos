@@ -1,0 +1,91 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableWorkflow
+metadata:
+  name: autogen-sk-to-agent-framework
+  title: AutoGen/Semantic Kernel to Microsoft Agent Framework
+spec:
+  routeOwner: domain-pack.project-generation
+  revisionBound: true
+  nodes:
+  - id: detect-source
+    sequence: 0
+    owner: K2
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+  - id: recover-agent-tool-session-workflow
+    sequence: 1
+    owner: K3
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - detect-source
+  - id: map-capabilities
+    sequence: 2
+    owner: K3
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - recover-agent-tool-session-workflow
+  - id: emit-agent-framework
+    sequence: 3
+    owner: K5
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - map-capabilities
+  - id: native-build-start
+    sequence: 4
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - emit-agent-framework
+  - id: differential-validate
+    sequence: 5
+    owner: K6
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - native-build-start
+  - id: certify
+    sequence: 6
+    owner: K8
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - differential-validate
+  terminalStates:
+  - COMPLETED
+  - BLOCKED
+  - FAILED
+  - CANCELLED
+  authority: Environment-owned; every write checks tenant, epoch, lease generation and fencing
+  evidence: each node emits immutable evidence or explicit NOT_EXECUTED reason

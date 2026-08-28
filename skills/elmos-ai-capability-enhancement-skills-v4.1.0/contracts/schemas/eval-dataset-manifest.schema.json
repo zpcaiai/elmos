@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvalDatasetManifest",
+  "type": "object",
+  "required": [
+    "datasetId",
+    "version",
+    "caseCount",
+    "splits",
+    "lineageHash",
+    "holdoutIsolated"
+  ],
+  "properties": {
+    "datasetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceTypes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "caseCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "splits": {
+      "type": "object"
+    },
+    "piiClass": {
+      "type": "string",
+      "minLength": 1
+    },
+    "consentStatus": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lineageHash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "holdoutIsolated": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

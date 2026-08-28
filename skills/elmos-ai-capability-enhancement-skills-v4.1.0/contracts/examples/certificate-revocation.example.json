@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "CertificateRevocation",
+  "metadata": {
+    "id": "certificate-revocation-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "certificateId": "example-certificateId",
+    "trigger": "example-trigger",
+    "effectiveAt": "2026-08-28T00:00:00Z",
+    "recertificationRequired": true
+  }
+}

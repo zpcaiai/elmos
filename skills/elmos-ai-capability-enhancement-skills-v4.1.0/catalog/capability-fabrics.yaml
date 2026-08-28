@@ -1,0 +1,81 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CapabilityFabricRegistry
+metadata:
+  name: elmos-ai-capability-enhancement-skills
+  version: 4.1.0
+spec:
+  preservesRoutableEntryCount: 16
+  packageRole: capability
+  fabrics:
+  - id: FABRIC-01
+    name: AI-Native Project Factory and Cross-Ecosystem Agentic Solution Compiler
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-02
+    name: Portable Skills, Plugins, ChatGPT Apps, MCP, A2A and ACP
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-03
+    name: Polyglot Deep Semantic Route Fabric
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-04
+    name: Relational SQL, NoSQL, Search, Graph, Vector, Stream and Lakehouse Data Fabric
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-05
+    name: API, Event, Saga and Distributed Consistency Contracts
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-06
+    name: Model Lifecycle, Serving, Realtime, Multimodal and Edge AI
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-07
+    name: Knowledge Graph, GraphRAG, Retrieval, Citation and Memory Lifecycle
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-08
+    name: Full-spectrum Automated QA and Evidence Mesh
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-09
+    name: Formal Assurance and Independent Translation Validation
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-10
+    name: Zero-trust, Confidential Runtime and Supply-chain Security
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-11
+    name: Platform Engineering, GitOps, Multi-region SRE and FinOps
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-12
+    name: Architecture, SaaS Productization, Governance and Safe Self-improvement
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8

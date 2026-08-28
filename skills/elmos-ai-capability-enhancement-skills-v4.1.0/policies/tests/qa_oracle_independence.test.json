@@ -1,0 +1,11 @@
+{
+  "policy": "qa_oracle_independence",
+  "positive": {
+    "authoritative_oracle_registered": true,
+    "candidate_producer_is_not_certifier": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

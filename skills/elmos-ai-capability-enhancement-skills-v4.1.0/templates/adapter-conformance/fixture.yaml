@@ -1,0 +1,17 @@
+apiVersion: elmos.ai/v3alpha1
+kind: AdapterConformanceFixture
+metadata:
+  name: replace-me
+spec:
+  exactUpstreamVersion: replace-me
+  adapterDigest: sha256:replace-at-release
+  scenarios:
+    - id: manifest-load
+    - id: minimal-native
+    - id: representative-project
+    - id: negative-unsupported
+    - id: authority-deny
+    - id: evidence-binding
+    - id: upgrade-drift
+  expectedDecision: BLOCKED
+  note: Change to CONFORMANT only after native evidence is attached.

@@ -1,0 +1,83 @@
+asyncapi: 3.0.0
+info:
+  title: Elmos AI Factory Hardening Events
+  version: 1.1.0
+channels:
+  aiFactoryRunEvents:
+    address: elmos.ai-factory.runs.{tenantId}.{runId}
+    parameters:
+      tenantId:
+        description: Tenant boundary
+      runId:
+        description: Durable run
+    messages:
+      runEvent:
+        $ref: '#/components/messages/RunEvent'
+  aiFactorySecurityEvents:
+    address: elmos.ai-factory.security.{tenantId}
+    messages:
+      securityEvent:
+        $ref: '#/components/messages/SecurityEvent'
+operations:
+  receiveRunEvents:
+    action: receive
+    channel:
+      $ref: '#/channels/aiFactoryRunEvents'
+  receiveSecurityEvents:
+    action: receive
+    channel:
+      $ref: '#/channels/aiFactorySecurityEvents'
+components:
+  messages:
+    RunEvent:
+      payload:
+        type: object
+        required:
+        - eventId
+        - tenantId
+        - runId
+        - executionEpoch
+        - type
+        - occurredAt
+        - evidenceHash
+        properties:
+          eventId:
+            type: string
+          tenantId:
+            type: string
+          runId:
+            type: string
+          executionEpoch:
+            type: integer
+          type:
+            type: string
+          occurredAt:
+            type: string
+            format: date-time
+          evidenceHash:
+            type: string
+    SecurityEvent:
+      payload:
+        type: object
+        required:
+        - eventId
+        - tenantId
+        - severity
+        - control
+        - occurredAt
+        properties:
+          eventId:
+            type: string
+          tenantId:
+            type: string
+          severity:
+            enum:
+            - low
+            - medium
+            - high
+            - critical
+          control:
+            type: string
+          occurredAt:
+            type: string
+            format: date-time

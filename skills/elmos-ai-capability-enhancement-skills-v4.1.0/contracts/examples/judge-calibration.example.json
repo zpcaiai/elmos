@@ -1,0 +1,12 @@
+{
+  "judgeId": "grounding-judge",
+  "modelFingerprint": "fp-1",
+  "datasetVersion": "judge-benchmark-3",
+  "humanAgreement": 0.91,
+  "falsePassRate": 0.02,
+  "confidenceLevel": 0.95,
+  "allowedUses": [
+    "non-authoritative-ranking"
+  ],
+  "status": "bounded"
+}

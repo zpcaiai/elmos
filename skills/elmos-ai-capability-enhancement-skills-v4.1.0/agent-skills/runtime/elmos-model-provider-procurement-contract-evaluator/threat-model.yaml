@@ -1,0 +1,144 @@
+apiVersion: elmos.ai/v3alpha1
+kind: ThreatModel
+metadata:
+  name: elmos-model-provider-procurement-contract-evaluator
+  version: 4.0.0
+spec:
+  trustBoundaries:
+  - user/tenant to control plane
+  - control plane to sandboxed execution
+  - execution to model/tool/provider
+  - runtime to evidence/certification
+  - tenant to shared infrastructure
+  assets:
+  - Goal and RevisionSet integrity
+  - tenant data and memory
+  - tool and deployment authority
+  - generated artifacts
+  - proof and certificate integrity
+  - availability and budget
+  threats:
+  - id: T01
+    threat: marketing page treated as contract
+    asset: tenant data
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: compile technical and contractual requirement matrix'
+  - id: T02
+    threat: regional endpoint assumed residency guarantee
+    asset: authority
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: map provider terms to controls and unresolved legal review'
+  - id: T03
+    threat: price change omitted
+    asset: evidence
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: model deprecation, outage and exit scenarios'
+  - id: T04
+    threat: exit export unsupported
+    asset: availability
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: compare total cost and data exposure'
+  - id: T05
+    threat: automatic evaluator gives legal approval
+    asset: semantic correctness
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: generate procurement evidence without legal conclusion'
+  assurance:
+  - OWASP-style agentic abuse campaign where applicable
+  - supply-chain and provenance verification
+  - incident kill-switch drill for critical Skills

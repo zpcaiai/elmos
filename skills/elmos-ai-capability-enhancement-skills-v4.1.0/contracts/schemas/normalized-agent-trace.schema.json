@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NormalizedAgentTrace",
+  "type": "object",
+  "required": [
+    "traceId",
+    "revisionSetId",
+    "events"
+  ],
+  "properties": {
+    "traceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revisionSetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "sequence",
+          "timestamp",
+          "payloadHash"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "input",
+              "route",
+              "retrieval",
+              "model",
+              "tool-proposal",
+              "approval",
+              "tool-result",
+              "state-transition",
+              "side-effect",
+              "evidence",
+              "output",
+              "error",
+              "terminal"
+            ]
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "causes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "payloadHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "semanticKey": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

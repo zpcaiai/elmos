@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/3.0.0/structured-assurance-case.schema.json",
+  "title": "StructuredAssuranceCase",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.ai/v3alpha1"
+    },
+    "kind": {
+      "const": "StructuredAssuranceCase"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "revisionSetId"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revisionSetId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "claims",
+        "arguments",
+        "evidenceRefs",
+        "unresolved"
+      ],
+      "properties": {
+        "claims": {
+          "type": "array"
+        },
+        "arguments": {
+          "type": "array"
+        },
+        "evidenceRefs": {
+          "type": "array"
+        },
+        "unresolved": {
+          "type": "array"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,144 @@
+apiVersion: elmos.ai/v3alpha1
+kind: ThreatModel
+metadata:
+  name: elmos-protocol-state-machine-model-checker
+  version: 4.0.0
+spec:
+  trustBoundaries:
+  - user/tenant to control plane
+  - control plane to sandboxed execution
+  - execution to model/tool/provider
+  - runtime to evidence/certification
+  - tenant to shared infrastructure
+  assets:
+  - Goal and RevisionSet integrity
+  - tenant data and memory
+  - tool and deployment authority
+  - generated artifacts
+  - proof and certificate integrity
+  - availability and budget
+  threats:
+  - id: T01
+    threat: state abstraction drops data guard
+    asset: tenant data
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: translate typed protocol states and guards'
+  - id: T02
+    threat: fairness assumption unrealistic
+    asset: authority
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: check invalid transitions and unreachable states'
+  - id: T03
+    threat: state explosion hidden by cutoff
+    asset: evidence
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: verify bounded liveness and cancellation'
+  - id: T04
+    threat: counterexample translation wrong
+    asset: availability
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: model retries, timeouts and crash recovery'
+  - id: T05
+    threat: protocol version mismatch
+    asset: semantic correctness
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: map counterexamples to executable scenarios'
+  assurance:
+  - OWASP-style agentic abuse campaign where applicable
+  - supply-chain and provenance verification
+  - incident kill-switch drill for critical Skills

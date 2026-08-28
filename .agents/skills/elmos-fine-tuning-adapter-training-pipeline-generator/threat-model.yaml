@@ -1,0 +1,144 @@
+apiVersion: elmos.ai/v3alpha1
+kind: ThreatModel
+metadata:
+  name: elmos-fine-tuning-adapter-training-pipeline-generator
+  version: 4.0.0
+spec:
+  trustBoundaries:
+  - user/tenant to control plane
+  - control plane to sandboxed execution
+  - execution to model/tool/provider
+  - runtime to evidence/certification
+  - tenant to shared infrastructure
+  assets:
+  - Goal and RevisionSet integrity
+  - tenant data and memory
+  - tool and deployment authority
+  - generated artifacts
+  - proof and certificate integrity
+  - availability and budget
+  threats:
+  - id: T01
+    threat: training data lacks rights
+    asset: tenant data
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: compile dataset, split and consent contracts'
+  - id: T02
+    threat: holdout leaks into train
+    asset: authority
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: generate reproducible training and checkpoint pipeline'
+  - id: T03
+    threat: adapter/base mismatch
+    asset: evidence
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: track base model, adapter and tokenizer lineage'
+  - id: T04
+    threat: checkpoint cannot reproduce
+    asset: availability
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: run capability, safety and regression evaluation'
+  - id: T05
+    threat: safety regression averaged away
+    asset: semantic correctness
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: promote via registry, canary and rollback'
+  assurance:
+  - OWASP-style agentic abuse campaign where applicable
+  - supply-chain and provenance verification
+  - incident kill-switch drill for critical Skills

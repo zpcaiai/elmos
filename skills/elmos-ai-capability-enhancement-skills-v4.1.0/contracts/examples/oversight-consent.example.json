@@ -1,0 +1,17 @@
+{
+  "actionDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "approverRoles": [
+    "finance-manager"
+  ],
+  "requiredApprovals": 2,
+  "receivedApprovals": [
+    {
+      "approver": "u1"
+    },
+    {
+      "approver": "u2"
+    }
+  ],
+  "expiresAt": "2026-08-28T01:00:00Z",
+  "status": "approved"
+}

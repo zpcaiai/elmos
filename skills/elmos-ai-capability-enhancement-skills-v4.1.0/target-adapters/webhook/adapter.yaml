@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: webhook
+  ecosystem: Webhook delivery
+  version: 4.0.0
+spec:
+  adapterKind: event-runtime
+  maturity: P1
+  modes:
+  - sign
+  - deliver
+  - retry
+  - verify
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - webhook exact-version profile
+  - webhook capability and semantic-gap map
+  - webhook native conformance evidence
+  - webhook deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

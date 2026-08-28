@@ -1,0 +1,2 @@
+scenario: locking-and-rollback
+required: true

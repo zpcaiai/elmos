@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "SqlQueryIR",
+  "metadata": {
+    "id": "sql-query-ir-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "statementType": "example-statementType",
+    "relationalPlan": {},
+    "expressions": [],
+    "sideEffects": []
+  }
+}

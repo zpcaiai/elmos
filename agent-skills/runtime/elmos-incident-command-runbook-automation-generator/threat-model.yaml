@@ -1,0 +1,144 @@
+apiVersion: elmos.ai/v3alpha1
+kind: ThreatModel
+metadata:
+  name: elmos-incident-command-runbook-automation-generator
+  version: 4.0.0
+spec:
+  trustBoundaries:
+  - user/tenant to control plane
+  - control plane to sandboxed execution
+  - execution to model/tool/provider
+  - runtime to evidence/certification
+  - tenant to shared infrastructure
+  assets:
+  - Goal and RevisionSet integrity
+  - tenant data and memory
+  - tool and deployment authority
+  - generated artifacts
+  - proof and certificate integrity
+  - availability and budget
+  threats:
+  - id: T01
+    threat: automation executes destructive mitigation
+    asset: tenant data
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: compile incident taxonomy and severity'
+  - id: T02
+    threat: incident role conflict
+    asset: authority
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: assign commander, operations and communications roles'
+  - id: T03
+    threat: evidence overwritten
+    asset: evidence
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: generate safe diagnostic and mitigation actions'
+  - id: T04
+    threat: customer notification inconsistent
+    asset: availability
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: preserve evidence and customer timelines'
+  - id: T05
+    threat: service restarts before side effects reconcile
+    asset: semantic correctness
+    entryPoints:
+    - typed input
+    - repository artifact
+    - adapter/tool
+    - runtime event
+    preventiveControls:
+    - schema/profile validation
+    - least privilege
+    - version/digest pinning
+    - fail-closed policy
+    detectiveControls:
+    - audit event
+    - anomaly metric
+    - negative test
+    - evidence consistency check
+    response:
+    - block path
+    - revoke authority
+    - quarantine artifacts
+    - preserve evidence
+    requiredTest: 'native scenario: gate restart and postmortem recertification'
+  assurance:
+  - OWASP-style agentic abuse campaign where applicable
+  - supply-chain and provenance verification
+  - incident kill-switch drill for critical Skills

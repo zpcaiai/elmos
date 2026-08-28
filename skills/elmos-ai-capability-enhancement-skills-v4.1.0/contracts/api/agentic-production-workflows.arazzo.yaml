@@ -1,0 +1,34 @@
+arazzo: 1.1.0
+info:
+  title: Elmos Agentic Production Workflow Contracts
+  version: 4.0.0
+sourceDescriptions:
+- name: control
+  url: ./polyglot-route-control.openapi.yaml
+  type: openapi
+workflows:
+- workflowId: certifiedGenerationAndDeployment
+  summary: Create a revision-bound run, verify it and request certificate-bound deployment admission.
+  inputs:
+    type: object
+    required:
+    - goal_id
+    - revision_set_id
+    properties:
+      goal_id:
+        type: string
+      revision_set_id:
+        type: string
+  steps:
+  - stepId: startRoute
+    operationId: v1_polyglot_runs_start
+    requestBody:
+      payload:
+        goal_id: $inputs.goal_id
+        revision_set_id: $inputs.revision_set_id
+    successCriteria:
+    - condition: $statusCode == 202
+  - stepId: requestCertificate
+    operationPath: '{$sourceDescriptions.control.url}#/paths/~1v1~1certification~1requests/post'
+    successCriteria:
+    - condition: $statusCode == 202

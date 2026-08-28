@@ -1,0 +1,73 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableWorkflow
+metadata:
+  name: mcp-2026-modernization
+  version: 4.0.0
+spec:
+  authority: Environment-owned
+  failureMode: fail-closed
+  steps:
+  - id: fingerprint-existing-mcp
+    ordinal: 1
+    dependsOn: []
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: compile-2026-profile
+    ordinal: 2
+    dependsOn:
+    - fingerprint-existing-mcp
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: modernize-stateless-core
+    ordinal: 3
+    dependsOn:
+    - compile-2026-profile
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: add-tasks-skills-apps
+    ordinal: 4
+    dependsOn:
+    - modernize-stateless-core
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: authorization-hardening
+    ordinal: 5
+    dependsOn:
+    - add-tasks-skills-apps
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: native-conformance
+    ordinal: 6
+    dependsOn:
+    - authorization-hardening
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: rollback-drill
+    ordinal: 7
+    dependsOn:
+    - native-conformance
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  terminalGate: independent K8 evaluation
+  machineEtaRequired: true

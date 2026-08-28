@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v3alpha1
+kind: SkillContract
+metadata:
+  name: elmos-managed-agent-cloud-deployment-generator
+  version: 4.0.0
+spec:
+  routeOwner: domain-pack.project-generation
+  routable: false
+  priority: P1
+  risk: critical
+  group: deployment
+  kernelAuthorities:
+  - K3
+  - K5
+  - K6
+  - K7
+  canonicalInputs:
+  - type: GoalContract
+    required: true
+    binding: goal_id
+  - type: RevisionSet
+    required: true
+    binding: revision_set_id
+  - type: EnvironmentAuthority
+    required: true
+    binding: execution_epoch+authority_digest
+  - type: ProofObligationGraph
+    required: true
+    binding: proof_graph_id
+  - type: BudgetAndPolicyEnvelope
+    required: true
+    binding: policy_bundle_digest
+  outputs:
+  - path: managed-runtime-targets/
+    type: ArtifactDirectory
+    immutable: true
+    evidenceBound: true
+    schemaRequired: false
+  - path: cloud-capability-diff.json
+    type: JsonArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  - path: deployment-evidence/
+    type: ArtifactDirectory
+    immutable: true
+    evidenceBound: true
+    schemaRequired: false
+  - path: cloud-exit-plan.yaml
+    type: YamlArtifact
+    immutable: true
+    evidenceBound: true
+    schemaRequired: true
+  dependencies:
+  - elmos-ai-deployment-pack-generator
+  - elmos-agent-workload-delegated-identity-controller
+  - elmos-genai-telemetry-profile-compiler
+  failureMode: fail-closed
+  ownership:
+    intent: K1
+    semantic: K2/K3
+    reasoning: K4
+    transformation: K5
+    verification: K6
+    execution: K7
+    completion: K8
+  invariants:
+  - every terminal result binds one exact RevisionSet
+  - every write validates tenant, execution epoch, lease generation and fencing token
+  - every side effect has idempotency and reconciliation state
+  - critical UNKNOWN or UNSUPPORTED cannot become COMPLETE
+  - generator, repairer and certifier are independently attributable
+  terminalStates:
+  - COMPLETED
+  - BLOCKED
+  - FAILED
+  - CANCELLED
+  externalDependencies: []
+  packageRole: capability
+  standaloneCompletionCeiling: E4_EVIDENCE_ONLY

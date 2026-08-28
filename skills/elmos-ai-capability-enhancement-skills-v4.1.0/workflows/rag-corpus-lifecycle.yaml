@@ -1,0 +1,73 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableWorkflow
+metadata:
+  name: rag-corpus-lifecycle
+  version: 4.0.0
+spec:
+  authority: Environment-owned
+  failureMode: fail-closed
+  steps:
+  - id: snapshot-source
+    ordinal: 1
+    dependsOn: []
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: start-cdc
+    ordinal: 2
+    dependsOn:
+    - snapshot-source
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: parse-and-index
+    ordinal: 3
+    dependsOn:
+    - start-cdc
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: reconcile
+    ordinal: 4
+    dependsOn:
+    - parse-and-index
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: verify-acl-freshness
+    ordinal: 5
+    dependsOn:
+    - reconcile
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: test-poisoning
+    ordinal: 6
+    dependsOn:
+    - verify-acl-freshness
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: delete-and-prove
+    ordinal: 7
+    dependsOn:
+    - test-poisoning
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  terminalGate: independent K8 evaluation
+  machineEtaRequired: true

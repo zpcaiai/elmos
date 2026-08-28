@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "performance-portability-result-example",
+  "status": "READY",
+  "content_hash": "c16b70a547d6be20c73363fd5465dda54d5955d808a6f8209e540f1b72eb104b",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

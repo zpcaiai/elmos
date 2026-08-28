@@ -1,0 +1,27 @@
+{
+  "requirements": [
+    "durable_execution",
+    "external_write_approval"
+  ],
+  "decisions": [
+    {
+      "requirement": "durable_execution",
+      "target": "langgraph-python",
+      "status": "supported",
+      "critical": true,
+      "obligations": [
+        "native-checkpoint-test"
+      ]
+    },
+    {
+      "requirement": "external_write_approval",
+      "target": "langgraph-python",
+      "status": "external-policy",
+      "critical": true,
+      "obligations": [
+        "elmos-tool-authority"
+      ]
+    }
+  ],
+  "overall": "BOUNDED"
+}

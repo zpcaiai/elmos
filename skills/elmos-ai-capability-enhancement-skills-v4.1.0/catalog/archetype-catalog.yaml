@@ -1,0 +1,155 @@
+apiVersion: elmos.ai/v3alpha1
+kind: AISolutionArchetypeCatalog
+spec:
+  archetypes:
+  - id: enterprise-knowledge-assistant
+    description: Tenant-aware grounded assistant over governed enterprise knowledge.
+    recommendedTargets:
+    - dify
+    - langgraph-python
+    - spring-ai-java
+    - llamaindex-python
+    requiredFeatures:
+    - rag
+    - acl
+    - citations
+    - abstention
+    - audit
+  - id: agentic-rag
+    description: Iterative retrieval, planning, tool use and verification over heterogeneous evidence.
+    recommendedTargets:
+    - langgraph-python
+    - haystack-python
+    - microsoft-agent-framework-python
+    requiredFeatures:
+    - durable_execution
+    - hybrid_retrieval
+    - tool_authority
+    - trace
+  - id: graph-rag
+    description: Knowledge graph construction and graph-aware retrieval.
+    recommendedTargets:
+    - microsoft-graphrag
+    - neo4j-graphrag
+    - langgraph-python
+    requiredFeatures:
+    - graph_index
+    - provenance
+    - budget
+  - id: document-intelligence
+    description: Parsing, extraction, classification, review and RAG over complex documents.
+    recommendedTargets:
+    - llamaindex-python
+    - ragflow
+    - spring-ai-java
+    requiredFeatures:
+    - document_parsing
+    - ocr
+    - extraction
+    - human_review
+  - id: multi-agent-business-process
+    description: Stateful multi-agent workflow with approvals and external side effects.
+    recommendedTargets:
+    - langgraph-python
+    - google-adk-python
+    - microsoft-agent-framework-dotnet
+    requiredFeatures:
+    - state_machine
+    - durable_execution
+    - human_approval
+    - compensation
+  - id: coding-agent
+    description: Repository-aware coding agent or extension package.
+    recommendedTargets:
+    - pi
+    - deepseek-harness
+    - openharness
+    - opencode
+    - codex
+    - claude-code
+    requiredFeatures:
+    - repository_tools
+    - sandbox
+    - git_lineage
+    - verification
+  - id: coding-work-orchestrator
+    description: Concurrent isolated coding workspaces with work-item reconciliation.
+    recommendedTargets:
+    - symphony
+    - openhands
+    requiredFeatures:
+    - workspace_isolation
+    - lease_fencing
+    - proof_of_work
+  - id: personal-assistant
+    description: Single-operator or isolated-tenant assistant across messaging channels.
+    recommendedTargets:
+    - openclaw
+    requiredFeatures:
+    - gateway
+    - channels
+    - skills
+    - sandbox
+  - id: data-sql-agent
+    description: Governed structured data and SQL analysis agent.
+    recommendedTargets:
+    - langgraph-python
+    - spring-ai-java
+    - pydanticai-python
+    requiredFeatures:
+    - database_tools
+    - read_only_default
+    - result_validation
+  - id: realtime-voice-agent
+    description: Low-latency bidirectional voice or realtime agent.
+    recommendedTargets:
+    - openai-agents-python
+    - google-adk-python
+    requiredFeatures:
+    - realtime
+    - streaming
+    - interrupt
+    - latency_budget
+  - id: ai-native-web-app
+    description: Streaming AI application with generative UI and backend agent runtime.
+    recommendedTargets:
+    - vercel-ai-sdk
+    - langgraph-typescript
+    - openai-agents-typescript
+    requiredFeatures:
+    - typed_streaming
+    - ui_events
+    - tool_calls
+  - id: ai-workflow-automation
+    description: Visual or event-driven automation combining AI with business systems.
+    recommendedTargets:
+    - dify
+    - n8n-ai
+    - coze-studio
+    - langflow
+    requiredFeatures:
+    - visual_workflow
+    - connectors
+    - side_effect_reconciliation
+  - id: protocol-gateway
+    description: MCP/A2A/OpenAPI gateway for tools and agents.
+    recommendedTargets:
+    - mcp
+    - a2a
+    - openapi-tools
+    requiredFeatures:
+    - discovery
+    - identity
+    - schema_validation
+    - audit
+  - id: enterprise-agent-control-plane
+    description: Multi-tenant governance, execution, observability and certification plane.
+    recommendedTargets:
+    - universal-rag
+    - opentelemetry
+    - litellm
+    requiredFeatures:
+    - multi_tenant
+    - durable_execution
+    - finops
+    - certification

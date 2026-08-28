@@ -1,0 +1,42 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: mimir
+  ecosystem: Grafana Mimir
+  version: 4.0.0
+spec:
+  adapterKind: metrics-store
+  maturity: P1
+  modes:
+  - ingest
+  - query
+  - tenant-isolation
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - mimir exact-version profile
+  - mimir capability and semantic-gap map
+  - mimir native conformance evidence
+  - mimir deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

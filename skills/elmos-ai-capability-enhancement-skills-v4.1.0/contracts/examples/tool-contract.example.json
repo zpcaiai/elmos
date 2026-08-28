@@ -1,0 +1,23 @@
+{
+  "tools": [
+    {
+      "id": "contract-search",
+      "protocol": "mcp",
+      "inputSchema": {
+        "type": "object"
+      },
+      "outputSchema": {
+        "type": "array"
+      },
+      "effect": "read",
+      "authority": {
+        "scope": [
+          "knowledge:contracts"
+        ],
+        "approval": "policy"
+      },
+      "idempotencyRequired": false
+    }
+  ],
+  "defaultPolicy": "deny"
+}

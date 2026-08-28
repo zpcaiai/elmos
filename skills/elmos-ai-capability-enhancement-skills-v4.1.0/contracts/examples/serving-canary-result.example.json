@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "serving-canary-result-example",
+  "status": "READY",
+  "content_hash": "d65fee04205560a19e3c83c13295586eab9eb7a857f29e2e1b063fd21e790467",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

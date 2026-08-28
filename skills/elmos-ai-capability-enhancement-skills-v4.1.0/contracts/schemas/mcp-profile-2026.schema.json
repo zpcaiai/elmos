@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MCPProfile2026",
+  "type": "object",
+  "required": [
+    "protocolVersion",
+    "coreMode",
+    "transport",
+    "extensions"
+  ],
+  "properties": {
+    "protocolVersion": {
+      "const": "2026-07-28"
+    },
+    "coreMode": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "stateless",
+        "stateful-bounded"
+      ]
+    },
+    "transport": {
+      "type": "string",
+      "minLength": 1
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "enum": [
+          "required",
+          "optional",
+          "unsupported"
+        ]
+      }
+    },
+    "authorization": {
+      "type": "string",
+      "minLength": 1
+    },
+    "deprecations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false
+}

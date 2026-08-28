@@ -1,0 +1,11 @@
+{
+  "policy": "dual_execution_oracle",
+  "positive": {
+    "source_native_executed": true,
+    "target_native_executed": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

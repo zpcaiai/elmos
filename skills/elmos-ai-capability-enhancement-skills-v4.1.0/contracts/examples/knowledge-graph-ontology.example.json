@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "knowledge-graph-ontology-example",
+  "status": "READY",
+  "content_hash": "18dcf966b962f9bae5a4ddefb9cfcfead3f7a7a0f355debb3c71c977b8b77014",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "nodes": [
+    {
+      "id": "N1"
+    }
+  ],
+  "edges": [],
+  "semantic_gaps": []
+}

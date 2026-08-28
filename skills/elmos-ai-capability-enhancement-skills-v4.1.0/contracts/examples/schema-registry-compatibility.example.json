@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "schema-registry-compatibility-example",
+  "status": "READY",
+  "content_hash": "8547f36ccd523d39721ac0661ab1155ba1dff58b67c43600e35d242c461ecab9",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "nodes": [
+    {
+      "id": "N1"
+    }
+  ],
+  "edges": [],
+  "semantic_gaps": []
+}

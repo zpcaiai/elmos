@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RuntimeOperations",
+  "type": "object",
+  "required": [
+    "durability",
+    "workers",
+    "observability",
+    "finops"
+  ],
+  "properties": {
+    "durability": {
+      "type": "object",
+      "required": [
+        "eventSourced",
+        "checkpoints",
+        "pauseResumeCancel"
+      ],
+      "properties": {
+        "eventSourced": {
+          "type": "boolean"
+        },
+        "checkpoints": {
+          "type": "boolean"
+        },
+        "pauseResumeCancel": {
+          "type": "boolean"
+        },
+        "timeTravel": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "workers": {
+      "type": "object",
+      "required": [
+        "lease",
+        "fencing",
+        "idempotency"
+      ],
+      "properties": {
+        "lease": {
+          "type": "boolean"
+        },
+        "fencing": {
+          "type": "boolean"
+        },
+        "idempotency": {
+          "type": "boolean"
+        },
+        "maxConcurrencyPerAccount": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "observability": {
+      "type": "object",
+      "required": [
+        "otel",
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "properties": {
+        "otel": {
+          "type": "boolean"
+        },
+        "logs": {
+          "type": "boolean"
+        },
+        "metrics": {
+          "type": "boolean"
+        },
+        "traces": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "finops": {
+      "type": "object",
+      "required": [
+        "token",
+        "compute",
+        "storage",
+        "machineEta"
+      ],
+      "properties": {
+        "token": {
+          "type": "boolean"
+        },
+        "compute": {
+          "type": "boolean"
+        },
+        "storage": {
+          "type": "boolean"
+        },
+        "machineEta": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,18 @@
+BEGIN;
+CREATE TABLE IF NOT EXISTS ai_eval_dataset (tenant_id uuid NOT NULL, dataset_id text NOT NULL, version text NOT NULL, manifest jsonb NOT NULL, lineage_hash text NOT NULL, status text NOT NULL CHECK (status IN ('DRAFT','FROZEN','EXPIRED','REVOKED')), PRIMARY KEY (tenant_id, dataset_id, version));
+CREATE TABLE IF NOT EXISTS ai_judge_calibration (tenant_id uuid NOT NULL, judge_id text NOT NULL, fingerprint text NOT NULL, dataset_id text NOT NULL, metrics jsonb NOT NULL, status text NOT NULL CHECK (status IN ('CALIBRATED','BOUNDED','BLOCKED','EXPIRED')), created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (tenant_id, judge_id, fingerprint, dataset_id));
+CREATE TABLE IF NOT EXISTS ai_provider_fingerprint (tenant_id uuid NOT NULL, provider text NOT NULL, region text NOT NULL, requested_model text NOT NULL, captured_at timestamptz NOT NULL, fingerprint jsonb NOT NULL, digest text NOT NULL, PRIMARY KEY (tenant_id, provider, region, requested_model, captured_at));
+CREATE TABLE IF NOT EXISTS ai_shadow_run (tenant_id uuid NOT NULL, shadow_run_id uuid PRIMARY KEY DEFAULT gen_random_uuid(), candidate_revision_set_id uuid NOT NULL REFERENCES ai_solution_revision(id), policy jsonb NOT NULL, status text NOT NULL CHECK (status IN ('QUEUED','RUNNING','BLOCKED','PASSED','FAILED','ROLLED_BACK')), decision jsonb, created_at timestamptz NOT NULL DEFAULT now());
+ALTER TABLE ai_eval_dataset ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_ai_eval_dataset ON ai_eval_dataset;
+CREATE POLICY tenant_isolation_ai_eval_dataset ON ai_eval_dataset USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+ALTER TABLE ai_judge_calibration ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_ai_judge_calibration ON ai_judge_calibration;
+CREATE POLICY tenant_isolation_ai_judge_calibration ON ai_judge_calibration USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+ALTER TABLE ai_provider_fingerprint ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_ai_provider_fingerprint ON ai_provider_fingerprint;
+CREATE POLICY tenant_isolation_ai_provider_fingerprint ON ai_provider_fingerprint USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+ALTER TABLE ai_shadow_run ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_ai_shadow_run ON ai_shadow_run;
+CREATE POLICY tenant_isolation_ai_shadow_run ON ai_shadow_run USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+COMMIT;

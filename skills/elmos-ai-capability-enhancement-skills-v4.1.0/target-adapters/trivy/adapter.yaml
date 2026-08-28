@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: trivy
+  ecosystem: Trivy
+  version: 4.0.0
+spec:
+  adapterKind: security-scanner
+  maturity: P1
+  modes:
+  - filesystem
+  - image
+  - sbom
+  - misconfiguration
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - trivy exact-version profile
+  - trivy capability and semantic-gap map
+  - trivy native conformance evidence
+  - trivy deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

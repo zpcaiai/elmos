@@ -1,0 +1,128 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableCertificationWorkflow
+metadata:
+  name: continuous-control-monitoring
+  version: 4.0.0
+spec:
+  routeOwner: domain-pack.project-generation
+  routable: false
+  skill: elmos-continuous-control-monitoring-engine
+  stateStore: PostgreSQL 17 append-only journal plus WORM evidence
+  execution:
+    pauseResumeCancel: true
+    leaseFencing: true
+    sideEffectReconciliation: true
+    machineWallClockEta: true
+  stages:
+  - id: S01
+    name: compile-control-queries
+    dependsOn: []
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S02
+    name: collect-current-evidence
+    dependsOn:
+    - S01
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S03
+    name: evaluate-operating-effectiveness
+    dependsOn:
+    - S02
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S04
+    name: map-certificate-impact
+    dependsOn:
+    - S03
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S05
+    name: restrict-or-remediate
+    dependsOn:
+    - S04
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S06
+    name: human-review
+    dependsOn:
+    - S05
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S07
+    name: recertify
+    dependsOn:
+    - S06
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S08
+    name: audit-export
+    dependsOn:
+    - S07
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  terminalRule: COMPLETED only after independent K8 decision; otherwise typed BLOCKED/FAILED/CANCELLED

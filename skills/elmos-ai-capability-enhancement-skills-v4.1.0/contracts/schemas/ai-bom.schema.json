@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AIBOM",
+  "type": "object",
+  "required": [
+    "bomId",
+    "revisionSetId",
+    "models",
+    "datasets",
+    "prompts",
+    "skills",
+    "tools",
+    "adapters",
+    "provenanceStatus"
+  ],
+  "properties": {
+    "bomId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revisionSetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "datasets": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "prompts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "adapters": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "provenanceStatus": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "complete",
+        "bounded",
+        "blocked"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

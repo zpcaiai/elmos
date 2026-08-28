@@ -1,0 +1,3 @@
+scenario: barge-in
+maxStopLatencyMs: 250
+sideEffects: none

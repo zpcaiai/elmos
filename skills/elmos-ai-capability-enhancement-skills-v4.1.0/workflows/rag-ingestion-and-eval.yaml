@@ -1,0 +1,124 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableWorkflow
+metadata:
+  name: rag-ingestion-and-eval
+  title: RAG ingestion and evaluation
+spec:
+  routeOwner: domain-pack.project-generation
+  revisionBound: true
+  nodes:
+  - id: inventory-data
+    sequence: 0
+    owner: K2
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+  - id: parse-and-normalize
+    sequence: 1
+    owner: K3
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - inventory-data
+  - id: apply-acl
+    sequence: 2
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - parse-and-normalize
+  - id: chunk-and-index
+    sequence: 3
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - apply-acl
+  - id: incremental-sync
+    sequence: 4
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - chunk-and-index
+  - id: retrieval-eval
+    sequence: 5
+    owner: K6
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - incremental-sync
+  - id: grounding-eval
+    sequence: 6
+    owner: K6
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - retrieval-eval
+  - id: delete-propagation-test
+    sequence: 7
+    owner: K6
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - grounding-eval
+  - id: performance-test
+    sequence: 8
+    owner: K6
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - delete-propagation-test
+  - id: certify
+    sequence: 9
+    owner: K8
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - performance-test
+  terminalStates:
+  - COMPLETED
+  - BLOCKED
+  - FAILED
+  - CANCELLED
+  authority: Environment-owned; every write checks tenant, epoch, lease generation and fencing
+  evidence: each node emits immutable evidence or explicit NOT_EXECUTED reason

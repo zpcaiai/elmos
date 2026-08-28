@@ -1,0 +1,1429 @@
+apiVersion: elmos.ai/v3alpha1
+kind: SplitSkillClassification
+metadata:
+  sourcePackage: elmos-ai-native-project-factory-total-skills-v4.0.0
+  version: 4.1.0
+spec:
+  skills:
+  - skill: elmos-a2a-v1-agent-card-trust-compiler
+    group: identity-discovery
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-accessibility-conformance-certifier
+    group: product-quality
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-accreditation-evidence-readiness-exporter
+    group: certification-accreditation
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-accreditation-scope-competence-matrix-compiler
+    group: certification-accreditation
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-accredited-once-accepted-everywhere-evidence-packager
+    group: certificate-recognition
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-admin-operator-portal-generator
+    group: product-operator-portal
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-adversarial-model-tool-memory-redteam-orchestrator
+    group: security-redteam
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-agent-approval-workflow-ux-generator
+    group: interaction-approval-ux
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-agent-arena-route-model-evaluator
+    group: learning-arena
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-agent-client-protocol-acp-adapter-generator
+    group: protocol-acp
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-agent-human-ux-safety-verifier
+    group: interaction-ui
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-agent-memory-consolidation-forgetting-controller
+    group: knowledge-memory-lifecycle
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-agent-protocol-version-negotiation-governor
+    group: protocol-versioning
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-agent-registry-resource-discovery-governor
+    group: identity-discovery
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-agent-skill-ir-compiler
+    group: skill-plugin-compiler
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-agent-skill-mcp-supply-chain-certifier
+    group: security-supply-chain
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-agent-skill-portability-emitter
+    group: skill-plugin-compiler
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-agent-skill-trigger-evaluator
+    group: evaluation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-agent-workload-delegated-identity-controller
+    group: identity-authorization
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-adversarial-robustness-evasion-poisoning-certifier
+    group: ai-adversarial-robustness
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-agent-contract-compiler
+    group: semantic-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-artifact-provenance-packager
+    group: evidence
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-assurance-contract-compiler
+    group: semantic-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-benchmark-grade-assurance-calibrator
+    group: ai-benchmarking
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-bom-provenance-generator
+    group: security-supply-chain
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-cache-semantic-consistency-verifier
+    group: runtime-safety
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-capability-negotiator
+    group: planning
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-compatibility-drift-monitor
+    group: lifecycle
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-compliance-profile-compiler
+    group: governance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-config-secret-materializer
+    group: transformation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-conformal-coverage-certifier
+    group: ai-uncertainty
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-content-provenance-labeling-controller
+    group: governance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-context-memory-governor
+    group: runtime-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-controllability-override-fail-safe-certifier
+    group: ai-control
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-cost-pricing-sla-contract-compiler
+    group: finops
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-counterfactual-fairness-causal-stability-verifier
+    group: ai-fairness
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-cross-framework-differential-validator
+    group: assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-data-contract-quality-governor
+    group: data-governance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-dependency-version-resolver
+    group: transformation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-deployment-pack-generator
+    group: runtime-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-distribution-shift-ood-robustness-certifier
+    group: ai-robustness
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-durable-runtime-integrator
+    group: runtime-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-e0-e5-certifier
+    group: certification
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-eval-dataset-governor
+    group: evaluation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-evaluation-measurement-model-compiler
+    group: lab-metrology
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-evaluation-power-sample-size-planner
+    group: ai-statistics
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-explainability-fidelity-stability-certifier
+    group: ai-explainability
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-fairness-bias-intersectional-certifier
+    group: ai-fairness
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-generated-project-conformance-validator
+    group: assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-generated-project-upgrader
+    group: lifecycle
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-golden-route-autogen-sk-to-agent-framework
+    group: golden-route
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-golden-route-business-requirement-multitarget
+    group: golden-route
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-golden-route-continuous-agent-certification
+    group: golden-route
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-golden-route-dify-to-production-code
+    group: golden-route
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-golden-route-langchain-to-langgraph
+    group: golden-route
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-golden-route-managed-runtime
+    group: golden-route
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-golden-route-mcp-2026-modernization
+    group: golden-route
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-golden-route-portable-skill
+    group: golden-route
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-golden-route-repository-to-coding-harness
+    group: golden-route
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-golden-route-trusted-cross-org-agent
+    group: golden-route
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-graph-liveness-side-effect-verifier
+    group: assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-human-factors-automation-bias-overreliance-verifier
+    group: ai-human-factors
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-impact-harm-benefit-distribution-assessor
+    group: ai-impact
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-incident-kill-switch-controller
+    group: incident-response
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-incident-regulatory-reporting-controller
+    group: governance-incident-reporting
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-interaction-channel-compiler
+    group: semantic-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-judge-calibration-stochastic-assurance
+    group: evaluation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-mcp-a2a-gateway-generator
+    group: runtime-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-memory-semantic-compiler
+    group: semantic-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-model-contract-compiler
+    group: semantic-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-model-provider-availability-resilience-controller
+    group: runtime-safety
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-model-routing-fallback-generator
+    group: runtime-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-multi-target-lowering-planner
+    group: transformation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-multiple-comparison-sequential-test-controller
+    group: ai-statistics
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-multitenant-control-plane-generator
+    group: runtime-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-normalized-agent-trace-recorder
+    group: assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-observability-finops-generator
+    group: runtime-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-online-shadow-eval-controller
+    group: evaluation-drift
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-operator-console-generator
+    group: runtime-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-policy-as-code-compiler
+    group: governance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-project-factory-orchestrator
+    group: control
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-project-repository-emitter
+    group: transformation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-prompt-tool-security-redteam
+    group: assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-provider-behavior-fingerprint-recertifier
+    group: evaluation-drift
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-provider-data-residency-controller
+    group: runtime-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-quality-characteristic-measurement-compiler
+    group: ai-quality-measurement
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-quality-model-evaluation-compiler
+    group: quality-certification
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-rag-retrieval-grounding-certifier
+    group: assurance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-rag-semantic-compiler
+    group: semantic-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-rare-event-tail-risk-estimator
+    group: ai-risk-measurement
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-regulated-decision-explainability-packager
+    group: governance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-requirement-contract-compiler
+    group: specification
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-retention-erasure-verifier
+    group: data-governance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-revision-set-freezer
+    group: control
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-roundtrip-migration-controller
+    group: lifecycle
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-runaway-loop-economic-dos-guard
+    group: runtime-safety
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-runtime-operations-compiler
+    group: semantic-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-secret-credential-lifecycle-controller
+    group: identity-authorization
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-security-governance-compiler
+    group: semantic-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-sir-compiler
+    group: semantic-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-sociotechnical-context-validity-certifier
+    group: ai-context-validity
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-solution-archetype-selector
+    group: planning
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-source-project-importer
+    group: import
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-supply-chain-performance-resilience-certifier
+    group: assurance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-synthetic-test-simulation-generator
+    group: evaluation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-system-impact-assessment-compiler
+    group: governance-impact
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-system-model-card-generator
+    group: governance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-target-adapter-sdk
+    group: adapter-sdk
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-target-portfolio-planner
+    group: planning
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-tenant-memory-isolation-verifier
+    group: security-rag-memory
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-test-laboratory-competence-governor
+    group: lab-competence
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-tevv-athlon-scenario-orchestrator
+    group: ai-tevv
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-tevv-program-architecture-compiler
+    group: ai-tevv
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-tool-authority-policy-generator
+    group: runtime-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-tool-contract-compatibility-verifier
+    group: compatibility
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-tool-protocol-compiler
+    group: semantic-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-uncertainty-calibration-selective-prediction-verifier
+    group: ai-uncertainty
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ai-unsupported-feature-ledger
+    group: governance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ai-workflow-state-machine-compiler
+    group: semantic-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-api-authz-rbac-abac-rebac-equivalence-verifier
+    group: security-authorization
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-api-consumer-driven-contract-verifier
+    group: qa-contract
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-api-event-contract-ir-compiler
+    group: event-contract-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-api-first-contract-generation-controller
+    group: architecture-api-first
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-api-sdk-codegen-conformance-certifier
+    group: protocol-sdk-codegen
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-architecture-decision-record-governor
+    group: architecture-decisions
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-assurance-case-confidence-quantifier
+    group: formal-assurance-case
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-asyncapi-cloudevents-generator
+    group: event-contract-generation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-audit-duration-sampling-risk-planner
+    group: certification-audit
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-audit-evidence-sufficiency-appropriateness-verifier
+    group: certification-audit
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-auditor-evaluator-competence-authorization-controller
+    group: certification-competence
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-authoritative-oracle-registry
+    group: qa-assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-automotive-cybersecurity-update-assurance-profile
+    group: sector-automotive
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-automotive-functional-safety-sotif-profile
+    group: sector-automotive
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-autonomous-system-safety-case-profile
+    group: sector-autonomy
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-aviation-software-tool-formal-assurance-profile
+    group: sector-aviation
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-backward-compatible-regeneration-merge-controller
+    group: architecture-regeneration
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-benchmark-contamination-leakage-detector
+    group: qa-benchmark-integrity
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-benchmark-integrity-large-repository-certifier
+    group: benchmark-certification
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-billing-quota-entitlement-generator
+    group: architecture-commercial
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-browser-computer-use-safety-certifier
+    group: model-computer-use
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-budget-aware-quality-slo-optimizer
+    group: finops-optimization
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-capacity-autoscaling-backpressure-planner
+    group: platform-capacity
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-capacity-soak-efficiency-certifier
+    group: operations-performance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-carbon-energy-efficiency-profiler
+    group: platform-sustainability
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-cdc-exactly-once-ordering-verifier
+    group: data-cdc-assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-certificate-cross-border-jurisdiction-acceptance-planner
+    group: certificate-recognition
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certificate-deployment-admission-controller
+    group: certification-deployment-admission
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certificate-drift-revocation-controller
+    group: certification-lifecycle
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certificate-maintenance-scope-change-controller
+    group: certification-lifecycle
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certificate-portability-transfer-controller
+    group: certificate-interoperability
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certificate-public-directory-transparency-controller
+    group: certificate-transparency
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certificate-relying-party-policy-compiler
+    group: certificate-reliance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certificate-status-list-revocation-service
+    group: certificate-interoperability
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certificate-trust-registry-federation-controller
+    group: certificate-interoperability
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-audit-program-governor
+    group: certification-audit
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-body-financial-liability-risk-governor
+    group: certification-management-system
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-confidentiality-information-security-governor
+    group: certification-confidentiality
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-decision-independent-review-controller
+    group: certification-decision
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-ethics-whistleblower-protection-governor
+    group: certification-ethics
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-function-separation-controller
+    group: certification-impartiality
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-key-ceremony-hsm-controller
+    group: certification-key-management
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-mark-claim-usage-governor
+    group: certification-mark
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-policy-practice-authority
+    group: certification-governance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-scheme-ownership-governor
+    group: certification-scheme
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-scheme-surveillance-planner
+    group: certification-surveillance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-scope-compiler
+    group: certification-authority
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-transfer-suspension-withdrawal-controller
+    group: certification-lifecycle
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certification-transparency-log-notary
+    group: certification-transparency
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-certified-compiler-translation-validation-controller
+    group: formal-translation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-certifier-independence-competence-governor
+    group: certification-governance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-chaos-experiment-safety-governor
+    group: qa-chaos-governance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-chaos-recovery-verification-controller
+    group: qa-resilience
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-chatgpt-apps-sdk-project-generator
+    group: protocol-openai-apps
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-clean-room-reproducible-builder
+    group: certification-lab
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-code-generation-source-map-roundtrip-verifier
+    group: polyglot-lineage
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-common-criteria-evaluation-assurance-level-planner
+    group: security-common-criteria
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-common-criteria-protection-profile-mapper
+    group: security-common-criteria
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-common-criteria-security-target-compiler
+    group: security-common-criteria
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-common-criteria-vulnerability-analysis-controller
+    group: security-common-criteria
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-compiler-codemod-rule-corpus-governor
+    group: polyglot-rules
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-compiler-frontend-conformance-certifier
+    group: polyglot-frontend
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-complaint-appeal-dispute-resolution-governor
+    group: certification-appeals
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-confidential-ai-inference-receipt-certifier
+    group: security-confidential-ai
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-confidential-computing-attestation-controller
+    group: security-confidential
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-conformity-assessment-impartiality-risk-governor
+    group: certification-impartiality
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-conformity-assessment-scheme-architecture-compiler
+    group: certification-scheme
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-conformity-decision-guard-band-controller
+    group: lab-decision-rule
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-content-safety-policy-classifier-orchestrator
+    group: governance-content-safety
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-continuous-control-monitoring-engine
+    group: governance-continuous-control
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-contract-integration-e2e-controller
+    group: qa-execution
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-contract-smt-symbolic-execution-verifier
+    group: formal-symbolic
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-cost-allocation-chargeback-showback-controller
+    group: platform-finops
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-counterexample-regression-promoter
+    group: qa-learning
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-counterexample-to-rule-skill-promotion-controller
+    group: learning-promotion
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-coverage-semantic-obligation-mapper
+    group: qa-coverage
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-critical-infrastructure-ai-resilience-profile
+    group: sector-critical-infrastructure
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-cross-language-concurrency-memory-model-verifier
+    group: polyglot-concurrency
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-cross-language-database-differential-runner
+    group: qa-differential
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-cross-language-numeric-time-unicode-conformance-suite
+    group: polyglot-value-semantics
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-cross-language-serialization-wire-compatibility-verifier
+    group: polyglot-wire
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-cross-scheme-claim-mapping-equivalence-verifier
+    group: certificate-interoperability
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-cross-store-polyglot-persistence-route-planner
+    group: data-route-planning
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-cryptographic-algorithm-test-vector-certifier
+    group: security-crypto
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-cryptographic-module-validation-readiness-governor
+    group: security-crypto
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-customer-holdout-acceptance-controller
+    group: certification-acceptance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-customer-vpc-runner-attestation-certifier
+    group: enterprise-edge-certification
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-data-lineage-impact-governor
+    group: data-lineage
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-data-quality-contract-anomaly-verifier
+    group: data-quality
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-data-retention-archive-tiering-controller
+    group: data-lifecycle
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-data-snapshot-cdc-controller
+    group: database-data-migration
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-data-sovereignty-residency-route-controller
+    group: governance-data-residency
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-database-backup-pitr-failover-certifier
+    group: data-resilience
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-database-cutover-rollback-certifier
+    group: database-certification
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-database-dialect-profile-registry
+    group: database-profile
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-database-extension-compatibility-governor
+    group: data-extension
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-database-performance-plan-certifier
+    group: database-performance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-database-schema-migration-planner
+    group: database-migration
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-database-security-authorization-equivalence-verifier
+    group: data-security-equivalence
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-dependency-malware-provenance-quarantine-controller
+    group: security-supply-chain
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-dependency-update-renovation-controller
+    group: platform-dependency-lifecycle
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-deterministic-record-replay-model-tool-harness
+    group: qa-record-replay
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-devcontainer-nix-hermetic-environment-generator
+    group: platform-dev-environment
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-digital-metrology-measurand-definition-compiler
+    group: lab-metrology
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-disaster-recovery-business-continuity-certifier
+    group: operations-resilience
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-distributed-consistency-invariant-verifier
+    group: event-consistency
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-distributed-invariant-tla-alloy-verifier
+    group: formal-distributed
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-distributed-sql-sharding-placement-compiler
+    group: data-distributed-sql
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-document-record-control-certification-governor
+    group: certification-management-system
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-domain-driven-architecture-synthesizer
+    group: architecture-domain
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-dual-write-outbox-saga-consistency-verifier
+    group: data-distributed-consistency
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-embedding-reranker-model-lifecycle-governor
+    group: model-retrieval-lifecycle
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-enterprise-assurance-dossier-generator
+    group: commercial-assurance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-enterprise-identity-sso-scim-generator
+    group: architecture-enterprise-identity
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-environment-parity-config-drift-certifier
+    group: operations-certification
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-eu-ai-act-post-market-monitoring-controller
+    group: governance-post-market
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-eval-observability-platform-integrator
+    group: observability
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-event-replay-idempotency-certifier
+    group: event-replay
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-event-stream-storage-ir-compiler
+    group: data-stream-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-evidence-trusted-timestamp-authority-controller
+    group: security-time
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-evidence-worm-merkle-sealer
+    group: certification-evidence
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-explainability-decision-recourse-generator
+    group: interaction-explainability
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-external-audit-oscal-evidence-exporter
+    group: certification-audit
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-fault-localization-root-cause-synthesizer
+    group: qa-diagnostics
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-federated-retrieval-data-source-router
+    group: knowledge-federated-retrieval
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-ffi-abi-native-boundary-certifier
+    group: polyglot-native-boundary
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-financial-model-risk-validation-profile
+    group: sector-finance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-fine-tuning-adapter-training-pipeline-generator
+    group: model-training
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-flake-quarantine-governor
+    group: qa-quality
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-formal-counterexample-to-regression-compiler
+    group: formal-counterexample
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-formal-method-selection-router
+    group: formal-routing
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-formal-model-runtime-refinement-verifier
+    group: formal-refinement
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-formal-proof-maintenance-drift-recertifier
+    group: formal-maintenance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-framework-runtime-bridge-compiler
+    group: polyglot-framework
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-genai-telemetry-profile-compiler
+    group: observability
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-generated-api-event-schema-evolution-controller
+    group: polyglot-contract-evolution
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-generated-code-secure-defaults-verifier
+    group: security-generated-code
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-generated-project-documentation-diagram-runbook-generator
+    group: architecture-documentation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-generated-project-telemetry-learning-governor
+    group: learning-telemetry
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-generated-repository-maintainability-evolution-certifier
+    group: product-quality
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-gitops-argocd-flux-release-controller
+    group: platform-gitops
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-global-recognition-scope-resolver
+    group: certification-recognition
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-gpu-accelerator-capacity-scheduler
+    group: model-capacity
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-graph-database-semantic-ir-compiler
+    group: data-graph-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-graphrag-pipeline-certifier
+    group: knowledge-graphrag
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-hardware-root-of-trust-measured-boot-verifier
+    group: security-attestation
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-hermetic-build-environment-attestation-controller
+    group: supply-chain-attestation
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-hermetic-remote-build-cache-governor
+    group: platform-build-cache
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-human-factors-cognitive-load-evaluator
+    group: interaction-human-factors
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-human-oversight-consent-contract-compiler
+    group: governance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-hybrid-signature-certificate-transition-governor
+    group: security-pqc
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-i18n-l10n-conformance-verifier
+    group: product-quality
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-incident-command-runbook-automation-generator
+    group: platform-incident
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-incident-postmortem-recertification-controller
+    group: incident-certification
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-independent-k8-certificate-signer
+    group: certification-authority
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-industrial-control-security-safety-coassurance-profile
+    group: sector-industrial
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-inference-cache-prefix-kv-consistency-controller
+    group: model-cache
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-inference-engine-deployment-generator
+    group: model-serving-generation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-inspection-validation-verification-mode-selector
+    group: certification-method
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-interlaboratory-comparison-controller
+    group: lab-intercomparison
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-internal-audit-management-review-compiler
+    group: certification-management-system
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-knowledge-graph-ontology-ir-compiler
+    group: knowledge-graph
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-knowledge-source-trust-scoring-governor
+    group: knowledge-trust
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-kubernetes-ai-workload-operator-generator
+    group: platform-kubernetes-operator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-lab-environment-validity-monitor
+    group: lab-environment
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-lab-reproducibility-repeatability-certifier
+    group: lab-validity
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-lakehouse-table-format-ir-compiler
+    group: data-lakehouse-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-language-runtime-performance-portability-profiler
+    group: polyglot-performance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-language-semantic-profile-compiler
+    group: polyglot-semantic-profile
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-localization-cultural-policy-adapter
+    group: product-localization
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-machine-checkable-proof-replay-controller
+    group: formal-proof-replay
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-machine-verifiable-certificate-profile-compiler
+    group: certificate-interoperability
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-managed-agent-cloud-deployment-generator
+    group: deployment
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-mcp-2026-profile-compiler
+    group: protocol
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-mcp-a2a-acp-bridge-conformance-verifier
+    group: protocol-bridge
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-mcp-apps-a2ui-generator
+    group: interaction-ui
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-mcp-enterprise-authorization-controller
+    group: identity-authorization
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-mcp-tasks-durable-bridge
+    group: protocol-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-measurement-uncertainty-budget-engine
+    group: lab-uncertainty
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-medical-device-ai-software-lifecycle-risk-profile
+    group: sector-medical
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-message-ordering-delivery-semantics-verifier
+    group: event-assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-method-sensitivity-specificity-detection-limit-certifier
+    group: lab-method-performance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-mobile-desktop-cross-platform-test-controller
+    group: qa-client-platform
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-model-checking-state-space-coverage-certifier
+    group: formal-model-checking
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-model-fallback-semantic-degradation-verifier
+    group: model-fallback-assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-model-license-usage-restriction-governor
+    group: model-license
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-model-provider-credit-quota-availability-controller
+    group: finops-provider-capacity
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-model-provider-procurement-contract-evaluator
+    group: governance-procurement
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-model-quantization-hardware-compatibility-certifier
+    group: model-optimization
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-model-response-schema-evolution-controller
+    group: compatibility
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-model-routing-quality-cost-latency-optimizer
+    group: model-routing-optimization
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-model-serving-canary-shadow-rollback-controller
+    group: model-release
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-model-serving-runtime-profile-compiler
+    group: model-serving-profile
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-model-weight-artifact-provenance-certifier
+    group: model-artifact-provenance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-modular-monolith-microservice-boundary-analyzer
+    group: architecture-boundaries
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-monorepo-build-graph-sharding-optimizer
+    group: polyglot-scale
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-multi-agent-budget-scheduler
+    group: multi-agent
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-multi-agent-deadlock-consensus-verifier
+    group: multi-agent
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-multi-agent-topology-delegation-compiler
+    group: multi-agent
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-multi-region-active-active-failover-certifier
+    group: platform-multiregion
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-multi-tenant-saas-foundation-generator
+    group: architecture-saas
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-multi-verifier-attestation-consensus-governor
+    group: security-attestation
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-multimodal-document-intelligence-generator
+    group: rag-data-plane
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-mutual-recognition-arrangement-scope-resolver
+    group: certificate-recognition
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-native-conformance-lab-controller
+    group: certification-lab
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-network-egress-data-exfiltration-certifier
+    group: security-egress
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-nonconformity-corrective-action-capa-controller
+    group: certification-capa
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-nondeterministic-statistical-reliability-verifier
+    group: qa-statistical
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-nosql-document-keyvalue-ir-compiler
+    group: data-nosql-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-observability-cardinality-privacy-governor
+    group: platform-observability
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-on-device-edge-ai-project-generator
+    group: model-edge
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-online-schema-change-backfill-controller
+    group: data-online-migration
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-open-source-license-ip-compliance-certifier
+    group: supply-chain-compliance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-openai-plugin-project-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-openapi-arazzo-workflow-compiler
+    group: protocol-openapi-arazzo
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-openapi-graphql-grpc-protocol-gateway-generator
+    group: event-protocol-gateway
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-openfeature-progressive-delivery-safety-controller
+    group: platform-openfeature-delivery
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-operability-support-readiness-certifier
+    group: operations-readiness
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-orm-persistence-ir-compiler
+    group: database-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-outsourced-certification-activity-control-governor
+    group: certification-outsourcing
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-peer-assessment-witness-audit-controller
+    group: certification-peer-assessment
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-performance-statistical-gate
+    group: qa-performance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-platform-engineering-golden-path-generator
+    group: platform-golden-path
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-policy-decision-explainability-audit-verifier
+    group: security-policy-audit
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-polyglot-build-toolchain-orchestrator
+    group: polyglot-toolchain
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-polyglot-differential-runtime
+    group: polyglot-assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-polyglot-route-certifier
+    group: polyglot-certification
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-polyglot-route-matrix-governor
+    group: polyglot-route
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-polyglot-upgrade-controller
+    group: polyglot-lifecycle
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-post-market-surveillance-signal-detection-controller
+    group: certification-surveillance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-post-quantum-cryptographic-agility-controller
+    group: security-pqc
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-privacy-impact-consent-purpose-verifier
+    group: commercial-assurance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-probabilistic-reliability-statistical-model-checker
+    group: formal-probabilistic
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-product-analytics-telemetry-experiment-governor
+    group: product-analytics
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-production-change-control-recertification-gate
+    group: certification-change-control
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-production-deployment-certifier
+    group: certification-deployment
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-productivity-value-stream-scorecard
+    group: productivity-assurance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-proficiency-testing-scheme-generator
+    group: lab-proficiency
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-project-estimation-machine-eta-calibrator
+    group: finops-estimation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-prompt-program-ir-compiler
+    group: prompt-engineering
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-prompt-registry-experiment-controller
+    group: prompt-engineering
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-prompt-skill-adapter-canary-promotion-governor
+    group: learning-canary
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-proof-assistant-lean-dafny-bridge
+    group: formal-proof-assistant
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-proof-assumption-defeater-ledger
+    group: formal-assurance-case
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-proof-carrying-artifact-compiler
+    group: formal-proof-artifact
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-proof-checker-diversity-cross-validation-governor
+    group: formal-proof-diversity
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-proof-to-validation-dag-compiler
+    group: qa-orchestration
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-property-metamorphic-mutation-fuzz-controller
+    group: qa-deep-verification
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-protocol-conformance-fuzzing-controller
+    group: qa-protocol-fuzz
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-protocol-state-machine-model-checker
+    group: formal-protocol
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-public-sector-high-impact-ai-assurance-profile
+    group: sector-public
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-query-plan-regression-autotuning-governor
+    group: data-query-optimization
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-rag-acl-freshness-deletion-verifier
+    group: rag-data-plane
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-rag-citation-provenance-chain-verifier
+    group: knowledge-citation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-rag-corpus-connector-cdc-governor
+    group: rag-data-plane
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-rag-memory-poisoning-verifier
+    group: security-rag-memory
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-rag-query-planner-optimizer
+    group: rag-retrieval
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-railway-software-safety-case-profile
+    group: sector-rail
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-rats-eat-corim-attestation-appraisal-controller
+    group: security-attestation
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-realtime-voice-multimodal-agent-generator
+    group: model-realtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-reference-dataset-material-producer-governor
+    group: lab-reference-material
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-regulatory-obligation-effective-date-monitor
+    group: governance-regulatory-monitor
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-release-test-budget-risk-optimizer
+    group: qa-selection
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-retrieval-index-build-compaction-governor
+    group: knowledge-index-lifecycle
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-risk-acceptance-residual-risk-governor
+    group: certification-risk
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-root-cause-effectiveness-verification-governor
+    group: certification-capa
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-runtime-admission-attestation-controller
+    group: runtime-admission
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-runtime-policy-continuous-compliance-monitor
+    group: governance-continuous-compliance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-runtime-sandbox-ebpf-behavior-verifier
+    group: security-runtime
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-safety-integrity-level-assurance-profile-compiler
+    group: sector-safety
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-saga-workflow-compensation-compiler
+    group: event-saga
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-sampling-plan-representativeness-certifier
+    group: lab-sampling
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-schema-registry-compatibility-controller
+    group: event-schema-registry
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-scitt-evidence-transparency-receipt-publisher
+    group: assurance-scitt-transparency
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-search-engine-query-index-ir-compiler
+    group: data-search-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-secretless-broker-breakglass-controller
+    group: security-secrets
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-sector-profile-applicability-tailoring-governor
+    group: sector-governance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-security-control-coverage-defeater-analyzer
+    group: security-assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-security-evaluation-methodology-work-unit-compiler
+    group: security-evaluation
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-security-incident-psirt-disclosure-controller
+    group: commercial-assurance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-self-improvement-change-isolation-certifier
+    group: learning-safety
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-semantic-gap-obligation-generator
+    group: polyglot-assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-sensitive-data-masking-tokenization-certifier
+    group: data-privacy
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-service-virtualization-contract-simulator
+    group: event-service-virtualization
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-slo-error-budget-release-governor
+    group: operations-reliability
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-smt-solver-trust-but-verify-controller
+    group: formal-smt
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-software-update-trust-root-governor
+    group: supply-chain-update
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-source-target-debuggability-observability-verifier
+    group: polyglot-operability
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-sql-catalog-ir-compiler
+    group: database-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-sql-dialect-lowering-engine
+    group: database-transformation
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-sql-dual-execution-oracle
+    group: database-assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-sql-query-ir-compiler
+    group: database-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-sql-routine-trigger-ir-compiler
+    group: database-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-sql-semantic-gap-analyzer
+    group: database-assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-static-analysis-multilanguage-security-orchestrator
+    group: qa-static-analysis
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-stored-routine-service-extraction-compiler
+    group: data-routine-service-extraction
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-structured-assurance-case-compiler
+    group: certification-assurance-case
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-structured-output-contract-verifier
+    group: prompt-engineering
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-supportability-diagnostics-bundle-generator
+    group: platform-support
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-sustainable-ai-energy-carbon-efficiency-certifier
+    group: platform-sustainable-ai
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-symbolic-execution-path-soundness-governor
+    group: formal-symbolic
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-coding-agent-harness-family-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-crewai-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-deepseek-harness-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-dify-project-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-google-adk-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-haystack-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-langchain-project-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-langchain4j-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-langgraph-project-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-language-backend-emitter
+    group: polyglot-backend
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-lightweight-agent-sdk-family-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-llamaindex-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-mastra-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-microsoft-agent-framework-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-openai-agents-sdk-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-openclaw-assistant-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-openharness-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-pi-package-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-pydanticai-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-ragflow-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-spring-ai-project-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-symphony-workflow-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-universal-rag-project-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-vercel-ai-sdk-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-target-visual-agent-platform-family-generator
+    group: target-generator
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-tcb-attack-surface-closure-certifier
+    group: formal-tcb
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-template-marketplace-package-lifecycle-governor
+    group: architecture-marketplace
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-temporal-knowledge-memory-conflict-resolver
+    group: knowledge-temporal
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-tenant-cryptographic-key-isolation-controller
+    group: security-tenant-crypto
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-terraform-pulumi-crossplane-infra-generator
+    group: platform-iac
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-test-data-privacy-synthetic-generation-certifier
+    group: qa-test-data
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-test-environment-service-virtualization-controller
+    group: qa-environment
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-test-equipment-software-calibration-traceability-governor
+    group: lab-traceability
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-test-fixture-data-factory
+    group: qa-fixtures
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-test-matrix-covering-array-planner
+    group: qa-planning
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-test-method-validation-verification-controller
+    group: lab-method
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-third-party-mark-conformity-license-governor
+    group: certificate-mark
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-tool-discovery-description-quality-evaluator
+    group: protocol-tool-quality
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-transaction-locking-equivalence-verifier
+    group: database-assurance
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-trusted-computing-base-minimization-governor
+    group: formal-tcb
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-ui-visual-regression-journey-certifier
+    group: qa-ui
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-user-feedback-issue-to-eval-dataset-pipeline
+    group: learning-feedback
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-vector-database-index-ir-compiler
+    group: data-vector-ir
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-vector-store-migration-benchmark-controller
+    group: data-vector-migration
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-verifiable-credential-assurance-certificate-emitter
+    group: certificate-interoperability
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-verification-tool-validation-corpus-governor
+    group: formal-tool-qualification
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-verifier-tool-qualification-classifier
+    group: formal-tool-qualification
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-vulnerability-vex-kev-response-governor
+    group: supply-chain-vulnerability
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-waiver-expiry-governor
+    group: certification-governance
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-warehouse-lakehouse-migration-certifier
+    group: data-warehouse-certification
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-wasi-sandbox-capability-certifier
+    group: security-wasi-sandbox
+    assignedPackage: elmos-functional-assurance-certification-skills
+  - skill: elmos-wasm-component-wit-portability-compiler
+    group: polyglot-wasm-component
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-webhook-delivery-security-reliability-controller
+    group: event-webhook
+    assignedPackage: elmos-ai-capability-enhancement-skills
+  - skill: elmos-zero-trust-service-identity-policy-compiler
+    group: security-zero-trust
+    assignedPackage: elmos-ai-capability-enhancement-skills

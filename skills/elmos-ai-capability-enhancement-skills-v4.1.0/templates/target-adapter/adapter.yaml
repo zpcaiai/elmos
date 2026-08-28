@@ -1,0 +1,19 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: replace-me
+  ecosystem: replace-me
+  version: 0.1.0
+spec:
+  adapterKind: replace-me
+  maturity: experimental
+  languages: []
+  modes: [detect, profile, import, lower, emit, native_validate, upgrade, evidence]
+  versionPolicy:
+    discovery: official release metadata or exact customer lockfile
+    pin: exact version and artifact digest required at release
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    failureMode: fail-closed

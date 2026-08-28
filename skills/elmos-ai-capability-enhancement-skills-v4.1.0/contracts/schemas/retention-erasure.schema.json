@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RetentionErasure",
+  "type": "object",
+  "required": [
+    "requestId",
+    "subjectId",
+    "dataClasses",
+    "lineageNodes",
+    "deletedNodes",
+    "heldNodes",
+    "status"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subjectId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dataClasses": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "lineageNodes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "deletedNodes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "heldNodes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "backupExpiry": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "pending",
+        "complete",
+        "bounded",
+        "blocked"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

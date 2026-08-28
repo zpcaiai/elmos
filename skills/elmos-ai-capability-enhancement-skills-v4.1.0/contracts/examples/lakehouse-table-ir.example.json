@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "lakehouse-table-ir-example",
+  "status": "READY",
+  "content_hash": "d962dff516722f4a475e345df9a9a1aa8e7f1f1dc5326ba4be8f95de6d39a70f",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "nodes": [
+    {
+      "id": "N1"
+    }
+  ],
+  "edges": [],
+  "semantic_gaps": []
+}

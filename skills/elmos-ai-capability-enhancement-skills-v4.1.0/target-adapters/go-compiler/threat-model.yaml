@@ -1,0 +1,27 @@
+apiVersion: elmos.ai/v3alpha1
+kind: AdapterThreatModel
+metadata:
+  adapter: go-compiler
+  version: 4.0.0
+spec:
+  trustBoundaries:
+  - Elmos core to adapter
+  - adapter to upstream runtime
+  - adapter to generated repository
+  - adapter to network/secrets
+  threats:
+  - id: AT-01
+    threat: capability overclaim
+    control: exact profile plus native conformance
+  - id: AT-02
+    threat: untrusted adapter code
+    control: sandbox, signature and least privilege
+  - id: AT-03
+    threat: version drift
+    control: pin and evidence invalidation
+  - id: AT-04
+    threat: silent semantic loss
+    control: gap ledger and differential tests
+  - id: AT-05
+    threat: supply-chain substitution
+    control: digest/signature/provenance

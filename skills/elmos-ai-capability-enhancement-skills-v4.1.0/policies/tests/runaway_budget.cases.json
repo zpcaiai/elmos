@@ -1,0 +1,26 @@
+{
+  "allow": [
+    {
+      "consumed": {
+        "tokens": 10
+      },
+      "limits": {
+        "tokens": 20
+      },
+      "loop_detected": false,
+      "fallback_cascade": false
+    }
+  ],
+  "deny": [
+    {
+      "consumed": {
+        "tokens": 21
+      },
+      "limits": {
+        "tokens": 20
+      },
+      "loop_detected": false,
+      "fallback_cascade": false
+    }
+  ]
+}

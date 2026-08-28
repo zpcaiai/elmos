@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "wasi-capability-policy-example",
+  "status": "READY",
+  "content_hash": "e824c23e3f61770cc3aa9797969bc0f0b6ba3a366b99cf5e7cbe12f8aab68f6a",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "rules": [
+    {
+      "id": "R1",
+      "effect": "deny",
+      "condition": "authority_missing"
+    }
+  ],
+  "exceptions": []
+}

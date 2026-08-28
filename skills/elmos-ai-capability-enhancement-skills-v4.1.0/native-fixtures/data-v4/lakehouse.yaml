@@ -1,0 +1,4 @@
+sourceFormat: iceberg
+targetFormat: delta
+snapshotRequired: true
+dualQuery: true

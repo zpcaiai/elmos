@@ -1,0 +1,52 @@
+{
+  "id": "certification-decision-example-001",
+  "tenant_id": "tenant-example",
+  "project_id": "project-certification-max",
+  "goal_id": "goal-example",
+  "revision_set_id": "revset-example-sha256",
+  "schema_version": "1.0",
+  "status": "BOUNDED",
+  "scope": {
+    "subject": "Example CertificationDecision subject",
+    "assurance_level": "A2",
+    "applicable_profiles": [
+      "example-profile@exact-version"
+    ],
+    "excluded_features": [
+      "unexecuted external accreditation"
+    ],
+    "jurisdictions": [
+      "example-only"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "claim-001",
+      "statement": "The reference contract is structurally valid for the exact example RevisionSet.",
+      "status": "BOUNDED",
+      "uncertainty": 0.05,
+      "decision_rule": "critical UNKNOWN or REFUTED blocks",
+      "assumptions": [
+        "native target execution is not represented by this example"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "artifact_id": "evidence-example-001",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "producer": "package-builder",
+      "independent": false,
+      "tool_digest": null,
+      "created_at": "2026-08-28T00:00:00Z"
+    }
+  ],
+  "limitations": [
+    "Example validates schema shape only; it is not certification evidence."
+  ],
+  "waivers": [],
+  "valid_from": null,
+  "valid_until": null,
+  "created_at": "2026-08-28T00:00:00Z",
+  "content_hash": null
+}

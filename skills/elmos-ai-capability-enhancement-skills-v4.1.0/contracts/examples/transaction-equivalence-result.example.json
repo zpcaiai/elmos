@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "TransactionEquivalenceResult",
+  "metadata": {
+    "id": "transaction-equivalence-result-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "isolationScenario": "example-isolationScenario",
+    "sourceTrace": [],
+    "targetTrace": [],
+    "equivalent": true
+  }
+}

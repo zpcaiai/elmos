@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OpenAIPluginProject",
+  "type": "object",
+  "required": [
+    "name",
+    "skills",
+    "submissionStatus"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "mcpServer": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "uiResources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "starterPrompts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "testCases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "submissionStatus": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "draft",
+        "review-ready",
+        "submitted",
+        "blocked"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

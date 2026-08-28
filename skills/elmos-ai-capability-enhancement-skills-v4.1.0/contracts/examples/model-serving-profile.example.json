@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "model-serving-profile-example",
+  "status": "READY",
+  "content_hash": "6db95c170337fb5aa618024b29571acba89972f57c46d3181a6cfa4644f7c473",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "version_pins": {
+    "runtime": "RELEASE_TIME_EXACT"
+  },
+  "capabilities": [
+    "detect",
+    "validate"
+  ],
+  "constraints": [
+    "fail-closed"
+  ]
+}

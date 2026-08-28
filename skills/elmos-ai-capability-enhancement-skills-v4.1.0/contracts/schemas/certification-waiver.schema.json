@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/3.0.0/certification-waiver.schema.json",
+  "title": "CertificationWaiver",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.ai/v3alpha1"
+    },
+    "kind": {
+      "const": "CertificationWaiver"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "revisionSetId"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revisionSetId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "claim",
+        "justification",
+        "owner",
+        "expiresAt"
+      ],
+      "properties": {
+        "claim": {
+          "type": "string"
+        },
+        "justification": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "expiresAt": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

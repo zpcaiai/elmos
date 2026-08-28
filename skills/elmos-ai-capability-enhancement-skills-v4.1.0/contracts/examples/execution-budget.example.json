@@ -1,0 +1,10 @@
+{
+  "runId": "run-1",
+  "wallClockSeconds": 3600,
+  "steps": 200,
+  "tokens": 500000,
+  "toolCalls": 100,
+  "fanout": 8,
+  "cost": 20.0,
+  "onExhaustion": "block"
+}

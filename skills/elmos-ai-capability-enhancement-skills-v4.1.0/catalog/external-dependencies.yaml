@@ -1,0 +1,252 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CrossPackageDependencyRegistry
+metadata:
+  package: elmos-ai-capability-enhancement-skills
+  version: 4.1.0
+spec:
+  companionPackage: elmos-functional-assurance-certification-skills
+  edges:
+  - fromSkill: elmos-ai-benchmark-grade-assurance-calibrator
+    toSkill: elmos-benchmark-integrity-large-repository-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-ai-benchmark-grade-assurance-calibrator
+    toSkill: elmos-ai-quality-characteristic-measurement-compiler
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-ai-bom-provenance-generator
+    toSkill: elmos-agent-skill-mcp-supply-chain-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-ai-cache-semantic-consistency-verifier
+    toSkill: elmos-ai-provider-behavior-fingerprint-recertifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-ai-golden-route-autogen-sk-to-agent-framework
+    toSkill: elmos-ai-e0-e5-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-ai-golden-route-business-requirement-multitarget
+    toSkill: elmos-ai-e0-e5-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-ai-golden-route-dify-to-production-code
+    toSkill: elmos-ai-e0-e5-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-ai-golden-route-langchain-to-langgraph
+    toSkill: elmos-ai-e0-e5-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-ai-golden-route-portable-skill
+    toSkill: elmos-agent-skill-mcp-supply-chain-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-ai-golden-route-repository-to-coding-harness
+    toSkill: elmos-ai-e0-e5-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-ai-online-shadow-eval-controller
+    toSkill: elmos-ai-provider-behavior-fingerprint-recertifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-ai-project-factory-orchestrator
+    toSkill: elmos-ai-e0-e5-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-benchmark-contamination-leakage-detector
+    toSkill: elmos-benchmark-integrity-large-repository-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-capacity-autoscaling-backpressure-planner
+    toSkill: elmos-capacity-soak-efficiency-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-carbon-energy-efficiency-profiler
+    toSkill: elmos-capacity-soak-efficiency-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-certified-compiler-translation-validation-controller
+    toSkill: elmos-compiler-frontend-conformance-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-certified-compiler-translation-validation-controller
+    toSkill: elmos-tcb-attack-surface-closure-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-confidential-computing-attestation-controller
+    toSkill: elmos-runtime-admission-attestation-controller
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-confidential-computing-attestation-controller
+    toSkill: elmos-customer-vpc-runner-attestation-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-continuous-control-monitoring-engine
+    toSkill: elmos-runtime-policy-continuous-compliance-monitor
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-continuous-control-monitoring-engine
+    toSkill: elmos-certificate-drift-revocation-controller
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-data-lineage-impact-governor
+    toSkill: elmos-certificate-drift-revocation-controller
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-dependency-malware-provenance-quarantine-controller
+    toSkill: elmos-vulnerability-vex-kev-response-governor
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-dependency-malware-provenance-quarantine-controller
+    toSkill: elmos-agent-skill-mcp-supply-chain-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-dependency-update-renovation-controller
+    toSkill: elmos-vulnerability-vex-kev-response-governor
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-devcontainer-nix-hermetic-environment-generator
+    toSkill: elmos-hermetic-build-environment-attestation-controller
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-generated-project-documentation-diagram-runbook-generator
+    toSkill: elmos-enterprise-assurance-dossier-generator
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-gitops-argocd-flux-release-controller
+    toSkill: elmos-production-deployment-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-hermetic-remote-build-cache-governor
+    toSkill: elmos-hermetic-build-environment-attestation-controller
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-human-factors-cognitive-load-evaluator
+    toSkill: elmos-ai-quality-model-evaluation-compiler
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-incident-command-runbook-automation-generator
+    toSkill: elmos-security-incident-psirt-disclosure-controller
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-language-runtime-performance-portability-profiler
+    toSkill: elmos-polyglot-route-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-localization-cultural-policy-adapter
+    toSkill: elmos-i18n-l10n-conformance-verifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-mobile-desktop-cross-platform-test-controller
+    toSkill: elmos-ui-visual-regression-journey-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-mobile-desktop-cross-platform-test-controller
+    toSkill: elmos-i18n-l10n-conformance-verifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-model-fallback-semantic-degradation-verifier
+    toSkill: elmos-ai-provider-behavior-fingerprint-recertifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-model-license-usage-restriction-governor
+    toSkill: elmos-open-source-license-ip-compliance-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-observability-cardinality-privacy-governor
+    toSkill: elmos-privacy-impact-consent-purpose-verifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-on-device-edge-ai-project-generator
+    toSkill: elmos-model-quantization-hardware-compatibility-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-platform-engineering-golden-path-generator
+    toSkill: elmos-operability-support-readiness-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-polyglot-build-toolchain-orchestrator
+    toSkill: elmos-compiler-frontend-conformance-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-probabilistic-reliability-statistical-model-checker
+    toSkill: elmos-capacity-soak-efficiency-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-product-analytics-telemetry-experiment-governor
+    toSkill: elmos-ai-quality-model-evaluation-compiler
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-product-analytics-telemetry-experiment-governor
+    toSkill: elmos-privacy-impact-consent-purpose-verifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-project-estimation-machine-eta-calibrator
+    toSkill: elmos-productivity-value-stream-scorecard
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-proof-assistant-lean-dafny-bridge
+    toSkill: elmos-structured-assurance-case-compiler
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-query-plan-regression-autotuning-governor
+    toSkill: elmos-database-performance-plan-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-rag-citation-provenance-chain-verifier
+    toSkill: elmos-ai-rag-retrieval-grounding-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-rag-query-planner-optimizer
+    toSkill: elmos-ai-rag-retrieval-grounding-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-release-test-budget-risk-optimizer
+    toSkill: elmos-productivity-value-stream-scorecard
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-runtime-sandbox-ebpf-behavior-verifier
+    toSkill: elmos-runtime-admission-attestation-controller
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-security-control-coverage-defeater-analyzer
+    toSkill: elmos-structured-assurance-case-compiler
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-smt-solver-trust-but-verify-controller
+    toSkill: elmos-proof-checker-diversity-cross-validation-governor
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-static-analysis-multilanguage-security-orchestrator
+    toSkill: elmos-compiler-frontend-conformance-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-supportability-diagnostics-bundle-generator
+    toSkill: elmos-operability-support-readiness-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-supportability-diagnostics-bundle-generator
+    toSkill: elmos-enterprise-assurance-dossier-generator
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-symbolic-execution-path-soundness-governor
+    toSkill: elmos-verification-tool-validation-corpus-governor
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-template-marketplace-package-lifecycle-governor
+    toSkill: elmos-agent-skill-mcp-supply-chain-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-test-environment-service-virtualization-controller
+    toSkill: elmos-native-conformance-lab-controller
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-vector-store-migration-benchmark-controller
+    toSkill: elmos-ai-rag-retrieval-grounding-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05
+  - fromSkill: elmos-wasm-component-wit-portability-compiler
+    toSkill: elmos-ffi-abi-native-boundary-certifier
+    package: elmos-functional-assurance-certification-skills
+    mode: optional-companion-required-for-E4-E5-P05

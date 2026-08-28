@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "data-quality-contract-example",
+  "status": "READY",
+  "content_hash": "72fd2596c3e89b3b4e89f0122d26fde58a861873a55737f7e3eb4f0743fd449a",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "requirements": [
+    "typed and version-bound"
+  ],
+  "invariants": [
+    "critical unknown blocks"
+  ],
+  "compatibility": "conditional"
+}

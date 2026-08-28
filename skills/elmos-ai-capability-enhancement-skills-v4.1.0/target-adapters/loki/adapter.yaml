@@ -1,0 +1,42 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: loki
+  ecosystem: Grafana Loki
+  version: 4.0.0
+spec:
+  adapterKind: log-store
+  maturity: P1
+  modes:
+  - ingest
+  - query
+  - retention
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - loki exact-version profile
+  - loki capability and semantic-gap map
+  - loki native conformance evidence
+  - loki deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

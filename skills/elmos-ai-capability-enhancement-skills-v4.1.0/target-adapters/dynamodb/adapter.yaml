@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: dynamodb
+  ecosystem: Amazon DynamoDB
+  version: 4.0.0
+spec:
+  adapterKind: key-value
+  maturity: P1
+  modes:
+  - tables
+  - indexes
+  - transactions
+  - streams
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - dynamodb exact-version profile
+  - dynamodb capability and semantic-gap map
+  - dynamodb native conformance evidence
+  - dynamodb deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

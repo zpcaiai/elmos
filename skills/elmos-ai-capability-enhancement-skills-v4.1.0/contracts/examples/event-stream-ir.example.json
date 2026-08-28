@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "event-stream-ir-example",
+  "status": "READY",
+  "content_hash": "ae30c3b3275e12a657a7d9989722f75cefadba8ce483e7af206b06bc69799c39",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "nodes": [
+    {
+      "id": "N1"
+    }
+  ],
+  "edges": [],
+  "semantic_gaps": []
+}

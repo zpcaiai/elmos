@@ -1,0 +1,12 @@
+{
+  "policy": "compiler_frontend_authority",
+  "positive": {
+    "compiler_native": true,
+    "frontend_conformance_passed": true,
+    "tool_digest_pinned": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

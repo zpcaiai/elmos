@@ -1,0 +1,12 @@
+{
+  "provider": "provider-a",
+  "region": "jp",
+  "requestedModel": "model-alias",
+  "resolvedModel": "model-2026-08",
+  "probeVersion": "probe-4",
+  "schemaCompliance": 0.99,
+  "toolCallSignature": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "latencyDigest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "safetyDigest": "1111111111111111111111111111111111111111111111111111111111111111",
+  "capturedAt": "2026-08-28T00:00:00Z"
+}

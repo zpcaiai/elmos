@@ -1,0 +1,51 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CommercialGoldenRoute
+metadata:
+  name: framework-to-managed-runtime
+  version: 4.0.0
+  status: not-certified
+spec:
+  routeOwner: domain-pack.project-generation
+  routable: false
+  skill: elmos-managed-agent-cloud-deployment-generator
+  workflow: workflows/managed-cloud-agent-deployment.yaml
+  source: LangGraph, Spring AI, OpenAI Agents SDK, Google ADK, Microsoft Agent Framework or AI-SIR project
+  targets:
+  - aws-bedrock-agentcore
+  - google-gemini-enterprise-agent-platform
+  - microsoft-foundry-agent-service
+  - databricks-agents
+  eligibility:
+  - cloud account and region are policy-approved
+  - identity/network/data-residency profile exists
+  - portable source artifact and exit plan are available
+  requiredEvidence:
+  - capability delta ledger
+  - native managed deployment
+  - workload identity and network denial tests
+  - telemetry and cost reconciliation
+  - export/exit drill
+  - rollback and region failover
+  holdoutScenarios:
+  - managed feature unavailable in selected region
+  - identity misbinding
+  - service quota exhaustion
+  - provider-specific artifact export
+  benchmark:
+    independentRepetitions: 3
+    holdoutRequired: true
+    customerAcceptanceRequired: true
+    machineWallClockRequired: true
+    costLedgerRequired: true
+    faultInjectionRequired: true
+    upgradeAndRollbackRequired: true
+  releaseGate:
+    E0toE5: true
+    P05ForProduction: true
+    criticalUnknown: BLOCK
+    sideEffectsSettled: true
+    exactRevisionSet: true
+    evidenceFreshnessRequired: true
+    independentCertifier: true
+  nonClaim: This route remains a production implementation contract until exact source/target revisions execute with sealed
+    independent evidence.

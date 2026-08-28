@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CompletionCertificate",
+  "type": "object",
+  "required": [
+    "certificateId",
+    "revisionSetId",
+    "evidenceRoot",
+    "decision",
+    "gates",
+    "issuedAt",
+    "certifier"
+  ],
+  "properties": {
+    "certificateId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revisionSetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidenceRoot": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "CERTIFIED",
+        "BOUNDED",
+        "BLOCKED",
+        "REVOKED"
+      ]
+    },
+    "gates": {
+      "type": "object",
+      "required": [
+        "E0",
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5"
+      ],
+      "properties": {
+        "E0": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "BLOCKED",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "E1": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "BLOCKED",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "E2": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "BLOCKED",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "E3": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "BLOCKED",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "E4": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "BLOCKED",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "E5": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "BLOCKED",
+            "NOT_APPLICABLE"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "waivers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "certifier": {
+      "type": "object",
+      "required": [
+        "independent",
+        "signer"
+      ],
+      "properties": {
+        "independent": {
+          "const": true
+        },
+        "signer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "signature": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

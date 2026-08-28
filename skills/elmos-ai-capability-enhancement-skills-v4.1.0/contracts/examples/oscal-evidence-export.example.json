@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "OscalEvidenceExport",
+  "metadata": {
+    "id": "oscal-evidence-export-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "profile": "example-profile",
+    "components": [],
+    "assessmentResults": [],
+    "poam": []
+  }
+}

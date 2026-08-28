@@ -1,0 +1,33 @@
+{
+  "agents": [
+    {
+      "id": "router",
+      "role": "route intent",
+      "permissions": [
+        "read:query"
+      ]
+    },
+    {
+      "id": "analyst",
+      "role": "analyze contracts",
+      "permissions": [
+        "read:knowledge"
+      ]
+    }
+  ],
+  "delegation": [
+    {
+      "from": "router",
+      "to": "analyst",
+      "condition": "intent=contract"
+    }
+  ],
+  "termination": {
+    "maxIterations": 12,
+    "conditions": [
+      "answer-grounded",
+      "blocked",
+      "cancelled"
+    ]
+  }
+}

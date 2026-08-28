@@ -1,0 +1,18 @@
+{
+  "allow": [
+    {
+      "lineage_complete": true,
+      "consent_valid": true,
+      "expired": false,
+      "holdout_exposed": false
+    }
+  ],
+  "deny": [
+    {
+      "lineage_complete": true,
+      "consent_valid": true,
+      "expired": false,
+      "holdout_exposed": true
+    }
+  ]
+}

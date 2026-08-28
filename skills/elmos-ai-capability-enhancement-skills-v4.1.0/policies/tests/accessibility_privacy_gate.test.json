@@ -1,0 +1,11 @@
+{
+  "policy": "accessibility_privacy_gate",
+  "positive": {
+    "purpose_limitations_verified": true,
+    "deletion_propagation_verified": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

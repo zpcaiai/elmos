@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "model-routing-decision-example",
+  "status": "READY",
+  "content_hash": "082a4e270a075b2c8ce94d13b455509517014a8ceed5b69a6fef619cb02df7d8",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

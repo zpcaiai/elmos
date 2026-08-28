@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "PolyglotRouteCertificate",
+  "metadata": {
+    "id": "polyglot-route-certificate-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "routeId": "example-routeId",
+    "revisionSet": "example-revisionSet",
+    "assuranceEnvelope": {},
+    "evidenceRoot": "example-evidenceRoot"
+  }
+}

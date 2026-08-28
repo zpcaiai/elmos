@@ -1,0 +1,25 @@
+{
+  "policy": "capability_negotiation.rego",
+  "cases": [
+    {
+      "name": "positive-fixture",
+      "expected": "allow-or-valid",
+      "input": "see contracts/examples"
+    },
+    {
+      "name": "negative-critical-unknown",
+      "expected": "deny-or-block",
+      "input": {
+        "critical": "UNKNOWN"
+      }
+    },
+    {
+      "name": "revision-or-authority-mismatch",
+      "expected": "deny-or-block",
+      "input": {
+        "revision_match": false
+      }
+    }
+  ],
+  "execution": "OPA execution is required in target CI; package validator checks inventory only."
+}

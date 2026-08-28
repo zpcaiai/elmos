@@ -1,0 +1,33 @@
+{
+  "identity": {
+    "oidc": true,
+    "agentIdentity": true,
+    "mfaForApprovals": true
+  },
+  "tenancy": {
+    "isolation": "tenant+project+environment",
+    "rls": true
+  },
+  "tools": {
+    "defaultDecision": "deny",
+    "requestScopedAuthority": true,
+    "approvalForExternalWrite": true
+  },
+  "data": {
+    "classification": [
+      "public",
+      "internal",
+      "confidential"
+    ],
+    "residency": [
+      "JP"
+    ],
+    "piiPolicy": "redact-before-provider"
+  },
+  "sandbox": {
+    "secretless": true,
+    "networkDefault": "deny",
+    "nonRoot": true,
+    "readOnlyRoot": true
+  }
+}

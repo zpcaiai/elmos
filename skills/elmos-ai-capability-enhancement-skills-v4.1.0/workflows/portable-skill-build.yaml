@@ -1,0 +1,73 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableWorkflow
+metadata:
+  name: portable-skill-build
+  version: 4.0.0
+spec:
+  authority: Environment-owned
+  failureMode: fail-closed
+  steps:
+  - id: freeze-goal-and-source
+    ordinal: 1
+    dependsOn: []
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: compile-skill-ir
+    ordinal: 2
+    dependsOn:
+    - freeze-goal-and-source
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: evaluate-trigger
+    ordinal: 3
+    dependsOn:
+    - compile-skill-ir
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: emit-host-packages
+    ordinal: 4
+    dependsOn:
+    - evaluate-trigger
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: native-host-load
+    ordinal: 5
+    dependsOn:
+    - emit-host-packages
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: cross-host-differential
+    ordinal: 6
+    dependsOn:
+    - native-host-load
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: seal-evidence
+    ordinal: 7
+    dependsOn:
+    - cross-host-differential
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  terminalGate: independent K8 evaluation
+  machineEtaRequired: true

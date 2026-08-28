@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "memory-consolidation-plan-example",
+  "status": "READY",
+  "content_hash": "d76c85a62b3472dbe43f653a089c479b1ff7bd7c189b26b33b2df683d057f98a",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "steps": [
+    {
+      "id": "S1",
+      "action": "freeze exact versions",
+      "depends_on": []
+    }
+  ],
+  "rollback_steps": [
+    "restore prior signed artifact"
+  ],
+  "proof_obligations": [
+    "PO-example"
+  ]
+}

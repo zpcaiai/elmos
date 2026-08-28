@@ -1,0 +1,15 @@
+{
+  "campaignId": "poison-1",
+  "tenant": "tenant-a",
+  "payloads": 100,
+  "detected": 99,
+  "crossTenantHits": 0,
+  "deletePersistenceHits": 0,
+  "findings": [
+    {
+      "type": "indirect-injection",
+      "status": "blocked"
+    }
+  ],
+  "decision": "bounded"
+}

@@ -1,0 +1,56 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CommercialGoldenRoute
+metadata:
+  name: portable-skill-route
+  version: 4.0.0
+  status: not-certified
+spec:
+  routeOwner: domain-pack.project-generation
+  routable: false
+  skill: elmos-agent-skill-portability-emitter
+  workflow: workflows/portable-skill-build.yaml
+  source: Repository knowledge, runbook, existing Skill, prompt package or coding-agent configuration
+  targets:
+  - agent-skills-standard
+  - openai-plugins
+  - codex
+  - claude-code
+  - pi
+  - openclaw
+  - gemini-cli
+  - opencode
+  - continue
+  eligibility:
+  - source resources are readable and license-compatible
+  - required tools and authority can be represented
+  - holdout trigger dataset can be built
+  requiredEvidence:
+  - Skill IR round-trip
+  - per-host native load
+  - trigger precision and recall
+  - permission non-expansion
+  - cross-host normalized trace differential
+  - signed package and SBOM
+  holdoutScenarios:
+  - unseen repository task
+  - negative trigger set
+  - multi-skill collision set
+  - malicious resource package
+  benchmark:
+    independentRepetitions: 3
+    holdoutRequired: true
+    customerAcceptanceRequired: true
+    machineWallClockRequired: true
+    costLedgerRequired: true
+    faultInjectionRequired: true
+    upgradeAndRollbackRequired: true
+  releaseGate:
+    E0toE5: true
+    P05ForProduction: true
+    criticalUnknown: BLOCK
+    sideEffectsSettled: true
+    exactRevisionSet: true
+    evidenceFreshnessRequired: true
+    independentCertifier: true
+  nonClaim: This route remains a production implementation contract until exact source/target revisions execute with sealed
+    independent evidence.

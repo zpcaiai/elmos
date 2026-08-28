@@ -1,0 +1,60 @@
+apiVersion: elmos.ai/v3alpha1
+kind: MigrationCompatibilityCatalog
+spec:
+  routes:
+  - source: Dify DSL
+    target:
+    - LangGraph
+    - Spring AI
+    status: golden-route
+    preservation:
+    - workflow semantics
+    - tools
+    - RAG
+    - approvals
+    knownLoss:
+    - visual layout may be non-semantic
+  - source: LangChain
+    target:
+    - LangGraph
+    status: golden-route
+    preservation:
+    - tools
+    - retrievers
+    - output contracts
+    requiredAdditions:
+    - typed state
+    - persistence
+    - termination
+  - source:
+    - AutoGen
+    - Semantic Kernel
+    target:
+    - Microsoft Agent Framework
+    status: golden-route
+    preservation:
+    - agents
+    - tools
+    - sessions
+    - workflows
+    - telemetry
+  - source: Flowise
+    target:
+    - Dify
+    - LangGraph
+    - Spring AI
+    status: compatibility-only
+    preservation:
+    - flow graph
+    - components where supported
+    knownLoss:
+    - custom component semantics require manual adapter
+  - source: OpenAI Swarm
+    target:
+    - OpenAI Agents SDK
+    - LangGraph
+    status: compatibility-only
+    preservation:
+    - agents
+    - handoffs
+    - tools

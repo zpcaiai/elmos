@@ -1,0 +1,7 @@
+protocolVersion: '2026-07-28'
+coreMode: stateless
+extensions:
+  tasks: required
+  skills: required
+  apps: optional
+  enterpriseAuthorization: required

@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "StructuredAssuranceCase",
+  "metadata": {
+    "id": "structured-assurance-case-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "claims": [],
+    "arguments": [],
+    "evidenceRefs": [],
+    "unresolved": []
+  }
+}

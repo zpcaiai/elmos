@@ -1,0 +1,45 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CommercialGoldenRoute
+metadata:
+  name: autogen-sk-to-agent-framework
+  version: 4.0.0
+  status: not-certified
+spec:
+  skill: elmos-ai-golden-route-autogen-sk-to-agent-framework
+  workflow: workflows/autogen-sk-to-agent-framework.yaml
+  source: AutoGen or Semantic Kernel repository
+  targets:
+  - microsoft-agent-framework-dotnet
+  - microsoft-agent-framework-python
+  eligibility:
+  - source API/version identified
+  - agent/tool/session/workflow semantics recovered
+  - unsupported extensions declared
+  requiredEvidence:
+  - native target build/start
+  - session/workflow preservation
+  - tool/handoff differential
+  - telemetry and HITL
+  - migration rollback
+  benchmark:
+    independentRepetitions: 3
+    holdoutRequired: true
+    customerAcceptanceRequired: true
+    machineWallClockRequired: true
+    costLedgerRequired: true
+  releaseGate:
+    E0toE5: true
+    P05ForProduction: true
+    criticalUnknown: BLOCK
+    sideEffectsSettled: true
+    exactRevisionSet: true
+    evidenceFreshnessRequired: true
+    independentCertifier: true
+  nonClaim: This route is a contract until executed on exact source/target revisions with sealed evidence.
+  routeOwner: domain-pack.project-generation
+  routable: false
+  holdoutScenarios:
+  - unseen repository variant
+  - upstream upgrade drift
+  - worker failure and resume
+  - rollback after partial side effect

@@ -1,0 +1,102 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableWorkflow
+metadata:
+  name: langchain-to-langgraph
+  title: LangChain to LangGraph modernization
+spec:
+  routeOwner: domain-pack.project-generation
+  revisionBound: true
+  nodes:
+  - id: import-langchain
+    sequence: 0
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+  - id: recover-tools-retrievers-agents
+    sequence: 1
+    owner: K3
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - import-langchain
+  - id: synthesize-state-schema
+    sequence: 2
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - recover-tools-retrievers-agents
+  - id: add-persistence-and-termination
+    sequence: 3
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - synthesize-state-schema
+  - id: emit-langgraph
+    sequence: 4
+    owner: K5
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - add-persistence-and-termination
+  - id: native-start
+    sequence: 5
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - emit-langgraph
+  - id: differential-validate
+    sequence: 6
+    owner: K6
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - native-start
+  - id: certify
+    sequence: 7
+    owner: K8
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - differential-validate
+  terminalStates:
+  - COMPLETED
+  - BLOCKED
+  - FAILED
+  - CANCELLED
+  authority: Environment-owned; every write checks tenant, epoch, lease generation and fencing
+  evidence: each node emits immutable evidence or explicit NOT_EXECUTED reason

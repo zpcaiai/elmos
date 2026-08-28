@@ -1,0 +1,73 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableWorkflow
+metadata:
+  name: openai-plugin-release
+  version: 4.0.0
+spec:
+  authority: Environment-owned
+  failureMode: fail-closed
+  steps:
+  - id: compile-plugin-scope
+    ordinal: 1
+    dependsOn: []
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: generate-skills-and-mcp
+    ordinal: 2
+    dependsOn:
+    - compile-plugin-scope
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: generate-optional-ui
+    ordinal: 3
+    dependsOn:
+    - generate-skills-and-mcp
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: developer-mode-test
+    ordinal: 4
+    dependsOn:
+    - generate-optional-ui
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: security-review
+    ordinal: 5
+    dependsOn:
+    - developer-mode-test
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: submission-case-generation
+    ordinal: 6
+    dependsOn:
+    - security-review
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: release-evidence
+    ordinal: 7
+    dependsOn:
+    - submission-case-generation
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  terminalGate: independent K8 evaluation
+  machineEtaRequired: true

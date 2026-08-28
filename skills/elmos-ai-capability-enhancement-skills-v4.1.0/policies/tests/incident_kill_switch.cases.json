@@ -1,0 +1,24 @@
+{
+  "allow": [
+    {
+      "target_disabled": false,
+      "tenant_disabled": false,
+      "global_disabled": false,
+      "fencing_current": true
+    }
+  ],
+  "deny": [
+    {
+      "target_disabled": true,
+      "tenant_disabled": false,
+      "global_disabled": false,
+      "fencing_current": true
+    },
+    {
+      "target_disabled": false,
+      "tenant_disabled": false,
+      "global_disabled": false,
+      "fencing_current": false
+    }
+  ]
+}

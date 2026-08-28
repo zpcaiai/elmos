@@ -1,0 +1,8 @@
+{
+  "metric": "cosine",
+  "dimension": 1536,
+  "acl": "tenant+document",
+  "qualityGate": {
+    "recallAt10": 0.9
+  }
+}

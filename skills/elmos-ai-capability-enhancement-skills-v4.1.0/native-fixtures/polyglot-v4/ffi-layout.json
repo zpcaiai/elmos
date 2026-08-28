@@ -1,0 +1,14 @@
+{
+  "abi": "c",
+  "struct": [
+    {
+      "name": "id",
+      "type": "uint64"
+    },
+    {
+      "name": "flag",
+      "type": "uint8"
+    }
+  ],
+  "expectedAlignment": "platform-profile"
+}

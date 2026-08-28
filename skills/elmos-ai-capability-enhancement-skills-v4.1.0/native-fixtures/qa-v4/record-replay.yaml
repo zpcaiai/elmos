@@ -1,0 +1,4 @@
+clock: virtual
+randomness: seeded
+externalEffects: suppressed
+compare: causal-trace

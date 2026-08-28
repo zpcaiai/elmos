@@ -1,0 +1,15 @@
+{
+  "packageId": "plugin-1",
+  "publisher": "example",
+  "signatureStatus": "verified",
+  "sbomHash": "2222222222222222222222222222222222222222222222222222222222222222",
+  "aibomHash": "3333333333333333333333333333333333333333333333333333333333333333",
+  "declaredPermissions": [
+    "network:api.example"
+  ],
+  "observedPermissions": [
+    "network:api.example"
+  ],
+  "reproducibleBuild": true,
+  "decision": "trusted"
+}

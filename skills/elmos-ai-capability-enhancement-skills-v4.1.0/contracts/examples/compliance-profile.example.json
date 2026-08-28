@@ -1,0 +1,21 @@
+{
+  "profileId": "enterprise-global",
+  "jurisdictions": [
+    "EU",
+    "CN"
+  ],
+  "frameworks": [
+    "ISO-42001",
+    "NIST-AI-RMF"
+  ],
+  "effectiveAt": "2026-08-28",
+  "controls": [
+    {
+      "id": "transparency",
+      "implementation": "interaction label",
+      "evidence": "ui test"
+    }
+  ],
+  "unresolvedDecisions": [],
+  "legalReviewRequired": true
+}

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ManagedAgentDeployment",
+  "type": "object",
+  "required": [
+    "target",
+    "region",
+    "artifactDigest",
+    "identityBinding",
+    "networkPolicy",
+    "observability",
+    "capabilityDeltas",
+    "rollback",
+    "exitPlan"
+  ],
+  "properties": {
+    "target": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "aws-agentcore",
+        "gemini-agent-platform",
+        "microsoft-foundry",
+        "databricks"
+      ]
+    },
+    "region": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifactDigest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "identityBinding": {
+      "type": "string",
+      "minLength": 1
+    },
+    "networkPolicy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observability": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capabilityDeltas": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "rollback": {
+      "type": "object"
+    },
+    "exitPlan": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,12 @@
+{
+  "humanSubject": "user-1",
+  "agentId": "agent-1",
+  "workloadId": "spiffe://example/agents/1",
+  "delegatedScopes": [
+    "documents.read"
+  ],
+  "audience": "documents-api",
+  "issuedAt": "2026-08-28T00:00:00Z",
+  "expiresAt": "2026-08-28T00:10:00Z",
+  "attestationHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+}

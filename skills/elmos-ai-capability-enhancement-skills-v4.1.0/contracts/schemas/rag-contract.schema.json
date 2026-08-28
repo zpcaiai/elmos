@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RAGContract",
+  "type": "object",
+  "required": [
+    "ingestion",
+    "retrieval",
+    "grounding",
+    "lifecycle",
+    "evaluation"
+  ],
+  "properties": {
+    "ingestion": {
+      "type": "object",
+      "required": [
+        "sources",
+        "parsing",
+        "chunking"
+      ],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "parsing": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "chunking": {
+          "type": "string"
+        },
+        "aclRequired": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "retrieval": {
+      "type": "object",
+      "required": [
+        "strategy",
+        "topK"
+      ],
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": [
+            "dense",
+            "sparse",
+            "hybrid",
+            "graph",
+            "federated"
+          ]
+        },
+        "topK": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "rerank": {
+          "type": "boolean"
+        },
+        "filtersRequired": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "grounding": {
+      "type": "object",
+      "required": [
+        "citations",
+        "abstainWhenUnsupported"
+      ],
+      "properties": {
+        "citations": {
+          "type": "boolean"
+        },
+        "abstainWhenUnsupported": {
+          "type": "boolean"
+        },
+        "contextBudgetTokens": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "lifecycle": {
+      "type": "object",
+      "required": [
+        "incrementalSync",
+        "deletePropagation",
+        "versioning"
+      ],
+      "properties": {
+        "incrementalSync": {
+          "type": "boolean"
+        },
+        "deletePropagation": {
+          "type": "boolean"
+        },
+        "versioning": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "evaluation": {
+      "type": "object",
+      "required": [
+        "metrics"
+      ],
+      "properties": {
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "thresholds": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

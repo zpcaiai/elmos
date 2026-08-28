@@ -1,0 +1,2229 @@
+apiVersion: elmos.ai/v3alpha1
+kind: SplitImplementationPlan
+metadata:
+  version: 4.1.0
+  packageRole: capability
+spec:
+  executionMode: durable, checkpointed, fail-closed
+  batches:
+  - id: CAP-00
+    title: Capability implementation batch 1
+    dependsOn: []
+    tasks:
+    - id: CAP-00-T01
+      skill: elmos-a2a-v1-agent-card-trust-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-00-T02
+      skill: elmos-admin-operator-portal-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-00-T03
+      skill: elmos-adversarial-model-tool-memory-redteam-orchestrator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-00-T04
+      skill: elmos-agent-approval-workflow-ux-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-00-T05
+      skill: elmos-agent-arena-route-model-evaluator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-00-T06
+      skill: elmos-agent-client-protocol-acp-adapter-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-00-T07
+      skill: elmos-agent-human-ux-safety-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-00-T08
+      skill: elmos-agent-memory-consolidation-forgetting-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-00-T09
+      skill: elmos-agent-protocol-version-negotiation-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-00-T10
+      skill: elmos-agent-registry-resource-discovery-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-01
+    title: Capability implementation batch 2
+    dependsOn:
+    - CAP-00
+    tasks:
+    - id: CAP-01-T01
+      skill: elmos-agent-skill-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-01-T02
+      skill: elmos-agent-skill-portability-emitter
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-01-T03
+      skill: elmos-agent-skill-trigger-evaluator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-01-T04
+      skill: elmos-agent-workload-delegated-identity-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-01-T05
+      skill: elmos-ai-agent-contract-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-01-T06
+      skill: elmos-ai-artifact-provenance-packager
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-01-T07
+      skill: elmos-ai-assurance-contract-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-01-T08
+      skill: elmos-ai-benchmark-grade-assurance-calibrator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-01-T09
+      skill: elmos-ai-bom-provenance-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-01-T10
+      skill: elmos-ai-cache-semantic-consistency-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-02
+    title: Capability implementation batch 3
+    dependsOn:
+    - CAP-01
+    tasks:
+    - id: CAP-02-T01
+      skill: elmos-ai-capability-negotiator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-02-T02
+      skill: elmos-ai-compatibility-drift-monitor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-02-T03
+      skill: elmos-ai-compliance-profile-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-02-T04
+      skill: elmos-ai-config-secret-materializer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-02-T05
+      skill: elmos-ai-content-provenance-labeling-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-02-T06
+      skill: elmos-ai-context-memory-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-02-T07
+      skill: elmos-ai-cost-pricing-sla-contract-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-02-T08
+      skill: elmos-ai-cross-framework-differential-validator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-02-T09
+      skill: elmos-ai-data-contract-quality-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-02-T10
+      skill: elmos-ai-dependency-version-resolver
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-03
+    title: Capability implementation batch 4
+    dependsOn:
+    - CAP-02
+    tasks:
+    - id: CAP-03-T01
+      skill: elmos-ai-deployment-pack-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-03-T02
+      skill: elmos-ai-durable-runtime-integrator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-03-T03
+      skill: elmos-ai-eval-dataset-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-03-T04
+      skill: elmos-ai-generated-project-conformance-validator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-03-T05
+      skill: elmos-ai-generated-project-upgrader
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-03-T06
+      skill: elmos-ai-golden-route-autogen-sk-to-agent-framework
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-03-T07
+      skill: elmos-ai-golden-route-business-requirement-multitarget
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-03-T08
+      skill: elmos-ai-golden-route-dify-to-production-code
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-03-T09
+      skill: elmos-ai-golden-route-langchain-to-langgraph
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-03-T10
+      skill: elmos-ai-golden-route-managed-runtime
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-04
+    title: Capability implementation batch 5
+    dependsOn:
+    - CAP-03
+    tasks:
+    - id: CAP-04-T01
+      skill: elmos-ai-golden-route-mcp-2026-modernization
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-04-T02
+      skill: elmos-ai-golden-route-portable-skill
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-04-T03
+      skill: elmos-ai-golden-route-repository-to-coding-harness
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-04-T04
+      skill: elmos-ai-golden-route-trusted-cross-org-agent
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-04-T05
+      skill: elmos-ai-graph-liveness-side-effect-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-04-T06
+      skill: elmos-ai-incident-kill-switch-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-04-T07
+      skill: elmos-ai-interaction-channel-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-04-T08
+      skill: elmos-ai-judge-calibration-stochastic-assurance
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-04-T09
+      skill: elmos-ai-mcp-a2a-gateway-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-04-T10
+      skill: elmos-ai-memory-semantic-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-05
+    title: Capability implementation batch 6
+    dependsOn:
+    - CAP-04
+    tasks:
+    - id: CAP-05-T01
+      skill: elmos-ai-model-contract-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-05-T02
+      skill: elmos-ai-model-provider-availability-resilience-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-05-T03
+      skill: elmos-ai-model-routing-fallback-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-05-T04
+      skill: elmos-ai-multi-target-lowering-planner
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-05-T05
+      skill: elmos-ai-multitenant-control-plane-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-05-T06
+      skill: elmos-ai-normalized-agent-trace-recorder
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-05-T07
+      skill: elmos-ai-observability-finops-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-05-T08
+      skill: elmos-ai-online-shadow-eval-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-05-T09
+      skill: elmos-ai-operator-console-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-05-T10
+      skill: elmos-ai-policy-as-code-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-06
+    title: Capability implementation batch 7
+    dependsOn:
+    - CAP-05
+    tasks:
+    - id: CAP-06-T01
+      skill: elmos-ai-project-factory-orchestrator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-06-T02
+      skill: elmos-ai-project-repository-emitter
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-06-T03
+      skill: elmos-ai-prompt-tool-security-redteam
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-06-T04
+      skill: elmos-ai-provider-data-residency-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-06-T05
+      skill: elmos-ai-rag-semantic-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-06-T06
+      skill: elmos-ai-regulated-decision-explainability-packager
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-06-T07
+      skill: elmos-ai-requirement-contract-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-06-T08
+      skill: elmos-ai-retention-erasure-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-06-T09
+      skill: elmos-ai-revision-set-freezer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-06-T10
+      skill: elmos-ai-roundtrip-migration-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-07
+    title: Capability implementation batch 8
+    dependsOn:
+    - CAP-06
+    tasks:
+    - id: CAP-07-T01
+      skill: elmos-ai-runaway-loop-economic-dos-guard
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-07-T02
+      skill: elmos-ai-runtime-operations-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-07-T03
+      skill: elmos-ai-secret-credential-lifecycle-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-07-T04
+      skill: elmos-ai-security-governance-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-07-T05
+      skill: elmos-ai-sir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-07-T06
+      skill: elmos-ai-solution-archetype-selector
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-07-T07
+      skill: elmos-ai-source-project-importer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-07-T08
+      skill: elmos-ai-synthetic-test-simulation-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-07-T09
+      skill: elmos-ai-system-impact-assessment-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-07-T10
+      skill: elmos-ai-system-model-card-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-08
+    title: Capability implementation batch 9
+    dependsOn:
+    - CAP-07
+    tasks:
+    - id: CAP-08-T01
+      skill: elmos-ai-target-adapter-sdk
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-08-T02
+      skill: elmos-ai-target-portfolio-planner
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-08-T03
+      skill: elmos-ai-tenant-memory-isolation-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-08-T04
+      skill: elmos-ai-tool-authority-policy-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-08-T05
+      skill: elmos-ai-tool-contract-compatibility-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-08-T06
+      skill: elmos-ai-tool-protocol-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-08-T07
+      skill: elmos-ai-unsupported-feature-ledger
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-08-T08
+      skill: elmos-ai-workflow-state-machine-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-08-T09
+      skill: elmos-api-authz-rbac-abac-rebac-equivalence-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-08-T10
+      skill: elmos-api-consumer-driven-contract-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-09
+    title: Capability implementation batch 10
+    dependsOn:
+    - CAP-08
+    tasks:
+    - id: CAP-09-T01
+      skill: elmos-api-event-contract-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-09-T02
+      skill: elmos-api-first-contract-generation-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-09-T03
+      skill: elmos-architecture-decision-record-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-09-T04
+      skill: elmos-asyncapi-cloudevents-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-09-T05
+      skill: elmos-authoritative-oracle-registry
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-09-T06
+      skill: elmos-backward-compatible-regeneration-merge-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-09-T07
+      skill: elmos-benchmark-contamination-leakage-detector
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-09-T08
+      skill: elmos-billing-quota-entitlement-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-09-T09
+      skill: elmos-budget-aware-quality-slo-optimizer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-09-T10
+      skill: elmos-capacity-autoscaling-backpressure-planner
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-10
+    title: Capability implementation batch 11
+    dependsOn:
+    - CAP-09
+    tasks:
+    - id: CAP-10-T01
+      skill: elmos-carbon-energy-efficiency-profiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-10-T02
+      skill: elmos-cdc-exactly-once-ordering-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-10-T03
+      skill: elmos-certified-compiler-translation-validation-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-10-T04
+      skill: elmos-chaos-experiment-safety-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-10-T05
+      skill: elmos-chaos-recovery-verification-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-10-T06
+      skill: elmos-chatgpt-apps-sdk-project-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-10-T07
+      skill: elmos-code-generation-source-map-roundtrip-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-10-T08
+      skill: elmos-compiler-codemod-rule-corpus-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-10-T09
+      skill: elmos-confidential-computing-attestation-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-10-T10
+      skill: elmos-content-safety-policy-classifier-orchestrator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-11
+    title: Capability implementation batch 12
+    dependsOn:
+    - CAP-10
+    tasks:
+    - id: CAP-11-T01
+      skill: elmos-continuous-control-monitoring-engine
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-11-T02
+      skill: elmos-contract-integration-e2e-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-11-T03
+      skill: elmos-contract-smt-symbolic-execution-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-11-T04
+      skill: elmos-cost-allocation-chargeback-showback-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-11-T05
+      skill: elmos-counterexample-regression-promoter
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-11-T06
+      skill: elmos-counterexample-to-rule-skill-promotion-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-11-T07
+      skill: elmos-coverage-semantic-obligation-mapper
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-11-T08
+      skill: elmos-cross-language-concurrency-memory-model-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-11-T09
+      skill: elmos-cross-language-database-differential-runner
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-11-T10
+      skill: elmos-cross-language-numeric-time-unicode-conformance-suite
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-12
+    title: Capability implementation batch 13
+    dependsOn:
+    - CAP-11
+    tasks:
+    - id: CAP-12-T01
+      skill: elmos-cross-language-serialization-wire-compatibility-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-12-T02
+      skill: elmos-cross-store-polyglot-persistence-route-planner
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-12-T03
+      skill: elmos-data-lineage-impact-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-12-T04
+      skill: elmos-data-quality-contract-anomaly-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-12-T05
+      skill: elmos-data-retention-archive-tiering-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-12-T06
+      skill: elmos-data-snapshot-cdc-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-12-T07
+      skill: elmos-data-sovereignty-residency-route-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-12-T08
+      skill: elmos-database-dialect-profile-registry
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-12-T09
+      skill: elmos-database-extension-compatibility-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-12-T10
+      skill: elmos-database-schema-migration-planner
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-13
+    title: Capability implementation batch 14
+    dependsOn:
+    - CAP-12
+    tasks:
+    - id: CAP-13-T01
+      skill: elmos-database-security-authorization-equivalence-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-13-T02
+      skill: elmos-dependency-malware-provenance-quarantine-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-13-T03
+      skill: elmos-dependency-update-renovation-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-13-T04
+      skill: elmos-deterministic-record-replay-model-tool-harness
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-13-T05
+      skill: elmos-devcontainer-nix-hermetic-environment-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-13-T06
+      skill: elmos-distributed-consistency-invariant-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-13-T07
+      skill: elmos-distributed-invariant-tla-alloy-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-13-T08
+      skill: elmos-distributed-sql-sharding-placement-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-13-T09
+      skill: elmos-domain-driven-architecture-synthesizer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-13-T10
+      skill: elmos-dual-write-outbox-saga-consistency-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-14
+    title: Capability implementation batch 15
+    dependsOn:
+    - CAP-13
+    tasks:
+    - id: CAP-14-T01
+      skill: elmos-embedding-reranker-model-lifecycle-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-14-T02
+      skill: elmos-enterprise-identity-sso-scim-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-14-T03
+      skill: elmos-eval-observability-platform-integrator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-14-T04
+      skill: elmos-event-stream-storage-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-14-T05
+      skill: elmos-explainability-decision-recourse-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-14-T06
+      skill: elmos-fault-localization-root-cause-synthesizer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-14-T07
+      skill: elmos-federated-retrieval-data-source-router
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-14-T08
+      skill: elmos-fine-tuning-adapter-training-pipeline-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-14-T09
+      skill: elmos-flake-quarantine-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-14-T10
+      skill: elmos-formal-counterexample-to-regression-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-15
+    title: Capability implementation batch 16
+    dependsOn:
+    - CAP-14
+    tasks:
+    - id: CAP-15-T01
+      skill: elmos-formal-method-selection-router
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-15-T02
+      skill: elmos-formal-model-runtime-refinement-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-15-T03
+      skill: elmos-framework-runtime-bridge-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-15-T04
+      skill: elmos-genai-telemetry-profile-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-15-T05
+      skill: elmos-generated-api-event-schema-evolution-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-15-T06
+      skill: elmos-generated-code-secure-defaults-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-15-T07
+      skill: elmos-generated-project-documentation-diagram-runbook-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-15-T08
+      skill: elmos-generated-project-telemetry-learning-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-15-T09
+      skill: elmos-gitops-argocd-flux-release-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-15-T10
+      skill: elmos-gpu-accelerator-capacity-scheduler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-16
+    title: Capability implementation batch 17
+    dependsOn:
+    - CAP-15
+    tasks:
+    - id: CAP-16-T01
+      skill: elmos-graph-database-semantic-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-16-T02
+      skill: elmos-hermetic-remote-build-cache-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-16-T03
+      skill: elmos-human-factors-cognitive-load-evaluator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-16-T04
+      skill: elmos-human-oversight-consent-contract-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-16-T05
+      skill: elmos-incident-command-runbook-automation-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-16-T06
+      skill: elmos-inference-cache-prefix-kv-consistency-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-16-T07
+      skill: elmos-inference-engine-deployment-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-16-T08
+      skill: elmos-knowledge-graph-ontology-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-16-T09
+      skill: elmos-knowledge-source-trust-scoring-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-16-T10
+      skill: elmos-kubernetes-ai-workload-operator-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-17
+    title: Capability implementation batch 18
+    dependsOn:
+    - CAP-16
+    tasks:
+    - id: CAP-17-T01
+      skill: elmos-lakehouse-table-format-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-17-T02
+      skill: elmos-language-runtime-performance-portability-profiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-17-T03
+      skill: elmos-language-semantic-profile-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-17-T04
+      skill: elmos-localization-cultural-policy-adapter
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-17-T05
+      skill: elmos-managed-agent-cloud-deployment-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-17-T06
+      skill: elmos-mcp-2026-profile-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-17-T07
+      skill: elmos-mcp-a2a-acp-bridge-conformance-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-17-T08
+      skill: elmos-mcp-apps-a2ui-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-17-T09
+      skill: elmos-mcp-enterprise-authorization-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-17-T10
+      skill: elmos-mcp-tasks-durable-bridge
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-18
+    title: Capability implementation batch 19
+    dependsOn:
+    - CAP-17
+    tasks:
+    - id: CAP-18-T01
+      skill: elmos-message-ordering-delivery-semantics-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-18-T02
+      skill: elmos-mobile-desktop-cross-platform-test-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-18-T03
+      skill: elmos-model-fallback-semantic-degradation-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-18-T04
+      skill: elmos-model-license-usage-restriction-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-18-T05
+      skill: elmos-model-provider-credit-quota-availability-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-18-T06
+      skill: elmos-model-provider-procurement-contract-evaluator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-18-T07
+      skill: elmos-model-response-schema-evolution-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-18-T08
+      skill: elmos-model-routing-quality-cost-latency-optimizer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-18-T09
+      skill: elmos-model-serving-canary-shadow-rollback-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-18-T10
+      skill: elmos-model-serving-runtime-profile-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-19
+    title: Capability implementation batch 20
+    dependsOn:
+    - CAP-18
+    tasks:
+    - id: CAP-19-T01
+      skill: elmos-modular-monolith-microservice-boundary-analyzer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-19-T02
+      skill: elmos-monorepo-build-graph-sharding-optimizer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-19-T03
+      skill: elmos-multi-agent-budget-scheduler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-19-T04
+      skill: elmos-multi-agent-deadlock-consensus-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-19-T05
+      skill: elmos-multi-agent-topology-delegation-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-19-T06
+      skill: elmos-multi-tenant-saas-foundation-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-19-T07
+      skill: elmos-multimodal-document-intelligence-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-19-T08
+      skill: elmos-nondeterministic-statistical-reliability-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-19-T09
+      skill: elmos-nosql-document-keyvalue-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-19-T10
+      skill: elmos-observability-cardinality-privacy-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-20
+    title: Capability implementation batch 21
+    dependsOn:
+    - CAP-19
+    tasks:
+    - id: CAP-20-T01
+      skill: elmos-on-device-edge-ai-project-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-20-T02
+      skill: elmos-online-schema-change-backfill-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-20-T03
+      skill: elmos-openai-plugin-project-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-20-T04
+      skill: elmos-openapi-arazzo-workflow-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-20-T05
+      skill: elmos-openapi-graphql-grpc-protocol-gateway-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-20-T06
+      skill: elmos-openfeature-progressive-delivery-safety-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-20-T07
+      skill: elmos-orm-persistence-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-20-T08
+      skill: elmos-performance-statistical-gate
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-20-T09
+      skill: elmos-platform-engineering-golden-path-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-20-T10
+      skill: elmos-policy-decision-explainability-audit-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-21
+    title: Capability implementation batch 22
+    dependsOn:
+    - CAP-20
+    tasks:
+    - id: CAP-21-T01
+      skill: elmos-polyglot-build-toolchain-orchestrator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-21-T02
+      skill: elmos-polyglot-differential-runtime
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-21-T03
+      skill: elmos-polyglot-route-matrix-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-21-T04
+      skill: elmos-polyglot-upgrade-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-21-T05
+      skill: elmos-probabilistic-reliability-statistical-model-checker
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-21-T06
+      skill: elmos-product-analytics-telemetry-experiment-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-21-T07
+      skill: elmos-project-estimation-machine-eta-calibrator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-21-T08
+      skill: elmos-prompt-program-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-21-T09
+      skill: elmos-prompt-registry-experiment-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-21-T10
+      skill: elmos-prompt-skill-adapter-canary-promotion-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-22
+    title: Capability implementation batch 23
+    dependsOn:
+    - CAP-21
+    tasks:
+    - id: CAP-22-T01
+      skill: elmos-proof-assistant-lean-dafny-bridge
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-22-T02
+      skill: elmos-proof-to-validation-dag-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-22-T03
+      skill: elmos-property-metamorphic-mutation-fuzz-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-22-T04
+      skill: elmos-protocol-conformance-fuzzing-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-22-T05
+      skill: elmos-protocol-state-machine-model-checker
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-22-T06
+      skill: elmos-query-plan-regression-autotuning-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-22-T07
+      skill: elmos-rag-acl-freshness-deletion-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-22-T08
+      skill: elmos-rag-citation-provenance-chain-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-22-T09
+      skill: elmos-rag-corpus-connector-cdc-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-22-T10
+      skill: elmos-rag-memory-poisoning-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-23
+    title: Capability implementation batch 24
+    dependsOn:
+    - CAP-22
+    tasks:
+    - id: CAP-23-T01
+      skill: elmos-rag-query-planner-optimizer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-23-T02
+      skill: elmos-realtime-voice-multimodal-agent-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-23-T03
+      skill: elmos-release-test-budget-risk-optimizer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-23-T04
+      skill: elmos-retrieval-index-build-compaction-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-23-T05
+      skill: elmos-runtime-sandbox-ebpf-behavior-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-23-T06
+      skill: elmos-saga-workflow-compensation-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-23-T07
+      skill: elmos-schema-registry-compatibility-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-23-T08
+      skill: elmos-search-engine-query-index-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-23-T09
+      skill: elmos-secretless-broker-breakglass-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-23-T10
+      skill: elmos-security-control-coverage-defeater-analyzer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-24
+    title: Capability implementation batch 25
+    dependsOn:
+    - CAP-23
+    tasks:
+    - id: CAP-24-T01
+      skill: elmos-semantic-gap-obligation-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-24-T02
+      skill: elmos-service-virtualization-contract-simulator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-24-T03
+      skill: elmos-smt-solver-trust-but-verify-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-24-T04
+      skill: elmos-software-update-trust-root-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-24-T05
+      skill: elmos-source-target-debuggability-observability-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-24-T06
+      skill: elmos-sql-catalog-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-24-T07
+      skill: elmos-sql-dialect-lowering-engine
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-24-T08
+      skill: elmos-sql-dual-execution-oracle
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-24-T09
+      skill: elmos-sql-query-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-24-T10
+      skill: elmos-sql-routine-trigger-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-25
+    title: Capability implementation batch 26
+    dependsOn:
+    - CAP-24
+    tasks:
+    - id: CAP-25-T01
+      skill: elmos-sql-semantic-gap-analyzer
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-25-T02
+      skill: elmos-static-analysis-multilanguage-security-orchestrator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-25-T03
+      skill: elmos-stored-routine-service-extraction-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-25-T04
+      skill: elmos-structured-output-contract-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-25-T05
+      skill: elmos-supportability-diagnostics-bundle-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-25-T06
+      skill: elmos-symbolic-execution-path-soundness-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-25-T07
+      skill: elmos-target-coding-agent-harness-family-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-25-T08
+      skill: elmos-target-crewai-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-25-T09
+      skill: elmos-target-deepseek-harness-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-25-T10
+      skill: elmos-target-dify-project-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-26
+    title: Capability implementation batch 27
+    dependsOn:
+    - CAP-25
+    tasks:
+    - id: CAP-26-T01
+      skill: elmos-target-google-adk-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-26-T02
+      skill: elmos-target-haystack-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-26-T03
+      skill: elmos-target-langchain-project-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-26-T04
+      skill: elmos-target-langchain4j-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-26-T05
+      skill: elmos-target-langgraph-project-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-26-T06
+      skill: elmos-target-language-backend-emitter
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-26-T07
+      skill: elmos-target-lightweight-agent-sdk-family-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-26-T08
+      skill: elmos-target-llamaindex-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-26-T09
+      skill: elmos-target-mastra-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-26-T10
+      skill: elmos-target-microsoft-agent-framework-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-27
+    title: Capability implementation batch 28
+    dependsOn:
+    - CAP-26
+    tasks:
+    - id: CAP-27-T01
+      skill: elmos-target-openai-agents-sdk-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-27-T02
+      skill: elmos-target-openclaw-assistant-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-27-T03
+      skill: elmos-target-openharness-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-27-T04
+      skill: elmos-target-pi-package-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-27-T05
+      skill: elmos-target-pydanticai-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-27-T06
+      skill: elmos-target-ragflow-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-27-T07
+      skill: elmos-target-spring-ai-project-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-27-T08
+      skill: elmos-target-symphony-workflow-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-27-T09
+      skill: elmos-target-universal-rag-project-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-27-T10
+      skill: elmos-target-vercel-ai-sdk-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-28
+    title: Capability implementation batch 29
+    dependsOn:
+    - CAP-27
+    tasks:
+    - id: CAP-28-T01
+      skill: elmos-target-visual-agent-platform-family-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-28-T02
+      skill: elmos-template-marketplace-package-lifecycle-governor
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-28-T03
+      skill: elmos-temporal-knowledge-memory-conflict-resolver
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-28-T04
+      skill: elmos-tenant-cryptographic-key-isolation-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-28-T05
+      skill: elmos-terraform-pulumi-crossplane-infra-generator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-28-T06
+      skill: elmos-test-environment-service-virtualization-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-28-T07
+      skill: elmos-test-fixture-data-factory
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-28-T08
+      skill: elmos-test-matrix-covering-array-planner
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-28-T09
+      skill: elmos-tool-discovery-description-quality-evaluator
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-28-T10
+      skill: elmos-transaction-locking-equivalence-verifier
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+  - id: CAP-29
+    title: Capability implementation batch 30
+    dependsOn:
+    - CAP-28
+    tasks:
+    - id: CAP-29-T01
+      skill: elmos-user-feedback-issue-to-eval-dataset-pipeline
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-29-T02
+      skill: elmos-vector-database-index-ir-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-29-T03
+      skill: elmos-vector-store-migration-benchmark-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-29-T04
+      skill: elmos-wasm-component-wit-portability-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-29-T05
+      skill: elmos-webhook-delivery-security-reliability-controller
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion
+    - id: CAP-29-T06
+      skill: elmos-zero-trust-service-identity-policy-compiler
+      status: not-started
+      acceptance:
+      - exact RevisionSet and environment bound
+      - native/negative/failure evidence produced
+      - critical UNKNOWN blocks completion

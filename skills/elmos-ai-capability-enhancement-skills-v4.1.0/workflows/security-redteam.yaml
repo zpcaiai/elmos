@@ -1,0 +1,113 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableWorkflow
+metadata:
+  name: security-redteam
+  title: Prompt/tool/tenant security red team
+spec:
+  routeOwner: domain-pack.project-generation
+  revisionBound: true
+  nodes:
+  - id: build-threat-model
+    sequence: 0
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+  - id: generate-attack-corpus
+    sequence: 1
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - build-threat-model
+  - id: run-direct-injection
+    sequence: 2
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - generate-attack-corpus
+  - id: run-indirect-injection
+    sequence: 3
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - run-direct-injection
+  - id: run-tool-escalation
+    sequence: 4
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - run-indirect-injection
+  - id: run-data-exfiltration
+    sequence: 5
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - run-tool-escalation
+  - id: run-memory-poisoning
+    sequence: 6
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - run-data-exfiltration
+  - id: run-cross-tenant
+    sequence: 7
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - run-memory-poisoning
+  - id: remediate-and-retest
+    sequence: 8
+    owner: K6
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - run-cross-tenant
+  terminalStates:
+  - COMPLETED
+  - BLOCKED
+  - FAILED
+  - CANCELLED
+  authority: Environment-owned; every write checks tenant, epoch, lease generation and fencing
+  evidence: each node emits immutable evidence or explicit NOT_EXECUTED reason

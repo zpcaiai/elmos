@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "vector-store-benchmark-result-example",
+  "status": "READY",
+  "content_hash": "69f6218fe9ada3e410da39d265b07e00e4c83cb68e190c3b51198aea8992ba40",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

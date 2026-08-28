@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AIComplianceProfile",
+  "type": "object",
+  "required": [
+    "profileId",
+    "jurisdictions",
+    "frameworks",
+    "effectiveAt",
+    "controls",
+    "legalReviewRequired"
+  ],
+  "properties": {
+    "profileId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jurisdictions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "frameworks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "effectiveAt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "minItems": 1
+    },
+    "unresolvedDecisions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "legalReviewRequired": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

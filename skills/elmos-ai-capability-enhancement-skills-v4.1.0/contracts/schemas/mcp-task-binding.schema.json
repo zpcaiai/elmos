@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MCPTaskBinding",
+  "type": "object",
+  "required": [
+    "mcpTaskId",
+    "runId",
+    "executionEpoch",
+    "leaseGeneration",
+    "state",
+    "sideEffectState"
+  ],
+  "properties": {
+    "mcpTaskId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "executionEpoch": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "leaseGeneration": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "state": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "SUBMITTED",
+        "WORKING",
+        "INPUT_REQUIRED",
+        "COMPLETED",
+        "FAILED",
+        "CANCELLED",
+        "BLOCKED"
+      ]
+    },
+    "sideEffectState": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "NONE",
+        "PENDING",
+        "SETTLED",
+        "UNKNOWN"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

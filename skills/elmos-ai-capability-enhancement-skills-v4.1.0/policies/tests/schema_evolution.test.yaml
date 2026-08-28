@@ -1,0 +1,33 @@
+policy: elmos.ai_factory.v4.schema_evolution
+version: 4.0.0
+cases:
+- name: allow-complete-evidence
+  input:
+    tenant_id: t1
+    revision_set_id: r1
+    authority_resolved: true
+    critical_unknown: 0
+    critical_refuted: 0
+    side_effects_settled: true
+    policy_specific_pass: true
+  expectedAllow: true
+- name: deny-missing-authority
+  input:
+    tenant_id: t1
+    revision_set_id: r1
+    authority_resolved: false
+    critical_unknown: 0
+    critical_refuted: 0
+    side_effects_settled: true
+    policy_specific_pass: true
+  expectedAllow: false
+- name: deny-specific-failure
+  input:
+    tenant_id: t1
+    revision_set_id: r1
+    authority_resolved: true
+    critical_unknown: 0
+    critical_refuted: 0
+    side_effects_settled: true
+    policy_specific_pass: false
+  expectedAllow: false

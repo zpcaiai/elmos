@@ -1,0 +1,23 @@
+{
+  "allow": [
+    {
+      "signature_status": "verified",
+      "provenance_complete": true,
+      "permission_delta": []
+    }
+  ],
+  "deny": [
+    {
+      "signature_status": "unverified",
+      "provenance_complete": true,
+      "permission_delta": []
+    },
+    {
+      "signature_status": "verified",
+      "provenance_complete": true,
+      "permission_delta": [
+        "network:new"
+      ]
+    }
+  ]
+}

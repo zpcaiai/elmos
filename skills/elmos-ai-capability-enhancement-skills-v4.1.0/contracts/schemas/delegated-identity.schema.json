@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DelegatedIdentity",
+  "type": "object",
+  "required": [
+    "agentId",
+    "workloadId",
+    "delegatedScopes",
+    "audience",
+    "expiresAt",
+    "attestationHash"
+  ],
+  "properties": {
+    "humanSubject": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agentId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "workloadId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "delegatedScopes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "audience": {
+      "type": "string",
+      "minLength": 1
+    },
+    "issuedAt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expiresAt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "attestationHash": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MCPAuthorizationProfile",
+  "type": "object",
+  "required": [
+    "issuer",
+    "audience",
+    "scopes",
+    "tokenTtlSeconds"
+  ],
+  "properties": {
+    "issuer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "audience": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scopes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "resourceIndicators": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "consentRequired": {
+      "type": "boolean"
+    },
+    "tokenTtlSeconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "revocation": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

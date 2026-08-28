@@ -1,0 +1,9 @@
+{
+  "sourceId": "sharepoint-contracts",
+  "snapshotVersion": "s-10",
+  "cursor": "c-99",
+  "eventsApplied": 1200,
+  "tombstonesApplied": 4,
+  "reconciliationGaps": 0,
+  "state": "complete"
+}

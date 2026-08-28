@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "VerificationCounterexample",
+  "metadata": {
+    "id": "verification-counterexample-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "obligationId": "example-obligationId",
+    "minimalInput": {},
+    "observation": {},
+    "regressionId": "example-regressionId"
+  }
+}

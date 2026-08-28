@@ -1,0 +1,11 @@
+{
+  "policy": "flaky_test_honesty",
+  "positive": {
+    "quarantines_have_owner_expiry": true,
+    "first_failure_preserved": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

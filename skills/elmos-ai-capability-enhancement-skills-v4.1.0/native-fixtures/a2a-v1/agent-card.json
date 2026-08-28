@@ -1,0 +1,19 @@
+{
+  "protocolVersion": "1.0",
+  "name": "contract-agent",
+  "url": "https://agent.invalid/a2a",
+  "capabilities": {
+    "streaming": true
+  },
+  "skills": [
+    {
+      "id": "review",
+      "name": "Contract Review"
+    }
+  ],
+  "securitySchemes": {
+    "oidc": {
+      "type": "openIdConnect"
+    }
+  }
+}

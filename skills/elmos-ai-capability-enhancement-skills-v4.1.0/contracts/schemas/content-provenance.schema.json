@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContentProvenance",
+  "type": "object",
+  "required": [
+    "artifactId",
+    "modality",
+    "generatedByAI",
+    "visibleLabel",
+    "machineMark",
+    "jurisdictions",
+    "provenanceHash"
+  ],
+  "properties": {
+    "artifactId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "modality": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "text",
+        "image",
+        "audio",
+        "video",
+        "mixed"
+      ]
+    },
+    "generatedByAI": {
+      "type": "boolean"
+    },
+    "visibleLabel": {
+      "type": "string",
+      "minLength": 1
+    },
+    "machineMark": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jurisdictions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "transformTests": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "provenanceHash": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,73 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableWorkflow
+metadata:
+  name: trusted-a2a-delegation
+  version: 4.0.0
+spec:
+  authority: Environment-owned
+  failureMode: fail-closed
+  steps:
+  - id: compile-agent-card
+    ordinal: 1
+    dependsOn: []
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: sign-and-verify
+    ordinal: 2
+    dependsOn:
+    - compile-agent-card
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: discover-and-pin
+    ordinal: 3
+    dependsOn:
+    - sign-and-verify
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: attest-workload
+    ordinal: 4
+    dependsOn:
+    - discover-and-pin
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: issue-delegated-credential
+    ordinal: 5
+    dependsOn:
+    - attest-workload
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: run-a2a-task
+    ordinal: 6
+    dependsOn:
+    - issue-delegated-credential
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: revoke-and-audit
+    ordinal: 7
+    dependsOn:
+    - run-a2a-task
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  terminalGate: independent K8 evaluation
+  machineEtaRequired: true

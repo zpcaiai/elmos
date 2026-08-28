@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "schema-evolution-plan-example",
+  "status": "READY",
+  "content_hash": "3bd0e2d90c6af4d4f31fccb975f8489bc420333182c64dba097a2ba016e7b0b0",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "steps": [
+    {
+      "id": "S1",
+      "action": "freeze exact versions",
+      "depends_on": []
+    }
+  ],
+  "rollback_steps": [
+    "restore prior signed artifact"
+  ],
+  "proof_obligations": [
+    "PO-example"
+  ]
+}

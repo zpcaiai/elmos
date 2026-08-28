@@ -1,0 +1,28 @@
+{
+  "traceId": "trace-1",
+  "revisionSetId": "rev-1",
+  "events": [
+    {
+      "id": "e1",
+      "type": "input",
+      "sequence": 0,
+      "timestamp": "2026-08-28T00:00:00Z",
+      "causes": [],
+      "payloadHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "semanticKey": "question",
+      "status": "OK"
+    },
+    {
+      "id": "e2",
+      "type": "terminal",
+      "sequence": 1,
+      "timestamp": "2026-08-28T00:00:01Z",
+      "causes": [
+        "e1"
+      ],
+      "payloadHash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "semanticKey": "completed",
+      "status": "COMPLETED"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: argocd
+  ecosystem: Argo CD
+  version: 4.0.0
+spec:
+  adapterKind: gitops
+  maturity: P1
+  modes:
+  - applications
+  - sync
+  - health
+  - rollback
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - argocd exact-version profile
+  - argocd capability and semantic-gap map
+  - argocd native conformance evidence
+  - argocd deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

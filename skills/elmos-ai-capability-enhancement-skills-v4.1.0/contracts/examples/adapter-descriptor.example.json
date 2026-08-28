@@ -1,0 +1,22 @@
+{
+  "name": "langgraph-python",
+  "kind": "graph-runtime",
+  "interfaces": [
+    "detect",
+    "profile",
+    "import",
+    "lower",
+    "emit",
+    "native_validate",
+    "upgrade",
+    "evidence"
+  ],
+  "versionPolicy": {
+    "exactVersion": true,
+    "digest": true
+  },
+  "failureMode": "fail-closed",
+  "capabilities": {
+    "durable_execution": "supported"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "allow": [
+    {
+      "action_digest": "x",
+      "approval": {
+        "action_digest": "x",
+        "status": "approved",
+        "expires_at": 20
+      },
+      "now": 10,
+      "distinct_qualified_approvers": [
+        "a",
+        "b"
+      ],
+      "required_approvals": 2
+    }
+  ],
+  "deny": [
+    {
+      "action_digest": "x",
+      "approval": {
+        "action_digest": "y",
+        "status": "approved",
+        "expires_at": 20
+      },
+      "now": 10,
+      "distinct_qualified_approvers": [
+        "a",
+        "b"
+      ],
+      "required_approvals": 2
+    }
+  ]
+}

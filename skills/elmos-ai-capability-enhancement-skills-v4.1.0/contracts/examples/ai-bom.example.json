@@ -1,0 +1,41 @@
+{
+  "bomId": "aibom-1",
+  "revisionSetId": "rev-1",
+  "models": [
+    {
+      "id": "model-a",
+      "digest": "6666666666666666666666666666666666666666666666666666666666666666"
+    }
+  ],
+  "datasets": [
+    {
+      "id": "eval-1",
+      "digest": "7777777777777777777777777777777777777777777777777777777777777777"
+    }
+  ],
+  "prompts": [
+    {
+      "id": "p1",
+      "digest": "8888888888888888888888888888888888888888888888888888888888888888"
+    }
+  ],
+  "skills": [
+    {
+      "id": "s1",
+      "digest": "9999999999999999999999999999999999999999999999999999999999999999"
+    }
+  ],
+  "tools": [
+    {
+      "id": "t1",
+      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ],
+  "adapters": [
+    {
+      "id": "langgraph",
+      "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ],
+  "provenanceStatus": "complete"
+}

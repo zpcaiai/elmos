@@ -1,0 +1,771 @@
+apiVersion: elmos.ai/v3alpha1
+kind: VersionSupportMatrix
+metadata:
+  version: 4.0.0
+spec:
+  states:
+  - certified
+  - supported
+  - conditional
+  - experimental
+  - detected-only
+  - deprecated
+  - blocked
+  rows:
+  - adapter: a2a
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: a2a-v1
+    declaredFamilyOrProtocol: '1.0'
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: a2ui-v1
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: ag-ui
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: agent-skills-standard
+    declaredFamilyOrProtocol: current-open-spec
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: agentic-resource-discovery
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: agno
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: aider
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: arize-phoenix
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: autogen-compat
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: aws-bedrock-agentcore
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: browser-computer-use
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: camel-ai
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: claude-code
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: cline-roo
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: codex
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: continue
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: coze-studio
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: crewai
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: databricks-agents
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: deepseek-harness
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: dify
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: dspy
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: fastgpt
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: flowise-compat
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: gemini-cli
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: google-adk-go
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: google-adk-java
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: google-adk-python
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: google-adk-typescript
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: google-gemini-enterprise-agent-platform
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: haystack-python
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: langchain-python
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: langchain-typescript
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: langchain4j
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: langflow
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: langgraph-python
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: langgraph-typescript
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: langsmith
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: litellm
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: llamaindex-python
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: llamaindex-typescript
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: mastra
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: mcp
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: mcp-2026-07-28
+    declaredFamilyOrProtocol: '2026-07-28'
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: mcp-apps
+    declaredFamilyOrProtocol: 2026-07-28-extension
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: microsoft-agent-framework-dotnet
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: microsoft-agent-framework-python
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: microsoft-foundry-agent-service
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: microsoft-graphrag
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: milvus
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: mlflow-genai
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: n8n-ai
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: neo4j-graphrag
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: ollama
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: openai-agents-python
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: openai-agents-typescript
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: openai-plugins
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: openapi-tools
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: openclaw
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: opencode
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: openhands
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: openharness
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: openinference-compatible
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: openrouter
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: opentelemetry
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: pgvector
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: pi
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: pydanticai-python
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: qdrant
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: qwen-agent
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: ragflow
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: semantic-kernel-compat
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: sglang
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: smolagents
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: spiffe-spire
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: spring-ai-java
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: strands-agents
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: swarm-compat
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: symphony
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: universal-rag
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: vercel-ai-sdk
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: vllm
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  - adapter: weaviate
+    declaredFamilyOrProtocol: release-time-pin
+    defaultSupportState: conditional-until-native-conformance
+    releaseResolution: exact at release time
+    evidenceInvalidators:
+    - upstream API/protocol/schema change
+    - SDK/runtime/image digest change
+    - authorization or region behavior change
+    - conformance suite change
+  rule: No moving latest alias can be certified.

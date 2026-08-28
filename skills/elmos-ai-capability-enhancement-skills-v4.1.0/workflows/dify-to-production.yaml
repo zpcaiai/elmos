@@ -1,0 +1,113 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableWorkflow
+metadata:
+  name: dify-to-production
+  title: Dify DSL to production code
+spec:
+  routeOwner: domain-pack.project-generation
+  revisionBound: true
+  nodes:
+  - id: import-dify
+    sequence: 0
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+  - id: recover-ai-sir
+    sequence: 1
+    owner: K3
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - import-dify
+  - id: negotiate-langgraph-spring
+    sequence: 2
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - recover-ai-sir
+  - id: emit-langgraph
+    sequence: 3
+    owner: K5
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - negotiate-langgraph-spring
+  - id: emit-spring-ai
+    sequence: 4
+    owner: K5
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - emit-langgraph
+  - id: native-import-build-start
+    sequence: 5
+    owner: K1
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - emit-spring-ai
+  - id: record-normalized-traces
+    sequence: 6
+    owner: K3
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - native-import-build-start
+  - id: differential-validate
+    sequence: 7
+    owner: K6
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - record-normalized-traces
+  - id: certify
+    sequence: 8
+    owner: K8
+    retry:
+      maxAttempts: 3
+      backoff: exponential
+      idempotencyRequired: true
+    checkpoint: true
+    failure: BLOCKED for critical unknown; otherwise route counterexample to bounded repair
+    dependsOn:
+    - differential-validate
+  terminalStates:
+  - COMPLETED
+  - BLOCKED
+  - FAILED
+  - CANCELLED
+  authority: Environment-owned; every write checks tenant, epoch, lease generation and fencing
+  evidence: each node emits immutable evidence or explicit NOT_EXECUTED reason

@@ -1,0 +1,5 @@
+target: release-time-select
+identity: workload-identity
+network: deny-by-default
+exitPlan:
+  exportAI_SIR: true

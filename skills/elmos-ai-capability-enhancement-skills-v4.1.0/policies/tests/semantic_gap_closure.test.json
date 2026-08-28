@@ -1,0 +1,11 @@
+{
+  "policy": "semantic_gap_closure",
+  "positive": {
+    "all_gaps_classified": true,
+    "allowed_delta_authorized": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InteractionContract",
+  "type": "object",
+  "required": [
+    "channels",
+    "streaming"
+  ],
+  "properties": {
+    "channels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "web",
+              "rest",
+              "sse",
+              "websocket",
+              "cli",
+              "tui",
+              "mobile",
+              "messaging",
+              "voice",
+              "realtime",
+              "ag-ui",
+              "generative-ui"
+            ]
+          },
+          "authRequired": {
+            "type": "boolean"
+          },
+          "accessibility": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "streaming": {
+      "type": "object",
+      "required": [
+        "events",
+        "resume"
+      ],
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "resume": {
+          "type": "boolean"
+        },
+        "backpressure": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

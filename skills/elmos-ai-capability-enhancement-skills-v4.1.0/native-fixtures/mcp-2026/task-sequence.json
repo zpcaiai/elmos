@@ -1,0 +1,16 @@
+{
+  "states": [
+    "ACCEPTED",
+    "RUNNING",
+    "WAITING_INPUT",
+    "RUNNING",
+    "COMPLETED"
+  ],
+  "fencing": [
+    1,
+    1,
+    1,
+    1,
+    1
+  ]
+}

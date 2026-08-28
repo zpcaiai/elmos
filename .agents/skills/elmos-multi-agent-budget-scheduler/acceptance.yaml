@@ -1,0 +1,142 @@
+apiVersion: elmos.ai/v3alpha1
+kind: AcceptanceSuite
+metadata:
+  name: elmos-multi-agent-budget-scheduler
+  version: 4.0.0
+spec:
+  minimumAssurance: A2 for critical; A1 otherwise
+  scenarios:
+  - id: ELMOS_MULTI_AGENT_BUDGET_SCHEDULER_AC_01
+    title: critical path allocation
+    class: native-or-domain
+    given: an exact RevisionSet, exact target/tool versions and authorized typed inputs
+    when: elmos-multi-agent-budget-scheduler executes this scenario in an isolated reproducible environment
+    then: the declared semantic, security, recovery and evidence assertions hold; uncertainty is explicit and critical uncertainty
+      blocks
+    automation: required
+    evidence:
+    - command+exit-code
+    - input/output hashes
+    - trace or native log
+    - proof result
+  - id: ELMOS_MULTI_AGENT_BUDGET_SCHEDULER_AC_02
+    title: fanout cap
+    class: native-or-domain
+    given: an exact RevisionSet, exact target/tool versions and authorized typed inputs
+    when: elmos-multi-agent-budget-scheduler executes this scenario in an isolated reproducible environment
+    then: the declared semantic, security, recovery and evidence assertions hold; uncertainty is explicit and critical uncertainty
+      blocks
+    automation: required
+    evidence:
+    - command+exit-code
+    - input/output hashes
+    - trace or native log
+    - proof result
+  - id: ELMOS_MULTI_AGENT_BUDGET_SCHEDULER_AC_03
+    title: budget reallocation
+    class: native-or-domain
+    given: an exact RevisionSet, exact target/tool versions and authorized typed inputs
+    when: elmos-multi-agent-budget-scheduler executes this scenario in an isolated reproducible environment
+    then: the declared semantic, security, recovery and evidence assertions hold; uncertainty is explicit and critical uncertainty
+      blocks
+    automation: required
+    evidence:
+    - command+exit-code
+    - input/output hashes
+    - trace or native log
+    - proof result
+  - id: ELMOS_MULTI_AGENT_BUDGET_SCHEDULER_AC_04
+    title: tenant fairness
+    class: native-or-domain
+    given: an exact RevisionSet, exact target/tool versions and authorized typed inputs
+    when: elmos-multi-agent-budget-scheduler executes this scenario in an isolated reproducible environment
+    then: the declared semantic, security, recovery and evidence assertions hold; uncertainty is explicit and critical uncertainty
+      blocks
+    automation: required
+    evidence:
+    - command+exit-code
+    - input/output hashes
+    - trace or native log
+    - proof result
+  - id: ELMOS_MULTI_AGENT_BUDGET_SCHEDULER_AC_05
+    title: degraded mode
+    class: native-or-domain
+    given: an exact RevisionSet, exact target/tool versions and authorized typed inputs
+    when: elmos-multi-agent-budget-scheduler executes this scenario in an isolated reproducible environment
+    then: the declared semantic, security, recovery and evidence assertions hold; uncertainty is explicit and critical uncertainty
+      blocks
+    automation: required
+    evidence:
+    - command+exit-code
+    - input/output hashes
+    - trace or native log
+    - proof result
+  - id: ELMOS_MULTI_AGENT_BUDGET_SCHEDULER_AC_06
+    title: hard cost stop
+    class: native-or-domain
+    given: an exact RevisionSet, exact target/tool versions and authorized typed inputs
+    when: elmos-multi-agent-budget-scheduler executes this scenario in an isolated reproducible environment
+    then: the declared semantic, security, recovery and evidence assertions hold; uncertainty is explicit and critical uncertainty
+      blocks
+    automation: required
+    evidence:
+    - command+exit-code
+    - input/output hashes
+    - trace or native log
+    - proof result
+  - id: ELMOS_MULTI_AGENT_BUDGET_SCHEDULER_NEG_01
+    title: critical unknown cannot pass
+    class: negative
+    given: the named adverse condition is injected
+    when: the Skill and independent gate evaluate the run
+    then: K8 returns BLOCKED
+    automation: required
+    evidence:
+    - negative fixture
+    - policy decision
+    - terminal run state
+  - id: ELMOS_MULTI_AGENT_BUDGET_SCHEDULER_NEG_02
+    title: stale fencing cannot write
+    class: negative
+    given: the named adverse condition is injected
+    when: the Skill and independent gate evaluate the run
+    then: worker result is rejected and audited
+    automation: required
+    evidence:
+    - negative fixture
+    - policy decision
+    - terminal run state
+  - id: ELMOS_MULTI_AGENT_BUDGET_SCHEDULER_NEG_03
+    title: unsupported feature cannot disappear
+    class: negative
+    given: the named adverse condition is injected
+    when: the Skill and independent gate evaluate the run
+    then: gap ledger contains the feature and critical path blocks
+    automation: required
+    evidence:
+    - negative fixture
+    - policy decision
+    - terminal run state
+  - id: ELMOS_MULTI_AGENT_BUDGET_SCHEDULER_NEG_04
+    title: tampered evidence cannot certify
+    class: negative
+    given: the named adverse condition is injected
+    when: the Skill and independent gate evaluate the run
+    then: Merkle/signature verification fails
+    automation: required
+    evidence:
+    - negative fixture
+    - policy decision
+    - terminal run state
+  - id: ELMOS_MULTI_AGENT_BUDGET_SCHEDULER_NEG_05
+    title: budget exhaustion is bounded
+    class: negative
+    given: the named adverse condition is injected
+    when: the Skill and independent gate evaluate the run
+    then: run checkpoints, reconciles side effects and terminates without ghost completion
+    automation: required
+    evidence:
+    - negative fixture
+    - policy decision
+    - terminal run state
+  releaseRule: all required scenarios explicit; critical failed/unknown/unsupported => BLOCKED

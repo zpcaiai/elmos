@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: k6
+  ecosystem: Grafana k6
+  version: 4.0.0
+spec:
+  adapterKind: load-testing
+  maturity: P1
+  modes:
+  - load
+  - thresholds
+  - browser
+  - distributed
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - k6 exact-version profile
+  - k6 capability and semantic-gap map
+  - k6 native conformance evidence
+  - k6 deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

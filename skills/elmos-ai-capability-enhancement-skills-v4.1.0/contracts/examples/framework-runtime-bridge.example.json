@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "FrameworkRuntimeBridge",
+  "metadata": {
+    "id": "framework-runtime-bridge-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "sourceFramework": "example-sourceFramework",
+    "targetFramework": "example-targetFramework",
+    "lifecycleMappings": [],
+    "obligations": []
+  }
+}

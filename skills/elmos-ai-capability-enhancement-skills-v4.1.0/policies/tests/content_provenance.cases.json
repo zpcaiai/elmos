@@ -1,0 +1,18 @@
+{
+  "allow": [
+    {
+      "required_visible_label_present": true,
+      "required_machine_mark_present": true,
+      "interaction_disclosure_present": true,
+      "provenance_bound": true
+    }
+  ],
+  "deny": [
+    {
+      "required_visible_label_present": false,
+      "required_machine_mark_present": true,
+      "interaction_disclosure_present": true,
+      "provenance_bound": true
+    }
+  ]
+}

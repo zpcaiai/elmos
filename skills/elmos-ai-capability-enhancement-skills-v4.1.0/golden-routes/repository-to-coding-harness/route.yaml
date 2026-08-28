@@ -1,0 +1,49 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CommercialGoldenRoute
+metadata:
+  name: repository-to-coding-harness
+  version: 4.0.0
+  status: not-certified
+spec:
+  skill: elmos-ai-golden-route-repository-to-coding-harness
+  workflow: workflows/repository-to-coding-harness.yaml
+  source: immutable software repository + build/test/runtime evidence
+  targets:
+  - pi
+  - deepseek-harness
+  - openharness
+  - codex
+  - claude-code
+  - opencode
+  eligibility:
+  - repository baseline reproducible or explicitly classified
+  - allowed tool/paths/network declared
+  - benchmark tasks available
+  requiredEvidence:
+  - package/skill/plugin native load
+  - sandbox deny tests
+  - repository task benchmarks
+  - Git lineage
+  - independent build/test/review evidence
+  benchmark:
+    independentRepetitions: 3
+    holdoutRequired: true
+    customerAcceptanceRequired: true
+    machineWallClockRequired: true
+    costLedgerRequired: true
+  releaseGate:
+    E0toE5: true
+    P05ForProduction: true
+    criticalUnknown: BLOCK
+    sideEffectsSettled: true
+    exactRevisionSet: true
+    evidenceFreshnessRequired: true
+    independentCertifier: true
+  nonClaim: This route is a contract until executed on exact source/target revisions with sealed evidence.
+  routeOwner: domain-pack.project-generation
+  routable: false
+  holdoutScenarios:
+  - unseen repository variant
+  - upstream upgrade drift
+  - worker failure and resume
+  - rollback after partial side effect

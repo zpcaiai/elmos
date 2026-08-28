@@ -1,0 +1,13 @@
+{
+  "agents": [
+    {
+      "id": "assistant",
+      "workspace": "workspace"
+    }
+  ],
+  "plugins": {
+    "allow": [
+      "enterprise-plugin"
+    ]
+  }
+}

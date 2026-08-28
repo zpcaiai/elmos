@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "debug-observability-parity-example",
+  "status": "READY",
+  "content_hash": "b6b389d0cb660e64e45ea166c12d23b2d4a0ce87c3667a7abee1b7b30b2e9695",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "nodes": [
+    {
+      "id": "N1"
+    }
+  ],
+  "edges": [],
+  "semantic_gaps": []
+}
