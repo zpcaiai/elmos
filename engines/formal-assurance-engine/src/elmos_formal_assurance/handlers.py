@@ -29,8 +29,8 @@ from .contracts import (
 )
 from .gate import evaluate_release_gate, validate_result
 from .planner import PlanError, serialize_plan, topological_order
-from .store import StateStore, StoreError
-from .artifact_store import ContentAddressedArtifactStore
+from .store import StateStore, StoreError, result_to_dict
+from .artifact_store import ArtifactStore
 
 
 class HandlerError(ValueError):
@@ -47,7 +47,7 @@ class HandlerContext:
     identity: TrustedIdentity
     payload: dict[str, Any]
     store: StateStore
-    artifact_store: ContentAddressedArtifactStore | None = None
+    artifact_store: ArtifactStore | None = None
     production: Any | None = None
 
 
@@ -910,17 +910,45 @@ def _release_gate(ctx: HandlerContext) -> SkillOutcome:
             ctx.payload.get("externalEvidenceComplete", False)
         ),
     )
+    evaluated_at = utc_now()
+    policy_revision = str(ctx.payload.get("policyRevision", "local-policy-v1"))
+    gate = str(ctx.payload.get("requiredGate", "E2_MODEL"))
+    evidence_hash = digest_value(
+        {
+            "scope": ctx.scope.to_dict(),
+            "subjectId": ctx.subject_id,
+            "gate": gate,
+            "obligations": [item.id for item in obligations],
+            "results": [result_to_dict(item) for item in parsed_results],
+            "waivers": sorted(waivers),
+            "policyRevision": policy_revision,
+        }
+    ).removeprefix("sha256:")
+    decision_id = "gate-" + evidence_hash[:32]
     decision_document = {
+        "id": decision_id,
+        "tenant": {
+            key: value
+            for key, value in {
+                "tenantId": ctx.scope.tenant_id,
+                "accountId": ctx.scope.account_id,
+                "projectId": ctx.scope.project_id,
+                "dataClassification": ctx.scope.data_classification,
+            }.items()
+            if value is not None
+        },
         "subjectId": ctx.subject_id,
-        "requiredGate": str(ctx.payload.get("requiredGate", "E2_MODEL")),
-        "policyRevision": str(ctx.payload.get("policyRevision", "local-policy-v1")),
-        "decision": decision.to_dict(),
-        "evaluatedAt": utc_now(),
+        "gate": gate,
+        "decision": decision.decision,
+        "policyRevision": policy_revision,
+        "evaluatedAt": evaluated_at,
+        "blockingReasons": list(decision.blocking_reasons),
+        "evidenceHash": evidence_hash,
     }
     registration = ctx.store.put_document(
         ctx.scope,
         "gate_decision",
-        ctx.subject_id,
+        decision_id,
         decision_document,
         version="decision-" + digest_value(decision_document).removeprefix("sha256:")[:24],
     )
@@ -928,6 +956,7 @@ def _release_gate(ctx: HandlerContext) -> SkillOutcome:
         ctx,
         {
             "gateDecision": decision.to_dict(),
+            "gateDocument": decision_document,
             "policy": "unknown-and-bounded-fail-closed",
             "certification": "NOT_CERTIFIED",
             "registration": registration,
@@ -2373,6 +2402,10 @@ def _counterexample(ctx: HandlerContext) -> SkillOutcome:
             "redacted": redacted_witness != witness,
             "registration": registration,
         },
+        status=ProofStatus.REFUTED_WITH_COUNTEREXAMPLE,
+        assurance=AssuranceLevel.NONE,
+        mode="RUNTIME",
+        capability_state="LOCAL_COUNTEREXAMPLE_REPLAY_MATERIALIZED",
     )
 
 

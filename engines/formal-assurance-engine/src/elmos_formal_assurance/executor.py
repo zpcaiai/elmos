@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .artifact_store import ContentAddressedArtifactStore
+from .artifact_store import ArtifactStore
 from .canonical import canonical_json, digest_value, validate_digest, validate_identifier
 from .contracts import AssuranceLevel, ProofResult, ProofRunState, ProofStatus, Scope
 from .store import StateStore, StoreError
@@ -25,7 +25,7 @@ class LocalBoundedExecutor:
     def __init__(
         self,
         store: StateStore,
-        artifact_store: ContentAddressedArtifactStore | None = None,
+        artifact_store: ArtifactStore | None = None,
     ) -> None:
         self.store = store
         self.artifact_store = artifact_store
