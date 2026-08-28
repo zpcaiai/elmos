@@ -24,6 +24,13 @@ from .commercial_request import (
     parse_commercial_request_json,
 )
 from .models import CommercialAssessRequest
+from .skill_runtime import (
+    MAX_REQUEST_BYTES,
+    SKILLS_BY_ID,
+    execute_skill,
+    parse_skill_request_json,
+    skill_capabilities,
+)
 from .transpiler import _require_pinned_parser
 
 MAX_HTTP_ENVELOPE_BYTES = 1_310_720
@@ -32,6 +39,7 @@ MAX_HTTP_PARAMETERS = 256
 MAX_HTTP_STATEMENTS = 256
 MAX_HTTP_RESPONSE_BYTES = 4 * 1024 * 1024
 MAX_CONCURRENT_ASSESSMENTS = 1
+MAX_CONCURRENT_SKILL_RUNS = 4
 ASSESSMENT_TIMEOUT_SECONDS = 15.0
 
 _HTTP_REQUEST_LIMITS = CommercialRequestLimits(
@@ -46,7 +54,7 @@ _OUTPUT_LIMIT_PREFIX = b"L"
 _INTERNAL_ERROR_PREFIX = b"I"
 
 
-@dataclass(frozen=True)
+@dataclass
 class SidecarFailure(Exception):
     status_code: int
     error_code: str
@@ -152,9 +160,7 @@ def _assert_fail_closed_assessment(value: dict[str, Any]) -> None:
     blockers = value.get("blockers")
     if not isinstance(statements, list) or not isinstance(blockers, list) or not blockers:
         raise AssertionError("commercial assessment statements are absent")
-    if (source_parse == "PASSED" and not statements) or (
-        source_parse == "FAILED" and statements
-    ):
+    if (source_parse == "PASSED" and not statements) or (source_parse == "FAILED" and statements):
         raise AssertionError("commercial assessment parse evidence is inconsistent")
     for statement in statements:
         if (
@@ -166,6 +172,43 @@ def _assert_fail_closed_assessment(value: dict[str, Any]) -> None:
             or not statement["obligations"]
         ):
             raise AssertionError("commercial assessment typed statements are invalid")
+
+
+def _assert_fail_closed_skill_result(value: dict[str, Any]) -> None:
+    required = {
+        "schemaVersion",
+        "package",
+        "runtimeVersion",
+        "skillId",
+        "alias",
+        "handlerId",
+        "scope",
+        "state",
+        "localCodeStatus",
+        "requestDigest",
+        "artifactDigest",
+        "artifacts",
+        "checks",
+        "blockers",
+        "effects",
+        "verification",
+        "certification",
+        "resultDigest",
+    }
+    if set(value) != required:
+        raise AssertionError("commercial Skill result fields escaped the exact contract")
+    effects = value.get("effects")
+    verification = value.get("verification")
+    if not isinstance(effects, dict) or not isinstance(verification, dict):
+        raise AssertionError("commercial Skill result evidence boundary is absent")
+    if (
+        value.get("localCodeStatus") != "CODE_IMPLEMENTED"
+        or value.get("certification") != "NOT_CERTIFIED"
+        or effects.get("externalEffectsExecuted") != []
+        or verification.get("externalExecution") != "NOT_RUN"
+        or verification.get("independentVerification") != "NOT_RUN"
+    ):
+        raise AssertionError("commercial Skill result escaped fail-closed boundaries")
 
 
 def _send_child_message(connection: Connection, value: bytes) -> None:
@@ -303,8 +346,7 @@ def _content_type_is_json(value: str | None) -> bool:
         return False
     parameters = parts[1:]
     return not parameters or (
-        len(parameters) == 1
-        and parameters[0].lower().replace(" ", "") == "charset=utf-8"
+        len(parameters) == 1 and parameters[0].lower().replace(" ", "") == "charset=utf-8"
     )
 
 
@@ -403,6 +445,7 @@ app = FastAPI(
     openapi_url=None,
 )
 _assessment_gate = AssessmentConcurrencyGate(MAX_CONCURRENT_ASSESSMENTS)
+_skill_gate = AssessmentConcurrencyGate(MAX_CONCURRENT_SKILL_RUNS)
 
 
 @app.middleware("http")
@@ -449,12 +492,17 @@ async def livez() -> dict[str, str]:
 def _readiness() -> dict[str, str | int]:
     _require_pinned_parser()
     capabilities = commercial_capabilities()
+    skills = skill_capabilities()
     if (
         capabilities.get("targetCount") != 13
         or capabilities.get("plannedRouteCount") != 78
         or capabilities.get("implementationStatus") != "SPEC_ONLY"
         or capabilities.get("externalExecution") != "NOT_RUN"
         or capabilities.get("certification") != "NOT_CERTIFIED"
+        or skills.get("skillCount") != 47
+        or skills.get("codeImplementedCount") != 47
+        or skills.get("externalExecution") != "NOT_RUN"
+        or skills.get("certification") != "NOT_CERTIFIED"
     ):
         raise RuntimeError("ChinaDB commercial capability registry is not fail closed")
     return {
@@ -462,6 +510,7 @@ def _readiness() -> dict[str, str | int]:
         "service": "chinadb-sql-preflight",
         "targetCount": 13,
         "plannedRouteCount": 78,
+        "skillHandlerCount": 47,
     }
 
 
@@ -507,6 +556,112 @@ async def capabilities_endpoint() -> Response:
                 retryable=True,
             )
         )
+
+
+@app.get("/internal/v1/chinadb-skills/capabilities")
+async def skill_capabilities_endpoint() -> Response:
+    try:
+        payload = _bounded_json_bytes(
+            skill_capabilities(),
+            maximum=MAX_HTTP_RESPONSE_BYTES,
+        )
+        return _json_response(payload)
+    except _ResponseLimitExceeded:
+        return _error_response(
+            SidecarFailure(
+                500,
+                "CHINADB_SKILL_CAPABILITIES_TOO_LARGE",
+                "ChinaDB Skill capability response exceeds its bounded limit.",
+            )
+        )
+    except (KeyError, RuntimeError, TypeError, ValueError):
+        return _error_response(
+            SidecarFailure(
+                503,
+                "CHINADB_SKILL_CAPABILITIES_UNAVAILABLE",
+                "ChinaDB Skill capabilities are unavailable.",
+                retryable=True,
+            )
+        )
+
+
+@app.post("/internal/v1/chinadb-skills/{skill_id}/execute")
+async def execute_skill_endpoint(skill_id: str, request: Request) -> Response:
+    try:
+        if skill_id not in SKILLS_BY_ID:
+            raise SidecarFailure(
+                404,
+                "CHINADB_SKILL_UNKNOWN",
+                "The requested exact ChinaDB Skill identity is not registered.",
+            )
+        if not _content_type_is_json(request.headers.get("content-type")):
+            raise SidecarFailure(
+                415,
+                "CHINADB_SKILL_JSON_REQUIRED",
+                "ChinaDB Skill execution accepts only UTF-8 application/json.",
+            )
+        content_encoding = request.headers.get("content-encoding")
+        if content_encoding not in {None, "", "identity"}:
+            raise SidecarFailure(
+                415,
+                "CHINADB_SKILL_CONTENT_ENCODING_REJECTED",
+                "ChinaDB Skill execution does not accept encoded request bodies.",
+            )
+        if request.headers.get("transfer-encoding") not in {None, ""}:
+            raise SidecarFailure(
+                400,
+                "CHINADB_SKILL_TRANSFER_ENCODING_REJECTED",
+                "ChinaDB Skill execution requires one bounded content-length body.",
+            )
+        declared_length = _declared_content_length(request.headers.get("content-length"))
+        if declared_length > MAX_REQUEST_BYTES:
+            raise SidecarFailure(
+                413,
+                "CHINADB_SKILL_REQUEST_TOO_LARGE",
+                "ChinaDB Skill request exceeds the bounded input limit.",
+            )
+        raw_payload = await _read_request_body(request, declared_length)
+        try:
+            skill_request = parse_skill_request_json(raw_payload)
+        except ValueError as error:
+            raise SidecarFailure(
+                422,
+                "CHINADB_SKILL_REQUEST_REJECTED",
+                "ChinaDB Skill request violates its strict bounded contract.",
+            ) from error
+        if not await _skill_gate.try_acquire():
+            raise SidecarFailure(
+                429,
+                "CHINADB_SKILL_CAPACITY_EXHAUSTED",
+                "ChinaDB Skill execution has reached its bounded concurrency limit.",
+                retryable=True,
+            )
+        try:
+            result = await anyio.to_thread.run_sync(
+                lambda: execute_skill(skill_id, skill_request),
+                abandon_on_cancel=False,
+            )
+        except (KeyError, RuntimeError, TypeError, ValueError) as error:
+            raise SidecarFailure(
+                422,
+                "CHINADB_SKILL_EXECUTION_REJECTED",
+                "ChinaDB Skill handler rejected the typed request and no external effect ran.",
+            ) from error
+        finally:
+            await _skill_gate.release()
+        _assert_fail_closed_skill_result(result)
+        response = _bounded_json_bytes(result, maximum=MAX_HTTP_RESPONSE_BYTES)
+        return _json_response(response)
+    except _ResponseLimitExceeded:
+        return _error_response(
+            SidecarFailure(
+                413,
+                "CHINADB_SKILL_RESULT_TOO_LARGE",
+                "ChinaDB Skill result exceeds the bounded response limit.",
+            )
+        )
+    except SidecarFailure as failure:
+        return _error_response(failure)
 
 
 @app.post("/internal/v1/chinadb-sql/assess")

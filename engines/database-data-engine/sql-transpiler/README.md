@@ -22,10 +22,23 @@ TiDB, GBase 8s/8c/8a, HighGo/HGDB, OceanBase Oracle/MySQL modes, GaussDB
 Oracle/M modes, and GoldenDB. PolarDB, PolarDB-X, and TDSQL are explicitly
 excluded.
 
-This is a static `SPEC_ONLY` registry. It does not add any target to the seven
-exact transpilation profiles, alias a ChinaDB product or compatibility mode to
-Oracle/MySQL/PostgreSQL, or claim a verified renderer. All 78 planned routes
-remain `NOT_RUN` and `NOT_CERTIFIED`.
+The imported package and its 78 route declarations remain immutable
+`SPEC_ONLY` source material. Separately, the repository now binds all 47 exact
+Skill IDs to bounded local code handlers. Those handlers implement typed local
+inventory, IR, rule, movement-plan, conversion-assessment, procedural,
+application-refactor, verifier, repair, cutover, evidence, release, six source,
+five application, 13 target-contract, route-matrix, mutation, benchmark,
+estimation, vendor-bridge, and observability operations. They require exact
+tenant/project/actor scope, reject inline secrets and ambiguous JSON, produce
+content-addressed results, and execute no provider/database/repository effect.
+
+`47/47 CODE_IMPLEMENTED` therefore means every exact Skill has executable
+repository-owned bounded handler code and tests. It does not mean the source
+package was mutated to claim implementation, or that 13 vendor renderers and
+databases were independently exercised. Exact target SQL emission, target
+apply/introspection, source/target execution, vendor tools, production cutover,
+independent verification, and certification remain `NOT_RUN` /
+`NOT_CERTIFIED`.
 
 `commercial-assess` is a read-only preflight. It requires an existing exact
 source profile, concrete target ID/version/edition/compatibility mode/driver/
@@ -41,6 +54,9 @@ The machine-readable contracts are:
 - `schemas/batch31/chinadb-commercial-capabilities.schema.json`
 - `schemas/batch31/chinadb-sql-preflight-request.schema.json`
 - `schemas/batch31/chinadb-sql-preflight-result.schema.json`
+- `schemas/batch31/chinadb-skill-capabilities.schema.json`
+- `schemas/batch31/chinadb-skill-request.schema.json`
+- `schemas/batch31/chinadb-skill-result.schema.json`
 
 ## Run
 
@@ -54,6 +70,12 @@ uv run elmos-sql-transpiler commercial-capabilities \
 uv run elmos-sql-transpiler commercial-assess \
   examples/chinadb-commercial-assess.json \
   --output /tmp/elmos-chinadb-commercial-assessment.json
+uv run elmos-sql-transpiler commercial-skill-capabilities \
+  --output /tmp/elmos-chinadb-skill-capabilities.json
+uv run elmos-sql-transpiler commercial-skill-run \
+  01-estate-inventory-assessment \
+  examples/chinadb-skill-inventory.json \
+  --output /tmp/elmos-chinadb-inventory-result.json
 uv run elmos-sql-transpiler transpile \
   examples/postgresql-to-mysql.json \
   /tmp/elmos-orders-mysql
@@ -75,6 +97,18 @@ uv run elmos-sql-transpiler verify-local-matrix \
 Capability and assessment `--output` files are create-only. The commercial
 assessment command returns exit status 3 after successfully writing its typed
 `BLOCKED` result; exit status 0 would incorrectly suggest a renderer is ready.
+Skill capability and execution outputs are also create-only. A bounded handler
+returns exit status 0 for local completion/human/external-gate readiness and 3
+for an explicit local or external block; neither status is certification.
+
+The sidecar exposes the same local surface at:
+
+- `GET /internal/v1/chinadb-skills/capabilities`
+- `POST /internal/v1/chinadb-skills/{skill_id}/execute`
+
+The execution endpoint accepts strict UTF-8 JSON with no duplicate fields,
+requires exact `scope.tenantId`, `scope.projectId`, and `scope.actorId`, is
+request/response/concurrency bounded, and rejects inline credential material.
 
 The output directory is create-only. A successful materialization contains target SQL, typed source/target AST, source and target profiles, route, source map identity, Runner configuration, verification state, and a transpilation report. The raw source SQL is not copied, although its typed AST and literals are retained in the canonical IR; customer handling policy still applies.
 

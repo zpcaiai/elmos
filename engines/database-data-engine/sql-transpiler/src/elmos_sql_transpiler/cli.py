@@ -18,6 +18,7 @@ from .runner import (
     verify_local_matrix,
     verify_route,
 )
+from .skill_runtime import execute_skill, parse_skill_request_json, skill_capabilities
 from .transpiler import transpile
 
 
@@ -72,6 +73,14 @@ def _parser() -> argparse.ArgumentParser:
     commercial_assess_parser.add_argument("request", type=Path)
     commercial_assess_parser.add_argument("--output", type=Path)
 
+    commercial_skill_capability_parser = subparsers.add_parser("commercial-skill-capabilities")
+    commercial_skill_capability_parser.add_argument("--output", type=Path)
+
+    commercial_skill_run_parser = subparsers.add_parser("commercial-skill-run")
+    commercial_skill_run_parser.add_argument("skill_id")
+    commercial_skill_run_parser.add_argument("request", type=Path)
+    commercial_skill_run_parser.add_argument("--output", type=Path)
+
     runner_capability_parser = subparsers.add_parser("runner-capabilities")
     runner_capability_parser.add_argument("--output", type=Path)
 
@@ -119,6 +128,25 @@ def main(argv: list[str] | None = None) -> int:
             rendered = _json(assessment.to_dict()) + "\n"
             _create_only_output(args.output, rendered, label="commercial assessment")
             return 3
+        if args.command == "commercial-skill-capabilities":
+            rendered = _json(skill_capabilities()) + "\n"
+            _create_only_output(args.output, rendered, label="commercial Skill capability")
+            return 0
+        if args.command == "commercial-skill-run":
+            raw_request = parse_skill_request_json(args.request.read_bytes())
+            result = execute_skill(args.skill_id, raw_request)
+            rendered = _json(result) + "\n"
+            _create_only_output(args.output, rendered, label="commercial Skill result")
+            return (
+                0
+                if result["state"]
+                in {
+                    "LOCAL_COMPLETED",
+                    "READY_FOR_HUMAN_DECISION",
+                    "READY_FOR_EXTERNAL_GATE",
+                }
+                else 3
+            )
         if args.command == "runner-capabilities":
             value = runner_capabilities()
             rendered = _json(value) + "\n"

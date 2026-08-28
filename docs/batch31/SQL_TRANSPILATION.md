@@ -106,7 +106,9 @@ fixture and runs:
 - explicit rollback and statement-failure atomicity;
 - a bounded two-connection same-row write-conflict schedule;
 - real engine `EXPLAIN` output;
-- three warmups plus 15 timed samples per query with a 75 ms local p95 SLO.
+- five warmups plus 40 timed samples per query with a 75 ms local p95 SLO;
+  a first shared-host miss gets one bounded confirmation attempt under the
+  same threshold, with both attempts and every raw sample retained.
 
 Run one route or the complete local matrix:
 
