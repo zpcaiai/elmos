@@ -1629,15 +1629,57 @@ class Trigger:
     update_columns: tuple[str, ...] = ()
 
 
+class RowPolicyMode(str, Enum):
+    PERMISSIVE = "PERMISSIVE"
+    RESTRICTIVE = "RESTRICTIVE"
+
+
+class RowPolicyCommand(str, Enum):
+    ALL = "ALL"
+    SELECT = "SELECT"
+    INSERT = "INSERT"
+    UPDATE = "UPDATE"
+    DELETE = "DELETE"
+
+
+@dataclass(frozen=True)
+class RowPolicySettingPredicate:
+    """One tenant-column comparison against PostgreSQL ``current_setting``.
+
+    The setting key and ``missing_ok`` flag are distinct typed fields because
+    ``current_setting(name, true)`` returns NULL when the key is absent while
+    ``current_setting(name, false)`` raises.  Treating the call as opaque text
+    would erase a security-relevant error contract.
+    """
+
+    column: str
+    setting_name: str
+    missing_ok: bool
+
+    def __post_init__(self) -> None:
+        if not self.setting_name or "\x00" in self.setting_name:
+            raise DialectError(
+                "CERTIFIED_RLS_UNSUPPORTED_PREDICATE",
+                "RLS current_setting key must be non-empty and NUL-free",
+            )
+
+
 @dataclass(frozen=True)
 class RowPolicy:
-    """Typed record for RLS facts; no cross-engine emitter is provided."""
+    """Closed PostgreSQL tenant-policy IR; non-PostgreSQL routes stay blocked."""
 
     name: str
     table: str
-    using_expression: str | None = None
-    check_expression: str | None = None
+    using_predicate: RowPolicySettingPredicate
+    check_predicate: RowPolicySettingPredicate
     schema: str | None = None
+    mode: RowPolicyMode = RowPolicyMode.PERMISSIVE
+    command: RowPolicyCommand = RowPolicyCommand.ALL
+    roles: tuple[str, ...] = ("PUBLIC",)
+
+    def __post_init__(self) -> None:
+        if not self.roles:
+            raise DialectError("CERTIFIED_RLS_UNSUPPORTED_ROLE", "RLS policy must retain at least one role")
 
 
 class RowSecurityAction(str, Enum):

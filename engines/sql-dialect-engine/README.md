@@ -37,7 +37,7 @@ relabel manual work as translated.
 
 The separate automatic-translation measure remains an upper bound. With the
 digest-bound profile `persistence-public-to-dbo` (`{"": "dbo", "public":
-"dbo"}`), the current 76-file migration corpus measures **1267/1485 = 85.3%**
+"dbo"}`), the current 76-file migration corpus measures **1274/1485 = 85.8%**
 source-side candidates. This includes typed namespace profiles, quoted and
 reserved identifiers, views, callable, constraint and PostgreSQL role comments, table
 privileges, bounded procedures, typed `RETURNS TABLE`, narrow static PL/pgSQL
@@ -48,9 +48,9 @@ metadata, typed `LOWER`/one-level JSON text-path index keys, JSONB type and
 top-level-key checks, typed PostgreSQL ARRAY defaults/containment,
 `ARRAY_LENGTH(..., 1)` checks, NULL-aware `IS DISTINCT FROM` comparisons,
 JSON/plain binary routes, typed TRIM/BTRIM, NULL-aware CHECK trees, explicit
-PostgreSQL non-finite DOUBLE literals, and the existing DDL/ALTER/routine
-expansions. Dynamic SQL, arbitrary
-procedural control flow, RLS policies, JSONB/arrays without exact target semantics, and
+PostgreSQL non-finite DOUBLE literals, typed tenant-setting RLS policies, and
+the existing DDL/ALTER/routine expansions. Dynamic SQL, arbitrary procedural
+control flow, non-typed RLS predicates, JSONB/arrays without exact target semantics, and
 vendor-specific constructs remain explicit blockers. The engine raises
 `DialectError` and reports `status: "BLOCKED"` for those cases rather than
 guessing. External execution, independent verification, and certification
@@ -67,11 +67,11 @@ remain `0`, external execution remains `NOT_RUN`, and certification remains
 
 The source-side number is not the same as target reachability. Replaying every
 admitted candidate through all four target emitters with that explicit profile
-gives **398/1267 = 31.4%** strict four-target intersection. The optimal strategy
+gives **398/1274 = 31.2%** strict four-target intersection. The optimal strategy
 under the fail-closed constraints is a target-specific route portfolio, not a
-forced common denominator: PostgreSQL is the source-native route at **1267**,
+forced common denominator: PostgreSQL is the source-native route at **1274**,
 followed by SQL Server at **512**, MySQL at **432**, and Oracle at **426**
-(100.0%, 40.4%, 34.1%, and 33.6% of admitted candidates). Routine privileges
+(100.0%, 40.2%, 33.9%, and 33.4% of admitted candidates). Routine privileges
 and MySQL function comments are widened only when a typed source catalog proves
 one exact routine overload, including a proven zero-argument signature; opaque
 PL/pgSQL declarations contribute identity-only evidence and remain blocked for
@@ -92,9 +92,11 @@ accepted only with an explicit `--namespace-map` or digest-bound
 unqualified objects to the target default schema. Quoted identifiers are
 preserved in typed IR and emitted with target quote syntax; dynamic or
 malformed identifier shapes remain blocked. PostgreSQL table-level RLS state
-controls use a typed, PostgreSQL-only route; RLS policies are intentionally
-exposed as `certified-rls-v1` blockers until a target policy model exists. Unsupported
-units remain visible in the scanner's 100% disposition ledger.
+controls and the default `PERMISSIVE FOR ALL TO PUBLIC` tenant-setting policy
+shape use typed, PostgreSQL-only routes. The policy IR retains separate USING
+and WITH CHECK predicates, setting keys and `missing_ok`; all non-PostgreSQL
+targets and wider policy forms remain explicit `certified-rls-v1` blockers.
+Unsupported units remain visible in the scanner's 100% disposition ledger.
 
 **Column types** (canonical, with dialect-specific spelling on each side):
 `BOOLEAN`, `INT16`/`INT32`/`INT64`, `DECIMAL(p,s)`, `CHAR(n)`, `VARCHAR(n)`,
@@ -262,14 +264,15 @@ values remain blocked.
       --source-file function.sql --source-dialect postgres \
       --target-dialect mysql --statement-kind FUNCTION --output out/
 
-In the current real corpus, the remaining blockers include 64 unsupported
-statement units, 54 security-context units, 35 dynamic/control-flow `DO`
-blocks, 19 unbounded decimal definitions, 17 non-static table-returning
-functions, 7 RLS policies, and 9 source-format/parser reviews. The scanner
-keeps all of them in the denominator and gives each an explicit manual or
-source-review disposition. The 259 trigger definitions now enter typed source
-IR but still require a target action ABI; they remain blocked only in the
-non-PostgreSQL target reachability report.
+In the current 76-file corpus, 211 source units remain blocked: 70 dynamic or
+control-flow `DO` blocks, 54 unsupported routine bodies, 29 unsupported
+routine/query statements, 22 security-context routines, 12 unbounded decimal
+definitions, 9 source-format/parser reviews, and 15 smaller typed boundaries.
+The scanner keeps all of them in the denominator and gives each an explicit
+manual or source-review disposition. The seven tenant-setting RLS policies now
+enter typed source IR, while their non-PostgreSQL target routes remain blocked.
+The 259 trigger definitions likewise require a target action ABI and remain
+blocked in non-PostgreSQL reachability.
 
 ## Why not just use sqlglot's own generator
 
@@ -380,9 +383,9 @@ hiding exactly what this engine cannot do.
 ### What it says about real code
 
 Run against the current checkout's 76 migration files with the digest-bound
-namespace profile, the scan reports **1267 of 1485 statements as automatic
-translation candidates (85.3% upper bound)**. It also reports **1485 of 1485
-(100.0%) with an explicit disposition**: 1267 automatic candidates, 209
+namespace profile, the scan reports **1274 of 1485 statements as automatic
+translation candidates (85.8% upper bound)**. It also reports **1485 of 1485
+(100.0%) with an explicit disposition**: 1274 automatic candidates, 202
 manual migrations, and 9 source-format reviews.
 
 The automatic candidate number is intentionally conservative. The blocker
@@ -396,7 +399,6 @@ ranking says why, while the disposition ledger ensures no unit disappears:
 | `CERTIFIED_DDL_UNSUPPORTED_STATEMENT` | 29 | 1 | routine/query statements without a bounded typed route remain blocked |
 | `CERTIFIED_DDL_UNBOUNDED_DECIMAL` | 12 | 1 | arbitrary-precision DECIMAL/NUMBER has no fixed cross-dialect equivalent |
 | `CERTIFIED_DDL_PARSE_FAILED` | 9 | 9 | source-format/parser review remains required |
-| `CERTIFIED_RLS_TARGET_ROUTE_REQUIRED` | 7 | 1 | RLS requires a target policy model; it is never weakened to an open policy |
 | `CERTIFIED_DDL_UNSUPPORTED_TYPE` | 5 | 1 | residual vendor-specific/return types remain outside the certified set |
 | `CERTIFIED_INSERT_UNSUPPORTED_MODIFIER` | 3 | 1 | conflict/upsert semantics need a target-specific route |
 | `CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET` | 2 | 2 | STABLE volatility has no exact common target declaration |
@@ -427,9 +429,10 @@ catalogue types, PostgreSQL adjacent-string comment recovery, and the earlier
 CHECK/identity/precision work. It also admits typed `LOWER` and one-level JSON
 text-path expression indexes plus `JSONB_TYPEOF`/top-level-key object checks,
 typed `ARRAY_LENGTH`/`CARDINALITY`/`ARRAY_POSITION`/containment/default routes,
-and PostgreSQL-only table-level RLS state controls on the source side; their
-non-PostgreSQL target routes remain explicitly blocked. The current checkout
-therefore measures **1267/1485 = 85.3%** automatic candidates with the
+and PostgreSQL-only table-level RLS state controls plus typed tenant-setting
+policies on the source side; their non-PostgreSQL target routes remain
+explicitly blocked. The current checkout therefore measures **1274/1485 =
+85.8%** automatic candidates with the
 explicit namespace profile.
 The repository-level headline remains **1485/1485 = 100.0% disposition
 coverage**: every blocker is explicit manual or source-review work, and none

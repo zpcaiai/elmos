@@ -79,6 +79,13 @@ def target_capability_matrix() -> list[dict[str, object]]:
             "RLS is never downgraded to ordinary privileges",
         ),
         TargetCapability(
+            "row_policy_tenant_setting",
+            (Dialect.POSTGRES.value,),
+            (Dialect.MYSQL.value, Dialect.ORACLE.value, Dialect.TSQL.value),
+            "PERMISSIVE FOR ALL TO PUBLIC, USING and WITH CHECK are typed; current_setting key "
+            "and missing_ok semantics are retained and never lowered to grants",
+        ),
+        TargetCapability(
             "if_not_exists_table_or_schema",
             (Dialect.POSTGRES.value, Dialect.MYSQL.value),
             (Dialect.ORACLE.value, Dialect.TSQL.value),

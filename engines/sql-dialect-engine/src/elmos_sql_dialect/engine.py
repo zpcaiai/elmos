@@ -18,6 +18,7 @@ from .advanced import (
     emit_comment,
     emit_privilege,
     emit_procedure,
+    emit_row_policy,
     emit_table_function,
     emit_trigger,
     emit_view,
@@ -69,7 +70,7 @@ def translate_ddl(
       RLS         -- PostgreSQL-only typed row-security state controls
       FUNCTION / PROCEDURE / TRIGGER -- certified-routine-v1
       VIEW / COMMENT / GRANT / REVOKE -- typed database object profiles
-      POLICY -- explicit RLS target-route blocker
+      POLICY -- typed PostgreSQL tenant-policy IR; non-PostgreSQL targets block
 
     Returns a structured report; never raises for out-of-profile input --
     that is reported as `status: "BLOCKED"`.
@@ -189,8 +190,10 @@ def translate_ddl(
         elif statement_kind in ("GRANT", "REVOKE"):
             emitted = emit_privilege(parse_privilege(sql, source, active_namespace_map), target, routine_catalog)
         elif statement_kind == "POLICY":
-            parse_row_policy(sql, source)
-            raise AssertionError("parse_row_policy is a permanent fail-closed route")  # pragma: no cover
+            emitted = emit_row_policy(
+                parse_row_policy(sql, source, active_namespace_map),
+                target,
+            )
         elif statement_kind == "DO":
             emitted = emit_static_do(parse_static_do(sql, source, active_namespace_map), target, catalog)
         else:

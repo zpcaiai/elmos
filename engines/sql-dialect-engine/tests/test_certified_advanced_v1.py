@@ -9,9 +9,16 @@ from __future__ import annotations
 
 import pytest
 
-from elmos_sql_dialect.advanced import emit_comment, emit_privilege, parse_comment, parse_privilege
+from elmos_sql_dialect.advanced import (
+    emit_comment,
+    emit_privilege,
+    emit_row_policy,
+    parse_comment,
+    parse_privilege,
+    parse_row_policy,
+)
 from elmos_sql_dialect.engine import translate_ddl
-from elmos_sql_dialect.models import CommentObjectKind, Dialect, DialectError
+from elmos_sql_dialect.models import CommentObjectKind, Dialect, DialectError, RowPolicyCommand, RowPolicyMode
 from elmos_sql_dialect.parser import parse_create_table
 from elmos_sql_dialect.routine import parse_routine_identity
 from elmos_sql_dialect.scan import SourceSchemaCatalog
@@ -404,13 +411,56 @@ def test_json_array_and_binary_boundaries_are_explicit() -> None:
 
 def test_rls_is_an_explicit_blocker_and_never_a_permissive_policy() -> None:
     report = translate_ddl(
-        "CREATE POLICY tenant_isolation ON users USING (tenant_id = 1)",
+        "CREATE POLICY tenant_isolation ON users "
+        "USING (tenant_id = current_setting('app.tenant_id', true)) "
+        "WITH CHECK (tenant_id = current_setting('app.tenant_id', true))",
         "postgres",
         "mysql",
         statement_kind="POLICY",
     )
     assert report["status"] == "BLOCKED", report
     assert report["reasonCode"] == "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED"
+
+
+def test_tenant_rls_policy_is_typed_before_the_target_gate() -> None:
+    sql = (
+        "CREATE POLICY tenant_isolation ON app.users "
+        "USING (organization_id = current_setting('app.organization_id', true)) "
+        "WITH CHECK (organization_id = current_setting('app.organization_id', true))"
+    )
+    policy = parse_row_policy(sql, Dialect.POSTGRES, {"app": "tenant"})
+    assert policy.name == "tenant_isolation"
+    assert policy.schema == "tenant"
+    assert policy.table == "users"
+    assert policy.mode is RowPolicyMode.PERMISSIVE
+    assert policy.command is RowPolicyCommand.ALL
+    assert policy.roles == ("PUBLIC",)
+    assert policy.using_predicate.column == "organization_id"
+    assert policy.using_predicate.setting_name == "app.organization_id"
+    assert policy.using_predicate.missing_ok is True
+    assert policy.check_predicate == policy.using_predicate
+    assert emit_row_policy(policy, Dialect.POSTGRES) == (
+        "CREATE POLICY tenant_isolation ON tenant.users AS PERMISSIVE FOR ALL TO PUBLIC "
+        "USING (organization_id = current_setting('app.organization_id', TRUE)) "
+        "WITH CHECK (organization_id = current_setting('app.organization_id', TRUE))"
+    )
+
+
+@pytest.mark.parametrize(
+    "sql",
+    [
+        "CREATE POLICY p ON users TO app_user "
+        "USING (organization_id = current_setting('app.organization_id', true)) "
+        "WITH CHECK (organization_id = current_setting('app.organization_id', true))",
+        "CREATE POLICY p ON users USING (organization_id = 'tenant') "
+        "WITH CHECK (organization_id = current_setting('app.organization_id', true))",
+        "CREATE POLICY p ON users "
+        "USING (organization_id = current_setting('app.organization_id', true))",
+    ],
+)
+def test_rls_policy_modifiers_and_untyped_predicates_remain_blocked(sql: str) -> None:
+    with pytest.raises(DialectError):
+        parse_row_policy(sql, Dialect.POSTGRES)
 
 
 @pytest.mark.parametrize(

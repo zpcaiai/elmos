@@ -2,10 +2,10 @@
 
 This module intentionally keeps the new surface narrow and explicit:
 ordinary views, comments, table privileges, bounded OUT-parameter procedures,
-simple table-valued functions, and trigger metadata.  It does not turn a
-procedural body or a security policy into a text blob.  Unsupported control
-flow, dynamic SQL, RLS, materialization, and provider-specific options remain
-typed blockers.
+simple table-valued functions, trigger metadata, and one closed tenant-policy
+shape. It does not turn a procedural body or security predicate into a text
+blob. Unsupported control flow, dynamic SQL, non-PostgreSQL RLS emission,
+materialization, and provider-specific options remain typed blockers.
 """
 
 from __future__ import annotations
@@ -41,6 +41,9 @@ from .models import (
     RoutineParameter,
     RoutineParameterMode,
     RowPolicy,
+    RowPolicyCommand,
+    RowPolicyMode,
+    RowPolicySettingPredicate,
     TableFunction,
     TableFunctionColumn,
     Trigger,
@@ -57,6 +60,7 @@ from .parser import (
     _plain_identifier,
     _require,
     _require_single_statement,
+    _row_security_tokens,
 )
 from .routine import _parse_routine_identity_type, _parse_value, _property_language, _routine_name
 from .statement_splitter import split_statements
@@ -994,23 +998,164 @@ def parse_trigger(
     )
 
 
-def parse_row_policy(sql: str | exp.Expression, source_dialect: Dialect) -> RowPolicy:
-    if isinstance(sql, str) and sql.lstrip().upper().startswith("CREATE POLICY"):
+def _row_policy_identifier(token: object, what: str) -> exp.Identifier:
+    token_type = getattr(token, "token_type", None)
+    kind_name = getattr(token_type, "name", "")
+    _require(
+        kind_name in {"VAR", "IDENTIFIER"},
+        "CERTIFIED_RLS_UNSUPPORTED_IDENTIFIER_SHAPE",
+        f"{what} must be a plain or double-quoted identifier",
+    )
+    return exp.Identifier(this=str(getattr(token, "text", "")), quoted=kind_name == "IDENTIFIER")
+
+
+def _row_policy_group(tokens: list[object], start: int, what: str) -> tuple[list[object], int]:
+    _require(
+        start < len(tokens) and str(getattr(tokens[start], "text", "")) == "(",
+        "CERTIFIED_RLS_UNSUPPORTED_STATEMENT",
+        f"{what} must be parenthesized",
+    )
+    depth = 0
+    for index in range(start, len(tokens)):
+        value = str(getattr(tokens[index], "text", ""))
+        if value == "(":
+            depth += 1
+        elif value == ")":
+            depth -= 1
+            if depth == 0:
+                return tokens[start + 1 : index], index + 1
+    raise DialectError("CERTIFIED_RLS_UNSUPPORTED_STATEMENT", f"{what} has no closing parenthesis")
+
+
+def _parse_row_policy_predicate(tokens: list[object], what: str) -> RowPolicySettingPredicate:
+    values = [str(getattr(token, "text", "")) for token in tokens]
+    upper = [value.upper() for value in values]
+    _require(
+        len(tokens) == 8
+        and upper[1:4] == ["=", "CURRENT_SETTING", "("]
+        and upper[5] == ","
+        and upper[6] in {"TRUE", "FALSE"}
+        and upper[7] == ")",
+        "CERTIFIED_RLS_UNSUPPORTED_PREDICATE",
+        f"{what} must compare one column with current_setting(<key>, <missing_ok>)",
+    )
+    column = _plain_identifier(_row_policy_identifier(tokens[0], f"{what} column"), f"{what} column")
+    setting_type = getattr(getattr(tokens[4], "token_type", None), "name", "")
+    _require(
+        setting_type == "STRING",
+        "CERTIFIED_RLS_UNSUPPORTED_PREDICATE",
+        f"{what} current_setting key must be a string literal",
+    )
+    return RowPolicySettingPredicate(
+        column=column,
+        setting_name=values[4],
+        missing_ok=upper[6] == "TRUE",
+    )
+
+
+def parse_row_policy(
+    sql: str | exp.Expression,
+    source_dialect: Dialect,
+    namespace_map: Mapping[str, str] | None = None,
+) -> RowPolicy:
+    """Parse the closed PostgreSQL tenant-policy shape into typed RLS IR.
+
+    Only the default ``PERMISSIVE FOR ALL TO PUBLIC`` policy with explicit
+    USING and WITH CHECK predicates is admitted. Both predicates must be a
+    typed tenant-column/current_setting comparison. Other command, role,
+    composition, function, cast, or boolean semantics remain blocked.
+    """
+
+    _require(
+        source_dialect is Dialect.POSTGRES,
+        "CERTIFIED_RLS_UNSUPPORTED_SOURCE",
+        "CREATE POLICY is admitted only from PostgreSQL",
+    )
+    raw_sql = sql if isinstance(sql, str) else sql.sql()
+    tokens = _row_security_tokens(raw_sql, source_dialect)
+    upper = [str(getattr(token, "text", "")).upper() for token in tokens]
+    _require(
+        len(tokens) >= 15 and upper[:2] == ["CREATE", "POLICY"] and upper[3] == "ON",
+        "CERTIFIED_RLS_UNSUPPORTED_STATEMENT",
+        "expected CREATE POLICY <name> ON <table> USING (...) WITH CHECK (...) ",
+    )
+    policy_name = _plain_identifier(_row_policy_identifier(tokens[2], "RLS policy name"), "RLS policy name")
+    try:
+        using_index = upper.index("USING", 4)
+    except ValueError as exc:
+        raise DialectError(
+            "CERTIFIED_RLS_UNSUPPORTED_STATEMENT",
+            "RLS policy requires an explicit USING predicate",
+        ) from exc
+    table_tokens = tokens[4:using_index]
+    _require(
+        len(table_tokens) in {1, 3},
+        "CERTIFIED_RLS_UNSUPPORTED_MODIFIER",
+        "AS, FOR, TO and other RLS policy modifiers are outside the default typed route",
+    )
+    if len(table_tokens) == 3:
+        _require(
+            str(getattr(table_tokens[1], "text", "")) == ".",
+            "CERTIFIED_RLS_UNSUPPORTED_IDENTIFIER_SHAPE",
+            "RLS policy table qualification must use one schema and one table",
+        )
+    table_node = exp.Table(
+        this=_row_policy_identifier(table_tokens[-1], "RLS policy table"),
+        db=_row_policy_identifier(table_tokens[0], "RLS policy schema") if len(table_tokens) == 3 else None,
+    )
+    schema, table = _mapped_table_name(table_node, "RLS policy table", namespace_map)
+    using_tokens, next_index = _row_policy_group(tokens, using_index + 1, "RLS USING predicate")
+    _require(
+        upper[next_index : next_index + 2] == ["WITH", "CHECK"],
+        "CERTIFIED_RLS_UNSUPPORTED_STATEMENT",
+        "RLS policy requires an explicit WITH CHECK predicate",
+    )
+    check_tokens, end_index = _row_policy_group(tokens, next_index + 2, "RLS WITH CHECK predicate")
+    _require(
+        end_index == len(tokens),
+        "CERTIFIED_RLS_UNSUPPORTED_MODIFIER",
+        "trailing RLS policy clauses are outside the typed route",
+    )
+    return RowPolicy(
+        name=policy_name,
+        table=table,
+        schema=schema,
+        mode=RowPolicyMode.PERMISSIVE,
+        command=RowPolicyCommand.ALL,
+        roles=("PUBLIC",),
+        using_predicate=_parse_row_policy_predicate(using_tokens, "RLS USING predicate"),
+        check_predicate=_parse_row_policy_predicate(check_tokens, "RLS WITH CHECK predicate"),
+    )
+
+
+def emit_row_policy(policy: RowPolicy, target_dialect: Dialect) -> str:
+    """Emit the typed policy only where PostgreSQL RLS semantics are native."""
+
+    if target_dialect is not Dialect.POSTGRES:
         raise DialectError(
             "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED",
-            "row-level security needs a target policy model, owner, command scope and execution "
-            "evidence; it is not lowered to a permissive policy",
+            f"{target_dialect.value} has no exact PostgreSQL policy evaluation and owner-bypass mapping; "
+            "the route will not downgrade RLS to ordinary privileges",
         )
-    statement = _create_statement(sql, source_dialect)
-    _require(
-        str(statement.args.get("kind", "")).upper() == "POLICY",
-        "CERTIFIED_RLS_UNSUPPORTED_STATEMENT",
-        "expected CREATE POLICY",
+
+    def predicate(value: RowPolicySettingPredicate) -> str:
+        setting = value.setting_name.replace("'", "''")
+        missing_ok = "TRUE" if value.missing_ok else "FALSE"
+        return (
+            f"{quote_identifier(value.column, target_dialect)} = "
+            f"current_setting('{setting}', {missing_ok})"
+        )
+
+    roles = ", ".join(
+        "PUBLIC" if str(role).upper() == "PUBLIC" else quote_identifier(role, target_dialect)
+        for role in policy.roles
     )
-    raise DialectError(
-        "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED",
-        "row-level security needs a target policy model, owner, command scope and execution "
-        "evidence; it is not lowered to a permissive policy",
+    return (
+        f"CREATE POLICY {quote_identifier(policy.name, target_dialect)} "
+        f"ON {_object_name(policy.schema, policy.table, target_dialect)} "
+        f"AS {policy.mode.value} FOR {policy.command.value} TO {roles} "
+        f"USING ({predicate(policy.using_predicate)}) "
+        f"WITH CHECK ({predicate(policy.check_predicate)})"
     )
 
 
