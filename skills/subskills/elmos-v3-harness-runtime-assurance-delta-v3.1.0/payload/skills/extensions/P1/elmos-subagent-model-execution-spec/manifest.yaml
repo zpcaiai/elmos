@@ -1,0 +1,65 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionSkill
+metadata:
+  id: ELMOS-V3D-013
+  name: elmos-subagent-model-execution-spec
+  version: 3.1.0
+  priority: P1
+  labels:
+    routable: 'false'
+    architecture: eight-kernel
+    commercialTier: production
+spec:
+  summary: Subagent 可按任务选择 provider/model/reasoning effort/max output，但环境、权限、预算与 Tool surface 仍受父执行约束。
+  ownerKernels:
+  - K4
+  - K7
+  extends:
+  - elmos-agentic-reasoning-kernel
+  - elmos-harness-runtime-kernel
+  dependencies:
+  - name: elmos-agentic-reasoning-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-harness-runtime-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-step-finalized-execution-plan
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  - name: elmos-lossless-permission-replay
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  - name: elmos-invocation-scoped-capability-lease
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  components:
+  - SubagentSpecCompiler
+  - ModelPolicyEvaluator
+  - ParentAuthorityLimiter
+  - ReasoningBudgetAllocator
+  - ChildPlanFinalizer
+  invariants:
+  - subagent model inheritance is a default, not a security boundary
+  - child authority never derives from model capability
+  - parent ownership and cancellation propagate to child lifecycle
+  - child results return through typed ingress and result commit
+  upstreamEvidence:
+  - deepseek-harness-v0.1.2-alpha.1
+  runtime:
+    durable: true
+    multiTenant: true
+    idempotencyRequired: true
+    outboxRequired: true
+    environmentAuthorityRequired: true
+    proofObligationAware: true
+    failMode: fail-closed
+  security:
+    llmAuthoritativeOracle: DENY
+    selfCertification: DENY
+    authorityWidening: DENY
+    providerTypesInCore: DENY
+  lifecycle:
+    initial: CANDIDATE
+    activationGate: DELTA_TARGET_CONFORMANCE
+    immutableVersions: true

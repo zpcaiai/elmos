@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/proof-harness/v3/invocation.schema.json",
+  "title": "Proof harness invocation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "requestId", "skill", "identity", "revisionSet", "authority", "idempotencyKey", "input"],
+  "properties": {
+    "apiVersion": {"const": "elmos.ai/proof-harness/v3"},
+    "requestId": {"type": "string", "minLength": 1, "maxLength": 160},
+    "skill": {
+      "enum": [
+        "elmos-goal-specification-kernel",
+        "elmos-repository-intelligence-kernel",
+        "elmos-repository-semantic-compiler-kernel",
+        "elmos-agentic-reasoning-kernel",
+        "elmos-transformation-kernel",
+        "elmos-proof-verification-kernel",
+        "elmos-harness-runtime-kernel",
+        "elmos-certification-kernel",
+        "elmos-domain-spring-legacy-modernization",
+        "elmos-domain-cross-language-conversion",
+        "elmos-domain-multi-language-project-generation",
+        "elmos-domain-sql-dialect-routine-conversion",
+        "elmos-domain-repository-refactoring",
+        "elmos-evaluation-trust-gate",
+        "elmos-self-improvement-governance",
+        "elmos-commercial-operations-finops"
+      ]
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "projectId", "actorId", "authenticationContextDigest"],
+      "properties": {
+        "tenantId": {"type": "string", "minLength": 1, "maxLength": 160},
+        "projectId": {"type": "string", "minLength": 1, "maxLength": 160},
+        "actorId": {"type": "string", "minLength": 1, "maxLength": 160},
+        "authenticationContextDigest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "revisionSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revisionSetId", "source", "baseline", "requirements", "policy", "workflow", "modelRoute", "toolchain", "environment", "domainPack"],
+      "properties": {
+        "revisionSetId": {"type": "string", "minLength": 1, "maxLength": 160},
+        "source": {"$ref": "#/$defs/digest"},
+        "baseline": {"$ref": "#/$defs/digest"},
+        "requirements": {"$ref": "#/$defs/digest"},
+        "policy": {"$ref": "#/$defs/digest"},
+        "workflow": {"$ref": "#/$defs/digest"},
+        "modelRoute": {"$ref": "#/$defs/digest"},
+        "toolchain": {"$ref": "#/$defs/digest"},
+        "environment": {"$ref": "#/$defs/digest"},
+        "domainPack": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authorityId", "revision", "environmentId", "executionEpoch", "fencingGeneration", "expiresAt"],
+      "properties": {
+        "authorityId": {"type": "string", "minLength": 1, "maxLength": 160},
+        "revision": {"$ref": "#/$defs/digest"},
+        "environmentId": {"type": "string", "minLength": 1, "maxLength": 160},
+        "executionEpoch": {"type": "integer", "minimum": 1},
+        "fencingGeneration": {"type": "integer", "minimum": 1},
+        "expiresAt": {"type": "string", "format": "date-time"}
+      }
+    },
+    "idempotencyKey": {"type": "string", "minLength": 16, "maxLength": 256},
+    "deadline": {"type": "string", "format": "date-time"},
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "wallClockSeconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 86400},
+        "maxInputBytes": {"type": "integer", "minimum": 1, "maximum": 1073741824},
+        "maxOutputBytes": {"type": "integer", "minimum": 1, "maximum": 1073741824},
+        "maxCostMicrounits": {"type": "integer", "minimum": 0}
+      }
+    },
+    "input": {"type": "object"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

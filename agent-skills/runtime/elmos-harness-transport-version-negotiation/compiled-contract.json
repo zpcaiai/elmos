@@ -1,0 +1,30 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "external_evidence_status": "NOT_RUN",
+  "implementation_status": "DECLARED_RUNTIME_UNQUALIFIED",
+  "kind": "elmos.v3.1.delta-skill-contract",
+  "name": "elmos-harness-transport-version-negotiation",
+  "owners": [
+    "K7"
+  ],
+  "permissions": {
+    "network": "default-deny",
+    "secrets": "never-in-prompts-or-logs",
+    "side_effects": "typed-authority-required"
+  },
+  "priority": "P0",
+  "routable": false,
+  "runtime": {
+    "entrypoint": "DeltaSkillRuntime.execute",
+    "module": "elmos_proof_harness.delta",
+    "registry": "DELTA_SKILL_REGISTRY"
+  },
+  "schema_version": "1.0.0",
+  "skill_id": "ELMOS-V3D-009",
+  "source": {
+    "package": "elmos-v3-harness-runtime-assurance-delta-v3.1.0",
+    "path": "P0/elmos-harness-transport-version-negotiation/SKILL.md",
+    "sha256": "sha256:c50cb1a0d2203b921498738ae2c2e0281727216499bd7a38403a28e6cf181673"
+  },
+  "version": "3.1.0"
+}

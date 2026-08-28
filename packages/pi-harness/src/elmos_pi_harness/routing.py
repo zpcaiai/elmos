@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Any, TypedDict
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -27,17 +27,8 @@ class RoutingRequest:
     preferred: str | None = None
 
 
-class RoutingCandidate(TypedDict):
-    alias: str
-    provider: str
-    model_id: str
-    eligible: bool
-    reasons: list[str]
-    score: str
-
-
 def route(request: RoutingRequest, models: Iterable[ModelCapability]) -> dict[str, Any]:
-    candidates: list[RoutingCandidate] = []
+    candidates = []
     for model in models:
         reasons: list[str] = []
         if not model.enabled:

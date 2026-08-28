@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/proof-harness/v3/proof-obligation-graph.schema.json",
+  "title": "Proof obligation scheduling graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["graphId", "tenantId", "projectId", "goalId", "revisionSetId", "obligations", "edges", "graphDigest"],
+  "properties": {
+    "graphId": {"type": "string", "minLength": 1},
+    "tenantId": {"type": "string", "minLength": 1},
+    "projectId": {"type": "string", "minLength": 1},
+    "goalId": {"type": "string", "minLength": 1},
+    "revisionSetId": {"type": "string", "minLength": 1},
+    "graphDigest": {"$ref": "#/$defs/digest"},
+    "obligations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/obligation"}},
+    "edges": {"type": "array", "items": {"$ref": "#/$defs/edge"}}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "obligation": {"type": "object", "additionalProperties": false, "required": ["id", "subjectRevision", "claim", "severity", "minimumStatus", "acceptedEvidenceClasses", "assumptions", "status"], "properties": {"id": {"type": "string", "minLength": 1}, "subjectRevision": {"$ref": "#/$defs/digest"}, "claim": {"type": "string", "minLength": 1}, "severity": {"enum": ["critical", "high", "medium", "low"]}, "minimumStatus": {"$ref": "#/$defs/proofStatus"}, "acceptedEvidenceClasses": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "assumptions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "status": {"$ref": "#/$defs/proofStatus"}}},
+    "edge": {"type": "object", "additionalProperties": false, "required": ["source", "target", "kind"], "properties": {"source": {"type": "string", "minLength": 1}, "target": {"type": "string", "minLength": 1}, "kind": {"enum": ["logical", "evidence", "refinement", "assumption", "invalidation"]}}},
+    "proofStatus": {"enum": ["PENDING", "READY", "RUNNING", "BLOCKED", "PROVED_CERTIFIED", "PROVED_INDUCTIVE", "PROVED_SOLVER_TRUSTED", "PROVED_FOR_SUPPORTED_FRAGMENT", "BOUNDED_NO_COUNTEREXAMPLE", "REFUTED_WITH_COUNTEREXAMPLE", "UNKNOWN_TIMEOUT", "UNKNOWN_RESOURCE_LIMIT", "UNSUPPORTED", "ASSUMPTION_REQUIRED", "RUNTIME_MONITORED", "WAIVED_BY_APPROVER"]}
+  }
+}

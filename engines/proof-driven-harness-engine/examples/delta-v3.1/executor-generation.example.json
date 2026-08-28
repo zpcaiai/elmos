@@ -1,0 +1,8 @@
+{
+  "connectionEpoch": 8,
+  "environmentId": "env-1",
+  "executorGeneration": 4,
+  "executorIdentity": "exec-b",
+  "liveProbeEvidenceRef": "cas:probe",
+  "state": "ACTIVE"
+}

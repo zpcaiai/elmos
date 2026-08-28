@@ -7,9 +7,7 @@ metadata:
   source_id: 33-unknown-semantics-ledger
   source_digest: sha256:640077031da0ebadd6f0a7e26b3aa9509eedea651a8989a47703e0fa2c5d881f
   phase: semantic-model
-  runtime_state: CODE_COMPLETE_LOCAL
-  capability_state: LOCAL_EXECUTED
-  operation_code: UNKNOWN_LEDGER_BUILT
+  runtime_state: BOUND_LOCAL_EXACT
   runtime_handler_id: legacy-web-handler:33-unknown-semantics-ledger
 ---
 
@@ -17,9 +15,8 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is code-complete for its bounded local contract, tenant/project/job
-scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
-It does not execute source-package instructions or mutate customer repositories.
+The handler is bounded, tenant/project/job scoped, idempotency-aware and
+does not execute source-package instructions or customer repository code.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and

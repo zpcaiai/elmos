@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/proof-harness/v3/workflow-ir.schema.json",
+  "title": "Durable workflow intermediate representation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["workflowId", "revision", "initialState", "states", "transitions", "terminalStates", "idempotency", "recovery"],
+  "properties": {
+    "workflowId": {"type": "string", "minLength": 1},
+    "revision": {"$ref": "#/$defs/digest"},
+    "initialState": {"type": "string", "minLength": 1},
+    "states": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "terminalStates": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "transitions": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["from", "to", "authority", "sideEffect"], "properties": {"from": {"type": "string", "minLength": 1}, "to": {"type": "string", "minLength": 1}, "authority": {"type": "string", "minLength": 1}, "sideEffect": {"enum": ["none", "idempotent", "reconcilable", "irreversible-review"]}, "compensation": {"type": ["string", "null"]}}}},
+    "idempotency": {"type": "object", "additionalProperties": false, "required": ["keyScope", "requestDigestRequired"], "properties": {"keyScope": {"enum": ["tenant-project-actor-operation", "tenant-project-operation"]}, "requestDigestRequired": {"const": true}}},
+    "recovery": {"type": "object", "additionalProperties": false, "required": ["checkpointed", "epochIncrement", "fencingIncrement"], "properties": {"checkpointed": {"const": true}, "epochIncrement": {"const": true}, "fencingIncrement": {"const": true}}}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}
+}

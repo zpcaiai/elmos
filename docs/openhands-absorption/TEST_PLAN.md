@@ -109,18 +109,9 @@ UNKNOWN、INCONCLUSIVE、过期、冲突、无 digest、无 replay 或自验证�
 | LOC-010 | Native/provider normalization、routing、cost ceiling、fallback | PASS |
 | LOC-011 | Browser capture、cleanup、locator evidence、secret masking | PASS |
 | LOC-012 | Worker plane、admission quota、metrics、cost reconciliation、service cursor | PASS |
-| LOC-013 | PostgreSQL adapter 的事务/RLS/advisory lock/outbox/checkpoint 合同（fake connection） | PASS（合同）；真实 DB NOT_RUN |
-| LOC-014 | S3 CAS、broker ack/outbox、tenant/digest/encryption contract | PASS（fake client）；真实服务 NOT_RUN |
-| LOC-015 | Sandbox backend fencing、Secret revoke、隔离等级和 snapshot attestation | PASS（fake backend）；生产隔离 NOT_RUN |
-| LOC-016 | Provider durable session、exact idempotency、终态 replay、usage reconciliation | PASS（fake transport）；外部 Provider NOT_RUN |
-| LOC-017 | Browser binary safety、PII/secret redaction、mask attestation、allowlist expiry、flake block | PASS（fake driver）；真实设备 NOT_RUN |
-| LOC-018 | Evidence producer/verifier 分离、trust/revoke、qualification fail-closed | PASS（本地签名合同）；独立 verifier NOT_RUN |
-| LOC-019 | Authenticated REST/WS/gRPC 共享 gateway core 的 trusted scope/RBAC/cursor 合同与 protobuf Schema 静态绑定 | PASS（直接合同/静态）；真实 FastAPI/gRPC server 部署与 E2E NOT_RUN |
-| LOC-020 | Retention/export/legal-hold/idempotent deletion/UNKNOWN reconciliation | PASS（本地 provider）；真实删除证明 NOT_RUN |
 
-当前本地执行证据为 57 个测试通过（并以 `ResourceWarning` 为错误）、Ruff、
-strict mypy、静态 importer/manifest 和 CLI status 通过。完整 make gate 在每次
-提交前重放。它们只能标记为 LOCAL_ENGINEERING_EVIDENCE，
+当前本地执行证据为 22 个测试通过、ruff/mypy/pyright 通过、
+make openhands-absorption 通过。它们只能标记为 LOCAL_ENGINEERING_EVIDENCE，
 不能覆盖下方的真实集成、独立验证、负载、Chaos 或认证要求。
 
 ## 5. 合同、集成和恢复测试
@@ -133,7 +124,7 @@ strict mypy、静态 importer/manifest 和 CLI status 通过。完整 make gate 
 | CT-002 | Execution Event | tenant/run/seq、digest、previous_digest、timestamp、payload | raw event stream、recomputed digest | PASS（本地） |
 | CT-003 | Provider adapter | 相同输入在 Native 和至少两个外部 adapter 上形成相同 normalized contract | raw provider response、normalized event、usage | NOT_RUN（外部） |
 | CT-004 | Workspace API | lease、snapshot、restore、image digest、isolation profile | workspace manifest、snapshot digest、restore log | PASS（L0）；NOT_RUN（生产 profile） |
-| CT-005 | Capability package | publisher、signature、SBOM/lock、permission、version、rollback | signed manifest、signature verify、package digest | PASS（本地 deterministic bundle/HMAC contract）；NOT_RUN（生产 KMS/Ed25519 registry） |
+| CT-005 | Capability package | publisher、signature、SBOM/lock、permission、version、rollback | signed manifest、signature verify、package digest | PASS（本地 HMAC）；NOT_RUN（生产签名/registry） |
 | CT-006 | Browser evidence | scenario、semantic locator、artifact refs、masking、replay metadata | screenshot/DOM/trace/network manifest | PASS（fake driver）；NOT_RUN（真实设备） |
 
 ### 5.2 真实集成测试
@@ -268,7 +259,7 @@ diff、build/test/browser/security artifact、要求追踪和独立 oracle。
 
 ## 13. 当前测试结论
 
-当前只有本地工程测试证据：实现和 57 个本地测试已完成，静态校验和 CLI 验证已
+当前只有本地工程测试证据：实现和 22 个本地测试已完成，静态校验和 CLI 验证已
 通过。真实 Temporal/PostgreSQL、生产 sandbox、外部 Provider、浏览器设备、
 Golden Repo、负载/Chaos、独立安全审查尚未执行，故所有对应 case 继续保持
 NOT_RUN；总体验证状态继续保持 NOT_CERTIFIED。任何计划文本、静态检查、fake

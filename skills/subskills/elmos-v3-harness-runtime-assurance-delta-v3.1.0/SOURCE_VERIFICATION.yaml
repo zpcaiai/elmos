@@ -1,0 +1,97 @@
+apiVersion: elmos.ai/v3delta1
+kind: SourceVerification
+metadata:
+  asOf: '2026-08-28'
+spec:
+  sources:
+  - id: openai/codex#41202
+    commit: 5bf0ba3dd65952f8e37abbb7b535ee88841e2793
+    date: '2026-08-27'
+    status: merged-main
+    capability: MCP result lifecycle interception before completion/model visibility
+  - id: openai/codex#41195
+    commit: 0182ff34802c068815d5e0990ee94ec2d080b4fe
+    date: '2026-08-27'
+    status: merged-main
+    capability: model-specific finalized ToolRouter plan and fallback isolation
+  - id: openai/codex#41192
+    commit: c29bc99949f90687171611bb845c4c289fa85dde
+    date: '2026-08-27'
+    status: merged-main
+    capability: preserve restored permission profiles and reject lossy projection
+  - id: openai/codex#41020
+    commit: 81e180044d91c42f20818c43fbc2558603e4361d
+    date: '2026-08-27'
+    status: merged-main
+    capability: invocation-lifetime-scoped extension capabilities
+  - id: openai/codex#41005
+    commit: ae357e7250402af7c3bbede18a46cc565a7670d4
+    date: '2026-08-27'
+    status: merged-main
+    capability: Host-verified entitlement/security context
+  - id: openai/codex#41006
+    commit: b68acc4d4b56fdfa1d5b6a2c36102c66876e0c46
+    date: '2026-08-27'
+    status: merged-main
+    capability: trusted user skill path provenance for Guardian
+  - id: openai/codex#41002
+    commit: e56e4922ebb71b868aba275aa85fbcd87b69034f
+    date: '2026-08-26'
+    status: merged-main
+    capability: standalone tool output as first-class turn input
+  - id: openai/codex#40728
+    commit: 4213b38f3c555049bf6f494065698a3dfe587c16
+    date: '2026-08-25'
+    status: merged-main
+    capability: attachment-owned MCP permission profile
+  - id: openai/codex#40771
+    commit: e24190caa9ee355044a7d70177d48a556d766d35
+    date: '2026-08-26'
+    status: merged-main
+    capability: sandbox execution uses owning TurnEnvironment settings
+  - id: openai/codex#40710
+    commit: eb49f491c6ed2e203d07919ffd9d45eebee851e7
+    date: '2026-08-25'
+    status: merged-main
+    capability: explicit remote executor refresh and replacement fencing
+  - id: openai/codex#40716
+    commit: 23cedf48023879d9666e41d8eee765a9482120c0
+    date: '2026-08-25'
+    status: merged-main
+    capability: managed worktree ownership metadata and no-clobber binding
+  - id: openai/codex#40787
+    commit: 37f4bb94c9f4e180535a12e3f2c2f93f4a773df0
+    date: '2026-08-26'
+    status: merged-main
+    capability: legacy/paginated history capability-aware access
+  - id: openai/codex#40775
+    commit: 25a6e316c81fb7600d1d75f3e63ffe26be10b7c8
+    date: '2026-08-26'
+    status: merged-main
+    capability: Bridge-compatible schema dialect
+  - id: openai/codex#40737
+    commit: 75cb7c903d474b6637a6e9fe6f76cedf76ef1472
+    date: '2026-08-25'
+    status: merged-main
+    capability: typed MCP content items
+  - id: openai/codex-release-0.150.1
+    date: '2026-08-27'
+    status: stable
+    capability: stable adapter baseline; main-only delta features remain gated
+  - id: deepseek-harness-v0.1.2-alpha.1
+    date: '2026-08-27'
+    status: official-prerelease
+    capability: Remote gateway, one-time token, dsh profile, PTC rename, subagent model selection
+  - id: deepseek-harness-discussion-4827
+    date: '2026-08-28'
+    status: ecosystem-signal
+    capability: CallId→ToolCallId plugin incompatibility; not treated as normative contract
+  - id: deepseek-harness-discussion-4815
+    date: '2026-08-28'
+    status: ecosystem-signal
+    capability: unknown durable event fail-closed concern; used only for defensive design
+  interpretationPolicy:
+    merged-main: pre-adapt but do not label stable
+    stable: production baseline candidate
+    official-prerelease: version-gated prerelease profile
+    ecosystem-signal: defensive design only; no upstream API claim

@@ -1,0 +1,104 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionAcceptance
+metadata:
+  skill: elmos-executor-generation-fencing
+  version: 3.1.0
+spec:
+  hardGates:
+  - ReconnectSameExecutor and ReplaceExecutor are distinct transitions
+  - replacement retires old sessions and connection attempts before activation
+  - old-generation RPC, callback, process state and artifact commits are rejected
+  - new executor passes a live status probe before becoming authoritative
+  - outstanding side effects are reconciled rather than blindly replayed
+  scenarios:
+  - id: ELMOS-V3D-007-A01
+    title: ReconnectSameExecutor and ReplaceExecutor are distinct transitions
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-executor-generation-fencing processes a production lifecycle transition
+    then:
+    - ReconnectSameExecutor and ReplaceExecutor are distinct transitions is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-007-A02
+    title: replacement retires old sessions and connection attempts before activation
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-executor-generation-fencing processes a production lifecycle transition
+    then:
+    - replacement retires old sessions and connection attempts before activation is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-007-A03
+    title: old-generation RPC, callback, process state and artifact commits are rejected
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-executor-generation-fencing processes a production lifecycle transition
+    then:
+    - old-generation RPC, callback, process state and artifact commits are rejected is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-007-A04
+    title: new executor passes a live status probe before becoming authoritative
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-executor-generation-fencing processes a production lifecycle transition
+    then:
+    - new executor passes a live status probe before becoming authoritative is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-007-A05
+    title: outstanding side effects are reconciled rather than blindly replayed
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-executor-generation-fencing processes a production lifecycle transition
+    then:
+    - outstanding side effects are reconciled rather than blindly replayed is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-007-NEG-STALE
+    title: Reject stale authority, generation or lease
+    given:
+    - stale execution context
+    when: an authoritative effect or commit is attempted
+    then:
+    - operation is rejected
+    - audit event is emitted
+    - no completion evidence is accepted
+    priority: P0
+  - id: ELMOS-V3D-007-NEG-REPLAY
+    title: Reject replay divergence
+    given:
+    - committed journal and artifacts
+    when: the execution is replayed or resumed
+    then:
+    - same effective state is reconstructed
+    - provider loss is explicit
+    - divergence blocks certification
+    priority: P0
+  - id: ELMOS-V3D-007-RECOVERY
+    title: Recover after worker, connection or plugin interruption
+    given:
+    - durable checkpoint and fencing state
+    when: a replacement worker resumes
+    then:
+    - committed side effects are not duplicated
+    - stale actors are fenced
+    - lineage remains complete
+    priority: P0
+  releaseRequirement: all P0 scenarios pass in target environment

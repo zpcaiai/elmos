@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/v3.1/durable-event-registration.schema.json",
+  "title": "Durable Plugin Event Registration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "type",
+    "owner",
+    "schemaVersion",
+    "semantics",
+    "validator",
+    "upgrader",
+    "projections"
+  ],
+  "properties": {
+    "type": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "semantics": {
+      "enum": [
+        "OPTIONAL_OBSERVATION",
+        "REQUIRED_STATE"
+      ]
+    },
+    "validator": {
+      "type": "string"
+    },
+    "upgrader": {
+      "type": "string"
+    },
+    "projections": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "compatibility": {
+      "enum": [
+        "STRICT",
+        "BACKWARD",
+        "FORWARD",
+        "FULL"
+      ]
+    }
+  }
+}

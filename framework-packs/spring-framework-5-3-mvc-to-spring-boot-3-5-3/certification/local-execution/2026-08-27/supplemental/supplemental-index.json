@@ -11,22 +11,22 @@
     {
       "bytes": 8254,
       "path": "raw/source-rollback.log",
-      "sha256": "00c66171843ba7ca9ee53538135e5135a63157ca44f941554a6856ab737b6011"
+      "sha256": "d2ad68e49d7bef2cc988e36bf6fa2d0146bf9dbb4bce16a47e44fe6f1271f4c4"
     },
     {
-      "bytes": 1328,
+      "bytes": 1465,
       "path": "raw/target-ab.txt",
-      "sha256": "d076aaeee22618b7102333c559b82efd3dfb902e49443cd6a197ec49971600f5"
+      "sha256": "7fa8ce2ecb4de860b7f88aa5ea6451f8b5f98e34948c767fbc6147eeff54b6a3"
     },
     {
-      "bytes": 3374,
+      "bytes": 3310,
       "path": "raw/target-startup.log",
-      "sha256": "af23625b8d43a17dcd94e0e37661c2070d15516898e03f63e49066221cbc7b6c"
+      "sha256": "dcfef40fab4877c49a134c828b56078321abff5a7176c5f39f49584a1ee86b21"
     },
     {
       "bytes": 22487,
       "path": "sbom-local-inventory.json",
-      "sha256": "46f74235f9e65dde173bd1449223d2df4f25c1792736e19391d74ae438e24282"
+      "sha256": "014aa7b81a2c46b44f86c4af1b07fc984f3ea796ab1c340f92188454c27c134e"
     },
     {
       "bytes": 9873951,
@@ -34,9 +34,9 @@
       "sha256": "0304b7290a71f4192eceaa75891f787532e4f26b5a7a7af7472d750aba1ff8ef"
     },
     {
-      "bytes": 5393,
+      "bytes": 5396,
       "path": "supplemental-local-evidence.json",
-      "sha256": "4d9820b7ce752ffcaa019fb146f0fc797da41ec93ee866a657fc6b28b4d46e9e"
+      "sha256": "555d79b45f984be715d983798a212c41fd71be3e1a67645129c9e528dc070ddc"
     }
   ],
   "index_does_not_self_reference": true,

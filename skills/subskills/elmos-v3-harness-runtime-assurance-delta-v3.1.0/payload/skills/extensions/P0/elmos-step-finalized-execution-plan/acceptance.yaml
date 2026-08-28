@@ -1,0 +1,104 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionAcceptance
+metadata:
+  skill: elmos-step-finalized-execution-plan
+  version: 3.1.0
+spec:
+  hardGates:
+  - active plan is finalized from the exact selected model snapshot
+  - fallback or candidate planning cannot mutate active tool metadata
+  - advertised tool specifications and executed handlers share one plan hash
+  - model switch, fallback, resume or environment refresh triggers explicit re-plan
+  - tool call dispatch uses the originating step plan even when the call outlives sampling
+  scenarios:
+  - id: ELMOS-V3D-002-A01
+    title: active plan is finalized from the exact selected model snapshot
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-step-finalized-execution-plan processes a production lifecycle transition
+    then:
+    - active plan is finalized from the exact selected model snapshot is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-002-A02
+    title: fallback or candidate planning cannot mutate active tool metadata
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-step-finalized-execution-plan processes a production lifecycle transition
+    then:
+    - fallback or candidate planning cannot mutate active tool metadata is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-002-A03
+    title: advertised tool specifications and executed handlers share one plan hash
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-step-finalized-execution-plan processes a production lifecycle transition
+    then:
+    - advertised tool specifications and executed handlers share one plan hash is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-002-A04
+    title: model switch, fallback, resume or environment refresh triggers explicit re-plan
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-step-finalized-execution-plan processes a production lifecycle transition
+    then:
+    - model switch, fallback, resume or environment refresh triggers explicit re-plan is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-002-A05
+    title: tool call dispatch uses the originating step plan even when the call outlives sampling
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-step-finalized-execution-plan processes a production lifecycle transition
+    then:
+    - tool call dispatch uses the originating step plan even when the call outlives sampling is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-002-NEG-STALE
+    title: Reject stale authority, generation or lease
+    given:
+    - stale execution context
+    when: an authoritative effect or commit is attempted
+    then:
+    - operation is rejected
+    - audit event is emitted
+    - no completion evidence is accepted
+    priority: P0
+  - id: ELMOS-V3D-002-NEG-REPLAY
+    title: Reject replay divergence
+    given:
+    - committed journal and artifacts
+    when: the execution is replayed or resumed
+    then:
+    - same effective state is reconstructed
+    - provider loss is explicit
+    - divergence blocks certification
+    priority: P0
+  - id: ELMOS-V3D-002-RECOVERY
+    title: Recover after worker, connection or plugin interruption
+    given:
+    - durable checkpoint and fencing state
+    when: a replacement worker resumes
+    then:
+    - committed side effects are not duplicated
+    - stale actors are fenced
+    - lineage remains complete
+    priority: P0
+  releaseRequirement: all P0 scenarios pass in target environment

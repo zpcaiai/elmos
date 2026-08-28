@@ -1,7 +1,0 @@
-{
-  "bundleId": "bundleId-fixture",
-  "datasetVersion": "datasetVersion-fixture",
-  "scorerProfile": "scorerProfile-fixture",
-  "decision": "PASS",
-  "evidenceRefs": []
-}

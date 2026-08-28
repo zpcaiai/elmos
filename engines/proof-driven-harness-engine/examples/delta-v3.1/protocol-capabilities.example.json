@@ -1,0 +1,15 @@
+{
+  "authScheme": "one-time-token",
+  "consistencyModel": "EVENTUAL",
+  "features": [
+    "PTC_MODE",
+    "SUBAGENT_MODEL_SELECTION"
+  ],
+  "historyMode": "PAGINATED",
+  "provider": "deepseek-harness",
+  "schemaDialect": "json-schema",
+  "transport": "REMOTE_GATEWAY",
+  "typedToolResult": true,
+  "unsupportedRequired": [],
+  "version": "0.1.2-alpha.1"
+}

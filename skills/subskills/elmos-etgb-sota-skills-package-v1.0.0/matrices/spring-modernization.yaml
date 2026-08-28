@@ -1,0 +1,2110 @@
+schema_version: '1.0'
+matrix_id: ETGB-SM-1
+business_line: spring-modernization
+archetypes:
+- id: servlet-jsp-webxml
+  title: Servlet/JSP web.xml WAR
+  traits:
+  - servlet
+  - jsp
+  - webxml
+  - war
+  - javax
+  source:
+    java: 8-17
+    framework: Servlet/JSP
+  target:
+    java: 21+
+    framework: Spring Boot 4
+    packaging: jar
+- id: spring-xml-mvc
+  title: Spring XML MVC/JSP
+  traits:
+  - spring-xml
+  - spring-mvc
+  - jsp
+  - war
+  - javax
+  source:
+    spring: 2.5-5.x
+  target:
+    spring: 7.x
+    boot: 4.x
+- id: struts1-spring
+  title: Struts 1 + Spring
+  traits:
+  - struts1
+  - spring-xml
+  - jsp
+  - war
+  - javax
+  source:
+    struts: 1.x
+  target:
+    spring: 7.x
+    boot: 4.x
+- id: struts2-spring
+  title: Struts 2 + Spring
+  traits:
+  - struts2
+  - spring-xml
+  - jsp
+  - tiles
+  - war
+  - javax
+  source:
+    struts: 2.x
+  target:
+    spring: 7.x
+    boot: 4.x
+- id: mixed-struts-servlet-spring
+  title: Mixed Struts/Servlet/Spring repository
+  traits:
+  - struts1
+  - struts2
+  - servlet
+  - spring-xml
+  - jsp
+  - tiles
+  - war
+  - javax
+  source:
+    style: mixed
+  target:
+    spring: 7.x
+    boot: 4.x
+- id: spring-boot-1
+  title: Spring Boot 1.x
+  traits:
+  - spring-boot
+  - boot1
+  - embedded
+  - javax
+  source:
+    boot: 1.x
+  target:
+    boot: 4.x
+- id: spring-boot-2
+  title: Spring Boot 2.x
+  traits:
+  - spring-boot
+  - boot2
+  - embedded
+  - javax
+  source:
+    boot: 2.x
+  target:
+    boot: 4.x
+- id: spring-boot-3
+  title: Spring Boot 3.x
+  traits:
+  - spring-boot
+  - boot3
+  - embedded
+  - jakarta
+  source:
+    boot: 3.x
+  target:
+    boot: 4.x
+variants:
+- nominal
+- edge-adversarial
+features:
+- id: build.maven-dependency-convergence
+  title: maven dependency convergence
+  group: build
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.gradle-dependency-convergence
+  title: gradle dependency convergence
+  group: build
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.war-to-executable-jar
+  title: war to executable jar
+  group: build
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.multi-module-reactor-order
+  title: multi module reactor order
+  group: build
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.parent-pom-and-bom-preservation
+  title: parent pom and BOM preservation
+  group: build
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.plugin-lifecycle-preservation
+  title: plugin lifecycle preservation
+  group: build
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.resource-filtering
+  title: resource filtering
+  group: build
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.generated-source-roots
+  title: generated source roots
+  group: build
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.annotation-processing
+  title: annotation processing
+  group: build
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.profile-activated-dependencies
+  title: profile activated dependencies
+  group: build
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.private-repository-declaration
+  title: private repository declaration
+  group: build
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.reproducible-build-metadata
+  title: reproducible build metadata
+  group: build
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.native-library-packaging
+  title: native library packaging
+  group: build
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.container-image-build
+  title: container image build
+  group: build
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.sbom-generation
+  title: SBOM generation
+  group: build
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: build.dependency-license-inventory
+  title: dependency license inventory
+  group: build
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - build-equivalence
+  - unsupported-feature-disclosure
+- id: namespace-api.javax-servlet-to-jakarta-servlet
+  title: javax servlet to jakarta servlet
+  group: namespace-api
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - static-and-runtime-equivalence
+  - unsupported-feature-disclosure
+- id: namespace-api.javax-validation-to-jakarta-validation
+  title: javax validation to jakarta validation
+  group: namespace-api
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - static-and-runtime-equivalence
+  - unsupported-feature-disclosure
+- id: namespace-api.javax-persistence-to-jakarta-persistence
+  title: javax persistence to jakarta persistence
+  group: namespace-api
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - static-and-runtime-equivalence
+  - unsupported-feature-disclosure
+- id: namespace-api.javax-transaction-to-jakarta-transaction
+  title: javax transaction to jakarta transaction
+  group: namespace-api
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - static-and-runtime-equivalence
+  - unsupported-feature-disclosure
+- id: namespace-api.javax-mail-to-jakarta-mail
+  title: javax mail to jakarta mail
+  group: namespace-api
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - static-and-runtime-equivalence
+  - unsupported-feature-disclosure
+- id: namespace-api.removed-spring-api-replacement
+  title: removed Spring API replacement
+  group: namespace-api
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - static-and-runtime-equivalence
+  - unsupported-feature-disclosure
+- id: namespace-api.deprecated-annotation-replacement
+  title: deprecated annotation replacement
+  group: namespace-api
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - static-and-runtime-equivalence
+  - unsupported-feature-disclosure
+- id: namespace-api.reflection-string-class-names
+  title: reflection string class names
+  group: namespace-api
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - static-and-runtime-equivalence
+  - unsupported-feature-disclosure
+- id: namespace-api.service-loader-provider-names
+  title: service loader provider names
+  group: namespace-api
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - static-and-runtime-equivalence
+  - unsupported-feature-disclosure
+- id: namespace-api.serialized-class-compatibility
+  title: serialized class compatibility
+  group: namespace-api
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - static-and-runtime-equivalence
+  - unsupported-feature-disclosure
+- id: namespace-api.custom-classloader-behavior
+  title: custom classloader behavior
+  group: namespace-api
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - static-and-runtime-equivalence
+  - unsupported-feature-disclosure
+- id: namespace-api.third-party-javax-compatibility-bridge
+  title: third party javax compatibility bridge
+  group: namespace-api
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - static-and-runtime-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.xml-bean-graph-to-java-configuration
+  title: XML bean graph to Java configuration
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.component-scan-boundary
+  title: component scan boundary
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.bean-name-identity
+  title: bean name identity
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.bean-alias-identity
+  title: bean alias identity
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.constructor-injection
+  title: constructor injection
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.setter-injection
+  title: setter injection
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.factory-bean-semantics
+  title: factory bean semantics
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.factory-method-semantics
+  title: factory method semantics
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.bean-scope-singleton
+  title: bean scope singleton
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.bean-scope-prototype
+  title: bean scope prototype
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.request-scope
+  title: request scope
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.session-scope
+  title: session scope
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.lazy-init-and-eager-init
+  title: lazy init and eager init
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.depends-on-order
+  title: depends-on order
+  group: configuration-di
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.primary-and-qualifier-resolution
+  title: primary and qualifier resolution
+  group: configuration-di
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.conditional-bean-creation
+  title: conditional bean creation
+  group: configuration-di
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.property-placeholder-precedence
+  title: property placeholder precedence
+  group: configuration-di
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.profile-activation
+  title: profile activation
+  group: configuration-di
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.environment-variable-binding
+  title: environment variable binding
+  group: configuration-di
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.encrypted-secret-reference
+  title: encrypted secret reference
+  group: configuration-di
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.circular-dependency-detection
+  title: circular dependency detection
+  group: configuration-di
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: configuration-di.application-event-ordering
+  title: application event ordering
+  group: configuration-di
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - bean-graph-equivalence
+  - unsupported-feature-disclosure
+- id: web.route-path-and-http-method
+  title: route path and HTTP method
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.path-variable-binding
+  title: path variable binding
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.query-parameter-binding
+  title: query parameter binding
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.form-object-binding
+  title: form object binding
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.json-request-binding
+  title: JSON request binding
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.xml-request-binding
+  title: XML request binding
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.multipart-upload
+  title: multipart upload
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.streaming-download
+  title: streaming download
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.content-negotiation
+  title: content negotiation
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.media-type-charset
+  title: media type charset
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.status-code-mapping
+  title: status code mapping
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.header-preservation
+  title: header preservation
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.cookie-path-domain-flags
+  title: cookie path domain flags
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.session-create-read-invalidate
+  title: session create read invalidate
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.flash-attributes
+  title: flash attributes
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.redirect-and-forward
+  title: redirect and forward
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.filter-mapping-and-order
+  title: filter mapping and order
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.listener-lifecycle
+  title: listener lifecycle
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.interceptor-order
+  title: interceptor order
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.locale-resolver
+  title: locale resolver
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.timezone-resolver
+  title: timezone resolver
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.cors-policy
+  title: CORS policy
+  group: web
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.compression-and-range-request
+  title: compression and range request
+  group: web
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.async-servlet-request
+  title: async servlet request
+  group: web
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.sse-endpoint
+  title: SSE endpoint
+  group: web
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.websocket-handshake
+  title: WebSocket handshake
+  group: web
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.error-page-mapping
+  title: error page mapping
+  group: web
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.controller-advice-exception-mapping
+  title: controller advice exception mapping
+  group: web
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.validation-error-shape
+  title: validation error shape
+  group: web
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.method-argument-resolver
+  title: method argument resolver
+  group: web
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.url-encoding-and-unicode
+  title: URL encoding and Unicode
+  group: web
+  priority: P2
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: web.reverse-proxy-forwarded-headers
+  title: reverse proxy forwarded headers
+  group: web
+  priority: P2
+  level: L1
+  requires_any: []
+  default_oracles:
+  - http-contract-equivalence
+  - unsupported-feature-disclosure
+- id: struts1.action-mapping-to-controller
+  title: Action mapping to controller
+  group: struts1
+  priority: P0
+  level: L1
+  requires_any: &id001
+  - struts1
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts1.actionform-to-dto
+  title: ActionForm to DTO
+  group: struts1
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts1.dynaactionform-binding
+  title: DynaActionForm binding
+  group: struts1
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts1.forward-result-mapping
+  title: forward result mapping
+  group: struts1
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts1.global-forward-mapping
+  title: global forward mapping
+  group: struts1
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts1.input-validation-flow
+  title: input validation flow
+  group: struts1
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts1.reset-method-semantics
+  title: reset method semantics
+  group: struts1
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts1.dispatchaction-method-selection
+  title: DispatchAction method selection
+  group: struts1
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts1.lookupdispatchaction
+  title: LookupDispatchAction
+  group: struts1
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts1.exception-handler-mapping
+  title: exception handler mapping
+  group: struts1
+  priority: P1
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts1.message-resources-and-locale
+  title: message resources and locale
+  group: struts1
+  priority: P1
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts1.plug-in-lifecycle
+  title: plug-in lifecycle
+  group: struts1
+  priority: P1
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.actionsupport-to-controller-service
+  title: ActionSupport to controller service
+  group: struts2
+  priority: P0
+  level: L1
+  requires_any: &id002
+  - struts2
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.struts-xml-route-mapping
+  title: struts.xml route mapping
+  group: struts2
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.ognl-request-binding
+  title: OGNL request binding
+  group: struts2
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.valuestack-expression-semantics
+  title: ValueStack expression semantics
+  group: struts2
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.result-type-mapping
+  title: result type mapping
+  group: struts2
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.interceptor-stack-order
+  title: interceptor stack order
+  group: struts2
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.conversion-errors
+  title: conversion errors
+  group: struts2
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.validation-workflow
+  title: validation workflow
+  group: struts2
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.wildcard-action-mapping
+  title: wildcard action mapping
+  group: struts2
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.method-filtering
+  title: method filtering
+  group: struts2
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.session-aware-action
+  title: session aware action
+  group: struts2
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.file-upload-interceptor
+  title: file upload interceptor
+  group: struts2
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.exception-mapping
+  title: exception mapping
+  group: struts2
+  priority: P1
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.rest-plugin-behavior
+  title: REST plugin behavior
+  group: struts2
+  priority: P1
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.spring-object-factory-integration
+  title: Spring object factory integration
+  group: struts2
+  priority: P1
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: struts2.token-interceptor-idempotency
+  title: token interceptor idempotency
+  group: struts2
+  priority: P1
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - http-and-view-equivalence
+  - unsupported-feature-disclosure
+- id: views.jsp-view-resolution
+  title: JSP view resolution
+  group: views
+  priority: P0
+  level: L1
+  requires_any: &id003
+  - jsp
+  - tiles
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: views.jstl-expression-semantics
+  title: JSTL expression semantics
+  group: views
+  priority: P0
+  level: L1
+  requires_any: *id003
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: views.custom-tag-library
+  title: custom tag library
+  group: views
+  priority: P0
+  level: L1
+  requires_any: *id003
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: views.tiles-definition-composition
+  title: Tiles definition composition
+  group: views
+  priority: P0
+  level: L1
+  requires_any: *id003
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: views.template-layout-inheritance
+  title: template layout inheritance
+  group: views
+  priority: P0
+  level: L1
+  requires_any: *id003
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: views.form-tag-binding
+  title: form tag binding
+  group: views
+  priority: P0
+  level: L1
+  requires_any: *id003
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: views.html-escaping
+  title: HTML escaping
+  group: views
+  priority: P0
+  level: L1
+  requires_any: *id003
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: views.csrf-hidden-token
+  title: CSRF hidden token
+  group: views
+  priority: P0
+  level: L1
+  requires_any: *id003
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: views.pagination-links
+  title: pagination links
+  group: views
+  priority: P0
+  level: L1
+  requires_any: *id003
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: views.error-page-dom-contract
+  title: error page DOM contract
+  group: views
+  priority: P0
+  level: L1
+  requires_any: *id003
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: views.static-resource-versioning
+  title: static resource versioning
+  group: views
+  priority: P1
+  level: L1
+  requires_any: *id003
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: views.i18n-message-fallback
+  title: i18n message fallback
+  group: views
+  priority: P1
+  level: L1
+  requires_any: *id003
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: views.jsp-to-thymeleaf-optional-migration
+  title: JSP to Thymeleaf optional migration
+  group: views
+  priority: P1
+  level: L1
+  requires_any: *id003
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: views.view-model-attribute-names
+  title: view model attribute names
+  group: views
+  priority: P1
+  level: L1
+  requires_any: *id003
+  default_oracles:
+  - dom-and-viewmodel-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.jdbc-query-result-mapping
+  title: JDBC query result mapping
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.jdbc-generated-keys
+  title: JDBC generated keys
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.jpa-entity-mapping
+  title: JPA entity mapping
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.hibernate-custom-type
+  title: Hibernate custom type
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.lazy-loading-boundary
+  title: lazy loading boundary
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.eager-fetch-graph
+  title: eager fetch graph
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.n-plus-one-budget
+  title: N plus one budget
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.transaction-required-propagation
+  title: transaction required propagation
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.transaction-requires-new-propagation
+  title: transaction requires new propagation
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.transaction-nested-propagation
+  title: transaction nested propagation
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.rollback-checked-exception-policy
+  title: rollback checked exception policy
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.rollback-runtime-exception-policy
+  title: rollback runtime exception policy
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.read-only-transaction
+  title: read only transaction
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.isolation-read-committed
+  title: isolation read committed
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.isolation-repeatable-read
+  title: isolation repeatable read
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.optimistic-locking
+  title: optimistic locking
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.pessimistic-locking
+  title: pessimistic locking
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.multiple-data-sources
+  title: multiple data sources
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.chained-transaction-limitation-disclosure
+  title: chained transaction limitation disclosure
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.schema-migration-ordering
+  title: schema migration ordering
+  group: data-transaction
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.sequence-allocation
+  title: sequence allocation
+  group: data-transaction
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.identity-allocation
+  title: identity allocation
+  group: data-transaction
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.database-trigger-side-effects
+  title: database trigger side effects
+  group: data-transaction
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.batch-write-semantics
+  title: batch write semantics
+  group: data-transaction
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.stored-procedure-invocation
+  title: stored procedure invocation
+  group: data-transaction
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.open-session-in-view-policy
+  title: Open Session in View policy
+  group: data-transaction
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: data-transaction.second-level-cache-semantics
+  title: second level cache semantics
+  group: data-transaction
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - db-state-and-transaction-equivalence
+  - unsupported-feature-disclosure
+- id: security.security-xml-to-securityfilterchain
+  title: security XML to SecurityFilterChain
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.form-login-success-and-failure
+  title: form login success and failure
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.password-encoder-migration
+  title: password encoder migration
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.remember-me
+  title: remember me
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.session-fixation-protection
+  title: session fixation protection
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.concurrent-session-control
+  title: concurrent session control
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.method-authorization
+  title: method authorization
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.url-authorization-precedence
+  title: URL authorization precedence
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.csrf-enforcement
+  title: CSRF enforcement
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.cors-security-interaction
+  title: CORS security interaction
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.jwt-validation
+  title: JWT validation
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.oauth2-login
+  title: OAuth2 login
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.oidc-logout
+  title: OIDC logout
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.resource-server-scopes
+  title: resource server scopes
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.anonymous-principal-semantics
+  title: anonymous principal semantics
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.access-denied-mapping
+  title: access denied mapping
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.security-headers
+  title: security headers
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.request-cache-redirect
+  title: request cache redirect
+  group: security
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.ldap-authentication
+  title: LDAP authentication
+  group: security
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.saml-integration-disclosure
+  title: SAML integration disclosure
+  group: security
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.shiro-to-spring-security-adaptation
+  title: Shiro to Spring Security adaptation
+  group: security
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: security.privilege-escalation-regression
+  title: privilege escalation regression
+  group: security
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - security-policy-equivalence
+  - unsupported-feature-disclosure
+- id: integration.jms-producer-consumer
+  title: JMS producer consumer
+  group: integration
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.rabbitmq-publisher-consumer
+  title: RabbitMQ publisher consumer
+  group: integration
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.kafka-producer-consumer
+  title: Kafka producer consumer
+  group: integration
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.transactional-outbox
+  title: transactional outbox
+  group: integration
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.email-sending
+  title: email sending
+  group: integration
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.rest-client-timeout
+  title: REST client timeout
+  group: integration
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.rest-client-retry
+  title: REST client retry
+  group: integration
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.soap-client-and-wsdl
+  title: SOAP client and WSDL
+  group: integration
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.scheduled-job-cron-semantics
+  title: scheduled job cron semantics
+  group: integration
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.async-executor-context-propagation
+  title: async executor context propagation
+  group: integration
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.cache-key-and-ttl
+  title: cache key and TTL
+  group: integration
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.distributed-lock
+  title: distributed lock
+  group: integration
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.file-system-watcher
+  title: file system watcher
+  group: integration
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.third-party-sdk-initialization
+  title: third party SDK initialization
+  group: integration
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.feature-flag-behavior
+  title: feature flag behavior
+  group: integration
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.webhook-signature-verification
+  title: webhook signature verification
+  group: integration
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.idempotency-key
+  title: idempotency key
+  group: integration
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: integration.dead-letter-handling
+  title: dead letter handling
+  group: integration
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - side-effect-equivalence
+  - unsupported-feature-disclosure
+- id: operations.application-startup
+  title: application startup
+  group: operations
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.graceful-shutdown
+  title: graceful shutdown
+  group: operations
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.health-liveness-readiness
+  title: health liveness readiness
+  group: operations
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.metrics-names-and-labels
+  title: metrics names and labels
+  group: operations
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.trace-propagation
+  title: trace propagation
+  group: operations
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.structured-log-fields
+  title: structured log fields
+  group: operations
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.log-redaction
+  title: log redaction
+  group: operations
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.externalized-configuration-precedence
+  title: externalized configuration precedence
+  group: operations
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.secret-injection
+  title: secret injection
+  group: operations
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.tls-configuration
+  title: TLS configuration
+  group: operations
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.reverse-proxy-context-path
+  title: reverse proxy context path
+  group: operations
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.container-non-root-execution
+  title: container non-root execution
+  group: operations
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.kubernetes-probes
+  title: Kubernetes probes
+  group: operations
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.horizontal-scaling-session-policy
+  title: horizontal scaling session policy
+  group: operations
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.memory-and-thread-leak-budget
+  title: memory and thread leak budget
+  group: operations
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.startup-performance-budget
+  title: startup performance budget
+  group: operations
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.steady-state-latency-budget
+  title: steady-state latency budget
+  group: operations
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: operations.rollback-deployment
+  title: rollback deployment
+  group: operations
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - operational-equivalence
+  - unsupported-feature-disclosure
+- id: testing.junit-4-to-junit-5
+  title: JUnit 4 to JUnit 5
+  group: testing
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - test-suite-preservation
+  - unsupported-feature-disclosure
+- id: testing.spring-test-context-migration
+  title: Spring test context migration
+  group: testing
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - test-suite-preservation
+  - unsupported-feature-disclosure
+- id: testing.mockmvc-contract-preservation
+  title: MockMvc contract preservation
+  group: testing
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - test-suite-preservation
+  - unsupported-feature-disclosure
+- id: testing.integration-test-database-isolation
+  title: integration test database isolation
+  group: testing
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - test-suite-preservation
+  - unsupported-feature-disclosure
+- id: testing.test-fixture-ordering
+  title: test fixture ordering
+  group: testing
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - test-suite-preservation
+  - unsupported-feature-disclosure
+- id: testing.time-and-clock-control
+  title: time and clock control
+  group: testing
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - test-suite-preservation
+  - unsupported-feature-disclosure
+- id: testing.random-seed-control
+  title: random seed control
+  group: testing
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - test-suite-preservation
+  - unsupported-feature-disclosure
+- id: testing.snapshot-update-prevention
+  title: snapshot update prevention
+  group: testing
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - test-suite-preservation
+  - unsupported-feature-disclosure
+- id: testing.coverage-non-regression
+  title: coverage non-regression
+  group: testing
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - test-suite-preservation
+  - unsupported-feature-disclosure
+- id: testing.mutation-score-non-regression
+  title: mutation score non-regression
+  group: testing
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - test-suite-preservation
+  - unsupported-feature-disclosure
+- id: testing.flaky-test-quarantine-prohibition
+  title: flaky test quarantine prohibition
+  group: testing
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - test-suite-preservation
+  - unsupported-feature-disclosure
+- id: testing.test-report-preservation
+  title: test report preservation
+  group: testing
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - test-suite-preservation
+  - unsupported-feature-disclosure
+public_corpus_ids:
+- spring-petclinic-framework
+- apache-struts-examples
+- apache-roller
+- broadleaf-legacy-demo

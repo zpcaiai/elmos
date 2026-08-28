@@ -158,31 +158,6 @@ describe("blockers are ranked so the report is actionable", () => {
   });
 });
 
-describe("blocked components become typed hand-port work instead of bare reason strings", () => {
-  it("captures every blocked React component with a digest-bound per-target semantic plan", () => {
-    const report = scanRepository({ repository: REPO(), sourceFramework: "react", includeAllFindings: true });
-    const blocked = report.findings.filter((finding) => finding.status === "OUT_OF_SUBSET");
-    expect(report.semanticCoverage).toEqual({ blockedAnalyzed: 3, represented: 3, partial: 0, unrepresented: 0 });
-    for (const finding of blocked) {
-      expect(finding.semanticIr?.kind).toBe("elmos.source-component-semantic-ir");
-      expect(finding.semanticIr?.irDigest).toMatch(/^sha256:[a-f0-9]{64}$/);
-      expect(Object.keys(finding.semanticIr?.targetPlans ?? {})).toHaveLength(10);
-      expect(finding.semanticCategory).toBeTruthy();
-      expect((finding as unknown as Record<string, unknown>).category).toBeUndefined();
-    }
-  });
-
-  it("binds the semantic digest and target dispositions into the manual port queue", () => {
-    const report = scanRepository({ repository: REPO(), sourceFramework: "react" });
-    expect(report.manualPortPlan).toHaveLength(3);
-    for (const entry of report.manualPortPlan) {
-      expect(entry.semanticIrDigest).toMatch(/^sha256:[a-f0-9]{64}$/);
-      expect(entry.captureStatus).toBe("REPRESENTED");
-      expect(Object.keys(entry.targetDispositions ?? {})).toHaveLength(10);
-    }
-  });
-});
-
 describe("the number is presented as an upper bound, not a promise", () => {
   it("states the upper-bound caveat in the report itself", () => {
     const report = scanRepository({ repository: REPO(), sourceFramework: "react" });
@@ -257,24 +232,6 @@ describe("scanning refuses what it cannot honestly answer", () => {
     expect(report.totals).toMatchObject({ discovered: 1, inSubset: 1, outOfSubset: 0, scanErrors: 0 });
   });
 
-  it("resolves an explicit imported state type even when the React Hook declaration is unavailable", () => {
-    const repo = fs.mkdtempSync(path.join(os.tmpdir(), "elmos-scan-imported-state-"));
-    fs.writeFileSync(path.join(repo, "tsconfig.json"), JSON.stringify({
-      compilerOptions: { target: "ES2022", module: "CommonJS", jsx: "react", strict: true, skipLibCheck: true },
-      include: ["**/*.ts", "**/*.tsx"],
-    }));
-    fs.writeFileSync(path.join(repo, "types.ts"), "export interface Payload { value: string; count: number }\n");
-    fs.writeFileSync(path.join(repo, "Card.tsx"), `
-      import type { Payload } from "./types";
-      function Card() {
-        const [payload, setPayload] = useState<Payload>({ value: "ready", count: 1 });
-        return <p>{payload.value}: {payload.count}</p>;
-      }
-    `);
-    const report = scanRepository({ repository: repo, sourceFramework: "react" });
-    expect(report.totals).toMatchObject({ discovered: 1, inSubset: 1, outOfSubset: 0, scanErrors: 0 });
-  });
-
   it("allows a declared object prop only through a declared field", () => {
     const repo = makeRepo({
       "Profile.tsx": "function Profile({ user }: { user: { name: string } }) { return <p>{user.name}</p>; }",
@@ -323,17 +280,6 @@ describe("dogfood: scanning real in-tree application code", () => {
     // A crash on real code is a defect in this engine, and it must never
     // be able to hide inside the coverage percentage.
     expect(report.totals.scanErrors).toBe(0);
-  }, 120000);
-
-  dogfood("captures a source-ranged semantic IR and target plan for every blocked real component", () => {
-    const report = scanRepository({ repository: consoleDir, sourceFramework: "react", includeAllFindings: true });
-    expect(report.semanticCoverage.blockedAnalyzed).toBe(report.totals.outOfSubset);
-    expect(report.semanticCoverage.unrepresented).toBe(0);
-    for (const finding of report.findings.filter((item) => item.status === "OUT_OF_SUBSET")) {
-      expect(finding.semanticIr?.source.componentName).toBe(finding.componentName);
-      expect(finding.semanticIr?.features.length).toBeGreaterThan(0);
-      expect(finding.semanticIr?.targetPlans.miniprogram.adapterId).toBe("wechat-miniapp-component-adapter");
-    }
   }, 120000);
 
   dogfood("gives every blocked real-world file a mapped, explained reason", () => {

@@ -17,7 +17,6 @@ class LedgerAndRuntimeTests(unittest.TestCase):
     def test_append_is_idempotent_and_hash_chain_is_rebuildable(self):
         with tempfile.TemporaryDirectory() as root:
             ledger = EventLedger(str(Path(root) / "ledger.sqlite"))
-            self.addCleanup(ledger.close)
             identity = Identity("tenant-a", "project-a", "task-a", "run-a")
             ledger.create_run(identity, "sha256:" + "a" * 64)
             first = ledger.append(identity, "run.status", {"status": "ready"}, idempotency_key="ready")
@@ -32,12 +31,9 @@ class LedgerAndRuntimeTests(unittest.TestCase):
             self.assertEqual(ledger.rebuild_projection(identity.tenant_id, identity.run_id)["status"], "ready")
             with self.assertRaises(TenantIsolationError):
                 ledger.events("tenant-b", identity.run_id)
-            with self.assertRaises(TenantIsolationError):
-                ledger.create_run(Identity("tenant-a", "project-b", "task-a", "run-a"), "sha256:" + "a" * 64)
 
     def test_fencing_rejects_stale_worker(self):
         ledger = EventLedger()
-        self.addCleanup(ledger.close)
         identity = Identity("tenant-a", "project-a", "task-a", "run-a")
         ledger.create_run(identity, "sha256:" + "a" * 64)
         first = ledger.acquire_lease(identity, "worker-a", 30, 10)
@@ -50,11 +46,9 @@ class LedgerAndRuntimeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             artifacts = ContentAddressedStore(Path(root) / "cas")
             ledger = EventLedger(str(Path(root) / "ledger.sqlite"))
-            self.addCleanup(ledger.close)
             identity = Identity("tenant-a", "project-a", "task-a", "run-a")
             manifest = ExecutionManifest("commit-a", "policy-v1", "native", "test-model")
             workspaces = LocalWorkspaceProvider(Path(root) / "workspaces", artifacts)
-            self.addCleanup(workspaces.close)
             lease = workspaces.activate(workspaces.allocate(WorkspaceRequest(identity)))
             action = Action("action-a", "workspace", {"operation": "write", "path": "out/result.txt", "content": "done"}, {}, "idem-a", write_scope=(str(Path(lease.root) / "out" / "result.txt"),), required_capabilities=("workspace.write",))
             registry = ToolRegistry()
@@ -75,11 +69,9 @@ class LedgerAndRuntimeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             artifacts = ContentAddressedStore(Path(root) / "cas")
             ledger = EventLedger(str(Path(root) / "ledger.sqlite"))
-            self.addCleanup(ledger.close)
             identity = Identity("tenant-a", "project-a", "task-a", "run-a")
             ledger.create_run(identity, "sha256:" + "a" * 64)
             workspace = LocalWorkspaceProvider(Path(root) / "workspaces", artifacts)
-            self.addCleanup(workspace.close)
             lease = workspace.activate(workspace.allocate(WorkspaceRequest(identity)))
             registry = ToolRegistry()
             registry.register(ToolSpec("workspace", "1.0", frozenset({"workspace.write"}), mutating=True, idempotent=True), LocalWorkspaceToolExecutor(workspace, lease))

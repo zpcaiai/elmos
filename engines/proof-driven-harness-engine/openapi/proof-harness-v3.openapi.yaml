@@ -1,0 +1,277 @@
+openapi: 3.1.0
+info:
+  title: Elmos Proof-Driven Harness API
+  version: 3.0.0
+  description: >-
+    Tenant-scoped control-plane API. Transport authentication must derive the
+    tenant, project, actor and grants; request bodies cannot grant authority.
+servers:
+  - url: https://proof-harness.invalid
+    description: Deployment replaces this non-routable placeholder.
+security:
+  - oauth2: [proof-harness.invoke]
+paths:
+  /livez:
+    get:
+      security: []
+      operationId: live
+      responses:
+        '200':
+          description: Process is live.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Health'}
+  /readyz:
+    get:
+      security: []
+      operationId: ready
+      responses:
+        '200':
+          description: Required local dependencies are ready.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Readiness'}
+        '503':
+          description: One or more required dependencies are unavailable.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Problem'}
+  /version:
+    get:
+      security: []
+      operationId: version
+      responses:
+        '200':
+          description: Exact engine and contract versions.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Version'}
+  /metrics:
+    get:
+      security:
+        - oauth2: [proof-harness.observe]
+      operationId: metrics
+      responses:
+        '200':
+          description: Prometheus text exposition with no tenant labels.
+          content:
+            text/plain:
+              schema: {type: string}
+  /v3/skills:
+    get:
+      operationId: listSkills
+      security:
+        - oauth2: [proof-harness.read]
+      responses:
+        '200':
+          description: Exact routable Skill registry and capability states.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [registryVersion, skills]
+                properties:
+                  registryVersion: {type: string}
+                  skills:
+                    type: array
+                    items: {$ref: '#/components/schemas/SkillDescriptor'}
+  /v3/invocations:
+    post:
+      operationId: invokeSkill
+      security:
+        - oauth2: [proof-harness.invoke]
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '../schemas/invocation.schema.json'}
+      responses:
+        '200':
+          description: Deterministic replay of an already completed invocation.
+          content:
+            application/json:
+              schema: {$ref: '../schemas/result.schema.json'}
+        '202':
+          description: Invocation was durably checkpointed for asynchronous execution.
+          content:
+            application/json:
+              schema: {$ref: '../schemas/admission.schema.json'}
+        '400': {$ref: '#/components/responses/Problem'}
+        '401': {$ref: '#/components/responses/Problem'}
+        '403': {$ref: '#/components/responses/Problem'}
+        '409': {$ref: '#/components/responses/Problem'}
+        '413': {$ref: '#/components/responses/Problem'}
+        '422': {$ref: '#/components/responses/Problem'}
+        '429': {$ref: '#/components/responses/Problem'}
+  /v3/runs/{runId}:
+    get:
+      operationId: getRun
+      security:
+        - oauth2: [proof-harness.read]
+      parameters:
+        - $ref: '#/components/parameters/RunId'
+      responses:
+        '200':
+          description: Tenant-scoped durable run state.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Run'}
+        '404': {$ref: '#/components/responses/Problem'}
+  /v3/runs/{runId}/cancel:
+    post:
+      operationId: cancelRun
+      security:
+        - oauth2: [proof-harness.cancel]
+      parameters:
+        - $ref: '#/components/parameters/RunId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [expectedVersion, reason]
+              properties:
+                expectedVersion: {type: integer, minimum: 1}
+                reason: {type: string, minLength: 1, maxLength: 1024}
+      responses:
+        '200':
+          description: Deterministic replay of an already recorded cancellation.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Run'}
+        '202':
+          description: Cancellation request was durably recorded.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Run'}
+        '409': {$ref: '#/components/responses/Problem'}
+  /v3/evidence/{evidenceId}:
+    get:
+      operationId: getEvidenceMetadata
+      security:
+        - oauth2: [proof-harness.evidence.read]
+      parameters:
+        - name: evidenceId
+          in: path
+          required: true
+          schema: {type: string, minLength: 1, maxLength: 160}
+      responses:
+        '200':
+          description: Evidence metadata; object bytes require a separate scoped lease.
+          content:
+            application/json:
+              schema: {$ref: '../schemas/evidence.schema.json'}
+        '404': {$ref: '#/components/responses/Problem'}
+  /v3/completion-reviews/{reviewId}:
+    get:
+      operationId: getCompletionReview
+      security:
+        - oauth2: [proof-harness.review.read]
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          schema: {type: string, minLength: 1, maxLength: 160}
+      responses:
+        '501':
+          description: Durable completion-review query storage is not configured.
+          content:
+            application/problem+json:
+              schema: {$ref: '#/components/schemas/Problem'}
+        '404': {$ref: '#/components/responses/Problem'}
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://identity.invalid/oauth2/token
+          scopes:
+            proof-harness.invoke: Invoke an authorized Skill.
+            proof-harness.read: Read tenant-scoped run and registry state.
+            proof-harness.cancel: Request cancellation of an authorized run.
+            proof-harness.observe: Read aggregate operational metrics.
+            proof-harness.evidence.read: Read evidence metadata.
+            proof-harness.review.read: Read completion reviews.
+  parameters:
+    RunId:
+      name: runId
+      in: path
+      required: true
+      schema: {type: string, minLength: 1, maxLength: 160}
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: {type: string, minLength: 16, maxLength: 256}
+  responses:
+    Problem:
+      description: Fail-closed structured error.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+  schemas:
+    Health:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status: {const: live}
+    Readiness:
+      type: object
+      additionalProperties: false
+      required: [status, checks]
+      properties:
+        status: {enum: [ready, not-ready]}
+        checks:
+          type: object
+          additionalProperties: {enum: [ready, not-ready, not-configured]}
+    Version:
+      type: object
+      additionalProperties: false
+      required: [name, version, contractDigest, runtimeMode]
+      properties:
+        name: {const: elmos-proof-driven-harness-engine}
+        version: {type: string}
+        contractDigest: {type: string, pattern: '^sha256:[0-9a-f]{64}$'}
+        runtimeMode: {enum: [local-engineering, production]}
+    SkillDescriptor:
+      type: object
+      additionalProperties: false
+      required: [id, name, owner, kind, implementationState, externalEvidence, certification]
+      properties:
+        id: {type: string}
+        name: {type: string}
+        owner: {type: string}
+        kind: {enum: [kernel, domain-pack, cross-cutting]}
+        implementationState: {enum: [LOCAL, PARTIAL, ADAPTER_REQUIRED, PLAN]}
+        externalEvidence: {enum: [NOT_RUN, VERIFIED, BLOCKED, FAILED, UNKNOWN]}
+        certification: {enum: [NOT_CERTIFIED, READY_FOR_EXTERNAL_GATE, CERTIFIED]}
+    Run:
+      type: object
+      additionalProperties: false
+      required: [runId, state, version, executionEpoch, fencingGeneration, updatedAt]
+      properties:
+        runId: {type: string}
+        state: {type: string}
+        version: {type: integer, minimum: 1}
+        executionEpoch: {type: integer, minimum: 1}
+        fencingGeneration: {type: integer, minimum: 1}
+        updatedAt: {type: string, format: date-time}
+    Problem:
+      type: object
+      additionalProperties: false
+      required: [type, title, status, code, detail, requestId, retryable]
+      properties:
+        type: {type: string, format: uri-reference}
+        title: {type: string}
+        status: {type: integer, minimum: 400, maximum: 599}
+        code: {type: string, pattern: '^[A-Z0-9_]+$'}
+        detail: {type: string, maxLength: 4096}
+        requestId: {type: string}
+        retryable: {type: boolean}

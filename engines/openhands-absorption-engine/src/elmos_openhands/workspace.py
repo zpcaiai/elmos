@@ -2,19 +2,19 @@
 
 from __future__ import annotations
 
-import json
 import os
+import json
 import shutil
 import sqlite3
 import subprocess
+import sys
 import tarfile
 import tempfile
 import time
-from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path, PurePosixPath
-from typing import Protocol
+from typing import Mapping, Protocol
 
 from .artifacts import ContentAddressedStore
 from .errors import ContractViolation, CorruptState, NotConfigured, TenantIsolationError
@@ -82,28 +82,15 @@ class WorkspaceProvider(Protocol):
 class LocalWorkspaceProvider:
     """Reference workspace provider for trusted L0 development and tests."""
 
-    def __init__(
-        self,
-        root: str | Path,
-        artifacts: ContentAddressedStore,
-        *,
-        lease_seconds: float = 300.0,
-        database: str | Path | None = None,
-    ) -> None:
+    def __init__(self, root: str | Path, artifacts: ContentAddressedStore, *, lease_seconds: float = 300.0, database: str | Path | None = None) -> None:
         self.root = Path(root).resolve()
         self.root.mkdir(parents=True, exist_ok=True)
         self.artifacts = artifacts
         self.lease_seconds = lease_seconds
         self._leases: dict[str, WorkspaceLease] = {}
-        self._connection = sqlite3.connect(
-            str(database or (self.root / "workspace-leases.sqlite")),
-            check_same_thread=False,
-            isolation_level=None,
-        )
+        self._connection = sqlite3.connect(str(database or (self.root / "workspace-leases.sqlite")), check_same_thread=False, isolation_level=None)
         self._connection.execute("PRAGMA journal_mode=WAL")
-        self._connection.execute(
-            "CREATE TABLE IF NOT EXISTS workspace_leases(workspace_id TEXT PRIMARY KEY,identity_json TEXT NOT NULL,root TEXT NOT NULL,state TEXT NOT NULL,fencing_token TEXT NOT NULL,expires_at REAL NOT NULL,isolation_class TEXT NOT NULL,image_digest TEXT)"
-        )
+        self._connection.execute("CREATE TABLE IF NOT EXISTS workspace_leases(workspace_id TEXT PRIMARY KEY,identity_json TEXT NOT NULL,root TEXT NOT NULL,state TEXT NOT NULL,fencing_token TEXT NOT NULL,expires_at REAL NOT NULL,isolation_class TEXT NOT NULL,image_digest TEXT)")
 
     def allocate(self, request: WorkspaceRequest, *, now: float | None = None) -> WorkspaceLease:
         if request.isolation_class != IsolationClass.L0:
@@ -135,16 +122,7 @@ class LocalWorkspaceProvider:
 
     def activate(self, lease: WorkspaceLease, *, now: float | None = None) -> WorkspaceLease:
         self._assert_lease(lease, now)
-        updated = WorkspaceLease(
-            lease.workspace_id,
-            lease.identity,
-            lease.root,
-            WorkspaceState.ACTIVE,
-            lease.fencing_token,
-            lease.expires_at,
-            lease.isolation_class,
-            lease.image_digest,
-        )
+        updated = WorkspaceLease(lease.workspace_id, lease.identity, lease.root, WorkspaceState.ACTIVE, lease.fencing_token, lease.expires_at, lease.isolation_class, lease.image_digest)
         self._leases[lease.workspace_id] = updated
         self._persist(updated)
         return updated
@@ -152,16 +130,7 @@ class LocalWorkspaceProvider:
     def heartbeat(self, lease: WorkspaceLease, *, now: float | None = None) -> WorkspaceLease:
         now = time.time() if now is None else now
         self._assert_lease(lease, now)
-        updated = WorkspaceLease(
-            lease.workspace_id,
-            lease.identity,
-            lease.root,
-            lease.state,
-            lease.fencing_token,
-            now + self.lease_seconds,
-            lease.isolation_class,
-            lease.image_digest,
-        )
+        updated = WorkspaceLease(lease.workspace_id, lease.identity, lease.root, lease.state, lease.fencing_token, now + self.lease_seconds, lease.isolation_class, lease.image_digest)
         self._leases[lease.workspace_id] = updated
         self._persist(updated)
         return updated
@@ -170,9 +139,7 @@ class LocalWorkspaceProvider:
         self._assert_lease(lease, time.time(), allow_expired=True)
         root = self._safe_root(lease)
         data = _deterministic_tar(root)
-        return self.artifacts.put(
-            lease.identity.tenant_id, data, kind="workspace-snapshot", media_type="application/x-tar"
-        )
+        return self.artifacts.put(lease.identity.tenant_id, data, kind="workspace-snapshot", media_type="application/x-tar")
 
     def restore(self, lease: WorkspaceLease, snapshot: ArtifactRef) -> None:
         self._assert_lease(lease, time.time(), allow_expired=True)
@@ -195,64 +162,21 @@ class LocalWorkspaceProvider:
 
     def release(self, lease: WorkspaceLease) -> None:
         current = self._leases.get(lease.workspace_id)
-        if current is None:
+        if current is None or current.fencing_token != lease.fencing_token:
             return
-        if (
-            current.identity.scope() != lease.identity.scope()
-            or current.identity.agent_id != lease.identity.agent_id
-        ):
-            raise TenantIsolationError("workspace release scope mismatch")
-        if current.fencing_token != lease.fencing_token:
-            raise TenantIsolationError("workspace release fencing mismatch")
-        if current.state == WorkspaceState.RELEASED:
-            return
-        self._leases[lease.workspace_id] = WorkspaceLease(
-            lease.workspace_id,
-            lease.identity,
-            lease.root,
-            WorkspaceState.RELEASED,
-            lease.fencing_token,
-            time.time(),
-            lease.isolation_class,
-            lease.image_digest,
-        )
+        self._leases[lease.workspace_id] = WorkspaceLease(lease.workspace_id, lease.identity, lease.root, WorkspaceState.RELEASED, lease.fencing_token, time.time(), lease.isolation_class, lease.image_digest)
         self._persist(self._leases[lease.workspace_id])
 
     def destroy(self, lease: WorkspaceLease) -> None:
         current = self._leases.get(lease.workspace_id)
-        if current is None:
-            return
-        if (
-            current.identity.scope() != lease.identity.scope()
-            or current.identity.agent_id != lease.identity.agent_id
-        ):
-            raise TenantIsolationError("workspace destroy scope mismatch")
-        if current.fencing_token != lease.fencing_token:
-            raise TenantIsolationError("workspace destroy fencing mismatch")
-        if current.state == WorkspaceState.DESTROYED:
+        if current is None or current.fencing_token != lease.fencing_token:
             return
         root = self._safe_root(lease)
         _remove_tree(root)
-        self._leases[lease.workspace_id] = WorkspaceLease(
-            lease.workspace_id,
-            lease.identity,
-            lease.root,
-            WorkspaceState.DESTROYED,
-            lease.fencing_token,
-            time.time(),
-            lease.isolation_class,
-            lease.image_digest,
-        )
+        self._leases[lease.workspace_id] = WorkspaceLease(lease.workspace_id, lease.identity, lease.root, WorkspaceState.DESTROYED, lease.fencing_token, time.time(), lease.isolation_class, lease.image_digest)
         self._persist(self._leases[lease.workspace_id])
 
-    def execute(
-        self,
-        lease: WorkspaceLease,
-        command: list[str],
-        *,
-        timeout_seconds: float = 30.0,
-        env: Mapping[str, str] | None = None,
-    ) -> subprocess.CompletedProcess[str]:
+    def execute(self, lease: WorkspaceLease, command: list[str], *, timeout_seconds: float = 30.0, env: Mapping[str, str] | None = None) -> subprocess.CompletedProcess[str]:
         self._assert_lease(lease, time.time())
         if lease.state != WorkspaceState.ACTIVE:
             raise ContractViolation("workspace must be active before execution")
@@ -260,33 +184,17 @@ class LocalWorkspaceProvider:
             raise ContractViolation("command must be a non-empty argv list")
         safe_env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": "/nonexistent", **(env or {})}
         safe_env.pop("ELMOS_SECRET", None)
-        return subprocess.run(
-            command,
-            cwd=self._safe_root(lease) / "tmp",
-            env=safe_env,
-            text=True,
-            capture_output=True,
-            timeout=timeout_seconds,
-            check=False,
-        )
+        return subprocess.run(command, cwd=self._safe_root(lease) / "tmp", env=safe_env, text=True, capture_output=True, timeout=timeout_seconds, check=False)
 
     def reap_expired(self, *, now: float | None = None) -> list[str]:
         now = time.time() if now is None else now
-        rows = self._connection.execute(
-            "SELECT workspace_id FROM workspace_leases WHERE expires_at<=? AND state NOT IN ('destroyed','released')",
-            (now,),
-        ).fetchall()
+        rows = self._connection.execute("SELECT workspace_id FROM workspace_leases WHERE expires_at<=? AND state NOT IN ('destroyed','released')", (now,)).fetchall()
         for (workspace_id,) in rows:
             if workspace_id not in self._leases:
                 loaded = self._load(workspace_id)
                 if loaded is not None:
                     self._leases[workspace_id] = loaded
-        expired = [
-            workspace_id
-            for workspace_id, lease in self._leases.items()
-            if lease.expires_at <= now
-            and lease.state not in {WorkspaceState.DESTROYED, WorkspaceState.RELEASED}
-        ]
+        expired = [workspace_id for workspace_id, lease in self._leases.items() if lease.expires_at <= now and lease.state not in {WorkspaceState.DESTROYED, WorkspaceState.RELEASED}]
         for workspace_id in expired:
             self.destroy(self._leases[workspace_id])
         return expired
@@ -294,12 +202,7 @@ class LocalWorkspaceProvider:
     def _assert_lease(self, lease: WorkspaceLease, now: float | None, *, allow_expired: bool = False) -> None:
         current = self._current(lease.workspace_id)
         now = time.time() if now is None else now
-        if (
-            current is None
-            or current.fencing_token != lease.fencing_token
-            or current.identity.scope() != lease.identity.scope()
-            or current.identity.agent_id != lease.identity.agent_id
-        ):
+        if current is None or current.fencing_token != lease.fencing_token or current.identity.tenant_id != lease.identity.tenant_id:
             raise TenantIsolationError("workspace fencing or tenant scope mismatch")
         if not allow_expired and current.expires_at <= now:
             raise ContractViolation("workspace lease expired")
@@ -323,42 +226,16 @@ class LocalWorkspaceProvider:
         return loaded
 
     def _persist(self, lease: WorkspaceLease) -> None:
-        identity_json = json.dumps(
-            {
-                "tenant_id": lease.identity.tenant_id,
-                "project_id": lease.identity.project_id,
-                "task_id": lease.identity.task_id,
-                "run_id": lease.identity.run_id,
-                "node_id": lease.identity.node_id,
-                "agent_id": lease.identity.agent_id,
-            },
-            sort_keys=True,
-        )
-        self._connection.execute(
-            "INSERT INTO workspace_leases VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(workspace_id) DO UPDATE SET state=excluded.state,expires_at=excluded.expires_at,fencing_token=excluded.fencing_token,root=excluded.root",
-            (
-                lease.workspace_id,
-                identity_json,
-                lease.root,
-                lease.state.value,
-                lease.fencing_token,
-                lease.expires_at,
-                lease.isolation_class.value,
-                lease.image_digest,
-            ),
-        )
+        identity_json = json.dumps({"tenant_id": lease.identity.tenant_id, "project_id": lease.identity.project_id, "task_id": lease.identity.task_id, "run_id": lease.identity.run_id, "node_id": lease.identity.node_id, "agent_id": lease.identity.agent_id}, sort_keys=True)
+        self._connection.execute("INSERT INTO workspace_leases VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(workspace_id) DO UPDATE SET state=excluded.state,expires_at=excluded.expires_at,fencing_token=excluded.fencing_token,root=excluded.root", (lease.workspace_id, identity_json, lease.root, lease.state.value, lease.fencing_token, lease.expires_at, lease.isolation_class.value, lease.image_digest))
 
     def _load(self, workspace_id: str) -> WorkspaceLease | None:
-        row = self._connection.execute(
-            "SELECT * FROM workspace_leases WHERE workspace_id=?", (workspace_id,)
-        ).fetchone()
+        row = self._connection.execute("SELECT * FROM workspace_leases WHERE workspace_id=?", (workspace_id,)).fetchone()
         if row is None:
             return None
         identity_data = json.loads(row[1])
         identity = Identity(**identity_data)
-        return WorkspaceLease(
-            row[0], identity, row[2], WorkspaceState(row[3]), row[4], row[5], IsolationClass(row[6]), row[7]
-        )
+        return WorkspaceLease(row[0], identity, row[2], WorkspaceState(row[3]), row[4], row[5], IsolationClass(row[6]), row[7])
 
     @staticmethod
     def _copy_source(source: Path, target: Path) -> None:
@@ -390,21 +267,12 @@ class ContainerSandboxProvider:
             raise NotConfigured("container provider only implements L1/L2")
         root = Path(lease.root).resolve()
         return [
-            self.engine,
-            "run",
-            "--rm",
-            "--network=none",
-            "--read-only",
-            "--cap-drop=ALL",
-            "--security-opt=no-new-privileges",
-            "--pids-limit=512",
-            "--memory=1024m",
+            self.engine, "run", "--rm", "--network=none", "--read-only", "--cap-drop=ALL",
+            "--security-opt=no-new-privileges", "--pids-limit=512", "--memory=1024m",
             f"--volume={root / 'source'}:/workspace/source:ro",
             f"--volume={root / 'out'}:/workspace/out:rw",
-            f"--volume={root / 'tmp'}:/workspace/tmp:rw",
-            "--workdir=/workspace/source",
-            f"elmos/sandbox@{image_digest}",
-            *command,
+            f"--volume={root / 'tmp'}:/workspace/tmp:rw", "--workdir=/workspace/source",
+            f"elmos/sandbox@{image_digest}", *command,
         ]
 
 
@@ -440,21 +308,12 @@ def _safe_extract(payload: bytes, destination: Path) -> None:
                     raise CorruptState("snapshot member escapes restore root")
                 if member.issym() or member.islnk() or not (member.isdir() or member.isfile()):
                     raise CorruptState("snapshot contains unsupported link or special file")
-            # Extract validated regular files explicitly.  ``extractall`` is
-            # intentionally avoided: its safety depends on interpreter
-            # version and it is too easy to regress the traversal boundary.
-            for member in archive.getmembers():
-                target = (destination / PurePosixPath(member.name)).resolve()
-                if member.isdir():
-                    target.mkdir(parents=True, exist_ok=True)
-                    continue
-                source = archive.extractfile(member)
-                if source is None:
-                    raise CorruptState("snapshot regular file has no readable payload")
-                target.parent.mkdir(parents=True, exist_ok=True)
-                with target.open("wb") as output:
-                    shutil.copyfileobj(source, output)
-                os.chmod(target, member.mode & 0o777)
+            # All members were validated above. Do not use the Python 3.12-only
+            # ``filter`` argument so the reference provider remains 3.11-capable.
+            if sys.version_info >= (3, 12):
+                archive.extractall(destination, filter="data")
+            else:  # pragma: no cover - exercised on Python 3.11 deployments
+                archive.extractall(destination)
 
 
 def _remove_tree(path: Path) -> None:

@@ -1,8 +1,0 @@
-{
-  "corpusRole": "development",
-  "files": {
-    "package.json": "{\"dependencies\":{\"vue\":\"3.5.39\"}}",
-    "src/App.vue": "<script setup lang=\"ts\">\nimport { ref } from \"vue\";\nconst count = ref(0);\nfunction increment() { count.value++; }\n</script>\n<template><main class=\"counter\"><h1>{{ count }}</h1><button @click=\"increment\">Add</button></main></template>\n<style scoped>.counter button { color: #b34838; }</style>"
-  },
-  "expectedStatus": "GENERATED"
-}

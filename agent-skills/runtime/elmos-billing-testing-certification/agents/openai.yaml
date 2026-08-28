@@ -1,6 +1,0 @@
-interface:
-  display_name: "Billing Testing and Production Certification"
-  short_description: "Apply imported Elmos billing guidance safely"
-  default_prompt: "Use $elmos-billing-testing-certification for the requested billing scope; treat Bxx IDs as elmos.pricing-billing.v1; use the repository runtime binding for local evidence and keep external evidence NOT_RUN until independently verified."
-policy:
-  allow_implicit_invocation: true

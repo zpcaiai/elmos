@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/v3.1/skill-provenance.schema.json",
+  "title": "Skill Trust Domain Provenance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "skillId",
+    "publisher",
+    "origin",
+    "canonicalUri",
+    "packageDigest",
+    "trustDomain",
+    "installScope",
+    "authorizationSemantics"
+  ],
+  "properties": {
+    "skillId": {
+      "type": "string"
+    },
+    "publisher": {
+      "type": "string"
+    },
+    "origin": {
+      "type": "string"
+    },
+    "canonicalUri": {
+      "type": "string"
+    },
+    "packageDigest": {
+      "type": "string"
+    },
+    "trustDomain": {
+      "enum": [
+        "USER",
+        "ENTERPRISE",
+        "MARKETPLACE",
+        "REPOSITORY",
+        "EPHEMERAL"
+      ]
+    },
+    "installScope": {
+      "type": "string"
+    },
+    "signature": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "authorizationSemantics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "verified": {
+      "type": "boolean"
+    }
+  }
+}

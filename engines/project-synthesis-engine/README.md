@@ -346,3 +346,4 @@ real provider provisioning, production migration/deployment, alert delivery,
 restore/DR exercises, assistive-technology review, independent user acceptance,
 external assessment and certification remain `NOT_RUN` / `NOT_CERTIFIED` until
 their authorized independent evidence exists.
+canary 1787721481

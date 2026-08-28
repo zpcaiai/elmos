@@ -1,0 +1,13 @@
+interface:
+  display_name: "elmos-lossless-permission-replay"
+  short_description: "Internal v3.1 runtime-assurance extension"
+  default_prompt: "Invoke the exact non-routable ELMOS-V3D-003 handler with typed, tenant-bound input."
+runtime:
+  module: "elmos_proof_harness.delta"
+  registry: "DELTA_SKILL_REGISTRY"
+  entrypoint: "DeltaSkillRuntime.execute"
+  routable: false
+  implementation_status: "DECLARED_RUNTIME_UNQUALIFIED"
+security:
+  network: "default-deny"
+  external_effects: "not-authorized"

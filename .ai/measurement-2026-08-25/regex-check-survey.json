@@ -1,0 +1,56 @@
+{
+  "kind": "elmos.sql-dialect.regex-check-survey",
+  "distinct_patterns": 8,
+  "total_occurrences": 418,
+  "portable_core": {
+    "distinct": 8,
+    "occurrences": 418
+  },
+  "non_portable": {
+    "distinct": 0,
+    "occurrences": 0
+  },
+  "portable_patterns": [
+    {
+      "pattern": "^[0-9a-f]{64}$",
+      "count": 400,
+      "non_portable": []
+    },
+    {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "count": 4,
+      "non_portable": []
+    },
+    {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "count": 4,
+      "non_portable": []
+    },
+    {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+      "count": 3,
+      "non_portable": []
+    },
+    {
+      "pattern": "^[a-z0-9][a-z0-9._/-]*(:[0-9]+)?/?[a-z0-9._/-]*@sha256:[0-9a-f]{64}$",
+      "count": 2,
+      "non_portable": []
+    },
+    {
+      "pattern": "^[0-9]+$",
+      "count": 2,
+      "non_portable": []
+    },
+    {
+      "pattern": "^[0-9a-f]{40}$",
+      "count": 2,
+      "non_portable": []
+    },
+    {
+      "pattern": "@sha256:[0-9a-f]{64}$",
+      "count": 1,
+      "non_portable": []
+    }
+  ],
+  "non_portable_patterns": []
+}

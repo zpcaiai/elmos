@@ -35,17 +35,6 @@ public final class RunnerAgentMain {
         }
 
         ProcessRunner processes = new ProcessRunner.Os();
-        ContainerRuntime containers = new ContainerRuntime(config, processes);
-        try {
-            containers.requireConfiguredImagesLocal();
-            System.out.println("[elmos-runner] local runner images verified="
-                    + config.runnerImages().size());
-        } catch (RuntimeException ex) {
-            System.err.println("[elmos-runner] refusing to start: " + ex.getMessage());
-            metrics.markUnhealthy("runner_image_not_local");
-            System.exit(78);
-            return;
-        }
         SandboxAttestation attestation = SandboxAttestation.probe(config, processes);
 
         System.out.println("[elmos-runner] version=" + VERSION
@@ -79,9 +68,10 @@ public final class RunnerAgentMain {
         }
 
         ControlPlaneClient client = new ControlPlaneClient(config);
+        ContainerRuntime containers = new ContainerRuntime(config, processes);
         ArtifactPublisher artifacts = new ArtifactPublisher(client, metrics);
         JobExecutor executor = new JobExecutor(config, client, containers, artifacts, metrics);
-        LeasePoller poller = new LeasePoller(config, client, containers, executor, metrics);
+        LeasePoller poller = new LeasePoller(config, client, executor, metrics);
 
         try {
             metrics.start(config.metricsPort(), "127.0.0.1");

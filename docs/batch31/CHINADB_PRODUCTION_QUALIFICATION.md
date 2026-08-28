@@ -54,17 +54,6 @@ exact commercial capability-snapshot digest. A capability registry or protocol
 change therefore invalidates earlier authorizations and every downstream
 receipt instead of replaying evidence across a recertification boundary.
 
-Protocol `1.1.0` also requires two exact, role-specific digest sets in every
-execution receipt. Artifact identity covers the source snapshot/catalog/data/
-workload, target snapshot/release, canonical IR, transformation, compatibility
-runtime, runner/toolchain, four physically separated corpora, data fixture,
-query plan, target SQL candidate, acceptance profile, and gate result. Runtime
-evidence separately covers version/capability probes, render/apply/introspection,
-schema/type, query/routine, transaction, reconciliation, performance, security,
-backup/restore, CDC, rollback, cleanup, and the raw evidence manifest. Missing,
-extra, malformed, or aliased digest roles fail closed. The requirements command
-returns both exact field lists for authorized external tooling.
-
 ## Exact input required for every target
 
 The request contract requires all 13 catalog identities in deterministic

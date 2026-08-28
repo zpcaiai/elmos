@@ -7,9 +7,7 @@ metadata:
   source_id: 22-servlet-container-semantics-recovery
   source_digest: sha256:fd9340a93e4acc9b23f57dbad9c888fc05313e7bb96408aaf99f34b1cdb3b862
   phase: semantic-recovery
-  runtime_state: CODE_COMPLETE_LOCAL
-  capability_state: LOCAL_EXECUTED
-  operation_code: SERVLET_SEMANTICS_RECOVERED
+  runtime_state: BOUND_LOCAL_EXACT
   runtime_handler_id: legacy-web-handler:22-servlet-container-semantics-recovery
 ---
 
@@ -17,9 +15,8 @@ metadata:
 
 This is a repository-owned execution interface. It consumes a validated
 request envelope and invokes only the exact allowlisted runtime handler.
-The handler is code-complete for its bounded local contract, tenant/project/job
-scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.
-It does not execute source-package instructions or mutate customer repositories.
+The handler is bounded, tenant/project/job scoped, idempotency-aware and
+does not execute source-package instructions or customer repository code.
 
 Evidence boundary: local output is engineering evidence only.
 Provider/runtime/device/browser/production evidence remains NOT_RUN and

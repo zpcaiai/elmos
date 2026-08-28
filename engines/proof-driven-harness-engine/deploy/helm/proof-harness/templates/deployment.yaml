@@ -1,0 +1,170 @@
+{{- $minimumGrace := add .Values.termination.preStopDelaySeconds .Values.http.gracefulShutdownSeconds 5 -}}
+{{- if lt (int .Values.termination.terminationGracePeriodSeconds) (int $minimumGrace) -}}
+{{- fail "termination.terminationGracePeriodSeconds must be at least preStopDelaySeconds + gracefulShutdownSeconds + 5" -}}
+{{- end -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "proof-harness.fullname" . }}
+  labels:
+{{ include "proof-harness.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+{{ include "proof-harness.selectorLabels" . | indent 6 }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxUnavailable: 0, maxSurge: 1}
+  template:
+    metadata:
+      labels:
+{{ include "proof-harness.selectorLabels" . | indent 8 }}
+    spec:
+      serviceAccountName: {{ include "proof-harness.serviceAccountName" . }}
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: {{ .Values.termination.terminationGracePeriodSeconds }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: proof-harness
+          image: "{{ .Values.image.repository }}@{{ .Values.image.digest }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["serve", "--host", "0.0.0.0", "--port", "{{ .Values.service.port }}"]
+          env:
+            - name: ELMOS_RUNTIME_MODE
+              value: {{ .Values.config.runtimeMode | quote }}
+            - name: ELMOS_STORAGE_BACKEND
+              value: {{ .Values.config.storageBackend | quote }}
+            - name: ELMOS_AUTH_EXPECTED_ISSUER
+              value: {{ required "authentication.expectedIssuer is required" .Values.authentication.expectedIssuer | quote }}
+            - name: ELMOS_AUTH_EXPECTED_AUDIENCE
+              value: {{ required "authentication.expectedAudience is required" .Values.authentication.expectedAudience | quote }}
+            - name: ELMOS_TRANSPORT_MODE
+              value: {{ .Values.transport.mode | quote }}
+            - name: ELMOS_HTTP_REQUEST_TIMEOUT_SECONDS
+              value: {{ .Values.http.requestTimeoutSeconds | quote }}
+            - name: ELMOS_HTTP_MAX_CONCURRENT_REQUESTS
+              value: {{ .Values.http.maxConcurrentRequests | quote }}
+            - name: ELMOS_HTTP_GRACEFUL_SHUTDOWN_SECONDS
+              value: {{ .Values.http.gracefulShutdownSeconds | quote }}
+{{- if eq .Values.authentication.mode "jwks" }}
+            - name: ELMOS_AUTH_JWKS_FILE
+              value: /var/run/secrets/elmos-auth/{{ .Values.authentication.jwks.key }}
+            - name: ELMOS_AUTH_JWT_ALGORITHM
+              value: {{ .Values.authentication.jwks.algorithm | quote }}
+            - name: ELMOS_AUTH_JWKS_REFRESH_SECONDS
+              value: {{ .Values.authentication.jwks.refreshSeconds | quote }}
+            - name: ELMOS_AUTH_JWT_LEEWAY_SECONDS
+              value: {{ .Values.authentication.jwks.leewaySeconds | quote }}
+{{- else }}
+            - name: ELMOS_AUTHENTICATOR_FACTORY
+              value: {{ required "authentication.factory.value is required in factory mode" .Values.authentication.factory.value | quote }}
+{{- end }}
+{{- if eq .Values.transport.mode "tls" }}
+            - name: ELMOS_TLS_CERT_FILE
+              value: /var/run/secrets/elmos-tls/{{ .Values.transport.tls.certificateKey }}
+            - name: ELMOS_TLS_KEY_FILE
+              value: /var/run/secrets/elmos-tls/{{ .Values.transport.tls.privateKeyKey }}
+{{- if .Values.transport.tls.clientCAKey }}
+            - name: ELMOS_TLS_CLIENT_CA_FILE
+              value: /var/run/secrets/elmos-tls/{{ .Values.transport.tls.clientCAKey }}
+{{- end }}
+{{- else }}
+            - name: ELMOS_TRUSTED_PROXY_CIDRS
+              value: {{ join "," .Values.transport.trustedProxyCIDRs | quote }}
+{{- end }}
+            - name: ELMOS_POSTGRES_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "postgresql.existingSecret is required" .Values.postgresql.existingSecret }}
+                  key: {{ required "postgresql.dsnKey is required" .Values.postgresql.dsnKey }}
+          envFrom:
+            - secretRef:
+                name: {{ required "config.existingSecret is required" .Values.config.existingSecret }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+              scheme: {{ ternary "HTTPS" "HTTP" (eq .Values.transport.mode "tls") }}
+            failureThreshold: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /livez
+              port: http
+              scheme: {{ ternary "HTTPS" "HTTP" (eq .Values.transport.mode "tls") }}
+            failureThreshold: 3
+            periodSeconds: 20
+          startupProbe:
+            # Startup is intentionally database-aware: missing driver/DSN,
+            # unapplied migration, unsafe role or failed RLS probe never admits
+            # a production replica.
+            httpGet:
+              path: /readyz
+              port: http
+              scheme: {{ ternary "HTTPS" "HTTP" (eq .Values.transport.mode "tls") }}
+            failureThreshold: 30
+            periodSeconds: 2
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          lifecycle:
+            # Endpoint removal starts before this hook. The bounded delay lets
+            # endpoint propagation finish before the server receives SIGTERM;
+            # the server then applies its own graceful-shutdown deadline.
+            preStop:
+              exec:
+                command:
+                  - python
+                  - -c
+                  - {{ printf "import time; time.sleep(%d)" (int .Values.termination.preStopDelaySeconds) | quote }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+            privileged: false
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+{{- if eq .Values.authentication.mode "jwks" }}
+            - name: auth-jwks
+              mountPath: /var/run/secrets/elmos-auth
+              readOnly: true
+{{- end }}
+{{- if eq .Values.transport.mode "tls" }}
+            - name: transport-tls
+              mountPath: /var/run/secrets/elmos-tls
+              readOnly: true
+{{- end }}
+      volumes:
+        - name: tmp
+          emptyDir: {sizeLimit: 256Mi}
+{{- if eq .Values.authentication.mode "jwks" }}
+        - name: auth-jwks
+          secret:
+            secretName: {{ required "authentication.jwks.existingSecret is required in jwks mode" .Values.authentication.jwks.existingSecret }}
+            optional: false
+{{- end }}
+{{- if eq .Values.transport.mode "tls" }}
+        - name: transport-tls
+          secret:
+            secretName: {{ required "transport.tls.existingSecret is required in tls mode" .Values.transport.tls.existingSecret }}
+            optional: false
+{{- end }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ include "proof-harness.name" . }}
+              app.kubernetes.io/instance: {{ .Release.Name }}

@@ -1,0 +1,11 @@
+{
+  "provider": "deepseek",
+  "model": "example-model",
+  "reasoningEffort": "high",
+  "maxOutputTokens": 16000,
+  "parentExecutionId": "exec-parent",
+  "environmentId": "env-child",
+  "authoritySnapshotId": "auth-child",
+  "budgetReservationId": "budget-1",
+  "toolPlanHash": "sha256:child-plan"
+}

@@ -733,7 +733,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "d97a8f267d824a540e0f59763776afe0679c35945503e9935a321f59f592d4c5"
+          "content": "1fae241386924325e6f8099e59b2d5da19749cfd47b9fdb26f92fb7d5c857f60"
         }
       ],
       "name": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
@@ -748,7 +748,7 @@
       }
     ]
   },
-  "serialNumber": "urn:uuid:d97a8f267d824a540e0f59763776afe0",
+  "serialNumber": "urn:uuid:1fae241386924325e6f8099e59b2d5da",
   "specVersion": "1.5",
   "version": 1
 }

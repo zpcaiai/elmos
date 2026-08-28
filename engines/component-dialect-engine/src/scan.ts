@@ -42,7 +42,6 @@ import { parseComponentResults } from "./engine";
 import { discoverComponents } from "./pipeline";
 import { MiniProgramSource } from "./parsers/miniprogram";
 import { createReactProjectContext, ReactParserOptions } from "./parsers/react";
-import { captureReactSourceSemanticIR, SourceComponentSemanticIR } from "./source-semantic-ir";
 
 export type BlockerFamily =
   | "props-and-types"
@@ -167,9 +166,6 @@ export interface ScanFinding {
   /** Cross-platform semantic routing for the hand-port queue. */
   semanticCategory?: SemanticCategory;
   disposition?: SemanticDisposition;
-  /** Typed, source-ranged semantics for a blocked React-family component.
-   * This is a handoff contract, not an automatically emittable ComponentDef. */
-  semanticIr?: SourceComponentSemanticIR;
 }
 
 export interface ManualPortPlanEntry {
@@ -180,9 +176,6 @@ export interface ManualPortPlanEntry {
   reasonCode: string;
   reason: string;
   requiredEvidence: string[];
-  semanticIrDigest: string | null;
-  captureStatus: SourceComponentSemanticIR["captureStatus"] | "UNREPRESENTED";
-  targetDispositions: Record<Framework, "ADAPTER_REQUIRED" | "HAND_PORTED" | "BLOCKED"> | null;
 }
 
 export interface BlockerGroup {
@@ -226,14 +219,6 @@ export interface FeasibilityReport {
   /** inSubset / discovered, rounded to 3 decimals. An UPPER BOUND on what
    * a real run will convert -- see `caveats`. */
   upperBoundCoverage: number;
-  /** Coverage of the HAND_PORTED/BLOCKED semantic queue. This never changes
-   * `upperBoundCoverage`, which remains automatic-source-subset only. */
-  semanticCoverage: {
-    blockedAnalyzed: number;
-    represented: number;
-    partial: number;
-    unrepresented: number;
-  };
   blockers: BlockerGroup[];
   families: FamilyGroup[];
   findings: ScanFinding[];
@@ -327,41 +312,22 @@ export function scanRepository(options: ScanOptions): FeasibilityReport {
           findings.push({ sourcePath: relative, componentName: result.component.name, status: "IN_SUBSET", reasonCode: null, reason: null, family: null, disposition: "AUTOMATIC" });
         } else {
           const code = result.error?.code ?? "UNKNOWN";
-          const classification = classifyBlocker(code);
-          const semanticIr = code === "CERTIFIED_COMPONENT_NOT_A_COMPONENT" || result.name === null
-            || reactOptions.sourceFile === undefined
-            || !(sourceFramework === "react" || sourceFramework === "typescript" || sourceFramework === "react-native")
-            ? null
-            : captureReactSourceSemanticIR({
-              sourceFile: reactOptions.sourceFile,
-              sourceFramework,
-              sourcePath: relative,
-              componentName: result.name,
-              reasonCode: code,
-              reason: result.error?.reason ?? "blocked without a detailed reason",
-            });
           findings.push({
             sourcePath: relative, componentName: result.name,
             status: code === "CERTIFIED_COMPONENT_NOT_A_COMPONENT" ? "NOT_A_COMPONENT" : "OUT_OF_SUBSET",
             reasonCode: code, reason: result.error?.reason ?? null,
             family: BLOCKER_CATALOG[code]?.family ?? null,
-            ...(code === "CERTIFIED_COMPONENT_NOT_A_COMPONENT" ? {} : {
-              semanticCategory: classification.category,
-              disposition: classification.disposition,
-              ...(semanticIr === null ? {} : { semanticIr }),
-            }),
+            ...(code === "CERTIFIED_COMPONENT_NOT_A_COMPONENT" ? {} : classifyBlocker(code)),
           });
         }
       }
     } catch (error) {
       if (error instanceof DialectError) {
-        const classification = classifyBlocker(error.code);
         findings.push({
           sourcePath: relative, componentName: null, status: "OUT_OF_SUBSET",
           reasonCode: error.code, reason: error.reason,
           family: BLOCKER_CATALOG[error.code]?.family ?? null,
-          semanticCategory: classification.category,
-          disposition: classification.disposition,
+          ...classifyBlocker(error.code),
         });
       } else {
         // Not a subset boundary -- an engine defect. Counted separately so
@@ -379,9 +345,6 @@ export function scanRepository(options: ScanOptions): FeasibilityReport {
   const scanErrors = findings.filter((f) => f.status === "SCAN_ERROR").length;
   const notComponents = findings.filter((f) => f.status === "NOT_A_COMPONENT").length;
   const denominator = inSubset + blocked.length;
-  const blockedAnalyzed = blocked.filter((finding) => finding.semanticIr !== undefined).length;
-  const represented = blocked.filter((finding) => finding.semanticIr?.captureStatus === "REPRESENTED").length;
-  const partial = blocked.filter((finding) => finding.semanticIr?.captureStatus === "PARTIAL").length;
 
   const byCode = new Map<string, ScanFinding[]>();
   for (const finding of blocked) {
@@ -425,11 +388,6 @@ export function scanRepository(options: ScanOptions): FeasibilityReport {
       requiredEvidence: classification.disposition === "HAND_PORTED"
         ? ["target-build", "browser-or-device", "platform-runtime", "independent-review"]
         : ["controlled-runtime", "cancellation-cleanup", "independent-review"],
-      semanticIrDigest: finding.semanticIr?.irDigest ?? null,
-      captureStatus: finding.semanticIr?.captureStatus ?? "UNREPRESENTED",
-      targetDispositions: finding.semanticIr === undefined
-        ? null
-        : Object.fromEntries(Object.entries(finding.semanticIr.targetPlans).map(([target, plan]) => [target, plan.disposition])) as Record<Framework, "ADAPTER_REQUIRED" | "HAND_PORTED" | "BLOCKED">,
     };
   });
 
@@ -463,7 +421,6 @@ export function scanRepository(options: ScanOptions): FeasibilityReport {
     scannedAt: new Date().toISOString(),
     totals: { discovered: denominator, inSubset, outOfSubset: blocked.length, scanErrors, notComponents },
     upperBoundCoverage: denominator === 0 ? 0 : round3(inSubset / denominator),
-    semanticCoverage: { blockedAnalyzed, represented, partial, unrepresented: blocked.length - blockedAnalyzed },
     blockers,
     families,
     findings: options.includeAllFindings ? findings : findings.filter((f) => f.status !== "IN_SUBSET"),
@@ -501,17 +458,6 @@ export function renderFeasibilityMarkdown(report: FeasibilityReport): string {
     `| Out of subset | ${totals.outOfSubset} |`,
     `| Helper functions (not components, excluded) | ${totals.notComponents} |`,
     `| Scan errors (engine defects) | ${totals.scanErrors} |`,
-    "",
-    "## Blocked semantic capture",
-    "",
-    `| | Count |`,
-    `|---|---|`,
-    `| Blocked components with source-ranged semantic IR | ${report.semanticCoverage.blockedAnalyzed} |`,
-    `| Fully represented for adapter / hand-port planning | ${report.semanticCoverage.represented} |`,
-    `| Partially represented with an explicit unmodeled feature | ${report.semanticCoverage.partial} |`,
-    `| Unrepresented | ${report.semanticCoverage.unrepresented} |`,
-    "",
-    "Semantic capture does not increase the automatic upper bound. It gives every captured blocker a digest-bound, per-target adapter plan; the component remains blocked or hand-ported until target code and the required evidence exist.",
     "",
   ];
 

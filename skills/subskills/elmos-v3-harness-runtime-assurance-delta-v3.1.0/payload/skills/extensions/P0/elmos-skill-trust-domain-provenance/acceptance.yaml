@@ -1,0 +1,104 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionAcceptance
+metadata:
+  skill: elmos-skill-trust-domain-provenance
+  version: 3.1.0
+spec:
+  hardGates:
+  - canonical path resolves inside the declared trusted root without symlink escape
+  - package digest and signature satisfy trust-domain policy
+  - repository skills cannot impersonate user or enterprise installed skills
+  - authorization evidence contains verified identity/provenance, not untrusted skill content
+  - digest drift or package substitution invalidates prior authorization evidence
+  scenarios:
+  - id: ELMOS-V3D-010-A01
+    title: canonical path resolves inside the declared trusted root without symlink escape
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-skill-trust-domain-provenance processes a production lifecycle transition
+    then:
+    - canonical path resolves inside the declared trusted root without symlink escape is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-010-A02
+    title: package digest and signature satisfy trust-domain policy
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-skill-trust-domain-provenance processes a production lifecycle transition
+    then:
+    - package digest and signature satisfy trust-domain policy is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-010-A03
+    title: repository skills cannot impersonate user or enterprise installed skills
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-skill-trust-domain-provenance processes a production lifecycle transition
+    then:
+    - repository skills cannot impersonate user or enterprise installed skills is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-010-A04
+    title: authorization evidence contains verified identity/provenance, not untrusted skill content
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-skill-trust-domain-provenance processes a production lifecycle transition
+    then:
+    - authorization evidence contains verified identity/provenance, not untrusted skill content is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-010-A05
+    title: digest drift or package substitution invalidates prior authorization evidence
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-skill-trust-domain-provenance processes a production lifecycle transition
+    then:
+    - digest drift or package substitution invalidates prior authorization evidence is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-010-NEG-STALE
+    title: Reject stale authority, generation or lease
+    given:
+    - stale execution context
+    when: an authoritative effect or commit is attempted
+    then:
+    - operation is rejected
+    - audit event is emitted
+    - no completion evidence is accepted
+    priority: P0
+  - id: ELMOS-V3D-010-NEG-REPLAY
+    title: Reject replay divergence
+    given:
+    - committed journal and artifacts
+    when: the execution is replayed or resumed
+    then:
+    - same effective state is reconstructed
+    - provider loss is explicit
+    - divergence blocks certification
+    priority: P0
+  - id: ELMOS-V3D-010-RECOVERY
+    title: Recover after worker, connection or plugin interruption
+    given:
+    - durable checkpoint and fencing state
+    when: a replacement worker resumes
+    then:
+    - committed side effects are not duplicated
+    - stale actors are fenced
+    - lineage remains complete
+    priority: P0
+  releaseRequirement: all P0 scenarios pass in target environment

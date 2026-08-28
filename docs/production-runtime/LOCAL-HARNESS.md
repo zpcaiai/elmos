@@ -19,8 +19,7 @@ The runner writes logs and content-addressed reports below `.elmos/`, which is
 ignored as generated evidence. The report marks these results as
 `LOCAL_HARNESS_PASS`; it deliberately keeps real Provider, target-cluster
 load, production chaos, hosted Redis, hosted backup/PITR, independent external
-verification, production deployment, and production certification as `NOT_RUN`
- / `NOT_CERTIFIED`.
+verification, and production certification as `NOT_RUN` / `NOT_CERTIFIED`.
 
 The attached skill archive remains declarative input. The harness does not
 execute archive scripts, installers, prompts, or workflows.

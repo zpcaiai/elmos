@@ -1,0 +1,52 @@
+{
+  "apiVersion": "elmos.ai/v3delta1",
+  "kind": "KernelExtensionDeltaPackage",
+  "metadata": {
+    "name": "elmos-v3-harness-runtime-assurance-delta",
+    "version": "3.1.0",
+    "packageId": "elmos-v3-harness-runtime-assurance-delta-v3.1.0",
+    "releaseDate": "2026-08-28",
+    "incrementalOnly": true
+  },
+  "spec": {
+    "base": {
+      "name": "elmos-proof-driven-agentic-harness-repository-semantic-compiler",
+      "exactVersion": "3.0.0",
+      "compositeVersionAfterInstall": "3.1.0",
+      "architecture": "eight-kernel-proof-obligation-driven"
+    },
+    "scope": {
+      "newKernels": 0,
+      "newRoutableBusinessLines": 0,
+      "kernelExtensionSkills": 13,
+      "priority": {
+        "P0": 10,
+        "P1": 3
+      },
+      "preservesRoutableSkillCount": 16,
+      "owners": [
+        "K1",
+        "K4",
+        "K5",
+        "K6",
+        "K7",
+        "K8"
+      ]
+    },
+    "principles": [
+      "incremental payload only; no copy of the v3.0.0 base package",
+      "all extension skills are internal and non-routable",
+      "canonical Elmos contracts hide upstream provider type names",
+      "main/alpha capabilities are version-gated and never misrepresented as stable",
+      "lossy authority mapping and unknown required durable state fail closed"
+    ],
+    "activationGates": [
+      "DELTA_PACKAGE_VALID",
+      "BASE_VERSION_EXACT",
+      "INSTALL_ROUNDTRIP_PASS",
+      "UNIT_TESTS_PASS",
+      "ADAPTER_PROFILE_NEGOTIATION_PASS",
+      "TARGET_ENVIRONMENT_CONFORMANCE_REQUIRED_FOR_PROD"
+    ]
+  }
+}

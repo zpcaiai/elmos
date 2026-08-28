@@ -93,7 +93,7 @@ multi-host operation.
 - `io.elmos.portfolio.TenantContentAddressedCache` delegates here instead of holding its own
   `HashMap`; it uses a length-prefixed key, exact durable logical-root lookup, verify-on-read and
   generation-bound invalidation so a delayed release cannot remove a rebuilt result.
-- `modules/persistence` owns `V65_1__content_addressed_store_and_action_cache.sql` and the
+- `modules/persistence` owns `V65__content_addressed_store_and_action_cache.sql` and the
   V66/V67 metadata, resource-binding and durable ActionCache migrations.
 
 ## Explicitly not implemented here

@@ -1,0 +1,12 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "proof-harness.fullname" . }}
+  labels:
+{{ include "proof-harness.labels" . | indent 4 }}
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "proof-harness.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}

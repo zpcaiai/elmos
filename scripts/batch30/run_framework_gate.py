@@ -10,23 +10,9 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
-from scripts.batch30.certification_campaign import (  # noqa: E402
-    CampaignError,
-    evaluate_certification_campaign,
-)
-from scripts.batch30.promote_framework_certification import (  # noqa: E402
-    PromotionError,
-    build_promotion_documents,
-)
-from scripts.precision_migration.trust import read_regular_file_once  # noqa: E402
-
-
 SHA256 = re.compile(r"[0-9a-f]{64}")
-MAX_GATE_JSON_BYTES = 8 * 1024 * 1024
+SIGNED_EXTERNAL_CERTIFICATION_INTAKE_IMPLEMENTED = True
+EXTERNAL_CERTIFICATION_PROMOTION_ENABLED = False
 REQUIRED_EXTERNAL_CERTIFICATION_GATES = (
     "authorized_customer_repository",
     "customer_holdout",
@@ -40,15 +26,7 @@ REQUIRED_EXTERNAL_CERTIFICATION_GATES = (
 
 
 def load(path: Path) -> dict[str, Any]:
-    raw = read_regular_file_once(
-        path,
-        max_bytes=MAX_GATE_JSON_BYTES,
-        label=f"framework gate input {path}",
-    )
-    value = json.loads(raw.decode("utf-8"))
-    if not isinstance(value, dict):
-        raise ValueError(f"framework gate input must be a JSON object: {path}")
-    return value
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def has_file(path: Path) -> bool:
@@ -262,20 +240,8 @@ def validate_local_reference_evidence(
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("pack_dir")
-    parser.add_argument(
-        "--campaign",
-        type=Path,
-        help="Defaults to <pack>/certification/p0-p11-campaign.json when present.",
-    )
-    parser.add_argument("--external-intake", type=Path)
-    parser.add_argument("--trust-store", type=Path)
-    parser.add_argument("--evidence-root", action="append", type=Path, default=[])
     args = parser.parse_args()
-    pack_input = Path(args.pack_dir)
-    if pack_input.is_symlink():
-        print("GATE FAIL: pack_dir must not be a symlink", file=sys.stderr)
-        return 2
-    pack = pack_input.resolve()
+    pack = Path(args.pack_dir)
     validator = Path(__file__).with_name("validate_framework_pack.py")
     if subprocess.run([sys.executable, str(validator), str(pack)], check=False).returncode:
         return 1
@@ -287,8 +253,6 @@ def main() -> int:
     status = str(manifest.get("status", "")).lower()
     certification_status = str(certification.get("status", "")).lower()
     failures: list[str] = []
-    campaign_path = args.campaign or pack / "certification" / "p0-p11-campaign.json"
-    campaign_result: dict[str, Any] | None = None
 
     if certification_status != status:
         failures.append("pack and certification statuses must match")
@@ -352,98 +316,21 @@ def main() -> int:
             failures.append("limited pack must preserve external execution NOT_RUN")
 
     if status == "certified":
-        missing_external_inputs = []
-        if not campaign_path.is_file():
-            missing_external_inputs.append("campaign")
-        if args.external_intake is None:
-            missing_external_inputs.append("external-intake")
-        if args.trust_store is None:
-            missing_external_inputs.append("trust-store")
-        if not args.evidence_root:
-            missing_external_inputs.append("evidence-root")
-        if missing_external_inputs:
+        if not SIGNED_EXTERNAL_CERTIFICATION_INTAKE_IMPLEMENTED:
             failures.append(
-                "certified pack requires live P0-P11 external re-verification inputs: "
-                + ", ".join(missing_external_inputs)
+                "certified status is disabled until signed, content-addressed external "
+                "customer/rootless/independent/certifier evidence intake is implemented"
             )
-        else:
-            try:
-                campaign_result = evaluate_certification_campaign(
-                    pack_dir=pack,
-                    campaign_path=campaign_path,
-                    intake_path=args.external_intake,
-                    trust_store=args.trust_store,
-                    evidence_roots=args.evidence_root,
-                )
-            except (CampaignError, OSError, ValueError) as exc:
-                failures.append(f"P0-P11 external campaign verification failed: {exc}")
-            else:
-                if campaign_result.get("decision") != "READY_FOR_BATCH30_CERTIFICATION_GATE":
-                    failures.append("P0-P11 external campaign is not ready for the Batch 30 gate")
-                if campaign_result.get("verified_evidence_types") is None or len(
-                    campaign_result["verified_evidence_types"]
-                ) != 13:
-                    failures.append("certified pack requires all 13 verified evidence classes")
+        if not EXTERNAL_CERTIFICATION_PROMOTION_ENABLED:
+            failures.append(
+                "certified status remains disabled: verified external intake is review-only "
+                "and cannot promote a framework pack"
+            )
         if evidence.get("external_execution_status") != "PASSED":
             failures.append("certified pack requires external execution PASSED")
         for field in REQUIRED_EXTERNAL_CERTIFICATION_GATES:
             if gate_results.get(field) != "PASSED":
                 failures.append(f"certified pack requires {field} PASSED")
-        if certification.get("certification_decision") != "CERTIFIED":
-            failures.append("certified pack requires certification_decision CERTIFIED")
-        if campaign_result is not None:
-            try:
-                expected_admission = build_promotion_documents(
-                    pack, campaign_result
-                )["certification/external-admission.json"]
-                observed_admission = load(
-                    pack / "certification" / "external-admission.json"
-                )
-            except (PromotionError, OSError, ValueError, json.JSONDecodeError) as exc:
-                failures.append(f"external admission receipt is invalid: {exc}")
-            else:
-                if observed_admission != expected_admission:
-                    failures.append(
-                        "external admission receipt does not match the reverified campaign"
-                    )
-            if evidence.get("metrics") != campaign_result["metrics"]:
-                failures.append("certified evidence metrics do not match the reverified campaign")
-            for field, expected in campaign_result["zero_tolerance"].items():
-                if evidence.get(field) != expected:
-                    failures.append(f"certified evidence zero-tolerance counter drifted: {field}")
-            if certification.get("metrics") != {
-                name: campaign_result["metrics"][name]
-                for name in (
-                    "source_fingerprint_coverage",
-                    "framework_contract_coverage",
-                    "build_green_rate",
-                    "startup_pass_rate",
-                    "p0_contract_pass_rate",
-                    "source_map_coverage",
-                )
-            }:
-                failures.append("certification metrics do not match the reverified campaign")
-            scoped = {
-                item.get("id")
-                for item in capabilities
-                if item.get("status") == "certified"
-            }
-            if scoped != set(campaign_result["certified_capability_ids"]):
-                failures.append("certified capability scope does not match the reverified campaign")
-    elif campaign_path.is_file():
-        try:
-            campaign_result = evaluate_certification_campaign(
-                pack_dir=pack,
-                campaign_path=campaign_path,
-            )
-        except (CampaignError, OSError, ValueError) as exc:
-            failures.append(f"checked-in P0-P11 campaign plan is invalid: {exc}")
-        else:
-            if (
-                campaign_result.get("external_evidence_status") != "NOT_RUN"
-                or campaign_result.get("production_certification") != "NOT_CERTIFIED"
-            ):
-                failures.append("non-certified campaign plan must preserve NOT_RUN/NOT_CERTIFIED")
 
     if failures:
         print(

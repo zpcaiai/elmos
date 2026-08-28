@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["replicaCount", "image", "service", "serviceAccount", "config", "authentication", "transport", "http", "termination", "postgresql", "resources", "podDisruptionBudget", "networkPolicy", "monitoring"],
+  "properties": {
+    "replicaCount": {"type": "integer", "minimum": 2, "maximum": 100},
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "digest", "pullPolicy"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "pullPolicy": {"enum": ["IfNotPresent", "Never"]}
+      }
+    },
+    "service": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["port"],
+      "properties": {"port": {"type": "integer", "minimum": 1024, "maximum": 65535}}
+    },
+    "serviceAccount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["create", "name"],
+      "properties": {"create": {"const": true}, "name": {"type": "string"}}
+    },
+    "config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["existingSecret", "runtimeMode", "storageBackend"],
+      "properties": {
+        "existingSecret": {"type": "string", "minLength": 1},
+        "runtimeMode": {"const": "production"},
+        "storageBackend": {"const": "postgresql"}
+      }
+    },
+    "authentication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "expectedIssuer", "expectedAudience", "jwks", "factory"],
+      "properties": {
+        "mode": {"enum": ["jwks", "factory"]},
+        "expectedIssuer": {"type": "string", "minLength": 1, "maxLength": 2048},
+        "expectedAudience": {"type": "string", "minLength": 1, "maxLength": 512},
+        "jwks": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["existingSecret", "key", "algorithm", "refreshSeconds", "leewaySeconds"],
+          "properties": {
+            "existingSecret": {"type": "string"},
+            "key": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+            "algorithm": {"const": "RS256"},
+            "refreshSeconds": {"type": "integer", "minimum": 30, "maximum": 86400},
+            "leewaySeconds": {"type": "integer", "minimum": 0, "maximum": 300}
+          }
+        },
+        "factory": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value"],
+          "properties": {"value": {"type": "string", "maxLength": 1024}}
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"mode": {"const": "jwks"}}},
+          "then": {
+            "properties": {
+              "jwks": {"properties": {"existingSecret": {"minLength": 1}}},
+              "factory": {"properties": {"value": {"maxLength": 0}}}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"mode": {"const": "factory"}}},
+          "then": {
+            "properties": {
+              "jwks": {"properties": {"existingSecret": {"maxLength": 0}}},
+              "factory": {"properties": {"value": {"minLength": 1}}}
+            }
+          }
+        }
+      ]
+    },
+    "transport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "tls", "trustedProxyCIDRs"],
+      "properties": {
+        "mode": {"enum": ["tls", "trusted-proxy"]},
+        "tls": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["existingSecret", "certificateKey", "privateKeyKey", "clientCAKey"],
+          "properties": {
+            "existingSecret": {"type": "string"},
+            "certificateKey": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+            "privateKeyKey": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+            "clientCAKey": {"type": "string", "pattern": "^(?:[A-Za-z0-9._-]+)?$"}
+          }
+        },
+        "trustedProxyCIDRs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/ipv4Cidr"}
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"mode": {"const": "tls"}}},
+          "then": {
+            "properties": {
+              "tls": {"properties": {"existingSecret": {"minLength": 1}}},
+              "trustedProxyCIDRs": {"maxItems": 0}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"mode": {"const": "trusted-proxy"}}},
+          "then": {
+            "properties": {
+              "tls": {"properties": {"existingSecret": {"maxLength": 0}}},
+              "trustedProxyCIDRs": {"minItems": 1}
+            }
+          }
+        }
+      ]
+    },
+    "http": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requestTimeoutSeconds", "maxConcurrentRequests", "gracefulShutdownSeconds"],
+      "properties": {
+        "requestTimeoutSeconds": {"type": "integer", "minimum": 1, "maximum": 300},
+        "maxConcurrentRequests": {"type": "integer", "minimum": 1, "maximum": 4096},
+        "gracefulShutdownSeconds": {"type": "integer", "minimum": 1, "maximum": 300}
+      }
+    },
+    "termination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preStopDelaySeconds", "terminationGracePeriodSeconds"],
+      "properties": {
+        "preStopDelaySeconds": {"type": "integer", "minimum": 1, "maximum": 60},
+        "terminationGracePeriodSeconds": {"type": "integer", "minimum": 10, "maximum": 600}
+      }
+    },
+    "postgresql": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["existingSecret", "dsnKey", "port", "networkCIDR"],
+      "properties": {
+        "existingSecret": {"type": "string", "minLength": 1},
+        "dsnKey": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+        "port": {"type": "integer", "minimum": 1, "maximum": 65535},
+        "networkCIDR": {"$ref": "#/$defs/ipv4Cidr"}
+      }
+    },
+    "resources": {"type": "object"},
+    "podDisruptionBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minAvailable"],
+      "properties": {"minAvailable": {"type": "integer", "minimum": 1}}
+    },
+    "networkPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedIngress", "allowedEgress"],
+      "properties": {
+        "allowedIngress": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["cidr"],
+            "properties": {
+              "cidr": {"$ref": "#/$defs/ipv4Cidr"}
+            }
+          }
+        },
+        "allowedEgress": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["cidr", "port"],
+            "properties": {
+              "cidr": {"$ref": "#/$defs/ipv4Cidr"},
+              "port": {"type": "integer", "minimum": 1, "maximum": 65535}
+            }
+          }
+        }
+      }
+    },
+    "monitoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["serviceMonitor", "prometheusRule"],
+      "properties": {
+        "serviceMonitor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "namespace", "interval", "scrapeTimeout", "additionalLabels", "authorizationSecret", "tls"],
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "namespace": {"type": "string"},
+            "interval": {"type": "string", "pattern": "^[1-9][0-9]*(?:ms|s|m|h)$"},
+            "scrapeTimeout": {"type": "string", "pattern": "^[1-9][0-9]*(?:ms|s|m|h)$"},
+            "additionalLabels": {"$ref": "#/$defs/stringMap"},
+            "authorizationSecret": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "key"],
+              "properties": {
+                "name": {"type": "string"},
+                "key": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"}
+              }
+            },
+            "tls": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["serverName", "caSecretName", "caSecretKey", "clientCertificateSecretName", "clientCertificateSecretKey", "clientKeySecretName", "clientKeySecretKey"],
+              "properties": {
+                "serverName": {"type": "string"},
+                "caSecretName": {"type": "string"},
+                "caSecretKey": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+                "clientCertificateSecretName": {"type": "string"},
+                "clientCertificateSecretKey": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+                "clientKeySecretName": {"type": "string"},
+                "clientKeySecretKey": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"}
+              }
+            }
+          },
+          "allOf": [
+            {
+              "if": {"properties": {"enabled": {"const": true}}},
+              "then": {"properties": {"authorizationSecret": {"properties": {"name": {"minLength": 1}}}}}
+            }
+          ]
+        },
+        "prometheusRule": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "namespace", "additionalLabels"],
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "namespace": {"type": "string"},
+            "additionalLabels": {"$ref": "#/$defs/stringMap"}
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "ipv4Cidr": {
+      "type": "string",
+      "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])/(?:[0-9]|[12][0-9]|3[0-2])$"
+    },
+    "stringMap": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[A-Za-z0-9./_-]+$"},
+      "additionalProperties": {"type": "string", "maxLength": 256}
+    }
+  }
+}

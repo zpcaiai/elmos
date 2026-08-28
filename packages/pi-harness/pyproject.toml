@@ -11,22 +11,7 @@ dependencies = []
 
 [project.optional-dependencies]
 api = ["fastapi>=0.115", "uvicorn>=0.30"]
-postgres = ["psycopg[binary,pool]>=3.2,<3.4"]
-temporal = ["temporalio>=1.16,<2"]
-identity = ["PyJWT[crypto]>=2.10,<3", "cryptography>=45,<47"]
-cloud = ["boto3>=1.40,<2"]
-production = [
-  "psycopg[binary,pool]>=3.2,<3.4",
-  "temporalio>=1.16,<2",
-  "PyJWT[crypto]>=2.10,<3",
-  "cryptography>=45,<47",
-  "boto3>=1.40,<2",
-]
-dev = [
-  "pytest>=8.0",
-  "mypy>=2.1,<2.2",
-  "boto3-stubs[s3,sts]>=1.40,<2",
-]
+dev = ["pytest>=8.0"]
 
 [project.scripts]
 elmos-pi-harness = "elmos_pi_harness.cli:main"
@@ -37,14 +22,5 @@ package-dir = {"" = "src"}
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.setuptools.data-files]
-"elmos-pi-harness/sql" = ["sql/*.sql"]
-"elmos-pi-harness/schemas" = ["schemas/*.json"]
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-
-[tool.mypy]
-python_version = "3.11"
-strict = true
-files = ["src/elmos_pi_harness"]

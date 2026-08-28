@@ -1,0 +1,23 @@
+apiVersion: elmos.ai/v3delta1
+kind: VerificationMatrix
+metadata:
+  name: protocol-events-ingress
+  version: 3.1.0
+spec:
+  cases:
+  - case: stable profile asks main-only feature
+    expected: unsupported
+  - case: DeepSeek alpha uses ApiProxy
+    expected: rejected
+  - case: code mode config on alpha
+    expected: rejected/migration required
+  - case: unknown required event
+    expected: resume rejected
+  - case: unknown optional observation with rule
+    expected: skipped and audited
+  - case: duplicate external result
+    expected: deduplicated
+  - case: typed media output
+    expected: preserved
+  - case: tool result as user text
+    expected: rejected

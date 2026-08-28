@@ -419,7 +419,7 @@ class ToolkitTests(unittest.TestCase):
             )
             self.assertEqual(rejected.returncode, 2, rejected.stdout + rejected.stderr)
             self.assertIn(
-                "certified pack requires live P0-P11 external re-verification inputs",
+                "certified status remains disabled: verified external intake is review-only",
                 rejected.stderr,
             )
 

@@ -1,0 +1,14 @@
+{
+  "profileId": "pp-1",
+  "canonicalProfile": {
+    "fs": "read-only"
+  },
+  "providerProjection": {
+    "provider": "codex",
+    "version": "0.150.1",
+    "mapping": "EXACT",
+    "value": "read-only"
+  },
+  "resumeAllowed": true,
+  "reason": "exact mapping"
+}

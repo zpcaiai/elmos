@@ -1,0 +1,80 @@
+replicaCount: 2
+image:
+  repository: ""
+  digest: ""
+  pullPolicy: IfNotPresent
+service:
+  port: 8080
+serviceAccount:
+  create: true
+  name: ""
+config:
+  existingSecret: ""
+  runtimeMode: production
+  storageBackend: postgresql
+authentication:
+  # Exactly one production authenticator is selected by mode. The chart never
+  # provisions or falls back to the local static bearer-token authenticator.
+  mode: jwks
+  expectedIssuer: ""
+  expectedAudience: ""
+  jwks:
+    existingSecret: ""
+    key: jwks.json
+    algorithm: RS256
+    refreshSeconds: 300
+    leewaySeconds: 30
+  factory:
+    value: ""
+transport:
+  mode: tls
+  tls:
+    existingSecret: ""
+    certificateKey: tls.crt
+    privateKeyKey: tls.key
+    clientCAKey: ""
+  trustedProxyCIDRs: []
+http:
+  requestTimeoutSeconds: 30
+  maxConcurrentRequests: 64
+  gracefulShutdownSeconds: 30
+termination:
+  preStopDelaySeconds: 10
+  terminationGracePeriodSeconds: 45
+postgresql:
+  existingSecret: ""
+  dsnKey: postgres-dsn
+  port: 5432
+  # TEST-NET default is intentionally unreachable. Production must supply the
+  # exact external PostgreSQL network CIDR or the readiness probe stays failed.
+  networkCIDR: 192.0.2.0/32
+resources:
+  requests: {cpu: 250m, memory: 256Mi}
+  limits: {cpu: "2", memory: 2Gi}
+podDisruptionBudget:
+  minAvailable: 1
+networkPolicy:
+  allowedIngress: []
+  allowedEgress: []
+monitoring:
+  serviceMonitor:
+    enabled: false
+    namespace: ""
+    interval: 30s
+    scrapeTimeout: 10s
+    additionalLabels: {}
+    authorizationSecret:
+      name: ""
+      key: token
+    tls:
+      serverName: ""
+      caSecretName: ""
+      caSecretKey: ca.crt
+      clientCertificateSecretName: ""
+      clientCertificateSecretKey: tls.crt
+      clientKeySecretName: ""
+      clientKeySecretKey: tls.key
+  prometheusRule:
+    enabled: false
+    namespace: ""
+    additionalLabels: {}

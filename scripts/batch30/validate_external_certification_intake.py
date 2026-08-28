@@ -51,38 +51,25 @@ MAX_JSON_BYTES = 4 * 1024 * 1024
 
 CUSTOMER_AUTHORIZATION_ROLE = "batch30-customer-authorizer"
 EVIDENCE_ROLES = {
-    "source_build": "batch30-source-build-verifier",
-    "target_build": "batch30-target-build-verifier",
-    "source_startup": "batch30-source-runtime-verifier",
-    "target_startup": "batch30-target-runtime-verifier",
-    "behavioral_equivalence": "batch30-behavior-verifier",
-    "security": "batch30-security-verifier",
-    "performance": "batch30-performance-verifier",
-    "operability": "batch30-operability-verifier",
-    "sbom": "batch30-sbom-verifier",
-    "rollback": "batch30-rollback-verifier",
-    "independent_review": "batch30-independent-reviewer",
+    "authorized_customer_repository": "batch30-customer-repository-verifier",
+    "customer_holdout": "batch30-customer-holdout-verifier",
     "customer_acceptance": "batch30-customer-acceptance-approver",
+    "rootless_runner": "batch30-rootless-runner-attestor",
+    "rootless_transformer": "batch30-rootless-transformer-attestor",
+    "rootless_verifier": "batch30-rootless-verifier-attestor",
+    "independent_review": "batch30-independent-verifier",
     "external_certification": "batch30-external-certifier",
 }
 REQUIRED_EVIDENCE = tuple(EVIDENCE_ROLES)
 ALLOWED_ROLES = {CUSTOMER_AUTHORIZATION_ROLE, *EVIDENCE_ROLES.values()}
 
-PRODUCER_EVIDENCE = {"source_build", "source_startup"}
-ROOTLESS_EVIDENCE = {"target_build", "target_startup", "behavioral_equivalence"}
-INDEPENDENT_EVIDENCE = {
-    "security",
-    "performance",
-    "operability",
-    "sbom",
-    "rollback",
-    "independent_review",
+CUSTOMER_EVIDENCE = {
+    "authorized_customer_repository",
+    "customer_holdout",
+    "customer_acceptance",
 }
-CUSTOMER_EVIDENCE = {"customer_acceptance"}
-ORGANIZATIONALLY_INDEPENDENT_EVIDENCE = {
-    *INDEPENDENT_EVIDENCE,
-    "external_certification",
-}
+ROOTLESS_EVIDENCE = {"rootless_runner", "rootless_transformer", "rootless_verifier"}
+ORGANIZATIONALLY_INDEPENDENT_EVIDENCE = {"independent_review", "external_certification"}
 EVIDENCE_OUTCOMES = {
     **{evidence_type: "PASS" for evidence_type in EVIDENCE_ROLES},
     "customer_acceptance": "ACCEPTED",
@@ -376,20 +363,6 @@ def _tuple_matches(candidate: Any, exact: dict[str, Any]) -> bool:
     )
 
 
-def _pack_certification_subject_digest(manifest: dict[str, Any]) -> str:
-    """Bind every manifest field while allowing only the governed status transition.
-
-    External evidence is collected before promotion, but promotion changes the
-    pack status from experimental/limited to certified. Normalizing that one
-    state-machine field prevents the act of promotion from invalidating the
-    evidence while still binding every tuple, version, owner, path, and gate.
-    """
-
-    subject = dict(manifest)
-    subject["status"] = "CERTIFICATION_SUBJECT"
-    return canonical_digest(subject)
-
-
 def build_expected_binding(
     pack_dir: Path,
     artifact_reference: Any,
@@ -408,7 +381,7 @@ def build_expected_binding(
     binding = {
         "pack_key": manifest["pack_key"],
         "pack_version": _require_identity(manifest.get("version"), "pack.version"),
-        "pack_manifest_digest": _pack_certification_subject_digest(manifest),
+        "pack_manifest_digest": snapshots["pack_manifest"].digest,
         "source_tuple": source,
         "target_tuple": target,
         "version_matrix_digest": snapshots["version_matrix"].digest,
@@ -480,13 +453,11 @@ def _load_trust(path: Path) -> LoadedTrust:
 
 
 def _organization_for(evidence_type: str, intake: dict[str, Any]) -> str:
-    if evidence_type in PRODUCER_EVIDENCE:
-        return intake["producer_organization_id"]
     if evidence_type in CUSTOMER_EVIDENCE:
         return intake["customer_organization_id"]
     if evidence_type in ROOTLESS_EVIDENCE:
         return intake["rootless_organization_id"]
-    if evidence_type in INDEPENDENT_EVIDENCE:
+    if evidence_type == "independent_review":
         return intake["independent_organization_id"]
     return intake["certification_organization_id"]
 
@@ -519,54 +490,20 @@ def _evidence_executors(value: Any) -> dict[str, dict[str, str]]:
 
 
 def _expected_claims(evidence_type: str) -> dict[str, Any]:
-    if evidence_type in {"source_build", "target_build"}:
-        claims = {"passed": True, "native": True, "exact_toolchain": True}
-        if evidence_type == "target_build":
-            claims.update({"rootless": True, "privileged": False})
-        return claims
-    if evidence_type in {"source_startup", "target_startup"}:
-        claims = {"passed": True, "native": True, "readiness": True}
-        if evidence_type == "target_startup":
-            claims.update({"rootless": True, "privileged": False})
-        return claims
-    if evidence_type == "behavioral_equivalence":
-        return {
-            "passed": True,
-            "critical_mismatch_count": 0,
-            "route_coverage": 1.0,
-            "independent_holdout": True,
-            "representative_repository": True,
-            "authorized_customer_repository": True,
-            "rootless": True,
-            "privileged": False,
-        }
-    if evidence_type == "security":
-        return {"passed": True, "critical_findings": 0}
-    if evidence_type == "performance":
-        return {"passed": True, "capacity_validated": True}
-    if evidence_type == "operability":
-        return {
-            "passed": True,
-            "endpoints_verified": ["/livez", "/readyz", "/metrics", "/version"],
-        }
-    if evidence_type == "sbom":
-        return {"passed": True, "artifact_bound": True}
-    if evidence_type == "rollback":
-        return {"passed": True, "rehearsed": True}
+    if evidence_type == "authorized_customer_repository":
+        return {"authorized_repository": True, "fixed_commit": True, "acceptance_subject_bound": True}
+    if evidence_type == "customer_holdout":
+        return {"independent_from_development": True, "customer_owned_acceptance": True}
     if evidence_type == "customer_acceptance":
         return {
             "acceptance_subject_bound": True,
             "accepted_exact_artifact_and_profile": True,
-            "customer_owned_holdout": True,
             "customer_decision": "ACCEPTED",
         }
+    if evidence_type in ROOTLESS_EVIDENCE:
+        return {"rootless": True, "privileged": False, "effective_uid_nonzero": True}
     if evidence_type == "independent_review":
-        return {
-            "passed": True,
-            "organizationally_independent": True,
-            "separate_executor_and_verifier": True,
-            "all_required_evidence_reviewed": True,
-        }
+        return {"organizationally_independent": True, "separate_executor_and_verifier": True}
     return {
         "certification_scope_bound": True,
         "independent_certification_authority": True,
@@ -775,10 +712,6 @@ def evaluate_external_intake(
             raise ExternalIntakeError(
                 "external evidence signer must be separate from every evidence executor"
             )
-        if receipt["organization_id"] == executor["organization_id"]:
-            raise ExternalIntakeError(
-                f"{evidence_type} signer and executor organizations must be separate"
-            )
         if (
             evidence_type in ORGANIZATIONALLY_INDEPENDENT_EVIDENCE
             and receipt["organization_id"] in executor_organization_ids
@@ -813,7 +746,6 @@ def evaluate_external_intake(
         "trust_store_digest": loaded.store.digest,
         "evidence_status": "VERIFIED_EXTERNAL_INTAKE",
         "verified_roles": [CUSTOMER_AUTHORIZATION_ROLE, *EVIDENCE_ROLES.values()],
-        "verified_evidence_types": list(REQUIRED_EVIDENCE),
         "verified_executor_principals": evidence_executors,
         "verified_content_digests": {
             "artifact": primary_artifacts["artifact"]["digest"],
@@ -824,16 +756,6 @@ def evaluate_external_intake(
         "customer_acceptance_signature_verified": True,
         "independent_review_signature_verified": True,
         "external_certification_signature_verified": True,
-        "certification_gate_results": {
-            "authorized_customer_repository": "PASSED",
-            "customer_holdout": "PASSED",
-            "customer_acceptance": "PASSED",
-            "rootless_runner": "PASSED",
-            "rootless_transformer": "PASSED",
-            "rootless_verifier": "PASSED",
-            "independent_review": "PASSED",
-            "external_certification": "PASSED",
-        },
         "certification_decision": "NOT_CERTIFIED",
         "certification_promoted": False,
         "pack_status_mutated": False,

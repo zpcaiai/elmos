@@ -359,12 +359,6 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             writeJson(runRoot.resolve("evidence/source-test-summary.json"), sourceTests);
             sourceMvcOracle = validateSourceStartup(sourceBaseline, runRoot, control, sourceJavaHome,
                     buildTool, fingerprint, route);
-            if (sourceMvcOracle != null) {
-                preserveVerifiedArtifact(
-                        SpringMvcWarRuntime.sourceWar(sourceBaseline, buildTool),
-                        runRoot.resolve("artifacts/executed-source-spring-mvc-5.3.39.war"));
-                control.log("preserved the exact source WAR used by the Tomcat 9 runtime oracle");
-            }
         } finally {
             deleteTree(sourceBaseline);
         }
@@ -1474,8 +1468,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         model.put("exact_tuple", route.tuple(
                 detectedSourceVersion, SpringRouteCatalog.normalizeJava(fingerprint.javaVersion())));
         model.put("capabilities", SpringCapabilityFingerprint.fcmCapabilities(fingerprint));
-        model.put("language_features", SpringFeatureCatalog.render(
-                fingerprint.features(), route.targetBoot(), route.targetJava()));
+        model.put("language_features", SpringFeatureCatalog.render(fingerprint.features()));
         model.put("unknowns", fingerprint.unknowns());
         model.put("ordering_and_defaults", Map.of(
                 "security_filter_order", "preserve-and-verify",
@@ -2560,29 +2553,6 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             }
         } catch (IOException error) {
             throw blocked("ARTIFACT_PACKAGE_FAILED", "Migrated source artifact could not be packaged.");
-        }
-    }
-
-    private static void preserveVerifiedArtifact(Path source, Path target) {
-        try {
-            if (!Files.isRegularFile(source, LinkOption.NOFOLLOW_LINKS)
-                    || Files.isSymbolicLink(source)
-                    || Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
-                throw blocked("SOURCE_ARTIFACT_PRESERVATION_FAILED",
-                        "The verified source artifact is unsafe or its evidence target already exists.");
-            }
-            createDirectory(target.getParent());
-            Files.copy(source, target);
-            if (!Files.isRegularFile(target, LinkOption.NOFOLLOW_LINKS)
-                    || Files.isSymbolicLink(target)
-                    || Files.size(source) != Files.size(target)
-                    || !sha256(source).equals(sha256(target))) {
-                throw blocked("SOURCE_ARTIFACT_PRESERVATION_FAILED",
-                        "The preserved source artifact does not match the executed bytes.");
-            }
-        } catch (IOException error) {
-            throw blocked("SOURCE_ARTIFACT_PRESERVATION_FAILED",
-                    "The verified source artifact could not be preserved as evidence.");
         }
     }
 

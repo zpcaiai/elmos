@@ -1,0 +1,19 @@
+apiVersion: elmos.ai/v3delta1
+kind: VerificationMatrix
+metadata:
+  name: tool-result-lifecycle
+  version: 3.1.0
+spec:
+  cases:
+  - case: success unchanged
+    expected: raw=effective; one commit; event/model identical
+  - case: success replaced
+    expected: raw retained; effective changed; provenance complete
+  - case: error replaced
+    expected: original error retained; replacement visible after commit
+  - case: interceptor timeout
+    expected: typed abort/continue policy; never partial publish
+  - case: cancel during interception
+    expected: lease revoked; no commit or one deterministic aborted commit
+  - case: replay
+    expected: no non-replay-safe interceptor rerun; effective result identical

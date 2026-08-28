@@ -1,0 +1,53 @@
+{
+  "complete": true,
+  "declared_model": "ETGB-COVERAGE-1.0",
+  "case_counts": {
+    "spring-modernization": 3117,
+    "cross-language": 29535,
+    "project-generation": 1451,
+    "sql-conversion": 11761,
+    "cross-cutting": 512
+  },
+  "lines": {
+    "cross-cutting": {
+      "expected_cells": 512,
+      "covered_cells": 512,
+      "coverage": 1.0
+    },
+    "cross-language": {
+      "expected_cells": 29534,
+      "covered_cells": 29534,
+      "coverage": 1.0
+    },
+    "project-generation": {
+      "expected_cells": 1450,
+      "covered_cells": 1450,
+      "coverage": 1.0
+    },
+    "spring-modernization": {
+      "expected_cells": 3116,
+      "covered_cells": 3116,
+      "coverage": 1.0
+    },
+    "sql-conversion": {
+      "expected_cells": 11760,
+      "covered_cells": 11760,
+      "coverage": 1.0
+    }
+  },
+  "missing_case_count": 0,
+  "missing_case_examples": [],
+  "unexpected_case_count": 0,
+  "unexpected_case_examples": [],
+  "mandatory_techniques": [
+    "differential",
+    "example-based",
+    "fault-injection",
+    "fuzz",
+    "metamorphic",
+    "mutation",
+    "property-based",
+    "temporal-hidden"
+  ],
+  "missing_techniques": []
+}

@@ -10,30 +10,6 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
 
-[project.optional-dependencies]
-postgres = ["psycopg[binary]"]
-object-store = ["boto3"]
-temporal = ["temporalio"]
-browser = ["playwright"]
-api = ["fastapi", "uvicorn", "grpcio", "protobuf"]
-telemetry = ["opentelemetry-api", "opentelemetry-sdk", "opentelemetry-exporter-otlp"]
-crypto = ["cryptography"]
-production = [
-  "boto3",
-  "cryptography",
-  "fastapi",
-  "grpcio",
-  "opentelemetry-api",
-  "opentelemetry-exporter-otlp",
-  "opentelemetry-sdk",
-  "playwright",
-  "psycopg[binary]",
-  "protobuf",
-  "temporalio",
-  "uvicorn",
-]
-dev = ["mypy", "pyright", "ruff", "types-grpcio"]
-
 [project.scripts]
 elmos-openhands = "elmos_openhands.cli:main"
 
@@ -45,7 +21,7 @@ include-package-data = true
 where = ["src"]
 
 [tool.setuptools.package-data]
-elmos_openhands = ["schemas/*.json", "implementation_manifest.json"]
+elmos_openhands = ["schemas/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

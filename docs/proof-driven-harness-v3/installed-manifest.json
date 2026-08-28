@@ -1,0 +1,539 @@
+{
+  "compiler": {
+    "path": "tooling/integrate_proof_driven_harness_v3.py",
+    "sha256": "6e202605781f44c1b8703656e9a5870df3bc1729b9a10a832efad37c036e33ec"
+  },
+  "counts": {
+    "commercialGoldenRoutes": 5,
+    "crossCuttingSkills": 3,
+    "domainPacks": 5,
+    "frameworkSemanticProfiles": 9,
+    "harnessAdapters": 7,
+    "inheritedEtgbCases": 46664,
+    "internalKernelComponents": 96,
+    "jsonSchemas": 15,
+    "kernels": 8,
+    "languageSemanticProfiles": 15,
+    "legacySkillsMapped": 115,
+    "legacySourceSnapshots": 115,
+    "postgresMigrations": 4,
+    "regoModules": 6,
+    "routableSkills": 16,
+    "verifierAdapters": 20
+  },
+  "dependency_edges": 76,
+  "dual_roots_byte_identical": true,
+  "install_roots": [
+    ".agents/skills",
+    "agent-skills/runtime"
+  ],
+  "kind": "elmos.proof-driven-harness-v3.installed-manifest",
+  "legacy_routing": {
+    "count": 115,
+    "independent_runtime_owners": 0,
+    "mode": "LOOKUP_ONLY_COMPATIBILITY_ALIAS"
+  },
+  "package": {
+    "name": "elmos-proof-driven-agentic-harness-repository-semantic-compiler",
+    "version": "3.0.0"
+  },
+  "qualification": {
+    "engine_tree_sha256": null,
+    "path": "engines/proof-driven-harness-engine/qualification/local-qualification.json",
+    "receipt_sha256": null,
+    "validation": "INVALID"
+  },
+  "schema_version": "1.0.0",
+  "skills": {
+    "elmos-agentic-reasoning-kernel": {
+      "dependencies": [
+        "elmos-goal-specification-kernel",
+        "elmos-repository-semantic-compiler-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3050,
+          "sha256": "2d10a2d047afcda8761f54a30f27ef327e4b2459c846f26d2fea66d22fd351b9"
+        },
+        "agents/openai.yaml": {
+          "bytes": 349,
+          "sha256": "24e796a834f0ad0d7c78af516f6f98981e41cb7dd8d5c8ec7b15f39b1e5a3441"
+        },
+        "compiled-contract.json": {
+          "bytes": 3309,
+          "sha256": "04edca781b7411f28095c2a4a1bb911aed533d338eb43671fda8617179002482"
+        }
+      },
+      "id": "ELMOS-V3-004",
+      "kind": "kernel",
+      "owner": "K4",
+      "source_member": "skills/P0/elmos-agentic-reasoning-kernel/SKILL.md",
+      "source_sha256": "945ad3b91895c125095763e15cf91c5c40031a0377fe513f941fe5805d13c6d0"
+    },
+    "elmos-certification-kernel": {
+      "dependencies": [
+        "elmos-goal-specification-kernel",
+        "elmos-proof-verification-kernel",
+        "elmos-harness-runtime-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3063,
+          "sha256": "d09cab64f3401de0990829665cd17c615c16b4366d420a6964605e906fb9fb03"
+        },
+        "agents/openai.yaml": {
+          "bytes": 341,
+          "sha256": "a0d58e9a4e6cc95024769e86428394e9e05940908cc4b56e8415788171acf8d8"
+        },
+        "compiled-contract.json": {
+          "bytes": 3326,
+          "sha256": "4e2343489396020ca607b96b3f9cf6b6ad1188fe93449c0c19e14de044a93a09"
+        }
+      },
+      "id": "ELMOS-V3-008",
+      "kind": "kernel",
+      "owner": "K8",
+      "source_member": "skills/P0/elmos-certification-kernel/SKILL.md",
+      "source_sha256": "8b2f65828e85caf54b5fdbf182758fb9961b80fbc7065797e58577a846ed9bac"
+    },
+    "elmos-commercial-operations-finops": {
+      "dependencies": [
+        "elmos-goal-specification-kernel",
+        "elmos-repository-intelligence-kernel",
+        "elmos-repository-semantic-compiler-kernel",
+        "elmos-agentic-reasoning-kernel",
+        "elmos-transformation-kernel",
+        "elmos-proof-verification-kernel",
+        "elmos-harness-runtime-kernel",
+        "elmos-certification-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3323,
+          "sha256": "908c167920019c2f9af6ea8d24f1143c17fda0fbbc3f0d6a067001afbf9eb5f8"
+        },
+        "agents/openai.yaml": {
+          "bytes": 361,
+          "sha256": "0029178e83b92d8b647fee96c9068b6a112ed00bc0ba503e8988e3068d48524c"
+        },
+        "compiled-contract.json": {
+          "bytes": 3596,
+          "sha256": "b65a87b3e9661d67fcff5b9b37f7cbcc71001694551ae297a41cd644f73eda91"
+        }
+      },
+      "id": "ELMOS-V3-016",
+      "kind": "cross-cutting",
+      "owner": "platform",
+      "source_member": "skills/P0/elmos-commercial-operations-finops/SKILL.md",
+      "source_sha256": "212a860981d6eb09169a0933d001ac435ed3a8c17b7f445cce9aaa441adc0bc5"
+    },
+    "elmos-domain-cross-language-conversion": {
+      "dependencies": [
+        "elmos-goal-specification-kernel",
+        "elmos-repository-intelligence-kernel",
+        "elmos-repository-semantic-compiler-kernel",
+        "elmos-agentic-reasoning-kernel",
+        "elmos-transformation-kernel",
+        "elmos-proof-verification-kernel",
+        "elmos-harness-runtime-kernel",
+        "elmos-certification-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3339,
+          "sha256": "dcb56a33410847f017e6f8f7f512eb8575309de4dd2dae2337fc5a817776645d"
+        },
+        "agents/openai.yaml": {
+          "bytes": 370,
+          "sha256": "031f6fab3728ff6334d4023781a846b7db583dea4933f6e7e65bfe93cb969883"
+        },
+        "compiled-contract.json": {
+          "bytes": 3605,
+          "sha256": "fb38222aaa428611d2906485d9b18db827a91333964833bdd40c5dde0e724fdd"
+        }
+      },
+      "id": "ELMOS-V3-010",
+      "kind": "domain-pack",
+      "owner": "cross-language",
+      "source_member": "skills/P0/elmos-domain-cross-language-conversion/SKILL.md",
+      "source_sha256": "0cedda9d3c4d7b0723cba5b9421acb49a3b17c05d3b24c6e61720ecc44401917"
+    },
+    "elmos-domain-multi-language-project-generation": {
+      "dependencies": [
+        "elmos-goal-specification-kernel",
+        "elmos-repository-intelligence-kernel",
+        "elmos-repository-semantic-compiler-kernel",
+        "elmos-agentic-reasoning-kernel",
+        "elmos-transformation-kernel",
+        "elmos-proof-verification-kernel",
+        "elmos-harness-runtime-kernel",
+        "elmos-certification-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3382,
+          "sha256": "f58fe6cd8ea0f8966b3a5eb299af3383c71514ca810d7dfe6d5a8f1023b64dcb"
+        },
+        "agents/openai.yaml": {
+          "bytes": 386,
+          "sha256": "49838025c22b326304126cbed21f4a0141c4e163f52d0e005a8c093aa2501948"
+        },
+        "compiled-contract.json": {
+          "bytes": 3644,
+          "sha256": "d2cd4dc355dc704c54dd33d25175abcb298921f727469b5662e6990a04018014"
+        }
+      },
+      "id": "ELMOS-V3-011",
+      "kind": "domain-pack",
+      "owner": "project-generation",
+      "source_member": "skills/P0/elmos-domain-multi-language-project-generation/SKILL.md",
+      "source_sha256": "c6d0cadd30847cdfc58e68d240d455fd850bd009893a2c4674020b6c229854d5"
+    },
+    "elmos-domain-repository-refactoring": {
+      "dependencies": [
+        "elmos-goal-specification-kernel",
+        "elmos-repository-intelligence-kernel",
+        "elmos-repository-semantic-compiler-kernel",
+        "elmos-agentic-reasoning-kernel",
+        "elmos-transformation-kernel",
+        "elmos-proof-verification-kernel",
+        "elmos-harness-runtime-kernel",
+        "elmos-certification-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3350,
+          "sha256": "83a7724aeb2cac36965d2b51844550c8cb5863e8a495688cb9c3397756d58fbe"
+        },
+        "agents/openai.yaml": {
+          "bytes": 364,
+          "sha256": "aae41671b628f6f2be13f6d32151bf608c34663f2d2be14a86c56aaa061524c3"
+        },
+        "compiled-contract.json": {
+          "bytes": 3608,
+          "sha256": "733014a880b6fa26c8ebf7ae67f4b6b146bde2a731f9815087999f3f19d83788"
+        }
+      },
+      "id": "ELMOS-V3-013",
+      "kind": "domain-pack",
+      "owner": "repository-refactoring",
+      "source_member": "skills/P0/elmos-domain-repository-refactoring/SKILL.md",
+      "source_sha256": "180286b859eb8da2cb2e13ebb0b7096323c60b3516a0a83ac6887657ea02e4a8"
+    },
+    "elmos-domain-spring-legacy-modernization": {
+      "dependencies": [
+        "elmos-goal-specification-kernel",
+        "elmos-repository-intelligence-kernel",
+        "elmos-repository-semantic-compiler-kernel",
+        "elmos-agentic-reasoning-kernel",
+        "elmos-transformation-kernel",
+        "elmos-proof-verification-kernel",
+        "elmos-harness-runtime-kernel",
+        "elmos-certification-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3376,
+          "sha256": "48c041509d2638c24898a451a5b8db1eb56def82a16f789a595b8a50898242ce"
+        },
+        "agents/openai.yaml": {
+          "bytes": 374,
+          "sha256": "f9c9a155e441635fe3a740750ef42e266ce40d1cf47a843ffeec5e33e2a266a3"
+        },
+        "compiled-contract.json": {
+          "bytes": 3636,
+          "sha256": "ac1f2a7e5c46d9e6c88c4d25497b68363ce4f5f54af9ff282a6f28a3ac970e4d"
+        }
+      },
+      "id": "ELMOS-V3-009",
+      "kind": "domain-pack",
+      "owner": "spring-modernization",
+      "source_member": "skills/P0/elmos-domain-spring-legacy-modernization/SKILL.md",
+      "source_sha256": "76d80eb6dcc135f6b14254f2ce326b9f6863b53bff9b860dd9957a9de42cb815"
+    },
+    "elmos-domain-sql-dialect-routine-conversion": {
+      "dependencies": [
+        "elmos-goal-specification-kernel",
+        "elmos-repository-intelligence-kernel",
+        "elmos-repository-semantic-compiler-kernel",
+        "elmos-agentic-reasoning-kernel",
+        "elmos-transformation-kernel",
+        "elmos-proof-verification-kernel",
+        "elmos-harness-runtime-kernel",
+        "elmos-certification-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3363,
+          "sha256": "3486e6eab40288c1389a0d9205c826e6f58d0363a035888bb6b2c405fb68e38f"
+        },
+        "agents/openai.yaml": {
+          "bytes": 384,
+          "sha256": "a836d58ca9777512a95f8f6768552d51e7117acdbb08de61f056b08b4045704c"
+        },
+        "compiled-contract.json": {
+          "bytes": 3625,
+          "sha256": "792f7e2ee558e4bfb5a9eb564ba5ac0a3146260682303495107c0ce376e2c497"
+        }
+      },
+      "id": "ELMOS-V3-012",
+      "kind": "domain-pack",
+      "owner": "sql-conversion",
+      "source_member": "skills/P0/elmos-domain-sql-dialect-routine-conversion/SKILL.md",
+      "source_sha256": "844a2c47b81870ef113d66bbd17998f0239708931098cc9078a5f6cee36beeeb"
+    },
+    "elmos-evaluation-trust-gate": {
+      "dependencies": [
+        "elmos-goal-specification-kernel",
+        "elmos-repository-intelligence-kernel",
+        "elmos-repository-semantic-compiler-kernel",
+        "elmos-agentic-reasoning-kernel",
+        "elmos-transformation-kernel",
+        "elmos-proof-verification-kernel",
+        "elmos-harness-runtime-kernel",
+        "elmos-certification-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3283,
+          "sha256": "626a6a07b0776ebe1a426052b5bbcbcc1aa2facce8ada3c5a3646a5c1be0f075"
+        },
+        "agents/openai.yaml": {
+          "bytes": 343,
+          "sha256": "53c9454237b63080ed87dad12140ac78cc72d56f494987099e159cc91282ddc4"
+        },
+        "compiled-contract.json": {
+          "bytes": 3560,
+          "sha256": "499e5def842c920599f66cf0197d2a3c47c8c90faa10ff376d0d9bf9d90a762f"
+        }
+      },
+      "id": "ELMOS-V3-014",
+      "kind": "cross-cutting",
+      "owner": "platform",
+      "source_member": "skills/P0/elmos-evaluation-trust-gate/SKILL.md",
+      "source_sha256": "8450e684717f9c05eef0d3d8df05f57de2e30bb52269df2000f15bb85918b5f1"
+    },
+    "elmos-goal-specification-kernel": {
+      "dependencies": [],
+      "files": {
+        "SKILL.md": {
+          "bytes": 2997,
+          "sha256": "b374518e3d695b5a0df4cb5ec7a028e991e3e9211224bef5a2da439928c9304d"
+        },
+        "agents/openai.yaml": {
+          "bytes": 351,
+          "sha256": "ea6bb7389144af5ca059f9d7269779bb4a846aea1f267c152abb897cd03ff590"
+        },
+        "compiled-contract.json": {
+          "bytes": 3237,
+          "sha256": "315b816d76cf2e57f44a872561f3eb6cabc4dede4b2f8fc0574514e7dc144cb5"
+        }
+      },
+      "id": "ELMOS-V3-001",
+      "kind": "kernel",
+      "owner": "K1",
+      "source_member": "skills/P0/elmos-goal-specification-kernel/SKILL.md",
+      "source_sha256": "09851b3d5787b30e7662a15d3f94b869bfb0042c52db1f58ea5cdfdc44783901"
+    },
+    "elmos-harness-runtime-kernel": {
+      "dependencies": [],
+      "files": {
+        "SKILL.md": {
+          "bytes": 2973,
+          "sha256": "fecfe1d7421bebda4d104fb676ef1d278e5beef83fe47bbd4b0770870bc0acd4"
+        },
+        "agents/openai.yaml": {
+          "bytes": 345,
+          "sha256": "be3b432fd8805562eab175f27fd7363cbe8792c7541e1919b5c037c6ca1fdc6e"
+        },
+        "compiled-contract.json": {
+          "bytes": 3213,
+          "sha256": "200641135a6b53e4dcf865030ebbea6c78858d99edbcbac6192b52fef141b0a7"
+        }
+      },
+      "id": "ELMOS-V3-007",
+      "kind": "kernel",
+      "owner": "K7",
+      "source_member": "skills/P0/elmos-harness-runtime-kernel/SKILL.md",
+      "source_sha256": "7eedc37835d06a1b7344e3af3b672531756213c081c6945e9c5c28b82575cbbc"
+    },
+    "elmos-proof-verification-kernel": {
+      "dependencies": [
+        "elmos-repository-semantic-compiler-kernel",
+        "elmos-harness-runtime-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3054,
+          "sha256": "0d27f381460ce274d796cd9185be80034202764309bc3be7266965ac54af3809"
+        },
+        "agents/openai.yaml": {
+          "bytes": 351,
+          "sha256": "0f17cec770649927c01be94aa0802b4c630595ef4a5aac93d2f7bfae74d60ce9"
+        },
+        "compiled-contract.json": {
+          "bytes": 3313,
+          "sha256": "1e901956f095e39e831b2656bd24896e932759c5ec85a377668b78325b516ea4"
+        }
+      },
+      "id": "ELMOS-V3-006",
+      "kind": "kernel",
+      "owner": "K6",
+      "source_member": "skills/P0/elmos-proof-verification-kernel/SKILL.md",
+      "source_sha256": "154562d38c56d7ec60e0294e79c6630720e52d994111091d7f873b6eb8745d02"
+    },
+    "elmos-repository-intelligence-kernel": {
+      "dependencies": [
+        "elmos-goal-specification-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3037,
+          "sha256": "08a350d9d575d109c4c3f07ff78117f749ed353433e311fa560af078812c067c"
+        },
+        "agents/openai.yaml": {
+          "bytes": 361,
+          "sha256": "076bf35a1a8adad6b520c87697334cf4fb36e2ba753218cd3171ca2a9ce17744"
+        },
+        "compiled-contract.json": {
+          "bytes": 3292,
+          "sha256": "7da078e61d78ecb7de3413c957a5b6b1bb51b8373f68be03451d4a76dc77c291"
+        }
+      },
+      "id": "ELMOS-V3-002",
+      "kind": "kernel",
+      "owner": "K2",
+      "source_member": "skills/P0/elmos-repository-intelligence-kernel/SKILL.md",
+      "source_sha256": "9c1074311ef43f53087dde4f3304c8328bdc7690e50b3021e29f1a48037b768d"
+    },
+    "elmos-repository-semantic-compiler-kernel": {
+      "dependencies": [
+        "elmos-repository-intelligence-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3044,
+          "sha256": "3b7bcf655df77b52643150629caa971e9e9e95569df618ad53719a65ff73d02a"
+        },
+        "agents/openai.yaml": {
+          "bytes": 371,
+          "sha256": "d1d6908fd0e63980466da5784e67e5aacb03395f7fee44bf0af2201e0089b9c3"
+        },
+        "compiled-contract.json": {
+          "bytes": 3299,
+          "sha256": "b7661ca360846ab90c0d7d9f83522ec6c70bafe0f9b951180b6711347fd01b7b"
+        }
+      },
+      "id": "ELMOS-V3-003",
+      "kind": "kernel",
+      "owner": "K3",
+      "source_member": "skills/P0/elmos-repository-semantic-compiler-kernel/SKILL.md",
+      "source_sha256": "affe6f3814ca1ca26a602c347a804d72dab9bc71df7baeae0e6d80000c27d9f3"
+    },
+    "elmos-self-improvement-governance": {
+      "dependencies": [
+        "elmos-goal-specification-kernel",
+        "elmos-repository-intelligence-kernel",
+        "elmos-repository-semantic-compiler-kernel",
+        "elmos-agentic-reasoning-kernel",
+        "elmos-transformation-kernel",
+        "elmos-proof-verification-kernel",
+        "elmos-harness-runtime-kernel",
+        "elmos-certification-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3311,
+          "sha256": "adfb4be27164a9c6df8ec516535ebb4b3435b81d831c3b55afb526df4ed263e9"
+        },
+        "agents/openai.yaml": {
+          "bytes": 355,
+          "sha256": "6baea02fc797858b104a4644eaf0724b76d167e613b6c1a30104bf036a4b039f"
+        },
+        "compiled-contract.json": {
+          "bytes": 3588,
+          "sha256": "3406ec735e2e26e7968b5cc42a7c7b9310e140b288fbce894a72438453b10351"
+        }
+      },
+      "id": "ELMOS-V3-015",
+      "kind": "cross-cutting",
+      "owner": "platform",
+      "source_member": "skills/P1/elmos-self-improvement-governance/SKILL.md",
+      "source_sha256": "6110de84347f2771ae3496753c2073376bcab7a1c6e808500e6191a063ad2a03"
+    },
+    "elmos-transformation-kernel": {
+      "dependencies": [
+        "elmos-repository-semantic-compiler-kernel",
+        "elmos-agentic-reasoning-kernel",
+        "elmos-harness-runtime-kernel"
+      ],
+      "files": {
+        "SKILL.md": {
+          "bytes": 3062,
+          "sha256": "6589c3a4f86fca6c43027d56c8f5f5b2e9e4cd81bb1217348a2d9eada3043623"
+        },
+        "agents/openai.yaml": {
+          "bytes": 343,
+          "sha256": "23006aabb01bf8f5eda37cd13cd540e5c0981ffcf33a497e84d9e22c7988800c"
+        },
+        "compiled-contract.json": {
+          "bytes": 3325,
+          "sha256": "0e97568864211abd84e2b5cfe76b8f3f28141d3c86ee80c14a6281e9ef6559ce"
+        }
+      },
+      "id": "ELMOS-V3-005",
+      "kind": "kernel",
+      "owner": "K5",
+      "source_member": "skills/P0/elmos-transformation-kernel/SKILL.md",
+      "source_sha256": "078a5c1b825557d96ce3dd1f9323d65e8823b455528f591632f5f6428d793fd2"
+    }
+  },
+  "source": {
+    "archive": "skills/subskills/elmos-proof-driven-agentic-harness-repository-semantic-compiler-v3.0.0.zip",
+    "bytes": 5601254,
+    "checksum_rows": 985,
+    "entries": 1263,
+    "files": 1007,
+    "sha256": "552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+    "uncompressed_bytes": 94803198
+  },
+  "source_assurance": {
+    "archive_digest_scope": "BYTE_IDENTITY_ONLY",
+    "archive_sha256": "552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+    "certification_status": "NOT_CERTIFIED",
+    "commercial_distribution_authorized": false,
+    "kind": "elmos.proof-driven-harness-v3.source-assurance-boundary",
+    "license": {
+      "approved_license_present": false,
+      "legal_review_status": "NOT_RUN",
+      "policy_is_approved_license": false,
+      "policy_is_execution_authority": false,
+      "policy_member": "LICENSE-POLICY.md",
+      "policy_member_bytes": 497,
+      "policy_member_sha256": "edbb0a43de88f2616bdedd59711eb4fdf35059b86e3ebdfbf6269b7f52175543"
+    },
+    "schema_version": "1.0.0",
+    "source_policy_observation": {
+      "commercial_distribution_prerequisites_declared_by_source": [
+        "REPLACE_WITH_ORGANIZATION_APPROVED_LICENSE",
+        "AUTOMATED_DEPENDENCY_LICENSE_REVIEW",
+        "SBOM",
+        "LICENSE_ALLOW_DENY_POLICY",
+        "LEGAL_REVIEW"
+      ],
+      "trusted_as_repository_instruction": false
+    },
+    "supply_chain": {
+      "independent_verification_status": "NOT_RUN",
+      "provenance_attestation_present": false,
+      "sbom_present": false,
+      "signature_present": false
+    }
+  },
+  "status": {
+    "certification": "NOT_CERTIFIED",
+    "external_evidence": "NOT_RUN",
+    "external_runtime": "NOT_RUN",
+    "implementation": "DECLARED_RUNTIME_UNQUALIFIED"
+  }
+}

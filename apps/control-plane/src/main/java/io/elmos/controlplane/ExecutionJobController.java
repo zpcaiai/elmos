@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,13 +37,7 @@ public class ExecutionJobController {
     private final ObjectMapper json;
     private final Map<ExecutionJobPort.BusinessLine, RuntimeProfile> profiles;
 
-    record RuntimeProfile(
-            String permission,
-            String capability,
-            String image,
-            String workloadClass,
-            int resourceUnits
-    ) {}
+    record RuntimeProfile(String permission, String capability, String image) {}
 
     public ExecutionJobController(
             ExecutionJobPort jobs,
@@ -61,25 +54,15 @@ public class ExecutionJobController {
         this.json = json;
         this.profiles = Map.of(
                 ExecutionJobPort.BusinessLine.GENERATION,
-                new RuntimeProfile(
-                        "generation:execute", "generation:multi", generationImage,
-                        "GENERATION", 2),
+                new RuntimeProfile("generation:execute", "generation:multi", generationImage),
                 ExecutionJobPort.BusinessLine.TRANSLATION,
-                new RuntimeProfile(
-                        "translation:execute", "translation:multi", translationImage,
-                        "CONVERSION", 3),
+                new RuntimeProfile("translation:execute", "translation:multi", translationImage),
                 ExecutionJobPort.BusinessLine.SPRING_UPGRADE,
-                new RuntimeProfile(
-                        "spring:execute", "spring:upgrade", springImage,
-                        "CONVERSION", 3),
+                new RuntimeProfile("spring:execute", "spring:upgrade", springImage),
                 ExecutionJobPort.BusinessLine.REPOSITORY_WORKSPACE,
-                new RuntimeProfile(
-                        "repository:write", "repository:workspace", repositoryImage,
-                        "PARSING", 1),
+                new RuntimeProfile("repository:write", "repository:workspace", repositoryImage),
                 ExecutionJobPort.BusinessLine.MODERNIZATION_PROOF,
-                new RuntimeProfile(
-                        "modernization:execute", "modernization:proof-loop", modernizationProofImage,
-                        "VALIDATION", 2));
+                new RuntimeProfile("modernization:execute", "modernization:proof-loop", modernizationProofImage));
     }
 
     public record EnqueueRequest(
@@ -93,10 +76,7 @@ public class ExecutionJobController {
     ) {}
 
     @PostMapping
-    public ResponseEntity<?> enqueue(
-            @RequestBody EnqueueRequest request,
-            @RequestHeader(value = "X-Request-ID", required = false) String requestId
-    ) {
+    public ResponseEntity<?> enqueue(@RequestBody EnqueueRequest request) {
         ExecutionJobPort.BusinessLine line = parseLine(request.businessLine());
         ControlPlanePrincipal principal = principal(line);
         RuntimeProfile profile = profiles.get(line);
@@ -119,7 +99,6 @@ public class ExecutionJobController {
         String persisted = jobs.enqueue(new ExecutionJobPort.EnqueueCommand(
                 jobId,
                 principal.organizationId(),
-                principal.accountId(),
                 principal.actorId(),
                 line,
                 jobKind,
@@ -130,10 +109,7 @@ public class ExecutionJobController {
                 profile.image(),
                 request.priority() == null ? (short) 100 : request.priority(),
                 request.budgetWallSeconds() == null ? 3600 : request.budgetWallSeconds(),
-                request.maxAttempts() == null ? (short) 1 : request.maxAttempts(),
-                serverRequestId(requestId),
-                profile.workloadClass(),
-                profile.resourceUnits()));
+                request.maxAttempts() == null ? (short) 1 : request.maxAttempts()));
         return ResponseEntity.accepted().body(Map.of(
                 "jobId", persisted,
                 "status", "QUEUED",
@@ -143,7 +119,7 @@ public class ExecutionJobController {
     @GetMapping("/{jobId}")
     public ResponseEntity<?> find(@PathVariable String jobId) {
         ControlPlanePrincipal principal = current();
-        return jobs.find(context(principal), jobId)
+        return jobs.find(principal.organizationId(), jobId)
                 .<ResponseEntity<?>>map(job -> {
                     principal.require(
                             principal.organizationId(),
@@ -171,20 +147,22 @@ public class ExecutionJobController {
         ControlPlanePrincipal principal = current();
         ExecutionJobPort.BusinessLine line = businessLine == null || businessLine.isBlank()
                 ? null : parseLine(businessLine);
-        if (line != null) {
+        if (line == null) {
+            principal.require(
+                    principal.organizationId(), principal.actorId(), "admin:read");
+        } else {
             RuntimeProfile profile = profiles.get(line);
             principal.require(principal.organizationId(), principal.actorId(), profile.permission());
         }
         return jobs.list(
-                context(principal), line,
+                principal.organizationId(), line,
                 requireListLimit(limit), requireListOffset(offset));
     }
 
     @DeleteMapping("/{jobId}")
     public ResponseEntity<?> cancel(@PathVariable String jobId) {
         ControlPlanePrincipal principal = current();
-        ExecutionJobPort.AuthenticatedContext context = context(principal);
-        ExecutionJobPort.JobView job = jobs.find(context, jobId)
+        ExecutionJobPort.JobView job = jobs.find(principal.organizationId(), jobId)
                 .orElseThrow(() -> new ExecutionJobPort.ExecutionStateException(
                         "ELMOS_EXECUTION_JOB_UNKNOWN"));
         principal.require(
@@ -193,7 +171,8 @@ public class ExecutionJobController {
                 profiles.get(job.businessLine()).permission());
         return ResponseEntity.accepted().body(Map.of(
                 "jobId", jobId,
-                "status", jobs.requestCancel(context, jobId).name()));
+                "status", jobs.requestCancel(
+                        principal.organizationId(), jobId, principal.actorId()).name()));
     }
 
     private ControlPlanePrincipal principal(ExecutionJobPort.BusinessLine line) {
@@ -208,16 +187,6 @@ public class ExecutionJobController {
     private static ControlPlanePrincipal current() {
         return ControlPlanePrincipal.current()
                 .orElseThrow(() -> new AccessDeniedException("CONTROL_PLANE_AUTH_REQUIRED"));
-    }
-
-    private static ExecutionJobPort.AuthenticatedContext context(
-            ControlPlanePrincipal principal
-    ) {
-        return new ExecutionJobPort.AuthenticatedContext(
-                principal.organizationId(),
-                principal.accountId(),
-                principal.actorId(),
-                "execution-api-" + UUID.randomUUID());
     }
 
     private ExecutionJobPort.BusinessLine parseLine(String value) {
@@ -325,13 +294,6 @@ public class ExecutionJobController {
             throw new ExecutionJobPort.ExecutionStateException(code);
         }
         return candidate;
-    }
-
-    private static String serverRequestId(String value) {
-        if (value != null && value.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}")) {
-            return value;
-        }
-        return UUID.randomUUID().toString();
     }
 
     private static int requireListOffset(int offset) {

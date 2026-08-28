@@ -23,7 +23,7 @@ def main():
   pth=pack/rel
   if not pth.exists() or a.force: pth.write_text(body+'\n')
  (pack/'certification/gap-inventory.md').write_text('# Gap inventory\n\n- Assign product, SDK, security, marketplace, legal, finance, support, and customer-data owners.\n- Replace placeholder product versions, digests, publisher facts, signatures, SBOM, provenance, and certification evidence.\n- Add real negative, holdout, representative extension, installation, rollback, revocation, and billing evidence.\n- Resolve every P0 unknown and zero-tolerance finding.\n')
-
+ 
  # Add complete closure contracts and templates.
  closure_mapping={'dependency-lock.json':'dependencies/lock.json','runtime-health.json':'runtime/health.json','catalog-entry.json':'catalog/catalog-entry.json','ranking-policy.json':'catalog/ranking-policy.json','publisher-lifecycle.json':'publishers/lifecycle.json','recertification-policy.json':'certification/recertification-policy.json','extension-migration.json':'migrations/extension-migration.json','continuity-plan.json':'continuity/revocation-plan.json','legal-support.json':'legal-support/policy.json','private-marketplace.json':'private-marketplace/policy.json','offline-mirror.json':'offline-mirror/policy.json','marketplace-operations.json':'operations/operations-policy.json','commercial-settlement.json':'commercial/settlement.json','eol-policy.json':'lifecycle/eol-policy.json','closure-certification.json':'certification/closure-certification.json'}
  for src,dst in closure_mapping.items():

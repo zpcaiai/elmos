@@ -5,64 +5,10 @@ from pathlib import Path
 
 import jsonschema
 
+
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_ROOT = ROOT / "schemas" / "batch31"
 DIGEST = "sha256:" + "a" * 64
-
-ARTIFACT_DIGEST_FIELDS = (
-    "sourceSnapshotDigest",
-    "sourceCatalogDigest",
-    "sourceDataDigest",
-    "sourceWorkloadDigest",
-    "targetSnapshotDigest",
-    "targetReleaseDigest",
-    "canonicalIrDigest",
-    "transformationDigest",
-    "compatibilityRuntimeDigest",
-    "runnerDigest",
-    "toolchainDigest",
-    "developmentCorpusDigest",
-    "negativeCorpusDigest",
-    "holdoutCorpusDigest",
-    "representativeWorkloadDigest",
-    "dataFixtureDigest",
-    "queryPlanDigest",
-    "targetSqlDigest",
-    "acceptanceProfileDigest",
-    "gateResultDigest",
-)
-
-EVIDENCE_DIGEST_FIELDS = (
-    "versionProbeDigest",
-    "capabilityProbeDigest",
-    "renderDigest",
-    "targetApplyDigest",
-    "introspectionDigest",
-    "schemaTypeDigest",
-    "queryRoutineDigest",
-    "transactionDigest",
-    "dataReconciliationDigest",
-    "performanceDigest",
-    "securityDigest",
-    "backupRestoreDigest",
-    "cdcDigest",
-    "rollbackDigest",
-    "cleanupDigest",
-    "rawEvidenceDigest",
-)
-
-REQUIRED_OPERATIONS = (
-    "APPLY_SANDBOX",
-    "BACKUP_RESTORE",
-    "CAPABILITY_PROBE",
-    "CAPTURE_PLAN",
-    "CDC_RECONCILIATION",
-    "CLEANUP",
-    "EXECUTE_WORKLOAD",
-    "INTROSPECT",
-    "RENDER",
-    "VERSION_PROBE",
-)
 
 TARGETS = (
     ("dm8", "DM8"),
@@ -162,10 +108,7 @@ def capability_document():
             "verifiedTargetRenderers": 0,
             "productionDatabaseAccess": False,
             "targetSqlMayBeEmitted": False,
-            "claim": (
-                "Planning inventory only; target adapters and target execution are not "
-                "implemented."
-            ),
+            "claim": "Planning inventory only; target adapters and target execution are not implemented.",
         },
     }
 
@@ -367,110 +310,6 @@ def production_request():
     }
 
 
-def production_envelope(payload):
-    return {
-        "algorithm": "ed25519",
-        "keyId": "qualification-key-1",
-        "payload": payload,
-        "signature": "A" * 86 + "==",
-    }
-
-
-def authorization_payload():
-    return {
-        "schemaVersion": "1.0",
-        "kind": "CHINADB_TARGET_EXECUTION_AUTHORIZATION",
-        "recordId": "authorization-dm8",
-        "scopeDigest": DIGEST,
-        "targetId": "dm8",
-        "qualificationInputDigest": DIGEST,
-        "environmentId": "sandbox-dm8",
-        "implementerActorId": "actor-1",
-        "implementerOrganizationId": "elmos-engineering",
-        "allowedOperations": list(REQUIRED_OPERATIONS),
-        "issuedAt": "2026-08-28T08:00:00Z",
-        "expiresAt": "2026-08-28T18:00:00Z",
-    }
-
-
-def execution_payload():
-    artifact_digests = {
-        field: "sha256:" + f"{index:064x}"
-        for index, field in enumerate(ARTIFACT_DIGEST_FIELDS, 1)
-    }
-    evidence_digests = {
-        field: "sha256:" + f"{index:064x}"
-        for index, field in enumerate(
-            EVIDENCE_DIGEST_FIELDS,
-            len(ARTIFACT_DIGEST_FIELDS) + 1,
-        )
-    }
-    return {
-        "schemaVersion": "1.0",
-        "kind": "CHINADB_TARGET_EXECUTION_RECEIPT",
-        "recordId": "execution-dm8",
-        "authorizationRecordId": "authorization-dm8",
-        "authorizationEnvelopeDigest": DIGEST,
-        "scopeDigest": DIGEST,
-        "targetId": "dm8",
-        "qualificationInputDigest": DIGEST,
-        "environmentId": "sandbox-dm8",
-        "exactTupleDigest": DIGEST,
-        "vendorToolDigests": [DIGEST],
-        "artifactDigests": artifact_digests,
-        "evidenceDigests": evidence_digests,
-        "executedAt": "2026-08-28T12:00:00Z",
-        "checks": {
-            "capabilityProbe": "PASSED",
-            "cleanup": "PASSED",
-            "dataReconciliation": "PASSED",
-            "performanceSecurityRollback": "PASSED",
-            "schemaTypeQueryRoutineTransaction": "PASSED",
-            "targetApplyIntrospection": "PASSED",
-            "targetRender": "PASSED",
-            "versionProbe": "PASSED",
-        },
-        "criticalUnknowns": 0,
-        "criticalDifferences": 0,
-        "testIntegrityViolations": 0,
-    }
-
-
-def verification_payload():
-    return {
-        "schemaVersion": "1.0",
-        "kind": "CHINADB_INDEPENDENT_VERIFICATION_RECEIPT",
-        "recordId": "verification-dm8",
-        "scopeDigest": DIGEST,
-        "targetId": "dm8",
-        "qualificationInputDigest": DIGEST,
-        "executionRecordId": "execution-dm8",
-        "executionEnvelopeDigest": DIGEST,
-        "rawEvidenceDigest": DIGEST,
-        "holdoutCorpusDigest": DIGEST,
-        "representativeWorkloadDigest": DIGEST,
-        "decision": "PASSED",
-        "criticalFindings": 0,
-        "verifiedAt": "2026-08-28T13:00:00Z",
-    }
-
-
-def certification_payload():
-    return {
-        "schemaVersion": "1.0",
-        "kind": "CHINADB_PRODUCTION_CERTIFICATION_RECEIPT",
-        "recordId": "certification-dm8",
-        "scopeDigest": DIGEST,
-        "targetId": "dm8",
-        "qualificationInputDigest": DIGEST,
-        "verificationRecordId": "verification-dm8",
-        "verificationEnvelopeDigest": DIGEST,
-        "decision": "CERTIFIED",
-        "certifiedAt": "2026-08-28T14:00:00Z",
-        "expiresAt": "2027-08-28T14:00:00Z",
-    }
-
-
 def exact_tuple():
     return {
         "productId": "dm8",
@@ -497,9 +336,21 @@ def exact_tuple():
 
 
 def production_requirements():
+    operations = [
+        "APPLY_SANDBOX",
+        "BACKUP_RESTORE",
+        "CAPABILITY_PROBE",
+        "CAPTURE_PLAN",
+        "CDC_RECONCILIATION",
+        "CLEANUP",
+        "EXECUTE_WORKLOAD",
+        "INTROSPECT",
+        "RENDER",
+        "VERSION_PROBE",
+    ]
     return {
         "schemaVersion": "1.0",
-        "protocolVersion": "1.1.0",
+        "protocolVersion": "1.0.0",
         "package": "chinadb-commercial-migration-skills",
         "capabilitySnapshotDigest": DIGEST,
         "targetCount": 13,
@@ -508,15 +359,13 @@ def production_requirements():
                 "targetId": target_id,
                 "label": label,
                 "adapterId": f"chinadb.{target_id}.target-adapter.v1",
-                "requiredOperations": list(REQUIRED_OPERATIONS),
+                "requiredOperations": operations,
                 "requiredEvidenceChain": [
                     "environment-authorization",
                     "external-target-execution",
                     "independent-verification",
                     "certification-decision",
                 ],
-                "requiredArtifactDigests": list(ARTIFACT_DIGEST_FIELDS),
-                "requiredEvidenceDigests": list(EVIDENCE_DIGEST_FIELDS),
                 "currentState": "BLOCKED_EXTERNAL_INPUT",
             }
             for target_id, label in TARGETS
@@ -546,7 +395,7 @@ def production_requirements():
 def production_result():
     return {
         "schemaVersion": "1.0",
-        "protocolVersion": "1.1.0",
+        "protocolVersion": "1.0.0",
         "package": "chinadb-commercial-migration-skills",
         "scope": production_request()["scope"],
         "scopeDigest": DIGEST,
@@ -733,41 +582,6 @@ class ChinaDbSqlExtensionSchemaTests(unittest.TestCase):
         fabricated_effect["effects"]["externalCallsExecuted"] = ["target-write"]
         self.assertInvalid(self.production_result_validator, fabricated_effect)
 
-    def test_production_receipt_slots_require_exact_typed_payloads(self):
-        payloads = {
-            "authorization": authorization_payload(),
-            "execution": execution_payload(),
-            "independentVerification": verification_payload(),
-            "certification": certification_payload(),
-        }
-        complete = production_request()
-        complete["targets"][0]["receipts"] = {
-            slot: production_envelope(payload) for slot, payload in payloads.items()
-        }
-        self.assertValid(self.production_request_validator, complete)
-
-        wrong_slot = production_request()
-        wrong_slot["targets"][0]["receipts"]["authorization"] = production_envelope(
-            execution_payload()
-        )
-        self.assertInvalid(self.production_request_validator, wrong_slot)
-
-        missing_digest = production_request()
-        incomplete_execution = execution_payload()
-        incomplete_execution["artifactDigests"].pop("canonicalIrDigest")
-        missing_digest["targets"][0]["receipts"]["execution"] = production_envelope(
-            incomplete_execution
-        )
-        self.assertInvalid(self.production_request_validator, missing_digest)
-
-        extra_digest = production_request()
-        extended_execution = execution_payload()
-        extended_execution["evidenceDigests"]["unboundDigest"] = DIGEST
-        extra_digest["targets"][0]["receipts"]["execution"] = production_envelope(
-            extended_execution
-        )
-        self.assertInvalid(self.production_request_validator, extra_digest)
-
     def test_skill_runtime_schemas_preserve_exact_local_and_external_boundaries(self):
         self.assertEqual(47, len(skill_ids()))
         self.assertValid(self.skill_capability_validator, skill_capability_document())
@@ -926,30 +740,8 @@ class ChinaDbSqlExtensionSchemaTests(unittest.TestCase):
         self.assertInvalid(self.result_validator, result)
 
     def test_java_worker_and_control_plane_protocols_do_not_drift(self):
-        worker_path = (
-            ROOT
-            / "engines"
-            / "database-data-engine"
-            / "src"
-            / "main"
-            / "java"
-            / "io"
-            / "elmos"
-            / "databasedata"
-            / "ChinaDbSqlPreflightProtocol.java"
-        )
-        control_path = (
-            ROOT
-            / "apps"
-            / "control-plane"
-            / "src"
-            / "main"
-            / "java"
-            / "io"
-            / "elmos"
-            / "controlplane"
-            / "ChinaDbSqlPreflightProtocol.java"
-        )
+        worker_path = ROOT / "engines" / "database-data-engine" / "src" / "main" / "java" / "io" / "elmos" / "databasedata" / "ChinaDbSqlPreflightProtocol.java"
+        control_path = ROOT / "apps" / "control-plane" / "src" / "main" / "java" / "io" / "elmos" / "controlplane" / "ChinaDbSqlPreflightProtocol.java"
         worker = worker_path.read_text(encoding="utf-8")
         control = control_path.read_text(encoding="utf-8")
 

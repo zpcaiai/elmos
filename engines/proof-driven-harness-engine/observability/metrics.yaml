@@ -1,0 +1,74 @@
+apiVersion: elmos.ai/proof-harness/v3
+kind: MetricCatalog
+metadata:
+  name: proof-harness
+  version: 3.0.0
+spec:
+  privacy:
+    forbiddenLabels:
+      - tenant_id
+      - project_id
+      - actor_id
+      - repository_url
+      - source_path
+      - evidence_id
+    rule: identifiers remain in tenant-scoped audit storage, never metric labels
+  metrics:
+    - name: elmos_proof_harness_invocations_total
+      type: counter
+      labels: [skill, status, runtime_mode]
+      description: Completed invocation count by exact Skill and non-sensitive status.
+    - name: elmos_proof_harness_invocation_duration_seconds
+      type: histogram
+      labels: [skill, phase]
+      buckets: [0.01, 0.05, 0.1, 0.5, 1, 5, 15, 60, 300, 900]
+      description: Machine wall-clock duration, excluding queue delay unless phase=queue.
+    - name: elmos_proof_harness_proof_results_total
+      type: counter
+      labels: [family, severity, status, accepted]
+      description: Exact verifier outcomes; UNKNOWN and UNSUPPORTED are distinct statuses.
+    - name: elmos_proof_harness_open_obligations
+      type: gauge
+      labels: [severity, state]
+      description: Current obligation population; critical blocked work remains visible.
+    - name: elmos_proof_harness_status_inflation_attempts_total
+      type: counter
+      labels: [reason]
+      description: Rejected attempts to close an obligation with insufficient evidence.
+    - name: elmos_proof_harness_authority_denials_total
+      type: counter
+      labels: [reason, capability]
+      description: Fail-closed authority decisions without tenant or path identifiers.
+    - name: elmos_proof_harness_active_leases
+      type: gauge
+      labels: [worker_class]
+      description: Non-expired worker leases.
+    - name: elmos_proof_harness_stale_fence_rejections_total
+      type: counter
+      labels: [operation]
+      description: Authoritative writes rejected for stale epochs or generations.
+    - name: elmos_proof_harness_outbox_events
+      type: gauge
+      labels: [state, event_type]
+      description: Durable outbox depth including UNKNOWN outcomes.
+    - name: elmos_proof_harness_reconciliation_age_seconds
+      type: gauge
+      labels: [provider_class, state]
+      description: Age of the oldest unreconciled external outcome.
+    - name: elmos_proof_harness_semantic_files_total
+      type: counter
+      labels: [language, authority, outcome]
+      description: Semantic frontend coverage without repository or path labels.
+    - name: elmos_proof_harness_semantic_cache_total
+      type: counter
+      labels: [language, result]
+      description: Content-addressed shard cache hit, miss and invalidation counts.
+    - name: elmos_proof_harness_evidence_bytes_total
+      type: counter
+      labels: [kind, classification]
+      description: Bytes sealed after actual-content digest verification.
+    - name: elmos_proof_harness_usage_quantity_total
+      type: counter
+      labels: [meter, unit]
+      description: Reconciled usage quantities; monetary totals remain in the decimal ledger.
+

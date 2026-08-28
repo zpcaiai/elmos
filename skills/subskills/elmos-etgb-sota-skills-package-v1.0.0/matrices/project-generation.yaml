@@ -1,0 +1,312 @@
+schema_version: '1.0'
+matrix_id: ETGB-PG-1
+business_line: project-generation
+stacks:
+- id: java-spring-boot
+  language: java
+  framework: Spring Boot 4
+  tier: P0
+- id: kotlin-spring-boot
+  language: kotlin
+  framework: Spring Boot 4
+  tier: P1
+- id: csharp-aspnet-core
+  language: csharp
+  framework: ASP.NET Core
+  tier: P0
+- id: python-fastapi
+  language: python
+  framework: FastAPI
+  tier: P0
+- id: python-django
+  language: python
+  framework: Django
+  tier: P1
+- id: go-gin
+  language: go
+  framework: Gin
+  tier: P0
+- id: rust-axum
+  language: rust
+  framework: Axum
+  tier: P1
+- id: typescript-nestjs
+  language: typescript
+  framework: NestJS
+  tier: P0
+- id: php-laravel
+  language: php
+  framework: Laravel
+  tier: P1
+- id: javascript-express
+  language: javascript
+  framework: Express
+  tier: P1
+deployment_profiles:
+- local-docker
+- kubernetes-production
+templates:
+- id: service.minimal-health-service
+  title: minimal health service
+  group: service
+  priority: P0
+- id: service.crud-api-with-validation
+  title: CRUD API with validation
+  group: service
+  priority: P0
+- id: service.authentication-jwt-refresh
+  title: authentication JWT refresh
+  group: service
+  priority: P0
+- id: service.rbac-authorization
+  title: RBAC authorization
+  group: service
+  priority: P0
+- id: service.oauth2-oidc-client
+  title: OAuth2 OIDC client
+  group: service
+  priority: P0
+- id: service.transactional-order-inventory
+  title: transactional order inventory
+  group: service
+  priority: P0
+- id: service.concurrent-limited-inventory
+  title: concurrent limited inventory
+  group: service
+  priority: P0
+- id: service.multi-tenant-saas
+  title: multi tenant SaaS
+  group: service
+  priority: P0
+- id: service.audit-log
+  title: audit log
+  group: service
+  priority: P0
+- id: service.file-upload-object-storage
+  title: file upload object storage
+  group: service
+  priority: P0
+- id: service.email-notification
+  title: email notification
+  group: service
+  priority: P0
+- id: service.search-service
+  title: search service
+  group: service
+  priority: P0
+- id: service.websocket-realtime
+  title: WebSocket realtime
+  group: service
+  priority: P1
+- id: service.graphql-api
+  title: GraphQL API
+  group: service
+  priority: P1
+- id: service.grpc-service
+  title: gRPC service
+  group: service
+  priority: P1
+- id: service.rest-client-integration
+  title: REST client integration
+  group: service
+  priority: P1
+- id: service.scheduled-job
+  title: scheduled job
+  group: service
+  priority: P1
+- id: service.cache-aside-service
+  title: cache aside service
+  group: service
+  priority: P2
+- id: service.rate-limited-public-api
+  title: rate limited public API
+  group: service
+  priority: P2
+- id: service.idempotent-payment-webhook
+  title: idempotent payment webhook
+  group: service
+  priority: P2
+- id: distributed.api-gateway-and-two-services
+  title: API gateway and two services
+  group: distributed
+  priority: P0
+- id: distributed.kafka-event-driven-workflow
+  title: Kafka event driven workflow
+  group: distributed
+  priority: P0
+- id: distributed.rabbitmq-work-queue
+  title: RabbitMQ work queue
+  group: distributed
+  priority: P0
+- id: distributed.transactional-outbox
+  title: transactional outbox
+  group: distributed
+  priority: P0
+- id: distributed.saga-orchestration
+  title: saga orchestration
+  group: distributed
+  priority: P0
+- id: distributed.saga-choreography
+  title: saga choreography
+  group: distributed
+  priority: P0
+- id: distributed.cqrs-read-model
+  title: CQRS read model
+  group: distributed
+  priority: P0
+- id: distributed.event-sourcing-aggregate
+  title: event sourcing aggregate
+  group: distributed
+  priority: P0
+- id: distributed.distributed-lock
+  title: distributed lock
+  group: distributed
+  priority: P1
+- id: distributed.retry-circuit-breaker-bulkhead
+  title: retry circuit breaker bulkhead
+  group: distributed
+  priority: P1
+- id: distributed.service-discovery
+  title: service discovery
+  group: distributed
+  priority: P1
+- id: distributed.configuration-service
+  title: configuration service
+  group: distributed
+  priority: P1
+- id: distributed.bff-backend-for-frontend
+  title: BFF backend for frontend
+  group: distributed
+  priority: P1
+- id: distributed.batch-processing-pipeline
+  title: batch processing pipeline
+  group: distributed
+  priority: P2
+- id: distributed.stream-processing-pipeline
+  title: stream processing pipeline
+  group: distributed
+  priority: P2
+- id: data-ai.data-ingestion-etl
+  title: data ingestion ETL
+  group: data-ai
+  priority: P0
+- id: data-ai.lakehouse-bronze-silver-gold
+  title: lakehouse bronze silver gold
+  group: data-ai
+  priority: P0
+- id: data-ai.feature-store-service
+  title: feature store service
+  group: data-ai
+  priority: P0
+- id: data-ai.vector-search-rag
+  title: vector search RAG
+  group: data-ai
+  priority: P0
+- id: data-ai.model-inference-api
+  title: model inference API
+  group: data-ai
+  priority: P0
+- id: data-ai.model-training-job
+  title: model training job
+  group: data-ai
+  priority: P1
+- id: data-ai.data-quality-pipeline
+  title: data quality pipeline
+  group: data-ai
+  priority: P1
+- id: data-ai.cdc-replication-consumer
+  title: CDC replication consumer
+  group: data-ai
+  priority: P1
+- id: data-ai.time-series-ingestion
+  title: time series ingestion
+  group: data-ai
+  priority: P1
+- id: data-ai.geospatial-query-service
+  title: geospatial query service
+  group: data-ai
+  priority: P1
+- id: full-product.employee-management-system
+  title: employee management system
+  group: full-product
+  priority: P0
+- id: full-product.ecommerce-marketplace
+  title: ecommerce marketplace
+  group: full-product
+  priority: P0
+- id: full-product.subscription-billing-saas
+  title: subscription billing SaaS
+  group: full-product
+  priority: P0
+- id: full-product.logistics-dispatch-system
+  title: logistics dispatch system
+  group: full-product
+  priority: P0
+- id: full-product.hospital-appointment-system
+  title: hospital appointment system
+  group: full-product
+  priority: P0
+- id: full-product.learning-management-system
+  title: learning management system
+  group: full-product
+  priority: P1
+- id: full-product.iot-device-management
+  title: IoT device management
+  group: full-product
+  priority: P1
+- id: full-product.industrial-telemetry-platform
+  title: industrial telemetry platform
+  group: full-product
+  priority: P1
+- id: full-product.content-management-system
+  title: content management system
+  group: full-product
+  priority: P1
+- id: full-product.social-feed-application
+  title: social feed application
+  group: full-product
+  priority: P1
+evolution_tasks:
+- add field with backward compatible migration
+- rename field with compatibility window
+- add coupon feature
+- add API version v2
+- replace database engine
+- split monolith module into service
+- merge two services
+- change authentication provider
+- introduce multi tenancy
+- add audit trail
+- add cache without stale data
+- add asynchronous processing
+- change event schema compatibly
+- roll back failed feature
+- upgrade framework major version
+- tighten authorization
+- add regional data residency
+- add observability
+- optimize performance without behavior change
+- repair production bug while preserving regression tests
+adversarial_requirements:
+- underspecified employee system
+- Shopify like request with unbounded scope
+- conflicting account creation rules
+- impossible latency and consistency constraints
+- missing data retention policy
+- ambiguous payment semantics
+- unsafe plaintext password request
+- request to embed production secret
+- contradictory tenancy model
+- missing failure behavior
+- unknown external API contract
+- privacy violating analytics request
+- license incompatible dependency request
+- non deterministic acceptance criterion
+- prompt injection inside requirement attachment
+public_corpus_ids:
+- realworld-spec
+- project-eval
+- dev-eval
+- human-evo
+- repo-exec
+- jhipster-sample-app

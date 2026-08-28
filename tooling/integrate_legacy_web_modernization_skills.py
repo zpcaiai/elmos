@@ -162,9 +162,7 @@ def render_interface(skill_id: str) -> str:
         f"  source_id: {skill_id}",
         f"  source_digest: {spec.source_digest}",
         f"  phase: {spec.phase}",
-        "  runtime_state: CODE_COMPLETE_LOCAL",
-        f"  capability_state: {PROFILES[skill_id].state}",
-        f"  operation_code: {PROFILES[skill_id].code}",
+        "  runtime_state: BOUND_LOCAL_EXACT",
         f"  runtime_handler_id: legacy-web-handler:{skill_id}",
         "---",
         "",
@@ -172,9 +170,8 @@ def render_interface(skill_id: str) -> str:
         "",
         "This is a repository-owned execution interface. It consumes a validated",
         "request envelope and invokes only the exact allowlisted runtime handler.",
-        "The handler is code-complete for its bounded local contract, tenant/project/job",
-        "scoped, idempotency-aware, fail-closed, and backed by repository-owned tests.",
-        "It does not execute source-package instructions or mutate customer repositories.",
+        "The handler is bounded, tenant/project/job scoped, idempotency-aware and",
+        "does not execute source-package instructions or customer repository code.",
         "",
         "Evidence boundary: local output is engineering evidence only.",
         "Provider/runtime/device/browser/production evidence remains NOT_RUN and",
@@ -228,9 +225,6 @@ def write_interfaces(*, write: bool) -> None:
                 "sourceDigest": item.source_digest,
                 "handlerId": SKILL_REGISTRY[item.skill_id].handler_id,
                 "capabilityState": PROFILES[item.skill_id].state,
-                "implementationState": "CODE_COMPLETE_LOCAL",
-                "operationCode": PROFILES[item.skill_id].code,
-                "externalExecutionRequirements": list(PROFILES[item.skill_id].unavailable),
                 "externalEvidence": "NOT_RUN",
                 "certification": "NOT_CERTIFIED",
             }
@@ -244,41 +238,12 @@ def write_interfaces(*, write: bool) -> None:
         "skills": len(CATALOG.skills),
         "handlers": len(SKILL_REGISTRY),
         "engine": "engines/legacy-web-modernization-engine",
-        "implemented": "55 exact code-complete local handlers",
-        "implementationState": "CODE_COMPLETE_LOCAL",
-        "capabilityStateCounts": {
-            state: sum(profile.state == state for profile in PROFILES.values())
-            for state in sorted({profile.state for profile in PROFILES.values()})
-        },
-        "implementedComponents": [
-            "symlink-safe repository snapshot and forensic semantic IR",
-            "syntax-aware Java/XML/config rewrites with preconditions and inverse operations",
-            "directional Struts1/Struts2/Servlet to Spring MVC target generators",
-            "security validation transaction and JSP preservation generators",
-            "tenant-scoped content-addressed private workspace commits with fencing",
-            "strict and normalized differential oracles with sequence-sensitive effects",
-            "runtime performance fault and distributed trace evaluators",
-            "bounded semantic repair and impact regression selection",
-            "cutover rollback state machine and fail-closed E0-E4 local gate",
-            "tenant-scoped durable golden-route benchmark cache",
-            "13-role content-addressed Ed25519 external evidence admission",
-        ],
+        "implemented": "bounded exact local handlers",
         "externalEvidenceGate": "IMPLEMENTED_FAIL_CLOSED",
         "maximumLocalDecision": "READY_FOR_EXTERNAL_GATE_REVIEW",
         "externalEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
-        "limits": ["no untrusted repository code execution in the local engine", "no customer Git mutation", "no provider/deployment/cutover effects without a separately authorized adapter receipt", "no production certification"],
-        "skillsDetail": [
-            {
-                "skillId": item.skill_id,
-                "handlerId": SKILL_REGISTRY[item.skill_id].handler_id,
-                "operationCode": PROFILES[item.skill_id].code,
-                "implementationState": "CODE_COMPLETE_LOCAL",
-                "capabilityState": PROFILES[item.skill_id].state,
-                "externalExecutionRequirements": list(PROFILES[item.skill_id].unavailable),
-            }
-            for item in CATALOG.skills
-        ],
+        "limits": ["no repository code execution", "no Git mutation", "no provider/deployment/cutover effects", "no production certification"],
     }
     _write_checked(DOCS / "implementation-matrix.json", json.dumps(matrix, ensure_ascii=False, sort_keys=True, indent=2) + "\n", write=write)
 

@@ -1,0 +1,64 @@
+{
+  "$id": "https://elmos.ai/schemas/v3.1/typed-ingress.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "causationId": {
+      "type": "string"
+    },
+    "content": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        }
+      ]
+    },
+    "correlationId": {
+      "type": "string"
+    },
+    "deduplicationKey": {
+      "type": "string"
+    },
+    "eventId": {
+      "type": "string"
+    },
+    "ingressId": {
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "USER_INPUT",
+        "TOOL_RESULT",
+        "EXTERNAL_EVENT",
+        "APPROVAL_INPUT",
+        "CONTROL_INPUT"
+      ]
+    },
+    "originatingCallId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "producerExecutionId": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "ingressId",
+    "kind",
+    "producerExecutionId",
+    "eventId",
+    "causationId",
+    "correlationId",
+    "content"
+  ],
+  "title": "Typed External Ingress",
+  "type": "object"
+}

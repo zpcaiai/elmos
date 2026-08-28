@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/v3.1/executor-generation.schema.json",
+  "title": "Remote Executor Generation Fence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "environmentId",
+    "executorIdentity",
+    "executorGeneration",
+    "connectionEpoch",
+    "state"
+  ],
+  "properties": {
+    "environmentId": {
+      "type": "string"
+    },
+    "executorIdentity": {
+      "type": "string"
+    },
+    "executorGeneration": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "connectionEpoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "state": {
+      "enum": [
+        "CONNECTING",
+        "ACTIVE",
+        "RETIRED",
+        "FAILED"
+      ]
+    },
+    "liveProbeEvidenceRef": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

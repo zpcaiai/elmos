@@ -1,0 +1,104 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionAcceptance
+metadata:
+  skill: elmos-lossless-permission-replay
+  version: 3.1.0
+spec:
+  hardGates:
+  - serialize→resume→adapter-map preserves permission semantics exactly
+  - lossy and unsupported projections fail closed
+  - working-directory changes cannot widen restored filesystem authority
+  - legacy compatibility fields never overwrite a richer canonical profile
+  - certificate records the exact permission profile and adapter mapping result
+  scenarios:
+  - id: ELMOS-V3D-003-A01
+    title: serialize→resume→adapter-map preserves permission semantics exactly
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-lossless-permission-replay processes a production lifecycle transition
+    then:
+    - serialize→resume→adapter-map preserves permission semantics exactly is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-003-A02
+    title: lossy and unsupported projections fail closed
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-lossless-permission-replay processes a production lifecycle transition
+    then:
+    - lossy and unsupported projections fail closed is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-003-A03
+    title: working-directory changes cannot widen restored filesystem authority
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-lossless-permission-replay processes a production lifecycle transition
+    then:
+    - working-directory changes cannot widen restored filesystem authority is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-003-A04
+    title: legacy compatibility fields never overwrite a richer canonical profile
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-lossless-permission-replay processes a production lifecycle transition
+    then:
+    - legacy compatibility fields never overwrite a richer canonical profile is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-003-A05
+    title: certificate records the exact permission profile and adapter mapping result
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-lossless-permission-replay processes a production lifecycle transition
+    then:
+    - certificate records the exact permission profile and adapter mapping result is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-003-NEG-STALE
+    title: Reject stale authority, generation or lease
+    given:
+    - stale execution context
+    when: an authoritative effect or commit is attempted
+    then:
+    - operation is rejected
+    - audit event is emitted
+    - no completion evidence is accepted
+    priority: P0
+  - id: ELMOS-V3D-003-NEG-REPLAY
+    title: Reject replay divergence
+    given:
+    - committed journal and artifacts
+    when: the execution is replayed or resumed
+    then:
+    - same effective state is reconstructed
+    - provider loss is explicit
+    - divergence blocks certification
+    priority: P0
+  - id: ELMOS-V3D-003-RECOVERY
+    title: Recover after worker, connection or plugin interruption
+    given:
+    - durable checkpoint and fencing state
+    when: a replacement worker resumes
+    then:
+    - committed side effects are not duplicated
+    - stale actors are fenced
+    - lineage remains complete
+    priority: P0
+  releaseRequirement: all P0 scenarios pass in target environment

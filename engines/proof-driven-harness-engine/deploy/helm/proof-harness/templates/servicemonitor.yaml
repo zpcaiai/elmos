@@ -1,0 +1,56 @@
+{{- if .Values.monitoring.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "proof-harness.fullname" . }}
+{{- if .Values.monitoring.serviceMonitor.namespace }}
+  namespace: {{ .Values.monitoring.serviceMonitor.namespace }}
+{{- end }}
+  labels:
+{{ include "proof-harness.labels" . | indent 4 }}
+{{- with .Values.monitoring.serviceMonitor.additionalLabels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  jobLabel: app.kubernetes.io/name
+  selector:
+    matchLabels:
+{{ include "proof-harness.selectorLabels" . | indent 6 }}
+  namespaceSelector:
+    matchNames: [{{ .Release.Namespace | quote }}]
+  endpoints:
+    - port: http
+      path: /metrics
+      scheme: {{ ternary "https" "http" (eq .Values.transport.mode "tls") }}
+      interval: {{ .Values.monitoring.serviceMonitor.interval }}
+      scrapeTimeout: {{ .Values.monitoring.serviceMonitor.scrapeTimeout }}
+      authorization:
+        type: Bearer
+        credentials:
+          name: {{ required "monitoring.serviceMonitor.authorizationSecret.name is required" .Values.monitoring.serviceMonitor.authorizationSecret.name }}
+          key: {{ .Values.monitoring.serviceMonitor.authorizationSecret.key }}
+{{- if eq .Values.transport.mode "tls" }}
+      tlsConfig:
+        insecureSkipVerify: false
+{{- if .Values.monitoring.serviceMonitor.tls.serverName }}
+        serverName: {{ .Values.monitoring.serviceMonitor.tls.serverName | quote }}
+{{- end }}
+{{- if .Values.monitoring.serviceMonitor.tls.caSecretName }}
+        ca:
+          secret:
+            name: {{ .Values.monitoring.serviceMonitor.tls.caSecretName }}
+            key: {{ .Values.monitoring.serviceMonitor.tls.caSecretKey }}
+{{- end }}
+{{- if .Values.monitoring.serviceMonitor.tls.clientCertificateSecretName }}
+        cert:
+          secret:
+            name: {{ .Values.monitoring.serviceMonitor.tls.clientCertificateSecretName }}
+            key: {{ .Values.monitoring.serviceMonitor.tls.clientCertificateSecretKey }}
+{{- end }}
+{{- if .Values.monitoring.serviceMonitor.tls.clientKeySecretName }}
+        keySecret:
+          name: {{ .Values.monitoring.serviceMonitor.tls.clientKeySecretName }}
+          key: {{ .Values.monitoring.serviceMonitor.tls.clientKeySecretKey }}
+{{- end }}
+{{- end }}
+{{- end }}

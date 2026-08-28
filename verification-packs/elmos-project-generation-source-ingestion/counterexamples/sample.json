@@ -4,7 +4,7 @@
   "technique": "mutation-negative-control",
   "claim_id": "claim.source-boundaries",
   "failure_fingerprint": "sha256:d79e98e4739124f4484239377869e0043905058351290e98bfdfdc2facbc2255",
-  "environment_digest": "sha256:8b08c9bbc3c8e7302217fb24f1c7c1d2eed653cc320b140d247e349a9478c87a",
+  "environment_digest": "sha256:1f81006e3b1c78a02188cf2bd131b89a4a71d8eb266ed6d084e32c2f41dd8cf1",
   "artifact_digests": [
     "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
     "sha256:54aa5faddc9cc05390997c55af8ee90509c76cb7937fbe259db79e304f036563"

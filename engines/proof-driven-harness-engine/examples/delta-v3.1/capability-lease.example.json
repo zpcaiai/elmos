@@ -1,0 +1,14 @@
+{
+  "authoritySnapshotId": "auth-1",
+  "capabilities": [
+    "filesystem:read"
+  ],
+  "delegationAllowed": false,
+  "environmentId": "env-1",
+  "executionEpoch": 2,
+  "expiresAt": "2026-08-28T00:05:00Z",
+  "invocationId": "i-9",
+  "issuedAt": "2026-08-28T00:00:00Z",
+  "leaseId": "lease-1",
+  "state": "ACTIVE"
+}

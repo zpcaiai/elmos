@@ -1,1 +1,0 @@
-{"findingId":"finding-1","assetId":"asset-api","category":"AUTHORIZATION","severity":"CRITICAL","confidence":0.99,"status":"CONFIRMED","sourceTool":"api-security-adapter","sourceRule":"cross-tenant","evidenceRefs":["evidence://scan/1"]}

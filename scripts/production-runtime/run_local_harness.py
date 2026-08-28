@@ -122,7 +122,6 @@ def main() -> int:
                 "redis_loss": "NOT_RUN",
                 "backup_pitr": "NOT_RUN",
                 "independent_verification": "NOT_RUN",
-                "production_deployment": "NOT_RUN",
                 "production_certification": "NOT_CERTIFIED",
             },
             "production_certification": "NOT_CERTIFIED",
