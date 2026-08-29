@@ -22,6 +22,12 @@ from .tree_sitter_incremental import (
     TreeSitterIncrementalParser,
     parse_incremental_cst,
 )
+from .regression_bisector import (
+    BisectResult,
+    BisectStep,
+    SemanticRegressionBisector,
+    run_semantic_bisect,
+)
 
 __version__ = "3.0.0"
 __all__ = [
@@ -43,5 +49,10 @@ __all__ = [
     "IncrementalAstTree",
     "TreeSitterIncrementalParser",
     "parse_incremental_cst",
+    "BisectResult",
+    "BisectStep",
+    "SemanticRegressionBisector",
+    "run_semantic_bisect",
 ]
+
 

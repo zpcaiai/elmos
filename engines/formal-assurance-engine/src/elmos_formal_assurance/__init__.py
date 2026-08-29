@@ -44,6 +44,12 @@ from .hermetic_environment_builder import (
     ToolchainManifest,
     export_hermetic_toolchain,
 )
+from .sbom_attestation_signer import (
+    SbomAttestationSigner,
+    SbomComponent,
+    SlsaProvenanceStatement,
+    sign_artifact_sbom,
+)
 
 __version__ = "1.0.0"
 
@@ -95,6 +101,11 @@ __all__ = [
     "HermeticToolchainBuilder",
     "ToolchainManifest",
     "export_hermetic_toolchain",
+    "SbomAttestationSigner",
+    "SbomComponent",
+    "SlsaProvenanceStatement",
+    "sign_artifact_sbom",
 ]
+
 
 

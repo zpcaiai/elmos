@@ -27,9 +27,11 @@ const navigation: Array<{
   { href: "/proof-loop", label: "现代化证据闭环", enLabel: "Modernization proof loop", hint: "B105–B108", icon: "shield" },
   { href: "/pricing", label: "套餐与用量", enLabel: "Plans and usage", hint: "Plans & usage", icon: "layers" },
   { href: "/playground", label: "AST 证明沙箱", enLabel: "Code & Proof Sandbox", hint: "Playground", icon: "spark" },
+  { href: "/observability", label: "全链路观测与存证", enLabel: "Observability & SLSA", hint: "OTLP & SLSA", icon: "shield" },
   { href: "/skills", label: "Skills 与验证", enLabel: "Skills and qualification", hint: "Qualification", icon: "test" },
   { href: "/admin", label: "运营管理端", enLabel: "Operations admin", hint: "Operations", icon: "settings" },
 ];
+
 
 
 const mobileNavigation = navigation.filter((item) =>

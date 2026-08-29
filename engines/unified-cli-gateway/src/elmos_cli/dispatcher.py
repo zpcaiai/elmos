@@ -143,6 +143,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     parse_inc_p.add_argument("--code", default="public class OrderService { public String id; }", help="Source code")
     parse_inc_p.add_argument("--prev-code", help="Previous source code for diffing")
 
+    bisect_p = polyglot_sub.add_parser("bisect", help="Automated semantic regression bisector", parents=[common_parser])
+    bisect_p.add_argument("--good", help="Known good commit/rev")
+    bisect_p.add_argument("--bad", help="Known bad commit/rev")
+
     # Command: commercial
     commercial_parser = subparsers.add_parser("commercial", help="Commercial Capability Expansion operations", parents=[common_parser])
     commercial_sub = commercial_parser.add_subparsers(dest="commercial_command", help="Commercial actions")
@@ -164,6 +168,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     herm_p = assurance_sub.add_parser("export-hermetic-toolchain", help="Export Hermetic Nix/Docker/DevContainer toolchain", parents=[common_parser])
     herm_p.add_argument("--toolchain-format", default="nix", choices=["nix", "docker", "devcontainer"], help="Toolchain format")
 
+    sbom_p = assurance_sub.add_parser("sign-sbom", help="Generate CycloneDX SBOM and signed SLSA provenance", parents=[common_parser])
+    sbom_p.add_argument("--artifact", default="order-service.jar", help="Target artifact name")
+    sbom_p.add_argument("--sbom-format", default="cyclonedx", choices=["cyclonedx", "spdx"], help="SBOM format")
 
     # Command: lsp
     lsp_p = subparsers.add_parser("lsp", help="Run Language Server Protocol daemon for IDE integration", parents=[common_parser])
@@ -197,6 +204,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     disp_p = runner_sub.add_parser("dispatch", help="Dispatch task sharding across runner nodes", parents=[common_parser])
     disp_p.add_argument("--repo-name", default="enterprise/monorepo", help="Repository name")
     disp_p.add_argument("--shards", type=int, default=4, help="Number of task shards")
+
+    # Command: telemetry
+    telemetry_p = subparsers.add_parser("telemetry", help="OpenTelemetry (OTLP) and Prometheus metrics", parents=[common_parser])
+    telemetry_sub = telemetry_p.add_subparsers(dest="telemetry_command", help="Telemetry actions")
+    otlp_p = telemetry_sub.add_parser("export-otlp", help="Export OTLP JSON trace envelope", parents=[common_parser])
+    otlp_p.add_argument("--trace-id", help="Trace ID filter")
+    telemetry_sub.add_parser("metrics", help="Export Prometheus metrics exposition", parents=[common_parser])
+
 
     # Command: foundry
     foundry_parser = subparsers.add_parser("foundry", help="Knowledge-Skill-Model Foundry operations", parents=[common_parser])
@@ -328,6 +343,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                     lang=parsed.lang,
                     previous_code=getattr(parsed, "prev_code", None),
                 )
+            elif act == "bisect":
+                from elmos_polyglot_compiler.regression_bisector import run_semantic_bisect
+                result_data = run_semantic_bisect(
+                    good_rev=getattr(parsed, "good", None),
+                    bad_rev=getattr(parsed, "bad", None),
+                )
         except ImportError as e:
             result_data = {"error": f"Polyglot engine import failure: {e}"}
 
@@ -352,6 +373,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                 repo_name=parsed.repo_name,
                 shards_count=parsed.shards,
             )
+
+    elif parsed.command == "telemetry":
+        act = parsed.telemetry_command or "export-otlp"
+        from .otel_collector import get_otel_collector
+        collector = get_otel_collector()
+        if act == "metrics":
+            print(collector.export_prometheus_text())
+            return 0
+        else:
+            result_data = collector.export_otlp_json(trace_id=getattr(parsed, "trace_id", None))
 
     elif parsed.command == "commercial":
         try:
@@ -389,13 +420,22 @@ def main(argv: Sequence[str] | None = None) -> int:
                 result_data = export_hermetic_toolchain(format_type=parsed.toolchain_format)
             except ImportError as e:
                 result_data = {"status": "ERROR", "message": f"Formal assurance engine error: {e}"}
-
+        elif act == "sign-sbom":
+            try:
+                from elmos_formal_assurance.sbom_attestation_signer import sign_artifact_sbom
+                result_data = sign_artifact_sbom(
+                    artifact_name=parsed.artifact,
+                    format_type=parsed.sbom_format,
+                )
+            except ImportError as e:
+                result_data = {"status": "ERROR", "message": f"Formal assurance engine error: {e}"}
         else:
             try:
                 from elmos_semantic_assurance.service import get_assurance_status
                 result_data = get_assurance_status()
             except ImportError:
                 result_data = {"status": "ACTIVE", "batches": 9, "skills": 132, "formal_verifiers": ["SMT-Z3", "CVC5", "Alloy"]}
+
 
 
 
