@@ -39,6 +39,11 @@ from .lean_dafny_bridge import (
     get_formal_proof_bridge,
     generate_lean4_proof,
 )
+from .hermetic_environment_builder import (
+    HermeticToolchainBuilder,
+    ToolchainManifest,
+    export_hermetic_toolchain,
+)
 
 __version__ = "1.0.0"
 
@@ -87,5 +92,9 @@ __all__ = [
     "FormalProofKernelBridge",
     "get_formal_proof_bridge",
     "generate_lean4_proof",
+    "HermeticToolchainBuilder",
+    "ToolchainManifest",
+    "export_hermetic_toolchain",
 ]
+
 

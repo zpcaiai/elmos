@@ -15,6 +15,13 @@ from .models import (
     SemanticRisk,
 )
 from .service import PolyglotSemanticCompilerService
+from .tree_sitter_incremental import (
+    AstSpan,
+    IncrementalAstNode,
+    IncrementalAstTree,
+    TreeSitterIncrementalParser,
+    parse_incremental_cst,
+)
 
 __version__ = "3.0.0"
 __all__ = [
@@ -31,4 +38,10 @@ __all__ = [
     "ObligationStatus",
     "SemanticRisk",
     "PolyglotSemanticCompilerService",
+    "AstSpan",
+    "IncrementalAstNode",
+    "IncrementalAstTree",
+    "TreeSitterIncrementalParser",
+    "parse_incremental_cst",
 ]
+

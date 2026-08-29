@@ -64,6 +64,12 @@ from .multi_agent_consensus import (
     get_consensus_arbitrator,
     run_multi_agent_consensus,
 )
+from .ebpf_sandbox_runner import (
+    EbpfSandboxPolicyEngine,
+    SandboxIsolationProfile,
+    SeccompFilterPolicy,
+    inspect_sandbox_policy,
+)
 
 __all__ = [
     "ArtifactError",
@@ -121,5 +127,10 @@ __all__ = [
     "MultiAgentConsensusArbitrator",
     "get_consensus_arbitrator",
     "run_multi_agent_consensus",
+    "EbpfSandboxPolicyEngine",
+    "SandboxIsolationProfile",
+    "SeccompFilterPolicy",
+    "inspect_sandbox_policy",
 ]
+
 

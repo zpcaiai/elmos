@@ -138,6 +138,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     cert_p = polyglot_sub.add_parser("certify-route", help="Certify language modernization route", parents=[common_parser])
     cert_p.add_argument("--route-id", default="ROUTE-JAVA-CSHARP", help="Route identifier")
 
+    parse_inc_p = polyglot_sub.add_parser("parse-incremental", help="Incremental Tree-sitter AST parsing", parents=[common_parser])
+    parse_inc_p.add_argument("--lang", default="java", help="Source language")
+    parse_inc_p.add_argument("--code", default="public class OrderService { public String id; }", help="Source code")
+    parse_inc_p.add_argument("--prev-code", help="Previous source code for diffing")
+
     # Command: commercial
     commercial_parser = subparsers.add_parser("commercial", help="Commercial Capability Expansion operations", parents=[common_parser])
     commercial_sub = commercial_parser.add_subparsers(dest="commercial_command", help="Commercial actions")
@@ -155,6 +160,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     lean_p.add_argument("--formula", default="balance >= 0 -> balance - withdraw >= 0", help="Logical formula or predicate")
     lean_p.add_argument("--src-lang", default="java", help="Source language")
     lean_p.add_argument("--tgt-lang", default="csharp", help="Target language")
+
+    herm_p = assurance_sub.add_parser("export-hermetic-toolchain", help="Export Hermetic Nix/Docker/DevContainer toolchain", parents=[common_parser])
+    herm_p.add_argument("--toolchain-format", default="nix", choices=["nix", "docker", "devcontainer"], help="Toolchain format")
+
 
     # Command: lsp
     lsp_p = subparsers.add_parser("lsp", help="Run Language Server Protocol daemon for IDE integration", parents=[common_parser])
@@ -174,6 +183,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     cons_p.add_argument("--task-name", default="OrderProcessor", help="Task name")
     cons_p.add_argument("--code", default="public class Order { public double amount; }", help="Source code snippet")
     cons_p.add_argument("--formula", default="amount >= 0 ==> amount_target >= 0", help="Invariant formula")
+
+    # Command: sandbox
+    sandbox_p = subparsers.add_parser("sandbox", help="eBPF and Seccomp-BPF security sandbox operations", parents=[common_parser])
+    sandbox_sub = sandbox_p.add_subparsers(dest="sandbox_command", help="Sandbox actions")
+    insp_p = sandbox_sub.add_parser("inspect-policy", help="Inspect Seccomp/eBPF isolation policy", parents=[common_parser])
+    insp_p.add_argument("--profile", default="restricted", choices=["restricted", "build_only", "formal_proof"], help="Isolation profile")
+
+    # Command: runner
+    runner_p = subparsers.add_parser("runner", help="Distributed Private Runner fleet scheduler operations", parents=[common_parser])
+    runner_sub = runner_p.add_subparsers(dest="runner_command", help="Runner actions")
+    runner_sub.add_parser("fleet-status", help="Show private runner fleet nodes and health", parents=[common_parser])
+    disp_p = runner_sub.add_parser("dispatch", help="Dispatch task sharding across runner nodes", parents=[common_parser])
+    disp_p.add_argument("--repo-name", default="enterprise/monorepo", help="Repository name")
+    disp_p.add_argument("--shards", type=int, default=4, help="Number of task shards")
 
     # Command: foundry
     foundry_parser = subparsers.add_parser("foundry", help="Knowledge-Skill-Model Foundry operations", parents=[common_parser])
@@ -198,6 +221,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     pipe_p.add_argument("--fuzz-cases", type=int, default=25, help="Number of fuzzing cases")
     pipe_p.add_argument("--budget-limit", type=float, default=50.0, help="Budget limit in USD")
     pipe_p.add_argument("--no-cache", action="store_true", help="Disable Action Cache")
+
 
 
 
@@ -297,8 +321,37 @@ def main(argv: Sequence[str] | None = None) -> int:
                 result_data = run_differential_fuzzing(parsed.source_surface, parsed.target_surface, parsed.cases)
             elif act == "certify-route":
                 result_data = certify_language_route(parsed.route_id)
+            elif act == "parse-incremental":
+                from elmos_polyglot_compiler.tree_sitter_incremental import parse_incremental_cst
+                result_data = parse_incremental_cst(
+                    code=parsed.code,
+                    lang=parsed.lang,
+                    previous_code=getattr(parsed, "prev_code", None),
+                )
         except ImportError as e:
             result_data = {"error": f"Polyglot engine import failure: {e}"}
+
+    elif parsed.command == "sandbox":
+        act = parsed.sandbox_command or "inspect-policy"
+        try:
+            from elmos_autonomous_qa.ebpf_sandbox_runner import inspect_sandbox_policy, _sandbox_engine, SandboxIsolationProfile
+            if act == "inspect-policy":
+                result_data = inspect_sandbox_policy(parsed.profile)
+            else:
+                result_data = _sandbox_engine.evaluate_command_safety(parsed.command)
+        except ImportError as e:
+            result_data = {"status": "ERROR", "message": f"Sandbox engine import error: {e}"}
+
+    elif parsed.command == "runner":
+        act = parsed.runner_command or "fleet-status"
+        from .runner_fleet_scheduler import get_fleet_status, get_fleet_scheduler
+        if act == "fleet-status":
+            result_data = get_fleet_status()
+        elif act == "dispatch":
+            result_data = get_fleet_scheduler().dispatch_task_shards(
+                repo_name=parsed.repo_name,
+                shards_count=parsed.shards,
+            )
 
     elif parsed.command == "commercial":
         try:
@@ -330,12 +383,20 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
             except ImportError as e:
                 result_data = {"status": "ERROR", "message": f"Formal assurance engine error: {e}"}
+        elif act == "export-hermetic-toolchain":
+            try:
+                from elmos_formal_assurance.hermetic_environment_builder import export_hermetic_toolchain
+                result_data = export_hermetic_toolchain(format_type=parsed.toolchain_format)
+            except ImportError as e:
+                result_data = {"status": "ERROR", "message": f"Formal assurance engine error: {e}"}
+
         else:
             try:
                 from elmos_semantic_assurance.service import get_assurance_status
                 result_data = get_assurance_status()
             except ImportError:
                 result_data = {"status": "ACTIVE", "batches": 9, "skills": 132, "formal_verifiers": ["SMT-Z3", "CVC5", "Alloy"]}
+
 
 
     elif parsed.command == "foundry":

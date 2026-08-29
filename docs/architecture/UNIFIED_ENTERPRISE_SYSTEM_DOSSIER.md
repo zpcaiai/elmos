@@ -158,6 +158,7 @@ elmos completion fish > ~/.config/fish/completions/elmos.fish
 elmos polyglot status
 elmos polyglot routes
 elmos polyglot transform --src-lang java --tgt-lang csharp --code "<snippet>"
+elmos polyglot parse-incremental --lang java --code "public class S { public String id; }"
 elmos polyglot formal-check --formula "forall x: P(x) ==> Q(x)"
 elmos polyglot fuzz-matrix --source-surface java --target-surface csharp --cases 50
 elmos polyglot certify-route --route-id ROUTE-JAVA-CSHARP
@@ -172,8 +173,16 @@ elmos daemon --simulate-event tests/fixtures/pr_event.json
 # Multi-Agent Consensus & Red-Team Formal Arbitration
 elmos qa consensus --task-name "OrderProcessor" --code "<snippet>" --formula "amount >= 0"
 
-# Formal Proof & Lean 4 / Dafny Kernel Bridge
+# Kernel-Level eBPF & Seccomp-BPF Syscall Sandbox
+elmos sandbox inspect-policy --profile restricted
+
+# Distributed Multi-Tenant Private Runner Fleet
+elmos runner fleet-status
+elmos runner dispatch --repo-name "enterprise/monorepo" --shards 4
+
+# Formal Proof & Lean 4 / Dafny Kernel Bridge & Hermetic Toolchains
 elmos assurance lean-proof --obligation "PreserveBalance" --formula "x >= 0 -> x - y >= 0"
+elmos assurance export-hermetic-toolchain --toolchain-format nix
 
 # Commercial Kernels & Pipelines
 elmos commercial status
@@ -198,6 +207,7 @@ elmos pipeline \
   --budget-limit 100.0 \
   --export-html docs/reports/order_modernization_dossier.html
 ```
+
 
 ---
 
