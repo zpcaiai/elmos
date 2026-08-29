@@ -1,0 +1,71 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: evidence-preserving-compression
+  version: 2.0.0
+  pack: 03-retrieval-context-engineering
+  priority: P1
+  owner: TBD
+spec:
+  description: 压缩代码和文档时保留类型、约束、异常、边界和引用位置。
+  kernel: K3 Retrieval and Context Kernel
+  riskClass: medium
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: task contract
+    required: true
+  - name: semantic graph
+    required: true
+  - name: knowledge objects
+    required: true
+  - name: token budget
+    required: true
+  - name: policy context
+    required: true
+  outputs:
+  - name: ranked evidence
+    contentAddressed: true
+  - name: context package
+    contentAddressed: true
+  - name: citation map
+    contentAddressed: true
+  - name: retrieval trace
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - search.lexical
+    - search.vector
+    - graph.query
+    - reranker.score
+    - context.pack
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - provenance-bound
+    - tenant-authorized
+    - version-compatible
+    - budget-respected
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

@@ -1,0 +1,71 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: terminal-state-independent-verification
+  version: 2.0.0
+  pack: 08-agentic-training-rl
+  priority: P0
+  owner: TBD
+spec:
+  description: 由独立执行器验证最终仓库状态，禁止模型自报成功作为奖励。
+  kernel: K7 Private Model Foundry / Agent Learning
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: repository environment
+    required: true
+  - name: task
+    required: true
+  - name: tools
+    required: true
+  - name: reward functions
+    required: true
+  - name: verified terminal state
+    required: true
+  outputs:
+  - name: agent policy
+    contentAddressed: true
+  - name: trajectory dataset
+    contentAddressed: true
+  - name: verifier scores
+    contentAddressed: true
+  - name: training checkpoint
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - env.create
+    - agent.rollout
+    - reward.compute
+    - sandbox.reset
+    - checkpoint.save
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - environment-reproducible
+    - reward-non-gameable
+    - terminal-state-verified
+    - safety-constraints
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

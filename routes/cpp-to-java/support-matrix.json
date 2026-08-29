@@ -81,7 +81,9 @@
       "strategy": "separate-exact-pack"
     },
     {
-      "evidence_refs": [],
+      "evidence_refs": [
+        "certification/module-equivalence.json"
+      ],
       "id": "typed-pure-module-v1",
       "reason": "Requires at least three independently observed functions, exact symbol/signature closure, semantic chunks, behavior replay, and module composition evidence.",
       "status": "conditional",

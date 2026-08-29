@@ -895,6 +895,7 @@ TRUSTED_PREVIOUS_OWNED_MANIFEST_SHA256S = frozenset(
         # The graph-analysis modules are now part of the owned engine tree;
         # preserve the prior generated marker for the receipt refresh.
         "sha256:fc872f534af894096c35b2af2713e7a8b1152751fae37af402d8fac0bcba5f00",
+        "sha256:d48312fd1746dfd5664437baacd1c3370fc1cb3a2f0523a3b2fe8afe8bb0b7fe",
     }
 )
 INSTALLED_TREE_DIGEST_SCHEMA = "sha256-v2:name-path-mode-bytes"

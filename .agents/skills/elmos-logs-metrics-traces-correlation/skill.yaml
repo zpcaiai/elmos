@@ -1,0 +1,71 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: logs-metrics-traces-correlation
+  version: 2.0.0
+  pack: 12-observability-lineage-finops
+  priority: P0
+  owner: TBD
+spec:
+  description: 使用统一 ID 关联任务、模型、工具、仓库、部署和客户问题。
+  kernel: Cross-Cutting Observability and Economics Plane
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: runtime events
+    required: true
+  - name: training events
+    required: true
+  - name: usage ledger
+    required: true
+  - name: quality scores
+    required: true
+  outputs:
+  - name: traces
+    contentAddressed: true
+  - name: metrics
+    contentAddressed: true
+  - name: lineage
+    contentAddressed: true
+  - name: dashboards
+    contentAddressed: true
+  - name: cost attribution
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - otel.emit
+    - lineage.emit
+    - metric.record
+    - cost.allocate
+    - trace.replay
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - correlation-id-complete
+    - content-capture-policy
+    - cost-reconciled
+    - slo-observable
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

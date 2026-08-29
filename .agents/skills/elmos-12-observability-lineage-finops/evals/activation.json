@@ -1,0 +1,18 @@
+[
+  {
+    "query": "为 Elmos 规划并执行 12-observability-lineage-finops 相关生产能力，必须给出证据和回滚。",
+    "should_trigger": true
+  },
+  {
+    "query": "这个任务涉及 统一追踪知识、检索、Skill、模型、工具、训练、证据、成本和业务价值，并支持重放和根因分析。，请选择合适技能。",
+    "should_trigger": true
+  },
+  {
+    "query": "解释一个普通编程概念，不需要访问仓库或执行工具。",
+    "should_trigger": false
+  },
+  {
+    "query": "只改写下面一句中文，使其更通顺。",
+    "should_trigger": false
+  }
+]

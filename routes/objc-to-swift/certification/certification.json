@@ -1,41 +1,34 @@
 {
   "certification_decision": "NOT_CERTIFIED",
   "declared_scope": "typed-pure-function-v1+typed-pure-module-v1",
-  "evidence_format": 2,
   "evidence_refs": [
     "certification/local-development-evidence.json",
     "certification/local-holdout-evidence.json",
     "certification/local-representative-evidence.json",
-    "certification/formal-equivalence.json",
-    "certification/module-equivalence.json",
-    "certification/artifacts/module/artifact-manifest.json"
+    "certification/local-negative-evidence.json",
+    "certification/module-equivalence.json"
   ],
-  "formal_equivalence": {
-    "bytes": 58929,
-    "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:6a6016675f4af7bb522f62381bab9ecd83814e050a79bedff9a67e42752fdaf8"
-  },
   "gate_results": {
     "external_execution": "NOT_RUN",
     "independent_verification": "NOT_RUN",
-    "local_execution": "PASSED",
-    "module_execution": "PASSED"
+    "local_execution": "NOT_RUN",
+    "module_execution": "NOT_RUN"
   },
-  "issued_at": "2026-08-09T23:53:58.874493+00:00",
+  "issued_at": "2026-08-09T00:00:00+00:00",
   "metrics": {
-    "build_green_rate": 1.0,
+    "build_green_rate": 0.0,
     "cost_per_verified_workload": 0,
-    "first_build_pass_rate": 1.0,
+    "first_build_pass_rate": 0.0,
     "manual_hours": 0,
-    "p0_behavior_pass_rate": 1.0,
-    "source_map_coverage": 1.0
+    "p0_behavior_pass_rate": 0.0,
+    "source_map_coverage": 0.0
   },
   "module_equivalence": {
-    "bytes": 184663,
+    "bytes": 1786,
     "path": "certification/module-equivalence.json",
-    "sha256": "sha256:a01059b9b50919655d88d218a73572283ff372b978f3c5a37c9fc6fb0f7e9af2"
+    "sha256": "sha256:b1b5574cdebeffc4c5d26ce20f798ea1ab031c308832abaea61a987482a743c7"
   },
-  "next_review_at": "2026-10-26T00:00:00+00:00",
+  "next_review_at": "2026-11-09T00:00:00+00:00",
   "route_key": "objc-to-swift",
   "route_version": "1.0.0",
   "schema_version": 1,

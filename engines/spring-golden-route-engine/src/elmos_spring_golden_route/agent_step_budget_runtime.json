@@ -4,7 +4,7 @@
   "certification": "NOT_CERTIFIED",
   "control_plane_evidence_status": "NOT_RUN",
   "customer_evidence_status": "NOT_RUN",
-  "domain_runtime_evidence_status": "NOT_RUN",
+  "domain_runtime_evidence_status": "LOCAL_TESTED",
   "durability": "SQLITE_APPEND_ONLY_AUDIT",
   "external_evidence_status": "NOT_RUN",
   "public_interface": "elmos_spring_golden_route.step_budget.StepBudgetStore.execute",

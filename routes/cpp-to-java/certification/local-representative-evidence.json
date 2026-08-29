@@ -1,8 +1,8 @@
 {
   "artifact_manifest": {
-    "bytes": 4079,
+    "bytes": 4424,
     "path": "certification/artifacts/real-repository/artifact-manifest.json",
-    "sha256": "sha256:a853717c10e1735829d513761152eab7d63bfa99fc7b499a03a8032f517a9932"
+    "sha256": "sha256:1361bfda108ce37a2becdb2e3ab563669b168827f2bed2eb7e41a2876f304191"
   },
   "artifact_root": "certification/artifacts/real-repository",
   "authorization": "local-engineering-validation",
@@ -21,7 +21,7 @@
   "certification_status": "NOT_CERTIFIED",
   "chunk_equivalence": {
     "artifact_path": "chunk-map.json",
-    "artifact_sha256": "sha256:7fe9ac123484dc9dd2f7a3c3ff5f7156eda06c8c0fccda079f84020a2354f7b8",
+    "artifact_sha256": "sha256:1e27738c746b0095b7dc0a709251eb20078cbcc1851a31fce3fd1376301203b9",
     "coverage": 1.0,
     "mapped_source_chunk_count": 14,
     "required_source_chunk_count": 14,
@@ -34,31 +34,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:5eba766a9b2c18fcc27d5ae308a552aea022b4eaa223c0e54b40271cd915ea06",
+    "artifact_sha256": "sha256:68e5e27db154c7c735c2a50943d3cf66c6ba63e36f6f4bab02fe3ca1380d8237",
     "assumption_boundary": "typed-pure-function-v1 / L0 / canonical-finite-no-error-input-domain",
-    "formal_input_digest": "sha256:c2fb0f166745cb810d6d12184dbd5617c48e8c99f7a30a6cc122dfa42b0749da",
+    "formal_input_digest": "sha256:9e85c886ebce444e7e28c98d6b7ce83ec45576a9391f8408ff9d4a65c2239fc6",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:c2fb0f166745cb810d6d12184dbd5617c48e8c99f7a30a6cc122dfa42b0749da",
+    "formal_input_sha256": "sha256:9e85c886ebce444e7e28c98d6b7ce83ec45576a9391f8408ff9d4a65c2239fc6",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:c2fb0f166745cb810d6d12184dbd5617c48e8c99f7a30a6cc122dfa42b0749da",
+        "formal_input_sha256": "sha256:9e85c886ebce444e7e28c98d6b7ce83ec45576a9391f8408ff9d4a65c2239fc6",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:f608dd1d2f06aed0b6ba71f6ee10051fafec6fc913b0d027960357beb43c6bdb",
+        "sha256": "sha256:f079a784e932e9c0ec25f5b0f5d79c665ec76b619bbda666bc815e89eb3bb68e",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:c2fb0f166745cb810d6d12184dbd5617c48e8c99f7a30a6cc122dfa42b0749da",
+        "formal_input_sha256": "sha256:9e85c886ebce444e7e28c98d6b7ce83ec45576a9391f8408ff9d4a65c2239fc6",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:616b6e1bf260b5eb418074da21c73af9d2169e760ca0d324e5553fce2eefc8da",
+        "sha256": "sha256:fcf30e68847bc0000dd44d090162a005e6f54031cccd86d27c713d6cf1fc4388",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:f608dd1d2f06aed0b6ba71f6ee10051fafec6fc913b0d027960357beb43c6bdb",
+    "solver_input_digest": "sha256:f079a784e932e9c0ec25f5b0f5d79c665ec76b619bbda666bc815e89eb3bb68e",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -69,10 +69,40 @@
       "reflection-dynamic-loading-and-native-interop"
     ]
   },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:c1c4e26e56c2b7bc2336340e5da142587563e82f9a1a56a1dd4642ffc3c93cc4",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:9bf0792b4bb4b990185f761d5b44fea6402deefa18cbd60c8d5b9b039b9dd082",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:5a41219e79deac95c5e407a65ec09c5cb89512924e01dfdd5dcea6043323280c",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:bbf52084115370b2840ddc80a84e345777906aa2b2c64d3372d49d3a3644cd64",
+      "status": "PASSED"
+    },
+    "renamed": true,
+    "source_function_name": "decision",
+    "status": "PASSED",
+    "target_function_name": "elmos_fn_0dde86255a67497f",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "decision.cpp",
+      "source_sha256": "sha256:93b5698cae229d9ecae4402fe8cd2f8a16374872b048208702de588f803bfd7f",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:0ddc6cee17ab4c6c31a501e5056b6baf7ea984112ef9fd0e6579ca7f15ebfc8b"
+  },
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:ec825537a14d9f53cb75712ee3842c2fbbc44a129ff7fa497f26a3c9202e3d25",
+    "artifact_sha256": "sha256:5b3fdd0c3c3e8da62d8437df165532b988186e8667297182dd8c520abe8ebd5e",
     "status": "PASSED"
   },
   "limitations": [
@@ -80,6 +110,7 @@
     "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
   ],
   "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
   "route": "cpp-to-java",
   "route_maturity": "LIMITED",
   "route_pack_status": "DECLARED",
@@ -93,12 +124,13 @@
     "source_ir_sha256": "sha256:8ff081b19023f500c61ed5f5fa88a219a5cb17167ce8b2820fadb62db2d49dfc",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
-    "target_ir_sha256": "sha256:19e10c85e9b6e46ef64fb33cedc675dcf8950f4fa7d4350f7b800705054e9435"
+    "target_ir_sha256": "sha256:c1c4e26e56c2b7bc2336340e5da142587563e82f9a1a56a1dd4642ffc3c93cc4"
   },
   "semantic_ir_sha256": "sha256:8ff081b19023f500c61ed5f5fa88a219a5cb17167ce8b2820fadb62db2d49dfc",
   "source": {
     "analyzer": "clang AST (JSON)",
     "analyzer_version": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "function_name": "decision",
     "language": "cpp",
     "path": "decision.cpp",
     "sha256": "sha256:93b5698cae229d9ecae4402fe8cd2f8a16374872b048208702de588f803bfd7f"
@@ -184,9 +216,10 @@
   },
   "status": "PASSED",
   "target": {
+    "function_name": "elmos_fn_0dde86255a67497f",
     "language": "java",
     "path": "Migrated.java",
-    "sha256": "sha256:3665906d657f729a38287afde93213aada2208046a872b7f2af893f5e3fcf948"
+    "sha256": "sha256:5fc20cb678274a596109f04d758dd85170478b3537fa10925a8ee6714f9ea17f"
   },
   "validation": {
     "case_count": 4,

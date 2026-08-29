@@ -1,0 +1,22 @@
+{
+  "archive_sha256": "afe529a29d99945f472cacebd479c10ebb802b3c3061c83dfe58659ea8330685",
+  "certification": "NOT_CERTIFIED",
+  "customer_evidence_status": "NOT_RUN",
+  "evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "external_evidence_status": "NOT_RUN",
+  "metrics": {
+    "atomicSkills": 458,
+    "metaSkills": 17,
+    "packs": 17,
+    "pipelines": 4,
+    "policies": 3,
+    "schemas": 5,
+    "tables": 25
+  },
+  "package_id": "elmos-knowledge-skill-model-foundry-v2.0.0",
+  "package_version": "2.0.0",
+  "qualification_state": "QUALIFIED_SELF_ATTESTED",
+  "qualified_at": "2026-08-28T23:12:39Z",
+  "schema_version": "elmos.knowledge-skill-model-foundry.qualification.v1",
+  "side_effects_authorized": false
+}

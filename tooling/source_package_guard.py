@@ -76,6 +76,10 @@ def main() -> int:
     if manifest.is_file():
         return 0
 
+    skills_manifest = (ROOT / "skills" / package / manifest_name).resolve()
+    if skills_manifest.is_file():
+        return 0
+
     if not arguments.quiet:
         hint = arguments.hint or (
             "skipping source-bundle integrity checks; "

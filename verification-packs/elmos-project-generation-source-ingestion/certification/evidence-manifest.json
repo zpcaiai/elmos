@@ -10,7 +10,7 @@
     {
       "path": "certification/certification.json",
       "byte_size": 2020,
-      "sha256": "1bd7c7d682da3cd29ca6bd7fe5c7c15676831109d4fe2df615f9ef79a338e125"
+      "sha256": "4fb4146a61fbb4f52bae59f5a9eb4f8557347048c76f970ea78de8971473f29a"
     },
     {
       "path": "certification/evidence.json",
@@ -20,7 +20,7 @@
     {
       "path": "certification/local-test-result.json",
       "byte_size": 2275,
-      "sha256": "3643fe5475a0a5c65bde9b1c5a7f00f7aa1fa7a3f8ea60d5a7911f4a0cb7c0e6"
+      "sha256": "f78a903d30fa23a1afc041e167ff194c530ad060c7c5da094f62d9b943930275"
     },
     {
       "path": "corpus/development/manifest.json",
@@ -70,7 +70,7 @@
     {
       "path": "counterexamples/sample.json",
       "byte_size": 1015,
-      "sha256": "0a6befd080046a9581810c77181ff1e796ad0f24bae4026d331ccd28556a924f"
+      "sha256": "a52d4176ddcd9b4a3ea1cc54479633661b465ee61f2abadb93f64ec0f100aa39"
     },
     {
       "path": "fuzz/campaign.json",
@@ -100,7 +100,7 @@
     {
       "path": "pack.json",
       "byte_size": 1715,
-      "sha256": "cc93980f087c24d53a03eb9e62bf91668a77959f7d7d7dfd7a983b03b66c08a7"
+      "sha256": "23744dce2002875fe8d590afc6c93d61869b33dfc1be4e675b8286d69f8ecf90"
     },
     {
       "path": "properties/sample.json",

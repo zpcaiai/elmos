@@ -1,0 +1,29 @@
+activation:
+  positiveRequired: 8
+  negativeRequired: 8
+  split: train-validation
+outcome:
+- gate: independent-grader
+  type: deterministic-first
+- gate: evidence-addressable
+  type: deterministic-first
+- gate: no-critical-regression
+  type: deterministic-first
+- gate: rollback-ready
+  type: deterministic-first
+process:
+- authorized-tools-only
+- checkpoint-created
+- independent-verification
+- rollback-on-hard-failure
+efficiency:
+- wall_clock_ms
+- input_tokens
+- output_tokens
+- tool_calls
+- cost
+security:
+- tenant-isolation
+- prompt-injection
+- secret-leakage
+- artifact-integrity

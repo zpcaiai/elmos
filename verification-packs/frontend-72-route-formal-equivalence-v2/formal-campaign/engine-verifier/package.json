@@ -4,11 +4,17 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.12.4",
+  "pnpm": {
+    "overrides": {
+      "nanoid@<3.3.18": "3.3.18"
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "pnpm run build && node --test --test-concurrency=1 dist/test/*.test.js",
     "check": "pnpm run test",
     "frt": "node dist/src/frt-cli.js",
+    "miniapp": "node dist/src/miniapp-cli.js",
     "polyglot": "node dist/src/polyglot-cli.js",
     "project:generate": "node dist/src/project-cli.js",
     "frontend:formal": "node dist/src/frontend-formal-cli.js",
@@ -26,5 +32,10 @@
   },
   "dependencies": {
     "@vue/compiler-sfc": "3.5.39"
+  },
+  "pnpm": {
+    "overrides": {
+      "nanoid@<3.3.18": "3.3.18"
+    }
   }
 }

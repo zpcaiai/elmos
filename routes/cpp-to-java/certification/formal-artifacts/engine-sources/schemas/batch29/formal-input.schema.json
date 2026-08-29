@@ -1,0 +1,437 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch29/formal-input.schema.json",
+  "title": "Batch29FormalEquivalenceInput",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "route",
+    "claim_scope",
+    "source_artifact",
+    "target_artifact",
+    "source_normalized_ir",
+    "target_relift_normalized_ir",
+    "identifier_hygiene",
+    "implementation_identity",
+    "analyzer_identity",
+    "emitter_identity",
+    "solver",
+    "environment",
+    "environment_assumptions",
+    "unsupported_semantics"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "kind": {"const": "elmos.formal-equivalence-input"},
+    "route": {"$ref": "#/$defs/route"},
+    "claim_scope": {"$ref": "#/$defs/claim_scope"},
+    "source_artifact": {"$ref": "#/$defs/source_artifact"},
+    "target_artifact": {"$ref": "#/$defs/target_artifact"},
+    "source_normalized_ir": {"$ref": "#/$defs/source_normalized_ir"},
+    "target_relift_normalized_ir": {"$ref": "#/$defs/normalized_target_ir"},
+    "identifier_hygiene": {"$ref": "#/$defs/identifier_hygiene"},
+    "implementation_identity": {"$ref": "#/$defs/implementation_identity"},
+    "analyzer_identity": {"$ref": "#/$defs/analyzer_identity"},
+    "emitter_identity": {"$ref": "#/$defs/emitter_identity"},
+    "solver": {"$ref": "#/$defs/solver"},
+    "environment": {"$ref": "#/$defs/environment"},
+    "environment_assumptions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "unsupported_semantics": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "language": {
+      "enum": [
+        "java",
+        "python",
+        "csharp",
+        "typescript",
+        "go",
+        "rust",
+        "cpp",
+        "objc",
+        "swift",
+        "php",
+        "kotlin",
+        "react",
+        "flutter"
+      ]
+    },
+    "relative_path": {
+      "type": "string",
+      "pattern": "^(?=.*[^/]$)(?!/)(?!.*[\\u0000-\\u001f\\u007f])(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)(?!.*\\\\).+$"
+    },
+    "unit_namespace": {
+      "type": "object",
+      "required": ["schema_version", "kind", "scope", "repository_snapshot_sha256", "work_unit_id", "source_logical_path", "source_sha256"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "kind": {"const": "elmos.identifier-unit-namespace"},
+        "scope": {"enum": ["standalone-semantic-ir", "standalone-artifact", "repository-work-unit"]},
+        "repository_snapshot_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "work_unit_id": {"oneOf": [{"type": "string", "pattern": "^WU-[0-9]{5}(?:-F[0-9]{3})?$"}, {"type": "null"}]},
+        "source_logical_path": {"$ref": "#/$defs/relative_path"},
+        "source_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"scope": {"const": "repository-work-unit"}}, "required": ["scope"]},
+          "then": {"properties": {"repository_snapshot_sha256": {"$ref": "#/$defs/sha256"}, "work_unit_id": {"type": "string", "pattern": "^WU-[0-9]{5}(?:-F[0-9]{3})?$"}}},
+          "else": {"properties": {"repository_snapshot_sha256": {"type": "null"}, "work_unit_id": {"type": "null"}}}
+        }
+      ],
+      "additionalProperties": false
+    },
+    "content_reference": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"$ref": "#/$defs/relative_path"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "route": {
+      "type": "object",
+      "required": ["source_language", "target_language", "profile"],
+      "properties": {
+        "source_language": {"$ref": "#/$defs/language"},
+        "target_language": {"$ref": "#/$defs/language"},
+        "profile": {"const": "typed-pure-function-v1"}
+      },
+      "additionalProperties": false
+    },
+    "claim_scope": {
+      "type": "object",
+      "required": [
+        "relation",
+        "source_term",
+        "target_term",
+        "original_source_bytes_theorem",
+        "input_domain",
+        "source_compiler_runtime_soundness",
+        "target_compiler_runtime_soundness"
+      ],
+      "properties": {
+        "relation": {"const": "canonical-normalized-source-ir-to-target-relift-ir"},
+        "source_term": {"const": "source_normalized_ir.formal_function"},
+        "target_term": {"const": "target_relift_normalized_ir.formal_function"},
+        "original_source_bytes_theorem": {"const": false},
+        "input_domain": {"type": "string", "minLength": 1},
+        "source_compiler_runtime_soundness": {"const": "NOT_RUN"},
+        "target_compiler_runtime_soundness": {"const": "NOT_RUN"}
+      },
+      "additionalProperties": false
+    },
+    "artifact_binding": {
+      "type": "object",
+      "required": ["role", "path", "sha256", "byte_count", "content_base64", "content_reference"],
+      "properties": {
+        "role": {"type": "string", "minLength": 1},
+        "path": {"$ref": "#/$defs/relative_path"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "byte_count": {"type": "integer", "minimum": 1},
+        "content_base64": {"type": "string", "minLength": 1},
+        "content_reference": {"$ref": "#/$defs/content_reference"}
+      },
+      "additionalProperties": false
+    },
+    "source_artifact": {
+      "allOf": [
+        {"$ref": "#/$defs/artifact_binding"},
+        {"properties": {"role": {"const": "original-source-analyzer-input"}}}
+      ]
+    },
+    "target_artifact": {
+      "allOf": [
+        {"$ref": "#/$defs/artifact_binding"},
+        {"properties": {"role": {"const": "emitted-target-analyzer-input"}}}
+      ]
+    },
+    "source_span": {
+      "type": "object",
+      "required": ["file", "start_byte", "end_byte"],
+      "properties": {
+        "file": {"$ref": "#/$defs/relative_path"},
+        "start_byte": {"type": "integer", "minimum": 0},
+        "end_byte": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "parameter": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "type": {"enum": ["integer", "number", "boolean", "string"]},
+        "source_span": {"$ref": "#/$defs/source_span"}
+      },
+      "additionalProperties": false
+    },
+    "expression": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": {"const": "name"},
+            "value": {"type": "string", "minLength": 1},
+            "source_span": {"$ref": "#/$defs/source_span"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": {"const": "literal"},
+            "value": {"type": ["integer", "number", "boolean", "string"]},
+            "source_span": {"$ref": "#/$defs/source_span"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["kind", "operator", "left", "right"],
+          "properties": {
+            "kind": {"const": "binary"},
+            "operator": {"enum": ["+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||"]},
+            "left": {"$ref": "#/$defs/expression"},
+            "right": {"$ref": "#/$defs/expression"},
+            "source_span": {"$ref": "#/$defs/source_span"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "statement": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "expression"],
+          "properties": {
+            "kind": {"const": "return"},
+            "expression": {"$ref": "#/$defs/expression"},
+            "source_span": {"$ref": "#/$defs/source_span"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["kind", "condition", "then", "else"],
+          "properties": {
+            "kind": {"const": "if"},
+            "condition": {"$ref": "#/$defs/expression"},
+            "then": {"type": "array", "items": {"$ref": "#/$defs/statement"}},
+            "else": {"type": "array", "items": {"$ref": "#/$defs/statement"}},
+            "source_span": {"$ref": "#/$defs/source_span"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "function": {
+      "type": "object",
+      "required": ["name", "parameters", "return_type", "body"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "parameters": {"type": "array", "items": {"$ref": "#/$defs/parameter"}},
+        "return_type": {"enum": ["integer", "number", "boolean", "string"]},
+        "body": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/statement"}},
+        "source_span": {"$ref": "#/$defs/source_span"}
+      },
+      "additionalProperties": false
+    },
+    "semantic_ir": {
+      "type": "object",
+      "required": ["schema_version", "source_language", "source_file", "analyzer", "analyzer_version", "functions", "diagnostics"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "source_language": {"$ref": "#/$defs/language"},
+        "source_file": {"$ref": "#/$defs/relative_path"},
+        "analyzer": {"type": "string", "minLength": 1},
+        "analyzer_version": {"type": "string", "minLength": 1},
+        "functions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/function"}},
+        "diagnostics": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "ir_binding": {
+      "type": "object",
+      "required": ["role", "artifact", "semantic_ir", "semantic_ir_sha256", "formal_function", "formal_function_sha256"],
+      "properties": {
+        "role": {"type": "string", "minLength": 1},
+        "artifact": {"$ref": "#/$defs/content_reference"},
+        "semantic_ir": {"$ref": "#/$defs/semantic_ir"},
+        "semantic_ir_sha256": {"$ref": "#/$defs/sha256"},
+        "formal_function": {"$ref": "#/$defs/function"},
+        "formal_function_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "source_normalized_ir": {
+      "allOf": [
+        {"$ref": "#/$defs/ir_binding"},
+        {"properties": {"role": {"const": "canonical-source-normalized-ir"}}}
+      ]
+    },
+    "normalized_target_ir": {
+      "allOf": [
+        {"$ref": "#/$defs/ir_binding"},
+        {"properties": {"role": {"const": "emitted-target-relift-normalized-ir"}}}
+      ]
+    },
+    "raw_target_ir": {
+      "allOf": [
+        {"$ref": "#/$defs/ir_binding"},
+        {"properties": {"role": {"const": "emitted-target-relift-raw-ir"}}}
+      ]
+    },
+    "identifier_hygiene": {
+      "type": "object",
+      "required": [
+        "kind",
+        "policy_id",
+        "policy_sha256",
+        "unit_namespace",
+        "unit_namespace_sha256",
+        "plan",
+        "plan_digest",
+        "source_function_name",
+        "target_function_name",
+        "raw_target_relift_ir",
+        "normalized_target_ir"
+      ],
+      "properties": {
+        "kind": {"const": "elmos.verified-alpha-normalization"},
+        "policy_id": {"const": "typed-alpha-hygiene-v2"},
+        "policy_sha256": {"$ref": "#/$defs/sha256"},
+        "unit_namespace": {"$ref": "#/$defs/unit_namespace"},
+        "unit_namespace_sha256": {"$ref": "#/$defs/sha256"},
+        "plan": {"$ref": "#/$defs/content_reference"},
+        "plan_digest": {"$ref": "#/$defs/sha256"},
+        "source_function_name": {"type": "string", "minLength": 1},
+        "target_function_name": {"type": "string", "minLength": 1},
+        "raw_target_relift_ir": {"$ref": "#/$defs/raw_target_ir"},
+        "normalized_target_ir": {"$ref": "#/$defs/content_reference"}
+      },
+      "additionalProperties": false
+    },
+    "file_identity": {
+      "type": "object",
+      "required": ["path", "sha256", "byte_count"],
+      "properties": {
+        "path": {"$ref": "#/$defs/relative_path"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "byte_count": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "implementation_identity": {
+      "type": "object",
+      "required": ["engine", "equivalence_encoder", "emitter", "identifier_hygiene"],
+      "properties": {
+        "engine": {"$ref": "#/$defs/file_identity"},
+        "equivalence_encoder": {"$ref": "#/$defs/file_identity"},
+        "emitter": {"$ref": "#/$defs/file_identity"},
+        "identifier_hygiene": {"$ref": "#/$defs/file_identity"}
+      },
+      "additionalProperties": false
+    },
+    "analyzer_identity": {
+      "type": "object",
+      "required": ["source", "target_relift"],
+      "properties": {
+        "source": {
+          "type": "object",
+          "required": ["name", "version", "language"],
+          "properties": {
+            "name": {"type": "string", "minLength": 1},
+            "version": {"type": "string", "minLength": 1},
+            "language": {"$ref": "#/$defs/language"}
+          },
+          "additionalProperties": false
+        },
+        "target_relift": {
+          "type": "object",
+          "required": ["name", "version", "language", "mode"],
+          "properties": {
+            "name": {"type": "string", "minLength": 1},
+            "version": {"type": "string", "minLength": 1},
+            "language": {"$ref": "#/$defs/language"},
+            "mode": {"const": "emitted-target"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "emitter_identity": {
+      "type": "object",
+      "required": ["target_language", "normalization_rules", "helper_digests"],
+      "properties": {
+        "target_language": {"$ref": "#/$defs/language"},
+        "normalization_rules": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "helper_digests": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["helper_id", "sha256"],
+            "properties": {
+              "helper_id": {"type": "string", "minLength": 1},
+              "sha256": {"$ref": "#/$defs/sha256"}
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "solver": {
+      "type": "object",
+      "required": ["name", "version", "timeout_ms", "random_seed", "theories"],
+      "properties": {
+        "name": {"const": "z3"},
+        "version": {"type": "string", "minLength": 1},
+        "timeout_ms": {"type": "integer", "minimum": 1},
+        "random_seed": {"type": "integer", "minimum": 0},
+        "theories": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "additionalProperties": false
+    },
+    "environment": {
+      "type": "object",
+      "required": ["python_version", "python_implementation", "system", "release", "machine"],
+      "properties": {
+        "python_version": {"type": "string", "minLength": 1},
+        "python_implementation": {"type": "string", "minLength": 1},
+        "system": {"type": "string", "minLength": 1},
+        "release": {"type": "string", "minLength": 1},
+        "machine": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  }
+}

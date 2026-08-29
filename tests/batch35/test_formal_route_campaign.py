@@ -19,6 +19,7 @@ from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts" / "batch35"
+sys.path.insert(0, str(ROOT / "engines" / "polyglot-route-engine" / "src"))
 LANGUAGES = ("csharp", "go", "java", "python", "rust", "typescript")
 PACKED_REPLAY_COMMAND = [
     "python3",

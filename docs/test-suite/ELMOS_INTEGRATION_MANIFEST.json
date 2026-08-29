@@ -14,9 +14,9 @@
     "result_placeholders": 408,
     "schemas": 11,
     "templates": 9,
-    "scripts": 24,
+    "scripts": 25,
     "toolkit_tests": 50,
-    "files": 586
+    "files": 589
   },
   "files": [
     {
@@ -725,6 +725,11 @@
       "bytes": 29613
     },
     {
+      "path": "scripts/test-suite/rehearse_certification_path.py",
+      "sha256": "077cd3d1807d9617421245c0735128172ab1ca020bf9951d7d10fd52152e1b83",
+      "bytes": 10623
+    },
+    {
       "path": "scripts/test-suite/run_batch1_55_slightly_strict_gate.py",
       "sha256": "f61bd5eb1962bad6b81c6ed95f865e4cffa5c7ebcf90cbcd24df646364edf0ce",
       "bytes": 4023
@@ -876,8 +881,8 @@
     },
     {
       "path": "test-suites/batch1-37-strict/execution-bindings.json",
-      "sha256": "ec56110bde84e79788de74aa021c8dc085a724ed6f442714ae4f2371e2a4d4de",
-      "bytes": 81598
+      "sha256": "2b6b8548ecf45c9ce029f088a0b0733ef1cc91069639cd4712ad7259fc3ad338",
+      "bytes": 81632
     },
     {
       "path": "test-suites/batch1-37-strict/repository-qualification-plan.json",
@@ -2960,5 +2965,5 @@
       "bytes": 25432
     }
   ],
-  "payload_digest": "sha256:511e3cfa1976b85b52fb746ee488f17fee27bc862906e41d443a6b5cea91bd36"
+  "payload_digest": "sha256:09c6c3f46999463a5e858437dc3fbdd3dab18c2086089805557e2f9927c7a05e"
 }

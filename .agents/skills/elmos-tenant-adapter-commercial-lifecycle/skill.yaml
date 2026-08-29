@@ -1,0 +1,69 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: tenant-adapter-commercial-lifecycle
+  version: 2.0.0
+  pack: 13-commercial-multitenant-platform
+  priority: P1
+  owner: TBD
+spec:
+  description: 管理租户 Adapter 的训练授权、成本、部署、升级、归属和退出。
+  kernel: Commercial Control Plane
+  riskClass: medium
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: tenant configuration
+    required: true
+  - name: contract
+    required: true
+  - name: usage event
+    required: true
+  - name: deployment profile
+    required: true
+  outputs:
+  - name: entitlement decision
+    contentAddressed: true
+  - name: invoice record
+    contentAddressed: true
+  - name: acceptance pack
+    contentAddressed: true
+  - name: support bundle
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - tenant.manage
+    - entitlement.check
+    - wallet.reserve
+    - billing.reconcile
+    - support.export
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - tenant-isolated
+    - usage-reconciled
+    - contract-respected
+    - supportable
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

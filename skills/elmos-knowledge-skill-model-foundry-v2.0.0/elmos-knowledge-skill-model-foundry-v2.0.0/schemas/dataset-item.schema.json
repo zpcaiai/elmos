@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Elmos Dataset Item",
+  "type": "object",
+  "required": [
+    "itemId",
+    "tier",
+    "tenantScope",
+    "sourceEpisodes",
+    "trainingEligibility",
+    "contentHash"
+  ],
+  "properties": {
+    "itemId": {
+      "type": "string"
+    },
+    "tier": {
+      "enum": [
+        "bronze",
+        "silver",
+        "gold",
+        "quarantine"
+      ]
+    },
+    "tenantScope": {
+      "type": "string"
+    },
+    "sourceEpisodes": {
+      "type": "array"
+    },
+    "payload": {
+      "type": "object"
+    },
+    "verification": {
+      "type": "object"
+    },
+    "rights": {
+      "type": "object"
+    },
+    "trainingEligibility": {
+      "type": "object"
+    },
+    "contentHash": {
+      "type": "string"
+    },
+    "revocationState": {
+      "type": "string"
+    }
+  }
+}

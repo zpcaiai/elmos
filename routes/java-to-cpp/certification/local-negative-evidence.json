@@ -3,198 +3,62 @@
     {
       "case_id": "cpp-long-width",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 41,
-          "path": "corpus/negative/cpp_long_width.cpp",
-          "role": "source",
-          "sha256": "sha256:7786438be7a70c9750e9ee05bf7b6be213d1d1948e3974f02c0c4c53a5042086"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "CPP_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:long",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "cpp-unsigned-domain",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 78,
-          "path": "corpus/negative/cpp_unsigned_domain.cpp",
-          "role": "source",
-          "sha256": "sha256:43072a2d2e51ddf460e29fdf06e122923b510916d86ca9ba412730afdfcc5a7c"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "CPP_UNSUPPORTED_TYPE:unsigned long long",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "java-int-width",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 93,
-          "path": "corpus/negative/JavaIntWidth.java",
-          "role": "source",
-          "sha256": "sha256:f6aef03d647cb80cf77631221095a6abc06be15f51e7c52d8e7728b12b97de17"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "java-string-raw-reference-equality",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 126,
-          "path": "corpus/negative/JavaStringIdentity.java",
-          "role": "source",
-          "sha256": "sha256:bb61fecbd978d47907a8b5ed25aef40f49f6be930fcbbbb71e142a83d38651a4"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "missing-symbol-fails-closed",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 168,
-          "path": "corpus/development/Pricing.java",
-          "role": "source",
-          "sha256": "sha256:64a54e96183233835bf8e70ba5acf495c74b882c99f827b8083d505501ba053d"
-        },
-        {
-          "bytes": 205,
-          "path": "corpus/development/cases.json",
-          "role": "cases",
-          "sha256": "sha256:609a504b37cb7cc2c442714cb114447c7d979c16b172f99773790f952007d517"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "NO_SUPPORTED_FUNCTIONS",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "specialized-non-finite-case-unsupported",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 102,
-          "path": "corpus/holdout/EchoNumber.java",
-          "role": "source",
-          "sha256": "sha256:0f576ef9c11bfbc7dc6f0cb61a1ee2ae5f2e31eab2645b48194318174e3e14ee"
-        },
-        {
-          "bytes": 34,
-          "path": "corpus/negative/non_finite_number_cases.json",
-          "role": "cases",
-          "sha256": "sha256:9f3d71e43aeb4837030e6822cd00d5911d7c72f1cfc3e39890c9b01469d07bf3"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "SPECIALIZED_CASE_NON_FINITE_NUMBER_UNSUPPORTED:java-to-cpp:echoNumber:0",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "specialized-number-arithmetic-unsupported",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 127,
-          "path": "corpus/negative/NumberArithmetic.java",
-          "role": "source",
-          "sha256": "sha256:882713820a197214297e2ee12bdbb1a71f12739f9d7fa7d30e5007fd8999dc70"
-        },
-        {
-          "bytes": 76,
-          "path": "corpus/negative/number_arithmetic_cases.json",
-          "role": "cases",
-          "sha256": "sha256:00b7757f97d39f8086ee0acd468d4bc6b4414a6d4b2ea13920a12afce65d97bb"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "SPECIALIZED_NUMBER_ARITHMETIC_UNSUPPORTED:java-to-cpp:addNumber",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "specialized-overflow-outside-no-error-domain",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 168,
-          "path": "corpus/development/Pricing.java",
-          "role": "source",
-          "sha256": "sha256:64a54e96183233835bf8e70ba5acf495c74b882c99f827b8083d505501ba053d"
-        },
-        {
-          "bytes": 105,
-          "path": "corpus/negative/canonical_overflow_cases.json",
-          "role": "cases",
-          "sha256": "sha256:6dd10f31cb2b35dafc946829946524222c3b0ebdf64c8f69ec89ccb9391c2dd5"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "SPECIALIZED_CASE_OUTSIDE_CANONICAL_NO_ERROR_DOMAIN:java-to-cpp:calculate:0:IntegerOverflow",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "specialized-string-semantics-unsupported",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 122,
-          "path": "corpus/negative/CanonicalStringEquality.java",
-          "role": "source",
-          "sha256": "sha256:5b6e6cbbed14d21927222f3c7a04bca61e3a1ca364a76241deaffcfb24e3e23a"
-        },
-        {
-          "bytes": 237,
-          "path": "corpus/negative/canonical_string_cases.json",
-          "role": "cases",
-          "sha256": "sha256:93ac4c8504a0448730f4d38494782dc2eec43a8f26e3f32870809fd233062731"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "SPECIALIZED_STRING_SEMANTICS_UNSUPPORTED:java-to-cpp:same",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "undeclared-directed-route-fails-closed",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 884,
-          "path": "corpus/negative/undeclared_java_to_java.java",
-          "role": "source-module",
-          "sha256": "sha256:5334a7a6c9bc252b66e3cedd3dc66f70b97071c71932376c68c43f767a863163"
-        },
-        {
-          "bytes": 2794,
-          "path": "corpus/negative/undeclared_java_to_java_cases.json",
-          "role": "case-manifest",
-          "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "SOURCE_AND_TARGET_MUST_DIFFER",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     }
   ],
   "expected_result": "BLOCKED",
@@ -202,6 +66,6 @@
   "independent_verifier": "NOT_RUN",
   "route": "java-to-cpp",
   "schema_version": 1,
-  "status": "PASSED",
+  "status": "NOT_RUN",
   "test_integrity": "PRESERVED"
 }

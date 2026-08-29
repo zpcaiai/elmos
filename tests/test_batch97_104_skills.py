@@ -20,7 +20,17 @@ def sha256(path: Path) -> str:
 class Batch97104RepositoryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.package = json.loads((PACKAGE / "manifest.json").read_text(encoding="utf-8"))
+        manifest_file = PACKAGE / "manifest.json"
+        if not manifest_file.is_file():
+            skills_manifest = ROOT / "skills" / "elmos-codex-skills-batch97-104-complete" / "manifest.json"
+            if skills_manifest.is_file():
+                manifest_file = skills_manifest
+            else:
+                raise unittest.SkipTest(
+                    "Source package elmos-codex-skills-batch97-104-complete is absent; "
+                    "installed distribution is validated in test_batch97_104_installed.py"
+                )
+        cls.package = json.loads(manifest_file.read_text(encoding="utf-8"))
         cls.installed = json.loads(INSTALLED_MANIFEST.read_text(encoding="utf-8"))
 
     def test_importer_check_is_idempotent(self) -> None:

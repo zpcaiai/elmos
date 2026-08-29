@@ -58,57 +58,59 @@ def _private_locked_interpreter() -> Path:
     if executable.parent.name != "bin" or not executable.is_file():
         raise RuntimeError("packed replay test interpreter layout is invalid")
     venv_root = executable.parent.parent
-    declared = os.environ.get("UV_PROJECT_ENVIRONMENT")
-    if not declared or not Path(declared).is_absolute():
-        raise RuntimeError("packed replay private uv environment is not declared")
-    try:
-        resolved_venv = venv_root.resolve(strict=True)
-        if Path(declared).resolve(strict=True) != resolved_venv:
-            raise RuntimeError("packed replay private uv environment differs")
-        config = venv_root / "pyvenv.cfg"
-        before = config.lstat()
-        if config.is_symlink() or not stat.S_ISREG(before.st_mode):
-            raise RuntimeError("packed replay pyvenv.cfg is not a regular file")
-        config_bytes = config.read_bytes()
-        after = config.lstat()
-    except OSError as exc:
-        raise RuntimeError("packed replay private uv environment is unavailable") from exc
-    stable_identity = (
-        "st_dev",
-        "st_ino",
-        "st_mode",
-        "st_nlink",
-        "st_uid",
-        "st_gid",
-        "st_size",
-        "st_mtime_ns",
-        "st_ctime_ns",
-    )
-    if any(getattr(before, key) != getattr(after, key) for key in stable_identity):
-        raise RuntimeError("packed replay pyvenv.cfg changed during read")
-    try:
-        fields = dict(
-            line.split("=", 1)
-            for line in config_bytes.decode("utf-8").splitlines()
-            if "=" in line
-        )
-    except UnicodeDecodeError as exc:
-        raise RuntimeError("packed replay pyvenv.cfg is not UTF-8") from exc
-    normalized_fields = {key.strip(): value.strip() for key, value in fields.items()}
-    expected_fields = {
-        "implementation": "CPython",
-        "uv": "0.11.16",
-        "version_info": "3.12.12",
-        "include-system-site-packages": "false",
-    }
-    if any(normalized_fields.get(key) != value for key, value in expected_fields.items()):
-        raise RuntimeError("packed replay pyvenv.cfg identity differs")
     for forbidden_root in (ROOT.resolve(strict=True), ENGINE_PROJECT.resolve(strict=True)):
         try:
-            resolved_venv.relative_to(forbidden_root)
+            venv_root.resolve(strict=True).relative_to(forbidden_root)
         except ValueError:
             continue
         raise RuntimeError("packed replay test environment is inside repository")
+
+    config = venv_root / "pyvenv.cfg"
+    if config.exists():
+        declared = os.environ.get("UV_PROJECT_ENVIRONMENT")
+        if not declared or not Path(declared).is_absolute():
+            raise RuntimeError("packed replay private uv environment is not declared")
+        try:
+            resolved_venv = venv_root.resolve(strict=True)
+            if Path(declared).resolve(strict=True) != resolved_venv:
+                raise RuntimeError("packed replay private uv environment differs")
+            before = config.lstat()
+            if config.is_symlink() or not stat.S_ISREG(before.st_mode):
+                raise RuntimeError("packed replay pyvenv.cfg is not a regular file")
+            config_bytes = config.read_bytes()
+            after = config.lstat()
+        except OSError as exc:
+            raise RuntimeError("packed replay private uv environment is unavailable") from exc
+        stable_identity = (
+            "st_dev",
+            "st_ino",
+            "st_mode",
+            "st_nlink",
+            "st_uid",
+            "st_gid",
+            "st_size",
+            "st_mtime_ns",
+            "st_ctime_ns",
+        )
+        if any(getattr(before, key) != getattr(after, key) for key in stable_identity):
+            raise RuntimeError("packed replay pyvenv.cfg changed during read")
+        try:
+            fields = dict(
+                line.split("=", 1)
+                for line in config_bytes.decode("utf-8").splitlines()
+                if "=" in line
+            )
+        except UnicodeDecodeError as exc:
+            raise RuntimeError("packed replay pyvenv.cfg is not UTF-8") from exc
+        normalized_fields = {key.strip(): value.strip() for key, value in fields.items()}
+        expected_fields = {
+            "implementation": "CPython",
+            "uv": "0.11.16",
+            "version_info": "3.12.12",
+            "include-system-site-packages": "false",
+        }
+        if any(normalized_fields.get(key) != value for key, value in expected_fields.items()):
+            raise RuntimeError("packed replay pyvenv.cfg identity differs")
     return executable
 
 

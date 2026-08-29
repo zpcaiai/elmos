@@ -9,7 +9,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 IMPORTER = ROOT / "tooling" / "import_product_convergence_complete.py"
-PACKAGE = ROOT / "batch46-product-convergence-complete-skills"
+PACKAGE = (
+    ROOT / "skills" / "batch46-product-convergence-complete-skills"
+    if (ROOT / "skills" / "batch46-product-convergence-complete-skills").is_dir()
+    else ROOT / "batch46-product-convergence-complete-skills"
+)
 MANIFEST = (
     ROOT
     / "docs"

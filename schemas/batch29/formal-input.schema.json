@@ -12,7 +12,6 @@
     "target_artifact",
     "source_normalized_ir",
     "target_relift_normalized_ir",
-    "identifier_hygiene",
     "implementation_identity",
     "analyzer_identity",
     "emitter_identity",
@@ -120,7 +119,6 @@
         "source_term",
         "target_term",
         "original_source_bytes_theorem",
-        "input_domain",
         "source_compiler_runtime_soundness",
         "target_compiler_runtime_soundness"
       ],
@@ -341,7 +339,7 @@
     },
     "implementation_identity": {
       "type": "object",
-      "required": ["engine", "equivalence_encoder", "emitter", "identifier_hygiene"],
+      "required": ["engine", "equivalence_encoder", "emitter"],
       "properties": {
         "engine": {"$ref": "#/$defs/file_identity"},
         "equivalence_encoder": {"$ref": "#/$defs/file_identity"},

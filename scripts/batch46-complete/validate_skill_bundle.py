@@ -20,23 +20,34 @@ def main() -> int:
     names: list[str] = []
     ids: list[int] = []
 
-    for path in sorted((root / ".agents/skills").glob("b46-*/SKILL.md")):
-        text = path.read_text(encoding="utf-8")
-        id_match = SKILL_ID_RE.search(text)
-        if not id_match or int(id_match.group(1)) not in ID_RANGE:
-            continue  # belongs to another b46- pack
-        skill_id = int(id_match.group(1))
-        name_match = NAME_RE.search(text)
-        if not name_match:
-            errors.append(f"{path}: missing frontmatter name")
+    search_dirs = [
+        root / ".agents/skills",
+        root / "skills/batch46-product-convergence-complete-skills/.agents/skills",
+    ]
+    seen_paths = set()
+    for search_dir in search_dirs:
+        if not search_dir.exists():
             continue
-        if name_match.group(1) != path.parent.name:
-            errors.append(f"{path}: name {name_match.group(1)} != folder {path.parent.name}")
-        for section in REQUIRED_SECTIONS:
-            if section not in text:
-                errors.append(f"{path}: missing {section}")
-        names.append(name_match.group(1))
-        ids.append(skill_id)
+        for path in sorted(search_dir.glob("b46-*/SKILL.md")):
+            if path.resolve() in seen_paths:
+                continue
+            seen_paths.add(path.resolve())
+            text = path.read_text(encoding="utf-8")
+            id_match = SKILL_ID_RE.search(text)
+            if not id_match or int(id_match.group(1)) not in ID_RANGE:
+                continue  # belongs to another b46- pack
+            skill_id = int(id_match.group(1))
+            name_match = NAME_RE.search(text)
+            if not name_match:
+                errors.append(f"{path}: missing frontmatter name")
+                continue
+            if name_match.group(1) != path.parent.name:
+                errors.append(f"{path}: name {name_match.group(1)} != folder {path.parent.name}")
+            for section in REQUIRED_SECTIONS:
+                if section not in text:
+                    errors.append(f"{path}: missing {section}")
+            names.append(name_match.group(1))
+            ids.append(skill_id)
 
     if len(names) != 40:
         errors.append(f"expected 40 Skills in {ID_RANGE.start}-{ID_RANGE.stop - 1}, found {len(names)}")

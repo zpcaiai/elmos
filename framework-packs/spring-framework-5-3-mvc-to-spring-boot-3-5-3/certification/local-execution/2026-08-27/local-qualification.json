@@ -60,8 +60,8 @@
   "harness" : {
     "files" : [ {
       "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/LocalSpringUpgradeExecutionPort.java",
-      "sha256" : "4e1be76b6c98b9161b631462294efc86e7a14e4fee7f24b86ff0fb6e1acb8f55",
-      "bytes" : 142273
+      "sha256" : "4b15c25271bff3ea27a920ea03b26bb27c78440dc6957d861a31be99de28d58f",
+      "bytes" : 144574
     }, {
       "path" : "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringDeploymentGuidance.java",
       "sha256" : "34a9b9f03464fbe51107cf67bc7be8053c05c49bbc9cd9a7e7b121dfe416edce",

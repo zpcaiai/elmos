@@ -17,16 +17,27 @@ if __name__ == "__main__":
     if fresh_runtime_exit is not None:
         raise SystemExit(fresh_runtime_exit)
 
+from route_sets import (
+    EVIDENCED_ROUTE_KEYS,
+    MODULE_EQUIVALENCE_ROUTE_KEYS,
+    NODEJS_EXACT_ROUTE_KEYS,
+    SPECIALIZED_ROUTE_KEYS,
+    V3_EXACT_ROUTE_KEYS,
+    split_route_key,
+)
 from validate_route import (
     SWIFT_ANALYZER_RECEIPT_PATH,
     _validate_specialized_native_runtime_replay,
-    main as validate_route_main,
     strict_evidence_requested,
     validate_formal_equivalence,
     validate_module_equivalence,
+    validate_nodejs_negative_evidence,
     validate_specialized_negative_evidence,
+    validate_v3_research_route_contract,
 )
-from route_sets import EVIDENCED_ROUTE_KEYS, SPECIALIZED_ROUTE_KEYS, split_route_key
+from validate_route import (
+    main as validate_route_main,
+)
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -129,6 +140,14 @@ def validate_negative_refs(
                 failures,
             )
         return
+    if route.name in NODEJS_EXACT_ROUTE_KEYS:
+        try:
+            manifest = load(route / "route.json")
+        except Exception as exc:
+            failures.append(f"Node.js negative route manifest is unreadable: {exc}")
+            return
+        validate_nodejs_negative_evidence(route, manifest, evidence, failures)
+        return
 
     references = evidence.get("negative_runs")
     if not isinstance(references, list) or not references:
@@ -168,6 +187,9 @@ def main() -> int:
         return 2
     source, target = split_route_key(str(route_key))
     specialized = route_key in SPECIALIZED_ROUTE_KEYS
+    nodejs = route_key in NODEJS_EXACT_ROUTE_KEYS
+    v3 = route_key in V3_EXACT_ROUTE_KEYS
+    module_route = route_key in MODULE_EQUIVALENCE_ROUTE_KEYS
     if (
         manifest.get("source", {}).get("language") != source
         or manifest.get("target", {}).get("language") != target
@@ -191,6 +213,15 @@ def main() -> int:
     status = str(manifest.get("status", "")).lower()
     certification_status = str(certification.get("status", "")).lower()
     failures: list[str] = []
+
+    if v3:
+        validate_v3_research_route_contract(
+            manifest,
+            support,
+            evidence,
+            certification,
+            failures,
+        )
 
     if specialized:
         profiles = manifest.get("profiles", {})
@@ -251,6 +282,78 @@ def main() -> int:
             failures.append("specialized evidence input domain drift")
         if certification.get("certification_decision") != "NOT_CERTIFIED":
             failures.append("specialized route must remain NOT_CERTIFIED")
+    if nodejs:
+        profiles = manifest.get("profiles", {})
+        gates = manifest.get("gates", {})
+        if profiles.get("input_domain") != "nodejs-es2022-esm-safe-integer-finite-v1":
+            failures.append("Node.js input domain drift")
+        if profiles.get("module_profile") != "typed-pure-module-v1":
+            failures.append("Node.js module profile drift")
+        for field in (
+            "module_equivalence_required",
+            "concrete_spans_required",
+            "nodejs_safe_integer_finite_domain_required",
+        ):
+            if gates.get(field) is not True:
+                failures.append(f"Node.js gate {field} must be true")
+        if gates.get("nodejs_effects_async_io_allowed") is not False:
+            failures.append("Node.js async/I/O effects must remain blocked")
+        nodejs_typescript = {source, target} == {"javascript", "typescript"}
+        expected_types = (
+            ["number", "boolean", "string"]
+            if nodejs_typescript
+            else ["integer", "number", "boolean"]
+        )
+        capability_by_id = {
+            item.get("id"): item
+            for item in support.get("capabilities", [])
+            if isinstance(item, dict)
+        }
+        expected_capability_statuses = {
+            "typed-pure-function-v1": "conditional",
+            "primitive-types": "conditional",
+            "nodejs-es2022-esm-safe-integer-finite-v1": "conditional",
+            "string-semantics": "conditional" if nodejs_typescript else "blocked",
+            "number-arithmetic": "blocked",
+            "if-return-control-flow": "conditional",
+            "framework-database-async-concurrency": "blocked",
+            "typed-pure-module-v1": "conditional",
+        }
+        for capability_id, expected_status in expected_capability_statuses.items():
+            if capability_by_id.get(capability_id, {}).get("status") != expected_status:
+                failures.append(f"Node.js capability {capability_id} status drift")
+        if gates.get("nodejs_typescript_integer_semantics_allowed") is not (
+            not nodejs_typescript
+        ):
+            failures.append("Node.js/TypeScript integer gate drift")
+        mappings = load(route / "mappings" / "types.json")
+        if mappings.get("types") != expected_types:
+            failures.append("Node.js type mapping drift")
+        expected_string = (
+            "STRICT_ECMASCRIPT_VALUE_EQUALITY_CONCAT"
+            if nodejs_typescript
+            else "BLOCK"
+        )
+        if mappings.get("string_semantics") != expected_string:
+            failures.append("Node.js string mapping boundary drift")
+        expected_integer = (
+            "BLOCK_NO_EXPLICIT_INTEGER_TYPE"
+            if nodejs_typescript
+            else "SAFE_INTEGER_CONDITIONAL"
+        )
+        if mappings.get("integer_semantics") != expected_integer:
+            failures.append("Node.js integer mapping boundary drift")
+        lowering = load(route / "lowering" / "profile.json")
+        if lowering.get("concrete_spans_required") is not True:
+            failures.append("Node.js lowering must require concrete spans")
+        if lowering.get("integer_semantics") != expected_integer:
+            failures.append("Node.js integer lowering boundary drift")
+        if evidence.get("evidenced_type_coverage") != expected_types:
+            failures.append("Node.js evidence type coverage drift")
+        if evidence.get("input_domain") != "nodejs-es2022-esm-safe-integer-finite-v1":
+            failures.append("Node.js evidence input domain drift")
+        if certification.get("certification_decision") != "NOT_CERTIFIED":
+            failures.append("Node.js route must remain NOT_CERTIFIED")
 
     if certification_status != status:
         failures.append("route and certification statuses must match")
@@ -261,7 +364,13 @@ def main() -> int:
 
     capabilities = support.get("capabilities", [])
     if status in {"limited", "certified"}:
-        supported_status = "certified" if status == "certified" else "supported"
+        supported_status = (
+            "certified"
+            if status == "certified"
+            else "conditional"
+            if nodejs
+            else "supported"
+        )
         scoped = [
             capability
             for capability in capabilities
@@ -495,7 +604,7 @@ def main() -> int:
                 ):
                     failures.append("module target profile call graph claim drift")
 
-    if specialized and formal_equivalence is not None and module_equivalence is not None:
+    if module_route and formal_equivalence is not None and module_equivalence is not None:
         formal_receipts = [
             item
             for item in formal_equivalence.get("artifact_refs", [])
@@ -532,7 +641,7 @@ def main() -> int:
                     "Swift function/module analyzer build receipt binding differs"
                 )
         elif formal_receipts or module_receipts:
-            failures.append("non-Swift specialized route cannot bind a Swift analyzer receipt")
+            failures.append("non-Swift module route cannot bind a Swift analyzer receipt")
 
     gate_results = certification.get("gate_results", {})
     if status == "limited":

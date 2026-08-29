@@ -1,0 +1,73 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: knowledge-source-connector-registry
+  version: 2.0.0
+  pack: 01-knowledge-ingestion-governance
+  priority: P0
+  owner: TBD
+spec:
+  description: 注册并治理 Git、对象存储、Wiki、Issue、PR、CI、数据库和日志等知识源连接器。
+  kernel: K1 Knowledge Fabric
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: repository
+    required: true
+  - name: document
+    required: true
+  - name: API schema
+    required: true
+  - name: database metadata
+    required: true
+  - name: runtime trace
+    required: true
+  - name: ticket or incident
+    required: true
+  outputs:
+  - name: normalized artifact
+    contentAddressed: true
+  - name: source provenance
+    contentAddressed: true
+  - name: rights classification
+    contentAddressed: true
+  - name: freshness status
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - source.connect
+    - artifact.parse
+    - secret.scan
+    - license.scan
+    - object.store
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - source-authorized
+    - provenance-complete
+    - sensitive-data-classified
+    - parse-quality-pass
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

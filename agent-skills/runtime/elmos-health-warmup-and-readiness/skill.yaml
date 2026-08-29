@@ -1,0 +1,72 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: health-warmup-and-readiness
+  version: 2.0.0
+  pack: 10-serving-routing-inference
+  priority: P0
+  owner: TBD
+spec:
+  description: 验证权重、Tokenizer、Adapter、依赖、显存和基准请求后才进入流量。
+  kernel: K8 Serving and Runtime Control
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: inference request
+    required: true
+  - name: task risk
+    required: true
+  - name: tenant policy
+    required: true
+  - name: model registry
+    required: true
+  - name: capacity state
+    required: true
+  outputs:
+  - name: routed request
+    contentAddressed: true
+  - name: structured response
+    contentAddressed: true
+  - name: usage record
+    contentAddressed: true
+  - name: serving evidence
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - gateway.route
+    - model.invoke
+    - adapter.resolve
+    - quota.check
+    - deployment.rollout
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - authorized-route
+    - version-pinned
+    - quota-respected
+    - telemetry-emitted
+    - fallback-defined
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

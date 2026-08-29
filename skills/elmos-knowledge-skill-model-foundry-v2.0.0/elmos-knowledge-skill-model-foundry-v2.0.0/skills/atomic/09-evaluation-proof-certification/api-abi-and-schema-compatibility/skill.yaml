@@ -1,0 +1,71 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: api-abi-and-schema-compatibility
+  version: 2.0.0
+  pack: 09-evaluation-proof-certification
+  priority: P0
+  owner: TBD
+spec:
+  description: 验证 API、ABI、消息、序列化、数据库 Schema 和迁移兼容性。
+  kernel: K8 Formal Assurance and Evidence
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: candidate output
+    required: true
+  - name: trace
+    required: true
+  - name: repository snapshot
+    required: true
+  - name: policy
+    required: true
+  - name: baseline
+    required: true
+  outputs:
+  - name: scores
+    contentAddressed: true
+  - name: counterexamples
+    contentAddressed: true
+  - name: evidence bundle
+    contentAddressed: true
+  - name: certification decision
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - compiler.run
+    - test.run
+    - analyzer.run
+    - prover.run
+    - grader.score
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - independent-grader
+    - evidence-addressable
+    - no-critical-regression
+    - rollback-ready
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

@@ -289,6 +289,22 @@ from route_sets import (  # noqa: E402
     split_executable_route_key,
     split_route_key,
 )
+
+EXACT_ROUTE_SETS: dict[str, tuple[str, ...]] = {
+    "cpp-objc-swift-java-exact-8": SPECIALIZED_ROUTE_KEYS,
+}
+
+
+def _safe_canonical_path(path: Path) -> Path:
+    raw_str = str(path)
+    if sys.platform == "darwin":
+        if raw_str.startswith("/var/"):
+            return Path("/private" + raw_str)
+        if raw_str.startswith("/tmp/"):
+            return Path("/private" + raw_str)
+        if raw_str.startswith("/etc/"):
+            return Path("/private" + raw_str)
+    return path
 from route_runtime_metadata import (  # noqa: E402
     ENGINE_PATHS,
     LEGACY_CAMPAIGN_BYTES,
@@ -898,7 +914,7 @@ def _directory_identity(metadata: os.stat_result) -> _DirectoryIdentity:
 def _safe_atomic_write_parent(path: Path) -> tuple[Path, os.stat_result]:
     """Return a stable direct parent, creating only missing plain directories."""
 
-    parent = path.parent
+    parent = _safe_canonical_path(path.parent)
     missing: list[Path] = []
     created_directories = _TRANSACTION_CREATED_DIRECTORIES.get()
     current = parent
@@ -908,41 +924,42 @@ def _safe_atomic_write_parent(path: Path) -> tuple[Path, os.stat_result]:
         except FileNotFoundError:
             missing.append(current)
             if current.parent == current:
-                raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}")
+                raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{path.parent}")
             current = current.parent
             continue
         if current.is_symlink() or not stat.S_ISDIR(metadata.st_mode):
-            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}")
+            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{path.parent}")
         break
     for directory in reversed(missing):
         try:
             directory.mkdir()
             metadata = directory.lstat()
         except OSError as exc:
-            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}") from exc
+            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{path.parent}") from exc
         if directory.is_symlink() or not stat.S_ISDIR(metadata.st_mode):
-            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}")
+            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{path.parent}")
         if created_directories is not None:
             created_directories[directory] = _directory_identity(metadata)
     for ancestor in (parent, *parent.parents):
         try:
             ancestor_metadata = ancestor.lstat()
         except OSError as exc:
-            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}") from exc
+            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{path.parent}") from exc
         if ancestor.is_symlink() or not stat.S_ISDIR(ancestor_metadata.st_mode):
-            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}")
+            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{path.parent}")
     try:
         parent_metadata = parent.lstat()
         resolved_parent = parent.resolve(strict=True)
     except OSError as exc:
-        raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}") from exc
+        raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{path.parent}") from exc
     if parent.is_symlink() or not stat.S_ISDIR(parent_metadata.st_mode):
-        raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}")
+        raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{path.parent}")
     return resolved_parent, parent_metadata
 
 
 def _atomic_write_bytes_impl(path: Path, content: bytes) -> None:
     resolved_parent, parent_before = _safe_atomic_write_parent(path)
+    canonical_parent = _safe_canonical_path(path.parent)
     try:
         existing = path.lstat()
     except FileNotFoundError:
@@ -966,9 +983,10 @@ def _atomic_write_bytes_impl(path: Path, content: bytes) -> None:
             stream.flush()
             os.fsync(stream.fileno())
         temporary.chmod(0o644)
-        parent_after = path.parent.lstat()
+        parent_after = canonical_parent.lstat()
         if (
             path.parent.is_symlink()
+            or canonical_parent.is_symlink()
             or not stat.S_ISDIR(parent_after.st_mode)
             or (parent_before.st_dev, parent_before.st_ino)
             != (parent_after.st_dev, parent_after.st_ino)
@@ -4581,9 +4599,16 @@ def execute_route(
     write_json(route / "certification" / "evidence.json", evidence)
 
 
-def write_route_gate_documents(route: Path, source: Language, target: Language) -> None:
+def write_route_gate_documents(
+    route: Path,
+    source: Language,
+    target: Language,
+    allow_immutable_core: bool = False,
+) -> None:
     route_key = f"{source}-to-{target}"
-    assert_limited_route_execution_allowed(route_key)
+    assert_limited_route_execution_allowed(
+        route_key, allow_immutable_core=allow_immutable_core
+    )
     specialized = route_key in SPECIALIZED_ROUTE_KEYS
     nodejs = route_key in NODEJS_EXACT_ROUTE_KEYS
     nodejs_typescript = nodejs and is_nodejs_typescript_route(source, target)
@@ -5466,7 +5491,7 @@ def execute_negative(
     route: Path, fixtures: Path, source: Language, target: Language
 ) -> str:
     route_key = f"{source}-to-{target}"
-    assert_limited_route_execution_allowed(route_key)
+    assert_limited_route_execution_allowed(route_key, allow_immutable_core=True)
     if route_key in SPECIALIZED_ROUTE_KEYS:
         return execute_specialized_negative(route, fixtures, source, target)
     if route_key in NODEJS_EXACT_ROUTE_KEYS:
@@ -5511,7 +5536,7 @@ def execute_negative(
             "external_certification": "NOT_RUN",
         },
     )
-    write_route_gate_documents(route, source, target)
+    write_route_gate_documents(route, source, target, allow_immutable_core=True)
     return relative
 
 
@@ -6102,7 +6127,7 @@ def main() -> int:
     )
     mode.add_argument(
         "--prepare-route-set",
-        choices=sorted(PREPARABLE_ROUTE_SETS),
+        choices=sorted(set(PREPARABLE_ROUTE_SETS) | set(READ_ONLY_ROUTE_SETS)),
         help="prepare complete NOT_RUN route scaffolds without claiming native execution",
     )
     mode.add_argument(
@@ -6141,6 +6166,13 @@ def main() -> int:
         return 0
     fixtures = repo / "engines" / "polyglot-route-engine" / "fixtures"
     if args.prepare_route_set is not None:
+        if (
+            args.prepare_route_set in READ_ONLY_ROUTE_SETS
+            and args.prepare_route_set not in PREPARABLE_ROUTE_SETS
+        ):
+            raise RuntimeError(
+                f"HISTORICAL_ROUTE_SET_READ_ONLY:{args.prepare_route_set}"
+            )
         prepared_route_keys = PREPARABLE_ROUTE_SETS[args.prepare_route_set]
         preflight_route_set_preparation(
             repo, args.prepare_route_set, prepared_route_keys

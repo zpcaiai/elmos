@@ -24,6 +24,7 @@ from types import MappingProxyType
 from .canonical import canonical_bytes, canonical_json, sha256_digest, validate_json_value
 from .errors import (
     IdempotencyConflict,
+    RequestValidationError,
     StepBudgetAuthorizationDenied,
     StepBudgetConflict,
     StepBudgetExhausted,
@@ -461,7 +462,10 @@ def _validate_policy(value: object) -> dict[str, object]:
 def validate_step_budget_request(value: object) -> StepBudgetRequest:
     """Validate and canonicalize the exact public request contract."""
 
-    validate_json_value(value)
+    try:
+        validate_json_value(value)
+    except RequestValidationError as error:
+        raise StepBudgetValidationError(str(error)) from error
     request = _exact_fields(value, _REQUEST_KEYS, "request")
     if request["schema_version"] != REQUEST_SCHEMA_VERSION:
         _fail("unsupported request.schema_version")

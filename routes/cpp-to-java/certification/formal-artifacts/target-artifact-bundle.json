@@ -4,22 +4,22 @@
   "semantic_profile": "typed-pure-function-v1",
   "target_artifacts": [
     {
-      "bytes": 205,
+      "bytes": 221,
       "corpus": "development",
       "path": "certification/artifacts/development/Migrated.java",
-      "sha256": "sha256:a26ca26a135d5e82f24824fe4e35d8bfc8f05545f6ef2b4418e7c11afa582f1e"
+      "sha256": "sha256:85e7b7dc5a5500229b5918da2b61dbbaa807975e9ded38bebf94ff0c33641542"
     },
     {
-      "bytes": 112,
+      "bytes": 127,
       "corpus": "holdout",
       "path": "certification/artifacts/holdout/Migrated.java",
-      "sha256": "sha256:2405a95bd9740706155e091b2ef1672fcf1e60ad75826a354e39d113c60d1a39"
+      "sha256": "sha256:c877d7c32480a6e337947bae7fef20b70e32dd7e1ffdecdbe6f3dd194863ff6c"
     },
     {
-      "bytes": 224,
+      "bytes": 241,
       "corpus": "real-repository",
       "path": "certification/artifacts/real-repository/Migrated.java",
-      "sha256": "sha256:3665906d657f729a38287afde93213aada2208046a872b7f2af893f5e3fcf948"
+      "sha256": "sha256:5fc20cb678274a596109f04d758dd85170478b3537fa10925a8ee6714f9ea17f"
     }
   ]
 }

@@ -1,0 +1,25 @@
+apiVersion: elmos.ai/v1
+kind: SkillDiscoveryPolicy
+spec:
+  startupExpose:
+  - skills/meta/*/SKILL.md
+  doNotExposeAtStartup:
+  - skills/atomic/**/SKILL.md
+  activationFlow:
+  - match user intent to meta skill
+  - load meta SKILL.md
+  - query registry by task facts, tenant policy, compatibility and risk
+  - load only selected atomic SKILL.md files
+  - pin contracts and evidence obligations through compaction
+  maxAtomicCandidates: 12
+  maxActivatedAtomicSkills: 6
+  requireNegativeTriggerEvals: true
+  collisionResolution:
+  - project
+  - tenant
+  - organization
+  - platform
+  trust:
+    unsignedSkill: quarantine
+    revokedSkill: deny
+    unknownTool: deny

@@ -2,8 +2,8 @@
 
 Generated from the route's authoritative `../support-matrix.json`; this view does not create execution or certification evidence.
 
-- Source SHA-256: `sha256:5acf1c9dd6d053afd9b3e9e264ce4bb0e00cca5593742e942b28439c1052c371`
-- Source bytes: `4076`
+- Source SHA-256: `sha256:0f2b8bc677299cdade279e96375043f5a3c66a6a785fd91cc6fa303dd84b5eb2`
+- Source bytes: `4131`
 
 ## typed-pure-function-v1
 
@@ -72,5 +72,5 @@ Generated from the route's authoritative `../support-matrix.json`; this view doe
 
 - Status: `conditional`
 - Strategy: `per-function-proof-plus-module-composition`
-- Evidence: None
+- Evidence: `certification/module-equivalence.json`
 - Reason: Requires at least three independently observed functions, exact symbol/signature closure, semantic chunks, behavior replay, and module composition evidence.

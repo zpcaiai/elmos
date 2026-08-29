@@ -1,0 +1,14 @@
+{
+  "archive_sha256": "9f7440b69a82a52172a1f62da915d96cfa4e0326dc04a305603c76001c8e88bc",
+  "certification": "NOT_CERTIFIED",
+  "customer_evidence_status": "NOT_RUN",
+  "evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "external_evidence_status": "NOT_RUN",
+  "package_id": "elmos-pricing-billing-skills-v1.0.0",
+  "package_version": "1.0.0",
+  "qualification_state": "QUALIFIED_SELF_ATTESTED",
+  "qualified_at": "2026-08-29T01:10:31Z",
+  "schema_version": "elmos.pricing-billing.qualification.v1",
+  "side_effects_authorized": false,
+  "skills_count": 18
+}

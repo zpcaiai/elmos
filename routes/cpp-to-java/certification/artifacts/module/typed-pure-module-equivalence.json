@@ -1,16 +1,34 @@
 {
   "artifact_refs": [
     {
+      "bytes": 9332,
+      "path": "identifier-plan.json",
+      "role": "identifier-plan",
+      "sha256": "sha256:2afb7fd891e8184d1e4b5307966ae9d159e99436fa35299123d72fcf4fc48154"
+    },
+    {
+      "bytes": 7152,
+      "path": "target-semantic-ir.raw.json",
+      "role": "raw-target-ir",
+      "sha256": "sha256:e54c2da717abd6224174533b4381a1fcbc2e50b586ee30436a5e99de08daed44"
+    },
+    {
+      "bytes": 7066,
+      "path": "target-semantic-ir.normalized.json",
+      "role": "normalized-target-ir",
+      "sha256": "sha256:89b2714f4540834f0df5c32d8dc3e30ad90fab2df805b625957842b9a163b9e0"
+    },
+    {
       "bytes": 7670,
       "path": "source-module-semantic-ir.json",
       "role": "source-module-semantic-ir",
       "sha256": "sha256:939a6c00741e82fe3c773e6adc8b5ebf8de49aa0f923ca3a5ffbd55ffc0a3071"
     },
     {
-      "bytes": 7064,
+      "bytes": 7066,
       "path": "target-module-semantic-ir.json",
       "role": "target-module-semantic-ir",
-      "sha256": "sha256:f4f911d92efca63e445e06d66e42223aadbd018063a37e17c3d17192e9e4489c"
+      "sha256": "sha256:89b2714f4540834f0df5c32d8dc3e30ad90fab2df805b625957842b9a163b9e0"
     },
     {
       "bytes": 1881,
@@ -31,10 +49,10 @@
       "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
     },
     {
-      "bytes": 918,
+      "bytes": 1004,
       "path": "Migrated.java",
       "role": "emitted-target-module-artifact",
-      "sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be"
+      "sha256": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2"
     },
     {
       "bytes": 2794,
@@ -43,10 +61,10 @@
       "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
     },
     {
-      "bytes": 1262,
+      "bytes": 3641,
       "path": "module-formal-input.json",
       "role": "module-formal-input",
-      "sha256": "sha256:a42f32910b72f7a70fb055a03225933ef2ce61c478fee1e3d2f576df7347037b"
+      "sha256": "sha256:8688e3efac4f9715cc29e5833c9b776824603cb15f410128e61d7c515855b46c"
     },
     {
       "bytes": 2903,
@@ -55,106 +73,106 @@
       "sha256": "sha256:68f2b4ca55c3c77cdbf6e57aa054c63093c9604274656890ab604420852ba86c"
     },
     {
-      "bytes": 3478,
+      "bytes": 3653,
       "path": "target-module-inventory.json",
       "role": "target-module-inventory",
-      "sha256": "sha256:36bc41eb9e6db4548e096bdc5375da8f7a8e33b096e30983d1560567d86a14c0"
+      "sha256": "sha256:ac52cf31ed2c942385ac540c307cd46a01e1673e9c0475940f30e9a7bffbc473"
     },
     {
-      "bytes": 10211,
+      "bytes": 13188,
       "path": "whole-file-module-closure.json",
       "role": "whole-file-module-closure",
-      "sha256": "sha256:97ab14e70547da64a3db6dac98c3e47f1e8fb3839c1f868b4749eeac43e2d826"
+      "sha256": "sha256:ddb914f9e12240ee183154f23a496c5c8414643ee0cea44bf6a01ad067893f66"
     },
     {
-      "bytes": 1361,
+      "bytes": 2556,
       "path": "formal-function-000-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:2ad1409b679891b524e506435391870fd974a0edb71a6142ac73ce94884fefb5"
+      "sha256": "sha256:d39103ee78f3b5da706eae1e6a5f990f2d15ff9240c634122dacb87be06c85dd"
     },
     {
-      "bytes": 1299,
+      "bytes": 1275,
       "path": "formal-function-000.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:ee2b592cb0df7da757dd63570862fb5b242d579ce9f8c92d985ef7def48caaf2"
+      "sha256": "sha256:4a82d329471346921b816c6ec537c4b73bc61f9cd45e019dc8b352df062366df"
     },
     {
       "bytes": 2414,
       "path": "formal-function-000-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:0b48c04e473c0c655072b4623ca08ad6e1ac1caad9c02b29acec53c1efe5ca48"
+      "sha256": "sha256:6ebd0921a042c52b02fc4898bd264d8a5f2926df38565dc36dfbccc7c315cdd6"
     },
     {
-      "bytes": 1818,
+      "bytes": 3022,
       "path": "formal-function-001-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:e34bf6cf0312a11a38934a1084800d1f95ba81b89042adbd3cf968be0e2d41da"
+      "sha256": "sha256:ad7c91f30d9abd071ed68c2bcc3ef66f660b78e918489ba984762f7082e93d4e"
     },
     {
-      "bytes": 2057,
+      "bytes": 1985,
       "path": "formal-function-001.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:a7657ab86c3e603c3c0594a51cd67db6fc7c5a04875d15c645e7e8428ff2a66a"
+      "sha256": "sha256:45c173a4d98d78ba0c8002c2aa1cd0d7ef71245f46662eec3b0437c408e0ef39"
     },
     {
       "bytes": 2423,
       "path": "formal-function-001-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:aceb7cbb4bf82f940206da6ec0febaf090b3258561121dc5726b3fa6341d50aa"
+      "sha256": "sha256:ac6f9a16956335f716a5c4f97800fbb0c702527c11602d01f95ce0e338286588"
     },
     {
-      "bytes": 2217,
+      "bytes": 3496,
       "path": "formal-function-002-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:2656a08540703ae8f359d74e33cf7e4c82f101de6d1583dfbdb415e014f5c3de"
+      "sha256": "sha256:2dfde1f9dd62c638d80fdb3abcacc80b3bd89a914fdbefc13ea66502366bc102"
     },
     {
-      "bytes": 1933,
+      "bytes": 1873,
       "path": "formal-function-002.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:8977b76b21235427e9b75e2eb0362eda094c7ff88bd257a65ab39ed2c959d72d"
+      "sha256": "sha256:39ebea8bc521bcbe3831229355b4aec35597e8921a21fb72785c1075ebb891b7"
     },
     {
       "bytes": 2450,
       "path": "formal-function-002-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:db64a30234d07e9474f7d832945f979a591938b4288ad7e552c0d54cd96dab07"
+      "sha256": "sha256:552aff46e02f7079ccc21485b1688291dad2dcbeeb7ce67d5585d6f6d086cdae"
     },
     {
-      "bytes": 2223,
+      "bytes": 3505,
       "path": "formal-function-003-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:264d704f47ad9556603611e40492ae4dad769e70717aa8a9b4dd24851fc1ec31"
+      "sha256": "sha256:a82e6cdcfabe8e706f6d5094db63bc6b9dc3db71c8cb2c502383ee1137ed8b8a"
     },
     {
-      "bytes": 2615,
+      "bytes": 2551,
       "path": "formal-function-003.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:9066b0a3f1bed1218be01484f39fd34759742a2f2b931fc580d1f937112b59a8"
+      "sha256": "sha256:a94ebdc16f6d0f121a1d66ba688026237081a691e05819d3967a20dc7b483c64"
     },
     {
       "bytes": 2734,
       "path": "formal-function-003-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:b454f7d039effe464029708c1964423502777f25f53ff6f0955483b53b9ad8d0"
+      "sha256": "sha256:7d126ef45544a28d8e531417da9e883ba8193e3ada5165dad37637d2b9609a9a"
     },
     {
-      "bytes": 1377,
+      "bytes": 2578,
       "path": "formal-function-004-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:a65e579d5033b73740ace8bd928fb21bc5af4aaa52aed287944a790e706d5304"
+      "sha256": "sha256:5047f1911dc89f7be1c401a43a82c41448561bce4aa6f9a011495b8bd6767e9d"
     },
     {
-      "bytes": 1813,
+      "bytes": 1771,
       "path": "formal-function-004.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:6b4ba61699facf04011957a26f5618dc7f7e2fdf6de838485a9f05137d6475ae"
+      "sha256": "sha256:47de40872853250d1d688aa7c2a74d1fc503037e5bb28c1e01542ec5e0d287ab"
     },
     {
       "bytes": 2420,
       "path": "formal-function-004-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:f6cbe8e24b248e6fe3aaae31b12ad50fabe53b7060969f00fcec89ff24ef8e5b"
+      "sha256": "sha256:d774150225fe647a62ccd1ade8fefe992db57100c7cfcfb061f8e1c84b0cc76c"
     },
     {
       "bytes": 8433,
@@ -328,11 +346,11 @@
                 "start_byte": 679
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0",
-              "target_chunk_id": "sha256:d70ccad7ce376693e4e2079c0fc16c0dea0317ebd7d4827fa94a87616e0652a4",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0",
+              "target_chunk_id": "sha256:fcf227708ac539dcf1903b4e677a90b576b5f31de96fead1de599b965ac9a1c3",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 129,
+                "end_byte": 150,
                 "file": "Migrated.java",
                 "start_byte": 34
               }
@@ -349,13 +367,13 @@
                 "start_byte": 689
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:0826dc1d7bbb584ed1ca9dd8e067a9c41b08bb1b90363250fc02d04dd3883ad4",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:5f77c24e01f6c8c0300b3142cc320bcbbf1cf3a50be0c5187ace6fb634e42224",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 73,
+                "end_byte": 94,
                 "file": "Migrated.java",
-                "start_byte": 61
+                "start_byte": 82
               }
             },
             {
@@ -370,13 +388,13 @@
                 "start_byte": 700
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:3c3288a8ed9635e00293615896bacee5d8644bc460e6319350a51e507b83e291",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:50fcbe0582d0d0476a5fe20778f57b31f474fe1310a41b55f00d923e303ff2f0",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 88,
+                "end_byte": 109,
                 "file": "Migrated.java",
-                "start_byte": 75
+                "start_byte": 96
               }
             },
             {
@@ -391,13 +409,13 @@
                 "start_byte": 718
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0",
-              "target_chunk_id": "sha256:fe39d64ee5de8e7ae0c36535448e2ed98b63bc589526e1f897ee80ea638ab3a6",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0",
+              "target_chunk_id": "sha256:7a1d4bc55365f46a0bc5f8da241b9174627864d4df5348c4b38cbd987f9f1c56",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 123,
+                "end_byte": 144,
                 "file": "Migrated.java",
-                "start_byte": 100
+                "start_byte": 121
               }
             },
             {
@@ -412,13 +430,13 @@
                 "start_byte": 725
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/expression",
-              "target_chunk_id": "sha256:2f797a52a7a080f335b18b8e0cfdf7d8ba5daf40bec2e2a054ca6d28dd9589d3",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/expression",
+              "target_chunk_id": "sha256:d12637e8679dda7bc94251873969a67f0e397fa2c98851e6bab144c9bed10a27",
               "target_semantic_pointer": "/functions/0/body/0/expression",
               "target_span": {
-                "end_byte": 122,
+                "end_byte": 143,
                 "file": "Migrated.java",
-                "start_byte": 107
+                "start_byte": 128
               }
             },
             {
@@ -433,13 +451,13 @@
                 "start_byte": 725
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/expression/left",
-              "target_chunk_id": "sha256:eb7a5ff29179c3f06c815e85855c5a69c389a361b6f6dcdfecb01eb85ed0075c",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/expression/left",
+              "target_chunk_id": "sha256:e2706c4268ee3395a5b953efd11bdc8089a60322aa6df1c5daa499f7013336f2",
               "target_semantic_pointer": "/functions/0/body/0/expression/left",
               "target_span": {
-                "end_byte": 112,
+                "end_byte": 133,
                 "file": "Migrated.java",
-                "start_byte": 108
+                "start_byte": 129
               }
             },
             {
@@ -454,13 +472,13 @@
                 "start_byte": 733
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/expression/right",
-              "target_chunk_id": "sha256:8dc029d85108ab25cf52a84b8515a31a4769a8e2c595d8fc9ca73fe8e9a3a647",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/expression/right",
+              "target_chunk_id": "sha256:c5d90be27d43540b1360e65ea9d9ffe743bed80285df018ca56207c982d061fb",
               "target_semantic_pointer": "/functions/0/body/0/expression/right",
               "target_span": {
-                "end_byte": 121,
+                "end_byte": 142,
                 "file": "Migrated.java",
-                "start_byte": 116
+                "start_byte": 137
               }
             }
           ],
@@ -492,8 +510,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 918,
-              "artifact_sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be",
+              "artifact_byte_count": 1004,
+              "artifact_sha256": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2",
               "logical_file": "Migrated.java",
               "node_count": 7,
               "rules": [
@@ -540,13 +558,13 @@
           },
           "formal_input": {
             "path": "formal-function-000-input.json",
-            "sha256": "sha256:2ad1409b679891b524e506435391870fd974a0edb71a6142ac73ce94884fefb5"
+            "sha256": "sha256:d39103ee78f3b5da706eae1e6a5f990f2d15ff9240c634122dacb87be06c85dd"
           },
-          "formal_input_digest": "sha256:2ad1409b679891b524e506435391870fd974a0edb71a6142ac73ce94884fefb5",
+          "formal_input_digest": "sha256:d39103ee78f3b5da706eae1e6a5f990f2d15ff9240c634122dacb87be06c85dd",
           "formal_input_path": "formal-function-000-input.json",
-          "formal_input_sha256": "sha256:2ad1409b679891b524e506435391870fd974a0edb71a6142ac73ce94884fefb5",
+          "formal_input_sha256": "sha256:d39103ee78f3b5da706eae1e6a5f990f2d15ff9240c634122dacb87be06c85dd",
           "formal_result_path": "formal-function-000-result.json",
-          "formal_result_sha256": "sha256:0b48c04e473c0c655072b4623ca08ad6e1ac1caad9c02b29acec53c1efe5ca48",
+          "formal_result_sha256": "sha256:6ebd0921a042c52b02fc4898bd264d8a5f2926df38565dc36dfbccc7c315cdd6",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:6f2a21b2edd2a1d48fcbcc6bd4d271a2077f4d2a6f839a5db112f8a84fface11",
@@ -585,11 +603,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-000.smt2",
-            "sha256": "sha256:ee2b592cb0df7da757dd63570862fb5b242d579ce9f8c92d985ef7def48caaf2"
+            "sha256": "sha256:4a82d329471346921b816c6ec537c4b73bc61f9cd45e019dc8b352df062366df"
           },
-          "solver_input_digest": "sha256:ee2b592cb0df7da757dd63570862fb5b242d579ce9f8c92d985ef7def48caaf2",
+          "solver_input_digest": "sha256:4a82d329471346921b816c6ec537c4b73bc61f9cd45e019dc8b352df062366df",
           "solver_input_path": "formal-function-000.smt2",
-          "solver_input_sha256": "sha256:ee2b592cb0df7da757dd63570862fb5b242d579ce9f8c92d985ef7def48caaf2",
+          "solver_input_sha256": "sha256:4a82d329471346921b816c6ec537c4b73bc61f9cd45e019dc8b352df062366df",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "both",
           "version": "4.16.0"
@@ -759,13 +777,13 @@
                 "start_byte": 20
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0",
-              "target_chunk_id": "sha256:7c5fe42be7c109537077606341f9852e26a21da374ed15ac81c374e285b9519e",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0",
+              "target_chunk_id": "sha256:9e1fad63d94069f5990ba7b9fbe0c02e96532398959172c5360cbd8f9951755d",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 303,
+                "end_byte": 340,
                 "file": "Migrated.java",
-                "start_byte": 135
+                "start_byte": 156
               }
             },
             {
@@ -780,13 +798,13 @@
                 "start_byte": 43
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:86e1758b513e46c8fe80d9399400d75447873eaacd70fe36f5abf862866304f8",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:4c137f068ce2f14cb52b43b3ef2aad54a21d760d5ee47266cc35b6605010094a",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 177,
+                "end_byte": 214,
                 "file": "Migrated.java",
-                "start_byte": 164
+                "start_byte": 201
               }
             },
             {
@@ -801,13 +819,13 @@
                 "start_byte": 66
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:2b5fee75b96f75dc249df88fc00edb7d5656b0e183206b8ed0c0267995f98bf2",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:9b9da4787107d7ea5978ab9673a41a029182504f0ef9f476236c35009efd1463",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 187,
+                "end_byte": 224,
                 "file": "Migrated.java",
-                "start_byte": 179
+                "start_byte": 216
               }
             },
             {
@@ -822,13 +840,13 @@
                 "start_byte": 90
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0",
-              "target_chunk_id": "sha256:3a3f2f7262509235d91497b970a49ca3e53b16dd80c7eca4b903894503bd4059",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0",
+              "target_chunk_id": "sha256:8bfc9ef8c82f5278dbb977e118cf7394b99b74d46774d6cca75f7c4bbbed01be",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 252,
+                "end_byte": 289,
                 "file": "Migrated.java",
-                "start_byte": 199
+                "start_byte": 236
               }
             },
             {
@@ -843,13 +861,13 @@
                 "start_byte": 94
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition",
-              "target_chunk_id": "sha256:477502d5683e20e7d7625fc047a26532c1ce45a2ac149800f0d24390d7dd3d49",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:d78493007db4a9ef16550ff36c001070d0c8ab32251b7b19f05a14162da988a3",
               "target_semantic_pointer": "/functions/0/body/0/condition",
               "target_span": {
-                "end_byte": 218,
+                "end_byte": 255,
                 "file": "Migrated.java",
-                "start_byte": 202
+                "start_byte": 239
               }
             },
             {
@@ -864,13 +882,13 @@
                 "start_byte": 94
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition/left",
-              "target_chunk_id": "sha256:0406f4981d80eacb61a919f42a19837b319291ad43318bc1e6197179579930d1",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:9fe6fb5d48a7d53bf320652b4b157db2798f71bfb5bc052ecb0bff1ecdf20f7e",
               "target_semantic_pointer": "/functions/0/body/0/condition/left",
               "target_span": {
-                "end_byte": 212,
+                "end_byte": 249,
                 "file": "Migrated.java",
-                "start_byte": 204
+                "start_byte": 241
               }
             },
             {
@@ -885,13 +903,13 @@
                 "start_byte": 105
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition/right",
-              "target_chunk_id": "sha256:0bce86d2bffb8fef18155ae8a852708160d632266f42aa02620c32e3b14bb8d7",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:42977097a474659de70354a1af4d0f752c5df8b8937b1263960f3301b62330b1",
               "target_semantic_pointer": "/functions/0/body/0/condition/right",
               "target_span": {
-                "end_byte": 216,
+                "end_byte": 253,
                 "file": "Migrated.java",
-                "start_byte": 215
+                "start_byte": 252
               }
             },
             {
@@ -906,13 +924,13 @@
                 "start_byte": 118
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/then/0",
-              "target_chunk_id": "sha256:58f7603ebff5fb845f725df027c56a5dda9605f93bb08f6de6e291bb4f28b73c",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:5d9883efd6cb031e0f151203b9b5b06f6b55f31ec25981b1b179146d8b68659a",
               "target_semantic_pointer": "/functions/0/body/0/then/0",
               "target_span": {
-                "end_byte": 242,
+                "end_byte": 279,
                 "file": "Migrated.java",
-                "start_byte": 233
+                "start_byte": 270
               }
             },
             {
@@ -927,13 +945,13 @@
                 "start_byte": 125
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/then/0/expression",
-              "target_chunk_id": "sha256:43595cc0fdf7da2a855b4e5c2ac0cbedc6ef4c36b2060d45f3a767134fe0e96b",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:eb37dae07fe3c436aee074d0b3ef37c341f8d21748ca03bbd022b3e852863a52",
               "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
               "target_span": {
-                "end_byte": 241,
+                "end_byte": 278,
                 "file": "Migrated.java",
-                "start_byte": 240
+                "start_byte": 277
               }
             },
             {
@@ -948,13 +966,13 @@
                 "start_byte": 138
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1",
-              "target_chunk_id": "sha256:d2cdc71d76649fa749da8a159644d987bc4c273acbeefab2dabd9e2adc544add",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1",
+              "target_chunk_id": "sha256:cb083f8782476c72728d0d4768f4c16535d0b69c0bb716a151834c45e62d8a5e",
               "target_semantic_pointer": "/functions/0/body/1",
               "target_span": {
-                "end_byte": 297,
+                "end_byte": 334,
                 "file": "Migrated.java",
-                "start_byte": 261
+                "start_byte": 298
               }
             },
             {
@@ -969,13 +987,13 @@
                 "start_byte": 145
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/expression",
-              "target_chunk_id": "sha256:784c183700f924452eff06305cfb77d11579192dbee4466c617f15d1d333b893",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1/expression",
+              "target_chunk_id": "sha256:f4dbdb35103c2f776c60147e44c9577742c793b303232ac7c3531320f3af078e",
               "target_semantic_pointer": "/functions/0/body/1/expression",
               "target_span": {
-                "end_byte": 296,
+                "end_byte": 333,
                 "file": "Migrated.java",
-                "start_byte": 268
+                "start_byte": 305
               }
             },
             {
@@ -990,13 +1008,13 @@
                 "start_byte": 145
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/expression/left",
-              "target_chunk_id": "sha256:c3971e72aa6c3f93e4518a18f0138cabea077f477a917a33eee764673de6d402",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1/expression/left",
+              "target_chunk_id": "sha256:90836b8ec4d2cc8bf6c62820daa971c6a27ab9fee6952aa15a4e8379466487e5",
               "target_semantic_pointer": "/functions/0/body/1/expression/left",
               "target_span": {
-                "end_byte": 290,
+                "end_byte": 327,
                 "file": "Migrated.java",
-                "start_byte": 282
+                "start_byte": 319
               }
             },
             {
@@ -1011,13 +1029,13 @@
                 "start_byte": 156
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/expression/right",
-              "target_chunk_id": "sha256:f30dcb050531e7096d12e49bf17698484db14af35c10701cc20e902ddf1306bd",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1/expression/right",
+              "target_chunk_id": "sha256:6ec84d28f07d57a790007ded4f18be63a112c5ce4affcb68f2f2100f22653dda",
               "target_semantic_pointer": "/functions/0/body/1/expression/right",
               "target_span": {
-                "end_byte": 295,
+                "end_byte": 332,
                 "file": "Migrated.java",
-                "start_byte": 292
+                "start_byte": 329
               }
             }
           ],
@@ -1049,8 +1067,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 918,
-              "artifact_sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be",
+              "artifact_byte_count": 1004,
+              "artifact_sha256": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2",
               "logical_file": "Migrated.java",
               "node_count": 13,
               "rules": [
@@ -1097,13 +1115,13 @@
           },
           "formal_input": {
             "path": "formal-function-001-input.json",
-            "sha256": "sha256:e34bf6cf0312a11a38934a1084800d1f95ba81b89042adbd3cf968be0e2d41da"
+            "sha256": "sha256:ad7c91f30d9abd071ed68c2bcc3ef66f660b78e918489ba984762f7082e93d4e"
           },
-          "formal_input_digest": "sha256:e34bf6cf0312a11a38934a1084800d1f95ba81b89042adbd3cf968be0e2d41da",
+          "formal_input_digest": "sha256:ad7c91f30d9abd071ed68c2bcc3ef66f660b78e918489ba984762f7082e93d4e",
           "formal_input_path": "formal-function-001-input.json",
-          "formal_input_sha256": "sha256:e34bf6cf0312a11a38934a1084800d1f95ba81b89042adbd3cf968be0e2d41da",
+          "formal_input_sha256": "sha256:ad7c91f30d9abd071ed68c2bcc3ef66f660b78e918489ba984762f7082e93d4e",
           "formal_result_path": "formal-function-001-result.json",
-          "formal_result_sha256": "sha256:aceb7cbb4bf82f940206da6ec0febaf090b3258561121dc5726b3fa6341d50aa",
+          "formal_result_sha256": "sha256:ac6f9a16956335f716a5c4f97800fbb0c702527c11602d01f95ce0e338286588",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:0ea3506a291ba9e34d6410fcee148d1fe945c5f185c3064e0b6f71d36816be78",
@@ -1142,11 +1160,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-001.smt2",
-            "sha256": "sha256:a7657ab86c3e603c3c0594a51cd67db6fc7c5a04875d15c645e7e8428ff2a66a"
+            "sha256": "sha256:45c173a4d98d78ba0c8002c2aa1cd0d7ef71245f46662eec3b0437c408e0ef39"
           },
-          "solver_input_digest": "sha256:a7657ab86c3e603c3c0594a51cd67db6fc7c5a04875d15c645e7e8428ff2a66a",
+          "solver_input_digest": "sha256:45c173a4d98d78ba0c8002c2aa1cd0d7ef71245f46662eec3b0437c408e0ef39",
           "solver_input_path": "formal-function-001.smt2",
-          "solver_input_sha256": "sha256:a7657ab86c3e603c3c0594a51cd67db6fc7c5a04875d15c645e7e8428ff2a66a",
+          "solver_input_sha256": "sha256:45c173a4d98d78ba0c8002c2aa1cd0d7ef71245f46662eec3b0437c408e0ef39",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "calculate",
           "version": "4.16.0"
@@ -1341,13 +1359,13 @@
                 "start_byte": 164
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0",
-              "target_chunk_id": "sha256:d647ce41c0274e02e908f0f5814f51620815bc3f9f77b36ab8c7117dbfa266d7",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0",
+              "target_chunk_id": "sha256:0325dcc501564f6e19a0c77cfad42d87850ce3b7c6b22472d80fe652b64111ac",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 545,
+                "end_byte": 602,
                 "file": "Migrated.java",
-                "start_byte": 309
+                "start_byte": 346
               }
             },
             {
@@ -1362,13 +1380,13 @@
                 "start_byte": 183
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:92572f4941533f862c376f1b1ae8d21a9b103151d7cb5cbce50c0c67ae0ba392",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:fa6f2c6cac0e2f9892315f4c1cd8f8bfab7df1629e41ece72f17e59aa970a782",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 344,
+                "end_byte": 401,
                 "file": "Migrated.java",
-                "start_byte": 334
+                "start_byte": 391
               }
             },
             {
@@ -1383,13 +1401,13 @@
                 "start_byte": 203
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:c622752cd9cd7ef68bc549b3601ae57ecf173028b6c312dd61d1e345be88c05a",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:f35464214301446f3ba387ff3abd118dc3ee71997f2cda4a11261e4675f489f1",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 358,
+                "end_byte": 415,
                 "file": "Migrated.java",
-                "start_byte": 346
+                "start_byte": 403
               }
             },
             {
@@ -1404,13 +1422,13 @@
                 "start_byte": 225
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/2",
-              "target_chunk_id": "sha256:9b2cf837d8dd0f454f7b1b79acf53d889b48f6c160b0af69003fb68bf186efe1",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/parameters/2",
+              "target_chunk_id": "sha256:d2e426161a83d4ee5623d97b5a92654229f536049846bc59e3275974dab31454",
               "target_semantic_pointer": "/functions/0/parameters/2",
               "target_span": {
-                "end_byte": 372,
+                "end_byte": 429,
                 "file": "Migrated.java",
-                "start_byte": 360
+                "start_byte": 417
               }
             },
             {
@@ -1425,13 +1443,13 @@
                 "start_byte": 253
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0",
-              "target_chunk_id": "sha256:25b377847c236f07adf91b4817498c410d3b86c964e1695c462b4e22ae5500d1",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0",
+              "target_chunk_id": "sha256:ae0bb1975f1601d6e47d3ccd658763a56541112da1e9affb13c43899ed2f0ba5",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 446,
+                "end_byte": 503,
                 "file": "Migrated.java",
-                "start_byte": 384
+                "start_byte": 441
               }
             },
             {
@@ -1446,13 +1464,13 @@
                 "start_byte": 257
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition",
-              "target_chunk_id": "sha256:ec6454a1be491c70248befa4dba65c356ea3bb23933de1f9fbf527cebf171519",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:499f47ca62103e986c12098b78c237a9e70e40d51469973b2ed2a46f512bbf1e",
               "target_semantic_pointer": "/functions/0/body/0/condition",
               "target_span": {
-                "end_byte": 406,
+                "end_byte": 463,
                 "file": "Migrated.java",
-                "start_byte": 387
+                "start_byte": 444
               }
             },
             {
@@ -1467,13 +1485,13 @@
                 "start_byte": 257
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition/left",
-              "target_chunk_id": "sha256:10a9f033a3587900f3f1387c558a408f02114d62769dd5ad7d9f53b206dbc8f7",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:1bcc26844d911d4f01a590397092319759a27b78476b6ac0cb3b4e5e9e548e8e",
               "target_semantic_pointer": "/functions/0/body/0/condition/left",
               "target_span": {
-                "end_byte": 394,
+                "end_byte": 451,
                 "file": "Migrated.java",
-                "start_byte": 389
+                "start_byte": 446
               }
             },
             {
@@ -1488,13 +1506,13 @@
                 "start_byte": 265
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition/right",
-              "target_chunk_id": "sha256:10f63a42872a90f9118df0c78f0a204ccfa0cd951b5dd94af45ec994987cac6d",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:1610c66ee5beb7786f90066b1789a78f6a054108341d8e573a107021001645af",
               "target_semantic_pointer": "/functions/0/body/0/condition/right",
               "target_span": {
-                "end_byte": 404,
+                "end_byte": 461,
                 "file": "Migrated.java",
-                "start_byte": 397
+                "start_byte": 454
               }
             },
             {
@@ -1509,13 +1527,13 @@
                 "start_byte": 284
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/then/0",
-              "target_chunk_id": "sha256:8f4314255b5d813a5e11874de65281b027dea3b6ad6d439c25215cde22a0c2c5",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:d23193a6895ee4346eb340aadd7ffa7dbf8832d3250a618021ef1a2a8d598fab",
               "target_semantic_pointer": "/functions/0/body/0/then/0",
               "target_span": {
-                "end_byte": 436,
+                "end_byte": 493,
                 "file": "Migrated.java",
-                "start_byte": 421
+                "start_byte": 478
               }
             },
             {
@@ -1530,13 +1548,13 @@
                 "start_byte": 291
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/then/0/expression",
-              "target_chunk_id": "sha256:a1f9d02f51d5c297ff6e03228caff89fbd5342f483d86821c692f4ed0dd786ee",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:ff55fb65bfe71bceee0549b13c1063a730b1a4d7529f3a5a5ca8c106851b0ed0",
               "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
               "target_span": {
-                "end_byte": 435,
+                "end_byte": 492,
                 "file": "Migrated.java",
-                "start_byte": 428
+                "start_byte": 485
               }
             },
             {
@@ -1551,13 +1569,13 @@
                 "start_byte": 310
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1",
-              "target_chunk_id": "sha256:7fffef3827074aab3100d4a75474a63df300a77938ed31102de9ed945cde11f1",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1",
+              "target_chunk_id": "sha256:2f36ec2e781183e75bbba401bb263821414975fbe1194aac304221fb4b95e672",
               "target_semantic_pointer": "/functions/0/body/1",
               "target_span": {
-                "end_byte": 517,
+                "end_byte": 574,
                 "file": "Migrated.java",
-                "start_byte": 455
+                "start_byte": 512
               }
             },
             {
@@ -1572,13 +1590,13 @@
                 "start_byte": 314
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/condition",
-              "target_chunk_id": "sha256:64460150640c92e2aaa91555b751d9b31724d3562f702f4a39ea29a45e85fb10",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1/condition",
+              "target_chunk_id": "sha256:7f8570f473160b065e80088a9561fed69f780bb825686ef269979b841107925d",
               "target_semantic_pointer": "/functions/0/body/1/condition",
               "target_span": {
-                "end_byte": 477,
+                "end_byte": 534,
                 "file": "Migrated.java",
-                "start_byte": 458
+                "start_byte": 515
               }
             },
             {
@@ -1593,13 +1611,13 @@
                 "start_byte": 314
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/condition/left",
-              "target_chunk_id": "sha256:422489f7f02b934ccb158007c3e9b081e0a05678841ae85d97ac9cc4220d9239",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1/condition/left",
+              "target_chunk_id": "sha256:30a3a16feb99150d7ba23ce7eb288c153b529fa35d1500adbafac94cefb1c63a",
               "target_semantic_pointer": "/functions/0/body/1/condition/left",
               "target_span": {
-                "end_byte": 465,
+                "end_byte": 522,
                 "file": "Migrated.java",
-                "start_byte": 460
+                "start_byte": 517
               }
             },
             {
@@ -1614,13 +1632,13 @@
                 "start_byte": 322
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/condition/right",
-              "target_chunk_id": "sha256:8103f2a9cd84cac972a0913d26fc3cd9d6c8150d5df227211059e98ba2c3c53d",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1/condition/right",
+              "target_chunk_id": "sha256:f98212d096f5f1eb21f8ae0728bbf59ed998ca35d591e30910033545ab18e04e",
               "target_semantic_pointer": "/functions/0/body/1/condition/right",
               "target_span": {
-                "end_byte": 475,
+                "end_byte": 532,
                 "file": "Migrated.java",
-                "start_byte": 468
+                "start_byte": 525
               }
             },
             {
@@ -1635,13 +1653,13 @@
                 "start_byte": 341
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/then/0",
-              "target_chunk_id": "sha256:cfca6519c19ef1aa6c395585f52ac11df48a53322dee32f76dda6a1214f08352",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1/then/0",
+              "target_chunk_id": "sha256:37fb403237636ff6fbf090d60dc8d6c62172dda873ec42c825caa669a3234636",
               "target_semantic_pointer": "/functions/0/body/1/then/0",
               "target_span": {
-                "end_byte": 507,
+                "end_byte": 564,
                 "file": "Migrated.java",
-                "start_byte": 492
+                "start_byte": 549
               }
             },
             {
@@ -1656,13 +1674,13 @@
                 "start_byte": 348
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/then/0/expression",
-              "target_chunk_id": "sha256:7f8e2a23a74629573a82821dd45b27c0b05d3452649974d0f5faae978ecdcdae",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1/then/0/expression",
+              "target_chunk_id": "sha256:d4e9b32a2060ac171c3a795ba2ffee29db1c0bf72d1c068780088e5d62eda5a4",
               "target_semantic_pointer": "/functions/0/body/1/then/0/expression",
               "target_span": {
-                "end_byte": 506,
+                "end_byte": 563,
                 "file": "Migrated.java",
-                "start_byte": 499
+                "start_byte": 556
               }
             },
             {
@@ -1677,13 +1695,13 @@
                 "start_byte": 367
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/2",
-              "target_chunk_id": "sha256:40a25dca95e6f8c7d17c25a092d34b26515c2c19017328c40d5dab34b80baa91",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/2",
+              "target_chunk_id": "sha256:b438aa8ef76948707e36a63650ad3b28ff7796d76fe946cc88c64e816ea045f6",
               "target_semantic_pointer": "/functions/0/body/2",
               "target_span": {
-                "end_byte": 539,
+                "end_byte": 596,
                 "file": "Migrated.java",
-                "start_byte": 526
+                "start_byte": 583
               }
             },
             {
@@ -1698,13 +1716,13 @@
                 "start_byte": 374
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/2/expression",
-              "target_chunk_id": "sha256:abb3971bcf5bee4fc4dd1b97074a4e2e0ecd3427a3061d4db0e70bc5a81d706f",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/2/expression",
+              "target_chunk_id": "sha256:37fe72764d6e92d324f1321be86e53faaf00ce9fadaf61733aef258e42825971",
               "target_semantic_pointer": "/functions/0/body/2/expression",
               "target_span": {
-                "end_byte": 538,
+                "end_byte": 595,
                 "file": "Migrated.java",
-                "start_byte": 533
+                "start_byte": 590
               }
             }
           ],
@@ -1736,8 +1754,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 918,
-              "artifact_sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be",
+              "artifact_byte_count": 1004,
+              "artifact_sha256": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2",
               "logical_file": "Migrated.java",
               "node_count": 18,
               "rules": [
@@ -1785,13 +1803,13 @@
           },
           "formal_input": {
             "path": "formal-function-002-input.json",
-            "sha256": "sha256:2656a08540703ae8f359d74e33cf7e4c82f101de6d1583dfbdb415e014f5c3de"
+            "sha256": "sha256:2dfde1f9dd62c638d80fdb3abcacc80b3bd89a914fdbefc13ea66502366bc102"
           },
-          "formal_input_digest": "sha256:2656a08540703ae8f359d74e33cf7e4c82f101de6d1583dfbdb415e014f5c3de",
+          "formal_input_digest": "sha256:2dfde1f9dd62c638d80fdb3abcacc80b3bd89a914fdbefc13ea66502366bc102",
           "formal_input_path": "formal-function-002-input.json",
-          "formal_input_sha256": "sha256:2656a08540703ae8f359d74e33cf7e4c82f101de6d1583dfbdb415e014f5c3de",
+          "formal_input_sha256": "sha256:2dfde1f9dd62c638d80fdb3abcacc80b3bd89a914fdbefc13ea66502366bc102",
           "formal_result_path": "formal-function-002-result.json",
-          "formal_result_sha256": "sha256:db64a30234d07e9474f7d832945f979a591938b4288ad7e552c0d54cd96dab07",
+          "formal_result_sha256": "sha256:552aff46e02f7079ccc21485b1688291dad2dcbeeb7ce67d5585d6f6d086cdae",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:2a9f5f06e16464ef3df8aa26bdaa21bccd3d4930f9a645385368958438970911",
@@ -1830,11 +1848,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-002.smt2",
-            "sha256": "sha256:8977b76b21235427e9b75e2eb0362eda094c7ff88bd257a65ab39ed2c959d72d"
+            "sha256": "sha256:39ebea8bc521bcbe3831229355b4aec35597e8921a21fb72785c1075ebb891b7"
           },
-          "solver_input_digest": "sha256:8977b76b21235427e9b75e2eb0362eda094c7ff88bd257a65ab39ed2c959d72d",
+          "solver_input_digest": "sha256:39ebea8bc521bcbe3831229355b4aec35597e8921a21fb72785c1075ebb891b7",
           "solver_input_path": "formal-function-002.smt2",
-          "solver_input_sha256": "sha256:8977b76b21235427e9b75e2eb0362eda094c7ff88bd257a65ab39ed2c959d72d",
+          "solver_input_sha256": "sha256:39ebea8bc521bcbe3831229355b4aec35597e8921a21fb72785c1075ebb891b7",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "clamp",
           "version": "4.16.0"
@@ -2033,13 +2051,13 @@
                 "start_byte": 477
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0",
-              "target_chunk_id": "sha256:0ee070287784855c5256af2bfec34d8aa052a7c0eeb34cf147c77f0f5fa974c9",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0",
+              "target_chunk_id": "sha256:805b55af7cafd0b3de7714ce3ccdae7032a6d4182850d9e6cb51366b8e0ab017",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 801,
+                "end_byte": 872,
                 "file": "Migrated.java",
-                "start_byte": 551
+                "start_byte": 608
               }
             },
             {
@@ -2054,13 +2072,13 @@
                 "start_byte": 496
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:1f450dbe7dedb29aabeac8974c2c1ab0c64be860668cea9eacaf7274b3861a7a",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:f699513cbe623842473decd4c013cae680d1010da59e69493cb10f4c63a52ffb",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 596,
+                "end_byte": 667,
                 "file": "Migrated.java",
-                "start_byte": 584
+                "start_byte": 655
               }
             },
             {
@@ -2075,13 +2093,13 @@
                 "start_byte": 510
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:e68d91ec206790fe3f91d253f67cb46f0281533ac14a8c1656ac424c53483d4e",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:7e46e5e9067f4e92f3ce74c79f3e7f83e8ca75d38f0b18658249797ae2eed1ba",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 612,
+                "end_byte": 683,
                 "file": "Migrated.java",
-                "start_byte": 598
+                "start_byte": 669
               }
             },
             {
@@ -2096,13 +2114,13 @@
                 "start_byte": 526
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/2",
-              "target_chunk_id": "sha256:f4cf8c0ed03215c98d93b21c09da56608739b5f1728b7ee033e220cd22de71c8",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/parameters/2",
+              "target_chunk_id": "sha256:1579b42eccf5bdecbff26f384a8b47fbd0fc2b333f6bc3ed97ea35a812ecf111",
               "target_semantic_pointer": "/functions/0/parameters/2",
               "target_span": {
-                "end_byte": 628,
+                "end_byte": 699,
                 "file": "Migrated.java",
-                "start_byte": 614
+                "start_byte": 685
               }
             },
             {
@@ -2117,13 +2135,13 @@
                 "start_byte": 548
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0",
-              "target_chunk_id": "sha256:25b377847c236f07adf91b4817498c410d3b86c964e1695c462b4e22ae5500d1",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0",
+              "target_chunk_id": "sha256:ae0bb1975f1601d6e47d3ccd658763a56541112da1e9affb13c43899ed2f0ba5",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 702,
+                "end_byte": 773,
                 "file": "Migrated.java",
-                "start_byte": 640
+                "start_byte": 711
               }
             },
             {
@@ -2138,13 +2156,13 @@
                 "start_byte": 552
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition",
-              "target_chunk_id": "sha256:ec6454a1be491c70248befa4dba65c356ea3bb23933de1f9fbf527cebf171519",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:499f47ca62103e986c12098b78c237a9e70e40d51469973b2ed2a46f512bbf1e",
               "target_semantic_pointer": "/functions/0/body/0/condition",
               "target_span": {
-                "end_byte": 662,
+                "end_byte": 733,
                 "file": "Migrated.java",
-                "start_byte": 643
+                "start_byte": 714
               }
             },
             {
@@ -2159,13 +2177,13 @@
                 "start_byte": 552
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition/left",
-              "target_chunk_id": "sha256:10a9f033a3587900f3f1387c558a408f02114d62769dd5ad7d9f53b206dbc8f7",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:1bcc26844d911d4f01a590397092319759a27b78476b6ac0cb3b4e5e9e548e8e",
               "target_semantic_pointer": "/functions/0/body/0/condition/left",
               "target_span": {
-                "end_byte": 650,
+                "end_byte": 721,
                 "file": "Migrated.java",
-                "start_byte": 645
+                "start_byte": 716
               }
             },
             {
@@ -2180,13 +2198,13 @@
                 "start_byte": 560
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition/right",
-              "target_chunk_id": "sha256:10f63a42872a90f9118df0c78f0a204ccfa0cd951b5dd94af45ec994987cac6d",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:1610c66ee5beb7786f90066b1789a78f6a054108341d8e573a107021001645af",
               "target_semantic_pointer": "/functions/0/body/0/condition/right",
               "target_span": {
-                "end_byte": 660,
+                "end_byte": 731,
                 "file": "Migrated.java",
-                "start_byte": 653
+                "start_byte": 724
               }
             },
             {
@@ -2201,13 +2219,13 @@
                 "start_byte": 579
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/then/0",
-              "target_chunk_id": "sha256:8f4314255b5d813a5e11874de65281b027dea3b6ad6d439c25215cde22a0c2c5",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:d23193a6895ee4346eb340aadd7ffa7dbf8832d3250a618021ef1a2a8d598fab",
               "target_semantic_pointer": "/functions/0/body/0/then/0",
               "target_span": {
-                "end_byte": 692,
+                "end_byte": 763,
                 "file": "Migrated.java",
-                "start_byte": 677
+                "start_byte": 748
               }
             },
             {
@@ -2222,13 +2240,13 @@
                 "start_byte": 586
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/then/0/expression",
-              "target_chunk_id": "sha256:a1f9d02f51d5c297ff6e03228caff89fbd5342f483d86821c692f4ed0dd786ee",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:ff55fb65bfe71bceee0549b13c1063a730b1a4d7529f3a5a5ca8c106851b0ed0",
               "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
               "target_span": {
-                "end_byte": 691,
+                "end_byte": 762,
                 "file": "Migrated.java",
-                "start_byte": 684
+                "start_byte": 755
               }
             },
             {
@@ -2243,13 +2261,13 @@
                 "start_byte": 605
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1",
-              "target_chunk_id": "sha256:7fffef3827074aab3100d4a75474a63df300a77938ed31102de9ed945cde11f1",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1",
+              "target_chunk_id": "sha256:2f36ec2e781183e75bbba401bb263821414975fbe1194aac304221fb4b95e672",
               "target_semantic_pointer": "/functions/0/body/1",
               "target_span": {
-                "end_byte": 773,
+                "end_byte": 844,
                 "file": "Migrated.java",
-                "start_byte": 711
+                "start_byte": 782
               }
             },
             {
@@ -2264,13 +2282,13 @@
                 "start_byte": 609
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/condition",
-              "target_chunk_id": "sha256:64460150640c92e2aaa91555b751d9b31724d3562f702f4a39ea29a45e85fb10",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1/condition",
+              "target_chunk_id": "sha256:7f8570f473160b065e80088a9561fed69f780bb825686ef269979b841107925d",
               "target_semantic_pointer": "/functions/0/body/1/condition",
               "target_span": {
-                "end_byte": 733,
+                "end_byte": 804,
                 "file": "Migrated.java",
-                "start_byte": 714
+                "start_byte": 785
               }
             },
             {
@@ -2285,13 +2303,13 @@
                 "start_byte": 609
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/condition/left",
-              "target_chunk_id": "sha256:422489f7f02b934ccb158007c3e9b081e0a05678841ae85d97ac9cc4220d9239",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1/condition/left",
+              "target_chunk_id": "sha256:30a3a16feb99150d7ba23ce7eb288c153b529fa35d1500adbafac94cefb1c63a",
               "target_semantic_pointer": "/functions/0/body/1/condition/left",
               "target_span": {
-                "end_byte": 721,
+                "end_byte": 792,
                 "file": "Migrated.java",
-                "start_byte": 716
+                "start_byte": 787
               }
             },
             {
@@ -2306,13 +2324,13 @@
                 "start_byte": 617
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/condition/right",
-              "target_chunk_id": "sha256:8103f2a9cd84cac972a0913d26fc3cd9d6c8150d5df227211059e98ba2c3c53d",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1/condition/right",
+              "target_chunk_id": "sha256:f98212d096f5f1eb21f8ae0728bbf59ed998ca35d591e30910033545ab18e04e",
               "target_semantic_pointer": "/functions/0/body/1/condition/right",
               "target_span": {
-                "end_byte": 731,
+                "end_byte": 802,
                 "file": "Migrated.java",
-                "start_byte": 724
+                "start_byte": 795
               }
             },
             {
@@ -2327,13 +2345,13 @@
                 "start_byte": 636
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/then/0",
-              "target_chunk_id": "sha256:cfca6519c19ef1aa6c395585f52ac11df48a53322dee32f76dda6a1214f08352",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1/then/0",
+              "target_chunk_id": "sha256:37fb403237636ff6fbf090d60dc8d6c62172dda873ec42c825caa669a3234636",
               "target_semantic_pointer": "/functions/0/body/1/then/0",
               "target_span": {
-                "end_byte": 763,
+                "end_byte": 834,
                 "file": "Migrated.java",
-                "start_byte": 748
+                "start_byte": 819
               }
             },
             {
@@ -2348,13 +2366,13 @@
                 "start_byte": 643
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/then/0/expression",
-              "target_chunk_id": "sha256:7f8e2a23a74629573a82821dd45b27c0b05d3452649974d0f5faae978ecdcdae",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/1/then/0/expression",
+              "target_chunk_id": "sha256:d4e9b32a2060ac171c3a795ba2ffee29db1c0bf72d1c068780088e5d62eda5a4",
               "target_semantic_pointer": "/functions/0/body/1/then/0/expression",
               "target_span": {
-                "end_byte": 762,
+                "end_byte": 833,
                 "file": "Migrated.java",
-                "start_byte": 755
+                "start_byte": 826
               }
             },
             {
@@ -2369,13 +2387,13 @@
                 "start_byte": 662
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/2",
-              "target_chunk_id": "sha256:40a25dca95e6f8c7d17c25a092d34b26515c2c19017328c40d5dab34b80baa91",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/2",
+              "target_chunk_id": "sha256:b438aa8ef76948707e36a63650ad3b28ff7796d76fe946cc88c64e816ea045f6",
               "target_semantic_pointer": "/functions/0/body/2",
               "target_span": {
-                "end_byte": 795,
+                "end_byte": 866,
                 "file": "Migrated.java",
-                "start_byte": 782
+                "start_byte": 853
               }
             },
             {
@@ -2390,13 +2408,13 @@
                 "start_byte": 669
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/2/expression",
-              "target_chunk_id": "sha256:abb3971bcf5bee4fc4dd1b97074a4e2e0ecd3427a3061d4db0e70bc5a81d706f",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/2/expression",
+              "target_chunk_id": "sha256:37fe72764d6e92d324f1321be86e53faaf00ce9fadaf61733aef258e42825971",
               "target_semantic_pointer": "/functions/0/body/2/expression",
               "target_span": {
-                "end_byte": 794,
+                "end_byte": 865,
                 "file": "Migrated.java",
-                "start_byte": 789
+                "start_byte": 860
               }
             }
           ],
@@ -2428,8 +2446,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 918,
-              "artifact_sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be",
+              "artifact_byte_count": 1004,
+              "artifact_sha256": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2",
               "logical_file": "Migrated.java",
               "node_count": 18,
               "rules": [
@@ -2483,13 +2501,13 @@
           },
           "formal_input": {
             "path": "formal-function-003-input.json",
-            "sha256": "sha256:264d704f47ad9556603611e40492ae4dad769e70717aa8a9b4dd24851fc1ec31"
+            "sha256": "sha256:a82e6cdcfabe8e706f6d5094db63bc6b9dc3db71c8cb2c502383ee1137ed8b8a"
           },
-          "formal_input_digest": "sha256:264d704f47ad9556603611e40492ae4dad769e70717aa8a9b4dd24851fc1ec31",
+          "formal_input_digest": "sha256:a82e6cdcfabe8e706f6d5094db63bc6b9dc3db71c8cb2c502383ee1137ed8b8a",
           "formal_input_path": "formal-function-003-input.json",
-          "formal_input_sha256": "sha256:264d704f47ad9556603611e40492ae4dad769e70717aa8a9b4dd24851fc1ec31",
+          "formal_input_sha256": "sha256:a82e6cdcfabe8e706f6d5094db63bc6b9dc3db71c8cb2c502383ee1137ed8b8a",
           "formal_result_path": "formal-function-003-result.json",
-          "formal_result_sha256": "sha256:b454f7d039effe464029708c1964423502777f25f53ff6f0955483b53b9ad8d0",
+          "formal_result_sha256": "sha256:7d126ef45544a28d8e531417da9e883ba8193e3ada5165dad37637d2b9609a9a",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:d11ca1a62c16815bca6c75cddb722cb973d11f45830d1513b759a723450808f8",
@@ -2528,11 +2546,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-003.smt2",
-            "sha256": "sha256:9066b0a3f1bed1218be01484f39fd34759742a2f2b931fc580d1f937112b59a8"
+            "sha256": "sha256:a94ebdc16f6d0f121a1d66ba688026237081a691e05819d3967a20dc7b483c64"
           },
-          "solver_input_digest": "sha256:9066b0a3f1bed1218be01484f39fd34759742a2f2b931fc580d1f937112b59a8",
+          "solver_input_digest": "sha256:a94ebdc16f6d0f121a1d66ba688026237081a691e05819d3967a20dc7b483c64",
           "solver_input_path": "formal-function-003.smt2",
-          "solver_input_sha256": "sha256:9066b0a3f1bed1218be01484f39fd34759742a2f2b931fc580d1f937112b59a8",
+          "solver_input_sha256": "sha256:a94ebdc16f6d0f121a1d66ba688026237081a691e05819d3967a20dc7b483c64",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "clampNumber",
           "version": "4.16.0"
@@ -2706,13 +2724,13 @@
                 "start_byte": 384
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0",
-              "target_chunk_id": "sha256:ec6c95e3bd3870f2c0f8cd6e2d94d985645a36c94ed564da6907ffd23e2af912",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0",
+              "target_chunk_id": "sha256:196e2f101e99063a965ffbc634fa72737327ac4dac013c9ba8c8f488acb1f239",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 915,
+                "end_byte": 1001,
                 "file": "Migrated.java",
-                "start_byte": 807
+                "start_byte": 878
               }
             },
             {
@@ -2727,13 +2745,13 @@
                 "start_byte": 408
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:7ef186a9f2f5463afd445d07124f355eced3d052822e41ad86271f948dcfde4b",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:b37bbd3f25c34c7e5f3807a41d7e3e1a2a1759d0bd4f20dd56e8a148620ab1f8",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 846,
+                "end_byte": 932,
                 "file": "Migrated.java",
-                "start_byte": 837
+                "start_byte": 923
               }
             },
             {
@@ -2748,13 +2766,13 @@
                 "start_byte": 427
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:9fd0f66889f434251e7f685f053af0d557ced5e901bc3a96ba04d60ade1726ee",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:ba1a9691ceed6bac66dfef82893d7e6b48276996949a91e3ab4f4eda0b43a5fd",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 858,
+                "end_byte": 944,
                 "file": "Migrated.java",
-                "start_byte": 848
+                "start_byte": 934
               }
             },
             {
@@ -2769,13 +2787,13 @@
                 "start_byte": 453
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0",
-              "target_chunk_id": "sha256:4d3038655aed9aa332a5683788b6f56d726a85027d53885ca966ba17273ff674",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0",
+              "target_chunk_id": "sha256:6c3ec0d7ea44a3695c7918f812556dccd15372028c9ed052ce4f20a8d52fbdf1",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 909,
+                "end_byte": 995,
                 "file": "Migrated.java",
-                "start_byte": 870
+                "start_byte": 956
               }
             },
             {
@@ -2790,13 +2808,13 @@
                 "start_byte": 460
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/expression",
-              "target_chunk_id": "sha256:599b76d5286dc8c7c902cba13a5c5eb769f7dc59b994e9bfcb03d7ba727eeb52",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/expression",
+              "target_chunk_id": "sha256:e65a8d2029b52426524075b2640bacff2efcf6bcdb54714722d31ada16df43c2",
               "target_semantic_pointer": "/functions/0/body/0/expression",
               "target_span": {
-                "end_byte": 908,
+                "end_byte": 994,
                 "file": "Migrated.java",
-                "start_byte": 877
+                "start_byte": 963
               }
             },
             {
@@ -2811,13 +2829,13 @@
                 "start_byte": 460
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/expression/left",
-              "target_chunk_id": "sha256:eb7a5ff29179c3f06c815e85855c5a69c389a361b6f6dcdfecb01eb85ed0075c",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/expression/left",
+              "target_chunk_id": "sha256:e2706c4268ee3395a5b953efd11bdc8089a60322aa6df1c5daa499f7013336f2",
               "target_semantic_pointer": "/functions/0/body/0/expression/left",
               "target_span": {
-                "end_byte": 900,
+                "end_byte": 986,
                 "file": "Migrated.java",
-                "start_byte": 896
+                "start_byte": 982
               }
             },
             {
@@ -2832,13 +2850,13 @@
                 "start_byte": 467
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/expression/right",
-              "target_chunk_id": "sha256:8dc029d85108ab25cf52a84b8515a31a4769a8e2c595d8fc9ca73fe8e9a3a647",
+              "target_artifact_pointer": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2#/functions/0/body/0/expression/right",
+              "target_chunk_id": "sha256:c5d90be27d43540b1360e65ea9d9ffe743bed80285df018ca56207c982d061fb",
               "target_semantic_pointer": "/functions/0/body/0/expression/right",
               "target_span": {
-                "end_byte": 907,
+                "end_byte": 993,
                 "file": "Migrated.java",
-                "start_byte": 902
+                "start_byte": 988
               }
             }
           ],
@@ -2870,8 +2888,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 918,
-              "artifact_sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be",
+              "artifact_byte_count": 1004,
+              "artifact_sha256": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2",
               "logical_file": "Migrated.java",
               "node_count": 7,
               "rules": [
@@ -2918,13 +2936,13 @@
           },
           "formal_input": {
             "path": "formal-function-004-input.json",
-            "sha256": "sha256:a65e579d5033b73740ace8bd928fb21bc5af4aaa52aed287944a790e706d5304"
+            "sha256": "sha256:5047f1911dc89f7be1c401a43a82c41448561bce4aa6f9a011495b8bd6767e9d"
           },
-          "formal_input_digest": "sha256:a65e579d5033b73740ace8bd928fb21bc5af4aaa52aed287944a790e706d5304",
+          "formal_input_digest": "sha256:5047f1911dc89f7be1c401a43a82c41448561bce4aa6f9a011495b8bd6767e9d",
           "formal_input_path": "formal-function-004-input.json",
-          "formal_input_sha256": "sha256:a65e579d5033b73740ace8bd928fb21bc5af4aaa52aed287944a790e706d5304",
+          "formal_input_sha256": "sha256:5047f1911dc89f7be1c401a43a82c41448561bce4aa6f9a011495b8bd6767e9d",
           "formal_result_path": "formal-function-004-result.json",
-          "formal_result_sha256": "sha256:f6cbe8e24b248e6fe3aaae31b12ad50fabe53b7060969f00fcec89ff24ef8e5b",
+          "formal_result_sha256": "sha256:d774150225fe647a62ccd1ade8fefe992db57100c7cfcfb061f8e1c84b0cc76c",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:a421c8d48182015667427029ceb5ec02e8a49f68e6ff3a61d6b70c40290fd7b5",
@@ -2963,11 +2981,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-004.smt2",
-            "sha256": "sha256:6b4ba61699facf04011957a26f5618dc7f7e2fdf6de838485a9f05137d6475ae"
+            "sha256": "sha256:47de40872853250d1d688aa7c2a74d1fc503037e5bb28c1e01542ec5e0d287ab"
           },
-          "solver_input_digest": "sha256:6b4ba61699facf04011957a26f5618dc7f7e2fdf6de838485a9f05137d6475ae",
+          "solver_input_digest": "sha256:47de40872853250d1d688aa7c2a74d1fc503037e5bb28c1e01542ec5e0d287ab",
           "solver_input_path": "formal-function-004.smt2",
-          "solver_input_sha256": "sha256:6b4ba61699facf04011957a26f5618dc7f7e2fdf6de838485a9f05137d6475ae",
+          "solver_input_sha256": "sha256:47de40872853250d1d688aa7c2a74d1fc503037e5bb28c1e01542ec5e0d287ab",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "difference",
           "version": "4.16.0"
@@ -2999,6 +3017,129 @@
       "symbol": "difference"
     }
   ],
+  "identifier_hygiene": {
+    "functions": [
+      {
+        "canonical_symbol": "both",
+        "parameters": [
+          {
+            "canonical_name": "left",
+            "canonical_type": "boolean",
+            "raw_name": "left"
+          },
+          {
+            "canonical_name": "right",
+            "canonical_type": "boolean",
+            "raw_name": "right"
+          }
+        ],
+        "raw_symbol": "elmos_fn_fda5aa27b3c743b7"
+      },
+      {
+        "canonical_symbol": "calculate",
+        "parameters": [
+          {
+            "canonical_name": "subtotal",
+            "canonical_type": "integer",
+            "raw_name": "subtotal"
+          },
+          {
+            "canonical_name": "tax",
+            "canonical_type": "integer",
+            "raw_name": "tax"
+          }
+        ],
+        "raw_symbol": "elmos_fn_9d7517398504726c"
+      },
+      {
+        "canonical_symbol": "clamp",
+        "parameters": [
+          {
+            "canonical_name": "value",
+            "canonical_type": "integer",
+            "raw_name": "value"
+          },
+          {
+            "canonical_name": "minimum",
+            "canonical_type": "integer",
+            "raw_name": "minimum"
+          },
+          {
+            "canonical_name": "maximum",
+            "canonical_type": "integer",
+            "raw_name": "maximum"
+          }
+        ],
+        "raw_symbol": "elmos_fn_5d67eed5ad387c44"
+      },
+      {
+        "canonical_symbol": "clampNumber",
+        "parameters": [
+          {
+            "canonical_name": "value",
+            "canonical_type": "number",
+            "raw_name": "value"
+          },
+          {
+            "canonical_name": "minimum",
+            "canonical_type": "number",
+            "raw_name": "minimum"
+          },
+          {
+            "canonical_name": "maximum",
+            "canonical_type": "number",
+            "raw_name": "maximum"
+          }
+        ],
+        "raw_symbol": "elmos_fn_bff0c05627800fbb"
+      },
+      {
+        "canonical_symbol": "difference",
+        "parameters": [
+          {
+            "canonical_name": "left",
+            "canonical_type": "integer",
+            "raw_name": "left"
+          },
+          {
+            "canonical_name": "right",
+            "canonical_type": "integer",
+            "raw_name": "right"
+          }
+        ],
+        "raw_symbol": "elmos_fn_8ea85b618b85973a"
+      }
+    ],
+    "normalized_target_ir": {
+      "bytes": 7066,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:89b2714f4540834f0df5c32d8dc3e30ad90fab2df805b625957842b9a163b9e0"
+    },
+    "plan": {
+      "bytes": 9332,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:2afb7fd891e8184d1e4b5307966ae9d159e99436fa35299123d72fcf4fc48154"
+    },
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:5a41219e79deac95c5e407a65ec09c5cb89512924e01dfdd5dcea6043323280c",
+    "raw_target_ir": {
+      "bytes": 7152,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:e54c2da717abd6224174533b4381a1fcbc2e50b586ee30436a5e99de08daed44"
+    },
+    "renamed": true,
+    "status": "PASSED",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "equivalence_module.cpp",
+      "source_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:79672aa4063d73131ccf231289c56959bbac28c52b849b1e74ad81082bc55d8e"
+  },
   "kind": "typed-pure-module-equivalence",
   "local_verification_status": "PASSED",
   "module_contract": {
@@ -3018,20 +3159,22 @@
       "target_call_graph": {
         "edges": [
           {
-            "callee": "Math.addExact",
-            "callee_kind": "pinned-target-builtin",
-            "caller": "calculate",
-            "canonical_domain": "integer",
-            "canonical_operator": "+",
-            "normalization_rule": "java.integer.+.call:Math.addExact"
-          },
-          {
             "callee": "Math.subtractExact",
             "callee_kind": "pinned-target-builtin",
-            "caller": "difference",
+            "caller": "elmos_fn_8ea85b618b85973a",
+            "canonical_caller": "difference",
             "canonical_domain": "integer",
             "canonical_operator": "-",
             "normalization_rule": "java.integer.-.call:Math.subtractExact"
+          },
+          {
+            "callee": "Math.addExact",
+            "callee_kind": "pinned-target-builtin",
+            "caller": "elmos_fn_9d7517398504726c",
+            "canonical_caller": "calculate",
+            "canonical_domain": "integer",
+            "canonical_operator": "+",
+            "normalization_rule": "java.integer.+.call:Math.addExact"
           }
         ],
         "helper_internal_calls": {
@@ -3108,57 +3251,57 @@
         "member_subjects": [
           {
             "declaration_kind": "method",
-            "name": "both",
+            "name": "elmos_fn_fda5aa27b3c743b7",
             "occurrence": 1,
-            "qualified_name": "Migrated.both",
+            "qualified_name": "Migrated.elmos_fn_fda5aa27b3c743b7",
             "source_span": {
-              "end_byte": 129,
+              "end_byte": 150,
               "file": "Migrated.java",
               "start_byte": 34
             }
           },
           {
             "declaration_kind": "method",
-            "name": "calculate",
+            "name": "elmos_fn_9d7517398504726c",
             "occurrence": 1,
-            "qualified_name": "Migrated.calculate",
+            "qualified_name": "Migrated.elmos_fn_9d7517398504726c",
             "source_span": {
-              "end_byte": 303,
+              "end_byte": 340,
               "file": "Migrated.java",
-              "start_byte": 135
+              "start_byte": 156
             }
           },
           {
             "declaration_kind": "method",
-            "name": "clamp",
+            "name": "elmos_fn_5d67eed5ad387c44",
             "occurrence": 1,
-            "qualified_name": "Migrated.clamp",
+            "qualified_name": "Migrated.elmos_fn_5d67eed5ad387c44",
             "source_span": {
-              "end_byte": 545,
+              "end_byte": 602,
               "file": "Migrated.java",
-              "start_byte": 309
+              "start_byte": 346
             }
           },
           {
             "declaration_kind": "method",
-            "name": "clampNumber",
+            "name": "elmos_fn_bff0c05627800fbb",
             "occurrence": 1,
-            "qualified_name": "Migrated.clampNumber",
+            "qualified_name": "Migrated.elmos_fn_bff0c05627800fbb",
             "source_span": {
-              "end_byte": 801,
+              "end_byte": 872,
               "file": "Migrated.java",
-              "start_byte": 551
+              "start_byte": 608
             }
           },
           {
             "declaration_kind": "method",
-            "name": "difference",
+            "name": "elmos_fn_8ea85b618b85973a",
             "occurrence": 1,
-            "qualified_name": "Migrated.difference",
+            "qualified_name": "Migrated.elmos_fn_8ea85b618b85973a",
             "source_span": {
-              "end_byte": 915,
+              "end_byte": 1001,
               "file": "Migrated.java",
-              "start_byte": 807
+              "start_byte": 878
             }
           }
         ],
@@ -3183,18 +3326,141 @@
           "visibility": "public"
         },
         "source_span": {
-          "end_byte": 917,
+          "end_byte": 1003,
           "file": "Migrated.java",
           "start_byte": 0
         },
         "status": "EXACT_AND_CLOSED"
       }
     },
-    "whole_file_closure_sha256": "sha256:97ab14e70547da64a3db6dac98c3e47f1e8fb3839c1f868b4749eeac43e2d826"
+    "whole_file_closure_sha256": "sha256:ddb914f9e12240ee183154f23a496c5c8414643ee0cea44bf6a01ad067893f66"
   },
   "module_input": {
     "case_manifest_sha256": "sha256:765081f57632fdff2499118ddeb6c12023e942c433675ac3d5e9b9864720a7ed",
     "corpus_sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112",
+    "identifier_hygiene": {
+      "functions": [
+        {
+          "canonical_symbol": "both",
+          "parameters": [
+            {
+              "canonical_name": "left",
+              "canonical_type": "boolean",
+              "raw_name": "left"
+            },
+            {
+              "canonical_name": "right",
+              "canonical_type": "boolean",
+              "raw_name": "right"
+            }
+          ],
+          "raw_symbol": "elmos_fn_fda5aa27b3c743b7"
+        },
+        {
+          "canonical_symbol": "calculate",
+          "parameters": [
+            {
+              "canonical_name": "subtotal",
+              "canonical_type": "integer",
+              "raw_name": "subtotal"
+            },
+            {
+              "canonical_name": "tax",
+              "canonical_type": "integer",
+              "raw_name": "tax"
+            }
+          ],
+          "raw_symbol": "elmos_fn_9d7517398504726c"
+        },
+        {
+          "canonical_symbol": "clamp",
+          "parameters": [
+            {
+              "canonical_name": "value",
+              "canonical_type": "integer",
+              "raw_name": "value"
+            },
+            {
+              "canonical_name": "minimum",
+              "canonical_type": "integer",
+              "raw_name": "minimum"
+            },
+            {
+              "canonical_name": "maximum",
+              "canonical_type": "integer",
+              "raw_name": "maximum"
+            }
+          ],
+          "raw_symbol": "elmos_fn_5d67eed5ad387c44"
+        },
+        {
+          "canonical_symbol": "clampNumber",
+          "parameters": [
+            {
+              "canonical_name": "value",
+              "canonical_type": "number",
+              "raw_name": "value"
+            },
+            {
+              "canonical_name": "minimum",
+              "canonical_type": "number",
+              "raw_name": "minimum"
+            },
+            {
+              "canonical_name": "maximum",
+              "canonical_type": "number",
+              "raw_name": "maximum"
+            }
+          ],
+          "raw_symbol": "elmos_fn_bff0c05627800fbb"
+        },
+        {
+          "canonical_symbol": "difference",
+          "parameters": [
+            {
+              "canonical_name": "left",
+              "canonical_type": "integer",
+              "raw_name": "left"
+            },
+            {
+              "canonical_name": "right",
+              "canonical_type": "integer",
+              "raw_name": "right"
+            }
+          ],
+          "raw_symbol": "elmos_fn_8ea85b618b85973a"
+        }
+      ],
+      "normalized_target_ir": {
+        "bytes": 7066,
+        "path": "target-semantic-ir.normalized.json",
+        "sha256": "sha256:89b2714f4540834f0df5c32d8dc3e30ad90fab2df805b625957842b9a163b9e0"
+      },
+      "plan": {
+        "bytes": 9332,
+        "path": "identifier-plan.json",
+        "sha256": "sha256:2afb7fd891e8184d1e4b5307966ae9d159e99436fa35299123d72fcf4fc48154"
+      },
+      "policy_id": "typed-alpha-hygiene-v2",
+      "policy_sha256": "sha256:5a41219e79deac95c5e407a65ec09c5cb89512924e01dfdd5dcea6043323280c",
+      "raw_target_ir": {
+        "bytes": 7152,
+        "path": "target-semantic-ir.raw.json",
+        "sha256": "sha256:e54c2da717abd6224174533b4381a1fcbc2e50b586ee30436a5e99de08daed44"
+      },
+      "renamed": true,
+      "status": "PASSED",
+      "unit_namespace": {
+        "kind": "elmos.identifier-unit-namespace",
+        "repository_snapshot_sha256": null,
+        "schema_version": "1.0.0",
+        "scope": "standalone-artifact",
+        "source_logical_path": "equivalence_module.cpp",
+        "source_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+        "work_unit_id": null
+      },
+      "unit_namespace_sha256": "sha256:79672aa4063d73131ccf231289c56959bbac28c52b849b1e74ad81082bc55d8e"
+    },
     "input_domain": "canonical-finite-no-error-input-domain",
     "profile": "typed-pure-module-v1",
     "route": {
@@ -3207,15 +3473,15 @@
     "source_inventory_sha256": "sha256:68f2b4ca55c3c77cdbf6e57aa054c63093c9604274656890ab604420852ba86c",
     "source_logical_file": "equivalence_module.cpp",
     "source_semantic_ir_sha256": "sha256:939a6c00741e82fe3c773e6adc8b5ebf8de49aa0f923ca3a5ffbd55ffc0a3071",
-    "target_artifact_byte_count": 918,
-    "target_artifact_sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be",
-    "target_inventory_byte_count": 3478,
-    "target_inventory_sha256": "sha256:36bc41eb9e6db4548e096bdc5375da8f7a8e33b096e30983d1560567d86a14c0",
+    "target_artifact_byte_count": 1004,
+    "target_artifact_sha256": "sha256:ec4d80ca3d9c86b71aaa25d6ab96febe695fdbfbde89ff6acaee48b3b9060ea2",
+    "target_inventory_byte_count": 3653,
+    "target_inventory_sha256": "sha256:ac52cf31ed2c942385ac540c307cd46a01e1673e9c0475940f30e9a7bffbc473",
     "target_logical_file": "Migrated.java",
-    "target_semantic_ir_sha256": "sha256:f4f911d92efca63e445e06d66e42223aadbd018063a37e17c3d17192e9e4489c",
-    "whole_file_closure_sha256": "sha256:97ab14e70547da64a3db6dac98c3e47f1e8fb3839c1f868b4749eeac43e2d826"
+    "target_semantic_ir_sha256": "sha256:89b2714f4540834f0df5c32d8dc3e30ad90fab2df805b625957842b9a163b9e0",
+    "whole_file_closure_sha256": "sha256:ddb914f9e12240ee183154f23a496c5c8414643ee0cea44bf6a01ad067893f66"
   },
-  "module_input_sha256": "sha256:a42f32910b72f7a70fb055a03225933ef2ce61c478fee1e3d2f576df7347037b",
+  "module_input_sha256": "sha256:8688e3efac4f9715cc29e5833c9b776824603cb15f410128e61d7c515855b46c",
   "profile": "typed-pure-module-v1",
   "route": {
     "route_key": "cpp-to-java",
@@ -4024,6 +4290,114 @@
       "source": [],
       "target": []
     },
+    "identifier_hygiene": {
+      "functions": [
+        {
+          "canonical_symbol": "both",
+          "parameters": [
+            {
+              "canonical_name": "left",
+              "canonical_type": "boolean",
+              "raw_name": "left"
+            },
+            {
+              "canonical_name": "right",
+              "canonical_type": "boolean",
+              "raw_name": "right"
+            }
+          ],
+          "raw_symbol": "elmos_fn_fda5aa27b3c743b7"
+        },
+        {
+          "canonical_symbol": "calculate",
+          "parameters": [
+            {
+              "canonical_name": "subtotal",
+              "canonical_type": "integer",
+              "raw_name": "subtotal"
+            },
+            {
+              "canonical_name": "tax",
+              "canonical_type": "integer",
+              "raw_name": "tax"
+            }
+          ],
+          "raw_symbol": "elmos_fn_9d7517398504726c"
+        },
+        {
+          "canonical_symbol": "clamp",
+          "parameters": [
+            {
+              "canonical_name": "value",
+              "canonical_type": "integer",
+              "raw_name": "value"
+            },
+            {
+              "canonical_name": "minimum",
+              "canonical_type": "integer",
+              "raw_name": "minimum"
+            },
+            {
+              "canonical_name": "maximum",
+              "canonical_type": "integer",
+              "raw_name": "maximum"
+            }
+          ],
+          "raw_symbol": "elmos_fn_5d67eed5ad387c44"
+        },
+        {
+          "canonical_symbol": "clampNumber",
+          "parameters": [
+            {
+              "canonical_name": "value",
+              "canonical_type": "number",
+              "raw_name": "value"
+            },
+            {
+              "canonical_name": "minimum",
+              "canonical_type": "number",
+              "raw_name": "minimum"
+            },
+            {
+              "canonical_name": "maximum",
+              "canonical_type": "number",
+              "raw_name": "maximum"
+            }
+          ],
+          "raw_symbol": "elmos_fn_bff0c05627800fbb"
+        },
+        {
+          "canonical_symbol": "difference",
+          "parameters": [
+            {
+              "canonical_name": "left",
+              "canonical_type": "integer",
+              "raw_name": "left"
+            },
+            {
+              "canonical_name": "right",
+              "canonical_type": "integer",
+              "raw_name": "right"
+            }
+          ],
+          "raw_symbol": "elmos_fn_8ea85b618b85973a"
+        }
+      ],
+      "plan_sha256": "sha256:2afb7fd891e8184d1e4b5307966ae9d159e99436fa35299123d72fcf4fc48154",
+      "policy_id": "typed-alpha-hygiene-v2",
+      "policy_sha256": "sha256:5a41219e79deac95c5e407a65ec09c5cb89512924e01dfdd5dcea6043323280c",
+      "status": "PASSED",
+      "unit_namespace": {
+        "kind": "elmos.identifier-unit-namespace",
+        "repository_snapshot_sha256": null,
+        "schema_version": "1.0.0",
+        "scope": "standalone-artifact",
+        "source_logical_path": "equivalence_module.cpp",
+        "source_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+        "work_unit_id": null
+      },
+      "unit_namespace_sha256": "sha256:79672aa4063d73131ccf231289c56959bbac28c52b849b1e74ad81082bc55d8e"
+    },
     "kind": "elmos.typed-pure-module-whole-file-closure",
     "manifest_symbols": [
       "both",
@@ -4055,6 +4429,7 @@
           ],
           "return_type": "boolean"
         },
+        "canonical_symbol": "both",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
         "qualified_name": "both",
@@ -4078,6 +4453,7 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "both",
         "source_span": {
           "end_byte": 741,
           "file": "equivalence_module.cpp",
@@ -4099,6 +4475,7 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "calculate",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
         "qualified_name": "calculate",
@@ -4122,6 +4499,7 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "calculate",
         "source_span": {
           "end_byte": 162,
           "file": "equivalence_module.cpp",
@@ -4147,6 +4525,7 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "clamp",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
         "qualified_name": "clamp",
@@ -4175,6 +4554,7 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "clamp",
         "source_span": {
           "end_byte": 382,
           "file": "equivalence_module.cpp",
@@ -4200,6 +4580,7 @@
           ],
           "return_type": "number"
         },
+        "canonical_symbol": "clampNumber",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
         "qualified_name": "clampNumber",
@@ -4228,6 +4609,7 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "clampNumber",
         "source_span": {
           "end_byte": 677,
           "file": "equivalence_module.cpp",
@@ -4249,6 +4631,7 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "difference",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
         "qualified_name": "difference",
@@ -4272,6 +4655,7 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "difference",
         "source_span": {
           "end_byte": 475,
           "file": "equivalence_module.cpp",
@@ -4292,20 +4676,22 @@
     "target_call_graph": {
       "edges": [
         {
-          "callee": "Math.addExact",
-          "callee_kind": "pinned-target-builtin",
-          "caller": "calculate",
-          "canonical_domain": "integer",
-          "canonical_operator": "+",
-          "normalization_rule": "java.integer.+.call:Math.addExact"
-        },
-        {
           "callee": "Math.subtractExact",
           "callee_kind": "pinned-target-builtin",
-          "caller": "difference",
+          "caller": "elmos_fn_8ea85b618b85973a",
+          "canonical_caller": "difference",
           "canonical_domain": "integer",
           "canonical_operator": "-",
           "normalization_rule": "java.integer.-.call:Math.subtractExact"
+        },
+        {
+          "callee": "Math.addExact",
+          "callee_kind": "pinned-target-builtin",
+          "caller": "elmos_fn_9d7517398504726c",
+          "canonical_caller": "calculate",
+          "canonical_domain": "integer",
+          "canonical_operator": "+",
+          "normalization_rule": "java.integer.+.call:Math.addExact"
         }
       ],
       "helper_internal_calls": {
@@ -4317,8 +4703,8 @@
     },
     "target_call_graph_policy": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
     "target_helper_symbols": [],
-    "target_inventory_bytes": 3478,
-    "target_inventory_sha256": "sha256:36bc41eb9e6db4548e096bdc5375da8f7a8e33b096e30983d1560567d86a14c0",
+    "target_inventory_bytes": 3653,
+    "target_inventory_sha256": "sha256:ac52cf31ed2c942385ac540c307cd46a01e1673e9c0475940f30e9a7bffbc473",
     "target_profile_symbols": [
       {
         "canonical_signature": {
@@ -4334,9 +4720,10 @@
           ],
           "return_type": "boolean"
         },
+        "canonical_symbol": "both",
         "declaration_kind": "method",
         "occurrence": 1,
-        "qualified_name": "Migrated.both",
+        "qualified_name": "Migrated.elmos_fn_fda5aa27b3c743b7",
         "raw_parameter_names": [
           "left",
           "right"
@@ -4366,8 +4753,9 @@
           "type_parameters": [],
           "visibility": "public"
         },
+        "raw_symbol": "elmos_fn_fda5aa27b3c743b7",
         "source_span": {
-          "end_byte": 129,
+          "end_byte": 150,
           "file": "Migrated.java",
           "start_byte": 34
         },
@@ -4387,9 +4775,10 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "calculate",
         "declaration_kind": "method",
         "occurrence": 1,
-        "qualified_name": "Migrated.calculate",
+        "qualified_name": "Migrated.elmos_fn_9d7517398504726c",
         "raw_parameter_names": [
           "subtotal",
           "tax"
@@ -4419,10 +4808,11 @@
           "type_parameters": [],
           "visibility": "public"
         },
+        "raw_symbol": "elmos_fn_9d7517398504726c",
         "source_span": {
-          "end_byte": 303,
+          "end_byte": 340,
           "file": "Migrated.java",
-          "start_byte": 135
+          "start_byte": 156
         },
         "symbol": "calculate"
       },
@@ -4444,9 +4834,10 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "clamp",
         "declaration_kind": "method",
         "occurrence": 1,
-        "qualified_name": "Migrated.clamp",
+        "qualified_name": "Migrated.elmos_fn_5d67eed5ad387c44",
         "raw_parameter_names": [
           "value",
           "minimum",
@@ -4481,10 +4872,11 @@
           "type_parameters": [],
           "visibility": "public"
         },
+        "raw_symbol": "elmos_fn_5d67eed5ad387c44",
         "source_span": {
-          "end_byte": 545,
+          "end_byte": 602,
           "file": "Migrated.java",
-          "start_byte": 309
+          "start_byte": 346
         },
         "symbol": "clamp"
       },
@@ -4506,9 +4898,10 @@
           ],
           "return_type": "number"
         },
+        "canonical_symbol": "clampNumber",
         "declaration_kind": "method",
         "occurrence": 1,
-        "qualified_name": "Migrated.clampNumber",
+        "qualified_name": "Migrated.elmos_fn_bff0c05627800fbb",
         "raw_parameter_names": [
           "value",
           "minimum",
@@ -4543,10 +4936,11 @@
           "type_parameters": [],
           "visibility": "public"
         },
+        "raw_symbol": "elmos_fn_bff0c05627800fbb",
         "source_span": {
-          "end_byte": 801,
+          "end_byte": 872,
           "file": "Migrated.java",
-          "start_byte": 551
+          "start_byte": 608
         },
         "symbol": "clampNumber"
       },
@@ -4564,9 +4958,10 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "difference",
         "declaration_kind": "method",
         "occurrence": 1,
-        "qualified_name": "Migrated.difference",
+        "qualified_name": "Migrated.elmos_fn_8ea85b618b85973a",
         "raw_parameter_names": [
           "left",
           "right"
@@ -4596,10 +4991,11 @@
           "type_parameters": [],
           "visibility": "public"
         },
+        "raw_symbol": "elmos_fn_8ea85b618b85973a",
         "source_span": {
-          "end_byte": 915,
+          "end_byte": 1001,
           "file": "Migrated.java",
-          "start_byte": 807
+          "start_byte": 878
         },
         "symbol": "difference"
       }
@@ -4647,57 +5043,57 @@
         "member_subjects": [
           {
             "declaration_kind": "method",
-            "name": "both",
+            "name": "elmos_fn_fda5aa27b3c743b7",
             "occurrence": 1,
-            "qualified_name": "Migrated.both",
+            "qualified_name": "Migrated.elmos_fn_fda5aa27b3c743b7",
             "source_span": {
-              "end_byte": 129,
+              "end_byte": 150,
               "file": "Migrated.java",
               "start_byte": 34
             }
           },
           {
             "declaration_kind": "method",
-            "name": "calculate",
+            "name": "elmos_fn_9d7517398504726c",
             "occurrence": 1,
-            "qualified_name": "Migrated.calculate",
+            "qualified_name": "Migrated.elmos_fn_9d7517398504726c",
             "source_span": {
-              "end_byte": 303,
+              "end_byte": 340,
               "file": "Migrated.java",
-              "start_byte": 135
+              "start_byte": 156
             }
           },
           {
             "declaration_kind": "method",
-            "name": "clamp",
+            "name": "elmos_fn_5d67eed5ad387c44",
             "occurrence": 1,
-            "qualified_name": "Migrated.clamp",
+            "qualified_name": "Migrated.elmos_fn_5d67eed5ad387c44",
             "source_span": {
-              "end_byte": 545,
+              "end_byte": 602,
               "file": "Migrated.java",
-              "start_byte": 309
+              "start_byte": 346
             }
           },
           {
             "declaration_kind": "method",
-            "name": "clampNumber",
+            "name": "elmos_fn_bff0c05627800fbb",
             "occurrence": 1,
-            "qualified_name": "Migrated.clampNumber",
+            "qualified_name": "Migrated.elmos_fn_bff0c05627800fbb",
             "source_span": {
-              "end_byte": 801,
+              "end_byte": 872,
               "file": "Migrated.java",
-              "start_byte": 551
+              "start_byte": 608
             }
           },
           {
             "declaration_kind": "method",
-            "name": "difference",
+            "name": "elmos_fn_8ea85b618b85973a",
             "occurrence": 1,
-            "qualified_name": "Migrated.difference",
+            "qualified_name": "Migrated.elmos_fn_8ea85b618b85973a",
             "source_span": {
-              "end_byte": 915,
+              "end_byte": 1001,
               "file": "Migrated.java",
-              "start_byte": 807
+              "start_byte": 878
             }
           }
         ],
@@ -4722,7 +5118,7 @@
           "visibility": "public"
         },
         "source_span": {
-          "end_byte": 917,
+          "end_byte": 1003,
           "file": "Migrated.java",
           "start_byte": 0
         },

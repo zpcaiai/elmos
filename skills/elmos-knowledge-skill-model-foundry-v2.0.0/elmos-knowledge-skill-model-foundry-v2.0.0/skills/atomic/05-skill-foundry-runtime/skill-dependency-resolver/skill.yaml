@@ -1,0 +1,71 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: skill-dependency-resolver
+  version: 2.0.0
+  pack: 05-skill-foundry-runtime
+  priority: P0
+  owner: TBD
+spec:
+  description: 解析 Skill、工具、模型、环境和 Schema 依赖，生成可重复执行闭包。
+  kernel: K5 Skill Foundry and Runtime
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: runbook
+    required: true
+  - name: experience episodes
+    required: true
+  - name: task contract
+    required: true
+  - name: semantic IR
+    required: true
+  - name: policy context
+    required: true
+  outputs:
+  - name: skill package
+    contentAddressed: true
+  - name: activation rules
+    contentAddressed: true
+  - name: workflow DAG
+    contentAddressed: true
+  - name: evidence bundle
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - skill.registry
+    - workflow.execute
+    - sandbox.run
+    - policy.evaluate
+    - eval.run
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - trigger-eval-pass
+    - tool-permission-bounded
+    - evidence-complete
+    - rollback-tested
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

@@ -108,7 +108,9 @@ class SpringCleanSourceBuildTest(unittest.TestCase):
             with self.subTest(message=message), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
                 archive = self._tar(root, entries)
-                with self.assertRaisesRegex(subject.BuildFailure, message):
+                with patch.object(subject, "capacity_snapshot"), self.assertRaisesRegex(
+                    subject.BuildFailure, message
+                ):
                     subject.safe_extract_git_archive(archive, root / "context", expected)
 
     def test_safe_extract_emits_deterministic_content_manifest(self) -> None:
@@ -121,11 +123,12 @@ class SpringCleanSourceBuildTest(unittest.TestCase):
                     ("a/b.txt", tarfile.REGTYPE, b"hello"),
                 ],
             )
-            result = subject.safe_extract_git_archive(
-                archive,
-                root / "context",
-                {"a/b.txt": "100644", "z.txt": "100644"},
-            )
+            with patch.object(subject, "capacity_snapshot"):
+                result = subject.safe_extract_git_archive(
+                    archive,
+                    root / "context",
+                    {"a/b.txt": "100644", "z.txt": "100644"},
+                )
             self.assertEqual(["a/b.txt", "z.txt"], [item["path"] for item in result["manifest"]["files"]])
             self.assertEqual(6, result["byte_count"])
             self.assertEqual(

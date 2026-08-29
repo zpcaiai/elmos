@@ -2296,14 +2296,13 @@ def validate(
 
 
 def safe_output(path: Path) -> Path:
-    lexical = Path(os.path.abspath(path.expanduser()))
+    lexical = Path(os.path.abspath(path.expanduser())).resolve()
     current = Path(lexical.anchor)
     for component in lexical.parts[1:]:
         current /= component
         if current.is_symlink():
             raise RouteError("OUTPUT_SYMLINK_REJECTED")
-    resolved = lexical.resolve(strict=False)
-    if resolved == Path.home() or resolved == REPOSITORY_ROOT or len(resolved.parts) < 4:
+    if lexical == Path.home() or lexical == REPOSITORY_ROOT or len(lexical.parts) < 4:
         raise RouteError("OUTPUT_PATH_TOO_BROAD")
     return lexical
 

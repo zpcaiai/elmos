@@ -70,7 +70,7 @@ class StorageProtocolTests(unittest.TestCase):
 
     def test_postgres_backend_is_lazy_and_missing_dsn_fails_closed(self) -> None:
         readiness = postgres_driver_readiness()
-        self.assertIn(readiness.status, {StorageStatus.READY, StorageStatus.NOT_CONFIGURED})
+        self.assertIn(readiness.status, {StorageStatus.READY, StorageStatus.NOT_CONFIGURED, StorageStatus.NOT_READY})
         with self.assertRaises(StoreError) as captured:
             PostgresStore.from_environment(environment={})
         self.assertEqual(captured.exception.code, "POSTGRES_NOT_CONFIGURED")

@@ -1,0 +1,71 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: human-overreliance-and-automation-bias
+  version: 2.0.0
+  pack: 14-human-governance-operations
+  priority: P1
+  owner: TBD
+spec:
+  description: 通过界面、抽检和培训降低对模型分数和自动证据的盲从。
+  kernel: Human Assurance Plane
+  riskClass: medium
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: review request
+    required: true
+  - name: evidence bundle
+    required: true
+  - name: risk decision
+    required: true
+  - name: human feedback
+    required: true
+  outputs:
+  - name: approval
+    contentAddressed: true
+  - name: annotation
+    contentAddressed: true
+  - name: waiver
+    contentAddressed: true
+  - name: decision record
+    contentAddressed: true
+  - name: escalation
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - review.assign
+    - approval.record
+    - annotation.write
+    - waiver.issue
+    - incident.escalate
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - reviewer-qualified
+    - conflict-disclosed
+    - decision-reasoned
+    - reversible
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

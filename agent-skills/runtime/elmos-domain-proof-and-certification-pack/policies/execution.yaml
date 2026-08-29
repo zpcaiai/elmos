@@ -1,0 +1,15 @@
+default: deny
+allowWhen:
+- tenant-authorized
+- version-compatible
+- required-evidence-service-available
+approvalWhen:
+- production-write
+- data-export
+- training-global
+- security-policy-change
+denyWhen:
+- revoked-skill
+- unsigned-dependency
+- quarantined-data
+- cross-tenant-access

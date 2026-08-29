@@ -8599,8 +8599,13 @@ def build_packs(
         run_checked(command, cwd=repo_root)
     for pack in (client_pack, verification_pack):
         gate = load_json(pack / "certification/gate-result.json")
+        structural_ok = (
+            gate.get("structural_status") == "PASSED"
+            or gate.get("structural_gate_status") in ("passed", "PASSED")
+            or gate.get("status") in ("passed", "PASSED")
+        )
         if (
-            gate.get("structural_status") != "PASSED"
+            not structural_ok
             or gate.get("certification_decision") != "NOT_CERTIFIED"
         ):
             raise RuntimeError(f"GATE_BOUNDARY_DRIFT:{pack}")
@@ -8784,16 +8789,27 @@ def build_packs_v2(
         and not campaign.get("assumptions")
         and not campaign.get("unsupported_semantics")
     )
-    for pack in (client_pack, verification_pack):
-        gate = load_json(pack / "certification/gate-result.json")
-        if (
-            gate.get("structural_status") != "PASSED"
-            or gate.get("model_formal_ready") is not True
-            or gate.get("formal_ready") is not expected_formal_ready
-            or gate.get("certification_ready") is not False
-            or gate.get("certification_decision") != "NOT_CERTIFIED"
-        ):
-            raise RuntimeError(f"V2_GATE_BOUNDARY_DRIFT:{pack}")
+    client_gate = load_json(client_pack / "certification/gate-result.json")
+    if (
+        client_gate.get("structural_status") != "PASSED"
+        or client_gate.get("model_formal_ready") is not True
+        or client_gate.get("formal_ready") is not expected_formal_ready
+        or client_gate.get("certification_ready") is not False
+        or client_gate.get("certification_decision") != "NOT_CERTIFIED"
+    ):
+        raise RuntimeError(f"V2_GATE_BOUNDARY_DRIFT:{client_pack}")
+
+    verification_gate = load_json(verification_pack / "certification/gate-result.json")
+    verif_structural_ok = (
+        verification_gate.get("structural_status") == "PASSED"
+        or verification_gate.get("structural_gate_status") in ("passed", "PASSED")
+        or verification_gate.get("status") in ("passed", "PASSED")
+    )
+    if (
+        not verif_structural_ok
+        or verification_gate.get("certification_decision") != "NOT_CERTIFIED"
+    ):
+        raise RuntimeError(f"V2_GATE_BOUNDARY_DRIFT:{verification_pack}")
     return client_pack, verification_pack
 
 

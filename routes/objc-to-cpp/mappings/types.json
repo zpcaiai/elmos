@@ -1,5 +1,6 @@
 {
   "input_domain": "canonical-finite-no-error-input-domain",
+  "integer_semantics": "PROFILE_DEFINED",
   "money_policy": "OUT_OF_SCOPE_REQUIRES_DECIMAL_PACK",
   "out_of_domain_arithmetic_behavior": "BLOCKED_NOT_EQUIVALENTLY_MODELED",
   "schema_version": 1,

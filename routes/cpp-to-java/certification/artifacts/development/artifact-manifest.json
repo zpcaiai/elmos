@@ -11,6 +11,7 @@
     ".log",
     ".m",
     ".md",
+    ".mjs",
     ".py",
     ".rs",
     ".smt2",
@@ -53,17 +54,17 @@
     "route_harness",
     "other extensionless/native binaries"
   ],
-  "file_count": 18,
+  "file_count": 20,
   "files": [
     {
-      "bytes": 205,
+      "bytes": 221,
       "path": "Migrated.java",
-      "sha256": "sha256:a26ca26a135d5e82f24824fe4e35d8bfc8f05545f6ef2b4418e7c11afa582f1e"
+      "sha256": "sha256:85e7b7dc5a5500229b5918da2b61dbbaa807975e9ded38bebf94ff0c33641542"
     },
     {
-      "bytes": 793,
+      "bytes": 841,
       "path": "RouteHarness.java",
-      "sha256": "sha256:e2db4a05b58371a899e51cae618bc9febafeb3a30dd83b83716692cddacd0257"
+      "sha256": "sha256:9d054193cf284705da93d12a4a8b96b5d432a446dd0eb9f1c2f2ec619b27aaef"
     },
     {
       "bytes": 1492,
@@ -71,29 +72,34 @@
       "sha256": "sha256:82ba3a3ae51e7ec872fe04c894f5261b8a9d1f2a68a2f00fa9b11ff2d4fb7be3"
     },
     {
-      "bytes": 12329,
+      "bytes": 12331,
       "path": "chunk-map.json",
-      "sha256": "sha256:a1249d9438c0c4eb6c1e9a2902db944ea834e440a3a1002b0d2a3e11708e7c4a"
+      "sha256": "sha256:ea511edb704cf8009ab337532e612b67413a2cb7c56cf491922936f3b4d42d43"
     },
     {
       "bytes": 3166,
       "path": "formal-composition.json",
-      "sha256": "sha256:29ea682c734d479e18d621845e62a9fca0bec5c00adefa253b500d73c2236adc"
+      "sha256": "sha256:7eafeccec48343bb51d35ef692ecfc5d0daf7a20433a30dd4a07a94464743acb"
     },
     {
-      "bytes": 2030,
+      "bytes": 1972,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:f298eb2528bdb5c5c2adb6a5d8b24a6346fbb96744393406cdbe2cc7e2f3c003"
+      "sha256": "sha256:fb3d9f4674c8f5027311c52a441ccaaa271c7de09b069bbc9ad7dc86920da8fa"
     },
     {
-      "bytes": 8477,
+      "bytes": 12264,
       "path": "formal-input.json",
-      "sha256": "sha256:a5579a9c626dc6e4a2fec0121b80a0d4ba0f56f00ad6bf35665c543c0307d6b3"
+      "sha256": "sha256:7db34747137aad91863d89cf8316a1c42fa109d9680026210119489c7ce7422e"
     },
     {
       "bytes": 2508,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:beae08b03090c6ab944fbb0f0f2a2f06716c739757c2e297bd67e85616ca612b"
+      "sha256": "sha256:416a29c806bb5e5c495ecdc02feb7275a6dcc430c686a8b6f78b7b265180d588"
+    },
+    {
+      "bytes": 2373,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:6659cc85f38bac17c05f1eb5ccafbe30136c81156e6f4abb5e4616d305dca13a"
     },
     {
       "bytes": 205,
@@ -108,12 +114,12 @@
     {
       "bytes": 3619,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:d1c40edfac7f2facd5dd1643d5e0a233db510ba21b309cf5c4ca09952ba2cafa"
+      "sha256": "sha256:2a795ba04a806f14eee7142f68bdff6f67283508d1dd2bb3df7bb212699f75fd"
     },
     {
-      "bytes": 8914,
+      "bytes": 10352,
       "path": "route-evidence.json",
-      "sha256": "sha256:1bcb4649d3e549ee82533f4a8fed857764f75e8f7649d4d5586a56b437928317"
+      "sha256": "sha256:cf66c8f42795b8e3a845d36a01447bbc37469af3d4af421aa96ca7f9eda3c090"
     },
     {
       "bytes": 309,
@@ -141,13 +147,18 @@
       "sha256": "sha256:566a1d2bbe548243e37dc7cd6600a1de27f28c0965d93fca0dbb87d04d8e1ea1"
     },
     {
-      "bytes": 1594,
+      "bytes": 1596,
       "path": "target-semantic-ir.normalized.json",
-      "sha256": "sha256:0cf9be59aa8b634be52f6d9dee18a45f7d47eb4de3b7ada661b5b81c828a5b00"
+      "sha256": "sha256:d557680a909f79552cfbe052b9f2651ffbfdd8a8da0f88696a23b03715782945"
+    },
+    {
+      "bytes": 1612,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:af9002bb1433126c568f3987c4bcd13486efc75e2de637ef007aec5d916161ac"
     }
   ],
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "cpp-to-java",
   "schema_version": 1,
-  "total_bytes": 51006
+  "total_bytes": 60226
 }

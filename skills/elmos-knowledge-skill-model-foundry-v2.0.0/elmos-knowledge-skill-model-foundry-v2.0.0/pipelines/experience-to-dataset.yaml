@@ -1,0 +1,16 @@
+apiVersion: elmos.ai/v1
+kind: Pipeline
+metadata:
+  name: experience-to-dataset
+spec:
+  steps:
+  - capture-episode
+  - independent-verify
+  - classify-rights
+  - redact-sensitive-data
+  - deduplicate
+  - detect-contamination
+  - assign-tier
+  - human-adjudicate-if-needed
+  - freeze-version
+  - sign-dataset-card

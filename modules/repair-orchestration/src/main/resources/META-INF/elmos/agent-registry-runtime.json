@@ -3,7 +3,7 @@
   "certification": "NOT_CERTIFIED",
   "control_plane_evidence_status": "LOCAL_TESTED",
   "customer_evidence_status": "NOT_RUN",
-  "domain_runtime_evidence_status": "LOCAL_TESTED",
+  "domain_runtime_evidence_status": "NOT_RUN",
   "external_evidence_status": "NOT_RUN",
   "runtime_class": "io.elmos.repair.DurableAgentRegistry",
   "schema_version": "elmos.agent-registry.runtime-binding.v1",

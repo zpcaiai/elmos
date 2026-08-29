@@ -1,0 +1,31 @@
+schema_version: 1
+package: elmos-pricing-billing-skills
+package_version: 1.0.0
+repository:
+  path: ""
+  baseline_commit: ""
+  branch: ""
+execution:
+  current_batch: B00
+  current_skill: elmos-billing-orchestrator
+  status: NOT_STARTED
+  started_at: ""
+  updated_at: ""
+  correlation_id: ""
+  budget_authorization_id: ""
+requirements:
+  implemented: []
+  partial: []
+  stub: []
+  missing: []
+  not_verified: []
+checks:
+  build: NOT_RUN
+  unit: NOT_RUN
+  integration: NOT_RUN
+  financial_invariants: NOT_RUN
+  security: NOT_RUN
+  migration: NOT_RUN
+  reconciliation: NOT_RUN
+blockers: []
+next_actions: []

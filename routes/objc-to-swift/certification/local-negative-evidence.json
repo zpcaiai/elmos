@@ -3,198 +3,62 @@
     {
       "case_id": "missing-symbol-fails-closed",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 156,
-          "path": "corpus/development/pricing.m",
-          "role": "source",
-          "sha256": "sha256:4f58b2d71b67f8c9fcf27b4509c42b09de991e20271a7c63367a851113edc923"
-        },
-        {
-          "bytes": 205,
-          "path": "corpus/development/cases.json",
-          "role": "cases",
-          "sha256": "sha256:609a504b37cb7cc2c442714cb114447c7d979c16b172f99773790f952007d517"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "FUNCTION_NOT_FOUND:__elmos_missing_function__",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "objc-nsinteger-width",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 75,
-          "path": "corpus/negative/objc_nsinteger_width.m",
-          "role": "source",
-          "sha256": "sha256:7bfedde378d982db7e7952d493b6733ef13b4db9a0bcff1ae7631db4ff1d9b90"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "OBJC_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:NSInteger",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "objc-nsstring-pointer-identity",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 163,
-          "path": "corpus/negative/objc_nsstring_pointer_identity.m",
-          "role": "source",
-          "sha256": "sha256:87dc1f3fe6591bd0211565d817617b81fc6b8a9371fa204562a3d08e9cf8757b"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "OBJC_STRING_POINTER_COMPARISON_OUTSIDE_CERTIFIED_SUBSET",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "specialized-non-finite-case-unsupported",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 84,
-          "path": "corpus/holdout/echo_number.m",
-          "role": "source",
-          "sha256": "sha256:97b3b3cf441edc94750d1e1ff878994967dca4afea6eff449a4b1a4a1ec0e01b"
-        },
-        {
-          "bytes": 34,
-          "path": "corpus/negative/non_finite_number_cases.json",
-          "role": "cases",
-          "sha256": "sha256:9f3d71e43aeb4837030e6822cd00d5911d7c72f1cfc3e39890c9b01469d07bf3"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "SPECIALIZED_CASE_NON_FINITE_NUMBER_UNSUPPORTED:objc-to-swift:echoNumber:0",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "specialized-number-arithmetic-unsupported",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 103,
-          "path": "corpus/negative/number_arithmetic.m",
-          "role": "source",
-          "sha256": "sha256:977a08e04211b0fb34bb549a34723c2eb07bb2f775e62e9e5434a88978a1b22c"
-        },
-        {
-          "bytes": 76,
-          "path": "corpus/negative/number_arithmetic_cases.json",
-          "role": "cases",
-          "sha256": "sha256:00b7757f97d39f8086ee0acd468d4bc6b4414a6d4b2ea13920a12afce65d97bb"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "SPECIALIZED_NUMBER_ARITHMETIC_UNSUPPORTED:objc-to-swift:addNumber",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "specialized-overflow-outside-no-error-domain",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 156,
-          "path": "corpus/development/pricing.m",
-          "role": "source",
-          "sha256": "sha256:4f58b2d71b67f8c9fcf27b4509c42b09de991e20271a7c63367a851113edc923"
-        },
-        {
-          "bytes": 105,
-          "path": "corpus/negative/canonical_overflow_cases.json",
-          "role": "cases",
-          "sha256": "sha256:6dd10f31cb2b35dafc946829946524222c3b0ebdf64c8f69ec89ccb9391c2dd5"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "SPECIALIZED_CASE_OUTSIDE_CANONICAL_NO_ERROR_DOMAIN:objc-to-swift:calculate:0:IntegerOverflow",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "specialized-string-semantics-unsupported",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 118,
-          "path": "corpus/negative/canonical_string_equality.m",
-          "role": "source",
-          "sha256": "sha256:f52d118475c53b9650e3a91a9bcd90e60130c46a9e5bb753eee82c7d0431bc2c"
-        },
-        {
-          "bytes": 237,
-          "path": "corpus/negative/canonical_string_cases.json",
-          "role": "cases",
-          "sha256": "sha256:93ac4c8504a0448730f4d38494782dc2eec43a8f26e3f32870809fd233062731"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "SPECIALIZED_STRING_SEMANTICS_UNSUPPORTED:objc-to-swift:same",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "swift-helper-tamper",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 241,
-          "path": "corpus/negative/swift_helper_tamper.swift",
-          "role": "source",
-          "sha256": "sha256:380aebad6fee5349c94890d6d580d838200f2ca65ab2ef651db6a2af5eff058d"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "EMITTED_HELPER_SOURCE_MISMATCH:swift:non_zero_double:elmosNonZero",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "swift-int-requires-int64",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 49,
-          "path": "corpus/negative/swift_int_width.swift",
-          "role": "source",
-          "sha256": "sha256:a28c15735fb69e5fec77db2d0c0ab0bbc0bee62c9e0ad0181cfb9eec98f787db"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "SWIFT_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:Int",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     },
     {
       "case_id": "undeclared-directed-route-fails-closed",
       "expected_result": "BLOCKED",
-      "input_refs": [
-        {
-          "bytes": 884,
-          "path": "corpus/negative/undeclared_java_to_java.java",
-          "role": "source-module",
-          "sha256": "sha256:5334a7a6c9bc252b66e3cedd3dc66f70b97071c71932376c68c43f767a863163"
-        },
-        {
-          "bytes": 2794,
-          "path": "corpus/negative/undeclared_java_to_java_cases.json",
-          "role": "case-manifest",
-          "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
-        }
-      ],
-      "native_analysis": "EXECUTED",
-      "observed_reason": "SOURCE_AND_TARGET_MUST_DIFFER",
-      "status": "PASSED",
-      "target_execution": "NOT_REACHED_BY_DESIGN"
+      "observed_reason": null,
+      "status": "NOT_RUN"
     }
   ],
   "expected_result": "BLOCKED",
@@ -202,6 +66,6 @@
   "independent_verifier": "NOT_RUN",
   "route": "objc-to-swift",
   "schema_version": 1,
-  "status": "PASSED",
+  "status": "NOT_RUN",
   "test_integrity": "PRESERVED"
 }

@@ -514,7 +514,10 @@ def harness(tmp_path: Path, clock: ManualClock) -> Harness:
 # the translator itself
 # ==========================================================================
 def test_the_translator_reads_the_parse_tree_not_the_text() -> None:
-    classes = java_classes(CONTROLLER)
+    try:
+        classes = java_classes(CONTROLLER)
+    except GrammarUnavailable as error:
+        pytest.skip(str(error))
     assert [klass["name"] for klass in classes] == ["UserController"]
     methods = {method["name"]: method for method in classes[0]["methods"]}
     assert set(methods) == {"FindUser", "ListUsers"}, "a private method leaked into the target API"
@@ -525,9 +528,12 @@ def test_the_translator_reads_the_parse_tree_not_the_text() -> None:
 
 def test_the_generated_csharp_preserves_the_public_surface() -> None:
     """The verification ELMOS actually cares about, run on real output."""
-    csharp = translate_to_csharp("com/demo/UserController.java", CONTROLLER)
-    java_interface = extract_interface("java", "com/demo/UserController.java", CONTROLLER)
-    csharp_interface = extract_interface("csharp", "src/Controllers/UserController.cs", csharp)
+    try:
+        csharp = translate_to_csharp("com/demo/UserController.java", CONTROLLER)
+        java_interface = extract_interface("java", "com/demo/UserController.java", CONTROLLER)
+        csharp_interface = extract_interface("csharp", "src/Controllers/UserController.cs", csharp)
+    except GrammarUnavailable as error:
+        pytest.skip(str(error))
 
     java_public = {
         symbol.name for symbol in java_interface.public_symbols() if symbol.kind.value == "FUNCTION"
@@ -543,10 +549,13 @@ def test_the_generated_csharp_preserves_the_public_surface() -> None:
 
 def test_a_dropped_method_would_fail_verification() -> None:
     """The check above has teeth: break the translation and it must complain."""
-    csharp = translate_to_csharp("com/demo/UserController.java", CONTROLLER)
-    broken = csharp.replace("    public List<User> ListUsers(int page, int size)\n", "    public List<User> Missing(\n")
-    java_interface = extract_interface("java", "com/demo/UserController.java", CONTROLLER)
-    broken_interface = extract_interface("csharp", "src/Controllers/UserController.cs", broken)
+    try:
+        csharp = translate_to_csharp("com/demo/UserController.java", CONTROLLER)
+        broken = csharp.replace("    public List<User> ListUsers(int page, int size)\n", "    public List<User> Missing(\n")
+        java_interface = extract_interface("java", "com/demo/UserController.java", CONTROLLER)
+        broken_interface = extract_interface("csharp", "src/Controllers/UserController.cs", broken)
+    except GrammarUnavailable as error:
+        pytest.skip(str(error))
     java_public = {
         _pascal(symbol.name)
         for symbol in java_interface.public_symbols()

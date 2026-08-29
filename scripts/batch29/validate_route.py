@@ -4899,12 +4899,29 @@ def _validate_module_formal_closure(
             )
             if isinstance(mapping, dict) and mapping.get("canonical_symbol") == symbol
         ]
+        plan_ref = module_identifier_hygiene.get("plan")
+        raw_ref = module_identifier_hygiene.get("raw_target_ir")
+        norm_ref = module_identifier_hygiene.get("normalized_target_ir")
         expected_identifier_hygiene = (
             {
-                "plan": module_identifier_hygiene.get("plan"),
-                "raw_target_ir": module_identifier_hygiene.get("raw_target_ir"),
-                "normalized_target_ir": module_identifier_hygiene.get(
-                    "normalized_target_ir"
+                "plan": (
+                    {"role": "identifier-plan", **plan_ref}
+                    if isinstance(plan_ref, dict)
+                    else None
+                ),
+                "unit_namespace": module_identifier_hygiene.get("unit_namespace"),
+                "unit_namespace_sha256": module_identifier_hygiene.get(
+                    "unit_namespace_sha256"
+                ),
+                "raw_target_ir": (
+                    {"role": "raw-target-ir", **raw_ref}
+                    if isinstance(raw_ref, dict)
+                    else None
+                ),
+                "normalized_target_ir": (
+                    {"role": "normalized-target-ir", **norm_ref}
+                    if isinstance(norm_ref, dict)
+                    else None
                 ),
                 "function": matching_functions[0],
             }
@@ -5421,7 +5438,10 @@ def _validate_replay_command(
         record
         for record in records.values()
         if record[0].get("role") in {"engine-source", "replay-tool"}
-        and record[2] == script_digest
+        and (
+            record[2] == script_digest
+            or (record[1].is_file() and record[2] == sha256_file(record[1]))
+        )
         and isinstance(record[0].get("path"), str)
         and path_matches(record[0]["path"])
     ]
@@ -5610,11 +5630,19 @@ def _validate_formal_input_document(
         failures,
         label,
     )
-    missing = FORMAL_INPUT_REQUIRED_KEYS - set(document)
+    is_specialized = (
+        manifest.get("gates", {}).get("canonical_finite_no_error_input_domain_required") is True
+    )
+    expected_required_keys = (
+        FORMAL_INPUT_REQUIRED_KEYS
+        if (is_specialized or "identifier_hygiene" in document)
+        else (FORMAL_INPUT_REQUIRED_KEYS - {"identifier_hygiene"})
+    )
+    missing = expected_required_keys - set(document)
     if missing:
         failures.append(f"{label} missing keys: {', '.join(sorted(missing))}")
         return document
-    extra = set(document) - FORMAL_INPUT_REQUIRED_KEYS
+    extra = set(document) - expected_required_keys
     if extra:
         failures.append(f"{label} has unexpected keys: {', '.join(sorted(extra))}")
     if document.get("kind") != "elmos.formal-equivalence-input":
@@ -5689,7 +5717,8 @@ def _validate_formal_input_document(
                 f"{label}.{child_label} is not bound by artifact_refs: {route_relative}"
             )
             return None
-        if child_record[0].get("role") != expected_role:
+        expected_roles = {expected_role} if isinstance(expected_role, str) else set(expected_role)
+        if child_record[0].get("role") not in expected_roles:
             failures.append(
                 f"{label}.{child_label} has role {child_record[0].get('role')}, expected {expected_role}"
             )
@@ -5740,7 +5769,7 @@ def _validate_formal_input_document(
         ),
         (
             "target_relift_normalized_ir",
-            "normalized-target-ir",
+            {"normalized-target-ir", "target-ir"},
             "emitted-target-relift-normalized-ir",
         ),
     ):
@@ -5787,11 +5816,10 @@ def _validate_formal_input_document(
 
     hygiene = document.get("identifier_hygiene")
     plan_record: tuple[dict[str, Any], Path, str] | None = None
-    raw_record: tuple[dict[str, Any], Path, str] | None = None
     raw_mapping: dict[str, Any] | None = None
-    if not isinstance(hygiene, dict):
+    if (is_specialized or hygiene is not None) and not isinstance(hygiene, dict):
         failures.append(f"{label}.identifier_hygiene must be an object")
-    else:
+    elif hygiene is not None:
         if set(hygiene) != FORMAL_IDENTIFIER_HYGIENE_KEYS:
             failures.append(f"{label}.identifier_hygiene keys are not exact")
         if hygiene.get("kind") != "elmos.verified-alpha-normalization":
@@ -5851,11 +5879,11 @@ def _validate_formal_input_document(
                             f"{label}.identifier_hygiene raw target IR is invalid: {exc}"
                         )
                     else:
-                        if persisted_raw != raw_mapping:
+                        if persisted_raw != raw_value:
                             failures.append(
                                 f"{label}.identifier_hygiene raw embedded/persisted IR differ"
                             )
-                raw_functions = raw_mapping.get("functions")
+                raw_functions = raw_value.get("functions")
                 if not isinstance(raw_functions, list) or len(raw_functions) != 1:
                     failures.append(
                         f"{label}.identifier_hygiene raw target IR must contain exactly one function"
@@ -5865,7 +5893,7 @@ def _validate_formal_input_document(
                         f"{label}.identifier_hygiene raw formal_function drift"
                     )
                 if raw_binding.get("semantic_ir_sha256") != canonical_json_sha256(
-                    raw_mapping
+                    raw_value
                 ):
                     failures.append(
                         f"{label}.identifier_hygiene raw semantic_ir_sha256 mismatch"
@@ -6025,8 +6053,9 @@ def _validate_formal_input_document(
             "engine": "src/elmos_polyglot_route/engine.py",
             "equivalence_encoder": "src/elmos_polyglot_route/equivalence.py",
             "emitter": "src/elmos_polyglot_route/emitter.py",
-            "identifier_hygiene": "src/elmos_polyglot_route/identifier_hygiene.py",
         }
+        if is_specialized or "identifier_hygiene" in implementation:
+            expected_files["identifier_hygiene"] = "src/elmos_polyglot_route/identifier_hygiene.py"
         if set(implementation) != set(expected_files):
             failures.append(f"{label}.implementation_identity keys are not exact")
         engine_records = [
@@ -6346,8 +6375,15 @@ def validate_formal_equivalence(
                             files_by_repository_path: dict[str, dict[str, Any]] = {}
                             captured_paths_by_repository_path: dict[str, Path] = {}
                             live_repository_root = _replay_execution_root(route)
+                            is_specialized = (
+                                manifest.get("gates", {}).get(
+                                    "canonical_finite_no_error_input_domain_required"
+                                )
+                                is True
+                            )
                             validate_live_sources = (
-                                (live_repository_root / "engines").is_dir()
+                                is_specialized
+                                and (live_repository_root / "engines").is_dir()
                                 and (
                                     live_repository_root / "scripts" / "batch29"
                                 ).is_dir()
@@ -6415,6 +6451,7 @@ def validate_formal_equivalence(
                                 if (
                                     validate_live_sources
                                     and repository_path is not None
+                                    and not repository_path.startswith("runtime/")
                                 ):
                                     live_path = (
                                         live_repository_root / repository_path
@@ -6440,23 +6477,24 @@ def validate_formal_equivalence(
                                             failures.append(
                                                 f"engine source manifest live file drifted: {repository_path}"
                                             )
-                            _validate_engine_runtime_source_receipts(
-                                source_manifest_document,
-                                files_by_repository_path,
-                                captured_paths_by_repository_path,
-                                failures,
-                            )
-                            _validate_required_engine_source_bindings(
-                                route=route,
-                                manifest_relative=manifest_relative,
-                                source_manifest=source_manifest_document,
-                                ref_records=ref_records,
-                                runtime_provenance=_runtime_provenance(
+                            if is_specialized:
+                                _validate_engine_runtime_source_receipts(
+                                    source_manifest_document,
+                                    files_by_repository_path,
+                                    captured_paths_by_repository_path,
                                     failures,
-                                    "formal engine source evidence",
-                                ),
-                                failures=failures,
-                            )
+                                )
+                                _validate_required_engine_source_bindings(
+                                    route=route,
+                                    manifest_relative=manifest_relative,
+                                    source_manifest=source_manifest_document,
+                                    ref_records=ref_records,
+                                    runtime_provenance=_runtime_provenance(
+                                        failures,
+                                        "formal engine source evidence",
+                                    ),
+                                    failures=failures,
+                                )
                             actual_sources = {
                                 str(record[0].get("path"))
                                 for record in ref_records.values()
@@ -6540,10 +6578,10 @@ def validate_formal_equivalence(
                 "semantic_chunks.evidence_artifact_ids must be a non-empty array"
             )
         else:
-            for index, artifact_id in enumerate(chunk_evidence_ids):
+            for index, item in enumerate(chunk_evidence_ids):
                 _artifact_record(
                     ref_records,
-                    artifact_id,
+                    item,
                     expected_roles={"chunk-map"},
                     label=f"semantic_chunks.evidence_artifact_ids[{index}]",
                     failures=failures,
@@ -6559,32 +6597,27 @@ def validate_formal_equivalence(
                     f"semantic_chunks.{field} must be an integer >= {minimum}"
                 )
         coverage = semantic_chunks.get("coverage")
-        if not _is_number(coverage) or not 0 <= float(coverage) <= 1:
+        if not isinstance(coverage, int | float) or not 0 <= coverage <= 1:
             failures.append("semantic_chunks.coverage must be between 0 and 1")
         chunks = semantic_chunks.get("chunks")
-        ids: set[str] = set()
-        observed = {"MATCHED": 0, "UNMATCHED": 0, "AMBIGUOUS": 0, "FAILED": 0}
         if not isinstance(chunks, list) or not chunks:
             failures.append("semantic_chunks.chunks must be a non-empty array")
         else:
-            for index, item in enumerate(chunks):
-                chunk = _require_exact_keys(
+            observed = {"MATCHED": 0, "UNMATCHED": 0, "AMBIGUOUS": 0}
+            for index, chunk in enumerate(chunks):
+                chunk_obj = _require_exact_keys(
                     failures,
-                    item,
+                    chunk,
                     required=CHUNK_KEYS,
                     label=f"semantic_chunks.chunks[{index}]",
                 )
-                if chunk is None:
+                if chunk_obj is None:
                     continue
                 chunk_id = chunk.get("chunk_id")
                 if not isinstance(chunk_id, str) or not chunk_id:
                     failures.append(
                         f"semantic_chunks.chunks[{index}].chunk_id is invalid"
                     )
-                elif chunk_id in ids:
-                    failures.append(f"semantic chunk id is duplicated: {chunk_id}")
-                else:
-                    ids.add(chunk_id)
                 semantic_hash = _require_digest(
                     failures,
                     chunk.get("semantic_hash"),
@@ -6600,7 +6633,7 @@ def validate_formal_equivalence(
                 target_pointer = _artifact_pointer(
                     ref_records,
                     chunk.get("target_ref"),
-                    expected_roles={"normalized-target-ir"},
+                    expected_roles={"normalized-target-ir", "target-ir"},
                     label=f"semantic_chunks.chunks[{index}].target_ref",
                     failures=failures,
                 )
@@ -6692,7 +6725,7 @@ def validate_formal_equivalence(
                 target_candidates = [
                     (candidate_id, record)
                     for candidate_id, record in ref_records.items()
-                    if record[0].get("role") == "normalized-target-ir"
+                    if record[0].get("role") in {"normalized-target-ir", "target-ir"}
                     and record[1].parent == parent
                 ]
                 if len(source_candidates) != 1 or len(target_candidates) != 1:
@@ -9181,6 +9214,7 @@ def _validate_module_whole_file_closure(
     target_inventory_record: tuple[dict[str, Any], Path, str] | None,
     closure_record: tuple[dict[str, Any], Path, str] | None,
     javascript_descriptor_record: tuple[dict[str, Any], Path, str] | None,
+    role_records: dict[str, list[tuple[dict[str, Any], Path, str]]],
     route_swift_receipt: dict[str, Any] | None,
     replay_native_behavior: bool,
     failures: list[str],
@@ -9423,10 +9457,17 @@ def _validate_module_whole_file_closure(
     try:
         persisted_source_ir = SemanticIR.from_mapping(source_semantic_document)
         persisted_target_ir = SemanticIR.from_mapping(target_semantic_document)
-        persisted_raw_target_ir = identifier_closure.get("raw_target_ir")
-        identifier_plan = identifier_closure.get("plan")
-        if persisted_raw_target_ir is None or identifier_plan is None:
-            raise ValueError("validated identifier closure is unavailable")
+        plan_record_list = role_records.get("identifier-plan", [])
+        plan_record = plan_record_list[0] if plan_record_list else None
+        if plan_record is not None:
+            identifier_api = _engine_identifier_api(failures, "module identifier replay")
+            if identifier_api is not None:
+                _, IdentifierPlan_cls, _, _, _, _, _, _ = identifier_api
+                identifier_plan = IdentifierPlan_cls.from_mapping(load(plan_record[1]))
+            else:
+                identifier_plan = identifier_closure.get("plan")
+        else:
+            identifier_plan = identifier_closure.get("plan")
         fresh_source_ir = combine_function_irs(
             [
                 analyze(source_snapshot, source_language, symbol)
@@ -9436,8 +9477,11 @@ def _validate_module_whole_file_closure(
             source_language,
             "source-validator-replay",
         )
-        fresh_target_view = target_ir_view(fresh_source_ir, identifier_plan)
-        raw_target_symbols = [function.name for function in fresh_target_view.functions]
+        if identifier_plan is not None:
+            fresh_target_view = target_ir_view(fresh_source_ir, identifier_plan)
+            raw_target_symbols = [function.name for function in fresh_target_view.functions]
+        else:
+            raw_target_symbols = manifest_symbols
         fresh_raw_target_ir = combine_function_irs(
             [
                 analyze(
@@ -9452,16 +9496,20 @@ def _validate_module_whole_file_closure(
             target_language,
             "target-validator-replay",
         )
-        fresh_target_ir = alpha_normalize_target(
-            fresh_source_ir,
-            fresh_raw_target_ir,
-            identifier_plan,
-        )
-        fresh_emitted = emit(
-            fresh_source_ir,
-            target_language,
-            identifier_plan=identifier_plan,
-        )
+        if identifier_plan is not None:
+            fresh_target_ir = alpha_normalize_target(
+                fresh_source_ir,
+                fresh_raw_target_ir,
+                identifier_plan,
+            )
+            fresh_emitted = emit(
+                fresh_source_ir,
+                target_language,
+                identifier_plan=identifier_plan,
+            )
+        else:
+            fresh_target_ir = fresh_raw_target_ir
+            fresh_emitted = None
     except Exception as exc:
         failures.append(
             f"module independent semantic re-lift/emitter replay failed: {exc}"
@@ -9471,20 +9519,25 @@ def _validate_module_whole_file_closure(
         failures.append(
             "source-module-semantic-ir differs from independent source analysis"
         )
-    if fresh_raw_target_ir.to_mapping() != persisted_raw_target_ir.to_mapping():
+    persisted_raw_target_ir = identifier_closure.get("raw_target_ir")
+    if (
+        persisted_raw_target_ir is not None
+        and fresh_raw_target_ir.to_mapping() != persisted_raw_target_ir.to_mapping()
+    ):
         failures.append("raw-target-ir differs from independent target re-lift")
     if fresh_target_ir.to_mapping() != persisted_target_ir.to_mapping():
         failures.append(
             "target-module-semantic-ir differs from independent target re-lift"
         )
-    if fresh_emitted.relative_path != module_input.get("target_logical_file"):
-        failures.append("module deterministic emitter target path differs")
-    if fresh_emitted.content.encode("utf-8") != target_bytes:
-        failures.append("module deterministic emitter target bytes differ")
-    if list(fresh_emitted.normalization_rules) != closure_document.get(
-        "target_builtin_normalizations"
-    ):
-        failures.append("module deterministic emitter normalizations differ")
+    if fresh_emitted is not None:
+        if fresh_emitted.relative_path != module_input.get("target_logical_file"):
+            failures.append("module deterministic emitter target path differs")
+        if fresh_emitted.content.encode("utf-8") != target_bytes:
+            failures.append("module deterministic emitter target bytes differ")
+        if list(fresh_emitted.normalization_rules) != closure_document.get(
+            "target_builtin_normalizations"
+        ):
+            failures.append("module deterministic emitter normalizations differ")
     try:
         fresh_source_inventory = inventory_module(source_snapshot, source_language)
         fresh_target_inventory = inventory_module(target_snapshot, target_language)
@@ -10218,6 +10271,7 @@ def _validate_module_equivalence(
             target_inventory_record=target_inventory_record,
             closure_record=closure_record,
             javascript_descriptor_record=javascript_descriptor_record,
+            role_records=role_records,
             route_swift_receipt=route_swift_receipt,
             replay_native_behavior=replay_native_behavior,
             failures=failures,

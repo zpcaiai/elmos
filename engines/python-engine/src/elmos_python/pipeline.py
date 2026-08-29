@@ -51,7 +51,7 @@ class PipelineAndNotebookAnalyzer:
                         "cleanKernelExecution": "NOT_RUN_REQUIRES_NOTEBOOK_RUNNER",
                     }
                 )
-            except OSError, json.JSONDecodeError:
+            except (OSError, json.JSONDecodeError):
                 findings.add("NOTEBOOK_STATE_UNRESOLVED")
         for path in root.rglob("*.py"):
             source = path.read_text(encoding="utf-8", errors="replace")

@@ -93,6 +93,8 @@ class FrontendFormalCampaignTests(unittest.TestCase):
                 str(cls.toolchain_evidence),
                 "--profile",
                 "harmony-arkui",
+                "--harmony-tool",
+                "/nonexistent/hvigorw",
                 "--no-network",
                 "--timeout-seconds",
                 "2",

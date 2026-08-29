@@ -181,7 +181,7 @@ class SafePythonDiscovery:
                 findings.add("NOTEBOOK_HIDDEN_STATE")
             if any("password" in "".join(cell.get("source", [])).lower() for cell in notebook.get("cells", [])):
                 findings.add("NOTEBOOK_SECRET_REVIEW_REQUIRED")
-        except OSError, UnicodeError, json.JSONDecodeError:
+        except (OSError, UnicodeError, json.JSONDecodeError):
             findings.add("NOTEBOOK_STATE_UNRESOLVED")
 
     def _inspect_version_source(self, path: Path, root: Path, versions: list[PythonVersionEvidence]) -> None:

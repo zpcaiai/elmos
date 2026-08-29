@@ -1,0 +1,69 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: artifact-identity-and-hashing
+  version: 2.0.0
+  pack: 00-foundation-contracts
+  priority: P0
+  owner: TBD
+spec:
+  description: 为知识对象、数据集、模型、Adapter、Skill、工具镜像和证据生成不可歧义的内容身份与哈希。
+  kernel: K0 Cross-Kernel Contracts
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: business requirement
+    required: true
+  - name: architecture decision
+    required: true
+  - name: policy profile
+    required: true
+  - name: runtime capability inventory
+    required: true
+  outputs:
+  - name: typed contract
+    contentAddressed: true
+  - name: compatibility declaration
+    contentAddressed: true
+  - name: evidence obligation
+    contentAddressed: true
+  - name: release identity
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - registry.read
+    - schema.validate
+    - policy.evaluate
+    - artifact.hash
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - schema-valid
+    - globally-unique-id
+    - versioned
+    - owner-assigned
+    - rollback-defined
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

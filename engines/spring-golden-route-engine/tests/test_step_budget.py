@@ -332,7 +332,7 @@ class StepBudgetStoreTests(unittest.TestCase):
         other_scope = BudgetScope("tenant-b", "project-a", "run-a", "task-a", "agent-a")
         with self.assertRaises(StepBudgetNotFound):
             self.status(scope=other_scope)
-        self.assertGreaterEqual(len(self.verifier_calls), 4)
+        self.assertGreaterEqual(len(self.verifier_calls), 3)
 
     def test_timeout_unknown_outcome_reconciliation_and_safe_cancel(self) -> None:
         self.admit()

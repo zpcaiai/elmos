@@ -1,0 +1,29 @@
+activation:
+  positiveRequired: 8
+  negativeRequired: 8
+  split: train-validation
+outcome:
+- gate: source-authorized
+  type: deterministic-first
+- gate: provenance-complete
+  type: deterministic-first
+- gate: sensitive-data-classified
+  type: deterministic-first
+- gate: parse-quality-pass
+  type: deterministic-first
+process:
+- authorized-tools-only
+- checkpoint-created
+- independent-verification
+- rollback-on-hard-failure
+efficiency:
+- wall_clock_ms
+- input_tokens
+- output_tokens
+- tool_calls
+- cost
+security:
+- tenant-isolation
+- prompt-injection
+- secret-leakage
+- artifact-integrity

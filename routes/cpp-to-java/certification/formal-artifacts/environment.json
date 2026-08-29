@@ -1,17 +1,17 @@
 {
   "authority": "local-engineering-validation",
   "engine_source_manifest": {
-    "bytes": 11973,
+    "bytes": 269277,
     "path": "certification/formal-artifacts/engine-source-manifest.json",
-    "sha256": "sha256:a3a3de05551380d8b2779bf7a7354faffe7c9f5e758600ff071ac28eb621f398"
+    "sha256": "sha256:813df9c99c48f1c352f4ed6a85b201fab7255f3f903c2baf36ae09ea00a62683"
   },
   "external_certification": "NOT_RUN",
   "independent_verification": "NOT_RUN",
-  "platform": "macOS-26.6-arm64-arm-64bit",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
   "python": "3.12.12 (main, Feb 12 2026, 00:42:34) [Clang 21.1.4 ]",
   "route_engine_lock": {
     "path": "engines/polyglot-route-engine/uv.lock",
-    "sha256": "sha256:59b8aa440f92f865671ddcdd0badc75ac55c9e86c6ef1ac92449f99cfbd87497"
+    "sha256": "sha256:9c061fb975a379ba550b66dc3dba089cf8f7d2fec8acc064f1590e3869cbda8d"
   },
   "route_key": "cpp-to-java",
   "schema_version": 1,

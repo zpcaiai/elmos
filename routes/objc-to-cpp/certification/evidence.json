@@ -1,88 +1,28 @@
 {
-  "artifact_manifests": {
-    "development": {
-      "bytes": 4035,
-      "path": "certification/artifacts/development/artifact-manifest.json",
-      "sha256": "sha256:df69b0f7275d2863e3b3b4991a3328658dd97d0fceef6ef3f47e02d77c46b414"
-    },
-    "holdout": {
-      "bytes": 4029,
-      "path": "certification/artifacts/holdout/artifact-manifest.json",
-      "sha256": "sha256:deb3a4a770d82f2e86d724e735486c06f9af121cd0a059bf2afd32c51a202c0d"
-    },
-    "real-repository": {
-      "bytes": 4045,
-      "path": "certification/artifacts/real-repository/artifact-manifest.json",
-      "sha256": "sha256:de25f5b7f9a23174200fc6c4616d2c6ee18ca3587be792e3d8d78700360fd06b"
-    }
-  },
-  "artifact_refs": [
-    {
-      "bytes": 4035,
-      "path": "certification/artifacts/development/artifact-manifest.json",
-      "sha256": "sha256:df69b0f7275d2863e3b3b4991a3328658dd97d0fceef6ef3f47e02d77c46b414"
-    },
-    {
-      "bytes": 4029,
-      "path": "certification/artifacts/holdout/artifact-manifest.json",
-      "sha256": "sha256:deb3a4a770d82f2e86d724e735486c06f9af121cd0a059bf2afd32c51a202c0d"
-    },
-    {
-      "bytes": 4045,
-      "path": "certification/artifacts/real-repository/artifact-manifest.json",
-      "sha256": "sha256:de25f5b7f9a23174200fc6c4616d2c6ee18ca3587be792e3d8d78700360fd06b"
-    },
-    {
-      "bytes": 9926,
-      "path": "certification/artifacts/module/artifact-manifest.json",
-      "sha256": "sha256:af777a0b154550492c6ad05a844e70c1d6ea3730929bf23bd96331917afe3737"
-    }
-  ],
   "critical_behavior_regressions": 0,
-  "critical_unknown_semantics": 0,
-  "evidenced_type_coverage": [
-    "integer",
-    "number",
-    "boolean"
-  ],
-  "execution_status": "PASSED_LOCAL",
-  "formal_equivalence": {
-    "bytes": 58550,
-    "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:576a3c8ef361f82a14d819e5a63079537ac6c3b9b6a86fb07e554c4732df6bfb"
-  },
-  "input_domain": "canonical-finite-no-error-input-domain",
+  "critical_unknown_semantics": 1,
+  "execution_status": "NOT_RUN",
   "metrics": {
-    "build_green_rate": 1.0,
+    "build_green_rate": 0.0,
     "cost_per_verified_workload": 0,
-    "first_build_pass_rate": 1.0,
+    "first_build_pass_rate": 0.0,
     "manual_hours": 0,
-    "p0_behavior_pass_rate": 1.0,
-    "source_map_coverage": 1.0
-  },
-  "module_artifact_manifest": {
-    "bytes": 9926,
-    "path": "certification/artifacts/module/artifact-manifest.json",
-    "sha256": "sha256:af777a0b154550492c6ad05a844e70c1d6ea3730929bf23bd96331917afe3737"
+    "p0_behavior_pass_rate": 0.0,
+    "source_map_coverage": 0.0
   },
   "module_equivalence": {
-    "bytes": 198015,
+    "bytes": 1782,
     "path": "certification/module-equivalence.json",
-    "sha256": "sha256:a9e50edcf26087bdbbcd452d8a6db3a9c743c0462e0794273a94176a0c38b128"
+    "sha256": "sha256:52544c1503f48bfc5e580c664c27ee39a1a29b8f1c222ff82606b1bf3da89781"
   },
-  "module_execution_status": "PASSED_LOCAL",
+  "module_execution_status": "NOT_RUN",
   "negative_runs": [
     "certification/local-negative-evidence.json"
   ],
   "notes": [
-    "The exact typed-pure-function-v1 profile passed native source analysis, native target compilation, and behavior replay.",
-    "Each corpus output directory is persisted under certification/artifacts and bound by a path, SHA-256, and byte-count manifest.",
-    "The physically separate holdout and representative bounded fixture were not used to author route rules.",
-    "Independent verifier, customer repository, framework, database, production, and external certification evidence remain NOT_RUN.",
-    "critical_unknown_semantics=0 is scoped only to canonical-finite-no-error-input-domain; string semantics and arithmetic-error-domain behavior remain blocked.",
-    "The typed-pure-module-v1 run composed at least three independently observed functions covering integer, finite-number, and boolean semantics with exact symbol/signature closure and byte-bound per-function proof artifacts."
+    "No local route or module behavior is claimed before native execution.",
+    "Independent, external, customer, and production evidence remain NOT_RUN."
   ],
-  "out_of_domain_arithmetic_behavior": "BLOCKED_NOT_EQUIVALENTLY_MODELED",
   "route_key": "objc-to-cpp",
   "route_maturity": "LIMITED",
   "route_version": "1.0.0",

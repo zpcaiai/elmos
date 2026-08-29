@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch29/identifier-plan.schema.json",
+  "title": "Batch29TypedIdentifierPlan",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "policy_id",
+    "policy_sha256",
+    "target_language",
+    "source_ir_sha256",
+    "source_semantic_sha256",
+    "unit_namespace",
+    "unit_namespace_sha256",
+    "candidate_limit",
+    "binding_count",
+    "bindings"
+  ],
+  "properties": {
+    "schema_version": {"const": "2.0.0"},
+    "kind": {"const": "elmos.typed-identifier-plan"},
+    "policy_id": {"const": "typed-alpha-hygiene-v2"},
+    "policy_sha256": {"$ref": "#/$defs/sha256"},
+    "target_language": {"$ref": "#/$defs/language"},
+    "source_ir_sha256": {"$ref": "#/$defs/sha256"},
+    "source_semantic_sha256": {"$ref": "#/$defs/sha256"},
+    "unit_namespace": {"$ref": "#/$defs/unit_namespace"},
+    "unit_namespace_sha256": {"$ref": "#/$defs/sha256"},
+    "candidate_limit": {"const": 16},
+    "binding_count": {"type": "integer", "minimum": 1},
+    "bindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/binding"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "language": {
+      "enum": [
+        "java",
+        "python",
+        "csharp",
+        "typescript",
+        "go",
+        "rust",
+        "cpp",
+        "objc",
+        "swift",
+        "php",
+        "kotlin",
+        "react",
+        "flutter"
+      ]
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "unit_namespace": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "kind",
+        "scope",
+        "repository_snapshot_sha256",
+        "work_unit_id",
+        "source_logical_path",
+        "source_sha256"
+      ],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "kind": {"const": "elmos.identifier-unit-namespace"},
+        "scope": {
+          "enum": [
+            "standalone-semantic-ir",
+            "standalone-artifact",
+            "repository-work-unit"
+          ]
+        },
+        "repository_snapshot_sha256": {
+          "oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+        },
+        "work_unit_id": {
+          "oneOf": [
+            {"type": "string", "pattern": "^WU-[0-9]{5}(?:-F[0-9]{3})?$"},
+            {"type": "null"}
+          ]
+        },
+        "source_logical_path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?!.*[\\u0000-\\u001f\\u007f]).*[^/]$"
+        },
+        "source_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"scope": {"const": "repository-work-unit"}},
+            "required": ["scope"]
+          },
+          "then": {
+            "properties": {
+              "repository_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+              "work_unit_id": {
+                "type": "string",
+                "pattern": "^WU-[0-9]{5}(?:-F[0-9]{3})?$"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "repository_snapshot_sha256": {"type": "null"},
+              "work_unit_id": {"type": "null"}
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "candidate": {
+      "type": "object",
+      "required": ["index", "name", "status", "reasons"],
+      "properties": {
+        "index": {"type": "integer", "minimum": 0, "maximum": 15},
+        "name": {"type": "string", "minLength": 1},
+        "status": {"enum": ["REJECTED", "SELECTED"]},
+        "reasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "additionalProperties": false
+    },
+    "binding": {
+      "type": "object",
+      "required": [
+        "binding_id",
+        "scope_id",
+        "role",
+        "ordinal",
+        "source_name",
+        "target_name",
+        "canonical_type",
+        "signature_sha256",
+        "decision",
+        "selected_candidate_index",
+        "candidates_examined"
+      ],
+      "properties": {
+        "binding_id": {"$ref": "#/$defs/sha256"},
+        "scope_id": {"$ref": "#/$defs/sha256"},
+        "role": {"enum": ["function", "parameter"]},
+        "ordinal": {"type": "integer", "minimum": 0},
+        "source_name": {"type": "string", "minLength": 1},
+        "target_name": {"$ref": "#/$defs/identifier"},
+        "canonical_type": {
+          "oneOf": [
+            {"enum": ["integer", "number", "boolean", "string"]},
+            {"type": "null"}
+          ]
+        },
+        "signature_sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "decision": {"enum": ["PRESERVED", "ALPHA_RENAMED"]},
+        "selected_candidate_index": {"type": "integer", "minimum": 0, "maximum": 15},
+        "candidates_examined": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": {"$ref": "#/$defs/candidate"}
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"role": {"const": "function"}}, "required": ["role"]},
+          "then": {
+            "properties": {
+              "canonical_type": {"type": "null"},
+              "signature_sha256": {"$ref": "#/$defs/sha256"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"role": {"const": "parameter"}}, "required": ["role"]},
+          "then": {
+            "properties": {
+              "canonical_type": {"enum": ["integer", "number", "boolean", "string"]},
+              "signature_sha256": {"type": "null"}
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  }
+}

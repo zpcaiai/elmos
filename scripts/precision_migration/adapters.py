@@ -364,7 +364,7 @@ def execute_batch29_route(
     gate = subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "batch29" / "run_route_gate.py"), str(route_dir)],
         cwd=ROOT,
-        env={"PATH": os.environ.get("PATH", ""), "PYTHONDONTWRITEBYTECODE": "1"},
+        env=environment,
         check=False,
         capture_output=True,
         timeout=int(entry.get("timeout_seconds", 120)),

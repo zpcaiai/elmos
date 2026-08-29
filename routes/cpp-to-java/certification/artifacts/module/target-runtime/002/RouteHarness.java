@@ -1,22 +1,22 @@
 public final class RouteHarness {
     public static void main(String[] args) {
-        var actual0 = Migrated.clamp(-10, 0, 100);
+        var actual0 = Migrated.elmos_fn_5d67eed5ad387c44(-10, 0, 100);
         var expected0 = 0;
         if (actual0 != expected0) throw new AssertionError("case 0");
         System.out.println("ELMOS_OBSERVATION\t0\ti64-dec\t" + Long.toString(actual0));
-        var actual1 = Migrated.clamp(55, 0, 100);
+        var actual1 = Migrated.elmos_fn_5d67eed5ad387c44(55, 0, 100);
         var expected1 = 55;
         if (actual1 != expected1) throw new AssertionError("case 1");
         System.out.println("ELMOS_OBSERVATION\t1\ti64-dec\t" + Long.toString(actual1));
-        var actual2 = Migrated.clamp(101, 0, 100);
+        var actual2 = Migrated.elmos_fn_5d67eed5ad387c44(101, 0, 100);
         var expected2 = 100;
         if (actual2 != expected2) throw new AssertionError("case 2");
         System.out.println("ELMOS_OBSERVATION\t2\ti64-dec\t" + Long.toString(actual2));
-        var actual3 = Migrated.clamp(0, 0, 100);
+        var actual3 = Migrated.elmos_fn_5d67eed5ad387c44(0, 0, 100);
         var expected3 = 0;
         if (actual3 != expected3) throw new AssertionError("case 3");
         System.out.println("ELMOS_OBSERVATION\t3\ti64-dec\t" + Long.toString(actual3));
-        var actual4 = Migrated.clamp(100, 0, 100);
+        var actual4 = Migrated.elmos_fn_5d67eed5ad387c44(100, 0, 100);
         var expected4 = 100;
         if (actual4 != expected4) throw new AssertionError("case 4");
         System.out.println("ELMOS_OBSERVATION\t4\ti64-dec\t" + Long.toString(actual4));

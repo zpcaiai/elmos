@@ -1,0 +1,71 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: skill-robustness-evaluation
+  version: 2.0.0
+  pack: 05-skill-foundry-runtime
+  priority: P1
+  owner: TBD
+spec:
+  description: 覆盖边界输入、版本变化、工具失败、并发、恢复和恶意内容。
+  kernel: K5 Skill Foundry and Runtime
+  riskClass: medium
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: runbook
+    required: true
+  - name: experience episodes
+    required: true
+  - name: task contract
+    required: true
+  - name: semantic IR
+    required: true
+  - name: policy context
+    required: true
+  outputs:
+  - name: skill package
+    contentAddressed: true
+  - name: activation rules
+    contentAddressed: true
+  - name: workflow DAG
+    contentAddressed: true
+  - name: evidence bundle
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - skill.registry
+    - workflow.execute
+    - sandbox.run
+    - policy.evaluate
+    - eval.run
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - trigger-eval-pass
+    - tool-permission-bounded
+    - evidence-complete
+    - rollback-tested
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

@@ -1521,17 +1521,17 @@
     "qualification_effect_guard_limitations": "Python audit events are fail-closed when observed but are not an OS sandbox and cannot account for effects through inherited descriptors, native extensions, or events the interpreter does not emit.",
     "qualification_runtime_environment": {
       "byteorder": "little",
-      "cache_tag": "cpython-314",
-      "executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
-      "executable_sha256": "sha256:c015ab131972822e27ed108cf353582af6ca2fd7daf6296789576c7e7d1ad61a",
-      "hexversion": 51250672,
+      "cache_tag": "cpython-312",
+      "executable": "/Users/stephen/Downloads/ENTER/bin/python3.12",
+      "executable_sha256": "sha256:54192ee41e783b7acfea25a8eff4ac32d7feb7fb55257b2bec8251f48e77221b",
+      "hexversion": 51121392,
       "implementation": "cpython",
       "machine": "arm64",
       "platform": "darwin",
       "release_level": "final",
-      "resolved_executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
+      "resolved_executable": "/Users/stephen/Downloads/ENTER/bin/python3.12",
       "serial": 0,
-      "version": "3.14.5"
+      "version": "3.12.12"
     },
     "skill_interface_status": "INSTALLED",
     "skills": 50,

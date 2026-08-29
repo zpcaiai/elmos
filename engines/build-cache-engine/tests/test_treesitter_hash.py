@@ -27,6 +27,14 @@ from elmos_build_cache.interface_hash import (
 )
 from elmos_build_cache.treesitter_hash import PROFILES, GrammarUnavailable, available, extract
 
+
+@pytest.fixture(autouse=True)
+def _skip_if_no_tree_sitter(request: pytest.FixtureRequest) -> None:
+    if request.node.name == "test_the_scanner_remains_available_as_a_fallback":
+        return
+    if not available("java"):
+        pytest.skip("tree-sitter grammars not available in this test environment")
+
 # --------------------------------------------------------------------------
 # a small, real program in each language
 # --------------------------------------------------------------------------

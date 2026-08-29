@@ -1,11 +1,51 @@
 # Batch 35 gate: frontend-72-route-formal-equivalence-v1
 
 - Pack status: `experimental`
-- Structural status: `PASSED`
-- Local equivalence status: `PARTIAL_PROVED_UNDER_ASSUMPTIONS`
-- Bounded proof profile ready: `true`
-- Formal ready: `false`
-- External evidence status: `NOT_RUN`
+- Structural gate status: `passed`
 - Certification decision: `NOT_CERTIFIED`
+- Certification readiness: `BLOCKED`
+- Evaluated pack digest: `sha256:3dcb7b549027048d235a8c36d33af45144d872047ef2ed8fb5a659fc86b999d0`
 
-The pack is structurally valid but is not certified.
+## Certification blockers
+- pack and certification status must both request certified
+- fuzz seed_corpus ref must be a safe pack-local file: 'corpus/development/seed.json'
+- representative_workload_pass_rate below 1.0
+- source_map_coverage below 0.95
+- evidence_trace_coverage below 0.95
+- p0_contract_pass_rate below 1.0
+- fuzz_campaign_pass_rate below 1.0
+- metamorphic_pass_rate below 1.0
+- model_transition_coverage below 0.95
+- mutation_score below 0.8
+- property_pass_rate below 1.0
+- security_property_pass_rate below 1.0
+- critical_fuzz_crashes must be explicitly zero
+- critical_unknown_obligations must be explicitly zero
+- forbidden_concurrency_outcomes must be explicitly zero
+- race_deadlock_liveness_violations must be explicitly zero
+- security_property_violations must be explicitly zero
+- surviving_critical_mutants must be explicitly zero
+- test_integrity_violations must be explicitly zero
+- unapproved_oracle_changes must be explicitly zero
+- unapproved_tolerance_changes must be explicitly zero
+- unresolved_oracle_conflicts must be explicitly zero
+- unsupported_p0_claims must be explicitly zero
+- negative corpus manifest missing
+- holdout corpus manifest missing
+- holdout corpus is not independently verified
+- holdout corpus independent verifier missing
+- holdout corpus executor missing
+- representative-workloads corpus manifest missing
+- representative workload corpus is not production-derived
+- representative workload authorization record is missing, invalid, or not content-bound locally
+- assurance claim claim.behavior is not fully supported
+- assurance case approvals empty
+- validation profile approvals empty
+- oracle registry approvals empty
+- certification approval timestamp missing
+- P0 claim claim.behavior has no independent external oracle evidence
+- scope controlled_public_dns_rebinding_campaign must be passed (found None)
+- scope independent_holdout must be passed (found None)
+- scope representative_production_workload must be passed (found None)
+- content-addressed evidence manifest is required
+- repository binding records are required for readiness

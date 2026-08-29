@@ -10,34 +10,103 @@ import os
 import pwd
 import re
 import shutil
+import signal
 import stat
 import struct
 import subprocess
+import sys
 import tempfile
 import threading
+import time
+from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, Final, cast
 
 from .clang_analyzer import analyze_clang, inventory_clang_module
-from .emitter import _CPP_HELPERS, _OBJC_HELPERS, _SWIFT_HELPERS
-from .models import ROUTED_LANGUAGES, Language, RouteError, SemanticIR
+from .emitter import _CPP_HELPERS, _OBJC_HELPERS, _PHP_HELPERS, _SWIFT_HELPERS
+from .models import (
+    DEPRECATED_LANGUAGES,
+    PENDING_ANALYZER_LANGUAGES,
+    ROUTED_LANGUAGES,
+    Language,
+    RouteError,
+    SemanticIR,
+)
 from .python_analyzer import analyze_python
+from .repository import javascript_esm_descriptor
 from .toolchains import (
     ExactToolchain,
     exact_toolchain,
     sanitized_subprocess_env,
+    typescript_parser_receipt,
     verify_csharp_toolchain,
 )
 
 ENGINE_ROOT = Path(__file__).resolve().parents[2]
 REPOSITORY_ROOT = ENGINE_ROOT.parents[1]
 
-# These native frontends can re-lift emitted target source even though they
-# are not part of the older ROUTED_LANGUAGES evidence inventory.  Relift
-# capability is deliberately named separately from route certification.
-NATIVE_RELIFTABLE_LANGUAGES = frozenset({"cpp", "objc", "swift"})
+# These native frontends keep an explicit relift surface separate from route
+# certification. JavaScript remains available only for archived evidence.
+NATIVE_RELIFTABLE_LANGUAGES = frozenset({"cpp", "objc", "swift", "php"})
 MODULE_INVENTORY_KIND = "elmos.typed-pure-module-inventory"
 MODULE_INVENTORY_PROFILE = "typed-pure-module-v1"
+_JAVASCRIPT_ANALYZER = ENGINE_ROOT / "native" / "javascript" / "analyzer.mjs"
+_JAVASCRIPT_ANALYZER_SHA256 = "22325ea068f0ae28d3602f452c3b6f27be0d1f332a1692655d8bcce986b9e5b0"
+_JAVASCRIPT_ANALYZER_BYTES = 26_923
+_JAVASCRIPT_TYPESCRIPT_ROOT = ENGINE_ROOT / "native" / "javascript" / "vendor" / "typescript-5.9.2"
+_JAVASCRIPT_TYPESCRIPT_ROOT_MODE = 0o755
+_JAVASCRIPT_TYPESCRIPT_ROOT_NLINK = 6
+_JAVASCRIPT_TYPESCRIPT_ASSET_SPECS = (
+    (
+        "asset-manifest.json",
+        931,
+        "e42b0b7a74a8b6532fb3edc39135776b9ee81e93aea0157a5e0c1c80ac44b073",
+    ),
+    (
+        "LICENSE.txt",
+        9_197,
+        "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47",
+    ),
+    (
+        "package.json",
+        3_620,
+        "5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+    ),
+    (
+        "typescript.js",
+        9_111_680,
+        "e5f1f6b3e82228a89873cc7b941b2465185e839c0692860f83e3e63e53f94c2b",
+    ),
+)
+_JAVASCRIPT_TYPESCRIPT_ASSET_MODE = 0o644
+_JAVASCRIPT_TYPESCRIPT_MANIFEST_SHA256 = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[0][2]
+_JAVASCRIPT_TYPESCRIPT_SHA256 = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][2]
+_JAVASCRIPT_TYPESCRIPT_BYTES = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][1]
+_JAVASCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
+_TYPESCRIPT_ANALYZER = ENGINE_ROOT / "native" / "typescript" / "analyzer.mjs"
+_TYPESCRIPT_ANALYZER_SHA256 = "482d2875c625f21fa13e02741ea4350e5ad43f0a168257a7425a3df87dc7d1d2"
+_TYPESCRIPT_ANALYZER_BYTES = 31_436
+_TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
+_PHP_ANALYZER = ENGINE_ROOT / "native" / "php" / "analyzer.php"
+_PHP_ANALYZER_SHA256 = "624dcfca3d60052aed151c07716b58a40ec73c48337f2424c66d005f8aad497d"
+_PHP_ANALYZER_BYTES = 63489
+_PHP_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
+#: Every PHP invocation the engine makes. `-n` drops php.ini so the analyzer's
+#: behaviour is the build's, not the machine's, and the four `-d` overrides pin
+#: the settings that could otherwise change an *observed value* rather than a
+#: diagnostic. Kept as one constant so the analyzer and the behaviour harness
+#: cannot drift apart in how they configure the interpreter.
+_PHP_INTERPRETER_FLAGS = (
+    "-n",
+    "-d",
+    "error_reporting=E_ALL",
+    "-d",
+    "precision=17",
+    "-d",
+    "serialize_precision=-1",
+    "-d",
+    "opcache.enable_cli=0",
+)
 _SWIFT_ANALYZER_KIND = "elmos.swift-analyzer-build-receipt"
 _SWIFT_SYNTAX_VERSION = "600.0.1"
 _SWIFT_SYNTAX_REVISION = "0687f71944021d616d34d922343dcef086855920"
@@ -45,19 +114,39 @@ _SWIFT_SYNTAX_TREE_SHA256 = "b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461b
 _SWIFT_SYNTAX_TREE_FILE_COUNT = 753
 _SWIFT_SYNTAX_TREE_BYTES = 8_866_479
 _SWIFT_DEPENDENCY_IDENTITY = "swift-syntax"
-_SWIFT_DEPENDENCY_CACHE_SCHEMA = "swift-dependencies-v1"
-_SWIFT_DEPENDENCY_CACHE_SEED = "verified-content-addressed-cache"
+_SWIFT_DEPENDENCY_CACHE_SCHEMA = "swift-dependencies-standalone-v2"
+_SWIFT_DEPENDENCY_CACHE_KEY_SCHEMA = "standalone-v2"
+_SWIFT_DEPENDENCY_CACHE_SEED = "verified-content-addressed-standalone-cache"
+_SWIFT_DEPENDENCY_OBJECT_STORE_POLICY = "standalone-no-alternates-no-hardlinks-v2"
+_SWIFT_DEPENDENCY_OBJECT_STORE_MANIFEST_SCHEMA = "swift-git-object-store-manifest-v1"
+_SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_ENTRIES = 100_000
+_SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_FILE_BYTES = 512 * 1024 * 1024
+_SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_BYTES = 64 * 1024 * 1024
 _SWIFT_ANALYZER_BINARY_MAX_BYTES = 100_000_000
+_SWIFT_ANALYZER_COLD_BUILD_TIMEOUT_SECONDS = 3_600
+_SWIFT_BUILD_TERMINATION_GRACE_SECONDS = 1.0
+_SWIFT_BUILD_CLEANUP_TIMEOUT_SECONDS = 5.0
+_SWIFT_BUILD_REAP_RESERVE_SECONDS = 0.5
+_SWIFT_BUILD_FINAL_SIGNAL_RESERVE_SECONDS = 0.25
+_SWIFT_BUILD_FINAL_VERIFICATION_RESERVE_SECONDS = 0.5
+_SWIFT_BUILD_SESSION_POLL_SECONDS = 0.05
+_SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS = 1.0
+_SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS = 2.0
+_SWIFT_BUILD_MAXIMUM_PROCESS_IDS = 32_768
+_SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES = 512 * 1024
+_SWIFT_BUILD_REQUIRED_EMPTY_SNAPSHOTS = 3
+_PROCESS_LIST = Path("/bin/ps")
+_LIBPROC = Path("/usr/lib/libproc.dylib")
 _APPLE_GIT = Path("/Applications/Xcode.app/Contents/Developer/usr/bin/git")
 _APPLE_GIT_VERSION = "git version 2.50.1 (Apple Git-155)"
 _APPLE_GIT_SHA256 = "10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"
 _APPLE_GIT_BYTES = 3_704_880
 _SANDBOX_EXEC = Path("/usr/bin/sandbox-exec")
-_SANDBOX_EXEC_SHA256 = "e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"
-_SANDBOX_EXEC_CDHASH_FULL = "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"
+_SANDBOX_EXEC_SHA256 = "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+_SANDBOX_EXEC_CDHASH_FULL = "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625"
 _SANDBOX_EXEC_BYTES = 102_368
 _CODESIGN = Path("/usr/bin/codesign")
-_CODESIGN_SHA256 = "6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"
+_CODESIGN_SHA256 = "844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"
 _CODESIGN_BYTES = 458_576
 _SANDBOX_EXEC_POLICY = "(version 1)\n(allow default)\n(deny network*)\n"
 _SANDBOX_NETWORK_PROBE_SOURCE = r"""#include <arpa/inet.h>
@@ -124,10 +213,7 @@ _SANDBOX_NETWORK_PROBE_BUILD_ARGV = (
     "-",
 )
 _SANDBOX_NETWORK_PROBE_BUILD_ENVIRONMENT = {
-    "PATH": (
-        "<swift-toolchain-bin>:<system-usr-bin>:<system-bin>:"
-        "<system-usr-sbin>:<system-sbin>"
-    ),
+    "PATH": ("<swift-toolchain-bin>:<system-usr-bin>:<system-bin>:<system-usr-sbin>:<system-sbin>"),
     "HOME": "<isolated-home>",
     "TMPDIR": "<isolated-tmp>",
     "LANG": "C",
@@ -706,7 +792,23 @@ def _scan_preprocessor_directives(
 
 
 def _verify_emitted_helper_sources(source: Path, language: Language) -> None:
-    registries = {"cpp": _CPP_HELPERS, "objc": _OBJC_HELPERS, "swift": _SWIFT_HELPERS}
+    # JavaScript helper identity is established by the pinned TypeScript AST
+    # frontend.  Text search cannot distinguish a call from the same bytes in
+    # a string or comment, and therefore must not pre-empt that exact parser
+    # boundary.  Native targets below retain their existing source precheck.
+    if language == "javascript":
+        return
+    registries = {
+        "cpp": _CPP_HELPERS,
+        "objc": _OBJC_HELPERS,
+        "swift": _SWIFT_HELPERS,
+        # The PHP frontend deliberately *skips* the helper bodies when it
+        # relifts (see native/php/analyzer.php, skipBalancedBlock). That is only
+        # sound because this check has already asserted each helper's source
+        # appears byte-for-byte exactly once, so the bytes are pinned here
+        # rather than re-parsed there.
+        "php": _PHP_HELPERS,
+    }
     registry = registries.get(language)
     if registry is None:
         return
@@ -995,7 +1097,10 @@ def _stable_read_regular_file(
 
 
 def _swift_dependency_cache_key() -> str:
-    return f"swift-syntax-{_SWIFT_SYNTAX_VERSION}-{_SWIFT_SYNTAX_REVISION}-{_SWIFT_SYNTAX_TREE_SHA256}"
+    return (
+        f"swift-syntax-{_SWIFT_DEPENDENCY_CACHE_KEY_SCHEMA}-"
+        f"{_SWIFT_SYNTAX_VERSION}-{_SWIFT_SYNTAX_REVISION}-{_SWIFT_SYNTAX_TREE_SHA256}"
+    )
 
 
 def _swift_dependency_cache_base() -> Path:
@@ -1034,6 +1139,7 @@ def _swift_dependency_cache_receipt(
     return {
         "cache_key": cache_key,
         "cache_schema": _SWIFT_DEPENDENCY_CACHE_SCHEMA,
+        "object_store_policy": _SWIFT_DEPENDENCY_OBJECT_STORE_POLICY,
         "identity": _SWIFT_DEPENDENCY_IDENTITY,
         "version": _SWIFT_SYNTAX_VERSION,
         "revision": _SWIFT_SYNTAX_REVISION,
@@ -1297,10 +1403,7 @@ def _swift_network_probe_macho_receipt(data: bytes) -> dict[str, Any]:
         raise RouteError(failure)
     uuid_hex = uuids[0].hex().upper()
     uuid_value = f"{uuid_hex[:8]}-{uuid_hex[8:12]}-{uuid_hex[12:16]}-{uuid_hex[16:20]}-{uuid_hex[20:]}"
-    if (
-        uuid_value != _SANDBOX_NETWORK_PROBE_UUID
-        or tuple(linked_libraries) != _SANDBOX_NETWORK_PROBE_LINKED_LIBRARIES
-    ):
+    if uuid_value != _SANDBOX_NETWORK_PROBE_UUID or tuple(linked_libraries) != _SANDBOX_NETWORK_PROBE_LINKED_LIBRARIES:
         raise RouteError(failure)
     return {
         "architecture": "arm64",
@@ -1409,13 +1512,7 @@ def _seal_swift_network_probe_binary(
     try:
         execution_root.mkdir(mode=0o700)
         sealed = execution_root / _SANDBOX_NETWORK_PROBE_BINARY_NAME
-        flags = (
-            os.O_WRONLY
-            | os.O_CREAT
-            | os.O_EXCL
-            | getattr(os, "O_CLOEXEC", 0)
-            | getattr(os, "O_NOFOLLOW", 0)
-        )
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
         descriptor = os.open(sealed, flags, 0o500)
         try:
             offset = 0
@@ -1533,8 +1630,7 @@ def _require_swift_network_probe_build_environment(
     toolchain_bin = _SWIFT_TOOLCHAIN_ROOT / "usr/bin"
     expected = {
         "PATH": os.pathsep.join(
-            str(path)
-            for path in (toolchain_bin, Path("/usr/bin"), Path("/bin"), Path("/usr/sbin"), Path("/sbin"))
+            str(path) for path in (toolchain_bin, Path("/usr/bin"), Path("/bin"), Path("/usr/sbin"), Path("/sbin"))
         ),
         "HOME": str((root / "home").resolve()),
         "TMPDIR": str((root / "tmp").resolve()),
@@ -1548,6 +1644,7 @@ def _require_swift_network_probe_build_environment(
         "GIT_CONFIG_NOSYSTEM": "1",
         "GIT_CONFIG_GLOBAL": "/dev/null",
         "GIT_TERMINAL_PROMPT": "0",
+        "TEST_TELEMETRY_DIR": str((root / "home" / ".elmos-go-telemetry").resolve()),
         "XDG_CACHE_HOME": str((root / "home" / ".cache").resolve()),
         "PYTHONHASHSEED": "0",
         "PYTHONDONTWRITEBYTECODE": "1",
@@ -1681,7 +1778,7 @@ def _verified_swift_network_isolation(
         if isinstance(error, RouteError) and str(error).startswith("NETWORK_ISOLATION_NOT_RUN"):
             raise
         raise RouteError("NETWORK_ISOLATION_NOT_RUN:unavailable") from error
-    receipt = {
+    receipt: dict[str, Any] = {
         "status": "PASSED",
         "scope": "swift-build-process-tree",
         "sandbox": {**sandbox_after, "cdhash_full": _SANDBOX_EXEC_CDHASH_FULL},
@@ -1815,16 +1912,380 @@ def _require_current_swift_network_execution_identity(
         "probe_binary": binary_after,
         "probe_mach_o": mach_o_after,
     }
+    # One opaque code for six before/after pairs and an eleven-key comparison
+    # cannot say what moved, which is the difference between a gate that fails
+    # closed and one that can be acted on. The names are appended to the code;
+    # every condition that used to fail still fails, on exactly the same inputs.
+    unstable = [
+        name
+        for name, before, after in (
+            ("sandbox", sandbox_before, sandbox_after),
+            ("sandbox_identity", sandbox_identity_before, sandbox_identity_after),
+            ("verifier", verifier_before, verifier_after),
+            ("verifier_identity", verifier_identity_before, verifier_identity_after),
+            ("probe_binary", binary_before, binary_after),
+            ("probe_mach_o", mach_o_before, mach_o_after),
+        )
+        if before != after
+    ]
+    mismatched = sorted(
+        key for key in expected_keys if observed.get(key) != expected.get(key)
+    )
+    if unstable or mismatched:
+        detail = ";".join(
+            part
+            for part in (
+                "unstable=" + ",".join(unstable) if unstable else "",
+                "mismatched=" + ",".join(mismatched) if mismatched else "",
+            )
+            if part
+        )
+        raise RouteError(
+            "NETWORK_ISOLATION_NOT_RUN:execution-identity-changed:" + detail
+        )
+
+
+def _stable_secure_directory_chain_identity(
+    chain: tuple[tuple[object, ...], ...],
+) -> tuple[tuple[object, ...], ...]:
+    """Retain path security identity while ignoring directory timestamp churn."""
+
+    return tuple(identity[:-2] for identity in chain)
+
+
+def _bounded_swift_object_store_paths(objects: Path) -> list[Path]:
+    """Discover at most the configured object-store entry count plus one."""
+
+    paths: list[Path] = []
+    pending = [objects]
+    while pending:
+        directory = pending.pop()
+        remaining = _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_ENTRIES - len(paths)
+        entries: list[Path] = []
+        try:
+            with os.scandir(directory) as iterator:
+                for entry in iterator:
+                    entries.append(Path(entry.path))
+                    if len(entries) > remaining:
+                        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_ENTRY_LIMIT_EXCEEDED")
+        except RouteError:
+            raise
+        except OSError as error:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED") from error
+        entries.sort(key=lambda item: item.name)
+        paths.extend(entries)
+        child_directories: list[Path] = []
+        try:
+            for path in entries:
+                if stat.S_ISDIR(path.lstat().st_mode):
+                    child_directories.append(path)
+        except OSError as error:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED") from error
+        pending.extend(reversed(child_directories))
+    return paths
+
+
+def _streaming_regular_file_sha256(
+    path: Path,
+    *,
+    maximum_bytes: int,
+    limit_failure: str,
+) -> tuple[int, str]:
+    """Hash one stable private regular file without materializing its content."""
+
+    failure = "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED"
+    try:
+        before = path.lstat()
+        if before.st_size > maximum_bytes:
+            raise RouteError(limit_failure)
+        descriptor = os.open(
+            path,
+            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+        )
+        try:
+            opened_before = os.fstat(descriptor)
+            digest = hashlib.sha256()
+            total = 0
+            while chunk := os.read(descriptor, 1024 * 1024):
+                total += len(chunk)
+                if total > maximum_bytes:
+                    raise RouteError(limit_failure)
+                digest.update(chunk)
+            opened_after = os.fstat(descriptor)
+        finally:
+            os.close(descriptor)
+        after = path.lstat()
+    except RouteError:
+        raise
+    except OSError as error:
+        raise RouteError(failure) from error
+    identity = (
+        before.st_dev,
+        before.st_ino,
+        before.st_mode,
+        before.st_nlink,
+        before.st_uid,
+        before.st_gid,
+        before.st_size,
+        before.st_mtime_ns,
+        before.st_ctime_ns,
+    )
     if (
-        sandbox_before != sandbox_after
-        or sandbox_identity_before != sandbox_identity_after
-        or verifier_before != verifier_after
-        or verifier_identity_before != verifier_identity_after
-        or binary_before != binary_after
-        or mach_o_before != mach_o_after
-        or observed != expected
+        identity
+        != (
+            opened_before.st_dev,
+            opened_before.st_ino,
+            opened_before.st_mode,
+            opened_before.st_nlink,
+            opened_before.st_uid,
+            opened_before.st_gid,
+            opened_before.st_size,
+            opened_before.st_mtime_ns,
+            opened_before.st_ctime_ns,
+        )
+        or identity
+        != (
+            opened_after.st_dev,
+            opened_after.st_ino,
+            opened_after.st_mode,
+            opened_after.st_nlink,
+            opened_after.st_uid,
+            opened_after.st_gid,
+            opened_after.st_size,
+            opened_after.st_mtime_ns,
+            opened_after.st_ctime_ns,
+        )
+        or identity
+        != (
+            after.st_dev,
+            after.st_ino,
+            after.st_mode,
+            after.st_nlink,
+            after.st_uid,
+            after.st_gid,
+            after.st_size,
+            after.st_mtime_ns,
+            after.st_ctime_ns,
+        )
+        or not stat.S_ISREG(after.st_mode)
+        or after.st_uid != os.getuid()
+        or stat.S_IMODE(after.st_mode) & 0o022
+        or after.st_nlink != 1
+        or total != after.st_size
     ):
-        raise RouteError("NETWORK_ISOLATION_NOT_RUN:execution-identity-changed")
+        raise RouteError(failure)
+    return total, "sha256:" + digest.hexdigest()
+
+
+def _swift_object_store_manifest(objects: Path) -> tuple[tuple[object, ...], ...]:
+    """Return a stable path/content/inode manifest for one Git object store."""
+
+    paths = _bounded_swift_object_store_paths(objects)
+    metadata_before: dict[str, tuple[object, ...]] = {}
+    manifest: list[tuple[object, ...]] = []
+    aggregate_bytes = 0
+    for path in paths:
+        relative = path.relative_to(objects).as_posix()
+        try:
+            metadata = path.lstat()
+        except OSError as error:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED") from error
+        identity = (
+            metadata.st_dev,
+            metadata.st_ino,
+            metadata.st_mode,
+            metadata.st_uid,
+            metadata.st_gid,
+            metadata.st_nlink,
+            metadata.st_size,
+            metadata.st_mtime_ns,
+            metadata.st_ctime_ns,
+        )
+        metadata_before[relative] = identity
+        if (
+            stat.S_ISLNK(metadata.st_mode)
+            or metadata.st_uid != os.getuid()
+            or stat.S_IMODE(metadata.st_mode) & 0o022
+        ):
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_REPOSITORY_UNSAFE")
+        if stat.S_ISDIR(metadata.st_mode):
+            manifest.append(
+                (
+                    relative,
+                    "directory",
+                    metadata.st_dev,
+                    metadata.st_ino,
+                    metadata.st_mode,
+                    metadata.st_uid,
+                    metadata.st_gid,
+                    metadata.st_nlink,
+                    None,
+                    None,
+                )
+            )
+            continue
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_REPOSITORY_UNSAFE")
+        if metadata.st_size > _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_FILE_BYTES:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_FILE_LIMIT_EXCEEDED")
+        remaining_bytes = _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_BYTES - aggregate_bytes
+        if metadata.st_size > remaining_bytes:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_BYTE_LIMIT_EXCEEDED")
+        maximum_bytes = min(
+            _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_FILE_BYTES,
+            remaining_bytes,
+        )
+        limit_failure = (
+            "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_BYTE_LIMIT_EXCEEDED"
+            if remaining_bytes <= _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_FILE_BYTES
+            else "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_FILE_LIMIT_EXCEEDED"
+        )
+        byte_count, digest = _streaming_regular_file_sha256(
+            path,
+            maximum_bytes=maximum_bytes,
+            limit_failure=limit_failure,
+        )
+        aggregate_bytes += byte_count
+        manifest.append(
+            (
+                relative,
+                "file",
+                metadata.st_dev,
+                metadata.st_ino,
+                metadata.st_mode,
+                metadata.st_uid,
+                metadata.st_gid,
+                metadata.st_nlink,
+                byte_count,
+                digest,
+            )
+        )
+
+    observed_paths = _bounded_swift_object_store_paths(objects)
+    if [path.relative_to(objects).as_posix() for path in observed_paths] != list(metadata_before):
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED")
+    try:
+        for path in observed_paths:
+            relative = path.relative_to(objects).as_posix()
+            metadata = path.lstat()
+            observed = (
+                metadata.st_dev,
+                metadata.st_ino,
+                metadata.st_mode,
+                metadata.st_uid,
+                metadata.st_gid,
+                metadata.st_nlink,
+                metadata.st_size,
+                metadata.st_mtime_ns,
+                metadata.st_ctime_ns,
+            )
+            if observed != metadata_before[relative]:
+                raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED")
+    except OSError as error:
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED") from error
+    return tuple(manifest)
+
+
+def _swift_object_store_content_digest(
+    manifest: tuple[tuple[object, ...], ...],
+) -> str:
+    portable_entries = [
+        {
+            "path": entry[0],
+            "kind": entry[1],
+            "mode": entry[4],
+            "bytes": entry[8],
+            "sha256": entry[9],
+        }
+        for entry in manifest
+    ]
+    return _canonical_digest(
+        {
+            "schema_version": _SWIFT_DEPENDENCY_OBJECT_STORE_MANIFEST_SCHEMA,
+            "entries": portable_entries,
+        }
+    )
+
+
+def _swift_object_store_manifest_receipt(
+    manifest: tuple[tuple[object, ...], ...],
+) -> dict[str, object]:
+    files = [entry for entry in manifest if entry[1] == "file"]
+    return {
+        "manifest_schema": _SWIFT_DEPENDENCY_OBJECT_STORE_MANIFEST_SCHEMA,
+        "entry_count": len(manifest),
+        "file_count": len(files),
+        "bytes": sum(cast(int, entry[8]) for entry in files),
+        "manifest_sha256": _swift_object_store_content_digest(manifest),
+    }
+
+
+def _swift_standalone_object_store_identity(
+    repository: Path,
+    *,
+    environment: dict[str, str],
+    require_worktree: bool,
+) -> tuple[tuple[tuple[object, ...], ...], frozenset[tuple[int, int]]]:
+    if any(
+        environment.get(name)
+        for name in (
+            "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+            "GIT_OBJECT_DIRECTORY",
+            "GIT_COMMON_DIR",
+        )
+    ):
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_ALTERNATE_OBJECT_STORE_FORBIDDEN")
+    metadata_root = repository / ".git" if require_worktree else repository
+    objects = metadata_root / "objects"
+    metadata_before = _verify_secure_directory_chain(
+        metadata_root,
+        "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_UNSAFE",
+    )
+    objects_before = _verify_secure_directory_chain(
+        objects,
+        "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_UNSAFE",
+    )
+    alternate_paths = (
+        objects / "info" / "alternates",
+        objects / "info" / "http-alternates",
+    )
+
+    def require_no_alternates() -> None:
+        for path in alternate_paths:
+            try:
+                path.lstat()
+            except FileNotFoundError:
+                continue
+            except OSError as error:
+                raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_UNSAFE") from error
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_ALTERNATE_OBJECT_STORE_FORBIDDEN")
+
+    require_no_alternates()
+    manifest_before = _swift_object_store_manifest(objects)
+    require_no_alternates()
+    metadata_after = _verify_secure_directory_chain(
+        metadata_root,
+        "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED",
+    )
+    objects_after = _verify_secure_directory_chain(
+        objects,
+        "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED",
+    )
+    manifest_after = _swift_object_store_manifest(objects)
+    if (
+        _stable_secure_directory_chain_identity(metadata_after)
+        != _stable_secure_directory_chain_identity(metadata_before)
+        or _stable_secure_directory_chain_identity(objects_after)
+        != _stable_secure_directory_chain_identity(objects_before)
+        or manifest_after != manifest_before
+    ):
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED")
+    identities = frozenset(
+        (cast(int, entry[2]), cast(int, entry[3]))
+        for entry in manifest_after
+        if entry[1] == "file"
+    )
+    return manifest_after, identities
 
 
 def _verify_swift_git_repository(
@@ -1833,8 +2294,18 @@ def _verify_swift_git_repository(
     root: Path,
     environment: dict[str, str],
     require_worktree: bool,
+    require_standalone_object_store: bool = True,
 ) -> dict[str, Any]:
     _verify_secure_directory_chain(repository, "SWIFT_ANALYZER_DEPENDENCY_REPOSITORY_UNSAFE")
+    object_store_before = (
+        _swift_standalone_object_store_identity(
+            repository,
+            environment=environment,
+            require_worktree=require_worktree,
+        )
+        if require_standalone_object_store
+        else None
+    )
     revision = _run_verified_apple_git(
         ["-C", str(repository), "rev-parse", f"{_SWIFT_SYNTAX_REVISION}^{{commit}}"],
         cwd=root,
@@ -1851,7 +2322,18 @@ def _verify_swift_git_repository(
         timeout=300,
         failure="SWIFT_ANALYZER_DEPENDENCY_FSCK_FAILED",
     )
+    if require_standalone_object_store:
+        remotes = _run_verified_apple_git(
+            ["-C", str(repository), "remote"],
+            cwd=root,
+            environment=environment,
+            timeout=30,
+            failure="SWIFT_ANALYZER_DEPENDENCY_REMOTE_INSPECTION_FAILED",
+        ).stdout.splitlines()
+        if remotes:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_REMOTE_FORBIDDEN")
     metadata = _swift_git_metadata_manifest(repository, require_worktree=require_worktree)
+    result: dict[str, Any] = {"git_metadata": metadata}
     if require_worktree:
         observed_head = _run_verified_apple_git(
             ["-C", str(repository), "rev-parse", "HEAD"],
@@ -1862,8 +2344,22 @@ def _verify_swift_git_repository(
         ).stdout.strip()
         if observed_head != _SWIFT_SYNTAX_REVISION:
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_REVISION_MISMATCH")
-        return {**_swift_dependency_tree(repository), "git_metadata": metadata}
-    return {"git_metadata": metadata}
+        result = {**_swift_dependency_tree(repository), **result}
+    if require_standalone_object_store:
+        object_store_after = _swift_standalone_object_store_identity(
+            repository,
+            environment=environment,
+            require_worktree=require_worktree,
+        )
+        if object_store_after != object_store_before:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED")
+        result["object_store"] = {
+            "policy": _SWIFT_DEPENDENCY_OBJECT_STORE_POLICY,
+            "alternates": False,
+            "hardlinks": False,
+            **_swift_object_store_manifest_receipt(object_store_after[0]),
+        }
+    return result
 
 
 def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) -> dict[str, Any]:
@@ -1905,17 +2401,7 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_UNSAFE") from error
         return files
 
-    def timestamps_only_changed(
-        before: tuple[tuple[object, ...], ...],
-        after: tuple[tuple[object, ...], ...],
-    ) -> bool:
-        return len(before) == len(after) and all(
-            left[:-2] == right[:-2] and left[-2:] != right[-2:]
-            for left, right in zip(before, after, strict=True)
-            if left != right
-        )
-
-    def capture() -> tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]] | None:
+    def capture() -> tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]]:
         root_before = _verify_secure_directory_chain(
             metadata_root,
             "SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_UNSAFE",
@@ -1953,9 +2439,16 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
             metadata_root,
             "SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED",
         )
-        if root_after != root_before:
-            if timestamps_only_changed(root_before, root_after):
-                return None
+        # The chain is walked from / down, so it includes the per-user temporary
+        # directory, whose mtime every other process on the machine moves. Only
+        # the two timestamps are dropped: dev, ino, mode, uid, gid and the path
+        # still have to match, and every capture re-checks that no component is
+        # a symlink, a non-directory or group/world-writable. This is the
+        # comparison _verify_swift_git_repository already makes on the same kind
+        # of chain.
+        if _stable_secure_directory_chain_identity(
+            root_after
+        ) != _stable_secure_directory_chain_identity(root_before):
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
         return (
             {
@@ -1967,23 +2460,19 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
             after_identities,
         )
 
-    previous: tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]] | None = None
-    for _attempt in range(3):
-        observed = capture()
-        if observed is None:
-            previous = None
-            continue
-        if previous is not None:
-            previous_receipt, previous_root, previous_files = previous
-            receipt, root_identity, file_identities = observed
-            if receipt != previous_receipt or file_identities != previous_files:
-                raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
-            if root_identity == previous_root:
-                return receipt
-            if not timestamps_only_changed(previous_root, root_identity):
-                raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
-        previous = observed
-    raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
+    # Two captures that have to agree. The three-attempt budget existed only to
+    # absorb a capture voided by timestamp churn; now that churn cannot void
+    # one, a third attempt could not observe anything the second did not.
+    previous_receipt, previous_root, previous_files = capture()
+    receipt, root_identity, file_identities = capture()
+    if (
+        receipt != previous_receipt
+        or file_identities != previous_files
+        or _stable_secure_directory_chain_identity(root_identity)
+        != _stable_secure_directory_chain_identity(previous_root)
+    ):
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
+    return receipt
 
 
 def _swift_dependency_tree_identity(value: dict[str, Any]) -> dict[str, Any]:
@@ -2031,18 +2520,20 @@ def _clone_verified_swift_dependency(
     root: Path,
     environment: dict[str, str],
     source_has_worktree: bool,
+    source_requires_standalone_object_store: bool = True,
 ) -> dict[str, Any]:
-    _verify_swift_git_repository(
+    source_before = _verify_swift_git_repository(
         source,
         root=root,
         environment=environment,
         require_worktree=source_has_worktree,
+        require_standalone_object_store=source_requires_standalone_object_store,
     )
-    source_identities = _regular_file_identities(source)
+    source_identities_before = _regular_file_identities(source)
     _run_verified_apple_git(
         [
             "clone",
-            "--local",
+            "--no-local",
             "--no-hardlinks",
             "--no-checkout",
             str(source),
@@ -2052,6 +2543,13 @@ def _clone_verified_swift_dependency(
         environment=environment,
         timeout=900,
         failure="SWIFT_ANALYZER_DEPENDENCY_CLONE_FAILED",
+    )
+    _run_verified_apple_git(
+        ["-C", str(destination), "remote", "remove", "origin"],
+        cwd=root,
+        environment=environment,
+        timeout=30,
+        failure="SWIFT_ANALYZER_DEPENDENCY_REMOTE_REMOVAL_FAILED",
     )
     _run_verified_apple_git(
         ["-C", str(destination), "checkout", "--detach", _SWIFT_SYNTAX_REVISION],
@@ -2066,9 +2564,40 @@ def _clone_verified_swift_dependency(
         environment=environment,
         require_worktree=True,
     )
-    if source_identities.intersection(_regular_file_identities(destination)):
+    source_after = _verify_swift_git_repository(
+        source,
+        root=root,
+        environment=environment,
+        require_worktree=source_has_worktree,
+        require_standalone_object_store=source_requires_standalone_object_store,
+    )
+    source_identities_after = _regular_file_identities(source)
+    if source_after != source_before or source_identities_after != source_identities_before:
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_SOURCE_CHANGED_DURING_CLONE")
+    if source_identities_after.intersection(_regular_file_identities(destination)):
         raise RouteError("SWIFT_ANALYZER_DEPENDENCY_HARDLINK_FORBIDDEN")
     return dependency
+
+
+def _open_swift_dependency_cache_lock(lock_path: Path) -> int:
+    common_flags = getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    for _attempt in range(3):
+        try:
+            return os.open(lock_path, os.O_RDONLY | common_flags)
+        except FileNotFoundError:
+            try:
+                return os.open(
+                    lock_path,
+                    os.O_RDWR | os.O_CREAT | os.O_EXCL | common_flags,
+                    0o600,
+                )
+            except FileExistsError:
+                continue
+            except OSError as error:
+                raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_LOCK_UNAVAILABLE") from error
+        except OSError as error:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_LOCK_UNAVAILABLE") from error
+    raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_LOCK_CHANGED")
 
 
 def _ensure_swift_dependency_cache(
@@ -2090,14 +2619,7 @@ def _ensure_swift_dependency_cache(
         raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_ROOT_UNAVAILABLE") from error
     base_identity = _verify_secure_directory_chain(cache_base, "SWIFT_ANALYZER_DEPENDENCY_CACHE_ROOT_UNSAFE")
     lock_path = cache_base / ".seed.lock"
-    try:
-        descriptor = os.open(
-            lock_path,
-            os.O_RDWR | os.O_CREAT | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
-            0o600,
-        )
-    except OSError as error:
-        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_LOCK_UNAVAILABLE") from error
+    descriptor = _open_swift_dependency_cache_lock(lock_path)
     candidate_root: Path | None = None
     try:
         lock_metadata = os.fstat(descriptor)
@@ -2171,6 +2693,7 @@ def _ensure_swift_dependency_cache(
             root=root,
             environment=environment,
             source_has_worktree=seed_has_worktree,
+            source_requires_standalone_object_store=False,
         )
         _verify_swift_git_repository(
             candidate,
@@ -2334,22 +2857,644 @@ def _run_swift_build_step(
     input_text: str | None = None,
 ) -> subprocess.CompletedProcess[str]:
     try:
-        completed = subprocess.run(
+        process = subprocess.Popen(
             command,
             cwd=cwd,
-            check=False,
-            capture_output=True,
+            stdin=subprocess.PIPE if input_text is not None else None,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            timeout=timeout,
             env=environment,
-            input=input_text,
+            start_new_session=True,
         )
-    except (OSError, subprocess.TimeoutExpired) as error:
+    except OSError as error:
         raise RouteError(failure + ":process") from error
+    try:
+        stdout, stderr = process.communicate(input=input_text, timeout=timeout)
+    except BaseException as error:
+        cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(process)
+        if cleanup_error is not None or cleanup_diagnostics:
+            _add_swift_build_cleanup_notes(error, cleanup_error, cleanup_diagnostics)
+        if isinstance(error, KeyboardInterrupt | SystemExit):
+            raise
+        if isinstance(cleanup_error, KeyboardInterrupt | SystemExit):
+            raise cleanup_error from error
+        if isinstance(error, OSError | subprocess.TimeoutExpired):
+            converted = RouteError(failure + ":process")
+            if cleanup_error is not None or cleanup_diagnostics:
+                _add_swift_build_cleanup_notes(
+                    converted,
+                    cleanup_error,
+                    cleanup_diagnostics,
+                )
+            raise converted from error
+        raise
+    known_members: dict[int, int] = {}
+    # communicate() reaps an ordinarily completed leader before this
+    # defense-in-depth residual-session scan. Darwin cannot atomically pin that
+    # now-free numeric PID/SID; a reuse collision remains a platform boundary.
+    try:
+        session_empty = _wait_for_swift_build_session_exit(
+            process.pid,
+            deadline=time.monotonic() + _SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS,
+            known_members=known_members,
+        )
+    except BaseException as error:
+        cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(
+            process,
+            known_members=known_members,
+        )
+        if cleanup_error is not None or cleanup_diagnostics:
+            _add_swift_build_cleanup_notes(error, cleanup_error, cleanup_diagnostics)
+        if isinstance(error, KeyboardInterrupt | SystemExit):
+            raise
+        if isinstance(cleanup_error, KeyboardInterrupt | SystemExit):
+            raise cleanup_error from error
+        if not isinstance(error, Exception):
+            raise
+        converted = RouteError(failure + ":process")
+        if cleanup_error is not None or cleanup_diagnostics:
+            _add_swift_build_cleanup_notes(
+                converted,
+                cleanup_error,
+                cleanup_diagnostics,
+            )
+        raise converted from error
+    if not session_empty:
+        cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(
+            process,
+            known_members=known_members,
+        )
+        if isinstance(cleanup_error, KeyboardInterrupt | SystemExit):
+            raise cleanup_error
+        converted = RouteError(failure + ":process")
+        if cleanup_error is not None or cleanup_diagnostics:
+            _add_swift_build_cleanup_notes(
+                converted,
+                cleanup_error,
+                cleanup_diagnostics,
+            )
+        raise converted
+    completed = subprocess.CompletedProcess(command, cast(int, process.returncode), stdout, stderr)
     if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout).strip()[-2_000:]
         raise RouteError(failure + ":" + detail)
     return completed
+
+
+def _swift_build_process_ids_from_ps(deadline: float) -> tuple[int, ...]:
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise RuntimeError("swift build process-list deadline expired")
+    try:
+        completed = subprocess.run(
+            [str(_PROCESS_LIST), "-axo", "pid="],
+            check=False,
+            capture_output=True,
+            timeout=min(_SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS, remaining),
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise RuntimeError("swift build process-list command failed") from error
+    if completed.returncode != 0 or completed.stderr.strip():
+        raise RuntimeError("swift build process-list command failed")
+    if len(completed.stdout) > _SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES:
+        raise RuntimeError("swift build process-list output exceeded its bound")
+    lines = completed.stdout.splitlines()
+    if len(lines) > _SWIFT_BUILD_MAXIMUM_PROCESS_IDS:
+        raise RuntimeError("swift build process-list count exceeded its bound")
+    process_ids: set[int] = set()
+    for line in lines:
+        if time.monotonic() >= deadline:
+            raise RuntimeError("swift build process-list deadline expired")
+        fields = line.split()
+        if len(fields) != 1:
+            raise RuntimeError("swift build process-list output was malformed")
+        try:
+            pid = int(fields[0])
+        except ValueError as error:
+            raise RuntimeError("swift build process-list output was malformed") from error
+        if pid > 0:
+            process_ids.add(pid)
+    if time.monotonic() >= deadline:
+        raise RuntimeError("swift build process-list deadline expired")
+    if len(process_ids) > _SWIFT_BUILD_MAXIMUM_PROCESS_IDS:
+        raise RuntimeError("swift build process-list count exceeded its bound")
+    return tuple(sorted(process_ids))
+
+
+def _swift_build_process_ids_from_libproc(deadline: float) -> tuple[int, ...]:
+    """Use Darwin's fixed-cap process API without spawning another process."""
+
+    if deadline - time.monotonic() <= 0:
+        raise RuntimeError("swift build process-list deadline expired")
+    import ctypes
+
+    try:
+        library = ctypes.CDLL(str(_LIBPROC), use_errno=True)
+        proc_listallpids = cast(Any, library.proc_listallpids)
+        proc_listallpids.argtypes = [ctypes.c_void_p, ctypes.c_int]
+        proc_listallpids.restype = ctypes.c_int
+        buffer_type = ctypes.c_int32 * (_SWIFT_BUILD_MAXIMUM_PROCESS_IDS + 1)
+        buffer = buffer_type()
+        count = cast(
+            int,
+            proc_listallpids(
+                ctypes.cast(buffer, ctypes.c_void_p),
+                ctypes.sizeof(buffer),
+            ),
+        )
+    except (AttributeError, OSError, ValueError) as error:
+        raise RuntimeError("swift build libproc enumeration failed") from error
+    if time.monotonic() > deadline:
+        raise RuntimeError("swift build process-list deadline expired")
+    if count < 0 or count >= len(buffer):
+        raise RuntimeError("swift build libproc process count exceeded its bound")
+    process_ids: set[int] = set()
+    for index in range(count):
+        if time.monotonic() >= deadline:
+            raise RuntimeError("swift build process-list deadline expired")
+        if buffer[index] > 0:
+            process_ids.add(int(buffer[index]))
+    if len(process_ids) > _SWIFT_BUILD_MAXIMUM_PROCESS_IDS:
+        raise RuntimeError("swift build libproc process count exceeded its bound")
+    return tuple(sorted(process_ids))
+
+
+def _swift_build_process_ids(deadline: float) -> tuple[int, ...]:
+    if sys.platform == "darwin":
+        try:
+            return _swift_build_process_ids_from_libproc(deadline)
+        except Exception as primary_error:
+            try:
+                return _swift_build_process_ids_from_ps(deadline)
+            except Exception as fallback_error:
+                failure = RuntimeError("swift build process enumeration failed")
+                failure.add_note(f"ps fallback: {fallback_error}")
+                raise failure from primary_error
+    return _swift_build_process_ids_from_ps(deadline)
+
+
+def _swift_build_session_members(
+    session_id: int,
+    *,
+    deadline: float | None = None,
+) -> dict[int, int]:
+    """Return exact live PID/PGID members of one isolated build session."""
+
+    enumeration_deadline = deadline or (
+        time.monotonic() + _SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS
+    )
+    members: dict[int, int] = {}
+    for pid in _swift_build_process_ids(enumeration_deadline):
+        if time.monotonic() >= enumeration_deadline:
+            raise RuntimeError("swift build session identity deadline expired")
+        if pid <= 1 or pid == os.getpid():
+            continue
+        try:
+            observed_session = os.getsid(pid)
+        except ProcessLookupError:
+            continue
+        except PermissionError as error:
+            raise RuntimeError("swift build session identity was inaccessible") from error
+        if time.monotonic() >= enumeration_deadline:
+            raise RuntimeError("swift build session identity deadline expired")
+        if observed_session != session_id:
+            continue
+        try:
+            process_group = os.getpgid(pid)
+        except ProcessLookupError:
+            continue
+        except PermissionError as error:
+            raise RuntimeError("swift build process-group identity was inaccessible") from error
+        if time.monotonic() >= enumeration_deadline:
+            raise RuntimeError("swift build session identity deadline expired")
+        if process_group <= 1 or process_group == os.getpgrp():
+            raise RuntimeError("swift build session escaped its isolation boundary")
+        members[pid] = process_group
+    return members
+
+
+def _record_swift_build_cleanup_error(
+    errors: list[str],
+    context: str,
+    error: BaseException,
+) -> None:
+    detail = f"{context}: {type(error).__name__}: {error}"
+    if detail not in errors and len(errors) < 16:
+        errors.append(detail)
+
+
+def _signal_swift_build_member(
+    session_id: int,
+    pid: int,
+    signal_number: int,
+    known_members: dict[int, int],
+    errors: list[str],
+    *,
+    deadline: float,
+) -> bool | None:
+    """Signal one member after identity checks, or return None at deadline.
+
+    Darwin has no pidfd-equivalent that makes the last getsid-to-kill step
+    atomic. The repeated identity checks narrow and detect PID reuse but cannot
+    eliminate that final platform race for a moved-PGID descendant.
+    """
+
+    if time.monotonic() >= deadline:
+        return None
+    try:
+        first_session = os.getsid(pid)
+    except ProcessLookupError:
+        known_members.pop(pid, None)
+        return False
+    except OSError as error:
+        _record_swift_build_cleanup_error(errors, f"getsid({pid})", error)
+        return True
+    if first_session != session_id:
+        known_members.pop(pid, None)
+        return False
+    if time.monotonic() >= deadline:
+        return None
+    try:
+        process_group = os.getpgid(pid)
+        if time.monotonic() >= deadline:
+            return None
+        second_session = os.getsid(pid)
+    except ProcessLookupError:
+        known_members.pop(pid, None)
+        return False
+    except OSError as error:
+        _record_swift_build_cleanup_error(errors, f"identity({pid})", error)
+        return True
+    if second_session != session_id:
+        known_members.pop(pid, None)
+        return False
+    if process_group <= 1 or process_group == os.getpgrp():
+        _record_swift_build_cleanup_error(
+            errors,
+            f"identity({pid})",
+            RuntimeError("unsafe process-group identity"),
+        )
+        return True
+    known_members[pid] = process_group
+    if time.monotonic() >= deadline:
+        return None
+    try:
+        os.kill(pid, signal_number)
+    except ProcessLookupError:
+        known_members.pop(pid, None)
+        return False
+    except OSError as error:
+        _record_swift_build_cleanup_error(errors, f"signal({pid})", error)
+        return True
+    if time.monotonic() >= deadline:
+        return None
+    try:
+        after_session = os.getsid(pid)
+    except ProcessLookupError:
+        known_members.pop(pid, None)
+        return False
+    except OSError as error:
+        _record_swift_build_cleanup_error(errors, f"post-signal getsid({pid})", error)
+        return True
+    if after_session != session_id:
+        known_members.pop(pid, None)
+        return False
+    return True
+
+
+def _signal_swift_build_session(
+    session_id: int,
+    signal_number: int,
+    *,
+    deadline: float,
+    known_members: dict[int, int],
+    errors: list[str],
+) -> dict[int, int] | None:
+    """Signal the original PGID and exact members that moved to other PGIDs."""
+
+    if session_id <= 1 or session_id == os.getpid() or session_id == os.getpgrp():
+        raise RuntimeError("unsafe swift build session identity")
+    if time.monotonic() >= deadline:
+        return None
+    try:
+        os.killpg(session_id, signal_number)
+    except ProcessLookupError:
+        pass
+    except OSError as error:
+        _record_swift_build_cleanup_error(errors, f"killpg({session_id})", error)
+    if deadline - time.monotonic() <= 0:
+        return None
+    members: dict[int, int] | None
+    try:
+        members = _swift_build_session_members(session_id, deadline=deadline)
+    except Exception as error:
+        _record_swift_build_cleanup_error(errors, "session enumeration", error)
+        members = None
+    if members is not None:
+        known_members.update(members)
+    live_members: dict[int, int] = {}
+    for pid in sorted(known_members, reverse=True):
+        live = _signal_swift_build_member(
+            session_id,
+            pid,
+            signal_number,
+            known_members,
+            errors,
+            deadline=deadline,
+        )
+        if live is None:
+            return None
+        if live:
+            live_members[pid] = known_members[pid]
+    if members is None:
+        return None
+    return {**members, **live_members}
+
+
+def _signal_known_swift_build_members(
+    session_id: int,
+    signal_number: int,
+    known_members: dict[int, int],
+    errors: list[str],
+    *,
+    deadline: float,
+) -> bool:
+    if time.monotonic() >= deadline:
+        return False
+    try:
+        os.killpg(session_id, signal_number)
+    except ProcessLookupError:
+        pass
+    except OSError as error:
+        _record_swift_build_cleanup_error(errors, f"killpg({session_id})", error)
+    for pid in sorted(known_members, reverse=True):
+        live = _signal_swift_build_member(
+            session_id,
+            pid,
+            signal_number,
+            known_members,
+            errors,
+            deadline=deadline,
+        )
+        if live is None:
+            return False
+    return True
+
+
+def _wait_for_swift_build_session_exit(
+    session_id: int,
+    *,
+    deadline: float,
+    known_members: dict[int, int],
+) -> bool:
+    """Require repeated empty snapshots; never reap the pinned leader here."""
+
+    empty_snapshots = 0
+    while time.monotonic() < deadline:
+        try:
+            members = _swift_build_session_members(session_id, deadline=deadline)
+        except Exception:
+            raise
+        if members:
+            known_members.update(members)
+            return False
+        else:
+            empty_snapshots += 1
+            if empty_snapshots >= _SWIFT_BUILD_REQUIRED_EMPTY_SNAPSHOTS:
+                return True
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return False
+        time.sleep(min(_SWIFT_BUILD_SESSION_POLL_SECONDS, remaining))
+    return False
+
+
+def _quiesce_swift_build_session(
+    session_id: int,
+    signal_number: int,
+    *,
+    deadline: float,
+    known_members: dict[int, int],
+    errors: list[str],
+) -> bool:
+    empty_snapshots = 0
+    while time.monotonic() < deadline:
+        members = _signal_swift_build_session(
+            session_id,
+            signal_number,
+            deadline=deadline,
+            known_members=known_members,
+            errors=errors,
+        )
+        if members is None or members:
+            empty_snapshots = 0
+        else:
+            empty_snapshots += 1
+            if empty_snapshots >= _SWIFT_BUILD_REQUIRED_EMPTY_SNAPSHOTS:
+                return True
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return False
+        time.sleep(min(_SWIFT_BUILD_SESSION_POLL_SECONDS, remaining))
+    return False
+
+
+def _terminate_swift_build_session(
+    process: subprocess.Popen[str],
+    *,
+    known_members: dict[int, int] | None = None,
+) -> tuple[str, ...]:
+    """Boundedly terminate and reap one verified command's POSIX session.
+
+    Swift/system descendants may create their own process groups, so cleanup
+    enumerates the isolated session. A descendant deliberately calling setsid()
+    is outside POSIX session containment and is not treated as contained here.
+    If both bounded enumerators fail before the first snapshot, an already
+    moved-PGID member is unknowable: cleanup kills the original PGID and every
+    last-known member, then fails closed without claiming absolute no-leak.
+    """
+
+    session_id = process.pid
+    if session_id <= 1 or session_id == os.getpid() or session_id == os.getpgrp():
+        raise RuntimeError("unsafe swift build session identity")
+    members = dict(known_members or {})
+    members.setdefault(session_id, session_id)
+    errors: list[str] = []
+    fatal_errors: list[str] = []
+    started = time.monotonic()
+    cleanup_deadline = started + _SWIFT_BUILD_CLEANUP_TIMEOUT_SECONDS
+    session_deadline = cleanup_deadline - _SWIFT_BUILD_REAP_RESERVE_SECONDS
+    final_signal_deadline = (
+        session_deadline - _SWIFT_BUILD_FINAL_VERIFICATION_RESERVE_SECONDS
+    )
+    kill_deadline = final_signal_deadline - _SWIFT_BUILD_FINAL_SIGNAL_RESERVE_SECONDS
+    termination_deadline = min(
+        started + _SWIFT_BUILD_TERMINATION_GRACE_SECONDS,
+        kill_deadline,
+    )
+    interrupted: BaseException | None = None
+    session_clean = False
+    try:
+        session_clean = _quiesce_swift_build_session(
+            session_id,
+            signal.SIGTERM,
+            deadline=termination_deadline,
+            known_members=members,
+            errors=errors,
+        )
+        if not session_clean:
+            session_clean = _quiesce_swift_build_session(
+                session_id,
+                signal.SIGKILL,
+                deadline=kill_deadline,
+                known_members=members,
+                errors=errors,
+            )
+    except BaseException as error:
+        interrupted = _capture_swift_build_cleanup_exception(
+            interrupted,
+            errors,
+            "initial session cleanup",
+            error,
+        )
+    finally:
+        if not session_clean:
+            try:
+                final_signals_complete = _signal_known_swift_build_members(
+                    session_id,
+                    signal.SIGKILL,
+                    members,
+                    errors,
+                    deadline=final_signal_deadline,
+                )
+                if not final_signals_complete:
+                    _record_swift_build_cleanup_error(
+                        errors,
+                        "final known-member signal",
+                        RuntimeError("cleanup deadline expired"),
+                    )
+            except BaseException as error:
+                interrupted = _capture_swift_build_cleanup_exception(
+                    interrupted,
+                    errors,
+                    "final known-member signal",
+                    error,
+                )
+            if process.returncode is None and time.monotonic() < final_signal_deadline:
+                try:
+                    process.kill()
+                except ProcessLookupError:
+                    pass
+                except BaseException as error:
+                    interrupted = _capture_swift_build_cleanup_exception(
+                        interrupted,
+                        errors,
+                        "direct process kill",
+                        error,
+                    )
+            elif process.returncode is None:
+                _record_swift_build_cleanup_error(
+                    errors,
+                    "direct process kill",
+                    RuntimeError("cleanup deadline expired"),
+                )
+            try:
+                session_clean = _quiesce_swift_build_session(
+                    session_id,
+                    signal.SIGKILL,
+                    deadline=session_deadline,
+                    known_members=members,
+                    errors=errors,
+                )
+            except BaseException as error:
+                interrupted = _capture_swift_build_cleanup_exception(
+                    interrupted,
+                    errors,
+                    "final session verification",
+                    error,
+                )
+        for stream in (process.stdin, process.stdout, process.stderr):
+            if stream is not None:
+                try:
+                    stream.close()
+                except BaseException as error:
+                    interrupted = _capture_swift_build_cleanup_exception(
+                        interrupted,
+                        errors,
+                        "process stream close",
+                        error,
+                    )
+                    fatal_errors.append("process stream close failed")
+        process_reaped = False
+        attempts = 0
+        while attempts < 2 and time.monotonic() <= cleanup_deadline:
+            attempts += 1
+            try:
+                process.wait(timeout=max(0.0, cleanup_deadline - time.monotonic()))
+                process_reaped = True
+                break
+            except BaseException as error:
+                interrupted = _capture_swift_build_cleanup_exception(
+                    interrupted,
+                    errors,
+                    "direct process reap",
+                    error,
+                )
+        if not process_reaped:
+            fatal_errors.append("direct process was not reaped")
+    if not session_clean:
+        fatal_errors.append("session was not proven empty before cleanup deadline")
+    if interrupted is not None:
+        for detail in (*errors, *fatal_errors):
+            interrupted.add_note(detail)
+        raise interrupted
+    if fatal_errors:
+        failure = RuntimeError("swift build process-tree cleanup failed")
+        for detail in (*errors, *fatal_errors):
+            failure.add_note(detail)
+        raise failure
+    return tuple(errors)
+
+
+def _capture_swift_build_cleanup_exception(
+    interrupted: BaseException | None,
+    errors: list[str],
+    context: str,
+    error: BaseException,
+) -> BaseException | None:
+    if isinstance(error, Exception):
+        _record_swift_build_cleanup_error(errors, context, error)
+        return interrupted
+    if interrupted is None:
+        return error
+    interrupted.add_note(f"{context}: {type(error).__name__}: {error}")
+    return interrupted
+
+
+def _attempt_swift_build_session_cleanup(
+    process: subprocess.Popen[str],
+    *,
+    known_members: dict[int, int] | None = None,
+) -> tuple[BaseException | None, tuple[str, ...]]:
+    try:
+        diagnostics = _terminate_swift_build_session(process, known_members=known_members)
+    except BaseException as error:
+        return error, ()
+    return None, diagnostics
+
+
+def _add_swift_build_cleanup_notes(
+    target: BaseException,
+    cleanup_error: BaseException | None,
+    cleanup_diagnostics: tuple[str, ...],
+) -> None:
+    if cleanup_error is not None:
+        target.add_note(f"Swift build cleanup: {cleanup_error}")
+        for detail in getattr(cleanup_error, "__notes__", ()):
+            target.add_note(f"Swift build cleanup detail: {detail}")
+    for detail in cleanup_diagnostics:
+        target.add_note(f"Swift build cleanup diagnostic: {detail}")
 
 
 def _prepare_swift_dependency_mirror(
@@ -2758,6 +3903,7 @@ def _canonical_swift_analyzer_receipt(receipt: dict[str, Any]) -> dict[str, Any]
                     for key in (
                         "cache_key",
                         "cache_schema",
+                        "object_store_policy",
                         "identity",
                         "version",
                         "revision",
@@ -2788,13 +3934,10 @@ def _canonical_swift_analyzer_receipt(receipt: dict[str, Any]) -> dict[str, Any]
                     "argv": network_probe["build"]["argv"],
                     "environment": network_probe["build"]["environment"],
                     "compiler": {
-                        key: probe_compiler[key]
-                        for key in ("role", "link_target", "sha256", "bytes", "mode", "nlink")
+                        key: probe_compiler[key] for key in ("role", "link_target", "sha256", "bytes", "mode", "nlink")
                     },
                 },
-                "binary": {
-                    key: network_probe["binary"][key] for key in ("name", "sha256", "bytes", "mode", "nlink")
-                },
+                "binary": {key: network_probe["binary"][key] for key in ("name", "sha256", "bytes", "mode", "nlink")},
                 "execution_seal": {
                     "policy": network_probe["execution_seal"]["policy"],
                     "mode": network_probe["execution_seal"]["mode"],
@@ -2940,7 +4083,7 @@ def _build_swift_analyzer(toolchain: ExactToolchain, package: Path) -> tuple[Pat
             command,
             cwd=snapshot,
             environment=environment,
-            timeout=1_800,
+            timeout=_SWIFT_ANALYZER_COLD_BUILD_TIMEOUT_SECONDS,
             failure="SWIFT_ANALYZER_BUILD_FAILED",
         )
     except RouteError as error:
@@ -3629,12 +4772,17 @@ def _build_csharp_analyzer(
             destination.chmod(0o600)
         home = root / "home"
         scratch = root / "tmp"
-        packages = root / "packages"
         http_cache = root / "http-cache"
         package_mirror = root / "package-source"
         output = root / "output"
-        for directory in (home, scratch, packages, http_cache, package_mirror, output):
+        for directory in (home, scratch, http_cache, package_mirror, output):
             directory.mkdir(mode=0o700)
+        packages = _csharp_package_restore_cache(
+            toolchain, source_manifest, toolchain_identity, package_manifest
+        )
+        if packages is None:
+            packages = root / "packages"
+            packages.mkdir(mode=0o700)
         for item in package_manifest["packages"]:
             filename = str(item["filename"])
             destination = package_mirror / filename
@@ -3796,18 +4944,40 @@ def _csharp_analyzer(toolchain: ExactToolchain) -> tuple[Path, dict[str, Any]]:
                 raise RouteError("CSHARP_ANALYZER_IDENTITY_CHANGED_AFTER_BUILD_FAILURE")
             raise RouteError(failure)
         if _CSHARP_ANALYZER_BINARY is None or _CSHARP_ANALYZER_RECEIPT is None:
-            try:
-                temporary, binary, receipt = _build_csharp_analyzer(toolchain, engine)
-            except RouteError as error:
-                _CSHARP_ANALYZER_FAILURE = (
-                    str(current_inputs["sha256"]),
-                    str(current_toolchain["sha256"]),
-                    str(error),
-                )
-                raise
-            _CSHARP_ANALYZER_TEMPORARY = temporary
-            _CSHARP_ANALYZER_BINARY = binary
-            _CSHARP_ANALYZER_RECEIPT = receipt
+            # The build is process-local today, so a thousand-repository run
+            # rebuilds an identical analyzer a thousand times.  Try the
+            # cross-process cache first, keyed on precisely the two identities
+            # this function already re-checks below -- the source inputs and the
+            # toolchain -- so a hit is only possible when those match, and is
+            # additionally re-verified against the stored output manifest.
+            cache_key = _toolchain_build_cache_key(
+                "csharp-analyzer",
+                Path(toolchain.executable),
+                salt=(str(current_inputs["sha256"]), str(current_toolchain["sha256"])),
+            )
+            cached = _load_persistent_analyzer_build(
+                "csharp-analyzer", cache_key, _verify_csharp_analyzer_output
+            )
+            if cached is not None:
+                cached_output, cached_receipt = cached
+                _CSHARP_ANALYZER_BINARY = cached_output / _CSHARP_ANALYZER_ENTRYPOINT
+                _CSHARP_ANALYZER_RECEIPT = cached_receipt
+            else:
+                try:
+                    temporary, binary, receipt = _build_csharp_analyzer(toolchain, engine)
+                except RouteError as error:
+                    _CSHARP_ANALYZER_FAILURE = (
+                        str(current_inputs["sha256"]),
+                        str(current_toolchain["sha256"]),
+                        str(error),
+                    )
+                    raise
+                _CSHARP_ANALYZER_TEMPORARY = temporary
+                _CSHARP_ANALYZER_BINARY = binary
+                _CSHARP_ANALYZER_RECEIPT = receipt
+                # Publishing is best-effort: a cache that cannot be written
+                # costs a rebuild next time and nothing else.
+                _store_persistent_analyzer_build("csharp-analyzer", cache_key, binary.parent, receipt)
         receipt = _CSHARP_ANALYZER_RECEIPT
         binary = _CSHARP_ANALYZER_BINARY
         if current_inputs["sha256"] != receipt["source_inputs"]["sha256"]:
@@ -3854,7 +5024,327 @@ def _bind_csharp_analyzer_identity(value: dict[str, Any], receipt: dict[str, Any
     return bound
 
 
-def _run(command: list[str], *, cwd: Path, timeout: int = 120) -> dict[str, Any]:
+_TOOLCHAIN_BUILD_CACHE_SCHEMA = "toolchain-build-cache-v1"
+_CARGO_BUILD_CACHE_SCHEMA = "cargo-build-cache-v1"
+
+
+def _toolchain_build_cache_key(
+    kind: str,
+    executable: Path,
+    files: Sequence[Path] = (),
+    trees: Sequence[Path] = (),
+    salt: Sequence[str] = (),
+) -> str:
+    """Content identity of everything that can change one analyzer build.
+
+    A cache hit is only sound if the key covers every input the compiler reads.
+    For these analyzers that set is closed and enumerable -- the compiler binary,
+    the analyzer sources, any vendored dependency tree, and the flags the build
+    is invoked with -- because every one of them is built offline with pinned or
+    vendored dependencies and no ambient registry.  Two runs with equal keys are
+    therefore required to produce equal output, which is what makes reusing the
+    build directory evidence-preserving rather than a shortcut.
+
+    Paths enter the digest relative to their own root and length-delimited, so a
+    file named ``a/bc`` and a file named ``ab/c`` cannot collide into the same
+    key by concatenation.
+    """
+    digest = hashlib.sha256()
+
+    def absorb(label: str, value: str) -> None:
+        digest.update(f"{len(label)}:{label}".encode())
+        digest.update(f"{len(value)}:{value}".encode())
+
+    absorb("schema", _TOOLCHAIN_BUILD_CACHE_SCHEMA)
+    absorb("kind", kind)
+    absorb("executable", _sha256_file(executable))
+    for item in salt:
+        absorb("salt", item)
+    for path in files:
+        absorb(f"file:{path.name}", _sha256_file(path) if path.is_file() else "absent")
+    for tree in trees:
+        if not tree.is_dir():
+            absorb(f"tree:{tree.name}", "absent")
+            continue
+        for path in sorted(p for p in tree.rglob("*") if p.is_file() and not p.is_symlink()):
+            absorb(f"tree:{path.relative_to(tree).as_posix()}", _sha256_file(path))
+    return digest.hexdigest()
+
+
+def _toolchain_build_cache(kind: str, key: str, names: Sequence[str]) -> tuple[Path, ...] | None:
+    """Materialise a persistent, content-addressed build directory set.
+
+    Returns ``None`` whenever the cache cannot be established safely, so a
+    read-only or hostile home directory degrades to the previous per-call
+    temporary directory instead of blocking analysis.
+    """
+    try:
+        base = (
+            Path(pwd.getpwuid(os.getuid()).pw_dir)
+            / ".cache"
+            / "elmos-polyglot-route-engine"
+            / _TOOLCHAIN_BUILD_CACHE_SCHEMA
+            / kind
+        )
+        base.mkdir(mode=0o700, parents=True, exist_ok=True)
+        root = base / key
+        root.mkdir(mode=0o700, parents=True, exist_ok=True)
+        directories = []
+        for name in names:
+            directory = root / name
+            directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+            directories.append(directory)
+        for directory in (root, *directories):
+            with tempfile.TemporaryFile(
+                prefix=".elmos-cache-write-probe-",
+                dir=directory,
+            ):
+                pass
+    except OSError:
+        return None
+    return tuple(directories)
+
+
+def _csharp_package_restore_cache(
+    toolchain: ExactToolchain,
+    source_manifest: dict[str, Any],
+    toolchain_identity: dict[str, Any],
+    package_manifest: dict[str, Any],
+) -> Path | None:
+    """Persistent NuGet package directory for the C# analyzer restore.
+
+    The C# analyzer was the last one still rebuilt from scratch in every
+    process: the other toolchains reuse a content-addressed build directory,
+    while this one only ever had the per-process globals, so a fresh process --
+    which is what discovery spawns -- restored and extracted the whole Roslyn
+    package set again.
+
+    The argument that licenses the cargo, Go and Java caches holds here too, and
+    the inputs are enumerated rather than assumed: the restore runs
+    ``--locked-mode`` against a verified local mirror with ``--no-http-cache``
+    and no reachable registry, so the extracted package set is a function of the
+    lock file, the mirror contents and the SDK. All three are hashed into the
+    key, so equal keys are required to yield equal restores.
+
+    Only the restore is shared. The compile still runs in the per-run temporary
+    directory under ``--no-incremental``, and its output is still verified
+    against a manifest computed from the bytes it just produced, so nothing that
+    reaches a receipt comes out of the cache.
+
+    The whole source manifest enters the key, not just the files a restore is
+    believed to read. Narrowing it to the project and lock files would be an
+    optimisation resting on an assumption about MSBuild's evaluation, and a
+    cache key that omits a real input returns a wrong build rather than a slow
+    one. Analyzer sources change during development, not in production, so the
+    misses this costs are the cheap ones.
+
+    Returns ``None`` when no cache can be established, which leaves the previous
+    per-run behaviour exactly as it was.
+    """
+    try:
+        key = _toolchain_build_cache_key(
+            "dotnet",
+            Path(toolchain.executable),
+            salt=(
+                f"source-inputs={source_manifest['sha256']}",
+                f"toolchain={toolchain_identity['sha256']}",
+                f"package-mirror={package_manifest['sha256']}",
+            ),
+        )
+    except OSError:
+        # Same contract as _toolchain_build_cache: a key that cannot be computed
+        # degrades to the per-run directory rather than failing the analysis.
+        return None
+    directories = _toolchain_build_cache("dotnet", key, ("packages",))
+    return None if directories is None else directories[0]
+
+
+def _cargo_build_cache_key(package: Path, executable: Path) -> str:
+    return _toolchain_build_cache_key(
+        "cargo",
+        executable,
+        files=(package / "Cargo.toml", package / "Cargo.lock", package / ".cargo" / "config.toml"),
+        trees=(package / "vendor",),
+    )
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _cargo_build_cache(package: Path, executable: Path) -> tuple[Path, Path, dict[str, Any]] | None:
+    """A persistent, content-addressed CARGO_HOME/CARGO_TARGET_DIR pair.
+
+    Without this, every analyzer invocation gets a fresh empty target directory
+    and cargo rebuilds the whole vendored dependency graph -- proc-macro crates
+    included -- before analyzing a single function.  Measured on this crate that
+    is ~17.8s cold against ~0.03s warm, and the analyzer is invoked once per
+    *candidate function*, so a Rust file with eight functions pays that cost
+    eight times.
+
+    Returning ``None`` falls back to the previous per-call temporary directory,
+    so a cache path that cannot be established safely never blocks analysis.
+    """
+    key = _cargo_build_cache_key(package, executable)
+    directories = _toolchain_build_cache("cargo", key, ("cargo-home", "cargo-target"))
+    if directories is None:
+        return None
+    cargo_home, cargo_target = directories
+    receipt = {
+        "cache_schema": _CARGO_BUILD_CACHE_SCHEMA,
+        "cache_key": key,
+        "cache_scope": "content-addressed-persistent",
+    }
+    return cargo_home, cargo_target, receipt
+
+
+_ANALYZER_BUILD_RECEIPT = "build-receipt.json"
+
+
+#: Reusing a *built analyzer binary* across processes is opt-in, unlike reusing
+#: a compiler's own build directory.
+#:
+#: The difference is observable.  `test_csharp_analyzer_cache` asserts how many
+#: build commands a single process issues, because "this process built the
+#: analyzer it is about to run" is a property the C# and Swift paths currently
+#: promise.  A cross-process cache makes that count depend on state outside the
+#: process, which is a real semantic change -- not one to make silently, and not
+#: one to hide by relaxing the tests that noticed it.  So it is enabled
+#: deliberately, per deployment.
+#:
+#: Adopting it means updating those build-count assertions on purpose.
+_ANALYZER_BINARY_CACHE_ENV = "ELMOS_ANALYZER_BINARY_CACHE"
+
+
+def _analyzer_binary_cache_enabled() -> bool:
+    return os.environ.get(_ANALYZER_BINARY_CACHE_ENV, "") == "1"
+
+
+def _persistent_analyzer_root(kind: str, key: str) -> Path | None:
+    if not _analyzer_binary_cache_enabled():
+        return None
+    if _toolchain_build_cache(kind, key, ()) is None:
+        return None
+    return (
+        Path(pwd.getpwuid(os.getuid()).pw_dir)
+        / ".cache"
+        / "elmos-polyglot-route-engine"
+        / _TOOLCHAIN_BUILD_CACHE_SCHEMA
+        / kind
+        / key
+    )
+
+
+def _load_persistent_analyzer_build(kind: str, key: str, verify: Any) -> tuple[Path, dict[str, Any]] | None:
+    """Reuse a previously built analyzer tree, but only if it still verifies.
+
+    The Swift and C# analyzers are built into a temporary directory that dies
+    with the process, so every repository in a portfolio rebuilds them from
+    scratch even though the inputs are identical.  The receipt those builds
+    already produce is what makes reuse checkable: it carries a digest of every
+    output file, and `verify` is the engine's own output verifier -- not a
+    weaker check written for the cache.
+
+    So a hit is not "trust the directory", it is "re-derive the output manifest
+    and refuse if one byte moved".  A damaged or tampered entry is discarded and
+    rebuilt rather than used.
+    """
+    root = _persistent_analyzer_root(kind, key)
+    if root is None:
+        return None
+    output = root / "output"
+    receipt_path = root / _ANALYZER_BUILD_RECEIPT
+    if not output.is_dir() or not receipt_path.is_file():
+        return None
+    try:
+        receipt = json.loads(receipt_path.read_text())
+        verify(output, receipt["output"])
+    except (OSError, ValueError, KeyError, TypeError, RouteError):
+        shutil.rmtree(output, ignore_errors=True)
+        receipt_path.unlink(missing_ok=True)
+        return None
+    return output, receipt
+
+
+def _store_persistent_analyzer_build(
+    kind: str,
+    key: str,
+    built_output: Path,
+    receipt: Mapping[str, Any],
+) -> Path | None:
+    """Publish a freshly built analyzer tree for the next process to reuse.
+
+    Copy-then-rename, so a concurrent reader never observes a partial tree, and
+    the receipt is written only once the tree is in place, so a receipt always
+    describes something that exists.
+    """
+    root = _persistent_analyzer_root(kind, key)
+    if root is None:
+        return None
+    output = root / "output"
+    staging = root / f".staging-{os.getpid()}"
+    try:
+        shutil.rmtree(staging, ignore_errors=True)
+        shutil.copytree(built_output, staging, symlinks=False)
+        shutil.rmtree(output, ignore_errors=True)
+        staging.rename(output)
+        (root / _ANALYZER_BUILD_RECEIPT).write_text(json.dumps(dict(receipt), sort_keys=True))
+    except (OSError, ValueError):
+        shutil.rmtree(staging, ignore_errors=True)
+        return None
+    return output
+
+
+def _go_build_cache_environment(helper: Path, executable: Path) -> dict[str, str] | None:
+    """Persistent GOCACHE/GOPATH for the Go analyzer.
+
+    `sanitized_subprocess_env` points HOME and XDG_CACHE_HOME at the per-call
+    temporary directory, which is correct for isolation and catastrophic for
+    cost: Go resolves its build cache under those, so `go run` recompiles the
+    analyzer and every package it touches on every invocation.  Measured here
+    that is 7.34s per call against 0.068s with a warm cache -- and the analyzer
+    runs once per *candidate function*, so this is the single largest avoidable
+    cost in the engine.
+
+    Isolation is preserved rather than traded away: the cache directory is keyed
+    on the Go binary's own digest and the analyzer source digest, so a different
+    toolchain or a modified analyzer cannot read another key's artifacts, and
+    the sandboxed HOME the rest of the environment relies on is untouched.
+    """
+    try:
+        key = _toolchain_build_cache_key("go", executable, files=(helper,))
+    except OSError:
+        return None
+    directories = _toolchain_build_cache("go", key, ("gocache", "gopath"))
+    if directories is None:
+        return None
+    gocache, gopath = directories
+    return {
+        "GOCACHE": str(gocache.resolve()),
+        "GOPATH": str(gopath.resolve()),
+        "GOMODCACHE": str((gopath / "pkg" / "mod").resolve()),
+        # The analyzer is stdlib-only and must stay that way; if it ever grows a
+        # module dependency this is the line that has to be revisited rather
+        # than silently reaching the network from inside an analysis.
+        "GOFLAGS": "-mod=mod",
+        "GOPROXY": "off",
+        "GOTOOLCHAIN": "local",
+    }
+
+
+def _run(
+    command: list[str],
+    *,
+    cwd: Path,
+    timeout: int = 120,
+    isolated_cargo: bool = False,
+    cargo_package: Path | None = None,
+    environment_overrides: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
     executable = Path(command[0])
     executable = executable if executable.is_absolute() else (cwd / executable)
     try:
@@ -3864,6 +5354,29 @@ def _run(command: list[str], *, cwd: Path, timeout: int = 120) -> dict[str, Any]
             scratch = root / "tmp"
             home.mkdir(mode=0o700)
             scratch.mkdir(mode=0o700)
+            environment = sanitized_subprocess_env(
+                home=home,
+                temp_dir=scratch,
+                executable_dirs=(executable.resolve().parent,),
+            )
+            if isolated_cargo:
+                cached = _cargo_build_cache(cargo_package, executable) if cargo_package else None
+                if cached is not None:
+                    cargo_home, cargo_target, _cache_receipt = cached
+                else:
+                    cargo_home = root / "cargo-home"
+                    cargo_target = root / "cargo-target"
+                    cargo_home.mkdir(mode=0o700)
+                    cargo_target.mkdir(mode=0o700)
+                environment.update(
+                    {
+                        "CARGO_HOME": str(cargo_home.resolve()),
+                        "CARGO_NET_OFFLINE": "true",
+                        "CARGO_TARGET_DIR": str(cargo_target.resolve()),
+                    }
+                )
+            if environment_overrides:
+                environment.update(environment_overrides)
             completed = subprocess.run(
                 command,
                 cwd=cwd,
@@ -3871,11 +5384,7 @@ def _run(command: list[str], *, cwd: Path, timeout: int = 120) -> dict[str, Any]
                 capture_output=True,
                 text=True,
                 timeout=timeout,
-                env=sanitized_subprocess_env(
-                    home=home,
-                    temp_dir=scratch,
-                    executable_dirs=(executable.resolve().parent,),
-                ),
+                env=environment,
             )
     except (OSError, subprocess.TimeoutExpired) as error:
         raise RouteError(f"NATIVE_ANALYZER_FAILED:{command[0]}:process") from error
@@ -3929,6 +5438,1332 @@ def _run_trusted_swift_analyzer(
     if _verify_swift_execution_seal(binary, receipt) != before:
         raise RouteError("SWIFT_ANALYZER_CHANGED_DURING_EXECUTION")
     return value
+
+
+def _javascript_bound_content(
+    path: Path,
+    root: Path,
+    *,
+    expected_sha256: str,
+    expected_bytes: int,
+    failure: str,
+) -> bytes:
+    guarded = _read_csharp_bound_file(
+        path,
+        root,
+        failure=failure,
+        maximum_bytes=expected_bytes,
+    )
+    content = _stable_read_regular_file(
+        path,
+        failure=failure,
+        maximum_bytes=expected_bytes,
+        minimum_bytes=expected_bytes,
+        allowed_uids=frozenset({os.getuid()}),
+        require_nlink_one=True,
+    )
+    final = _read_csharp_bound_file(
+        path,
+        root,
+        failure=failure,
+        maximum_bytes=expected_bytes,
+    )
+    if (
+        guarded != content
+        or final != content
+        or len(content) != expected_bytes
+        or hashlib.sha256(content).hexdigest() != expected_sha256
+    ):
+        raise RouteError(failure)
+    return content
+
+
+def _run_trusted_php_analyzer(
+    toolchain: ExactToolchain,
+    source: Path,
+    function_name: str,
+    *,
+    emitted_target: bool,
+) -> dict[str, Any]:
+    """Run the PHP frontend against a content-pinned copy of its own script.
+
+    The analyzer is a *script*, not a built binary, so the thing that has to be
+    pinned is the file the interpreter is about to read. It is read through the
+    same triple-read the JavaScript analyzer uses -- guarded read, stable read
+    with an fd-level stat, guarded read again -- and compared against the
+    recorded digest and length before the interpreter is ever invoked, so a
+    swap between the check and the run is what the two outer reads exist to
+    catch.
+
+    The analyzer's own reported version is then rewritten into an identity chain
+    the same way the Swift and TypeScript paths rewrite theirs, so a persisted
+    IR names the exact script and interpreter that produced it rather than just
+    "php".
+    """
+    raw_source = source.expanduser()
+    if raw_source.is_symlink():
+        raise RouteError("PHP_ANALYZER_SOURCE_UNSAFE")
+    resolved = raw_source.resolve()
+    if not resolved.is_file() or resolved.stat().st_size > _PHP_ANALYZER_MAX_SOURCE_BYTES:
+        raise RouteError("PHP_ANALYZER_SOURCE_UNSAFE")
+
+    analyzer_before = _javascript_bound_content(
+        _PHP_ANALYZER,
+        ENGINE_ROOT,
+        expected_sha256=_PHP_ANALYZER_SHA256,
+        expected_bytes=_PHP_ANALYZER_BYTES,
+        failure="PHP_ANALYZER_ASSET_UNSAFE",
+    )
+    arguments = [str(resolved), function_name]
+    if emitted_target:
+        arguments.append("--emitted-target")
+    value = _run(
+        [toolchain.executable, *_PHP_INTERPRETER_FLAGS, str(_PHP_ANALYZER), *arguments],
+        cwd=ENGINE_ROOT,
+    )
+    analyzer_after = _javascript_bound_content(
+        _PHP_ANALYZER,
+        ENGINE_ROOT,
+        expected_sha256=_PHP_ANALYZER_SHA256,
+        expected_bytes=_PHP_ANALYZER_BYTES,
+        failure="PHP_ANALYZER_ASSET_UNSAFE",
+    )
+    if analyzer_before != analyzer_after:
+        raise RouteError("PHP_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+    if type(value) is not dict:
+        raise RouteError("NATIVE_ANALYZER_OBJECT_REQUIRED")
+    reported = value.get("analyzer_version")
+    if type(reported) is not str or not reported:
+        raise RouteError("PHP_ANALYZER_VERSION_REQUIRED")
+    bound = dict(value)
+    bound["analyzer_version"] = (
+        f"{reported};analyzer-sha256={_PHP_ANALYZER_SHA256};"
+        f"interpreter-sha256={toolchain.executable_sha256};"
+        f"interpreter-version={toolchain.version}"
+    )
+    return bound
+
+
+def _javascript_metadata_identity(metadata: os.stat_result) -> tuple[int, ...]:
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_mode,
+        metadata.st_nlink,
+        metadata.st_uid,
+        metadata.st_gid,
+        metadata.st_size,
+        metadata.st_mtime_ns,
+        metadata.st_ctime_ns,
+    )
+
+
+def _normalize_private_analyzer_root_group(root: Path, *, failure: str) -> None:
+    """Normalize a new private analyzer root without permitting path replacement."""
+
+    try:
+        before = root.lstat()
+        resolved_before = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError(failure) from error
+    if (
+        root != resolved_before
+        or root.is_symlink()
+        or not stat.S_ISDIR(before.st_mode)
+        or before.st_uid != os.getuid()
+        or stat.S_IMODE(before.st_mode) != 0o700
+    ):
+        raise RouteError(failure)
+    identity_before = (
+        before.st_dev,
+        before.st_ino,
+        before.st_mode,
+        before.st_nlink,
+        before.st_uid,
+        before.st_size,
+        before.st_mtime_ns,
+    )
+    exact_before = (
+        before.st_dev,
+        before.st_ino,
+        before.st_mode,
+        before.st_nlink,
+        before.st_uid,
+        before.st_gid,
+        before.st_size,
+        before.st_mtime_ns,
+        before.st_ctime_ns,
+    )
+    descriptor_flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_DIRECTORY", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
+    try:
+        descriptor = os.open(root, descriptor_flags)
+    except OSError as error:
+        raise RouteError(failure) from error
+    try:
+        opened_before = os.fstat(descriptor)
+        if (
+            (
+                opened_before.st_dev,
+                opened_before.st_ino,
+                opened_before.st_mode,
+                opened_before.st_nlink,
+                opened_before.st_uid,
+                opened_before.st_gid,
+                opened_before.st_size,
+                opened_before.st_mtime_ns,
+                opened_before.st_ctime_ns,
+            )
+            != exact_before
+        ):
+            raise RouteError(failure)
+        os.fchown(descriptor, -1, os.getgid())
+        opened_after = os.fstat(descriptor)
+        after = root.lstat()
+        resolved_after = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError(failure) from error
+    finally:
+        os.close(descriptor)
+    identity_after = (
+        after.st_dev,
+        after.st_ino,
+        after.st_mode,
+        after.st_nlink,
+        after.st_uid,
+        after.st_size,
+        after.st_mtime_ns,
+    )
+    exact_after = (
+        after.st_dev,
+        after.st_ino,
+        after.st_mode,
+        after.st_nlink,
+        after.st_uid,
+        after.st_gid,
+        after.st_size,
+        after.st_mtime_ns,
+        after.st_ctime_ns,
+    )
+    if (
+        root != resolved_after
+        or root.is_symlink()
+        or not stat.S_ISDIR(after.st_mode)
+        or after.st_uid != os.getuid()
+        or after.st_gid != os.getgid()
+        or stat.S_IMODE(after.st_mode) != 0o700
+        or identity_after != identity_before
+        or exact_after
+        != (
+            opened_after.st_dev,
+            opened_after.st_ino,
+            opened_after.st_mode,
+            opened_after.st_nlink,
+            opened_after.st_uid,
+            opened_after.st_gid,
+            opened_after.st_size,
+            opened_after.st_mtime_ns,
+            opened_after.st_ctime_ns,
+        )
+    ):
+        raise RouteError(failure)
+
+
+def _javascript_file_receipt(path: Path, content: bytes) -> dict[str, object]:
+    try:
+        metadata = path.lstat()
+    except OSError as error:
+        raise RouteError("JAVASCRIPT_ANALYZER_INPUT_UNSAFE") from error
+    return {
+        "path": str(path),
+        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+        "bytes": len(content),
+        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+        "uid": metadata.st_uid,
+        "gid": metadata.st_gid,
+        "nlink": metadata.st_nlink,
+        "device": metadata.st_dev,
+        "inode": metadata.st_ino,
+        "mtime_ns": metadata.st_mtime_ns,
+        "ctime_ns": metadata.st_ctime_ns,
+    }
+
+
+def _javascript_directory_chain(directory: Path, failure: str) -> tuple[tuple[object, ...], ...]:
+    """Bind path components without treating unrelated child writes as drift."""
+
+    if not directory.is_absolute():
+        raise RouteError(failure)
+    cursor = Path("/")
+    identities: list[tuple[object, ...]] = []
+    try:
+        for part in directory.parts[1:]:
+            cursor = cursor / part
+            metadata = cursor.lstat()
+            if (
+                stat.S_ISLNK(metadata.st_mode)
+                or not stat.S_ISDIR(metadata.st_mode)
+                or metadata.st_uid not in {0, os.getuid()}
+                or stat.S_IMODE(metadata.st_mode) & 0o022
+            ):
+                raise RouteError(failure)
+            identities.append(
+                (
+                    str(cursor),
+                    metadata.st_dev,
+                    metadata.st_ino,
+                    metadata.st_mode,
+                    metadata.st_uid,
+                    metadata.st_gid,
+                )
+            )
+        if directory.resolve(strict=True) != directory:
+            raise RouteError(failure)
+    except OSError as error:
+        raise RouteError(failure) from error
+    return tuple(identities)
+
+
+def _javascript_strict_json_object(content: bytes, failure: str) -> dict[str, Any]:
+    def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate JSON object key")
+            result[key] = value
+        return result
+
+    try:
+        value = json.loads(content.decode("utf-8"), object_pairs_hook=reject_duplicate_keys)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+        raise RouteError(failure) from error
+    if not isinstance(value, dict):
+        raise RouteError(failure)
+    return value
+
+
+def _validate_javascript_typescript_metadata(contents: dict[str, bytes]) -> None:
+    failure = "JAVASCRIPT_TYPESCRIPT_ASSET_UNSAFE"
+    try:
+        manifest_content = contents["asset-manifest.json"]
+        package_content = contents["package.json"]
+    except KeyError as error:
+        raise RouteError(failure) from error
+    manifest = _javascript_strict_json_object(manifest_content, failure)
+    expected_files = [
+        {"path": name, "bytes": byte_count, "sha256": "sha256:" + digest}
+        for name, byte_count, digest in _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS
+        if name != "asset-manifest.json"
+    ]
+    if manifest != {
+        "schema_version": "1.0.0",
+        "asset_id": "typescript-parser-5.9.2",
+        "package": {
+            "name": "typescript",
+            "version": "5.9.2",
+            "license": "Apache-2.0",
+            "repository": "https://github.com/microsoft/TypeScript.git",
+            "registry_tarball": "https://registry.npmjs.org/typescript/-/typescript-5.9.2.tgz",
+            "registry_integrity": (
+                "sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A=="
+            ),
+        },
+        "files": expected_files,
+    }:
+        raise RouteError(failure)
+    package = _javascript_strict_json_object(package_content, failure)
+    if (
+        package.get("name") != "typescript"
+        or package.get("version") != "5.9.2"
+        or package.get("license") != "Apache-2.0"
+        or package.get("repository") != {"type": "git", "url": "https://github.com/microsoft/TypeScript.git"}
+        or package.get("main") != "./lib/typescript.js"
+    ):
+        raise RouteError(failure)
+
+
+def _javascript_typescript_assets() -> tuple[dict[str, object], dict[str, bytes]]:
+    failure = "JAVASCRIPT_TYPESCRIPT_ASSET_UNSAFE"
+    root = _JAVASCRIPT_TYPESCRIPT_ROOT
+    expected_names = tuple(name for name, _byte_count, _digest in _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS)
+    try:
+        if not root.is_absolute() or root.name != "typescript-5.9.2":
+            raise RouteError(failure)
+        chain_before = _javascript_directory_chain(root, failure)
+        root_before = root.lstat()
+        names_before = tuple(sorted(item.name for item in root.iterdir()))
+        resolved_root = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError(failure) from error
+    root_identity = _javascript_metadata_identity(root_before)
+    if (
+        resolved_root != root
+        or not stat.S_ISDIR(root_before.st_mode)
+        or root_before.st_uid != os.getuid()
+        or root_before.st_gid != os.getgid()
+        or stat.S_IMODE(root_before.st_mode) != _JAVASCRIPT_TYPESCRIPT_ROOT_MODE
+        or root_before.st_nlink != _JAVASCRIPT_TYPESCRIPT_ROOT_NLINK
+        or names_before != tuple(sorted(expected_names))
+    ):
+        raise RouteError(failure)
+
+    contents: dict[str, bytes] = {}
+    files: dict[str, object] = {}
+    for name, expected_bytes, expected_sha256 in _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS:
+        path = root / name
+        try:
+            relative = path.relative_to(root)
+            metadata_before = path.lstat()
+            resolved = path.resolve(strict=True)
+        except (OSError, ValueError) as error:
+            raise RouteError(failure) from error
+        if (
+            relative.parts != (name,)
+            or resolved != path
+            or not resolved.is_relative_to(root)
+            or not stat.S_ISREG(metadata_before.st_mode)
+            or metadata_before.st_uid != os.getuid()
+            or metadata_before.st_gid != os.getgid()
+            or stat.S_IMODE(metadata_before.st_mode) != _JAVASCRIPT_TYPESCRIPT_ASSET_MODE
+            or metadata_before.st_nlink != 1
+        ):
+            raise RouteError(failure)
+        content = _stable_read_regular_file(
+            path,
+            failure=failure,
+            maximum_bytes=expected_bytes,
+            minimum_bytes=expected_bytes,
+            allowed_uids=frozenset({os.getuid()}),
+            require_nlink_one=True,
+        )
+        try:
+            metadata_after = path.lstat()
+        except OSError as error:
+            raise RouteError(failure) from error
+        if (
+            _javascript_metadata_identity(metadata_before) != _javascript_metadata_identity(metadata_after)
+            or len(content) != expected_bytes
+            or hashlib.sha256(content).hexdigest() != expected_sha256
+        ):
+            raise RouteError(failure)
+        contents[name] = content
+        files[name] = _javascript_file_receipt(path, content)
+
+    _validate_javascript_typescript_metadata(contents)
+    try:
+        names_after = tuple(sorted(item.name for item in root.iterdir()))
+        root_after = root.lstat()
+        chain_after = _javascript_directory_chain(root, failure)
+    except OSError as error:
+        raise RouteError(failure) from error
+    if (
+        names_after != names_before
+        or _javascript_metadata_identity(root_after) != root_identity
+        or chain_after != chain_before
+    ):
+        raise RouteError(failure)
+    return (
+        {
+            "root": {
+                "path": str(root),
+                "mode": f"{stat.S_IMODE(root_after.st_mode):04o}",
+                "uid": root_after.st_uid,
+                "gid": root_after.st_gid,
+                "nlink": root_after.st_nlink,
+                "device": root_after.st_dev,
+                "inode": root_after.st_ino,
+                "mtime_ns": root_after.st_mtime_ns,
+                "ctime_ns": root_after.st_ctime_ns,
+            },
+            "path_set": list(expected_names),
+            "files": files,
+        },
+        contents,
+    )
+
+
+def _javascript_analyzer_inputs(
+    source: Path,
+    descriptor: dict[str, object] | None,
+) -> tuple[dict[str, object], dict[str, bytes]]:
+    try:
+        resolved_analyzer = _JAVASCRIPT_ANALYZER.resolve(strict=True)
+    except OSError as error:
+        raise RouteError("JAVASCRIPT_ANALYZER_SOURCE_UNSAFE") from error
+    if resolved_analyzer != _JAVASCRIPT_ANALYZER:
+        raise RouteError("JAVASCRIPT_ANALYZER_SOURCE_UNSAFE")
+    analyzer = _javascript_bound_content(
+        _JAVASCRIPT_ANALYZER,
+        _JAVASCRIPT_ANALYZER.parent,
+        expected_sha256=_JAVASCRIPT_ANALYZER_SHA256,
+        expected_bytes=_JAVASCRIPT_ANALYZER_BYTES,
+        failure="JAVASCRIPT_ANALYZER_SOURCE_UNSAFE",
+    )
+    typescript_binding, typescript_contents = _javascript_typescript_assets()
+    source_content = _stable_read_regular_file(
+        source,
+        failure="JAVASCRIPT_SOURCE_UNSAFE",
+        maximum_bytes=_JAVASCRIPT_ANALYZER_MAX_SOURCE_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+        require_nlink_one=True,
+    )
+    descriptor_content: bytes | None = None
+    if descriptor is not None:
+        descriptor_path = Path(str(descriptor.get("path", "")))
+        expected_sha256 = descriptor.get("sha256")
+        expected_bytes = descriptor.get("bytes")
+        if (
+            not descriptor_path.is_absolute()
+            or not isinstance(expected_sha256, str)
+            or not isinstance(expected_bytes, int)
+            or expected_bytes < 0
+        ):
+            raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_PATH_UNSAFE")
+        descriptor_content = _stable_read_regular_file(
+            descriptor_path,
+            failure="JAVASCRIPT_ESM_DESCRIPTOR_PATH_UNSAFE",
+            maximum_bytes=expected_bytes,
+            minimum_bytes=expected_bytes,
+            allowed_uids=frozenset({os.getuid()}),
+            require_nlink_one=True,
+        )
+        if hashlib.sha256(descriptor_content).hexdigest() != expected_sha256:
+            raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_CHANGED_DURING_READ")
+    binding: dict[str, object] = {
+        "analyzer_sha256": "sha256:" + hashlib.sha256(analyzer).hexdigest(),
+        "analyzer_bytes": len(analyzer),
+        "typescript_asset_manifest_sha256": (
+            "sha256:" + hashlib.sha256(typescript_contents["asset-manifest.json"]).hexdigest()
+        ),
+        "typescript_asset_manifest_bytes": len(typescript_contents["asset-manifest.json"]),
+        "typescript_license_sha256": "sha256:" + hashlib.sha256(typescript_contents["LICENSE.txt"]).hexdigest(),
+        "typescript_license_bytes": len(typescript_contents["LICENSE.txt"]),
+        "typescript_package_sha256": "sha256:" + hashlib.sha256(typescript_contents["package.json"]).hexdigest(),
+        "typescript_package_bytes": len(typescript_contents["package.json"]),
+        "typescript_sha256": "sha256:" + hashlib.sha256(typescript_contents["typescript.js"]).hexdigest(),
+        "typescript_bytes": len(typescript_contents["typescript.js"]),
+        "source_sha256": "sha256:" + hashlib.sha256(source_content).hexdigest(),
+        "source_bytes": len(source_content),
+        "live_seal": {
+            "analyzer": _javascript_file_receipt(_JAVASCRIPT_ANALYZER, analyzer),
+            "typescript_assets": typescript_binding,
+            "source": _javascript_file_receipt(source, source_content),
+        },
+    }
+    if descriptor is not None and descriptor_content is not None:
+        binding["source_esm_descriptor_sha256"] = "sha256:" + str(descriptor["sha256"])
+        binding["source_esm_descriptor_bytes"] = expected_bytes
+        binding["source_esm_descriptor_path"] = str(descriptor["path"])
+        live_seal = binding["live_seal"]
+        assert isinstance(live_seal, dict)
+        live_seal["source_esm_descriptor"] = _javascript_file_receipt(Path(str(descriptor["path"])), descriptor_content)
+    contents = {
+        "analyzer": analyzer,
+        "asset-manifest.json": typescript_contents["asset-manifest.json"],
+        "LICENSE.txt": typescript_contents["LICENSE.txt"],
+        "package.json": typescript_contents["package.json"],
+        "typescript.js": typescript_contents["typescript.js"],
+        "source": source_content,
+    }
+    if descriptor_content is not None:
+        contents["source_esm_descriptor"] = descriptor_content
+    return binding, contents
+
+
+def _write_javascript_snapshot(path: Path, content: bytes) -> None:
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(path, flags, 0o600)
+        try:
+            written = 0
+            while written < len(content):
+                size = os.write(descriptor, content[written:])
+                if size <= 0:
+                    raise OSError("zero-byte JavaScript analyzer snapshot write")
+                written += size
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    except OSError as error:
+        raise RouteError("JAVASCRIPT_ANALYZER_SNAPSHOT_CREATE_FAILED") from error
+
+
+def _javascript_snapshot_binding(
+    root: Path,
+    source_name: str,
+    *,
+    descriptor_required: bool = False,
+) -> dict[str, object]:
+    failure = "JAVASCRIPT_ANALYZER_SNAPSHOT_UNSAFE"
+    try:
+        root_metadata = root.lstat()
+        resolved_root = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError(failure) from error
+    if (
+        root != resolved_root
+        or root.is_symlink()
+        or not stat.S_ISDIR(root_metadata.st_mode)
+        or root_metadata.st_uid != os.getuid()
+        or root_metadata.st_gid != os.getgid()
+        or stat.S_IMODE(root_metadata.st_mode) != 0o700
+    ):
+        raise RouteError(failure)
+    directories = (
+        root / "assets",
+        root / "assets" / "typescript-5.9.2",
+        root / "source",
+    )
+    for directory in directories:
+        try:
+            metadata = directory.lstat()
+            resolved_directory = directory.resolve(strict=True)
+        except OSError as error:
+            raise RouteError(failure) from error
+        if (
+            directory.is_symlink()
+            or not stat.S_ISDIR(metadata.st_mode)
+            or metadata.st_uid != os.getuid()
+            or metadata.st_gid != os.getgid()
+            or stat.S_IMODE(metadata.st_mode) != 0o700
+            or not resolved_directory.is_relative_to(resolved_root)
+        ):
+            raise RouteError(failure)
+    expected_sets = {
+        root: {"assets", "source"},
+        root / "assets": {"analyzer.mjs", "typescript-5.9.2"},
+        root / "assets" / "typescript-5.9.2": {
+            name for name, _byte_count, _digest in _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS
+        },
+        root / "source": ({source_name, "package.json"} if descriptor_required else {source_name}),
+    }
+    try:
+        if any(
+            {item.name for item in directory.iterdir()} != expected for directory, expected in expected_sets.items()
+        ):
+            raise RouteError(failure)
+    except OSError as error:
+        raise RouteError(failure) from error
+    paths = {
+        "analyzer": root / "assets" / "analyzer.mjs",
+        "typescript_asset_manifest": root / "assets" / "typescript-5.9.2" / "asset-manifest.json",
+        "typescript_license": root / "assets" / "typescript-5.9.2" / "LICENSE.txt",
+        "typescript_package": root / "assets" / "typescript-5.9.2" / "package.json",
+        "typescript": root / "assets" / "typescript-5.9.2" / "typescript.js",
+        "source": root / "source" / source_name,
+    }
+    limits = {
+        "analyzer": _JAVASCRIPT_ANALYZER_BYTES,
+        "typescript_asset_manifest": _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[0][1],
+        "typescript_license": _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[1][1],
+        "typescript_package": _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[2][1],
+        "typescript": _JAVASCRIPT_TYPESCRIPT_BYTES,
+        "source": _JAVASCRIPT_ANALYZER_MAX_SOURCE_BYTES,
+    }
+    if descriptor_required:
+        paths["source_esm_descriptor"] = root / "source" / "package.json"
+        limits["source_esm_descriptor"] = _JAVASCRIPT_ANALYZER_MAX_SOURCE_BYTES
+    result: dict[str, object] = {}
+    file_seals: dict[str, object] = {}
+    for role, path in paths.items():
+        try:
+            relative = path.relative_to(root)
+            metadata = path.lstat()
+            resolved_path = path.resolve(strict=True)
+        except (OSError, ValueError) as error:
+            raise RouteError(failure) from error
+        if (
+            len(relative.parts) not in {2, 3}
+            or path.is_symlink()
+            or not stat.S_ISREG(metadata.st_mode)
+            or metadata.st_uid != os.getuid()
+            or metadata.st_gid != os.getgid()
+            or stat.S_IMODE(metadata.st_mode) != 0o600
+            or metadata.st_nlink != 1
+            or not resolved_path.is_relative_to(resolved_root)
+        ):
+            raise RouteError(failure)
+        content = _stable_read_regular_file(
+            path,
+            failure=failure,
+            maximum_bytes=limits[role],
+            allowed_uids=frozenset({os.getuid()}),
+            require_nlink_one=True,
+        )
+        result[f"{role}_sha256"] = "sha256:" + hashlib.sha256(content).hexdigest()
+        result[f"{role}_bytes"] = len(content)
+        file_seals[role] = _javascript_file_receipt(path, content)
+    try:
+        directory_seals = {
+            str(directory.relative_to(root)): _javascript_metadata_identity(directory.lstat())
+            for directory in directories
+        }
+    except (OSError, ValueError) as error:
+        raise RouteError(failure) from error
+    result["snapshot_seal"] = {
+        "root": {
+            "path": str(root),
+            "mode": f"{stat.S_IMODE(root_metadata.st_mode):04o}",
+            "uid": root_metadata.st_uid,
+            "gid": root_metadata.st_gid,
+            "nlink": root_metadata.st_nlink,
+            "device": root_metadata.st_dev,
+            "inode": root_metadata.st_ino,
+            "mtime_ns": root_metadata.st_mtime_ns,
+            "ctime_ns": root_metadata.st_ctime_ns,
+        },
+        "directories": directory_seals,
+        "files": file_seals,
+    }
+    return result
+
+
+def _javascript_toolchain_binding(toolchain: ExactToolchain) -> dict[str, str]:
+    profile: dict[str, str] = {}
+    for item in toolchain.profile:
+        key, separator, value = item.partition("=")
+        if not separator or not key or not value or key in profile:
+            raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+        profile[key] = value
+    closure_items = [
+        (key, value) for key, value in profile.items() if re.fullmatch(r"node(?:-toolchain)?-closure-sha256", key)
+    ]
+    if (
+        len(closure_items) != 1
+        or re.fullmatch(r"[0-9a-f]{64}", closure_items[0][1]) is None
+        or profile.get("node-toolchain-closure-schema") != "v1"
+    ):
+        raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+    profile_bytes = json.dumps(list(toolchain.profile), ensure_ascii=True, separators=(",", ":")).encode("ascii")
+    return {
+        "closure_field": closure_items[0][0],
+        "closure_sha256": closure_items[0][1],
+        "profile_sha256": hashlib.sha256(profile_bytes).hexdigest(),
+    }
+
+
+def _verify_trusted_javascript_toolchain(expected: ExactToolchain) -> dict[str, str]:
+    if (
+        expected.language != "javascript"
+        or expected.version != "Node.js 26.0.0 / ES2022 / ESM"
+        or not Path(expected.executable).is_absolute()
+        or expected.auxiliary is not None
+        or expected.executable_sha256 is None
+        or re.fullmatch(r"[0-9a-f]{64}", expected.executable_sha256) is None
+    ):
+        raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+    expected_binding = _javascript_toolchain_binding(expected)
+    try:
+        current = exact_toolchain("javascript")
+    except RouteError as error:
+        raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected or _javascript_toolchain_binding(current) != expected_binding:
+        raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_CHANGED")
+    return expected_binding
+
+
+def _javascript_content_binding(binding: dict[str, object]) -> dict[str, object]:
+    return {
+        key: value
+        for key, value in binding.items()
+        if key not in {"live_seal", "snapshot_seal", "source_esm_descriptor_path"}
+    }
+
+
+def _require_javascript_snapshot_unchanged(
+    root: Path,
+    source_name: str,
+    expected: dict[str, object],
+    *,
+    descriptor_required: bool = False,
+) -> None:
+    try:
+        current = _javascript_snapshot_binding(root, source_name, descriptor_required=descriptor_required)
+    except RouteError as error:
+        raise RouteError("JAVASCRIPT_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+    if current != expected:
+        raise RouteError("JAVASCRIPT_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+
+
+def _require_javascript_inputs_unchanged(
+    source: Path,
+    expected: dict[str, object],
+    descriptor: dict[str, object] | None,
+) -> None:
+    try:
+        current_descriptor = javascript_esm_descriptor(source)
+        if current_descriptor != descriptor:
+            raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_CHANGED_DURING_EXECUTION")
+        current, _contents = _javascript_analyzer_inputs(source, current_descriptor)
+    except RouteError as error:
+        raise RouteError("JAVASCRIPT_ANALYZER_INPUT_CHANGED_DURING_EXECUTION") from error
+    if current != expected:
+        raise RouteError("JAVASCRIPT_ANALYZER_INPUT_CHANGED_DURING_EXECUTION")
+
+
+def _run_trusted_javascript_analyzer(
+    toolchain: ExactToolchain,
+    source: Path,
+    selector: str,
+    *,
+    emitted_target: bool = False,
+) -> dict[str, Any]:
+    descriptor = javascript_esm_descriptor(source)
+    if selector != "--inventory" and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", selector) is None:
+        raise RouteError("JAVASCRIPT_ANALYZER_COMMAND_SHAPE_INVALID")
+    if selector == "--inventory" and emitted_target:
+        raise RouteError("JAVASCRIPT_ANALYZER_COMMAND_SHAPE_INVALID")
+    expected_inputs, contents = _javascript_analyzer_inputs(source, descriptor)
+    expected_toolchain = _verify_trusted_javascript_toolchain(toolchain)
+    with tempfile.TemporaryDirectory(prefix="elmos-javascript-analyzer-") as temporary:
+        root = Path(temporary).resolve(strict=True)
+        root.chmod(0o700)
+        _normalize_private_analyzer_root_group(
+            root,
+            failure="JAVASCRIPT_ANALYZER_SNAPSHOT_UNSAFE",
+        )
+        assets = root / "assets"
+        typescript_assets = assets / "typescript-5.9.2"
+        sources = root / "source"
+        assets.mkdir(mode=0o700)
+        typescript_assets.mkdir(mode=0o700)
+        sources.mkdir(mode=0o700)
+        analyzer = assets / "analyzer.mjs"
+        typescript = typescript_assets / "typescript.js"
+        source_snapshot = sources / source.name
+        _write_javascript_snapshot(analyzer, contents["analyzer"])
+        for name, _byte_count, _digest in _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS:
+            _write_javascript_snapshot(typescript_assets / name, contents[name])
+        _write_javascript_snapshot(source_snapshot, contents["source"])
+        if descriptor is not None:
+            _write_javascript_snapshot(sources / "package.json", contents["source_esm_descriptor"])
+        expected_snapshot = _javascript_snapshot_binding(root, source.name, descriptor_required=descriptor is not None)
+        if _javascript_content_binding(expected_snapshot) != _javascript_content_binding(expected_inputs):
+            raise RouteError("JAVASCRIPT_ANALYZER_SNAPSHOT_CONTENT_MISMATCH")
+        _require_javascript_snapshot_unchanged(
+            root, source.name, expected_snapshot, descriptor_required=descriptor is not None
+        )
+        _require_javascript_inputs_unchanged(source, expected_inputs, descriptor)
+        if _verify_trusted_javascript_toolchain(toolchain) != expected_toolchain:
+            raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_CHANGED")
+        command = [
+            toolchain.executable,
+            str(analyzer),
+            str(typescript),
+            str(source_snapshot),
+            selector,
+            *(["--emitted-target"] if emitted_target else []),
+        ]
+        try:
+            value = _run(command, cwd=root)
+        except RouteError as error:
+            try:
+                _require_javascript_snapshot_unchanged(
+                    root, source.name, expected_snapshot, descriptor_required=descriptor is not None
+                )
+                _require_javascript_inputs_unchanged(source, expected_inputs, descriptor)
+            except RouteError as changed:
+                raise changed from error
+            _verify_trusted_javascript_toolchain(toolchain)
+            raise
+        _require_javascript_snapshot_unchanged(
+            root, source.name, expected_snapshot, descriptor_required=descriptor is not None
+        )
+        _require_javascript_inputs_unchanged(source, expected_inputs, descriptor)
+        if _verify_trusted_javascript_toolchain(toolchain) != expected_toolchain:
+            raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_CHANGED")
+        analyzer_version = value.get("analyzer_version")
+        if not isinstance(analyzer_version, str) or not analyzer_version:
+            raise RouteError("JAVASCRIPT_ANALYZER_VERSION_REQUIRED")
+        bound = dict(value)
+        bound["analyzer_version"] = (
+            f"{analyzer_version};analyzer={_JAVASCRIPT_ANALYZER_SHA256};"
+            f"typescript={_JAVASCRIPT_TYPESCRIPT_SHA256};"
+            f"typescript-assets={_JAVASCRIPT_TYPESCRIPT_MANIFEST_SHA256};"
+            f"node={toolchain.executable_sha256};"
+            f"node-closure={expected_toolchain['closure_sha256']};"
+            f"node-profile={expected_toolchain['profile_sha256']}"
+        )
+        return bound
+
+
+def _validated_typescript_parser_receipt(value: object) -> dict[str, str | int]:
+    failure = "TYPESCRIPT_ANALYZER_PARSER_RECEIPT_INVALID"
+    required_keys = {
+        "schema_version",
+        "path",
+        "sha256",
+        "bytes",
+        "mode",
+        "uid",
+        "gid",
+        "nlink",
+        "compiler_root",
+        "compiler_closure_sha256",
+        "compiler_closure_file_count",
+        "compiler_closure_bytes",
+        "semantic_soundness",
+    }
+    if not isinstance(value, dict) or set(value) != required_keys:
+        raise RouteError(failure)
+    path_value = value.get("path")
+    root_value = value.get("compiler_root")
+    sha256 = value.get("sha256")
+    closure_sha256 = value.get("compiler_closure_sha256")
+    mode = value.get("mode")
+    byte_count = value.get("bytes")
+    closure_file_count = value.get("compiler_closure_file_count")
+    closure_bytes = value.get("compiler_closure_bytes")
+    uid = value.get("uid")
+    gid = value.get("gid")
+    nlink = value.get("nlink")
+    if (
+        type(value.get("schema_version")) is not int
+        or value.get("schema_version") != 1
+        or value.get("semantic_soundness") != "NOT_RUN"
+        or not isinstance(path_value, str)
+        or not isinstance(root_value, str)
+        or not isinstance(sha256, str)
+        or re.fullmatch(r"[0-9a-f]{64}", sha256) is None
+        or not isinstance(closure_sha256, str)
+        or re.fullmatch(r"[0-9a-f]{64}", closure_sha256) is None
+        or not isinstance(mode, str)
+        or re.fullmatch(r"0[0-7]{3}", mode) is None
+        or type(byte_count) is not int
+        or byte_count <= 0
+        or type(closure_file_count) is not int
+        or closure_file_count <= 0
+        or type(closure_bytes) is not int
+        or closure_bytes < byte_count
+        or type(uid) is not int
+        or uid not in {0, os.getuid()}
+        or type(gid) is not int
+        or gid < 0
+        or type(nlink) is not int
+        or nlink != 1
+        or int(mode, 8) & 0o022
+    ):
+        raise RouteError(failure)
+    parser = Path(path_value)
+    compiler_root = Path(root_value)
+    try:
+        relative = parser.relative_to(compiler_root)
+    except ValueError as error:
+        raise RouteError(failure) from error
+    if (
+        not parser.is_absolute()
+        or not compiler_root.is_absolute()
+        or parser == compiler_root
+        or not relative.parts
+        or ".." in parser.parts
+        or ".." in compiler_root.parts
+    ):
+        raise RouteError(failure)
+    return {str(key): item for key, item in value.items() if isinstance(item, str | int)}
+
+
+def _typescript_toolchain_binding(
+    toolchain: ExactToolchain,
+    parser_receipt: dict[str, str | int],
+) -> dict[str, str]:
+    failure = "TYPESCRIPT_ANALYZER_TOOLCHAIN_POLICY_INVALID"
+    profile: dict[str, str] = {}
+    for item in toolchain.profile:
+        key, separator, value = item.partition("=")
+        if not separator or not key or not value or key in profile:
+            raise RouteError(failure)
+        profile[key] = value
+    if (
+        toolchain.language != "typescript"
+        or toolchain.version != "5.9.2 / Node 26.0.0"
+        or not Path(toolchain.executable).is_absolute()
+        or toolchain.auxiliary is None
+        or not Path(toolchain.auxiliary).is_absolute()
+        or toolchain.executable_sha256 is None
+        or re.fullmatch(r"[0-9a-f]{64}", toolchain.executable_sha256) is None
+        or toolchain.auxiliary_sha256 is None
+        or re.fullmatch(r"[0-9a-f]{64}", toolchain.auxiliary_sha256) is None
+        or profile.get("typescript-toolchain-closure-schema") != "v1"
+        or profile.get("typescript-language-version") != "5.9.2"
+        or profile.get("typescript-package-root") != parser_receipt["compiler_root"]
+        or profile.get("typescript-closure-sha256") != parser_receipt["compiler_closure_sha256"]
+        or profile.get("typescript-closure-file-count") != str(parser_receipt["compiler_closure_file_count"])
+        or profile.get("typescript-closure-bytes") != str(parser_receipt["compiler_closure_bytes"])
+        or profile.get("typescript-parser-sha256") != parser_receipt["sha256"]
+        or profile.get("typescript-compiler-runtime-semantic-soundness") != "NOT_RUN"
+        or re.fullmatch(r"[0-9a-f]{64}", profile.get("node-closure-sha256", "")) is None
+    ):
+        raise RouteError(failure)
+    for key in (
+        "node-closure-component-count",
+        "node-closure-edge-count",
+        "node-closure-system-edge-count",
+    ):
+        try:
+            if int(profile.get(key, "")) <= 0:
+                raise ValueError
+        except ValueError as error:
+            raise RouteError(failure) from error
+    profile_bytes = json.dumps(list(toolchain.profile), ensure_ascii=True, separators=(",", ":")).encode("ascii")
+    return {
+        "typescript_closure_sha256": str(parser_receipt["compiler_closure_sha256"]),
+        "node_closure_sha256": profile["node-closure-sha256"],
+        "profile_sha256": hashlib.sha256(profile_bytes).hexdigest(),
+    }
+
+
+def _typescript_file_seal(path: Path, content: bytes, failure: str) -> dict[str, object]:
+    try:
+        metadata = path.lstat()
+    except OSError as error:
+        raise RouteError(failure) from error
+    return {
+        "path": str(path),
+        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+        "bytes": len(content),
+        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+        "uid": metadata.st_uid,
+        "gid": metadata.st_gid,
+        "nlink": metadata.st_nlink,
+        "device": metadata.st_dev,
+        "inode": metadata.st_ino,
+        "mtime_ns": metadata.st_mtime_ns,
+        "ctime_ns": metadata.st_ctime_ns,
+    }
+
+
+def _typescript_parser_content(receipt: dict[str, str | int]) -> bytes:
+    failure = "TYPESCRIPT_ANALYZER_PARSER_INPUT_UNSAFE"
+    parser = Path(str(receipt["path"]))
+    compiler_root = Path(str(receipt["compiler_root"]))
+    try:
+        resolved_parser = parser.resolve(strict=True)
+        resolved_root = compiler_root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError(failure) from error
+    if resolved_parser != parser or resolved_root != compiler_root or not parser.is_relative_to(compiler_root):
+        raise RouteError(failure)
+    content = _stable_read_regular_file(
+        parser,
+        failure=failure,
+        maximum_bytes=int(receipt["bytes"]),
+        minimum_bytes=int(receipt["bytes"]),
+        allowed_uids=frozenset({int(receipt["uid"])}),
+        require_nlink_one=True,
+    )
+    seal = _typescript_file_seal(parser, content, failure)
+    if (
+        hashlib.sha256(content).hexdigest() != receipt["sha256"]
+        or seal["bytes"] != receipt["bytes"]
+        or seal["mode"] != receipt["mode"]
+        or seal["uid"] != receipt["uid"]
+        or seal["gid"] != receipt["gid"]
+        or seal["nlink"] != receipt["nlink"]
+    ):
+        raise RouteError(failure)
+    return content
+
+
+def _typescript_analyzer_inputs(
+    source: Path,
+    parser_receipt: dict[str, str | int],
+) -> tuple[dict[str, object], dict[str, bytes]]:
+    analyzer = _javascript_bound_content(
+        _TYPESCRIPT_ANALYZER,
+        _TYPESCRIPT_ANALYZER.parent,
+        expected_sha256=_TYPESCRIPT_ANALYZER_SHA256,
+        expected_bytes=_TYPESCRIPT_ANALYZER_BYTES,
+        failure="TYPESCRIPT_ANALYZER_SOURCE_UNSAFE",
+    )
+    parser = _typescript_parser_content(parser_receipt)
+    source_content = _stable_read_regular_file(
+        source,
+        failure="TYPESCRIPT_ANALYZER_SOURCE_INPUT_UNSAFE",
+        maximum_bytes=_TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+        require_nlink_one=True,
+    )
+    binding: dict[str, object] = {
+        "analyzer_sha256": "sha256:" + hashlib.sha256(analyzer).hexdigest(),
+        "analyzer_bytes": len(analyzer),
+        "parser_sha256": "sha256:" + hashlib.sha256(parser).hexdigest(),
+        "parser_bytes": len(parser),
+        "source_sha256": "sha256:" + hashlib.sha256(source_content).hexdigest(),
+        "source_bytes": len(source_content),
+        "parser_receipt": dict(parser_receipt),
+        "live_seal": {
+            "analyzer": _typescript_file_seal(
+                _TYPESCRIPT_ANALYZER,
+                analyzer,
+                "TYPESCRIPT_ANALYZER_SOURCE_UNSAFE",
+            ),
+            "parser": _typescript_file_seal(
+                Path(str(parser_receipt["path"])),
+                parser,
+                "TYPESCRIPT_ANALYZER_PARSER_INPUT_UNSAFE",
+            ),
+            "source": _typescript_file_seal(
+                source,
+                source_content,
+                "TYPESCRIPT_ANALYZER_SOURCE_INPUT_UNSAFE",
+            ),
+        },
+    }
+    return binding, {"analyzer": analyzer, "parser": parser, "source": source_content}
+
+
+def _write_typescript_snapshot(path: Path, content: bytes) -> None:
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(path, flags, 0o600)
+        try:
+            written = 0
+            while written < len(content):
+                size = os.write(descriptor, content[written:])
+                if size <= 0:
+                    raise OSError("zero-byte TypeScript analyzer snapshot write")
+                written += size
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    except OSError as error:
+        raise RouteError("TYPESCRIPT_ANALYZER_SNAPSHOT_CREATE_FAILED") from error
+
+
+def _typescript_snapshot_binding(root: Path, source_name: str) -> dict[str, object]:
+    failure = "TYPESCRIPT_ANALYZER_SNAPSHOT_UNSAFE"
+    try:
+        root_metadata = root.lstat()
+        resolved_root = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError(failure) from error
+    if (
+        root != resolved_root
+        or root.is_symlink()
+        or not stat.S_ISDIR(root_metadata.st_mode)
+        or root_metadata.st_uid != os.getuid()
+        or root_metadata.st_gid != os.getgid()
+        or stat.S_IMODE(root_metadata.st_mode) != 0o700
+    ):
+        raise RouteError(failure)
+    assets = root / "assets"
+    sources = root / "source"
+    directories = (assets, sources)
+    for directory in directories:
+        try:
+            metadata = directory.lstat()
+            resolved = directory.resolve(strict=True)
+        except OSError as error:
+            raise RouteError(failure) from error
+        if (
+            directory.is_symlink()
+            or not stat.S_ISDIR(metadata.st_mode)
+            or metadata.st_uid != os.getuid()
+            or metadata.st_gid != os.getgid()
+            or stat.S_IMODE(metadata.st_mode) != 0o700
+            or not resolved.is_relative_to(resolved_root)
+        ):
+            raise RouteError(failure)
+    expected_sets = {
+        root: {"assets", "source"},
+        assets: {"analyzer.mjs", "typescript.js"},
+        sources: {source_name},
+    }
+    try:
+        if any(
+            {item.name for item in directory.iterdir()} != expected for directory, expected in expected_sets.items()
+        ):
+            raise RouteError(failure)
+    except OSError as error:
+        raise RouteError(failure) from error
+    paths = {
+        "analyzer": assets / "analyzer.mjs",
+        "parser": assets / "typescript.js",
+        "source": sources / source_name,
+    }
+    limits = {
+        "analyzer": _TYPESCRIPT_ANALYZER_BYTES,
+        "parser": 20_000_000,
+        "source": _TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES,
+    }
+    result: dict[str, object] = {}
+    files: dict[str, object] = {}
+    for role, path in paths.items():
+        try:
+            relative = path.relative_to(root)
+            metadata = path.lstat()
+            resolved = path.resolve(strict=True)
+        except (OSError, ValueError) as error:
+            raise RouteError(failure) from error
+        if (
+            len(relative.parts) != 2
+            or path.is_symlink()
+            or not stat.S_ISREG(metadata.st_mode)
+            or metadata.st_uid != os.getuid()
+            or metadata.st_gid != os.getgid()
+            or stat.S_IMODE(metadata.st_mode) != 0o600
+            or metadata.st_nlink != 1
+            or not resolved.is_relative_to(resolved_root)
+        ):
+            raise RouteError(failure)
+        content = _stable_read_regular_file(
+            path,
+            failure=failure,
+            maximum_bytes=limits[role],
+            allowed_uids=frozenset({os.getuid()}),
+            require_nlink_one=True,
+        )
+        result[f"{role}_sha256"] = "sha256:" + hashlib.sha256(content).hexdigest()
+        result[f"{role}_bytes"] = len(content)
+        files[role] = _typescript_file_seal(path, content, failure)
+    result["snapshot_seal"] = {
+        "root": {
+            "path": str(root),
+            "mode": f"{stat.S_IMODE(root_metadata.st_mode):04o}",
+            "uid": root_metadata.st_uid,
+            "gid": root_metadata.st_gid,
+            "nlink": root_metadata.st_nlink,
+            "device": root_metadata.st_dev,
+            "inode": root_metadata.st_ino,
+            "mtime_ns": root_metadata.st_mtime_ns,
+            "ctime_ns": root_metadata.st_ctime_ns,
+        },
+        "directories": {
+            str(directory.relative_to(root)): _javascript_metadata_identity(directory.lstat())
+            for directory in directories
+        },
+        "files": files,
+    }
+    return result
+
+
+def _typescript_content_binding(binding: dict[str, object]) -> dict[str, object]:
+    keys = {
+        "analyzer_sha256",
+        "analyzer_bytes",
+        "parser_sha256",
+        "parser_bytes",
+        "source_sha256",
+        "source_bytes",
+    }
+    return {key: binding[key] for key in sorted(keys)}
+
+
+def _require_typescript_snapshot_unchanged(
+    root: Path,
+    source_name: str,
+    expected: dict[str, object],
+) -> None:
+    try:
+        current = _typescript_snapshot_binding(root, source_name)
+    except RouteError as error:
+        raise RouteError("TYPESCRIPT_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+    if current != expected:
+        raise RouteError("TYPESCRIPT_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+
+
+def _require_typescript_inputs_unchanged(
+    source: Path,
+    expected_receipt: dict[str, str | int],
+    expected_inputs: dict[str, object],
+) -> dict[str, str | int]:
+    try:
+        current_receipt = _validated_typescript_parser_receipt(typescript_parser_receipt())
+        current_inputs, _ = _typescript_analyzer_inputs(source, current_receipt)
+    except RouteError as error:
+        raise RouteError("TYPESCRIPT_ANALYZER_INPUT_CHANGED_DURING_EXECUTION") from error
+    if current_receipt != expected_receipt or current_inputs != expected_inputs:
+        raise RouteError("TYPESCRIPT_ANALYZER_INPUT_CHANGED_DURING_EXECUTION")
+    return current_receipt
+
+
+def _require_typescript_toolchain_unchanged(
+    expected: ExactToolchain,
+    expected_binding: dict[str, str],
+    parser_receipt: dict[str, str | int],
+) -> None:
+    try:
+        current = exact_toolchain("typescript")
+        current_binding = _typescript_toolchain_binding(current, parser_receipt)
+    except RouteError as error:
+        raise RouteError("TYPESCRIPT_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected or current_binding != expected_binding:
+        raise RouteError("TYPESCRIPT_ANALYZER_TOOLCHAIN_CHANGED")
+
+
+def _run_trusted_typescript_analyzer(
+    toolchain: ExactToolchain,
+    source: Path,
+    selector: str,
+    *,
+    emitted_target: bool = False,
+) -> dict[str, Any]:
+    if selector != "--inventory" and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", selector) is None:
+        raise RouteError("TYPESCRIPT_ANALYZER_COMMAND_SHAPE_INVALID")
+    if selector == "--inventory" and emitted_target:
+        raise RouteError("TYPESCRIPT_ANALYZER_COMMAND_SHAPE_INVALID")
+    parser_receipt = _validated_typescript_parser_receipt(typescript_parser_receipt())
+    toolchain_binding = _typescript_toolchain_binding(toolchain, parser_receipt)
+    expected_inputs, contents = _typescript_analyzer_inputs(source, parser_receipt)
+    with tempfile.TemporaryDirectory(prefix="elmos-typescript-analyzer-") as temporary:
+        root = Path(temporary).resolve(strict=True)
+        root.chmod(0o700)
+        _normalize_private_analyzer_root_group(
+            root,
+            failure="TYPESCRIPT_ANALYZER_SNAPSHOT_UNSAFE",
+        )
+        assets = root / "assets"
+        sources = root / "source"
+        assets.mkdir(mode=0o700)
+        sources.mkdir(mode=0o700)
+        analyzer = assets / "analyzer.mjs"
+        parser = assets / "typescript.js"
+        source_snapshot = sources / source.name
+        _write_typescript_snapshot(analyzer, contents["analyzer"])
+        _write_typescript_snapshot(parser, contents["parser"])
+        _write_typescript_snapshot(source_snapshot, contents["source"])
+        expected_snapshot = _typescript_snapshot_binding(root, source.name)
+        if _typescript_content_binding(expected_snapshot) != _typescript_content_binding(expected_inputs):
+            raise RouteError("TYPESCRIPT_ANALYZER_SNAPSHOT_CONTENT_MISMATCH")
+        _require_typescript_snapshot_unchanged(root, source.name, expected_snapshot)
+        command = [
+            toolchain.executable,
+            str(analyzer),
+            str(parser),
+            str(source_snapshot),
+            selector,
+            *(["--emitted-target"] if emitted_target else []),
+        ]
+        try:
+            value = _run(command, cwd=root)
+        except RouteError as error:
+            try:
+                _require_typescript_snapshot_unchanged(root, source.name, expected_snapshot)
+                current_receipt = _require_typescript_inputs_unchanged(source, parser_receipt, expected_inputs)
+                _require_typescript_toolchain_unchanged(toolchain, toolchain_binding, current_receipt)
+            except RouteError as changed:
+                raise changed from error
+            raise
+        _require_typescript_snapshot_unchanged(root, source.name, expected_snapshot)
+        current_receipt = _require_typescript_inputs_unchanged(source, parser_receipt, expected_inputs)
+        _require_typescript_toolchain_unchanged(toolchain, toolchain_binding, current_receipt)
+        analyzer_version = value.get("analyzer_version")
+        if analyzer_version != "5.9.2":
+            raise RouteError("TYPESCRIPT_ANALYZER_VERSION_MISMATCH")
+        bound = dict(value)
+        bound["analyzer_version"] = (
+            f"{analyzer_version};analyzer={_TYPESCRIPT_ANALYZER_SHA256};"
+            f"typescript-parser={parser_receipt['sha256']};"
+            f"typescript-closure={toolchain_binding['typescript_closure_sha256']};"
+            f"node={toolchain.executable_sha256};"
+            f"node-closure={toolchain_binding['node_closure_sha256']};"
+            f"typescript-profile={toolchain_binding['profile_sha256']}"
+        )
+        return bound
 
 
 def _java_analyzer_source_snapshot(helper: Path) -> tuple[dict[str, object], bytes]:
@@ -4067,6 +6902,108 @@ def _java_analyzer_arguments(arguments: list[str]) -> None:
         raise RouteError("JAVA_ANALYZER_COMMAND_SHAPE_INVALID")
 
 
+_JAVA_ANALYZER_CLASS_RECEIPT = "class-receipt.json"
+
+
+def _verify_java_analyzer_classes(classes: Path, receipt: Mapping[str, Any]) -> None:
+    """Refuse to execute bytecode that is not the bytecode we recorded."""
+    recorded = receipt.get("classes")
+    if not isinstance(recorded, dict) or not recorded:
+        raise RouteError("JAVA_ANALYZER_CLASS_RECEIPT_INVALID")
+    observed = {
+        path.relative_to(classes).as_posix(): path
+        for path in classes.rglob("*.class")
+        if path.is_file() and not path.is_symlink()
+    }
+    if set(observed) != set(recorded):
+        raise RouteError("JAVA_ANALYZER_CLASS_SET_CHANGED")
+    for relative, digest in sorted(recorded.items()):
+        if _sha256_file(observed[relative]) != digest:
+            raise RouteError("JAVA_ANALYZER_CLASS_CHANGED")
+
+
+def _java_analyzer_classes(helper: Path, toolchain: ExactToolchain) -> tuple[Path, dict[str, Any]] | None:
+    """Compile the Java analyzer once and bind the bytecode to its source.
+
+    The engine runs the analyzer through JEP 330's source launcher, which
+    recompiles `Analyzer.java` on every invocation -- measured at ~1.65s per
+    call against ~0.56s for an already-compiled class, and the analyzer runs
+    once per candidate function.
+
+    The source-launcher form is not merely convenient, though: it is what makes
+    the executed program byte-bound to the source this module hashed.  Caching
+    bytecode has to preserve that property rather than trade it away, so the
+    cache is keyed on the compiler binary and the analyzer source digest, and a
+    receipt records the digest of every class file produced from them.  Those
+    digests are re-checked before every run, so "what executed" stays provably
+    derived from "what we hashed" -- the binding moves from source to bytecode
+    and is established once under a content-addressed key, instead of being
+    re-derived on every call.
+
+    Returns ``None`` when the compiler is unavailable or the cache cannot be
+    written, which falls back to the existing source-launcher path.
+    """
+    compiler = Path(toolchain.executable).parent / "javac"
+    if not compiler.is_file():
+        return None
+    try:
+        key = _toolchain_build_cache_key("java", compiler, files=(helper,), salt=("release=21",))
+    except OSError:
+        return None
+    directories = _toolchain_build_cache("java", key, ("classes",))
+    if directories is None:
+        return None
+    (classes,) = directories
+    receipt_path = classes.parent / _JAVA_ANALYZER_CLASS_RECEIPT
+
+    if receipt_path.is_file():
+        try:
+            receipt = json.loads(receipt_path.read_text())
+            _verify_java_analyzer_classes(classes, receipt)
+            return classes, receipt
+        except (OSError, ValueError, RouteError):
+            # A damaged or tampered cache entry is rebuilt, never trusted.
+            shutil.rmtree(classes, ignore_errors=True)
+            classes.mkdir(mode=0o700, parents=True, exist_ok=True)
+
+    staging = classes.parent / f".staging-{os.getpid()}"
+    shutil.rmtree(staging, ignore_errors=True)
+    try:
+        staging.mkdir(mode=0o700, parents=True)
+        completed = subprocess.run(
+            [str(compiler), "--release", "21", "-nowarn", "-d", str(staging), str(helper)],
+            capture_output=True,
+            text=True,
+            timeout=300,
+            check=False,
+        )
+        if completed.returncode != 0:
+            shutil.rmtree(staging, ignore_errors=True)
+            return None
+        produced = sorted(p for p in staging.rglob("*.class") if p.is_file())
+        if not produced:
+            shutil.rmtree(staging, ignore_errors=True)
+            return None
+        receipt = {
+            "cache_schema": _TOOLCHAIN_BUILD_CACHE_SCHEMA,
+            "cache_key": key,
+            "cache_scope": "content-addressed-persistent",
+            "analyzer_source_sha256": _sha256_file(helper),
+            "compiler_sha256": _sha256_file(compiler),
+            "classes": {path.relative_to(staging).as_posix(): _sha256_file(path) for path in produced},
+        }
+        # Publish atomically, so a concurrent reader never observes a partial
+        # class set.  Two writers derived the same key from the same inputs, so
+        # whichever lands is equivalent by construction.
+        shutil.rmtree(classes, ignore_errors=True)
+        staging.rename(classes)
+        receipt_path.write_text(json.dumps(receipt, sort_keys=True))
+    except (OSError, subprocess.SubprocessError):
+        shutil.rmtree(staging, ignore_errors=True)
+        return None
+    return classes, receipt
+
+
 def _run_trusted_java_analyzer(
     toolchain: ExactToolchain,
     helper: Path,
@@ -4091,7 +7028,16 @@ def _run_trusted_java_analyzer(
         if current_helper != expected_helper:
             raise RouteError("JAVA_ANALYZER_SOURCE_CHANGED_BEFORE_EXECUTION")
         _verify_trusted_java_toolchain(toolchain)
-        command = [toolchain.executable, "--source", "21", str(snapshot), *arguments]
+        # Prefer the cached bytecode, whose digests were just re-verified
+        # against the receipt built from this exact source; fall back to the
+        # source launcher whenever the cache is unavailable, so behaviour is
+        # identical either way and only the compile cost differs.
+        cached_classes = _java_analyzer_classes(helper, toolchain)
+        if cached_classes is not None:
+            classes, _class_receipt = cached_classes
+            command = [toolchain.executable, "-cp", str(classes), "Analyzer", *arguments]
+        else:
+            command = [toolchain.executable, "--source", "21", str(snapshot), *arguments]
         try:
             value = _run(command, cwd=root)
         except RouteError as error:
@@ -4142,6 +7088,64 @@ def _run_csharp_semantic_cli(
     if verified_binary != binary or verified_receipt != receipt:
         raise RouteError("CSHARP_ANALYZER_CHANGED_DURING_EXECUTION")
     return _bind_csharp_analyzer_identity(value, receipt), receipt
+
+
+_PHP_PROFILE_PREAMBLE = b"declare(strict_types=1);"
+
+
+def _partition_php_profile_preamble(
+    subjects: list[dict[str, Any]],
+    source: Path,
+    source_bytes: bytes,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Keep PHP's exact strict-types contract as byte-bound prelude evidence.
+
+    The declaration is a prerequisite of the typed PHP profile, not a symbol
+    that a target generator must translate.  Every other ``declare`` remains a
+    normal module obligation and therefore continues to block repository
+    completion.
+    """
+
+    profile_subjects = [
+        subject
+        for subject in subjects
+        if subject.get("declaration_kind") == "php-profile-preamble"
+    ]
+    if len(profile_subjects) > 1:
+        raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+    if not profile_subjects:
+        return subjects, []
+
+    subject = profile_subjects[0]
+    span = subject.get("source_span")
+    signature = subject.get("signature")
+    if (
+        subject.get("name") != "<strict-types>"
+        or subject.get("qualified_name") != "<strict-types>"
+        or subject.get("analyzable") is not False
+        or subject.get("occurrence") != 1
+        or signature != {"directive": "strict_types", "value": 1}
+        or not isinstance(span, dict)
+        or span.get("file") != source.name
+    ):
+        raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+    start = span.get("start_byte")
+    end = span.get("end_byte")
+    if not isinstance(start, int) or not isinstance(end, int):
+        raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+    raw = source_bytes[start:end]
+    if raw != _PHP_PROFILE_PREAMBLE:
+        raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+    remaining = [subject for subject in subjects if subject is not profile_subjects[0]]
+    return remaining, [
+        {
+            "order": 0,
+            "kind": "declare",
+            "value": "strict_types=1",
+            "source_span": span,
+            "sha256": "sha256:" + hashlib.sha256(raw).hexdigest(),
+        }
+    ]
 
 
 def _validated_module_inventory(
@@ -4238,11 +7242,20 @@ def _validated_module_inventory(
                 "occurrence": occurrence,
             }
         )
+    directives = _scan_preprocessor_directives(source, language, source_bytes)
+    if language == "php":
+        if directives:
+            raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+        normalized_subjects, directives = _partition_php_profile_preamble(
+            normalized_subjects,
+            source,
+            source_bytes,
+        )
     return {
         **value,
         "source_artifact_sha256": "sha256:" + hashlib.sha256(source_bytes).hexdigest(),
         "source_artifact_bytes": len(source_bytes),
-        "directives": _scan_preprocessor_directives(source, language, source_bytes),
+        "directives": directives,
         "subjects": normalized_subjects,
         "diagnostics": [str(item) for item in diagnostics],
     }
@@ -4256,8 +7269,11 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
     enumerated callable fits ``typed-pure-function-v1``.
     """
 
-    source = source.resolve()
-    if not source.is_file() or source.is_symlink() or source.stat().st_size > 2_000_000:
+    raw_source = source.expanduser()
+    if raw_source.is_symlink():
+        raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
+    source = raw_source.resolve()
+    if not source.is_file() or source.stat().st_size > 2_000_000:
         raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
     if language == "python":
         raise RouteError("PYTHON_MODULE_INVENTORY_USES_CPYTHON_AST")
@@ -4284,26 +7300,16 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
             [str(source), "--inventory"],
         )
     elif language == "typescript":
-        frontend = REPOSITORY_ROOT / "engines" / "frontend-client-engine"
-        cli = frontend / "dist" / "src" / "polyglot-cli.js"
-        if not cli.is_file():
-            pnpm = shutil.which("pnpm")
-            if pnpm is None:
-                raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:pnpm")
-            completed = subprocess.run(
-                [pnpm, "run", "build"],
-                cwd=frontend,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=120,
-            )
-            if completed.returncode != 0:
-                raise RouteError("TYPESCRIPT_ANALYZER_BUILD_FAILED:" + completed.stderr[-2_000:])
-        value = _run([toolchain.executable, str(cli), str(source), "--inventory"], cwd=frontend)
+        value = _run_trusted_typescript_analyzer(toolchain, source, "--inventory")
+    elif language == "javascript":
+        value = _run_trusted_javascript_analyzer(toolchain, source, "--inventory")
     elif language == "go":
         helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
-        value = _run([toolchain.executable, "run", str(helper), "--", str(source), "--inventory"], cwd=ENGINE_ROOT)
+        value = _run(
+            [toolchain.executable, "run", str(helper), "--", str(source), "--inventory"],
+            cwd=ENGINE_ROOT,
+            environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
+        )
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
         assert toolchain.auxiliary is not None
@@ -4322,6 +7328,8 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
             ],
             cwd=package,
             timeout=900,
+            isolated_cargo=True,
+            cargo_package=package,
         )
     elif language == "swift":
         binary, analyzer_build_receipt = _swift_analyzer(toolchain)
@@ -4334,6 +7342,13 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
             ),
             analyzer_build_receipt,
         )
+    elif language == "php":
+        value = _run_trusted_php_analyzer(
+            toolchain,
+            source,
+            "--inventory",
+            emitted_target=False,
+        )
     else:
         raise RouteError(f"MODULE_INVENTORY_UNSUPPORTED:{language}")
     if source.read_bytes() != source_bytes:
@@ -4344,6 +7359,569 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
     return validated
 
 
+_BATCH_ANALYZABLE_LANGUAGES: Final[frozenset[str]] = frozenset({"java", "go", "rust"})
+
+
+def analyze_many(
+    source: Path,
+    language: Language,
+    function_names: Sequence[str],
+    *,
+    emitted_target: bool = False,
+) -> dict[str, SemanticIR | RouteError]:
+    """Analyze every candidate in one file, ideally with one analyzer process.
+
+    Discovery asks the native analyzer about one *function* at a time, so a file
+    with eight candidates starts eight processes -- and every one of them
+    recompiles the same target source before answering about a different method
+    of it.  The compile is the entire cost; the scan is free by comparison.
+
+    Batching is introduced strictly as an optimisation with a fallback, never as
+    a second oracle.  The batch is attempted first; if it does not return a
+    well-formed result for every requested name -- for any reason at all,
+    including an analyzer crash partway through -- this falls back to the
+    original one-process-per-function path and returns exactly what that would
+    have returned.  So the fast path can only ever be taken when it agrees, and
+    a verdict never depends on which path produced it.
+
+    That distinction matters most for rejections.  The analyzer signals a
+    *promotable* domain rejection by exiting cleanly with a known message; other
+    failures surface as a stack trace and must stay unpromotable, because
+    `_run_trusted_java_analyzer` deliberately refuses to read a domain error out
+    of one.  The batch therefore captures only the promotable kind, and anything
+    else aborts it into the per-function path where the existing fail-closed
+    handling applies unchanged.
+    """
+    requested = list(dict.fromkeys(function_names))
+    if language in _BATCH_ANALYZABLE_LANGUAGES and len(requested) > 1:
+        batched = _analyze_batch(source, language, requested, emitted_target=emitted_target)
+        if batched is not None:
+            return batched
+    results: dict[str, SemanticIR | RouteError] = {}
+    for name in requested:
+        try:
+            results[name] = analyze(source, language, name, emitted_target=emitted_target)
+        except RouteError as error:
+            results[name] = error
+    return results
+
+
+def _analyze_batch(
+    source: Path,
+    language: Language,
+    function_names: Sequence[str],
+    *,
+    emitted_target: bool,
+) -> dict[str, SemanticIR | RouteError] | None:
+    """One analyzer process for a whole file, or ``None`` to fall back."""
+    if language not in _BATCH_ANALYZABLE_LANGUAGES:
+        return None
+    if any("," in name for name in function_names):
+        # The wire format is comma-delimited; a name containing one would be
+        # silently split, so refuse the fast path rather than guess.
+        return None
+    raw_source = source.expanduser()
+    if raw_source.is_symlink():
+        raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
+    resolved = raw_source.resolve()
+    if not resolved.is_file() or resolved.stat().st_size > 2_000_000:
+        raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
+    if emitted_target:
+        _verify_emitted_helper_sources(resolved, language)
+    toolchain = exact_toolchain(language)
+    selector = "--functions=" + ",".join(function_names)
+
+    # `promote` turns a batch entry's rejection code into exactly the error the
+    # per-function path would have raised for the same rejection.  Returning
+    # ``None`` from it means "this code is not one this fast path is entitled to
+    # interpret", which drops the whole batch to the fallback.
+    promote: Any
+    try:
+        if language == "java":
+            helper = ENGINE_ROOT / "native" / "java" / "Analyzer.java"
+            arguments = [str(resolved), selector]
+            if emitted_target:
+                arguments.append("--emitted-target")
+            document = _run_trusted_java_analyzer(
+                toolchain,
+                helper,
+                arguments,
+                allowed_domain_errors=_JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS,
+            )
+            # Java promotes only an explicit allow-list; every other failure has
+            # to stay a hard failure, which is what the forged-stack-trace tests
+            # in `test_native_validation.py` exist to guarantee.
+            def promote(reason: str) -> RouteError | None:
+                return RouteError(reason) if reason in _JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS else None
+
+        elif language == "go":
+            helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
+            arguments = [str(resolved), selector]
+            if emitted_target:
+                arguments.append("--emitted-target")
+            document = _run(
+                [toolchain.executable, "run", str(helper), "--", *arguments],
+                cwd=ENGINE_ROOT,
+                environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
+            )
+            # Go has no promotion list: a rejected function fails the analyzer
+            # process, and `_run` wraps whatever it printed.  Reconstructing that
+            # exact wrapping is what keeps a batched rejection indistinguishable
+            # from the individual call it replaced.
+            def promote(reason: str) -> RouteError | None:
+                return RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{reason}")
+
+        elif language == "rust":
+            package = ENGINE_ROOT / "native" / "rust"
+            if toolchain.auxiliary is None:
+                return None
+            cargo = toolchain.auxiliary
+            document = _run(
+                [
+                    cargo,
+                    "run",
+                    "--quiet",
+                    "--offline",
+                    "--locked",
+                    "--manifest-path",
+                    str(package / "Cargo.toml"),
+                    "--",
+                    str(resolved),
+                    selector,
+                    *(["--emitted-target"] if emitted_target else []),
+                ],
+                cwd=package,
+                timeout=900,
+                isolated_cargo=True,
+                cargo_package=package,
+            )
+
+            def promote(reason: str) -> RouteError | None:
+                return RouteError(f"NATIVE_ANALYZER_FAILED:{cargo}:{reason}")
+
+        else:
+            return None
+    except RouteError:
+        return None
+    if document.get("kind") != "elmos.typed-pure-function-batch":
+        return None
+    entries = document.get("results")
+    if not isinstance(entries, list):
+        return None
+
+    results: dict[str, SemanticIR | RouteError] = {}
+    for entry in entries:
+        if not isinstance(entry, dict):
+            return None
+        name = entry.get("function")
+        status = entry.get("status")
+        if not isinstance(name, str):
+            return None
+        if status == "ok":
+            value = entry.get("value")
+            if not isinstance(value, dict):
+                return None
+            try:
+                results[name] = SemanticIR.from_mapping(value)
+            except (RouteError, ValueError, TypeError):
+                return None
+        elif status == "domain_error":
+            reason = entry.get("error")
+            if not isinstance(reason, str):
+                return None
+            # Only a rejection the single-function path would itself have
+            # produced may be reconstructed here; anything else means the batch
+            # saw a failure mode this fast path is not entitled to interpret,
+            # and the whole file drops to the per-function path.
+            promoted = promote(reason)
+            if promoted is None:
+                return None
+            results[name] = promoted
+        else:
+            return None
+    if set(results) != set(function_names):
+        return None
+    return results
+
+
+def _external_semantic_ir(value: dict[str, Any]) -> SemanticIR:
+    """Bind the analyzer's JSON contract before anything downstream trusts it.
+
+    Grafted from the other side of this merge: this side's analyzers are its
+    own, but nothing validated their output shape.  An analyzer that returns
+    no functions and one diagnostic is reporting a real source problem, and
+    promoting that diagnostic is far more useful than the shapeless failure a
+    caller would otherwise see several layers later.
+    """
+    functions = value.get("functions")
+    diagnostics = value.get("diagnostics")
+    if not isinstance(functions, list) or not isinstance(diagnostics, list):
+        raise RouteError("NATIVE_ANALYZER_CONTRACT_INVALID:FUNCTIONS_OR_DIAGNOSTICS")
+    if not functions:
+        if diagnostics and all(isinstance(item, str) and item for item in diagnostics):
+            raise RouteError(str(diagnostics[0]))
+        raise RouteError("NATIVE_ANALYZER_CONTRACT_INVALID:EMPTY_FUNCTIONS_WITHOUT_DIAGNOSTIC")
+    try:
+        semantic = SemanticIR.from_mapping(value)
+    except RouteError as error:
+        raise RouteError(f"NATIVE_ANALYZER_CONTRACT_INVALID:{error}") from error
+    if not semantic.functions:
+        raise RouteError("NATIVE_ANALYZER_CONTRACT_INVALID:NO_PARSED_FUNCTIONS")
+    return semantic
+
+
+#: The Kotlin analyzer is one file and it is the only Kotlin the engine
+#: compiles.  The cap is the same order as the Java one: large enough that a
+#: real edit fits, small enough that a substituted tree is refused.
+_KOTLIN_ANALYZER_SOURCE_MAX_BYTES = 512_000
+_KOTLIN_ANALYZER_CLASS_RECEIPT = "kotlin-analyzer-classes.json"
+
+#: Rejections the analyzer raises about the *source it was asked to lift*,
+#: which the caller is entitled to see as a typed domain verdict rather than a
+#: crash.  Deliberately as narrow as the Java set and for the same reason: a
+#: code that means "this engine is broken" must never be promotable into "your
+#: source is unsupported", because that turns an outage into a wrong answer
+#: about someone's code.  `KOTLIN_UNSUPPORTED_TYPE:Int` is the exact analogue of
+#: `JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int` -- a 32-bit integer in a
+#: matrix whose canonical integer is 64-bit.
+_KOTLIN_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
+    {
+        "KOTLIN_UNSUPPORTED_TYPE:Int",
+        "KOTLIN_GENERIC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_FUNCTION_NAME_AMBIGUOUS",
+    }
+)
+
+
+def _kotlin_analyzer_source_snapshot(helper: Path) -> tuple[dict[str, object], bytes]:
+    expected = ENGINE_ROOT / "native" / "kotlin" / "analyzer.kt"
+    if not helper.is_absolute() or helper != expected:
+        raise RouteError("KOTLIN_ANALYZER_SOURCE_UNSAFE")
+    guarded_content = _read_csharp_bound_file(
+        helper,
+        ENGINE_ROOT,
+        failure="KOTLIN_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_KOTLIN_ANALYZER_SOURCE_MAX_BYTES,
+    )
+    content = _stable_read_regular_file(
+        helper,
+        failure="KOTLIN_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_KOTLIN_ANALYZER_SOURCE_MAX_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+    )
+    final_content = _read_csharp_bound_file(
+        helper,
+        ENGINE_ROOT,
+        failure="KOTLIN_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_KOTLIN_ANALYZER_SOURCE_MAX_BYTES,
+    )
+    if content != guarded_content or content != final_content:
+        raise RouteError("KOTLIN_ANALYZER_SOURCE_UNSAFE_CHANGED")
+    binding: dict[str, object] = {
+        "path": str(helper),
+        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+        "bytes": len(content),
+    }
+    return binding, content
+
+
+def _kotlin_analyzer_source_binding(helper: Path) -> dict[str, object]:
+    binding, _ = _kotlin_analyzer_source_snapshot(helper)
+    return binding
+
+
+def _kotlin_analyzer_snapshot_binding(snapshot: Path, root: Path) -> dict[str, object]:
+    try:
+        root_metadata = root.lstat()
+        resolved_root = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_UNSAFE") from error
+    if (
+        root != resolved_root
+        or root.is_symlink()
+        or not stat.S_ISDIR(root_metadata.st_mode)
+        or root_metadata.st_uid != os.getuid()
+        or stat.S_IMODE(root_metadata.st_mode) != 0o700
+        or snapshot.parent != root
+        or snapshot.name != "analyzer.kt"
+    ):
+        raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_UNSAFE")
+    content = _stable_read_regular_file(
+        snapshot,
+        failure="KOTLIN_ANALYZER_SNAPSHOT_UNSAFE",
+        maximum_bytes=_KOTLIN_ANALYZER_SOURCE_MAX_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+    )
+    try:
+        metadata = snapshot.lstat()
+    except OSError as error:
+        raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_UNSAFE") from error
+    if stat.S_IMODE(metadata.st_mode) != 0o600:
+        raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_UNSAFE")
+    return {
+        "path": str(snapshot),
+        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+        "bytes": len(content),
+    }
+
+
+def _write_kotlin_analyzer_snapshot(root: Path, content: bytes) -> tuple[Path, dict[str, object]]:
+    snapshot = root / "analyzer.kt"
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(snapshot, flags, 0o600)
+        try:
+            written = 0
+            while written < len(content):
+                chunk_bytes = os.write(descriptor, content[written:])
+                if chunk_bytes <= 0:
+                    raise OSError("zero-byte Kotlin analyzer snapshot write")
+                written += chunk_bytes
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    except OSError as error:
+        raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_CREATE_FAILED") from error
+    binding = _kotlin_analyzer_snapshot_binding(snapshot, root)
+    if binding["sha256"] != "sha256:" + hashlib.sha256(content).hexdigest() or binding["bytes"] != len(content):
+        raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_CONTENT_MISMATCH")
+    return snapshot, binding
+
+
+def _kotlin_analyzer_arguments(arguments: list[str]) -> None:
+    if (
+        len(arguments) not in {2, 3}
+        or any(not isinstance(argument, str) or not argument for argument in arguments)
+        or any("\n" in argument or "\r" in argument or "\x00" in argument for argument in arguments)
+        or (len(arguments) == 3 and arguments[2] != "--emitted-target")
+        or arguments[1] in {"--inventory", "--emitted-target"}
+    ):
+        raise RouteError("KOTLIN_ANALYZER_COMMAND_SHAPE_INVALID")
+    source = Path(arguments[0])
+    if not source.is_absolute() or source.is_symlink() or not source.is_file():
+        raise RouteError("KOTLIN_ANALYZER_COMMAND_SHAPE_INVALID")
+
+
+def _verify_trusted_kotlin_toolchain(expected: ExactToolchain) -> None:
+    """Re-assert the pin around every analyzer run, as the Java path does.
+
+    Re-selecting is intentional: the selector re-hashes the compiler, JARs,
+    JVM release and full Kotlin tree. A dataclass shape check would let bytes
+    drift after the first selection while the analyzer kept executing paths
+    recorded in a stale object.
+    """
+    digest = re.compile(r"[0-9a-f]{64}").fullmatch
+    if (
+        expected.language != "kotlin"
+        or not Path(expected.executable).is_absolute()
+        or expected.auxiliary is None
+        or not Path(expected.auxiliary).is_absolute()
+        or not expected.profile
+        or expected.executable_sha256 is None
+        or digest(expected.executable_sha256) is None
+    ):
+        raise RouteError("KOTLIN_ANALYZER_TOOLCHAIN_UNTRUSTED")
+    try:
+        current = exact_toolchain("kotlin")
+    except RouteError as error:
+        raise RouteError("KOTLIN_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected:
+        raise RouteError("KOTLIN_ANALYZER_TOOLCHAIN_CHANGED")
+
+
+def _kotlin_runtime_paths(toolchain: ExactToolchain) -> tuple[Path, Path, Path]:
+    """The pinned `java`, and the two jars the analyzer needs on its classpath.
+
+    Derived from ``kotlin-root=`` and re-checked against the digests the probe
+    recorded, rather than taken on faith from the filesystem: the jars are the
+    parser this frontend *is*, so a swapped ``kotlin-compiler.jar`` is a swapped
+    definition of the Kotlin language, not a swapped dependency.
+    """
+    root = Path(_toolchain_profile_value(toolchain.profile, "kotlin-root"))
+    jvm_home = Path(_toolchain_profile_value(toolchain.profile, "kotlin-jvm-home"))
+    java = jvm_home / "bin" / "java"
+    compiler_jar = root / "lib" / "kotlin-compiler.jar"
+    stdlib_jar = root / "lib" / "kotlin-stdlib.jar"
+    for path in (java, compiler_jar, stdlib_jar):
+        if not path.is_absolute() or path.is_symlink() or not path.is_file():
+            raise RouteError(f"KOTLIN_ANALYZER_RUNTIME_UNAVAILABLE:{path.name}")
+    expected_compiler = _toolchain_profile_value(toolchain.profile, "kotlin-compiler-jar-sha256")
+    expected_stdlib = _toolchain_profile_value(toolchain.profile, "kotlin-stdlib-jar-sha256")
+    if _sha256_file(compiler_jar) != expected_compiler or _sha256_file(stdlib_jar) != expected_stdlib:
+        raise RouteError("KOTLIN_ANALYZER_RUNTIME_CHANGED")
+    return java, compiler_jar, stdlib_jar
+
+
+def _verify_kotlin_analyzer_classes(classes: Path, receipt: Mapping[str, Any]) -> None:
+    """Refuse to execute bytecode that is not the bytecode we recorded."""
+    recorded = receipt.get("classes")
+    if not isinstance(recorded, dict) or not recorded:
+        raise RouteError("KOTLIN_ANALYZER_CLASS_RECEIPT_INVALID")
+    observed = {
+        path.relative_to(classes).as_posix(): path
+        for path in classes.rglob("*.class")
+        if path.is_file() and not path.is_symlink()
+    }
+    if set(observed) != set(recorded):
+        raise RouteError("KOTLIN_ANALYZER_CLASS_SET_CHANGED")
+    for relative, class_digest in sorted(recorded.items()):
+        if _sha256_file(observed[relative]) != class_digest:
+            raise RouteError("KOTLIN_ANALYZER_CLASS_CHANGED")
+
+
+def _kotlin_analyzer_classes(
+    helper: Path,
+    toolchain: ExactToolchain,
+    compiler_jar: Path,
+    staging_root: Path,
+) -> tuple[Path, dict[str, Any]] | None:
+    """Disable persistent analyzer bytecode until provenance is non-forgeable.
+
+    A content-addressed key plus a self-authored class digest does not prove
+    that pre-existing class bytes were produced by the pinned compiler. The
+    callers therefore always take the private-directory compile path. Keeping
+    this small compatibility hook avoids duplicating that fallback between
+    named-function and repository inventory execution.
+    """
+
+    del helper, toolchain, compiler_jar, staging_root
+    return None
+
+
+def _compile_kotlin_analyzer(
+    toolchain: ExactToolchain,
+    compiler_jar: Path,
+    source: Path,
+    destination: Path,
+    scratch: Path,
+) -> bool:
+    """Run `kotlinc` on the snapshot.  Returns whether it produced classes.
+
+    `kotlinc` is a shell script that execs a JVM, so the pinned JDK has to be
+    both on PATH and named in JAVA_HOME -- the launcher prefers the variable and
+    silently falls back to a bare `java` from PATH.  Setting only one of them
+    leaves an "exact toolchain" claim resting on whatever JVM the host happens
+    to have.
+
+    `scratch` gives the compiler a private HOME and TMPDIR.  Kotlin's daemon and
+    the JVM both write there when left to their own devices, and pointing them
+    at the real home would let one route's build observe another's leftovers.
+    """
+    jvm_home = Path(_toolchain_profile_value(toolchain.profile, "kotlin-jvm-home"))
+    home = scratch / "home"
+    temporary = scratch / "tmp"
+    for directory in (home, temporary):
+        directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+    environment = sanitized_subprocess_env(
+        home=home,
+        temp_dir=temporary,
+        executable_dirs=(jvm_home / "bin", Path(toolchain.executable).resolve().parent),
+    )
+    environment["JAVA_HOME"] = str(jvm_home)
+    completed = subprocess.run(
+        [
+            str(toolchain.executable),
+            "-nowarn",
+            "-classpath",
+            str(compiler_jar),
+            "-d",
+            str(destination),
+            str(source),
+        ],
+        capture_output=True,
+        text=True,
+        stdin=subprocess.DEVNULL,
+        timeout=900,
+        check=False,
+        env=environment,
+    )
+    return completed.returncode == 0
+
+
+def _run_trusted_kotlin_analyzer(
+    toolchain: ExactToolchain,
+    helper: Path,
+    arguments: list[str],
+    *,
+    allowed_domain_errors: frozenset[str],
+) -> dict[str, Any]:
+    """Run the exact source-file Kotlin analyzer with fail-closed error promotion."""
+
+    if allowed_domain_errors != _KOTLIN_ANALYZE_PROMOTABLE_DOMAIN_ERRORS:
+        raise RouteError("KOTLIN_ANALYZER_DOMAIN_ERROR_POLICY_INVALID")
+    _kotlin_analyzer_arguments(arguments)
+    expected_helper, helper_content = _kotlin_analyzer_source_snapshot(helper)
+    java, compiler_jar, stdlib_jar = _kotlin_runtime_paths(toolchain)
+    with tempfile.TemporaryDirectory(prefix="elmos-kotlin-analyzer-") as temporary:
+        root = Path(temporary).resolve(strict=True)
+        root.chmod(0o700)
+        snapshot, expected_snapshot = _write_kotlin_analyzer_snapshot(root, helper_content)
+        try:
+            current_helper = _kotlin_analyzer_source_binding(helper)
+        except RouteError as error:
+            raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_BEFORE_EXECUTION") from error
+        if current_helper != expected_helper:
+            raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_BEFORE_EXECUTION")
+        _verify_trusted_kotlin_toolchain(toolchain)
+        # Prefer the cached bytecode, whose digests were just re-verified
+        # against the receipt built from this exact source; otherwise compile
+        # the snapshot in place, so behaviour is identical either way and only
+        # the compile cost differs.
+        cached_classes = _kotlin_analyzer_classes(helper, toolchain, compiler_jar, root)
+        if cached_classes is not None:
+            classes, _class_receipt = cached_classes
+        else:
+            classes = root / "classes"
+            classes.mkdir(mode=0o700)
+            if not _compile_kotlin_analyzer(toolchain, compiler_jar, snapshot, classes, root):
+                raise RouteError("KOTLIN_ANALYZER_COMPILE_FAILED")
+        # The pinned `java` directly, not `bin/kotlin`: one less shell script
+        # between the pin and the process, and the launcher would only rebuild
+        # the same classpath from the same two jars.
+        command = [
+            str(java),
+            "-cp",
+            os.pathsep.join([str(classes), str(compiler_jar), str(stdlib_jar)]),
+            "AnalyzerKt",
+            *arguments,
+        ]
+        try:
+            value = _run(command, cwd=root)
+        except RouteError as error:
+            try:
+                current_snapshot = _kotlin_analyzer_snapshot_binding(snapshot, root)
+            except RouteError as verification_error:
+                raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from verification_error
+            if current_snapshot != expected_snapshot:
+                raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+            try:
+                current_helper = _kotlin_analyzer_source_binding(helper)
+            except RouteError as verification_error:
+                raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION") from verification_error
+            if current_helper != expected_helper:
+                raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION") from error
+            _verify_trusted_kotlin_toolchain(toolchain)
+            wrapped = str(error)
+            for reason in allowed_domain_errors:
+                if wrapped == f"NATIVE_ANALYZER_FAILED:{java}:{reason}":
+                    raise RouteError(reason) from error
+            raise
+        try:
+            current_snapshot = _kotlin_analyzer_snapshot_binding(snapshot, root)
+        except RouteError as error:
+            raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+        if current_snapshot != expected_snapshot:
+            raise RouteError("KOTLIN_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+        try:
+            current_helper = _kotlin_analyzer_source_binding(helper)
+        except RouteError as error:
+            raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION") from error
+        if current_helper != expected_helper:
+            raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION")
+        _verify_trusted_kotlin_toolchain(toolchain)
+        return value
+
+
 def analyze(
     source: Path,
     language: Language,
@@ -4351,10 +7929,36 @@ def analyze(
     *,
     emitted_target: bool = False,
 ) -> SemanticIR:
-    source = source.resolve()
-    if not source.is_file() or source.is_symlink() or source.stat().st_size > 2_000_000:
+    raw_source = source.expanduser()
+    if raw_source.is_symlink():
         raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
-    if emitted_target and language not in ROUTED_LANGUAGES and language not in NATIVE_RELIFTABLE_LANGUAGES:
+    source = raw_source.resolve()
+    if not source.is_file() or source.stat().st_size > 2_000_000:
+        raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
+    if language in PENDING_ANALYZER_LANGUAGES:
+        # A future matrix member declared ahead of its analyzer cannot be
+        # lifted in either direction. The current active13 set is required to
+        # keep this tuple empty; this branch is the fail-closed future guard.
+        raise RouteError(f"SOURCE_ANALYZER_NOT_IMPLEMENTED:{language}")
+    # A backstop, and deliberately unreachable today: `ROUTED_LANGUAGES` and
+    # `DEPRECATED_LANGUAGES` together cover every member of `Language`, and the
+    # test for this gate asserts that they do.  It fires only if someone adds a
+    # language to the `Language` literal without placing it in either set --
+    # the one arrangement in which this module would otherwise fall through to
+    # a dispatch chain that has no branch for it and return `value` unbound.
+    #
+    # Route membership is not the question it asks.  A deprecated language
+    # keeps the analyzer, emitter and filed evidence it always had (see
+    # `DEPRECATED_LANGUAGES`), so relifting its archived output has to keep
+    # working; javascript's deprecation left it out of the admitted set and
+    # silently took relift away from a language whose evidence the deprecation
+    # had promised to preserve.
+    if (
+        emitted_target
+        and language not in ROUTED_LANGUAGES
+        and language not in DEPRECATED_LANGUAGES
+        and language not in NATIVE_RELIFTABLE_LANGUAGES
+    ):
         raise RouteError(f"EMITTED_TARGET_REANALYSIS_UNSUPPORTED:{language}")
     if emitted_target:
         _verify_emitted_helper_sources(source, language)
@@ -4410,7 +8014,11 @@ def analyze(
         arguments = [str(source), function_name]
         if emitted_target:
             arguments.append("--emitted-target")
-        value = _run([toolchain.executable, "run", str(helper), "--", *arguments], cwd=ENGINE_ROOT)
+        value = _run(
+            [toolchain.executable, "run", str(helper), "--", *arguments],
+            cwd=ENGINE_ROOT,
+            environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
+        )
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
         assert toolchain.auxiliary is not None
@@ -4430,45 +8038,41 @@ def analyze(
             ],
             cwd=package,
             timeout=900,
+            isolated_cargo=True,
+            cargo_package=package,
         )
-    elif emitted_target:
-        helper = ENGINE_ROOT / "native" / "typescript" / "analyzer.mjs"
-        typescript_module = (
-            REPOSITORY_ROOT
-            / "engines"
-            / "frontend-client-engine"
-            / "node_modules"
-            / "typescript"
-            / "lib"
-            / "typescript.js"
+    elif language == "javascript":
+        value = _run_trusted_javascript_analyzer(
+            toolchain,
+            source,
+            function_name,
+            emitted_target=emitted_target,
         )
-        value = _run(
-            [
-                toolchain.executable,
-                str(helper),
-                str(typescript_module),
-                str(source),
-                function_name,
-                "--emitted-target",
-            ],
-            cwd=ENGINE_ROOT,
+    elif language == "typescript":
+        value = _run_trusted_typescript_analyzer(
+            toolchain,
+            source,
+            function_name,
+            emitted_target=emitted_target,
+        )
+    elif language == "php":
+        value = _run_trusted_php_analyzer(
+            toolchain,
+            source,
+            function_name,
+            emitted_target=emitted_target,
+        )
+    elif language == "kotlin":
+        helper = ENGINE_ROOT / "native" / "kotlin" / "analyzer.kt"
+        arguments = [str(source), function_name]
+        if emitted_target:
+            arguments.append("--emitted-target")
+        value = _run_trusted_kotlin_analyzer(
+            toolchain,
+            helper,
+            arguments,
+            allowed_domain_errors=_KOTLIN_ANALYZE_PROMOTABLE_DOMAIN_ERRORS,
         )
     else:
-        frontend = REPOSITORY_ROOT / "engines" / "frontend-client-engine"
-        cli = frontend / "dist" / "src" / "polyglot-cli.js"
-        if not cli.is_file():
-            pnpm = shutil.which("pnpm")
-            if pnpm is None:
-                raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:pnpm")
-            completed = subprocess.run(
-                [pnpm, "run", "build"],
-                cwd=frontend,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=120,
-            )
-            if completed.returncode != 0:
-                raise RouteError("TYPESCRIPT_ANALYZER_BUILD_FAILED:" + completed.stderr[-2_000:])
-        value = _run([toolchain.executable, str(cli), str(source), function_name], cwd=frontend)
-    return SemanticIR.from_mapping(value)
+        raise RouteError(f"NATIVE_ANALYZER_UNSUPPORTED:{language}")
+    return _external_semantic_ir(value)

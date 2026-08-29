@@ -1,0 +1,71 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: symbol-aware-retrieval
+  version: 2.0.0
+  pack: 03-retrieval-context-engineering
+  priority: P0
+  owner: TBD
+spec:
+  description: 围绕定义、引用、实现、测试、配置和调用方检索完整符号上下文。
+  kernel: K3 Retrieval and Context Kernel
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: task contract
+    required: true
+  - name: semantic graph
+    required: true
+  - name: knowledge objects
+    required: true
+  - name: token budget
+    required: true
+  - name: policy context
+    required: true
+  outputs:
+  - name: ranked evidence
+    contentAddressed: true
+  - name: context package
+    contentAddressed: true
+  - name: citation map
+    contentAddressed: true
+  - name: retrieval trace
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - search.lexical
+    - search.vector
+    - graph.query
+    - reranker.score
+    - context.pack
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - provenance-bound
+    - tenant-authorized
+    - version-compatible
+    - budget-respected
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

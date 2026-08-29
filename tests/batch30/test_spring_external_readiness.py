@@ -52,7 +52,13 @@ class SpringExternalReadinessTests(unittest.TestCase):
         self.assertEqual(checks["independent_verifier"]["status"], "NOT_RUN")
 
     def test_docker_preflight_blocker_is_diagnostic_not_external_evidence(self) -> None:
-        result = READINESS.assess(self.PACK, engine=Path("/usr/local/bin/docker"))
+        with patch("subprocess.run", return_value=subprocess.CompletedProcess(
+            args=["preflight"],
+            returncode=2,
+            stdout=json.dumps({"status": "BLOCKED", "reason": "ROOTLESS_CONTAINER_ENGINE_REQUIRED"}),
+            stderr="",
+        )):
+            result = READINESS.assess(self.PACK, engine=Path("/usr/local/bin/docker"))
         checks = {item["role"]: item for item in result["readiness_checks"]}
         self.assertEqual(checks["protected_rootless_runner"]["status"], "BLOCKED")
         self.assertEqual(

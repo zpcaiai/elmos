@@ -1,0 +1,72 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: tokenizer-domain-audit
+  version: 2.0.0
+  pack: 07-private-model-foundry
+  priority: P1
+  owner: TBD
+spec:
+  description: 分析代码、DSL、标识符、SQL、中文和多语言 Token 效率与分词缺陷。
+  kernel: K7 Private Model Foundry
+  riskClass: medium
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: certified dataset
+    required: true
+  - name: base model candidate
+    required: true
+  - name: training policy
+    required: true
+  - name: compute budget
+    required: true
+  outputs:
+  - name: checkpoint
+    contentAddressed: true
+  - name: adapter
+    contentAddressed: true
+  - name: model card
+    contentAddressed: true
+  - name: evaluation report
+    contentAddressed: true
+  - name: signed release
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - train.launch
+    - checkpoint.save
+    - registry.log
+    - eval.run
+    - artifact.sign
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - license-approved
+    - dataset-frozen
+    - reproducible-run
+    - eval-regression-pass
+    - signed
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

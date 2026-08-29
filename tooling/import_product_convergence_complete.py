@@ -7,16 +7,25 @@ import argparse
 import hashlib
 import json
 import re
+import sys
 from pathlib import Path
 from types import ModuleType
 from typing import Any
+
+TOOLING = Path(__file__).resolve().parent
+if str(TOOLING) not in sys.path:
+    sys.path.insert(0, str(TOOLING))
 
 import skill_creator_tools
 import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGE = ROOT / "batch46-product-convergence-complete-skills"
+PACKAGE = (
+    ROOT / "skills" / "batch46-product-convergence-complete-skills"
+    if (ROOT / "skills" / "batch46-product-convergence-complete-skills").is_dir()
+    else ROOT / "batch46-product-convergence-complete-skills"
+)
 AGENT_SKILL_ROOT = ROOT / ".agents" / "skills"
 INSTALL_MANIFEST = (
     ROOT
@@ -320,7 +329,7 @@ def expected_manifest(
         record = {
             "source_id": entry["skill_id"],
             "source_name": source_name,
-            "source_path": source.relative_to(ROOT).as_posix(),
+            "source_path": f"batch46-product-convergence-complete-skills/{source.relative_to(PACKAGE).as_posix()}",
             "source_sha256": "sha256:" + sha256_file(source),
             "installed_alias": alias,
             "normalized_prerequisites": prerequisites[entry["skill_id"]],

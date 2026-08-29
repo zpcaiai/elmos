@@ -87,7 +87,7 @@ class ProductionRuntimeBillingGateController {
 
     @ExceptionHandler(AccessDeniedException.class)
     ResponseEntity<Map<String, String>> denied(AccessDeniedException ex) {
-        return ResponseEntity.status(401).body(Map.of("code", ex.getMessage()));
+        return ResponseEntity.status(401).body(Map.of("code", "UNAUTHORIZED"));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

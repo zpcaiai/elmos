@@ -22,7 +22,10 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-import z3  # type: ignore[import-untyped]
+try:
+    import z3  # type: ignore[import-untyped]
+except ImportError:
+    z3 = None
 
 from . import canonical, types
 from .emitter import EmittedFile
@@ -312,7 +315,7 @@ def verify_formal_input_closure(root: Path, reference: dict[str, Any]) -> dict[s
 def formal_solver_identity() -> dict[str, Any]:
     return {
         "name": "z3",
-        "version": z3.get_version_string(),
+        "version": z3.get_version_string() if z3 is not None else "unavailable",
         "timeout_ms": FORMAL_TIMEOUT_MS,
         "random_seed": 0,
         "theories": ["QF_BV", "FP", "Seq", "Bool", "Int"],
@@ -1835,11 +1838,26 @@ def module_equivalence(
             "target_function_sha256": sha256_bytes(canonical_json_bytes(target_function_mapping)),
             "case_manifest_sha256": case_manifest_sha256,
             "identifier_hygiene": {
-                "plan": identifier_hygiene["plan"],
+                "plan": {
+                    "role": "identifier-plan",
+                    "path": identifier_hygiene["plan"]["path"],
+                    "sha256": identifier_hygiene["plan"]["sha256"],
+                    "bytes": identifier_hygiene["plan"]["bytes"],
+                },
                 "unit_namespace": identifier_hygiene["unit_namespace"],
                 "unit_namespace_sha256": identifier_hygiene["unit_namespace_sha256"],
-                "raw_target_ir": identifier_hygiene["raw_target_ir"],
-                "normalized_target_ir": identifier_hygiene["normalized_target_ir"],
+                "raw_target_ir": {
+                    "role": "raw-target-ir",
+                    "path": identifier_hygiene["raw_target_ir"]["path"],
+                    "sha256": identifier_hygiene["raw_target_ir"]["sha256"],
+                    "bytes": identifier_hygiene["raw_target_ir"]["bytes"],
+                },
+                "normalized_target_ir": {
+                    "role": "normalized-target-ir",
+                    "path": identifier_hygiene["normalized_target_ir"]["path"],
+                    "sha256": identifier_hygiene["normalized_target_ir"]["sha256"],
+                    "bytes": identifier_hygiene["normalized_target_ir"]["bytes"],
+                },
                 "function": next(
                     function_mapping
                     for function_mapping in identifier_hygiene["functions"]

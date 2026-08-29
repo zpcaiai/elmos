@@ -1,5 +1,6 @@
 {
   "concrete_spans_required": true,
+  "effect_semantics": "PROFILE_DEFINED",
   "expressions": [
     "name",
     "literal",
@@ -7,6 +8,7 @@
   ],
   "fail_closed": true,
   "input_domain": "canonical-finite-no-error-input-domain",
+  "integer_semantics": "PROFILE_DEFINED",
   "operator_domains": {
     "boolean_logic": {
       "operators": [
