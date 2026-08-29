@@ -1,0 +1,152 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: mobile-startup-battery-network
+  version: 3.0.0
+  pack: 29-performance-reliability-cost-engineering
+  priority: P1
+  owner: performance-reliability-team
+spec:
+  description: 优化移动端冷启动、内存、电量、网络、后台和包体积。
+  kernel: K6 Performance Verification + K7 Operations
+  riskClass: high
+  exposure: atomic-registry-only
+  businessLines:
+  - performance-reliability-finops
+  capabilityTags:
+  - 29-performance-reliability-cost-engineering
+  - battery
+  - mobile
+  - network
+  - performance-reliability-finops
+  - startup
+  triggers:
+  - 任务明确要求：优化移动端冷启动、内存、电量、网络、后台和包体积。
+  - 任务属于 performance-reliability-finops，需要仓库级、可重放、带证据和回滚的执行。
+  - 注册表确认 mobile-startup-battery-network 与目标技术栈、版本、租户和风险相容。
+  negativeTriggers:
+  - 仅询问概念或写作，不访问仓库、数据、环境或工具。
+  - 没有租户授权、版本锁定、基线、验收标准或验证环境。
+  - 目标是绕过测试、权限、签名、证据、审计或回滚门。
+  - 已有更窄且风险更低的确定性 Skill 能完整处理任务。
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  - baseline.snapshotAvailable == true
+  - evidence.serviceAvailable == true
+  inputs:
+  - name: task contract
+    required: true
+  - name: tenant and repository identity
+    required: true
+  - name: version-pinned environment
+    required: true
+  - name: acceptance and evidence obligations
+    required: true
+  - name: representative workload, SLO and cost baseline
+    required: true
+  outputs:
+  - name: execution plan
+    contentAddressed: true
+  - name: versioned artifacts or patch set
+    contentAddressed: true
+  - name: verification and evidence bundle
+    contentAddressed: true
+  - name: risk, cost and machine wall-clock report
+    contentAddressed: true
+  - name: rollback or compensation record
+    contentAddressed: true
+  workflow:
+  - define-workload-and-slo
+  - capture-baseline
+  - locate-critical-path
+  - optimize-with-guardrails
+  - load-chaos-and-cost-test
+  - compare-pareto-frontier
+  - gate-release
+  tools:
+    allowed:
+    - profile.capture
+    - load.execute
+    - trace.analyze
+    - capacity.model
+    - chaos.run
+    - cost.query
+    - evidence.write
+    defaultDeny: true
+    parameterValidationRequired: true
+    environmentOwnedAuthority: true
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  - runtime-static-correlation
+  - quality-cost-pareto-analysis
+  - chaos-soak-backup-restore-certification
+  invariants:
+  - workload-representative
+  - functional-behavior-preserved
+  - slo-met
+  - recovery-objectives-met
+  - cost-regression-acceptable
+  - tenant-boundary-preserved
+  - source-and-target-traceable
+  - no-hidden-test-weakening
+  - no-evidence-fabrication
+  - machine-wall-clock-recorded
+  failureModes:
+  - unsupported-source-or-target-version
+  - insufficient-semantic-or-contract-coverage
+  - deterministic-verification-failure
+  - security-privacy-or-license-policy-failure
+  - performance-or-capacity-regression
+  - rollback-or-recovery-evidence-missing
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+    maxUnverifiedSideEffects: 0
+  evidence:
+    requiredGates:
+    - workload-representative
+    - functional-behavior-preserved
+    - slo-met
+    - recovery-objectives-met
+    - cost-regression-acceptable
+    minimumLevel: E2
+    sourceBindingRequired: true
+    independentReplayRequired: false
+  rollback:
+    required: true
+    strategy: restore-versioned-checkpoint-and-compensate-side-effects
+    rehearsalRequired: false
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+    minimumDatasetTier: Gold
+    humanAcceptanceRequired: false
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true
+    emitProgress: true
+    emitEvidenceLineage: true
+    sensitiveContentDefault: redacted
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E2
+  support:
+    supportTier: standard
+    deprecationPolicyRequired: true

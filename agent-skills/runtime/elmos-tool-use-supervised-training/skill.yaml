@@ -2,10 +2,10 @@ apiVersion: elmos.ai/v1
 kind: ProofCarryingSkill
 metadata:
   name: tool-use-supervised-training
-  version: 2.0.0
+  version: 3.0.0
   pack: 08-agentic-training-rl
   priority: P1
-  owner: TBD
+  owner: agent-training-team
 spec:
   description: 训练何时读取、搜索、编辑、编译、测试、查询和请求审批。
   kernel: K7 Private Model Foundry / Agent Learning
@@ -69,3 +69,57 @@ spec:
     emitTrace: true
     emitCost: true
     emitWallClock: true
+  businessLines:
+  - agentic-training
+  capabilityTags:
+  - 08-agentic-training-rl
+  - agentic-training
+  - supervised
+  - tool
+  - training
+  - use
+  triggers:
+  - 任务需要：训练何时读取、搜索、编辑、编译、测试、查询和请求审批。
+  - 任务属于 agentic-training 且需要仓库级执行、证据与回滚。
+  negativeTriggers:
+  - 仅解释普通概念且不需要访问仓库、数据、模型或工具。
+  - 没有租户授权、版本锁定、验收标准或可用验证环境。
+  - 请求绕过测试、权限、证据、签名或回滚门。
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  invariants:
+  - environment-reproducible
+  - reward-non-gameable
+  - terminal-state-verified
+  - safety-constraints
+  - tenant-boundary-preserved
+  - no-evidence-fabrication
+  - hard-gates-not-weakened
+  failureModes:
+  - unsupported-version-or-environment
+  - insufficient-semantic-coverage
+  - deterministic-verification-failure
+  - authorization-or-data-rights-failure
+  - rollback-target-unavailable
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: standard
+    deprecationPolicyRequired: true

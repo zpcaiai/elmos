@@ -1,7 +1,9 @@
 activation:
   positiveRequired: 8
   negativeRequired: 8
-  split: train-validation
+  split: repo-org-time-disjoint
+  ambiguousRequired: 4
+  adversarialRequired: 4
 outcome:
 - gate: environment-reproducible
   type: deterministic-first
@@ -27,3 +29,8 @@ security:
 - prompt-injection
 - secret-leakage
 - artifact-integrity
+learning:
+- training-rights
+- dataset-tier
+- eval-leakage
+- human-acceptance

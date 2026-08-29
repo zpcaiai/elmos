@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Verification Obligation",
+  "type": "object",
+  "required": [
+    "id",
+    "claim",
+    "method",
+    "environment",
+    "result",
+    "evidenceArtifacts"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "claim": {
+      "type": "string"
+    },
+    "method": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "object"
+    },
+    "result": {
+      "enum": [
+        "pass",
+        "fail",
+        "blocked",
+        "uncertain"
+      ]
+    },
+    "evidenceArtifacts": {
+      "type": "array"
+    }
+  }
+}

@@ -1,0 +1,153 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: cmake-bazel-meson-ninja-adapter
+  version: 3.0.0
+  pack: 34-language-runtime-adapters
+  priority: P0
+  owner: language-adapter-team
+spec:
+  description: 适配 CMake、Bazel、Meson、Ninja 的目标图、Toolchain 和增量构建。
+  kernel: K3 Language Frontends/Backends
+  riskClass: medium
+  exposure: atomic-registry-only
+  businessLines:
+  - language-runtime-adapters
+  capabilityTags:
+  - 34-language-runtime-adapters
+  - adapter
+  - bazel
+  - cmake
+  - language-runtime-adapters
+  - meson
+  - ninja
+  triggers:
+  - 任务明确要求：适配 CMake、Bazel、Meson、Ninja 的目标图、Toolchain 和增量构建。
+  - 任务属于 language-runtime-adapters，需要仓库级、可重放、带证据和回滚的执行。
+  - 注册表确认 cmake-bazel-meson-ninja-adapter 与目标技术栈、版本、租户和风险相容。
+  negativeTriggers:
+  - 仅询问概念或写作，不访问仓库、数据、环境或工具。
+  - 没有租户授权、版本锁定、基线、验收标准或验证环境。
+  - 目标是绕过测试、权限、签名、证据、审计或回滚门。
+  - 已有更窄且风险更低的确定性 Skill 能完整处理任务。
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  - baseline.snapshotAvailable == true
+  - evidence.serviceAvailable == true
+  inputs:
+  - name: task contract
+    required: true
+  - name: tenant and repository identity
+    required: true
+  - name: version-pinned environment
+    required: true
+  - name: acceptance and evidence obligations
+    required: true
+  - name: language, compiler, build and runtime versions
+    required: true
+  outputs:
+  - name: execution plan
+    contentAddressed: true
+  - name: versioned artifacts or patch set
+    contentAddressed: true
+  - name: verification and evidence bundle
+    contentAddressed: true
+  - name: risk, cost and machine wall-clock report
+    contentAddressed: true
+  - name: rollback or compensation record
+    contentAddressed: true
+  workflow:
+  - detect-language-and-version
+  - load-grammar-and-runtime-profile
+  - parse-and-index
+  - generate-or-transform
+  - build-test-debug
+  - matrix-verify
+  - publish-adapter-evidence
+  tools:
+    allowed:
+    - language.parse
+    - compiler.invoke
+    - package.resolve
+    - debug.adapter
+    - test.execute
+    - artifact.inspect
+    - evidence.write
+    defaultDeny: true
+    parameterValidationRequired: true
+    environmentOwnedAuthority: true
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  - multi-language-ast-extraction
+  - build-and-dependency-graph
+  - compatibility-matrix-manager
+  invariants:
+  - parser-coverage-pass
+  - build-reproducible
+  - runtime-semantics-profiled
+  - debug-and-test-integrated
+  - adapter-matrix-certified
+  - tenant-boundary-preserved
+  - source-and-target-traceable
+  - no-hidden-test-weakening
+  - no-evidence-fabrication
+  - machine-wall-clock-recorded
+  failureModes:
+  - unsupported-source-or-target-version
+  - insufficient-semantic-or-contract-coverage
+  - deterministic-verification-failure
+  - security-privacy-or-license-policy-failure
+  - performance-or-capacity-regression
+  - rollback-or-recovery-evidence-missing
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+    maxUnverifiedSideEffects: 0
+  evidence:
+    requiredGates:
+    - parser-coverage-pass
+    - build-reproducible
+    - runtime-semantics-profiled
+    - debug-and-test-integrated
+    - adapter-matrix-certified
+    minimumLevel: E3
+    sourceBindingRequired: true
+    independentReplayRequired: true
+  rollback:
+    required: true
+    strategy: restore-versioned-checkpoint-and-compensate-side-effects
+    rehearsalRequired: false
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+    minimumDatasetTier: Gold
+    humanAcceptanceRequired: false
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true
+    emitProgress: true
+    emitEvidenceLineage: true
+    sensitiveContentDefault: redacted
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: LTS-candidate
+    deprecationPolicyRequired: true

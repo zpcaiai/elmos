@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Elmos Experience Episode",
+  "type": "object",
+  "required": [
+    "episodeId",
+    "tenantId",
+    "taskContract",
+    "releaseBundle",
+    "repositorySnapshot",
+    "trajectory",
+    "verification",
+    "outcome",
+    "lineage"
+  ],
+  "properties": {
+    "episodeId": {
+      "type": "string"
+    },
+    "tenantId": {
+      "type": "string"
+    },
+    "taskContract": {
+      "type": "object"
+    },
+    "releaseBundle": {
+      "type": "object"
+    },
+    "repositorySnapshot": {
+      "type": "object"
+    },
+    "knowledgeReferences": {
+      "type": "array"
+    },
+    "skillsInvoked": {
+      "type": "array"
+    },
+    "trajectory": {
+      "type": "array"
+    },
+    "patches": {
+      "type": "array"
+    },
+    "verification": {
+      "type": "object"
+    },
+    "humanFeedback": {
+      "type": "object"
+    },
+    "outcome": {
+      "enum": [
+        "accepted",
+        "rejected",
+        "partial",
+        "blocked",
+        "rolled-back"
+      ]
+    },
+    "rewardVector": {
+      "type": "object"
+    },
+    "rights": {
+      "type": "object"
+    },
+    "lineage": {
+      "type": "object"
+    }
+  }
+}

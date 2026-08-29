@@ -2,10 +2,10 @@ apiVersion: elmos.ai/v1
 kind: ProofCarryingSkill
 metadata:
   name: symbol-aware-retrieval
-  version: 2.0.0
+  version: 3.0.0
   pack: 03-retrieval-context-engineering
   priority: P0
-  owner: TBD
+  owner: retrieval-platform-team
 spec:
   description: 围绕定义、引用、实现、测试、配置和调用方检索完整符号上下文。
   kernel: K3 Retrieval and Context Kernel
@@ -69,3 +69,56 @@ spec:
     emitTrace: true
     emitCost: true
     emitWallClock: true
+  businessLines:
+  - retrieval-context
+  capabilityTags:
+  - 03-retrieval-context-engineering
+  - aware
+  - retrieval
+  - retrieval-context
+  - symbol
+  triggers:
+  - 任务需要：围绕定义、引用、实现、测试、配置和调用方检索完整符号上下文。
+  - 任务属于 retrieval-context 且需要仓库级执行、证据与回滚。
+  negativeTriggers:
+  - 仅解释普通概念且不需要访问仓库、数据、模型或工具。
+  - 没有租户授权、版本锁定、验收标准或可用验证环境。
+  - 请求绕过测试、权限、证据、签名或回滚门。
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  invariants:
+  - provenance-bound
+  - tenant-authorized
+  - version-compatible
+  - budget-respected
+  - tenant-boundary-preserved
+  - no-evidence-fabrication
+  - hard-gates-not-weakened
+  failureModes:
+  - unsupported-version-or-environment
+  - insufficient-semantic-coverage
+  - deterministic-verification-failure
+  - authorization-or-data-rights-failure
+  - rollback-target-unavailable
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: LTS-candidate
+    deprecationPolicyRequired: true

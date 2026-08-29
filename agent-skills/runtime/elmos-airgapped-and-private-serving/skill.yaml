@@ -2,10 +2,10 @@ apiVersion: elmos.ai/v1
 kind: ProofCarryingSkill
 metadata:
   name: airgapped-and-private-serving
-  version: 2.0.0
+  version: 3.0.0
   pack: 10-serving-routing-inference
   priority: P0
-  owner: TBD
+  owner: inference-platform-team
 spec:
   description: 支持离线镜像、私有 Registry、无外网依赖、更新包和本地审计。
   kernel: K8 Serving and Runtime Control
@@ -70,3 +70,57 @@ spec:
     emitTrace: true
     emitCost: true
     emitWallClock: true
+  businessLines:
+  - model-serving
+  capabilityTags:
+  - 10-serving-routing-inference
+  - airgapped
+  - model-serving
+  - private
+  - serving
+  triggers:
+  - 任务需要：支持离线镜像、私有 Registry、无外网依赖、更新包和本地审计。
+  - 任务属于 model-serving 且需要仓库级执行、证据与回滚。
+  negativeTriggers:
+  - 仅解释普通概念且不需要访问仓库、数据、模型或工具。
+  - 没有租户授权、版本锁定、验收标准或可用验证环境。
+  - 请求绕过测试、权限、证据、签名或回滚门。
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  invariants:
+  - authorized-route
+  - version-pinned
+  - quota-respected
+  - telemetry-emitted
+  - fallback-defined
+  - tenant-boundary-preserved
+  - no-evidence-fabrication
+  - hard-gates-not-weakened
+  failureModes:
+  - unsupported-version-or-environment
+  - insufficient-semantic-coverage
+  - deterministic-verification-failure
+  - authorization-or-data-rights-failure
+  - rollback-target-unavailable
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: LTS-candidate
+    deprecationPolicyRequired: true

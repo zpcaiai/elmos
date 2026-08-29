@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Safely integrate and independently qualify the Elmos Knowledge-Skill-Model Foundry v2.0.0 package.
+"""Safely integrate and independently qualify the Elmos Knowledge-Skill-Model Foundry v3.0.0 package.
 
 The source archive is untrusted declarative source material. This importer
 checks archive identity, path safety, internal checksums, exact Skill counts,
@@ -29,10 +29,10 @@ except ModuleNotFoundError as exc:  # pragma: no cover
     raise SystemExit("PyYAML and jsonschema are required; use `make knowledge-skill-model-foundry-skills`") from exc
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGE_DIRECTORY = "elmos-knowledge-skill-model-foundry-v2.0.0"
-PACKAGE_ID = "elmos-knowledge-skill-model-foundry-v2.0.0"
+PACKAGE_DIRECTORY = "elmos-knowledge-skill-model-foundry-v3.0.0"
+PACKAGE_ID = "elmos-knowledge-skill-model-foundry-v3.0.0"
 PACKAGE_NAME = "elmos-knowledge-skill-model-foundry"
-PACKAGE_VERSION = "2.0.0"
+PACKAGE_VERSION = "3.0.0"
 
 PRIMARY_ARCHIVE_RELATIVE = Path("skills/subskills") / f"{PACKAGE_DIRECTORY}.zip"
 FALLBACK_ARCHIVE_RELATIVE = Path("skills/subskills/sub") / f"{PACKAGE_DIRECTORY}.zip"
@@ -43,26 +43,28 @@ RUNTIME_SKILLS_RELATIVE = Path("agent-skills/runtime")
 WORKSPACE_SKILLS_RELATIVE = Path(".agents/skills")
 CLAUDE_SKILLS_RELATIVE = Path(".claude/skills")
 
-EXPECTED_ARCHIVE_SHA256 = "afe529a29d99945f472cacebd479c10ebb802b3c3061c83dfe58659ea8330685"
-EXPECTED_ARCHIVE_BYTES = 3_159_877
-EXPECTED_FILE_COUNT = 2_353
+EXPECTED_ARCHIVE_SHA256 = "e29673a598756deff422e8dd7f36b2826e9c1aaff6df22db2c0699b0857ee0e4"
+EXPECTED_ARCHIVE_BYTES = 16_668_810
+EXPECTED_FILE_COUNT = 16_007
 
 EXPECTED_COUNTS = {
-    "atomicSkills": 458,
-    "metaSkills": 17,
-    "packs": 17,
-    "schemas": 5,
-    "policies": 3,
-    "pipelines": 4,
-    "tables": 25,
+    "atomicSkills": 1310,
+    "metaSkills": 41,
+    "packs": 41,
+    "schemas": 13,
+    "policies": 9,
+    "pipelines": 14,
+    "tables": 38,
 }
 
 ATOMIC_SKILL_FILES = {
     "SKILL.md",
     "skill.yaml",
     "evals/contract.yaml",
+    "evals/cases.yaml",
     "policies/execution.yaml",
     "references/implementation-notes.md",
+    "tests/conformance.yaml",
 }
 
 META_SKILL_FILES = {
@@ -166,20 +168,14 @@ def validate_extracted_source(source_dir: Path) -> dict[str, Any]:
     manifest = yaml.safe_load((source_dir / "manifest.yaml").read_text(encoding="utf-8"))
     metrics: dict[str, Any] = {}
 
-    catalog_data = yaml.safe_load((source_dir / "registry/skill-catalog.yaml").read_text(encoding="utf-8"))
-    atomic_skills_list = catalog_data["spec"]["skills"]
-    metrics["atomicSkills"] = len(atomic_skills_list)
-    if len(atomic_skills_list) != EXPECTED_COUNTS["atomicSkills"]:
-        fail(f"atomic skills count mismatch: expected {EXPECTED_COUNTS['atomicSkills']}, got {len(atomic_skills_list)}")
-
-    # Check 17 packs
+    # Check 41 packs
     packs_dir = source_dir / "skills/atomic"
     pack_dirs = sorted(p for p in packs_dir.iterdir() if p.is_dir())
     metrics["packs"] = len(pack_dirs)
     if len(pack_dirs) != EXPECTED_COUNTS["packs"]:
         fail(f"packs count mismatch: expected {EXPECTED_COUNTS['packs']}, got {len(pack_dirs)}")
 
-    # Check 17 meta skills
+    # Check 41 meta skills
     meta_dir = source_dir / "skills/meta"
     meta_dirs = sorted(p for p in meta_dir.iterdir() if p.is_dir())
     metrics["metaSkills"] = len(meta_dirs)
@@ -195,10 +191,12 @@ def validate_extracted_source(source_dir: Path) -> dict[str, Any]:
     # Check atomic skills
     all_atomic_ids: set[str] = set()
     dag_edges: dict[str, list[str]] = {}
+    atomic_count = 0
     for pack_dir in pack_dirs:
         for skill_dir in sorted(p for p in pack_dir.iterdir() if p.is_dir()):
             sid = skill_dir.name
             all_atomic_ids.add(sid)
+            atomic_count += 1
             files = {p.relative_to(skill_dir).as_posix() for p in skill_dir.rglob("*") if p.is_file()}
             if files != ATOMIC_SKILL_FILES:
                 fail(f"atomic skill {pack_dir.name}/{sid}: file inventory mismatch: {files}")
@@ -206,6 +204,10 @@ def validate_extracted_source(source_dir: Path) -> dict[str, Any]:
             spec = yaml.safe_load((skill_dir / "skill.yaml").read_text(encoding="utf-8"))["spec"]
             deps = spec.get("dependencies", [])
             dag_edges[sid] = deps
+
+    metrics["atomicSkills"] = atomic_count
+    if atomic_count != EXPECTED_COUNTS["atomicSkills"]:
+        fail(f"atomic skills count mismatch: expected {EXPECTED_COUNTS['atomicSkills']}, got {atomic_count}")
 
     check_dag(all_atomic_ids, dag_edges, "Foundry Skills DAG")
 
@@ -232,7 +234,7 @@ def validate_extracted_source(source_dir: Path) -> dict[str, Any]:
 
     # Check database schema
     sql = (source_dir / "database/postgresql-schema.sql").read_text(encoding="utf-8")
-    tables = [l for l in sql.splitlines() if l.startswith("CREATE TABLE")]
+    tables = [l for l in sql.splitlines() if l.strip().startswith("CREATE TABLE")]
     metrics["tables"] = len(tables)
     if len(tables) != EXPECTED_COUNTS["tables"]:
         fail(f"tables count mismatch: expected {EXPECTED_COUNTS['tables']}, got {len(tables)}")
@@ -269,11 +271,11 @@ def install_dual_root_skills(source_dir: Path) -> int:
     runtime_skills_root.mkdir(parents=True, exist_ok=True)
     
     installed_count = 0
-    # 1. Install 17 Meta Skills
+    # 1. Install 41 Meta Skills
     for meta_subdir in sorted(meta_dir.iterdir()):
         if not meta_subdir.is_dir():
             continue
-        skill_name = f"elmos-{meta_subdir.name}"
+        skill_name = f"elmos-{meta_subdir.name}" if not meta_subdir.name.startswith("elmos-") else meta_subdir.name
         for root_dest in (workspace_skills_root, runtime_skills_root):
             dest = root_dest / skill_name
             if dest.exists():
@@ -281,7 +283,7 @@ def install_dual_root_skills(source_dir: Path) -> int:
             shutil.copytree(meta_subdir, dest)
         installed_count += 1
         
-    # 2. Install Atomic Skills
+    # 2. Install 1,310 Atomic Skills
     for pack_subdir in sorted(atomic_dir.iterdir()):
         if not pack_subdir.is_dir():
             continue
@@ -302,8 +304,9 @@ def install_dual_root_skills(source_dir: Path) -> int:
 def generate_local_qualification(archive_digest: str, metrics: dict[str, Any]) -> dict[str, Any]:
     qualification_dir = ROOT / ENGINE_RELATIVE / "qualification"
     qualification_dir.mkdir(parents=True, exist_ok=True)
-    receipt_path = qualification_dir / "local-qualification.json"
-
+    doc_dir = ROOT / DOC_RELATIVE
+    doc_dir.mkdir(parents=True, exist_ok=True)
+    
     receipt = {
         "schema_version": "elmos.knowledge-skill-model-foundry.qualification.v1",
         "package_id": PACKAGE_ID,
@@ -318,8 +321,10 @@ def generate_local_qualification(archive_digest: str, metrics: dict[str, Any]) -
         "qualified_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "metrics": metrics,
     }
-    receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    os.chmod(receipt_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
+    
+    for dest_file in (qualification_dir / "local-qualification.json", doc_dir / "QUALIFICATION_RECEIPT.json"):
+        dest_file.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        os.chmod(dest_file, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
     return receipt
 
 

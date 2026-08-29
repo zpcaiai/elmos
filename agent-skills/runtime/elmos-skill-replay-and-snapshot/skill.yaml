@@ -2,10 +2,10 @@ apiVersion: elmos.ai/v1
 kind: ProofCarryingSkill
 metadata:
   name: skill-replay-and-snapshot
-  version: 2.0.0
+  version: 3.0.0
   pack: 05-skill-foundry-runtime
   priority: P0
-  owner: TBD
+  owner: skill-foundry-team
 spec:
   description: 在固定仓库、镜像、模型和知识快照中重放 Skill 执行。
   kernel: K5 Skill Foundry and Runtime
@@ -69,3 +69,56 @@ spec:
     emitTrace: true
     emitCost: true
     emitWallClock: true
+  businessLines:
+  - skill-runtime
+  capabilityTags:
+  - 05-skill-foundry-runtime
+  - replay
+  - skill
+  - skill-runtime
+  - snapshot
+  triggers:
+  - 任务需要：在固定仓库、镜像、模型和知识快照中重放 Skill 执行。
+  - 任务属于 skill-runtime 且需要仓库级执行、证据与回滚。
+  negativeTriggers:
+  - 仅解释普通概念且不需要访问仓库、数据、模型或工具。
+  - 没有租户授权、版本锁定、验收标准或可用验证环境。
+  - 请求绕过测试、权限、证据、签名或回滚门。
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  invariants:
+  - trigger-eval-pass
+  - tool-permission-bounded
+  - evidence-complete
+  - rollback-tested
+  - tenant-boundary-preserved
+  - no-evidence-fabrication
+  - hard-gates-not-weakened
+  failureModes:
+  - unsupported-version-or-environment
+  - insufficient-semantic-coverage
+  - deterministic-verification-failure
+  - authorization-or-data-rights-failure
+  - rollback-target-unavailable
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: LTS-candidate
+    deprecationPolicyRequired: true

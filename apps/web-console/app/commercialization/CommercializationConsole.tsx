@@ -10,6 +10,28 @@ const reviewQueue = [
   { id: "EVD-1042", title: "SCM Workspace admission", subject: "order-platform / commit a4f2…91c", stage: "B35", status: "NOT_RUN", owner: "Source owner" },
   { id: "EVD-1041", title: "Runner capability attestation", subject: "macos-arm64-private-01", stage: "B36", status: "BLOCKED", owner: "Platform security" },
   { id: "EVD-1038", title: "Evidence pack assurance", subject: "migration-run / pack 018", stage: "B37", status: "REVIEW", owner: "Independent judge" },
+  { id: "EVD-1045", title: "Foundry v3.0.0 Model Foundry Pack", subject: "qwen2.5-coder-32b-distill", stage: "Foundry-07", status: "READY", owner: "Model Foundry" },
+  { id: "EVD-1046", title: "Polyglot SMT Formal Verification", subject: "java-to-csharp-golden-route", stage: "Batch-Q", status: "READY", owner: "Formal Assurance" },
+];
+
+const commercialKernels = [
+  { id: "K1", name: "Skill Runtime", skills: 10, status: "READY", desc: "Sandbox execution, context budgeting, durable events" },
+  { id: "K2", name: "Repository Intelligence", skills: 10, status: "READY", desc: "Semantic AST indexing, symbol resolution, call graph" },
+  { id: "K3", name: "Transformation", skills: 10, status: "READY", desc: "Rule DSL, bidirectional lowering, AST rewrites" },
+  { id: "K4", name: "Build & Execution", skills: 9, status: "READY", desc: "Hermetic container toolchains, compiler diagnostic mapping" },
+  { id: "K5", name: "Verification", skills: 14, status: "READY", desc: "SMT solver obligations, differential fuzzing, metamorphic tests" },
+  { id: "K6", name: "Security & Governance", skills: 10, status: "READY", desc: "Zero-trust policies, secret egress, SLSA provenance" },
+  { id: "K7", name: "Database & Data", skills: 10, status: "READY", desc: "DDL/DML transpilation, routine CFG, CDC reconciliation" },
+  { id: "K8", name: "Observability & Evolution", skills: 12, status: "READY", desc: "OTel traces, cost telemetry, self-evolving recipes" },
+];
+
+const foundryHighlights = [
+  { pack: "00–04", name: "Foundation & Knowledge", skills: 98, desc: "Contracts, ingestion, semantic intelligence, memory" },
+  { pack: "05–08", name: "Foundry Core & RL Training", skills: 121, desc: "Skill runtime, dataset foundry, private model foundry, RL" },
+  { pack: "09–12", name: "Assurance & Governance", skills: 128, desc: "E0–E5 certification, serving gateway, security, finops" },
+  { pack: "13–16", name: "Platform & Self-Evolution", skills: 111, desc: "Multi-tenant control plane, operations, self-evolution" },
+  { pack: "17–33", name: "Enterprise Route Specialization", skills: 676, desc: "Spring, Cross-language, Database, Mainframe, IoT" },
+  { pack: "34–40", name: "Adapters & Industrial Assurance", skills: 217, desc: "Language/DB/Cloud adapters, regulated compliance" },
 ];
 
 export function CommercializationConsole() {
@@ -57,21 +79,76 @@ export function CommercializationConsole() {
     <div className="page-stack control-page">
       <section className="page-header control-header">
         <div>
-          <span className="overline">PRODUCT CONTROL PLANE · B34–B38</span>
-          <h1>商业化控制面</h1>
-          <p>在执行前回答五个问题：谁、哪份源码、在哪里运行、证据是否可信、现在是否仍被授权。</p>
+          <span className="overline">ENTERPRISE COMMERCIAL CONTROL PLANE · v3.0.0</span>
+          <h1>商业化控制面与能力内核</h1>
+          <p>整合 8 大商业内核 (K1–K8)、Foundry v3.0.0 (41 Packs, 1,351 Skills) 与 18-Batch 多语言编译器控制链。</p>
         </div>
-        <div className="header-actions"><span className="environment-selector"><i />环境：本地契约</span><button className="button button-secondary" onClick={refresh} disabled={refreshing}><Icon name="refresh" size={16} className={refreshing ? "spinning" : undefined} />刷新能力</button></div>
+        <div className="header-actions">
+          <span className="environment-selector"><i />环境：本地工程契约</span>
+          <button className="button button-secondary" onClick={refresh} disabled={refreshing}>
+            <Icon name="refresh" size={16} className={refreshing ? "spinning" : undefined} />刷新能力
+          </button>
+        </div>
       </section>
 
       <section className="metric-grid metric-grid-four" aria-label="控制面摘要">
-        <article className="metric-card"><span>控制域</span><strong>5</strong><small>B34–B38 可信链</small></article>
-        <article className="metric-card"><span>本地契约检查</span><strong>{enforcedCount}</strong><small>已定义或强制</small></article>
-        <article className="metric-card"><span>待补外部项</span><strong className="warning-text">{unresolvedCount}</strong><small>不隐藏阻断状态</small></article>
+        <article className="metric-card"><span>商业能力内核</span><strong>8 (K1–K8)</strong><small>85 个商业扩展 Skills</small></article>
+        <article className="metric-card"><span>Foundry 知识库</span><strong>1,351 Skills</strong><small>41 大能力 Pack (v3.0.0)</small></article>
+        <article className="metric-card"><span>多语言语义编译</span><strong>784 Routes</strong><small>18 个 Batches (A–R)</small></article>
         <article className="metric-card"><span>决策上限</span><strong className="metric-word">Gate / Human</strong><small>不批准、不执行</small></article>
       </section>
 
-      <section className="source-notice" role="status"><Icon name={payload.source === "LIVE_API" ? "check" : "clock"} size={16} /><span>{payload.note}</span><small className="source-freshness">最近刷新 {fetchedAt}</small><StatusChip status={payload.source} compact /></section>
+      <section className="source-notice" role="status">
+        <Icon name={payload.source === "LIVE_API" ? "check" : "clock"} size={16} />
+        <span>{payload.note}</span>
+        <small className="source-freshness">最近刷新 {fetchedAt}</small>
+        <StatusChip status={payload.source} compact />
+      </section>
+
+      {/* Commercial Kernels Matrix */}
+      <section className="surface-card" aria-labelledby="kernels-title">
+        <div className="section-heading compact-heading">
+          <div><span className="overline">COMMERCIAL CAPABILITY KERNELS (K1–K8)</span><h2 id="kernels-title">八大商业能力内核</h2></div>
+          <StatusChip status="READY" compact />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-3">
+          {commercialKernels.map((k) => (
+            <div key={k.id} className="p-3 rounded-lg border border-border bg-card/60 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <strong className="text-sm font-semibold text-primary">{k.id} · {k.name}</strong>
+                  <span className="text-xs px-2 py-0.5 rounded bg-primary/10 text-primary font-mono">{k.skills} skills</span>
+                </div>
+                <p className="text-xs text-muted-foreground">{k.desc}</p>
+              </div>
+              <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+                <span>状态: {k.status}</span>
+                <Icon name="check" size={13} className="text-emerald-500" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Foundry v3.0.0 Highlights */}
+      <section className="surface-card" aria-labelledby="foundry-title">
+        <div className="section-heading compact-heading">
+          <div><span className="overline">FOUNDRY v3.0.0 ECOSYSTEM</span><h2 id="foundry-title">Knowledge-Skill-Model Foundry (41 Packs)</h2></div>
+          <span className="text-xs px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 font-mono">1,351 Skills Total</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
+          {foundryHighlights.map((f) => (
+            <div key={f.pack} className="p-3 rounded-lg border border-border bg-card/40">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-mono text-muted-foreground">Pack {f.pack}</span>
+                <strong className="text-xs text-emerald-400">{f.skills} Skills</strong>
+              </div>
+              <strong className="text-sm font-medium block">{f.name}</strong>
+              <p className="text-xs text-muted-foreground mt-1">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <section className="trust-chain" aria-labelledby="trust-chain-title">
         <div className="section-heading compact-heading"><div><span className="overline">TRUST CHAIN</span><h2 id="trust-chain-title">从身份到执行回执</h2></div><span className="quiet-label">点击任一阶段查看检查项</span></div>

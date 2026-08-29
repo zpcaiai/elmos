@@ -2,10 +2,10 @@ apiVersion: elmos.ai/v1
 kind: ProofCarryingSkill
 metadata:
   name: memory-knowledge-poisoning-detection
-  version: 2.0.0
+  version: 3.0.0
   pack: 11-security-privacy-compliance
   priority: P0
-  owner: TBD
+  owner: security-governance-team
 spec:
   description: 识别恶意知识、持久化指令、错误高置信记录和跨任务污染。
   kernel: Cross-Cutting Trust Plane
@@ -70,3 +70,58 @@ spec:
     emitTrace: true
     emitCost: true
     emitWallClock: true
+  businessLines:
+  - security-privacy
+  capabilityTags:
+  - 11-security-privacy-compliance
+  - detection
+  - knowledge
+  - memory
+  - poisoning
+  - security-privacy
+  triggers:
+  - 任务需要：识别恶意知识、持久化指令、错误高置信记录和跨任务污染。
+  - 任务属于 security-privacy 且需要仓库级执行、证据与回滚。
+  negativeTriggers:
+  - 仅解释普通概念且不需要访问仓库、数据、模型或工具。
+  - 没有租户授权、版本锁定、验收标准或可用验证环境。
+  - 请求绕过测试、权限、证据、签名或回滚门。
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  invariants:
+  - least-privilege
+  - tenant-isolation
+  - signed-artifact
+  - audit-complete
+  - critical-risk-zero
+  - tenant-boundary-preserved
+  - no-evidence-fabrication
+  - hard-gates-not-weakened
+  failureModes:
+  - unsupported-version-or-environment
+  - insufficient-semantic-coverage
+  - deterministic-verification-failure
+  - authorization-or-data-rights-failure
+  - rollback-target-unavailable
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: LTS-candidate
+    deprecationPolicyRequired: true

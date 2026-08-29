@@ -1,0 +1,43 @@
+activation:
+  positiveRequired: 8
+  negativeRequired: 8
+  ambiguousRequired: 4
+  adversarialRequired: 4
+  split: repo-org-time-disjoint
+outcome:
+- gate: threat-model-complete
+  type: deterministic-first
+- gate: no-unaccepted-critical-risk
+  type: deterministic-first
+- gate: tenant-boundary-proven
+  type: deterministic-first
+- gate: supply-chain-attested
+  type: deterministic-first
+- gate: remediation-verified
+  type: deterministic-first
+process:
+- authorized-tools-only
+- environment-owned-authority
+- checkpoint-created
+- source-target-lineage
+- independent-verification
+- rollback-on-hard-failure
+efficiency:
+- wall_clock_ms
+- queue_ms
+- input_tokens
+- output_tokens
+- tool_calls
+- build_minutes
+- cost
+security:
+- tenant-isolation
+- prompt-injection
+- secret-leakage
+- artifact-integrity
+- supply-chain
+learning:
+- training-rights
+- dataset-tier
+- eval-leakage
+- human-acceptance

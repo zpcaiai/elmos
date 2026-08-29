@@ -1,0 +1,17 @@
+skill: executor-failure-recovery-and-reassignment
+packageVersion: 3.0.0
+requiredChecks:
+- schema-valid
+- frontmatter-valid
+- id-unique-and-length-valid
+- owner-and-business-line-assigned
+- dependencies-resolvable-and-acyclic
+- tools-default-deny
+- eight-positive-eight-negative-four-ambiguous-four-adversarial-evals
+- evidence-gates-nonempty
+- rollback-required
+- learning-policy-explicit
+- telemetry-wall-clock-and-cost-enabled
+- unsupported-version-never-presented-as-supported
+- no-placeholder-or-empty-required-artifact
+runtimeStatus: not-implemented-by-this-specification-package

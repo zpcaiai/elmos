@@ -1,0 +1,28 @@
+apiVersion: elmos.ai/v1
+kind: DurablePipeline
+metadata:
+  name: data-platform-golden-route
+  version: 3.0.0
+spec:
+  durable: true
+  idempotent: true
+  environmentOwnedAuthority: true
+  checkpointAfterEachStep: true
+  hardFailureAction: block-and-rollback
+  steps:
+  - id: inventory-data
+    emitEvidence: true
+  - id: define-contracts
+    emitEvidence: true
+  - id: migrate-pipelines
+    emitEvidence: true
+  - id: backfill-and-replay
+    emitEvidence: true
+  - id: quality-lineage
+    emitEvidence: true
+  - id: performance-cost
+    emitEvidence: true
+  - id: chaos-recovery
+    emitEvidence: true
+  - id: certify-data-product
+    emitEvidence: true

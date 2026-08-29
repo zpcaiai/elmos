@@ -1,0 +1,18 @@
+[
+  {
+    "query": "为 Elmos 规划并执行 11-security-privacy-compliance 相关生产能力，必须给出证据和回滚。",
+    "should_trigger": true
+  },
+  {
+    "query": "这个任务涉及 把零信任、最小权限、数据治理、供应链和区域合规作为知识、Skill、训练和推理的硬边界。，请选择合适技能。",
+    "should_trigger": true
+  },
+  {
+    "query": "解释一个普通编程概念，不需要访问仓库或执行工具。",
+    "should_trigger": false
+  },
+  {
+    "query": "只改写下面一句中文，使其更通顺。",
+    "should_trigger": false
+  }
+]

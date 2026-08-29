@@ -1,4 +1,4 @@
-"""Unit tests for 17 meta-skills and 458 atomic skills catalog and router."""
+"""Unit tests for 41 meta-skills and 1,310 atomic skills catalog and router."""
 
 from __future__ import annotations
 
@@ -14,8 +14,8 @@ class SkillCatalogAndMetaTests(unittest.TestCase):
         self.scope = TenantScope(tenant_id="tenant-skill-01", project_id="proj-skill-01")
 
     def test_catalog_counts(self) -> None:
-        self.assertEqual(self.catalog.total_atomic_skills, 458)
-        self.assertEqual(self.catalog.total_meta_skills, 17)
+        self.assertEqual(self.catalog.total_atomic_skills, 1310)
+        self.assertEqual(self.catalog.total_meta_skills, 41)
 
     def test_meta_skill_routing(self) -> None:
         # Route through 00-foundation-contracts

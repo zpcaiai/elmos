@@ -1,6 +1,6 @@
 """Skill catalog registry, hierarchical meta-skill router, and atomic execution runtime.
 
-Manages all 17 Meta-Skills and 458 Atomic Skills across the 17 Foundry capability packs.
+Manages all 41 Meta-Skills and 1,310 Atomic Skills across the 41 Foundry capability packs (v3.0.0).
 """
 
 from __future__ import annotations
@@ -26,7 +26,19 @@ from .kernel import ExecutionKernel
 
 
 ROOT = Path(__file__).resolve().parents[4]
-CATALOG_PATH = ROOT / "skills/elmos-knowledge-skill-model-foundry-v2.0.0/elmos-knowledge-skill-model-foundry-v2.0.0/registry/skill-catalog.yaml"
+
+
+def _find_foundry_base() -> Path | None:
+    candidates = [
+        ROOT / "skills/elmos-knowledge-skill-model-foundry-v3.0.0/elmos-knowledge-skill-model-foundry-v3.0.0",
+        ROOT / "skills/elmos-knowledge-skill-model-foundry-v3.0.0",
+        ROOT / "skills/elmos-knowledge-skill-model-foundry-v2.0.0/elmos-knowledge-skill-model-foundry-v2.0.0",
+        ROOT / "skills/elmos-knowledge-skill-model-foundry-v2.0.0",
+    ]
+    for c in candidates:
+        if (c / "skills/atomic").is_dir():
+            return c
+    return None
 
 
 class SkillCatalog:
@@ -40,46 +52,46 @@ class SkillCatalog:
         self._load_catalog()
 
     def _load_catalog(self) -> None:
-        if not CATALOG_PATH.is_file():
+        base_dir = _find_foundry_base()
+        if not base_dir:
             return
-        data = yaml.safe_load(CATALOG_PATH.read_text(encoding="utf-8"))
-        spec = data.get("spec", {})
-        for skill_entry in spec.get("skills", []):
-            name = skill_entry.get("name") or skill_entry.get("id")
-            if not name:
-                continue
-            pack = skill_entry.get("pack", "00-foundation-contracts")
-            contract = SkillContract(
-                skill_name=name,
-                pack=pack,
-                owner=skill_entry.get("owner", "elmos.ai/foundry"),
-                risk_class=skill_entry.get("riskClass", "standard"),
-                status=LifecycleState.CERTIFIED,
-                version=skill_entry.get("version", "2.0.0"),
-                content_hash=skill_entry.get("contentHash", ""),
-                preconditions=skill_entry.get("preconditions", ["valid_tenant_scope"]),
-                postconditions=skill_entry.get("postconditions", ["output_evidence_sealed"]),
-                inputs_schema=skill_entry.get("inputsSchema", {}),
-                outputs_schema=skill_entry.get("outputsSchema", {}),
-            )
-            self._skills[name] = contract
-            if pack not in self._pack_skills:
-                self._pack_skills[pack] = []
-            self._pack_skills[pack].append(name)
 
-        # Meta skill mapping (17 meta skills corresponding to 17 packs)
-        for i in range(17):
-            pack_suffix = [
-                "foundation-contracts", "knowledge-ingestion-governance", "repository-semantic-intelligence",
-                "retrieval-context-engineering", "memory-experience-flywheel", "skill-foundry-runtime",
-                "dataset-foundry", "private-model-foundry", "agentic-training-rl",
-                "evaluation-proof-certification", "serving-routing-inference", "security-privacy-compliance",
-                "observability-lineage-finops", "commercial-multitenant-platform", "human-governance-operations",
-                "domain-engineering-packs", "self-evolution-release-engineering",
-            ][i]
-            pack_name = f"{i:02d}-{pack_suffix}"
-            meta_name = f"elmos-{pack_name}"
-            self._meta_skills[meta_name] = self._pack_skills.get(pack_name, [])
+        atomic_dir = base_dir / "skills/atomic"
+        meta_dir = base_dir / "skills/meta"
+
+        if atomic_dir.is_dir():
+            for pack_dir in sorted(atomic_dir.iterdir()):
+                if not pack_dir.is_dir():
+                    continue
+                pack_name = pack_dir.name
+                self._pack_skills[pack_name] = []
+                for skill_dir in sorted(pack_dir.iterdir()):
+                    if not skill_dir.is_dir():
+                        continue
+                    skill_name = skill_dir.name
+                    contract = SkillContract(
+                        skill_name=skill_name,
+                        pack=pack_name,
+                        owner="elmos.ai/foundry",
+                        risk_class="standard",
+                        status=LifecycleState.CERTIFIED,
+                        version="3.0.0",
+                        content_hash="",
+                        preconditions=["valid_tenant_scope"],
+                        postconditions=["output_evidence_sealed"],
+                        inputs_schema={},
+                        outputs_schema={},
+                    )
+                    self._skills[skill_name] = contract
+                    self._pack_skills[pack_name].append(skill_name)
+
+        if meta_dir.is_dir():
+            for meta_dir_p in sorted(meta_dir.iterdir()):
+                if not meta_dir_p.is_dir():
+                    continue
+                meta_name = f"elmos-{meta_dir_p.name}" if not meta_dir_p.name.startswith("elmos-") else meta_dir_p.name
+                pack_key = meta_dir_p.name.replace("elmos-", "")
+                self._meta_skills[meta_name] = self._pack_skills.get(pack_key, [])
 
     @property
     def total_atomic_skills(self) -> int:
@@ -126,7 +138,7 @@ class SkillCatalog:
                 owner="elmos.ai/foundry",
                 risk_class="standard",
                 status=LifecycleState.CERTIFIED,
-                version="2.0.0",
+                version="3.0.0",
                 content_hash="",
             )
 

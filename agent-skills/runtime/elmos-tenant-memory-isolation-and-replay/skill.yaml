@@ -2,10 +2,10 @@ apiVersion: elmos.ai/v1
 kind: ProofCarryingSkill
 metadata:
   name: tenant-memory-isolation-and-replay
-  version: 2.0.0
+  version: 3.0.0
   pack: 04-memory-experience-flywheel
   priority: P0
-  owner: TBD
+  owner: experience-platform-team
 spec:
   description: 确保经验不可跨租户泄漏，且在固定环境中可以确定性重放验证。
   kernel: K4 Memory and Experience Kernel
@@ -69,3 +69,57 @@ spec:
     emitTrace: true
     emitCost: true
     emitWallClock: true
+  businessLines:
+  - memory-experience
+  capabilityTags:
+  - 04-memory-experience-flywheel
+  - isolation
+  - memory
+  - memory-experience
+  - replay
+  - tenant
+  triggers:
+  - 任务需要：确保经验不可跨租户泄漏，且在固定环境中可以确定性重放验证。
+  - 任务属于 memory-experience 且需要仓库级执行、证据与回滚。
+  negativeTriggers:
+  - 仅解释普通概念且不需要访问仓库、数据、模型或工具。
+  - 没有租户授权、版本锁定、验收标准或可用验证环境。
+  - 请求绕过测试、权限、证据、签名或回滚门。
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  invariants:
+  - episode-complete
+  - tenant-isolated
+  - outcome-verified
+  - retention-policy-applied
+  - tenant-boundary-preserved
+  - no-evidence-fabrication
+  - hard-gates-not-weakened
+  failureModes:
+  - unsupported-version-or-environment
+  - insufficient-semantic-coverage
+  - deterministic-verification-failure
+  - authorization-or-data-rights-failure
+  - rollback-target-unavailable
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: LTS-candidate
+    deprecationPolicyRequired: true

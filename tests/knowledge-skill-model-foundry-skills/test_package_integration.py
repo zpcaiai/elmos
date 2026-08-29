@@ -1,4 +1,4 @@
-"""Root-level integration tests for the Knowledge-Skill-Model Foundry Skills package."""
+"""Root-level integration tests for the Knowledge-Skill-Model Foundry Skills package v3.0.0."""
 
 from __future__ import annotations
 
@@ -35,19 +35,19 @@ class PackageIntegrationTests(unittest.TestCase):
         source_dir = ROOT / self.tool.SOURCE_RELATIVE
         controlled = source_dir / self.tool.PACKAGE_DIRECTORY if (source_dir / self.tool.PACKAGE_DIRECTORY).is_dir() else source_dir
         checked = self.tool.verify_controlled_files(controlled)
-        self.assertEqual(len(checked), 2352)
+        self.assertEqual(len(checked), 9316)
 
     def test_extracted_source_counts(self) -> None:
         source_dir = ROOT / self.tool.SOURCE_RELATIVE
         controlled = source_dir / self.tool.PACKAGE_DIRECTORY if (source_dir / self.tool.PACKAGE_DIRECTORY).is_dir() else source_dir
         metrics = self.tool.validate_extracted_source(controlled)
-        self.assertEqual(metrics["atomicSkills"], 458)
-        self.assertEqual(metrics["metaSkills"], 17)
-        self.assertEqual(metrics["packs"], 17)
-        self.assertEqual(metrics["schemas"], 5)
-        self.assertEqual(metrics["policies"], 3)
-        self.assertEqual(metrics["pipelines"], 4)
-        self.assertEqual(metrics["tables"], 25)
+        self.assertEqual(metrics["atomicSkills"], 1310)
+        self.assertEqual(metrics["metaSkills"], 41)
+        self.assertEqual(metrics["packs"], 41)
+        self.assertEqual(metrics["schemas"], 13)
+        self.assertEqual(metrics["policies"], 9)
+        self.assertEqual(metrics["pipelines"], 14)
+        self.assertEqual(metrics["tables"], 38)
 
     def test_qualification_receipt_integrity(self) -> None:
         receipt_path = ROOT / "engines/knowledge-skill-model-foundry-engine/qualification/local-qualification.json"

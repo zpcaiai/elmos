@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Customer Acceptance Contract",
+  "type": "object",
+  "required": [
+    "scope",
+    "requirements",
+    "tests",
+    "risks",
+    "deliverables",
+    "signatures"
+  ],
+  "properties": {
+    "scope": {
+      "type": "object"
+    },
+    "requirements": {
+      "type": "array"
+    },
+    "tests": {
+      "type": "array"
+    },
+    "risks": {
+      "type": "array"
+    },
+    "deliverables": {
+      "type": "array"
+    },
+    "signatures": {
+      "type": "array"
+    }
+  }
+}

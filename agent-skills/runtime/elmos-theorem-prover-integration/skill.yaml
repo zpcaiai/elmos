@@ -2,10 +2,10 @@ apiVersion: elmos.ai/v1
 kind: ProofCarryingSkill
 metadata:
   name: theorem-prover-integration
-  version: 2.0.0
+  version: 3.0.0
   pack: 09-evaluation-proof-certification
   priority: P2
-  owner: TBD
+  owner: verification-team
 spec:
   description: 为关键算法和转换规则生成 Lean/Coq/Isabelle 等证明接口与证据。
   kernel: K8 Formal Assurance and Evidence
@@ -69,3 +69,56 @@ spec:
     emitTrace: true
     emitCost: true
     emitWallClock: true
+  businessLines:
+  - evaluation-certification
+  capabilityTags:
+  - 09-evaluation-proof-certification
+  - evaluation-certification
+  - integration
+  - prover
+  - theorem
+  triggers:
+  - 任务需要：为关键算法和转换规则生成 Lean/Coq/Isabelle 等证明接口与证据。
+  - 任务属于 evaluation-certification 且需要仓库级执行、证据与回滚。
+  negativeTriggers:
+  - 仅解释普通概念且不需要访问仓库、数据、模型或工具。
+  - 没有租户授权、版本锁定、验收标准或可用验证环境。
+  - 请求绕过测试、权限、证据、签名或回滚门。
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  invariants:
+  - independent-grader
+  - evidence-addressable
+  - no-critical-regression
+  - rollback-ready
+  - tenant-boundary-preserved
+  - no-evidence-fabrication
+  - hard-gates-not-weakened
+  failureModes:
+  - unsupported-version-or-environment
+  - insufficient-semantic-coverage
+  - deterministic-verification-failure
+  - authorization-or-data-rights-failure
+  - rollback-target-unavailable
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E2
+  support:
+    supportTier: standard
+    deprecationPolicyRequired: true

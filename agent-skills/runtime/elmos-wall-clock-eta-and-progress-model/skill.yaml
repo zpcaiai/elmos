@@ -2,10 +2,10 @@ apiVersion: elmos.ai/v1
 kind: ProofCarryingSkill
 metadata:
   name: wall-clock-eta-and-progress-model
-  version: 2.0.0
+  version: 3.0.0
   pack: 12-observability-lineage-finops
   priority: P0
-  owner: TBD
+  owner: observability-platform-team
 spec:
   description: 基于仓库规模、历史节点、队列和失败概率预测机器执行 ETA 与进度。
   kernel: Cross-Cutting Observability and Economics Plane
@@ -69,3 +69,58 @@ spec:
     emitTrace: true
     emitCost: true
     emitWallClock: true
+  businessLines:
+  - observability-finops
+  capabilityTags:
+  - 12-observability-lineage-finops
+  - clock
+  - eta
+  - model
+  - observability-finops
+  - progress
+  - wall
+  triggers:
+  - 任务需要：基于仓库规模、历史节点、队列和失败概率预测机器执行 ETA 与进度。
+  - 任务属于 observability-finops 且需要仓库级执行、证据与回滚。
+  negativeTriggers:
+  - 仅解释普通概念且不需要访问仓库、数据、模型或工具。
+  - 没有租户授权、版本锁定、验收标准或可用验证环境。
+  - 请求绕过测试、权限、证据、签名或回滚门。
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  invariants:
+  - correlation-id-complete
+  - content-capture-policy
+  - cost-reconciled
+  - slo-observable
+  - tenant-boundary-preserved
+  - no-evidence-fabrication
+  - hard-gates-not-weakened
+  failureModes:
+  - unsupported-version-or-environment
+  - insufficient-semantic-coverage
+  - deterministic-verification-failure
+  - authorization-or-data-rights-failure
+  - rollback-target-unavailable
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: LTS-candidate
+    deprecationPolicyRequired: true

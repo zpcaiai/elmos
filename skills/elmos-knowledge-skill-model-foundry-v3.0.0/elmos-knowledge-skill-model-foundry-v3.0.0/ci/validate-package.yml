@@ -1,0 +1,15 @@
+name: validate-elmos-skills-package
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pyyaml jsonschema
+      - run: python -m py_compile tools/*.py
+      - run: python tools/validate_package.py
+      - run: python tools/coverage_audit.py
+      - run: python tools/deep_quality_audit.py

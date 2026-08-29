@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Elmos Commercial Golden Route",
+  "type": "object",
+  "required": [
+    "businessLine",
+    "repositories",
+    "workflow",
+    "evidenceLevel",
+    "repeatability",
+    "rollback"
+  ],
+  "properties": {
+    "businessLine": {
+      "type": "string"
+    },
+    "repositories": {
+      "type": "array",
+      "minItems": 1
+    },
+    "workflow": {
+      "type": "array",
+      "minItems": 5
+    },
+    "evidenceLevel": {
+      "enum": [
+        "E3",
+        "E4",
+        "E5"
+      ]
+    },
+    "repeatability": {
+      "type": "object"
+    },
+    "rollback": {
+      "type": "object"
+    }
+  }
+}

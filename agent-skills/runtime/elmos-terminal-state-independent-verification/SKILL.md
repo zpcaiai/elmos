@@ -1,16 +1,17 @@
 ---
 name: terminal-state-independent-verification
-description: Use this skill when Elmos must perform terminal state independent verification as part of the 08-agentic-training-rl production workflow, with typed contracts, policy enforcement, evidence capture, and rollback.
+description: Use this skill when Elmos must perform terminal state independent verification as part of the 08-agentic-training-rl
+  production workflow, with typed contracts, policy enforcement, evidence capture, and rollback.
 license: Proprietary-Elmos-Commercial
 compatibility: Elmos v3 harness; K7 Private Model Foundry / Agent Learning; policy and evidence services required.
 metadata:
-  version: "2.0.0"
+  version: 3.0.0
   pack: 08-agentic-training-rl
   priority: P0
   exposure: atomic-registry-only
+  business-line: agentic-training
 allowed-tools: env.create agent.rollout reward.compute sandbox.reset checkpoint.save
 ---
-
 # terminal-state-independent-verification
 
 ## 能力目标
@@ -54,3 +55,11 @@ allowed-tools: env.create agent.rollout reward.compute sandbox.reset checkpoint.
 ## 失败与回滚
 
 任何硬门失败时输出 `blocked`，保留工作区与证据，恢复到检查点；高风险或无法确定的情况升级人工，不得声称生产可用。
+
+
+## v3 商业生产扩展
+
+- 业务线：`agentic-training`；包：`08-agentic-training-rl`。
+- 所有执行必须绑定租户、仓库、环境、模型、Skill、知识快照与工具版本。
+- 必须输出机器 Wall-clock、成本、未决风险、Evidence Bundle 和完整回滚目标。
+- 本文件定义能力契约与实现要求；Runtime Adapter、连接器和验证器仍需按路线图编码与认证。

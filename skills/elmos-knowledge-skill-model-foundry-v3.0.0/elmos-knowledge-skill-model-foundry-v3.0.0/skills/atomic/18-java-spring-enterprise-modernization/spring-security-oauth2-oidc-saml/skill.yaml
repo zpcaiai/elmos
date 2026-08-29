@@ -1,0 +1,153 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: spring-security-oauth2-oidc-saml
+  version: 3.0.0
+  pack: 18-java-spring-enterprise-modernization
+  priority: P1
+  owner: spring-modernization-team
+spec:
+  description: 迁移 OAuth2、OIDC、SAML、JWT、SSO、客户端与资源服务器配置。
+  kernel: K3 Semantic Compiler + K6 Verification
+  riskClass: critical
+  exposure: atomic-registry-only
+  businessLines:
+  - spring-modernization
+  capabilityTags:
+  - 18-java-spring-enterprise-modernization
+  - oauth2
+  - oidc
+  - saml
+  - security
+  - spring
+  - spring-modernization
+  triggers:
+  - 任务明确要求：迁移 OAuth2、OIDC、SAML、JWT、SSO、客户端与资源服务器配置。
+  - 任务属于 spring-modernization，需要仓库级、可重放、带证据和回滚的执行。
+  - 注册表确认 spring-security-oauth2-oidc-saml 与目标技术栈、版本、租户和风险相容。
+  negativeTriggers:
+  - 仅询问概念或写作，不访问仓库、数据、环境或工具。
+  - 没有租户授权、版本锁定、基线、验收标准或验证环境。
+  - 目标是绕过测试、权限、签名、证据、审计或回滚门。
+  - 已有更窄且风险更低的确定性 Skill 能完整处理任务。
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  - baseline.snapshotAvailable == true
+  - evidence.serviceAvailable == true
+  inputs:
+  - name: task contract
+    required: true
+  - name: tenant and repository identity
+    required: true
+  - name: version-pinned environment
+    required: true
+  - name: acceptance and evidence obligations
+    required: true
+  - name: legacy Java repository and runtime baseline
+    required: true
+  outputs:
+  - name: execution plan
+    contentAddressed: true
+  - name: versioned artifacts or patch set
+    contentAddressed: true
+  - name: verification and evidence bundle
+    contentAddressed: true
+  - name: risk, cost and machine wall-clock report
+    contentAddressed: true
+  - name: rollback or compensation record
+    contentAddressed: true
+  workflow:
+  - inventory-legacy-stack
+  - characterize-behavior
+  - build-semantic-map
+  - transform-in-waves
+  - compile-and-differential-test
+  - shadow-and-certify
+  - cutover-or-rollback
+  tools:
+    allowed:
+    - repo.analyze
+    - java.parse
+    - semantic.transform
+    - build.java
+    - test.execute
+    - diff.verify
+    - evidence.write
+    defaultDeny: true
+    parameterValidationRequired: true
+    environmentOwnedAuthority: true
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  - spring-legacy-inventory-and-version-graph
+  - spring-shadow-differential-golden-route
+  - multi-language-ast-extraction
+  invariants:
+  - legacy-inventory-complete
+  - target-build-passes
+  - behavior-equivalent
+  - security-not-weakened
+  - migration-reversible
+  - tenant-boundary-preserved
+  - source-and-target-traceable
+  - no-hidden-test-weakening
+  - no-evidence-fabrication
+  - machine-wall-clock-recorded
+  failureModes:
+  - unsupported-source-or-target-version
+  - insufficient-semantic-or-contract-coverage
+  - deterministic-verification-failure
+  - security-privacy-or-license-policy-failure
+  - performance-or-capacity-regression
+  - rollback-or-recovery-evidence-missing
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+    maxUnverifiedSideEffects: 0
+  evidence:
+    requiredGates:
+    - legacy-inventory-complete
+    - target-build-passes
+    - behavior-equivalent
+    - security-not-weakened
+    - migration-reversible
+    minimumLevel: E3
+    sourceBindingRequired: true
+    independentReplayRequired: true
+  rollback:
+    required: true
+    strategy: restore-versioned-checkpoint-and-compensate-side-effects
+    rehearsalRequired: true
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+    minimumDatasetTier: Gold
+    humanAcceptanceRequired: true
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true
+    emitProgress: true
+    emitEvidenceLineage: true
+    sensitiveContentDefault: redacted
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: standard
+    deprecationPolicyRequired: true

@@ -1,0 +1,20 @@
+default: deny
+allowWhen:
+- tenant-authorized
+- version-compatible
+- baseline-and-rollback-available
+- required-evidence-service-available
+- tool-authority-owned-by-environment
+approvalWhen:
+- production-write
+- irreversible-data-change
+- data-export
+- training-or-adapter-update
+- security-policy-change
+denyWhen:
+- revoked-skill
+- unsigned-dependency
+- quarantined-data
+- cross-tenant-access
+- missing-version-pin
+- hard-gate-bypass-requested

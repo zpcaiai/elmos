@@ -2,10 +2,10 @@ apiVersion: elmos.ai/v1
 kind: ProofCarryingSkill
 metadata:
   name: automatic-eval-and-counterexample-generation
-  version: 2.0.0
+  version: 3.0.0
   pack: 16-self-evolution-release-engineering
   priority: P1
-  owner: TBD
+  owner: release-engineering-team
 spec:
   description: 为新缺陷自动生成回归、边界、对抗和反例测试。
   kernel: Learning Flywheel and Release Kernel
@@ -67,3 +67,57 @@ spec:
     emitTrace: true
     emitCost: true
     emitWallClock: true
+  businessLines:
+  - self-evolution-release
+  capabilityTags:
+  - 16-self-evolution-release-engineering
+  - automatic
+  - counterexample
+  - eval
+  - generation
+  - self-evolution-release
+  triggers:
+  - 任务需要：为新缺陷自动生成回归、边界、对抗和反例测试。
+  - 任务属于 self-evolution-release 且需要仓库级执行、证据与回滚。
+  negativeTriggers:
+  - 仅解释普通概念且不需要访问仓库、数据、模型或工具。
+  - 没有租户授权、版本锁定、验收标准或可用验证环境。
+  - 请求绕过测试、权限、证据、签名或回滚门。
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  invariants:
+  - causal-evidence
+  - no-eval-leakage
+  - independent-certification
+  - reversible-release
+  - tenant-boundary-preserved
+  - no-evidence-fabrication
+  - hard-gates-not-weakened
+  failureModes:
+  - unsupported-version-or-environment
+  - insufficient-semantic-coverage
+  - deterministic-verification-failure
+  - authorization-or-data-rights-failure
+  - rollback-target-unavailable
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: standard
+    deprecationPolicyRequired: true

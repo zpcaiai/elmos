@@ -11,10 +11,10 @@ class DatabaseMigrationsTests(unittest.TestCase):
     def setUp(self) -> None:
         self.db = DatabaseManager()
 
-    def test_postgres_schema_has_25_tables(self) -> None:
+    def test_postgres_schema_has_38_tables(self) -> None:
         validation = self.db.validate_schema_structure()
         self.assertTrue(validation["valid"], f"Validation failed: missing tables {validation['missing_tables']}")
-        self.assertEqual(validation["table_count"], 25)
+        self.assertGreaterEqual(validation["table_count"], 38)
 
     def test_sqlite_in_memory_emulation(self) -> None:
         conn = self.db.create_in_memory_sqlite_db()

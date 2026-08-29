@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Repository Execution Contract",
+  "type": "object",
+  "required": [
+    "tenantId",
+    "repositoryId",
+    "snapshot",
+    "workspaceLease",
+    "taskDag",
+    "rollbackTarget"
+  ],
+  "properties": {
+    "tenantId": {
+      "type": "string"
+    },
+    "repositoryId": {
+      "type": "string"
+    },
+    "snapshot": {
+      "type": "string"
+    },
+    "workspaceLease": {
+      "type": "object"
+    },
+    "taskDag": {
+      "type": "array"
+    },
+    "rollbackTarget": {
+      "type": "string"
+    }
+  }
+}

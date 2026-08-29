@@ -1,145 +1,65 @@
 ---
-name: elmos-proof-obligation-generator
-description: "Generate route-specific obligations from semantic IR, source contracts and target adaptations, with machine-readable status and dependency graphs."
-version: 1.0.0
-skill_id: ELMOS-POLY-282
-layer: formal-assurance
-risk: critical
-readiness: not-run
-dependencies:
-  - "elmos-translation-validation-planner"
-  - "elmos-refinement-range-contract-semantics"
-triggers:
-  - "Use when implementing or executing `elmos-proof-obligation-generator`."
-  - "Use when a migration/certification DAG requires `formal-assurance` capability."
-outputs:
-  - "semantic-assurance/elmos-proof-obligation-generator/model.json"
-  - "semantic-assurance/elmos-proof-obligation-generator/evidence.json"
-  - "semantic-assurance/elmos-proof-obligation-generator/diagnostics.json"
+name: proof-obligation-generator
+description: Use this skill when Elmos must perform proof obligation generator as part of the 09-evaluation-proof-certification
+  production workflow, with typed contracts, policy enforcement, evidence capture, and rollback.
+license: Proprietary-Elmos-Commercial
+compatibility: Elmos v3 harness; K8 Formal Assurance and Evidence; policy and evidence services required.
+metadata:
+  version: 3.0.0
+  pack: 09-evaluation-proof-certification
+  priority: P1
+  exposure: atomic-registry-only
+  business-line: evaluation-certification
+allowed-tools: compiler.run test.run analyzer.run prover.run grader.score
 ---
+# proof-obligation-generator
 
-# Proof Obligation Generator
+## 能力目标
 
-## Objective
+按变换类型生成覆盖路由、类型、事务、安全和数据的证明义务。
 
-Generate route-specific obligations from semantic IR, source contracts and target adaptations, with machine-readable status and dependency graphs.
+## 何时使用
 
-This Skill is an **implementation, execution, and evidence contract**. It must be implemented behind stable code/tooling boundaries. A generated file, prompt response, static package check, or green target build is never by itself evidence of semantic equivalence.
+当任务事实与本能力目标一致，并且注册表确认租户权限、版本兼容、依赖、风险和运行环境满足条件时使用。不要仅因关键词相似而触发。
 
-## When to use
+## 输入契约
 
-- Use when implementing or executing `elmos-proof-obligation-generator`.
-- Use for repository-scale conversion, modernization, generation, validation, or certification whenever the listed semantic focus can affect observable behavior.
-- Invoke it from the route DAG only for the immutable snapshot, dialect/runtime profile, and authorization scope bound to the current run.
+- 任务契约、租户/项目/仓库身份与风险等级；
+- 与本能力相关的知识快照、Semantic IR、环境或数据版本；
+- 明确的验收标准、预算、机器 Wall-clock 截止时间和副作用边界。
 
-## Preconditions
+## 执行流程
 
-- Immutable source snapshot, source provenance and target profile are bound to the run.
-- Source dialect/compiler/runtime identity is known or explicitly `unknown` with a blocker/limitation.
-- Relevant upstream IR/evidence artifacts are schema-valid and fresh.
-- Source-native baseline exists when executable; unavailable runtimes remain `not-run`, never inferred as pass.
-- Readiness starts as `not-run`; waivers require scope, owner, rationale, expiry and compensating evidence.
+1. 验证前置条件、权限、数据用途、版本和依赖。
+2. 建立只读基线、内容哈希、检查点和回滚目标。
+3. 生成最小执行计划，优先使用确定性工具和可重放脚本。
+4. 执行能力动作，记录每个 Tool Call、模型、参数、环境和产物。
+5. 运行独立验证器；失败时只允许受控修复，不得删除或弱化验收门。
+6. 聚合 Evidence Contract，明确通过项、失败项、不确定项和人工升级条件。
 
-### Hard dependencies
+## 输出与证据
 
-- `elmos-translation-validation-planner`
-- `elmos-refinement-range-contract-semantics`
+- 结构化结果与内容地址；
+- 输入、输出、依赖、模型、Skill、知识和工具版本；
+- 必须门：independent-grader, evidence-addressable, no-critical-regression, rollback-ready；
+- 机器 Wall-clock、Token、GPU、工具与存储成本；
+- 回滚/补偿记录和未决风险。
 
-## Inputs
+## 禁止行为
 
-- `run_id`, `snapshot_id`, route ID, source/target technology and dialect/runtime versions.
-- Versioned Project/Semantic/Framework/Behavior IR plus source-span provenance.
-- Route semantic-obligation graph and applicable policy/threshold profile.
-- Fixture/corpus references and native-runtime evidence relevant to this capability.
-- Explicit semantic-loss budget, nondeterminism policy, proof/test budget and approved waivers.
+- 未授权跨租户读取、训练或复用；
+- 以模型自评替代编译、测试、差分、证明或策略检查；
+- 为通过测试而删除测试、硬编码答案、扩大权限或隐藏错误；
+- 覆盖不可变发布物、跳过签名、伪造来源或证据。
 
-## Outputs
+## 失败与回滚
 
-- `semantic-assurance/elmos-proof-obligation-generator/model.json`
-- `semantic-assurance/elmos-proof-obligation-generator/evidence.json`
-- `semantic-assurance/elmos-proof-obligation-generator/diagnostics.json`
+任何硬门失败时输出 `blocked`，保留工作区与证据，恢复到检查点；高风险或无法确定的情况升级人工，不得声称生产可用。
 
-Every output must include snapshot, toolchain/runtime, rule/schema version, evidence timestamp, producer identity and content hash.
 
-## Guardrails
+## v3 商业生产扩展
 
-- Never substitute syntax similarity, compilation success, unit-test count or model confidence for semantic evidence.
-- Never silently strengthen, weaken or invent source behavior. Unsupported/undefined/implementation-defined behavior must be typed explicitly.
-- Never delete failing tests, suppress sanitizer/proof/compiler findings, relax assertions, broaden privileges or normalize away contractual differences.
-- Preserve exact source spans and provenance from parser/CST/AST through IR, transform, target code, test and verdict.
-- Critical obligations involving money, data integrity, security, concurrency, ABI, numeric precision, encoding, transactions, irreversible effects or safety cannot be waived implicitly.
-- Separate **unknown**, **unsupported**, **undefined**, **implementation-defined**, **nondeterministic**, **counterexample**, **failed**, and **waived** states.
-
-## Workflow
-
-1. Determine applicability from source/target dialects, constructs, runtime profile and semantic-obligation registry.
-2. Characterize source semantics before transforming; attach source-native evidence where available.
-3. Produce deterministic machine-readable semantic artifacts with source spans and confidence.
-4. Map source behavior to a target relation: exact equivalence, observational equivalence, permitted refinement, explicit adapter, or blocker.
-5. Generate/modify target code only after critical obligations have a verification strategy.
-6. Execute route-native static, dynamic, differential, fuzzing and/or formal checks appropriate to risk.
-7. On mismatch, emit a reproducible counterexample and minimize it where possible; do not patch blindly.
-8. Re-run affected obligations after every patch and invalidate stale downstream evidence.
-
-### Semantic focus
-
-- **pre/post/invariants.**
-- **semantic adaptation obligations.**
-- **criticality.**
-- **dependency graph.**
-
-## Implementation Contract
-
-- Implement deterministic parser/analyzer/prover/test adapters where native APIs exist; LLM reasoning may orchestrate or explain but is not the semantic source of truth.
-- Maintain a versioned `source span → CST/AST/native symbol → semantic IR → obligation → rule/patch → evidence` chain.
-- Expose stable CLI/service contracts and machine-readable exit/status semantics.
-- Make runs checkpointed, idempotent, resumable and independently reproducible in a trusted runner.
-- Use route-specific comparison relations and tolerances; tolerances must never conceal discrete contract changes.
-- Cache only against full semantic identity including source/IR/toolchain/solver/runtime/assumption versions.
-- Store large/proprietary source outside prompts and logs; evidence references content-addressed artifacts.
-- Emit counters/denominators for coverage claims. "100%" is forbidden without an explicit complete denominator.
-
-## Required Tests
-
-- [ ] obligation DAG acyclic.
-- [ ] unproved critical obligation blocks.
-- [ ] non-applicable rationale.
-- [ ] same-snapshot deterministic artifact serialization.
-- [ ] stale evidence/toolchain/assumption invalidation.
-- [ ] at least one positive, one negative, and one boundary/adversarial fixture.
-- [ ] missing required evidence remains `not-run` or `blocked`.
-- [ ] interrupted execution resumes idempotently from checkpoint.
-- [ ] unauthorized filesystem/network/secret/tool access is rejected.
-
-## Verification
-
-1. Validate outputs against versioned schemas and the route semantic-obligation graph.
-2. Run source-native characterization and target-native checks in matched, attested environments where required.
-3. Execute independent oracles where feasible; correlate rather than collapse contradictory evidence.
-4. Reproduce every critical mismatch/counterexample from a clean checkpoint.
-5. Verify evidence freshness against snapshot, rule, IR, runtime, compiler, solver and corpus identities.
-6. Record precise scope and limitations; passing this Skill never certifies unrelated modules/routes.
-
-## Stop and Escalate
-
-Stop safely when a critical semantic obligation is unknown, source behavior cannot be characterized, required native runtime is unavailable, proof returns an unresolved critical counterexample, nondeterminism prevents a stable oracle, or route budgets are exhausted.
-
-Return a structured blocker containing affected symbols/modules, source spans, semantic category, counterexample/evidence, severity, owner, safe alternatives and the exact implementation/approval needed.
-
-## Definition of Done
-
-- [ ] Stable implementation interface and versioned configuration exist.
-- [ ] Applicable semantic obligations are enumerated with explicit statuses.
-- [ ] Representative and adversarial fixtures execute in required native environments.
-- [ ] Static/dynamic/differential/formal evidence required by route policy is fresh.
-- [ ] Critical counterexamples are fixed or explicitly blocked; no unresolved critical mismatch is hidden by tolerance.
-- [ ] Coverage includes denominators for syntax/semantic/runtime/corpus dimensions.
-- [ ] Residual semantic loss and waivers are explicit, scoped and reviewable.
-- [ ] Evidence is bound to the same snapshot/route/toolchain/runtime/assumptions.
-- [ ] Readiness is derived from executed gates and cannot be inferred from artifact presence.
-
-## Completion Report
-
-Return machine-readable plus human-readable results with run/snapshot/route IDs, source and target dialect/runtime identities, applicable obligations, commands and exit codes, fixture/corpus IDs, source-target observables, proof/fuzz/mutation results, counterexamples, coverage numerators/denominators, waivers, residual risks, artifact hashes and next executable actions.
-
-Final execution status must be one of `completed`, `completed-with-approved-exceptions`, `blocked`, or `failed`. Never emit `completed` while any required gate is `not-run`.
+- 业务线：`evaluation-certification`；包：`09-evaluation-proof-certification`。
+- 所有执行必须绑定租户、仓库、环境、模型、Skill、知识快照与工具版本。
+- 必须输出机器 Wall-clock、成本、未决风险、Evidence Bundle 和完整回滚目标。
+- 本文件定义能力契约与实现要求；Runtime Adapter、连接器和验证器仍需按路线图编码与认证。

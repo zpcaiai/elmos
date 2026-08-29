@@ -1,0 +1,32 @@
+apiVersion: elmos.ai/v1
+kind: DurablePipeline
+metadata:
+  name: repository-task-intake-to-certify
+  version: 3.0.0
+spec:
+  durable: true
+  idempotent: true
+  environmentOwnedAuthority: true
+  checkpointAfterEachStep: true
+  hardFailureAction: block-and-rollback
+  steps:
+  - id: authorize
+    emitEvidence: true
+  - id: identify-repository
+    emitEvidence: true
+  - id: snapshot
+    emitEvidence: true
+  - id: baseline
+    emitEvidence: true
+  - id: plan-shards
+    emitEvidence: true
+  - id: execute
+    emitEvidence: true
+  - id: semantic-merge
+    emitEvidence: true
+  - id: independent-verify
+    emitEvidence: true
+  - id: evidence
+    emitEvidence: true
+  - id: accept-or-rollback
+    emitEvidence: true

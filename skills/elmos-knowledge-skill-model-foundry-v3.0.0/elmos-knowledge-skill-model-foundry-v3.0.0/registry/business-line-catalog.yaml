@@ -1,0 +1,400 @@
+apiVersion: elmos.ai/v1
+kind: BusinessLineCatalog
+metadata:
+  version: 3.0.0
+  generatedAt: '2026-08-29'
+spec:
+  businessLines:
+  - id: repository-execution
+    pack: 17-repository-execution-os
+    title: Repository Execution OS / 仓库级执行操作系统
+    owner: repository-runtime-team
+    goal: 把超大仓库准入、环境复现、并行 Agent、工作区所有权、补丁合并、长任务恢复和交付证据收敛为可靠执行底座。
+    atomicSkillCount: 34
+    lifecycleCoverage: &id001
+    - discover
+    - characterize
+    - model
+    - plan
+    - transform-or-generate
+    - verify
+    - release-or-cutover
+    - operate
+    - learn
+    requiredGates:
+    - repository-baseline-valid
+    - workspace-isolated
+    - change-set-mergeable
+    - recovery-tested
+    - delivery-provenance-complete
+    goldenRouteSkill: execution-os-golden-route-certification
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: spring-modernization
+    pack: 18-java-spring-enterprise-modernization
+    title: Java & Spring Enterprise Modernization / Java 企业现代化
+    owner: spring-modernization-team
+    goal: 把 Struts、Servlet、JSP、Java EE、应用服务器和旧 Spring 仓库语义正确、行为等价地迁移到现代 Spring Boot 目标栈。
+    atomicSkillCount: 48
+    lifecycleCoverage: *id001
+    requiredGates:
+    - legacy-inventory-complete
+    - target-build-passes
+    - behavior-equivalent
+    - security-not-weakened
+    - migration-reversible
+    goldenRouteSkill: spring-modernization-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: cross-language-conversion
+    pack: 19-cross-language-semantic-conversion
+    title: Cross-Language Repository Semantic Compiler / 跨语言整库转换
+    owner: cross-language-compiler-team
+    goal: 通过 Semantic IR、语言能力画像、差分运行和渐进切换保持整库转换的类型、控制、并发、数据、协议与运维语义。
+    atomicSkillCount: 52
+    lifecycleCoverage: *id001
+    requiredGates:
+    - semantic-coverage-complete
+    - target-build-passes
+    - behavior-equivalent
+    - interop-boundary-safe
+    - rollback-ready
+    goldenRouteSkill: null
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: sql-database-conversion
+    pack: 20-sql-database-modernization
+    title: SQL & Database Modernization / 数据库语义迁移
+    owner: database-modernization-team
+    goal: 覆盖 SQL 方言、Routine、Schema、数据、事务、计划、CDC 与零停机切换的端到端数据库现代化。
+    atomicSkillCount: 50
+    lifecycleCoverage: *id001
+    requiredGates:
+    - schema-and-routine-covered
+    - data-equivalent
+    - transaction-semantics-preserved
+    - performance-acceptable
+    - cutover-reversible
+    goldenRouteSkill: database-modernization-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: project-generation
+    pack: 21-project-generation-product-engineering
+    title: Project Generation & Product Engineering / 全项目生成
+    owner: project-generation-team
+    goal: 从需求和非功能约束生成可构建、可测试、可部署、可运营、可计费和可认证的多语言完整项目。
+    atomicSkillCount: 44
+    lifecycleCoverage: *id001
+    requiredGates:
+    - requirements-traceable
+    - project-builds
+    - tests-and-security-pass
+    - deployment-reproducible
+    - operations-and-rollback-ready
+    goldenRouteSkill: requirement-to-production-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: frontend-mobile-miniapp
+    pack: 22-frontend-mobile-miniapp-modernization
+    title: Frontend, Mobile & Mini-App Modernization / 前端与多端转换
+    owner: frontend-platform-team
+    goal: 在 Web、移动端、Flutter 与微信/支付宝/抖音/小红书小程序之间保持组件、状态、导航、平台能力、视觉和交互语义。
+    atomicSkillCount: 44
+    lifecycleCoverage: *id001
+    requiredGates:
+    - component-state-covered
+    - navigation-and-platform-behavior-equivalent
+    - visual-and-accessibility-pass
+    - device-matrix-pass
+    - release-reversible
+    goldenRouteSkill: frontend-mobile-miniapp-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: repository-refactoring
+    pack: 23-repository-refactoring-technical-debt
+    title: Repository Refactoring & Technical Debt / 整库重构
+    owner: repository-refactoring-team
+    goal: 对多语言仓库执行行为保持、可审阅、可回滚的架构重构、技术债治理和模块化演进。
+    atomicSkillCount: 32
+    lifecycleCoverage: *id001
+    requiredGates:
+    - debt-baseline-complete
+    - behavior-preserved
+    - api-compatible
+    - tests-adequate
+    - patch-series-reversible
+    goldenRouteSkill: repository-refactoring-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: api-event-integration
+    pack: 24-api-event-integration-modernization
+    title: API, Event & Integration Modernization / 接口与集成现代化
+    owner: integration-modernization-team
+    goal: 现代化 REST、GraphQL、gRPC、SOAP、实时连接、事件流和批量集成，同时保持协议、交付和消费者兼容。
+    atomicSkillCount: 32
+    lifecycleCoverage: *id001
+    requiredGates:
+    - contract-compatible
+    - delivery-semantics-preserved
+    - security-policy-preserved
+    - consumer-tests-pass
+    - cutover-reversible
+    goldenRouteSkill: api-event-integration-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: data-engineering
+    pack: 25-data-engineering-lakehouse-analytics
+    title: Data Engineering, Lakehouse & Analytics / 大数据与湖仓
+    owner: data-platform-team
+    goal: 生成和现代化批流一体、CDC、湖仓、编排、数据质量、血缘、治理、特征与分析平台。
+    atomicSkillCount: 40
+    lifecycleCoverage: *id001
+    requiredGates:
+    - data-contract-covered
+    - quality-and-lineage-pass
+    - replay-equivalent
+    - recovery-tested
+    - cost-and-sla-acceptable
+    goldenRouteSkill: lakehouse-analytics-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: cloud-devops-platform
+    pack: 26-cloud-native-devops-platform-engineering
+    title: Cloud Native, DevOps & Platform Engineering / 云原生工程
+    owner: platform-engineering-team
+    goal: 把应用容器化、Kubernetes、IaC、CI/CD、GitOps、多云、私有化、灾备和平台自服务能力纳入自动生成与现代化。
+    atomicSkillCount: 38
+    lifecycleCoverage: *id001
+    requiredGates:
+    - infrastructure-reproducible
+    - security-baseline-pass
+    - deployment-strategy-tested
+    - recovery-objectives-pass
+    - rollback-verified
+    goldenRouteSkill: cloud-native-production-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: test-quality-certification
+    pack: 27-test-quality-assurance-factory
+    title: Autonomous Test & Quality Assurance Factory / 自动测试认证工厂
+    owner: quality-assurance-team
+    goal: 为生成、转换、重构和迁移任务自动建立测试、Oracle、差分、性能、安全、恢复和 E0-E5 认证闭环。
+    atomicSkillCount: 44
+    lifecycleCoverage: *id001
+    requiredGates:
+    - requirements-covered
+    - independent-oracles-pass
+    - tests-not-weakened
+    - regression-risk-acceptable
+    - evidence-complete
+    goldenRouteSkill: qa-factory-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: security-compliance
+    pack: 28-security-compliance-supply-chain
+    title: Security, Privacy, Compliance & Supply Chain / 安全合规
+    owner: product-security-team
+    goal: 对代码、仓库、工具、模型、数据、部署和供应链执行零信任、隐私、攻击验证与可审计控制。
+    atomicSkillCount: 40
+    lifecycleCoverage: *id001
+    requiredGates:
+    - threat-model-complete
+    - no-unaccepted-critical-risk
+    - tenant-boundary-proven
+    - supply-chain-attested
+    - remediation-verified
+    goldenRouteSkill: null
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: performance-reliability-finops
+    pack: 29-performance-reliability-cost-engineering
+    title: Performance, Reliability & Cost Engineering / 性能可靠性与成本
+    owner: performance-reliability-team
+    goal: 以真实工作负载和 SLO 为依据，联合优化应用、数据库、前端、数据平台、AI 推理的性能、可靠性和单位经济性。
+    atomicSkillCount: 32
+    lifecycleCoverage: *id001
+    requiredGates:
+    - workload-representative
+    - functional-behavior-preserved
+    - slo-met
+    - recovery-objectives-met
+    - cost-regression-acceptable
+    goldenRouteSkill: performance-reliability-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: architecture-documentation-ide
+    pack: 30-architecture-documentation-ide
+    title: Architecture Intelligence, Documentation & Online IDE / 架构智能与代码工作台
+    owner: developer-experience-team
+    goal: 提供大型仓库在线阅读、语义导航、架构恢复、变换过程可视化、在线调试和可验证文档生成。
+    atomicSkillCount: 32
+    lifecycleCoverage: *id001
+    requiredGates:
+    - source-binding-complete
+    - navigation-accurate
+    - documentation-drift-checked
+    - sensitive-content-controlled
+    - artifacts-reproducible
+    goldenRouteSkill: architecture-intelligence-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: ai-agent-rag-ml
+    pack: 31-ai-agent-rag-ml-engineering
+    title: AI Agent, RAG & ML Engineering / AI 工具项目生成与迁移
+    owner: ai-platform-engineering-team
+    goal: 生成、迁移和认证 RAG、Agent、多 Agent、模型服务、私有训练和 AI 应用项目，保持供应商可替换与生产安全。
+    atomicSkillCount: 46
+    lifecycleCoverage: *id001
+    requiredGates:
+    - task-and-tool-contract-valid
+    - grounding-and-quality-pass
+    - tool-permission-safe
+    - data-rights-compliant
+    - shadow-and-rollback-tested
+    goldenRouteSkill: agent-rag-ml-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: legacy-mainframe-modernization
+    pack: 32-legacy-mainframe-enterprise-modernization
+    title: Legacy & Mainframe Modernization / 主机与遗留平台现代化
+    owner: legacy-modernization-team
+    goal: 对 COBOL、JCL、CICS、IMS、RPG、ABAP、PowerBuilder、VB6、.NET Framework 等遗留系统实施可验证渐进现代化。
+    atomicSkillCount: 40
+    lifecycleCoverage: *id001
+    requiredGates:
+    - legacy-behavior-characterized
+    - data-and-transaction-equivalent
+    - batch-restart-preserved
+    - dual-run-pass
+    - fallback-ready
+    goldenRouteSkill: legacy-modernization-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: industrial-iot-robotics
+    pack: 33-industrial-iot-edge-robotics
+    title: Industrial IoT, Edge & Robotics / 工业边缘与机器人
+    owner: industrial-systems-team
+    goal: 生成和现代化工业协议、设备、SCADA、ROS、数字孪生、边缘部署、实时与功能安全软件。
+    atomicSkillCount: 32
+    lifecycleCoverage: *id001
+    requiredGates:
+    - asset-and-protocol-covered
+    - real-time-and-safety-invariants-pass
+    - sil-hil-pass
+    - cybersecurity-boundary-pass
+    - field-rollback-ready
+    goldenRouteSkill: industrial-iot-robotics-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: language-runtime-adapters
+    pack: 34-language-runtime-adapters
+    title: Language & Build Runtime Adapters / 语言运行时适配矩阵
+    owner: language-adapter-team
+    goal: 为 Elmos 支持的语言、编译器、包管理器和构建系统提供统一解析、生成、执行、调试和认证适配层。
+    atomicSkillCount: 36
+    lifecycleCoverage: *id001
+    requiredGates:
+    - parser-coverage-pass
+    - build-reproducible
+    - runtime-semantics-profiled
+    - debug-and-test-integrated
+    - adapter-matrix-certified
+    goldenRouteSkill: null
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: database-engine-adapters
+    pack: 35-database-engine-adapters
+    title: Database Engine Adapters / 数据库引擎适配矩阵
+    owner: database-adapter-team
+    goal: 为关系型、分布式、仓库、文档、时序、图、搜索和缓存数据库提供可验证的语义与运维适配器。
+    atomicSkillCount: 24
+    lifecycleCoverage: *id001
+    requiredGates:
+    - metadata-introspection-pass
+    - dialect-and-driver-pass
+    - transaction-profiled
+    - backup-and-recovery-pass
+    - adapter-certified
+    goldenRouteSkill: null
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: framework-runtime-adapters
+    pack: 36-framework-runtime-adapters
+    title: Framework & Runtime Adapters / 框架平台适配矩阵
+    owner: framework-adapter-team
+    goal: 为主流后端、前端、移动端、数据、云和 AI 框架提供统一扫描、生成、转换、测试与版本兼容适配。
+    atomicSkillCount: 36
+    lifecycleCoverage: *id001
+    requiredGates:
+    - framework-detected
+    - configuration-covered
+    - convention-semantics-profiled
+    - build-and-test-pass
+    - version-matrix-certified
+    goldenRouteSkill: null
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: cloud-platform-adapters
+    pack: 37-cloud-platform-adapters
+    title: Cloud & Deployment Platform Adapters / 云平台适配矩阵
+    owner: cloud-adapter-team
+    goal: 为公有云、私有云、Kubernetes、Serverless、裸机与边缘目标生成可移植、可退出、可认证的部署适配层。
+    atomicSkillCount: 16
+    lifecycleCoverage: *id001
+    requiredGates:
+    - service-capability-profiled
+    - identity-and-network-secure
+    - deployment-reproducible
+    - exit-path-tested
+    - disaster-recovery-pass
+    goldenRouteSkill: null
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: customer-delivery
+    pack: 38-golden-route-customer-delivery
+    title: Golden Route & Customer Delivery / 商业项目交付
+    owner: delivery-engineering-team
+    goal: 把售前评估、试点、范围、迁移波次、验收、证据、SLA、移交和 LTS 组织为可重复付费交付流程。
+    atomicSkillCount: 24
+    lifecycleCoverage: *id001
+    requiredGates:
+    - scope-and-acceptance-frozen
+    - baseline-and-pilot-pass
+    - wave-evidence-complete
+    - customer-acceptance-recorded
+    - support-and-exit-ready
+    goldenRouteSkill: commercial-golden-route-certifier
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: product-commercialization
+    pack: 39-product-commercialization-marketplace
+    title: Product Commercialization & Marketplace / 产品商业化
+    owner: commercial-platform-team
+    goal: 将 Elmos 能力包装为可授权、可计量、可定价、可结算、可市场化并具备单位经济性的商业产品。
+    atomicSkillCount: 16
+    lifecycleCoverage: *id001
+    requiredGates:
+    - entitlement-correct
+    - usage-reconciled
+    - billing-auditable
+    - tenant-data-isolated
+    - unit-economics-acceptable
+    goldenRouteSkill: null
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
+  - id: regulated-industry-assurance
+    pack: 40-regulated-industry-assurance
+    title: Regulated Industry Assurance / 受监管行业认证
+    owner: assurance-governance-team
+    goal: 为金融、医疗、工业安全、公共部门等高要求场景建立验证、控制、电子记录、模型风险和安全案例证据。
+    atomicSkillCount: 20
+    lifecycleCoverage: *id001
+    requiredGates:
+    - regulatory-scope-defined
+    - traceability-complete
+    - independent-validation-pass
+    - approval-and-signature-valid
+    - periodic-review-scheduled
+    goldenRouteSkill: regulated-industry-golden-route
+    status: specification-ready
+    productionRequirement: runtime implementation plus declared E0-E5 certification
