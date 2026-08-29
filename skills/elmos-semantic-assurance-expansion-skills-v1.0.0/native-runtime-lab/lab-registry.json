@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "elmos.lab-registry/v1",
+  "metadata": {
+    "version": "3.0.0"
+  },
+  "labs": [
+    {
+      "id": "standard-polyglot",
+      "skill": "elmos-hermetic-toolchain-image-builder",
+      "readiness": "not-run",
+      "profiles": []
+    },
+    {
+      "id": "mainframe",
+      "skill": "elmos-mainframe-native-runtime-lab",
+      "readiness": "not-run",
+      "profiles": []
+    },
+    {
+      "id": "ibmi",
+      "skill": "elmos-ibmi-native-runtime-lab",
+      "readiness": "not-run",
+      "profiles": []
+    },
+    {
+      "id": "windows-legacy",
+      "skill": "elmos-windows-legacy-runtime-lab",
+      "readiness": "not-run",
+      "profiles": []
+    },
+    {
+      "id": "sap-abap",
+      "skill": "elmos-sap-abap-runtime-lab",
+      "readiness": "not-run",
+      "profiles": []
+    },
+    {
+      "id": "scientific-hpc",
+      "skill": "elmos-scientific-hpc-runtime-lab",
+      "readiness": "not-run",
+      "profiles": []
+    },
+    {
+      "id": "mobile-native",
+      "skill": "elmos-mobile-native-runtime-lab",
+      "readiness": "not-run",
+      "profiles": []
+    },
+    {
+      "id": "browser-js-wasm",
+      "skill": "elmos-browser-js-wasm-runtime-lab",
+      "readiness": "not-run",
+      "profiles": []
+    },
+    {
+      "id": "database-message",
+      "skill": "elmos-database-message-runtime-lab",
+      "readiness": "not-run",
+      "profiles": []
+    }
+  ]
+}

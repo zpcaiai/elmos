@@ -1,0 +1,2620 @@
+{
+  "schema_version": "3.0",
+  "package": {
+    "name": "elmos-semantic-assurance-expansion-skills",
+    "display_name": "ELMOS Semantic Assurance Expansion",
+    "version": "1.0.0",
+    "build_date": "2026-08-29",
+    "skill_count": 132,
+    "base_package": "elmos-polyglot-skills>=2.0.0",
+    "target_total_skill_count": 300,
+    "default_readiness": "not-run"
+  },
+  "skills": [
+    {
+      "id": "ELMOS-POLY-169",
+      "name": "elmos-grammar-spec-ingestor",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "frontend-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-grammar-spec-ingestor/SKILL.md",
+      "description": "Ingest normative grammars, vendor dialect grammars and parser artifacts into a versioned grammar model with provenance and ambiguity records.",
+      "dependencies": [
+        "elmos-multi-source-repository-discovery"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-grammar-spec-ingestor/model.json",
+        "semantic-assurance/elmos-grammar-spec-ingestor/evidence.json",
+        "semantic-assurance/elmos-grammar-spec-ingestor/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-170",
+      "name": "elmos-dialect-version-detector",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "frontend-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-dialect-version-detector/SKILL.md",
+      "description": "Infer language dialect, standard edition, compiler mode and vendor extensions per module instead of assuming one repository-wide syntax.",
+      "dependencies": [
+        "elmos-grammar-spec-ingestor"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-dialect-version-detector/model.json",
+        "semantic-assurance/elmos-dialect-version-detector/evidence.json",
+        "semantic-assurance/elmos-dialect-version-detector/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-171",
+      "name": "elmos-preprocessor-macro-expansion-modeler",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "frontend-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-preprocessor-macro-expansion-modeler/SKILL.md",
+      "description": "Model preprocessing, include/copy expansion, macros, conditional compilation and generated-source boundaries while retaining source-to-expanded provenance.",
+      "dependencies": [
+        "elmos-dialect-version-detector"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-preprocessor-macro-expansion-modeler/model.json",
+        "semantic-assurance/elmos-preprocessor-macro-expansion-modeler/evidence.json",
+        "semantic-assurance/elmos-preprocessor-macro-expansion-modeler/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-172",
+      "name": "elmos-lexical-layout-fidelity-engine",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "frontend-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-lexical-layout-fidelity-engine/SKILL.md",
+      "description": "Preserve lexical tokens, fixed/free-form layout rules, whitespace-significant syntax, continuation columns and source encodings that carry meaning.",
+      "dependencies": [
+        "elmos-preprocessor-macro-expansion-modeler"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-lexical-layout-fidelity-engine/model.json",
+        "semantic-assurance/elmos-lexical-layout-fidelity-engine/evidence.json",
+        "semantic-assurance/elmos-lexical-layout-fidelity-engine/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-173",
+      "name": "elmos-lossless-cst-builder",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "frontend-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-lossless-cst-builder/SKILL.md",
+      "description": "Build a lossless concrete syntax tree that retains every token, trivia item, directive and source span required for safe round-trip transformations.",
+      "dependencies": [
+        "elmos-lexical-layout-fidelity-engine"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-lossless-cst-builder/model.json",
+        "semantic-assurance/elmos-lossless-cst-builder/evidence.json",
+        "semantic-assurance/elmos-lossless-cst-builder/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-174",
+      "name": "elmos-native-ast-cross-checker",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "frontend-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-native-ast-cross-checker/SKILL.md",
+      "description": "Cross-check ELMOS CST/AST extraction against native compiler or language-service frontends to detect parser drift and semantic frontend mismatches.",
+      "dependencies": [
+        "elmos-lossless-cst-builder"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-native-ast-cross-checker/model.json",
+        "semantic-assurance/elmos-native-ast-cross-checker/evidence.json",
+        "semantic-assurance/elmos-native-ast-cross-checker/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-175",
+      "name": "elmos-parse-error-recovery-validator",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "frontend-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-parse-error-recovery-validator/SKILL.md",
+      "description": "Validate partial and malformed repositories without allowing parser recovery to silently invent executable semantics.",
+      "dependencies": [
+        "elmos-native-ast-cross-checker"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-parse-error-recovery-validator/model.json",
+        "semantic-assurance/elmos-parse-error-recovery-validator/evidence.json",
+        "semantic-assurance/elmos-parse-error-recovery-validator/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-176",
+      "name": "elmos-source-roundtrip-preserver",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "frontend-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-source-roundtrip-preserver/SKILL.md",
+      "description": "Guarantee parse→model→print round trips preserve source meaning and intentionally preserved lexical structure before semantic transformation begins.",
+      "dependencies": [
+        "elmos-lossless-cst-builder"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-source-roundtrip-preserver/model.json",
+        "semantic-assurance/elmos-source-roundtrip-preserver/evidence.json",
+        "semantic-assurance/elmos-source-roundtrip-preserver/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-177",
+      "name": "elmos-comments-directives-trivia-provenance",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "frontend-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-comments-directives-trivia-provenance/SKILL.md",
+      "description": "Carry comments, pragmas, directives, suppression annotations and non-code source material through conversion with explicit semantic relevance classification.",
+      "dependencies": [
+        "elmos-source-roundtrip-preserver"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-comments-directives-trivia-provenance/model.json",
+        "semantic-assurance/elmos-comments-directives-trivia-provenance/evidence.json",
+        "semantic-assurance/elmos-comments-directives-trivia-provenance/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-178",
+      "name": "elmos-symbol-table-builder",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "name-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-symbol-table-builder/SKILL.md",
+      "description": "Construct a cross-language canonical symbol table covering declarations, imports, modules, packages, namespaces and external symbols.",
+      "dependencies": [
+        "elmos-native-ast-cross-checker"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-symbol-table-builder/model.json",
+        "semantic-assurance/elmos-symbol-table-builder/evidence.json",
+        "semantic-assurance/elmos-symbol-table-builder/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-179",
+      "name": "elmos-scope-resolution-engine",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "name-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-scope-resolution-engine/SKILL.md",
+      "description": "Resolve lexical, dynamic, imported, inherited and host-environment scopes and preserve binding identity through target generation.",
+      "dependencies": [
+        "elmos-symbol-table-builder"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-scope-resolution-engine/model.json",
+        "semantic-assurance/elmos-scope-resolution-engine/evidence.json",
+        "semantic-assurance/elmos-scope-resolution-engine/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-180",
+      "name": "elmos-overload-dispatch-resolver",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "name-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-overload-dispatch-resolver/SKILL.md",
+      "description": "Model overload resolution, multimethod dispatch, virtual dispatch and target-language call selection rather than translating call syntax literally.",
+      "dependencies": [
+        "elmos-scope-resolution-engine"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-overload-dispatch-resolver/model.json",
+        "semantic-assurance/elmos-overload-dispatch-resolver/evidence.json",
+        "semantic-assurance/elmos-overload-dispatch-resolver/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-181",
+      "name": "elmos-generic-template-specialization-modeler",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "name-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-generic-template-specialization-modeler/SKILL.md",
+      "description": "Represent Java/C# generics, C++ templates, Rust generics/traits, Swift protocols and specialization/monomorphization consequences.",
+      "dependencies": [
+        "elmos-overload-dispatch-resolver"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-generic-template-specialization-modeler/model.json",
+        "semantic-assurance/elmos-generic-template-specialization-modeler/evidence.json",
+        "semantic-assurance/elmos-generic-template-specialization-modeler/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-182",
+      "name": "elmos-annotation-attribute-reflection-modeler",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "reflection-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-annotation-attribute-reflection-modeler/SKILL.md",
+      "description": "Capture metadata-driven behavior including annotations, attributes, decorators, reflection, DI scanning and runtime discovery.",
+      "dependencies": [
+        "elmos-symbol-table-builder"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-annotation-attribute-reflection-modeler/model.json",
+        "semantic-assurance/elmos-annotation-attribute-reflection-modeler/evidence.json",
+        "semantic-assurance/elmos-annotation-attribute-reflection-modeler/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-183",
+      "name": "elmos-dynamic-language-shape-inference",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "dynamic-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-dynamic-language-shape-inference/SKILL.md",
+      "description": "Infer runtime object shapes, duck-typed protocols, monkey patches and dynamic call targets with confidence and observed evidence.",
+      "dependencies": [
+        "elmos-scope-resolution-engine"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-dynamic-language-shape-inference/model.json",
+        "semantic-assurance/elmos-dynamic-language-shape-inference/evidence.json",
+        "semantic-assurance/elmos-dynamic-language-shape-inference/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-184",
+      "name": "elmos-frontend-consistency-gate",
+      "version": "1.0.0",
+      "batch": "J",
+      "layer": "quality-gate",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-frontend-consistency-gate/SKILL.md",
+      "description": "Block transformation when grammar, CST, native AST, symbol or source-roundtrip evidence disagrees beyond declared tolerances.",
+      "dependencies": [
+        "elmos-parse-error-recovery-validator",
+        "elmos-comments-directives-trivia-provenance",
+        "elmos-generic-template-specialization-modeler",
+        "elmos-annotation-attribute-reflection-modeler",
+        "elmos-dynamic-language-shape-inference"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-frontend-consistency-gate/model.json",
+        "semantic-assurance/elmos-frontend-consistency-gate/evidence.json",
+        "semantic-assurance/elmos-frontend-consistency-gate/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-185",
+      "name": "elmos-canonical-type-algebra",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "type-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-canonical-type-algebra/SKILL.md",
+      "description": "Normalize primitive, nominal, structural, algebraic, callable, reference and opaque types into a target-independent algebra with provenance.",
+      "dependencies": [
+        "elmos-frontend-consistency-gate"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-canonical-type-algebra/model.json",
+        "semantic-assurance/elmos-canonical-type-algebra/evidence.json",
+        "semantic-assurance/elmos-canonical-type-algebra/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-186",
+      "name": "elmos-nominal-structural-subtyping-mapper",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "type-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-nominal-structural-subtyping-mapper/SKILL.md",
+      "description": "Preserve inheritance, interfaces, protocols, duck typing and structural compatibility across different target type systems.",
+      "dependencies": [
+        "elmos-canonical-type-algebra"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-nominal-structural-subtyping-mapper/model.json",
+        "semantic-assurance/elmos-nominal-structural-subtyping-mapper/evidence.json",
+        "semantic-assurance/elmos-nominal-structural-subtyping-mapper/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-187",
+      "name": "elmos-nullability-optionality-semantics",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "type-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-nullability-optionality-semantics/SKILL.md",
+      "description": "Model null, undefined, optional, nullable reference/value types and null-propagation behavior explicitly.",
+      "dependencies": [
+        "elmos-canonical-type-algebra"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-nullability-optionality-semantics/model.json",
+        "semantic-assurance/elmos-nullability-optionality-semantics/evidence.json",
+        "semantic-assurance/elmos-nullability-optionality-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-188",
+      "name": "elmos-numeric-type-range-overflow",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "type-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-numeric-type-range-overflow/SKILL.md",
+      "description": "Preserve integer widths, signedness, big integers, decimal types, overflow modes, shifts and conversion behavior.",
+      "dependencies": [
+        "elmos-canonical-type-algebra"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-numeric-type-range-overflow/model.json",
+        "semantic-assurance/elmos-numeric-type-range-overflow/evidence.json",
+        "semantic-assurance/elmos-numeric-type-range-overflow/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-189",
+      "name": "elmos-string-char-codepoint-semantics",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "type-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-string-char-codepoint-semantics/SKILL.md",
+      "description": "Model byte strings, UTF encodings, code units, code points, graphemes and string indexing/comparison behavior.",
+      "dependencies": [
+        "elmos-canonical-type-algebra"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-string-char-codepoint-semantics/model.json",
+        "semantic-assurance/elmos-string-char-codepoint-semantics/evidence.json",
+        "semantic-assurance/elmos-string-char-codepoint-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-190",
+      "name": "elmos-collection-order-mutability-semantics",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "type-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-collection-order-mutability-semantics/SKILL.md",
+      "description": "Preserve sequence/set/map ordering, equality, hashing, mutability, aliasing and iteration guarantees.",
+      "dependencies": [
+        "elmos-canonical-type-algebra"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-collection-order-mutability-semantics/model.json",
+        "semantic-assurance/elmos-collection-order-mutability-semantics/evidence.json",
+        "semantic-assurance/elmos-collection-order-mutability-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-191",
+      "name": "elmos-enum-variant-sumtype-semantics",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "type-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-enum-variant-sumtype-semantics/SKILL.md",
+      "description": "Translate enums, tagged unions, variants, discriminated unions and pattern matching while preserving exhaustiveness and representation.",
+      "dependencies": [
+        "elmos-canonical-type-algebra"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-enum-variant-sumtype-semantics/model.json",
+        "semantic-assurance/elmos-enum-variant-sumtype-semantics/evidence.json",
+        "semantic-assurance/elmos-enum-variant-sumtype-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-192",
+      "name": "elmos-generics-variance-erasure-semantics",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "type-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-generics-variance-erasure-semantics/SKILL.md",
+      "description": "Preserve variance, bounds, erasure/reification, wildcards and runtime generic metadata across target systems.",
+      "dependencies": [
+        "elmos-generic-template-specialization-modeler",
+        "elmos-canonical-type-algebra"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-generics-variance-erasure-semantics/model.json",
+        "semantic-assurance/elmos-generics-variance-erasure-semantics/evidence.json",
+        "semantic-assurance/elmos-generics-variance-erasure-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-193",
+      "name": "elmos-refinement-range-contract-semantics",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "contract-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-refinement-range-contract-semantics/SKILL.md",
+      "description": "Represent Ada/SPARK subtypes, ranges, invariants, pre/postconditions and other refinement constraints as executable/provable obligations.",
+      "dependencies": [
+        "elmos-canonical-type-algebra"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-refinement-range-contract-semantics/model.json",
+        "semantic-assurance/elmos-refinement-range-contract-semantics/evidence.json",
+        "semantic-assurance/elmos-refinement-range-contract-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-194",
+      "name": "elmos-lifetime-ownership-borrow-semantics",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "memory-type-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-lifetime-ownership-borrow-semantics/SKILL.md",
+      "description": "Model ownership, borrowing, lifetimes, aliasing and move/copy semantics for safe translation between managed and native languages.",
+      "dependencies": [
+        "elmos-canonical-type-algebra"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-lifetime-ownership-borrow-semantics/model.json",
+        "semantic-assurance/elmos-lifetime-ownership-borrow-semantics/evidence.json",
+        "semantic-assurance/elmos-lifetime-ownership-borrow-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-195",
+      "name": "elmos-exception-effect-type-semantics",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "effect-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-exception-effect-type-semantics/SKILL.md",
+      "description": "Represent checked/unchecked exceptions, Result/error unions, non-local exits and typed effects as part of callable contracts.",
+      "dependencies": [
+        "elmos-canonical-type-algebra"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-exception-effect-type-semantics/model.json",
+        "semantic-assurance/elmos-exception-effect-type-semantics/evidence.json",
+        "semantic-assurance/elmos-exception-effect-type-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-196",
+      "name": "elmos-serialization-schema-type-semantics",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "schema-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-serialization-schema-type-semantics/SKILL.md",
+      "description": "Tie in-memory types to JSON/XML/Protobuf/Avro/DB/wire schemas including defaults, unknown fields and evolution rules.",
+      "dependencies": [
+        "elmos-canonical-type-algebra"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-serialization-schema-type-semantics/model.json",
+        "semantic-assurance/elmos-serialization-schema-type-semantics/evidence.json",
+        "semantic-assurance/elmos-serialization-schema-type-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-197",
+      "name": "elmos-public-api-binary-compatibility",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "compatibility",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-public-api-binary-compatibility/SKILL.md",
+      "description": "Compare source and target public API surfaces, ABI/binary compatibility where relevant, and consumer-visible type semantics.",
+      "dependencies": [
+        "elmos-serialization-schema-type-semantics",
+        "elmos-nominal-structural-subtyping-mapper"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-public-api-binary-compatibility/model.json",
+        "semantic-assurance/elmos-public-api-binary-compatibility/evidence.json",
+        "semantic-assurance/elmos-public-api-binary-compatibility/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-198",
+      "name": "elmos-type-semantic-loss-gate",
+      "version": "1.0.0",
+      "batch": "K",
+      "layer": "quality-gate",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-type-semantic-loss-gate/SKILL.md",
+      "description": "Aggregate type-system obligations and block routes that narrow domains, erase contracts or alter observable type behavior without an approved adaptation.",
+      "dependencies": [
+        "elmos-nullability-optionality-semantics",
+        "elmos-numeric-type-range-overflow",
+        "elmos-string-char-codepoint-semantics",
+        "elmos-collection-order-mutability-semantics",
+        "elmos-enum-variant-sumtype-semantics",
+        "elmos-generics-variance-erasure-semantics",
+        "elmos-refinement-range-contract-semantics",
+        "elmos-lifetime-ownership-borrow-semantics",
+        "elmos-exception-effect-type-semantics",
+        "elmos-public-api-binary-compatibility"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-type-semantic-loss-gate/model.json",
+        "semantic-assurance/elmos-type-semantic-loss-gate/evidence.json",
+        "semantic-assurance/elmos-type-semantic-loss-gate/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-199",
+      "name": "elmos-cfg-equivalence-builder",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "controlflow-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-cfg-equivalence-builder/SKILL.md",
+      "description": "Build normalized source/target CFGs and compare branch, loop, early-exit and exceptional control-flow structure.",
+      "dependencies": [
+        "elmos-type-semantic-loss-gate"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-cfg-equivalence-builder/model.json",
+        "semantic-assurance/elmos-cfg-equivalence-builder/evidence.json",
+        "semantic-assurance/elmos-cfg-equivalence-builder/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-200",
+      "name": "elmos-ssa-dataflow-lowering",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "dataflow-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-ssa-dataflow-lowering/SKILL.md",
+      "description": "Lower relevant code into SSA-like dataflow form to expose definitions, uses, phi merges and value transformations across languages.",
+      "dependencies": [
+        "elmos-cfg-equivalence-builder"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-ssa-dataflow-lowering/model.json",
+        "semantic-assurance/elmos-ssa-dataflow-lowering/evidence.json",
+        "semantic-assurance/elmos-ssa-dataflow-lowering/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-201",
+      "name": "elmos-program-dependence-graph-analyzer",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "dataflow-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-program-dependence-graph-analyzer/SKILL.md",
+      "description": "Construct control/data dependence graphs for slicing, business-rule extraction and semantic comparison across structurally different implementations.",
+      "dependencies": [
+        "elmos-ssa-dataflow-lowering"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-program-dependence-graph-analyzer/model.json",
+        "semantic-assurance/elmos-program-dependence-graph-analyzer/evidence.json",
+        "semantic-assurance/elmos-program-dependence-graph-analyzer/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-202",
+      "name": "elmos-alias-points-to-analysis",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "memory-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-alias-points-to-analysis/SKILL.md",
+      "description": "Approximate and refine heap aliasing, pointer targets and shared mutable state so transformations do not duplicate or detach state accidentally.",
+      "dependencies": [
+        "elmos-ssa-dataflow-lowering",
+        "elmos-lifetime-ownership-borrow-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-alias-points-to-analysis/model.json",
+        "semantic-assurance/elmos-alias-points-to-analysis/evidence.json",
+        "semantic-assurance/elmos-alias-points-to-analysis/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-203",
+      "name": "elmos-interprocedural-callgraph-resolver",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "call-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-interprocedural-callgraph-resolver/SKILL.md",
+      "description": "Resolve direct, virtual, interface, reflection-assisted and callback call edges with confidence for repository-scale semantic obligations.",
+      "dependencies": [
+        "elmos-overload-dispatch-resolver",
+        "elmos-annotation-attribute-reflection-modeler"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-interprocedural-callgraph-resolver/model.json",
+        "semantic-assurance/elmos-interprocedural-callgraph-resolver/evidence.json",
+        "semantic-assurance/elmos-interprocedural-callgraph-resolver/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-204",
+      "name": "elmos-side-effect-footprint-model",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "effect-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-side-effect-footprint-model/SKILL.md",
+      "description": "Classify reads/writes to memory, DB, files, network, queues, clocks, environment and external systems per operation.",
+      "dependencies": [
+        "elmos-interprocedural-callgraph-resolver",
+        "elmos-program-dependence-graph-analyzer"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-side-effect-footprint-model/model.json",
+        "semantic-assurance/elmos-side-effect-footprint-model/evidence.json",
+        "semantic-assurance/elmos-side-effect-footprint-model/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-205",
+      "name": "elmos-exception-unwind-equivalence",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "effect-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-exception-unwind-equivalence/SKILL.md",
+      "description": "Preserve exception matching, stack unwinding, finally/defer/destructor behavior, retry boundaries and error translation.",
+      "dependencies": [
+        "elmos-exception-effect-type-semantics",
+        "elmos-cfg-equivalence-builder"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-exception-unwind-equivalence/model.json",
+        "semantic-assurance/elmos-exception-unwind-equivalence/evidence.json",
+        "semantic-assurance/elmos-exception-unwind-equivalence/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-206",
+      "name": "elmos-resource-lifetime-finalization",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "resource-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-resource-lifetime-finalization/SKILL.md",
+      "description": "Preserve RAII, try-with-resources, using/defer, GC finalizers and explicit close semantics with failure-path validation.",
+      "dependencies": [
+        "elmos-exception-unwind-equivalence"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-resource-lifetime-finalization/model.json",
+        "semantic-assurance/elmos-resource-lifetime-finalization/evidence.json",
+        "semantic-assurance/elmos-resource-lifetime-finalization/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-207",
+      "name": "elmos-closure-capture-lambda-semantics",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "call-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-closure-capture-lambda-semantics/SKILL.md",
+      "description": "Preserve capture-by-value/reference, receiver capture, mutable closures and escaping lifetime behavior.",
+      "dependencies": [
+        "elmos-alias-points-to-analysis"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-closure-capture-lambda-semantics/model.json",
+        "semantic-assurance/elmos-closure-capture-lambda-semantics/evidence.json",
+        "semantic-assurance/elmos-closure-capture-lambda-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-208",
+      "name": "elmos-iterator-generator-coroutine-semantics",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "controlflow-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-iterator-generator-coroutine-semantics/SKILL.md",
+      "description": "Model suspension points, yielded values, cleanup, backpressure and resumption state across generator/coroutine constructs.",
+      "dependencies": [
+        "elmos-cfg-equivalence-builder",
+        "elmos-resource-lifetime-finalization"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-iterator-generator-coroutine-semantics/model.json",
+        "semantic-assurance/elmos-iterator-generator-coroutine-semantics/evidence.json",
+        "semantic-assurance/elmos-iterator-generator-coroutine-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-209",
+      "name": "elmos-async-await-task-semantics",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "concurrency-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-async-await-task-semantics/SKILL.md",
+      "description": "Preserve scheduling, cancellation, continuation context, structured concurrency and error propagation across async runtimes.",
+      "dependencies": [
+        "elmos-iterator-generator-coroutine-semantics",
+        "elmos-side-effect-footprint-model"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-async-await-task-semantics/model.json",
+        "semantic-assurance/elmos-async-await-task-semantics/evidence.json",
+        "semantic-assurance/elmos-async-await-task-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-210",
+      "name": "elmos-reflection-dynamic-dispatch-semantics",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "dynamic-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-reflection-dynamic-dispatch-semantics/SKILL.md",
+      "description": "Characterize runtime-discovered members, proxy invocation, dynamic method lookup and reflection-visible metadata behavior.",
+      "dependencies": [
+        "elmos-annotation-attribute-reflection-modeler",
+        "elmos-interprocedural-callgraph-resolver"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-reflection-dynamic-dispatch-semantics/model.json",
+        "semantic-assurance/elmos-reflection-dynamic-dispatch-semantics/evidence.json",
+        "semantic-assurance/elmos-reflection-dynamic-dispatch-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-211",
+      "name": "elmos-metaprogramming-runtime-codegen-semantics",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "dynamic-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-metaprogramming-runtime-codegen-semantics/SKILL.md",
+      "description": "Model eval, macros, generated bytecode/source, expression trees and metaprogramming boundaries that cannot be assumed statically.",
+      "dependencies": [
+        "elmos-reflection-dynamic-dispatch-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-metaprogramming-runtime-codegen-semantics/model.json",
+        "semantic-assurance/elmos-metaprogramming-runtime-codegen-semantics/evidence.json",
+        "semantic-assurance/elmos-metaprogramming-runtime-codegen-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-212",
+      "name": "elmos-io-environment-observable-semantics",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "observable-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-io-environment-observable-semantics/SKILL.md",
+      "description": "Normalize observable console, file, environment, process and network interactions for source-target comparison.",
+      "dependencies": [
+        "elmos-side-effect-footprint-model"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-io-environment-observable-semantics/model.json",
+        "semantic-assurance/elmos-io-environment-observable-semantics/evidence.json",
+        "semantic-assurance/elmos-io-environment-observable-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-213",
+      "name": "elmos-time-randomness-nondeterminism-semantics",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "nondeterminism",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-time-randomness-nondeterminism-semantics/SKILL.md",
+      "description": "Identify and control clocks, RNG, UUIDs, hash seeds, scheduler order and other nondeterministic inputs to enable fair differential execution.",
+      "dependencies": [
+        "elmos-io-environment-observable-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-time-randomness-nondeterminism-semantics/model.json",
+        "semantic-assurance/elmos-time-randomness-nondeterminism-semantics/evidence.json",
+        "semantic-assurance/elmos-time-randomness-nondeterminism-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-214",
+      "name": "elmos-control-data-effect-equivalence-gate",
+      "version": "1.0.0",
+      "batch": "L",
+      "layer": "quality-gate",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-control-data-effect-equivalence-gate/SKILL.md",
+      "description": "Require closed obligations for CFG, data dependencies, aliasing, effects, errors, resources, async and nondeterminism before behavioral certification.",
+      "dependencies": [
+        "elmos-program-dependence-graph-analyzer",
+        "elmos-alias-points-to-analysis",
+        "elmos-async-await-task-semantics",
+        "elmos-metaprogramming-runtime-codegen-semantics",
+        "elmos-time-randomness-nondeterminism-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-control-data-effect-equivalence-gate/model.json",
+        "semantic-assurance/elmos-control-data-effect-equivalence-gate/evidence.json",
+        "semantic-assurance/elmos-control-data-effect-equivalence-gate/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-215",
+      "name": "elmos-cross-language-memory-model",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "runtime-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-cross-language-memory-model/SKILL.md",
+      "description": "Represent happens-before, visibility, atomicity and data-race legality for Java/.NET/C++/Rust/Swift and other concurrency models.",
+      "dependencies": [
+        "elmos-control-data-effect-equivalence-gate"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-cross-language-memory-model/model.json",
+        "semantic-assurance/elmos-cross-language-memory-model/evidence.json",
+        "semantic-assurance/elmos-cross-language-memory-model/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-216",
+      "name": "elmos-pointer-layout-endianness-semantics",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "runtime-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-pointer-layout-endianness-semantics/SKILL.md",
+      "description": "Preserve pointer arithmetic, provenance-sensitive operations, alignment, padding, bitfields and byte order for native/record migrations.",
+      "dependencies": [
+        "elmos-lifetime-ownership-borrow-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-pointer-layout-endianness-semantics/model.json",
+        "semantic-assurance/elmos-pointer-layout-endianness-semantics/evidence.json",
+        "semantic-assurance/elmos-pointer-layout-endianness-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-217",
+      "name": "elmos-abi-calling-convention-semantics",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "abi-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-abi-calling-convention-semantics/SKILL.md",
+      "description": "Capture platform ABI, calling convention, register/stack classification, symbol mangling and exception ABI obligations.",
+      "dependencies": [
+        "elmos-pointer-layout-endianness-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-abi-calling-convention-semantics/model.json",
+        "semantic-assurance/elmos-abi-calling-convention-semantics/evidence.json",
+        "semantic-assurance/elmos-abi-calling-convention-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-218",
+      "name": "elmos-ffi-marshalling-semantics",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "abi-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-ffi-marshalling-semantics/SKILL.md",
+      "description": "Generate and verify foreign-function bridges, marshalling, ownership transfer, callbacks and error boundaries between source and target runtimes.",
+      "dependencies": [
+        "elmos-abi-calling-convention-semantics",
+        "elmos-serialization-schema-type-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-ffi-marshalling-semantics/model.json",
+        "semantic-assurance/elmos-ffi-marshalling-semantics/evidence.json",
+        "semantic-assurance/elmos-ffi-marshalling-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-219",
+      "name": "elmos-object-layout-vtable-semantics",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "abi-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-object-layout-vtable-semantics/SKILL.md",
+      "description": "Model native object layout, inheritance offsets, vtables, RTTI and COM-style interfaces where binary interoperability matters.",
+      "dependencies": [
+        "elmos-abi-calling-convention-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-object-layout-vtable-semantics/model.json",
+        "semantic-assurance/elmos-object-layout-vtable-semantics/evidence.json",
+        "semantic-assurance/elmos-object-layout-vtable-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-220",
+      "name": "elmos-atomic-memory-order-semantics",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "concurrency-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-atomic-memory-order-semantics/SKILL.md",
+      "description": "Map relaxed/acquire/release/seq-cst atomics and language-specific volatile primitives without strengthening/weakening silently.",
+      "dependencies": [
+        "elmos-cross-language-memory-model"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-atomic-memory-order-semantics/model.json",
+        "semantic-assurance/elmos-atomic-memory-order-semantics/evidence.json",
+        "semantic-assurance/elmos-atomic-memory-order-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-221",
+      "name": "elmos-lock-condition-semaphore-semantics",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "concurrency-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-lock-condition-semaphore-semantics/SKILL.md",
+      "description": "Preserve mutual exclusion, reentrancy, condition-variable wakeups, fairness assumptions and timeout behavior.",
+      "dependencies": [
+        "elmos-cross-language-memory-model"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-lock-condition-semaphore-semantics/model.json",
+        "semantic-assurance/elmos-lock-condition-semaphore-semantics/evidence.json",
+        "semantic-assurance/elmos-lock-condition-semaphore-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-222",
+      "name": "elmos-actor-channel-mailbox-semantics",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "concurrency-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-actor-channel-mailbox-semantics/SKILL.md",
+      "description": "Represent actor/channel ordering, buffering, supervision, mailbox behavior and failure propagation for distributed/concurrent conversions.",
+      "dependencies": [
+        "elmos-cross-language-memory-model"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-actor-channel-mailbox-semantics/model.json",
+        "semantic-assurance/elmos-actor-channel-mailbox-semantics/evidence.json",
+        "semantic-assurance/elmos-actor-channel-mailbox-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-223",
+      "name": "elmos-thread-scheduler-determinism-lab",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "concurrency-verification",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-thread-scheduler-determinism-lab/SKILL.md",
+      "description": "Systematically explore permitted thread schedules, races, deadlocks and starvation-sensitive behavior across source and target runtimes.",
+      "dependencies": [
+        "elmos-atomic-memory-order-semantics",
+        "elmos-lock-condition-semaphore-semantics",
+        "elmos-actor-channel-mailbox-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-thread-scheduler-determinism-lab/model.json",
+        "semantic-assurance/elmos-thread-scheduler-determinism-lab/evidence.json",
+        "semantic-assurance/elmos-thread-scheduler-determinism-lab/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-224",
+      "name": "elmos-integer-ub-language-lawyer",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "undefined-behavior",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-integer-ub-language-lawyer/SKILL.md",
+      "description": "Classify integer overflow, shifts, casts, uninitialized values and language-specific undefined/implementation-defined behavior before conversion.",
+      "dependencies": [
+        "elmos-numeric-type-range-overflow"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-integer-ub-language-lawyer/model.json",
+        "semantic-assurance/elmos-integer-ub-language-lawyer/evidence.json",
+        "semantic-assurance/elmos-integer-ub-language-lawyer/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-225",
+      "name": "elmos-ieee754-floating-point-semantics",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "numeric-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-ieee754-floating-point-semantics/SKILL.md",
+      "description": "Preserve NaN, infinities, signed zero, rounding, fused operations, extended precision and tolerance policies.",
+      "dependencies": [
+        "elmos-numeric-type-range-overflow"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-ieee754-floating-point-semantics/model.json",
+        "semantic-assurance/elmos-ieee754-floating-point-semantics/evidence.json",
+        "semantic-assurance/elmos-ieee754-floating-point-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-226",
+      "name": "elmos-decimal-money-arithmetic-semantics",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "numeric-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-decimal-money-arithmetic-semantics/SKILL.md",
+      "description": "Preserve decimal scale, rounding, packed/zoned decimal, currency precision and monetary comparison rules.",
+      "dependencies": [
+        "elmos-numeric-type-range-overflow"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-decimal-money-arithmetic-semantics/model.json",
+        "semantic-assurance/elmos-decimal-money-arithmetic-semantics/evidence.json",
+        "semantic-assurance/elmos-decimal-money-arithmetic-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-227",
+      "name": "elmos-datetime-timezone-calendar-semantics",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "temporal-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-datetime-timezone-calendar-semantics/SKILL.md",
+      "description": "Preserve instant/local date/time, timezone database, DST ambiguity, calendar rules, epoch ranges and serialization.",
+      "dependencies": [
+        "elmos-serialization-schema-type-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-datetime-timezone-calendar-semantics/model.json",
+        "semantic-assurance/elmos-datetime-timezone-calendar-semantics/evidence.json",
+        "semantic-assurance/elmos-datetime-timezone-calendar-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-228",
+      "name": "elmos-text-encoding-collation-locale-semantics",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "text-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-text-encoding-collation-locale-semantics/SKILL.md",
+      "description": "Preserve EBCDIC/ASCII/Unicode conversions, locale-sensitive casing, collation, normalization and database/string comparison behavior.",
+      "dependencies": [
+        "elmos-string-char-codepoint-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-text-encoding-collation-locale-semantics/model.json",
+        "semantic-assurance/elmos-text-encoding-collation-locale-semantics/evidence.json",
+        "semantic-assurance/elmos-text-encoding-collation-locale-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-229",
+      "name": "elmos-binary-record-wire-layout-semantics",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "wire-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-binary-record-wire-layout-semantics/SKILL.md",
+      "description": "Preserve fixed records, copybooks, packed fields, alignment, endian, protocol framing and exact byte-level interchange contracts.",
+      "dependencies": [
+        "elmos-pointer-layout-endianness-semantics",
+        "elmos-decimal-money-arithmetic-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-binary-record-wire-layout-semantics/model.json",
+        "semantic-assurance/elmos-binary-record-wire-layout-semantics/evidence.json",
+        "semantic-assurance/elmos-binary-record-wire-layout-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-230",
+      "name": "elmos-sql-null-collation-isolation-semantics",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "data-semantics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-sql-null-collation-isolation-semantics/SKILL.md",
+      "description": "Capture three-valued logic, collation, locking/isolation, identity/sequence and vendor procedural differences during language/data migration.",
+      "dependencies": [
+        "elmos-embedded-sql-routine-migrator",
+        "elmos-text-encoding-collation-locale-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-sql-null-collation-isolation-semantics/model.json",
+        "semantic-assurance/elmos-sql-null-collation-isolation-semantics/evidence.json",
+        "semantic-assurance/elmos-sql-null-collation-isolation-semantics/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-231",
+      "name": "elmos-native-ub-sanitizer-orchestrator",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "runtime-verification",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-native-ub-sanitizer-orchestrator/SKILL.md",
+      "description": "Run sanitizer/interpreter profiles such as ASan/UBSan/TSan/Miri or route-equivalent tools and turn findings into conversion blockers/evidence.",
+      "dependencies": [
+        "elmos-integer-ub-language-lawyer",
+        "elmos-thread-scheduler-determinism-lab",
+        "elmos-pointer-layout-endianness-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-native-ub-sanitizer-orchestrator/model.json",
+        "semantic-assurance/elmos-native-ub-sanitizer-orchestrator/evidence.json",
+        "semantic-assurance/elmos-native-ub-sanitizer-orchestrator/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-232",
+      "name": "elmos-runtime-edge-semantics-gate",
+      "version": "1.0.0",
+      "batch": "M",
+      "layer": "quality-gate",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-runtime-edge-semantics-gate/SKILL.md",
+      "description": "Aggregate memory, ABI, concurrency, numeric, temporal, encoding, wire, SQL and UB obligations before behavioral equivalence can pass.",
+      "dependencies": [
+        "elmos-ffi-marshalling-semantics",
+        "elmos-object-layout-vtable-semantics",
+        "elmos-native-ub-sanitizer-orchestrator",
+        "elmos-ieee754-floating-point-semantics",
+        "elmos-decimal-money-arithmetic-semantics",
+        "elmos-datetime-timezone-calendar-semantics",
+        "elmos-binary-record-wire-layout-semantics",
+        "elmos-sql-null-collation-isolation-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-runtime-edge-semantics-gate/model.json",
+        "semantic-assurance/elmos-runtime-edge-semantics-gate/evidence.json",
+        "semantic-assurance/elmos-runtime-edge-semantics-gate/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-233",
+      "name": "elmos-observable-behavior-specification",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "behavior-oracle",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-observable-behavior-specification/SKILL.md",
+      "description": "Define route-specific observables and comparison relations so equivalence means the same externally relevant behavior, not identical implementation.",
+      "dependencies": [
+        "elmos-runtime-edge-semantics-gate"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-observable-behavior-specification/model.json",
+        "semantic-assurance/elmos-observable-behavior-specification/evidence.json",
+        "semantic-assurance/elmos-observable-behavior-specification/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-234",
+      "name": "elmos-input-domain-partitioner",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "behavior-oracle",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-input-domain-partitioner/SKILL.md",
+      "description": "Partition valid, invalid, boundary, adversarial and environment-dependent inputs from source contracts and traces to drive complete equivalence tests.",
+      "dependencies": [
+        "elmos-observable-behavior-specification"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-input-domain-partitioner/model.json",
+        "semantic-assurance/elmos-input-domain-partitioner/evidence.json",
+        "semantic-assurance/elmos-input-domain-partitioner/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-235",
+      "name": "elmos-semantic-golden-master-capture",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "behavior-oracle",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-semantic-golden-master-capture/SKILL.md",
+      "description": "Capture source outputs, traces and state snapshots with normalization and provenance as replayable baseline evidence.",
+      "dependencies": [
+        "elmos-input-domain-partitioner"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-semantic-golden-master-capture/model.json",
+        "semantic-assurance/elmos-semantic-golden-master-capture/evidence.json",
+        "semantic-assurance/elmos-semantic-golden-master-capture/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-236",
+      "name": "elmos-multi-oracle-differential-executor",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "behavior-oracle",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-multi-oracle-differential-executor/SKILL.md",
+      "description": "Execute source and target under matched inputs/environments and compare multiple independent observables instead of stdout-only diffs.",
+      "dependencies": [
+        "elmos-semantic-golden-master-capture",
+        "elmos-time-randomness-nondeterminism-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-multi-oracle-differential-executor/model.json",
+        "semantic-assurance/elmos-multi-oracle-differential-executor/evidence.json",
+        "semantic-assurance/elmos-multi-oracle-differential-executor/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-237",
+      "name": "elmos-cross-runtime-trace-alignment",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "behavior-oracle",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-cross-runtime-trace-alignment/SKILL.md",
+      "description": "Align semantically corresponding calls/events/transactions across structurally different runtimes using stable semantic event identities.",
+      "dependencies": [
+        "elmos-multi-oracle-differential-executor"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-cross-runtime-trace-alignment/model.json",
+        "semantic-assurance/elmos-cross-runtime-trace-alignment/evidence.json",
+        "semantic-assurance/elmos-cross-runtime-trace-alignment/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-238",
+      "name": "elmos-state-snapshot-equivalence",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "behavior-oracle",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-state-snapshot-equivalence/SKILL.md",
+      "description": "Compare selected object/heap/session state under canonical schemas while ignoring approved representation-only differences.",
+      "dependencies": [
+        "elmos-multi-oracle-differential-executor"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-state-snapshot-equivalence/model.json",
+        "semantic-assurance/elmos-state-snapshot-equivalence/evidence.json",
+        "semantic-assurance/elmos-state-snapshot-equivalence/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-239",
+      "name": "elmos-database-state-equivalence",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "behavior-oracle",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-database-state-equivalence/SKILL.md",
+      "description": "Compare committed database state, constraints, keys, isolation outcomes and audit effects across source and target executions.",
+      "dependencies": [
+        "elmos-multi-oracle-differential-executor",
+        "elmos-sql-null-collation-isolation-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-database-state-equivalence/model.json",
+        "semantic-assurance/elmos-database-state-equivalence/evidence.json",
+        "semantic-assurance/elmos-database-state-equivalence/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-240",
+      "name": "elmos-message-event-equivalence",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "behavior-oracle",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-message-event-equivalence/SKILL.md",
+      "description": "Compare queues, topics, event envelopes, ordering, delivery semantics and deduplication outcomes.",
+      "dependencies": [
+        "elmos-multi-oracle-differential-executor"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-message-event-equivalence/model.json",
+        "semantic-assurance/elmos-message-event-equivalence/evidence.json",
+        "semantic-assurance/elmos-message-event-equivalence/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-241",
+      "name": "elmos-file-network-sideeffect-equivalence",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "behavior-oracle",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-file-network-sideeffect-equivalence/SKILL.md",
+      "description": "Compare filesystem and network effects including paths, bytes, status codes, headers, retries and external call contracts.",
+      "dependencies": [
+        "elmos-multi-oracle-differential-executor"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-file-network-sideeffect-equivalence/model.json",
+        "semantic-assurance/elmos-file-network-sideeffect-equivalence/evidence.json",
+        "semantic-assurance/elmos-file-network-sideeffect-equivalence/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-242",
+      "name": "elmos-api-contract-behavior-equivalence",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "behavior-oracle",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-api-contract-behavior-equivalence/SKILL.md",
+      "description": "Verify status/error mapping, validation, pagination, authentication, compatibility and schema behavior at public APIs.",
+      "dependencies": [
+        "elmos-public-api-binary-compatibility",
+        "elmos-multi-oracle-differential-executor"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-api-contract-behavior-equivalence/model.json",
+        "semantic-assurance/elmos-api-contract-behavior-equivalence/evidence.json",
+        "semantic-assurance/elmos-api-contract-behavior-equivalence/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-243",
+      "name": "elmos-ui-interaction-equivalence",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "behavior-oracle",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-ui-interaction-equivalence/SKILL.md",
+      "description": "Compare user-visible workflows, navigation, form validation, accessibility-critical state and UI-triggered side effects across frameworks.",
+      "dependencies": [
+        "elmos-multi-oracle-differential-executor"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-ui-interaction-equivalence/model.json",
+        "semantic-assurance/elmos-ui-interaction-equivalence/evidence.json",
+        "semantic-assurance/elmos-ui-interaction-equivalence/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-244",
+      "name": "elmos-performance-complexity-equivalence",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "nonfunctional-equivalence",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-performance-complexity-equivalence/SKILL.md",
+      "description": "Detect asymptotic regressions and material latency/throughput/resource changes under statistically valid route-specific budgets.",
+      "dependencies": [
+        "elmos-multi-oracle-differential-executor"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-performance-complexity-equivalence/model.json",
+        "semantic-assurance/elmos-performance-complexity-equivalence/evidence.json",
+        "semantic-assurance/elmos-performance-complexity-equivalence/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-245",
+      "name": "elmos-security-policy-equivalence",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "nonfunctional-equivalence",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-security-policy-equivalence/SKILL.md",
+      "description": "Verify authentication, authorization, input handling, cryptographic policy and security-relevant defaults remain at least as strong after conversion.",
+      "dependencies": [
+        "elmos-multi-oracle-differential-executor"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-security-policy-equivalence/model.json",
+        "semantic-assurance/elmos-security-policy-equivalence/evidence.json",
+        "semantic-assurance/elmos-security-policy-equivalence/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-246",
+      "name": "elmos-deterministic-replay-oracle",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "behavior-oracle",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-deterministic-replay-oracle/SKILL.md",
+      "description": "Record and replay external nondeterministic inputs and schedules where possible to turn flaky differential failures into reproducible evidence.",
+      "dependencies": [
+        "elmos-time-randomness-nondeterminism-semantics",
+        "elmos-cross-runtime-trace-alignment"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-deterministic-replay-oracle/model.json",
+        "semantic-assurance/elmos-deterministic-replay-oracle/evidence.json",
+        "semantic-assurance/elmos-deterministic-replay-oracle/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-247",
+      "name": "elmos-semantic-refinement-counterexample",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "behavior-oracle",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-semantic-refinement-counterexample/SKILL.md",
+      "description": "Judge target behavior as equality/refinement under the declared relation and emit minimal counterexamples for violations.",
+      "dependencies": [
+        "elmos-deterministic-replay-oracle",
+        "elmos-observable-behavior-specification"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-semantic-refinement-counterexample/model.json",
+        "semantic-assurance/elmos-semantic-refinement-counterexample/evidence.json",
+        "semantic-assurance/elmos-semantic-refinement-counterexample/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-248",
+      "name": "elmos-behavior-equivalence-verdict-aggregator",
+      "version": "1.0.0",
+      "batch": "N",
+      "layer": "quality-gate",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-behavior-equivalence-verdict-aggregator/SKILL.md",
+      "description": "Aggregate all behavioral, state, side-effect, performance and security oracles into scoped pass/fail/blocked/waived verdicts with evidence freshness checks.",
+      "dependencies": [
+        "elmos-semantic-refinement-counterexample",
+        "elmos-database-state-equivalence",
+        "elmos-message-event-equivalence",
+        "elmos-file-network-sideeffect-equivalence",
+        "elmos-api-contract-behavior-equivalence",
+        "elmos-ui-interaction-equivalence",
+        "elmos-performance-complexity-equivalence",
+        "elmos-security-policy-equivalence"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-behavior-equivalence-verdict-aggregator/model.json",
+        "semantic-assurance/elmos-behavior-equivalence-verdict-aggregator/evidence.json",
+        "semantic-assurance/elmos-behavior-equivalence-verdict-aggregator/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-249",
+      "name": "elmos-fixture-corpus-governance",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "corpus",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-fixture-corpus-governance/SKILL.md",
+      "description": "Define ownership, provenance, licensing, sensitivity, versioning and reproducibility rules for real/open/commercial fixture corpora.",
+      "dependencies": [
+        "elmos-behavior-equivalence-verdict-aggregator"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-fixture-corpus-governance/model.json",
+        "semantic-assurance/elmos-fixture-corpus-governance/evidence.json",
+        "semantic-assurance/elmos-fixture-corpus-governance/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-250",
+      "name": "elmos-public-fixture-license-provenance",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "corpus",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-public-fixture-license-provenance/SKILL.md",
+      "description": "Track repository origin, commit, license, redistribution constraints and transformations for public/open-source certification fixtures.",
+      "dependencies": [
+        "elmos-fixture-corpus-governance"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-public-fixture-license-provenance/model.json",
+        "semantic-assurance/elmos-public-fixture-license-provenance/evidence.json",
+        "semantic-assurance/elmos-public-fixture-license-provenance/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-251",
+      "name": "elmos-language-spec-conformance-mapper",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "corpus",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-language-spec-conformance-mapper/SKILL.md",
+      "description": "Map normative language/runtime specification clauses and official conformance tests to ELMOS semantic features and route obligations.",
+      "dependencies": [
+        "elmos-grammar-spec-ingestor"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-language-spec-conformance-mapper/model.json",
+        "semantic-assurance/elmos-language-spec-conformance-mapper/evidence.json",
+        "semantic-assurance/elmos-language-spec-conformance-mapper/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-252",
+      "name": "elmos-grammar-feature-coverage",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "corpus-metrics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-grammar-feature-coverage/SKILL.md",
+      "description": "Measure parser/converter coverage over grammar productions, dialect extensions and syntactic combinations rather than file count.",
+      "dependencies": [
+        "elmos-language-spec-conformance-mapper",
+        "elmos-frontend-consistency-gate"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-grammar-feature-coverage/model.json",
+        "semantic-assurance/elmos-grammar-feature-coverage/evidence.json",
+        "semantic-assurance/elmos-grammar-feature-coverage/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-253",
+      "name": "elmos-semantic-feature-coverage",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "corpus-metrics",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-semantic-feature-coverage/SKILL.md",
+      "description": "Measure route corpus coverage of type, control-flow, runtime, effect and behavior semantic obligations.",
+      "dependencies": [
+        "elmos-language-spec-conformance-mapper",
+        "elmos-runtime-edge-semantics-gate"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-semantic-feature-coverage/model.json",
+        "semantic-assurance/elmos-semantic-feature-coverage/evidence.json",
+        "semantic-assurance/elmos-semantic-feature-coverage/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-254",
+      "name": "elmos-dialect-version-fixture-matrix",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "corpus",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-dialect-version-fixture-matrix/SKILL.md",
+      "description": "Maintain representative fixtures across language editions, vendor compilers, compatibility modes and framework/runtime versions.",
+      "dependencies": [
+        "elmos-dialect-version-detector"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-dialect-version-fixture-matrix/model.json",
+        "semantic-assurance/elmos-dialect-version-fixture-matrix/evidence.json",
+        "semantic-assurance/elmos-dialect-version-fixture-matrix/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-255",
+      "name": "elmos-adversarial-edge-case-corpus",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "corpus",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adversarial-edge-case-corpus/SKILL.md",
+      "description": "Curate boundary and pathological programs that stress parsing, typing, UB, concurrency, numeric, encoding and reflection semantics.",
+      "dependencies": [
+        "elmos-semantic-feature-coverage"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-adversarial-edge-case-corpus/model.json",
+        "semantic-assurance/elmos-adversarial-edge-case-corpus/evidence.json",
+        "semantic-assurance/elmos-adversarial-edge-case-corpus/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-256",
+      "name": "elmos-legacy-business-pattern-corpus",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "corpus",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-legacy-business-pattern-corpus/SKILL.md",
+      "description": "Curate realistic batch, transaction, screen, record, report, decimal and procedural patterns from COBOL/RPG/PL/I/4GL estates.",
+      "dependencies": [
+        "elmos-fixture-corpus-governance"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-legacy-business-pattern-corpus/model.json",
+        "semantic-assurance/elmos-legacy-business-pattern-corpus/evidence.json",
+        "semantic-assurance/elmos-legacy-business-pattern-corpus/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-257",
+      "name": "elmos-golden-route-repository-fixtures",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "corpus",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-golden-route-repository-fixtures/SKILL.md",
+      "description": "Build small/medium/large repository fixtures for every high-value Golden Route with source-native builds, tests and expected evidence.",
+      "dependencies": [
+        "elmos-legacy-business-pattern-corpus",
+        "elmos-dialect-version-fixture-matrix"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-golden-route-repository-fixtures/model.json",
+        "semantic-assurance/elmos-golden-route-repository-fixtures/evidence.json",
+        "semantic-assurance/elmos-golden-route-repository-fixtures/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-258",
+      "name": "elmos-generated-program-corpus",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "corpus",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-generated-program-corpus/SKILL.md",
+      "description": "Generate semantically valid random programs and structured inputs to explore compiler/converter behavior beyond hand-authored fixtures.",
+      "dependencies": [
+        "elmos-semantic-feature-coverage"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-generated-program-corpus/model.json",
+        "semantic-assurance/elmos-generated-program-corpus/evidence.json",
+        "semantic-assurance/elmos-generated-program-corpus/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-259",
+      "name": "elmos-bug-regression-corpus",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "corpus",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-bug-regression-corpus/SKILL.md",
+      "description": "Promote every confirmed semantic mismatch, compiler bug and production incident into a minimized permanent regression fixture.",
+      "dependencies": [
+        "elmos-semantic-refinement-counterexample"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-bug-regression-corpus/model.json",
+        "semantic-assurance/elmos-bug-regression-corpus/evidence.json",
+        "semantic-assurance/elmos-bug-regression-corpus/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-260",
+      "name": "elmos-fixture-minimizer-deduplicator",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "corpus",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-fixture-minimizer-deduplicator/SKILL.md",
+      "description": "Reduce failing fixtures while preserving the failure oracle and deduplicate semantically equivalent corpus items to control certification cost.",
+      "dependencies": [
+        "elmos-bug-regression-corpus"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-fixture-minimizer-deduplicator/model.json",
+        "semantic-assurance/elmos-fixture-minimizer-deduplicator/evidence.json",
+        "semantic-assurance/elmos-fixture-minimizer-deduplicator/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-261",
+      "name": "elmos-corpus-drift-freshness-manager",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "corpus",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-corpus-drift-freshness-manager/SKILL.md",
+      "description": "Detect stale toolchain/spec/framework fixtures and schedule recertification when source standards, compilers or dependencies change.",
+      "dependencies": [
+        "elmos-fixture-corpus-governance",
+        "elmos-dialect-version-fixture-matrix"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-corpus-drift-freshness-manager/model.json",
+        "semantic-assurance/elmos-corpus-drift-freshness-manager/evidence.json",
+        "semantic-assurance/elmos-corpus-drift-freshness-manager/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-262",
+      "name": "elmos-certification-corpus-readiness-gate",
+      "version": "1.0.0",
+      "batch": "O",
+      "layer": "quality-gate",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-certification-corpus-readiness-gate/SKILL.md",
+      "description": "Require sufficient syntax, semantic, dialect, adversarial, regression and scale coverage before a route can enter E4/E5 certification.",
+      "dependencies": [
+        "elmos-grammar-feature-coverage",
+        "elmos-semantic-feature-coverage",
+        "elmos-golden-route-repository-fixtures",
+        "elmos-generated-program-corpus",
+        "elmos-fixture-minimizer-deduplicator",
+        "elmos-corpus-drift-freshness-manager"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-certification-corpus-readiness-gate/model.json",
+        "semantic-assurance/elmos-certification-corpus-readiness-gate/evidence.json",
+        "semantic-assurance/elmos-certification-corpus-readiness-gate/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-263",
+      "name": "elmos-hermetic-toolchain-image-builder",
+      "version": "1.0.0",
+      "batch": "P",
+      "layer": "runtime-lab",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-hermetic-toolchain-image-builder/SKILL.md",
+      "description": "Build content-addressed toolchain/runtime images or VM descriptors with pinned compilers, SDKs, linkers, locale and OS dependencies.",
+      "dependencies": [
+        "elmos-certification-corpus-readiness-gate"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-hermetic-toolchain-image-builder/model.json",
+        "semantic-assurance/elmos-hermetic-toolchain-image-builder/evidence.json",
+        "semantic-assurance/elmos-hermetic-toolchain-image-builder/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-264",
+      "name": "elmos-compiler-runtime-version-matrix",
+      "version": "1.0.0",
+      "batch": "P",
+      "layer": "runtime-lab",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-compiler-runtime-version-matrix/SKILL.md",
+      "description": "Execute fixture suites across supported compiler/runtime versions and optimization modes to expose version-specific semantics.",
+      "dependencies": [
+        "elmos-hermetic-toolchain-image-builder"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-compiler-runtime-version-matrix/model.json",
+        "semantic-assurance/elmos-compiler-runtime-version-matrix/evidence.json",
+        "semantic-assurance/elmos-compiler-runtime-version-matrix/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-265",
+      "name": "elmos-os-arch-libc-matrix",
+      "version": "1.0.0",
+      "batch": "P",
+      "layer": "runtime-lab",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-os-arch-libc-matrix/SKILL.md",
+      "description": "Test platform-sensitive routes across OS, CPU architecture, endianness and libc/runtime implementations where semantics or ABI can differ.",
+      "dependencies": [
+        "elmos-hermetic-toolchain-image-builder"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-os-arch-libc-matrix/model.json",
+        "semantic-assurance/elmos-os-arch-libc-matrix/evidence.json",
+        "semantic-assurance/elmos-os-arch-libc-matrix/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-266",
+      "name": "elmos-mainframe-native-runtime-lab",
+      "version": "1.0.0",
+      "batch": "P",
+      "layer": "runtime-lab",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-mainframe-native-runtime-lab/SKILL.md",
+      "description": "Define controlled z/OS-style native execution for COBOL/PL/I/JCL/CICS/IMS/DB2 characterization and differential evidence.",
+      "dependencies": [
+        "elmos-compiler-runtime-version-matrix"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-mainframe-native-runtime-lab/model.json",
+        "semantic-assurance/elmos-mainframe-native-runtime-lab/evidence.json",
+        "semantic-assurance/elmos-mainframe-native-runtime-lab/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-267",
+      "name": "elmos-ibmi-native-runtime-lab",
+      "version": "1.0.0",
+      "batch": "P",
+      "layer": "runtime-lab",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-ibmi-native-runtime-lab/SKILL.md",
+      "description": "Define controlled IBM i execution for RPG/CL/DDS/DB2 for i including library lists, job state, commitment control and object authority.",
+      "dependencies": [
+        "elmos-compiler-runtime-version-matrix"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-ibmi-native-runtime-lab/model.json",
+        "semantic-assurance/elmos-ibmi-native-runtime-lab/evidence.json",
+        "semantic-assurance/elmos-ibmi-native-runtime-lab/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-268",
+      "name": "elmos-windows-legacy-runtime-lab",
+      "version": "1.0.0",
+      "batch": "P",
+      "layer": "runtime-lab",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-windows-legacy-runtime-lab/SKILL.md",
+      "description": "Provide isolated Windows environments for VB6/COM/ActiveX/PowerBuilder/Delphi/FoxPro behavior capture and migration verification.",
+      "dependencies": [
+        "elmos-compiler-runtime-version-matrix"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-windows-legacy-runtime-lab/model.json",
+        "semantic-assurance/elmos-windows-legacy-runtime-lab/evidence.json",
+        "semantic-assurance/elmos-windows-legacy-runtime-lab/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-269",
+      "name": "elmos-sap-abap-runtime-lab",
+      "version": "1.0.0",
+      "batch": "P",
+      "layer": "runtime-lab",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-sap-abap-runtime-lab/SKILL.md",
+      "description": "Define authorized SAP sandbox execution for ABAP/Open SQL/BAPI/RFC/IDoc/LUW behavior characterization without leaking customer systems.",
+      "dependencies": [
+        "elmos-compiler-runtime-version-matrix"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-sap-abap-runtime-lab/model.json",
+        "semantic-assurance/elmos-sap-abap-runtime-lab/evidence.json",
+        "semantic-assurance/elmos-sap-abap-runtime-lab/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-270",
+      "name": "elmos-scientific-hpc-runtime-lab",
+      "version": "1.0.0",
+      "batch": "P",
+      "layer": "runtime-lab",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-scientific-hpc-runtime-lab/SKILL.md",
+      "description": "Execute Fortran/C/C++ numerical routes with BLAS/LAPACK/MPI/OpenMP/vectorization and deterministic numeric comparison profiles.",
+      "dependencies": [
+        "elmos-compiler-runtime-version-matrix",
+        "elmos-ieee754-floating-point-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-scientific-hpc-runtime-lab/model.json",
+        "semantic-assurance/elmos-scientific-hpc-runtime-lab/evidence.json",
+        "semantic-assurance/elmos-scientific-hpc-runtime-lab/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-271",
+      "name": "elmos-mobile-native-runtime-lab",
+      "version": "1.0.0",
+      "batch": "P",
+      "layer": "runtime-lab",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-mobile-native-runtime-lab/SKILL.md",
+      "description": "Run Swift/Objective-C/Kotlin/Java/Flutter/React-derived mobile workloads across simulator/device profiles with lifecycle and platform-channel evidence.",
+      "dependencies": [
+        "elmos-compiler-runtime-version-matrix"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-mobile-native-runtime-lab/model.json",
+        "semantic-assurance/elmos-mobile-native-runtime-lab/evidence.json",
+        "semantic-assurance/elmos-mobile-native-runtime-lab/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-272",
+      "name": "elmos-browser-js-wasm-runtime-lab",
+      "version": "1.0.0",
+      "batch": "P",
+      "layer": "runtime-lab",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-browser-js-wasm-runtime-lab/SKILL.md",
+      "description": "Run ECMAScript/TypeScript/React/Wasm-related fixtures across major engines with conformance and portable-semantics checks.",
+      "dependencies": [
+        "elmos-compiler-runtime-version-matrix"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-browser-js-wasm-runtime-lab/model.json",
+        "semantic-assurance/elmos-browser-js-wasm-runtime-lab/evidence.json",
+        "semantic-assurance/elmos-browser-js-wasm-runtime-lab/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-273",
+      "name": "elmos-database-message-runtime-lab",
+      "version": "1.0.0",
+      "batch": "P",
+      "layer": "runtime-lab",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-database-message-runtime-lab/SKILL.md",
+      "description": "Provision real compatible database/message broker matrices for transaction, collation, delivery and retry equivalence instead of mocks-only certification.",
+      "dependencies": [
+        "elmos-os-arch-libc-matrix"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-database-message-runtime-lab/model.json",
+        "semantic-assurance/elmos-database-message-runtime-lab/evidence.json",
+        "semantic-assurance/elmos-database-message-runtime-lab/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-274",
+      "name": "elmos-native-runtime-lab-evidence-attestor",
+      "version": "1.0.0",
+      "batch": "P",
+      "layer": "runtime-lab-gate",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-native-runtime-lab-evidence-attestor/SKILL.md",
+      "description": "Bind runtime evidence to immutable image/VM, hardware, compiler, dependency, fixture, command and output identities and reject stale lab evidence.",
+      "dependencies": [
+        "elmos-mainframe-native-runtime-lab",
+        "elmos-ibmi-native-runtime-lab",
+        "elmos-windows-legacy-runtime-lab",
+        "elmos-sap-abap-runtime-lab",
+        "elmos-scientific-hpc-runtime-lab",
+        "elmos-mobile-native-runtime-lab",
+        "elmos-browser-js-wasm-runtime-lab",
+        "elmos-database-message-runtime-lab"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-native-runtime-lab-evidence-attestor/model.json",
+        "semantic-assurance/elmos-native-runtime-lab-evidence-attestor/evidence.json",
+        "semantic-assurance/elmos-native-runtime-lab-evidence-attestor/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-275",
+      "name": "elmos-formal-semantics-contract",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "formal-assurance",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-formal-semantics-contract/SKILL.md",
+      "description": "Define the source/target semantic relation, observable behavior domain, undefined behavior assumptions and proof scope before applying formal methods.",
+      "dependencies": [
+        "elmos-native-runtime-lab-evidence-attestor",
+        "elmos-observable-behavior-specification"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-formal-semantics-contract/model.json",
+        "semantic-assurance/elmos-formal-semantics-contract/evidence.json",
+        "semantic-assurance/elmos-formal-semantics-contract/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-276",
+      "name": "elmos-translation-validation-planner",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "formal-assurance",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-translation-validation-planner/SKILL.md",
+      "description": "Select per-function/module/route validation strategies such as refinement checking, symbolic execution, BMC or runtime differential evidence.",
+      "dependencies": [
+        "elmos-formal-semantics-contract"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-translation-validation-planner/model.json",
+        "semantic-assurance/elmos-translation-validation-planner/evidence.json",
+        "semantic-assurance/elmos-translation-validation-planner/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-277",
+      "name": "elmos-llvm-ir-refinement-checker",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "formal-assurance",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-llvm-ir-refinement-checker/SKILL.md",
+      "description": "Lower suitable native-language fragments to LLVM IR and use refinement-style translation validation where source/target semantics can be represented safely.",
+      "dependencies": [
+        "elmos-translation-validation-planner",
+        "elmos-native-ub-sanitizer-orchestrator"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-llvm-ir-refinement-checker/model.json",
+        "semantic-assurance/elmos-llvm-ir-refinement-checker/evidence.json",
+        "semantic-assurance/elmos-llvm-ir-refinement-checker/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-278",
+      "name": "elmos-smt-equivalence-prover",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "formal-assurance",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-smt-equivalence-prover/SKILL.md",
+      "description": "Encode bounded pure/finite semantic obligations into SMT and prove equivalence/refinement or return concrete counterexamples.",
+      "dependencies": [
+        "elmos-translation-validation-planner"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-smt-equivalence-prover/model.json",
+        "semantic-assurance/elmos-smt-equivalence-prover/evidence.json",
+        "semantic-assurance/elmos-smt-equivalence-prover/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-279",
+      "name": "elmos-symbolic-execution-equivalence",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "formal-assurance",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-symbolic-execution-equivalence/SKILL.md",
+      "description": "Symbolically execute source/target paths for selected modules and compare path conditions, outputs and side effects under bounded models.",
+      "dependencies": [
+        "elmos-smt-equivalence-prover"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-symbolic-execution-equivalence/model.json",
+        "semantic-assurance/elmos-symbolic-execution-equivalence/evidence.json",
+        "semantic-assurance/elmos-symbolic-execution-equivalence/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-280",
+      "name": "elmos-bounded-model-checking-equivalence",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "formal-assurance",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-bounded-model-checking-equivalence/SKILL.md",
+      "description": "Check bounded loops/state machines/concurrency properties and source-target assertions with explicit bounds and counterexamples.",
+      "dependencies": [
+        "elmos-smt-equivalence-prover"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-bounded-model-checking-equivalence/model.json",
+        "semantic-assurance/elmos-bounded-model-checking-equivalence/evidence.json",
+        "semantic-assurance/elmos-bounded-model-checking-equivalence/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-281",
+      "name": "elmos-abstract-interpretation-invariant-engine",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "formal-assurance",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-abstract-interpretation-invariant-engine/SKILL.md",
+      "description": "Infer ranges, nullness, alias/effect facts and invariants that strengthen conversion safety and reduce proof/testing search space.",
+      "dependencies": [
+        "elmos-program-dependence-graph-analyzer"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-abstract-interpretation-invariant-engine/model.json",
+        "semantic-assurance/elmos-abstract-interpretation-invariant-engine/evidence.json",
+        "semantic-assurance/elmos-abstract-interpretation-invariant-engine/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-282",
+      "name": "elmos-proof-obligation-generator",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "formal-assurance",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-proof-obligation-generator/SKILL.md",
+      "description": "Generate route-specific obligations from semantic IR, source contracts and target adaptations, with machine-readable status and dependency graphs.",
+      "dependencies": [
+        "elmos-translation-validation-planner",
+        "elmos-refinement-range-contract-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-proof-obligation-generator/model.json",
+        "semantic-assurance/elmos-proof-obligation-generator/evidence.json",
+        "semantic-assurance/elmos-proof-obligation-generator/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-283",
+      "name": "elmos-contract-invariant-inference",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "formal-assurance",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-contract-invariant-inference/SKILL.md",
+      "description": "Infer candidate preconditions, postconditions and invariants from code, traces and tests while distinguishing inferred hypotheses from proven contracts.",
+      "dependencies": [
+        "elmos-abstract-interpretation-invariant-engine",
+        "elmos-semantic-golden-master-capture"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-contract-invariant-inference/model.json",
+        "semantic-assurance/elmos-contract-invariant-inference/evidence.json",
+        "semantic-assurance/elmos-contract-invariant-inference/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-284",
+      "name": "elmos-verified-lowering-route",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "formal-assurance",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-verified-lowering-route/SKILL.md",
+      "description": "Define high-assurance lowering paths where a verified compiler/intermediate target or proof-producing step can reduce the trusted computing base.",
+      "dependencies": [
+        "elmos-proof-obligation-generator"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-verified-lowering-route/model.json",
+        "semantic-assurance/elmos-verified-lowering-route/evidence.json",
+        "semantic-assurance/elmos-verified-lowering-route/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-285",
+      "name": "elmos-wasm-portable-semantics-oracle",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "formal-assurance",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-wasm-portable-semantics-oracle/SKILL.md",
+      "description": "Use WebAssembly’s specified validation/execution semantics and reference tests as an optional portable low-level oracle for suitable cross-language kernels.",
+      "dependencies": [
+        "elmos-formal-semantics-contract",
+        "elmos-browser-js-wasm-runtime-lab"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-wasm-portable-semantics-oracle/model.json",
+        "semantic-assurance/elmos-wasm-portable-semantics-oracle/evidence.json",
+        "semantic-assurance/elmos-wasm-portable-semantics-oracle/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-286",
+      "name": "elmos-proof-counterexample-replayer",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "formal-assurance",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-proof-counterexample-replayer/SKILL.md",
+      "description": "Convert solver/model-checker/refinement counterexamples into executable regression tests in source and target environments when possible.",
+      "dependencies": [
+        "elmos-smt-equivalence-prover",
+        "elmos-symbolic-execution-equivalence",
+        "elmos-bounded-model-checking-equivalence"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-proof-counterexample-replayer/model.json",
+        "semantic-assurance/elmos-proof-counterexample-replayer/evidence.json",
+        "semantic-assurance/elmos-proof-counterexample-replayer/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-287",
+      "name": "elmos-proof-cache-invalidation",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "formal-assurance",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-proof-cache-invalidation/SKILL.md",
+      "description": "Cache expensive proof/analysis results by source, IR, toolchain, solver and assumption identity and invalidate them on semantic drift.",
+      "dependencies": [
+        "elmos-proof-obligation-generator"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-proof-cache-invalidation/model.json",
+        "semantic-assurance/elmos-proof-cache-invalidation/evidence.json",
+        "semantic-assurance/elmos-proof-cache-invalidation/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-288",
+      "name": "elmos-formal-assurance-gate",
+      "version": "1.0.0",
+      "batch": "Q",
+      "layer": "quality-gate",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-formal-assurance-gate/SKILL.md",
+      "description": "Aggregate proof/refinement/model-checking evidence where required and combine it with runtime evidence without overclaiming unproved portions.",
+      "dependencies": [
+        "elmos-llvm-ir-refinement-checker",
+        "elmos-symbolic-execution-equivalence",
+        "elmos-bounded-model-checking-equivalence",
+        "elmos-contract-invariant-inference",
+        "elmos-verified-lowering-route",
+        "elmos-wasm-portable-semantics-oracle",
+        "elmos-proof-counterexample-replayer",
+        "elmos-proof-cache-invalidation"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-formal-assurance-gate/model.json",
+        "semantic-assurance/elmos-formal-assurance-gate/evidence.json",
+        "semantic-assurance/elmos-formal-assurance-gate/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-289",
+      "name": "elmos-grammar-based-semantic-fuzzer",
+      "version": "1.0.0",
+      "batch": "R",
+      "layer": "fuzzing",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-grammar-based-semantic-fuzzer/SKILL.md",
+      "description": "Generate/mutate syntactically valid programs and inputs from grammar plus semantic constraints to stress parser and converter edges.",
+      "dependencies": [
+        "elmos-generated-program-corpus",
+        "elmos-grammar-spec-ingestor"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-grammar-based-semantic-fuzzer/model.json",
+        "semantic-assurance/elmos-grammar-based-semantic-fuzzer/evidence.json",
+        "semantic-assurance/elmos-grammar-based-semantic-fuzzer/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-290",
+      "name": "elmos-coverage-guided-differential-fuzzer",
+      "version": "1.0.0",
+      "batch": "R",
+      "layer": "fuzzing",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-coverage-guided-differential-fuzzer/SKILL.md",
+      "description": "Use source/target coverage and behavioral disagreement as guidance to discover semantic conversion mismatches.",
+      "dependencies": [
+        "elmos-grammar-based-semantic-fuzzer",
+        "elmos-multi-oracle-differential-executor"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-coverage-guided-differential-fuzzer/model.json",
+        "semantic-assurance/elmos-coverage-guided-differential-fuzzer/evidence.json",
+        "semantic-assurance/elmos-coverage-guided-differential-fuzzer/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-291",
+      "name": "elmos-metamorphic-transformation-tester",
+      "version": "1.0.0",
+      "batch": "R",
+      "layer": "fuzzing",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-metamorphic-transformation-tester/SKILL.md",
+      "description": "Apply semantics-preserving source transformations and require conversion/output relations to remain stable without needing a perfect oracle.",
+      "dependencies": [
+        "elmos-coverage-guided-differential-fuzzer"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-metamorphic-transformation-tester/model.json",
+        "semantic-assurance/elmos-metamorphic-transformation-tester/evidence.json",
+        "semantic-assurance/elmos-metamorphic-transformation-tester/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-292",
+      "name": "elmos-property-based-cross-language-tester",
+      "version": "1.0.0",
+      "batch": "R",
+      "layer": "fuzzing",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-property-based-cross-language-tester/SKILL.md",
+      "description": "Generate values/state sequences from contracts and assert language-independent properties across source and target implementations.",
+      "dependencies": [
+        "elmos-input-domain-partitioner",
+        "elmos-semantic-feature-coverage"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-property-based-cross-language-tester/model.json",
+        "semantic-assurance/elmos-property-based-cross-language-tester/evidence.json",
+        "semantic-assurance/elmos-property-based-cross-language-tester/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-293",
+      "name": "elmos-compiler-matrix-nversion-oracle",
+      "version": "1.0.0",
+      "batch": "R",
+      "layer": "fuzzing",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-compiler-matrix-nversion-oracle/SKILL.md",
+      "description": "Compile/run fixtures with multiple independent compilers/runtimes to detect implementation-specific behavior and strengthen differential oracles.",
+      "dependencies": [
+        "elmos-compiler-runtime-version-matrix"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-compiler-matrix-nversion-oracle/model.json",
+        "semantic-assurance/elmos-compiler-matrix-nversion-oracle/evidence.json",
+        "semantic-assurance/elmos-compiler-matrix-nversion-oracle/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-294",
+      "name": "elmos-undefined-behavior-filter",
+      "version": "1.0.0",
+      "batch": "R",
+      "layer": "fuzzing",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-undefined-behavior-filter/SKILL.md",
+      "description": "Exclude or explicitly model source cases whose behavior is undefined/unspecified before treating runtime disagreement as converter failure.",
+      "dependencies": [
+        "elmos-native-ub-sanitizer-orchestrator",
+        "elmos-integer-ub-language-lawyer"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-undefined-behavior-filter/model.json",
+        "semantic-assurance/elmos-undefined-behavior-filter/evidence.json",
+        "semantic-assurance/elmos-undefined-behavior-filter/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-295",
+      "name": "elmos-semantic-mutation-testing",
+      "version": "1.0.0",
+      "batch": "R",
+      "layer": "test-strength",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-semantic-mutation-testing/SKILL.md",
+      "description": "Inject behavior-changing mutations into conversion rules/targets and verify that equivalence tests and oracles reliably kill them.",
+      "dependencies": [
+        "elmos-behavior-equivalence-verdict-aggregator"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-semantic-mutation-testing/model.json",
+        "semantic-assurance/elmos-semantic-mutation-testing/evidence.json",
+        "semantic-assurance/elmos-semantic-mutation-testing/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-296",
+      "name": "elmos-equivalent-mutant-classifier",
+      "version": "1.0.0",
+      "batch": "R",
+      "layer": "test-strength",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-equivalent-mutant-classifier/SKILL.md",
+      "description": "Distinguish surviving equivalent/no-op mutations from weak tests using static, differential and bounded proof evidence where feasible.",
+      "dependencies": [
+        "elmos-semantic-mutation-testing",
+        "elmos-smt-equivalence-prover"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-equivalent-mutant-classifier/model.json",
+        "semantic-assurance/elmos-equivalent-mutant-classifier/evidence.json",
+        "semantic-assurance/elmos-equivalent-mutant-classifier/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-297",
+      "name": "elmos-failure-reducer-minimizer",
+      "version": "1.0.0",
+      "batch": "R",
+      "layer": "fuzzing",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-failure-reducer-minimizer/SKILL.md",
+      "description": "Automatically minimize failing source programs, inputs, repository slices and traces while preserving the semantic mismatch oracle.",
+      "dependencies": [
+        "elmos-coverage-guided-differential-fuzzer",
+        "elmos-semantic-refinement-counterexample"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-failure-reducer-minimizer/model.json",
+        "semantic-assurance/elmos-failure-reducer-minimizer/evidence.json",
+        "semantic-assurance/elmos-failure-reducer-minimizer/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-298",
+      "name": "elmos-flaky-nondeterminism-classifier",
+      "version": "1.0.0",
+      "batch": "R",
+      "layer": "fuzzing",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-flaky-nondeterminism-classifier/SKILL.md",
+      "description": "Separate true semantic mismatches from scheduler, timing, network, hash-order and environment noise using replay and statistical evidence.",
+      "dependencies": [
+        "elmos-deterministic-replay-oracle",
+        "elmos-time-randomness-nondeterminism-semantics"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-flaky-nondeterminism-classifier/model.json",
+        "semantic-assurance/elmos-flaky-nondeterminism-classifier/evidence.json",
+        "semantic-assurance/elmos-flaky-nondeterminism-classifier/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-299",
+      "name": "elmos-bug-seed-feedback-loop",
+      "version": "1.0.0",
+      "batch": "R",
+      "layer": "continuous-improvement",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-bug-seed-feedback-loop/SKILL.md",
+      "description": "Feed confirmed minimized failures into route rules, fixture corpora, mutation operators and risk models with provenance and regression guarantees.",
+      "dependencies": [
+        "elmos-failure-reducer-minimizer",
+        "elmos-bug-regression-corpus"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-bug-seed-feedback-loop/model.json",
+        "semantic-assurance/elmos-bug-seed-feedback-loop/evidence.json",
+        "semantic-assurance/elmos-bug-seed-feedback-loop/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-300",
+      "name": "elmos-semantic-stress-certification-gate",
+      "version": "1.0.0",
+      "batch": "R",
+      "layer": "quality-gate",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-semantic-stress-certification-gate/SKILL.md",
+      "description": "Require differential fuzzing, metamorphic/property testing, mutation strength and failure reduction thresholds appropriate to route risk before E4/E5.",
+      "dependencies": [
+        "elmos-metamorphic-transformation-tester",
+        "elmos-property-based-cross-language-tester",
+        "elmos-compiler-matrix-nversion-oracle",
+        "elmos-undefined-behavior-filter",
+        "elmos-equivalent-mutant-classifier",
+        "elmos-flaky-nondeterminism-classifier",
+        "elmos-bug-seed-feedback-loop"
+      ],
+      "outputs": [
+        "semantic-assurance/elmos-semantic-stress-certification-gate/model.json",
+        "semantic-assurance/elmos-semantic-stress-certification-gate/evidence.json",
+        "semantic-assurance/elmos-semantic-stress-certification-gate/diagnostics.json"
+      ],
+      "readiness": "not-run"
+    }
+  ]
+}

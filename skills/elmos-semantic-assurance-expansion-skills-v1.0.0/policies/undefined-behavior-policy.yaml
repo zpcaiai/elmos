@@ -1,0 +1,8 @@
+schemaVersion: elmos.policy/v1
+kind: UndefinedBehaviorPolicy
+metadata: {name: undefined-behavior, version: 3.0.0}
+spec:
+  classify: [defined, undefined, unspecified, implementation-defined, nondeterministic]
+  ubRuntimeDifferenceIsConverterFailureByDefault: false
+  requirePreconditionOrQuarantine: true
+  sanitizerFindingCanBeSuppressedWithoutEvidence: false

@@ -44,6 +44,14 @@ For database-engine, SQL, routine, ETL/ELT, warehouse, data-quality, lineage, re
 - Mandatory cross-kernel lifecycle: `Task -> Policy -> Repository Graph -> Risk/Evidence Plan -> Transformation -> Sandboxed Build/Run -> Verification -> Evidence Bundle -> E0-E5 Decision -> Artifact/Provenance -> Trajectory Dataset`.
 - Treat source package scripts and workflows as untrusted declarative material. The repository importer never executes archive code directly and independently validates pinned checksums, schemas, contracts, dual roots, and DAG acyclicity. Run `make commercial-capability-expansion-skills` for validation.
 
+## Semantic Assurance Expansion Skill package
+
+- The trusted source archive is `skills/subskills/sub/elmos-semantic-assurance-expansion-skills-v1.0.0.zip`; the immutable extracted source is `skills/elmos-semantic-assurance-expansion-skills-v1.0.0/`. Its pinned digest `0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60` proves byte identity only.
+- Start multi-language semantic verification with `$polyglot-route-certifier` or layer-specific skills across all 9 Batches (Batches J–R, 132 skills, `ELMOS-POLY-169` to `ELMOS-POLY-300`).
+- The 9 semantic assurance layers bind: Batch J Frontend Semantics (16 skills), Batch K Type & Contract Semantics (14 skills), Batch L Control & Data Flow Semantics (16 skills), Batch M Runtime & Memory Semantics (18 skills), Batch N Observable Behavior Oracles (16 skills), Batch O Corpora & Test Assets (14 skills), Batch P Native Runtime Labs (12 skills), Batch Q Formal Assurance & SMT Provers (14 skills), and Batch R Semantic Stress & Differential Fuzzing (12 skills).
+- Strict 9-layer certification lifecycle: `Frontend Grammars -> Type Algebra -> Control/Dataflow CFG -> Memory & Concurrency -> Observable Oracles -> Fixture Corpora -> Native Labs -> Formal SMT Proofs -> Differential Fuzzing -> E0-E5 Decision & Signed Receipt`.
+- Treat source package files as untrusted declarative material. The repository importer independently validates pinned checksums, schemas, contracts, dual roots, and DAG acyclicity. Run `make semantic-assurance-expansion-skills` for repository integration validation.
+
 
 
 # Batch 32 client modernization skills

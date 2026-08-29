@@ -1,0 +1,8 @@
+schemaVersion: elmos.policy/v1
+kind: NondeterminismPolicy
+metadata: {name: nondeterminism, version: 3.0.0}
+spec:
+  virtualizeWhenPossible: [clock, random, uuid, external-response]
+  captureSeeds: true
+  flakyFailureCanPass: false
+  requireReplayForCriticalMismatch: true

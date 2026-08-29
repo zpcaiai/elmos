@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.fixture/v1",
+  "type": "object",
+  "required": [
+    "fixtureId",
+    "route",
+    "source",
+    "provenance",
+    "semanticTags",
+    "hash"
+  ],
+  "properties": {
+    "fixtureId": {
+      "type": "string"
+    },
+    "route": {
+      "type": "string"
+    },
+    "source": {
+      "type": "object"
+    },
+    "provenance": {
+      "type": "object"
+    },
+    "semanticTags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "license": {
+      "type": "string"
+    },
+    "sensitivity": {
+      "type": "string"
+    },
+    "hash": {
+      "type": "string"
+    },
+    "expectedOracles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

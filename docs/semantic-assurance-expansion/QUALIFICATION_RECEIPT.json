@@ -1,0 +1,45 @@
+{
+  "archive_bytes": 632740,
+  "archive_sha256": "0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+  "batch_counts": {
+    "J": 16,
+    "K": 14,
+    "L": 16,
+    "M": 18,
+    "N": 16,
+    "O": 14,
+    "P": 12,
+    "Q": 14,
+    "R": 12
+  },
+  "compliance": {
+    "certification": "NOT_CERTIFIED",
+    "dual_root_installed": true,
+    "external_runtime_evidence": "NOT_RUN",
+    "frontmatters_validated": true,
+    "immutable_extraction": true,
+    "schemas_validated": true
+  },
+  "dag": {
+    "acyclic": true,
+    "batch_pipeline": [
+      "J",
+      "K",
+      "L",
+      "M",
+      "N",
+      "O",
+      "P",
+      "Q",
+      "R"
+    ],
+    "node_count": 132,
+    "status": "VALID"
+  },
+  "package_id": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "package_name": "elmos-semantic-assurance-expansion-skills",
+  "package_version": "1.0.0",
+  "qualified_at": "2026-08-29T07:28:53Z",
+  "schema_version": 1,
+  "skill_count": 132
+}

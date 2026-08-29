@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.runtime-lab/v1",
+  "type": "object",
+  "required": [
+    "labId",
+    "runtime",
+    "toolchains",
+    "environmentFingerprint",
+    "readiness"
+  ],
+  "properties": {
+    "labId": {
+      "type": "string"
+    },
+    "runtime": {
+      "type": "string"
+    },
+    "toolchains": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "environmentFingerprint": {
+      "type": "string"
+    },
+    "hardware": {
+      "type": "object"
+    },
+    "readiness": {
+      "enum": [
+        "not-run",
+        "blocked",
+        "fail",
+        "waived",
+        "pass"
+      ]
+    }
+  }
+}

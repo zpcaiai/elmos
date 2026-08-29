@@ -1,0 +1,966 @@
+{
+  "package": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "fileCount": 192,
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "size": 198,
+      "sha256": "7f760f985857a8910a8dc6907c7f9719303a6d8174761f723ad707a56af0f7d4"
+    },
+    {
+      "path": "CLAUDE.md",
+      "size": 198,
+      "sha256": "7f760f985857a8910a8dc6907c7f9719303a6d8174761f723ad707a56af0f7d4"
+    },
+    {
+      "path": "CODEX.md",
+      "size": 198,
+      "sha256": "7f760f985857a8910a8dc6907c7f9719303a6d8174761f723ad707a56af0f7d4"
+    },
+    {
+      "path": "README.md",
+      "size": 433,
+      "sha256": "942989771fca0eb8ba48ebbb89bef14e531e628778d2f38d5beab37d04020efb"
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "size": 26325,
+      "sha256": "9c65501d7ef98bb01cb4750eeeb1307c3dfc8b3cc7f00bbc84d99cab451873d9"
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "size": 643,
+      "sha256": "b1cf66852fe55a9b58af2d9b8f341da9bcfc5162973caee6bc98935ac7c159b4"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-abi-calling-convention-semantics/SKILL.md",
+      "size": 8804,
+      "sha256": "e0d3622f7807793824637ffcede615e0730255c2fd237c863c08cc5fb6e7c447"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-abstract-interpretation-invariant-engine/SKILL.md",
+      "size": 8911,
+      "sha256": "5b41f1acddad7ed9a9fd51fce71ba1e174701f96a9f66f7e3f6d5bb2fe892e7c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-actor-channel-mailbox-semantics/SKILL.md",
+      "size": 8853,
+      "sha256": "19e6729fe2b8f6716e15651e129a0a5b2309f287f3a7bf3b6d7b361f9b0c1798"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adversarial-edge-case-corpus/SKILL.md",
+      "size": 8783,
+      "sha256": "88b397662b1df92554fcedeea910498cf0a5df07bd1cc2a6ef6421d41832d2b7"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-alias-points-to-analysis/SKILL.md",
+      "size": 8849,
+      "sha256": "c83179a7313a5b1830ec4b7ecf3c820b201ac3a1fe7c92946cf98637a3b15f68"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-annotation-attribute-reflection-modeler/SKILL.md",
+      "size": 8918,
+      "sha256": "083ff22ef6e1d13a59ab78a67e61ebee3894d449795dd7c8e14a6aa7f7845803"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-api-contract-behavior-equivalence/SKILL.md",
+      "size": 8900,
+      "sha256": "0fa1c3f100dec90a5e2617e80d8d8f8c8955c73a953d5ae232407e9dec9b2644"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-async-await-task-semantics/SKILL.md",
+      "size": 8874,
+      "sha256": "3cacef48b2c803f2de999df36194b773eb58a967e2de5fcf469c10c3815a73a8"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-atomic-memory-order-semantics/SKILL.md",
+      "size": 8777,
+      "sha256": "d117d7e8f2a2f2fc96cfedf46e9480cd8422e952cd687d6b7508bf54bddd37cc"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-behavior-equivalence-verdict-aggregator/SKILL.md",
+      "size": 9541,
+      "sha256": "99aabdd4bb69bad557e75f707daa8f8e936bb108a8ba389a64e0e4e0d34ee04f"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-binary-record-wire-layout-semantics/SKILL.md",
+      "size": 8961,
+      "sha256": "6f8b735545ba707bfade632f77013a99063407a97b9a21e0db3f2ed9dae8f10a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-bounded-model-checking-equivalence/SKILL.md",
+      "size": 8817,
+      "sha256": "2c9c2cb955d45ffb99da3672bff2cf102795060e115e5385fe12f7a9c78ef2ae"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-browser-js-wasm-runtime-lab/SKILL.md",
+      "size": 8778,
+      "sha256": "2e8c2ec62114faa2d71c90d0c4d02c98e06dc1618e69868c5766c1c9065d6868"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-bug-regression-corpus/SKILL.md",
+      "size": 8716,
+      "sha256": "65d9c5a302573939913e82c9983b8c9d142fc26cec7fbaadb786c94c295c4d47"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-bug-seed-feedback-loop/SKILL.md",
+      "size": 8850,
+      "sha256": "74cd1500d819e560adf1262cda6d4f1aa37d88c087fd7144d4c7c5028cfe62e8"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-canonical-type-algebra/SKILL.md",
+      "size": 8768,
+      "sha256": "db60b16e3f523a5feb0150518919fc8f63de602cf5f5a91d7a1ffe1956849286"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-certification-corpus-readiness-gate/SKILL.md",
+      "size": 9270,
+      "sha256": "8d25690188f366c618cdd25fe81a4863ee4b312d23425c46814e0fbada51911b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-cfg-equivalence-builder/SKILL.md",
+      "size": 8697,
+      "sha256": "c9efc4dde872eeca43b64be9387a2a664cd9c773bc5517b00318d38d49f82d71"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-closure-capture-lambda-semantics/SKILL.md",
+      "size": 8767,
+      "sha256": "39444e6eb1d26434dc67e8e058ccb67b922e51b8fb0471f7ee0565758387da03"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-collection-order-mutability-semantics/SKILL.md",
+      "size": 8820,
+      "sha256": "67cd92dd0200a20b3fc33a5ca73bc182079c5e1d590d638bc1e517a51f37da0b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-comments-directives-trivia-provenance/SKILL.md",
+      "size": 8974,
+      "sha256": "aaa58713dfbb0b890b7f105b744eb6a576d74b6a0b12dd10c1ea49409259b977"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-compiler-matrix-nversion-oracle/SKILL.md",
+      "size": 8877,
+      "sha256": "cbad172db6d4ab26f1fc93aa1fe2c6623e7591533f510eebdfff7699d1a7d43e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-compiler-runtime-version-matrix/SKILL.md",
+      "size": 8817,
+      "sha256": "92474487fb46e3453f8d5fb6868ad110164b34f6bd684548fbc71f4b43f9cb69"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-contract-invariant-inference/SKILL.md",
+      "size": 8947,
+      "sha256": "b5dda29c61eb25270c83f4d18f2644cd0407a0ccae15349a34625b611ba7b4ab"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-control-data-effect-equivalence-gate/SKILL.md",
+      "size": 9325,
+      "sha256": "3ad00e246dd5802ca38b32f1de07e29464836121f9eb2163786eeaf6691c25c1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-corpus-drift-freshness-manager/SKILL.md",
+      "size": 8883,
+      "sha256": "d3dd5e09dcdcf674d5856859ec86a0e5b44f4cdc454723875c5e123f4d80637b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-coverage-guided-differential-fuzzer/SKILL.md",
+      "size": 8899,
+      "sha256": "4b49eaaa55fd1f73217a1bea5845b01c663d1fc053813efcf005c940cee71e50"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-cross-language-memory-model/SKILL.md",
+      "size": 8807,
+      "sha256": "2f4092117c93cad5e0e101658593412dabf7d2bb6ca134da06f5de6cec038465"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-cross-runtime-trace-alignment/SKILL.md",
+      "size": 8859,
+      "sha256": "4a0e144fb59060fa1bcaf2ad8b2f76ed3abb0167474c578f09bb47b97118176b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-database-message-runtime-lab/SKILL.md",
+      "size": 8811,
+      "sha256": "e817da776fdafa0c347703cf53e4248850fbe850e3138aa9df72158c0002157e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-database-state-equivalence/SKILL.md",
+      "size": 8894,
+      "sha256": "9327a2bebe9aa767e460ae134d57fce144eedce618c2a72f3b39b9a470cb375c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-datetime-timezone-calendar-semantics/SKILL.md",
+      "size": 8831,
+      "sha256": "b4567891885d52505229ee4ae0b95942a93d6bb7b839af5df0afd920ee990002"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-decimal-money-arithmetic-semantics/SKILL.md",
+      "size": 8807,
+      "sha256": "a2a69df85e2163e09d14422e3a124f73c17c84984e663a89e32e1d6db8846fca"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-deterministic-replay-oracle/SKILL.md",
+      "size": 8904,
+      "sha256": "4d554257b3ee75fbf7092d2d0efc719558ed41a226a4a8ad451e50fd4fe2cf71"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-dialect-version-detector/SKILL.md",
+      "size": 8845,
+      "sha256": "ae5bbf970e1cc16250604f9dec2718cab67db9288b9a061a17361936cd5b067d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-dialect-version-fixture-matrix/SKILL.md",
+      "size": 8793,
+      "sha256": "2d37cb68d30804d1ec9f52ac8133b57863337b86aca7c6a3bf265911da4125fb"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-dynamic-language-shape-inference/SKILL.md",
+      "size": 8860,
+      "sha256": "890e9194450f82b3bf0b6453f55c5b842afbab318a9bccce7b93bd24ec176c81"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-enum-variant-sumtype-semantics/SKILL.md",
+      "size": 8820,
+      "sha256": "73a4a091afb95295a99d517c9224cc19429764081c059f875931ec59bfdee145"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-equivalent-mutant-classifier/SKILL.md",
+      "size": 8864,
+      "sha256": "65114826b0231631b30945fbfc67c5f5cf3a30a6797fd4734dd7360b09b82998"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-exception-effect-type-semantics/SKILL.md",
+      "size": 8809,
+      "sha256": "78d4ef0dc25971d3165a1eb24236482210644ad80bdc72b930de7119d3d8ea48"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-exception-unwind-equivalence/SKILL.md",
+      "size": 8830,
+      "sha256": "5a95618bf8599239ad3a4dcaf022b843fd59a6d396fa41416f13a76673ad665f"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-failure-reducer-minimizer/SKILL.md",
+      "size": 8847,
+      "sha256": "92e956139c5872526d8a5337956eb26690bd453023a0156bf54807cb121a0f3c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ffi-marshalling-semantics/SKILL.md",
+      "size": 8888,
+      "sha256": "036f6c180e831759b29c06f17bd3ed66b15a220a662e14886d502075033a4670"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-file-network-sideeffect-equivalence/SKILL.md",
+      "size": 8850,
+      "sha256": "12cf2b925aff1afdc4cab191f01e319602ae7202a33c3b6d5e0aba41c9c22b93"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-fixture-corpus-governance/SKILL.md",
+      "size": 8757,
+      "sha256": "320b1b26ae7e64adb751c74605d3b327429b27f26e8c5f085994d41ecb50b6b0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-fixture-minimizer-deduplicator/SKILL.md",
+      "size": 8817,
+      "sha256": "a8b452df7417edaeef86200a8a64eef951ff8106015b774981dddc12b2db6363"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-flaky-nondeterminism-classifier/SKILL.md",
+      "size": 8925,
+      "sha256": "7b82d0447d69abda4d3745d2a3204cc39f9492d76bbdccfd0a861d60afbc5a91"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-formal-assurance-gate/SKILL.md",
+      "size": 9330,
+      "sha256": "c5401158f31c54b3aefa44a16ef5e00747174b02c7930f508aeb08dffa54de65"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-formal-semantics-contract/SKILL.md",
+      "size": 8932,
+      "sha256": "f8b8ae072e972ef75edb6795fd88dc2e4d89843d66c8ed73c0ce9f6c10da5239"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-frontend-consistency-gate/SKILL.md",
+      "size": 9154,
+      "sha256": "09d1f3eebad6d40134c4b84c2dbcf2ac76422740382ce621b56c30c5ba7f2088"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-generated-program-corpus/SKILL.md",
+      "size": 8735,
+      "sha256": "4e82ad0c9d4a9f648b7ebd4347a3412b0d9bddb5735c14072f3da1d348783584"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-generic-template-specialization-modeler/SKILL.md",
+      "size": 8902,
+      "sha256": "90b3e3935197a6f84b2ec6f82dae04e56a4d0fef4b36bce52d3bd3b9c25b4e17"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-generics-variance-erasure-semantics/SKILL.md",
+      "size": 8888,
+      "sha256": "1c632b022e1b66e85b23419a1d00771a88c8e44648977641914114e4eef8998b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-golden-route-repository-fixtures/SKILL.md",
+      "size": 8943,
+      "sha256": "5e566d2882c9a5970e78575096aad1c9fa23614c6ff23063f135b8522c2d009b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-grammar-based-semantic-fuzzer/SKILL.md",
+      "size": 8840,
+      "sha256": "1caf374dba6eec5dbbb8d6c124dd809384ba308e9156d4c8b5db8903b578e798"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-grammar-feature-coverage/SKILL.md",
+      "size": 8866,
+      "sha256": "2a9f713edb71b56306e681714cbfecb8eca69a0bfc85476fbcf584e86463fb66"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-grammar-spec-ingestor/SKILL.md",
+      "size": 8866,
+      "sha256": "696a813f943ee4afadd6dbdb9763c12105de85a9c0b7976d3f1b787ed16fa8bd"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-hermetic-toolchain-image-builder/SKILL.md",
+      "size": 8837,
+      "sha256": "af88123936efe2e3c8d23e02dc67668cb06a8517549420b6ddfee454596f77f5"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ibmi-native-runtime-lab/SKILL.md",
+      "size": 8725,
+      "sha256": "7fda7ec56b316bf8d315e4e035ba18a47f97bfcd699b19b78cedbb931735b916"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ieee754-floating-point-semantics/SKILL.md",
+      "size": 8788,
+      "sha256": "e1d9849cf68a7459eea8adf639ff487772b7a7452f03fe87f115562ef9117238"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-input-domain-partitioner/SKILL.md",
+      "size": 8807,
+      "sha256": "97a6ee6c5d62810e5800ce6e26194859cf90a056ecba18df088e5f5c57d1c68b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-integer-ub-language-lawyer/SKILL.md",
+      "size": 8847,
+      "sha256": "a50993e407735485a92b50d8df6985e8591ff2d8062caad1c58ab961f61a5c38"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-interprocedural-callgraph-resolver/SKILL.md",
+      "size": 8950,
+      "sha256": "d3e790de27648925f3f87f9988d8dee5caf456df656dabe697d87faba9dcff67"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-io-environment-observable-semantics/SKILL.md",
+      "size": 8863,
+      "sha256": "303df43d571d563032107881014b0ef1de21cc07aa69d6093a4eaf007c50f615"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-iterator-generator-coroutine-semantics/SKILL.md",
+      "size": 8951,
+      "sha256": "2e15050ac21c78c9dcc53d9d317dfec711504eaf1ddf2f25f50207ed8b93fce4"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-language-spec-conformance-mapper/SKILL.md",
+      "size": 8827,
+      "sha256": "c02eaf2d2f023597025a34370f2320a610a7234e1a6e1dd2909557b74ee743e6"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-legacy-business-pattern-corpus/SKILL.md",
+      "size": 8774,
+      "sha256": "f671e25d0aa65a4189efb51e67b054c159d842880065894458de0460eb3ad734"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-lexical-layout-fidelity-engine/SKILL.md",
+      "size": 8924,
+      "sha256": "677eb8fa19f92b5b82b3a150c16400291cdedea526e07a0535ea0a0120e593d0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-lifetime-ownership-borrow-semantics/SKILL.md",
+      "size": 8855,
+      "sha256": "f4167f5d2e8397048bbc7317e29af8bb618a3303ee96a4180db6842ebcc1a29a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-llvm-ir-refinement-checker/SKILL.md",
+      "size": 8960,
+      "sha256": "f793c4a90bb4b2e67407adbd1535d15f39c4b83a542dd6522334bb58cc69baba"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-lock-condition-semaphore-semantics/SKILL.md",
+      "size": 8801,
+      "sha256": "dce1fff5aaeb724a416b673c91c39cc209c78b4b98d9242070a0b1f140e5b108"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-lossless-cst-builder/SKILL.md",
+      "size": 8773,
+      "sha256": "0bfe4ca52cf470af5a2a4888a28c7ffa0d1fe3c7e0ae7836deb9de8c77689220"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-mainframe-native-runtime-lab/SKILL.md",
+      "size": 8764,
+      "sha256": "d59fa7c9f9569a2740a5b0839cc3a8fa2292e39b3fb31ad114c6c0584be4ea00"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-message-event-equivalence/SKILL.md",
+      "size": 8706,
+      "sha256": "0dc09054702adb23bb59fc8aab581c60225974e770a6b5a405852d1e1e773ea0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-metamorphic-transformation-tester/SKILL.md",
+      "size": 8880,
+      "sha256": "0a452e0ca285a9a91efb7bbd806c74263916ec42c2c39902b17bde4c99334bab"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-metaprogramming-runtime-codegen-semantics/SKILL.md",
+      "size": 8954,
+      "sha256": "f43a3af176dec47207bbe6101c3e4769930807494ec710071f42d9fe10e23657"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-mobile-native-runtime-lab/SKILL.md",
+      "size": 8809,
+      "sha256": "6a2e26e4874d4f1befb5c7ac0fe6325d1bbbebfcc26654a7c5098b374f8672f7"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-multi-oracle-differential-executor/SKILL.md",
+      "size": 8978,
+      "sha256": "8f10d79ad19ff725f9c5ca0c45945481ea87750ce9c27845acaf3477a0900f0c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-native-ast-cross-checker/SKILL.md",
+      "size": 8858,
+      "sha256": "58b071c82f4d99d22cda8fb8a3f9059ccbb1df34e4d9e3c5fdfb3f9db3bbbc09"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-native-runtime-lab-evidence-attestor/SKILL.md",
+      "size": 9434,
+      "sha256": "84a3b14bdc0f5d5c038087342fb4160735ed4aceabf30a8efcc35e8336299de1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-native-ub-sanitizer-orchestrator/SKILL.md",
+      "size": 9028,
+      "sha256": "c5f828b5ccac1593c0455cc43b9be64c24015aeef2f1a0acdef82265b915841a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-nominal-structural-subtyping-mapper/SKILL.md",
+      "size": 8866,
+      "sha256": "8c90d0b9a77e2897cc10134f07e3e1c473c02046b82cbc58cb0b3ede3b7c8168"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-nullability-optionality-semantics/SKILL.md",
+      "size": 8783,
+      "sha256": "a93a708d071c916fbbcd32f99f7fa8745ebb3fe5e0bd7696832a8208848eb36c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-numeric-type-range-overflow/SKILL.md",
+      "size": 8762,
+      "sha256": "905ae400dcfc9c9fbde40ccde731f319ec66aebe6b66b53336a664fb03cef52c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-object-layout-vtable-semantics/SKILL.md",
+      "size": 8780,
+      "sha256": "d3f08be779e80fca18acfeb3ac111f3ae7027a1b30a4af786586e10f34d55b97"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-observable-behavior-specification/SKILL.md",
+      "size": 8886,
+      "sha256": "a7ae2eb44c6a6ac8cdda8a4778e46fa7655245c712798a74779c8395d2453a3d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-os-arch-libc-matrix/SKILL.md",
+      "size": 8756,
+      "sha256": "e4adc6447f25f61c7f2e551500482afb9e31721b641d713703bbaa29c13a5fce"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-overload-dispatch-resolver/SKILL.md",
+      "size": 8813,
+      "sha256": "84d13f7bf9f4c30dd613d9e1474c764eadad6d98e3151412c11effc55de38fe5"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-parse-error-recovery-validator/SKILL.md",
+      "size": 8842,
+      "sha256": "50c7ac05abd96ce896d568147b884a7827e4dcd3e98a53928619c9fe6a31a179"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-performance-complexity-equivalence/SKILL.md",
+      "size": 8871,
+      "sha256": "7eed0793c20da5aede727265c62c6cf724697d9ecab4b1e099fbb4dad9396bd5"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-pointer-layout-endianness-semantics/SKILL.md",
+      "size": 8891,
+      "sha256": "2c00b3c44747b7d60114b7ca3552ec042da7063a37d795eb7de2fd4fb74ef562"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-preprocessor-macro-expansion-modeler/SKILL.md",
+      "size": 8971,
+      "sha256": "4aee358041aa1c47d872f4e600de6c701c4ba9048c30a33908b0bd59ad5a6a71"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-program-dependence-graph-analyzer/SKILL.md",
+      "size": 8871,
+      "sha256": "121d169e3daf8af013ed77d56702e1db3513f51a8528ebf3b0971ca6d76aff24"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-proof-cache-invalidation/SKILL.md",
+      "size": 8772,
+      "sha256": "9887006af94c5a0362bdf4a092b3a3f3f260a3ae4ed38af96712074506dd738a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-proof-counterexample-replayer/SKILL.md",
+      "size": 8994,
+      "sha256": "7adc5d82596041d0c99e0779adb58848858b65eca93613655f41af0c87a03d2f"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-proof-obligation-generator/SKILL.md",
+      "size": 8908,
+      "sha256": "e6e3010ba60cd03dbe55e402c47400114a3d692d0d0bae12e5a6177d3c5bf907"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-property-based-cross-language-tester/SKILL.md",
+      "size": 8910,
+      "sha256": "8f69379513111a3452f8072f8ace91f0f113510ddc154614dd5c0e95dd29ac65"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-public-api-binary-compatibility/SKILL.md",
+      "size": 8923,
+      "sha256": "6fe91ca1c0b60fabea781bb638fa8529bf76d21682a24cf193d362f2bfbcf409"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-public-fixture-license-provenance/SKILL.md",
+      "size": 8819,
+      "sha256": "c2dcdb5527f5a70911ac05e8b270187eac5ff5ce277e9bbacc1a378132c23e3f"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-refinement-range-contract-semantics/SKILL.md",
+      "size": 8877,
+      "sha256": "a8273cb5be31f15d0cc602049c4b4e1b691a0a3f92c85ae91bba5b92c143bbb1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-reflection-dynamic-dispatch-semantics/SKILL.md",
+      "size": 8966,
+      "sha256": "11841bbcd1d1d07ed1b5fcd1ed28dd0bafa6c1ec52e364bba81a3a94bde99e56"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-resource-lifetime-finalization/SKILL.md",
+      "size": 8826,
+      "sha256": "54ea32a499cad56445fa0cf0344de4403865a4ce6a50c6a11bfaf5a3bc4f5fe8"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-runtime-edge-semantics-gate/SKILL.md",
+      "size": 9435,
+      "sha256": "05bfd269ac0dd70ae2b8ec654d8453aa026b30c41adb761ea1f9251c69f13bbc"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-sap-abap-runtime-lab/SKILL.md",
+      "size": 8668,
+      "sha256": "280a23ca7213f47a711099203706eb5c65a40e389ad99001451c817a1a0aa226"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-scientific-hpc-runtime-lab/SKILL.md",
+      "size": 8828,
+      "sha256": "df8c6ae982df86b74e926c4d13d3d1b9a65926035ba3f0ac1ac2c7731a60aec4"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-scope-resolution-engine/SKILL.md",
+      "size": 8737,
+      "sha256": "1ee5b1a3b1e3a75c68e8b06c28d9c8ecbb299020a43cbbc8055a0a9660f02a9a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-security-policy-equivalence/SKILL.md",
+      "size": 8832,
+      "sha256": "290421b740d1f532691535133b5707c96d846ebdca7fb180a00ba2806ba2d3ee"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-semantic-feature-coverage/SKILL.md",
+      "size": 8780,
+      "sha256": "e78125622b4375a875b3b3f5e145063608cfad4e69454ab7aff0bddeef090257"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-semantic-golden-master-capture/SKILL.md",
+      "size": 8779,
+      "sha256": "996a5974325f4115fd25ec41de04ba4ed29680c70a8071b3830410bb2dd74db1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-semantic-mutation-testing/SKILL.md",
+      "size": 8804,
+      "sha256": "e14ed33eeb43d327a6cf826f04eacb2a84de14f2645e686b9b39461be0a2daec"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-semantic-refinement-counterexample/SKILL.md",
+      "size": 8971,
+      "sha256": "709039637694f437548ac0978ad2244495f99b5b9ff67cf92fc07a3f3b2423b7"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-semantic-stress-certification-gate/SKILL.md",
+      "size": 9404,
+      "sha256": "dbec752adf7d072e64db568d40a5e579a9b6ff0121468b03ec2f78576e7cb6e4"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-serialization-schema-type-semantics/SKILL.md",
+      "size": 8846,
+      "sha256": "316f5a3509bc65c7e1d8a9f115d9f33780cb5b6c430d15944c6d86451fcaaba4"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-side-effect-footprint-model/SKILL.md",
+      "size": 8848,
+      "sha256": "03f0a9af271189716acbfbe23cbc7de862f581679a43fb5fb20f504bee2e69ce"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-smt-equivalence-prover/SKILL.md",
+      "size": 8709,
+      "sha256": "faef47077a97e37951fcdc7e4d797acc410f3ef497d787ef14aca3461b078358"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-source-roundtrip-preserver/SKILL.md",
+      "size": 8817,
+      "sha256": "dc2579aa505fa589e487c0d549630e28300b74468a3cf668e078e3dc376503d6"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-sql-null-collation-isolation-semantics/SKILL.md",
+      "size": 9003,
+      "sha256": "69f2e485f1e7feac94347b55b6e8b86d5441fe6d2fb471bebdf68b795448b0b8"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ssa-dataflow-lowering/SKILL.md",
+      "size": 8709,
+      "sha256": "fff4f841414fb7f0b68ea3c5f60e2b155eda9c1026cc9323b7d11d84b55c5e02"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-state-snapshot-equivalence/SKILL.md",
+      "size": 8793,
+      "sha256": "523015a30066ba833778e3584756dd6b8479a22d91d910ff8c9da71c6ef671a8"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-string-char-codepoint-semantics/SKILL.md",
+      "size": 8781,
+      "sha256": "467cd2e2c201dd81a12b98a43257c8fb1db2fe0dd9491124a166cfd896de205a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-symbol-table-builder/SKILL.md",
+      "size": 8729,
+      "sha256": "8eae9652758b926a084214b7ba00d61646e81d6e9050eacb0a1bd26fe9a63915"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-symbolic-execution-equivalence/SKILL.md",
+      "size": 8812,
+      "sha256": "d060171674f0d3a226869409b5f68e1e27936d14b075a4b2e0c8c50c3ace7d2c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-text-encoding-collation-locale-semantics/SKILL.md",
+      "size": 8902,
+      "sha256": "f0ac1c24a4bd20be87221656de9d1fba23ca39bc4baa0c09830b192dc915187d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-thread-scheduler-determinism-lab/SKILL.md",
+      "size": 9028,
+      "sha256": "f510e51ec91ab3fc201661938716a507255e27849eb836f74d166881e36c22a0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-time-randomness-nondeterminism-semantics/SKILL.md",
+      "size": 8952,
+      "sha256": "4535ccb96344b2889281ec2582502b846665b24db9c36da6a4e2677281346adb"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-translation-validation-planner/SKILL.md",
+      "size": 8848,
+      "sha256": "a644517aa56e82df14503c3f5fcf594d814db9d1c7bd6e707ca6932020538ac6"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-type-semantic-loss-gate/SKILL.md",
+      "size": 9603,
+      "sha256": "b61260e95f1f9d5ccf23822ac0a4b48722d477ddacdba34a9f9bc4da602cb540"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ui-interaction-equivalence/SKILL.md",
+      "size": 8811,
+      "sha256": "d70f220784ec973726ab3fd27a9ce783d3b493d9b9c6b04f23db00d208ec7dbd"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-undefined-behavior-filter/SKILL.md",
+      "size": 8854,
+      "sha256": "5dd23edc97ac488286ff12c76580f0d1cf411f5bf088838233a3a5f0273dd15b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-verified-lowering-route/SKILL.md",
+      "size": 8791,
+      "sha256": "9040de6927f1b00c2ec3d9da900560e08b501483dbb50e3b5fcbaf81de524c9b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-wasm-portable-semantics-oracle/SKILL.md",
+      "size": 8950,
+      "sha256": "2ac5e61270f169007d2209a5ff66e6609273220bd0d3f03911d4390420e6ffdf"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-windows-legacy-runtime-lab/SKILL.md",
+      "size": 8744,
+      "sha256": "1b636b73a641953fdced6e2530aedbd28e25d1fe258a84831b953aceac59269d"
+    },
+    {
+      "path": "certification-corpus/README.md",
+      "size": 313,
+      "sha256": "c2236e8da1adbbd2624fea68dcb3102a8e92a84713059a4cd033acb58e197584"
+    },
+    {
+      "path": "certification-corpus/corpus-registry.json",
+      "size": 15815,
+      "sha256": "bc0babfaab791c9a166c36abd931f909caeb8a1c777bd73dcfaacf67ee198cfb"
+    },
+    {
+      "path": "install.sh",
+      "size": 1216,
+      "sha256": "7d3d89113e6eebec59c82a8f584bcf2052af9952f3eca638923792078b365e3e"
+    },
+    {
+      "path": "manifest.json",
+      "size": 113267,
+      "sha256": "e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40"
+    },
+    {
+      "path": "merge_into_v2.py",
+      "size": 1185,
+      "sha256": "8d98956ad23e786089d35aa2ac0a751e534b3b3d8620f1c2ece8fef2b471a2df"
+    },
+    {
+      "path": "native-runtime-lab/lab-registry.json",
+      "size": 1397,
+      "sha256": "d7653340059c5d529123710e815026ba8c4a518103a167420ae4c1510961d859"
+    },
+    {
+      "path": "policies/corpus-governance-policy.yaml",
+      "size": 291,
+      "sha256": "545cc2e980649c2686bf6e8486eea90fd4d0c62739c39029122e8173e0513690"
+    },
+    {
+      "path": "policies/e0-e5-policy-v3.yaml",
+      "size": 549,
+      "sha256": "e9e444eeb5a049eedd80afd50533071a4650d99ab7264c02b4f6b2ad8411c6cc"
+    },
+    {
+      "path": "policies/formal-assurance-policy.yaml",
+      "size": 271,
+      "sha256": "b802a6d36e3d1003edd8c7f1aa388395ce38b71cc1671d00c7a85eda2dbe209a"
+    },
+    {
+      "path": "policies/native-lab-policy.yaml",
+      "size": 254,
+      "sha256": "4931f6fe52605aff100bae695da817b8c9acccde730b9127649f69d370a1320d"
+    },
+    {
+      "path": "policies/nondeterminism-policy.yaml",
+      "size": 271,
+      "sha256": "5077153e7694a28ac94a3461f5af1e3fc6c87fa951ef51a1e11d2f7874cef994"
+    },
+    {
+      "path": "policies/semantic-equivalence-policy.yaml",
+      "size": 400,
+      "sha256": "d44b919327fd37d9f6205139a65d722f9a114b41dbf9cc7866bff3a61f90aecc"
+    },
+    {
+      "path": "policies/undefined-behavior-policy.yaml",
+      "size": 360,
+      "sha256": "e0eeb298777df6e710ca37b9e2c7cf031b5102afd5b89ba38def8b0cbe0bd63e"
+    },
+    {
+      "path": "references/differential-fuzzing-strategy.md",
+      "size": 412,
+      "sha256": "71aefb1f4718dea2d3db18a9cfaf6ed0cf45f13d13d78b9e39c2aa98d3be72ed"
+    },
+    {
+      "path": "references/e0-e5-certification-standard-v3.md",
+      "size": 978,
+      "sha256": "3ec8a0ba00a3cf10c783ffe9d950d60217fe8af2b7e3f136ef95aa4aa4be67d8"
+    },
+    {
+      "path": "references/external-methods-catalog.md",
+      "size": 2680,
+      "sha256": "040124c132d638455969887dd97c2f1e1a36a9d2e4475c70c30143f2299cff90"
+    },
+    {
+      "path": "references/external-methods-notes.md",
+      "size": 740,
+      "sha256": "041943616e59ee9de06b4f2b335ccafa58d87ccf40479f0896dc6714a8b1d7bb"
+    },
+    {
+      "path": "references/fixture-corpus-standard.md",
+      "size": 406,
+      "sha256": "3375e7aa2faa2c48e0c0b08280158b218bbaf72fd3161aab888d7f68027af620"
+    },
+    {
+      "path": "references/formal-assurance-ladder.md",
+      "size": 396,
+      "sha256": "5722b215c8a4104cdf18ceb4b0ba8f7507b27f8f3af87a8f37c551a0b10ea93b"
+    },
+    {
+      "path": "references/frontend-fidelity-standard.md",
+      "size": 342,
+      "sha256": "35533dab9dada470cf55100498058686a862c33b1f59ebf17a96476bebec1ddf"
+    },
+    {
+      "path": "references/language-spec-source-matrix.md",
+      "size": 1455,
+      "sha256": "f14edc4a13d2a92b14a2a8f05a81cb6208e1796f952ce2e8e8486db242237014"
+    },
+    {
+      "path": "references/native-runtime-lab-standard.md",
+      "size": 354,
+      "sha256": "64cce26df90761ce5a7890d2f40902beec1a8c7bd4d30deda9d23768e335d9fd"
+    },
+    {
+      "path": "references/observable-behavior-model.md",
+      "size": 394,
+      "sha256": "750da34e96589ea8450ac6fae3f8b55f3fbbdbc7ccfd534daa7fd52377120919"
+    },
+    {
+      "path": "references/route-certification-evidence-model.md",
+      "size": 420,
+      "sha256": "e722372fa974039efbdca022ee87c39374e0e7ca2ed09a9f1e6e84412e09e461"
+    },
+    {
+      "path": "references/runtime-semantic-obligation-catalog.md",
+      "size": 364,
+      "sha256": "ed8bbdd3bdedb31951f0b4f89baefda9c06bedfd6a1bd02a811c4ddcf6627ed5"
+    },
+    {
+      "path": "references/semantic-loss-taxonomy-v3.md",
+      "size": 422,
+      "sha256": "a326693d720a7091874eb7d39dbf30e91f322c7ab353e8b9e09787fa0b4f51bc"
+    },
+    {
+      "path": "references/semantic-preservation-contract.md",
+      "size": 681,
+      "sha256": "7f04703e834da1cb260fadeac9b0dab281417c9c45ee0b45ce96b95c6c0568ed"
+    },
+    {
+      "path": "references/type-semantics-crosswalk.md",
+      "size": 371,
+      "sha256": "bb213773005ea90f6e5817473a47cc0e138e0e5f8c119102c63913108a584443"
+    },
+    {
+      "path": "route-certification-registry.json",
+      "size": 38213,
+      "sha256": "a9cb7fdc9b3d4c33dafe358774ad4740079a6ccf2543a18e5451c0ad869f58af"
+    },
+    {
+      "path": "schemas/behavior-oracle.schema.json",
+      "size": 730,
+      "sha256": "b1f814e4d2632bface43792624ff7e146b2f5cbb7ac8a56c209e8cf53e8b6df8"
+    },
+    {
+      "path": "schemas/certification-run.schema.json",
+      "size": 845,
+      "sha256": "65733ab71b5aa559f8a81e5e4c42f58f6fdbc3c242bdd0ea17279ad56f271cb2"
+    },
+    {
+      "path": "schemas/conformance-mapping.schema.json",
+      "size": 853,
+      "sha256": "b3bf617a3e9ce568135872c05ecf3cbd01bd2d7372dbefa66e85c21ab2965fd5"
+    },
+    {
+      "path": "schemas/counterexample.schema.json",
+      "size": 638,
+      "sha256": "22061c3570e6bd01d1f55ca5bc0f17c5b1f71860fc49896528c61de8ebf71136"
+    },
+    {
+      "path": "schemas/coverage-metric.schema.json",
+      "size": 657,
+      "sha256": "b2c42014fdd9028de70ee63e467d964aae8f2311ad5b52ad73786090a9235925"
+    },
+    {
+      "path": "schemas/differential-result.schema.json",
+      "size": 766,
+      "sha256": "2255bbf3334c511e8c07a6fa894748a6703db6958db77182cac4b757e59db573"
+    },
+    {
+      "path": "schemas/fixture-manifest.schema.json",
+      "size": 788,
+      "sha256": "89c8720a6df6828f9559d56a140824bc03f8f31fe23b1aaad38e278c55f19fa8"
+    },
+    {
+      "path": "schemas/proof-obligation.schema.json",
+      "size": 805,
+      "sha256": "20eae399afd8a1a5789d106efe723a87b3feb49e1cfcf495f22e7eb7e355a3a1"
+    },
+    {
+      "path": "schemas/runtime-lab-profile.schema.json",
+      "size": 691,
+      "sha256": "791d45d2dbf74b9c453dfec9deafee95c0b154956b364f357f248f20ef5d0f4e"
+    },
+    {
+      "path": "schemas/semantic-obligation.schema.json",
+      "size": 1179,
+      "sha256": "b9a1f7b577e7c50370983b5050b5d8f5efb6d0091708fffc38edc1272a77bcd9"
+    },
+    {
+      "path": "scripts/check_semantic_obligations.py",
+      "size": 435,
+      "sha256": "25004d5329dab25bfa3f5291079a95ef7f3b905419d48d88a133677f4853da88"
+    },
+    {
+      "path": "scripts/compare_observables.py",
+      "size": 930,
+      "sha256": "0d81e8c0c9e7a037e15afa4135da574985583dd322edde9674f445d002a63b9b"
+    },
+    {
+      "path": "scripts/corpus_score.py",
+      "size": 362,
+      "sha256": "99a86dcad4b47e52b1db43bb68abc1241a44042f767a27e0672d528e30cf6f8e"
+    },
+    {
+      "path": "scripts/generate_route_certification_plan.py",
+      "size": 736,
+      "sha256": "7e97787c3ef5bcffd0f8a8b4ef42c8ed8138c0ce08111ecdcd16f841c1caa61e"
+    },
+    {
+      "path": "scripts/new_fixture.py",
+      "size": 610,
+      "sha256": "f4ba8b3c08ff35ed06407bd389485634b005c06f3eb8257f8853b9943d5e7f26"
+    },
+    {
+      "path": "scripts/validate_expansion.py",
+      "size": 3295,
+      "sha256": "19fa0701eeb6701571f7160bf8dc4c049c7f4c766ef4d8fab8d904be621e5d3b"
+    },
+    {
+      "path": "templates/behavior-oracle.json",
+      "size": 191,
+      "sha256": "c5e654151f8f5e878ac820b65282a89b8917709193218475b6d2ef24471de593"
+    },
+    {
+      "path": "templates/counterexample.json",
+      "size": 218,
+      "sha256": "0fc0e40f330f2d75f620cbf741064c347a4f62c05dc2569b424ac58508ca930c"
+    },
+    {
+      "path": "templates/fixture-manifest.json",
+      "size": 425,
+      "sha256": "75fb16611981d324a2401ad395f83bf260f146433fd46e1988acba277e36f317"
+    },
+    {
+      "path": "templates/proof-obligation.json",
+      "size": 202,
+      "sha256": "156965154b1f572a70c0986838abc4763d0ebbeeab89944aaa601fd60c27c2bc"
+    },
+    {
+      "path": "templates/route-certification-plan.json",
+      "size": 209,
+      "sha256": "54811590dc5c027f41de698d41810c53b03d6e240c20814198f6101a71123520"
+    },
+    {
+      "path": "templates/runtime-lab-profile.json",
+      "size": 160,
+      "sha256": "023e365e4bd046e6f6fd1cb706f402020b0e03e94ef2b5bb5fcfafe9699b1ba8"
+    },
+    {
+      "path": "templates/semantic-obligation.json",
+      "size": 280,
+      "sha256": "e215cdab276283568c5cbd410a9fa5e525929e27de6fcec4f26a98735d44428c"
+    },
+    {
+      "path": "uninstall.sh",
+      "size": 597,
+      "sha256": "2ce2531107526f71e634e5f5400e3e1ddaa44e99c154d424d3296eebcfb5ec0a"
+    },
+    {
+      "path": "validate.sh",
+      "size": 233,
+      "sha256": "c884787999276bfce8a103225df366bd1a87ff3f51c4b7213e4d6ddeb90ed860"
+    }
+  ]
+}
