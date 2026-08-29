@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Elmos Certification Result",
+  "type": "object",
+  "required": [
+    "level",
+    "decision",
+    "evidenceBundleRef"
+  ],
+  "properties": {
+    "level": {
+      "enum": [
+        "E0",
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5"
+      ]
+    },
+    "decision": {
+      "enum": [
+        "pass",
+        "fail",
+        "conditional",
+        "blocked"
+      ]
+    },
+    "evidenceBundleRef": {
+      "type": "string"
+    },
+    "waivers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "expiresAt": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

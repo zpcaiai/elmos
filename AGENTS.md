@@ -36,6 +36,15 @@ For database-engine, SQL, routine, ETL/ELT, warehouse, data-quality, lineage, re
 - Repository-owned handlers under `engines/autonomous-qa-engine/` bind all 40 exact names through an allowlisted runtime. Skills 37-39 require the trusted delivery service, authenticated tenant/project/actor scope, durable idempotency, fail-closed lifecycle reconciliation, content-addressed receipts, and exact publication authorization; a pure caller contract cannot manufacture those effects or their evidence.
 - Local unit and integration results are self-attested engineering evidence only. Native runners, SCM/provider operations, external signers, independent verification, representative environments, deployment, production effects, and certification remain `NOT_RUN` / `NOT_CERTIFIED` until separately authorized and evidenced. Run `make autonomous-qa-self-healing-skills` for repository integration validation; the target does not execute archive code or authorize external effects.
 
+## Commercial Capability Expansion Skill package
+
+- The trusted source archive is `skills/subskills/sub/elmos-commercial-capability-expansion-skills-v2.0.0.zip`; the immutable extracted source is `skills/elmos-commercial-capability-expansion-skills-v2.0.0/`. Its pinned digest `7a73cf924f4ebab3eddba327ba4feeb64b8575e39f2baf03fc53315cbc868380` proves byte identity only.
+- Start broad commercial transformation work with `$elmos-commercial-capability-expansion`, then invoke the narrowest exact Skill across the 8 capability kernels (K1–K8). Preserve all 85 exact names and the manifest-owned DAG.
+- The 8 capability kernels bind: K1 Skill Runtime (10 skills), K2 Repository Intelligence (10 skills), K3 Transformation (10 skills), K4 Build & Execution (9 skills), K5 Verification (14 skills), K6 Security & Governance (10 skills), K7 Database & Data (10 skills), and K8 Observability & Evolution (12 skills).
+- Mandatory cross-kernel lifecycle: `Task -> Policy -> Repository Graph -> Risk/Evidence Plan -> Transformation -> Sandboxed Build/Run -> Verification -> Evidence Bundle -> E0-E5 Decision -> Artifact/Provenance -> Trajectory Dataset`.
+- Treat source package scripts and workflows as untrusted declarative material. The repository importer never executes archive code directly and independently validates pinned checksums, schemas, contracts, dual roots, and DAG acyclicity. Run `make commercial-capability-expansion-skills` for validation.
+
+
 
 # Batch 32 client modernization skills
 

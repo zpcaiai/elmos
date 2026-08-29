@@ -1,0 +1,950 @@
+{
+  "package": "elmos-commercial-capability-expansion-skills",
+  "version": "2.0.0",
+  "generated": "2026-08-29",
+  "skills": [
+    {
+      "id": "universal-agent-skill-runtime",
+      "kernel": "K1-skill-runtime",
+      "priority": "P0",
+      "objective": "Make Agent Skills first-class executable, versioned, discoverable assets with instructions, resources, scripts and policy metadata.",
+      "inspirations": [
+        "Microsoft Agent Framework",
+        "AgentSkills.io",
+        "Vercel Skills"
+      ],
+      "path": "skills/K1-skill-runtime/universal-agent-skill-runtime/SKILL.md"
+    },
+    {
+      "id": "progressive-skill-disclosure",
+      "kernel": "K1-skill-runtime",
+      "priority": "P0",
+      "objective": "Advertise only compact metadata, load full instructions/resources/scripts on demand, and enforce context-budget-aware unloading.",
+      "inspirations": [
+        "Microsoft Agent Framework",
+        "AgentSkills.io"
+      ],
+      "path": "skills/K1-skill-runtime/progressive-skill-disclosure/SKILL.md"
+    },
+    {
+      "id": "context-aware-skill-source",
+      "kernel": "K1-skill-runtime",
+      "priority": "P0",
+      "objective": "Filter skills by tenant, repository, task phase, agent, session, permissions and environment, with cache isolation and TTL refresh.",
+      "inspirations": [
+        "Microsoft Agent Framework"
+      ],
+      "path": "skills/K1-skill-runtime/context-aware-skill-source/SKILL.md"
+    },
+    {
+      "id": "skill-registry-ingestion",
+      "kernel": "K1-skill-runtime",
+      "priority": "P0",
+      "objective": "Continuously ingest compatible public/private skills, normalize metadata, scan licenses/security, evaluate quality and publish trusted internal variants.",
+      "inspirations": [
+        "Microsoft Skills",
+        "MongoDB Agent Skills",
+        "Hugging Face Skills",
+        "Cloudflare Skills"
+      ],
+      "path": "skills/K1-skill-runtime/skill-registry-ingestion/SKILL.md"
+    },
+    {
+      "id": "skill-sandbox-runner",
+      "kernel": "K1-skill-runtime",
+      "priority": "P0",
+      "objective": "Execute skill scripts only in policy-constrained sandboxes with CPU/memory/time/network/filesystem/secret limits and complete audit evidence.",
+      "inspirations": [
+        "Microsoft Agent Framework",
+        "gVisor",
+        "Firecracker"
+      ],
+      "path": "skills/K1-skill-runtime/skill-sandbox-runner/SKILL.md"
+    },
+    {
+      "id": "skill-version-provenance",
+      "kernel": "K1-skill-runtime",
+      "priority": "P0",
+      "objective": "Pin skill version, source revision, dependencies, model/tool compatibility and evidence so every run is reproducible and auditable.",
+      "inspirations": [
+        "SLSA",
+        "in-toto",
+        "Sigstore"
+      ],
+      "path": "skills/K1-skill-runtime/skill-version-provenance/SKILL.md"
+    },
+    {
+      "id": "model-tool-skill-router",
+      "kernel": "K1-skill-runtime",
+      "priority": "P0",
+      "objective": "Select the lowest-risk/highest-value model, tool, rewrite engine and skill combination using capability, cost, latency and proof requirements.",
+      "inspirations": [
+        "OpenRouter patterns",
+        "Harness architectures"
+      ],
+      "path": "skills/K1-skill-runtime/model-tool-skill-router/SKILL.md"
+    },
+    {
+      "id": "human-approval-message-injection",
+      "kernel": "K1-skill-runtime",
+      "priority": "P1",
+      "objective": "Allow safe human intervention, approval, correction and policy escalation while a long-running agent session is active.",
+      "inspirations": [
+        "Microsoft Agent Framework"
+      ],
+      "path": "skills/K1-skill-runtime/human-approval-message-injection/SKILL.md"
+    },
+    {
+      "id": "durable-agent-workflow",
+      "kernel": "K1-skill-runtime",
+      "priority": "P0",
+      "objective": "Represent repository transformations as durable workflows with retry, idempotency, pause/resume/cancel, checkpoints and recovery after process failure.",
+      "inspirations": [
+        "Temporal"
+      ],
+      "path": "skills/K1-skill-runtime/durable-agent-workflow/SKILL.md"
+    },
+    {
+      "id": "task-checkpoint-time-travel",
+      "kernel": "K1-skill-runtime",
+      "priority": "P1",
+      "objective": "Persist deterministic checkpoints and allow replay/time-travel for debugging, certification and alternative planning branches.",
+      "inspirations": [
+        "Temporal",
+        "Agent Framework patterns"
+      ],
+      "path": "skills/K1-skill-runtime/task-checkpoint-time-travel/SKILL.md"
+    },
+    {
+      "id": "polyglot-syntax-front-end",
+      "kernel": "K2-repository-intelligence",
+      "priority": "P0",
+      "objective": "Provide a unified error-tolerant incremental CST/AST layer for all supported languages and configuration formats.",
+      "inspirations": [
+        "Tree-sitter"
+      ],
+      "path": "skills/K2-repository-intelligence/polyglot-syntax-front-end/SKILL.md"
+    },
+    {
+      "id": "semantic-symbol-index",
+      "kernel": "K2-repository-intelligence",
+      "priority": "P0",
+      "objective": "Index definitions, references, implementations, symbols and types using compiler/LSP/SCIP-grade semantic information.",
+      "inspirations": [
+        "SCIP",
+        "Sourcegraph Code Intelligence"
+      ],
+      "path": "skills/K2-repository-intelligence/semantic-symbol-index/SKILL.md"
+    },
+    {
+      "id": "repository-semantic-code-graph",
+      "kernel": "K2-repository-intelligence",
+      "priority": "P0",
+      "objective": "Fuse syntax, symbol, type, call, inheritance, dependency, build, data and runtime evidence into one queryable repository graph.",
+      "inspirations": [
+        "SCIP",
+        "Tree-sitter",
+        "OpenTelemetry"
+      ],
+      "path": "skills/K2-repository-intelligence/repository-semantic-code-graph/SKILL.md"
+    },
+    {
+      "id": "cross-repository-impact-analysis",
+      "kernel": "K2-repository-intelligence",
+      "priority": "P0",
+      "objective": "Compute transitive blast radius across services, libraries, schemas, contracts, packages and repositories before applying changes.",
+      "inspirations": [
+        "SCIP",
+        "Backstage",
+        "OpenLineage"
+      ],
+      "path": "skills/K2-repository-intelligence/cross-repository-impact-analysis/SKILL.md"
+    },
+    {
+      "id": "dependency-build-graph-discovery",
+      "kernel": "K2-repository-intelligence",
+      "priority": "P0",
+      "objective": "Extract dependency and target graphs from Maven/Gradle/Bazel/Pants/Buck2/npm/pnpm/Cargo/Go/.NET/CMake and normalize them into Build IR.",
+      "inspirations": [
+        "Bazel",
+        "Buck2",
+        "Pants"
+      ],
+      "path": "skills/K2-repository-intelligence/dependency-build-graph-discovery/SKILL.md"
+    },
+    {
+      "id": "runtime-evidence-graph",
+      "kernel": "K2-repository-intelligence",
+      "priority": "P0",
+      "objective": "Correlate static code entities with traces, logs, metrics, DB calls, queues, RPCs and exceptions to reduce false semantic assumptions.",
+      "inspirations": [
+        "OpenTelemetry"
+      ],
+      "path": "skills/K2-repository-intelligence/runtime-evidence-graph/SKILL.md"
+    },
+    {
+      "id": "repository-slicing-context-pack",
+      "kernel": "K2-repository-intelligence",
+      "priority": "P0",
+      "objective": "Generate minimal semantically closed context slices for an agent rather than loading whole repositories or arbitrary grep results.",
+      "inspirations": [
+        "SCIP",
+        "Build graph systems"
+      ],
+      "path": "skills/K2-repository-intelligence/repository-slicing-context-pack/SKILL.md"
+    },
+    {
+      "id": "affected-test-selection",
+      "kernel": "K2-repository-intelligence",
+      "priority": "P0",
+      "objective": "Map changed symbols and targets to the minimal high-confidence unit/integration/contract/E2E certification set.",
+      "inspirations": [
+        "Bazel",
+        "Pants",
+        "coverage-guided testing"
+      ],
+      "path": "skills/K2-repository-intelligence/affected-test-selection/SKILL.md"
+    },
+    {
+      "id": "software-catalog-ownership-graph",
+      "kernel": "K2-repository-intelligence",
+      "priority": "P1",
+      "objective": "Track component ownership, lifecycle, documentation, interfaces, dependencies and operational metadata for enterprise-scale repositories.",
+      "inspirations": [
+        "Backstage"
+      ],
+      "path": "skills/K2-repository-intelligence/software-catalog-ownership-graph/SKILL.md"
+    },
+    {
+      "id": "change-risk-classifier",
+      "kernel": "K2-repository-intelligence",
+      "priority": "P0",
+      "objective": "Score change risk from semantic blast radius, criticality, historical failures, runtime hot paths, security boundaries and proof coverage.",
+      "inspirations": [
+        "CodeQL",
+        "OpenTelemetry",
+        "SLSA"
+      ],
+      "path": "skills/K2-repository-intelligence/change-risk-classifier/SKILL.md"
+    },
+    {
+      "id": "multi-engine-rewrite-router",
+      "kernel": "K3-transformation",
+      "priority": "P0",
+      "objective": "Route each edit to deterministic AST/LST/structural/security/compiler/LLM transformation engines instead of defaulting to free-form generation.",
+      "inspirations": [
+        "OpenRewrite",
+        "ast-grep",
+        "Semgrep",
+        "GritQL",
+        "Comby"
+      ],
+      "path": "skills/K3-transformation/multi-engine-rewrite-router/SKILL.md"
+    },
+    {
+      "id": "compiler-api-rewrite",
+      "kernel": "K3-transformation",
+      "priority": "P0",
+      "objective": "Use compiler APIs and typed ASTs for transformations where symbol/type correctness dominates textual convenience.",
+      "inspirations": [
+        "Java Compiler APIs",
+        "Roslyn",
+        "SwiftSyntax",
+        "Clang tooling"
+      ],
+      "path": "skills/K3-transformation/compiler-api-rewrite/SKILL.md"
+    },
+    {
+      "id": "semantic-ir-lift-lower",
+      "kernel": "K3-transformation",
+      "priority": "P0",
+      "objective": "Lift source/framework/database constructs into Semantic IR and lower them to target languages/frameworks with explicit loss and assumption tracking.",
+      "inspirations": [
+        "Compiler architecture",
+        "OpenRewrite"
+      ],
+      "path": "skills/K3-transformation/semantic-ir-lift-lower/SKILL.md"
+    },
+    {
+      "id": "behavioral-equivalence-migration",
+      "kernel": "K3-transformation",
+      "priority": "P0",
+      "objective": "Preserve externally observable behavior while allowing implementation changes, with explicit equivalence contracts and differential evidence.",
+      "inspirations": [
+        "Differential testing",
+        "Pact",
+        "Schemathesis"
+      ],
+      "path": "skills/K3-transformation/behavioral-equivalence-migration/SKILL.md"
+    },
+    {
+      "id": "framework-modernization-router",
+      "kernel": "K3-transformation",
+      "priority": "P0",
+      "objective": "Plan and execute staged legacy-framework modernization with adapters, strangler phases, compatibility shims and rollback points.",
+      "inspirations": [
+        "OpenRewrite",
+        "Strangler pattern"
+      ],
+      "path": "skills/K3-transformation/framework-modernization-router/SKILL.md"
+    },
+    {
+      "id": "api-contract-preserving-transform",
+      "kernel": "K3-transformation",
+      "priority": "P0",
+      "objective": "Preserve or intentionally version HTTP/RPC/event contracts and generate compatibility adapters plus contract tests.",
+      "inspirations": [
+        "Pact",
+        "OpenAPI",
+        "AsyncAPI"
+      ],
+      "path": "skills/K3-transformation/api-contract-preserving-transform/SKILL.md"
+    },
+    {
+      "id": "concurrency-semantics-transform",
+      "kernel": "K3-transformation",
+      "priority": "P0",
+      "objective": "Translate locks, atomics, async, actors, threads, memory ordering and cancellation without silently changing concurrency semantics.",
+      "inspirations": [
+        "TLA+",
+        "language memory models"
+      ],
+      "path": "skills/K3-transformation/concurrency-semantics-transform/SKILL.md"
+    },
+    {
+      "id": "build-system-migration",
+      "kernel": "K3-transformation",
+      "priority": "P1",
+      "objective": "Convert build definitions and dependency semantics across Maven/Gradle/Bazel/Pants/Buck2/CMake/npm ecosystems with reproducible validation.",
+      "inspirations": [
+        "Bazel",
+        "Buck2",
+        "Pants",
+        "Nix"
+      ],
+      "path": "skills/K3-transformation/build-system-migration/SKILL.md"
+    },
+    {
+      "id": "configuration-iac-migration",
+      "kernel": "K3-transformation",
+      "priority": "P1",
+      "objective": "Transform application config, containers, Kubernetes, Terraform and deployment manifests while preserving environment and policy semantics.",
+      "inspirations": [
+        "OPA",
+        "Kyverno",
+        "Conftest"
+      ],
+      "path": "skills/K3-transformation/configuration-iac-migration/SKILL.md"
+    },
+    {
+      "id": "transformation-explainability-ledger",
+      "kernel": "K3-transformation",
+      "priority": "P0",
+      "objective": "Record why every rule/edit was selected, the source evidence used, assumptions made, validation results and rollback mapping.",
+      "inspirations": [
+        "SLSA",
+        "in-toto",
+        "proof-carrying transformations"
+      ],
+      "path": "skills/K3-transformation/transformation-explainability-ledger/SKILL.md"
+    },
+    {
+      "id": "hermetic-build-environment",
+      "kernel": "K4-build-execution",
+      "priority": "P0",
+      "objective": "Build and test inside declared environments with controlled toolchains, dependencies, network and filesystem inputs.",
+      "inspirations": [
+        "Bazel",
+        "Nix"
+      ],
+      "path": "skills/K4-build-execution/hermetic-build-environment/SKILL.md"
+    },
+    {
+      "id": "untrusted-code-microvm-sandbox",
+      "kernel": "K4-build-execution",
+      "priority": "P0",
+      "objective": "Run user repositories and generated artifacts in hardened OCI or microVM sandboxes selected by risk tier.",
+      "inspirations": [
+        "Firecracker",
+        "gVisor"
+      ],
+      "path": "skills/K4-build-execution/untrusted-code-microvm-sandbox/SKILL.md"
+    },
+    {
+      "id": "reproducible-build-verifier",
+      "kernel": "K4-build-execution",
+      "priority": "P0",
+      "objective": "Rebuild artifacts independently and detect nondeterminism, undeclared inputs, timestamp leakage and environment drift.",
+      "inspirations": [
+        "Nix Reproducible Builds",
+        "SLSA"
+      ],
+      "path": "skills/K4-build-execution/reproducible-build-verifier/SKILL.md"
+    },
+    {
+      "id": "remote-execution-cache-planner",
+      "kernel": "K4-build-execution",
+      "priority": "P0",
+      "objective": "Exploit content-addressed caching, target-level parallelism and remote execution while preserving tenant isolation and evidence integrity.",
+      "inspirations": [
+        "Bazel",
+        "Buck2",
+        "Pants"
+      ],
+      "path": "skills/K4-build-execution/remote-execution-cache-planner/SKILL.md"
+    },
+    {
+      "id": "resource-quota-budget-enforcer",
+      "kernel": "K4-build-execution",
+      "priority": "P0",
+      "objective": "Enforce per-tenant/task/model/tool CPU, RAM, disk, network, token, credit and wall-clock budgets with graceful degradation.",
+      "inspirations": [
+        "Sandbox systems",
+        "Policy-as-code"
+      ],
+      "path": "skills/K4-build-execution/resource-quota-budget-enforcer/SKILL.md"
+    },
+    {
+      "id": "deterministic-toolchain-lock",
+      "kernel": "K4-build-execution",
+      "priority": "P0",
+      "objective": "Lock compiler, runtime, package manager, SDK, system library, container and skill versions for replayable transformations.",
+      "inspirations": [
+        "Nix",
+        "SLSA"
+      ],
+      "path": "skills/K4-build-execution/deterministic-toolchain-lock/SKILL.md"
+    },
+    {
+      "id": "environment-capture-replay",
+      "kernel": "K4-build-execution",
+      "priority": "P0",
+      "objective": "Capture execution environment and replay failures locally or in certification labs with equivalent dependencies and inputs.",
+      "inspirations": [
+        "Nix",
+        "OCI",
+        "OpenTelemetry"
+      ],
+      "path": "skills/K4-build-execution/environment-capture-replay/SKILL.md"
+    },
+    {
+      "id": "native-runtime-lab",
+      "kernel": "K4-build-execution",
+      "priority": "P0",
+      "objective": "Execute source and target systems on their real native runtimes/OS/architecture combinations for cross-language behavioral certification.",
+      "inspirations": [
+        "QEMU/VM/container ecosystems",
+        "OpenHarmony testing patterns"
+      ],
+      "path": "skills/K4-build-execution/native-runtime-lab/SKILL.md"
+    },
+    {
+      "id": "fault-injection-chaos-execution",
+      "kernel": "K4-build-execution",
+      "priority": "P1",
+      "objective": "Inject latency, process death, network faults, DB failover, duplicate messages and partial outages to validate migration resilience.",
+      "inspirations": [
+        "Chaos engineering",
+        "Temporal retry semantics"
+      ],
+      "path": "skills/K4-build-execution/fault-injection-chaos-execution/SKILL.md"
+    },
+    {
+      "id": "compiler-grade-certification-gate",
+      "kernel": "K5-verification",
+      "priority": "P0",
+      "objective": "Gate transformations through parse/compile/unit/integration/fuzz/security/runtime/compatibility/performance evidence rather than compile success alone.",
+      "inspirations": [
+        "OpenHarmony ArkCompiler testing philosophy"
+      ],
+      "path": "skills/K5-verification/compiler-grade-certification-gate/SKILL.md"
+    },
+    {
+      "id": "differential-runtime-verification",
+      "kernel": "K5-verification",
+      "priority": "P0",
+      "objective": "Run old/new implementations on identical scenarios and compare outputs, state transitions, side effects and temporal behavior.",
+      "inspirations": [
+        "Differential testing"
+      ],
+      "path": "skills/K5-verification/differential-runtime-verification/SKILL.md"
+    },
+    {
+      "id": "continuous-fuzz-certification",
+      "kernel": "K5-verification",
+      "priority": "P0",
+      "objective": "Generate and continuously run coverage-guided fuzz targets with sanitizer support, crash deduplication and regression corpus promotion.",
+      "inspirations": [
+        "OSS-Fuzz",
+        "ClusterFuzz"
+      ],
+      "path": "skills/K5-verification/continuous-fuzz-certification/SKILL.md"
+    },
+    {
+      "id": "property-based-test-generation",
+      "kernel": "K5-verification",
+      "priority": "P0",
+      "objective": "Infer invariants and generators from schemas, types, code and runtime samples, then shrink counterexamples into durable regression tests.",
+      "inspirations": [
+        "Hypothesis/QuickCheck patterns"
+      ],
+      "path": "skills/K5-verification/property-based-test-generation/SKILL.md"
+    },
+    {
+      "id": "api-schema-fuzz-testing",
+      "kernel": "K5-verification",
+      "priority": "P0",
+      "objective": "Generate adversarial and stateful tests directly from OpenAPI/GraphQL schemas and retain minimized failing examples.",
+      "inspirations": [
+        "Schemathesis"
+      ],
+      "path": "skills/K5-verification/api-schema-fuzz-testing/SKILL.md"
+    },
+    {
+      "id": "contract-compatibility-verification",
+      "kernel": "K5-verification",
+      "priority": "P0",
+      "objective": "Verify consumer/provider compatibility across language boundaries and prevent breaking service/event contract changes.",
+      "inspirations": [
+        "Pact"
+      ],
+      "path": "skills/K5-verification/contract-compatibility-verification/SKILL.md"
+    },
+    {
+      "id": "browser-e2e-trace-verification",
+      "kernel": "K5-verification",
+      "priority": "P0",
+      "objective": "Validate generated/modernized UIs on real browser engines and retain DOM/network/console/screenshot traces for failures.",
+      "inspirations": [
+        "Playwright"
+      ],
+      "path": "skills/K5-verification/browser-e2e-trace-verification/SKILL.md"
+    },
+    {
+      "id": "static-dataflow-assurance",
+      "kernel": "K5-verification",
+      "priority": "P0",
+      "objective": "Run semantic static analysis, taint/data-flow checks and interprocedural defect detection on changed code and critical paths.",
+      "inspirations": [
+        "CodeQL",
+        "Semgrep",
+        "Infer"
+      ],
+      "path": "skills/K5-verification/static-dataflow-assurance/SKILL.md"
+    },
+    {
+      "id": "formal-proof-router",
+      "kernel": "K5-verification",
+      "priority": "P1",
+      "objective": "Route high-risk invariants to model checking, SMT/theorem proving or lightweight formal models instead of applying formal methods indiscriminately.",
+      "inspirations": [
+        "TLA+",
+        "Lean 4",
+        "Alloy"
+      ],
+      "path": "skills/K5-verification/formal-proof-router/SKILL.md"
+    },
+    {
+      "id": "metamorphic-equivalence-testing",
+      "kernel": "K5-verification",
+      "priority": "P1",
+      "objective": "Generate transformations of inputs whose output relations must remain invariant to expose silent semantic divergence.",
+      "inspirations": [
+        "Metamorphic testing research"
+      ],
+      "path": "skills/K5-verification/metamorphic-equivalence-testing/SKILL.md"
+    },
+    {
+      "id": "mutation-strength-certification",
+      "kernel": "K5-verification",
+      "priority": "P1",
+      "objective": "Measure whether generated tests can kill behaviorally meaningful mutations and promote missing tests automatically.",
+      "inspirations": [
+        "PIT",
+        "Stryker patterns"
+      ],
+      "path": "skills/K5-verification/mutation-strength-certification/SKILL.md"
+    },
+    {
+      "id": "performance-regression-certification",
+      "kernel": "K5-verification",
+      "priority": "P0",
+      "objective": "Compare latency, throughput, memory, CPU, allocations, startup and query plans under controlled workloads with explicit budgets.",
+      "inspirations": [
+        "Benchmarking best practices"
+      ],
+      "path": "skills/K5-verification/performance-regression-certification/SKILL.md"
+    },
+    {
+      "id": "golden-route-corpus-manager",
+      "kernel": "K5-verification",
+      "priority": "P0",
+      "objective": "Maintain real open/commercial fixtures, expected outputs, adversarial mutations and E0-E5 evidence for each high-value migration route.",
+      "inspirations": [
+        "OSS-Fuzz corpus discipline",
+        "benchmark suites"
+      ],
+      "path": "skills/K5-verification/golden-route-corpus-manager/SKILL.md"
+    },
+    {
+      "id": "evidence-gate-orchestrator",
+      "kernel": "K5-verification",
+      "priority": "P0",
+      "objective": "Aggregate all proof artifacts into configurable E0-E5 production gates and fail closed when mandatory evidence is missing or stale.",
+      "inspirations": [
+        "SLSA",
+        "OpenHarmony-inspired gates"
+      ],
+      "path": "skills/K5-verification/evidence-gate-orchestrator/SKILL.md"
+    },
+    {
+      "id": "policy-as-code-kernel",
+      "kernel": "K6-security-governance",
+      "priority": "P0",
+      "objective": "Centralize model/tool/file/network/build/deploy/data/approval decisions in auditable policy-as-code rather than scattered application conditionals.",
+      "inspirations": [
+        "OPA"
+      ],
+      "path": "skills/K6-security-governance/policy-as-code-kernel/SKILL.md"
+    },
+    {
+      "id": "fine-grained-authorization-engine",
+      "kernel": "K6-security-governance",
+      "priority": "P0",
+      "objective": "Enforce principal-action-resource-context authorization for tenant/repo/branch/environment/secret/tool access with schema validation.",
+      "inspirations": [
+        "Cedar",
+        "SpiceDB-style relationship authorization"
+      ],
+      "path": "skills/K6-security-governance/fine-grained-authorization-engine/SKILL.md"
+    },
+    {
+      "id": "secret-egress-control",
+      "kernel": "K6-security-governance",
+      "priority": "P0",
+      "objective": "Broker secret access, redact logs, prevent credential exfiltration, restrict network destinations and produce access evidence.",
+      "inspirations": [
+        "OPA",
+        "sandboxing",
+        "secret managers"
+      ],
+      "path": "skills/K6-security-governance/secret-egress-control/SKILL.md"
+    },
+    {
+      "id": "prompt-injection-tool-boundary",
+      "kernel": "K6-security-governance",
+      "priority": "P0",
+      "objective": "Treat repository content and remote tool output as untrusted data; enforce instruction/data separation and tool capability boundaries.",
+      "inspirations": [
+        "Agent Framework security guidance",
+        "least privilege"
+      ],
+      "path": "skills/K6-security-governance/prompt-injection-tool-boundary/SKILL.md"
+    },
+    {
+      "id": "sbom-vulnerability-attestation",
+      "kernel": "K6-security-governance",
+      "priority": "P0",
+      "objective": "Generate SBOMs, scan dependencies/images and attach vulnerability results to certification evidence.",
+      "inspirations": [
+        "Syft",
+        "Grype",
+        "SPDX",
+        "CycloneDX"
+      ],
+      "path": "skills/K6-security-governance/sbom-vulnerability-attestation/SKILL.md"
+    },
+    {
+      "id": "slsa-in-toto-provenance",
+      "kernel": "K6-security-governance",
+      "priority": "P0",
+      "objective": "Emit verifiable provenance for source, build, transformation, test and packaging steps using standard attestation models.",
+      "inspirations": [
+        "SLSA",
+        "in-toto",
+        "Tekton Chains"
+      ],
+      "path": "skills/K6-security-governance/slsa-in-toto-provenance/SKILL.md"
+    },
+    {
+      "id": "artifact-signing-verification",
+      "kernel": "K6-security-governance",
+      "priority": "P0",
+      "objective": "Sign outputs and attestations and verify signatures before promotion or deployment.",
+      "inspirations": [
+        "Sigstore",
+        "Tekton Chains"
+      ],
+      "path": "skills/K6-security-governance/artifact-signing-verification/SKILL.md"
+    },
+    {
+      "id": "license-compliance-scanner",
+      "kernel": "K6-security-governance",
+      "priority": "P0",
+      "objective": "Detect source/dependency/skill licenses, obligations and incompatibilities before generated artifacts are delivered commercially.",
+      "inspirations": [
+        "SPDX",
+        "SBOM ecosystems"
+      ],
+      "path": "skills/K6-security-governance/license-compliance-scanner/SKILL.md"
+    },
+    {
+      "id": "multi-tenant-isolation-certifier",
+      "kernel": "K6-security-governance",
+      "priority": "P0",
+      "objective": "Continuously verify tenant separation across execution, cache, artifacts, secrets, logs, traces and storage boundaries.",
+      "inspirations": [
+        "Firecracker",
+        "gVisor",
+        "policy-as-code"
+      ],
+      "path": "skills/K6-security-governance/multi-tenant-isolation-certifier/SKILL.md"
+    },
+    {
+      "id": "kubernetes-policy-certification",
+      "kernel": "K6-security-governance",
+      "priority": "P1",
+      "objective": "Validate/mutate/generate deployment resources and verify image/security policies before cluster admission.",
+      "inspirations": [
+        "Kyverno",
+        "OPA"
+      ],
+      "path": "skills/K6-security-governance/kubernetes-policy-certification/SKILL.md"
+    },
+    {
+      "id": "database-semantic-compiler",
+      "kernel": "K7-database-data",
+      "priority": "P0",
+      "objective": "Represent schema, SQL, routines, transaction semantics, constraints and query behavior in a database Semantic IR for target-aware migration.",
+      "inspirations": [
+        "SQLGlot",
+        "jOOQ",
+        "SchemaCrawler"
+      ],
+      "path": "skills/K7-database-data/database-semantic-compiler/SKILL.md"
+    },
+    {
+      "id": "schema-metadata-discovery",
+      "kernel": "K7-database-data",
+      "priority": "P0",
+      "objective": "Reverse engineer schemas, keys, constraints, indexes, routines, privileges and relationships into a normalized model.",
+      "inspirations": [
+        "SchemaCrawler"
+      ],
+      "path": "skills/K7-database-data/schema-metadata-discovery/SKILL.md"
+    },
+    {
+      "id": "sql-dialect-transpiler",
+      "kernel": "K7-database-data",
+      "priority": "P0",
+      "objective": "Parse/normalize/transpile SQL dialects with explicit unsupported constructs and target-specific rewrite rules.",
+      "inspirations": [
+        "SQLGlot",
+        "jOOQ"
+      ],
+      "path": "skills/K7-database-data/sql-dialect-transpiler/SKILL.md"
+    },
+    {
+      "id": "stored-routine-migration",
+      "kernel": "K7-database-data",
+      "priority": "P0",
+      "objective": "Translate procedures/functions/triggers/packages and preserve exception, transaction, cursor and procedural semantics.",
+      "inspirations": [
+        "jOOQ",
+        "dialect-specific parsers"
+      ],
+      "path": "skills/K7-database-data/stored-routine-migration/SKILL.md"
+    },
+    {
+      "id": "transaction-semantic-equivalence",
+      "kernel": "K7-database-data",
+      "priority": "P0",
+      "objective": "Verify isolation, locking, retries, autocommit, savepoints and error behavior across source/target database engines.",
+      "inspirations": [
+        "DB runtime differential testing"
+      ],
+      "path": "skills/K7-database-data/transaction-semantic-equivalence/SKILL.md"
+    },
+    {
+      "id": "query-plan-performance-equivalence",
+      "kernel": "K7-database-data",
+      "priority": "P0",
+      "objective": "Compare execution plans and representative workload performance; generate index/query fixes when semantics match but performance regresses.",
+      "inspirations": [
+        "SQL optimizers",
+        "database EXPLAIN facilities"
+      ],
+      "path": "skills/K7-database-data/query-plan-performance-equivalence/SKILL.md"
+    },
+    {
+      "id": "data-lineage-impact-analysis",
+      "kernel": "K7-database-data",
+      "priority": "P0",
+      "objective": "Track run/job/dataset/table/column lineage so code/schema changes propagate to affected pipelines and consumers.",
+      "inspirations": [
+        "OpenLineage",
+        "DataHub patterns"
+      ],
+      "path": "skills/K7-database-data/data-lineage-impact-analysis/SKILL.md"
+    },
+    {
+      "id": "data-migration-reconciliation",
+      "kernel": "K7-database-data",
+      "priority": "P0",
+      "objective": "Validate row counts, keys, aggregates, referential integrity, sampling hashes and business invariants after data migration.",
+      "inspirations": [
+        "Data reconciliation patterns"
+      ],
+      "path": "skills/K7-database-data/data-migration-reconciliation/SKILL.md"
+    },
+    {
+      "id": "cdc-shadow-compare",
+      "kernel": "K7-database-data",
+      "priority": "P1",
+      "objective": "Run source/target databases in shadow/CDC mode and continuously compare data and query results before cutover.",
+      "inspirations": [
+        "CDC architectures",
+        "strangler migration"
+      ],
+      "path": "skills/K7-database-data/cdc-shadow-compare/SKILL.md"
+    },
+    {
+      "id": "database-security-policy-migration",
+      "kernel": "K7-database-data",
+      "priority": "P1",
+      "objective": "Migrate users, roles, grants, row-level policies, masking and encryption semantics with least-privilege verification.",
+      "inspirations": [
+        "OPA/Cedar concepts",
+        "database security models"
+      ],
+      "path": "skills/K7-database-data/database-security-policy-migration/SKILL.md"
+    },
+    {
+      "id": "otel-agent-execution-tracing",
+      "kernel": "K8-observability-evolution",
+      "priority": "P0",
+      "objective": "Emit language-neutral traces/metrics/logs for agents, tools, builds, tests, DB/RPC calls and transformation phases with stable semantic attributes.",
+      "inspirations": [
+        "OpenTelemetry"
+      ],
+      "path": "skills/K8-observability-evolution/otel-agent-execution-tracing/SKILL.md"
+    },
+    {
+      "id": "agent-evidence-evaluation",
+      "kernel": "K8-observability-evolution",
+      "priority": "P0",
+      "objective": "Evaluate trajectories, responses, retrieval, tool use and outcomes against versioned datasets and production-grade evaluators.",
+      "inspirations": [
+        "Phoenix",
+        "OpenInference"
+      ],
+      "path": "skills/K8-observability-evolution/agent-evidence-evaluation/SKILL.md"
+    },
+    {
+      "id": "trajectory-dataset-versioning",
+      "kernel": "K8-observability-evolution",
+      "priority": "P0",
+      "objective": "Persist successful/failed trajectories, environments, evidence and labels as versioned training/evaluation datasets.",
+      "inspirations": [
+        "Phoenix",
+        "AgentEvolver"
+      ],
+      "path": "skills/K8-observability-evolution/trajectory-dataset-versioning/SKILL.md"
+    },
+    {
+      "id": "failure-attribution-learning",
+      "kernel": "K8-observability-evolution",
+      "priority": "P0",
+      "objective": "Attribute failures to planning, context, rule, skill, model, tool, environment, dependency or verification gaps and propose bounded fixes.",
+      "inspirations": [
+        "AgentEvolver"
+      ],
+      "path": "skills/K8-observability-evolution/failure-attribution-learning/SKILL.md"
+    },
+    {
+      "id": "self-evolving-skill-factory",
+      "kernel": "K8-observability-evolution",
+      "priority": "P1",
+      "objective": "Mine production trajectories into candidate rules/skills/tests, evaluate offline, canary safely and promote only evidence-backed improvements.",
+      "inspirations": [
+        "AgentEvolver",
+        "Youtu-Agent patterns"
+      ],
+      "path": "skills/K8-observability-evolution/self-evolving-skill-factory/SKILL.md"
+    },
+    {
+      "id": "automatic-task-corpus-generation",
+      "kernel": "K8-observability-evolution",
+      "priority": "P1",
+      "objective": "Generate diverse, adversarial and boundary tasks from environments and failure clusters to expand certification/training corpora.",
+      "inspirations": [
+        "AgentEvolver self-questioning"
+      ],
+      "path": "skills/K8-observability-evolution/automatic-task-corpus-generation/SKILL.md"
+    },
+    {
+      "id": "skill-promotion-canary",
+      "kernel": "K8-observability-evolution",
+      "priority": "P0",
+      "objective": "Promote new skill/rule/model versions through offline replay, shadow, canary and rollback stages with statistically meaningful comparisons.",
+      "inspirations": [
+        "Progressive delivery patterns",
+        "OpenFeature"
+      ],
+      "path": "skills/K8-observability-evolution/skill-promotion-canary/SKILL.md"
+    },
+    {
+      "id": "software-catalog-production-scorecard",
+      "kernel": "K8-observability-evolution",
+      "priority": "P1",
+      "objective": "Expose repository ownership, readiness, certification status, documentation, migration debt and operational health in a developer portal.",
+      "inspirations": [
+        "Backstage"
+      ],
+      "path": "skills/K8-observability-evolution/software-catalog-production-scorecard/SKILL.md"
+    },
+    {
+      "id": "feature-flag-progressive-rollout",
+      "kernel": "K8-observability-evolution",
+      "priority": "P1",
+      "objective": "Decouple transformation/deployment feature flags from vendors and use controlled cohorts for new rules, models and runtime behaviors.",
+      "inspirations": [
+        "OpenFeature"
+      ],
+      "path": "skills/K8-observability-evolution/feature-flag-progressive-rollout/SKILL.md"
+    },
+    {
+      "id": "incident-replay-root-cause",
+      "kernel": "K8-observability-evolution",
+      "priority": "P0",
+      "objective": "Reconstruct failed long tasks from checkpoints, traces, tool results and environment snapshots; identify first causal divergence and repair path.",
+      "inspirations": [
+        "Temporal",
+        "OpenTelemetry",
+        "Phoenix"
+      ],
+      "path": "skills/K8-observability-evolution/incident-replay-root-cause/SKILL.md"
+    },
+    {
+      "id": "cost-latency-quality-optimizer",
+      "kernel": "K8-observability-evolution",
+      "priority": "P0",
+      "objective": "Optimize model/tool/parallelism/cache decisions against quality gates, wall-clock ETA, token/credit cost and infrastructure cost.",
+      "inspirations": [
+        "Agent observability",
+        "build caching"
+      ],
+      "path": "skills/K8-observability-evolution/cost-latency-quality-optimizer/SKILL.md"
+    },
+    {
+      "id": "platform-template-generator",
+      "kernel": "K8-observability-evolution",
+      "priority": "P1",
+      "objective": "Standardize new project/service generation with organization-approved templates, docs, ownership metadata, CI and certification defaults.",
+      "inspirations": [
+        "Backstage Software Templates"
+      ],
+      "path": "skills/K8-observability-evolution/platform-template-generator/SKILL.md"
+    }
+  ]
+}

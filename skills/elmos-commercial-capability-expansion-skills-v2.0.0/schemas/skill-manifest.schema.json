@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Elmos Skill Manifest",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "priority",
+    "capabilities",
+    "trustTier"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "priority": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2"
+      ]
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "trustTier": {
+      "enum": [
+        "builtin",
+        "trusted-private",
+        "verified-remote",
+        "untrusted-remote"
+      ]
+    },
+    "allowedTools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "requiresNetwork": {
+      "type": "boolean"
+    },
+    "sourceRevision": {
+      "type": "string"
+    },
+    "license": {
+      "type": "string"
+    }
+  }
+}
