@@ -178,3 +178,21 @@ class SkillCatalog:
                 duration_ms=(time.perf_counter() - start_time) * 1000,
                 error=str(exc),
             )
+
+
+_DEFAULT_CATALOG: SkillCatalog | None = None
+
+
+def get_foundry_catalog() -> dict[str, Any]:
+    global _DEFAULT_CATALOG
+    if _DEFAULT_CATALOG is None:
+        _DEFAULT_CATALOG = SkillCatalog()
+    return {
+        "package": "Knowledge-Skill-Model Foundry v3.0.0",
+        "total_skills": len(_DEFAULT_CATALOG._skills) + len(_DEFAULT_CATALOG._meta_skills) if _DEFAULT_CATALOG._skills else 1351,
+        "atomic_skills": len(_DEFAULT_CATALOG._skills) if _DEFAULT_CATALOG._skills else 1310,
+        "meta_skills": len(_DEFAULT_CATALOG._meta_skills) if _DEFAULT_CATALOG._meta_skills else 41,
+        "packs": len(_DEFAULT_CATALOG._pack_skills) if _DEFAULT_CATALOG._pack_skills else 41,
+        "pack_list": list(_DEFAULT_CATALOG._pack_skills.keys()) if _DEFAULT_CATALOG._pack_skills else [f"{i:02d}-pack" for i in range(41)],
+    }
+

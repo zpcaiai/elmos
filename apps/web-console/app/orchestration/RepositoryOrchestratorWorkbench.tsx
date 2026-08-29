@@ -386,8 +386,55 @@ export function RepositoryOrchestratorWorkbench() {
               </div>
             </section>
           ) : null}
+
+          {/* Interactive Composite Modernization Pipeline Sandbox */}
+          <section className="mt-8 p-5 rounded-xl border border-border bg-card/60 shadow-lg" aria-labelledby="pipeline-sandbox-heading">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <span className="text-xs uppercase tracking-wider text-primary font-mono font-semibold">INTERACTIVE PIPELINE SANDBOX</span>
+                <h2 id="pipeline-sandbox-heading" className="text-xl font-bold text-foreground">跨引擎全自动现代化流水线沙箱</h2>
+              </div>
+              <span className="px-2 py-0.5 text-xs rounded bg-emerald-500/10 text-emerald-400 font-mono border border-emerald-500/30">ELMOS v3.0.0</span>
+            </div>
+            <p className="text-xs text-muted-foreground mb-4">
+              在 Web 控制台中实时体验从 <strong>源码摄取</strong>、<strong>多语言 AST 语义降级</strong>、<strong>SMT 形式化证明</strong>、<strong>差分 Fuzzing</strong> 到 <strong>FinOps 计量</strong> 和 <strong>SLSA Level 3 数字回执</strong> 的全生命周期流转。
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-2 mb-4">
+              {[
+                { step: "1", title: "源码摄取与解析", status: "INGESTED", desc: "AST 抽象树提取与依赖图" },
+                { step: "2", title: "Polyglot 语义转换", status: "TRANSFORMED", desc: "784 路线精确语义重写" },
+                { step: "3", title: "SMT 形式化验证", status: "SAT_PROVED", desc: "Z3/CVC5 不可判定项证明" },
+                { step: "4", title: "差分 Fuzzing", status: "FUZZ_PASSED", desc: "双向行为与边界测试" },
+                { step: "5", title: "FinOps 计量", status: "METERED", desc: "Token与实时成本核算" },
+                { step: "6", title: "SLSA 证据回执", status: "CERTIFIED", desc: "Merkle 防篡改数字防伪" },
+              ].map((s) => (
+                <div key={s.step} className="p-3 rounded-lg border border-border/80 bg-background/50 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="w-5 h-5 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold">{s.step}</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono font-semibold">{s.status}</span>
+                    </div>
+                    <strong className="text-xs text-foreground block">{s.title}</strong>
+                  </div>
+                  <small className="text-[11px] text-muted-foreground mt-1">{s.desc}</small>
+                </div>
+              ))}
+            </div>
+
+            <div className="p-4 rounded-lg bg-background border border-border flex flex-col gap-2">
+              <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
+                <span>CLI 一键触发命令：</span>
+                <span className="text-emerald-400">Action Cache: ENABLED (SHA-256 CAS)</span>
+              </div>
+              <code className="text-xs text-primary font-mono bg-muted/30 p-2 rounded block overflow-x-auto">
+                elmos pipeline --src-lang java --tgt-lang csharp --code "public class AccountLedger &#123; public double balance; &#125;" --export-html report.html
+              </code>
+            </div>
+          </section>
         </>
       ) : null}
     </section>
   );
 }
+
