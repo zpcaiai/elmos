@@ -1,0 +1,8 @@
+schemaVersion: elmos.policy/v1
+kind: FormalAssurancePolicy
+metadata: {name: formal-assurance, version: 3.0.0}
+spec:
+  unknownOrTimeoutCanPass: false
+  proofScopeMustBeExplicit: true
+  assumptionsMustBeVersioned: true
+  counterexamplesMustBecomeRegressionCandidates: true

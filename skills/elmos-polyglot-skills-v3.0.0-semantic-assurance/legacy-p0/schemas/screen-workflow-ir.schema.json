@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/screen-workflow-ir.schema.json",
+  "title": "Screen Workflow IR",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "screens",
+    "transitions",
+    "validations"
+  ],
+  "properties": {
+    "screens": {},
+    "transitions": {},
+    "validations": {}
+  }
+}

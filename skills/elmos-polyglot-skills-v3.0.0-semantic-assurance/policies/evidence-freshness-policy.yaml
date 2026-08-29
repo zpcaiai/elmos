@@ -1,0 +1,14 @@
+schemaVersion: elmos.evidence-freshness-policy/v1
+invalidateOn:
+  - source-snapshot-change
+  - target-profile-change
+  - dependency-lock-change
+  - toolchain-change
+  - rule-or-adapter-change
+  - test-or-fixture-change
+  - environment-change
+  - execution-policy-change
+  - contract-change
+states: [current, stale, unknown]
+unknownSatisfiesGate: false
+staleSatisfiesGate: false

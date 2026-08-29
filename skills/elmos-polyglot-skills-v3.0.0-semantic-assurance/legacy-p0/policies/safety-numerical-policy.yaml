@@ -1,0 +1,4 @@
+safetyContractWeakening: forbidden-without-approval
+proofWaiver: explicit
+floatingPointTolerance: declared-per-route
+performanceRegression: budgeted-and-evidenced

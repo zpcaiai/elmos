@@ -1,0 +1,14 @@
+schemaVersion: elmos.readiness-policy/v1
+default: not-run
+states: [not-run, blocked, fail, waived, pass]
+rules:
+  - id: no-file-presence-pass
+    statement: Generated files or package presence never satisfy an execution gate.
+  - id: stale-evidence-deny
+    statement: Stale evidence cannot satisfy a gate.
+  - id: required-not-run-deny
+    statement: A required not-run or blocked check prevents pass.
+  - id: waiver-bounded
+    statement: Every waiver requires owner, rationale, compensating control, scope, and expiry.
+  - id: certificate-bounded
+    statement: Readiness is bound to exact artifacts, environment, policy, and time.

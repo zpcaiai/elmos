@@ -1,0 +1,13 @@
+schemaVersion: elmos.policy/v1
+kind: CertificationPolicy
+metadata: {name: e0-e5-v3, version: 3.0.0}
+spec:
+  levels:
+    E0: [characterization, semantic-obligation-graph]
+    E1: [frontend-fidelity, type-semantics, build]
+    E2: [component-tests, property-contract-tests]
+    E3: [differential-behavior, state-side-effects]
+    E4: [stress-fuzz-mutation, runtime-edge, nonfunctional, applicable-formal]
+    E5: [production-representative-shadow, rollback-reconciliation, attested-evidence]
+  requiredLowerLevels: true
+  criticalNotRunCanPass: false

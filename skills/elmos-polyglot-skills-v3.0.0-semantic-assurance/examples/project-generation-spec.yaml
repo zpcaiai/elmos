@@ -1,0 +1,50 @@
+schemaVersion: elmos.project-generation-spec/v1
+projectId: demo-field-service
+name: Field Service Platform
+businessObjective: Coordinate field work orders, technicians, assets, evidence, and customer notifications.
+personas:
+  - dispatcher
+  - technician
+  - customer
+  - administrator
+features:
+  - id: F-001
+    statement: A dispatcher creates and assigns a work order.
+    acceptanceCriteria:
+      - Assignment is authorized and audited.
+      - The technician receives a notification.
+      - Duplicate submission does not create a second work order.
+    priority: must
+  - id: F-002
+    statement: A technician completes a work order with photos and notes.
+    acceptanceCriteria:
+      - Offline drafts synchronize idempotently.
+      - Uploaded evidence is access controlled.
+    priority: must
+domain:
+  entities: [WorkOrder, Technician, Asset, Assignment, Evidence]
+  invariants:
+    - A completed work order cannot be reassigned without a reopening decision.
+    - Every state transition has actor, time, reason, and correlation ID.
+  workflows:
+    - create-assign-execute-complete
+technology:
+  backend: java
+  frontend: react
+  mobile: flutter
+  database: postgresql
+nonFunctional:
+  availability: 99.9%
+  latencyBudgets:
+    - API p95 under 300 ms at declared load
+  securityClassification: confidential
+  dataResidency: deployment-region
+delivery:
+  environments: [local, test, staging, production]
+  ciProvider: repository-native
+  infrastructureMode: containers-and-iac
+policy:
+  placeholdersAllowedInProductionScope: false
+  disabledTestsAllowed: false
+  hardcodedSecretsAllowed: false
+readiness: not-run

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.coverage-metric/v1",
+  "type": "object",
+  "required": [
+    "metric",
+    "numerator",
+    "denominator",
+    "scope"
+  ],
+  "properties": {
+    "metric": {
+      "type": "string"
+    },
+    "numerator": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "denominator": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "scope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "excluded": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "computedAt": {
+      "type": "string"
+    }
+  }
+}

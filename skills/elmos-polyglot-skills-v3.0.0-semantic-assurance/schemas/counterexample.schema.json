@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.counterexample/v1",
+  "type": "object",
+  "required": [
+    "id",
+    "route",
+    "obligation",
+    "input",
+    "reproduction"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "route": {
+      "type": "string"
+    },
+    "obligation": {
+      "type": "string"
+    },
+    "input": {},
+    "reproduction": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sourceObserved": {},
+    "targetObserved": {},
+    "minimized": {
+      "type": "boolean"
+    },
+    "hash": {
+      "type": "string"
+    }
+  }
+}

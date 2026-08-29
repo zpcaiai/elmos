@@ -1,0 +1,3 @@
+# External Methods Used as Design References
+
+ELMOS should learn concepts, not copy third-party code blindly. Useful reference families include: lossless/incremental parsing (Tree-sitter); native compiler semantic frontends; verified semantic preservation (CompCert); LLVM refinement/translation validation (Alive2); executable semantics (K Framework); property-based testing (QuickCheck/Hypothesis family); defined-behavior random program generation (Csmith/YARPGen); coverage-guided fuzzing (AFL++/LLVM fuzzers); sanitizer/interpreter UB detection (ASan/UBSan/Miri); official conformance suites such as Test262 and WebAssembly specification tests; syntax-aware differencing and reducers. Track tool licenses and pin versions in adapters.

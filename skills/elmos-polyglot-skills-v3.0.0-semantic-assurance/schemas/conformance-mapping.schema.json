@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.conformance-mapping/v1",
+  "type": "object",
+  "required": [
+    "standard",
+    "version",
+    "clauses"
+  ],
+  "properties": {
+    "standard": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "clauses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "clause",
+          "semanticTags"
+        ],
+        "properties": {
+          "clause": {
+            "type": "string"
+          },
+          "semanticTags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "testRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

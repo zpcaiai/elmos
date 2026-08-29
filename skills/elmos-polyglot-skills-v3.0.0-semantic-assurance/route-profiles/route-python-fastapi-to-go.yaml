@@ -1,0 +1,55 @@
+schemaVersion: elmos.route-profile/v1
+kind: RouteProfile
+metadata:
+  id: route-python-fastapi-to-go
+  version: 1.0.0
+  readiness: not-run
+  priority: reference
+spec:
+  source: python
+  target: go
+  mode: cross-stack
+  intent: Convert FastAPI services to Go with explicit type, validation, async, dependency,
+    error, and OpenAPI behavior.
+  requiredSkills:
+  - elmos-polyglot-modernization-orchestrator
+  - elmos-adapter-python
+  - elmos-adapter-go
+  - elmos-differential-behavior-validator
+  - elmos-unified-evidence-packager
+  - elmos-production-readiness-gate
+  prerequisites:
+  - FastAPI/OpenAPI inventory
+  - typed/dynamic risk report
+  - Go web framework target
+  preservationPriorities:
+  - OpenAPI behavior
+  - Pydantic validation
+  - async/concurrency
+  - database transactions
+  - errors
+  stages:
+  - Freeze OpenAPI and golden tests
+  - Generate Go DTO/validation
+  - Map dependency injection
+  - Map async tasks to contexts/goroutines
+  - Implement data layer
+  - Run differential load and contract tests
+  requiredValidation:
+  - clean source and target builds
+  - contract tests
+  - differential behavior tests
+  - data equivalence where state exists
+  - performance comparison against declared budgets
+  - security and supply-chain checks
+  - rollback or approved non-reversibility
+  automaticBlockers:
+  - missing immutable source baseline
+  - unresolved critical semantic loss
+  - unavailable required toolchain
+  - unapproved breaking public contract
+  - unverified irreversible data change
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

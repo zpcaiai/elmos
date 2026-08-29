@@ -1,0 +1,56 @@
+schemaVersion: elmos.route-profile/v1
+kind: RouteProfile
+metadata:
+  id: route-cpp-to-rust
+  version: 1.0.0
+  readiness: not-run
+  priority: reference
+spec:
+  source: cpp
+  target: rust
+  mode: safety-modernization
+  intent: Replace selected C++ components with Rust behind measured ABI/FFI boundaries
+    rather than performing an unbounded rewrite.
+  requiredSkills:
+  - elmos-polyglot-modernization-orchestrator
+  - elmos-adapter-cpp
+  - elmos-adapter-rust
+  - elmos-differential-behavior-validator
+  - elmos-unified-evidence-packager
+  - elmos-production-readiness-gate
+  prerequisites:
+  - compile_commands and ABI inventory
+  - unsafe/UB findings
+  - Rust target profile
+  preservationPriorities:
+  - ABI and data layout
+  - ownership/lifetime
+  - performance
+  - threading
+  - hardware/platform integration
+  stages:
+  - Select bounded component
+  - Freeze C ABI facade
+  - Characterize behavior and benchmarks
+  - Implement safe Rust core
+  - Minimize unsafe FFI shim
+  - Dual-run/fuzz/sanitize
+  - Expand only after evidence
+  requiredValidation:
+  - clean source and target builds
+  - contract tests
+  - differential behavior tests
+  - data equivalence where state exists
+  - performance comparison against declared budgets
+  - security and supply-chain checks
+  - rollback or approved non-reversibility
+  automaticBlockers:
+  - missing immutable source baseline
+  - unresolved critical semantic loss
+  - unavailable required toolchain
+  - unapproved breaking public contract
+  - unverified irreversible data change
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

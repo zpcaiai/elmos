@@ -1,0 +1,55 @@
+schemaVersion: elmos.route-profile/v1
+kind: RouteProfile
+metadata:
+  id: route-go-to-rust
+  version: 1.0.0
+  readiness: not-run
+  priority: reference
+spec:
+  source: go
+  target: rust
+  mode: systems-modernization
+  intent: Convert selected Go services or libraries to Rust where memory control,
+    latency, footprint, or safety justifies the added semantic cost.
+  requiredSkills:
+  - elmos-polyglot-modernization-orchestrator
+  - elmos-adapter-go
+  - elmos-adapter-rust
+  - elmos-differential-behavior-validator
+  - elmos-unified-evidence-packager
+  - elmos-production-readiness-gate
+  prerequisites:
+  - Go call/concurrency profile
+  - Rust runtime target
+  - performance and behavior baseline
+  preservationPriorities:
+  - context/cancellation
+  - goroutine/channel behavior
+  - errors
+  - zero/nil semantics
+  - performance
+  stages:
+  - Select bounded module
+  - Map APIs and errors
+  - Map goroutines/channels to Tokio/async or threads
+  - Define ownership
+  - Implement data/network layer
+  - Run race/property/performance tests
+  requiredValidation:
+  - clean source and target builds
+  - contract tests
+  - differential behavior tests
+  - data equivalence where state exists
+  - performance comparison against declared budgets
+  - security and supply-chain checks
+  - rollback or approved non-reversibility
+  automaticBlockers:
+  - missing immutable source baseline
+  - unresolved critical semantic loss
+  - unavailable required toolchain
+  - unapproved breaking public contract
+  - unverified irreversible data change
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

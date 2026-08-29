@@ -1,0 +1,55 @@
+schemaVersion: elmos.route-profile/v1
+kind: RouteProfile
+metadata:
+  id: route-react-to-flutter
+  version: 1.0.0
+  readiness: not-run
+  priority: reference
+spec:
+  source: react
+  target: flutter
+  mode: cross-ui-recomposition
+  intent: Translate a React web experience into a Flutter application by preserving
+    product flows and state contracts, not by syntactic component substitution.
+  requiredSkills:
+  - elmos-polyglot-modernization-orchestrator
+  - elmos-adapter-react
+  - elmos-adapter-flutter
+  - elmos-differential-behavior-validator
+  - elmos-unified-evidence-packager
+  - elmos-production-readiness-gate
+  prerequisites:
+  - React component/state/route inventory
+  - Flutter platform targets
+  - design and journey baselines
+  preservationPriorities:
+  - user journeys
+  - state/data contracts
+  - forms/validation
+  - accessibility
+  - responsive behavior
+  stages:
+  - Map routes to navigation
+  - Map components to semantic widgets
+  - Map query/cache/state
+  - Adapt browser-only capabilities
+  - Implement platform-responsive design
+  - Run journey and golden tests
+  requiredValidation:
+  - clean source and target builds
+  - contract tests
+  - differential behavior tests
+  - data equivalence where state exists
+  - performance comparison against declared budgets
+  - security and supply-chain checks
+  - rollback or approved non-reversibility
+  automaticBlockers:
+  - missing immutable source baseline
+  - unresolved critical semantic loss
+  - unavailable required toolchain
+  - unapproved breaking public contract
+  - unverified irreversible data change
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

@@ -1,0 +1,44 @@
+schemaVersion: elmos.route-profile/v2
+kind: RouteProfile
+metadata:
+  id: route-ibmi-rpg-to-csharp
+  version: 1.0.0
+  readiness: not-run
+  priority: P0-reference
+spec:
+  source: rpg
+  target: csharp
+  mode: cross-stack
+  intent: RPG/RPGLE/CL/DDS/DB2 for i to C#/ASP.NET Core
+  requiredSkills:
+  - elmos-ibmi-rpg-to-csharp-golden-route
+  - elmos-legacy-p0-orchestrator
+  - elmos-adapter-rpg
+  - elmos-adapter-csharp
+  - elmos-target-fitness-route-scorer
+  - elmos-coexistence-strangler-planner
+  - elmos-semantic-loss-risk-estimator
+  - elmos-dual-run-shadow-reconciliation-validator
+  - elmos-legacy-production-certification-gate
+  preservationPriorities:
+  - business rules and external contracts
+  - record/data representation
+  - transaction and restart semantics
+  - security authority
+  - operational behavior and rollback
+  requiredValidation:
+  - source baseline when executable
+  - clean target build
+  - route-specific semantic validators
+  - data/transaction/security validation where applicable
+  - performance comparison
+  - shadow/dual-run or approved equivalent for critical workloads
+  automaticBlockers:
+  - missing immutable source baseline without approved characterization substitute
+  - unresolved critical semantic loss
+  - unavailable mandatory target toolchain
+  - unapproved breaking contract or irreversible data change
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

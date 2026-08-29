@@ -1,0 +1,56 @@
+schemaVersion: elmos.route-profile/v1
+kind: RouteProfile
+metadata:
+  id: route-swift-uikit-to-flutter
+  version: 1.0.0
+  readiness: not-run
+  priority: reference
+spec:
+  source: swift
+  target: flutter
+  mode: mobile-recomposition
+  intent: Recompose a Swift/UIKit application in Flutter while preserving navigation,
+    lifecycle, storage, permissions, and iOS SDK integration.
+  requiredSkills:
+  - elmos-polyglot-modernization-orchestrator
+  - elmos-adapter-swift
+  - elmos-adapter-flutter
+  - elmos-differential-behavior-validator
+  - elmos-unified-evidence-packager
+  - elmos-production-readiness-gate
+  prerequisites:
+  - Xcode/UI flow inventory
+  - Flutter iOS target profile
+  - journey/performance baselines
+  preservationPriorities:
+  - navigation
+  - main-thread/async behavior
+  - iOS permissions
+  - Keychain/storage
+  - native SDKs
+  - accessibility
+  stages:
+  - Map view controllers/storyboards
+  - Define Flutter navigation/state
+  - Generate service/data layers
+  - Wrap native SDKs
+  - Rebuild design system
+  - Validate on simulators/devices
+  requiredValidation:
+  - clean source and target builds
+  - contract tests
+  - differential behavior tests
+  - data equivalence where state exists
+  - performance comparison against declared budgets
+  - security and supply-chain checks
+  - rollback or approved non-reversibility
+  automaticBlockers:
+  - missing immutable source baseline
+  - unresolved critical semantic loss
+  - unavailable required toolchain
+  - unapproved breaking public contract
+  - unverified irreversible data change
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

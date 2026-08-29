@@ -1,0 +1,55 @@
+schemaVersion: elmos.route-profile/v1
+kind: RouteProfile
+metadata:
+  id: route-java-spring-to-csharp-aspnet-core
+  version: 1.0.0
+  readiness: not-run
+  priority: reference
+spec:
+  source: java
+  target: csharp
+  mode: cross-stack
+  intent: Convert a Spring/Spring Boot application to ASP.NET Core while preserving
+    API, security, transaction, data, async, and operational behavior.
+  requiredSkills:
+  - elmos-polyglot-modernization-orchestrator
+  - elmos-adapter-java
+  - elmos-adapter-csharp
+  - elmos-differential-behavior-validator
+  - elmos-unified-evidence-packager
+  - elmos-production-readiness-gate
+  prerequisites:
+  - Spring/Jakarta inventory
+  - ASP.NET Core target profile
+  - API/data/behavior baselines
+  preservationPriorities:
+  - HTTP and event contracts
+  - authorization policy
+  - transaction and ORM semantics
+  - serialization and timezone behavior
+  - operational SLOs
+  stages:
+  - Strangler or module-by-module conversion
+  - Spring MVC → ASP.NET Core controllers/minimal APIs
+  - Spring DI scopes → .NET DI scopes
+  - JPA/Hibernate → EF Core or approved data layer
+  - Spring Security → ASP.NET Core authentication/authorization
+  - Java exceptions/concurrency → .NET error/task semantics
+  requiredValidation:
+  - clean source and target builds
+  - contract tests
+  - differential behavior tests
+  - data equivalence where state exists
+  - performance comparison against declared budgets
+  - security and supply-chain checks
+  - rollback or approved non-reversibility
+  automaticBlockers:
+  - missing immutable source baseline
+  - unresolved critical semantic loss
+  - unavailable required toolchain
+  - unapproved breaking public contract
+  - unverified irreversible data change
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/route-profile.schema.json",
+  "title": "ELMOS Route Profile",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "elmos.route-profile/v1"
+    },
+    "kind": {
+      "const": "RouteProfile"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "readiness"
+      ],
+      "properties": {
+        "readiness": {
+          "const": "not-run"
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "source",
+        "target",
+        "mode",
+        "intent",
+        "requiredSkills",
+        "prerequisites",
+        "preservationPriorities",
+        "stages",
+        "requiredValidation",
+        "automaticBlockers",
+        "readinessPolicy"
+      ],
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string"
+        },
+        "intent": {
+          "type": "string"
+        },
+        "requiredSkills": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "preservationPriorities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "stages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "requiredValidation": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "automaticBlockers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "readinessPolicy": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

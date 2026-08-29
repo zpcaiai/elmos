@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elmos-polyglot-compiler-engine"
+version = "3.0.0"
+description = "ELMOS Polyglot Repository Semantic Compiler Engine (Batches A-R, 300 Skills)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pyyaml>=6.0.0",
+    "jsonschema>=4.20.0",
+]
+
+[project.scripts]
+elmos-polyglot-compiler = "elmos_polyglot_compiler.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

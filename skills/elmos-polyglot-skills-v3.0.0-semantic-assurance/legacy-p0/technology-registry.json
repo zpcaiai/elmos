@@ -1,0 +1,813 @@
+{
+  "schemaVersion": "elmos.legacy-p0-technology-registry/v1",
+  "kind": "LegacyP0TechnologyRegistry",
+  "metadata": {
+    "name": "elmos-legacy-p0-technology-registry",
+    "version": "1.0.0"
+  },
+  "spec": {
+    "primary_language_families": 14,
+    "repository_support_surfaces": 8,
+    "notes": [
+      "P0 primary language families participate in the 28x28 merged route matrix with the existing 14 technologies.",
+      "Repository DSLs are converted as part of owner-workload routes; they are not naively treated as mutually interchangeable general-purpose languages.",
+      "All readiness defaults to not-run."
+    ],
+    "technologies": [
+      {
+        "id": "c",
+        "display": "C",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-c",
+        "extensions": [
+          ".c",
+          ".h"
+        ],
+        "build_tools": [
+          "CMake",
+          "Make",
+          "Meson",
+          "Bazel"
+        ],
+        "parsers": [
+          "Clang AST",
+          "libclang",
+          "tree-sitter-c"
+        ],
+        "frameworks": [
+          "POSIX",
+          "Win32",
+          "embedded RTOS",
+          "native libraries"
+        ],
+        "verification": [
+          "clang/gcc build",
+          "ctest",
+          "ASan",
+          "UBSan"
+        ],
+        "semantic_risks": [
+          "pointer aliasing and provenance",
+          "manual memory ownership",
+          "undefined/implementation-defined behavior",
+          "preprocessor and conditional compilation",
+          "ABI and struct layout"
+        ]
+      },
+      {
+        "id": "cobol",
+        "display": "COBOL",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-cobol",
+        "extensions": [
+          ".cbl",
+          ".cob",
+          ".cpy"
+        ],
+        "build_tools": [
+          "Enterprise COBOL",
+          "GnuCOBOL",
+          "mainframe build pipelines"
+        ],
+        "parsers": [
+          "vendor compiler frontend",
+          "ANTLR/tree-sitter COBOL",
+          "copybook-aware parser"
+        ],
+        "frameworks": [
+          "CICS",
+          "IMS",
+          "DB2",
+          "VSAM",
+          "MQ",
+          "batch"
+        ],
+        "verification": [
+          "native compile",
+          "record-layout byte tests",
+          "CICS/DB2 integration fixtures"
+        ],
+        "semantic_risks": [
+          "fixed-format and dialect variance",
+          "EBCDIC/ASCII conversion",
+          "COMP/COMP-3 arithmetic",
+          "REDEFINES/OCCURS DEPENDING ON",
+          "CICS/IMS transaction semantics"
+        ]
+      },
+      {
+        "id": "rpg",
+        "display": "RPG/RPGLE",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-rpg",
+        "extensions": [
+          ".rpg",
+          ".rpgle",
+          ".sqlrpgle"
+        ],
+        "build_tools": [
+          "IBM i ILE",
+          "RDi builds"
+        ],
+        "parsers": [
+          "RPGLE parser",
+          "IBM i compiler diagnostics",
+          "tree-sitter/custom grammar"
+        ],
+        "frameworks": [
+          "DB2 for i",
+          "DDS",
+          "CL/CLLE",
+          "ILE service programs"
+        ],
+        "verification": [
+          "IBM i compile",
+          "DB2i integration",
+          "job log comparison"
+        ],
+        "semantic_risks": [
+          "fixed/free-form coexistence",
+          "indicator semantics",
+          "packed/zoned decimal",
+          "record-level IO",
+          "activation groups and commitment control"
+        ]
+      },
+      {
+        "id": "pli",
+        "display": "PL/I",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-pli",
+        "extensions": [
+          ".pli",
+          ".pl1"
+        ],
+        "build_tools": [
+          "IBM Enterprise PL/I",
+          "mainframe build pipelines"
+        ],
+        "parsers": [
+          "vendor compiler frontend",
+          "ANTLR/custom PL/I grammar"
+        ],
+        "frameworks": [
+          "CICS",
+          "IMS",
+          "DB2",
+          "MQ",
+          "batch"
+        ],
+        "verification": [
+          "native compile",
+          "record/decimal equivalence",
+          "transaction fixtures"
+        ],
+        "semantic_risks": [
+          "based/controlled storage",
+          "condition handling",
+          "picture/decimal semantics",
+          "preprocessor and include behavior",
+          "mainframe linkage/ABI"
+        ]
+      },
+      {
+        "id": "vb6",
+        "display": "Visual Basic 6",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-vb6",
+        "extensions": [
+          ".vbp",
+          ".frm",
+          ".bas",
+          ".cls",
+          ".ctl"
+        ],
+        "build_tools": [
+          "VB6 toolchain",
+          "MSBuild bridge scripts"
+        ],
+        "parsers": [
+          "VB6 grammar",
+          "form/resource parser",
+          "COM type library reader"
+        ],
+        "frameworks": [
+          "COM",
+          "ActiveX",
+          "ADO",
+          "DAO",
+          "Win32"
+        ],
+        "verification": [
+          "legacy executable smoke",
+          "COM contract tests",
+          "UI workflow replay"
+        ],
+        "semantic_risks": [
+          "default properties",
+          "Variants and coercion",
+          "On Error Resume Next",
+          "COM apartment/lifetime",
+          "binary form/resource dependencies"
+        ]
+      },
+      {
+        "id": "vbscript",
+        "display": "VBScript",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-vbscript",
+        "extensions": [
+          ".vbs",
+          ".asp"
+        ],
+        "build_tools": [
+          "Windows Script Host",
+          "IIS Classic ASP"
+        ],
+        "parsers": [
+          "VBScript parser",
+          "ASP mixed-template parser"
+        ],
+        "frameworks": [
+          "WSH",
+          "Classic ASP",
+          "COM/ADO"
+        ],
+        "verification": [
+          "cscript/wscript fixtures",
+          "IIS characterization",
+          "HTTP differential tests"
+        ],
+        "semantic_risks": [
+          "late binding and Variant coercion",
+          "global scope/include order",
+          "COM automation",
+          "ASP session/application state",
+          "error swallowing"
+        ]
+      },
+      {
+        "id": "object-pascal",
+        "display": "Object Pascal/Delphi",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-object-pascal",
+        "extensions": [
+          ".pas",
+          ".dpr",
+          ".dfm",
+          ".fmx"
+        ],
+        "build_tools": [
+          "Delphi compiler",
+          "MSBuild"
+        ],
+        "parsers": [
+          "Delphi compiler AST where available",
+          "Pascal parser",
+          "DFM/FMX resource parser"
+        ],
+        "frameworks": [
+          "VCL",
+          "FMX",
+          "RTL",
+          "COM",
+          "FireDAC"
+        ],
+        "verification": [
+          "native build",
+          "form workflow tests",
+          "ABI/DB fixtures"
+        ],
+        "semantic_risks": [
+          "managed/unmanaged string lifetime",
+          "properties/events/RTTI",
+          "VCL message loop",
+          "packed records and calling conventions",
+          "resource/form serialization"
+        ]
+      },
+      {
+        "id": "powerscript",
+        "display": "PowerScript/PowerBuilder",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-powerscript",
+        "extensions": [
+          ".srw",
+          ".sru",
+          ".srd",
+          ".srm",
+          ".pbl"
+        ],
+        "build_tools": [
+          "PowerBuilder"
+        ],
+        "parsers": [
+          "PowerScript parser",
+          "PBL export parser",
+          "DataWindow syntax parser"
+        ],
+        "frameworks": [
+          "DataWindow",
+          "PowerBuilder VM",
+          "ODBC/OLE DB"
+        ],
+        "verification": [
+          "PB build",
+          "DataWindow SQL/validation tests",
+          "UI replay"
+        ],
+        "semantic_risks": [
+          "DataWindow implicit data behavior",
+          "transaction object semantics",
+          "event lifecycle",
+          "PBL binary assets",
+          "dynamic SQL and painter metadata"
+        ]
+      },
+      {
+        "id": "abap",
+        "display": "ABAP",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-abap",
+        "extensions": [
+          ".abap",
+          ".asddls",
+          ".clas",
+          ".prog"
+        ],
+        "build_tools": [
+          "ABAP Platform/ADT",
+          "ATC"
+        ],
+        "parsers": [
+          "ADT/ABAP parser",
+          "CDS DDL parser"
+        ],
+        "frameworks": [
+          "Open SQL",
+          "CDS",
+          "BAPI/RFC",
+          "IDoc",
+          "BAdI",
+          "Dynpro"
+        ],
+        "verification": [
+          "ABAP Unit",
+          "ATC",
+          "contract replay"
+        ],
+        "semantic_risks": [
+          "SAP LUW and update task",
+          "internal table semantics",
+          "implicit enhancements/user exits",
+          "authorization checks",
+          "dictionary/CDS coupling"
+        ]
+      },
+      {
+        "id": "natural",
+        "display": "Natural",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-natural",
+        "extensions": [
+          ".nsn",
+          ".nsp",
+          ".nsg"
+        ],
+        "build_tools": [
+          "Natural compiler"
+        ],
+        "parsers": [
+          "Natural source parser",
+          "map/DDM parser"
+        ],
+        "frameworks": [
+          "Adabas",
+          "Natural Security",
+          "EntireX"
+        ],
+        "verification": [
+          "Natural compile",
+          "Adabas result comparison",
+          "transaction replay"
+        ],
+        "semantic_risks": [
+          "Adabas DDM/multivalue fields",
+          "implicit database loop semantics",
+          "maps and terminal state",
+          "system variables",
+          "transaction/backout behavior"
+        ]
+      },
+      {
+        "id": "abl",
+        "display": "Progress OpenEdge ABL",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-abl",
+        "extensions": [
+          ".p",
+          ".w",
+          ".cls",
+          ".i"
+        ],
+        "build_tools": [
+          "OpenEdge compiler",
+          "PCT/ABL build"
+        ],
+        "parsers": [
+          "ABL parser",
+          "schema/propath resolver"
+        ],
+        "frameworks": [
+          "OpenEdge DB",
+          "AppServer/PASOE",
+          "ADM2"
+        ],
+        "verification": [
+          "ABL compile",
+          "OpenEdge transaction fixtures",
+          "API replay"
+        ],
+        "semantic_risks": [
+          "record buffers and temp-tables",
+          "NO-ERROR/ERROR-STATUS semantics",
+          "transaction scoping",
+          "PROPATH/includes",
+          "persistent procedures and handles"
+        ]
+      },
+      {
+        "id": "fortran",
+        "display": "Fortran",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-fortran",
+        "extensions": [
+          ".f",
+          ".for",
+          ".f77",
+          ".f90",
+          ".f95",
+          ".f03",
+          ".f08"
+        ],
+        "build_tools": [
+          "CMake",
+          "Make",
+          "fpm"
+        ],
+        "parsers": [
+          "flang/gfortran frontend",
+          "fparser",
+          "tree-sitter-fortran"
+        ],
+        "frameworks": [
+          "BLAS/LAPACK",
+          "MPI",
+          "OpenMP",
+          "coarrays"
+        ],
+        "verification": [
+          "gfortran/flang build",
+          "numerical regression",
+          "MPI/OpenMP tests"
+        ],
+        "semantic_risks": [
+          "COMMON/EQUIVALENCE/SAVE",
+          "implicit typing",
+          "column-major arrays",
+          "floating-point reproducibility",
+          "legacy IO and numerical libraries"
+        ]
+      },
+      {
+        "id": "ada-spark",
+        "display": "Ada/SPARK",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-ada-spark",
+        "extensions": [
+          ".adb",
+          ".ads",
+          ".gpr"
+        ],
+        "build_tools": [
+          "GNAT",
+          "GPRbuild",
+          "Alire"
+        ],
+        "parsers": [
+          "Libadalang",
+          "GNAT semantic info"
+        ],
+        "frameworks": [
+          "Ada tasking",
+          "Ravenscar/Jorvik",
+          "SPARK contracts"
+        ],
+        "verification": [
+          "gprbuild",
+          "GNATtest",
+          "GNATprove"
+        ],
+        "semantic_risks": [
+          "tasking/rendezvous/protected objects",
+          "representation clauses",
+          "range/subtype constraints",
+          "real-time scheduling",
+          "proof obligations and contract strength"
+        ]
+      },
+      {
+        "id": "xbase",
+        "display": "xBase/FoxPro",
+        "kind": "language-family",
+        "tier": "P0",
+        "adapter_skill": "elmos-adapter-xbase",
+        "extensions": [
+          ".prg",
+          ".scx",
+          ".vcx",
+          ".frx",
+          ".dbf",
+          ".cdx"
+        ],
+        "build_tools": [
+          "Visual FoxPro/xBase toolchain"
+        ],
+        "parsers": [
+          "xBase parser",
+          "DBF/CDX metadata reader",
+          "VFP form/class parser"
+        ],
+        "frameworks": [
+          "DBF/CDX",
+          "VFP forms",
+          "OLE/COM"
+        ],
+        "verification": [
+          "legacy runtime replay",
+          "DBF/index comparison",
+          "UI/report characterization"
+        ],
+        "semantic_risks": [
+          "work areas/aliases",
+          "SET environment state",
+          "macro evaluation",
+          "DBF index/collation behavior",
+          "form/report metadata"
+        ]
+      },
+      {
+        "id": "jcl",
+        "display": "JCL",
+        "kind": "repository-dsl",
+        "tier": "P0-support",
+        "adapter_skill": "elmos-adapter-jcl",
+        "extensions": [
+          ".jcl"
+        ],
+        "build_tools": [
+          "owner runtime/toolchain"
+        ],
+        "parsers": [
+          "JES/JCL parser"
+        ],
+        "frameworks": [
+          "repository support surface"
+        ],
+        "verification": [
+          "parse/roundtrip fixtures",
+          "owner runtime characterization"
+        ],
+        "semantic_risks": [
+          "job step ordering",
+          "DISP/dataset lifecycle",
+          "return-code conditionals",
+          "restart points"
+        ]
+      },
+      {
+        "id": "rexx",
+        "display": "REXX",
+        "kind": "repository-dsl",
+        "tier": "P0-support",
+        "adapter_skill": "elmos-adapter-rexx",
+        "extensions": [
+          ".rexx",
+          ".rex",
+          ".exec"
+        ],
+        "build_tools": [
+          "owner runtime/toolchain"
+        ],
+        "parsers": [
+          "REXX interpreter/parser"
+        ],
+        "frameworks": [
+          "repository support surface"
+        ],
+        "verification": [
+          "parse/roundtrip fixtures",
+          "owner runtime characterization"
+        ],
+        "semantic_risks": [
+          "host command environments",
+          "stem variables",
+          "numeric settings",
+          "external function resolution"
+        ]
+      },
+      {
+        "id": "ibmi-cl",
+        "display": "IBM i CL/CLLE",
+        "kind": "repository-dsl",
+        "tier": "P0-support",
+        "adapter_skill": "elmos-adapter-ibmi-cl",
+        "extensions": [
+          ".cl",
+          ".clle"
+        ],
+        "build_tools": [
+          "owner runtime/toolchain"
+        ],
+        "parsers": [
+          "IBM i CL compiler/parser"
+        ],
+        "frameworks": [
+          "repository support surface"
+        ],
+        "verification": [
+          "parse/roundtrip fixtures",
+          "owner runtime characterization"
+        ],
+        "semantic_risks": [
+          "job/library list state",
+          "object authority",
+          "message handling",
+          "commitment boundaries"
+        ]
+      },
+      {
+        "id": "cobol-copybook",
+        "display": "COBOL Copybook",
+        "kind": "repository-dsl",
+        "tier": "P0-support",
+        "adapter_skill": "elmos-adapter-cobol-copybook",
+        "extensions": [
+          ".cpy",
+          ".copy"
+        ],
+        "build_tools": [
+          "owner runtime/toolchain"
+        ],
+        "parsers": [
+          "copybook parser"
+        ],
+        "frameworks": [
+          "repository support surface"
+        ],
+        "verification": [
+          "parse/roundtrip fixtures",
+          "owner runtime characterization"
+        ],
+        "semantic_risks": [
+          "REPLACING/includes",
+          "level-88 conditions",
+          "REDEFINES",
+          "OCCURS DEPENDING ON"
+        ]
+      },
+      {
+        "id": "cics-bms",
+        "display": "CICS BMS",
+        "kind": "repository-dsl",
+        "tier": "P0-support",
+        "adapter_skill": "elmos-adapter-cics-bms",
+        "extensions": [
+          ".bms"
+        ],
+        "build_tools": [
+          "owner runtime/toolchain"
+        ],
+        "parsers": [
+          "BMS parser"
+        ],
+        "frameworks": [
+          "repository support surface"
+        ],
+        "verification": [
+          "parse/roundtrip fixtures",
+          "owner runtime characterization"
+        ],
+        "semantic_risks": [
+          "map coordinates/attributes",
+          "AID keys",
+          "field protection",
+          "terminal state"
+        ]
+      },
+      {
+        "id": "ims-mfs",
+        "display": "IMS MFS",
+        "kind": "repository-dsl",
+        "tier": "P0-support",
+        "adapter_skill": "elmos-adapter-ims-mfs",
+        "extensions": [
+          ".mfs"
+        ],
+        "build_tools": [
+          "owner runtime/toolchain"
+        ],
+        "parsers": [
+          "MFS parser"
+        ],
+        "frameworks": [
+          "repository support surface"
+        ],
+        "verification": [
+          "parse/roundtrip fixtures",
+          "owner runtime characterization"
+        ],
+        "semantic_risks": [
+          "message segmentation",
+          "device fields",
+          "format routing",
+          "transaction codes"
+        ]
+      },
+      {
+        "id": "ibmi-dds",
+        "display": "IBM i DDS",
+        "kind": "repository-dsl",
+        "tier": "P0-support",
+        "adapter_skill": "elmos-adapter-ibmi-dds",
+        "extensions": [
+          ".dds"
+        ],
+        "build_tools": [
+          "owner runtime/toolchain"
+        ],
+        "parsers": [
+          "DDS parser"
+        ],
+        "frameworks": [
+          "repository support surface"
+        ],
+        "verification": [
+          "parse/roundtrip fixtures",
+          "owner runtime characterization"
+        ],
+        "semantic_risks": [
+          "record formats",
+          "access paths",
+          "indicators",
+          "display/printer attributes"
+        ]
+      },
+      {
+        "id": "legacy-sql-routines",
+        "display": "Legacy SQL/Routine Surface",
+        "kind": "repository-dsl",
+        "tier": "P0-support",
+        "adapter_skill": "elmos-adapter-legacy-sql-routines",
+        "extensions": [
+          ".sql",
+          ".ddl",
+          ".proc"
+        ],
+        "build_tools": [
+          "owner runtime/toolchain"
+        ],
+        "parsers": [
+          "dialect parser",
+          "vendor catalog introspection"
+        ],
+        "frameworks": [
+          "repository support surface"
+        ],
+        "verification": [
+          "parse/roundtrip fixtures",
+          "owner runtime characterization"
+        ],
+        "semantic_risks": [
+          "transaction isolation",
+          "NULL/collation",
+          "procedural control flow",
+          "optimizer-dependent behavior"
+        ]
+      }
+    ]
+  }
+}

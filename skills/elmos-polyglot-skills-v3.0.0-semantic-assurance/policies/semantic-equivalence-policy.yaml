@@ -1,0 +1,10 @@
+schemaVersion: elmos.policy/v1
+kind: SemanticEquivalencePolicy
+metadata: {name: semantic-equivalence, version: 3.0.0}
+spec:
+  defaultRelation: observational-equivalence
+  criticalCategories: [money, data-integrity, security, concurrency, abi, numerical, transaction, safety]
+  compilationIsEvidence: false
+  syntaxSimilarityIsEvidence: false
+  unknownCanPass: false
+  requiredStatusForCritical: pass

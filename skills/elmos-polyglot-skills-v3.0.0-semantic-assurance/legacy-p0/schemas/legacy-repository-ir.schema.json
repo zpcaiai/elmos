@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/legacy-repository-ir.schema.json",
+  "title": "Legacy Repository IR",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "snapshot_id",
+    "surfaces",
+    "modules",
+    "runtime_dependencies",
+    "provenance"
+  ],
+  "properties": {
+    "snapshot_id": {},
+    "surfaces": {},
+    "modules": {},
+    "runtime_dependencies": {},
+    "provenance": {}
+  }
+}

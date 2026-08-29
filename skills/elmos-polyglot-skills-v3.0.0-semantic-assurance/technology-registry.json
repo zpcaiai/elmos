@@ -1,0 +1,965 @@
+{
+  "schemaVersion": "elmos.technology-registry/v1",
+  "kind": "TechnologyRegistry",
+  "metadata": {
+    "name": "elmos-polyglot-technology-registry-v2",
+    "version": "2.0.0"
+  },
+  "spec": {
+    "notes": [
+      "React and Flutter are frameworks, not programming languages.",
+      "Flutter uses Dart as an implicit implementation substrate; Dart is not exposed as a separate source technology in this bundle.",
+      "Node.js and build tools are runtimes/toolchains and are represented inside adapters rather than as languages.",
+      "v2 adds 14 P0 legacy language families.",
+      "JCL/REXX/CL/Copybook/BMS/MFS/DDS/legacy SQL routines are repository support surfaces registered separately.",
+      "All static technology and route entries default to not-run until executed evidence exists."
+    ],
+    "technologies": [
+      {
+        "id": "java",
+        "display": "Java",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-java",
+        "extensions": [
+          ".java"
+        ],
+        "build_tools": [
+          "Maven",
+          "Gradle",
+          "Bazel"
+        ],
+        "parsers": [
+          "Eclipse JDT",
+          "JavaParser",
+          "tree-sitter-java"
+        ],
+        "frameworks": [
+          "Spring Framework",
+          "Spring Boot",
+          "Jakarta EE",
+          "Quarkus",
+          "Micronaut",
+          "Android"
+        ],
+        "verification": [
+          "mvn test",
+          "gradle test",
+          "jdeps",
+          "japicmp"
+        ]
+      },
+      {
+        "id": "kotlin",
+        "display": "Kotlin",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-kotlin",
+        "extensions": [
+          ".kt",
+          ".kts"
+        ],
+        "build_tools": [
+          "Gradle",
+          "Maven",
+          "Bazel"
+        ],
+        "parsers": [
+          "Kotlin PSI",
+          "K2/FIR",
+          "tree-sitter-kotlin"
+        ],
+        "frameworks": [
+          "Spring Boot",
+          "Ktor",
+          "Android",
+          "Jetpack Compose",
+          "Kotlin Multiplatform"
+        ],
+        "verification": [
+          "gradle test",
+          "kotlinc",
+          "detekt",
+          "binary compatibility validator"
+        ]
+      },
+      {
+        "id": "python",
+        "display": "Python",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-python",
+        "extensions": [
+          ".py",
+          ".pyi"
+        ],
+        "build_tools": [
+          "uv",
+          "Poetry",
+          "pip",
+          "PDM",
+          "setuptools"
+        ],
+        "parsers": [
+          "CPython ast",
+          "LibCST",
+          "astroid",
+          "tree-sitter-python"
+        ],
+        "frameworks": [
+          "Django",
+          "FastAPI",
+          "Flask",
+          "Celery",
+          "SQLAlchemy"
+        ],
+        "verification": [
+          "pytest",
+          "mypy",
+          "pyright",
+          "ruff"
+        ]
+      },
+      {
+        "id": "csharp",
+        "display": "C#",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-csharp",
+        "extensions": [
+          ".cs",
+          ".csproj",
+          ".sln"
+        ],
+        "build_tools": [
+          ".NET SDK",
+          "MSBuild",
+          "NuGet"
+        ],
+        "parsers": [
+          "Roslyn",
+          "tree-sitter-c-sharp"
+        ],
+        "frameworks": [
+          "ASP.NET MVC",
+          "ASP.NET Core",
+          "Entity Framework",
+          "Blazor",
+          "MAUI"
+        ],
+        "verification": [
+          "dotnet build",
+          "dotnet test",
+          "APICompat",
+          "BenchmarkDotNet"
+        ]
+      },
+      {
+        "id": "go",
+        "display": "Go",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-go",
+        "extensions": [
+          ".go",
+          "go.mod",
+          "go.sum"
+        ],
+        "build_tools": [
+          "Go modules",
+          "Bazel"
+        ],
+        "parsers": [
+          "go/ast",
+          "go/parser",
+          "go/types",
+          "go/packages",
+          "tree-sitter-go"
+        ],
+        "frameworks": [
+          "net/http",
+          "Gin",
+          "Echo",
+          "Fiber",
+          "gRPC-Go"
+        ],
+        "verification": [
+          "go test ./...",
+          "go vet ./...",
+          "staticcheck",
+          "govulncheck"
+        ]
+      },
+      {
+        "id": "rust",
+        "display": "Rust",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-rust",
+        "extensions": [
+          ".rs",
+          "Cargo.toml",
+          "Cargo.lock"
+        ],
+        "build_tools": [
+          "Cargo",
+          "Bazel"
+        ],
+        "parsers": [
+          "rust-analyzer",
+          "syn",
+          "tree-sitter-rust"
+        ],
+        "frameworks": [
+          "Axum",
+          "Actix Web",
+          "Tokio",
+          "Tonic",
+          "Diesel",
+          "SQLx"
+        ],
+        "verification": [
+          "cargo check",
+          "cargo test",
+          "cargo clippy",
+          "cargo audit",
+          "miri"
+        ]
+      },
+      {
+        "id": "cpp",
+        "display": "C++",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-cpp",
+        "extensions": [
+          ".cc",
+          ".cpp",
+          ".cxx",
+          ".h",
+          ".hpp",
+          ".hxx"
+        ],
+        "build_tools": [
+          "CMake",
+          "Meson",
+          "Bazel",
+          "Make"
+        ],
+        "parsers": [
+          "Clang AST",
+          "Clang LibTooling",
+          "clangd",
+          "tree-sitter-cpp"
+        ],
+        "frameworks": [
+          "STL",
+          "Boost",
+          "Qt",
+          "gRPC C++",
+          "Poco"
+        ],
+        "verification": [
+          "cmake --build",
+          "ctest",
+          "clang-tidy",
+          "AddressSanitizer",
+          "UndefinedBehaviorSanitizer"
+        ]
+      },
+      {
+        "id": "php",
+        "display": "PHP",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-php",
+        "extensions": [
+          ".php",
+          "composer.json",
+          "composer.lock"
+        ],
+        "build_tools": [
+          "Composer"
+        ],
+        "parsers": [
+          "nikic/PHP-Parser",
+          "PHPStan parser",
+          "tree-sitter-php"
+        ],
+        "frameworks": [
+          "Laravel",
+          "Symfony",
+          "Slim",
+          "WordPress"
+        ],
+        "verification": [
+          "phpunit",
+          "phpstan",
+          "psalm",
+          "composer audit"
+        ]
+      },
+      {
+        "id": "typescript",
+        "display": "TypeScript",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-typescript",
+        "extensions": [
+          ".ts",
+          ".tsx",
+          ".mts",
+          ".cts"
+        ],
+        "build_tools": [
+          "npm",
+          "pnpm",
+          "Yarn",
+          "Bun",
+          "Turborepo",
+          "Nx"
+        ],
+        "parsers": [
+          "TypeScript Compiler API",
+          "ts-morph",
+          "SWC",
+          "tree-sitter-typescript"
+        ],
+        "frameworks": [
+          "NestJS",
+          "Next.js",
+          "Angular",
+          "React",
+          "Vue",
+          "Node.js"
+        ],
+        "verification": [
+          "tsc --noEmit",
+          "vitest",
+          "jest",
+          "eslint"
+        ]
+      },
+      {
+        "id": "react",
+        "display": "React",
+        "kind": "framework",
+        "host_languages": [
+          "typescript",
+          "javascript"
+        ],
+        "adapter_skill": "elmos-adapter-react",
+        "extensions": [
+          ".jsx",
+          ".tsx",
+          ".js",
+          ".ts"
+        ],
+        "build_tools": [
+          "Vite",
+          "Next.js",
+          "Webpack",
+          "Rspack",
+          "Turbopack"
+        ],
+        "parsers": [
+          "TypeScript Compiler API",
+          "Babel",
+          "jscodeshift",
+          "ts-morph"
+        ],
+        "frameworks": [
+          "React",
+          "Next.js",
+          "React Router",
+          "Redux",
+          "TanStack Query"
+        ],
+        "verification": [
+          "vitest",
+          "jest",
+          "React Testing Library",
+          "Playwright",
+          "axe-core"
+        ]
+      },
+      {
+        "id": "objc",
+        "display": "Objective-C",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-objective-c",
+        "extensions": [
+          ".m",
+          ".mm",
+          ".h"
+        ],
+        "build_tools": [
+          "Xcode",
+          "xcodebuild",
+          "CocoaPods",
+          "Bazel"
+        ],
+        "parsers": [
+          "Clang AST",
+          "libclang",
+          "SourceKit",
+          "tree-sitter-objc"
+        ],
+        "frameworks": [
+          "Foundation",
+          "UIKit",
+          "AppKit",
+          "Core Data"
+        ],
+        "verification": [
+          "xcodebuild test",
+          "clang static analyzer",
+          "XCTest"
+        ]
+      },
+      {
+        "id": "swift",
+        "display": "Swift",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-swift",
+        "extensions": [
+          ".swift",
+          "Package.swift"
+        ],
+        "build_tools": [
+          "SwiftPM",
+          "Xcode",
+          "xcodebuild"
+        ],
+        "parsers": [
+          "SwiftSyntax",
+          "SourceKit-LSP",
+          "Swift compiler AST"
+        ],
+        "frameworks": [
+          "SwiftUI",
+          "UIKit",
+          "Vapor",
+          "Combine",
+          "Core Data"
+        ],
+        "verification": [
+          "swift test",
+          "xcodebuild test",
+          "swiftlint",
+          "XCTest"
+        ]
+      },
+      {
+        "id": "flutter",
+        "display": "Flutter",
+        "kind": "framework",
+        "host_languages": [
+          "dart"
+        ],
+        "implicit_runtime": "Dart",
+        "adapter_skill": "elmos-adapter-flutter",
+        "extensions": [
+          ".dart",
+          "pubspec.yaml"
+        ],
+        "build_tools": [
+          "Flutter SDK",
+          "Dart SDK",
+          "pub"
+        ],
+        "parsers": [
+          "Dart analyzer",
+          "analyzer package",
+          "dart_style"
+        ],
+        "frameworks": [
+          "Flutter",
+          "Material",
+          "Cupertino",
+          "Riverpod",
+          "Bloc",
+          "Provider"
+        ],
+        "verification": [
+          "flutter analyze",
+          "flutter test",
+          "golden tests",
+          "integration_test"
+        ]
+      },
+      {
+        "id": "javascript",
+        "display": "JavaScript",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-javascript",
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".mjs",
+          ".cjs"
+        ],
+        "build_tools": [
+          "npm",
+          "pnpm",
+          "Yarn",
+          "Bun"
+        ],
+        "parsers": [
+          "Babel",
+          "SWC",
+          "Acorn",
+          "ESTree",
+          "tree-sitter-javascript"
+        ],
+        "frameworks": [
+          "Node.js",
+          "Express",
+          "Fastify",
+          "React",
+          "Vue"
+        ],
+        "verification": [
+          "node --test",
+          "vitest",
+          "jest",
+          "eslint"
+        ]
+      },
+      {
+        "id": "c",
+        "display": "C",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-c",
+        "extensions": [
+          ".c",
+          ".h"
+        ],
+        "build_tools": [
+          "CMake",
+          "Make",
+          "Meson",
+          "Bazel"
+        ],
+        "parsers": [
+          "Clang AST",
+          "libclang",
+          "tree-sitter-c"
+        ],
+        "frameworks": [
+          "POSIX",
+          "Win32",
+          "embedded RTOS",
+          "native libraries"
+        ],
+        "verification": [
+          "clang/gcc build",
+          "ctest",
+          "ASan",
+          "UBSan"
+        ]
+      },
+      {
+        "id": "cobol",
+        "display": "COBOL",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-cobol",
+        "extensions": [
+          ".cbl",
+          ".cob",
+          ".cpy"
+        ],
+        "build_tools": [
+          "Enterprise COBOL",
+          "GnuCOBOL",
+          "mainframe build pipelines"
+        ],
+        "parsers": [
+          "vendor compiler frontend",
+          "ANTLR/tree-sitter COBOL",
+          "copybook-aware parser"
+        ],
+        "frameworks": [
+          "CICS",
+          "IMS",
+          "DB2",
+          "VSAM",
+          "MQ",
+          "batch"
+        ],
+        "verification": [
+          "native compile",
+          "record-layout byte tests",
+          "CICS/DB2 integration fixtures"
+        ]
+      },
+      {
+        "id": "rpg",
+        "display": "RPG/RPGLE",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-rpg",
+        "extensions": [
+          ".rpg",
+          ".rpgle",
+          ".sqlrpgle"
+        ],
+        "build_tools": [
+          "IBM i ILE",
+          "RDi builds"
+        ],
+        "parsers": [
+          "RPGLE parser",
+          "IBM i compiler diagnostics",
+          "tree-sitter/custom grammar"
+        ],
+        "frameworks": [
+          "DB2 for i",
+          "DDS",
+          "CL/CLLE",
+          "ILE service programs"
+        ],
+        "verification": [
+          "IBM i compile",
+          "DB2i integration",
+          "job log comparison"
+        ]
+      },
+      {
+        "id": "pli",
+        "display": "PL/I",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-pli",
+        "extensions": [
+          ".pli",
+          ".pl1"
+        ],
+        "build_tools": [
+          "IBM Enterprise PL/I",
+          "mainframe build pipelines"
+        ],
+        "parsers": [
+          "vendor compiler frontend",
+          "ANTLR/custom PL/I grammar"
+        ],
+        "frameworks": [
+          "CICS",
+          "IMS",
+          "DB2",
+          "MQ",
+          "batch"
+        ],
+        "verification": [
+          "native compile",
+          "record/decimal equivalence",
+          "transaction fixtures"
+        ]
+      },
+      {
+        "id": "vb6",
+        "display": "Visual Basic 6",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-vb6",
+        "extensions": [
+          ".vbp",
+          ".frm",
+          ".bas",
+          ".cls",
+          ".ctl"
+        ],
+        "build_tools": [
+          "VB6 toolchain",
+          "MSBuild bridge scripts"
+        ],
+        "parsers": [
+          "VB6 grammar",
+          "form/resource parser",
+          "COM type library reader"
+        ],
+        "frameworks": [
+          "COM",
+          "ActiveX",
+          "ADO",
+          "DAO",
+          "Win32"
+        ],
+        "verification": [
+          "legacy executable smoke",
+          "COM contract tests",
+          "UI workflow replay"
+        ]
+      },
+      {
+        "id": "vbscript",
+        "display": "VBScript",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-vbscript",
+        "extensions": [
+          ".vbs",
+          ".asp"
+        ],
+        "build_tools": [
+          "Windows Script Host",
+          "IIS Classic ASP"
+        ],
+        "parsers": [
+          "VBScript parser",
+          "ASP mixed-template parser"
+        ],
+        "frameworks": [
+          "WSH",
+          "Classic ASP",
+          "COM/ADO"
+        ],
+        "verification": [
+          "cscript/wscript fixtures",
+          "IIS characterization",
+          "HTTP differential tests"
+        ]
+      },
+      {
+        "id": "object-pascal",
+        "display": "Object Pascal/Delphi",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-object-pascal",
+        "extensions": [
+          ".pas",
+          ".dpr",
+          ".dfm",
+          ".fmx"
+        ],
+        "build_tools": [
+          "Delphi compiler",
+          "MSBuild"
+        ],
+        "parsers": [
+          "Delphi compiler AST where available",
+          "Pascal parser",
+          "DFM/FMX resource parser"
+        ],
+        "frameworks": [
+          "VCL",
+          "FMX",
+          "RTL",
+          "COM",
+          "FireDAC"
+        ],
+        "verification": [
+          "native build",
+          "form workflow tests",
+          "ABI/DB fixtures"
+        ]
+      },
+      {
+        "id": "powerscript",
+        "display": "PowerScript/PowerBuilder",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-powerscript",
+        "extensions": [
+          ".srw",
+          ".sru",
+          ".srd",
+          ".srm",
+          ".pbl"
+        ],
+        "build_tools": [
+          "PowerBuilder"
+        ],
+        "parsers": [
+          "PowerScript parser",
+          "PBL export parser",
+          "DataWindow syntax parser"
+        ],
+        "frameworks": [
+          "DataWindow",
+          "PowerBuilder VM",
+          "ODBC/OLE DB"
+        ],
+        "verification": [
+          "PB build",
+          "DataWindow SQL/validation tests",
+          "UI replay"
+        ]
+      },
+      {
+        "id": "abap",
+        "display": "ABAP",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-abap",
+        "extensions": [
+          ".abap",
+          ".asddls",
+          ".clas",
+          ".prog"
+        ],
+        "build_tools": [
+          "ABAP Platform/ADT",
+          "ATC"
+        ],
+        "parsers": [
+          "ADT/ABAP parser",
+          "CDS DDL parser"
+        ],
+        "frameworks": [
+          "Open SQL",
+          "CDS",
+          "BAPI/RFC",
+          "IDoc",
+          "BAdI",
+          "Dynpro"
+        ],
+        "verification": [
+          "ABAP Unit",
+          "ATC",
+          "contract replay"
+        ]
+      },
+      {
+        "id": "natural",
+        "display": "Natural",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-natural",
+        "extensions": [
+          ".nsn",
+          ".nsp",
+          ".nsg"
+        ],
+        "build_tools": [
+          "Natural compiler"
+        ],
+        "parsers": [
+          "Natural source parser",
+          "map/DDM parser"
+        ],
+        "frameworks": [
+          "Adabas",
+          "Natural Security",
+          "EntireX"
+        ],
+        "verification": [
+          "Natural compile",
+          "Adabas result comparison",
+          "transaction replay"
+        ]
+      },
+      {
+        "id": "abl",
+        "display": "Progress OpenEdge ABL",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-abl",
+        "extensions": [
+          ".p",
+          ".w",
+          ".cls",
+          ".i"
+        ],
+        "build_tools": [
+          "OpenEdge compiler",
+          "PCT/ABL build"
+        ],
+        "parsers": [
+          "ABL parser",
+          "schema/propath resolver"
+        ],
+        "frameworks": [
+          "OpenEdge DB",
+          "AppServer/PASOE",
+          "ADM2"
+        ],
+        "verification": [
+          "ABL compile",
+          "OpenEdge transaction fixtures",
+          "API replay"
+        ]
+      },
+      {
+        "id": "fortran",
+        "display": "Fortran",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-fortran",
+        "extensions": [
+          ".f",
+          ".for",
+          ".f77",
+          ".f90",
+          ".f95",
+          ".f03",
+          ".f08"
+        ],
+        "build_tools": [
+          "CMake",
+          "Make",
+          "fpm"
+        ],
+        "parsers": [
+          "flang/gfortran frontend",
+          "fparser",
+          "tree-sitter-fortran"
+        ],
+        "frameworks": [
+          "BLAS/LAPACK",
+          "MPI",
+          "OpenMP",
+          "coarrays"
+        ],
+        "verification": [
+          "gfortran/flang build",
+          "numerical regression",
+          "MPI/OpenMP tests"
+        ]
+      },
+      {
+        "id": "ada-spark",
+        "display": "Ada/SPARK",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-ada-spark",
+        "extensions": [
+          ".adb",
+          ".ads",
+          ".gpr"
+        ],
+        "build_tools": [
+          "GNAT",
+          "GPRbuild",
+          "Alire"
+        ],
+        "parsers": [
+          "Libadalang",
+          "GNAT semantic info"
+        ],
+        "frameworks": [
+          "Ada tasking",
+          "Ravenscar/Jorvik",
+          "SPARK contracts"
+        ],
+        "verification": [
+          "gprbuild",
+          "GNATtest",
+          "GNATprove"
+        ]
+      },
+      {
+        "id": "xbase",
+        "display": "xBase/FoxPro",
+        "kind": "language",
+        "adapter_skill": "elmos-adapter-xbase",
+        "extensions": [
+          ".prg",
+          ".scx",
+          ".vcx",
+          ".frx",
+          ".dbf",
+          ".cdx"
+        ],
+        "build_tools": [
+          "Visual FoxPro/xBase toolchain"
+        ],
+        "parsers": [
+          "xBase parser",
+          "DBF/CDX metadata reader",
+          "VFP form/class parser"
+        ],
+        "frameworks": [
+          "DBF/CDX",
+          "VFP forms",
+          "OLE/COM"
+        ],
+        "verification": [
+          "legacy runtime replay",
+          "DBF/index comparison",
+          "UI/report characterization"
+        ]
+      }
+    ]
+  }
+}

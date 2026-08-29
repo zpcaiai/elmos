@@ -1,0 +1,55 @@
+schemaVersion: elmos.route-profile/v1
+kind: RouteProfile
+metadata:
+  id: route-java-to-kotlin
+  version: 1.0.0
+  readiness: not-run
+  priority: reference
+spec:
+  source: java
+  target: kotlin
+  mode: same-runtime-modernization
+  intent: Modernize Java modules to idiomatic Kotlin while preserving JVM ABI and
+    Java interoperability where required.
+  requiredSkills:
+  - elmos-polyglot-modernization-orchestrator
+  - elmos-adapter-java
+  - elmos-adapter-kotlin
+  - elmos-differential-behavior-validator
+  - elmos-unified-evidence-packager
+  - elmos-production-readiness-gate
+  prerequisites:
+  - JVM baseline
+  - Kotlin compiler/Gradle profile
+  - public API compatibility policy
+  preservationPriorities:
+  - JVM signatures
+  - nullability
+  - exceptions
+  - serialization
+  - framework annotations
+  stages:
+  - Introduce Kotlin toolchain
+  - Convert low-risk data/value modules
+  - Annotate platform types
+  - Migrate services and tests
+  - Preserve Java-callable facades
+  - Run binary/API compatibility
+  requiredValidation:
+  - clean source and target builds
+  - contract tests
+  - differential behavior tests
+  - data equivalence where state exists
+  - performance comparison against declared budgets
+  - security and supply-chain checks
+  - rollback or approved non-reversibility
+  automaticBlockers:
+  - missing immutable source baseline
+  - unresolved critical semantic loss
+  - unavailable required toolchain
+  - unapproved breaking public contract
+  - unverified irreversible data change
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

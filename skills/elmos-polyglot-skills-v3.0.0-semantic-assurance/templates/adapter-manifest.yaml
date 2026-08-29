@@ -1,0 +1,18 @@
+schemaVersion: elmos.adapter/v1
+adapterId: REPLACE-ME
+technology: REPLACE-ME
+version: 1.0.0
+capabilities:
+  discovery: not-run
+  parsing: not-run
+  symbolResolution: not-run
+  semanticIR: not-run
+  frameworkIR: not-run
+  emission: not-run
+  nativeBuild: not-run
+  nativeTest: not-run
+parsers: []
+buildSystems: []
+frameworks: []
+knownLosses: []
+verificationCommands: []

@@ -1,0 +1,13 @@
+{
+  "id": "CEX-ID",
+  "route": "route-id",
+  "obligation": "OBL-ID",
+  "input": {},
+  "reproduction": [
+    "command"
+  ],
+  "sourceObserved": {},
+  "targetObserved": {},
+  "minimized": false,
+  "hash": "sha256:..."
+}

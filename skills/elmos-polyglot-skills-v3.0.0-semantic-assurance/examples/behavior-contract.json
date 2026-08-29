@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "elmos.behavior-contract/v1",
+  "snapshotId": "sha256:REPLACE-ME",
+  "contractId": "orders-create-v1",
+  "scope": {
+    "kind": "http-endpoint",
+    "ref": "POST /orders"
+  },
+  "inputs": [
+    {
+      "fixture": "valid-order.json"
+    },
+    {
+      "fixture": "duplicate-idempotency-key.json"
+    }
+  ],
+  "observations": [
+    {
+      "kind": "http",
+      "status": 201,
+      "bodySchema": "OrderResponse",
+      "headers": [
+        "Location"
+      ]
+    },
+    {
+      "kind": "database-invariant",
+      "statement": "one order per idempotency key"
+    },
+    {
+      "kind": "event",
+      "type": "OrderCreated",
+      "delivery": "at-least-once"
+    }
+  ],
+  "comparators": [
+    {
+      "kind": "semantic-json"
+    },
+    {
+      "kind": "domain-invariant"
+    }
+  ],
+  "nondeterminism": [
+    {
+      "path": "$.id",
+      "normalizer": "correlation-map"
+    },
+    {
+      "path": "$.createdAt",
+      "toleranceMs": 1000
+    }
+  ],
+  "provenance": [
+    {
+      "kind": "source-test",
+      "ref": "OrdersControllerIT#create"
+    }
+  ],
+  "status": "observed"
+}

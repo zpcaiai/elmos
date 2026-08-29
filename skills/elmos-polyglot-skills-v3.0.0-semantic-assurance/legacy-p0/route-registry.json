@@ -1,0 +1,193 @@
+{
+  "schemaVersion": "elmos.route-registry/v2",
+  "kind": "RouteRegistry",
+  "metadata": {
+    "name": "elmos-legacy-p0-reference-routes",
+    "version": "1.0.0"
+  },
+  "spec": {
+    "profiles": [
+      {
+        "id": "route-mainframe-cobol-to-java",
+        "source": "cobol",
+        "target": "java",
+        "profile": "route-profiles/route-mainframe-cobol-to-java.yaml",
+        "skill": "elmos-mainframe-cobol-to-java-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-mainframe-cobol-to-csharp",
+        "source": "cobol",
+        "target": "csharp",
+        "profile": "route-profiles/route-mainframe-cobol-to-csharp.yaml",
+        "skill": "elmos-mainframe-cobol-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-ibmi-rpg-to-java",
+        "source": "rpg",
+        "target": "java",
+        "profile": "route-profiles/route-ibmi-rpg-to-java.yaml",
+        "skill": "elmos-ibmi-rpg-to-java-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-ibmi-rpg-to-csharp",
+        "source": "rpg",
+        "target": "csharp",
+        "profile": "route-profiles/route-ibmi-rpg-to-csharp.yaml",
+        "skill": "elmos-ibmi-rpg-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-pli-to-java",
+        "source": "pli",
+        "target": "java",
+        "profile": "route-profiles/route-pli-to-java.yaml",
+        "skill": "elmos-pli-to-java-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-pli-to-csharp",
+        "source": "pli",
+        "target": "csharp",
+        "profile": "route-profiles/route-pli-to-csharp.yaml",
+        "skill": "elmos-pli-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-vb6-to-csharp",
+        "source": "vb6",
+        "target": "csharp",
+        "profile": "route-profiles/route-vb6-to-csharp.yaml",
+        "skill": "elmos-vb6-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-vbscript-to-csharp",
+        "source": "vbscript",
+        "target": "csharp",
+        "profile": "route-profiles/route-vbscript-to-csharp.yaml",
+        "skill": "elmos-vbscript-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-powerbuilder-to-csharp-react",
+        "source": "powerscript",
+        "target": "csharp",
+        "profile": "route-profiles/route-powerbuilder-to-csharp-react.yaml",
+        "skill": "elmos-powerbuilder-to-csharp-react-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-delphi-to-csharp",
+        "source": "object-pascal",
+        "target": "csharp",
+        "profile": "route-profiles/route-delphi-to-csharp.yaml",
+        "skill": "elmos-delphi-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-abap-to-java",
+        "source": "abap",
+        "target": "java",
+        "profile": "route-profiles/route-abap-to-java.yaml",
+        "skill": "elmos-abap-to-java-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-natural-adabas-to-java",
+        "source": "natural",
+        "target": "java",
+        "profile": "route-profiles/route-natural-adabas-to-java.yaml",
+        "skill": "elmos-natural-adabas-to-java-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-abl-openedge-to-java",
+        "source": "abl",
+        "target": "java",
+        "profile": "route-profiles/route-abl-openedge-to-java.yaml",
+        "skill": "elmos-abl-openedge-to-java-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-c-to-rust",
+        "source": "c",
+        "target": "rust",
+        "profile": "route-profiles/route-c-to-rust.yaml",
+        "skill": "elmos-c-to-rust-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-c-to-cpp-modernization",
+        "source": "c",
+        "target": "cpp",
+        "profile": "route-profiles/route-c-to-cpp-modernization.yaml",
+        "skill": "elmos-c-to-cpp-modernization-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-ada-spark-to-rust",
+        "source": "ada-spark",
+        "target": "rust",
+        "profile": "route-profiles/route-ada-spark-to-rust.yaml",
+        "skill": "elmos-ada-spark-to-rust-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-rust-to-ada-spark-assurance",
+        "source": "rust",
+        "target": "ada-spark",
+        "profile": "route-profiles/route-rust-to-ada-spark-assurance.yaml",
+        "skill": "elmos-rust-to-ada-spark-assurance-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-fortran-to-cpp",
+        "source": "fortran",
+        "target": "cpp",
+        "profile": "route-profiles/route-fortran-to-cpp.yaml",
+        "skill": "elmos-fortran-to-cpp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-fortran-to-python-numerical",
+        "source": "fortran",
+        "target": "python",
+        "profile": "route-profiles/route-fortran-to-python-numerical.yaml",
+        "skill": "elmos-fortran-to-python-numerical-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-xbase-foxpro-to-csharp",
+        "source": "xbase",
+        "target": "csharp",
+        "profile": "route-profiles/route-xbase-foxpro-to-csharp.yaml",
+        "skill": "elmos-xbase-foxpro-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-cobol-in-place-modernization",
+        "source": "cobol",
+        "target": "cobol",
+        "profile": "route-profiles/route-cobol-in-place-modernization.yaml",
+        "skill": "elmos-cobol-in-place-modernization-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-rpg-in-place-modernization",
+        "source": "rpg",
+        "target": "rpg",
+        "profile": "route-profiles/route-rpg-in-place-modernization.yaml",
+        "skill": "elmos-rpg-in-place-modernization-route",
+        "readiness": "not-run"
+      }
+    ],
+    "genericRouting": {
+      "primaryTechnologyCount": 28,
+      "orderedRouteCellsIncludingSelf": 784,
+      "rule": "All unprofiled pairs require target-fitness scoring + IR-mediated planning + route-specific validation before implementation claims."
+    }
+  }
+}

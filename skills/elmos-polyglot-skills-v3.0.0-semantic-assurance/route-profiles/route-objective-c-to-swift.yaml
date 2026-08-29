@@ -1,0 +1,55 @@
+schemaVersion: elmos.route-profile/v1
+kind: RouteProfile
+metadata:
+  id: route-objective-c-to-swift
+  version: 1.0.0
+  readiness: not-run
+  priority: reference
+spec:
+  source: objc
+  target: swift
+  mode: incremental-mobile-modernization
+  intent: Incrementally migrate Objective-C to Swift using mixed-language boundaries
+    and preserving UIKit/runtime behavior.
+  requiredSkills:
+  - elmos-polyglot-modernization-orchestrator
+  - elmos-adapter-objective-c
+  - elmos-adapter-swift
+  - elmos-differential-behavior-validator
+  - elmos-unified-evidence-packager
+  - elmos-production-readiness-gate
+  prerequisites:
+  - Xcode target graph
+  - ARC/MRC and runtime inventory
+  - Swift target language version
+  preservationPriorities:
+  - Objective-C-visible API
+  - memory ownership
+  - selectors/KVC/KVO
+  - UIKit lifecycle
+  - binary SDK compatibility
+  stages:
+  - Create bridging headers/module maps
+  - Migrate models/utilities
+  - Wrap dynamic runtime behavior
+  - Migrate screens/services
+  - Replace KVO/delegates carefully
+  - Retire Objective-C only after call graph closure
+  requiredValidation:
+  - clean source and target builds
+  - contract tests
+  - differential behavior tests
+  - data equivalence where state exists
+  - performance comparison against declared budgets
+  - security and supply-chain checks
+  - rollback or approved non-reversibility
+  automaticBlockers:
+  - missing immutable source baseline
+  - unresolved critical semantic loss
+  - unavailable required toolchain
+  - unapproved breaking public contract
+  - unverified irreversible data change
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

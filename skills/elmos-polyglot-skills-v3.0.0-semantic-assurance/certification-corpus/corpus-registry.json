@@ -1,0 +1,768 @@
+{
+  "schemaVersion": "elmos.corpus-registry/v1",
+  "metadata": {
+    "version": "3.0.0"
+  },
+  "routes": [
+    {
+      "route": "route-java-spring-to-csharp-aspnet-core",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-csharp-aspnet-core-to-java-spring",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-java-to-kotlin",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-kotlin-to-java",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-javascript-to-typescript",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-objective-c-to-swift",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-cpp-to-rust",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-rust-to-cpp",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-php-laravel-to-typescript-nest",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-python-fastapi-to-go",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-python-django-to-typescript-nest",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-java-android-to-flutter",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-kotlin-android-to-flutter",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-swift-uikit-to-flutter",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-react-to-flutter",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-php-laravel-to-python-fastapi",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-go-to-rust",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-spring-in-place-modernization",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-mainframe-cobol-to-java",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-mainframe-cobol-to-csharp",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-ibmi-rpg-to-java",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-ibmi-rpg-to-csharp",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-pli-to-java",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-pli-to-csharp",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-vb6-to-csharp",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-vbscript-to-csharp",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-powerbuilder-to-csharp-react",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-delphi-to-csharp",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-abap-to-java",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-natural-adabas-to-java",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-abl-openedge-to-java",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-c-to-rust",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-c-to-cpp-modernization",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-ada-spark-to-rust",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-rust-to-ada-spark-assurance",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-fortran-to-cpp",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-fortran-to-python-numerical",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-xbase-foxpro-to-csharp",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-cobol-in-place-modernization",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "route": "route-rpg-in-place-modernization",
+      "status": "not-run",
+      "fixtures": [],
+      "coverage": {
+        "syntax": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "semantic": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "regression": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      }
+    }
+  ]
+}

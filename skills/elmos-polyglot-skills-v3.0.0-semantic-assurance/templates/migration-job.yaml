@@ -1,0 +1,39 @@
+schemaVersion: elmos.migration-job/v1
+jobId: REPLACE-ME
+mode: convert # generate-project | modernize | convert | interop
+source:
+  technology: java
+  location: /absolute/path/or/repository-reference
+  revision: REPLACE-WITH-COMMIT
+  framework: spring-boot
+target:
+  technology: csharp
+  profile: target-profile.yaml
+  framework: aspnet-core
+routeProfile: route-java-spring-to-csharp-aspnet-core
+scope:
+  include:
+    - service-a/**
+  exclude:
+    - vendor/**
+    - generated/**
+policy:
+  network:
+    default: deny
+    allow:
+      - approved-package-mirror.example
+  secrets:
+    mode: runtime-handles-only
+    allowedNames: []
+  approvals:
+    requiredFor:
+      - production-write
+      - irreversible-data-change
+      - cryptographic-change
+  budgets:
+    wallTimeMinutes: 120
+    cpu: "4"
+    memoryMiB: 8192
+    diskMiB: 20480
+    maxPatchLines: 5000
+readiness: not-run

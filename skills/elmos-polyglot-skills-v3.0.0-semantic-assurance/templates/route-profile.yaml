@@ -1,0 +1,28 @@
+schemaVersion: elmos.route-profile/v1
+kind: RouteProfile
+metadata:
+  id: REPLACE-ME
+  version: 1.0.0
+  readiness: not-run
+  priority: custom
+spec:
+  source: REPLACE-ME
+  target: REPLACE-ME
+  mode: ir-mediated-conversion
+  intent: REPLACE-ME
+  requiredSkills: []
+  prerequisites: []
+  preservationPriorities: []
+  stages: []
+  requiredValidation:
+    - clean source and target builds
+    - contract tests
+    - differential behavior tests
+    - security and supply-chain checks
+  automaticBlockers:
+    - missing immutable source baseline
+    - unresolved critical semantic loss
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

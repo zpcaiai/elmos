@@ -1,0 +1,55 @@
+schemaVersion: elmos.route-profile/v1
+kind: RouteProfile
+metadata:
+  id: route-javascript-to-typescript
+  version: 1.0.0
+  readiness: not-run
+  priority: reference
+spec:
+  source: javascript
+  target: typescript
+  mode: gradual-modernization
+  intent: Gradually introduce TypeScript with runtime schemas, strictness waves, and
+    preserved module/runtime behavior.
+  requiredSkills:
+  - elmos-polyglot-modernization-orchestrator
+  - elmos-adapter-javascript
+  - elmos-adapter-typescript
+  - elmos-differential-behavior-validator
+  - elmos-unified-evidence-packager
+  - elmos-production-readiness-gate
+  prerequisites:
+  - JS package graph
+  - runtime/test baseline
+  - TypeScript target configuration
+  preservationPriorities:
+  - runtime behavior
+  - module loading
+  - public package API
+  - event-loop ordering
+  - browser/Node compatibility
+  stages:
+  - Enable allowJs/checkJs
+  - Add declarations and runtime schemas
+  - Convert leaf modules
+  - Raise strictness by wave
+  - Remove unsafe assertions
+  - Validate ESM/CJS and bundlers
+  requiredValidation:
+  - clean source and target builds
+  - contract tests
+  - differential behavior tests
+  - data equivalence where state exists
+  - performance comparison against declared budgets
+  - security and supply-chain checks
+  - rollback or approved non-reversibility
+  automaticBlockers:
+  - missing immutable source baseline
+  - unresolved critical semantic loss
+  - unavailable required toolchain
+  - unapproved breaking public contract
+  - unverified irreversible data change
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

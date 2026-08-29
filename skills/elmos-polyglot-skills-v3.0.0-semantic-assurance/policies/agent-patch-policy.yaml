@@ -1,0 +1,17 @@
+schemaVersion: elmos.agent-patch-policy/v1
+default: deny
+requirements:
+  inspectBeforeEdit: true
+  isolatedWorktree: true
+  allowedPathsRequired: true
+  forbiddenPathsRequired: true
+  maxDiffRequired: true
+  requiredTestsRequired: true
+  cleanCheckpointRequired: true
+  unrelatedFormattingForbidden: true
+  disabledTestsForbidden: true
+  secretExposureForbidden: true
+  generatedBinaryCommitForbidden: true
+review:
+  criticalRiskHumanApproval: true
+  securityOrDataBoundaryHumanApproval: true

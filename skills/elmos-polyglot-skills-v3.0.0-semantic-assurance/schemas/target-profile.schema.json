@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/target-profile.schema.json",
+  "title": "ELMOS Target Profile",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "profileId",
+    "technologies",
+    "architecture",
+    "semanticPolicies",
+    "nonFunctionalBudgets",
+    "decisions"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "elmos.target-profile/v1"
+    },
+    "profileId": {
+      "type": "string"
+    },
+    "technologies": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "role"
+        ]
+      }
+    },
+    "architecture": {
+      "type": "object"
+    },
+    "semanticPolicies": {
+      "type": "object"
+    },
+    "nonFunctionalBudgets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "metric",
+          "operator",
+          "value",
+          "unit"
+        ]
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

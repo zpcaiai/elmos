@@ -1,0 +1,2126 @@
+{
+  "$schema": "./schemas/skill-bundle.schema.json",
+  "schema_version": "2.0",
+  "package": {
+    "name": "elmos-legacy-p0-expansion-skills",
+    "display_name": "ELMOS Legacy P0 Polyglot Expansion Skills",
+    "version": "1.0.0",
+    "build_date": "2026-08-29",
+    "skill_count": 104,
+    "technology_count": 14,
+    "repository_surface_count": 8,
+    "merged_primary_technology_count": 28,
+    "merged_route_cell_count": 784,
+    "default_readiness": "not-run",
+    "entry_skills": [
+      "elmos-legacy-p0-orchestrator",
+      "elmos-target-fitness-route-scorer",
+      "elmos-legacy-production-certification-gate"
+    ]
+  },
+  "technologies": [
+    "c",
+    "cobol",
+    "rpg",
+    "pli",
+    "vb6",
+    "vbscript",
+    "object-pascal",
+    "powerscript",
+    "abap",
+    "natural",
+    "abl",
+    "fortran",
+    "ada-spark",
+    "xbase"
+  ],
+  "repository_surfaces": [
+    "jcl",
+    "rexx",
+    "ibmi-cl",
+    "cobol-copybook",
+    "cics-bms",
+    "ims-mfs",
+    "ibmi-dds",
+    "legacy-sql-routines"
+  ],
+  "skills": [
+    {
+      "id": "ELMOS-POLY-065",
+      "name": "elmos-legacy-p0-orchestrator",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "orchestration",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-legacy-p0-orchestrator/SKILL.md",
+      "description": "Coordinate P0 legacy repository discovery, semantic lowering, target selection, conversion, coexistence, verification, evidence, and cutover.",
+      "dependencies": [
+        "elmos-legacy-repository-archeologist"
+      ],
+      "outputs": [
+        "legacy-run.json",
+        "legacy-stage-state.json",
+        "legacy-decision-log.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-066",
+      "name": "elmos-legacy-repository-archeologist",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "discovery",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-legacy-repository-archeologist/SKILL.md",
+      "description": "Recover code, copybooks, job control, screens, binary assets, schemas, generated artifacts, runtime dependencies, and operational knowledge from legacy repositories.",
+      "dependencies": [],
+      "outputs": [
+        "legacy-repository-inventory.json",
+        "legacy-surface-map.json",
+        "opaque-assets.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-067",
+      "name": "elmos-source-encoding-normalizer",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "normalization",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-source-encoding-normalizer/SKILL.md",
+      "description": "Detect and normalize EBCDIC/code pages, newline modes, tab/column rules, source encodings, and binary/text boundaries without losing byte provenance.",
+      "dependencies": [
+        "elmos-legacy-repository-archeologist"
+      ],
+      "outputs": [
+        "encoding-inventory.json",
+        "normalized-source-map.json",
+        "byte-provenance.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-068",
+      "name": "elmos-fixed-format-source-normalizer",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "normalization",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-fixed-format-source-normalizer/SKILL.md",
+      "description": "Normalize fixed-column, sequence-area, continuation, indicator, and card-image source forms into reversible logical source while preserving original coordinates.",
+      "dependencies": [
+        "elmos-source-encoding-normalizer"
+      ],
+      "outputs": [
+        "fixed-format-map.json",
+        "logical-source/",
+        "roundtrip-map.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-069",
+      "name": "elmos-legacy-build-runtime-discovery",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "build-analysis",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-legacy-build-runtime-discovery/SKILL.md",
+      "description": "Recover unavailable or implicit compilers, linkers, preprocessors, subsystem versions, copy/include paths, runtime libraries, database clients, job schedulers, and deployment assumptions.",
+      "dependencies": [
+        "elmos-fixed-format-source-normalizer"
+      ],
+      "outputs": [
+        "legacy-toolchain-inventory.json",
+        "runtime-requirements.json",
+        "reproduction-plan.md"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-070",
+      "name": "elmos-legacy-dependency-runtime-graph",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "semantic-analysis",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-legacy-dependency-runtime-graph/SKILL.md",
+      "description": "Build symbol, include/copy, call, job-step, data, transaction, screen, dataset, program-to-program, remote-call, and runtime integration graphs.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "legacy-dependency-graph.json",
+        "job-call-graph.json",
+        "data-flow-graph.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-071",
+      "name": "elmos-business-rule-ir-builder",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "ir",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-business-rule-ir-builder/SKILL.md",
+      "description": "Extract auditable business rules from procedural, 4GL, screen, job and database logic with source spans, predicates, effects, priority and exception semantics.",
+      "dependencies": [
+        "elmos-legacy-dependency-runtime-graph"
+      ],
+      "outputs": [
+        "business-rule-ir.json",
+        "rule-provenance.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-072",
+      "name": "elmos-record-layout-ir-builder",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "ir",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-record-layout-ir-builder/SKILL.md",
+      "description": "Model COBOL/RPG/PL-I/Fortran/Pascal/xBase record layout, decimal formats, overlays, unions, variable arrays, alignment and physical byte representation.",
+      "dependencies": [
+        "elmos-business-rule-ir-builder"
+      ],
+      "outputs": [
+        "record-layout-ir.json",
+        "layout-loss-register.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-073",
+      "name": "elmos-transaction-ir-builder",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "ir",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-transaction-ir-builder/SKILL.md",
+      "description": "Recover transaction boundaries, commit/backout, lock scope, update tasks, unit-of-work, retry and idempotency semantics across legacy runtimes.",
+      "dependencies": [
+        "elmos-legacy-dependency-runtime-graph"
+      ],
+      "outputs": [
+        "transaction-ir.json",
+        "transaction-boundaries.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-074",
+      "name": "elmos-batch-job-ir-builder",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "ir",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-batch-job-ir-builder/SKILL.md",
+      "description": "Model JCL, CL, schedulers, steps, datasets, temporary files, return-code branches, checkpoints, restartability and batch SLA semantics.",
+      "dependencies": [
+        "elmos-legacy-dependency-runtime-graph"
+      ],
+      "outputs": [
+        "batch-job-ir.json",
+        "restart-model.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-075",
+      "name": "elmos-screen-workflow-ir-builder",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "ir",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-screen-workflow-ir-builder/SKILL.md",
+      "description": "Recover terminal, desktop and 4GL screen navigation, state, validation, field protection, events, menu/action flows and user-visible error behavior.",
+      "dependencies": [
+        "elmos-legacy-dependency-runtime-graph"
+      ],
+      "outputs": [
+        "screen-workflow-ir.json",
+        "ui-state-machine.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-076",
+      "name": "elmos-indexed-file-state-ir-builder",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "ir",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-indexed-file-state-ir-builder/SKILL.md",
+      "description": "Model VSAM, DBF/CDX, keyed/relative files, DDS physical/logical files and other indexed storage as logical state plus physical semantics.",
+      "dependencies": [
+        "elmos-record-layout-ir-builder"
+      ],
+      "outputs": [
+        "indexed-state-ir.json",
+        "access-path-ir.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-077",
+      "name": "elmos-numerical-ir-builder",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "ir",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-numerical-ir-builder/SKILL.md",
+      "description": "Extract numerical kernels, array/storage order, precision, BLAS/LAPACK calls, loop transformations and tolerated error envelopes for scientific conversion.",
+      "dependencies": [
+        "elmos-legacy-dependency-runtime-graph"
+      ],
+      "outputs": [
+        "numerical-ir.json",
+        "numerical-baseline.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-078",
+      "name": "elmos-safety-contract-ir-builder",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "ir",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-safety-contract-ir-builder/SKILL.md",
+      "description": "Extract range constraints, contracts, assertions, real-time deadlines, tasking assumptions and proof obligations from C/Ada/SPARK and safety-critical code.",
+      "dependencies": [
+        "elmos-legacy-dependency-runtime-graph"
+      ],
+      "outputs": [
+        "safety-contract-ir.json",
+        "proof-obligations.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-079",
+      "name": "elmos-legacy-control-flow-ir-builder",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "ir",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-legacy-control-flow-ir-builder/SKILL.md",
+      "description": "Normalize GO TO, PERFORM ranges, ALTER, computed branches, error labels, event callbacks and irreducible control flow into explicit CFG/state-machine representations.",
+      "dependencies": [
+        "elmos-business-rule-ir-builder"
+      ],
+      "outputs": [
+        "legacy-control-flow-ir.json",
+        "irreducible-regions.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-080",
+      "name": "elmos-enterprise-4gl-ir-builder",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "ir",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-enterprise-4gl-ir-builder/SKILL.md",
+      "description": "Model DataWindow, ABAP internal tables/Open SQL, Natural database loops, ABL buffers/temp-tables, FoxPro work areas and other 4GL high-level behaviors.",
+      "dependencies": [
+        "elmos-business-rule-ir-builder"
+      ],
+      "outputs": [
+        "enterprise-4gl-ir.json",
+        "4gl-semantic-loss.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-081",
+      "name": "elmos-native-abi-ir-builder",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "ir",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-native-abi-ir-builder/SKILL.md",
+      "description": "Capture native ABI, calling conventions, packing, symbol export, COM interfaces, callbacks, FFI, binary structures and cross-language ownership.",
+      "dependencies": [
+        "elmos-record-layout-ir-builder"
+      ],
+      "outputs": [
+        "native-abi-ir.json",
+        "abi-contracts.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-082",
+      "name": "elmos-semantic-loss-risk-estimator",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "planning",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-semantic-loss-risk-estimator/SKILL.md",
+      "description": "Score semantic loss per symbol, module and route, including money, data integrity, security, concurrency, numerical, ABI and safety consequences.",
+      "dependencies": [
+        "elmos-business-rule-ir-builder",
+        "elmos-transaction-ir-builder",
+        "elmos-record-layout-ir-builder"
+      ],
+      "outputs": [
+        "semantic-loss-register.json",
+        "risk-heatmap.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-083",
+      "name": "elmos-target-fitness-route-scorer",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "planning",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-target-fitness-route-scorer/SKILL.md",
+      "description": "Rank destination languages/stacks by semantic fit, performance, operations, ecosystem, team constraints, coexistence and verification cost; reject low-fitness blind conversions.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "target-fitness.json",
+        "route-scorecard.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-084",
+      "name": "elmos-coexistence-strangler-planner",
+      "version": "1.0.0",
+      "batch": "E",
+      "layer": "planning",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-coexistence-strangler-planner/SKILL.md",
+      "description": "Plan API wrapping, dual run, data replication, batch coexistence, module strangulation, rollback, cutover and decommissioning for incremental legacy modernization.",
+      "dependencies": [
+        "elmos-target-fitness-route-scorer"
+      ],
+      "outputs": [
+        "coexistence-plan.json",
+        "cutover-waves.json",
+        "rollback-plan.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-085",
+      "name": "elmos-adapter-c",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-c/SKILL.md",
+      "description": "Implement C language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/c/adapter-manifest.json",
+        "adapters/c/semantic-mapping.yaml",
+        "adapters/c/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-086",
+      "name": "elmos-adapter-cobol",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-cobol/SKILL.md",
+      "description": "Implement COBOL language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/cobol/adapter-manifest.json",
+        "adapters/cobol/semantic-mapping.yaml",
+        "adapters/cobol/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-087",
+      "name": "elmos-adapter-rpg",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-rpg/SKILL.md",
+      "description": "Implement RPG/RPGLE language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/rpg/adapter-manifest.json",
+        "adapters/rpg/semantic-mapping.yaml",
+        "adapters/rpg/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-088",
+      "name": "elmos-adapter-pli",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-pli/SKILL.md",
+      "description": "Implement PL/I language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/pli/adapter-manifest.json",
+        "adapters/pli/semantic-mapping.yaml",
+        "adapters/pli/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-089",
+      "name": "elmos-adapter-vb6",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-vb6/SKILL.md",
+      "description": "Implement Visual Basic 6 language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/vb6/adapter-manifest.json",
+        "adapters/vb6/semantic-mapping.yaml",
+        "adapters/vb6/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-090",
+      "name": "elmos-adapter-vbscript",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-vbscript/SKILL.md",
+      "description": "Implement VBScript language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/vbscript/adapter-manifest.json",
+        "adapters/vbscript/semantic-mapping.yaml",
+        "adapters/vbscript/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-091",
+      "name": "elmos-adapter-object-pascal",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-object-pascal/SKILL.md",
+      "description": "Implement Object Pascal/Delphi language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/object-pascal/adapter-manifest.json",
+        "adapters/object-pascal/semantic-mapping.yaml",
+        "adapters/object-pascal/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-092",
+      "name": "elmos-adapter-powerscript",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-powerscript/SKILL.md",
+      "description": "Implement PowerScript/PowerBuilder language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/powerscript/adapter-manifest.json",
+        "adapters/powerscript/semantic-mapping.yaml",
+        "adapters/powerscript/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-093",
+      "name": "elmos-adapter-abap",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-abap/SKILL.md",
+      "description": "Implement ABAP language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/abap/adapter-manifest.json",
+        "adapters/abap/semantic-mapping.yaml",
+        "adapters/abap/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-094",
+      "name": "elmos-adapter-natural",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-natural/SKILL.md",
+      "description": "Implement Natural language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/natural/adapter-manifest.json",
+        "adapters/natural/semantic-mapping.yaml",
+        "adapters/natural/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-095",
+      "name": "elmos-adapter-abl",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-abl/SKILL.md",
+      "description": "Implement Progress OpenEdge ABL language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/abl/adapter-manifest.json",
+        "adapters/abl/semantic-mapping.yaml",
+        "adapters/abl/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-096",
+      "name": "elmos-adapter-fortran",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-fortran/SKILL.md",
+      "description": "Implement Fortran language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/fortran/adapter-manifest.json",
+        "adapters/fortran/semantic-mapping.yaml",
+        "adapters/fortran/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-097",
+      "name": "elmos-adapter-ada-spark",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-ada-spark/SKILL.md",
+      "description": "Implement Ada/SPARK language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/ada-spark/adapter-manifest.json",
+        "adapters/ada-spark/semantic-mapping.yaml",
+        "adapters/ada-spark/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-098",
+      "name": "elmos-adapter-xbase",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-xbase/SKILL.md",
+      "description": "Implement xBase/FoxPro language parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/xbase/adapter-manifest.json",
+        "adapters/xbase/semantic-mapping.yaml",
+        "adapters/xbase/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-099",
+      "name": "elmos-adapter-jcl",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-jcl/SKILL.md",
+      "description": "Implement JCL repository-dsl parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/jcl/adapter-manifest.json",
+        "adapters/jcl/semantic-mapping.yaml",
+        "adapters/jcl/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-100",
+      "name": "elmos-adapter-rexx",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-rexx/SKILL.md",
+      "description": "Implement REXX repository-dsl parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/rexx/adapter-manifest.json",
+        "adapters/rexx/semantic-mapping.yaml",
+        "adapters/rexx/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-101",
+      "name": "elmos-adapter-ibmi-cl",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-ibmi-cl/SKILL.md",
+      "description": "Implement IBM i CL/CLLE repository-dsl parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/ibmi-cl/adapter-manifest.json",
+        "adapters/ibmi-cl/semantic-mapping.yaml",
+        "adapters/ibmi-cl/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-102",
+      "name": "elmos-adapter-cobol-copybook",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-cobol-copybook/SKILL.md",
+      "description": "Implement COBOL Copybook repository-dsl parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/cobol-copybook/adapter-manifest.json",
+        "adapters/cobol-copybook/semantic-mapping.yaml",
+        "adapters/cobol-copybook/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-103",
+      "name": "elmos-adapter-cics-bms",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-cics-bms/SKILL.md",
+      "description": "Implement CICS BMS repository-dsl parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/cics-bms/adapter-manifest.json",
+        "adapters/cics-bms/semantic-mapping.yaml",
+        "adapters/cics-bms/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-104",
+      "name": "elmos-adapter-ims-mfs",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-ims-mfs/SKILL.md",
+      "description": "Implement IMS MFS repository-dsl parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/ims-mfs/adapter-manifest.json",
+        "adapters/ims-mfs/semantic-mapping.yaml",
+        "adapters/ims-mfs/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-105",
+      "name": "elmos-adapter-ibmi-dds",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-ibmi-dds/SKILL.md",
+      "description": "Implement IBM i DDS repository-dsl parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/ibmi-dds/adapter-manifest.json",
+        "adapters/ibmi-dds/semantic-mapping.yaml",
+        "adapters/ibmi-dds/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-106",
+      "name": "elmos-adapter-legacy-sql-routines",
+      "version": "1.0.0",
+      "batch": "F",
+      "layer": "technology-adapter",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-adapter-legacy-sql-routines/SKILL.md",
+      "description": "Implement Legacy SQL/Routine Surface repository-dsl parsing, semantic lowering, framework/runtime mapping, target emission and verification for repository-scale modernization.",
+      "dependencies": [
+        "elmos-legacy-build-runtime-discovery"
+      ],
+      "outputs": [
+        "adapters/legacy-sql-routines/adapter-manifest.json",
+        "adapters/legacy-sql-routines/semantic-mapping.yaml",
+        "adapters/legacy-sql-routines/verification-profile.yaml"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-107",
+      "name": "elmos-character-encoding-transcoder",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "data-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-character-encoding-transcoder/SKILL.md",
+      "description": "Convert EBCDIC/code pages/Unicode and text-vs-binary records with reversible byte provenance and field-level validation.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-character-encoding-transcoder/plan.json",
+        "transforms/elmos-character-encoding-transcoder/semantic-loss.json",
+        "transforms/elmos-character-encoding-transcoder/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-108",
+      "name": "elmos-decimal-arithmetic-preserver",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "semantic-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-decimal-arithmetic-preserver/SKILL.md",
+      "description": "Preserve packed/zoned/fixed decimal precision, rounding, overflow, scale, currency and financial arithmetic across target numeric models.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-decimal-arithmetic-preserver/plan.json",
+        "transforms/elmos-decimal-arithmetic-preserver/semantic-loss.json",
+        "transforms/elmos-decimal-arithmetic-preserver/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-109",
+      "name": "elmos-record-layout-mapper",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "semantic-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-record-layout-mapper/SKILL.md",
+      "description": "Map overlays, REDEFINES, unions, packed records, variable arrays and alignment into safe target schemas without silently changing bytes.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-record-layout-mapper/plan.json",
+        "transforms/elmos-record-layout-mapper/semantic-loss.json",
+        "transforms/elmos-record-layout-mapper/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-110",
+      "name": "elmos-indexed-file-database-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "data-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-indexed-file-database-migrator/SKILL.md",
+      "description": "Migrate VSAM/DBF/DDS/indexed files to relational/document/KV stores while preserving keys, collation, duplicates, ordering and restart semantics.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-indexed-file-database-migrator/plan.json",
+        "transforms/elmos-indexed-file-database-migrator/semantic-loss.json",
+        "transforms/elmos-indexed-file-database-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-111",
+      "name": "elmos-embedded-sql-routine-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "database-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-embedded-sql-routine-migrator/SKILL.md",
+      "description": "Extract and convert embedded SQL, cursors, stored procedures, triggers, SQL dialects and host-variable semantics into approved target data access.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-embedded-sql-routine-migrator/plan.json",
+        "transforms/elmos-embedded-sql-routine-migrator/semantic-loss.json",
+        "transforms/elmos-embedded-sql-routine-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-112",
+      "name": "elmos-transaction-monitor-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "runtime-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-transaction-monitor-migrator/SKILL.md",
+      "description": "Map CICS/IMS/SAP LUW/OpenEdge/IBM i transaction behavior to explicit modern units of work, retries, outbox/saga patterns and rollback.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-transaction-monitor-migrator/plan.json",
+        "transforms/elmos-transaction-monitor-migrator/semantic-loss.json",
+        "transforms/elmos-transaction-monitor-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-113",
+      "name": "elmos-batch-scheduler-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "runtime-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-batch-scheduler-migrator/SKILL.md",
+      "description": "Convert JCL/CL/legacy schedulers into workflow/job definitions while preserving dependencies, datasets, return codes, checkpoints and restart.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-batch-scheduler-migrator/plan.json",
+        "transforms/elmos-batch-scheduler-migrator/semantic-loss.json",
+        "transforms/elmos-batch-scheduler-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-114",
+      "name": "elmos-terminal-screen-ui-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "ui-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-terminal-screen-ui-migrator/SKILL.md",
+      "description": "Convert BMS/MFS/DDS/Dynpro/Natural maps and terminal workflows to web/API UI while preserving navigation, validation and accessibility semantics.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-terminal-screen-ui-migrator/plan.json",
+        "transforms/elmos-terminal-screen-ui-migrator/semantic-loss.json",
+        "transforms/elmos-terminal-screen-ui-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-115",
+      "name": "elmos-report-printer-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "ui-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-report-printer-migrator/SKILL.md",
+      "description": "Convert printer files, VFP/PowerBuilder/legacy reports and spool workflows to report services/PDF/export pipelines with layout regression tests.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-report-printer-migrator/plan.json",
+        "transforms/elmos-report-printer-migrator/semantic-loss.json",
+        "transforms/elmos-report-printer-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-116",
+      "name": "elmos-legacy-messaging-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "integration-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-legacy-messaging-migrator/SKILL.md",
+      "description": "Map MQ, CICS/IMS messaging, SAP IDoc/RFC/BAPI and file-based interchange to modern messaging/API contracts with delivery guarantees.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-legacy-messaging-migrator/plan.json",
+        "transforms/elmos-legacy-messaging-migrator/semantic-loss.json",
+        "transforms/elmos-legacy-messaging-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-117",
+      "name": "elmos-mainframe-security-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "security-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-mainframe-security-migrator/SKILL.md",
+      "description": "Translate RACF/ACF2/Top Secret/Natural/SAP/IBM i authority concepts to explicit IAM/RBAC/ABAC mappings without privilege broadening.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-mainframe-security-migrator/plan.json",
+        "transforms/elmos-mainframe-security-migrator/semantic-loss.json",
+        "transforms/elmos-mainframe-security-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-118",
+      "name": "elmos-c-memory-safety-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "systems-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-c-memory-safety-migrator/SKILL.md",
+      "description": "Transform C ownership, pointer arithmetic, allocation and lifetime patterns toward Rust/C++ safety models using evidence-backed unsafe boundaries.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-c-memory-safety-migrator/plan.json",
+        "transforms/elmos-c-memory-safety-migrator/semantic-loss.json",
+        "transforms/elmos-c-memory-safety-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-119",
+      "name": "elmos-native-abi-ffi-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "systems-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-native-abi-ffi-migrator/SKILL.md",
+      "description": "Preserve ABI/FFI/COM/native calling conventions, symbol contracts, callback lifetime and binary layout through wrappers or generated bindings.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-native-abi-ffi-migrator/plan.json",
+        "transforms/elmos-native-abi-ffi-migrator/semantic-loss.json",
+        "transforms/elmos-native-abi-ffi-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-120",
+      "name": "elmos-numerical-kernel-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "numerical-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-numerical-kernel-migrator/SKILL.md",
+      "description": "Transform Fortran/C numerical kernels to C++/Rust/Python-native stacks while preserving vectorization, libraries, memory order and computational complexity.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-numerical-kernel-migrator/plan.json",
+        "transforms/elmos-numerical-kernel-migrator/semantic-loss.json",
+        "transforms/elmos-numerical-kernel-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-121",
+      "name": "elmos-floating-point-equivalence-controller",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "numerical-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-floating-point-equivalence-controller/SKILL.md",
+      "description": "Define route-specific floating-point tolerances, reproducibility modes, reduction-order controls and high-precision oracle comparisons.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-floating-point-equivalence-controller/plan.json",
+        "transforms/elmos-floating-point-equivalence-controller/semantic-loss.json",
+        "transforms/elmos-floating-point-equivalence-controller/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-122",
+      "name": "elmos-safety-realtime-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "safety-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-safety-realtime-migrator/SKILL.md",
+      "description": "Preserve Ada/SPARK/C real-time scheduling, deadlines, boundedness, representation and safety contracts when moving to Rust/C++/Ada targets.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-safety-realtime-migrator/plan.json",
+        "transforms/elmos-safety-realtime-migrator/semantic-loss.json",
+        "transforms/elmos-safety-realtime-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-123",
+      "name": "elmos-com-activex-ole-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "windows-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-com-activex-ole-migrator/SKILL.md",
+      "description": "Inventory and replace/wrap COM, ActiveX, OLE Automation, type libraries, apartment models and registration dependencies during Windows modernization.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-com-activex-ole-migrator/plan.json",
+        "transforms/elmos-com-activex-ole-migrator/semantic-loss.json",
+        "transforms/elmos-com-activex-ole-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-124",
+      "name": "elmos-desktop-ui-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "ui-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-desktop-ui-migrator/SKILL.md",
+      "description": "Transform VB6/Delphi/VFP desktop forms, event lifecycles, controls and resources to approved C#/web targets with workflow characterization.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-desktop-ui-migrator/plan.json",
+        "transforms/elmos-desktop-ui-migrator/semantic-loss.json",
+        "transforms/elmos-desktop-ui-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-125",
+      "name": "elmos-powerbuilder-datawindow-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "4gl-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-powerbuilder-datawindow-migrator/SKILL.md",
+      "description": "Decompose DataWindow SQL, binding, validation, update rules, presentation and events into explicit API/data/UI components.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-powerbuilder-datawindow-migrator/plan.json",
+        "transforms/elmos-powerbuilder-datawindow-migrator/semantic-loss.json",
+        "transforms/elmos-powerbuilder-datawindow-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-126",
+      "name": "elmos-sap-business-object-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "4gl-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-sap-business-object-migrator/SKILL.md",
+      "description": "Extract ABAP DDIC/CDS, Open SQL, internal tables, BAPI/RFC/IDoc, enhancements and authorization behavior into target domain/integration models.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-sap-business-object-migrator/plan.json",
+        "transforms/elmos-sap-business-object-migrator/semantic-loss.json",
+        "transforms/elmos-sap-business-object-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-127",
+      "name": "elmos-natural-adabas-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "4gl-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-natural-adabas-migrator/SKILL.md",
+      "description": "Transform Natural programs/maps/DDMs and Adabas multivalue/periodic-group semantics into explicit application/data models.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-natural-adabas-migrator/plan.json",
+        "transforms/elmos-natural-adabas-migrator/semantic-loss.json",
+        "transforms/elmos-natural-adabas-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-128",
+      "name": "elmos-openedge-abl-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "4gl-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-openedge-abl-migrator/SKILL.md",
+      "description": "Transform ABL buffers, temp-tables, procedures/classes, handles, transactions and PASOE integration to explicit modern service/data layers.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-openedge-abl-migrator/plan.json",
+        "transforms/elmos-openedge-abl-migrator/semantic-loss.json",
+        "transforms/elmos-openedge-abl-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-129",
+      "name": "elmos-ibmi-rpg-db2i-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "4gl-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-ibmi-rpg-db2i-migrator/SKILL.md",
+      "description": "Transform RPG opcodes/indicators, DB2 for i record IO, DDS/SQL, CL integration and activation-group behavior into target services.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-ibmi-rpg-db2i-migrator/plan.json",
+        "transforms/elmos-ibmi-rpg-db2i-migrator/semantic-loss.json",
+        "transforms/elmos-ibmi-rpg-db2i-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-130",
+      "name": "elmos-xbase-dbf-index-migrator",
+      "version": "1.0.0",
+      "batch": "G",
+      "layer": "4gl-transformation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-xbase-dbf-index-migrator/SKILL.md",
+      "description": "Transform xBase/FoxPro work areas, DBF/CDX indexes, SET state, macros, forms and reports into explicit services/data/UI modules.",
+      "dependencies": [
+        "elmos-semantic-loss-risk-estimator"
+      ],
+      "outputs": [
+        "transforms/elmos-xbase-dbf-index-migrator/plan.json",
+        "transforms/elmos-xbase-dbf-index-migrator/semantic-loss.json",
+        "transforms/elmos-xbase-dbf-index-migrator/evidence.json"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-131",
+      "name": "elmos-mainframe-cobol-to-java-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-mainframe-cobol-to-java-golden-route/SKILL.md",
+      "description": "Execute the reference route: COBOL/CICS/DB2/VSAM/JCL to Java/Spring Boot.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-cobol",
+        "elmos-adapter-java",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-mainframe-cobol-to-java-golden-route/run.json",
+        "routes/elmos-mainframe-cobol-to-java-golden-route/migration-plan.json",
+        "routes/elmos-mainframe-cobol-to-java-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-132",
+      "name": "elmos-mainframe-cobol-to-csharp-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-mainframe-cobol-to-csharp-golden-route/SKILL.md",
+      "description": "Execute the reference route: COBOL/CICS/DB2/VSAM/JCL to C#/ASP.NET Core.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-cobol",
+        "elmos-adapter-csharp",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-mainframe-cobol-to-csharp-golden-route/run.json",
+        "routes/elmos-mainframe-cobol-to-csharp-golden-route/migration-plan.json",
+        "routes/elmos-mainframe-cobol-to-csharp-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-133",
+      "name": "elmos-ibmi-rpg-to-java-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-ibmi-rpg-to-java-golden-route/SKILL.md",
+      "description": "Execute the reference route: RPG/RPGLE/CL/DDS/DB2 for i to Java/Spring Boot.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-rpg",
+        "elmos-adapter-java",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-ibmi-rpg-to-java-golden-route/run.json",
+        "routes/elmos-ibmi-rpg-to-java-golden-route/migration-plan.json",
+        "routes/elmos-ibmi-rpg-to-java-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-134",
+      "name": "elmos-ibmi-rpg-to-csharp-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-ibmi-rpg-to-csharp-golden-route/SKILL.md",
+      "description": "Execute the reference route: RPG/RPGLE/CL/DDS/DB2 for i to C#/ASP.NET Core.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-rpg",
+        "elmos-adapter-csharp",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-ibmi-rpg-to-csharp-golden-route/run.json",
+        "routes/elmos-ibmi-rpg-to-csharp-golden-route/migration-plan.json",
+        "routes/elmos-ibmi-rpg-to-csharp-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-135",
+      "name": "elmos-pli-to-java-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-pli-to-java-golden-route/SKILL.md",
+      "description": "Execute the reference route: PL/I mainframe applications to Java/Spring.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-pli",
+        "elmos-adapter-java",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-pli-to-java-golden-route/run.json",
+        "routes/elmos-pli-to-java-golden-route/migration-plan.json",
+        "routes/elmos-pli-to-java-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-136",
+      "name": "elmos-pli-to-csharp-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-pli-to-csharp-golden-route/SKILL.md",
+      "description": "Execute the reference route: PL/I mainframe applications to C#/ASP.NET Core.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-pli",
+        "elmos-adapter-csharp",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-pli-to-csharp-golden-route/run.json",
+        "routes/elmos-pli-to-csharp-golden-route/migration-plan.json",
+        "routes/elmos-pli-to-csharp-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-137",
+      "name": "elmos-vb6-to-csharp-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-vb6-to-csharp-golden-route/SKILL.md",
+      "description": "Execute the reference route: VB6/COM desktop applications to C# with staged UI and COM replacement.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-vb6",
+        "elmos-adapter-csharp",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-vb6-to-csharp-golden-route/run.json",
+        "routes/elmos-vb6-to-csharp-golden-route/migration-plan.json",
+        "routes/elmos-vb6-to-csharp-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-138",
+      "name": "elmos-vbscript-to-csharp-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-vbscript-to-csharp-golden-route/SKILL.md",
+      "description": "Execute the reference route: VBScript/Classic ASP automation and web code to modern .NET.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-vbscript",
+        "elmos-adapter-csharp",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-vbscript-to-csharp-golden-route/run.json",
+        "routes/elmos-vbscript-to-csharp-golden-route/migration-plan.json",
+        "routes/elmos-vbscript-to-csharp-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-139",
+      "name": "elmos-powerbuilder-to-csharp-react-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-powerbuilder-to-csharp-react-golden-route/SKILL.md",
+      "description": "Execute the reference route: PowerBuilder/DataWindow to ASP.NET Core plus React-compatible API/UI model.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-powerscript",
+        "elmos-adapter-csharp",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-powerbuilder-to-csharp-react-golden-route/run.json",
+        "routes/elmos-powerbuilder-to-csharp-react-golden-route/migration-plan.json",
+        "routes/elmos-powerbuilder-to-csharp-react-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-140",
+      "name": "elmos-delphi-to-csharp-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-delphi-to-csharp-golden-route/SKILL.md",
+      "description": "Execute the reference route: Delphi/Object Pascal/VCL to C# desktop or service architecture.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-object-pascal",
+        "elmos-adapter-csharp",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-delphi-to-csharp-golden-route/run.json",
+        "routes/elmos-delphi-to-csharp-golden-route/migration-plan.json",
+        "routes/elmos-delphi-to-csharp-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-141",
+      "name": "elmos-abap-to-java-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-abap-to-java-golden-route/SKILL.md",
+      "description": "Execute the reference route: ABAP business logic/integration to Java/Spring with SAP coexistence.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-abap",
+        "elmos-adapter-java",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-abap-to-java-golden-route/run.json",
+        "routes/elmos-abap-to-java-golden-route/migration-plan.json",
+        "routes/elmos-abap-to-java-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-142",
+      "name": "elmos-natural-adabas-to-java-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-natural-adabas-to-java-golden-route/SKILL.md",
+      "description": "Execute the reference route: Natural/Adabas to Java/Spring and modern database.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-natural",
+        "elmos-adapter-java",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-natural-adabas-to-java-golden-route/run.json",
+        "routes/elmos-natural-adabas-to-java-golden-route/migration-plan.json",
+        "routes/elmos-natural-adabas-to-java-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-143",
+      "name": "elmos-abl-openedge-to-java-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-abl-openedge-to-java-golden-route/SKILL.md",
+      "description": "Execute the reference route: OpenEdge ABL/PASOE to Java/Spring.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-abl",
+        "elmos-adapter-java",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-abl-openedge-to-java-golden-route/run.json",
+        "routes/elmos-abl-openedge-to-java-golden-route/migration-plan.json",
+        "routes/elmos-abl-openedge-to-java-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-144",
+      "name": "elmos-c-to-rust-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-c-to-rust-golden-route/SKILL.md",
+      "description": "Execute the reference route: C native/embedded modules to Rust with memory-safety proof obligations.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-c",
+        "elmos-adapter-rust",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-c-to-rust-golden-route/run.json",
+        "routes/elmos-c-to-rust-golden-route/migration-plan.json",
+        "routes/elmos-c-to-rust-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-145",
+      "name": "elmos-c-to-cpp-modernization-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-c-to-cpp-modernization-route/SKILL.md",
+      "description": "Execute the reference route: C to modern C++ with ABI and ownership preservation.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-c",
+        "elmos-adapter-cpp",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-c-to-cpp-modernization-route/run.json",
+        "routes/elmos-c-to-cpp-modernization-route/migration-plan.json",
+        "routes/elmos-c-to-cpp-modernization-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-146",
+      "name": "elmos-ada-spark-to-rust-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-ada-spark-to-rust-golden-route/SKILL.md",
+      "description": "Execute the reference route: Ada/SPARK to Rust for safety-oriented native modernization.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-ada-spark",
+        "elmos-adapter-rust",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-ada-spark-to-rust-golden-route/run.json",
+        "routes/elmos-ada-spark-to-rust-golden-route/migration-plan.json",
+        "routes/elmos-ada-spark-to-rust-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-147",
+      "name": "elmos-rust-to-ada-spark-assurance-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-rust-to-ada-spark-assurance-route/SKILL.md",
+      "description": "Execute the reference route: Rust to Ada/SPARK where stronger contract/proof regimes are required.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-rust",
+        "elmos-adapter-ada-spark",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-rust-to-ada-spark-assurance-route/run.json",
+        "routes/elmos-rust-to-ada-spark-assurance-route/migration-plan.json",
+        "routes/elmos-rust-to-ada-spark-assurance-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-148",
+      "name": "elmos-fortran-to-cpp-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-fortran-to-cpp-golden-route/SKILL.md",
+      "description": "Execute the reference route: Fortran numerical/HPC code to modern C++.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-fortran",
+        "elmos-adapter-cpp",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-fortran-to-cpp-golden-route/run.json",
+        "routes/elmos-fortran-to-cpp-golden-route/migration-plan.json",
+        "routes/elmos-fortran-to-cpp-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-149",
+      "name": "elmos-fortran-to-python-numerical-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-fortran-to-python-numerical-route/SKILL.md",
+      "description": "Execute the reference route: Fortran to Python scientific stack while retaining native kernels where required.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-fortran",
+        "elmos-adapter-python",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-fortran-to-python-numerical-route/run.json",
+        "routes/elmos-fortran-to-python-numerical-route/migration-plan.json",
+        "routes/elmos-fortran-to-python-numerical-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-150",
+      "name": "elmos-xbase-foxpro-to-csharp-golden-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-xbase-foxpro-to-csharp-golden-route/SKILL.md",
+      "description": "Execute the reference route: FoxPro/xBase DBF/forms/reports to C#/ASP.NET or desktop target.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-xbase",
+        "elmos-adapter-csharp",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-xbase-foxpro-to-csharp-golden-route/run.json",
+        "routes/elmos-xbase-foxpro-to-csharp-golden-route/migration-plan.json",
+        "routes/elmos-xbase-foxpro-to-csharp-golden-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-151",
+      "name": "elmos-cobol-in-place-modernization-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-cobol-in-place-modernization-route/SKILL.md",
+      "description": "Execute the reference route: COBOL dialect/source modernization before or instead of replatforming.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-cobol",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-cobol-in-place-modernization-route/run.json",
+        "routes/elmos-cobol-in-place-modernization-route/migration-plan.json",
+        "routes/elmos-cobol-in-place-modernization-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-152",
+      "name": "elmos-rpg-in-place-modernization-route",
+      "version": "1.0.0",
+      "batch": "H",
+      "layer": "route-execution",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-rpg-in-place-modernization-route/SKILL.md",
+      "description": "Execute the reference route: Fixed-format RPG to free-form/modular/API-enabled RPG modernization.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator",
+        "elmos-adapter-rpg",
+        "elmos-target-fitness-route-scorer",
+        "elmos-coexistence-strangler-planner",
+        "elmos-dual-run-shadow-reconciliation-validator",
+        "elmos-legacy-production-certification-gate"
+      ],
+      "outputs": [
+        "routes/elmos-rpg-in-place-modernization-route/run.json",
+        "routes/elmos-rpg-in-place-modernization-route/migration-plan.json",
+        "routes/elmos-rpg-in-place-modernization-route/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-153",
+      "name": "elmos-parser-ast-conformance-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-parser-ast-conformance-validator/SKILL.md",
+      "description": "Compare native compiler/parser results, symbols and source spans against adapter output on dialect/version fixture matrices.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-parser-ast-conformance-validator/result.json",
+        "validation/elmos-parser-ast-conformance-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-154",
+      "name": "elmos-byte-record-layout-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-byte-record-layout-validator/SKILL.md",
+      "description": "Verify record sizes, offsets, overlays, packed fields, alignment, encodings and round-trip bytes between source and target representations.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-byte-record-layout-validator/result.json",
+        "validation/elmos-byte-record-layout-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-155",
+      "name": "elmos-decimal-financial-equivalence-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-decimal-financial-equivalence-validator/SKILL.md",
+      "description": "Verify decimal precision, scale, rounding, overflow and monetary results using high-precision or source-runtime oracles.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-decimal-financial-equivalence-validator/result.json",
+        "validation/elmos-decimal-financial-equivalence-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-156",
+      "name": "elmos-transaction-commit-rollback-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-transaction-commit-rollback-validator/SKILL.md",
+      "description": "Replay success, failure, retry and partial-update scenarios to prove equivalent commit, rollback, locking and idempotency behavior.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-transaction-commit-rollback-validator/result.json",
+        "validation/elmos-transaction-commit-rollback-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-157",
+      "name": "elmos-batch-order-restart-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-batch-order-restart-validator/SKILL.md",
+      "description": "Verify job ordering, return-code branching, dataset lifecycle, checkpoints, restart and exactly-once/at-least-once side-effect semantics.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-batch-order-restart-validator/result.json",
+        "validation/elmos-batch-order-restart-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-158",
+      "name": "elmos-ui-workflow-equivalence-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-ui-workflow-equivalence-validator/SKILL.md",
+      "description": "Replay terminal/desktop/web user journeys and compare navigation, field validation, authorization, errors and persistent effects.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-ui-workflow-equivalence-validator/result.json",
+        "validation/elmos-ui-workflow-equivalence-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-159",
+      "name": "elmos-indexed-file-data-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-indexed-file-data-validator/SKILL.md",
+      "description": "Reconcile source indexed files and target stores for key semantics, collation, duplicates, ordering, tombstones and full dataset checksums.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-indexed-file-data-validator/result.json",
+        "validation/elmos-indexed-file-data-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-160",
+      "name": "elmos-sql-result-equivalence-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-sql-result-equivalence-validator/SKILL.md",
+      "description": "Compare query/routine results, null/collation/date behavior, isolation and side effects across database dialects and access layers.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-sql-result-equivalence-validator/result.json",
+        "validation/elmos-sql-result-equivalence-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-161",
+      "name": "elmos-numerical-tolerance-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-numerical-tolerance-validator/SKILL.md",
+      "description": "Validate numerical outputs across representative and adversarial datasets using declared absolute/relative/ULP tolerances and performance budgets.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-numerical-tolerance-validator/result.json",
+        "validation/elmos-numerical-tolerance-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-162",
+      "name": "elmos-native-abi-behavior-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-native-abi-behavior-validator/SKILL.md",
+      "description": "Verify exported symbols, calling conventions, struct layout, callbacks, FFI ownership and binary interop across source/target builds.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-native-abi-behavior-validator/result.json",
+        "validation/elmos-native-abi-behavior-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-163",
+      "name": "elmos-memory-safety-regression-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-memory-safety-regression-validator/SKILL.md",
+      "description": "Run sanitizers, Miri/fuzzing/static analysis and leak/use-after-free/double-free fixtures for C/C++/Rust conversion routes.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-memory-safety-regression-validator/result.json",
+        "validation/elmos-memory-safety-regression-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-164",
+      "name": "elmos-safety-contract-proof-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-safety-contract-proof-validator/SKILL.md",
+      "description": "Check SPARK/GNATprove or equivalent contracts, assertions, ranges, WCET/deadline evidence and approved proof waivers for safety routes.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-safety-contract-proof-validator/result.json",
+        "validation/elmos-safety-contract-proof-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-165",
+      "name": "elmos-legacy-performance-capacity-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-legacy-performance-capacity-validator/SKILL.md",
+      "description": "Compare batch elapsed time, throughput, latency, memory, CPU, IO and peak-volume behavior against declared SLO/budget envelopes.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-legacy-performance-capacity-validator/result.json",
+        "validation/elmos-legacy-performance-capacity-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-166",
+      "name": "elmos-security-authority-equivalence-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-security-authority-equivalence-validator/SKILL.md",
+      "description": "Prove identities, roles, authorities, segregation-of-duties and denied operations are not broadened during migration.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-security-authority-equivalence-validator/result.json",
+        "validation/elmos-security-authority-equivalence-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-167",
+      "name": "elmos-dual-run-shadow-reconciliation-validator",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "validation",
+      "risk": "high",
+      "path": "agent-skills/runtime/elmos-dual-run-shadow-reconciliation-validator/SKILL.md",
+      "description": "Operate source and target in shadow/dual-run, normalize nondeterminism, reconcile outputs/state and quantify divergence before cutover.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-dual-run-shadow-reconciliation-validator/result.json",
+        "validation/elmos-dual-run-shadow-reconciliation-validator/evidence/"
+      ],
+      "readiness": "not-run"
+    },
+    {
+      "id": "ELMOS-POLY-168",
+      "name": "elmos-legacy-production-certification-gate",
+      "version": "1.0.0",
+      "batch": "I",
+      "layer": "certification",
+      "risk": "critical",
+      "path": "agent-skills/runtime/elmos-legacy-production-certification-gate/SKILL.md",
+      "description": "Issue E0-E5-style readiness only from fresh executed evidence, with explicit blockers, waivers, rollback readiness and route-specific residual risk.",
+      "dependencies": [
+        "elmos-legacy-p0-orchestrator"
+      ],
+      "outputs": [
+        "validation/elmos-legacy-production-certification-gate/result.json",
+        "validation/elmos-legacy-production-certification-gate/evidence/"
+      ],
+      "readiness": "not-run"
+    }
+  ]
+}

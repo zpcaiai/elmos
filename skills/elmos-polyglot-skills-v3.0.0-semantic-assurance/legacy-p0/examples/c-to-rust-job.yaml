@@ -1,0 +1,6 @@
+run_id: c-rust-001
+source: {technology: c, repository: /path/to/c}
+target: {technology: rust, profile: safe-native-library}
+strategy: module-by-module
+required_gates: [source-baseline, native-abi, memory-safety, performance, production-certification]
+readiness: not-run

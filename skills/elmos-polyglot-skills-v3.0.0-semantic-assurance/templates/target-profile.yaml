@@ -1,0 +1,31 @@
+schemaVersion: elmos.target-profile/v1
+profileId: REPLACE-ME
+technologies:
+  - id: csharp
+    version: "REPLACE-ME"
+    role: application
+architecture:
+  style: modular-monolith
+  modules: []
+  apiStyle: rest
+  dataAccess: explicit
+  deployment: containers
+semanticPolicies:
+  nullability: explicit
+  errorModel: typed-domain-errors
+  asyncCancellation: required
+  timezone: UTC-at-boundaries
+  decimals: decimal-not-float-for-money
+  collectionOrdering: explicit
+  serializationDefaults: forbidden
+nonFunctionalBudgets:
+  - metric: api.latency.p95
+    operator: lte
+    value: 250
+    unit: ms
+  - metric: error.rate
+    operator: lte
+    value: 0.005
+    unit: ratio
+decisions:
+  - architecture-decisions/0001-target-platform.md

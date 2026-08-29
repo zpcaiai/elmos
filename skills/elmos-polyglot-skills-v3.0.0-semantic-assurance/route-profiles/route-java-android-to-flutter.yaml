@@ -1,0 +1,56 @@
+schemaVersion: elmos.route-profile/v1
+kind: RouteProfile
+metadata:
+  id: route-java-android-to-flutter
+  version: 1.0.0
+  readiness: not-run
+  priority: reference
+spec:
+  source: java
+  target: flutter
+  mode: mobile-recomposition
+  intent: Recompose a Java Android application in Flutter while preserving journeys,
+    state, permissions, deep links, data, and native SDK behavior.
+  requiredSkills:
+  - elmos-polyglot-modernization-orchestrator
+  - elmos-adapter-java
+  - elmos-adapter-flutter
+  - elmos-differential-behavior-validator
+  - elmos-unified-evidence-packager
+  - elmos-production-readiness-gate
+  prerequisites:
+  - Android module/screen inventory
+  - Flutter target profile
+  - device and journey baselines
+  preservationPriorities:
+  - navigation/state
+  - permissions
+  - offline data
+  - deep links
+  - native SDKs
+  - accessibility
+  stages:
+  - Map activities/fragments/views to screens/widgets
+  - Select state architecture
+  - Generate data/network layers
+  - Wrap native SDKs with platform channels
+  - Rebuild UI by design tokens
+  - Run device/golden/journey validation
+  requiredValidation:
+  - clean source and target builds
+  - contract tests
+  - differential behavior tests
+  - data equivalence where state exists
+  - performance comparison against declared budgets
+  - security and supply-chain checks
+  - rollback or approved non-reversibility
+  automaticBlockers:
+  - missing immutable source baseline
+  - unresolved critical semantic loss
+  - unavailable required toolchain
+  - unapproved breaking public contract
+  - unverified irreversible data change
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/native-abi-ir.schema.json",
+  "title": "Native ABI IR",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "symbols",
+    "calling_conventions",
+    "layouts"
+  ],
+  "properties": {
+    "symbols": {},
+    "calling_conventions": {},
+    "layouts": {}
+  }
+}

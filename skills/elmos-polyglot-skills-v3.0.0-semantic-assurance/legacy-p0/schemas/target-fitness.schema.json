@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/target-fitness.schema.json",
+  "title": "Target Fitness",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "source",
+    "candidates",
+    "decision"
+  ],
+  "properties": {
+    "source": {},
+    "candidates": {},
+    "decision": {}
+  }
+}

@@ -1,0 +1,9 @@
+[project]
+name = "elmos-polyglot-skills"
+version = "1.0.0"
+description = "Validation and scaffolding toolkit for ELMOS polyglot Skills"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.unittest]
+start-directory = "tests"

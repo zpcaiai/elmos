@@ -1,0 +1,34 @@
+schemaVersion: elmos.project-generation-spec/v1
+projectId: REPLACE-ME
+name: REPLACE-ME
+businessObjective: REPLACE-ME
+personas: []
+features:
+  - id: F-001
+    statement: REPLACE-ME
+    acceptanceCriteria:
+      - REPLACE-ME
+    priority: must
+domain:
+  entities: []
+  invariants: []
+  workflows: []
+technology:
+  backend: java
+  frontend: react
+  mobile: flutter
+  database: REPLACE-ME
+nonFunctional:
+  availability: REPLACE-ME
+  latencyBudgets: []
+  securityClassification: confidential
+  dataResidency: REPLACE-ME
+delivery:
+  environments: [local, test, staging, production]
+  ciProvider: REPLACE-ME
+  infrastructureMode: REPLACE-ME
+policy:
+  placeholdersAllowedInProductionScope: false
+  disabledTestsAllowed: false
+  hardcodedSecretsAllowed: false
+readiness: not-run

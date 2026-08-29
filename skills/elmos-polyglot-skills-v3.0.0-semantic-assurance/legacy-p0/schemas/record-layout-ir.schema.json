@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/record-layout-ir.schema.json",
+  "title": "Record Layout IR",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "records",
+    "encodings",
+    "numeric_formats",
+    "provenance"
+  ],
+  "properties": {
+    "records": {},
+    "encodings": {},
+    "numeric_formats": {},
+    "provenance": {}
+  }
+}

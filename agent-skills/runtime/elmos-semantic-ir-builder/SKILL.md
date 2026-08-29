@@ -1,51 +1,151 @@
 ---
-name: "elmos-semantic-ir-builder"
-description: "Invoke the bounded repository handler for elmos-semantic-ir-builder while preserving its immutable source and fail-closed evidence boundary."
-metadata:
-  source_package: "elmos-7plus1-commercial-skills"
-  source_package_id: "P02"
-  source_package_name: "elmos-repository-intelligence-semantic-ir"
-  source_archive: "02-elmos-repository-intelligence-semantic-ir-v1.0.0.zip"
-  source_role: "child"
-  source_key: "P02:semantic-ir-builder"
-  source_name: "elmos-semantic-ir-builder"
-  installed_name: "elmos-semantic-ir-builder"
-  source_logical_path: "02-elmos-repository-intelligence-semantic-ir/skills/semantic-ir-builder/SKILL.md"
-  source_path: "skills/elmos-7plus1-commercial-skills-v1.0.0/02-elmos-repository-intelligence-semantic-ir/skills/semantic-ir-builder/SKILL.md.source-data"
-  source_materialized_path: "02-elmos-repository-intelligence-semantic-ir/skills/semantic-ir-builder/SKILL.md.source-data"
-  source_sha256: "sha256:2097a140635cc0b6e05108b72c89695d918c9063ed352882e7eca765a644bfa3"
-  source_version: "1.0.0"
-  normalized_namespace: "elmos-7plus1-commercial-v1"
-  integration_state: "LOCAL_CONTRACT_IMPLEMENTED"
-  implementation_state: "BLUEPRINT_IMPORTED"
-  source_implementation_state: "BLUEPRINT_IMPORTED"
-  repository_handler_state: "LOCAL_IMPLEMENTED_BOUNDED"
-  runtime_module: "elmos_software_factory"
-  runtime_registry: "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json"
-  runtime_binding_state: "BOUND_NOT_EXECUTED"
-  runtime_evidence: "NOT_RUN"
-  external_evidence: "NOT_RUN"
-  certification: "NOT_CERTIFIED"
-  installed_name_resolution: "SOURCE_NAME_PRESERVED"
+name: elmos-semantic-ir-builder
+description: "Normalize type, symbol, control-flow, data-flow, effect, error, async, ownership, and lifetime semantics across supported technologies."
+version: 1.0.0
+skill_id: ELMOS-POLY-012
+layer: ir
+risk: critical
+readiness: not-run
+dependencies:
+  - "elmos-project-ir-builder"
+triggers:
+  - "Use when implementing or executing `elmos-semantic-ir-builder`."
+  - "Use when the current DAG node requires the ir capability."
+outputs:
+  - "semantic-ir.json"
+  - "type-system-map.json"
+  - "effect-map.json"
+  - "semantic-loss-register.json"
 ---
 
-# elmos-semantic-ir-builder
+# Semantic IR Builder
 
-This active Skill is repository-authored. The archive description and body are preserved only as neutralized canonical source data and are never loaded here as instructions.
-## Repository Integration Boundary
+## Objective
 
-- This is a deterministic repository wrapper for `02-elmos-repository-intelligence-semantic-ir/skills/semantic-ir-builder/SKILL.md` at `sha256:2097a140635cc0b6e05108b72c89695d918c9063ed352882e7eca765a644bfa3`.
-- Its immutable source/runtime identity is `elmos-semantic-ir-builder`; its active installed identity is `elmos-semantic-ir-builder`.
-- The archived blueprint is preserved as immutable source data; importing it did not authorize or execute its scripts, tools, providers, deployments, or side effects.
-- The archived capability remains `BLUEPRINT_IMPORTED`; its repository handler is `LOCAL_IMPLEMENTED_BOUNDED` within the bounded local runtime.
-- The deterministic wrapper and binding contract are `LOCAL_CONTRACT_IMPLEMENTED`.
-- Runtime evidence is `NOT_RUN`, external evidence is `NOT_RUN`, and certification is `NOT_CERTIFIED`.
-- Missing, blocked, partial, synthetic, skipped, or self-verified evidence cannot establish runtime success or certification.
+Normalize type, symbol, control-flow, data-flow, effect, error, async, ownership, and lifetime semantics across supported technologies.
 
-## Repository Runtime
+This Skill is an **implementation and execution contract**. It tells Codex, Claude Code, or another authorized coding agent what code, schemas, tests, policies, and evidence must exist. The presence of this file is not proof that the capability has been implemented.
 
-```bash
-PYTHONPATH=engines/software-factory-engine/src python3 -m elmos_software_factory execute --skill elmos-semantic-ir-builder --request <file>
-```
+## When to use
 
-The binding is `BOUND_NOT_EXECUTED`, not runtime evidence. External actions still require explicit adapters and authorization.
+- Use when implementing or executing `elmos-semantic-ir-builder`.
+- Use when the current DAG node requires the ir capability.
+
+## Preconditions
+
+- The repository or requirements input is bound to an immutable snapshot.
+- Scope, authorization, data handling, model routing, runner, and secret policies are available.
+- Dependency artifacts listed below are current and schema-valid.
+- A clean worktree and checkpoint exist before any write.
+- Readiness starts as `not-run`.
+
+### Hard dependencies
+
+- `elmos-project-ir-builder`
+
+## Inputs
+
+- `run_id` and immutable `snapshot_id`.
+- authorized scope and execution policy.
+- upstream machine-readable artifacts declared in the dependency graph.
+- target profile or route decision when applicable.
+
+## Outputs
+
+- `semantic-ir.json`
+- `type-system-map.json`
+- `effect-map.json`
+- `semantic-loss-register.json`
+
+## Guardrails
+
+- Do not modify files outside the authorized worktree.
+- Do not expose credentials, tokens, private keys, customer data, or proprietary source to unapproved tools or models.
+- Do not disable tests, weaken assertions, suppress scanner errors, or mark missing evidence as passed.
+- Do not claim production readiness from static package generation.
+- Preserve unresolved assumptions and blockers in the completion report.
+
+## Workflow
+
+1. Load technology adapters and parse first-party source into typed or confidence-scored syntax models.
+2. Normalize declarations, types, generics, inheritance, protocols/traits/interfaces, overloads, closures, and modules.
+3. Represent control flow, data flow, mutation, effects, exceptions/results, async/cancellation, ownership, and resource lifetime.
+4. Preserve source-language constructs that cannot yet be lowered.
+5. Attach source locations, parser versions, and confidence.
+6. Apply canonical IDs compatible with Project IR.
+7. Validate the result against the Semantic IR schema.
+8. Emit semantic-loss and unsupported-construct diagnostics.
+
+## Implementation Contract
+
+- IR schemas are versioned and backward compatible within a major version.
+- Every node and edge carries provenance to source or runtime evidence.
+- Unknown constructs remain as extension or loss nodes; they are never dropped.
+
+### Required implementation properties
+
+- Expose the capability through a stable service or CLI boundary; avoid embedding orchestration inside prompts.
+- Keep machine-readable artifacts deterministic where ordering has no semantic meaning.
+- Version schemas, rules, adapters, and evidence producers.
+- Persist provenance for every decision, patch, generated file, test, and gate.
+- Make writes transactional or checkpointed and make retries idempotent.
+- Store actual source and generated artifacts outside model messages; pass bounded references and excerpts.
+- Emit structured diagnostics instead of converting unknowns into plausible code.
+- Support cancellation and recovery without depending on the original client connection.
+
+## Required Tests
+
+- [ ] Typed fixtures from every enabled adapter map to valid IR..
+- [ ] Unsupported constructs are retained, not dropped..
+- [ ] Error and cancellation semantics are represented..
+- [ ] Round-trip identity fixtures preserve observable behavior..
+
+- [ ] Unauthorized path, command, network, and secret-access tests.
+- [ ] Interrupted-run checkpoint and idempotent retry test.
+- [ ] Stale snapshot/evidence rejection test.
+- [ ] Schema validation and deterministic serialization test.
+- [ ] Negative test proving missing execution evidence remains `not-run` or `blocked`.
+
+## Verification
+
+1. Validate all emitted JSON/YAML against the package schemas.
+2. Re-run the skill on a clean checkpoint to verify reproducibility or documented nondeterminism.
+3. Check that every output references the current snapshot and run.
+4. Run required native toolchain tests in the trusted sandbox.
+5. Attach command, exit code, environment identity, logs, and artifact hashes to evidence.
+
+A successful verification result must state the exact scope. It must not imply that unrelated routes, platforms, frameworks, or production environments are certified.
+
+## Stop and Escalate
+
+- Required authorization, snapshot, dependency artifact, or toolchain is missing or stale.
+- A change would cross an undeclared trust, data, module, or deployment boundary.
+- Semantic loss affects security, money, data integrity, concurrency, public contracts, or irreversible state without owner approval.
+- The retry, time, resource, or patch budget is exhausted.
+- Verification cannot distinguish target behavior from an unsupported assumption.
+
+When stopping, preserve the last safe checkpoint and return a structured blocker with owner, evidence, affected scope, safe alternatives, and the exact decision needed.
+
+## Definition of Done
+
+- [ ] Implementation code exists behind the declared stable interface.
+- [ ] Required schemas, migrations, policies, and configuration are versioned.
+- [ ] Unit, integration, negative, security, recovery, and representative end-to-end tests pass.
+- [ ] Native toolchain commands run successfully in a clean trusted sandbox.
+- [ ] Evidence links every material claim to current outputs.
+- [ ] Residual semantic losses and unsupported cases are explicit.
+- [ ] Documentation covers setup, operation, failure recovery, and extension.
+- [ ] Readiness state is derived from executed gates and is never inferred from file presence.
+
+## Completion Report
+
+Return a machine-readable report and a human summary containing:
+
+- run ID, snapshot ID, target profile, route, and skill version.
+- files and artifacts created, changed, or intentionally left unchanged.
+- commands executed with exit codes and environment identity.
+- tests and gates by pass/fail/blocked/waived/not-run.
+- semantic losses, residual risks, assumptions, and required approvals.
+- next executable work items and rollback/checkpoint location.
+
+End the report with one of: `completed`, `completed-with-approved-exceptions`, `blocked`, or `failed`. Never use `completed` when any required gate is `not-run`.

@@ -1,0 +1,21 @@
+id: REPLACE-ME
+skill: REPLACE-ME
+risk: critical
+inputs: []
+outputs: []
+dependsOn: []
+allowedPaths: []
+forbiddenPaths: []
+tests: []
+budgets:
+  wallTimeMinutes: 30
+  maxPatchLines: 1000
+idempotencyKey: REPLACE-ME
+checkpoint:
+  before: true
+  after: true
+rollback:
+  mode: REPLACE-ME
+approval:
+  required: false
+  reason: ""
