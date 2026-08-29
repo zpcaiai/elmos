@@ -224,6 +224,35 @@ def main(argv: Sequence[str] | None = None) -> int:
     cache_sub.add_parser("inspect", help="Inspect multi-tier CAS cache metrics and Bloom filter stats", parents=[common_parser])
     cache_sub.add_parser("purge", help="Purge L1 in-memory CAS cache", parents=[common_parser])
 
+    # Command: sql
+    sql_p = subparsers.add_parser("sql", help="Enterprise SQL & ChinaDB dialect transpiler operations", parents=[common_parser])
+    sql_sub = sql_p.add_subparsers(dest="sql_command", help="SQL actions")
+    sql_sub.add_parser("dialects", help="List supported database dialects and ChinaDB targets", parents=[common_parser])
+    sql_trans_p = sql_sub.add_parser("transpile", help="Transpile SQL across dialects", parents=[common_parser])
+    sql_trans_p.add_argument("--src-dialect", default="oracle", help="Source dialect (e.g. oracle, sqlserver, mysql)")
+    sql_trans_p.add_argument("--tgt-dialect", default="postgres", help="Target dialect (e.g. postgres, dm8, tidb, kingbasees)")
+    sql_trans_p.add_argument("--sql", default="SELECT NVL(col, 'DEFAULT'), SYSDATE FROM t", help="SQL query")
+    sql_diff_p = sql_sub.add_parser("diff-ddl", help="Compare two DDL schema definitions", parents=[common_parser])
+    sql_diff_p.add_argument("--source-ddl", default="CREATE TABLE orders (id INT, amount DECIMAL);", help="Source DDL")
+    sql_diff_p.add_argument("--target-ddl", default="CREATE TABLE orders (id INT, amount DECIMAL, tenant_id VARCHAR(64));", help="Target DDL")
+
+    # Command: security
+    sec_p = subparsers.add_parser("security", help="Enterprise Zero-Trust IAM & Security Policy Transpiler", parents=[common_parser])
+    sec_sub = sec_p.add_subparsers(dest="security_command", help="Security actions")
+    sec_trans_p = sec_sub.add_parser("transpile-policy", help="Transpile Spring Security / RBAC to OPA Rego & IAM", parents=[common_parser])
+    sec_trans_p.add_argument("--framework", default="spring-security", choices=["spring-security", "shiro"], help="Source security framework")
+    sec_trans_p.add_argument("--rule", default="hasRole('ROLE_ADMIN') and hasAuthority('READ_FINANCE')", help="Security rule or annotation")
+    sec_chk_p = sec_sub.add_parser("check-non-escalation", help="Verify SMT non-escalation invariants", parents=[common_parser])
+    sec_chk_p.add_argument("--source-rule", default="hasRole('ROLE_ADMIN')", help="Source security rule")
+    sec_chk_p.add_argument("--target-rego", default="package elmos.authz\ndefault allow = false\nallow { input.user.roles[_] == 'ADMIN' }", help="Target Rego policy")
+
+    # Command: industrial
+    ind_p = subparsers.add_parser("industrial", help="Industrial IoT & Edge protocol semantic transformer", parents=[common_parser])
+    ind_sub = ind_p.add_subparsers(dest="industrial_command", help="Industrial actions")
+    ind_map_p = ind_sub.add_parser("map-tags", help="Map Modbus registers to OPC-UA, CloudEvents, and ROS2", parents=[common_parser])
+    ind_map_p.add_argument("--tags", default="40001:FLOAT32:MotorTemperature:celsius;40003:UINT16:RPM:rpm", help="Modbus tag spec")
+    ind_map_p.add_argument("--device-id", default="RobotArm_01", help="Industrial device identifier")
+
 
 
     # Command: foundry
@@ -532,6 +561,65 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "estimated_cost_usd": cost_usd,
                 "estimated_cost_cny": cost_cny,
                 "slsa_verification_included": True,
+            }
+
+    elif parsed.command == "sql":
+        from elmos_sql_dialect.sql_transpiler_gateway import (
+            SqlTranspilerGateway,
+            get_supported_dialects,
+        )
+        gw = SqlTranspilerGateway()
+        act = parsed.sql_command or "dialects"
+        if act == "dialects":
+            result_data = get_supported_dialects()
+        elif act == "transpile":
+            res = gw.transpile(parsed.sql, parsed.src_dialect, parsed.tgt_dialect)
+            result_data = {
+                "source_dialect": res.source_dialect,
+                "target_dialect": res.target_dialect,
+                "source_sql": res.source_sql,
+                "target_sql": res.target_sql,
+                "transformed_constructs": res.transformed_constructs,
+                "warnings": res.warnings,
+                "semantic_equivalence": res.semantic_equivalence,
+                "merkle_receipt": res.merkle_receipt,
+            }
+        elif act == "diff-ddl":
+            result_data = gw.diff_schemas(parsed.source_ddl, parsed.target_ddl)
+
+    elif parsed.command == "security":
+        from elmos_security_engine.iam_policy_transpiler import IamPolicyTranspiler
+        sec_transpiler = IamPolicyTranspiler()
+        act = parsed.security_command or "transpile-policy"
+        if act == "transpile-policy":
+            res = sec_transpiler.transpile_spring_security(parsed.rule)
+            result_data = {
+                "source_framework": res.source_framework,
+                "source_rule": res.source_rule,
+                "target_format": res.target_format,
+                "rego_policy": res.rego_policy,
+                "iam_statement": res.iam_statement,
+                "smt_non_escalation_property": res.smt_non_escalation_property,
+                "verified_invariants": res.verified_invariants,
+                "merkle_receipt": res.merkle_receipt,
+            }
+        elif act == "check-non-escalation":
+            result_data = sec_transpiler.verify_non_escalation(parsed.source_rule, parsed.target_rego)
+
+    elif parsed.command == "industrial":
+        from elmos_industrial_engine.protocol_mapper import IndustrialProtocolMapper
+        ind_mapper = IndustrialProtocolMapper()
+        act = parsed.industrial_command or "map-tags"
+        if act == "map-tags":
+            res = ind_mapper.map_modbus_to_opcua_and_cloud(parsed.tags, device_id=parsed.device_id)
+            result_data = {
+                "source_protocol": res.source_protocol,
+                "target_protocol": res.target_protocol,
+                "mapped_tags": res.mapped_tags,
+                "cloudevents_schema": res.cloudevents_schema,
+                "opcua_nodes": res.opcua_nodes,
+                "ros2_msg_definition": res.ros2_msg_definition,
+                "merkle_receipt": res.merkle_receipt,
             }
 
     elif parsed.command == "pipeline":

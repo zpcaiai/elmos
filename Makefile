@@ -193,7 +193,7 @@ polyglot-semantic-assurance-skills:
 
 .PHONY: unified-cli-gateway
 unified-cli-gateway:
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/unified-cli-gateway/src:engines/polyglot-semantic-compiler-engine/src:engines/commercial-capability-expansion-engine/src:engines/semantic-assurance-engine/src:engines/knowledge-skill-model-foundry-engine/src:engines/build-cache-engine/src:engines/formal-assurance-engine/src:engines/autonomous-qa-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest tests/unified-cli-gateway/ -v
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/unified-cli-gateway/src:engines/polyglot-semantic-compiler-engine/src:engines/commercial-capability-expansion-engine/src:engines/semantic-assurance-engine/src:engines/knowledge-skill-model-foundry-engine/src:engines/build-cache-engine/src:engines/formal-assurance-engine/src:engines/autonomous-qa-engine/src:engines/sql-dialect-engine/src:engines/security-compliance-engine/src:engines/edge-iot-industrial-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest tests/unified-cli-gateway/ -v
 
 
 
