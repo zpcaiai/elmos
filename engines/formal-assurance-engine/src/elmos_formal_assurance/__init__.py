@@ -32,6 +32,13 @@ from .observability import FormalObservabilityService, OtlpHttpJsonExporter
 from .postgres import Postgres17MigrationManager
 from .registry import SkillRegistry
 from .runtime import FormalAssuranceRuntime, RuntimeConfig
+from .lean_dafny_bridge import (
+    Lean4Generator,
+    DafnyGenerator,
+    FormalProofKernelBridge,
+    get_formal_proof_bridge,
+    generate_lean4_proof,
+)
 
 __version__ = "1.0.0"
 
@@ -75,4 +82,10 @@ __all__ = [
     "execution_binding_digest",
     "load_toolchain_registry",
     "validate_result",
+    "Lean4Generator",
+    "DafnyGenerator",
+    "FormalProofKernelBridge",
+    "get_formal_proof_bridge",
+    "generate_lean4_proof",
 ]
+

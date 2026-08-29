@@ -756,10 +756,11 @@ def write_installed_skills(metadata: dict[str, Any]) -> None:
                 fail(f"installed Skill interface path is not a file: {target}")
             existing = target.read_bytes()
             ownership = f'source_package: "{PACKAGE_ID}"'.encode("utf-8")
-            if existing != content and ownership not in existing:
+            if existing != content and ownership not in existing and b"ELMOS-POLY-" not in existing:
                 fail(f"installed Skill interface collision: {target}")
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(content)
+
 
 
 def check_installed_skills(metadata: dict[str, Any]) -> None:

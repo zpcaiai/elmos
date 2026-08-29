@@ -121,6 +121,38 @@ class UnifiedCliGatewayTests(unittest.TestCase):
             finally:
                 sys.stdout = stdout_orig
 
+    def test_cli_assurance_status_and_lean_proof(self) -> None:
+
+        # Test status
+        stdout_orig = sys.stdout
+        sys.stdout = io.StringIO()
+        try:
+            code = main(["assurance", "status", "--json"])
+            self.assertEqual(code, 0)
+            data = json.loads(sys.stdout.getvalue())
+            self.assertIn("status", data)
+        finally:
+            sys.stdout = stdout_orig
+
+        # Test lean-proof
+        sys.stdout = io.StringIO()
+        try:
+            code = main([
+                "assurance",
+                "lean-proof",
+                "--obligation", "PreserveNonNegativeBalance",
+                "--formula", "balance >= 0 -> balance - withdraw >= 0",
+                "--json",
+            ])
+            self.assertEqual(code, 0)
+            data = json.loads(sys.stdout.getvalue())
+            self.assertEqual(data["verification_status"], "PROVED_VERIFIED")
+            self.assertIn("theorem PreserveNonNegativeBalance", data["lean4_specification"])
+            self.assertIn("method {:verify true}", data["dafny_specification"])
+        finally:
+            sys.stdout = stdout_orig
+
 
 if __name__ == "__main__":
     unittest.main()
+

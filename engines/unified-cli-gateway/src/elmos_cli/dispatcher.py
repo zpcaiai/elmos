@@ -150,6 +150,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     assurance_sub = assurance_parser.add_subparsers(dest="assurance_command", help="Assurance actions")
     assurance_sub.add_parser("status", help="Show semantic assurance status", parents=[common_parser])
     assurance_sub.add_parser("layers", help="List formal assurance layers (Batches J-R)", parents=[common_parser])
+    lean_p = assurance_sub.add_parser("lean-proof", help="Synthesize Lean 4 and Dafny formal proofs", parents=[common_parser])
+    lean_p.add_argument("--obligation", default="PreserveNonNegativeBalance", help="Obligation theorem name")
+    lean_p.add_argument("--formula", default="balance >= 0 -> balance - withdraw >= 0", help="Logical formula or predicate")
+    lean_p.add_argument("--src-lang", default="java", help="Source language")
+    lean_p.add_argument("--tgt-lang", default="csharp", help="Target language")
+
+    # Command: lsp
+    lsp_p = subparsers.add_parser("lsp", help="Run Language Server Protocol daemon for IDE integration", parents=[common_parser])
+    lsp_p.add_argument("--stdio", action="store_true", default=True, help="Run LSP over standard I/O (default)")
 
     # Command: foundry
     foundry_parser = subparsers.add_parser("foundry", help="Knowledge-Skill-Model Foundry operations", parents=[common_parser])
@@ -174,6 +183,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     pipe_p.add_argument("--fuzz-cases", type=int, default=25, help="Number of fuzzing cases")
     pipe_p.add_argument("--budget-limit", type=float, default=50.0, help="Budget limit in USD")
     pipe_p.add_argument("--no-cache", action="store_true", help="Disable Action Cache")
+
 
     parsed = parser.parse_args(args_list)
 
@@ -216,8 +226,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"Initialized configuration at {target.resolve()}")
             return 0
 
+    elif parsed.command == "lsp":
+        from .lsp_server import run_lsp_server
+        return run_lsp_server(stdio=parsed.stdio)
+
     elif parsed.command == "status":
         result_data = _get_global_status()
+
 
     elif parsed.command == "polyglot":
         try:
@@ -263,11 +278,25 @@ def main(argv: Sequence[str] | None = None) -> int:
             result_data = {"status": "ACTIVE", "kernels_count": 8, "skills_count": 85}
 
     elif parsed.command == "assurance":
-        try:
-            from elmos_semantic_assurance.service import get_assurance_status
-            result_data = get_assurance_status()
-        except ImportError:
-            result_data = {"status": "ACTIVE", "batches": 9, "skills": 132, "formal_verifiers": ["SMT-Z3", "CVC5", "Alloy"]}
+        act = parsed.assurance_command or "status"
+        if act == "lean-proof":
+            try:
+                from elmos_formal_assurance.lean_dafny_bridge import generate_lean4_proof
+                result_data = generate_lean4_proof(
+                    obligation_name=parsed.obligation,
+                    formula=parsed.formula,
+                    source_lang=parsed.src_lang,
+                    target_lang=parsed.tgt_lang,
+                )
+            except ImportError as e:
+                result_data = {"status": "ERROR", "message": f"Formal assurance engine error: {e}"}
+        else:
+            try:
+                from elmos_semantic_assurance.service import get_assurance_status
+                result_data = get_assurance_status()
+            except ImportError:
+                result_data = {"status": "ACTIVE", "batches": 9, "skills": 132, "formal_verifiers": ["SMT-Z3", "CVC5", "Alloy"]}
+
 
     elif parsed.command == "foundry":
         try:
