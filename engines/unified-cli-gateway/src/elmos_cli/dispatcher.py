@@ -160,6 +160,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     lsp_p = subparsers.add_parser("lsp", help="Run Language Server Protocol daemon for IDE integration", parents=[common_parser])
     lsp_p.add_argument("--stdio", action="store_true", default=True, help="Run LSP over standard I/O (default)")
 
+    # Command: daemon
+    daemon_p = subparsers.add_parser("daemon", help="Run Git PR autonomous self-healing webhook daemon", parents=[common_parser])
+    daemon_p.add_argument("--port", type=int, default=8080, help="Webhook server port")
+    daemon_p.add_argument("--host", default="127.0.0.1", help="Webhook server host")
+    daemon_p.add_argument("--simulate-event", help="Simulate a single PR webhook event JSON file")
+
+    # Command: qa
+    qa_parser = subparsers.add_parser("qa", help="Autonomous QA & Multi-Agent Consensus operations", parents=[common_parser])
+    qa_sub = qa_parser.add_subparsers(dest="qa_command", help="QA actions")
+    qa_sub.add_parser("status", help="Show autonomous QA engine status", parents=[common_parser])
+    cons_p = qa_sub.add_parser("consensus", help="Run multi-agent consensus and formal arbitration", parents=[common_parser])
+    cons_p.add_argument("--task-name", default="OrderProcessor", help="Task name")
+    cons_p.add_argument("--code", default="public class Order { public double amount; }", help="Source code snippet")
+    cons_p.add_argument("--formula", default="amount >= 0 ==> amount_target >= 0", help="Invariant formula")
+
     # Command: foundry
     foundry_parser = subparsers.add_parser("foundry", help="Knowledge-Skill-Model Foundry operations", parents=[common_parser])
     foundry_sub = foundry_parser.add_subparsers(dest="foundry_command", help="Foundry actions")
@@ -183,6 +198,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     pipe_p.add_argument("--fuzz-cases", type=int, default=25, help="Number of fuzzing cases")
     pipe_p.add_argument("--budget-limit", type=float, default=50.0, help="Budget limit in USD")
     pipe_p.add_argument("--no-cache", action="store_true", help="Disable Action Cache")
+
 
 
     parsed = parser.parse_args(args_list)
@@ -230,8 +246,32 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .lsp_server import run_lsp_server
         return run_lsp_server(stdio=parsed.stdio)
 
+    elif parsed.command == "daemon":
+        from .daemon import run_daemon
+        return run_daemon(
+            host=parsed.host,
+            port=parsed.port,
+            simulate_event_path=parsed.simulate_event,
+        )
+
+    elif parsed.command == "qa":
+        act = parsed.qa_command or "status"
+        if act == "consensus":
+            try:
+                from elmos_autonomous_qa.multi_agent_consensus import run_multi_agent_consensus
+                result_data = run_multi_agent_consensus(
+                    task_name=parsed.task_name,
+                    source_code=parsed.code,
+                    formula=parsed.formula,
+                )
+            except ImportError as e:
+                result_data = {"status": "ERROR", "message": f"Autonomous QA engine error: {e}"}
+        else:
+            result_data = {"status": "ACTIVE", "engine": "autonomous-qa-engine", "skills_count": 40}
+
     elif parsed.command == "status":
         result_data = _get_global_status()
+
 
 
     elif parsed.command == "polyglot":

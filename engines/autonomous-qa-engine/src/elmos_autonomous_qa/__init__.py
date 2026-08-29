@@ -57,6 +57,13 @@ from .skill_runtime import (
     dispatch_skill,
     phase_execution_plan,
 )
+from .multi_agent_consensus import (
+    AgentProfile,
+    AgentProposal,
+    MultiAgentConsensusArbitrator,
+    get_consensus_arbitrator,
+    run_multi_agent_consensus,
+)
 
 __all__ = [
     "ArtifactError",
@@ -109,4 +116,10 @@ __all__ = [
     "sha256_bytes",
     "sha256_file",
     "validate_unique_paths",
+    "AgentProfile",
+    "AgentProposal",
+    "MultiAgentConsensusArbitrator",
+    "get_consensus_arbitrator",
+    "run_multi_agent_consensus",
 ]
+

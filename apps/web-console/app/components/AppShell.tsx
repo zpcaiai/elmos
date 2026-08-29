@@ -26,10 +26,11 @@ const navigation: Array<{
   { href: "/migration", label: "迁移工坊", enLabel: "Migration studio", hint: "Migration", icon: "route" },
   { href: "/proof-loop", label: "现代化证据闭环", enLabel: "Modernization proof loop", hint: "B105–B108", icon: "shield" },
   { href: "/pricing", label: "套餐与用量", enLabel: "Plans and usage", hint: "Plans & usage", icon: "layers" },
-  { href: "/commercialization", label: "商业化控制面", enLabel: "Commercial control plane", hint: "Control plane", icon: "shield" },
+  { href: "/playground", label: "AST 证明沙箱", enLabel: "Code & Proof Sandbox", hint: "Playground", icon: "spark" },
   { href: "/skills", label: "Skills 与验证", enLabel: "Skills and qualification", hint: "Qualification", icon: "test" },
   { href: "/admin", label: "运营管理端", enLabel: "Operations admin", hint: "Operations", icon: "settings" },
 ];
+
 
 const mobileNavigation = navigation.filter((item) =>
   ["/", "/spring", "/translation", "/intake", "/generation", "/frontend", "/skills"].includes(item.href),

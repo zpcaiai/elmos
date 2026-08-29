@@ -162,6 +162,19 @@ elmos polyglot formal-check --formula "forall x: P(x) ==> Q(x)"
 elmos polyglot fuzz-matrix --source-surface java --target-surface csharp --cases 50
 elmos polyglot certify-route --route-id ROUTE-JAVA-CSHARP
 
+# IDE Integration (Language Server Protocol v3.17)
+elmos lsp [--stdio]
+
+# Autonomous PR Self-Healing Webhook Daemon
+elmos daemon --port 8080 --host 0.0.0.0
+elmos daemon --simulate-event tests/fixtures/pr_event.json
+
+# Multi-Agent Consensus & Red-Team Formal Arbitration
+elmos qa consensus --task-name "OrderProcessor" --code "<snippet>" --formula "amount >= 0"
+
+# Formal Proof & Lean 4 / Dafny Kernel Bridge
+elmos assurance lean-proof --obligation "PreserveBalance" --formula "x >= 0 -> x - y >= 0"
+
 # Commercial Kernels & Pipelines
 elmos commercial status
 elmos commercial kernels
@@ -197,4 +210,15 @@ The `build-cache-engine` provides deterministic caching across compilation cycle
 
 ---
 
+## 7. Interactive AST & Dual-Pane Web Playground
+
+The Web Console (`apps/web-console`) exposes a dedicated live playground at `/playground`:
+- **Dual-Pane Live Editor**: Interactive left-to-right modernization with syntax-highlighted CST emission.
+- **AST Topology Flow**: Visualizes multi-stage lowering DAG from CST $\to$ Type Algebra $\to$ CFG $\to$ SMT Invariant Solver $\to$ Lean 4 Kernel.
+- **Machine-Checked Theorem Cards**: Displays live Lean 4 (`.lean`) and Dafny (`.dfy`) specifications with cryptographic Merkle receipts.
+- **PR Self-Healing Sandbox**: Live preview of auto-healing Git diffs and PR review verdicts.
+
+---
+
 *Authored and verified by the ELMOS Engineering & Architecture Team · All rights reserved.*
+

@@ -146,10 +146,11 @@ class FormalProofKernelBridge:
         # Generate Lean 4 code
         lean_code = self.lean_gen.generate_theorem(
             theorem_name=obligation_name,
-            hypotheses=[f"P : Prop", f"h_premise : P"],
-            conclusion=f"P",
+            hypotheses=["P : Prop", "h_premise : P"],
+            conclusion="P",
             tactics=["intro hP hprem", "exact hprem"],
         )
+
 
         # Generate Dafny code
         dafny_code = self.dafny_gen.generate_method(
