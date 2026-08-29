@@ -632,9 +632,9 @@
       "sha256": "sha256:38f7e13c3c6162d6535e91c606842e27b2cb4a03f3b2d1406168af567fece637"
     },
     {
-      "byte_size": 2237,
+      "byte_size": 2752,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/__init__.py",
-      "sha256": "sha256:4eaebc15fafee141e5a01f5ce224ff19de224f94a7cba25e82fab94bc18e0ce5"
+      "sha256": "sha256:c790b8630a018b653db90aff64077e28fc039f8db64f0d3179772b052714303f"
     },
     {
       "byte_size": 25033,
@@ -705,6 +705,16 @@
       "byte_size": 110588,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/handlers.py",
       "sha256": "sha256:8a52541694f3d5da6b0c0d1baedfb16c2ff6e668a7ebbb471d60f66f9fb9c700"
+    },
+    {
+      "byte_size": 4562,
+      "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/hermetic_environment_builder.py",
+      "sha256": "sha256:855356c6c69f652dd17d91bf5a8d73ba628874ecf09c871ec4a26eee80b95ac8"
+    },
+    {
+      "byte_size": 7290,
+      "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/lean_dafny_bridge.py",
+      "sha256": "sha256:6f3019b1c2af60401285e5af3202a41c372352bdab80d6705fe9ede0a735ab9f"
     },
     {
       "byte_size": 7672,
@@ -802,9 +812,9 @@
       "sha256": "sha256:84b3e5aa12f530e4955cceacfaaf91bc8c75e31d02bc7a43593a38abb186cb52"
     },
     {
-      "byte_size": 41907,
+      "byte_size": 41943,
       "path": "tooling/integrate_formal_assurance_kernel.py",
-      "sha256": "sha256:000de703202851650f335cb79980a3e8c96acd992140df6471ee7b06efb41f99"
+      "sha256": "sha256:97b9a34d04921627b5f08fc15d34b94beb66992b8137789da8efa036459c37ca"
     }
   ],
   "format": "elmos-formal-implementation-manifest/v1",

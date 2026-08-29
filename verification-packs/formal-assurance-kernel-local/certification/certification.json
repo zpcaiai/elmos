@@ -2,11 +2,11 @@
   "approved_at": null,
   "evidence_refs": [],
   "exact_scope": {
-    "environment_digest": "sha256:74a18f60878588efb2d3ef924febb383f28d8557dd4f7d872d85e2a5a06c1b39",
+    "environment_digest": "sha256:1837faf402fcf23f0bad19a6633df0cad79390a787b01d16975fd633e1742dff",
     "migration_route": "formal-assurance-kernel-local-runtime",
     "risk_tier": "P1",
     "source_artifact_digest": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
-    "target_artifact_digest": "sha256:cc0bda32d32fcbde167844dcf5d550e84ea6a86c4c983f7ab1d7cff7c1473727",
+    "target_artifact_digest": "sha256:07e49e567c37e36be756b031ccb8f9779b197482a05bcd468f0e56c360660d9a",
     "workload_key": "formal-assurance-kernel-60-skills"
   },
   "limitations": [
