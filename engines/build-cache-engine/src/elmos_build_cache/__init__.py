@@ -20,10 +20,24 @@ Layering follows the capability DAG declared by the
 
 from __future__ import annotations
 
-__all__ = ["__version__", "PACKAGE_VERSION", "SCHEMA_VERSION"]
+from .cas_cache_manager import (
+    CasCacheEntry,
+    MultiTierCasCacheManager,
+    SimpleBloomFilter,
+    get_cas_manager,
+)
+
+__all__ = [
+    "__version__",
+    "PACKAGE_VERSION",
+    "SCHEMA_VERSION",
+    "CasCacheEntry",
+    "MultiTierCasCacheManager",
+    "SimpleBloomFilter",
+    "get_cas_manager",
+]
 
 __version__ = "1.2.0"
 PACKAGE_VERSION = "1.2.0"
-# Existing v1.0/v1.1 manifests retain their own schema versions; this is the
-# current package-level contract and the new parity contracts are v1.2.0.
 SCHEMA_VERSION = "1.2.0"
+

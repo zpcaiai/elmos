@@ -70,6 +70,12 @@ from .ebpf_sandbox_runner import (
     SeccompFilterPolicy,
     inspect_sandbox_policy,
 )
+from .mutation_engine import (
+    Mutant,
+    MutationAnalysisReport,
+    MutationTestingEngine,
+    run_mutation_testing,
+)
 
 __all__ = [
     "ArtifactError",
@@ -131,6 +137,11 @@ __all__ = [
     "SandboxIsolationProfile",
     "SeccompFilterPolicy",
     "inspect_sandbox_policy",
+    "Mutant",
+    "MutationAnalysisReport",
+    "MutationTestingEngine",
+    "run_mutation_testing",
 ]
+
 
 

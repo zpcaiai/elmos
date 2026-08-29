@@ -147,6 +147,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     bisect_p.add_argument("--good", help="Known good commit/rev")
     bisect_p.add_argument("--bad", help="Known bad commit/rev")
 
+    apidiff_p = polyglot_sub.add_parser("api-diff", help="API contract and backward-compatibility drift diffing", parents=[common_parser])
+    apidiff_p.add_argument("--source-spec", help="Source specification JSON or path")
+    apidiff_p.add_argument("--target-spec", help="Target specification JSON or path")
+
     # Command: commercial
     commercial_parser = subparsers.add_parser("commercial", help="Commercial Capability Expansion operations", parents=[common_parser])
     commercial_sub = commercial_parser.add_subparsers(dest="commercial_command", help="Commercial actions")
@@ -190,6 +194,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     cons_p.add_argument("--task-name", default="OrderProcessor", help="Task name")
     cons_p.add_argument("--code", default="public class Order { public double amount; }", help="Source code snippet")
     cons_p.add_argument("--formula", default="amount >= 0 ==> amount_target >= 0", help="Invariant formula")
+    mut_p = qa_sub.add_parser("mutate", help="Mutation testing and test oracle adequacy analyzer", parents=[common_parser])
+    mut_p.add_argument("--code", default="public int calculateDiscount(int price) { if (price > 100) return price - 20; return price; }", help="Source code snippet")
 
     # Command: sandbox
     sandbox_p = subparsers.add_parser("sandbox", help="eBPF and Seccomp-BPF security sandbox operations", parents=[common_parser])
@@ -211,6 +217,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     otlp_p = telemetry_sub.add_parser("export-otlp", help="Export OTLP JSON trace envelope", parents=[common_parser])
     otlp_p.add_argument("--trace-id", help="Trace ID filter")
     telemetry_sub.add_parser("metrics", help="Export Prometheus metrics exposition", parents=[common_parser])
+
+    # Command: cache
+    cache_p = subparsers.add_parser("cache", help="Multi-tier CAS distributed action cache operations", parents=[common_parser])
+    cache_sub = cache_p.add_subparsers(dest="cache_command", help="Cache actions")
+    cache_sub.add_parser("inspect", help="Inspect multi-tier CAS cache metrics and Bloom filter stats", parents=[common_parser])
+    cache_sub.add_parser("purge", help="Purge L1 in-memory CAS cache", parents=[common_parser])
+
 
 
     # Command: foundry
@@ -305,13 +318,29 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
             except ImportError as e:
                 result_data = {"status": "ERROR", "message": f"Autonomous QA engine error: {e}"}
+        elif act == "mutate":
+            try:
+                from elmos_autonomous_qa.mutation_engine import run_mutation_testing
+                result_data = run_mutation_testing(source_code=parsed.code)
+            except ImportError as e:
+                result_data = {"status": "ERROR", "message": f"Autonomous QA engine error: {e}"}
         else:
             result_data = {"status": "ACTIVE", "engine": "autonomous-qa-engine", "skills_count": 40}
 
+    elif parsed.command == "cache":
+        act = parsed.cache_command or "inspect"
+        try:
+            from elmos_build_cache.cas_cache_manager import get_cas_manager
+            mgr = get_cas_manager()
+            if act == "purge":
+                result_data = mgr.purge()
+            else:
+                result_data = mgr.inspect_stats()
+        except ImportError as e:
+            result_data = {"status": "ERROR", "message": f"Build cache engine error: {e}"}
+
     elif parsed.command == "status":
         result_data = _get_global_status()
-
-
 
     elif parsed.command == "polyglot":
         try:
@@ -349,8 +378,27 @@ def main(argv: Sequence[str] | None = None) -> int:
                     good_rev=getattr(parsed, "good", None),
                     bad_rev=getattr(parsed, "bad", None),
                 )
+            elif act == "api-diff":
+                import os
+                from elmos_polyglot_compiler.api_contract_diff import run_api_contract_diff
+                src_data = None
+                tgt_data = None
+                if getattr(parsed, "source_spec", None):
+                    if os.path.exists(parsed.source_spec):
+                        with open(parsed.source_spec, "r", encoding="utf-8") as f:
+                            src_data = json.load(f)
+                    else:
+                        src_data = json.loads(parsed.source_spec)
+                if getattr(parsed, "target_spec", None):
+                    if os.path.exists(parsed.target_spec):
+                        with open(parsed.target_spec, "r", encoding="utf-8") as f:
+                            tgt_data = json.load(f)
+                    else:
+                        tgt_data = json.loads(parsed.target_spec)
+                result_data = run_api_contract_diff(source_spec=src_data, target_spec=tgt_data)
         except ImportError as e:
             result_data = {"error": f"Polyglot engine import failure: {e}"}
+
 
     elif parsed.command == "sandbox":
         act = parsed.sandbox_command or "inspect-policy"

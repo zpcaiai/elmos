@@ -28,6 +28,12 @@ from .regression_bisector import (
     SemanticRegressionBisector,
     run_semantic_bisect,
 )
+from .api_contract_diff import (
+    ApiContractDiffer,
+    ContractDiffItem,
+    ContractDiffReport,
+    run_api_contract_diff,
+)
 
 __version__ = "3.0.0"
 __all__ = [
@@ -53,6 +59,11 @@ __all__ = [
     "BisectStep",
     "SemanticRegressionBisector",
     "run_semantic_bisect",
+    "ApiContractDiffer",
+    "ContractDiffItem",
+    "ContractDiffReport",
+    "run_api_contract_diff",
 ]
+
 
 

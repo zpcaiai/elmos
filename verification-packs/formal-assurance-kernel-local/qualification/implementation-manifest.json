@@ -632,9 +632,9 @@
       "sha256": "sha256:38f7e13c3c6162d6535e91c606842e27b2cb4a03f3b2d1406168af567fece637"
     },
     {
-      "byte_size": 2752,
+      "byte_size": 3000,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/__init__.py",
-      "sha256": "sha256:c790b8630a018b653db90aff64077e28fc039f8db64f0d3179772b052714303f"
+      "sha256": "sha256:94cd8ddeee6be4627663a6de2576976c9a0a67870574d253116cdf6c868ef31c"
     },
     {
       "byte_size": 25033,
@@ -745,6 +745,11 @@
       "byte_size": 27159,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/runtime.py",
       "sha256": "sha256:443b056979e6561eaea4f777ac317755f1863c476170bc956d7a467659dde8a7"
+    },
+    {
+      "byte_size": 5405,
+      "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/sbom_attestation_signer.py",
+      "sha256": "sha256:030a21fb96e8725389046e69b6ae5a2476d0fe3328ed80d50d8913424b4176f8"
     },
     {
       "byte_size": 78095,

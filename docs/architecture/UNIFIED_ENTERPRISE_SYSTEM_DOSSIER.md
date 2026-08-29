@@ -230,5 +230,51 @@ The Web Console (`apps/web-console`) exposes a dedicated live playground at `/pl
 
 ---
 
+## 8. Multi-Tier CAS Cache & Bloom Filter Admission
+
+The `build-cache-engine` features a high-throughput multi-tier architecture:
+- **L1 In-Memory Fast Cache**: Sub-millisecond direct memory key-value storage for high-frequency compilation queries.
+- **L2 Persistent Content-Addressed Store**: Local filesystem disk storage keyed by SHA-256 chunk digests.
+- **Probabilistic Bloom Filter**: Fast membership query (`SimpleBloomFilter`) to reject cache-miss disk lookups in $O(1)$ time without IO overhead.
+- **CLI Commands**:
+  - `elmos build-cache cas-stats`: Inspect cache entry count, disk usage, and hit ratio.
+  - `elmos build-cache cas-purge`: Purge stale or corrupted cache entries safely.
+
+---
+
+## 9. Polyglot API Contract Drift & Backward-Compatibility Differ
+
+The `polyglot-semantic-compiler-engine` embeds structural OpenAPI/JSON-Schema drift detection:
+- **Breaking Change Detection**: Identifies dropped endpoints, renamed required fields, incompatible type narrowing, and missing response schemas.
+- **Semantic Severity Classification**: Separates `BREAKING` contract violations from non-breaking additions (e.g. optional fields).
+- **CLI Command**:
+  - `elmos polyglot diff-api`: Run contract comparison between source and target specifications, returning structured diff manifests.
+
+---
+
+## 10. Autonomous QA AST Mutation Testing Engine
+
+The `autonomous-qa-engine` includes mutation-driven test adequacy analysis:
+- **Mutation Operators**:
+  - `CONDITION_NEGATION`: Inverts comparison operators (`>` $\leftrightarrow$ `<=`, `==` $\leftrightarrow$ `!=`).
+  - `ARITHMETIC_SWAP`: Mutates math operators (`+` $\leftrightarrow$ `-`, `*` $\leftrightarrow$ `/`).
+  - `RETURN_VALUE_TAMPER`: Replaces return values with zeroes, empty sets, or nulls.
+  - `BOUNDARY_MUTATION`: Off-by-one shifts on loop and array indices.
+- **Mutation Adequacy Score**: Computes the ratio of killed mutants vs total non-equivalent mutants ($\ge 0.85$ required for gold certification).
+- **CLI Command**:
+  - `elmos qa mutate --code "<code>"`: Generate mutant ASTs and evaluate test suite killing strength.
+
+---
+
+## 11. Web Console Enterprise Governance & Compliance Center
+
+The Web Console (`apps/web-console`) exposes a dedicated executive compliance dashboard at `/governance`:
+- **SLSA Level 4 & CycloneDX SBOM Verification**: Real-time validation of builder certificates, digital signatures, and bill of materials.
+- **Deterministic Toolchain Locks**: Hermetic DevContainer, Dockerfile, and Nix Flake verification.
+- **Real-Time Audit Export**: Compliance export for SOC2, ISO 27001, and enterprise regulatory audit reviews.
+
+---
+
 *Authored and verified by the ELMOS Engineering & Architecture Team · All rights reserved.*
+
 

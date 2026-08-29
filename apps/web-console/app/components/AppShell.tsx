@@ -25,12 +25,13 @@ const navigation: Array<{
   { href: "/orchestration", label: "任务编排与模型路由", enLabel: "Task orchestration", hint: "DAG / cost routing", icon: "workflow" },
   { href: "/migration", label: "迁移工坊", enLabel: "Migration studio", hint: "Migration", icon: "route" },
   { href: "/proof-loop", label: "现代化证据闭环", enLabel: "Modernization proof loop", hint: "B105–B108", icon: "shield" },
-  { href: "/pricing", label: "套餐与用量", enLabel: "Plans and usage", hint: "Plans & usage", icon: "layers" },
   { href: "/playground", label: "AST 证明沙箱", enLabel: "Code & Proof Sandbox", hint: "Playground", icon: "spark" },
   { href: "/observability", label: "全链路观测与存证", enLabel: "Observability & SLSA", hint: "OTLP & SLSA", icon: "shield" },
+  { href: "/governance", label: "契约治理与变异", enLabel: "Governance & Mutation", hint: "API diff & Mutate", icon: "route" },
   { href: "/skills", label: "Skills 与验证", enLabel: "Skills and qualification", hint: "Qualification", icon: "test" },
   { href: "/admin", label: "运营管理端", enLabel: "Operations admin", hint: "Operations", icon: "settings" },
 ];
+
 
 
 

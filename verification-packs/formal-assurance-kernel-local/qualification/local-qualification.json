@@ -3,25 +3,25 @@
   "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
   "commands": [
     {
-      "command": "/Users/stephen/.cache/uv/builds-v0/.tmpsLzdkB/bin/python -m unittest discover -s engines/formal-assurance-engine/tests -p test_*.py -v",
-      "duration_seconds": 2.21,
+      "command": "/Users/stephen/.cache/uv/builds-v0/.tmpevE5GA/bin/python -m unittest discover -s engines/formal-assurance-engine/tests -p test_*.py -v",
+      "duration_seconds": 1.549,
       "exit_code": 0,
       "failed": 0,
       "name": "formal-assurance-engine",
       "passed": 532,
-      "raw_evidence_digest": "sha256:3724cd5d1ebd7d5ff6880013ddac54c152e9e3503015f6d4eaf406be92a585f3",
+      "raw_evidence_digest": "sha256:4934eae283c925e1ab8561d3a10376c11d247d51bff456ca7366291052410e7a",
       "raw_evidence_ref": "qualification/raw/engine-tests.txt",
       "skipped": 0,
       "tests": 532
     },
     {
-      "command": "/Users/stephen/.cache/uv/builds-v0/.tmpsLzdkB/bin/python -m unittest discover -s tests/formal-assurance-kernel -p test_*.py -v",
-      "duration_seconds": 5.374,
+      "command": "/Users/stephen/.cache/uv/builds-v0/.tmpevE5GA/bin/python -m unittest discover -s tests/formal-assurance-kernel -p test_*.py -v",
+      "duration_seconds": 5.014,
       "exit_code": 0,
       "failed": 0,
       "name": "formal-assurance-package-integration",
       "passed": 4,
-      "raw_evidence_digest": "sha256:890213d94ad2982a2edcb0ae105c8971be106308c8539eede2a7b18462a69b7a",
+      "raw_evidence_digest": "sha256:1bef5162bef1a20133ff9096633d9bf361190a2ffd3c224773e0fd4d8269f1ba",
       "raw_evidence_ref": "qualification/raw/integration-tests.txt",
       "skipped": 0,
       "tests": 4
@@ -40,8 +40,8 @@
     "strongSandboxDowngradeNegative": "PASSED",
     "tenantIsolationNegative": "PASSED"
   },
-  "environment_digest": "sha256:1837faf402fcf23f0bad19a6633df0cad79390a787b01d16975fd633e1742dff",
-  "executed_at": "2026-08-29T09:38:34Z",
+  "environment_digest": "sha256:52654ab6a82a0654a1f741e77be914741a900e02807c542ea3e9e2b2887044f9",
+  "executed_at": "2026-08-29T14:52:07Z",
   "externalEvidenceStatus": "NOT_RUN",
   "failed": 0,
   "independentVerificationStatus": "NOT_RUN",
@@ -811,10 +811,10 @@
       "sha256": "sha256:38f7e13c3c6162d6535e91c606842e27b2cb4a03f3b2d1406168af567fece637"
     },
     {
-      "byte_size": 2752,
+      "byte_size": 3000,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/__init__.py",
       "role": "implementation",
-      "sha256": "sha256:c790b8630a018b653db90aff64077e28fc039f8db64f0d3179772b052714303f"
+      "sha256": "sha256:94cd8ddeee6be4627663a6de2576976c9a0a67870574d253116cdf6c868ef31c"
     },
     {
       "byte_size": 25033,
@@ -949,6 +949,12 @@
       "sha256": "sha256:443b056979e6561eaea4f777ac317755f1863c476170bc956d7a467659dde8a7"
     },
     {
+      "byte_size": 5405,
+      "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/sbom_attestation_signer.py",
+      "role": "implementation",
+      "sha256": "sha256:030a21fb96e8725389046e69b6ae5a2476d0fe3328ed80d50d8913424b4176f8"
+    },
+    {
       "byte_size": 78095,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/store.py",
       "role": "implementation",
@@ -1042,19 +1048,19 @@
       "byte_size": 9098,
       "path": "verification-packs/formal-assurance-kernel-local/qualification/environment.json",
       "role": "environment",
-      "sha256": "sha256:1837faf402fcf23f0bad19a6633df0cad79390a787b01d16975fd633e1742dff"
+      "sha256": "sha256:52654ab6a82a0654a1f741e77be914741a900e02807c542ea3e9e2b2887044f9"
     },
     {
-      "byte_size": 33942,
+      "byte_size": 34173,
       "path": "verification-packs/formal-assurance-kernel-local/qualification/implementation-manifest.json",
       "role": "test",
-      "sha256": "sha256:07e49e567c37e36be756b031ccb8f9779b197482a05bcd468f0e56c360660d9a"
+      "sha256": "sha256:d31a8f3213e40c0d4be84d74eac09c3549ad29c7d899ed399f8caa30771c9f4b"
     }
   ],
   "schema_version": 1,
   "skipped": 0,
   "source_digest": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
   "status": "passed",
-  "test_digest": "sha256:07e49e567c37e36be756b031ccb8f9779b197482a05bcd468f0e56c360660d9a",
+  "test_digest": "sha256:d31a8f3213e40c0d4be84d74eac09c3549ad29c7d899ed399f8caa30771c9f4b",
   "tests": 536
 }
