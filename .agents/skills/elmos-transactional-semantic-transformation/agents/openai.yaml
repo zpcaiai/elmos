@@ -1,0 +1,6 @@
+interface:
+  display_name: "Transactional Semantic Transformation"
+  short_description: "Apply stale-safe, rollback-bound semantic transactions."
+  default_prompt: "Use $elmos-transactional-semantic-transformation through the exact PDHI v1 K2 runtime with typed scope, allowlisted operations, replayable evidence, and fail-closed external gates."
+policy:
+  allow_implicit_invocation: true

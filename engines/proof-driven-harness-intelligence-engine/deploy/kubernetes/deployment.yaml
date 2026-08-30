@@ -1,0 +1,153 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elmos-pdhi
+  labels:
+    app.kubernetes.io/name: elmos-pdhi
+    app.kubernetes.io/component: control-plane
+  annotations:
+    elmos.dev/external-evidence: NOT_RUN
+    elmos.dev/certification: NOT_CERTIFIED
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: elmos-pdhi
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: elmos-pdhi
+        app.kubernetes.io/component: control-plane
+      annotations:
+        elmos.dev/runtime-evidence: NOT_RUN
+    spec:
+      serviceAccountName: elmos-pdhi
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 40
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: elmos-pdhi
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: elmos-pdhi
+      containers:
+        - name: api
+          # Release automation replaces this placeholder with an immutable
+          # registry/repository@sha256 digest. Tags are prohibited by policy.
+          image: registry.invalid/elmos-pdhi@sha256:0000000000000000000000000000000000000000000000000000000000000000
+          imagePullPolicy: IfNotPresent
+          args:
+            - serve
+            - --factory
+            - $(ELMOS_PDHI_SERVICE_FACTORY)
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8080"
+            - --trusted-mesh-transport
+          env:
+            - name: ELMOS_PDHI_SERVICE_FACTORY
+              valueFrom:
+                configMapKeyRef:
+                  name: elmos-pdhi-runtime
+                  key: service-factory
+            - name: ELMOS_PDHI_CONFIG
+              value: /etc/elmos-pdhi/config.yaml
+            - name: ELMOS_PDHI_DATABASE_DSN_FILE
+              value: /var/run/secrets/pdhi-database/dsn
+            - name: ELMOS_PDHI_JWKS_FILE
+              value: /var/run/secrets/pdhi-identity/jwks.json
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 2
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "kill -TERM 1"]
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+              ephemeral-storage: 128Mi
+            limits:
+              cpu: "2"
+              memory: 1Gi
+              ephemeral-storage: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            privileged: false
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: runtime-config
+              mountPath: /etc/elmos-pdhi
+              readOnly: true
+            - name: database-credentials
+              mountPath: /var/run/secrets/pdhi-database
+              readOnly: true
+            - name: identity-keys
+              mountPath: /var/run/secrets/pdhi-identity
+              readOnly: true
+            - name: temporary
+              mountPath: /tmp
+      volumes:
+        - name: runtime-config
+          configMap:
+            name: elmos-pdhi-runtime
+            defaultMode: 0440
+        - name: database-credentials
+          secret:
+            secretName: elmos-pdhi-database
+            defaultMode: 0400
+        - name: identity-keys
+          secret:
+            secretName: elmos-pdhi-identity
+            defaultMode: 0400
+        - name: temporary
+          emptyDir:
+            sizeLimit: 64Mi
