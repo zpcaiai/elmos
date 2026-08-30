@@ -1,0 +1,8 @@
+Package: elmos.java-legacy-web.repository-modernization 1.0.0
+Skills: 55
+Schemas: 10
+YAML files parsed: 20
+JSON files parsed: 20
+Examples schema-validated: 9
+DAG nodes ordered: 55
+Validation PASSED
