@@ -97,6 +97,9 @@ const BLOCKER_CATALOG: Record<string, { family: BlockerFamily; what: string }> =
   CERTIFIED_COMPONENT_UNKNOWN_PROP: { family: "expressions", what: "a reference to a prop that was never declared" },
   CERTIFIED_COMPONENT_OBJECT_PROP_READ: { family: "expressions", what: "a structured object/array prop rendered as a bare value, which would stringify differently across targets" },
   CERTIFIED_COMPONENT_EXPRESSION_PARSE_FAILED: { family: "expressions", what: "an expression the real parser could not read as a certified expression" },
+  CERTIFIED_COMPONENT_USEMEMO_ARITY: { family: "expressions", what: "a useMemo call without exactly one pure callback and one explicit dependency array" },
+  CERTIFIED_COMPONENT_USEMEMO_CALLBACK: { family: "expressions", what: "a useMemo callback that is asynchronous, indirect, or uses a statement block instead of one pure expression" },
+  CERTIFIED_COMPONENT_USEMEMO_DEPENDENCIES: { family: "expressions", what: "a useMemo dependency list that is not an explicit array and therefore cannot be replayed deterministically" },
 
   CERTIFIED_COMPONENT_UNSUPPORTED_HANDLER_STATEMENT: { family: "event-handlers", what: "a handler statement outside state assignment and callback invocation -- loops, conditionals, async and arbitrary calls are excluded" },
   CERTIFIED_COMPONENT_UNSUPPORTED_HANDLER_CALL: { family: "event-handlers", what: "a handler calling something other than a setter or a declared callback prop" },

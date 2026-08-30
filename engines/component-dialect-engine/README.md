@@ -479,6 +479,14 @@ and fail another, which produces bugs that only appear in some callers:
 - **Both Vue majors are installed at once.** `vue` is Vue 3; the Vue 2
   runtime is aliased as `"vue2": "npm:vue@2.7.16"` because one npm name
   cannot hold two versions. It is a real alias, not a typo.
+- **Vue 2.7.16 is end-of-life and has no upstream release fixing
+  GHSA-5j4c-8p2g-v4jx or GHSA-g3ch-rx76-35fx.** Every repository-owned Vue 2
+  compiler entry point therefore runs behind `src/vue2-security.ts`: inputs
+  are capped at 1 MiB, known raw-text/consecutive-`<` ReDoS shapes are rejected
+  with linear checks, and compiler-sensitive prototype pollution fails closed.
+  These controls reduce retained compatibility risk; they do not make the
+  upstream packages patched, certified, or suitable for an unrestricted
+  production renderer.
 
 Because every one of these is reached through a runtime `require(...)`
 rather than a static import, TypeScript cannot verify them and a package

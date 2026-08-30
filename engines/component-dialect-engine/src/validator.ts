@@ -29,6 +29,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as ts from "typescript";
 import { EXECUTABLE_FRAMEWORKS, Framework } from "./models";
+import { assertVue2CompilerInput } from "./vue2-security";
 
 export type SyntaxStatus = "PASSED" | "FAILED";
 export type ExecutionStatus = "PASSED" | "FAILED" | "EXECUTION_NOT_AVAILABLE" | "EXECUTION_NOT_ATTEMPTED";
@@ -77,6 +78,7 @@ function validateVue3Source(source: string): string[] {
 }
 
 function validateVue2Source(source: string): string[] {
+  assertVue2CompilerInput(source, "Emitted.vue");
   // `vue-template-compiler`'s index.js hard-fails when vue@3 is also
   // installed (a version-mismatch guard). `build.js` is the same published
   // compiler without that guard -- see parsers/vue2.ts.

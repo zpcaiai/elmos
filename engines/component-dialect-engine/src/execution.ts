@@ -24,6 +24,7 @@ import * as os from "os";
 import * as path from "path";
 import * as ts from "typescript";
 import { ComponentDef, DataPropDef, Framework, ListPropDef, Literal, PrimitiveType } from "./models";
+import { assertVue2CompilerInput } from "./vue2-security";
 
 export interface ExecutionCase {
   /** Prop values to render with. Keys must be declared props; list props
@@ -227,6 +228,7 @@ async function renderVue3(source: string, props: Record<string, unknown>): Promi
  * so the real Vue 2 runtime is used -- not a stand-in.
  */
 async function renderVue2(source: string, props: Record<string, unknown>): Promise<string> {
+  assertVue2CompilerInput(source, "Vue2 execution source");
   /* eslint-disable @typescript-eslint/no-var-requires */
   const compiler = require("vue-template-compiler/build");
   const Vue2 = require("vue2");

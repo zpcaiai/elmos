@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { compileTemplate, parse as parseVueSfc } from "@vue/compiler-sfc";
 import ts from "typescript";
 import * as vue2Compiler from "vue-template-compiler";
+import { assertVue2CompilerInput } from "./vue2-security.js";
 
 import type {
   MiniappConversionRequest,
@@ -2175,6 +2176,7 @@ function syntheticNode(path: string, source: string, line: number): ts.Node {
 }
 
 function analyzeVue2(path: string, source: string, state: MutableAnalysis): void {
+  assertVue2CompilerInput(source, path);
   const descriptor = vue2Compiler.parseComponent(source, { pad: "space" });
   state.parserEvidence.add("vue-template-compiler@2.7.16");
   if (descriptor.script) {
