@@ -1,0 +1,34 @@
+{
+  "certification": "NOT_CERTIFIED",
+  "component_count": 96,
+  "component_ids_sha256": "sha256:3e76361a14ce21d6ad4c56a3d6fc080946c054295263673e9df845ab0e0649a3",
+  "engine_tree_sha256": "sha256:89cd435e1317b3d9b80c506e002e378b6ae42dc8d748ac553ea5f17411ede1f4",
+  "external_evidence": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "kind": "elmos.proof-driven-harness-v3.receipt-validation",
+  "postgresql17": {
+    "raw_log": null,
+    "reason": "Disposable PostgreSQL qualification was not explicitly requested.",
+    "required_postgresql_version": "17.5",
+    "required_psycopg_version": "3.2.13",
+    "status": "NOT_RUN"
+  },
+  "qualifier_sha256": "sha256:ab3afa1149db2efa46fa473de573dea5f95a554f620ff0d5233f9e82cb36a60e",
+  "receipt_sha256": "sha256:891ed5c4967ffd6ac976c78fe94cd5b0db374af8298c4737deb20cab96b4d611",
+  "schema_version": 1,
+  "skill_count": 16,
+  "skill_names_sha256": "sha256:dfceeb074cb8525aa6a999fec19dae565383f82c33cb1fbe3eaef76e8d8fb0e4",
+  "source_archive_sha256": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+  "status": "PASS",
+  "tests": {
+    "errors": 0,
+    "expected_failures": 0,
+    "failed": 0,
+    "passed": 110,
+    "raw_log_count": 3,
+    "selected": 110,
+    "skipped": 0,
+    "status": "PASS",
+    "unexpected_successes": 0
+  }
+}

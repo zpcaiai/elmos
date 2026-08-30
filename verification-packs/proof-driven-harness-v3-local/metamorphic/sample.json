@@ -1,0 +1,29 @@
+{
+  "claim_id": "claim.local.safe-deterministic-publication",
+  "execution_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "expected_relation": {
+    "kind": "identical-relative-path-byte-map",
+    "mutable_exclusions": [
+      "certification/gate-result.json",
+      "certification/gate-report.md"
+    ]
+  },
+  "non_applicable": [
+    "changed-receipt",
+    "changed-engine-tree"
+  ],
+  "oracle_refs": [
+    "oracle.byte-recomputation",
+    "oracle.local-negative-tests"
+  ],
+  "owner": "elmos-proof-harness-engineering",
+  "preconditions": [
+    "same-validated-receipt",
+    "same-repository-bindings"
+  ],
+  "relation_id": "relation.repeat-publication-byte-identical",
+  "schema_version": 1,
+  "transformation": {
+    "kind": "repeat-pack-build"
+  }
+}

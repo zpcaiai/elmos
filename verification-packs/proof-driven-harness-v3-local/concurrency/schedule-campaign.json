@@ -1,0 +1,10 @@
+{
+  "forbidden_outcomes": [
+    "output-path-escape",
+    "partial-published-pack"
+  ],
+  "max_schedules": 0,
+  "schema_version": 1,
+  "status": "NOT_RUN",
+  "technique": "deterministic-schedule-exploration"
+}

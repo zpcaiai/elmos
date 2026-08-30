@@ -27,12 +27,12 @@
     "verifierAdapters": 20
   },
   "external_runtime_status": "NOT_RUN",
-  "implementation_status": "DECLARED_RUNTIME_UNQUALIFIED",
+  "implementation_status": "LOCAL_EXECUTED_SELF_ATTESTED",
   "local_qualification": {
-    "engine_tree_sha256": null,
+    "engine_tree_sha256": "89cd435e1317b3d9b80c506e002e378b6ae42dc8d748ac553ea5f17411ede1f4",
     "path": "engines/proof-driven-harness-engine/qualification/local-qualification.json",
-    "receipt_sha256": null,
-    "validation": "INVALID"
+    "receipt_sha256": "891ed5c4967ffd6ac976c78fe94cd5b0db374af8298c4737deb20cab96b4d611",
+    "validation": "VALID"
   },
   "package": "elmos-proof-driven-agentic-harness-repository-semantic-compiler@3.0.0",
   "schema_version": "1.0.0",

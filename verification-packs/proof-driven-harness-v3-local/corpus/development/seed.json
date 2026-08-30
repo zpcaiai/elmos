@@ -1,0 +1,56 @@
+{
+  "kind": "elmos.proof-driven-harness-v3.local-development-corpus",
+  "limitations": [
+    "This is repository-owned development evidence, not an independent holdout."
+  ],
+  "raw_logs": [
+    {
+      "bytes": 10226,
+      "path": "qualification/raw/archive-installation-check.json",
+      "sha256": "sha256:de09e73055b5092f9459ba71d5334e48f4c425e1ec1f4c3c37113d6959ba2c65"
+    },
+    {
+      "bytes": 62208,
+      "path": "qualification/raw/engine-tests.json",
+      "sha256": "sha256:cb72dfe6bf983f5c08ffb30f305bb0c4a28a559fa958ad89388b0a5691cd3edd"
+    },
+    {
+      "bytes": 12171,
+      "path": "qualification/raw/package-integration-tests.json",
+      "sha256": "sha256:de02bc8842c769b90f6f61c269fd3d3dd49d7481d9d04ef81536e11c58d95556"
+    }
+  ],
+  "receipt_sha256": "sha256:891ed5c4967ffd6ac976c78fe94cd5b0db374af8298c4737deb20cab96b4d611",
+  "schema_version": 1,
+  "source_digest": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+  "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "structured_test_outcomes": [
+    {
+      "raw_log": "qualification/raw/engine-tests.json",
+      "results_sha256": "sha256:cda2905420dd2fdf74de7995e8827cc02ac1aba3203687426f6cc8d7a3b336fd",
+      "totals": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failed": 0,
+        "passed": 94,
+        "selected": 94,
+        "skipped": 0,
+        "unexpected_successes": 0
+      }
+    },
+    {
+      "raw_log": "qualification/raw/package-integration-tests.json",
+      "results_sha256": "sha256:b29dee1a937ddc20752ce7cfa776d67a6457100f766c514d712ac4eb127d3e2b",
+      "totals": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failed": 0,
+        "passed": 16,
+        "selected": 16,
+        "skipped": 0,
+        "unexpected_successes": 0
+      }
+    }
+  ],
+  "target_digest": "sha256:89cd435e1317b3d9b80c506e002e378b6ae42dc8d748ac553ea5f17411ede1f4"
+}

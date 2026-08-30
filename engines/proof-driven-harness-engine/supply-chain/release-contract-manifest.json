@@ -6,9 +6,9 @@
     "externalEvidence": "NOT_RUN",
     "localEngineeringMaximum": "READY_FOR_EXTERNAL_GATE"
   },
-  "contractRoot": "sha256:4863567c2bb39d6d61edf28ba099842e3dc268ae4ddde13137eaf733f238b854",
+  "contractRoot": "sha256:b38dfe11da125dcd037d75a1042ca48245e9707ab59467f021449f284a46ccde",
   "counts": {
-    "files": 72,
+    "files": 73,
     "roles": {
       "container-build-contract": 1,
       "database-migration": 1,
@@ -24,7 +24,7 @@
       "postgres-migration-applicator": 1,
       "production-dependency-lock": 1,
       "release-contract-verifier": 1,
-      "runtime-source": 27,
+      "runtime-source": 28,
       "source-dependency-sbom": 1,
       "structured-test-runner": 1,
       "supply-chain-policy": 1,
@@ -328,6 +328,12 @@
       "sha256": "sha256:a7952074c8ad3e0f1db873e02c2b6bfc1d1ba33c48b15302192791e8a1730113"
     },
     {
+      "bytes": 81911,
+      "path": "src/elmos_proof_harness/delta.py",
+      "role": "runtime-source",
+      "sha256": "sha256:f80a7c117814ae5d0cea50b41015e2c3375edba16741c797f9e66ab51f0ac929"
+    },
+    {
       "bytes": 13758,
       "path": "src/elmos_proof_harness/domains.py",
       "role": "runtime-source",
@@ -442,16 +448,16 @@
       "sha256": "sha256:236f565e8856a76977042bcdf46aa16a883b2a8fd849e4804e0d3a6121456f38"
     },
     {
-      "bytes": 121884,
+      "bytes": 123299,
       "path": "tools/publish_verification_pack.py",
       "role": "verification-pack-publisher",
-      "sha256": "sha256:114a0db5b8d0891bf43c663fbd306933d87380325c68d0f2d4aa8c2bee6d9d33"
+      "sha256": "sha256:5edb0371d9661554008fcadce8a10fd3a19edfca522bc870a6100c2160a724d7"
     },
     {
-      "bytes": 31819,
+      "bytes": 32568,
       "path": "tools/qualify_local.py",
       "role": "local-qualification-producer",
-      "sha256": "sha256:db38bb10a96cded3adfa3b40068ec4a742dddf991e22e99272db2488ac635e95"
+      "sha256": "sha256:ab3afa1149db2efa46fa473de573dea5f95a554f620ff0d5233f9e82cb36a60e"
     },
     {
       "bytes": 24073,

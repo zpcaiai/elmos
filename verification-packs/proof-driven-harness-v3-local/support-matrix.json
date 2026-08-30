@@ -1,0 +1,56 @@
+{
+  "capabilities": [
+    {
+      "evidence_refs": [
+        "qualification/receipt-validation.json",
+        "certification/repository-binding.json"
+      ],
+      "key": "exact-receipt-revalidation",
+      "limitations": [
+        "Local self-attested byte and test identity only."
+      ],
+      "owner": "elmos-proof-harness-engineering",
+      "status": "supported"
+    },
+    {
+      "evidence_refs": [
+        "corpus/negative/cases.json",
+        "qualification/raw/engine-tests.json"
+      ],
+      "key": "deterministic-safe-pack-publication",
+      "limitations": [
+        "Independent cross-platform replay remains NOT_RUN."
+      ],
+      "owner": "elmos-proof-harness-engineering",
+      "status": "supported"
+    },
+    {
+      "evidence_refs": [
+        "validation-profile.json",
+        "properties/sample.json",
+        "metamorphic/sample.json",
+        "models/model.json"
+      ],
+      "key": "advanced-verification-contracts",
+      "limitations": [
+        "Mutation, fuzz, model campaign, symbolic, solver, concurrency, query, numeric, and representative executions remain NOT_RUN."
+      ],
+      "owner": "elmos-proof-harness-engineering",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [
+        "corpus/holdout/not-run.json",
+        "corpus/representative-workloads/not-run.json"
+      ],
+      "key": "independent-production-assurance",
+      "limitations": [
+        "External, independent, representative, production, and certification evidence is NOT_RUN."
+      ],
+      "owner": "independent-verification-owner-unassigned",
+      "status": "blocked"
+    }
+  ],
+  "pack_key": "proof-driven-harness-v3-local",
+  "schema_version": 1
+}

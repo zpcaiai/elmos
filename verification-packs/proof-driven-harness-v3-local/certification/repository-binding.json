@@ -1,0 +1,155 @@
+{
+  "certification": "NOT_CERTIFIED",
+  "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "environment_digest": "sha256:fed97bfe52dc08ca429c12cf64d92d82935881d9205138386f4961f5722f98a3",
+  "external_evidence": "NOT_RUN",
+  "failed": 0,
+  "independent_verification": "NOT_RUN",
+  "kind": "elmos.batch35.exact-repository-binding",
+  "limitations": [
+    "The Batch35-required test role binds canonical engine-tree inventory bytes; it is the exact target artifact, not a claim that a single test file represents the engine.",
+    "Local executor and verifier are repository-owned and not independent."
+  ],
+  "pack_key": "proof-driven-harness-v3-local",
+  "passed": 110,
+  "postgresql17": {
+    "raw_log": null,
+    "reason": "Disposable PostgreSQL qualification was not explicitly requested.",
+    "required_postgresql_version": "17.5",
+    "required_psycopg_version": "3.2.13",
+    "status": "NOT_RUN"
+  },
+  "raw_logs": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "tooling/integrate_proof_driven_harness_v3.py",
+        "--check",
+        "--qualification-phase"
+      ],
+      "bytes": 10226,
+      "pack_copy": "qualification/raw/archive-installation-check.json",
+      "repository_path": "engines/proof-driven-harness-engine/qualification/raw/archive-installation-check.json",
+      "returncode": 0,
+      "sha256": "sha256:de09e73055b5092f9459ba71d5334e48f4c425e1ec1f4c3c37113d6959ba2c65",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "engines/proof-driven-harness-engine/tests",
+        "--pattern",
+        "test_*.py"
+      ],
+      "bytes": 62208,
+      "pack_copy": "qualification/raw/engine-tests.json",
+      "repository_path": "engines/proof-driven-harness-engine/qualification/raw/engine-tests.json",
+      "returncode": 0,
+      "sha256": "sha256:cb72dfe6bf983f5c08ffb30f305bb0c4a28a559fa958ad89388b0a5691cd3edd",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "tests/proof-driven-harness-v3",
+        "--pattern",
+        "test_*.py"
+      ],
+      "bytes": 12171,
+      "pack_copy": "qualification/raw/package-integration-tests.json",
+      "repository_path": "engines/proof-driven-harness-engine/qualification/raw/package-integration-tests.json",
+      "returncode": 0,
+      "sha256": "sha256:de02bc8842c769b90f6f61c269fd3d3dd49d7481d9d04ef81536e11c58d95556",
+      "timed_out": false
+    }
+  ],
+  "receipt_sha256": "sha256:891ed5c4967ffd6ac976c78fe94cd5b0db374af8298c4737deb20cab96b4d611",
+  "repository_bindings": [
+    {
+      "byte_size": 24471,
+      "path": "engines/proof-driven-harness-engine/qualification/local-qualification.json",
+      "role": "qualification-receipt",
+      "sha256": "sha256:891ed5c4967ffd6ac976c78fe94cd5b0db374af8298c4737deb20cab96b4d611"
+    },
+    {
+      "byte_size": 10226,
+      "path": "engines/proof-driven-harness-engine/qualification/raw/archive-installation-check.json",
+      "role": "raw-log-archive-installation-check",
+      "sha256": "sha256:de09e73055b5092f9459ba71d5334e48f4c425e1ec1f4c3c37113d6959ba2c65"
+    },
+    {
+      "byte_size": 62208,
+      "path": "engines/proof-driven-harness-engine/qualification/raw/engine-tests.json",
+      "role": "raw-log-engine-tests",
+      "sha256": "sha256:cb72dfe6bf983f5c08ffb30f305bb0c4a28a559fa958ad89388b0a5691cd3edd"
+    },
+    {
+      "byte_size": 12171,
+      "path": "engines/proof-driven-harness-engine/qualification/raw/package-integration-tests.json",
+      "role": "raw-log-package-integration-tests",
+      "sha256": "sha256:de02bc8842c769b90f6f61c269fd3d3dd49d7481d9d04ef81536e11c58d95556"
+    },
+    {
+      "byte_size": 19573,
+      "path": "engines/proof-driven-harness-engine/tests/test_publish_verification_pack.py",
+      "role": "verification-pack-negative-tests",
+      "sha256": "sha256:c6b2d9467144f023222212b6bef37461f3bc56da3f59cc34014e776ef4e0a4bb"
+    },
+    {
+      "byte_size": 123299,
+      "path": "engines/proof-driven-harness-engine/tools/publish_verification_pack.py",
+      "role": "verification-pack-publisher",
+      "sha256": "sha256:5edb0371d9661554008fcadce8a10fd3a19edfca522bc870a6100c2160a724d7"
+    },
+    {
+      "byte_size": 32568,
+      "path": "engines/proof-driven-harness-engine/tools/qualify_local.py",
+      "role": "qualification-producer",
+      "sha256": "sha256:ab3afa1149db2efa46fa473de573dea5f95a554f620ff0d5233f9e82cb36a60e"
+    },
+    {
+      "byte_size": 5601254,
+      "path": "skills/subskills/elmos-proof-driven-agentic-harness-repository-semantic-compiler-v3.0.0.zip",
+      "role": "source",
+      "sha256": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07"
+    },
+    {
+      "byte_size": 22583,
+      "path": "tests/proof-driven-harness-v3/test_integration.py",
+      "role": "archive-importer-negative-tests",
+      "sha256": "sha256:8b6c98fc6c7a5defc9266195e6e8c081ddb5a548bd256a5bf612e38ed2eda114"
+    },
+    {
+      "byte_size": 108723,
+      "path": "tooling/integrate_proof_driven_harness_v3.py",
+      "role": "archive-importer",
+      "sha256": "sha256:2c8d40cbc82e110e74c6c801987d02175f9a4a246e75dc22f8c6a6fc7eba063d"
+    },
+    {
+      "byte_size": 22875,
+      "path": "verification-packs/proof-driven-harness-v3-local/artifacts/engine-tree-inventory.json",
+      "role": "test",
+      "sha256": "sha256:89cd435e1317b3d9b80c506e002e378b6ae42dc8d748ac553ea5f17411ede1f4"
+    },
+    {
+      "byte_size": 7076,
+      "path": "verification-packs/proof-driven-harness-v3-local/environment/local-environment.json",
+      "role": "environment",
+      "sha256": "sha256:fed97bfe52dc08ca429c12cf64d92d82935881d9205138386f4961f5722f98a3"
+    }
+  ],
+  "schema_version": 1,
+  "skipped": 0,
+  "source_digest": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+  "status": "passed",
+  "test_digest": "sha256:89cd435e1317b3d9b80c506e002e378b6ae42dc8d748ac553ea5f17411ede1f4",
+  "tests": 110
+}

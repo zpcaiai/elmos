@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
@@ -26,17 +27,10 @@ assert SPEC is not None and SPEC.loader is not None
 publisher = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = publisher
 SPEC.loader.exec_module(publisher)
-UV = shutil.which("uv") or "/opt/homebrew/bin/uv"
-BATCH35_PYTHON = [
-    UV,
-    "run",
-    "--quiet",
-    "--with",
-    "jsonschema",
-    "--with",
-    "pyyaml",
-    "python",
-]
+# Batch 35 validators have a repository-owned JSON Schema fallback so the
+# qualification suite remains deterministic when its network-denied runner
+# cannot resolve third-party wheels.
+BATCH35_PYTHON = [sys.executable]
 
 
 def _write(path: Path, payload: bytes) -> None:
@@ -467,6 +461,31 @@ class ProofDrivenHarnessVerificationPackPublisherTests(unittest.TestCase):
         ):
             publisher.publish_pack(self.root)
         self.assertFalse(self.pack.exists())
+
+    def test_publication_lock_accepts_canonical_system_temp_alias(self) -> None:
+        alias = self.root / "tmp-alias"
+        alias.symlink_to(Path(tempfile.gettempdir()), target_is_directory=True)
+        with mock.patch.object(
+            publisher.tempfile, "gettempdir", return_value=str(alias)
+        ):
+            with publisher.publication_lock(self.root):
+                pass
+
+    def test_publication_lock_rejects_non_sticky_world_writable_directory(
+        self,
+    ) -> None:
+        unsafe = self.root / "unsafe-temp"
+        unsafe.mkdir(mode=0o777)
+        unsafe.chmod(0o777)
+        with mock.patch.object(
+            publisher.tempfile, "gettempdir", return_value=str(unsafe)
+        ):
+            with self.assertRaisesRegex(
+                publisher.VerificationPackError,
+                "stable, owned, safe directory",
+            ):
+                with publisher.publication_lock(self.root):
+                    pass
 
 
 if __name__ == "__main__":

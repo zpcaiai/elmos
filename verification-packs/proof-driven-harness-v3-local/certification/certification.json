@@ -1,0 +1,33 @@
+{
+  "approved_at": null,
+  "certification_decision": "NOT_CERTIFIED",
+  "evidence_refs": [
+    "certification/evidence.json",
+    "certification/repository-binding.json",
+    "assurance/assurance-case.json"
+  ],
+  "exact_scope": {
+    "controlled_public_dns_rebinding_campaign": "NOT_RUN",
+    "environment_digest": "sha256:fed97bfe52dc08ca429c12cf64d92d82935881d9205138386f4961f5722f98a3",
+    "independent_holdout": "NOT_RUN",
+    "migration_route": "proof-driven-harness-v3-local-qualification",
+    "representative_production_workload": "NOT_RUN",
+    "risk_tier": "P0",
+    "source_artifact_digest": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+    "target_artifact_digest": "sha256:89cd435e1317b3d9b80c506e002e378b6ae42dc8d748ac553ea5f17411ede1f4",
+    "workload_key": "proof-driven-harness-v3-local-development-negative"
+  },
+  "limitations": [
+    "Local evidence is self-attested and does not establish source-target semantic equivalence or universal correctness.",
+    "Holdout, representative, external runtime, independent verifier, deployment, production, and customer evidence remains NOT_RUN.",
+    "The pack is NOT_CERTIFIED; a zero gate process exit for a limited pack means gate evaluation completed, not that certification passed."
+  ],
+  "metrics": {
+    "local_test_pass_rate": 1.0,
+    "local_tests": 110
+  },
+  "owner": "elmos-proof-harness-engineering",
+  "pack_key": "proof-driven-harness-v3-local",
+  "schema_version": 1,
+  "status": "limited"
+}
