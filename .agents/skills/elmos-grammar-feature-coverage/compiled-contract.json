@@ -1,1 +1,41 @@
-{"batch":"O","capability_mode":"LOCAL_ANALYSIS","certification_status":"NOT_CERTIFIED","dependencies":["elmos-language-spec-conformance-mapper","elmos-frontend-consistency-gate"],"description":"Measure parser/converter coverage over grammar productions, dialect extensions and syntactic combinations rather than file count.","external_evidence_status":"NOT_RUN","installation_binding":"REPOSITORY_OWNED_WRAPPER","layer":"corpus-metrics","managed_by":"tooling/integrate_polyglot_semantic_assurance_skills.py","name":"elmos-grammar-feature-coverage","operation_family":"corpus-governance","ordinal":252,"outputs":["semantic-assurance/elmos-grammar-feature-coverage/model.json","semantic-assurance/elmos-grammar-feature-coverage/evidence.json","semantic-assurance/elmos-grammar-feature-coverage/diagnostics.json"],"package_id":"elmos-polyglot-skills-v3.0.0-semantic-assurance","package_version":"3.0.0","repository_owned_wrapper":true,"risk":"critical","runtime_evidence_status":"NOT_RUN","schema_version":"elmos.polyglot-semantic-assurance.compiled-skill.v1","side_effects_authorized":false,"source_body_embedded":false,"source_id":"ELMOS-POLY-252","source_instructions_activated":false,"source_path":"agent-skills/runtime/elmos-grammar-feature-coverage/SKILL.md","source_readiness":"not-run","source_sha256":"sha256:2a9f713edb71b56306e681714cbfecb8eca69a0bfc85476fbcf584e86463fb66"}
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-grammar-feature-coverage"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_LOCAL_BOUNDED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_grammar_feature_coverage",
+    "operation": "COVERAGE_ANALYSIS",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-grammar-feature-coverage"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-grammar-feature-coverage",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-grammar-feature-coverage/SKILL.md",
+    "sourceSha256": "sha256:2a9f713edb71b56306e681714cbfecb8eca69a0bfc85476fbcf584e86463fb66",
+    "sourceSkillId": "ELMOS-POLY-252"
+  }
+}

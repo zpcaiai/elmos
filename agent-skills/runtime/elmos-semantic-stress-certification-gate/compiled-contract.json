@@ -1,1 +1,41 @@
-{"batch":"R","capability_mode":"INDEPENDENT_GATE_REQUIRED","certification_status":"NOT_CERTIFIED","dependencies":["elmos-metamorphic-transformation-tester","elmos-property-based-cross-language-tester","elmos-compiler-matrix-nversion-oracle","elmos-undefined-behavior-filter","elmos-equivalent-mutant-classifier","elmos-flaky-nondeterminism-classifier","elmos-bug-seed-feedback-loop"],"description":"Require differential fuzzing, metamorphic/property testing, mutation strength and failure reduction thresholds appropriate to route risk before E4/E5.","external_evidence_status":"NOT_RUN","installation_binding":"REPOSITORY_OWNED_WRAPPER","layer":"quality-gate","managed_by":"tooling/integrate_polyglot_semantic_assurance_skills.py","name":"elmos-semantic-stress-certification-gate","operation_family":"quality-gate","ordinal":300,"outputs":["semantic-assurance/elmos-semantic-stress-certification-gate/model.json","semantic-assurance/elmos-semantic-stress-certification-gate/evidence.json","semantic-assurance/elmos-semantic-stress-certification-gate/diagnostics.json"],"package_id":"elmos-polyglot-skills-v3.0.0-semantic-assurance","package_version":"3.0.0","repository_owned_wrapper":true,"risk":"critical","runtime_evidence_status":"NOT_RUN","schema_version":"elmos.polyglot-semantic-assurance.compiled-skill.v1","side_effects_authorized":false,"source_body_embedded":false,"source_id":"ELMOS-POLY-300","source_instructions_activated":false,"source_path":"agent-skills/runtime/elmos-semantic-stress-certification-gate/SKILL.md","source_readiness":"not-run","source_sha256":"sha256:dbec752adf7d072e64db568d40a5e579a9b6ff0121468b03ec2f78576e7cb6e4"}
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-semantic-stress-certification-gate"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_EXTERNAL_GATE_REQUIRED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_semantic_stress_certification_gate",
+    "operation": "GATE_EVALUATION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-semantic-stress-certification-gate"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-semantic-stress-certification-gate",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-semantic-stress-certification-gate/SKILL.md",
+    "sourceSha256": "sha256:dbec752adf7d072e64db568d40a5e579a9b6ff0121468b03ec2f78576e7cb6e4",
+    "sourceSkillId": "ELMOS-POLY-300"
+  }
+}

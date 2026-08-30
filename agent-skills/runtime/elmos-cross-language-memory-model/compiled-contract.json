@@ -1,1 +1,41 @@
-{"batch":"M","capability_mode":"LOCAL_ANALYSIS","certification_status":"NOT_CERTIFIED","dependencies":["elmos-control-data-effect-equivalence-gate"],"description":"Represent happens-before, visibility, atomicity and data-race legality for Java/.NET/C++/Rust/Swift and other concurrency models.","external_evidence_status":"NOT_RUN","installation_binding":"REPOSITORY_OWNED_WRAPPER","layer":"runtime-semantics","managed_by":"tooling/integrate_polyglot_semantic_assurance_skills.py","name":"elmos-cross-language-memory-model","operation_family":"runtime-semantics","ordinal":215,"outputs":["semantic-assurance/elmos-cross-language-memory-model/model.json","semantic-assurance/elmos-cross-language-memory-model/evidence.json","semantic-assurance/elmos-cross-language-memory-model/diagnostics.json"],"package_id":"elmos-polyglot-skills-v3.0.0-semantic-assurance","package_version":"3.0.0","repository_owned_wrapper":true,"risk":"critical","runtime_evidence_status":"NOT_RUN","schema_version":"elmos.polyglot-semantic-assurance.compiled-skill.v1","side_effects_authorized":false,"source_body_embedded":false,"source_id":"ELMOS-POLY-215","source_instructions_activated":false,"source_path":"agent-skills/runtime/elmos-cross-language-memory-model/SKILL.md","source_readiness":"not-run","source_sha256":"sha256:2f4092117c93cad5e0e101658593412dabf7d2bb6ca134da06f5de6cec038465"}
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-cross-language-memory-model"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_LOCAL_BOUNDED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_cross_language_memory_model",
+    "operation": "MODEL_NORMALIZATION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-cross-language-memory-model"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-cross-language-memory-model",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-cross-language-memory-model/SKILL.md",
+    "sourceSha256": "sha256:2f4092117c93cad5e0e101658593412dabf7d2bb6ca134da06f5de6cec038465",
+    "sourceSkillId": "ELMOS-POLY-215"
+  }
+}

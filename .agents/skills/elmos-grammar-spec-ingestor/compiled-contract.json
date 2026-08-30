@@ -1,1 +1,41 @@
-{"batch":"J","capability_mode":"LOCAL_ANALYSIS","certification_status":"NOT_CERTIFIED","dependencies":["elmos-multi-source-repository-discovery"],"description":"Ingest normative grammars, vendor dialect grammars and parser artifacts into a versioned grammar model with provenance and ambiguity records.","external_evidence_status":"NOT_RUN","installation_binding":"REPOSITORY_OWNED_WRAPPER","layer":"frontend-semantics","managed_by":"tooling/integrate_polyglot_semantic_assurance_skills.py","name":"elmos-grammar-spec-ingestor","operation_family":"frontend-semantics","ordinal":169,"outputs":["semantic-assurance/elmos-grammar-spec-ingestor/model.json","semantic-assurance/elmos-grammar-spec-ingestor/evidence.json","semantic-assurance/elmos-grammar-spec-ingestor/diagnostics.json"],"package_id":"elmos-polyglot-skills-v3.0.0-semantic-assurance","package_version":"3.0.0","repository_owned_wrapper":true,"risk":"critical","runtime_evidence_status":"NOT_RUN","schema_version":"elmos.polyglot-semantic-assurance.compiled-skill.v1","side_effects_authorized":false,"source_body_embedded":false,"source_id":"ELMOS-POLY-169","source_instructions_activated":false,"source_path":"agent-skills/runtime/elmos-grammar-spec-ingestor/SKILL.md","source_readiness":"not-run","source_sha256":"sha256:696a813f943ee4afadd6dbdb9763c12105de85a9c0b7976d3f1b787ed16fa8bd"}
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-grammar-spec-ingestor"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_LOCAL_BOUNDED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_grammar_spec_ingestor",
+    "operation": "MODEL_NORMALIZATION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-grammar-spec-ingestor"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-grammar-spec-ingestor",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-grammar-spec-ingestor/SKILL.md",
+    "sourceSha256": "sha256:696a813f943ee4afadd6dbdb9763c12105de85a9c0b7976d3f1b787ed16fa8bd",
+    "sourceSkillId": "ELMOS-POLY-169"
+  }
+}

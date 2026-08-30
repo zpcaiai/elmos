@@ -1,1 +1,41 @@
-{"batch":"M","capability_mode":"LOCAL_ANALYSIS","certification_status":"NOT_CERTIFIED","dependencies":["elmos-serialization-schema-type-semantics"],"description":"Preserve instant/local date/time, timezone database, DST ambiguity, calendar rules, epoch ranges and serialization.","external_evidence_status":"NOT_RUN","installation_binding":"REPOSITORY_OWNED_WRAPPER","layer":"temporal-semantics","managed_by":"tooling/integrate_polyglot_semantic_assurance_skills.py","name":"elmos-datetime-timezone-calendar-semantics","operation_family":"runtime-semantics","ordinal":227,"outputs":["semantic-assurance/elmos-datetime-timezone-calendar-semantics/model.json","semantic-assurance/elmos-datetime-timezone-calendar-semantics/evidence.json","semantic-assurance/elmos-datetime-timezone-calendar-semantics/diagnostics.json"],"package_id":"elmos-polyglot-skills-v3.0.0-semantic-assurance","package_version":"3.0.0","repository_owned_wrapper":true,"risk":"critical","runtime_evidence_status":"NOT_RUN","schema_version":"elmos.polyglot-semantic-assurance.compiled-skill.v1","side_effects_authorized":false,"source_body_embedded":false,"source_id":"ELMOS-POLY-227","source_instructions_activated":false,"source_path":"agent-skills/runtime/elmos-datetime-timezone-calendar-semantics/SKILL.md","source_readiness":"not-run","source_sha256":"sha256:b4567891885d52505229ee4ae0b95942a93d6bb7b839af5df0afd920ee990002"}
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-datetime-timezone-calendar-semantics"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_LOCAL_BOUNDED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_datetime_timezone_calendar_semantics",
+    "operation": "MODEL_NORMALIZATION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-datetime-timezone-calendar-semantics"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-datetime-timezone-calendar-semantics",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-datetime-timezone-calendar-semantics/SKILL.md",
+    "sourceSha256": "sha256:b4567891885d52505229ee4ae0b95942a93d6bb7b839af5df0afd920ee990002",
+    "sourceSkillId": "ELMOS-POLY-227"
+  }
+}

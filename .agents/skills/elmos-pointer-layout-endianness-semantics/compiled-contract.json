@@ -1,1 +1,41 @@
-{"batch":"M","capability_mode":"LOCAL_ANALYSIS","certification_status":"NOT_CERTIFIED","dependencies":["elmos-lifetime-ownership-borrow-semantics"],"description":"Preserve pointer arithmetic, provenance-sensitive operations, alignment, padding, bitfields and byte order for native/record migrations.","external_evidence_status":"NOT_RUN","installation_binding":"REPOSITORY_OWNED_WRAPPER","layer":"runtime-semantics","managed_by":"tooling/integrate_polyglot_semantic_assurance_skills.py","name":"elmos-pointer-layout-endianness-semantics","operation_family":"runtime-semantics","ordinal":216,"outputs":["semantic-assurance/elmos-pointer-layout-endianness-semantics/model.json","semantic-assurance/elmos-pointer-layout-endianness-semantics/evidence.json","semantic-assurance/elmos-pointer-layout-endianness-semantics/diagnostics.json"],"package_id":"elmos-polyglot-skills-v3.0.0-semantic-assurance","package_version":"3.0.0","repository_owned_wrapper":true,"risk":"critical","runtime_evidence_status":"NOT_RUN","schema_version":"elmos.polyglot-semantic-assurance.compiled-skill.v1","side_effects_authorized":false,"source_body_embedded":false,"source_id":"ELMOS-POLY-216","source_instructions_activated":false,"source_path":"agent-skills/runtime/elmos-pointer-layout-endianness-semantics/SKILL.md","source_readiness":"not-run","source_sha256":"sha256:2c00b3c44747b7d60114b7ca3552ec042da7063a37d795eb7de2fd4fb74ef562"}
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-pointer-layout-endianness-semantics"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_LOCAL_BOUNDED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_pointer_layout_endianness_semantics",
+    "operation": "MODEL_NORMALIZATION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-pointer-layout-endianness-semantics"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-pointer-layout-endianness-semantics",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-pointer-layout-endianness-semantics/SKILL.md",
+    "sourceSha256": "sha256:2c00b3c44747b7d60114b7ca3552ec042da7063a37d795eb7de2fd4fb74ef562",
+    "sourceSkillId": "ELMOS-POLY-216"
+  }
+}

@@ -1,1 +1,41 @@
-{"batch":"J","capability_mode":"LOCAL_ANALYSIS","certification_status":"NOT_CERTIFIED","dependencies":["elmos-lossless-cst-builder"],"description":"Cross-check ELMOS CST/AST extraction against native compiler or language-service frontends to detect parser drift and semantic frontend mismatches.","external_evidence_status":"NOT_RUN","installation_binding":"REPOSITORY_OWNED_WRAPPER","layer":"frontend-semantics","managed_by":"tooling/integrate_polyglot_semantic_assurance_skills.py","name":"elmos-native-ast-cross-checker","operation_family":"frontend-semantics","ordinal":174,"outputs":["semantic-assurance/elmos-native-ast-cross-checker/model.json","semantic-assurance/elmos-native-ast-cross-checker/evidence.json","semantic-assurance/elmos-native-ast-cross-checker/diagnostics.json"],"package_id":"elmos-polyglot-skills-v3.0.0-semantic-assurance","package_version":"3.0.0","repository_owned_wrapper":true,"risk":"critical","runtime_evidence_status":"NOT_RUN","schema_version":"elmos.polyglot-semantic-assurance.compiled-skill.v1","side_effects_authorized":false,"source_body_embedded":false,"source_id":"ELMOS-POLY-174","source_instructions_activated":false,"source_path":"agent-skills/runtime/elmos-native-ast-cross-checker/SKILL.md","source_readiness":"not-run","source_sha256":"sha256:58b071c82f4d99d22cda8fb8a3f9059ccbb1df34e4d9e3c5fdfb3f9db3bbbc09"}
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-native-ast-cross-checker"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_LOCAL_BOUNDED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_native_ast_cross_checker",
+    "operation": "SEMANTIC_COMPARISON",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-native-ast-cross-checker"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-native-ast-cross-checker",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-native-ast-cross-checker/SKILL.md",
+    "sourceSha256": "sha256:58b071c82f4d99d22cda8fb8a3f9059ccbb1df34e4d9e3c5fdfb3f9db3bbbc09",
+    "sourceSkillId": "ELMOS-POLY-174"
+  }
+}

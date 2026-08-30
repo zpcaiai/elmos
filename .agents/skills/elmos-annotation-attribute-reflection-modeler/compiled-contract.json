@@ -1,1 +1,41 @@
-{"batch":"J","capability_mode":"LOCAL_ANALYSIS","certification_status":"NOT_CERTIFIED","dependencies":["elmos-symbol-table-builder"],"description":"Capture metadata-driven behavior including annotations, attributes, decorators, reflection, DI scanning and runtime discovery.","external_evidence_status":"NOT_RUN","installation_binding":"REPOSITORY_OWNED_WRAPPER","layer":"reflection-semantics","managed_by":"tooling/integrate_polyglot_semantic_assurance_skills.py","name":"elmos-annotation-attribute-reflection-modeler","operation_family":"frontend-semantics","ordinal":182,"outputs":["semantic-assurance/elmos-annotation-attribute-reflection-modeler/model.json","semantic-assurance/elmos-annotation-attribute-reflection-modeler/evidence.json","semantic-assurance/elmos-annotation-attribute-reflection-modeler/diagnostics.json"],"package_id":"elmos-polyglot-skills-v3.0.0-semantic-assurance","package_version":"3.0.0","repository_owned_wrapper":true,"risk":"critical","runtime_evidence_status":"NOT_RUN","schema_version":"elmos.polyglot-semantic-assurance.compiled-skill.v1","side_effects_authorized":false,"source_body_embedded":false,"source_id":"ELMOS-POLY-182","source_instructions_activated":false,"source_path":"agent-skills/runtime/elmos-annotation-attribute-reflection-modeler/SKILL.md","source_readiness":"not-run","source_sha256":"sha256:083ff22ef6e1d13a59ab78a67e61ebee3894d449795dd7c8e14a6aa7f7845803"}
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-annotation-attribute-reflection-modeler"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_LOCAL_BOUNDED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_annotation_attribute_reflection_modeler",
+    "operation": "MODEL_NORMALIZATION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-annotation-attribute-reflection-modeler"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-annotation-attribute-reflection-modeler",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-annotation-attribute-reflection-modeler/SKILL.md",
+    "sourceSha256": "sha256:083ff22ef6e1d13a59ab78a67e61ebee3894d449795dd7c8e14a6aa7f7845803",
+    "sourceSkillId": "ELMOS-POLY-182"
+  }
+}

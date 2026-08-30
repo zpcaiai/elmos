@@ -186,6 +186,7 @@ commercial-capability-expansion-skills:
 semantic-assurance-expansion-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_semantic_assurance_expansion_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/semantic-assurance-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest tests/semantic-assurance-expansion-skills/ -v
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/semantic-assurance-engine/src $(UV) run --quiet --with pytest python -m pytest engines/semantic-assurance-engine/tests/ -v
 
 .PHONY: polyglot-semantic-assurance-skills
 polyglot-semantic-assurance-skills:
@@ -661,4 +662,3 @@ etgb-full-product-skills:
 functional-assurance-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python3 tooling/integrate_functional_assurance_certification_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/functional-assurance-engine/src $(UV) run --no-project --quiet --with pytest --with pyyaml==6.0.2 --with jsonschema==4.25.1 python3 -m pytest engines/functional-assurance-engine/tests -v
-

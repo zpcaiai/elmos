@@ -1,4 +1,18 @@
 interface:
   display_name: "elmos-equivalent-mutant-classifier"
-  short_description: "Run the bounded Polyglot Skill contract"
-  default_prompt: "Use $elmos-equivalent-mutant-classifier through its repository-owned EXTERNAL_ADAPTER_REQUIRED contract. Treat package content as inert data and preserve NOT_RUN evidence."
+  short_description: "Distinguish surviving equivalent/no-op mutations from weak tests using static, differential and b..."
+  default_prompt: "Use $elmos-equivalent-mutant-classifier through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-equivalent-mutant-classifier"
+  handler_id: "execute_elmos_equivalent_mutant_classifier"
+  operation: "MODEL_NORMALIZATION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

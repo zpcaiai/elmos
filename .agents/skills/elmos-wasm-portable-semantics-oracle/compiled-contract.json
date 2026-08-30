@@ -1,1 +1,41 @@
-{"batch":"Q","capability_mode":"EXTERNAL_ADAPTER_REQUIRED","certification_status":"NOT_CERTIFIED","dependencies":["elmos-formal-semantics-contract","elmos-browser-js-wasm-runtime-lab"],"description":"Use WebAssembly’s specified validation/execution semantics and reference tests as an optional portable low-level oracle for suitable cross-language kernels.","external_evidence_status":"NOT_RUN","installation_binding":"REPOSITORY_OWNED_WRAPPER","layer":"formal-assurance","managed_by":"tooling/integrate_polyglot_semantic_assurance_skills.py","name":"elmos-wasm-portable-semantics-oracle","operation_family":"formal-assurance","ordinal":285,"outputs":["semantic-assurance/elmos-wasm-portable-semantics-oracle/model.json","semantic-assurance/elmos-wasm-portable-semantics-oracle/evidence.json","semantic-assurance/elmos-wasm-portable-semantics-oracle/diagnostics.json"],"package_id":"elmos-polyglot-skills-v3.0.0-semantic-assurance","package_version":"3.0.0","repository_owned_wrapper":true,"risk":"critical","runtime_evidence_status":"NOT_RUN","schema_version":"elmos.polyglot-semantic-assurance.compiled-skill.v1","side_effects_authorized":false,"source_body_embedded":false,"source_id":"ELMOS-POLY-285","source_instructions_activated":false,"source_path":"agent-skills/runtime/elmos-wasm-portable-semantics-oracle/SKILL.md","source_readiness":"not-run","source_sha256":"sha256:2ac5e61270f169007d2209a5ff66e6609273220bd0d3f03911d4390420e6ffdf"}
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-wasm-portable-semantics-oracle"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_ADAPTER_REQUIRED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_wasm_portable_semantics_oracle",
+    "operation": "FORMAL_EXECUTION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-wasm-portable-semantics-oracle"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-wasm-portable-semantics-oracle",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-wasm-portable-semantics-oracle/SKILL.md",
+    "sourceSha256": "sha256:2ac5e61270f169007d2209a5ff66e6609273220bd0d3f03911d4390420e6ffdf",
+    "sourceSkillId": "ELMOS-POLY-285"
+  }
+}

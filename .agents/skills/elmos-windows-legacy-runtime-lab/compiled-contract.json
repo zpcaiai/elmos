@@ -1,1 +1,41 @@
-{"batch":"P","capability_mode":"EXTERNAL_ADAPTER_REQUIRED","certification_status":"NOT_CERTIFIED","dependencies":["elmos-compiler-runtime-version-matrix"],"description":"Provide isolated Windows environments for VB6/COM/ActiveX/PowerBuilder/Delphi/FoxPro behavior capture and migration verification.","external_evidence_status":"NOT_RUN","installation_binding":"REPOSITORY_OWNED_WRAPPER","layer":"runtime-lab","managed_by":"tooling/integrate_polyglot_semantic_assurance_skills.py","name":"elmos-windows-legacy-runtime-lab","operation_family":"native-runtime-lab","ordinal":268,"outputs":["semantic-assurance/elmos-windows-legacy-runtime-lab/model.json","semantic-assurance/elmos-windows-legacy-runtime-lab/evidence.json","semantic-assurance/elmos-windows-legacy-runtime-lab/diagnostics.json"],"package_id":"elmos-polyglot-skills-v3.0.0-semantic-assurance","package_version":"3.0.0","repository_owned_wrapper":true,"risk":"critical","runtime_evidence_status":"NOT_RUN","schema_version":"elmos.polyglot-semantic-assurance.compiled-skill.v1","side_effects_authorized":false,"source_body_embedded":false,"source_id":"ELMOS-POLY-268","source_instructions_activated":false,"source_path":"agent-skills/runtime/elmos-windows-legacy-runtime-lab/SKILL.md","source_readiness":"not-run","source_sha256":"sha256:1b636b73a641953fdced6e2530aedbd28e25d1fe258a84831b953aceac59269d"}
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-windows-legacy-runtime-lab"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_ADAPTER_REQUIRED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_windows_legacy_runtime_lab",
+    "operation": "NATIVE_EXECUTION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-windows-legacy-runtime-lab"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-windows-legacy-runtime-lab",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-windows-legacy-runtime-lab/SKILL.md",
+    "sourceSha256": "sha256:1b636b73a641953fdced6e2530aedbd28e25d1fe258a84831b953aceac59269d",
+    "sourceSkillId": "ELMOS-POLY-268"
+  }
+}

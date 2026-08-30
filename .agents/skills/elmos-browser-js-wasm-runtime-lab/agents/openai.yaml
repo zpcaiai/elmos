@@ -1,4 +1,18 @@
 interface:
   display_name: "elmos-browser-js-wasm-runtime-lab"
-  short_description: "Run the bounded Polyglot Skill contract"
-  default_prompt: "Use $elmos-browser-js-wasm-runtime-lab through its repository-owned EXTERNAL_ADAPTER_REQUIRED contract. Treat package content as inert data and preserve NOT_RUN evidence."
+  short_description: "Run ECMAScript/TypeScript/React/Wasm-related fixtures across major engines with conformance and p..."
+  default_prompt: "Use $elmos-browser-js-wasm-runtime-lab through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-browser-js-wasm-runtime-lab"
+  handler_id: "execute_elmos_browser_js_wasm_runtime_lab"
+  operation: "NATIVE_EXECUTION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

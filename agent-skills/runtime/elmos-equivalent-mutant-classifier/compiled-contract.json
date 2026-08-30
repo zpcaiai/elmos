@@ -1,1 +1,41 @@
-{"batch":"R","capability_mode":"EXTERNAL_ADAPTER_REQUIRED","certification_status":"NOT_CERTIFIED","dependencies":["elmos-semantic-mutation-testing","elmos-smt-equivalence-prover"],"description":"Distinguish surviving equivalent/no-op mutations from weak tests using static, differential and bounded proof evidence where feasible.","external_evidence_status":"NOT_RUN","installation_binding":"REPOSITORY_OWNED_WRAPPER","layer":"test-strength","managed_by":"tooling/integrate_polyglot_semantic_assurance_skills.py","name":"elmos-equivalent-mutant-classifier","operation_family":"semantic-fuzzing","ordinal":296,"outputs":["semantic-assurance/elmos-equivalent-mutant-classifier/model.json","semantic-assurance/elmos-equivalent-mutant-classifier/evidence.json","semantic-assurance/elmos-equivalent-mutant-classifier/diagnostics.json"],"package_id":"elmos-polyglot-skills-v3.0.0-semantic-assurance","package_version":"3.0.0","repository_owned_wrapper":true,"risk":"critical","runtime_evidence_status":"NOT_RUN","schema_version":"elmos.polyglot-semantic-assurance.compiled-skill.v1","side_effects_authorized":false,"source_body_embedded":false,"source_id":"ELMOS-POLY-296","source_instructions_activated":false,"source_path":"agent-skills/runtime/elmos-equivalent-mutant-classifier/SKILL.md","source_readiness":"not-run","source_sha256":"sha256:65114826b0231631b30945fbfc67c5f5cf3a30a6797fd4734dd7360b09b82998"}
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-equivalent-mutant-classifier"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_LOCAL_BOUNDED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_equivalent_mutant_classifier",
+    "operation": "MODEL_NORMALIZATION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-equivalent-mutant-classifier"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-equivalent-mutant-classifier",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-equivalent-mutant-classifier/SKILL.md",
+    "sourceSha256": "sha256:65114826b0231631b30945fbfc67c5f5cf3a30a6797fd4734dd7360b09b82998",
+    "sourceSkillId": "ELMOS-POLY-296"
+  }
+}

@@ -1,1 +1,41 @@
-{"batch":"K","capability_mode":"INDEPENDENT_GATE_REQUIRED","certification_status":"NOT_CERTIFIED","dependencies":["elmos-nullability-optionality-semantics","elmos-numeric-type-range-overflow","elmos-string-char-codepoint-semantics","elmos-collection-order-mutability-semantics","elmos-enum-variant-sumtype-semantics","elmos-generics-variance-erasure-semantics","elmos-refinement-range-contract-semantics","elmos-lifetime-ownership-borrow-semantics","elmos-exception-effect-type-semantics","elmos-public-api-binary-compatibility"],"description":"Aggregate type-system obligations and block routes that narrow domains, erase contracts or alter observable type behavior without an approved adaptation.","external_evidence_status":"NOT_RUN","installation_binding":"REPOSITORY_OWNED_WRAPPER","layer":"quality-gate","managed_by":"tooling/integrate_polyglot_semantic_assurance_skills.py","name":"elmos-type-semantic-loss-gate","operation_family":"quality-gate","ordinal":198,"outputs":["semantic-assurance/elmos-type-semantic-loss-gate/model.json","semantic-assurance/elmos-type-semantic-loss-gate/evidence.json","semantic-assurance/elmos-type-semantic-loss-gate/diagnostics.json"],"package_id":"elmos-polyglot-skills-v3.0.0-semantic-assurance","package_version":"3.0.0","repository_owned_wrapper":true,"risk":"critical","runtime_evidence_status":"NOT_RUN","schema_version":"elmos.polyglot-semantic-assurance.compiled-skill.v1","side_effects_authorized":false,"source_body_embedded":false,"source_id":"ELMOS-POLY-198","source_instructions_activated":false,"source_path":"agent-skills/runtime/elmos-type-semantic-loss-gate/SKILL.md","source_readiness":"not-run","source_sha256":"sha256:b61260e95f1f9d5ccf23822ac0a4b48722d477ddacdba34a9f9bc4da602cb540"}
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-type-semantic-loss-gate"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_EXTERNAL_GATE_REQUIRED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_type_semantic_loss_gate",
+    "operation": "GATE_EVALUATION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-type-semantic-loss-gate"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-type-semantic-loss-gate",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-type-semantic-loss-gate/SKILL.md",
+    "sourceSha256": "sha256:b61260e95f1f9d5ccf23822ac0a4b48722d477ddacdba34a9f9bc4da602cb540",
+    "sourceSkillId": "ELMOS-POLY-198"
+  }
+}
