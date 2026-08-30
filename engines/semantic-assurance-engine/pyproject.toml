@@ -8,13 +8,27 @@ version = "1.0.0"
 description = "Production-grade Semantic Assurance Engine for Elmos (Batches J-R, Skills 169-300)"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
-    "jsonschema>=4.20.0",
-    "pyyaml>=6.0",
-]
+dependencies = []
 
 [project.scripts]
 elmos-semantic-assurance = "elmos_semantic_assurance.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unreachable = true
+exclude = ["tests/"]

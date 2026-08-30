@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-scientific-hpc-runtime-lab"
+  short_description: "Execute Fortran/C/C++ numerical routes with BLAS/LAPACK/MPI/OpenMP/vectorization and deterministi..."
+  default_prompt: "Use $elmos-scientific-hpc-runtime-lab through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-scientific-hpc-runtime-lab"
+  handler_id: "execute_elmos_scientific_hpc_runtime_lab"
+  operation: "NATIVE_EXECUTION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

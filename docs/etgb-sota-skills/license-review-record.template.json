@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "record_type": "license-review",
+  "payload": {
+    "corpus_id": "REPLACE_FROM_CORPUS_REVIEW_REQUEST",
+    "repository": "REPLACE_FROM_CORPUS_REVIEW_REQUEST",
+    "commit": "0000000000000000000000000000000000000000",
+    "license_spdx": [],
+    "patent_and_trademark_scope": "REPLACE_WITH_INDEPENDENT_REVIEW",
+    "data_and_export_control_scope": "REPLACE_WITH_INDEPENDENT_REVIEW",
+    "redistribution_decision": "REPLACE_WITH_INDEPENDENT_DECISION",
+    "review_status": "REPLACE_WITH_INDEPENDENT_DECISION"
+  },
+  "issuer_id": "REPLACE_WITH_INDEPENDENT_LICENSE_REVIEWER",
+  "key_id": "REPLACE_WITH_PURPOSE_BOUND_PUBLIC_KEY_ID",
+  "algorithm": "ed25519",
+  "issued_at": "REPLACE_WITH_RFC3339_TIME",
+  "expires_at": "REPLACE_WITH_RFC3339_TIME",
+  "signature": "REPLACE_WITH_BASE64URL_ED25519_SIGNATURE"
+}

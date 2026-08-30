@@ -1,0 +1,27 @@
+<view class="content-shell">
+  <view class="business-hero">
+    <view class="cc-h1">
+      一键冒烟运行
+    </view>
+    <view class="cc-p">
+      生成或转换完成的项目会自带 Batch 46 冒烟包。在这里选中项目即可一键跑起来：
+          自动灌入一次性种子数据、探活、跑冒烟断言，免费额度到期后自动停止服务并清空临时数据。
+    </view>
+  </view>
+  <view class="business-form">
+    <label class="business-form-grid">
+      <text>
+        项目引用（相对 ELMOS_SMOKE_PROJECTS_ROOT 的路径）
+      </text>
+      <input value="{{ draft }}" placeholder="例如 java-to-python/orders-service" maxlength="{{ 180 }}" bindchange="handleChangeInput0" />
+    </label>
+    <view class="business-actions">
+      <button class="button button-primary" type="button" disabled="{{ !(/^[a-z0-9][a-z0-9._/-]{2,180}$/i.test(draft.trim()) && !draft.includes(&quot;..&quot;)) }}" bindtap="handleClickButton1">
+        载入冒烟包
+      </button>
+    </view>
+  </view>
+  <block wx:if="{{ projectRef }}">
+    <smoke-run-button project-ref="{{ projectRef }}" />
+  </block>
+</view>

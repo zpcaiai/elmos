@@ -1,0 +1,2719 @@
+{
+  "schema_version": 1,
+  "pack_key": "web-console-next16-react19-wechat-v1",
+  "source_tuple": {
+    "stack": "nextjs-react-web-console",
+    "versions": [
+      "next-16.3.0-react-19.2.7-typescript-5.9.2"
+    ],
+    "language": "typescript",
+    "language_versions": [
+      "5.9.2"
+    ],
+    "runtime": "nodejs",
+    "runtime_versions": [
+      "26.0.0"
+    ],
+    "build_tool": "next-16.3.0",
+    "package_manager": "pnpm-10.12.4",
+    "router": [
+      "next-app-router-16.3.0"
+    ],
+    "renderer": [
+      "react-dom-19.2.7",
+      "next-server-client-components-16.3.0"
+    ],
+    "state": [
+      "react-hooks-19.2.7",
+      "context-providers"
+    ],
+    "forms": [
+      "react-controlled-and-uncontrolled-forms"
+    ],
+    "styling": [
+      "css-modules",
+      "global-css",
+      "inline-style"
+    ],
+    "design_system": [
+      "web-console-local-design-system"
+    ],
+    "api_client": [
+      "fetch-relative-api-contract"
+    ],
+    "identity": [
+      "account-session-context",
+      "server-cookie-session"
+    ],
+    "i18n": [
+      "zh-CN",
+      "en-US"
+    ],
+    "test_tools": [
+      "typescript-5.9.2",
+      "next-build-16.3.0",
+      "playwright-1.61.1"
+    ],
+    "browsers": [
+      "chromium-playwright-source-NOT_RUN"
+    ],
+    "devices": []
+  },
+  "source_revision": "f734a4d9a2dd9253d975b998eb5bbe5a7c624dff",
+  "snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+  "coverage": 1,
+  "routes": [
+    {
+      "path": "/account",
+      "source_ref": "apps/web-console/app/account/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/admin",
+      "source_ref": "apps/web-console/app/admin/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/commercialization",
+      "source_ref": "apps/web-console/app/commercialization/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/frontend",
+      "source_ref": "apps/web-console/app/frontend/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/generation",
+      "source_ref": "apps/web-console/app/generation/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/governance",
+      "source_ref": "apps/web-console/app/governance/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/help",
+      "source_ref": "apps/web-console/app/help/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/intake",
+      "source_ref": "apps/web-console/app/intake/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/login",
+      "source_ref": "apps/web-console/app/login/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/migration",
+      "source_ref": "apps/web-console/app/migration/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/migration/sql",
+      "source_ref": "apps/web-console/app/migration/sql/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/observability",
+      "source_ref": "apps/web-console/app/observability/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/orchestration",
+      "source_ref": "apps/web-console/app/orchestration/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/",
+      "source_ref": "apps/web-console/app/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/playground",
+      "source_ref": "apps/web-console/app/playground/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/pricing",
+      "source_ref": "apps/web-console/app/pricing/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/proof-loop",
+      "source_ref": "apps/web-console/app/proof-loop/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/repositories",
+      "source_ref": "apps/web-console/app/repositories/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/skills",
+      "source_ref": "apps/web-console/app/skills/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/smoke",
+      "source_ref": "apps/web-console/app/smoke/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/spring",
+      "source_ref": "apps/web-console/app/spring/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/translation",
+      "source_ref": "apps/web-console/app/translation/page.tsx",
+      "discovery": "next-app-router-static"
+    }
+  ],
+  "components": [
+    {
+      "name": "AccountOrganizationStudio",
+      "source_ref": "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "AccountWalletPanel",
+      "source_ref": "apps/web-console/app/account/AccountWalletPanel.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "AccountPage",
+      "source_ref": "apps/web-console/app/account/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "Empty",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "EventTable",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "IncidentCard",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "OperationsAdmin",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "RemediationCard",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "AdminPage",
+      "source_ref": "apps/web-console/app/admin/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "PlatformJobsPanel",
+      "source_ref": "apps/web-console/app/admin/PlatformJobsPanel.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "PlatformWalletPanel",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "CommercializationConsole",
+      "source_ref": "apps/web-console/app/commercialization/CommercializationConsole.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "CommercializationPage",
+      "source_ref": "apps/web-console/app/commercialization/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "AccountSessionProvider",
+      "source_ref": "apps/web-console/app/components/AccountSessionProvider.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "AppShell",
+      "source_ref": "apps/web-console/app/components/AppShell.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "Icon",
+      "source_ref": "apps/web-console/app/components/Icon.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "BehaviorChart",
+      "source_ref": "apps/web-console/app/components/ProjectEvidenceCharts.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "CoverageMeter",
+      "source_ref": "apps/web-console/app/components/ProjectEvidenceCharts.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "EmptyEvidence",
+      "source_ref": "apps/web-console/app/components/ProjectEvidenceCharts.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "EquivalenceMatrix",
+      "source_ref": "apps/web-console/app/components/ProjectEvidenceCharts.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "EvidenceGraph",
+      "source_ref": "apps/web-console/app/components/ProjectEvidenceCharts.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "ProjectEvidenceCharts",
+      "source_ref": "apps/web-console/app/components/ProjectEvidenceCharts.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "SemanticMappingChart",
+      "source_ref": "apps/web-console/app/components/ProjectEvidenceCharts.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "StatusMark",
+      "source_ref": "apps/web-console/app/components/ProjectEvidenceCharts.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "TranslationEvidenceCharts",
+      "source_ref": "apps/web-console/app/components/ProjectEvidenceCharts.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "RuntimeDeploymentGuide",
+      "source_ref": "apps/web-console/app/components/RuntimeDeploymentGuide.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "SmokeRunButton",
+      "source_ref": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "StatusChip",
+      "source_ref": "apps/web-console/app/components/StatusChip.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "UiPreferencesProvider",
+      "source_ref": "apps/web-console/app/components/UiPreferencesProvider.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "FrontendTransformationStudio",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "FrontendTransformationPage",
+      "source_ref": "apps/web-console/app/frontend/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "GenerationPage",
+      "source_ref": "apps/web-console/app/generation/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "ProjectGenerationStudio",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "GovernanceWorkspace",
+      "source_ref": "apps/web-console/app/governance/GovernanceWorkspace.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "GovernancePage",
+      "source_ref": "apps/web-console/app/governance/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "HelpCenter",
+      "source_ref": "apps/web-console/app/help/HelpCenter.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "HelpPage",
+      "source_ref": "apps/web-console/app/help/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "MultimodalIntakePage",
+      "source_ref": "apps/web-console/app/intake/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "RootLayout",
+      "source_ref": "apps/web-console/app/layout.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "LoginPage",
+      "source_ref": "apps/web-console/app/login/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "Marketplace",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "MigrationStudio",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "MigrationPage",
+      "source_ref": "apps/web-console/app/migration/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "ChinaDbSqlPreflightStudio",
+      "source_ref": "apps/web-console/app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "ChinaDbSqlPreflightPage",
+      "source_ref": "apps/web-console/app/migration/sql/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "ObservabilityWorkspace",
+      "source_ref": "apps/web-console/app/observability/ObservabilityWorkspace.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "ObservabilityPage",
+      "source_ref": "apps/web-console/app/observability/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "RepositoryOrchestrationPage",
+      "source_ref": "apps/web-console/app/orchestration/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "RepositoryOrchestratorWorkbench",
+      "source_ref": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "Home",
+      "source_ref": "apps/web-console/app/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "PlaygroundPage",
+      "source_ref": "apps/web-console/app/playground/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "PlaygroundWorkspace",
+      "source_ref": "apps/web-console/app/playground/PlaygroundWorkspace.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "PlanBillingAction",
+      "source_ref": "apps/web-console/app/pricing/BillingActions.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "SubscriptionManager",
+      "source_ref": "apps/web-console/app/pricing/BillingActions.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "PricingPage",
+      "source_ref": "apps/web-console/app/pricing/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "UsageDashboard",
+      "source_ref": "apps/web-console/app/pricing/UsageDashboard.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "UsageMeter",
+      "source_ref": "apps/web-console/app/pricing/UsageDashboard.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "ModernizationProofStudio",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "ModernizationProofPage",
+      "source_ref": "apps/web-console/app/proof-loop/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "RepositoriesPage",
+      "source_ref": "apps/web-console/app/repositories/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "SkillsPage",
+      "source_ref": "apps/web-console/app/skills/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "PrecisionMigrationJobs",
+      "source_ref": "apps/web-console/app/skills/PrecisionMigrationJobs.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "SkillsWorkspace",
+      "source_ref": "apps/web-console/app/skills/SkillsWorkspace.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "SmokePage",
+      "source_ref": "apps/web-console/app/smoke/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "SmokeConsole",
+      "source_ref": "apps/web-console/app/smoke/SmokeConsole.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "SpringModernizationPage",
+      "source_ref": "apps/web-console/app/spring/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "SpringModernizationStudio",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "TranslationPage",
+      "source_ref": "apps/web-console/app/translation/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
+      "name": "TranslationStudio",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "discovery": "typescript-compiler-api"
+    }
+  ],
+  "templates": [
+    "apps/web-console/app/account/AccountOrganizationStudio.tsx#AccountOrganizationStudio",
+    "apps/web-console/app/account/AccountWalletPanel.tsx#AccountWalletPanel",
+    "apps/web-console/app/account/page.tsx#AccountPage",
+    "apps/web-console/app/admin/OperationsAdmin.tsx#Empty",
+    "apps/web-console/app/admin/OperationsAdmin.tsx#EventTable",
+    "apps/web-console/app/admin/OperationsAdmin.tsx#IncidentCard",
+    "apps/web-console/app/admin/OperationsAdmin.tsx#OperationsAdmin",
+    "apps/web-console/app/admin/OperationsAdmin.tsx#RemediationCard",
+    "apps/web-console/app/admin/page.tsx#AdminPage",
+    "apps/web-console/app/admin/PlatformJobsPanel.tsx#PlatformJobsPanel",
+    "apps/web-console/app/admin/PlatformWalletPanel.tsx#PlatformWalletPanel",
+    "apps/web-console/app/commercialization/CommercializationConsole.tsx#CommercializationConsole",
+    "apps/web-console/app/commercialization/page.tsx#CommercializationPage",
+    "apps/web-console/app/components/AccountSessionProvider.tsx#AccountSessionProvider",
+    "apps/web-console/app/components/AppShell.tsx#AppShell",
+    "apps/web-console/app/components/Icon.tsx#Icon",
+    "apps/web-console/app/components/ProjectEvidenceCharts.tsx#BehaviorChart",
+    "apps/web-console/app/components/ProjectEvidenceCharts.tsx#CoverageMeter",
+    "apps/web-console/app/components/ProjectEvidenceCharts.tsx#EmptyEvidence",
+    "apps/web-console/app/components/ProjectEvidenceCharts.tsx#EquivalenceMatrix",
+    "apps/web-console/app/components/ProjectEvidenceCharts.tsx#EvidenceGraph",
+    "apps/web-console/app/components/ProjectEvidenceCharts.tsx#ProjectEvidenceCharts",
+    "apps/web-console/app/components/ProjectEvidenceCharts.tsx#SemanticMappingChart",
+    "apps/web-console/app/components/ProjectEvidenceCharts.tsx#StatusMark",
+    "apps/web-console/app/components/ProjectEvidenceCharts.tsx#TranslationEvidenceCharts",
+    "apps/web-console/app/components/RuntimeDeploymentGuide.tsx#RuntimeDeploymentGuide",
+    "apps/web-console/app/components/SmokeRunButton.tsx#SmokeRunButton",
+    "apps/web-console/app/components/StatusChip.tsx#StatusChip",
+    "apps/web-console/app/components/UiPreferencesProvider.tsx#UiPreferencesProvider",
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#FrontendTransformationStudio",
+    "apps/web-console/app/frontend/page.tsx#FrontendTransformationPage",
+    "apps/web-console/app/generation/page.tsx#GenerationPage",
+    "apps/web-console/app/generation/ProjectGenerationStudio.tsx#ProjectGenerationStudio",
+    "apps/web-console/app/governance/GovernanceWorkspace.tsx#GovernanceWorkspace",
+    "apps/web-console/app/governance/page.tsx#GovernancePage",
+    "apps/web-console/app/help/HelpCenter.tsx#HelpCenter",
+    "apps/web-console/app/help/page.tsx#HelpPage",
+    "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx#MultimodalIntakeWorkbench",
+    "apps/web-console/app/intake/page.tsx#MultimodalIntakePage",
+    "apps/web-console/app/layout.tsx#RootLayout",
+    "apps/web-console/app/login/page.tsx#LoginPage",
+    "apps/web-console/app/migration/MigrationStudio.tsx#Marketplace",
+    "apps/web-console/app/migration/MigrationStudio.tsx#MigrationStudio",
+    "apps/web-console/app/migration/page.tsx#MigrationPage",
+    "apps/web-console/app/migration/sql/ChinaDbSqlPreflightStudio.tsx#ChinaDbSqlPreflightStudio",
+    "apps/web-console/app/migration/sql/page.tsx#ChinaDbSqlPreflightPage",
+    "apps/web-console/app/observability/ObservabilityWorkspace.tsx#ObservabilityWorkspace",
+    "apps/web-console/app/observability/page.tsx#ObservabilityPage",
+    "apps/web-console/app/orchestration/page.tsx#RepositoryOrchestrationPage",
+    "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx#RepositoryOrchestratorWorkbench",
+    "apps/web-console/app/page.tsx#Home",
+    "apps/web-console/app/playground/page.tsx#PlaygroundPage",
+    "apps/web-console/app/playground/PlaygroundWorkspace.tsx#PlaygroundWorkspace",
+    "apps/web-console/app/pricing/BillingActions.tsx#PlanBillingAction",
+    "apps/web-console/app/pricing/BillingActions.tsx#SubscriptionManager",
+    "apps/web-console/app/pricing/page.tsx#PricingPage",
+    "apps/web-console/app/pricing/UsageDashboard.tsx#UsageDashboard",
+    "apps/web-console/app/pricing/UsageDashboard.tsx#UsageMeter",
+    "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx#ModernizationProofStudio",
+    "apps/web-console/app/proof-loop/page.tsx#ModernizationProofPage",
+    "apps/web-console/app/repositories/page.tsx#RepositoriesPage",
+    "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx#RepositoryWorkspaceStudio",
+    "apps/web-console/app/skills/page.tsx#SkillsPage",
+    "apps/web-console/app/skills/PrecisionMigrationJobs.tsx#PrecisionMigrationJobs",
+    "apps/web-console/app/skills/SkillsWorkspace.tsx#SkillsWorkspace",
+    "apps/web-console/app/smoke/page.tsx#SmokePage",
+    "apps/web-console/app/smoke/SmokeConsole.tsx#SmokeConsole",
+    "apps/web-console/app/spring/page.tsx#SpringModernizationPage",
+    "apps/web-console/app/spring/SpringModernizationStudio.tsx#SpringModernizationStudio",
+    "apps/web-console/app/translation/page.tsx#TranslationPage",
+    "apps/web-console/app/translation/TranslationStudio.tsx#TranslationStudio"
+  ],
+  "state_stores": [
+    {
+      "name": "AccountOrganizationStudio.organizations",
+      "source_ref": "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountOrganizationStudio.selectedId",
+      "source_ref": "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountOrganizationStudio.members",
+      "source_ref": "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountOrganizationStudio.name",
+      "source_ref": "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountOrganizationStudio.region",
+      "source_ref": "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountOrganizationStudio.inviteEmail",
+      "source_ref": "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountOrganizationStudio.inviteRole",
+      "source_ref": "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountOrganizationStudio.invitationToken",
+      "source_ref": "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountOrganizationStudio.acceptToken",
+      "source_ref": "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountOrganizationStudio.feedback",
+      "source_ref": "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountOrganizationStudio.busy",
+      "source_ref": "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountWalletPanel.wallet",
+      "source_ref": "apps/web-console/app/account/AccountWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountWalletPanel.ledger",
+      "source_ref": "apps/web-console/app/account/AccountWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountWalletPanel.handoff",
+      "source_ref": "apps/web-console/app/account/AccountWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountWalletPanel.amountYuan",
+      "source_ref": "apps/web-console/app/account/AccountWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountWalletPanel.feedback",
+      "source_ref": "apps/web-console/app/account/AccountWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountWalletPanel.failure",
+      "source_ref": "apps/web-console/app/account/AccountWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountWalletPanel.busy",
+      "source_ref": "apps/web-console/app/account/AccountWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.token",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.hours",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.businessLine",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.result",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.state",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.view",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.error",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.notice",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.busyAction",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.exportDays",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.exportBusy",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.exportError",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.exportNotice",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.replayRunId",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.replayBusy",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.replayError",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.replay",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.quota",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.quotaBusy",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.quotaError",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.quotaNotice",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.quotaTokenLimit",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.quotaCreditLimit",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.quotaReason",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.operationsJobs",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.operationsJobsLoaded",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.operationsJobsBusy",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.operationsJobsError",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.operationsJobsNotice",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.operationsJobBusinessLine",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.operationsJobStatus",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.operationsJobCancelBusy",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.runnerFleet",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.runnerFleetLoaded",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.runnerFleetBusy",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.runnerFleetStatus",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.runnerFleetActionBusy",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.runnerFleetError",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.runnerFleetNotice",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.adminSection",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.systemReadiness",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.systemReadinessBusy",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.systemReadinessError",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.financialStatus",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.financialCases",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.financialLoaded",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.financialLoadBusy",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.financialBusyAction",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.financialError",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.financialNotice",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.financialUnknown",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "OperationsAdmin.financialResolutionRefs",
+      "source_ref": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformJobsPanel.rows",
+      "source_ref": "apps/web-console/app/admin/PlatformJobsPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformJobsPanel.loaded",
+      "source_ref": "apps/web-console/app/admin/PlatformJobsPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformJobsPanel.status",
+      "source_ref": "apps/web-console/app/admin/PlatformJobsPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformJobsPanel.organization",
+      "source_ref": "apps/web-console/app/admin/PlatformJobsPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformJobsPanel.denial",
+      "source_ref": "apps/web-console/app/admin/PlatformJobsPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformJobsPanel.busy",
+      "source_ref": "apps/web-console/app/admin/PlatformJobsPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformWalletPanel.wallets",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformWalletPanel.topups",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformWalletPanel.loaded",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformWalletPanel.expanded",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformWalletPanel.ledger",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformWalletPanel.ledgerBusy",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformWalletPanel.denial",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformWalletPanel.notice",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformWalletPanel.busy",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformWalletPanel.target",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformWalletPanel.amountYuan",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformWalletPanel.direction",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlatformWalletPanel.reason",
+      "source_ref": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "CommercializationConsole.payload",
+      "source_ref": "apps/web-console/app/commercialization/CommercializationConsole.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "CommercializationConsole.selected",
+      "source_ref": "apps/web-console/app/commercialization/CommercializationConsole.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "CommercializationConsole.refreshing",
+      "source_ref": "apps/web-console/app/commercialization/CommercializationConsole.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountSessionProvider.status",
+      "source_ref": "apps/web-console/app/components/AccountSessionProvider.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountSessionProvider.principal",
+      "source_ref": "apps/web-console/app/components/AccountSessionProvider.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AccountSessionProvider.expiresAt",
+      "source_ref": "apps/web-console/app/components/AccountSessionProvider.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AppShell.mobileOpen",
+      "source_ref": "apps/web-console/app/components/AppShell.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AppShell.commandOpen",
+      "source_ref": "apps/web-console/app/components/AppShell.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AppShell.commandQuery",
+      "source_ref": "apps/web-console/app/components/AppShell.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AppShell.commandActive",
+      "source_ref": "apps/web-console/app/components/AppShell.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AppShell.showBackToTop",
+      "source_ref": "apps/web-console/app/components/AppShell.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AppShell.telemetryEnabled",
+      "source_ref": "apps/web-console/app/components/AppShell.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "AppShell.profileOpen",
+      "source_ref": "apps/web-console/app/components/AppShell.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SmokeRunButton.capability",
+      "source_ref": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SmokeRunButton.pack",
+      "source_ref": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SmokeRunButton.session",
+      "source_ref": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SmokeRunButton.evidence",
+      "source_ref": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SmokeRunButton.entry",
+      "source_ref": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SmokeRunButton.error",
+      "source_ref": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SmokeRunButton.busy",
+      "source_ref": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SmokeRunButton.remaining",
+      "source_ref": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SmokeRunButton.extendOpen",
+      "source_ref": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SmokeRunButton.extendSeconds",
+      "source_ref": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SmokeRunButton.extendReason",
+      "source_ref": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SmokeRunButton.extendActor",
+      "source_ref": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "UiPreferencesProvider.locale",
+      "source_ref": "apps/web-console/app/components/UiPreferencesProvider.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "UiPreferencesProvider.theme",
+      "source_ref": "apps/web-console/app/components/UiPreferencesProvider.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.batch",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.query",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.source",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.target",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.selectedSkillId",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.workspaceId",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.projectId",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.environmentId",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.releaseId",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.policyVersion",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.risk",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.tenantId",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.actorId",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.runnerToken",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.sourceFiles",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.inputJson",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.run",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.audit",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.operationError",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "FrontendTransformationStudio.busy",
+      "source_ref": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.name",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.namespace",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.description",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.entity",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.reviewer",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.targets",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.persistence",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.authMode",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.sourceUrl",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.sourceSkills",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.repositoryWorkspaceId",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.repositoryPaths",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.sourceFiles",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.sourceBundle",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.sourceBusy",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.draft",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.savedDrafts",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.draftsReady",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.capability",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.capabilityError",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.runnerReadiness",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.tenantId",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.runnerToken",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.analysis",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.approved",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.job",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.recoveryJobId",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.runnerBusy",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.runtimeLanguage",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.runtimePreviewPayload",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.githubOwner",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.githubRepositoryName",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.githubToken",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.githubConfirmed",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.githubBusy",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.githubIdempotencyKey",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.feedback",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ProjectGenerationStudio.targetError",
+      "source_ref": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "GovernanceWorkspace.activeTab",
+      "source_ref": "apps/web-console/app/governance/GovernanceWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "GovernanceWorkspace.codeSnippet",
+      "source_ref": "apps/web-console/app/governance/GovernanceWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "GovernanceWorkspace.isAnalyzing",
+      "source_ref": "apps/web-console/app/governance/GovernanceWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "GovernanceWorkspace.cacheStats",
+      "source_ref": "apps/web-console/app/governance/GovernanceWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.projectId",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.directText",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.assets",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.recoveryRecordCount",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.legacyRecoveryCount",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.recoveryStoreReady",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.recoveryStoreError",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.busy",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewBusy",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.feedback",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.treeQuery",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.packagePreview",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.packagePage",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.packagePageCursors",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.packagePageIndex",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.estimate",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.estimateBusy",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.correction",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.correctionTouched",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.correctionTarget",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewTasks",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewSources",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.selectedReviewSourceKey",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.selectedReviewTaskId",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewTargetKind",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewTargetLocator",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewOriginalValue",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewConfidence",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewReason",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewPropagation",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewCurrentCorrection",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewClaims",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewIdentityScope",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.legacyReviewClaimDiscarded",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewEnqueueRecoveryCount",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewEnqueueRecoveryError",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MultimodalIntakeWorkbench.reviewClock",
+      "source_ref": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MigrationStudio.view",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MigrationStudio.query",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MigrationStudio.statusFilter",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MigrationStudio.selected",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MigrationStudio.capabilities",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MigrationStudio.source",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MigrationStudio.note",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MigrationStudio.dialogOpen",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MigrationStudio.drafts",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MigrationStudio.draftsReady",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MigrationStudio.draftCapability",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "MigrationStudio.feedback",
+      "source_ref": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ChinaDbSqlPreflightStudio.capabilities",
+      "source_ref": "apps/web-console/app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ChinaDbSqlPreflightStudio.fields",
+      "source_ref": "apps/web-console/app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ChinaDbSqlPreflightStudio.parameters",
+      "source_ref": "apps/web-console/app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ChinaDbSqlPreflightStudio.result",
+      "source_ref": "apps/web-console/app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ChinaDbSqlPreflightStudio.loadingCapabilities",
+      "source_ref": "apps/web-console/app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ChinaDbSqlPreflightStudio.busy",
+      "source_ref": "apps/web-console/app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ChinaDbSqlPreflightStudio.error",
+      "source_ref": "apps/web-console/app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ObservabilityWorkspace.selectedSpan",
+      "source_ref": "apps/web-console/app/observability/ObservabilityWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ObservabilityWorkspace.activeTab",
+      "source_ref": "apps/web-console/app/observability/ObservabilityWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryOrchestratorWorkbench.catalog",
+      "source_ref": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryOrchestratorWorkbench.catalogError",
+      "source_ref": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryOrchestratorWorkbench.loading",
+      "source_ref": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryOrchestratorWorkbench.mode",
+      "source_ref": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryOrchestratorWorkbench.selectedModel",
+      "source_ref": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryOrchestratorWorkbench.fallbackEnabled",
+      "source_ref": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryOrchestratorWorkbench.optimizationProfile",
+      "source_ref": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryOrchestratorWorkbench.verificationPolicy",
+      "source_ref": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryOrchestratorWorkbench.risk",
+      "source_ref": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryOrchestratorWorkbench.result",
+      "source_ref": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryOrchestratorWorkbench.preflightError",
+      "source_ref": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryOrchestratorWorkbench.submitting",
+      "source_ref": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlaygroundWorkspace.sourceLang",
+      "source_ref": "apps/web-console/app/playground/PlaygroundWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlaygroundWorkspace.targetLang",
+      "source_ref": "apps/web-console/app/playground/PlaygroundWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlaygroundWorkspace.sourceCode",
+      "source_ref": "apps/web-console/app/playground/PlaygroundWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlaygroundWorkspace.isProcessing",
+      "source_ref": "apps/web-console/app/playground/PlaygroundWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlaygroundWorkspace.activeTab",
+      "source_ref": "apps/web-console/app/playground/PlaygroundWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlaygroundWorkspace.proofVerified",
+      "source_ref": "apps/web-console/app/playground/PlaygroundWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlanBillingAction.pending",
+      "source_ref": "apps/web-console/app/pricing/BillingActions.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlanBillingAction.message",
+      "source_ref": "apps/web-console/app/pricing/BillingActions.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlanBillingAction.failed",
+      "source_ref": "apps/web-console/app/pricing/BillingActions.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PlanBillingAction.qrCode",
+      "source_ref": "apps/web-console/app/pricing/BillingActions.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SubscriptionManager.subscription",
+      "source_ref": "apps/web-console/app/pricing/BillingActions.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SubscriptionManager.state",
+      "source_ref": "apps/web-console/app/pricing/BillingActions.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SubscriptionManager.confirming",
+      "source_ref": "apps/web-console/app/pricing/BillingActions.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SubscriptionManager.pending",
+      "source_ref": "apps/web-console/app/pricing/BillingActions.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SubscriptionManager.message",
+      "source_ref": "apps/web-console/app/pricing/BillingActions.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "UsageDashboard.form",
+      "source_ref": "apps/web-console/app/pricing/UsageDashboard.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "UsageDashboard.session",
+      "source_ref": "apps/web-console/app/pricing/UsageDashboard.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "UsageDashboard.readState",
+      "source_ref": "apps/web-console/app/pricing/UsageDashboard.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "UsageDashboard.insights",
+      "source_ref": "apps/web-console/app/pricing/UsageDashboard.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "UsageDashboard.savingAlerts",
+      "source_ref": "apps/web-console/app/pricing/UsageDashboard.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.contracts",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.targetSkillId",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.projectId",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.repositoryId",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.baselineCommit",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.candidateCommit",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.imageDigest",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.policyDigest",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.inputs",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.evidence",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.subjectDigest",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.job",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.busy",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "ModernizationProofStudio.error",
+      "source_ref": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.accessToken",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.provider",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.cloneUrl",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.requestedRef",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.nativeRepositoryId",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.providerInstanceId",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.credentialRef",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.recoveryId",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.workspace",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.selected",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.editor",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.intent",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.ownerApproved",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.busy",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.feedback",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.filter",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.newPath",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.commitMessage",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.deliveryCredentialRef",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.baseBranch",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.pullRequestTitle",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.pullRequestBody",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "RepositoryWorkspaceStudio.pullRequestKey",
+      "source_ref": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PrecisionMigrationJobs.skill",
+      "source_ref": "apps/web-console/app/skills/PrecisionMigrationJobs.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PrecisionMigrationJobs.mode",
+      "source_ref": "apps/web-console/app/skills/PrecisionMigrationJobs.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PrecisionMigrationJobs.workspacePath",
+      "source_ref": "apps/web-console/app/skills/PrecisionMigrationJobs.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PrecisionMigrationJobs.runnerToken",
+      "source_ref": "apps/web-console/app/skills/PrecisionMigrationJobs.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PrecisionMigrationJobs.tenantId",
+      "source_ref": "apps/web-console/app/skills/PrecisionMigrationJobs.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PrecisionMigrationJobs.actorId",
+      "source_ref": "apps/web-console/app/skills/PrecisionMigrationJobs.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PrecisionMigrationJobs.job",
+      "source_ref": "apps/web-console/app/skills/PrecisionMigrationJobs.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PrecisionMigrationJobs.busy",
+      "source_ref": "apps/web-console/app/skills/PrecisionMigrationJobs.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "PrecisionMigrationJobs.error",
+      "source_ref": "apps/web-console/app/skills/PrecisionMigrationJobs.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SkillsWorkspace.namespace",
+      "source_ref": "apps/web-console/app/skills/SkillsWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SkillsWorkspace.searchQuery",
+      "source_ref": "apps/web-console/app/skills/SkillsWorkspace.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.sourceMode",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.repositoryUrl",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.requestedRef",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.expectedCommitSha",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.snapshotId",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.materializedRelativePath",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.repositoryWorkspaceId",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.githubRepositories",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.githubRepositoryId",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.githubCatalogStatus",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.startAfterVerification",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.capability",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.targetSpringBoot",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.targetJava",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.capabilityError",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.run",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.logs",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.showLogs",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.busy",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.feedback",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.feedbackKind",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.tenantId",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.actorId",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.proxyToken",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "SpringModernizationStudio.recoveryRunId",
+      "source_ref": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.sourceLanguage",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.targetLanguage",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.repositoryRef",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.scope",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.handoff",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.repositoryPlan",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.discovery",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.workUnitFilter",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.workUnitPage",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.capability",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.capabilityError",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.importing",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.feedback",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.tenantId",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.actorId",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.runnerToken",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.workspaceId",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.repositoryWorkspaceId",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.casesBundleId",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.recoveryJobId",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.runnerHealth",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.job",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    },
+    {
+      "name": "TranslationStudio.jobBusy",
+      "source_ref": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "provider": "react-hook-or-context"
+    }
+  ],
+  "forms": [
+    {
+      "name": "web-console-forms",
+      "source_ref": "apps/web-console/app",
+      "binding": "react-event-contracts"
+    }
+  ],
+  "api_clients": [
+    {
+      "name": "/api/wallet",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/wallet/ledger?limit=50",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/wallet/topup",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/admin/billing/reconciliation",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/admin/operations",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/admin/tenant-quota",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/health?probe=readiness",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/admin/topups?limit=50",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/admin/wallets/adjust",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/admin/wallets?limit=100",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/capabilities/product",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/auth/logout",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/auth/refresh",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/auth/tenant",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/capabilities/migration",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/smoke/capability",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/smoke/sessions",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/frt/runs",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/capabilities/generation",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/generation/analyze",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/generation/jobs",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/generation/sources",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/auth/login",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/capabilities/database-sql",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/database-sql/preflight",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/repository-orchestrator/models",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/repository-orchestrator/preflight",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/billing/checkout",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/billing/trial",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/billing/cancel",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/billing/subscription",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/pricing",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/usage/alerts",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/usage/current",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/modernization-proof/contracts",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/modernization-proof/jobs",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/modernization-proof/subject-digest",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/repository-workspaces",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/precision-migration/jobs",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/github-installation",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/github-repositories",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/spring-upgrades",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/spring-upgrades/capabilities",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/capabilities/translation",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/translation/discovery-report",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/translation/health",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/translation/jobs",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/translation/repository-plan",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    }
+  ],
+  "auth": [
+    {
+      "name": "account-session",
+      "source_ref": "apps/web-console/app/components/AccountSessionProvider.tsx"
+    }
+  ],
+  "i18n": [
+    {
+      "locale": "zh-CN",
+      "mode": "source-copy-candidate"
+    },
+    {
+      "locale": "en-US",
+      "mode": "source-copy-candidate"
+    }
+  ],
+  "design_assets": [
+    {
+      "name": "web-console-css",
+      "source_ref": "apps/web-console/app/globals.css",
+      "mode": "css-and-css-modules"
+    }
+  ],
+  "accessibility": [
+    {
+      "name": "source-accessibility-inventory",
+      "source_ref": "apps/web-console/app",
+      "mode": "ast-static-candidate"
+    }
+  ],
+  "runtime_evidence": [],
+  "evidence_refs": [
+    "source-snapshots/manifest.json",
+    "transformations/component-migration-closure.json",
+    "certification/local-static-evidence.json"
+  ],
+  "critical_unknowns": [
+    "source browser journeys NOT_RUN",
+    "target emulator/device journeys NOT_RUN",
+    "independent equivalence NOT_RUN"
+  ]
+}

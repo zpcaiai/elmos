@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-comments-directives-trivia-provenance"
+  short_description: "Carry comments, pragmas, directives, suppression annotations and non-code source material through..."
+  default_prompt: "Use $elmos-comments-directives-trivia-provenance through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-comments-directives-trivia-provenance"
+  handler_id: "execute_elmos_comments_directives_trivia_provenance"
+  operation: "MODEL_NORMALIZATION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

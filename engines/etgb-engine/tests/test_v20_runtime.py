@@ -1,16 +1,18 @@
 from __future__ import annotations
 
-import json
+import hashlib
 import unittest
 from pathlib import Path
 
 from elmos_etgb.discovery import load_surface, surface_coverage_report
 from elmos_etgb.features import feature_coverage_report
 from elmos_etgb.materializer import materialize, smoke_cases
+from elmos_etgb.orchestrator import release_preflight
 from elmos_etgb.package import verify_source_package
+from elmos_etgb.planner import build_external_canary_plan, validate_plan_scope
 from elmos_etgb.registry import SkillRegistry
 from elmos_etgb.skills import audit_skills
-from elmos_etgb.validation import coverage_report, validate_package
+from elmos_etgb.validation import runtime_adapter_report, validate_package
 
 ROOT = Path(__file__).resolve().parents[3]
 PACKAGE = ROOT / "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0"
@@ -104,3 +106,38 @@ class V20FullProductRuntimeTests(unittest.TestCase):
         self.assertEqual(len(smoke), 12)
         smoke_bls = {c["business_line"] for c in smoke}
         self.assertTrue({"spring-modernization", "cross-language", "project-generation", "sql-conversion"}.issubset(smoke_bls))
+
+    def test_all_v20_adapters_are_bound_and_release_scope_is_exact(self) -> None:
+        adapters = runtime_adapter_report(PACKAGE)
+        self.assertTrue(adapters["complete"], adapters)
+        self.assertEqual(len(adapters["declared_external_adapters"]), 32)
+        self.assertEqual(len(adapters["declared_local_adapters"]), 4)
+        self.assertEqual(adapters["unsupported_external_adapters"], [])
+
+        preflight = release_preflight(PACKAGE, results=[])
+        self.assertEqual(preflight["status"], "BLOCKED")
+        self.assertEqual(preflight["scope"]["expected_cases"], 75419)
+        self.assertEqual(preflight["scope"]["expected_case_runs"], 206671)
+        self.assertEqual(preflight["scope"]["external_adapter_cases"], 75407)
+        self.assertEqual(preflight["scope"]["external_adapter_case_runs"], 206659)
+
+    def test_canary_plan_contains_one_stable_case_per_external_adapter(self) -> None:
+        plan = build_external_canary_plan(
+            PACKAGE,
+            candidate_digest="sha256:" + "a" * 64,
+            shard_count=4,
+        )
+        self.assertEqual(validate_plan_scope(PACKAGE, plan), [])
+        self.assertEqual(len(plan["required_adapters"]), 32)
+        self.assertEqual(len(plan["case_ids"]), 32)
+        self.assertEqual(sum(shard["case_count"] for shard in plan["shards"]), 32)
+
+    def test_git_ignored_source_evidence_is_present_and_digest_bound(self) -> None:
+        expected = {
+            "fixtures/cross-language/java-to-python-ledger/java/Ledger.class": "5c7981389bc3b7ccb3430721eb30dd9bb4f41f1ed12de475e3ac37dbf98fcd73",
+            "reports/smoke-results.jsonl": "18bb510687a03906cd243d99fb7d43617fabb7fbbe65ec7aa142e87129e74902",
+        }
+        for relative, digest in expected.items():
+            path = PACKAGE / relative
+            self.assertTrue(path.is_file(), relative)
+            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), digest)

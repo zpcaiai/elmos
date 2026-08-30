@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-file-network-sideeffect-equivalence"
+  short_description: "Compare filesystem and network effects including paths, bytes, status codes, headers, retries and..."
+  default_prompt: "Use $elmos-file-network-sideeffect-equivalence through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-file-network-sideeffect-equivalence"
+  handler_id: "execute_elmos_file_network_sideeffect_equivalence"
+  operation: "SEMANTIC_COMPARISON"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

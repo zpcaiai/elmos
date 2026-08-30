@@ -49,7 +49,7 @@ class SecurityContextGateTests(unittest.TestCase):
         order = []
         hooks.register("pre_completion", "first", lambda *_: order.append("first"), order=2)
         hooks.register("pre_completion", "zero", lambda *_: order.append("zero"), order=1)
-        gates = CompletionGateEngine(required=("build_or_compile", "unit_tests"), hooks=hooks, evidence_verifier=lambda reference: reference.startswith("artifact-") or reference.startswith("traceability:"))
+        gates = CompletionGateEngine(required=("build_or_compile", "unit_tests"), hooks=hooks, evidence_verifier=lambda reference: reference.startswith(("artifact-", "traceability:")))
         proposal = CompletionProposal(self.identity.run_id, "done", provider_text="all tests passed")
         blocked = gates.evaluate(self.identity, proposal, {"build_or_compile": "fail", "unit_tests": "pass"}, {"build_or_compile": ["sha256:x"]})
         self.assertEqual(blocked.status, "blocked")

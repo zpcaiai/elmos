@@ -1,0 +1,6 @@
+interface:
+  display_name: "Context Aware Skill Source"
+  short_description: "Run context-aware-skill-source with bounded commercial controls"
+  default_prompt: "Use $context-aware-skill-source through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

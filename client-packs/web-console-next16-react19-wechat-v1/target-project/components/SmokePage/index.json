@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "smoke-console": "/components/SmokeConsole/index"
+  }
+}

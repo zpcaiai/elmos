@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "migration-studio": "/components/MigrationStudio/index"
+  }
+}

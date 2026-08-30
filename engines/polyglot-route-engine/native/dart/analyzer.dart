@@ -554,23 +554,86 @@ Map<String, Object> _analyzeFunction(
       emittedTarget,
     );
   } else if (body is ExpressionFunctionBody) {
-    final lifted = _expression(
-      body.expression,
-      environment,
-      fileName,
-      offsets,
-      emittedTarget,
-    );
-    if (lifted.type != returnType) {
-      _fail('DART_RETURN_TYPE_MISMATCH:$returnType:${lifted.type}');
+    final expressionBody = body.expression;
+    if (expressionBody is ConditionalExpression) {
+      final condition = _expression(
+        expressionBody.condition,
+        environment,
+        fileName,
+        offsets,
+        emittedTarget,
+      );
+      if (condition.type != 'boolean') {
+        _fail('DART_CONDITION_MUST_BE_BOOLEAN');
+      }
+      final thenExpression = _expression(
+        expressionBody.thenExpression,
+        environment,
+        fileName,
+        offsets,
+        emittedTarget,
+      );
+      if (thenExpression.type != returnType) {
+        _fail('DART_RETURN_TYPE_MISMATCH:$returnType:${thenExpression.type}');
+      }
+      final elseExpression = _expression(
+        expressionBody.elseExpression,
+        environment,
+        fileName,
+        offsets,
+        emittedTarget,
+      );
+      if (elseExpression.type != returnType) {
+        _fail('DART_RETURN_TYPE_MISMATCH:$returnType:${elseExpression.type}');
+      }
+      liftedBody = <Map<String, Object>>[
+        <String, Object>{
+          'kind': 'if',
+          'condition': condition.mapping,
+          'then': <Map<String, Object>>[
+            <String, Object>{
+              'kind': 'return',
+              'expression': thenExpression.mapping,
+              'source_span': _span(
+                fileName,
+                offsets,
+                expressionBody.thenExpression,
+              ),
+            },
+          ],
+          'else': <Map<String, Object>>[
+            <String, Object>{
+              'kind': 'return',
+              'expression': elseExpression.mapping,
+              'source_span': _span(
+                fileName,
+                offsets,
+                expressionBody.elseExpression,
+              ),
+            },
+          ],
+          'source_span': _span(fileName, offsets, expressionBody),
+        },
+      ];
+    } else {
+      final lifted = _expression(
+        expressionBody,
+        environment,
+        fileName,
+        offsets,
+        emittedTarget,
+      );
+      if (lifted.type != returnType) {
+        _fail('DART_RETURN_TYPE_MISMATCH:$returnType:${lifted.type}');
+      }
+      liftedBody = <Map<String, Object>>[
+        <String, Object>{
+          'kind': 'return',
+          'expression': lifted.mapping,
+          'source_span': _span(fileName, offsets, body),
+        },
+      ];
     }
-    liftedBody = <Map<String, Object>>[
-      <String, Object>{
-        'kind': 'return',
-        'expression': lifted.mapping,
-        'source_span': _span(fileName, offsets, body),
-      },
-    ];
   } else {
     _fail('DART_FUNCTION_BODY_UNSUPPORTED:${body.runtimeType}');
   }

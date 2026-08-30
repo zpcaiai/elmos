@@ -110,7 +110,7 @@ UNKNOWN、INCONCLUSIVE、过期、冲突、无 digest、无 replay 或自验证�
 | LOC-011 | Browser capture、cleanup、locator evidence、secret masking | PASS |
 | LOC-012 | Worker plane、admission quota、metrics、cost reconciliation、service cursor | PASS |
 
-当前本地执行证据为 22 个测试通过、ruff/mypy/pyright 通过、
+当前本地执行证据为 60 个测试通过、Ruff 通过、44 个源文件的 mypy/pyright 通过、
 make openhands-absorption 通过。它们只能标记为 LOCAL_ENGINEERING_EVIDENCE，
 不能覆盖下方的真实集成、独立验证、负载、Chaos 或认证要求。
 
@@ -259,7 +259,7 @@ diff、build/test/browser/security artifact、要求追踪和独立 oracle。
 
 ## 13. 当前测试结论
 
-当前只有本地工程测试证据：实现和 22 个本地测试已完成，静态校验和 CLI 验证已
+当前只有本地工程测试证据：实现和 60 个本地测试已完成，静态校验和 CLI 验证已
 通过。真实 Temporal/PostgreSQL、生产 sandbox、外部 Provider、浏览器设备、
 Golden Repo、负载/Chaos、独立安全审查尚未执行，故所有对应 case 继续保持
 NOT_RUN；总体验证状态继续保持 NOT_CERTIFIED。任何计划文本、静态检查、fake

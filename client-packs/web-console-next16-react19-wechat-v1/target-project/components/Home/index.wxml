@@ -1,0 +1,331 @@
+<view class="page-stack">
+  <view class="welcome-card">
+    <view class="welcome-copy">
+      <text class="overline">
+        ELMOS CONTROL CENTER
+      </text>
+      <view class="cc-h1">
+        四类核心工作空间，一套可验证的交付闭环。
+      </view>
+      <view class="cc-p">
+        Spring 老项目翻新、全库跨语言转换、多语言项目生成与国产数据库 SQL 转换分别拥有清晰入口、精确状态、阻断原因和恢复动作。任何执行、认证、合并或发布仍由对应门禁和人工权限决定。
+      </view>
+      <view class="welcome-actions">
+        <navigator class="button button-primary" url="/spring">
+          评估 Spring 老项目
+          <icon name="{{ &quot;arrow&quot; }}" size="{{ 16 }}" />
+        </navigator>
+        <navigator class="button button-secondary" url="/translation">
+          选择跨语言路线
+        </navigator>
+      </view>
+    </view>
+    <view class="trust-visual" aria-label="证据链状态：控制面就绪，外部执行未运行">
+      <view class="trust-orbit trust-orbit-one" />
+      <view class="trust-orbit trust-orbit-two" />
+      <view class="trust-core">
+        <icon name="{{ &quot;check&quot; }}" size="{{ 24 }}" />
+      </view>
+      <text class="trust-node node-a">
+        IR
+      </text>
+      <text class="trust-node node-b">
+        Gate
+      </text>
+      <text class="trust-node node-c">
+        Evidence
+      </text>
+    </view>
+  </view>
+  <view class="overview-metrics" aria-label="平台结构摘要">
+    <view>
+      <text class="metric-icon tone-cyan">
+        <icon name="{{ &quot;workflow&quot; }}" size="{{ 18 }}" />
+      </text>
+      <view>
+        <text class="cc-small">
+          Spring 实验 Pack
+        </text>
+        <text class="cc-strong">
+          1
+        </text>
+        <text class="cc-em">
+          外部证据 NOT_RUN
+        </text>
+      </view>
+    </view>
+    <view>
+      <text class="metric-icon tone-violet">
+        <icon name="{{ &quot;route&quot; }}" size="{{ 18 }}" />
+      </text>
+      <view>
+        <text class="cc-small">
+          跨语言方向
+        </text>
+        <text class="cc-strong">
+          12
+        </text>
+        <text class="cc-em">
+          本地 Profile 已通过
+        </text>
+      </view>
+    </view>
+    <view>
+      <text class="metric-icon tone-amber">
+        <icon name="{{ &quot;spark&quot; }}" size="{{ 18 }}" />
+      </text>
+      <view>
+        <text class="cc-small">
+          项目生成目标
+        </text>
+        <text class="cc-strong">
+          8
+        </text>
+        <text class="cc-em">
+          逐目标验证
+        </text>
+      </view>
+    </view>
+    <view>
+      <text class="metric-icon tone-violet">
+        <icon name="{{ &quot;database&quot; }}" size="{{ 18 }}" />
+      </text>
+      <view>
+        <text class="cc-small">
+          国产数据库目标
+        </text>
+        <text class="cc-strong">
+          13
+        </text>
+        <text class="cc-em">
+          78 条路线 SPEC_ONLY
+        </text>
+      </view>
+    </view>
+    <view>
+      <text class="metric-icon tone-green">
+        <icon name="{{ &quot;shield&quot; }}" size="{{ 18 }}" />
+      </text>
+      <view>
+        <text class="cc-small">
+          外部认证
+        </text>
+        <text class="cc-strong">
+          0
+        </text>
+        <text class="cc-em">
+          Fail closed
+        </text>
+      </view>
+    </view>
+  </view>
+  <view aria-labelledby="workspace-title">
+    <view class="section-heading">
+      <view>
+        <text class="overline">
+          WORKSPACES
+        </text>
+        <view class="cc-h2" id="workspace-title">
+          选择工作空间
+        </view>
+      </view>
+      <text class="quiet-label">
+        能力状态来自仓库契约
+      </text>
+    </view>
+    <view class="workspace-grid">
+      <navigator wx:for="{{ workspaces }}" wx:for-item="workspace" wx:key="title" class="{{ "workspace-card accent-" + workspace.accent }}" url="{{ workspace.href }}">
+        <view class="workspace-icon">
+          <icon name="{{ workspace.icon }}" size="{{ 22 }}" />
+        </view>
+        <view class="workspace-card-copy">
+          <text class="overline">
+            {{ workspace.eyebrow }}
+          </text>
+          <view class="cc-h3">
+            {{ workspace.title }}
+          </view>
+          <view class="cc-p">
+            {{ workspace.description }}
+          </view>
+          <text class="workspace-meta">
+            {{ workspace.meta }}
+          </text>
+        </view>
+        <text class="round-arrow">
+          <icon name="{{ &quot;arrow&quot; }}" size="{{ 16 }}" />
+        </text>
+      </navigator>
+    </view>
+  </view>
+  <view class="overview-grid">
+    <view class="surface-card attention-card">
+      <view class="card-heading">
+        <view>
+          <text class="overline">
+            ATTENTION
+          </text>
+          <view class="cc-h2">
+            需要补齐的外部证据
+          </view>
+        </view>
+        <text class="count-badge">
+          3
+        </text>
+      </view>
+      <view class="attention-list">
+        <view wx:for="{{ attention }}" wx:for-item="attentionItem" wx:key="item0" class="attention-row">
+          <text class="attention-icon">
+            <icon name="{{ &quot;clock&quot; }}" size="{{ 16 }}" />
+          </text>
+          <view>
+            <text class="cc-strong">
+              {{ attentionItem.item0 }}
+            </text>
+            <text class="cc-small">
+              {{ attentionItem.item1 }}
+            </text>
+          </view>
+          <status-chip status="{{ attentionItem.item2 }}" compact="{{ true }}" />
+        </view>
+      </view>
+    </view>
+    <view class="surface-card boundary-card">
+      <text class="overline">
+        AUTHORITY BOUNDARY
+      </text>
+      <view class="cc-h2">
+        控制面只准备决策
+      </view>
+      <view class="cc-p">
+        当前页面不会执行客户代码、写入生产系统、签发认证或代替人工批准。
+      </view>
+      <view class="boundary-rule">
+        <icon name="{{ &quot;lock&quot; }}" size="{{ 17 }}" />
+        <text>
+          未知、过期、冲突与未运行状态一律不通过
+        </text>
+      </view>
+      <navigator class="text-link" url="/commercialization">
+        查看职责分离
+        <icon name="{{ &quot;arrow&quot; }}" size="{{ 14 }}" />
+      </navigator>
+    </view>
+  </view>
+  <view class="overview-grid qualification-overview">
+    <view class="surface-card namespace-card">
+      <view class="card-heading">
+        <view>
+          <text class="overline">
+            NAMESPACE COVERAGE
+          </text>
+          <view class="cc-h2">
+            双命名空间，边界不混用
+          </view>
+        </view>
+        <navigator class="text-link" url="/skills">
+          查看全部
+          <icon name="{{ &quot;arrow&quot; }}" size="{{ 14 }}" />
+        </navigator>
+      </view>
+      <view class="namespace-summary">
+        <view class="namespace-item">
+          <view>
+            <text class="namespace-dot migration-dot" />
+            <text class="cc-strong">
+              Migration Packs
+            </text>
+            <text class="cc-small">
+              M1–M45 · 820 Skills
+            </text>
+          </view>
+          <text>
+            45%
+          </text>
+        </view>
+        <view class="namespace-track">
+          <text class="namespace-fill migration-fill" style="width: {{ 45 }}%;" />
+        </view>
+        <view class="namespace-item">
+          <view>
+            <text class="namespace-dot product-dot" />
+            <text class="cc-strong">
+              Product commercialization
+            </text>
+            <text class="cc-small">
+              B34–B55 · 1,004 Skills
+            </text>
+          </view>
+          <text>
+            55%
+          </text>
+        </view>
+        <view class="namespace-track">
+          <text class="namespace-fill product-fill" style="width: {{ 55 }}%;" />
+        </view>
+      </view>
+    </view>
+    <view class="surface-card qualification-card">
+      <text class="overline">
+        QUALIFICATION LADDER
+      </text>
+      <view class="cc-h2">
+        工程通过，不等于外部认证
+      </view>
+      <view class="qualification-steps">
+        <view class="complete">
+          <text>
+            <icon name="{{ &quot;check&quot; }}" size="{{ 13 }}" />
+          </text>
+          <text>
+            <text class="cc-strong">
+              Skill 结构
+            </text>
+            <text class="cc-small">
+              1,824 / 1,824
+            </text>
+          </text>
+        </view>
+        <view class="complete">
+          <text>
+            <icon name="{{ &quot;check&quot; }}" size="{{ 13 }}" />
+          </text>
+          <text>
+            <text class="cc-strong">
+              用例目录
+            </text>
+            <text class="cc-small">
+              408 / 408
+            </text>
+          </text>
+        </view>
+        <view>
+          <text>
+            3
+          </text>
+          <text>
+            <text class="cc-strong">
+              独立执行
+            </text>
+            <text class="cc-small">
+              0 / 408 · NOT_RUN
+            </text>
+          </text>
+        </view>
+        <view>
+          <text>
+            <icon name="{{ &quot;lock&quot; }}" size="{{ 12 }}" />
+          </text>
+          <text>
+            <text class="cc-strong">
+              严格认证
+            </text>
+            <text class="cc-small">
+              BLOCKED
+            </text>
+          </text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

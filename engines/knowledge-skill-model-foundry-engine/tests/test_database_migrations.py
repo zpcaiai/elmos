@@ -1,32 +1,27 @@
-"""Unit tests for database migrations, table counts, and SQLite emulation."""
+"""Database source inspection must never masquerade as runtime execution."""
 
 from __future__ import annotations
 
 import unittest
 
-from elmos_foundry.database import DatabaseManager
+from elmos_foundry.database import DatabaseBoundaryError, DatabaseManager
 
 
 class DatabaseMigrationsTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.db = DatabaseManager()
+        self.database = DatabaseManager()
 
-    def test_postgres_schema_has_38_tables(self) -> None:
-        validation = self.db.validate_schema_structure()
-        self.assertTrue(validation["valid"], f"Validation failed: missing tables {validation['missing_tables']}")
-        self.assertGreaterEqual(validation["table_count"], 38)
+    def test_postgres_source_has_exact_bounded_structure(self) -> None:
+        validation = self.database.validate_schema_structure()
+        self.assertTrue(validation["structurally_valid"])
+        self.assertEqual(validation["table_count"], 38)
+        self.assertEqual(validation["source_status"], "UNTRUSTED_DECLARATIVE_INPUT")
+        self.assertEqual(validation["execution_status"], "NOT_RUN")
+        self.assertEqual(validation["certification_status"], "NOT_CERTIFIED")
 
-    def test_sqlite_in_memory_emulation(self) -> None:
-        conn = self.db.create_in_memory_sqlite_db()
-        cursor = conn.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        tables = [r[0] for r in cursor.fetchall()]
-        self.assertIn("knowledge_source", tables)
-        self.assertIn("skill", tables)
-        self.assertIn("dataset_item", tables)
-        self.assertIn("model_artifact", tables)
-        self.assertIn("audit_event", tables)
-        conn.close()
+    def test_untrusted_postgres_sql_is_never_regex_executed_in_sqlite(self) -> None:
+        with self.assertRaises(DatabaseBoundaryError):
+            self.database.create_in_memory_sqlite_db()
 
 
 if __name__ == "__main__":

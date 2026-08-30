@@ -17,7 +17,7 @@
   ],
   "properties": {
     "schemaVersion": { "const": "1.0" },
-    "protocolVersion": { "const": "1.0.0" },
+    "protocolVersion": { "const": "1.1.0" },
     "package": { "const": "chinadb-commercial-migration-skills" },
     "capabilitySnapshotDigest": { "$ref": "#/$defs/digest" },
     "targetCount": { "const": 13 },
@@ -34,6 +34,8 @@
           "adapterId",
           "requiredOperations",
           "requiredEvidenceChain",
+          "requiredArtifactDigests",
+          "requiredEvidenceDigests",
           "currentState"
         ],
         "properties": {
@@ -53,6 +55,50 @@
               "external-target-execution",
               "independent-verification",
               "certification-decision"
+            ]
+          },
+          "requiredArtifactDigests": {
+            "const": [
+              "sourceSnapshotDigest",
+              "sourceCatalogDigest",
+              "sourceDataDigest",
+              "sourceWorkloadDigest",
+              "targetSnapshotDigest",
+              "targetReleaseDigest",
+              "canonicalIrDigest",
+              "transformationDigest",
+              "compatibilityRuntimeDigest",
+              "runnerDigest",
+              "toolchainDigest",
+              "developmentCorpusDigest",
+              "negativeCorpusDigest",
+              "holdoutCorpusDigest",
+              "representativeWorkloadDigest",
+              "dataFixtureDigest",
+              "queryPlanDigest",
+              "targetSqlDigest",
+              "acceptanceProfileDigest",
+              "gateResultDigest"
+            ]
+          },
+          "requiredEvidenceDigests": {
+            "const": [
+              "versionProbeDigest",
+              "capabilityProbeDigest",
+              "renderDigest",
+              "targetApplyDigest",
+              "introspectionDigest",
+              "schemaTypeDigest",
+              "queryRoutineDigest",
+              "transactionDigest",
+              "dataReconciliationDigest",
+              "performanceDigest",
+              "securityDigest",
+              "backupRestoreDigest",
+              "cdcDigest",
+              "rollbackDigest",
+              "cleanupDigest",
+              "rawEvidenceDigest"
             ]
           },
           "currentState": { "const": "BLOCKED_EXTERNAL_INPUT" }

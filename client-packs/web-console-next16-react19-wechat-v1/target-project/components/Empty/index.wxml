@@ -1,0 +1,6 @@
+<view class="{{ "empty" }}">
+  <icon name="{{ &quot;database&quot; }}" size="{{ 22 }}" />
+  <text>
+    {{ label }}
+  </text>
+</view>

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Secret Egress Control"
+  short_description: "Run secret-egress-control with bounded commercial controls"
+  default_prompt: "Use $secret-egress-control through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true
