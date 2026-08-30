@@ -4,7 +4,7 @@
 - Structural gate status: `passed`
 - Certification decision: `NOT_CERTIFIED`
 - Certification readiness: `BLOCKED`
-- Evaluated pack digest: `sha256:bf6081ff19e26a45f8d27c974cddc451f071676f3c1d50d404fe9e2ecd9bf7e1`
+- Evaluated pack digest: `sha256:e72798a7013e0ea448899b2705823af203c752e7aebe03be7262f028212dfea1`
 
 ## Certification blockers
 - pack and certification status must both request certified

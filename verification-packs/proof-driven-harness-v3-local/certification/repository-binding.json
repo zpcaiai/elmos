@@ -1,7 +1,7 @@
 {
   "certification": "NOT_CERTIFIED",
   "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
-  "environment_digest": "sha256:a3daa4fd5229e18df5fb20a9fc56425c175fb6200655c2c5f58beb9b1b889a31",
+  "environment_digest": "sha256:fed97bfe52dc08ca429c12cf64d92d82935881d9205138386f4961f5722f98a3",
   "external_evidence": "NOT_RUN",
   "failed": 0,
   "independent_verification": "NOT_RUN",
@@ -31,7 +31,7 @@
       "pack_copy": "qualification/raw/archive-installation-check.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/raw/archive-installation-check.json",
       "returncode": 0,
-      "sha256": "sha256:12384730bcff3caf0f9e1d5fbe03c11851bfbfd06464d9472c8f56109082c049",
+      "sha256": "sha256:de09e73055b5092f9459ba71d5334e48f4c425e1ec1f4c3c37113d6959ba2c65",
       "timed_out": false
     },
     {
@@ -45,11 +45,11 @@
         "--pattern",
         "test_*.py"
       ],
-      "bytes": 62206,
+      "bytes": 62208,
       "pack_copy": "qualification/raw/engine-tests.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/raw/engine-tests.json",
       "returncode": 0,
-      "sha256": "sha256:386c3e81a0814a30f9b4000c85b3b06c4eb5efd438c86e88e7a0e5baa4811cf2",
+      "sha256": "sha256:cb72dfe6bf983f5c08ffb30f305bb0c4a28a559fa958ad89388b0a5691cd3edd",
       "timed_out": false
     },
     {
@@ -63,39 +63,39 @@
         "--pattern",
         "test_*.py"
       ],
-      "bytes": 12169,
+      "bytes": 12171,
       "pack_copy": "qualification/raw/package-integration-tests.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/raw/package-integration-tests.json",
       "returncode": 0,
-      "sha256": "sha256:f583cecd1973466a5fe8a54c6d1e67f2eab7edc37f4fcd08e71e918c7e07a917",
+      "sha256": "sha256:de02bc8842c769b90f6f61c269fd3d3dd49d7481d9d04ef81536e11c58d95556",
       "timed_out": false
     }
   ],
-  "receipt_sha256": "sha256:fa18d1d356f6ece0506339b773b2f2ecd2db863c16b8b11b11c7bd93c0422fa6",
+  "receipt_sha256": "sha256:891ed5c4967ffd6ac976c78fe94cd5b0db374af8298c4737deb20cab96b4d611",
   "repository_bindings": [
     {
       "byte_size": 24471,
       "path": "engines/proof-driven-harness-engine/qualification/local-qualification.json",
       "role": "qualification-receipt",
-      "sha256": "sha256:fa18d1d356f6ece0506339b773b2f2ecd2db863c16b8b11b11c7bd93c0422fa6"
+      "sha256": "sha256:891ed5c4967ffd6ac976c78fe94cd5b0db374af8298c4737deb20cab96b4d611"
     },
     {
       "byte_size": 10226,
       "path": "engines/proof-driven-harness-engine/qualification/raw/archive-installation-check.json",
       "role": "raw-log-archive-installation-check",
-      "sha256": "sha256:12384730bcff3caf0f9e1d5fbe03c11851bfbfd06464d9472c8f56109082c049"
+      "sha256": "sha256:de09e73055b5092f9459ba71d5334e48f4c425e1ec1f4c3c37113d6959ba2c65"
     },
     {
-      "byte_size": 62206,
+      "byte_size": 62208,
       "path": "engines/proof-driven-harness-engine/qualification/raw/engine-tests.json",
       "role": "raw-log-engine-tests",
-      "sha256": "sha256:386c3e81a0814a30f9b4000c85b3b06c4eb5efd438c86e88e7a0e5baa4811cf2"
+      "sha256": "sha256:cb72dfe6bf983f5c08ffb30f305bb0c4a28a559fa958ad89388b0a5691cd3edd"
     },
     {
-      "byte_size": 12169,
+      "byte_size": 12171,
       "path": "engines/proof-driven-harness-engine/qualification/raw/package-integration-tests.json",
       "role": "raw-log-package-integration-tests",
-      "sha256": "sha256:f583cecd1973466a5fe8a54c6d1e67f2eab7edc37f4fcd08e71e918c7e07a917"
+      "sha256": "sha256:de02bc8842c769b90f6f61c269fd3d3dd49d7481d9d04ef81536e11c58d95556"
     },
     {
       "byte_size": 19573,
@@ -143,7 +143,7 @@
       "byte_size": 7076,
       "path": "verification-packs/proof-driven-harness-v3-local/environment/local-environment.json",
       "role": "environment",
-      "sha256": "sha256:a3daa4fd5229e18df5fb20a9fc56425c175fb6200655c2c5f58beb9b1b889a31"
+      "sha256": "sha256:fed97bfe52dc08ca429c12cf64d92d82935881d9205138386f4961f5722f98a3"
     }
   ],
   "schema_version": 1,
