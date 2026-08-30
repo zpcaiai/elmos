@@ -4,10 +4,15 @@ from pathlib import Path
 
 from elmos_openhands.artifacts import ContentAddressedStore
 from elmos_openhands.browser import BrowserEvidenceRunner, BrowserScenario, BrowserStep
-from elmos_openhands.errors import ContractViolation, NotConfigured
+from elmos_openhands.errors import ContractViolation, NotConfigured, TenantIsolationError
 from elmos_openhands.models import Identity
 from elmos_openhands.plane import AdmissionController, WorkerRegistry
-from elmos_openhands.workspace import ContainerSandboxProvider, IsolationClass, LocalWorkspaceProvider, WorkspaceRequest
+from elmos_openhands.workspace import (
+    ContainerSandboxProvider,
+    IsolationClass,
+    LocalWorkspaceProvider,
+    WorkspaceRequest,
+)
 
 
 class FakeBrowser:
@@ -23,6 +28,7 @@ class WorkspaceBrowserPlaneTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             artifacts = ContentAddressedStore(Path(root) / "cas")
             provider = LocalWorkspaceProvider(Path(root) / "workspaces", artifacts)
+            self.addCleanup(provider.close)
             identity = Identity("tenant-a", "project-a", "task-a", "run-a")
             lease = provider.activate(provider.allocate(WorkspaceRequest(identity)))
             result = Path(lease.root) / "out" / "result.txt"
@@ -32,7 +38,7 @@ class WorkspaceBrowserPlaneTests(unittest.TestCase):
             provider.restore(lease, snapshot)
             self.assertEqual(result.read_text(), "before")
             foreign = ContentAddressedStore(Path(root) / "foreign").put("tenant-b", b"data")
-            with self.assertRaises(Exception):
+            with self.assertRaises(TenantIsolationError):
                 provider.restore(lease, foreign)
 
     def test_workspace_lease_survives_provider_restart(self):
@@ -52,6 +58,7 @@ class WorkspaceBrowserPlaneTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             artifacts = ContentAddressedStore(Path(root) / "cas")
             provider = LocalWorkspaceProvider(Path(root) / "workspaces", artifacts)
+            self.addCleanup(provider.close)
             identity = Identity("tenant-a", "project-a", "task-a", "run-a")
             with self.assertRaises(NotConfigured):
                 provider.allocate(WorkspaceRequest(identity, isolation_class=IsolationClass.L2, image_digest="sha256:" + "a" * 64))

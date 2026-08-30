@@ -21,7 +21,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any
+from typing import Any, LiteralString
 
 from .artifacts import ContentAddressedStore
 from .browser import BrowserEvidenceRunner, BrowserScenario, BrowserStep
@@ -1007,7 +1007,7 @@ class _QualificationPage(BaseHTTPRequestHandler):
 def _postgres_append_only_checks(dsn: str, identity: Identity) -> tuple[int, int, str]:
     import psycopg
 
-    def attempt(statement: str) -> int:
+    def attempt(statement: LiteralString) -> int:
         try:
             with (
                 psycopg.connect(dsn, autocommit=False) as connection,

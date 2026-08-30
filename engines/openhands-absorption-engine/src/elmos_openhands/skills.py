@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
-from typing import Any, Iterable, Mapping
+from typing import Any
 
 from .errors import ContractViolation, TenantIsolationError
 
@@ -17,10 +18,20 @@ class SkillMetadata:
     permissions: frozenset[str] = frozenset()
     tenant_allowlist: frozenset[str] = frozenset()
     content: Mapping[str, Any] = field(default_factory=dict)
+    triggers: frozenset[str] = frozenset()
+    domains: frozenset[str] = frozenset()
+    languages: frozenset[str] = frozenset()
+    frameworks: frozenset[str] = frozenset()
+    risk_capabilities: frozenset[str] = frozenset()
+    token_estimate: int = 0
+    package_name: str | None = None
+    trust_level: str = "untrusted"
 
     def __post_init__(self) -> None:
-        if not self.name or not self.version or not self.description:
+        if not self.name or not self.version or not self.description or self.token_estimate < 0:
             raise ContractViolation("skill metadata is incomplete")
+        if self.trust_level not in {"untrusted", "trusted", "verified"}:
+            raise ContractViolation("skill trust level is invalid")
 
 
 @dataclass(frozen=True, slots=True)
@@ -65,7 +76,7 @@ class ProgressiveSkillRouter:
             raise TenantIsolationError("skill is not enabled for tenant")
         if stage not in self.STAGES:
             raise ContractViolation("invalid Skill disclosure stage")
-        result: dict[str, object] = {"name": skill.name, "version": skill.version, "stage": stage, "description": skill.description, "permissions": sorted(skill.permissions)}
+        result: dict[str, object] = {"name": skill.name, "version": skill.version, "stage": stage, "description": skill.description, "permissions": sorted(skill.permissions), "package_name": skill.package_name, "trust_level": skill.trust_level, "token_estimate": skill.token_estimate}
         if stage in self.STAGES[1:]:
             contract = (skill.content or {}).get("contract", "")
             result["contract"] = dict(contract) if isinstance(contract, dict) else contract
@@ -73,4 +84,7 @@ class ProgressiveSkillRouter:
             result["instructions"] = (skill.content or {}).get("instructions", "")
         if stage == "L3_examples":
             result["examples"] = (skill.content or {}).get("examples", "")
+            result["schemas"] = (skill.content or {}).get("schemas", "")
+            result["scripts"] = (skill.content or {}).get("scripts", "")
+            result["references"] = (skill.content or {}).get("references", "")
         return result
