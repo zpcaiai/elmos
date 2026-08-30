@@ -1,0 +1,6 @@
+interface:
+  display_name: "Formal Proof Router"
+  short_description: "Run formal-proof-router with bounded commercial controls"
+  default_prompt: "Use $formal-proof-router through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

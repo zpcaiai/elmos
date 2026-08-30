@@ -178,8 +178,9 @@ pricing-billing-skills:
 
 .PHONY: commercial-capability-expansion-skills
 commercial-capability-expansion-skills:
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_commercial_capability_expansion_skills.py --check
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/commercial-capability-expansion-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest tests/commercial-capability-expansion-skills/ -v
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_commercial_capability_expansion_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/commercial-capability-expansion-engine/src $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest==8.4.2 python -m pytest -p no:cacheprovider tests/commercial-capability-expansion-skills/ -v
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/commercial-capability-expansion-engine/src $(UV) run --no-project --quiet --with pytest==8.4.2 python -m pytest -p no:cacheprovider engines/commercial-capability-expansion-engine/tests/ -v
 
 .PHONY: semantic-assurance-expansion-skills
 semantic-assurance-expansion-skills:
@@ -660,5 +661,4 @@ etgb-full-product-skills:
 functional-assurance-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python3 tooling/integrate_functional_assurance_certification_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/functional-assurance-engine/src $(UV) run --no-project --quiet --with pytest --with pyyaml==6.0.2 --with jsonschema==4.25.1 python3 -m pytest engines/functional-assurance-engine/tests -v
-
 

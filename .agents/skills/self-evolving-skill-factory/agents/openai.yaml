@@ -1,0 +1,6 @@
+interface:
+  display_name: "Self Evolving Skill Factory"
+  short_description: "Run self-evolving-skill-factory with bounded commercial controls"
+  default_prompt: "Use $self-evolving-skill-factory through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

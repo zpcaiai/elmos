@@ -1,0 +1,6 @@
+interface:
+  display_name: "Performance Regression Certification"
+  short_description: "Run performance-regression-certification with bounded commercial controls"
+  default_prompt: "Use $performance-regression-certification through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true
