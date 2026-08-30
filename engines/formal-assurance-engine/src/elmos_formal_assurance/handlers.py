@@ -4,11 +4,15 @@ import ast
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
+import html
 import json
+import keyword
 import re
 from typing import Any
 
 from .canonical import (
+    canonical_json,
+    digest_bytes,
     digest_value,
     normalized_text,
     proof_cache_key,
@@ -27,14 +31,31 @@ from .contracts import (
     Waiver,
     utc_now,
 )
-from .gate import evaluate_release_gate, validate_result
+from .gate import evaluate_release_gate, validate_result, validate_status_claim
+from .gate_evidence import (
+    GateEvidenceError,
+    GateEvidenceVerifier,
+    VerifiedGateEvidence,
+)
+from .governance import GovernanceError, GovernanceService
+from .lean_dafny_bridge import FormalProofBridgeError, FormalProofKernelBridge
 from .planner import PlanError, serialize_plan, topological_order
 from .store import StateStore, StoreError, result_to_dict
-from .artifact_store import ArtifactStore
+from .artifact_store import ArtifactStore, ArtifactStoreError
 
 
 class HandlerError(ValueError):
     pass
+
+
+_PROVED_STATUSES = frozenset(
+    {
+        ProofStatus.PROVED_CERTIFIED,
+        ProofStatus.PROVED_INDUCTIVE,
+        ProofStatus.PROVED_SOLVER_TRUSTED,
+        ProofStatus.PROVED_FOR_SUPPORTED_FRAGMENT,
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -49,6 +70,7 @@ class HandlerContext:
     store: StateStore
     artifact_store: ArtifactStore | None = None
     production: Any | None = None
+    gate_evidence_verifier: GateEvidenceVerifier | None = None
 
 
 def _required(ctx: HandlerContext, key: str) -> Any:
@@ -69,6 +91,15 @@ def _list(value: Any, path: str) -> list[Any]:
     return value
 
 
+def _require_exact_payload(ctx: HandlerContext, allowed: set[str]) -> None:
+    unknown = sorted(set(ctx.payload) - allowed - {"traceId"})
+    if unknown:
+        raise HandlerError(
+            f"{ctx.skill_id}: payload contains unknown fields: "
+            + ", ".join(unknown)
+        )
+
+
 def _bounded(
     ctx: HandlerContext,
     output: dict[str, Any],
@@ -78,6 +109,7 @@ def _bounded(
     assurance: AssuranceLevel = AssuranceLevel.A1_BOUNDED,
     mode: str = "BOUNDED",
     capability_state: str | None = None,
+    external_evidence_status: str = "NOT_RUN",
 ) -> SkillOutcome:
     normalized_output = dict(output)
     if status == ProofStatus.BOUNDED_NO_COUNTEREXAMPLE:
@@ -105,6 +137,7 @@ def _bounded(
         mode=mode,
         output=normalized_output,
         diagnostics=diagnostics,
+        external_evidence_status=external_evidence_status,
     )
 
 
@@ -542,30 +575,171 @@ def _status_policy(ctx: HandlerContext) -> SkillOutcome:
 
 
 def _tcb(ctx: HandlerContext) -> SkillOutcome:
+    action = ctx.payload.get("action")
+    if action is not None or "trustedComponent" in ctx.payload:
+        _require_exact_payload(ctx, {"action", "trustedComponent"})
+        if action != "register":
+            raise HandlerError(
+                "trustedComponent mutation requires the exact register action"
+            )
+        document = _mapping(
+            _required(ctx, "trustedComponent"), "trustedComponent"
+        )
+        try:
+            registration = GovernanceService(ctx.store).register_trusted_component(
+                ctx.scope, ctx.identity, document
+            )
+        except (GovernanceError, PermissionError, StoreError) as exc:
+            raise HandlerError(str(exc)) from exc
+        return _bounded(
+            ctx,
+            {
+                "action": "register",
+                "trustedComponent": registration,
+                "tcbMutationAuthorized": True,
+                "externalAttestationStatus": "NOT_RUN",
+                "certificationStatus": "NOT_CERTIFIED",
+            },
+        )
+    _require_exact_payload(ctx, {"components"})
     components = _list(_required(ctx, "components"), "components")
-    records = []
-    missing = []
-    for item in components:
-        record = _mapping(item, "component")
+    records: list[dict[str, Any]] = []
+    missing: list[str] = []
+    seen: set[str] = set()
+    allowed_roles = {
+        "PARSER",
+        "SEMANTICS",
+        "ADAPTER",
+        "SOLVER",
+        "KERNEL",
+        "COMPILER",
+        "RUNTIME",
+        "DATABASE",
+        "EXTERNAL_CONTRACT",
+    }
+    for index, item in enumerate(components):
+        record = _mapping(item, f"components[{index}]")
+        unknown = sorted(
+            set(record)
+            - {
+                "id",
+                "version",
+                "digest",
+                "role",
+                "componentType",
+                "sbomRef",
+                "signatureRef",
+            }
+        )
+        if unknown:
+            raise HandlerError(
+                f"components[{index}] contains unknown fields: "
+                + ", ".join(unknown)
+            )
         identifier = validate_identifier(record.get("id"), "component.id")
+        if identifier in seen:
+            raise HandlerError(f"duplicate TCB component: {identifier}")
+        seen.add(identifier)
+        version = record.get("version")
         digest = record.get("digest")
-        if not isinstance(digest, str):
+        if not isinstance(version, str) or not version.strip() or not isinstance(
+            digest, str
+        ):
             missing.append(identifier)
             continue
-        validate_digest(digest, f"component[{identifier}].digest")
+        version = normalized_text(version, f"component[{identifier}].version")
+        digest = validate_digest(digest, f"component[{identifier}].digest")
+        role = str(record.get("role", record.get("componentType", "UNKNOWN")))
+        if (
+            record.get("role") is not None
+            and record.get("componentType") is not None
+            and record["role"] != record["componentType"]
+        ):
+            raise HandlerError(
+                f"component[{identifier}] role and componentType disagree"
+            )
+        if role not in allowed_roles:
+            raise HandlerError(f"component[{identifier}].role is invalid")
+        sbom_ref = record.get("sbomRef")
+        sbom_digest = None
+        if sbom_ref is not None:
+            sbom = _mapping(sbom_ref, f"component[{identifier}].sbomRef")
+            sbom_digest = validate_digest(
+                sbom.get("sha256"), f"component[{identifier}].sbomRef.sha256"
+            )
+        signature_ref = record.get("signatureRef")
+        if signature_ref is not None and (
+            not isinstance(signature_ref, str) or not signature_ref.strip()
+        ):
+            raise HandlerError(f"component[{identifier}].signatureRef is invalid")
+        if isinstance(signature_ref, str):
+            signature_ref = normalized_text(
+                signature_ref, f"component[{identifier}].signatureRef"
+            )
+        trust_level = (
+            "KERNEL_CHECKED"
+            if role == "KERNEL"
+            else "SOLVER_TRUSTED"
+            if role == "SOLVER"
+            else "TCB_ASSUMPTION"
+        )
         records.append(
             {
                 "id": identifier,
-                "version": record.get("version"),
+                "version": version,
                 "digest": digest,
-                "role": record.get("role", "UNKNOWN"),
+                "role": role,
+                "trustLevel": trust_level,
+                "sbomDigest": sbom_digest,
+                "signatureRef": signature_ref,
+                "attestationStatus": "BOUND_NOT_INDEPENDENTLY_VERIFIED"
+                if sbom_ref is not None and signature_ref is not None
+                else "NOT_RUN",
             }
         )
+    records.sort(key=lambda item: item["id"])
+    closure = {
+        "format": "elmos-tcb-closure/v1",
+        "subjectId": ctx.subject_id,
+        "scopeDigest": digest_value(ctx.scope.to_dict()),
+        "components": records,
+        "missingPins": sorted(missing),
+        "trustLevels": {
+            "kernelChecked": sum(
+                item["trustLevel"] == "KERNEL_CHECKED" for item in records
+            ),
+            "solverTrusted": sum(
+                item["trustLevel"] == "SOLVER_TRUSTED" for item in records
+            ),
+            "assumed": sum(
+                item["trustLevel"] == "TCB_ASSUMPTION" for item in records
+            ),
+        },
+        "productionTrustStatus": "NOT_TRUSTED",
+        "externalAttestationStatus": "NOT_RUN",
+        "independentVerificationStatus": "NOT_RUN",
+        "certificationStatus": "NOT_CERTIFIED",
+    }
+    tcb_digest = digest_value(closure)
+    registration = ctx.store.put_document(
+        ctx.scope,
+        "tcb_closure",
+        ctx.subject_id,
+        closure,
+        version="tcb-" + tcb_digest.removeprefix("sha256:")[:24],
+    )
     output = {
         "components": records,
-        "tcbDigest": digest_value(records),
-        "missingDigests": missing,
+        "tcbClosure": closure,
+        "tcbDigest": tcb_digest,
+        "missingDigests": sorted(missing),
         "productionEnablement": "BLOCKED" if missing else "REQUIRES_EXTERNAL_REVIEW",
+        "kernelAndSolverTrustSeparated": True,
+        "stalenessPlan": {
+            "onComponentDigestChange": "MARK_BOUND_PROOFS_STALE_AND_ENQUEUE_REPROOF",
+            "automaticTrustPromotion": False,
+        },
+        "registration": registration,
     }
     if missing:
         return _blocked(
@@ -653,28 +827,174 @@ def _cache_invalidation(ctx: HandlerContext) -> SkillOutcome:
 
 
 def _model_versioning(ctx: HandlerContext) -> SkillOutcome:
-    from_version = normalized_text(_required(ctx, "fromVersion"), "fromVersion")
-    to_version = normalized_text(_required(ctx, "toVersion"), "toVersion")
-
-    def major(value: str) -> int:
-        try:
-            return int(value.split(".", 1)[0])
-        except (ValueError, IndexError) as exc:
-            raise HandlerError(
-                "model versions must be numeric semantic versions"
-            ) from exc
-
-    breaking = major(to_version) > major(from_version)
-    return _bounded(
+    _require_exact_payload(
         ctx,
         {
-            "fromVersion": from_version,
-            "toVersion": to_version,
-            "breakingChange": breaking,
-            "replayRequired": breaking,
-            "modelDigest": digest_value({"from": from_version, "to": to_version}),
+            "fromVersion",
+            "toVersion",
+            "fromModel",
+            "toModel",
+            "changeGraph",
+            "proofBaselines",
         },
     )
+    from_version = normalized_text(_required(ctx, "fromVersion"), "fromVersion")
+    to_version = normalized_text(_required(ctx, "toVersion"), "toVersion")
+    version_pattern = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
+    from_match = version_pattern.fullmatch(from_version)
+    to_match = version_pattern.fullmatch(to_version)
+    if from_match is None or to_match is None:
+        raise HandlerError("model versions must be exact numeric semantic versions")
+    from_tuple = tuple(int(value) for value in from_match.groups())
+    to_tuple = tuple(int(value) for value in to_match.groups())
+    from_model = _mapping(
+        ctx.payload.get("fromModel", {"model": "UNSPECIFIED"}), "fromModel"
+    )
+    to_model = _mapping(
+        ctx.payload.get("toModel", {"model": "UNSPECIFIED"}), "toModel"
+    )
+    from_digest = digest_value(from_model)
+    to_digest = digest_value(to_model)
+    changed_paths = _json_changed_paths(from_model, to_model)
+    declared_changes: list[dict[str, Any]] = []
+    for index, item in enumerate(
+        _list(ctx.payload.get("changeGraph", []), "changeGraph")
+    ):
+        change = _mapping(item, f"changeGraph[{index}]")
+        if set(change) != {"path", "classification", "reason"}:
+            raise HandlerError(
+                f"changeGraph[{index}] must contain path, classification and reason"
+            )
+        path = normalized_text(change["path"], f"changeGraph[{index}].path")
+        classification = str(change["classification"])
+        if classification not in {"COMPATIBLE", "BREAKING", "UNKNOWN"}:
+            raise HandlerError(f"changeGraph[{index}].classification is invalid")
+        reason = normalized_text(change["reason"], f"changeGraph[{index}].reason")
+        declared_changes.append(
+            {"path": path, "classification": classification, "reason": reason}
+        )
+    declared_paths = {item["path"] for item in declared_changes}
+    unexplained_paths = sorted(set(changed_paths) - declared_paths)
+    breaking = any(
+        item["classification"] == "BREAKING" for item in declared_changes
+    )
+    unknown = bool(unexplained_paths) or any(
+        item["classification"] == "UNKNOWN" for item in declared_changes
+    )
+    major_bumped = to_tuple[0] > from_tuple[0]
+    version_regressed = to_tuple < from_tuple
+    compatibility = (
+        "INDETERMINATE" if unknown else "BREAKING" if breaking else "COMPATIBLE"
+    )
+    violations: list[str] = []
+    if breaking and not major_bumped:
+        violations.append("breaking semantic change requires a major version increment")
+    if from_digest != to_digest and from_tuple == to_tuple:
+        violations.append("changed model release requires a semantic version increment")
+    if version_regressed:
+        violations.append("model release cannot regress its semantic version")
+    baselines: list[dict[str, Any]] = []
+    for index, item in enumerate(
+        _list(ctx.payload.get("proofBaselines", []), "proofBaselines")
+    ):
+        baseline = _mapping(item, f"proofBaselines[{index}]")
+        if set(baseline) != {"id", "digest"}:
+            raise HandlerError(
+                f"proofBaselines[{index}] must contain exactly id and digest"
+            )
+        baselines.append(
+            {
+                "id": validate_identifier(
+                    baseline["id"], f"proofBaselines[{index}].id"
+                ),
+                "digest": validate_digest(
+                    baseline["digest"], f"proofBaselines[{index}].digest"
+                ),
+                "replayStatus": "NOT_RUN",
+            }
+        )
+    replay_required = from_digest != to_digest or breaking or unknown
+    release = {
+        "format": "elmos-formal-model-release/v1",
+        "subjectId": ctx.subject_id,
+        "fromVersion": from_version,
+        "toVersion": to_version,
+        "fromModelDigest": from_digest,
+        "toModelDigest": to_digest,
+        "compatibility": compatibility,
+        "majorVersionBumped": major_bumped,
+        "changedPaths": changed_paths,
+        "declaredChanges": declared_changes,
+        "unexplainedChangedPaths": unexplained_paths,
+        "replayPlan": baselines,
+        "replayRequired": replay_required,
+        "replayStatus": "NOT_RUN" if replay_required else "NOT_REQUIRED",
+        "rollback": {
+            "modelDigest": from_digest,
+            "evidenceMutationAllowed": False,
+        },
+        "historicalEvidenceOverwritten": False,
+        "violations": violations,
+        "externalEvidenceStatus": "NOT_RUN",
+        "certificationStatus": "NOT_CERTIFIED",
+    }
+    release_digest = digest_value(release)
+    registration = ctx.store.put_document(
+        ctx.scope,
+        "formal_model_release",
+        ctx.subject_id,
+        release,
+        version="model-" + release_digest.removeprefix("sha256:")[:24],
+    )
+    output = {
+        **release,
+        "modelDigest": to_digest,
+        "releaseDigest": release_digest,
+        "compatibilityReport": {
+            "status": compatibility,
+            "changedPaths": changed_paths,
+            "unexplainedChangedPaths": unexplained_paths,
+            "violations": violations,
+        },
+        "registration": registration,
+    }
+    if violations or unknown or replay_required:
+        reasons = [
+            *violations,
+            *(f"unexplained model change: {item}" for item in unexplained_paths),
+        ]
+        if replay_required:
+            reasons.append("required proof baseline replay remains NOT_RUN")
+        return _blocked(
+            ctx,
+            output,
+            "; ".join(reasons)
+            or "model compatibility contains unknown changes",
+            status=ProofStatus.ASSUMPTION_REQUIRED,
+        )
+    return _bounded(ctx, output)
+
+
+def _json_changed_paths(source: Any, target: Any, path: str = "$") -> list[str]:
+    if isinstance(source, dict) and isinstance(target, dict):
+        changed: list[str] = []
+        for key in sorted(set(source) | set(target)):
+            child = f"{path}.{key}"
+            if key not in source or key not in target:
+                changed.append(child)
+            else:
+                changed.extend(_json_changed_paths(source[key], target[key], child))
+        return changed
+    if isinstance(source, list) and isinstance(target, list):
+        changed = []
+        for index in range(max(len(source), len(target))):
+            child = f"{path}[{index}]"
+            if index >= len(source) or index >= len(target):
+                changed.append(child)
+            else:
+                changed.extend(_json_changed_paths(source[index], target[index], child))
+        return changed
+    return [] if source == target else [path]
 
 
 def _parse_result(item: Any, path: str = "result") -> ProofResult:
@@ -708,9 +1028,11 @@ def _parse_result(item: Any, path: str = "result") -> ProofResult:
 def _orchestrator(ctx: HandlerContext) -> SkillOutcome:
     action = str(ctx.payload.get("action", "submit"))
     run_id = validate_identifier(_required(ctx, "runId"), "runId")
-    obligation_id = validate_identifier(_required(ctx, "obligationId"), "obligationId")
     try:
         if action == "submit":
+            obligation_id = validate_identifier(
+                _required(ctx, "obligationId"), "obligationId"
+            )
             run = ctx.store.submit_run(
                 ctx.scope,
                 run_id,
@@ -752,16 +1074,56 @@ def _orchestrator(ctx: HandlerContext) -> SkillOutcome:
                 int(_required(ctx, "token")),
                 result,
             )
+        elif action == "checkpoint":
+            checkpoint = _mapping(_required(ctx, "checkpoint"), "checkpoint")
+            progress = _mapping(_required(ctx, "progress"), "progress")
+            run = ctx.store.checkpoint_run(
+                ctx.scope,
+                run_id,
+                validate_identifier(_required(ctx, "workerId"), "workerId"),
+                int(_required(ctx, "token")),
+                checkpoint,
+                progress,
+            )
+        elif action == "retry":
+            run = ctx.store.retry_run(
+                ctx.scope,
+                run_id,
+                validate_identifier(_required(ctx, "retryRunId"), "retryRunId"),
+                account_concurrency=int(ctx.payload.get("accountConcurrency", 3)),
+                maximum_attempts=int(ctx.payload.get("maximumAttempts", 3)),
+            )
+        elif action in {"pause", "resume", "cancel"}:
+            run = ctx.store.control_run(ctx.scope, run_id, action.upper())
+        elif action == "get":
+            run = ctx.store.get_run(ctx.scope, run_id)
         else:
             raise HandlerError(f"unsupported orchestrator action: {action}")
     except (StoreError, ValueError) as exc:
         raise HandlerError(str(exc)) from exc
+    event_run_id = str(run.get("run_id", run_id))
+    checkpoint_document = (
+        json.loads(run["checkpoint_json"]) if run.get("checkpoint_json") else None
+    )
+    result_document = json.loads(run["result_json"]) if run.get("result_json") else None
+    final_evidence = (
+        result_document.get("artifacts", [])
+        if isinstance(result_document, dict)
+        else []
+    )
     return _bounded(
         ctx,
         {
             "action": action,
             "run": run,
-            "events": ctx.store.events(ctx.scope, "proof_run", run_id),
+            "events": ctx.store.events(ctx.scope, "proof_run", event_run_id),
+            "checkpoint": checkpoint_document,
+            "progress": checkpoint_document.get("progress")
+            if checkpoint_document
+            else None,
+            "finalEvidenceSet": final_evidence,
+            "terminalStateImmutable": True,
+            "etaUnit": "wall-clock-seconds",
         },
     )
 
@@ -817,11 +1179,27 @@ def _artifact_store(ctx: HandlerContext) -> SkillOutcome:
         ):
             raise HandlerError("proofArtifact.ref.sizeBytes is invalid")
         local_verified = False
+        encryption_verified = False
         if ctx.artifact_store is not None and str(ref["uri"]).startswith("cas://"):
-            data = ctx.artifact_store.get(ctx.scope.tenant_id, digest)
+            try:
+                data, metadata = ctx.artifact_store.verify_reference(
+                    ctx.scope.tenant_id, ref
+                )
+            except ArtifactStoreError as exc:
+                raise HandlerError(
+                    "proofArtifact local CAS reference cannot be verified"
+                ) from exc
             if len(data) != ref["sizeBytes"]:
                 raise HandlerError("proofArtifact local CAS size does not match ref")
             local_verified = True
+            encryption = metadata.get("encryption", {})
+            encryption_verified = bool(
+                metadata.get("encrypted") is True
+                or (
+                    isinstance(encryption, dict)
+                    and encryption.get("state") == "ENCRYPTED"
+                )
+            )
         registration = ctx.store.put_document(
             ctx.scope, "proof_artifact", identifier, document
         )
@@ -829,14 +1207,16 @@ def _artifact_store(ctx: HandlerContext) -> SkillOutcome:
             "artifact": document,
             "registration": registration,
             "localContentVerified": local_verified,
+            "envelopeEncryptionVerified": encryption_verified,
             "externalContentStatus": "NOT_RUN" if not local_verified else "NOT_REQUIRED",
             "crossTenantReadable": False,
         }
-        if not local_verified:
+        if not local_verified or not encryption_verified:
             return _blocked(
                 ctx,
                 output,
-                "external proof artifact content has not been retrieved and digest-verified",
+                "proof artifact content or tenant-scoped envelope encryption has not been verified",
+                status=ProofStatus.ASSUMPTION_REQUIRED,
             )
         return _bounded(ctx, output)
     content = _required(ctx, "artifactContent")
@@ -854,25 +1234,34 @@ def _artifact_store(ctx: HandlerContext) -> SkillOutcome:
             retention_class=retention,
         )
         stored = True
+        encryption_verified = ref.get("encrypted") is True
     else:
-        digest = digest_value(content)
+        digest = digest_bytes(content.encode("utf-8"))
         ref = {
             "uri": f"cas://{ctx.scope.tenant_id}/{digest}",
             "sha256": digest,
             "mediaType": media_type,
             "sizeBytes": len(content.encode("utf-8")),
             "immutable": True,
+            "encrypted": False,
         }
         stored = False
-    return _bounded(
-        ctx,
-        {
-            "artifact": ref,
-            "retentionClass": retention,
-            "crossTenantReadable": False,
-            "storedInLocalCas": stored,
-        },
-    )
+        encryption_verified = False
+    output = {
+        "artifact": ref,
+        "retentionClass": retention,
+        "crossTenantReadable": False,
+        "storedInLocalCas": stored,
+        "envelopeEncryptionVerified": encryption_verified,
+    }
+    if not stored or not encryption_verified:
+        return _blocked(
+            ctx,
+            output,
+            "tenant-confidential proof artifacts require an encrypted artifact store",
+            status=ProofStatus.ASSUMPTION_REQUIRED,
+        )
+    return _bounded(ctx, output)
 
 
 def _release_gate(ctx: HandlerContext) -> SkillOutcome:
@@ -900,28 +1289,92 @@ def _release_gate(ctx: HandlerContext) -> SkillOutcome:
             compensating_controls=tuple(record.get("compensatingControls", [])),
             expires_at=str(record.get("expiresAt")),
         )
+    policy_revision = str(ctx.payload.get("policyRevision", "local-policy-v1"))
+    gate = str(ctx.payload.get("requiredGate", "E2_MODEL"))
+    decision_input = {
+        "scope": ctx.scope.to_dict(),
+        "subjectId": ctx.subject_id,
+        "gate": gate,
+        "obligations": [
+            {
+                "id": item.id,
+                "criticality": item.criticality.value,
+                "propertyKind": item.property_kind,
+                "requiredAssurance": item.required_assurance.value,
+                "formulaHash": item.formula_hash,
+                "allowBounded": item.allow_bounded,
+                "required": item.required,
+                "dependencies": list(item.dependencies),
+            }
+            for item in obligations
+        ],
+        "results": [result_to_dict(item) for item in parsed_results],
+        "waivers": [
+            {
+                "obligationId": item.obligation_id,
+                "status": item.status,
+                "risk": item.risk,
+                "approvals": list(item.approvals),
+                "compensatingControls": list(item.compensating_controls),
+                "expiresAt": item.expires_at,
+            }
+            for item in (waivers[key] for key in sorted(waivers))
+        ],
+        "policyRevision": policy_revision,
+    }
+    decision_input_digest = digest_value(decision_input)
+    verified_evidence: VerifiedGateEvidence | None = None
+    raw_evidence = ctx.payload.get("gateEvidenceReceipt")
+    if raw_evidence is not None:
+        if ctx.gate_evidence_verifier is None:
+            raise HandlerError(
+                "gateEvidenceReceipt requires an independently configured verifier"
+            )
+        try:
+            verified_evidence = ctx.gate_evidence_verifier.verify(
+                raw_evidence,
+                scope=ctx.scope,
+                subject_id=ctx.subject_id,
+                gate=gate,
+                decision_input_digest=decision_input_digest,
+            )
+        except GateEvidenceError as exc:
+            raise HandlerError(str(exc)) from exc
+    requested_deployment = ctx.payload.get("deploymentComplete")
+    requested_external = ctx.payload.get("externalEvidenceComplete")
+    if requested_deployment is not None and not isinstance(requested_deployment, bool):
+        raise HandlerError("deploymentComplete must be a boolean")
+    if requested_external is not None and not isinstance(requested_external, bool):
+        raise HandlerError("externalEvidenceComplete must be a boolean")
+    deployment_complete = (
+        verified_evidence.deployment_complete if verified_evidence else False
+    )
+    external_evidence_complete = (
+        verified_evidence.external_evidence_complete if verified_evidence else False
+    )
+    for field, requested, verified in (
+        ("deploymentComplete", requested_deployment, deployment_complete),
+        ("externalEvidenceComplete", requested_external, external_evidence_complete),
+    ):
+        if requested is not None and requested != verified:
+            raise HandlerError(
+                f"{field} cannot be asserted without matching signed evidence"
+            )
     decision = evaluate_release_gate(
         obligations,
         results,
         waivers,
-        required_gate=str(ctx.payload.get("requiredGate", "E2_MODEL")),
-        deployment_complete=bool(ctx.payload.get("deploymentComplete", False)),
-        external_evidence_complete=bool(
-            ctx.payload.get("externalEvidenceComplete", False)
-        ),
+        required_gate=gate,
+        deployment_complete=deployment_complete,
+        external_evidence_complete=external_evidence_complete,
     )
     evaluated_at = utc_now()
-    policy_revision = str(ctx.payload.get("policyRevision", "local-policy-v1"))
-    gate = str(ctx.payload.get("requiredGate", "E2_MODEL"))
     evidence_hash = digest_value(
         {
-            "scope": ctx.scope.to_dict(),
-            "subjectId": ctx.subject_id,
-            "gate": gate,
-            "obligations": [item.id for item in obligations],
-            "results": [result_to_dict(item) for item in parsed_results],
-            "waivers": sorted(waivers),
-            "policyRevision": policy_revision,
+            "decisionInputDigest": decision_input_digest,
+            "gateEvidenceReceiptDigest": (
+                verified_evidence.receipt_digest if verified_evidence else None
+            ),
         }
     ).removeprefix("sha256:")
     decision_id = "gate-" + evidence_hash[:32]
@@ -944,6 +1397,15 @@ def _release_gate(ctx: HandlerContext) -> SkillOutcome:
         "evaluatedAt": evaluated_at,
         "blockingReasons": list(decision.blocking_reasons),
         "evidenceHash": evidence_hash,
+        "gateEvidence": (
+            verified_evidence.to_dict()
+            if verified_evidence
+            else {
+                "verificationStatus": "NOT_RUN",
+                "deploymentComplete": False,
+                "externalEvidenceComplete": False,
+            }
+        ),
     }
     registration = ctx.store.put_document(
         ctx.scope,
@@ -958,6 +1420,8 @@ def _release_gate(ctx: HandlerContext) -> SkillOutcome:
             "gateDecision": decision.to_dict(),
             "gateDocument": decision_document,
             "policy": "unknown-and-bounded-fail-closed",
+            "decisionInputDigest": decision_input_digest,
+            "gateEvidenceVerification": decision_document["gateEvidence"],
             "certification": "NOT_CERTIFIED",
             "registration": registration,
         },
@@ -967,30 +1431,316 @@ def _release_gate(ctx: HandlerContext) -> SkillOutcome:
         assurance=AssuranceLevel.A1_BOUNDED
         if decision.decision != "DENY"
         else AssuranceLevel.NONE,
+        external_evidence_status=(
+            verified_evidence.verification_status
+            if verified_evidence is not None
+            else "NOT_RUN"
+        ),
     )
 
 
 def _report(ctx: HandlerContext) -> SkillOutcome:
-    outcomes = _list(_required(ctx, "outcomes"), "outcomes")
-    counts: dict[str, int] = {}
-    for item in outcomes:
-        status = str(
-            _mapping(item, "outcome").get("proofStatus", "UNKNOWN_RESOURCE_LIMIT")
-        )
-        counts[status] = counts.get(status, 0) + 1
-    return _bounded(
-        ctx,
-        {
-            "subjectId": ctx.subject_id,
-            "outcomeCount": len(outcomes),
-            "statusCounts": counts,
-            "externalEvidenceStatus": "NOT_RUN",
-            "certificationStatus": "NOT_CERTIFIED",
-            "reportDigest": digest_value(
-                {"subjectId": ctx.subject_id, "statusCounts": counts}
-            ),
-        },
+    _require_exact_payload(
+        ctx, {"outcomes", "coverage", "riskRegister", "releaseDecision"}
     )
+    outcomes = _list(_required(ctx, "outcomes"), "outcomes")
+    coverage = _mapping(ctx.payload.get("coverage", {}), "coverage")
+    risk_register = _list(ctx.payload.get("riskRegister", []), "riskRegister")
+    counts: dict[str, int] = {}
+    assurance_counts: dict[str, int] = {}
+    normalized: list[dict[str, Any]] = []
+    unresolved_evidence: list[str] = []
+    labels = {
+        ProofStatus.PROVED_CERTIFIED: "certified proof result",
+        ProofStatus.PROVED_INDUCTIVE: "inductive proof result",
+        ProofStatus.PROVED_SOLVER_TRUSTED: "solver-trusted proof result",
+        ProofStatus.PROVED_FOR_SUPPORTED_FRAGMENT: "proved for supported fragment",
+        ProofStatus.BOUNDED_NO_COUNTEREXAMPLE: "bounded search found no counterexample",
+        ProofStatus.REFUTED_WITH_COUNTEREXAMPLE: "refuted with counterexample",
+        ProofStatus.UNKNOWN_TIMEOUT: "unknown due to timeout",
+        ProofStatus.UNKNOWN_RESOURCE_LIMIT: "unknown due to resource limit",
+        ProofStatus.UNSUPPORTED: "unsupported",
+        ProofStatus.ASSUMPTION_REQUIRED: "assumption required",
+        ProofStatus.RUNTIME_MONITORED: "runtime monitored",
+        ProofStatus.WAIVED_BY_APPROVER: "waived by governed approver",
+    }
+    for index, item in enumerate(outcomes):
+        record = _mapping(item, f"outcomes[{index}]")
+        unknown = sorted(
+            set(record)
+            - {
+                "skillId",
+                "handlerId",
+                "implementationState",
+                "capabilityState",
+                "proofStatus",
+                "assuranceLevel",
+                "mode",
+                "bound",
+                "engine",
+                "runId",
+                "obligationId",
+                "assumptionHash",
+                "tcbHash",
+                "formulaHash",
+                "counterexampleId",
+                "stale",
+                "output",
+                "diagnostics",
+                "artifactRefs",
+                "artifacts",
+                "externalEvidenceStatus",
+                "certificationStatus",
+                "createdAt",
+            }
+        )
+        if unknown:
+            raise HandlerError(
+                f"outcomes[{index}] contains unknown fields: "
+                + ", ".join(unknown)
+            )
+        try:
+            status_value = ProofStatus(str(record.get("proofStatus")))
+            assurance = AssuranceLevel(str(record.get("assuranceLevel", "NONE")))
+        except ValueError as exc:
+            raise HandlerError(
+                f"outcomes[{index}] contains invalid proofStatus or assuranceLevel"
+            ) from exc
+        output = record.get("output", {})
+        if output is not None and not isinstance(output, dict):
+            raise HandlerError(f"outcomes[{index}].output must be an object")
+        diagnostics = record.get("diagnostics", [])
+        if not isinstance(diagnostics, list) or any(
+            not isinstance(value, str) for value in diagnostics
+        ):
+            raise HandlerError(
+                f"outcomes[{index}].diagnostics must contain strings"
+            )
+        mode = record.get("mode", "UNKNOWN")
+        if not isinstance(mode, str):
+            raise HandlerError(f"outcomes[{index}].mode must be text")
+        bound = (
+            record.get("bound")
+            if "bound" in record
+            else output.get("bound")
+            if isinstance(output, dict)
+            else None
+        )
+        if bound is not None and not isinstance(bound, dict):
+            raise HandlerError(f"outcomes[{index}].bound must be an object")
+        for identifier_field in ("runId", "obligationId", "counterexampleId"):
+            if record.get(identifier_field) is not None:
+                validate_identifier(
+                    record[identifier_field],
+                    f"outcomes[{index}].{identifier_field}",
+                )
+        if record.get("formulaHash") is not None:
+            validate_digest(
+                record["formulaHash"], f"outcomes[{index}].formulaHash"
+            )
+        if record.get("engine") is not None and (
+            not isinstance(record["engine"], str) or not record["engine"].strip()
+        ):
+            raise HandlerError(f"outcomes[{index}].engine must be non-empty text")
+        try:
+            validate_status_claim(
+                status_value,
+                assurance,
+                mode,
+                bound=bound,
+                assumption_hash=record.get("assumptionHash"),
+                tcb_hash=record.get("tcbHash"),
+                counterexample_id=record.get("counterexampleId"),
+            )
+        except ValueError as exc:
+            raise HandlerError(
+                f"outcomes[{index}] violates proof anti-inflation policy: {exc}"
+            ) from exc
+        status = status_value.value
+        counts[status] = counts.get(status, 0) + 1
+        assurance_counts[assurance.value] = assurance_counts.get(assurance.value, 0) + 1
+        if (
+            "artifactRefs" in record
+            and "artifacts" in record
+            and record["artifactRefs"] != record["artifacts"]
+        ):
+            raise HandlerError(
+                f"outcomes[{index}] artifactRefs and artifacts aliases disagree"
+            )
+        refs = _list(
+            record.get("artifactRefs", record.get("artifacts", [])),
+            f"outcomes[{index}].artifactRefs",
+        )
+        normalized_refs: list[dict[str, Any]] = []
+        for ref_index, item_ref in enumerate(refs):
+            ref = _mapping(
+                item_ref, f"outcomes[{index}].artifactRefs[{ref_index}]"
+            )
+            if not isinstance(ref.get("uri"), str) or not ref["uri"]:
+                raise HandlerError("report artifact URI is required")
+            digest = validate_digest(
+                ref.get("sha256"),
+                f"outcomes[{index}].artifactRefs[{ref_index}].sha256",
+            )
+            locally_verified = False
+            if ctx.artifact_store is not None and ref["uri"].startswith("cas://"):
+                try:
+                    ctx.artifact_store.verify_reference(ctx.scope.tenant_id, ref)
+                except ArtifactStoreError as exc:
+                    raise HandlerError(
+                        "report local CAS reference cannot be verified"
+                    ) from exc
+                locally_verified = True
+            if not locally_verified:
+                unresolved_evidence.append(
+                    f"outcome-{index}-artifact-{ref_index}"
+                )
+            normalized_refs.append(
+                {
+                    "uri": ref["uri"],
+                    "sha256": digest,
+                    "localIntegrityVerified": locally_verified,
+                }
+            )
+        if status_value in _PROVED_STATUSES and (
+            not normalized_refs
+            or not all(item["localIntegrityVerified"] for item in normalized_refs)
+        ):
+            raise HandlerError(
+                f"outcomes[{index}] proved status requires locally verified evidence"
+            )
+        normalized_record = {
+            "index": index,
+            "skillId": record.get("skillId"),
+            "proofStatus": status,
+            "assuranceLevel": assurance.value,
+            "humanLabel": labels[status_value],
+            "mode": mode,
+            "bound": bound,
+            "diagnostics": diagnostics,
+            "artifactRefs": normalized_refs,
+            "sourceOutcomeDigest": digest_value(record),
+        }
+        normalized.append(normalized_record)
+    status_counts = {key: counts[key] for key in sorted(counts)}
+    assurance_status_counts = {
+        key: assurance_counts[key] for key in sorted(assurance_counts)
+    }
+    limitations = [
+        "Bounded, unknown, unsupported, assumed, monitored and waived states are not displayed as proved.",
+        "Package certification remains NOT_CERTIFIED.",
+    ]
+    if unresolved_evidence:
+        limitations.append(
+            "One or more evidence references were not locally retrieved and digest-verified."
+        )
+    machine_model = {
+        "format": "elmos-formal-assurance-report/v1",
+        "subjectId": ctx.subject_id,
+        "scope": _scope_payload(ctx),
+        "outcomeCount": len(normalized),
+        "statusCounts": status_counts,
+        "assuranceLevelCounts": assurance_status_counts,
+        "outcomes": normalized,
+        "coverage": coverage,
+        "riskRegister": risk_register,
+        "releaseDecision": ctx.payload.get("releaseDecision"),
+        "limitations": limitations,
+        "unresolvedEvidence": sorted(unresolved_evidence),
+        "externalEvidenceStatus": "NOT_RUN",
+        "independentVerificationStatus": "NOT_RUN",
+        "certificationStatus": "NOT_CERTIFIED",
+    }
+    report_digest = digest_value(machine_model)
+    summary_lines = [
+        "# Formal Assurance Report",
+        "",
+        f"Subject: `{ctx.subject_id}`",
+        f"Machine model: `{report_digest}`",
+        "Certification: `NOT_CERTIFIED`",
+        "",
+        "## Exact machine status counts",
+        "",
+    ]
+    if status_counts:
+        summary_lines.extend(
+            f"- `{status}`: {count}" for status, count in status_counts.items()
+        )
+    else:
+        summary_lines.append("- No proof outcomes were supplied.")
+    summary_lines.extend(["", "## Critical limitations", ""])
+    summary_lines.extend(f"- {item}" for item in limitations)
+    markdown = "\n".join(summary_lines) + "\n"
+    html_report = (
+        "<!doctype html><html><head><meta charset=\"utf-8\"><title>Formal Assurance Report</title></head>"
+        "<body><h1>Formal Assurance Report</h1>"
+        f"<p>Subject: <code>{html.escape(ctx.subject_id)}</code></p>"
+        f"<p>Machine model: <code>{report_digest}</code></p>"
+        "<p>Certification: <code>NOT_CERTIFIED</code></p>"
+        "<h2>Exact machine status counts</h2><ul>"
+        + "".join(
+            f"<li><code>{html.escape(status)}</code>: {count}</li>"
+            for status, count in status_counts.items()
+        )
+        + "</ul><h2>Critical limitations</h2><ul>"
+        + "".join(f"<li>{html.escape(item)}</li>" for item in limitations)
+        + "</ul></body></html>\n"
+    )
+    machine_json = canonical_json(machine_model) + b"\n"
+    artifacts: list[dict[str, Any]] = []
+    if ctx.artifact_store is not None:
+        for content, media_type in (
+            (machine_json, "application/json"),
+            (markdown.encode("utf-8"), "text/markdown"),
+            (html_report.encode("utf-8"), "text/html"),
+        ):
+            artifacts.append(
+                ctx.artifact_store.put(
+                    ctx.scope.tenant_id,
+                    content,
+                    media_type=media_type,
+                    retention_class="AUDIT",
+                )
+            )
+    report_document = {
+        "subjectId": ctx.subject_id,
+        "reportDigest": report_digest,
+        "machineModel": machine_model,
+        "artifactRefs": artifacts,
+        "formats": {
+            "json": report_digest,
+            "markdownModelDigest": report_digest,
+            "htmlModelDigest": report_digest,
+            "pdf": "NOT_RUN",
+        },
+    }
+    registration = ctx.store.put_document(
+        ctx.scope,
+        "formal_assurance_report",
+        ctx.subject_id,
+        report_document,
+        version="report-" + report_digest.removeprefix("sha256:")[:24],
+    )
+    output = {
+        **machine_model,
+        "machineModel": machine_model,
+        "machineJson": machine_json.decode("utf-8"),
+        "markdown": markdown,
+        "html": html_report,
+        "artifactRefs": artifacts,
+        "reportDigest": report_digest,
+        "machineHumanConsistent": True,
+        "pdfRenderingStatus": "NOT_RUN",
+        "registration": registration,
+    }
+    if unresolved_evidence:
+        return _blocked(
+            ctx,
+            output,
+            "report contains evidence that has not been locally digest-verified",
+            status=ProofStatus.ASSUMPTION_REQUIRED,
+        )
+    return _bounded(ctx, output)
 
 
 def _requirement_spec(ctx: HandlerContext) -> SkillOutcome:
@@ -2442,17 +3192,296 @@ def _evidence_bundle(ctx: HandlerContext) -> SkillOutcome:
 
 
 def _proof_carrying(ctx: HandlerContext) -> SkillOutcome:
+    _require_exact_payload(
+        ctx,
+        {
+            "sourceCommit",
+            "targetCommit",
+            "sourceManifestDigest",
+            "targetManifestDigest",
+            "assumptionDigest",
+            "tcbDigest",
+            "artifacts",
+            "proofResults",
+            "machineStatus",
+            "marketingStatus",
+            "coverage",
+            "boundaries",
+            "counterexamples",
+            "productionExecution",
+        },
+    )
     artifacts = _list(_required(ctx, "artifacts"), "artifacts")
-    missing = [
-        index
-        for index, item in enumerate(artifacts)
-        if not isinstance(item, dict) or not item.get("sha256") or not item.get("uri")
+    normalized_artifacts: list[dict[str, Any]] = []
+    missing: list[str] = []
+    if not artifacts:
+        missing.append("artifacts")
+    for index, item in enumerate(artifacts):
+        record = _mapping(item, f"artifacts[{index}]")
+        unknown = sorted(
+            set(record)
+            - {
+                "path",
+                "uri",
+                "sha256",
+                "mediaType",
+                "sizeBytes",
+                "retentionClass",
+                "immutable",
+                "encrypted",
+                "encryptionKeyId",
+            }
+        )
+        if unknown:
+            raise HandlerError(
+                f"artifacts[{index}] contains unknown fields: "
+                + ", ".join(unknown)
+            )
+        uri = record.get("uri")
+        if not isinstance(uri, str) or not uri.strip() or uri != uri.strip():
+            missing.append(f"artifacts[{index}].uri")
+            continue
+        try:
+            digest = validate_digest(
+                record.get("sha256"), f"artifacts[{index}].sha256"
+            )
+        except ValueError:
+            missing.append(f"artifacts[{index}].sha256")
+            continue
+        raw_path = record.get("path", f"artifact-{index}")
+        if not isinstance(raw_path, str) or not raw_path.strip():
+            raise HandlerError(f"artifacts[{index}].path must be non-empty text")
+        path = normalized_text(raw_path, f"artifacts[{index}].path")
+        path_parts = path.split("/")
+        if (
+            path.startswith("/")
+            or "\\" in path
+            or any(part in {"", ".", ".."} for part in path_parts)
+        ):
+            raise HandlerError(f"artifacts[{index}].path escapes the bundle root")
+        raw_media_type = record.get("mediaType", "application/octet-stream")
+        if not isinstance(raw_media_type, str) or not raw_media_type.strip():
+            raise HandlerError(f"artifacts[{index}].mediaType must be non-empty text")
+        media_type = normalized_text(
+            raw_media_type, f"artifacts[{index}].mediaType"
+        )
+        local_verified = False
+        actual_size = record.get("sizeBytes")
+        if ctx.artifact_store is not None and uri.startswith("cas://"):
+            try:
+                data, metadata = ctx.artifact_store.verify_reference(
+                    ctx.scope.tenant_id, record
+                )
+            except ArtifactStoreError as exc:
+                raise HandlerError(
+                    "proof-carrying local CAS reference cannot be verified"
+                ) from exc
+            actual_size = len(data)
+            media_type = str(metadata["mediaType"])
+            local_verified = True
+        if not isinstance(actual_size, int) or isinstance(actual_size, bool) or actual_size < 0:
+            missing.append(f"artifacts[{index}].sizeBytes")
+            continue
+        normalized_artifacts.append(
+            {
+                "path": path,
+                "uri": uri,
+                "sha256": digest,
+                "mediaType": media_type,
+                "sizeBytes": actual_size,
+                "localIntegrityVerified": local_verified,
+            }
+        )
+        if not local_verified:
+            missing.append(f"artifacts[{index}].localIntegrityEvidence")
+    normalized_artifacts.sort(key=lambda item: item["path"])
+    if len({item["path"] for item in normalized_artifacts}) != len(
+        normalized_artifacts
+    ):
+        raise HandlerError("proof-carrying artifact paths must be unique")
+    commit_pattern = re.compile(r"^(?:[0-9a-f]{40}|sha256:[0-9a-f]{64})$")
+    source_commit = ctx.payload.get("sourceCommit")
+    target_commit = ctx.payload.get("targetCommit")
+    for field, value in (("sourceCommit", source_commit), ("targetCommit", target_commit)):
+        if value is None:
+            missing.append(field)
+        elif not isinstance(value, str) or not commit_pattern.fullmatch(value):
+            raise HandlerError(f"{field} must be a full immutable commit digest")
+    proof_results = [
+        _parse_result(item, f"proofResults[{index}]")
+        for index, item in enumerate(
+            _list(ctx.payload.get("proofResults", []), "proofResults")
+        )
     ]
+    if not proof_results:
+        missing.append("proofResults")
+    for result_index, result in enumerate(proof_results):
+        try:
+            validate_result(result)
+        except ValueError as exc:
+            raise HandlerError(f"proofResults contains an inflated result: {exc}") from exc
+    conservative_order = {
+        ProofStatus.REFUTED_WITH_COUNTEREXAMPLE: 0,
+        ProofStatus.UNKNOWN_TIMEOUT: 1,
+        ProofStatus.UNKNOWN_RESOURCE_LIMIT: 1,
+        ProofStatus.UNSUPPORTED: 2,
+        ProofStatus.ASSUMPTION_REQUIRED: 2,
+        ProofStatus.WAIVED_BY_APPROVER: 3,
+        ProofStatus.RUNTIME_MONITORED: 3,
+        ProofStatus.BOUNDED_NO_COUNTEREXAMPLE: 4,
+        ProofStatus.PROVED_FOR_SUPPORTED_FRAGMENT: 5,
+        ProofStatus.PROVED_SOLVER_TRUSTED: 6,
+        ProofStatus.PROVED_INDUCTIVE: 7,
+        ProofStatus.PROVED_CERTIFIED: 8,
+    }
+    machine_status = (
+        min(proof_results, key=lambda item: conservative_order[item.status]).status
+        if proof_results
+        else ProofStatus.ASSUMPTION_REQUIRED
+    )
+    requested_machine_status = ctx.payload.get("machineStatus")
+    if requested_machine_status is not None and requested_machine_status != machine_status.value:
+        missing.append("machineStatusEvidenceMismatch")
+    marketing_labels = {
+        ProofStatus.PROVED_CERTIFIED: "certified proof result",
+        ProofStatus.PROVED_INDUCTIVE: "inductive proof result",
+        ProofStatus.PROVED_SOLVER_TRUSTED: "solver-trusted proof result",
+        ProofStatus.PROVED_FOR_SUPPORTED_FRAGMENT: "proved for supported fragment",
+        ProofStatus.BOUNDED_NO_COUNTEREXAMPLE: "bounded search found no counterexample",
+        ProofStatus.REFUTED_WITH_COUNTEREXAMPLE: "refuted with counterexample",
+        ProofStatus.UNKNOWN_TIMEOUT: "unknown due to timeout",
+        ProofStatus.UNKNOWN_RESOURCE_LIMIT: "unknown due to resource limit",
+        ProofStatus.UNSUPPORTED: "unsupported",
+        ProofStatus.ASSUMPTION_REQUIRED: "assumption required",
+        ProofStatus.RUNTIME_MONITORED: "runtime monitored",
+        ProofStatus.WAIVED_BY_APPROVER: "waived by governed approver",
+    }
+    marketing_status = marketing_labels[machine_status]
+    requested_marketing_status = ctx.payload.get("marketingStatus")
+    if requested_marketing_status is not None and requested_marketing_status != marketing_status:
+        missing.append("marketingStatusMachineMismatch")
+    binding_digests: dict[str, str | None] = {}
+    for field in (
+        "sourceManifestDigest",
+        "targetManifestDigest",
+        "assumptionDigest",
+        "tcbDigest",
+    ):
+        value = ctx.payload.get(field)
+        if value is None:
+            missing.append(field)
+            binding_digests[field] = None
+        else:
+            binding_digests[field] = validate_digest(value, field)
+    for result_index, result in enumerate(proof_results):
+        if result.assumption_hash:
+            result_assumption = validate_digest(
+                result.assumption_hash,
+                f"proofResults[{result_index}].assumptionHash",
+            )
+            if result_assumption != binding_digests["assumptionDigest"]:
+                missing.append(
+                    f"proofResults[{result_index}].assumptionDigestMismatch"
+                )
+        if result.tcb_hash:
+            result_tcb = validate_digest(
+                result.tcb_hash, f"proofResults[{result_index}].tcbHash"
+            )
+            if result_tcb != binding_digests["tcbDigest"]:
+                missing.append(f"proofResults[{result_index}].tcbDigestMismatch")
+    coverage = _mapping(ctx.payload.get("coverage", {}), "coverage")
+    boundaries = _list(ctx.payload.get("boundaries", []), "boundaries")
+    counterexamples = _list(
+        ctx.payload.get("counterexamples", []), "counterexamples"
+    )
+    manifest = {
+        "format": "elmos-proof-carrying-conversion-manifest/v1",
+        "subjectId": ctx.subject_id,
+        "source": {
+            "commit": source_commit,
+            "artifactDigest": ctx.scope.source_artifact_digest,
+            "manifestDigest": binding_digests["sourceManifestDigest"],
+        },
+        "target": {
+            "commit": target_commit,
+            "artifactDigest": ctx.scope.target_artifact_digest,
+            "manifestDigest": binding_digests["targetManifestDigest"],
+        },
+        "environmentDigest": ctx.scope.environment_digest,
+        "assumptionDigest": binding_digests["assumptionDigest"],
+        "tcbDigest": binding_digests["tcbDigest"],
+        "machineStatus": machine_status.value,
+        "marketingStatus": marketing_status,
+        "artifacts": normalized_artifacts,
+        "coverage": coverage,
+        "boundaries": boundaries,
+        "counterexamples": counterexamples,
+        "proofResults": [result_to_dict(item) for item in proof_results],
+        "externalSignatureStatus": "NOT_RUN",
+        "independentReplayStatus": "NOT_RUN",
+        "certificationStatus": "NOT_CERTIFIED",
+    }
+    manifest_digest = digest_value(manifest)
+    signature_request = {
+        "format": "elmos-proof-manifest-signature-request/v1",
+        "manifestDigest": manifest_digest,
+        "requiredSignerClass": "EXTERNAL_ORGANIZATION_AUTHORIZED",
+        "requiredAlgorithmPolicy": "ASYMMETRIC_NON_REPUDIABLE",
+        "status": "NOT_RUN",
+    }
+    offline_bundle = {
+        "format": "elmos-offline-proof-verifier-bundle/v1",
+        "manifest": manifest,
+        "manifestDigest": manifest_digest,
+        "verificationRules": [
+            "recompute canonical manifest digest",
+            "recompute every artifact SHA-256 and size",
+            "reject source or target commit mismatch",
+            "reject machine and marketing status mismatch",
+            "verify signature against a separately trusted non-revoked key",
+        ],
+        "nativeReplayStatus": "NOT_RUN",
+    }
+    stored_refs: list[dict[str, Any]] = []
+    if ctx.artifact_store is not None:
+        for document, media_type in (
+            (manifest, "application/vnd.elmos.proof-manifest+json"),
+            (offline_bundle, "application/vnd.elmos.offline-proof-bundle+json"),
+            (signature_request, "application/vnd.elmos.signature-request+json"),
+        ):
+            stored_refs.append(
+                ctx.artifact_store.put(
+                    ctx.scope.tenant_id,
+                    canonical_json(document) + b"\n",
+                    media_type=media_type,
+                    retention_class="AUDIT",
+                )
+            )
+    registration = ctx.store.put_document(
+        ctx.scope,
+        "proof_carrying_manifest",
+        ctx.subject_id,
+        {
+            "manifest": manifest,
+            "manifestDigest": manifest_digest,
+            "signatureRequest": signature_request,
+            "storedArtifactRefs": stored_refs,
+        },
+        version="manifest-" + manifest_digest.removeprefix("sha256:")[:24],
+    )
     output = {
-        "artifactCount": len(artifacts),
-        "missingBindingIndexes": missing,
+        "artifactCount": len(normalized_artifacts),
+        "manifest": manifest,
+        "manifestDigest": manifest_digest,
+        "offlineVerifierBundle": offline_bundle,
+        "signatureRequest": signature_request,
+        "storedArtifactRefs": stored_refs,
+        "missingBindingIndexes": sorted(set(missing)),
         "signatureVerification": "NOT_RUN",
         "independentReplay": "NOT_RUN",
+        "offlineReplayReady": not missing and bool(stored_refs),
+        "machineMarketingConsistent": "marketingStatusMachineMismatch" not in missing,
+        "registration": registration,
     }
     return _blocked(
         ctx,
@@ -2481,13 +3510,38 @@ def _drift(ctx: HandlerContext) -> SkillOutcome:
 
 
 def _verified_core(ctx: HandlerContext) -> SkillOutcome:
-    function_name = validate_identifier(_required(ctx, "functionName"), "functionName")
-    if not function_name.replace("_", "").isalnum() or function_name[0].isdigit():
-        raise HandlerError("functionName must be a safe identifier")
-    parameters = [
-        validate_identifier(value, "parameters")
-        for value in _list(ctx.payload.get("parameters", ["value"]), "parameters")
-    ]
+    _require_exact_payload(
+        ctx,
+        {
+            "functionName",
+            "parameters",
+            "expression",
+            "formula",
+            "contract",
+            "adapterMappings",
+            "proofSourceContext",
+            "sourceLanguage",
+            "productionExecution",
+        },
+    )
+    raw_function_name = _required(ctx, "functionName")
+    if not isinstance(raw_function_name, str):
+        raise HandlerError("functionName must be a Python identifier")
+    function_name = validate_identifier(raw_function_name, "functionName")
+    if not function_name.isidentifier() or keyword.iskeyword(function_name):
+        raise HandlerError("functionName must be a non-keyword Python identifier")
+    parameters: list[str] = []
+    for index, value in enumerate(
+        _list(ctx.payload.get("parameters", ["value"]), "parameters")
+    ):
+        if not isinstance(value, str):
+            raise HandlerError(f"parameters[{index}] must be a Python identifier")
+        parameter = validate_identifier(value, f"parameters[{index}]")
+        if not parameter.isidentifier() or keyword.iskeyword(parameter):
+            raise HandlerError(
+                f"parameters[{index}] must be a non-keyword Python identifier"
+            )
+        parameters.append(parameter)
     if len(parameters) != len(set(parameters)):
         raise HandlerError("parameters must be unique")
     expression = normalized_text(_required(ctx, "expression"), "expression")
@@ -2531,6 +3585,181 @@ def _verified_core(ctx: HandlerContext) -> SkillOutcome:
         if isinstance(node, ast.Name) and node.id not in parameters:
             raise HandlerError(f"expression references undeclared parameter: {node.id}")
     candidate = f"def {function_name}({', '.join(parameters)}):\n    return {expression}\n"
+    contract = ctx.payload.get("contract")
+    contract_document: dict[str, Any] | None = None
+    gaps: list[str] = []
+    if contract is None:
+        gaps.append("FORMAL_CONTRACT_REQUIRED")
+    else:
+        contract_document = _mapping(contract, "contract")
+        if set(contract_document) != {
+            "preconditions",
+            "postconditions",
+            "invariants",
+        }:
+            raise HandlerError(
+                "contract must contain preconditions, postconditions and invariants"
+            )
+        for field in ("preconditions", "postconditions", "invariants"):
+            values = _list(contract_document[field], f"contract.{field}")
+            if any(not isinstance(item, str) or not item.strip() for item in values):
+                raise HandlerError(f"contract.{field} must contain non-empty strings")
+        if not contract_document["postconditions"]:
+            gaps.append("POSTCONDITION_REQUIRED")
+    adapter_mappings: list[dict[str, Any]] = []
+    for index, item in enumerate(
+        _list(ctx.payload.get("adapterMappings", []), "adapterMappings")
+    ):
+        mapping = _mapping(item, f"adapterMappings[{index}]")
+        required_mapping_fields = {
+            "sourceField",
+            "targetField",
+            "mappingKind",
+            "evidenceStatus",
+        }
+        if not required_mapping_fields.issubset(mapping) or set(mapping) - (
+            required_mapping_fields | {"evidenceDigest"}
+        ):
+            raise HandlerError(
+                f"adapterMappings[{index}] fields are invalid"
+            )
+        declared_evidence_status = mapping["evidenceStatus"]
+        if not isinstance(declared_evidence_status, str) or declared_evidence_status not in {
+            "PROVED",
+            "TESTED",
+            "NOT_RUN",
+        }:
+            raise HandlerError(
+                f"adapterMappings[{index}].evidenceStatus is invalid"
+            )
+        evidence_digest = mapping.get("evidenceDigest")
+        if declared_evidence_status == "PROVED":
+            if evidence_digest is None:
+                raise HandlerError(
+                    f"adapterMappings[{index}] cannot claim PROVED without evidenceDigest"
+                )
+            evidence_digest = validate_digest(
+                evidence_digest, f"adapterMappings[{index}].evidenceDigest"
+            )
+            evidence_status = "DECLARED_PROVED_EVIDENCE_BOUND_NOT_VERIFIED"
+            gaps.append(
+                f"ADAPTER_MAPPING_INDEPENDENT_VERIFICATION_REQUIRED:{index}"
+            )
+        elif declared_evidence_status == "TESTED":
+            if evidence_digest is None:
+                raise HandlerError(
+                    f"adapterMappings[{index}] cannot claim TESTED without evidenceDigest"
+                )
+            evidence_digest = validate_digest(
+                evidence_digest, f"adapterMappings[{index}].evidenceDigest"
+            )
+            evidence_status = "DECLARED_TESTED_EVIDENCE_BOUND_NOT_VERIFIED"
+            gaps.extend(
+                (
+                    f"ADAPTER_MAPPING_EVIDENCE_REPLAY_REQUIRED:{index}",
+                    f"ADAPTER_MAPPING_FORMAL_PROOF_REQUIRED:{index}",
+                )
+            )
+        else:
+            if evidence_digest is not None:
+                raise HandlerError(
+                    f"adapterMappings[{index}] NOT_RUN status cannot carry evidenceDigest"
+                )
+            evidence_status = "NOT_RUN"
+        adapter_mappings.append(
+            {
+                "sourceField": validate_identifier(
+                    mapping["sourceField"], f"adapterMappings[{index}].sourceField"
+                ),
+                "targetField": validate_identifier(
+                    mapping["targetField"], f"adapterMappings[{index}].targetField"
+                ),
+                "mappingKind": normalized_text(
+                    mapping["mappingKind"], f"adapterMappings[{index}].mappingKind"
+                ),
+                "declaredEvidenceStatus": declared_evidence_status,
+                "evidenceStatus": evidence_status,
+                "evidenceDigest": evidence_digest,
+            }
+        )
+        if declared_evidence_status == "NOT_RUN":
+            gaps.append(f"ADAPTER_MAPPING_EVIDENCE_REQUIRED:{index}")
+    if not adapter_mappings:
+        gaps.append("ADAPTER_MAPPING_PLAN_REQUIRED")
+    generator_contract = {
+        "format": "elmos-verified-core-generator/v1",
+        "language": "python",
+        "safeAstSubset": [item.__name__ for item in allowed_nodes],
+        "shellGeneration": "DISABLED",
+        "contractPreservation": "REQUIRED",
+    }
+    generator_digest = digest_value(generator_contract)
+    proof_context = ctx.payload.get("proofSourceContext")
+    if proof_context is not None and not isinstance(proof_context, dict):
+        raise HandlerError("proofSourceContext must be an object")
+    formula = ctx.payload.get("formula", expression)
+    if not isinstance(formula, str):
+        raise HandlerError("formula must be text")
+    formula = normalized_text(formula, "formula")
+    source_language = ctx.payload.get("sourceLanguage", "formal-spec")
+    if not isinstance(source_language, str):
+        raise HandlerError("sourceLanguage must be text")
+    source_language = normalized_text(source_language, "sourceLanguage")
+    try:
+        verification_request = FormalProofKernelBridge().synthesize_proof_certificate(
+            function_name,
+            formula,
+            source_lang=source_language,
+            target_lang="python",
+            context=proof_context,
+        )
+    except (FormalProofBridgeError, ValueError) as exc:
+        raise HandlerError(str(exc)) from exc
+    gaps.extend(verification_request["gaps"])
+    core_manifest = {
+        "format": "elmos-verified-core-candidate/v1",
+        "subjectId": ctx.subject_id,
+        "candidateDigest": digest_value(candidate),
+        "generatorDigest": generator_digest,
+        "contract": contract_document,
+        "contractDigest": digest_value(contract_document)
+        if contract_document is not None
+        else None,
+        "adapterMappings": adapter_mappings,
+        "verificationRequestDigest": verification_request["request_digest"],
+        "verifiedCoreBoundary": "CANDIDATE_CORE",
+        "testedShellBoundary": "OUTSIDE_GENERATED_CORE",
+        "nativeVerificationStatus": "NOT_RUN",
+        "humanReviewStatus": "NOT_RUN",
+        "certificationStatus": "NOT_CERTIFIED",
+        "gaps": sorted(set(gaps)),
+    }
+    artifact_refs: list[dict[str, Any]] = []
+    if ctx.artifact_store is not None:
+        for content, media_type in (
+            (candidate.encode("utf-8"), "text/x-python"),
+            (canonical_json(core_manifest) + b"\n", "application/vnd.elmos.verified-core+json"),
+            (
+                canonical_json(verification_request) + b"\n",
+                "application/vnd.elmos.proof-verification-request+json",
+            ),
+        ):
+            artifact_refs.append(
+                ctx.artifact_store.put(
+                    ctx.scope.tenant_id,
+                    content,
+                    media_type=media_type,
+                    retention_class="AUDIT",
+                )
+            )
+    registration = ctx.store.put_document(
+        ctx.scope,
+        "verified_core_candidate",
+        ctx.subject_id,
+        {"manifest": core_manifest, "artifactRefs": artifact_refs},
+        version="candidate-"
+        + core_manifest["candidateDigest"].removeprefix("sha256:")[:24],
+    )
     return _blocked(
         ctx,
         {
@@ -2539,6 +3768,14 @@ def _verified_core(ctx: HandlerContext) -> SkillOutcome:
             "safeExpressionSubset": True,
             "proofObligationsRequired": ["FUNCTIONAL_CORRECTNESS", "RESOURCE_BOUND"],
             "shellGeneration": "DISABLED_BY_DEFAULT",
+            "generatorContract": generator_contract,
+            "generatorDigest": generator_digest,
+            "coreManifest": core_manifest,
+            "proofVerificationRequest": verification_request,
+            "artifactRefs": artifact_refs,
+            "contractsRemoved": False,
+            "verifiedCoreTestedShellBoundaryExplicit": True,
+            "registration": registration,
         },
         "verified core generation requires proof discharge and human review",
     )

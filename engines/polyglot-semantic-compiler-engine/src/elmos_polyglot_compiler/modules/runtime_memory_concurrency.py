@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import hashlib
-import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRisk
 
@@ -12,7 +11,7 @@ from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRi
 class RuntimeMemoryConcurrencyModule:
     """Manages cross-language memory models, struct alignment/padding/endianness, atomic ordering, and GC/lifetimes."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.memory_profiles: Dict[str, Dict[str, Any]] = {}
 
     def calculate_memory_layout(
@@ -24,6 +23,14 @@ class RuntimeMemoryConcurrencyModule:
         offset = 0
         max_align = 1
         layout = []
+
+        names: set[str] = set()
+        for name, size, align in fields:
+            if not name or name in names:
+                raise ValueError("memory layout field names must be unique and non-empty")
+            if size < 0 or align <= 0 or align & (align - 1):
+                raise ValueError("field size must be non-negative and alignment a positive power of two")
+            names.add(name)
 
         for name, size, align in fields:
             max_align = max(max_align, align)
@@ -40,7 +47,9 @@ class RuntimeMemoryConcurrencyModule:
             "total_size": offset,
             "alignment": max_align,
             "fields": layout,
-            "status": "COMPUTED",
+            "status": "LOCAL_LAYOUT_ARITHMETIC_ONLY",
+            "abi_evidence": "NOT_RUN",
+            "equivalence_verified": False,
         }
         self.memory_profiles[type_name] = res
         return res
@@ -60,7 +69,7 @@ class RuntimeMemoryConcurrencyModule:
             source_construct=source_struct,
             target_construct=target_struct,
             property_name=property_name,
-            invariants=["STRUCT_LAYOUT_COMPATIBILITY", "DATA_RACE_FREEDOM", "MEMORY_ORDER_EQUIVALENCE"],
+            invariants=("STRUCT_LAYOUT_COMPATIBILITY", "DATA_RACE_FREEDOM", "MEMORY_ORDER_EQUIVALENCE"),
             risk=SemanticRisk.CRITICAL,
             status=ObligationStatus.NOT_RUN,
         )

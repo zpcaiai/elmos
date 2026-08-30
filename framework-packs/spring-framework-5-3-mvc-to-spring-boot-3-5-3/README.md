@@ -27,13 +27,18 @@ the same 142 UTF-8 bytes; only the exact 32-hex-character `JSESSIONID` value is
 treated as governed nondeterminism while cookie attributes remain exact.
 
 The content-addressed evidence index is
-`certification/local-execution/2026-08-27/evidence-index.json`. It separately
+`certification/local-execution/2026-08-30/evidence-index.json`. It separately
 binds the 17,347-byte migrated-repository ZIP and the 28,990,394-byte executable
-WAR, whose manifest names Boot `3.5.3`, `WarLauncher` and
+WAR (`7a326b69fc5651fe4986d00742dbae7a4f8b6e81aacdecc361a0d9cf30ec1d97`),
+whose manifest names Boot `3.5.3`, `WarLauncher` and
 `io.elmos.legacy.LegacyMvcApplication`. It also preserves the Java materializer
 receipt and source map, including exact byte/SHA-256 bindings for the controlled
 target profile and scaffold manifest. The Python scaffold remains static and was
-not the runtime materializer used by this replay.
+not the runtime materializer used by this replay. A separate supplemental local
+receipt records a 200-request loopback benchmark, local operability probes, an
+isolated source rollback rehearsal and an artifact-bound CycloneDX component
+inventory; it explicitly leaves vulnerability scanning and external qualification
+`NOT_RUN`.
 
 The result is therefore `PASSED_LOCAL` for this one exact fixture while the pack
 remains `experimental` and `NOT_CERTIFIED`. Negative and holdout corpora,

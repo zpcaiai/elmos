@@ -6,7 +6,7 @@
     "externalEvidence": "NOT_RUN",
     "localEngineeringMaximum": "READY_FOR_EXTERNAL_GATE"
   },
-  "contractRoot": "sha256:12a91c23d0aeeba43869c29726fff7375a1cad165e168565d76f79a14d0fc06c",
+  "contractRoot": "sha256:a799b78a5633e9263308ce879768558656b4570e20a437f97068b16f0f16ca05",
   "counts": {
     "baseSchemas": 18,
     "deltaSchemas": 15,
@@ -781,22 +781,22 @@
       "sha256": "sha256:236f565e8856a76977042bcdf46aa16a883b2a8fd849e4804e0d3a6121456f38"
     },
     {
-      "bytes": 166630,
+      "bytes": 166663,
       "path": "tools/publish_verification_pack.py",
       "role": "verification-pack-publisher",
-      "sha256": "sha256:977bdfc4b3601b254255814d654f581deb7beb4a031659d54e9a3b1345c41e7c"
+      "sha256": "sha256:7becbe8f4e8dee0acf3b6bb610bdc76787a29ab2b9ee4c943d0abf10c0bd33ee"
     },
     {
-      "bytes": 66262,
+      "bytes": 66773,
       "path": "tools/qualify_delta.py",
       "role": "delta-local-qualification-producer",
-      "sha256": "sha256:9b3ae41c4db99bf5f27ed3cee2799dc4bd9a3999e839ad227e7ca40175dfc945"
+      "sha256": "sha256:a0a5eec88b1cc3d4d5605fb399a4990d6a1eff6f057fe469b30f3cb6722169d3"
     },
     {
-      "bytes": 31966,
+      "bytes": 32715,
       "path": "tools/qualify_local.py",
       "role": "local-qualification-producer",
-      "sha256": "sha256:f8d1452bffa613c9d7c3621cedd14465cec256e1c59d198790281cfd6cd42289"
+      "sha256": "sha256:fb6f59a13145623f45f61c4dbf689475c053c37446fa2d24650c7f1e547d235f"
     },
     {
       "bytes": 63173,

@@ -1,7 +1,7 @@
 {
-  "archive_bytes": 632740,
-  "archive_sha256": "0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
-  "batch_counts": {
+  "archiveBytes": 632740,
+  "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+  "batchCounts": {
     "J": 16,
     "K": 14,
     "L": 16,
@@ -12,34 +12,68 @@
     "Q": 14,
     "R": 12
   },
-  "compliance": {
-    "certification": "NOT_CERTIFIED",
-    "dual_root_installed": true,
-    "external_runtime_evidence": "NOT_RUN",
-    "frontmatters_validated": true,
-    "immutable_extraction": true,
-    "schemas_validated": true
+  "compiledContractSha256": "sha256:664949cff35cd2c6d21c9dcfb40160d516556042d96df9b19623fc05bb287fe7",
+  "corpora": {
+    "count": 40,
+    "status": "NOT_RUN"
   },
-  "dag": {
+  "decision": "VALIDATED_WITH_BLOCKERS",
+  "dependencyEdges": {
     "acyclic": true,
-    "batch_pipeline": [
-      "J",
-      "K",
-      "L",
-      "M",
-      "N",
-      "O",
-      "P",
-      "Q",
-      "R"
+    "external": [
+      "elmos-embedded-sql-routine-migrator",
+      "elmos-multi-source-repository-discovery"
     ],
-    "node_count": 132,
-    "status": "VALID"
+    "internal": 227,
+    "total": 229
   },
-  "package_id": "elmos-semantic-assurance-expansion-skills-v1.0.0",
-  "package_name": "elmos-semantic-assurance-expansion-skills",
-  "package_version": "1.0.0",
-  "qualified_at": "2026-08-29T07:28:53Z",
-  "schema_version": 1,
-  "skill_count": 132
+  "entryCount": 337,
+  "evidence": {
+    "certification": "NOT_CERTIFIED",
+    "external": "NOT_RUN",
+    "independent": "NOT_RUN",
+    "localRuntime": "NOT_RUN"
+  },
+  "fileCount": 194,
+  "installedManifestSha256": "sha256:3020d3a70410f5b81bdc02c2ded3504e1642813c6aa536d2901e1dded195aba4",
+  "internalFileManifestRows": 192,
+  "labs": {
+    "count": 9,
+    "status": "NOT_RUN"
+  },
+  "outputCount": 396,
+  "packageBlockersSha256": "sha256:d3a52bee15d522721213cd89454d04769af36b9a16f9a8beabf0198f5c6ea10b",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "routes": {
+    "count": 40,
+    "missingProfiles": 40,
+    "status": "BLOCKED"
+  },
+  "runtime": {
+    "genericFallbackAllowed": false,
+    "mappingAuthority": "REPOSITORY_OWNED",
+    "operations": [
+      "MODEL_NORMALIZATION",
+      "SEMANTIC_COMPARISON",
+      "GRAPH_ANALYSIS",
+      "COVERAGE_ANALYSIS",
+      "CORPUS_GOVERNANCE",
+      "EVIDENCE_VALIDATION",
+      "NATIVE_EXECUTION",
+      "FORMAL_EXECUTION",
+      "FUZZ_EXECUTION",
+      "GATE_EVALUATION",
+      "CACHE_INVALIDATION",
+      "COUNTEREXAMPLE_REPLAY"
+    ]
+  },
+  "schemaVersion": "elmos.semantic-assurance.qualification-receipt/v1",
+  "skillCount": 132,
+  "sourceCodeExecuted": false,
+  "supply_chain": {
+    "byte_identity_only": true,
+    "provenance_attestation_present": false,
+    "sbom_present": false,
+    "signature_present": false
+  }
 }

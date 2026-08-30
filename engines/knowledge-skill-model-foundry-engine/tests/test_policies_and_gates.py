@@ -1,7 +1,8 @@
-"""Unit tests for training eligibility, skill execution, and model promotion policies."""
+"""Conservative policy decisions and non-certifying gate behavior."""
 
 from __future__ import annotations
 
+import time
 import unittest
 
 from elmos_foundry.domain import (
@@ -11,25 +12,80 @@ from elmos_foundry.domain import (
     LifecycleState,
     RightsClass,
     SkillContract,
-    TenantScope,
 )
-from elmos_foundry.evidence import EvidenceLedger
 from elmos_foundry.kernel import ExecutionKernel
 from elmos_foundry.policies import PolicyEngine
 
 
+def digest(character: str) -> str:
+    return "sha256:" + character * 64
+
+
 class PoliciesAndGatesTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.policies = PolicyEngine()
         self.kernel = ExecutionKernel()
-        self.evidence = EvidenceLedger(self.kernel)
-
-    def test_training_eligibility_policy(self) -> None:
-        # Eligible item
-        eligible_item = DatasetItem(
-            item_id="item-01",
-            dataset_id="ds-01",
+        self.scope = self.kernel.mint_context(
             tenant_id="tenant-01",
+            project_id="project-01",
+            actor_id="requester",
+            environment_id="test",
+            workspace_digest=digest("a"),
+            revision_set_id=digest("b"),
+            purpose="test-purpose",
+            capabilities=(
+                "foundry.skill.execute",
+                "foundry.training.conditional",
+                "foundry.training.use",
+            ),
+            ttl_seconds=600,
+        )
+
+    def test_training_eligibility_is_consent_and_context_bound(self) -> None:
+        engine = PolicyEngine(self.kernel.require_context)
+        item = DatasetItem(
+            item_id="item-01",
+            dataset_id="dataset-01",
+            tenant_id="tenant-01",
+            project_id="project-01",
+            split="train",
+            input_text="prompt",
+            target_text="response",
+            metadata={},
+            rights_class=RightsClass.INTERNAL,
+            consent_status=ConsentStatus.CONDITIONAL,
+            quality_score=0.9,
+        )
+        denied = engine.evaluate_training_eligibility(item, purpose="test-purpose")
+        self.assertEqual(denied["decision"], "DENY")
+        allowed = engine.evaluate_training_eligibility(
+            item, security_context=self.scope, purpose="test-purpose"
+        )
+        self.assertEqual(allowed["decision"], "ALLOW")
+
+        foreign_scope = self.kernel.mint_context(
+            tenant_id="tenant-02",
+            project_id="project-02",
+            actor_id="requester",
+            environment_id="test",
+            workspace_digest=digest("c"),
+            revision_set_id=digest("d"),
+            purpose="test-purpose",
+            capabilities=("foundry.training.conditional", "foundry.training.use"),
+            ttl_seconds=600,
+        )
+        foreign = engine.evaluate_training_eligibility(
+            item, security_context=foreign_scope, purpose="test-purpose"
+        )
+        self.assertEqual(foreign["decision"], "DENY")
+        self.assertTrue(any("tenant/project" in item for item in foreign["violations"]))
+
+    def test_allow_consent_still_requires_matching_training_lease(self) -> None:
+        engine = PolicyEngine(self.kernel.require_context)
+        item = DatasetItem(
+            item_id="item-allow",
+            dataset_id="dataset-01",
+            tenant_id="tenant-01",
+            project_id="project-01",
             split="train",
             input_text="prompt",
             target_text="response",
@@ -37,76 +93,83 @@ class PoliciesAndGatesTests(unittest.TestCase):
             rights_class=RightsClass.INTERNAL,
             consent_status=ConsentStatus.ALLOW,
             quality_score=0.9,
-            quarantine=False,
         )
-        res = self.policies.evaluate_training_eligibility(eligible_item)
-        self.assertTrue(res["eligible"])
-        self.assertEqual(res["decision"], "ALLOW")
-
-        # Ineligible due to denied consent
-        denied_item = DatasetItem(
-            item_id="item-02",
-            dataset_id="ds-01",
-            tenant_id="tenant-01",
-            split="train",
-            input_text="prompt",
-            target_text="response",
-            metadata={},
-            rights_class=RightsClass.INTERNAL,
-            consent_status=ConsentStatus.DENY,
-            quality_score=0.9,
-            quarantine=False,
+        self.assertEqual(
+            engine.evaluate_training_eligibility(item, purpose="test-purpose")["decision"],
+            "DENY",
         )
-        res_denied = self.policies.evaluate_training_eligibility(denied_item)
-        self.assertFalse(res_denied["eligible"])
-        self.assertEqual(res_denied["decision"], "DENY")
+        self.assertEqual(
+            engine.evaluate_training_eligibility(
+                item, security_context=self.scope, purpose="test-purpose"
+            )["decision"],
+            "ALLOW",
+        )
 
-    def test_skill_execution_policy(self) -> None:
+    def test_critical_skill_rejects_boolean_self_approval(self) -> None:
         contract = SkillContract(
-            skill_name="high-risk-skill",
-            pack="00-foundation",
+            skill_name="critical-skill",
+            pack="pack-00",
             owner="elmos",
             risk_class="critical",
-            status=LifecycleState.CERTIFIED,
+            status=LifecycleState.PLANNED,
             version="1.0.0",
-            content_hash="hash",
+            content_hash="source-hash",
         )
-        # Without approval -> DENY
-        res1 = self.policies.evaluate_skill_execution(contract, {"human_approved": False})
-        self.assertFalse(res1["allowed"])
+        engine = PolicyEngine(self.kernel.require_context)
+        decision = engine.evaluate_skill_execution(
+            contract,
+            {
+                "security_context": self.scope,
+                "purpose": "test-purpose",
+                "human_approved": True,
+            },
+        )
+        self.assertEqual(decision["decision"], "DENY")
+        self.assertTrue(any("verifier-backed" in item for item in decision["violations"]))
 
-        # With approval -> ALLOW
-        res2 = self.policies.evaluate_skill_execution(contract, {"human_approved": True})
-        self.assertTrue(res2["allowed"])
-
-    def test_model_promotion_policy_and_evidence_integrity(self) -> None:
-        scope = TenantScope(tenant_id="tenant-t1", project_id="proj-p1")
-        
-        # E4 production gate evaluation
-        eval_metrics = {
-            "unit_eval_score": 0.95,
-            "integration_pass_rate": 0.99,
-            "canary_error_rate": 0.001,
-            "regression_count": 0,
-        }
-        res = self.policies.evaluate_model_promotion(
-            target_gate=GateLevel.E4_PRODUCTION_CERTIFIED,
-            eval_metrics=eval_metrics,
+    def test_external_gate_is_readiness_not_local_approval(self) -> None:
+        decision = PolicyEngine().evaluate_model_promotion(
+            GateLevel.E4_PRODUCTION_CERTIFIED,
+            {"regression_count": 0},
             proof_obligations_satisfied=True,
         )
-        self.assertTrue(res["approved"])
+        self.assertFalse(decision["approved"])
+        self.assertTrue(decision["ready_for_external_gate"])
+        self.assertEqual(decision["decision"], "READY_FOR_EXTERNAL_GATE")
+        self.assertEqual(decision["external_evidence_status"], "NOT_RUN")
+        self.assertEqual(decision["certification_status"], "NOT_CERTIFIED")
 
-        # Evidence bundle sealing and verification
-        bundle = self.evidence.seal_evidence_bundle(
-            target_id="model-rel-01",
-            target_type="model_release",
-            gate_level=GateLevel.E4_PRODUCTION_CERTIFIED,
-            verdict="PASS",
-            proof_obligations=[{"name": "formal_safety", "status": "SATISFIED"}],
-            metrics=eval_metrics,
-            tenant_scope=scope,
+    def test_trusted_approval_requires_separate_actor_and_verifier(self) -> None:
+        contract = SkillContract(
+            "critical-skill",
+            "pack-00",
+            "elmos",
+            "critical",
+            LifecycleState.PLANNED,
+            "1.0.0",
+            "source-hash",
         )
-        self.assertTrue(self.evidence.verify_bundle_integrity(bundle))
+        engine = PolicyEngine(
+            self.kernel.require_context,
+            approval_verifier=lambda approval, scope, target: (
+                approval["skill_name"] == target.skill_name and scope.actor_id == "requester"
+            ),
+        )
+        decision = engine.evaluate_skill_execution(
+            contract,
+            {
+                "security_context": self.scope,
+                "purpose": "test-purpose",
+                "human_approval": {
+                    "approver_actor_id": "reviewer",
+                    "skill_name": "critical-skill",
+                    "approval_digest": digest("c"),
+                    "expires_at": int(time.time()) + 300,
+                    "authorized": True,
+                },
+            },
+        )
+        self.assertEqual(decision["decision"], "ALLOW")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "help-center": "/components/HelpCenter/index"
+  }
+}

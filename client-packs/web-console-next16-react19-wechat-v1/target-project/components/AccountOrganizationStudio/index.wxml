@@ -1,0 +1,16 @@
+<view class="card" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <view class="source-labels">
+    <text class="source-label">ACCOUNT_LOAD_FAILED</text>
+    <text class="source-label">ACCOUNT_REQUEST_REJECTED</text>
+    <text class="source-label">ADMIN</text>
+    <text class="source-label">BILLING</text>
+    <text class="source-label">Content-Type</text>
+    <text class="source-label">DELETE</text>
+  </view>
+  <view class="actions">
+    <button wx:for="{{actions}}" wx:key="id" size="mini" data-action="{{item.id}}" bindtap="runAction">{{item.label}}</button>
+  </view>
+  <view wx:for="{{rows}}" wx:key="key" class="data-row"><text>{{item.key}}</text><text>{{item.value}}</text></view>
+</view>

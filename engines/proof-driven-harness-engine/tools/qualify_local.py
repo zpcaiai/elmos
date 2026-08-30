@@ -277,8 +277,17 @@ def _ensure_private_output_tree(engine_root: Path) -> tuple[Path, Path]:
                 os.close(child_fd)
                 raise QualificationError(f"qualification output is not owned by the qualifier user: {display}")
             if stat.S_IMODE(metadata.st_mode) & 0o077:
-                os.close(child_fd)
-                raise QualificationError(f"qualification output permissions are too broad: {display}")
+                try:
+                    os.fchmod(child_fd, 0o700)
+                except OSError as exc:
+                    os.close(child_fd)
+                    raise QualificationError(
+                        f"cannot make qualification output private: {display}: {exc}"
+                    ) from exc
+                metadata = os.fstat(child_fd)
+                if stat.S_IMODE(metadata.st_mode) & 0o077:
+                    os.close(child_fd)
+                    raise QualificationError(f"qualification output permissions are too broad: {display}")
             if name == "raw":
                 os.close(child_fd)
             else:
@@ -659,7 +668,12 @@ def qualify(repository_root: Path, *, postgres17_mode: str = "not-run") -> dict[
         ),
         (
             "archive-installation-check",
-            [sys.executable, "tooling/integrate_proof_driven_harness_v3.py", "--check"],
+            [
+                sys.executable,
+                "tooling/integrate_proof_driven_harness_v3.py",
+                "--check",
+                "--qualification-phase",
+            ],
             300,
             Path("tooling/integrate_proof_driven_harness_v3.py"),
             False,
@@ -669,6 +683,11 @@ def qualify(repository_root: Path, *, postgres17_mode: str = "not-run") -> dict[
     totals = _empty_test_totals()
     failures: list[str] = []
     for name, argv, timeout, tool_relative, structured_tests in commands:
+        extra_environment = (
+            {"ELMOS_PROOF_HARNESS_QUALIFICATION_PHASE": "1"}
+            if name == "package-integration-tests"
+            else None
+        )
         raw, command_totals, command_succeeded = _run_fixed_command(
             repository_root=repository_root,
             name=name,
@@ -677,6 +696,7 @@ def qualify(repository_root: Path, *, postgres17_mode: str = "not-run") -> dict[
             raw_directory=raw_directory,
             tool_relative=tool_relative,
             structured_tests=structured_tests,
+            extra_environment=extra_environment,
         )
         raw_logs.append(raw)
         if not command_succeeded:

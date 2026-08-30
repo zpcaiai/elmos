@@ -1,0 +1,33 @@
+<view class="evidence-dimension" aria-labelledby="generation-semantic-title">
+  <view class="evidence-section-heading">
+    <text>
+      <view class="cc-h5" id="generation-semantic-title">
+        语义映射
+      </view>
+      <text class="cc-small">
+        映射覆盖与直接语义等价是两个独立维度
+      </text>
+    </text>
+    <text class="evidence-heading-statuses">
+      <status-mark status="{{ semantic.mapping_status }}" compact="{{ true }}" />
+      <status-mark status="{{ semantic.equivalence_status }}" compact="{{ true }}" />
+    </text>
+  </view>
+  <coverage-meter label="{{ &quot;需求主题映射&quot; }}" status="{{ semantic.mapping_status }}" passed="{{ semantic.mapped_subject_count }}" total="{{ semantic.source_subject_count }}" />
+  <view class="evidence-subject-grid">
+    <view wx:for="{{ semantic.subjects }}" wx:for-item="subject" wx:key="id">
+      <view>
+        <text class="cc-strong">
+          {{ subject.label }}
+        </text>
+        <status-mark status="{{ subject.semantic_equivalence_status }}" compact="{{ true }}" />
+      </view>
+      <coverage-meter label="{{ (&quot;&quot; + subject.label) + &quot;映射&quot; }}" status="{{ subject.mapping_status }}" passed="{{ subject.mapped_count }}" total="{{ subject.source_count }}" />
+    </view>
+  </view>
+  <view class="evidence-limitations cc-ul" aria-label="语义证据限制">
+    <view wx:for="{{ semantic.limitations }}" wx:for-item="limitation" wx:key="*this" class="cc-li">
+      {{ limitation }}
+    </view>
+  </view>
+</view>

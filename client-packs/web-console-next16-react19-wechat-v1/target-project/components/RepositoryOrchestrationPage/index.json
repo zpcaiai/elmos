@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "repository-orchestrator-workbench": "/components/RepositoryOrchestratorWorkbench/index"
+  }
+}

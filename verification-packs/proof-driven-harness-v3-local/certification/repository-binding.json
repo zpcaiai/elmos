@@ -2,7 +2,7 @@
   "certification": "NOT_CERTIFIED",
   "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
   "delta_acceptance_binding_sha256": "sha256:d315f4e9a2c0de7d0017d39e1de1331c92c10bb9570c131b4de13051fedae529",
-  "delta_receipt_sha256": "sha256:c64c8df1a1b7eb8a0a11400d71f2838a4fee3dbf5f5290a02e5e4b52afc3953d",
+  "delta_receipt_sha256": "sha256:b1217d98b24145a30b86370989eb3686e8881d0879a7d922876033a36de32a83",
   "delta_runtime_evidence": {
     "opa": "NOT_RUN",
     "postgresql17": "NOT_RUN",
@@ -11,7 +11,7 @@
     "target_environment_conformance": "NOT_RUN"
   },
   "delta_source_digest": "sha256:13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
-  "environment_digest": "sha256:d5da0fcb73d7e9cfb5be18d7ea2125fe7f043d9d0512dd82b19cca98346697eb",
+  "environment_digest": "sha256:f43b29a9cc421b13e30855234510d5a8a2f64cbb1613935ff15138815c5c157a",
   "external_evidence": "NOT_RUN",
   "failed": 0,
   "independent_verification": "NOT_RUN",
@@ -34,13 +34,14 @@
       "argv": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
         "tooling/integrate_proof_driven_harness_v3.py",
-        "--check"
+        "--check",
+        "--qualification-phase"
       ],
-      "bytes": 10182,
+      "bytes": 10226,
       "pack_copy": "qualification/raw/archive-installation-check.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/raw/archive-installation-check.json",
       "returncode": 0,
-      "sha256": "sha256:8ad6faba25af6e8b60e2925a1713d67c92e8f79275d18464b27bc30cf8c31875",
+      "sha256": "sha256:8e162f671f3e80a94e75052a30facd9631d7776ea1915d1882cb86b669389da7",
       "timed_out": false
     },
     {
@@ -54,11 +55,11 @@
         "--pattern",
         "test_*.py"
       ],
-      "bytes": 177039,
+      "bytes": 176911,
       "pack_copy": "qualification/raw/engine-tests.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/raw/engine-tests.json",
       "returncode": 0,
-      "sha256": "sha256:11d932c6c53d44a637b0565b5f05655b72d0345738aa753e0585ce1b56794a06",
+      "sha256": "sha256:80d8e549648cd8566b5fb83c98d9a3d2d0d3a3afb29d4b25c2ca10cc8248d7ce",
       "timed_out": false
     },
     {
@@ -72,11 +73,11 @@
         "--pattern",
         "test_*.py"
       ],
-      "bytes": 29525,
+      "bytes": 29509,
       "pack_copy": "qualification/raw/package-integration-tests.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/raw/package-integration-tests.json",
       "returncode": 0,
-      "sha256": "sha256:2352fd90dc3a96197d4bb9b111e1b86b6d0b0f98889898392e013f78f822b2b3",
+      "sha256": "sha256:2580c3e280bb22398fdd41aaef604122978faecb0e08091adffa31c6910db57c",
       "timed_out": false
     },
     {
@@ -90,11 +91,11 @@
         "--pattern",
         "test_delta_*.py"
       ],
-      "bytes": 102088,
+      "bytes": 102042,
       "pack_copy": "qualification/delta-v3.1/raw/delta-engine-tests.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-engine-tests.json",
       "returncode": 0,
-      "sha256": "sha256:55a2d55d6252293b16b4e91fe4921933300b17f456ab8aa79c9d2adf93a3e2de",
+      "sha256": "sha256:08aec4261014a72d7aae8cb79c70ba3185ee4a05545f4e096c058d5f208c45e9",
       "timed_out": false
     },
     {
@@ -108,11 +109,11 @@
         "--pattern",
         "test_delta_integration.py"
       ],
-      "bytes": 18394,
+      "bytes": 18381,
       "pack_copy": "qualification/delta-v3.1/raw/delta-importer-tests.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-importer-tests.json",
       "returncode": 0,
-      "sha256": "sha256:7b3a276b2df81bb29e8c755e16077bd2e7f640c05e1399682144baafdfc1b630",
+      "sha256": "sha256:648e942baf67a73a7039bb16899943033115bf147dad62273db1c02c24dc02c4",
       "timed_out": false
     },
     {
@@ -123,63 +124,63 @@
         ".",
         "--check"
       ],
-      "bytes": 2206,
+      "bytes": 2205,
       "pack_copy": "qualification/delta-v3.1/raw/delta-installation-check.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-installation-check.json",
       "returncode": 0,
-      "sha256": "sha256:b61e1a13b670fb8d873b6dd7891726763f456294c03d13a1a8eb25f6b25396be",
+      "sha256": "sha256:50da257ed5cb60c62e99667c88e9695a385f41afdff202ffd1c55671c417c8e3",
       "timed_out": false
     }
   ],
-  "receipt_sha256": "sha256:4e5c1dd835de315ae297f6d2f5499ae6ad8838245f86c4583e65ca59facef179",
+  "receipt_sha256": "sha256:82b08d41777fd050cbe5667ad144d517b7ea68e6bc01819d8da6108076186fcb",
   "repository_bindings": [
     {
       "byte_size": 148422,
       "path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/local-qualification.json",
       "role": "delta-qualification-receipt",
-      "sha256": "sha256:c64c8df1a1b7eb8a0a11400d71f2838a4fee3dbf5f5290a02e5e4b52afc3953d"
+      "sha256": "sha256:b1217d98b24145a30b86370989eb3686e8881d0879a7d922876033a36de32a83"
     },
     {
-      "byte_size": 102088,
+      "byte_size": 102042,
       "path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-engine-tests.json",
       "role": "delta-raw-log-delta-engine-tests",
-      "sha256": "sha256:55a2d55d6252293b16b4e91fe4921933300b17f456ab8aa79c9d2adf93a3e2de"
+      "sha256": "sha256:08aec4261014a72d7aae8cb79c70ba3185ee4a05545f4e096c058d5f208c45e9"
     },
     {
-      "byte_size": 18394,
+      "byte_size": 18381,
       "path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-importer-tests.json",
       "role": "delta-raw-log-delta-importer-tests",
-      "sha256": "sha256:7b3a276b2df81bb29e8c755e16077bd2e7f640c05e1399682144baafdfc1b630"
+      "sha256": "sha256:648e942baf67a73a7039bb16899943033115bf147dad62273db1c02c24dc02c4"
     },
     {
-      "byte_size": 2206,
+      "byte_size": 2205,
       "path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-installation-check.json",
       "role": "delta-raw-log-delta-installation-check",
-      "sha256": "sha256:b61e1a13b670fb8d873b6dd7891726763f456294c03d13a1a8eb25f6b25396be"
+      "sha256": "sha256:50da257ed5cb60c62e99667c88e9695a385f41afdff202ffd1c55671c417c8e3"
     },
     {
       "byte_size": 25836,
       "path": "engines/proof-driven-harness-engine/qualification/local-qualification.json",
       "role": "qualification-receipt",
-      "sha256": "sha256:4e5c1dd835de315ae297f6d2f5499ae6ad8838245f86c4583e65ca59facef179"
+      "sha256": "sha256:82b08d41777fd050cbe5667ad144d517b7ea68e6bc01819d8da6108076186fcb"
     },
     {
-      "byte_size": 10182,
+      "byte_size": 10226,
       "path": "engines/proof-driven-harness-engine/qualification/raw/archive-installation-check.json",
       "role": "raw-log-archive-installation-check",
-      "sha256": "sha256:8ad6faba25af6e8b60e2925a1713d67c92e8f79275d18464b27bc30cf8c31875"
+      "sha256": "sha256:8e162f671f3e80a94e75052a30facd9631d7776ea1915d1882cb86b669389da7"
     },
     {
-      "byte_size": 177039,
+      "byte_size": 176911,
       "path": "engines/proof-driven-harness-engine/qualification/raw/engine-tests.json",
       "role": "raw-log-engine-tests",
-      "sha256": "sha256:11d932c6c53d44a637b0565b5f05655b72d0345738aa753e0585ce1b56794a06"
+      "sha256": "sha256:80d8e549648cd8566b5fb83c98d9a3d2d0d3a3afb29d4b25c2ca10cc8248d7ce"
     },
     {
-      "byte_size": 29525,
+      "byte_size": 29509,
       "path": "engines/proof-driven-harness-engine/qualification/raw/package-integration-tests.json",
       "role": "raw-log-package-integration-tests",
-      "sha256": "sha256:2352fd90dc3a96197d4bb9b111e1b86b6d0b0f98889898392e013f78f822b2b3"
+      "sha256": "sha256:2580c3e280bb22398fdd41aaef604122978faecb0e08091adffa31c6910db57c"
     },
     {
       "byte_size": 53596,
@@ -230,22 +231,22 @@
       "sha256": "sha256:92cb1447cf47c352d41b0009811278a75d0fa375e61280a5c60624a26b6f3d20"
     },
     {
-      "byte_size": 166630,
+      "byte_size": 166663,
       "path": "engines/proof-driven-harness-engine/tools/publish_verification_pack.py",
       "role": "verification-pack-publisher",
-      "sha256": "sha256:977bdfc4b3601b254255814d654f581deb7beb4a031659d54e9a3b1345c41e7c"
+      "sha256": "sha256:7becbe8f4e8dee0acf3b6bb610bdc76787a29ab2b9ee4c943d0abf10c0bd33ee"
     },
     {
-      "byte_size": 66262,
+      "byte_size": 66773,
       "path": "engines/proof-driven-harness-engine/tools/qualify_delta.py",
       "role": "delta-qualification-producer",
-      "sha256": "sha256:9b3ae41c4db99bf5f27ed3cee2799dc4bd9a3999e839ad227e7ca40175dfc945"
+      "sha256": "sha256:a0a5eec88b1cc3d4d5605fb399a4990d6a1eff6f057fe469b30f3cb6722169d3"
     },
     {
-      "byte_size": 31966,
+      "byte_size": 32715,
       "path": "engines/proof-driven-harness-engine/tools/qualify_local.py",
       "role": "qualification-producer",
-      "sha256": "sha256:f8d1452bffa613c9d7c3621cedd14465cec256e1c59d198790281cfd6cd42289"
+      "sha256": "sha256:fb6f59a13145623f45f61c4dbf689475c053c37446fa2d24650c7f1e547d235f"
     },
     {
       "byte_size": 5601254,
@@ -266,10 +267,10 @@
       "sha256": "sha256:6826ce85b48d9a0f26d6fb1dd828ff342452cfb5b332a66856a08ff14e860e28"
     },
     {
-      "byte_size": 23203,
+      "byte_size": 23648,
       "path": "tests/proof-driven-harness-v3/test_integration.py",
       "role": "archive-importer-negative-tests",
-      "sha256": "sha256:53d926d783f6a656059971615608d3a00c6a82fd94d5ddb2dfd8c6120288b42d"
+      "sha256": "sha256:04978864b06e4b91275059a9e9eb75e39e48a510c9331aafe96a018ffc8c74c5"
     },
     {
       "byte_size": 119826,
@@ -278,28 +279,28 @@
       "sha256": "sha256:c52d8a428e97b76a1833b5e88b46b8b6b9a16b644eb524669fa802545b9c4266"
     },
     {
-      "byte_size": 108171,
+      "byte_size": 108864,
       "path": "tooling/integrate_proof_driven_harness_v3.py",
       "role": "archive-importer",
-      "sha256": "sha256:cf15f1e0a5e3aa4dfaf5968860faf050caf8b3ddd91b772e654f3c9c4f140cc0"
+      "sha256": "sha256:99fd1c52f597831fda767fd7b16c186b5a441c80e4e59d6fd3b161ee6f904d4e"
     },
     {
       "byte_size": 24239,
       "path": "verification-packs/proof-driven-harness-v3-local/artifacts/engine-tree-inventory.json",
       "role": "test",
-      "sha256": "sha256:218b1191cdd9f4d9bd5327c8a232e336da9268cb7c8dbcd0b35343ddc1a5480a"
+      "sha256": "sha256:5911d6505514c699d4b161486dc8ab94a503cfaff682b485dfec7e6bab84d3b4"
     },
     {
-      "byte_size": 10806,
+      "byte_size": 10839,
       "path": "verification-packs/proof-driven-harness-v3-local/environment/local-environment.json",
       "role": "environment",
-      "sha256": "sha256:d5da0fcb73d7e9cfb5be18d7ea2125fe7f043d9d0512dd82b19cca98346697eb"
+      "sha256": "sha256:f43b29a9cc421b13e30855234510d5a8a2f64cbb1613935ff15138815c5c157a"
     }
   ],
   "schema_version": 1,
   "skipped": 0,
   "source_digest": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
   "status": "passed",
-  "test_digest": "sha256:218b1191cdd9f4d9bd5327c8a232e336da9268cb7c8dbcd0b35343ddc1a5480a",
+  "test_digest": "sha256:5911d6505514c699d4b161486dc8ab94a503cfaff682b485dfec7e6bab84d3b4",
   "tests": 485
 }

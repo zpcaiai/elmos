@@ -45,6 +45,12 @@ export interface HandoffEntry {
   /** Source path, relative to the source repository. The stable identity
    * of a component across runs -- target paths can move as emitters change. */
   sourcePath: string;
+  /** Component declaration inside sourcePath. Null is the legacy
+   * file-scoped identity used by manifests written before multi-component
+   * handoffs were supported. New repository migrations always write the
+   * exact component name so two declarations in one TSX file can be owned
+   * independently. */
+  componentName: string | null;
   state: HandoffState;
   ownership: PortOwnership;
   assignee: string | null;
@@ -57,6 +63,9 @@ export interface HandoffEntry {
   sourceHashAtPort: string | null;
   /** SHA-256 of the hand-written TARGET at the moment it was marked. */
   targetHashAtPort: string | null;
+  /** Exact hand-written target (a file for web targets or a component
+   * directory for Mini Programs), relative to the destination. */
+  targetPathAtPort: string | null;
   markedAt: string | null;
   updatedAt: string;
 }
@@ -119,7 +128,9 @@ export function loadManifest(destination: string): HandoffManifest {
     // losing the protection mark or treating missing metadata as a port.
     entries: manifest.entries.map((entry) => ({
       ...entry,
+      componentName: entry.componentName ?? null,
       ownership: entry.ownership ?? (entry.state === "MANUALLY_PORTED" ? "HAND_PORTED" : "ENGINE_GENERATED"),
+      targetPathAtPort: entry.targetPathAtPort ?? null,
     })),
   };
 }
@@ -129,26 +140,36 @@ export function saveManifest(destination: string, manifest: HandoffManifest): vo
     ...manifest,
     // Sorted so the manifest diffs cleanly in review rather than churning
     // on iteration order.
-    entries: [...manifest.entries].sort((a, b) => a.sourcePath.localeCompare(b.sourcePath)),
+    entries: [...manifest.entries].sort((a, b) =>
+      a.sourcePath.localeCompare(b.sourcePath) || (a.componentName ?? "").localeCompare(b.componentName ?? ""),
+    ),
   };
   fs.mkdirSync(destination, { recursive: true });
   fs.writeFileSync(manifestPath(destination), JSON.stringify(sorted, null, 2) + "\n", "utf8");
 }
 
-export function findEntry(manifest: HandoffManifest, sourcePath: string): HandoffEntry | undefined {
+export function findEntry(manifest: HandoffManifest, sourcePath: string, componentName?: string): HandoffEntry | undefined {
+  if (componentName !== undefined) {
+    const exact = manifest.entries.find((entry) => entry.sourcePath === sourcePath && entry.componentName === componentName);
+    if (exact) return exact;
+    // Backwards compatibility: an old file-scoped mark still protects the
+    // file. New marks never use this ambiguous identity.
+    return manifest.entries.find((entry) => entry.sourcePath === sourcePath && entry.componentName === null);
+  }
   return manifest.entries.find((entry) => entry.sourcePath === sourcePath);
 }
 
-export function isManuallyPorted(manifest: HandoffManifest, sourcePath: string): boolean {
-  return findEntry(manifest, sourcePath)?.state === "MANUALLY_PORTED";
+export function isManuallyPorted(manifest: HandoffManifest, sourcePath: string, componentName?: string): boolean {
+  return findEntry(manifest, sourcePath, componentName)?.state === "MANUALLY_PORTED";
 }
 
-function upsert(manifest: HandoffManifest, sourcePath: string): HandoffEntry {
-  const existing = findEntry(manifest, sourcePath);
+function upsert(manifest: HandoffManifest, sourcePath: string, componentName: string | null): HandoffEntry {
+  const existing = manifest.entries.find((entry) => entry.sourcePath === sourcePath && entry.componentName === componentName);
   if (existing) return existing;
   const created: HandoffEntry = {
-    sourcePath, state: "UNASSIGNED", ownership: "ENGINE_GENERATED", assignee: null, note: null, reasonCode: null,
+    sourcePath, componentName, state: "UNASSIGNED", ownership: "ENGINE_GENERATED", assignee: null, note: null, reasonCode: null,
     sourceHashAtPort: null, targetHashAtPort: null, markedAt: null,
+    targetPathAtPort: null,
     updatedAt: new Date().toISOString(),
   };
   manifest.entries.push(created);
@@ -158,6 +179,7 @@ function upsert(manifest: HandoffManifest, sourcePath: string): HandoffEntry {
 export interface AssignOptions {
   destination: string;
   sourcePath: string;
+  componentName?: string;
   assignee: string;
   note?: string;
 }
@@ -166,7 +188,7 @@ export interface AssignOptions {
  * nothing about writes -- only `markPorted` protects a file. */
 export function assign(options: AssignOptions): HandoffEntry {
   const manifest = loadManifest(options.destination);
-  const entry = upsert(manifest, options.sourcePath);
+  const entry = upsert(manifest, options.sourcePath, options.componentName ?? null);
   if (entry.state === "MANUALLY_PORTED") {
     throw new RouteError(
       `HANDOFF_ALREADY_PORTED: ${options.sourcePath} is already marked MANUALLY_PORTED. ` +
@@ -186,6 +208,7 @@ export interface MarkPortedOptions {
   /** Source repository, needed to hash the source this port was made from. */
   repository: string;
   sourcePath: string;
+  componentName?: string;
   /** Hand-written target, relative to the destination. */
   targetPath: string;
   assignee?: string;
@@ -214,13 +237,14 @@ export function markPorted(options: MarkPortedOptions): HandoffEntry {
   }
 
   const manifest = loadManifest(options.destination);
-  const entry = upsert(manifest, options.sourcePath);
+  const entry = upsert(manifest, options.sourcePath, options.componentName ?? null);
   entry.state = "MANUALLY_PORTED";
   entry.ownership = "HAND_PORTED";
   if (options.assignee !== undefined) entry.assignee = options.assignee;
   if (options.note !== undefined) entry.note = options.note;
   entry.sourceHashAtPort = hashContent(fs.readFileSync(sourceFile, "utf8"));
-  entry.targetHashAtPort = hashContent(fs.readFileSync(targetFile, "utf8"));
+  entry.targetHashAtPort = hashTarget(targetFile);
+  entry.targetPathAtPort = options.targetPath;
   entry.markedAt = new Date().toISOString();
   entry.updatedAt = entry.markedAt;
   saveManifest(options.destination, manifest);
@@ -229,18 +253,44 @@ export function markPorted(options: MarkPortedOptions): HandoffEntry {
 
 /** Release a component back to the engine. Explicit, because the next run
  * will overwrite the hand-written file. */
-export function unmark(destination: string, sourcePath: string): HandoffEntry {
+export function unmark(destination: string, sourcePath: string, componentName?: string): HandoffEntry {
   const manifest = loadManifest(destination);
-  const entry = findEntry(manifest, sourcePath);
+  const entry = componentName === undefined
+    ? findEntry(manifest, sourcePath)
+    : manifest.entries.find((candidate) => candidate.sourcePath === sourcePath && candidate.componentName === componentName);
   if (!entry) throw new RouteError(`HANDOFF_ENTRY_NOT_FOUND: ${sourcePath}`);
   entry.state = entry.assignee ? "ASSIGNED" : "UNASSIGNED";
   entry.ownership = "ENGINE_GENERATED";
   entry.sourceHashAtPort = null;
   entry.targetHashAtPort = null;
+  entry.targetPathAtPort = null;
   entry.markedAt = null;
   entry.updatedAt = new Date().toISOString();
   saveManifest(destination, manifest);
   return entry;
+}
+
+/** Stable digest for either a single target file or a Mini Program
+ * four-file component directory. Relative names are included so renaming a
+ * file cannot preserve the same digest accidentally. */
+function hashTarget(target: string): string {
+  if (!fs.statSync(target).isDirectory()) return hashContent(fs.readFileSync(target, "utf8"));
+  const hash = crypto.createHash("sha256");
+  const visit = (dir: string): void => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      if (entry.isSymbolicLink()) throw new RouteError(`HANDOFF_TARGET_SYMLINK_FORBIDDEN: ${path.join(dir, entry.name)}`);
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) visit(full);
+      else if (entry.isFile()) {
+        hash.update(path.relative(target, full));
+        hash.update("\0");
+        hash.update(fs.readFileSync(full));
+        hash.update("\0");
+      }
+    }
+  };
+  visit(target);
+  return hash.digest("hex");
 }
 
 export interface HandoffCheck {

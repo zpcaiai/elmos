@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-golden-route-repository-fixtures"
+  short_description: "Build small/medium/large repository fixtures for every high-value Golden Route with source-native..."
+  default_prompt: "Use $elmos-golden-route-repository-fixtures through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-golden-route-repository-fixtures"
+  handler_id: "execute_elmos_golden_route_repository_fixtures"
+  operation: "CORPUS_GOVERNANCE"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

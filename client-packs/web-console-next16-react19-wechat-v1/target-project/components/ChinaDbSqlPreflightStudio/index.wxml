@@ -1,0 +1,12 @@
+<view class="card" data-component="{{componentName}}">
+  <button class="heading" bindtap="toggleExpanded" aria-expanded="{{expanded}}">{{title}}</button>
+  <view wx:if="{{expanded}}" class="content">
+    <text class="source-label">/api/capabilities/database-sql</text>
+    <text class="source-label">/api/database-sql/preflight</text>
+    <text class="source-label">/migration</text>
+    <text class="source-label">1.0</text>
+    <text class="source-label">BATCH 31 · READ-ONLY SOURCE PREFLIGHT</text>
+    <text class="source-label">BLOCKED</text>
+    <view wx:for="{{rows}}" wx:key="key"><text>{{item.key}}: {{item.value}}</text></view>
+  </view>
+</view>

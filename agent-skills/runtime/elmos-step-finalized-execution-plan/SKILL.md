@@ -14,7 +14,7 @@ metadata:
   runtime_module: "elmos_proof_harness.delta"
   runtime_registry: "DELTA_SKILL_REGISTRY"
   runtime_entrypoint: "DeltaSkillRuntime.execute"
-  implementation_status: "DECLARED_RUNTIME_UNQUALIFIED"
+  implementation_status: "LOCAL_EXECUTED_SELF_ATTESTED"
   external_evidence_status: "NOT_RUN"
   certification_status: "NOT_CERTIFIED"
 ---

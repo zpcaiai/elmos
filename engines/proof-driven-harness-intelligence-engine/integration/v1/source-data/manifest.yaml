@@ -1,0 +1,62 @@
+package:
+  name: elmos-proof-driven-harness-intelligence
+  version: 1.0.0
+  maturity: production-design
+  source_inspiration:
+    - can1357/oh-my-pi
+  elmos_role: proof-driven-agentic-harness
+  default_schema_mode: strict
+
+authority_ladder:
+  - formal_proof
+  - compiler
+  - lsp
+  - semantic_ir
+  - ast
+  - runtime_evidence
+  - text_search
+  - llm_inference
+
+kernels:
+  - id: K0
+    path: 00-contracts
+    priority: P0
+  - id: K1
+    path: 10-semantic-intelligence
+    priority: P0
+  - id: K2
+    path: 20-transactional-transformation
+    priority: P0
+  - id: K3
+    path: 30-runtime-proof
+    priority: P0
+  - id: K4
+    path: 40-agentic-execution
+    priority: P0
+  - id: K5
+    path: 50-independent-assurance
+    priority: P0
+  - id: K6
+    path: 60-policy-invariants
+    priority: P0
+  - id: K7
+    path: 70-skill-evolution
+    priority: P1
+  - id: K8
+    path: 80-harness-intelligence
+    priority: P0
+  - id: K9
+    path: 90-production-control-plane
+    priority: P0
+  - id: K10
+    path: 95-certification
+    priority: P0
+
+production_defaults:
+  mutation_mode: transactional
+  evidence_required: true
+  independent_review_required: true
+  policy_conflict_mode: explicit_resolution
+  workspace_isolation: required_for_parallel_writes
+  durable_side_effect_log: required
+  learning_promotion: gated

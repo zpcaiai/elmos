@@ -2,7 +2,7 @@
 
 版本：`5.1.0`
 
-当前状态：代码实现完成，`LOCAL_ENGINEERING_IMPLEMENTATION`
+当前状态：八项代码补全完成，`CODE_COMPLETE_EXTERNAL_EVIDENCE_PENDING`
 
 外部证据：`NOT_RUN`
 
@@ -12,7 +12,9 @@
 
 用户请求是把 ZIP 中的架构能力编码成可运行、可验证的商业工具。ZIP 内的 Markdown、脚本、安装器、SQL、Prompt、工作流和示例只作为不可信的需求与参考材料；它们不是本仓库的执行权限，也没有被执行。
 
-当前仓库已经完成 PI Harness 的本地工程实现、接口、持久化、安全边界和自动化测试。下面的计划只负责补齐真实基础设施、外部系统、独立证据和生产放行条件，不把静态代码检查或本地自测伪装成生产认证。
+源 ZIP 固定为 SHA-256 `8d600342ab0652e23aef80ef72583dfa4cbe01db7dc49b7d339dd40aa285c75c`（425,097 bytes）；该摘要只证明本次输入的字节身份，不证明来源签名、SBOM、许可证、运行正确性或认证。
+
+当前仓库已经完成 PI Harness 内核以及 PostgreSQL、Temporal、Cloud、IdP/mTLS、独立验证、DR、UAT 和部署门禁的代码级实现。下面的计划只负责执行真实基础设施、外部系统、独立证据和生产放行条件，不把静态代码检查、本地一次性 PostgreSQL 或 SDK 导入检查伪装成生产认证。
 
 ## 2. 永久硬规则
 
@@ -25,16 +27,16 @@
 
 ## 3. 补全门禁总表
 
-| 门禁 | 目标 | 必须补全 | 最低完成证据 | 当前状态 |
+| 门禁 | 目标 | 代码实现 | 最低完成证据 | 外部证据 |
 |---|---|---|---|---|
-| P0-G01 | 真实 PostgreSQL | 生产兼容 adapter、迁移、RLS、锁/事务、备份接口 | 真实版本矩阵、迁移日志、RLS 负测、并发报告、备份校验 | `NOT_RUN` |
-| P0-G02 | Temporal 工作流 | Workflow/Activity、信号、重试、恢复、worker generation fencing、版本化 replay | Temporal 集群执行记录、worker 故障/恢复报告、replay 与幂等证据 | `NOT_RUN` |
-| P0-G03 | 云 Provider | Provider adapter、IAM、网络、对象存储、KMS、配额、成本与回滚 | 隔离账户/区域的 plan/apply/runtime/rollback 原始证据 | `NOT_RUN` |
-| P0-G04 | IdP/mTLS | OIDC/工作负载身份、租户 claim、mTLS、轮换、撤销、break-glass | IdP 测试租户、证书生命周期、越权负测、审计日志 | `NOT_RUN` |
-| P0-G05 | 独立验证器 | 独立信任域、证据 digest、签名、过期/撤销/未知处理 | 非实现团队验证报告、签名链、反自证报告、回放记录 | `NOT_RUN` |
-| P0-G06 | 灾备 | 跨区备份、恢复、RPO/RTO、密钥恢复、损坏备份处理 | 带时间戳的 DR 演练、恢复后校验、RPO/RTO 和遗留资源报告 | `NOT_RUN` |
-| P1-G07 | 客户验收 | 目标客户旅程、角色、支持流程、可观测性、结果导出 | 客户代表签署的 UAT、缺陷关闭、业务结果与支持记录 | `NOT_RUN` |
-| P0-G08 | 生产部署 | 制品供应链、canary、混合版本、SLO、告警、回滚、运行手册 | 发布工单、制品 digest、canary/rollback、SLO 和值班确认 | `NOT_RUN` |
+| P0-G01 | 真实 PostgreSQL | `PostgresStore`、001/002 digest migration、FORCE RLS、age 备份、S3/KMS artifact | staging 版本矩阵、迁移日志、RLS 负测、并发报告、备份校验 | `NOT_RUN` |
+| P0-G02 | Temporal 工作流 | TLS Gateway、Workflow/Activity、信号、重试、generation fencing、replay runner | Temporal 集群执行记录、worker 故障/恢复报告、replay 与幂等证据 | `NOT_RUN` |
+| P0-G03 | 云 Provider | durable journal、approval、AWS adapter、S3/KMS、Terraform、rollback/destroy/reconcile | 隔离账户/区域的 plan/apply/runtime/rollback 原始证据 | `NOT_RUN` |
+| P0-G04 | IdP/mTLS | OIDC JWKS、SPIFFE mTLS、租户/项目绑定、过期/撤销 fail closed | IdP 测试租户、证书生命周期、越权负测、审计日志 | `NOT_RUN` |
+| P0-G05 | 独立验证器 | Ed25519、独立信任域、digest、过期/撤销/防自证、receipt registry | 非实现团队验证报告、签名链、反自证报告、回放记录 | `NOT_RUN` |
+| P0-G06 | 灾备 | 加密 capture、损坏检测、隔离 restore、RPO/RTO 与组件验证 | 带时间戳的 DR 演练、恢复后校验、RPO/RTO 和遗留资源报告 | `NOT_RUN` |
+| P1-G07 | 客户验收 | executable journeys、evidence digest、外部签署与防自签 | 客户代表签署的 UAT、缺陷关闭、业务结果与支持记录 | `NOT_RUN` |
+| P0-G08 | 生产部署 | manifest digest、canary、SLO、promote、rollback、unknown reconcile | 发布工单、制品 digest、canary/rollback、SLO 和值班确认 | `NOT_RUN` |
 
 任一 P0 门禁未满足，最高只能是 `READY_FOR_EXTERNAL_GATE`，不能进入生产放行，也不能认证。
 
@@ -58,7 +60,7 @@
 
 先落地真实持久化和身份边界，再接入工作流与 Provider。
 
-- 建立受控 PostgreSQL staging，执行 [001_pi_harness.sql](../sql/001_pi_harness.sql) 的人工审查后迁移。
+- 建立受控 PostgreSQL staging，审查并执行 [001_pi_harness.sql](../sql/001_pi_harness.sql) 与 [002_pi_harness_runtime.sql](../sql/002_pi_harness_runtime.sql)；迁移器拒绝已应用 digest 漂移。
 - 验证 tenant/project/task/event/idempotency/workspace/artifact 的约束、索引、事务隔离和 RLS。
 - 接入 IdP staging；校验 operator、workload、auditor、break-glass 四类身份。
 - 为 API、worker、验证器签发短期凭证；完成证书轮换、撤销和失效测试。
@@ -113,6 +115,8 @@
 
 ## 5. 每个门禁的证据包格式
 
+仓库已提供 [EXTERNAL_QUALIFICATION_RUNBOOK.md](EXTERNAL_QUALIFICATION_RUNBOOK.md) 和 `qualification-init`、`qualification-record`、`qualification-verify`、`qualification-accept`、`qualification-status` 操作入口。它们将冻结 RC、原始证据、执行事件、独立签名和客户/发布接受写入不可变 hash chain；实时状态检查会重新计算对象 digest 并使用当前 trust store 检查 key、scope、role、有效期和撤销状态。该实现只记录真实外部事实，不执行或制造任何外部门禁结果。
+
 每项证据至少包含：
 
 - `evidence_id`、`requirement_id`、`test_id`、`release_sha`、artifact digest；
@@ -125,4 +129,4 @@
 
 ## 6. 当前决策
 
-代码实现已完成，允许继续进行外部 gate 准备；真实 PostgreSQL/Temporal/云 Provider、IdP/mTLS、独立验证器、灾备、客户验收和生产部署证据仍为 `NOT_RUN`。认证状态保持 `NOT_CERTIFIED`，本计划不构成生产批准或认证。
+八项代码实现已完成并通过本地测试，允许继续进行外部 gate；一次性 PostgreSQL 17.5、Temporal Server 1.31.2 + SDK 1.32.0 原生 workflow、本地 RS256/JWKS/CA/CRL/mTLS，以及 SDK/IaC 验证仅为 `LOCAL_EXECUTED_SELF_ATTESTED`。真实 PostgreSQL staging/Temporal 集群/云 Provider、IdP/mTLS、独立验证器、灾备、客户验收和生产部署证据仍为 `NOT_RUN`。认证状态保持 `NOT_CERTIFIED`，本计划不构成生产批准或认证。

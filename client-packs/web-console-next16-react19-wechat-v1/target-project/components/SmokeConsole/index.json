@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "smoke-run-button": "/components/SmokeRunButton/index"
+  }
+}

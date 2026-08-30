@@ -21,6 +21,10 @@ import {
   materializeMiniappGeneratedProjectBasePath,
 } from "../src/miniapp-output-contracts.js";
 import { validateMiniappConversionRequest } from "../src/miniapp-contract-validation.js";
+import {
+  validateMiniappSemanticIr,
+  type MiniappSemanticIr,
+} from "../src/miniapp-semantic-ir.js";
 import { conversionInput, vueTodoFiles } from "./miniapp-test-fixture.js";
 
 function exactReactFiles(source: string) {
@@ -239,8 +243,8 @@ test("unsupported control flow, route identity and binary assets fail closed ins
     ['required/>', 'required pattern="[0-9]+"/>'],
     ['aria-label="Todo list"', 'aria-label="Todo list" aria-label="Other"'],
     ['<span aria-label="Todo list">Todos</span>', "<table><tr><td>Todos</td></tr></table><iframe></iframe><br/><hr/>"],
-    ['<span aria-label="Todo list">Todos</span>', "<main><h1>Todos</h1><nav><ul><li>One</li></ul></nav></main>"],
-    ["<style>", "<style scoped>"],
+    ['<span aria-label="Todo list">Todos</span>', "<header><label>Todos</label></header>"],
+    ["<style>", "<style module>"],
   ] as const) {
     const files = vueTodoFiles.map(file => file.path === "src/App.vue" ? {
       ...file,
@@ -249,6 +253,138 @@ test("unsupported control flow, route identity and binary assets fail closed ins
     const run = runMiniappConversion(conversionInput(files, "vue3", ["wechat"]));
     assert.ok(run.plan.findings.some(finding => finding.blocking), `${needle} must fail closed`);
     assert.equal(run.gates.find(gate => gate.gate === "G3")?.state, "BLOCKED", needle);
+  }
+
+  const boundedScopedSemanticFiles = vueTodoFiles.map(file => file.path === "src/App.vue" ? {
+    ...file,
+    content: String(file.content)
+      .replace(
+        '<span aria-label="Todo list">Todos</span>',
+        '<main><h1>Todos</h1><nav><ul><li>One</li></ul></nav></main>',
+      )
+      .replace("<style>", "<style scoped>"),
+  } : file);
+  const boundedScopedSemantic = runMiniappConversion(conversionInput(boundedScopedSemanticFiles, "vue3", ["wechat"]));
+  assert.ok(!boundedScopedSemantic.plan.findings.some(finding => [
+    "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
+    "MINIAPP_SCOPED_STYLE_NOT_LOWERED",
+    "MINIAPP_EXTERNAL_STYLE_SOURCE_UNRESOLVED",
+  ].includes(finding.code)));
+  assert.equal(boundedScopedSemantic.generatedProjects[0]?.status, "GENERATED");
+  const scopedTemplate = Object.entries(boundedScopedSemantic.generatedProjects[0]!.files)
+    .find(([path]) => path.endsWith(".wxml"))?.[1] ?? "";
+  const scopeClass = boundedScopedSemantic.semanticIr.components
+    .flatMap(component => component.styleScopeClasses ?? [])[0];
+  assert.match(scopeClass ?? "", /^elmos-scope-[a-f0-9]{12}$/u);
+  assert.match(scopedTemplate, new RegExp(`class="[^"]*${scopeClass}`, "u"));
+  assert.match(scopedTemplate, /aria-role="main"/u);
+  assert.match(scopedTemplate, /aria-role="heading" aria-level="1"/u);
+  assert.match(scopedTemplate, /aria-role="navigation"/u);
+  assert.doesNotMatch(scopedTemplate, /<navigator\b[^>]*aria-role="navigation"/u);
+  assert.match(scopedTemplate, /<view\b[^>]*aria-role="navigation"/u);
+  assert.match(scopedTemplate, /aria-role="list"/u);
+  assert.match(scopedTemplate, /aria-role="listitem"/u);
+  const scopedStyles = Object.entries(boundedScopedSemantic.generatedProjects[0]!.files)
+    .filter(([path]) => path.endsWith(".wxss"))
+    .map(([, content]) => content)
+    .join("\n");
+  assert.match(scopedStyles, new RegExp(`\\.page\\.${scopeClass}\\s*\\{`, "u"));
+
+  const forgedAccessibility = structuredClone(boundedScopedSemantic.semanticIr) as MiniappSemanticIr;
+  const heading = forgedAccessibility.components.find(component => component.implicitAccessibility?.role === "heading");
+  assert.ok(heading);
+  (heading as unknown as { implicitAccessibility: { provenance: string; role: string; level: number; officialRuntimeVerification: string } }).implicitAccessibility = {
+    provenance: "html-implicit",
+    role: "main",
+    level: 1,
+    officialRuntimeVerification: "NOT_RUN",
+  };
+  assert.throws(() => validateMiniappSemanticIr(forgedAccessibility), /implicit accessibility/u);
+
+  const forgedScopeClass = structuredClone(boundedScopedSemantic.semanticIr) as MiniappSemanticIr;
+  const scopedComponent = forgedScopeClass.components.find(component => (component.styleScopeClasses?.length ?? 0) > 0);
+  assert.ok(scopedComponent);
+  (scopedComponent as unknown as { styleScopeClasses: string[] }).styleScopeClasses = ["elmos-scope-000000000000"];
+  assert.throws(() => validateMiniappSemanticIr(forgedScopeClass), /scoped-style class/u);
+
+  const inconsistentScopeOwnership = structuredClone(boundedScopedSemantic.semanticIr) as MiniappSemanticIr;
+  const ownedComponent = inconsistentScopeOwnership.components.find(component => (component.styleScopeClasses?.length ?? 0) > 0);
+  assert.ok(ownedComponent);
+  (ownedComponent as unknown as { styleScopeClasses: string[] }).styleScopeClasses = [];
+  assert.throws(() => validateMiniappSemanticIr(inconsistentScopeOwnership), /consistently owned/u);
+
+  const deepScopedFiles = boundedScopedSemanticFiles.map(file => file.path === "src/App.vue" ? {
+    ...file,
+    content: String(file.content).replace(".page {", ":deep(.page) {"),
+  } : file);
+  const deepScoped = runMiniappConversion(conversionInput(deepScopedFiles, "vue3", ["wechat"]));
+  assert.ok(deepScoped.plan.findings.some(finding => finding.code === "MINIAPP_CSS_SELECTOR_UNRESOLVED" && finding.blocking));
+
+  const externalScopedStyleFiles = [
+    ...boundedScopedSemanticFiles.map(file => file.path === "src/App.vue" ? {
+      ...file,
+      content: String(file.content).replace(/<style scoped>[\s\S]*<\/style>/u, '<style scoped src="./external.css"></style>'),
+    } : file),
+    { path: "src/external.css", content: ".page { color: #111827; }" },
+  ];
+  const externalScopedStyle = runMiniappConversion(conversionInput(externalScopedStyleFiles, "vue3", ["wechat"]));
+  assert.ok(externalScopedStyle.plan.findings.some(finding =>
+    finding.code === "MINIAPP_EXTERNAL_STYLE_SOURCE_UNRESOLVED"
+    && finding.classification === "D"
+    && finding.blocking));
+  assert.equal(externalScopedStyle.gates.find(gate => gate.gate === "G3")?.state, "BLOCKED");
+
+  const buildPluginFiles = vueTodoFiles.map(file => {
+    if (file.path === "package.json") {
+      const manifest = JSON.parse(String(file.content)) as { devDependencies: Record<string, string> };
+      manifest.devDependencies["@vitejs/plugin-vue"] = "5.2.1";
+      return { ...file, content: JSON.stringify(manifest) };
+    }
+    if (file.path === "package-lock.json") {
+      const lock = JSON.parse(String(file.content)) as { packages: Record<string, Record<string, unknown>> };
+      (lock.packages[""]!.devDependencies as Record<string, string>)["@vitejs/plugin-vue"] = "5.2.1";
+      lock.packages["node_modules/@vitejs/plugin-vue"] = { version: "5.2.1" };
+      return { ...file, content: JSON.stringify(lock) };
+    }
+    return file;
+  });
+  const manifestOnlyBuildPlugin = runMiniappConversion(conversionInput(buildPluginFiles, "vue3", ["wechat"]));
+  assert.equal(manifestOnlyBuildPlugin.plan.dependencies.find(item => item.dependency === "@vitejs/plugin-vue")?.action, "blocked");
+  assert.ok(manifestOnlyBuildPlugin.plan.findings.some(finding =>
+    finding.code === "MINIAPP_SOURCE_BUILD_CONFIG_MISSING_OR_INVALID" && finding.blocking));
+
+  const buildPluginWithConfig = [
+    ...buildPluginFiles,
+    {
+      path: "vite.config.ts",
+      content: 'import { defineConfig } from "vite"; import vue from "@vitejs/plugin-vue"; export default defineConfig({ plugins: [vue()] });',
+    },
+  ];
+  const buildPlugin = runMiniappConversion(conversionInput(buildPluginWithConfig, "vue3", ["wechat"]));
+  const pluginDecision = buildPlugin.plan.dependencies.find(item => item.dependency === "@vitejs/plugin-vue");
+  assert.equal(pluginDecision?.action, "rewrite");
+  assert.equal(pluginDecision?.replacement, "semantic-ir-native-generation");
+  assert.ok(pluginDecision?.usageEvidence.some(item => item.includes("locked-5.2.1")));
+  assert.ok(pluginDecision?.usageEvidence.some(item => /^vite\.config\.ts:config-sha256:[a-f0-9]{64}$/u.test(item)));
+  assert.ok(!buildPlugin.plan.findings.some(finding => finding.code === "MINIAPP_DEPENDENCY_ADAPTER_NOT_WIRED"
+    && finding.message.startsWith("@vitejs/plugin-vue:")));
+  assert.ok(!buildPlugin.plan.findings.some(finding => finding.code === "MINIAPP_SOURCE_BUILD_CONFIG_MISSING_OR_INVALID"));
+
+  for (const invalidConfig of [
+    'import { defineConfig } from "vite"; import vue from "@vitejs/plugin-vue"; export default defineConfig({ plugins: [] });',
+    'import { defineConfig } from "vite"; import vue from "@vitejs/plugin-vue"; export default defineConfig({ plugins: [enabled ? vue() : null] });',
+    'import { defineConfig } from "vite"; import vue from "@vitejs/plugin-vue"; export default defineConfig({ plugins: [vue(), vue()] });',
+    'import { defineConfig } from "vite"; import vue from "@vitejs/plugin-vue"; const plugins = [vue()]; export default defineConfig({ plugins });',
+  ]) {
+    const invalidBuildPlugin = runMiniappConversion(conversionInput([
+      ...buildPluginFiles,
+      { path: "vite.config.ts", content: invalidConfig },
+    ], "vue3", ["wechat"]));
+    assert.ok(invalidBuildPlugin.inventory.findings.some(finding =>
+      finding.code === "MINIAPP_CONFIG_PARSE_ERROR" && finding.paths.includes("vite.config.ts")));
+    assert.equal(invalidBuildPlugin.plan.dependencies.find(item => item.dependency === "@vitejs/plugin-vue")?.action, "blocked");
+    assert.ok(invalidBuildPlugin.plan.findings.some(finding =>
+      finding.code === "MINIAPP_SOURCE_BUILD_CONFIG_MISSING_OR_INVALID" && finding.blocking));
   }
   const formFiles = vueTodoFiles.map(file => file.path === "src/App.vue" ? {
     ...file,
@@ -454,6 +590,10 @@ test("full runtime is deterministic, resumable and keeps external gates fail clo
   assert.ok(first.gates.slice(4).every(gate => gate.state === "NOT_RUN"));
   assert.ok(first.evidenceGraph.length >= 7);
   assert.ok(first.evidenceGraph.every(node => /^sha256:[a-f0-9]{64}$/.test(node.digest) && node.byteCount > 0));
+  const adapter = first.generatedProjects[0]?.files["adapters/platform.js"] ?? "";
+  assert.match(adapter, /platform: "wechat"/u);
+  assert.doesNotMatch(adapter, /\b(?:request|navigateTo|getStorage|setStorage):/u,
+    "a source with no platform capabilities must not receive ambient adapter authority");
   const resumed = runMiniappConversion({ ...input, resumeFrom: first.checkpoint });
   assert.equal(resumed.resumed, true);
   assert.equal(resumed.inputDigest, first.inputDigest);

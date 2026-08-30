@@ -1,7 +1,12 @@
 """Repository-owned runtime for the ELMOS Formal Assurance Kernel."""
 
 from .canonical import canonical_json, digest_bytes, digest_value, proof_cache_key
-from .artifact_store import ArtifactStore, ContentAddressedArtifactStore
+from .artifact_store import (
+    AesGcmEnvelopeCipher,
+    ArtifactEnvelopeCipher,
+    ArtifactStore,
+    ContentAddressedArtifactStore,
+)
 from .bundles import EvidenceBundleService, HmacEvidenceBundleSigner
 from .contracts import (
     AssuranceLevel,
@@ -13,6 +18,13 @@ from .contracts import (
     TrustedIdentity,
 )
 from .gate import evaluate_release_gate, validate_result
+from .gate_evidence import (
+    Ed25519GateEvidenceVerifier,
+    ExternalGateEvidenceReceipt,
+    GateEvidenceError,
+    GateEvidenceVerifier,
+    VerifiedGateEvidence,
+)
 from .executor import LocalBoundedExecutor, LocalEvaluationError
 from .execution import (
     ExecutionPermit,
@@ -33,18 +45,26 @@ from .postgres import Postgres17MigrationManager
 from .registry import SkillRegistry
 from .runtime import FormalAssuranceRuntime, RuntimeConfig
 from .lean_dafny_bridge import (
-    Lean4Generator,
     DafnyGenerator,
+    FormalProofBridgeError,
     FormalProofKernelBridge,
-    get_formal_proof_bridge,
+    Lean4Generator,
     generate_lean4_proof,
+    get_formal_proof_bridge,
 )
 from .hermetic_environment_builder import (
+    EnvironmentPlanError,
     HermeticToolchainBuilder,
+    ToolchainArtifact,
     ToolchainManifest,
     export_hermetic_toolchain,
+    toolchain_manifest_from_mapping,
 )
 from .sbom_attestation_signer import (
+    AttestationError,
+    AttestationSignature,
+    AttestationSigner,
+    HmacLocalAttestationSigner,
     SbomAttestationSigner,
     SbomComponent,
     SlsaProvenanceStatement,
@@ -55,6 +75,8 @@ __version__ = "1.0.0"
 
 __all__ = [
     "AssuranceLevel",
+    "AesGcmEnvelopeCipher",
+    "ArtifactEnvelopeCipher",
     "ArtifactStore",
     "ContentAddressedArtifactStore",
     "Criticality",
@@ -93,19 +115,29 @@ __all__ = [
     "execution_binding_digest",
     "load_toolchain_registry",
     "validate_result",
+    "Ed25519GateEvidenceVerifier",
+    "ExternalGateEvidenceReceipt",
+    "GateEvidenceError",
+    "GateEvidenceVerifier",
+    "VerifiedGateEvidence",
+    "FormalProofBridgeError",
     "Lean4Generator",
     "DafnyGenerator",
     "FormalProofKernelBridge",
     "get_formal_proof_bridge",
     "generate_lean4_proof",
     "HermeticToolchainBuilder",
+    "EnvironmentPlanError",
+    "ToolchainArtifact",
     "ToolchainManifest",
     "export_hermetic_toolchain",
+    "toolchain_manifest_from_mapping",
+    "AttestationError",
+    "AttestationSignature",
+    "AttestationSigner",
+    "HmacLocalAttestationSigner",
     "SbomAttestationSigner",
     "SbomComponent",
     "SlsaProvenanceStatement",
     "sign_artifact_sbom",
 ]
-
-
-

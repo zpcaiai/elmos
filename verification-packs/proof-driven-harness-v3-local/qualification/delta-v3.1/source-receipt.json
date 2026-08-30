@@ -2792,7 +2792,7 @@
       {
         "bytes": 31247,
         "path": "supply-chain/release-contract-manifest.json",
-        "sha256": "sha256:f7fdbfbecd6e275a9e2c0137c7fe2300b66d277dead5303b153c33df0489e669"
+        "sha256": "sha256:f3af25a00d85d2101b0cf1784e7ebcb784b2f370075f8513e2e7e0bf55880ccc"
       },
       {
         "bytes": 1110,
@@ -2925,19 +2925,19 @@
         "sha256": "sha256:236f565e8856a76977042bcdf46aa16a883b2a8fd849e4804e0d3a6121456f38"
       },
       {
-        "bytes": 166630,
+        "bytes": 166663,
         "path": "tools/publish_verification_pack.py",
-        "sha256": "sha256:977bdfc4b3601b254255814d654f581deb7beb4a031659d54e9a3b1345c41e7c"
+        "sha256": "sha256:7becbe8f4e8dee0acf3b6bb610bdc76787a29ab2b9ee4c943d0abf10c0bd33ee"
       },
       {
-        "bytes": 66262,
+        "bytes": 66773,
         "path": "tools/qualify_delta.py",
-        "sha256": "sha256:9b3ae41c4db99bf5f27ed3cee2799dc4bd9a3999e839ad227e7ca40175dfc945"
+        "sha256": "sha256:a0a5eec88b1cc3d4d5605fb399a4990d6a1eff6f057fe469b30f3cb6722169d3"
       },
       {
-        "bytes": 31966,
+        "bytes": 32715,
         "path": "tools/qualify_local.py",
-        "sha256": "sha256:f8d1452bffa613c9d7c3621cedd14465cec256e1c59d198790281cfd6cd42289"
+        "sha256": "sha256:fb6f59a13145623f45f61c4dbf689475c053c37446fa2d24650c7f1e547d235f"
       },
       {
         "bytes": 63173,
@@ -2985,7 +2985,7 @@
         "sha256": "sha256:6de54a81cc052f69f178275fdb660a056ccf4a196a1791bb47a08453be48a8f7"
       }
     ],
-    "tree_sha256": "sha256:a0454c6e429ba28573d21a7cc9db6a0437451219065b3e3e78f0a8e3233b9751"
+    "tree_sha256": "sha256:bd34ee953658863e2c65d72d32924935947913fe06223323280d975f2fab3725"
   },
   "implementation_status": "LOCAL_EXECUTED_SELF_ATTESTED",
   "independent_verification": "NOT_RUN",
@@ -3019,8 +3019,8 @@
       "sha256": "sha256:e8e82f99dcc30ceeab533e3bfd78c76eb6aff402e727b37b674a1a6ec957eab4"
     },
     "engines/proof-driven-harness-engine/tools/qualify_delta.py": {
-      "bytes": 66262,
-      "sha256": "sha256:9b3ae41c4db99bf5f27ed3cee2799dc4bd9a3999e839ad227e7ca40175dfc945"
+      "bytes": 66773,
+      "sha256": "sha256:a0a5eec88b1cc3d4d5605fb399a4990d6a1eff6f057fe469b30f3cb6722169d3"
     },
     "engines/proof-driven-harness-engine/tools/run_structured_unittest.py": {
       "bytes": 9844,
@@ -3046,19 +3046,19 @@
       "name": "delta-engine-tests",
       "path": "qualification/delta-v3.1/raw/delta-engine-tests.json",
       "returncode": 0,
-      "sha256": "sha256:55a2d55d6252293b16b4e91fe4921933300b17f456ab8aa79c9d2adf93a3e2de"
+      "sha256": "sha256:08aec4261014a72d7aae8cb79c70ba3185ee4a05545f4e096c058d5f208c45e9"
     },
     {
       "name": "delta-importer-tests",
       "path": "qualification/delta-v3.1/raw/delta-importer-tests.json",
       "returncode": 0,
-      "sha256": "sha256:7b3a276b2df81bb29e8c755e16077bd2e7f640c05e1399682144baafdfc1b630"
+      "sha256": "sha256:648e942baf67a73a7039bb16899943033115bf147dad62273db1c02c24dc02c4"
     },
     {
       "name": "delta-installation-check",
       "path": "qualification/delta-v3.1/raw/delta-installation-check.json",
       "returncode": 0,
-      "sha256": "sha256:b61e1a13b670fb8d873b6dd7891726763f456294c03d13a1a8eb25f6b25396be"
+      "sha256": "sha256:50da257ed5cb60c62e99667c88e9695a385f41afdff202ffd1c55671c417c8e3"
     }
   ],
   "remote_executor": "NOT_RUN",

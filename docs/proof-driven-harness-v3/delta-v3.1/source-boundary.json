@@ -117,7 +117,7 @@
   },
   "external_runtime_status": "NOT_RUN",
   "instruction_content_materialized": false,
-  "local_qualification": "DECLARED_RUNTIME_UNQUALIFIED",
+  "local_qualification": "LOCAL_EXECUTED_SELF_ATTESTED",
   "reference_implementation_materialized": false,
   "schema_version": "1.0.0",
   "source_migration": {

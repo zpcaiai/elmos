@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-time-randomness-nondeterminism-semantics"
+  short_description: "Identify and control clocks, RNG, UUIDs, hash seeds, scheduler order and other nondeterministic i..."
+  default_prompt: "Use $elmos-time-randomness-nondeterminism-semantics through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-time-randomness-nondeterminism-semantics"
+  handler_id: "execute_elmos_time_randomness_nondeterminism_semantics"
+  operation: "MODEL_NORMALIZATION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

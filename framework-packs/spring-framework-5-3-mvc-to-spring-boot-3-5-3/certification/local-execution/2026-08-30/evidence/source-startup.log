@@ -1,0 +1,24 @@
+30-Aug-2026 17:22:01.060 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-127.0.0.1-59947"]
+30-Aug-2026 17:22:01.073 INFO [main] org.apache.catalina.startup.Catalina.load Server initialization in [211] milliseconds
+30-Aug-2026 17:22:01.076 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+30-Aug-2026 17:22:01.076 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/9.0.120]
+30-Aug-2026 17:22:01.087 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Deploying web application archive [/private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/runtime/source-tomcat-16393587476467764603/webapps/ROOT.war]
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by org.apache.tomcat.util.compat.JreCompat (file:/private/tmp/elmos-mvc-exact-runtime.RXogV6/apache-tomcat-9.0.120/lib/tomcat-util.jar) to field java.io.FileSystem.useCanonCaches
+WARNING: Please consider reporting this to the maintainers of org.apache.tomcat.util.compat.JreCompat
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+30-Aug-2026 17:22:01.164 WARNING [main] org.apache.catalina.webresources.DirResourceSet.initInternal Disabled the global canonical file name cache to protect against CVE-2024-56337 when starting the WebResourceSet at [/private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/runtime/source-tomcat-16393587476467764603/webapps/ROOT] which is part of the web application []
+30-Aug-2026 17:22:01.605 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+30-Aug-2026 17:22:01.612 INFO [main] org.springframework.web.context.ContextLoader.initWebApplicationContext Root WebApplicationContext: initialization started
+30-Aug-2026 17:22:01.831 INFO [main] org.springframework.web.context.ContextLoader.initWebApplicationContext Root WebApplicationContext initialized in 219 ms
+30-Aug-2026 17:22:01.852 INFO [main] org.springframework.web.servlet.FrameworkServlet.initServletBean Initializing Servlet 'legacy'
+30-Aug-2026 17:22:02.133 INFO [main] org.hibernate.validator.internal.util.Version.<clinit> HV000001: Hibernate Validator 6.2.5.Final
+30-Aug-2026 17:22:02.315 INFO [main] org.springframework.web.servlet.FrameworkServlet.initServletBean Completed initialization in 463 ms
+30-Aug-2026 17:22:02.319 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/runtime/source-tomcat-16393587476467764603/webapps/ROOT.war] has finished in [1,232] ms
+30-Aug-2026 17:22:02.321 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-127.0.0.1-59947"]
+30-Aug-2026 17:22:02.326 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [1252] milliseconds
+30-Aug-2026 17:22:02.746 INFO [Thread-1] org.apache.coyote.AbstractProtocol.pause Pausing ProtocolHandler ["http-nio-127.0.0.1-59947"]
+30-Aug-2026 17:22:02.749 INFO [Thread-1] org.apache.catalina.core.StandardService.stopInternal Stopping service [Catalina]
+30-Aug-2026 17:22:02.764 INFO [Thread-1] org.apache.coyote.AbstractProtocol.stop Stopping ProtocolHandler ["http-nio-127.0.0.1-59947"]
+30-Aug-2026 17:22:02.778 INFO [Thread-1] org.apache.coyote.AbstractProtocol.destroy Destroying ProtocolHandler ["http-nio-127.0.0.1-59947"]

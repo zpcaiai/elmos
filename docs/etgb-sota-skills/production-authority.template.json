@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "record_type": "production-authorization",
+  "payload": {
+    "schema_version": "1.0",
+    "candidate_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "plan_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "tenant_id": "REPLACE_WITH_TENANT_ID",
+    "project_id": "REPLACE_WITH_PROJECT_ID",
+    "task_id": "REPLACE_WITH_CAMPAIGN_ID",
+    "environment_id": "REPLACE_WITH_PRODUCTION_OR_REPRESENTATIVE_ENVIRONMENT",
+    "authority_id": "REPLACE_WITH_APPROVED_AUTHORITY_ID",
+    "status": "approved",
+    "authorized_executor_ids": [],
+    "allowed_effects": [
+      "external-case-execution",
+      "cleanup",
+      "rollback"
+    ],
+    "cleanup_required": true,
+    "rollback_required": true
+  },
+  "issuer_id": "REPLACE_WITH_ASSIGNED_PRODUCTION_ENVIRONMENT_OWNER",
+  "key_id": "REPLACE_WITH_PURPOSE_BOUND_PUBLIC_KEY_ID",
+  "algorithm": "ed25519",
+  "issued_at": "REPLACE_WITH_RFC3339_TIME",
+  "expires_at": "REPLACE_WITH_RFC3339_TIME",
+  "signature": "REPLACE_WITH_BASE64URL_ED25519_SIGNATURE"
+}

@@ -1,0 +1,74 @@
+{
+  "binding_id" : "spring-mvc-5.3.39-java-11-to-boot-3.5.3-java-21-2026-08-30",
+  "pack_key" : "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "policy" : {
+    "path" : "qualification-policy.json",
+    "sha256" : "sha256:e7e1e19b10a2e7545f859204542c9a1afbe3aeaa49478415c4050340bac7e88c"
+  },
+  "schema_version" : 1,
+  "source" : {
+    "artifact_bytes" : 9873951,
+    "artifact_format" : "spring-framework-mvc-war",
+    "artifact_path" : "artifacts/executed-source-spring-mvc-5.3.39.war",
+    "artifact_sha256" : "sha256:ad40f44d02fbebe7300f2c1aefa4ba27fcae3dd180d2ae839e0e3685e3aba42d",
+    "commit" : "7e1c098541143c96cce7d9a637fffe57d0e2baae",
+    "framework" : "spring-framework-mvc",
+    "framework_version" : "5.3.39",
+    "git_tree_sha" : "4e1a0354cb51cfb2479ea049063226d3a9df2b67",
+    "java" : "11.0.26",
+    "maven" : "3.9.11",
+    "packaging" : "war",
+    "servlet_api" : "4.0.1",
+    "servlet_namespace" : "javax.servlet",
+    "snapshot_sha256" : "sha256:68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581"
+  },
+  "status_boundary" : {
+    "external_evidence" : "NOT_RUN",
+    "local_execution" : "PASSED_LOCAL",
+    "local_runner_may_certify" : false,
+    "maximum_local_decision" : "READY_FOR_EXTERNAL_GATE_REVIEW",
+    "production_certification" : "NOT_CERTIFIED"
+  },
+  "target" : {
+    "artifact_bytes" : 28990394,
+    "artifact_format" : "spring-boot-executable-war",
+    "artifact_path" : "artifacts/executed-spring-boot-3.5.3.war",
+    "artifact_sha256" : "sha256:7a326b69fc5651fe4986d00742dbae7a4f8b6e81aacdecc361a0d9cf30ec1d97",
+    "embedded_tomcat" : "10.1.42",
+    "framework" : "spring-boot",
+    "framework_version" : "3.5.3",
+    "java" : "21.0.11",
+    "manifest" : {
+      "Main-Class" : "org.springframework.boot.loader.launch.WarLauncher",
+      "Spring-Boot-Version" : "3.5.3",
+      "Start-Class" : "io.elmos.legacy.LegacyMvcApplication"
+    },
+    "maven" : "3.9.11",
+    "packaging" : "executable-war",
+    "servlet_api" : "6.1",
+    "servlet_namespace" : "jakarta.servlet",
+    "spring_framework_version" : "6.2.8"
+  },
+  "toolchain" : {
+    "maven_archive_sha256" : "sha256:0d7125e8c91097b36edb990ea5934e6c68b4440eef4ea96510a0f6815e7eeadb",
+    "maven_archive_sha512" : "sha512:03e2d65d4483a3396980629f260e25cac0d8b6f7f2791e4dc20bc83f9514db8d0f05b0479e699a5f34679250c49c8e52e961262ded468a20de0be254d8207076",
+    "source_java_release_sha256" : "sha256:09d5fffa5ad3de15dcfd603e747df1e6c9ecdb58f25d333e89661910064e884a",
+    "source_tomcat_archive_sha256" : "sha256:93306f86baafe13186cc3e705c201040d68b0192a50be667a1f576ee4711db0d",
+    "source_tomcat_archive_sha512" : "sha512:fca7cfbe8255b61fac0e474a9a7ac6fbaf2792c72061fda2666b26eb5ba60718adc4fc0cbd013f14a41f101bcd7f5b70b2d3eedc37554ff0db4bdb6e2e2898f6",
+    "source_tomcat_version" : "9.0.120",
+    "target_java_release_sha256" : "sha256:7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756",
+    "target_tomcat_core_entry" : "WEB-INF/lib-provided/tomcat-embed-core-10.1.42.jar",
+    "target_tomcat_core_sha256" : "sha256:c0ca6acafe5ad63cd5de16ec8894318a7b53ea11e3db1bc217fd5f2a9746a790"
+  },
+  "transformation" : {
+    "custom_recipe_artifact_sha256" : "sha256:a2291b649d9d84a36f455e3ef8eb477efdfda9a05c6b9026b76391d8e6a0d45c",
+    "custom_recipe_build_output_timestamp" : "2026-08-28T00:00:00Z",
+    "custom_recipe_coordinate" : "io.elmos:elmos-java-recipes:0.1.0-SNAPSHOT",
+    "custom_recipe_parent_pom_sha256" : "sha256:ada08c7433515cf79992c725f180ef12398803b4eb1372444821cc951e10efa8",
+    "custom_recipe_pom_sha256" : "sha256:22775dc1c4ceebb891eccd4f6c10f8e4e4f63c1ccdf7a909935b81df7b9f311a",
+    "materializer_contract_sha256" : "sha256:c49c796656a34391b892b4a61973161aafce778a4cfc742e5dfb1f0e2eb27f24",
+    "recipe_sha256" : "sha256:e6b648f5dfdf350c1f6ac0ccc9636b40453af13a48e18974076e455dc872b75b",
+    "source_fixture_manifest_sha256" : "sha256:f982de2d2daca2247f5f3efa788a64f653bb2d576a4c8516fafc0cd96d34fe74",
+    "target_profile_sha256" : "sha256:8042f1bed7cde57d13e9794b7a694437d5b12d40f0eb4948c656d942a9297ee1"
+  }
+}

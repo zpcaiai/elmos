@@ -1,0 +1,6 @@
+interface:
+  display_name: "Harness Contracts"
+  short_description: "Construct and validate the canonical PDHI v1 typed contracts."
+  default_prompt: "Use $elmos-harness-contracts through the exact PDHI v1 K0 runtime with typed scope, allowlisted operations, replayable evidence, and fail-closed external gates."
+policy:
+  allow_implicit_invocation: true

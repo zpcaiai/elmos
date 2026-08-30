@@ -173,6 +173,7 @@ RAW_LOG_COMMANDS: Mapping[str, tuple[str, ...]] = {
     "qualification/raw/archive-installation-check.json": (
         "tooling/integrate_proof_driven_harness_v3.py",
         "--check",
+        "--qualification-phase",
     ),
 }
 DELTA_RAW_LOG_COMMANDS: Mapping[str, tuple[str, ...]] = {

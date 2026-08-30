@@ -17,33 +17,229 @@
     "source_scripts_executed": false
   },
   "runtime_implementation": {
-    "digest": "sha256:dca978c88c176d29f06a3cdcfd31ebbc60b49de55313d59bbbe1930e56e6b308",
+    "digest": "sha256:3c66e54aa46545dc22c2ca245ab074d46924d5d02b1b2bd6b60e96bf7ab77aca",
     "file_count": 24,
     "node_version": "26.0.0",
     "typescript_version": "5.9.2",
     "vue_compiler_sfc_version": "3.5.39"
   },
+  "evidence_root": {
+    "digest": "sha256:b3a09731defd0559dfb18b4c33a23fbcd2da837d7185178d285fc8140b399988",
+    "entry_count": 38,
+    "entries": [
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/acceptance/acceptance-profile.json",
+        "bytes": 2166,
+        "sha256": "sha256:ed13212693830e3bdf8f48d154089516e2abc94975abf49b8a08faa84c1ae813"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/certification.json",
+        "bytes": 2855,
+        "sha256": "sha256:e4b543acd89dc091f4d3d9798a843fb7805cc0ef5828f620404d4084f335762a"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/external-evidence-status.json",
+        "bytes": 856,
+        "sha256": "sha256:d231fcb59f7ed44316f0a784112618e2516f01a64492dbe067c7bf8c9b1d0525"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/replay-local-runtime.mjs",
+        "bytes": 44819,
+        "sha256": "sha256:e3a27c9597369d87e33037711b1a7e5620cf6160fad61ff59d7c52bc2529f086"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/source-build-evidence.json",
+        "bytes": 3330,
+        "sha256": "sha256:ad74c7ed309b3664b4564e72d527a00cb836620344dc3765f3c74ec5b909f091"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/pack.json",
+        "bytes": 4743,
+        "sha256": "sha256:43fe5ae29d4615d274999fc1e00cb7a1fd4dcab92e664d4773a3f00b1646681b"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/route-matrix.json",
+        "bytes": 1503,
+        "sha256": "sha256:36de276f534913ca735ac19165c00e501453421ef7b460e2b30c7ca938c5c17a"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/manifest.json",
+        "bytes": 2273,
+        "sha256": "sha256:1f1848a8d4d40f1aa5a47ee61bc1b5157ebe55001b8aef6759266e8ea6c8c04b"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/target-profile/profile.json",
+        "bytes": 2902,
+        "sha256": "sha256:315e4403dc93a60363ca0eb71334f44e24d08644715194609ce69e1fa04774ea"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/transformations/vue3-todo-to-wechat-native.json",
+        "bytes": 3330,
+        "sha256": "sha256:c6e27b2fe0cf297102eb748dd62ab1ac9b5d318b1d33ed0cdebde2e2fc5df1d8"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/ui-ir/model.json",
+        "bytes": 9647,
+        "sha256": "sha256:5a530aa493b438ade546b84aeb713bea2fd48e164c3683399db69d025c416f80"
+      },
+      {
+        "path": "dist/src/miniapp-contract-validation.js",
+        "bytes": 12721,
+        "sha256": "sha256:e1fcd85fa37da8ca6c3d50d4a86957b1335e140c6031f4fe28c370ca06ad278f"
+      },
+      {
+        "path": "dist/src/miniapp-inventory.js",
+        "bytes": 55803,
+        "sha256": "sha256:0951dcabf42cfe8cb55b8d2d0b9ffda00bdf92d871307b63ed21dc114719eadf"
+      },
+      {
+        "path": "dist/src/miniapp-output-contracts.js",
+        "bytes": 99127,
+        "sha256": "sha256:a69c114400a5c2675454f12696b2722abfb72440d9f49a1eae05ca05d42684e6"
+      },
+      {
+        "path": "dist/src/miniapp-package-contract.js",
+        "bytes": 36950,
+        "sha256": "sha256:02af7af2682cc781dcf5c2df4e78a62997a528f0eca4386e6133e49142687728"
+      },
+      {
+        "path": "dist/src/miniapp-planning.js",
+        "bytes": 61436,
+        "sha256": "sha256:b8bef0f7be72b4dba906194297b29aa3b926f2bca2ed1f1135dc8dbc97ab1c0c"
+      },
+      {
+        "path": "dist/src/miniapp-semantic-ir.js",
+        "bytes": 156553,
+        "sha256": "sha256:206da93cbd8d82ae7730a639748265d3fdc29c227492fd035b75dcbca5eb6637"
+      },
+      {
+        "path": "dist/src/miniapp-skill-runtime.js",
+        "bytes": 34954,
+        "sha256": "sha256:c0c841efdf22cff36a0f3abf89fffdd1cc25344cab06d7256e5136cf3a2685d1"
+      },
+      {
+        "path": "dist/src/miniapp-target-generation.js",
+        "bytes": 36174,
+        "sha256": "sha256:0921401253dc0ac1393c3e3e061d16f700bfc6d9ce17411e654b44c404a2cbf9"
+      },
+      {
+        "path": "dist/src/miniapp-types.js",
+        "bytes": 1106,
+        "sha256": "sha256:c85fd4b6304ff5966b205493879db2784e31b50a87b90fe065947ba1b8df27a3"
+      },
+      {
+        "path": "dist/src/miniapp-validation.js",
+        "bytes": 43128,
+        "sha256": "sha256:5ebb4110eb3e76d74815ef5306f33f097b9508b83f09f533fe66d444955b26fb"
+      },
+      {
+        "path": "package.json",
+        "bytes": 1123,
+        "sha256": "sha256:4e15dd29f10d03cc76f2d91cca03ce7ddfa14f57a078ef06a6b005c807a13b81"
+      },
+      {
+        "path": "pnpm-lock.yaml",
+        "bytes": 8878,
+        "sha256": "sha256:77592e787157ec5fb0fad3548906ee8d06524674b0698557ce15134a34b28603"
+      },
+      {
+        "path": "scripts/batch32/run_client_gate.py",
+        "bytes": 44582,
+        "sha256": "sha256:387b9ceda1e729c0fc6afdb99aaeaf768649611d5a9449f7845d176afcdf2a8c"
+      },
+      {
+        "path": "scripts/batch32/validate_client_pack.py",
+        "bytes": 8095,
+        "sha256": "sha256:599a4d57a7354dbc2eed5f4613f75ab2e716a1a0aaa7d96080f1f15d252781a4"
+      },
+      {
+        "path": "scripts/batch32/validate_ui_ir.py",
+        "bytes": 2701,
+        "sha256": "sha256:144a63839f24820490b3fb5a594032b10bc8d33f8762bdaf659ac95e15b04413"
+      },
+      {
+        "path": "skills/subskills/elmos-frontend-to-miniapp-skills-v1.0.0.zip",
+        "bytes": 281829,
+        "sha256": "sha256:e8fabbe19f96a432e3ba77470e1c35a000cc683cd4ac0c084bbabcf31df79d82"
+      },
+      {
+        "path": "src/miniapp-contract-validation.ts",
+        "bytes": 13442,
+        "sha256": "sha256:8756dd145fa4c88c51d0270818cf88bd336237900980799064bc5a05a8c87fc4"
+      },
+      {
+        "path": "src/miniapp-inventory.ts",
+        "bytes": 54784,
+        "sha256": "sha256:f8d697e092d1b7be8a09140e19785183fcd824aef925674e78d51d7f308f46db"
+      },
+      {
+        "path": "src/miniapp-output-contracts.ts",
+        "bytes": 95692,
+        "sha256": "sha256:aba64390442b46260afc2ffc84c2f96b4e4e3089647725c8dbb0b013fc6875df"
+      },
+      {
+        "path": "src/miniapp-package-contract.ts",
+        "bytes": 43849,
+        "sha256": "sha256:00203999d7dfd6bfbaf32d7b0f5fbcf1ee1edeeee35c8d06b3d44d71fd3f9fcf"
+      },
+      {
+        "path": "src/miniapp-planning.ts",
+        "bytes": 66447,
+        "sha256": "sha256:96068e28216f023f70824a61927bccd5a6af22d0fd406845d8f66bfc1c25912e"
+      },
+      {
+        "path": "src/miniapp-semantic-ir.ts",
+        "bytes": 160447,
+        "sha256": "sha256:1b8e1170c07ecc89faef8ccb898bbff0dce41dafaa41798275a1b95d89954ba5"
+      },
+      {
+        "path": "src/miniapp-skill-runtime.ts",
+        "bytes": 42586,
+        "sha256": "sha256:15af94b507882ce25fe95cd37fc88ba9d78a90d1cd20cddc91d7e149c7adb39b"
+      },
+      {
+        "path": "src/miniapp-target-generation.ts",
+        "bytes": 38014,
+        "sha256": "sha256:a151c22924c58ef5dc2322b621aca36b2c5e8090ba2428873efa58e1be59aa5e"
+      },
+      {
+        "path": "src/miniapp-types.ts",
+        "bytes": 8119,
+        "sha256": "sha256:50994ce2045a857cf409c394513f7b47d73417f54eb8de06347257df16900182"
+      },
+      {
+        "path": "src/miniapp-validation.ts",
+        "bytes": 48502,
+        "sha256": "sha256:2a3b2b1abc580b756415539a60e640fe96fd994c0913d090ab2cfe55d2606eed"
+      },
+      {
+        "path": "tsconfig.json",
+        "bytes": 373,
+        "sha256": "sha256:445643bccad04d5cb5aeae088bd9430b462b260e524412d4d19897484f73f273"
+      }
+    ]
+  },
   "request": {
     "request_id": "conv-vue3-todo-wechat",
-    "request_digest": "sha256:0f683412841f28e016ccff898f5b349673f309b979d7a30571f5bc1bdfb19e9a",
+    "request_digest": "sha256:b6a19721a46a0ebce0faef7d037e214718eda0ae598ed5dcebd6e55c0c7480b7",
     "source_revision": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
     "target": {
       "platform": "wechat",
       "platformVersion": "3.9.1",
       "toolchainVersion": "1.06.2504010"
     },
-    "target_profile_digest": "sha256:4d38f1e6365911d5731efeeeb2b9d7f4d4460a6950c4d7c0b2744e66d0f101e5",
+    "target_profile_digest": "sha256:315e4403dc93a60363ca0eb71334f44e24d08644715194609ce69e1fa04774ea",
     "target_profile": {
       "profile_key": "frontend-to-miniapp-vue3-wechat-v1-target",
       "framework": "wechat-native-miniapp-candidate",
       "versions": [
-        "wechat-base-library-3.9.1-requested-NOT_RUN"
+        "3.9.1"
       ],
       "runtime_versions": [
-        "wechat-base-library-3.9.1-requested-NOT_RUN"
+        "3.9.1"
       ],
       "generator_profile_version": "2026-08-20.1",
-      "official_toolchain_version": "wechat-devtools-1.06.2504010-NOT_RUN",
+      "official_toolchain_version": "1.06.2504010",
       "authorization": {
         "official_build": false,
         "preview": false,
@@ -61,15 +257,15 @@
     }
   },
   "conversion": {
-    "run_id": "miniapp-run-conv-vue3-todo-wechat-a3d9a1108aad7f06",
-    "deterministic_digest": "sha256:fcea5aafb07268a04ad1c2ca148d52400214ed2a111e137a5e2d2487598b6d55",
-    "analysis_digest": "sha256:980b47d70f146ddba083d78d17f4007a94bb2d2f607d456ec0107b1dc71d59db",
-    "semantic_ir_digest": "sha256:149d49beb320824da249b859e341d9129aea76035072ee3b6bc6e1d49c5a5f4d",
-    "plan_digest": "sha256:e0ca83d8e1e940976763a63fc3d4107c4660fb1f0f822b91f6c556229d5100af",
-    "checkpoint_digest": "sha256:4edee0710a554fdb6732202ac070bfa29bc38b244bea671078271031ad634714"
+    "run_id": "miniapp-run-conv-vue3-todo-wechat-cd99dfb53ff81e55",
+    "deterministic_digest": "sha256:84591dd961573411c178103e09454f1862251b1b3fe8f0afa10675850ae02493",
+    "analysis_digest": "sha256:474a0dbe13b1ce6f9f6555206b3706c5d0a9c0afcd55ad4dfc99635ad63c7de6",
+    "semantic_ir_digest": "sha256:2b6ef6399d4d223bb472d9224dd61fdf5d105ce8bc0106c70eabf9a540a8a75a",
+    "plan_digest": "sha256:9eb50cbee9e36b48aba28394b88479b850c510c64fdadcd1c27a12956e374fb4",
+    "checkpoint_digest": "sha256:e500b49e375ce592afdd9a802c8c5cec71715615767f4d19ce2d03968147e0d5"
   },
   "analysis": {
-    "parser": "@vue/compiler-sfc+@vue/compiler-sfc-template@3.5.39+router-ast+source-build-config-inventory-only+source-build-entrypoint+typescript-compiler-api+vue-router-ast",
+    "parser": "@vue/compiler-sfc+@vue/compiler-sfc-template@3.5.39+deterministic-css-parser+router-ast+source-build-config-inventory-only+source-build-entrypoint+typescript-compiler-api+vue-router-ast",
     "coverage": 1,
     "parsed_files": [
       "index.html",
@@ -85,183 +281,799 @@
     "component_count": 8,
     "route_count": 1,
     "state_count": 2,
-    "findings": [
-      {
-        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
-        "severity": "warning",
-        "message": "main carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile.",
-        "classification": "C",
-        "blocking": false,
-        "sourceRefs": [
-          {
-            "path": "src/App.vue",
-            "sha256": "sha256:91985cca2e02ba745bdaa1b043f30977a3c7e0778c8309d21282e1f5efba922e",
-            "startLine": 6,
-            "startColumn": 3,
-            "endLine": 6,
-            "endColumn": 27
-          }
-        ]
-      },
-      {
-        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
-        "severity": "warning",
-        "message": "h1 carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile.",
-        "classification": "C",
-        "blocking": false,
-        "sourceRefs": [
-          {
-            "path": "src/App.vue",
-            "sha256": "sha256:91985cca2e02ba745bdaa1b043f30977a3c7e0778c8309d21282e1f5efba922e",
-            "startLine": 7,
-            "startColumn": 5,
-            "endLine": 7,
-            "endColumn": 18
-          }
-        ]
-      },
-      {
-        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
-        "severity": "warning",
-        "message": "section carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile.",
-        "classification": "C",
-        "blocking": false,
-        "sourceRefs": [
-          {
-            "path": "src/views/HomeView.vue",
-            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
-            "startLine": 15,
-            "startColumn": 3,
-            "endLine": 15,
-            "endColumn": 12
-          }
-        ]
-      },
-      {
-        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
-        "severity": "warning",
-        "message": "ul carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile.",
-        "classification": "C",
-        "blocking": false,
-        "sourceRefs": [
-          {
-            "path": "src/views/HomeView.vue",
-            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
-            "startLine": 18,
-            "startColumn": 5,
-            "endLine": 18,
-            "endColumn": 9
-          }
-        ]
-      },
-      {
-        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
-        "severity": "warning",
-        "message": "li carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile.",
-        "classification": "C",
-        "blocking": false,
-        "sourceRefs": [
-          {
-            "path": "src/views/HomeView.vue",
-            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
-            "startLine": 19,
-            "startColumn": 7,
-            "endLine": 19,
-            "endColumn": 89
-          }
-        ]
-      },
-      {
-        "code": "MINIAPP_SCOPED_STYLE_NOT_LOWERED",
-        "severity": "warning",
-        "message": "Vue scoped/module style ownership requires deterministic scope selectors and matching template attributes before target emission.",
-        "classification": "C",
-        "blocking": false,
-        "sourceRefs": [
-          {
-            "path": "src/App.vue",
-            "sha256": "sha256:91985cca2e02ba745bdaa1b043f30977a3c7e0778c8309d21282e1f5efba922e",
-            "startLine": 12,
-            "startColumn": 1,
-            "endLine": 12,
-            "endColumn": 15
-          }
-        ]
-      }
-    ]
+    "findings": []
   },
   "semantic_ir": {
     "profile": "miniapp-ui-interaction-v1",
-    "node_count": 20,
+    "node_count": 21,
     "trace_coverage": 1,
     "batch32_pack_model": "ui-ir/model.json is a separate 20-node review model, not this runtime IR"
+  },
+  "review_model_binding": {
+    "ui_ir_digest": "sha256:5a530aa493b438ade546b84aeb713bea2fd48e164c3683399db69d025c416f80",
+    "transformation_digest": "sha256:c6e27b2fe0cf297102eb748dd62ab1ac9b5d318b1d33ed0cdebde2e2fc5df1d8",
+    "review_node_count": 20,
+    "review_node_mapping_coverage": 1,
+    "declared_transformation_mapping_count": 8,
+    "declared_transformation_mapping_coverage": 1,
+    "directional_scope": "one-way review UI IR to source-derived runtime subjects and content-addressed generated artifacts",
+    "declared_transformation_bindings": [
+      {
+        "source_node": "route.home",
+        "target_contract": "app.json pages[0] equals pages/index/index and pages/index/index.json exists",
+        "target_artifacts": [
+          {
+            "path": "app.json",
+            "sha256": "sha256:bfc2c6a6b1d0d35c4a703cf381337f6f1e0cdef73dd9fc8c79b9bec0693c0ad1",
+            "bytes": 223
+          },
+          {
+            "path": "pages/index/index.json",
+            "sha256": "sha256:0a8bcafa55f5e50b92ef24d825875f116290019242a8f949c4c9520cd9bc8228",
+            "bytes": 64
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "component.app-shell",
+        "target_contract": "pages/index/index.wxml contains the source-traced application shell",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "component.todo-input",
+        "target_contract": "pages/index/index.wxml input value binds text and bindinput targets handleInput0",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "component.add-button",
+        "target_contract": "pages/index/index.wxml button disabled binds !canSubmit0 and bindtap targets handleSubmit0",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "component.todo-list",
+        "target_contract": "pages/index/index.wxml iterates itemsRender with __elmosKey and pages/index/index.js derives each key from item plus source index",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "effect.add-todo",
+        "target_contract": "pages/index/index.js trims text appends one value persists application items and clears text",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "token.app-shell",
+        "target_contract": "pages/index/index.wxss scopes .app-shell with the deterministic scope class and preserves max-width auto margins and padding",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxss",
+            "sha256": "sha256:196d07bb36e8792dbc5bf9910c474253dfbd628a895fe96633801f72f0f8336f",
+            "bytes": 574
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "permission.local-only",
+        "target_contract": "adapters/platform.js exposes no network identity payment upload review or release capability",
+        "target_artifacts": [
+          {
+            "path": "adapters/platform.js",
+            "sha256": "sha256:79ca61a9ed6d1e702de495b8064c4e911ad9175030809d361462b47ba997ff0b",
+            "bytes": 129
+          }
+        ],
+        "verified": true
+      }
+    ],
+    "crosswalk": [
+      {
+        "review_node_id": "route.home",
+        "runtime_subject_ids": [
+          "route.8b8df5760bcd52c75516"
+        ],
+        "review_source_paths": [
+          "src/router.ts"
+        ],
+        "runtime_source_paths": [
+          "src/router.ts"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/router.ts",
+            "sha256": "sha256:4a100a699df9e076565bcba974ea0e7433a3d2d9cd6445d0a36f764eb5b629e4",
+            "bytes": 244
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "app.json",
+            "sha256": "sha256:bfc2c6a6b1d0d35c4a703cf381337f6f1e0cdef73dd9fc8c79b9bec0693c0ad1",
+            "bytes": 223
+          },
+          {
+            "path": "pages/index/index.json",
+            "sha256": "sha256:0a8bcafa55f5e50b92ef24d825875f116290019242a8f949c4c9520cd9bc8228",
+            "bytes": 64
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "view.app-shell",
+        "runtime_subject_ids": [
+          "component.361923a1bb7397676d8e"
+        ],
+        "review_source_paths": [
+          "src/App.vue"
+        ],
+        "runtime_source_paths": [
+          "src/App.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/App.vue",
+            "sha256": "sha256:91985cca2e02ba745bdaa1b043f30977a3c7e0778c8309d21282e1f5efba922e",
+            "bytes": 263
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "view.home",
+        "runtime_subject_ids": [
+          "component.532133dc3188c5366642"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "component.app-shell",
+        "runtime_subject_ids": [
+          "component.361923a1bb7397676d8e"
+        ],
+        "review_source_paths": [
+          "src/App.vue"
+        ],
+        "runtime_source_paths": [
+          "src/App.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/App.vue",
+            "sha256": "sha256:91985cca2e02ba745bdaa1b043f30977a3c7e0778c8309d21282e1f5efba922e",
+            "bytes": 263
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "component.home-view",
+        "runtime_subject_ids": [
+          "component.532133dc3188c5366642"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "component.todo-input",
+        "runtime_subject_ids": [
+          "component.d67240b928720b098e09"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "component.add-button",
+        "runtime_subject_ids": [
+          "component.69b07e0f26388ff2514d"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "component.todo-list",
+        "runtime_subject_ids": [
+          "component.9ba2c5abfd87ca91748c"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "state.todo-text",
+        "runtime_subject_ids": [
+          "state.ad7ce7a5eeb7b35e351a"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "state.todo-items",
+        "runtime_subject_ids": [
+          "state.9a892831ecf0f8a8bb4f"
+        ],
+        "review_source_paths": [
+          "src/stores/todo.ts"
+        ],
+        "runtime_source_paths": [
+          "src/stores/todo.ts"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/stores/todo.ts",
+            "sha256": "sha256:dff9c172ca2a16986b3c943711625df827abda894b6529e38c41937292570c3a",
+            "bytes": 260
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "app.js",
+            "sha256": "sha256:516bc3ee3685e36ec5c74d30eec6fa18690f6ad370eca17e194c1882e114396e",
+            "bytes": 169
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "action.input-todo",
+        "runtime_subject_ids": [
+          "interaction.3daa07935328ebded93b"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "action.submit-todo",
+        "runtime_subject_ids": [
+          "interaction.3daa07935328ebded93b"
+        ],
+        "review_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/stores/todo.ts",
+            "sha256": "sha256:dff9c172ca2a16986b3c943711625df827abda894b6529e38c41937292570c3a",
+            "bytes": 260
+          },
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "effect.add-todo",
+        "runtime_subject_ids": [
+          "interaction.3daa07935328ebded93b"
+        ],
+        "review_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/stores/todo.ts",
+            "sha256": "sha256:dff9c172ca2a16986b3c943711625df827abda894b6529e38c41937292570c3a",
+            "bytes": 260
+          },
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "form.todo-entry",
+        "runtime_subject_ids": [
+          "form.fda314903f53c1212a4a"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "binding.todo-text",
+        "runtime_subject_ids": [
+          "interaction.3daa07935328ebded93b",
+          "component.d67240b928720b098e09"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "permission.local-only",
+        "runtime_subject_ids": [
+          "policy.no-declared-platform-capabilities"
+        ],
+        "review_source_paths": [
+          "package.json"
+        ],
+        "runtime_source_paths": [],
+        "source_manifest_entries": [
+          {
+            "path": "package.json",
+            "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+            "bytes": 461
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "SOURCE_MANIFEST_ONLY_NEGATIVE_OR_RESOURCE_CONTRACT",
+        "target_artifacts": [
+          {
+            "path": "adapters/platform.js",
+            "sha256": "sha256:79ca61a9ed6d1e702de495b8064c4e911ad9175030809d361462b47ba997ff0b",
+            "bytes": 129
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "resource.source-snapshot",
+        "runtime_subject_ids": [
+          "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184"
+        ],
+        "review_source_paths": [
+          "package.json"
+        ],
+        "runtime_source_paths": [],
+        "source_manifest_entries": [
+          {
+            "path": "package.json",
+            "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+            "bytes": 461
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "SOURCE_MANIFEST_ONLY_NEGATIVE_OR_RESOURCE_CONTRACT",
+        "target_artifacts": [
+          {
+            "path": "source-snapshots/manifest.json",
+            "sha256": "sha256:1f1848a8d4d40f1aa5a47ee61bc1b5157ebe55001b8aef6759266e8ea6c8c04b",
+            "bytes": 2273
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "token.app-shell",
+        "runtime_subject_ids": [
+          "style.e0dad29b9ebfe405ce86"
+        ],
+        "review_source_paths": [
+          "src/App.vue"
+        ],
+        "runtime_source_paths": [
+          "src/App.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/App.vue",
+            "sha256": "sha256:91985cca2e02ba745bdaa1b043f30977a3c7e0778c8309d21282e1f5efba922e",
+            "bytes": 263
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxss",
+            "sha256": "sha256:196d07bb36e8792dbc5bf9910c474253dfbd628a895fe96633801f72f0f8336f",
+            "bytes": 574
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "a11y.todo-input-label",
+        "runtime_subject_ids": [
+          "component.d67240b928720b098e09"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "a11y.disabled-state",
+        "runtime_subject_ids": [
+          "component.69b07e0f26388ff2514d",
+          "state.ad7ce7a5eeb7b35e351a",
+          "interaction.3daa07935328ebded93b"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.wxml",
+            "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+            "bytes": 1101
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      }
+    ],
+    "state": "PASSED_LOCAL_SELF_ATTESTED_MAPPING_ONLY",
+    "full_runtime_ir_reverse_equivalence": "NOT_EVALUATED",
+    "independent_verification": "NOT_RUN",
+    "official_runtime_verification": "NOT_RUN"
   },
   "plan": {
     "summary": {
       "A": 8,
       "B": 0,
-      "C": 7,
+      "C": 0,
       "D": 0,
       "E": 0
     },
-    "findings": [
-      {
-        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
-        "platform": "all",
-        "classification": "C",
-        "blocking": true,
-        "message": "h1 carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile."
-      },
-      {
-        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
-        "platform": "all",
-        "classification": "C",
-        "blocking": true,
-        "message": "li carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile."
-      },
-      {
-        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
-        "platform": "all",
-        "classification": "C",
-        "blocking": true,
-        "message": "main carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile."
-      },
-      {
-        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
-        "platform": "all",
-        "classification": "C",
-        "blocking": true,
-        "message": "section carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile."
-      },
-      {
-        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
-        "platform": "all",
-        "classification": "C",
-        "blocking": true,
-        "message": "ul carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile."
-      },
-      {
-        "code": "MINIAPP_SCOPED_STYLE_NOT_LOWERED",
-        "platform": "all",
-        "classification": "C",
-        "blocking": true,
-        "message": "Vue scoped/module style ownership requires deterministic scope selectors and matching template attributes before target emission."
-      },
-      {
-        "code": "MINIAPP_DEPENDENCY_ADAPTER_NOT_WIRED",
-        "platform": "wechat",
-        "classification": "C",
-        "blocking": true,
-        "message": "@vitejs/plugin-vue: The dependency is declared but no exact source import/call-site evidence was recovered."
-      }
-    ]
+    "findings": []
   },
   "generated_project": {
     "platform": "wechat",
     "platform_version": "3.9.1",
     "toolchain_version": "1.06.2504010",
     "profile_version": "2026-08-20.1",
-    "deterministic_digest": "sha256:78246d3918bc18962daae20f4794d3c564cff6084350cbd5b9c6bc769384f8bb",
+    "deterministic_digest": "sha256:599711da49a22092244a2852bbdc7969258fe0ee01fb6893905af184faae7d14",
     "file_count": 11,
     "static_validation": "PASSED",
     "official_build": "NOT_RUN",
@@ -270,8 +1082,8 @@
     "artifacts": [
       {
         "path": "adapters/platform.js",
-        "sha256": "sha256:8ea42b7b8ee37e4ec282ebd637ddb723aecbce3ebb547c666b7b6879709636ca",
-        "bytes": 649
+        "sha256": "sha256:79ca61a9ed6d1e702de495b8064c4e911ad9175030809d361462b47ba997ff0b",
+        "bytes": 129
       },
       {
         "path": "app.js",
@@ -285,13 +1097,13 @@
       },
       {
         "path": "app.wxss",
-        "sha256": "sha256:6e264462b17ffd3ebacf55d7568e7db53886ccb978fe3da2680b8303b0de653f",
-        "bytes": 476
+        "sha256": "sha256:196d07bb36e8792dbc5bf9910c474253dfbd628a895fe96633801f72f0f8336f",
+        "bytes": 574
       },
       {
         "path": "migration-findings.json",
-        "sha256": "sha256:358afa61d5c23921f2e4a4a70d03f9bd3bbce688fa6ab2608fa24e7154a9a490",
-        "bytes": 1855
+        "sha256": "sha256:b5002d1c76fa98d568d1074a8d0ab9087c7ca74af47cef29b7328abda87d45f0",
+        "bytes": 575
       },
       {
         "path": "pages/index/index.js",
@@ -305,13 +1117,13 @@
       },
       {
         "path": "pages/index/index.wxml",
-        "sha256": "sha256:1f5d28a1d8dd006746bbd77ff988ae1efbbb94952379701c4e0d0a7bbf0c94e3",
-        "bytes": 1000
+        "sha256": "sha256:8a2d177fa100a813bdc7b8c9f4d6812bf6478e52662e2426e4321904110f879d",
+        "bytes": 1101
       },
       {
         "path": "pages/index/index.wxss",
-        "sha256": "sha256:6e264462b17ffd3ebacf55d7568e7db53886ccb978fe3da2680b8303b0de653f",
-        "bytes": 476
+        "sha256": "sha256:196d07bb36e8792dbc5bf9910c474253dfbd628a895fe96633801f72f0f8336f",
+        "bytes": 574
       },
       {
         "path": "project.config.json",
@@ -320,17 +1132,17 @@
       },
       {
         "path": "trace-map.json",
-        "sha256": "sha256:35e174b57f2f63ecc423d8f5cff6e39dc2e98823631a616054214518b2c0027b",
-        "bytes": 1253
+        "sha256": "sha256:a970be36a31cf7827b09daf845f4cabd1798123ece07a00e1c774c06119af557",
+        "bytes": 1325
       }
     ]
   },
   "gates": {
     "G0": "PASSED",
-    "G1": "BLOCKED",
+    "G1": "PASSED",
     "G2": "PASSED",
-    "G3": "BLOCKED",
-    "G4": "BLOCKED",
+    "G3": "PASSED",
+    "G4": "NOT_RUN",
     "G5": "NOT_RUN",
     "G6": "NOT_RUN",
     "G7": "NOT_RUN",
@@ -338,11 +1150,11 @@
     "G9": "NOT_RUN"
   },
   "task_states": {
-    "BLOCKED": 24,
+    "EXECUTED_LOCAL": 24,
     "NOT_APPLICABLE": 7,
     "NOT_RUN_EXTERNAL": 9
   },
-  "local_engineering": "BLOCKED",
+  "local_engineering": "PASSED",
   "readiness": "NOT_READY",
   "certification": "NOT_CERTIFIED",
   "external_evidence": "NOT_RUN",

@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from .canonical import canonical_json, digest_value, validate_identifier
+from .canonical import canonical_json, digest_value, validate_digest, validate_identifier
 from .contracts import (
     ProofResult,
     ProofRunState,
@@ -67,6 +67,7 @@ class StateStore:
         self._connection.row_factory = sqlite3.Row
         self._connection.execute("PRAGMA foreign_keys = ON")
         self._connection.execute("PRAGMA journal_mode = WAL")
+        self._connection.execute("PRAGMA busy_timeout = 5000")
         self._connection.executescript(
             """
             CREATE TABLE IF NOT EXISTS idempotency (
@@ -112,6 +113,10 @@ class StateStore:
               lease_expires_at TEXT,
               trace_id TEXT,
               checkpoint_json TEXT,
+              retry_parent_run_id TEXT,
+              retry_root_run_id TEXT,
+              retry_attempt INTEGER NOT NULL DEFAULT 0,
+              retry_maximum_attempts INTEGER,
               started_at TEXT,
               completed_at TEXT,
               wall_clock_ms INTEGER,
@@ -119,6 +124,18 @@ class StateStore:
               created_at TEXT NOT NULL,
               updated_at TEXT NOT NULL,
               PRIMARY KEY (tenant_id, run_id)
+            );
+            CREATE TABLE IF NOT EXISTS run_operation_idempotency (
+              tenant_id TEXT NOT NULL,
+              operation_key TEXT NOT NULL,
+              request_digest TEXT NOT NULL,
+              operation_type TEXT NOT NULL,
+              scope_digest TEXT NOT NULL,
+              aggregate_run_id TEXT NOT NULL,
+              response_digest TEXT NOT NULL,
+              response_row_json TEXT NOT NULL,
+              created_at TEXT NOT NULL,
+              PRIMARY KEY (tenant_id, operation_key)
             );
             CREATE TABLE IF NOT EXISTS cache_entries (
               tenant_id TEXT NOT NULL,
@@ -291,6 +308,10 @@ class StateStore:
             "options_json": "TEXT NOT NULL DEFAULT '{}'",
             "trace_id": "TEXT",
             "checkpoint_json": "TEXT",
+            "retry_parent_run_id": "TEXT",
+            "retry_root_run_id": "TEXT",
+            "retry_attempt": "INTEGER NOT NULL DEFAULT 0",
+            "retry_maximum_attempts": "INTEGER",
             "started_at": "TEXT",
             "completed_at": "TEXT",
             "wall_clock_ms": "INTEGER",
@@ -301,6 +322,16 @@ class StateStore:
                     self._connection.execute(
                         f"ALTER TABLE proof_runs ADD COLUMN {name} {definition}"
                     )
+            self._connection.execute(
+                "CREATE UNIQUE INDEX IF NOT EXISTS proof_runs_one_child_per_parent "
+                "ON proof_runs(tenant_id, retry_parent_run_id) "
+                "WHERE retry_parent_run_id IS NOT NULL"
+            )
+            self._connection.execute(
+                "CREATE UNIQUE INDEX IF NOT EXISTS proof_runs_one_attempt_per_root "
+                "ON proof_runs(tenant_id, retry_root_run_id, retry_attempt) "
+                "WHERE retry_root_run_id IS NOT NULL"
+            )
 
     def _ensure_support_columns(self) -> None:
         """Upgrade repository-owned support tables without touching source SQL."""
@@ -603,6 +634,90 @@ class StateStore:
                 existing = self.get_idempotent(tenant_id, key, request_digest)
                 if existing != response:
                     raise StoreError("idempotency record conflict")
+
+    def _run_operation_replay_locked(
+        self,
+        scope: Scope,
+        operation_key: str,
+        request_digest: str,
+        operation_type: str,
+        aggregate_run_id: str,
+    ) -> dict[str, Any] | None:
+        row = self._connection.execute(
+            "SELECT request_digest,operation_type,scope_digest,aggregate_run_id,"
+            "response_digest,response_row_json FROM run_operation_idempotency "
+            "WHERE tenant_id=? AND operation_key=?",
+            (scope.tenant_id, operation_key),
+        ).fetchone()
+        if row is None:
+            return None
+        if (
+            row["request_digest"] != request_digest
+            or row["operation_type"] != operation_type
+            or row["scope_digest"] != digest_value(scope.to_dict())
+            or row["aggregate_run_id"] != aggregate_run_id
+        ):
+            raise StoreError("run operation idempotency key was reused")
+        try:
+            response = json.loads(row["response_row_json"])
+        except json.JSONDecodeError as exc:
+            raise StoreError("run operation idempotency record is corrupt") from exc
+        if not isinstance(response, dict) or digest_value(response) != row["response_digest"]:
+            raise StoreError("run operation idempotency integrity check failed")
+        return response
+
+    def _put_run_operation_locked(
+        self,
+        scope: Scope,
+        operation_key: str,
+        request_digest: str,
+        operation_type: str,
+        aggregate_run_id: str,
+        response: dict[str, Any],
+    ) -> None:
+        response_json = canonical_json(response).decode("utf-8")
+        try:
+            self._connection.execute(
+                "INSERT INTO run_operation_idempotency(tenant_id,operation_key,"
+                "request_digest,operation_type,scope_digest,aggregate_run_id,"
+                "response_digest,response_row_json,created_at) VALUES(?,?,?,?,?,?,?,?,?)",
+                (
+                    scope.tenant_id,
+                    operation_key,
+                    request_digest,
+                    operation_type,
+                    digest_value(scope.to_dict()),
+                    aggregate_run_id,
+                    digest_value(response),
+                    response_json,
+                    utc_now(),
+                ),
+            )
+        except sqlite3.IntegrityError as exc:
+            replay = self._run_operation_replay_locked(
+                scope,
+                operation_key,
+                request_digest,
+                operation_type,
+                aggregate_run_id,
+            )
+            if replay != response:
+                raise StoreError("run operation idempotency conflict") from exc
+
+    @staticmethod
+    def _validate_run_operation_binding(
+        operation_key: str | None, request_digest: str | None
+    ) -> bool:
+        if (operation_key is None) != (request_digest is None):
+            raise StoreError(
+                "operation key and request digest must be supplied together"
+            )
+        if operation_key is None:
+            return False
+        assert request_digest is not None
+        validate_digest(operation_key, "operationKey")
+        validate_digest(request_digest, "requestDigest")
+        return True
 
     def record_invocation(
         self,
@@ -1358,46 +1473,100 @@ class StateStore:
         if mode not in {"CERTIFIED", "INDUCTIVE", "SMT", "BOUNDED", "RUNTIME"}:
             raise StoreError("run mode is invalid")
         if formula_hash is not None:
-            from .canonical import validate_digest
-
             formula_hash = validate_digest(formula_hash, "formulaHash")
         if bound is not None and not isinstance(bound, dict):
             raise StoreError("run bound must be an object")
         if options is not None and not isinstance(options, dict):
             raise StoreError("run options must be an object")
+        reserved_retry_options = {
+            "retryOf",
+            "retryRoot",
+            "retryAttempt",
+            "retryMaximumAttempts",
+            "priorResultDigest",
+        }
+        if options is not None and set(options) & reserved_retry_options:
+            raise StoreError("run options contain reserved retry lineage fields")
+        if bound is not None and len(canonical_json(bound)) > 512 * 1024:
+            raise StoreError("run bound exceeds the local size limit")
+        if options is not None and len(canonical_json(options)) > 512 * 1024:
+            raise StoreError("run options exceed the local size limit")
         if trace_id is not None:
             validate_identifier(trace_id, "traceId")
         with self._lock, self._connection:
-            existing = self._connection.execute(
-                "SELECT * FROM proof_runs WHERE tenant_id=? AND run_id=?",
-                (scope.tenant_id, run_id),
-            ).fetchone()
-            if existing is not None:
-                raise StoreError("duplicate proof run")
-            active = self._connection.execute(
-                "SELECT count(*) FROM proof_runs WHERE tenant_id=? AND account_id=? AND state NOT IN (?, ?, ?, ?)",
-                (
-                    scope.tenant_id,
-                    scope.account_id,
-                    *(state.value for state in TERMINAL_RUN_STATES),
-                ),
-            ).fetchone()[0]
-            if active >= account_concurrency:
-                raise StoreError("top-level account concurrency limit exceeded")
-            duplicate_obligation = self._connection.execute(
-                "SELECT 1 FROM proof_runs WHERE tenant_id=? AND obligation_id=? AND state IN (?, ?) LIMIT 1",
-                (
-                    scope.tenant_id,
-                    obligation_id,
-                    ProofRunState.LEASED.value,
-                    ProofRunState.RUNNING.value,
-                ),
-            ).fetchone()
-            if duplicate_obligation is not None:
-                raise StoreError("proof obligation already has an active owner")
-            now = utc_now()
+            return self._insert_run_locked(
+                scope,
+                run_id,
+                obligation_id,
+                account_concurrency,
+                engine=engine,
+                engine_version=engine_version,
+                mode=mode,
+                formula_hash=formula_hash,
+                bound=bound,
+                options=options or {},
+                trace_id=trace_id,
+            )
+
+    def _insert_run_locked(
+        self,
+        scope: Scope,
+        run_id: str,
+        obligation_id: str,
+        account_concurrency: int,
+        *,
+        engine: str,
+        engine_version: str,
+        mode: str,
+        formula_hash: str | None,
+        bound: dict[str, Any] | None,
+        options: dict[str, Any],
+        trace_id: str | None,
+        retry_parent_run_id: str | None = None,
+        retry_root_run_id: str | None = None,
+        retry_attempt: int = 0,
+        retry_maximum_attempts: int | None = None,
+    ) -> dict[str, Any]:
+        existing = self._connection.execute(
+            "SELECT 1 FROM proof_runs WHERE tenant_id=? AND run_id=?",
+            (scope.tenant_id, run_id),
+        ).fetchone()
+        if existing is not None:
+            raise StoreError("duplicate proof run")
+        active = self._connection.execute(
+            "SELECT count(*) FROM proof_runs WHERE tenant_id=? AND account_id=? "
+            "AND state NOT IN (?, ?, ?, ?)",
+            (
+                scope.tenant_id,
+                scope.account_id,
+                *(state.value for state in TERMINAL_RUN_STATES),
+            ),
+        ).fetchone()[0]
+        if active >= account_concurrency:
+            raise StoreError("top-level account concurrency limit exceeded")
+        duplicate_obligation = self._connection.execute(
+            "SELECT 1 FROM proof_runs WHERE tenant_id=? AND obligation_id=? "
+            "AND state IN (?, ?) LIMIT 1",
+            (
+                scope.tenant_id,
+                obligation_id,
+                ProofRunState.LEASED.value,
+                ProofRunState.RUNNING.value,
+            ),
+        ).fetchone()
+        if duplicate_obligation is not None:
+            raise StoreError("proof obligation already has an active owner")
+        now = utc_now()
+        try:
             self._connection.execute(
-                "INSERT INTO proof_runs(tenant_id,run_id,account_id,project_id,source_artifact_digest,target_artifact_digest,environment_digest,workload_key,data_classification,obligation_id,engine,engine_version,formula_hash,mode,bound_json,options_json,state,owner_id,fencing_token,lease_expires_at,trace_id,checkpoint_json,started_at,completed_at,wall_clock_ms,result_json,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO proof_runs(tenant_id,run_id,account_id,project_id,"
+                "source_artifact_digest,target_artifact_digest,environment_digest,"
+                "workload_key,data_classification,obligation_id,engine,engine_version,"
+                "formula_hash,mode,bound_json,options_json,state,owner_id,fencing_token,"
+                "lease_expires_at,trace_id,checkpoint_json,retry_parent_run_id,"
+                "retry_root_run_id,retry_attempt,retry_maximum_attempts,started_at,"
+                "completed_at,wall_clock_ms,result_json,created_at,updated_at) "
+                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
                     scope.tenant_id,
                     run_id,
@@ -1416,13 +1585,17 @@ class StateStore:
                     canonical_json(bound).decode("utf-8")
                     if bound is not None
                     else None,
-                    canonical_json(options or {}).decode("utf-8"),
+                    canonical_json(options).decode("utf-8"),
                     ProofRunState.QUEUED.value,
                     None,
                     1,
                     None,
                     trace_id,
                     None,
+                    retry_parent_run_id,
+                    retry_root_run_id,
+                    retry_attempt,
+                    retry_maximum_attempts,
                     None,
                     None,
                     None,
@@ -1431,14 +1604,25 @@ class StateStore:
                     now,
                 ),
             )
-            self._append_event_locked(
-                scope,
-                "proof_run",
-                run_id,
-                "submitted",
-                {"fencingToken": 1, "obligationId": obligation_id},
+        except sqlite3.IntegrityError as exc:
+            raise StoreError("proof run or retry lineage conflicts with durable state") from exc
+        event_payload: dict[str, Any] = {
+            "fencingToken": 1,
+            "obligationId": obligation_id,
+        }
+        if retry_parent_run_id is not None:
+            event_payload.update(
+                {
+                    "retryOf": retry_parent_run_id,
+                    "retryRoot": retry_root_run_id,
+                    "retryAttempt": retry_attempt,
+                    "retryMaximumAttempts": retry_maximum_attempts,
+                }
             )
-        return self.get_run(scope, run_id)
+        self._append_event_locked(
+            scope, "proof_run", run_id, "submitted", event_payload
+        )
+        return dict(self._run_row(scope, run_id))
 
     @staticmethod
     def _scope_matches(row: sqlite3.Row, scope: Scope) -> bool:
@@ -1643,6 +1827,355 @@ class StateStore:
                 },
             )
         return self.get_run(scope, run_id)
+
+    def checkpoint_run(
+        self,
+        scope: Scope,
+        run_id: str,
+        worker_id: str,
+        token: int,
+        checkpoint: dict[str, Any],
+        progress: dict[str, Any],
+        *,
+        operation_key: str | None = None,
+        request_digest: str | None = None,
+    ) -> dict[str, Any]:
+        """Commit one owner/fence-bound checkpoint and wall-clock progress event."""
+        validate_identifier(run_id, "runId")
+        validate_identifier(worker_id, "workerId")
+        if not isinstance(token, int) or isinstance(token, bool) or token < 1:
+            raise StoreError("checkpoint fencing token must be a positive integer")
+        if not isinstance(checkpoint, dict):
+            raise StoreError("checkpoint must be an object")
+        if not isinstance(progress, dict):
+            raise StoreError("checkpoint progress must be an object")
+        unknown_progress = set(progress) - {
+            "completed",
+            "total",
+            "phase",
+            "etaWallClockSeconds",
+        }
+        if unknown_progress:
+            raise StoreError(
+                "checkpoint progress contains unknown fields: "
+                + ", ".join(sorted(unknown_progress))
+            )
+        completed = progress.get("completed")
+        total = progress.get("total")
+        if not isinstance(completed, int) or isinstance(completed, bool):
+            raise StoreError("checkpoint progress completed and total must be integers")
+        if not isinstance(total, int) or isinstance(total, bool):
+            raise StoreError("checkpoint progress completed and total must be integers")
+        if total < 1 or completed < 0 or completed > total:
+            raise StoreError("checkpoint progress is outside the valid range")
+        phase = progress.get("phase")
+        if phase is not None:
+            validate_identifier(phase, "checkpoint.progress.phase")
+        eta = progress.get("etaWallClockSeconds")
+        if eta is not None and (
+            not isinstance(eta, (int, float))
+            or isinstance(eta, bool)
+            or eta < 0
+            or eta > 31_536_000
+        ):
+            raise StoreError("checkpoint ETA must be bounded wall-clock seconds")
+        if len(canonical_json(checkpoint)) > 512 * 1024:
+            raise StoreError("checkpoint exceeds the local size bound")
+        idempotent = self._validate_run_operation_binding(
+            operation_key, request_digest
+        )
+        with self._lock, self._connection:
+            if idempotent:
+                assert operation_key is not None and request_digest is not None
+                replay = self._run_operation_replay_locked(
+                    scope,
+                    operation_key,
+                    request_digest,
+                    "CHECKPOINT",
+                    run_id,
+                )
+                if replay is not None:
+                    return replay
+            row = self._run_row(scope, run_id)
+            if row["state"] != ProofRunState.RUNNING.value:
+                raise StoreError("only a running owner may checkpoint")
+            if row["owner_id"] != worker_id or int(row["fencing_token"]) != token:
+                raise StoreError("stale or non-owner checkpoint writer")
+            if row["lease_expires_at"] and row["lease_expires_at"] <= utc_now():
+                raise StoreError("checkpoint writer lease has expired")
+            prior_sequence = 0
+            if row["checkpoint_json"]:
+                try:
+                    prior = json.loads(row["checkpoint_json"])
+                    prior_sequence = int(prior["sequence"])
+                except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+                    raise StoreError("stored checkpoint is corrupt") from exc
+            checkpoint_document = {
+                "format": "elmos-proof-run-checkpoint/v1",
+                "runId": run_id,
+                "workerId": worker_id,
+                "fencingToken": token,
+                "sequence": prior_sequence + 1,
+                "state": checkpoint,
+                "stateDigest": digest_value(checkpoint),
+                "progress": {
+                    "completed": completed,
+                    "total": total,
+                    "phase": phase,
+                    "etaWallClockSeconds": eta,
+                    "etaUnit": "wall-clock-seconds",
+                },
+                "createdAt": utc_now(),
+            }
+            updated = self._connection.execute(
+                "UPDATE proof_runs SET checkpoint_json=?,updated_at=? WHERE tenant_id=? AND run_id=? AND owner_id=? AND fencing_token=? AND state=?",
+                (
+                    canonical_json(checkpoint_document).decode("utf-8"),
+                    utc_now(),
+                    scope.tenant_id,
+                    run_id,
+                    worker_id,
+                    token,
+                    ProofRunState.RUNNING.value,
+                ),
+            )
+            if updated.rowcount != 1:
+                raise StoreError("checkpoint commit lost its fencing race")
+            self._append_event_locked(
+                scope,
+                "proof_run",
+                run_id,
+                "checkpoint_committed",
+                {
+                    "sequence": checkpoint_document["sequence"],
+                    "stateDigest": checkpoint_document["stateDigest"],
+                    "progress": checkpoint_document["progress"],
+                    "fencingToken": token,
+                },
+            )
+            response = dict(self._run_row(scope, run_id))
+            if idempotent:
+                assert operation_key is not None and request_digest is not None
+                self._put_run_operation_locked(
+                    scope,
+                    operation_key,
+                    request_digest,
+                    "CHECKPOINT",
+                    run_id,
+                    response,
+                )
+            return response
+
+    def retry_run(
+        self,
+        scope: Scope,
+        run_id: str,
+        retry_run_id: str,
+        *,
+        account_concurrency: int = 3,
+        maximum_attempts: int | None = None,
+        operation_key: str | None = None,
+        request_digest: str | None = None,
+    ) -> dict[str, Any]:
+        """Schedule a new immutable attempt; terminal history is never reopened."""
+        validate_identifier(run_id, "runId")
+        validate_identifier(retry_run_id, "retryRunId")
+        if retry_run_id == run_id:
+            raise StoreError("retry run ID must differ from its parent run ID")
+        if not isinstance(account_concurrency, int) or isinstance(
+            account_concurrency, bool
+        ):
+            raise StoreError("account concurrency must be an integer")
+        if not 1 <= account_concurrency <= 3:
+            raise StoreError("top-level account concurrency must be between 1 and 3")
+        if maximum_attempts is not None and (
+            not isinstance(maximum_attempts, int)
+            or isinstance(maximum_attempts, bool)
+        ):
+            raise StoreError("maximum attempts must be an integer")
+        if maximum_attempts is not None and not 1 <= maximum_attempts <= 10:
+            raise StoreError("maximum attempts must be between 1 and 10")
+        idempotent = self._validate_run_operation_binding(
+            operation_key, request_digest
+        )
+        try:
+            with self._lock, self._connection:
+                if idempotent:
+                    assert operation_key is not None and request_digest is not None
+                    replay = self._run_operation_replay_locked(
+                        scope,
+                        operation_key,
+                        request_digest,
+                        "RETRY",
+                        run_id,
+                    )
+                    if replay is not None:
+                        return replay
+                row = self._run_row(scope, run_id)
+                state = ProofRunState(row["state"])
+                if state not in {ProofRunState.FAILED, ProofRunState.TIMED_OUT}:
+                    raise StoreError("only FAILED or TIMED_OUT runs may be retried")
+                existing_child = self._connection.execute(
+                    "SELECT run_id FROM proof_runs WHERE tenant_id=? "
+                    "AND retry_parent_run_id=?",
+                    (scope.tenant_id, run_id),
+                ).fetchone()
+                if existing_child is not None:
+                    raise StoreError(
+                        "proof run already has an immutable retry child: "
+                        + str(existing_child["run_id"])
+                    )
+                prior_attempt = int(row["retry_attempt"] or 0)
+                stored_parent = row["retry_parent_run_id"]
+                stored_root = row["retry_root_run_id"]
+                stored_maximum = row["retry_maximum_attempts"]
+                if stored_root is None:
+                    if (
+                        prior_attempt != 0
+                        or stored_parent is not None
+                        or stored_maximum is not None
+                    ):
+                        raise StoreError("root proof run retry lineage is corrupt")
+                    retry_root = run_id
+                    effective_maximum = (
+                        3 if maximum_attempts is None else maximum_attempts
+                    )
+                else:
+                    validate_identifier(stored_root, "retryRootRunId")
+                    if stored_parent is None or prior_attempt < 1:
+                        raise StoreError("retry parent or attempt binding is missing")
+                    validate_identifier(stored_parent, "retryParentRunId")
+                    if stored_maximum is None:
+                        raise StoreError("retry maximum attempts binding is missing")
+                    effective_maximum = int(stored_maximum)
+                    if not 1 <= effective_maximum <= 10:
+                        raise StoreError("stored retry maximum attempts is corrupt")
+                    if (
+                        maximum_attempts is not None
+                        and maximum_attempts != effective_maximum
+                    ):
+                        raise StoreError(
+                            "retry maximum attempts is immutable for the retry chain"
+                        )
+                    retry_root = str(stored_root)
+                    root_row = self._run_row(scope, retry_root)
+                    if (
+                        root_row["retry_parent_run_id"] is not None
+                        or root_row["retry_root_run_id"] is not None
+                        or int(root_row["retry_attempt"] or 0) != 0
+                        or root_row["retry_maximum_attempts"] is not None
+                    ):
+                        raise StoreError("retry root binding is corrupt")
+                attempt = prior_attempt + 1
+                if attempt > effective_maximum:
+                    raise StoreError("proof run retry limit exceeded")
+                try:
+                    options = json.loads(row["options_json"] or "{}")
+                    bound = (
+                        json.loads(row["bound_json"])
+                        if row["bound_json"]
+                        else None
+                    )
+                except json.JSONDecodeError as exc:
+                    raise StoreError("stored run retry inputs are corrupt") from exc
+                if not isinstance(options, dict) or (
+                    bound is not None and not isinstance(bound, dict)
+                ):
+                    raise StoreError("stored run retry inputs are corrupt")
+                reserved_retry_options = {
+                    "retryOf",
+                    "retryRoot",
+                    "retryAttempt",
+                    "retryMaximumAttempts",
+                    "priorResultDigest",
+                }
+                present_retry_options = set(options) & reserved_retry_options
+                if stored_root is None and present_retry_options:
+                    raise StoreError("root run contains forged retry lineage options")
+                if stored_root is not None:
+                    expected_lineage = {
+                        "retryOf": stored_parent,
+                        "retryRoot": retry_root,
+                        "retryAttempt": prior_attempt,
+                        "retryMaximumAttempts": effective_maximum,
+                    }
+                    if any(
+                        options.get(key) != value
+                        for key, value in expected_lineage.items()
+                    ):
+                        raise StoreError(
+                            "retry columns and immutable options lineage disagree"
+                        )
+                    prior_result_digest = options.get("priorResultDigest")
+                    if prior_result_digest is not None:
+                        validate_digest(
+                            prior_result_digest, "retryOptions.priorResultDigest"
+                        )
+                base_options = {
+                    key: value
+                    for key, value in options.items()
+                    if key not in reserved_retry_options
+                }
+                result_digest = None
+                if row["result_json"]:
+                    try:
+                        result_digest = digest_value(json.loads(row["result_json"]))
+                    except (TypeError, ValueError, json.JSONDecodeError) as exc:
+                        raise StoreError("stored run result is corrupt") from exc
+                retry_options = {
+                    **base_options,
+                    "retryOf": run_id,
+                    "retryRoot": retry_root,
+                    "retryAttempt": attempt,
+                    "retryMaximumAttempts": effective_maximum,
+                    "priorResultDigest": result_digest,
+                }
+                retry = self._insert_run_locked(
+                    scope,
+                    retry_run_id,
+                    row["obligation_id"],
+                    account_concurrency,
+                    engine=row["engine"],
+                    engine_version=row["engine_version"],
+                    mode=row["mode"],
+                    formula_hash=row["formula_hash"],
+                    bound=bound,
+                    options=retry_options,
+                    trace_id=row["trace_id"],
+                    retry_parent_run_id=run_id,
+                    retry_root_run_id=retry_root,
+                    retry_attempt=attempt,
+                    retry_maximum_attempts=effective_maximum,
+                )
+                self._append_event_locked(
+                    scope,
+                    "proof_run",
+                    run_id,
+                    "retry_scheduled",
+                    {
+                        "retryRunId": retry_run_id,
+                        "retryRoot": retry_root,
+                        "retryAttempt": attempt,
+                        "retryMaximumAttempts": effective_maximum,
+                    },
+                )
+                if idempotent:
+                    assert operation_key is not None and request_digest is not None
+                    self._put_run_operation_locked(
+                        scope,
+                        operation_key,
+                        request_digest,
+                        "RETRY",
+                        run_id,
+                        retry,
+                    )
+                return retry
+        except sqlite3.OperationalError as exc:
+            if "locked" in str(exc).lower():
+                raise StoreError(
+                    "retry scheduling contention prevented a duplicate attempt"
+                ) from exc
+            raise
 
     def authorized_transition(
         self,

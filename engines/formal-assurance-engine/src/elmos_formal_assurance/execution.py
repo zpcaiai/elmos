@@ -612,6 +612,63 @@ class AdapterDefinition:
             raise ExecutionContractError(f"{self.adapter_id} received an unsupported file type")
         if request.query_semantics not in self.accepted_semantics:
             raise ExecutionContractError(f"{self.adapter_id} does not support {request.query_semantics}")
+        _validate_native_proof_sources(self, request)
+
+
+_LEAN_TRUST_ESCAPE = re.compile(r"(?mi)(?:\bsorry\b|\badmit\b|\baxiom\b|\bunsafe\b)")
+_DAFNY_TRUST_ESCAPE = re.compile(
+    r"(?mi)(?:\{:verify\s+false\}|\{:axiom\b|\bassume\b|\bexpect\b)"
+)
+
+
+def _proof_source_text(file: ExecutionFile) -> str:
+    try:
+        return file.data.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ExecutionContractError(
+            f"native proof source must be UTF-8 text: {file.path}"
+        ) from exc
+
+
+def _validate_native_proof_sources(
+    definition: AdapterDefinition, request: NativeExecutionRequest
+) -> None:
+    """Reject source-level trust escapes before a native proof can be accepted."""
+
+    if definition.parser == "lean":
+        sources = [
+            _proof_source_text(item)
+            for item in request.files
+            if item.path.endswith(".lean")
+        ]
+        joined = "\n".join(sources)
+        if _LEAN_TRUST_ESCAPE.search(joined):
+            raise ExecutionContractError(
+                "Lean proof source contains a forbidden trust escape"
+            )
+        if not re.search(r"(?m)^\s*(?:theorem|lemma|example)\b", joined):
+            raise ExecutionContractError(
+                "Lean proof source contains no theorem, lemma or example obligation"
+            )
+    elif definition.parser == "dafny":
+        sources = [
+            _proof_source_text(item)
+            for item in request.files
+            if item.path.endswith(".dfy")
+        ]
+        joined = "\n".join(sources)
+        if _DAFNY_TRUST_ESCAPE.search(joined):
+            raise ExecutionContractError(
+                "Dafny proof source contains a forbidden trust escape"
+            )
+        if not re.search(r"(?mi)^\s*(?:method|lemma|function)\b", joined):
+            raise ExecutionContractError(
+                "Dafny proof source contains no verifiable declaration"
+            )
+        if not re.search(r"(?mi)\b(?:ensures|assert|invariant|decreases)\b", joined):
+            raise ExecutionContractError(
+                "Dafny proof source contains no explicit proof obligation"
+            )
 
 
 ADAPTERS: dict[str, AdapterDefinition] = {
@@ -897,8 +954,17 @@ def interpret_tool_result(
             verdict = "REFUTED"
     elif parser == "apalache":
         verdict = _marker(text, ("the outcome is: noerror",), ("the outcome is: error", "counterexample"))
-    elif parser in {"boogie", "dafny"}:
+    elif parser == "boogie":
         verdict = _marker(text, ("0 errors",), ("1 error", "2 errors", "3 errors", "assertion might not hold"))
+    elif parser == "dafny":
+        summary = re.search(r"(?i)(\d+)\s+verified,\s*(\d+)\s+errors?", text)
+        if summary is not None:
+            verified = int(summary.group(1))
+            errors = int(summary.group(2))
+            if errors > 0:
+                verdict = "REFUTED"
+            elif verified > 0 and result.state == ExecutionState.COMPLETED:
+                verdict = "PROVED"
     elif parser == "frama-c":
         verdict = _marker(text, ("proved goals: 100%",), ("unknown", "untried", "failed"))
     elif parser == "jpf":

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Fault Injection Chaos Execution"
+  short_description: "Run fault-injection-chaos-execution with bounded commercial controls"
+  default_prompt: "Use $fault-injection-chaos-execution through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

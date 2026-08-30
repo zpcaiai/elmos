@@ -7,7 +7,7 @@ runtime:
   registry: "DELTA_SKILL_REGISTRY"
   entrypoint: "DeltaSkillRuntime.execute"
   routable: false
-  implementation_status: "DECLARED_RUNTIME_UNQUALIFIED"
+  implementation_status: "LOCAL_EXECUTED_SELF_ATTESTED"
 security:
   network: "default-deny"
   external_effects: "not-authorized"

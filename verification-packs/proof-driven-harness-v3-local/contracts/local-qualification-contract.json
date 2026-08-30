@@ -24,7 +24,7 @@
     "archive_sha256": "sha256:13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
     "fixed_receipt_path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/local-qualification.json",
     "package_version": "3.1.0",
-    "receipt_sha256": "sha256:c64c8df1a1b7eb8a0a11400d71f2838a4fee3dbf5f5290a02e5e4b52afc3953d"
+    "receipt_sha256": "sha256:b1217d98b24145a30b86370989eb3686e8881d0879a7d922876033a36de32a83"
   },
   "external_evidence": "NOT_RUN",
   "fixed_receipt_path": "engines/proof-driven-harness-engine/qualification/local-qualification.json",
@@ -57,7 +57,7 @@
   },
   "target": {
     "engine_root": "engines/proof-driven-harness-engine",
-    "engine_tree_sha256": "sha256:218b1191cdd9f4d9bd5327c8a232e336da9268cb7c8dbcd0b35343ddc1a5480a",
+    "engine_tree_sha256": "sha256:5911d6505514c699d4b161486dc8ab94a503cfaff682b485dfec7e6bab84d3b4",
     "inventory_path": "artifacts/engine-tree-inventory.json"
   }
 }

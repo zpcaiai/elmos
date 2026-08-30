@@ -1374,6 +1374,7 @@ def audit_archive(path: Path) -> ArchiveAudit:
 
 _QUALIFICATION_CACHE_DIRECTORIES = frozenset(
     {
+        ".venv",
         "__pycache__",
         ".pytest_cache",
         ".ruff_cache",
@@ -1404,6 +1405,7 @@ _EXPECTED_RAW_LOG_COMMANDS: Mapping[str, tuple[str, ...]] = {
     "qualification/raw/archive-installation-check.json": (
         "tooling/integrate_proof_driven_harness_v3.py",
         "--check",
+        "--qualification-phase",
     ),
 }
 
@@ -2625,6 +2627,19 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
         return {"action": "audit", **audit.summary()}
     qualification = qualification_state(repo_root, audit)
     outputs = build_outputs(repo_root, audit, qualification=qualification)
+    if args.qualification_phase:
+        if not args.check:
+            raise IntegrationError("--qualification-phase requires --check")
+        return {
+            "action": "check-compiler",
+            **audit.summary(qualification),
+            "installation": {
+                "status": "PASS",
+                "mode": "COMPILER_ONLY_BEFORE_QIC_INSTALL",
+                "managed_files": len(outputs),
+                "skills": len(SKILLS),
+            },
+        }
     if args.install:
         lock = _lock_path(repo_root)
         with lock.open("a+b") as handle:
@@ -2649,6 +2664,11 @@ def _parser() -> argparse.ArgumentParser:
     action.add_argument("--audit", action="store_true", help="audit the ZIP without writes")
     action.add_argument("--install", action="store_true", help="transactionally install wrappers")
     action.add_argument("--check", action="store_true", help="audit and verify checked-in outputs")
+    parser.add_argument(
+        "--qualification-phase",
+        action="store_true",
+        help="check compiler output before the transactional install phase",
+    )
     parser.add_argument(
         "--repo-root",
         default=str(Path(__file__).resolve().parents[1]),

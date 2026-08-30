@@ -1,0 +1,217 @@
+flowchart TD
+  subgraph control_plane["control-plane"]
+    00_modernization_orchestrator["00-modernization-orchestrator"]
+    01_job_contract_and_policy_resolver["01-job-contract-and-policy-resolver"]
+    02_reproducible_repository_snapshot["02-reproducible-repository-snapshot"]
+    03_checkpoint_resume_cancel["03-checkpoint-resume-cancel"]
+    04_wall_clock_eta_and_cost_model["04-wall-clock-eta-and-cost-model"]
+    05_tool_authority_and_sandbox["05-tool-authority-and-sandbox"]
+  end
+  subgraph repository_forensics["repository-forensics"]
+    10_build_and_module_topology["10-build-and-module-topology"]
+    11_framework_and_version_fingerprinting["11-framework-and-version-fingerprinting"]
+    12_runtime_deployment_topology["12-runtime-deployment-topology"]
+    13_route_ownership_and_conflict_analysis["13-route-ownership-and-conflict-analysis"]
+    14_environment_config_overlay_analysis["14-environment-config-overlay-analysis"]
+    15_dependency_compatibility_and_jakarta_readiness["15-dependency-compatibility-and-jakarta-readiness"]
+  end
+  subgraph semantic_recovery["semantic-recovery"]
+    20_struts1_lifecycle_recovery["20-struts1-lifecycle-recovery"]
+    21_struts2_interceptor_pipeline_recovery["21-struts2-interceptor-pipeline-recovery"]
+    22_servlet_container_semantics_recovery["22-servlet-container-semantics-recovery"]
+    23_jsp_taglib_and_view_semantics["23-jsp-taglib-and-view-semantics"]
+    24_request_binding_and_type_conversion["24-request-binding-and-type-conversion"]
+    25_navigation_dispatch_and_error_semantics["25-navigation-dispatch-and-error-semantics"]
+    26_session_state_and_scope_semantics["26-session-state-and-scope-semantics"]
+    27_security_authn_authz_csrf_semantics["27-security-authn-authz-csrf-semantics"]
+    28_transaction_and_side_effect_topology["28-transaction-and-side-effect-topology"]
+    29_concurrency_lifecycle_and_threadlocal["29-concurrency-lifecycle-and-threadlocal"]
+  end
+  subgraph semantic_model["semantic-model"]
+    30_repository_evidence_graph["30-repository-evidence-graph"]
+    31_legacy_web_semantic_ir["31-legacy-web-semantic-ir"]
+    32_behavioral_contract_and_sequence_mining["32-behavioral-contract-and-sequence-mining"]
+    33_unknown_semantics_ledger["33-unknown-semantics-ledger"]
+    34_semantic_risk_scoring["34-semantic-risk-scoring"]
+  end
+  subgraph planning["planning"]
+    40_preserve_first_migration_strategy["40-preserve-first-migration-strategy"]
+    41_springboot4_target_architecture["41-springboot4-target-architecture"]
+    42_multi_module_conversion_wave_planner["42-multi-module-conversion-wave-planner"]
+    43_compatibility_shim_synthesis["43-compatibility-shim-synthesis"]
+    44_packaging_view_and_container_decision["44-packaging-view-and-container-decision"]
+    45_cutover_strangler_and_dual_run_plan["45-cutover-strangler-and-dual-run-plan"]
+  end
+  subgraph transformation["transformation"]
+    50_deterministic_ast_and_config_rewrite["50-deterministic-ast-and-config-rewrite"]
+    51_struts1_to_springmvc_generator["51-struts1-to-springmvc-generator"]
+    52_struts2_to_springmvc_generator["52-struts2-to-springmvc-generator"]
+    53_servlet_to_springmvc_generator["53-servlet-to-springmvc-generator"]
+    54_jakarta_and_dependency_migration["54-jakarta-and-dependency-migration"]
+    55_spring_security_validation_transaction_generator["55-spring-security-validation-transaction-generator"]
+    56_jsp_preserve_or_modernize["56-jsp-preserve-or-modernize"]
+    57_source_map_change_provenance["57-source-map-change-provenance"]
+    58_idempotent_change_set_commit["58-idempotent-change-set-commit"]
+  end
+  subgraph verification["verification"]
+    60_static_semantic_coverage["60-static-semantic-coverage"]
+    61_test_and_scenario_generation["61-test-and-scenario-generation"]
+    62_differential_http_and_view_oracle["62-differential-http-and-view-oracle"]
+    63_session_db_and_side_effect_diff["63-session-db-and-side-effect-diff"]
+    64_security_equivalence_and_hardening["64-security-equivalence-and-hardening"]
+    65_concurrency_performance_and_fault_verification["65-concurrency-performance-and-fault-verification"]
+    66_observability_and_trace_correlation["66-observability-and-trace-correlation"]
+  end
+  subgraph repair_certification["repair-certification"]
+    70_mismatch_classification["70-mismatch-classification"]
+    71_bounded_semantic_auto_repair["71-bounded-semantic-auto-repair"]
+    72_impact_based_regression_selection["72-impact-based-regression-selection"]
+    73_production_cutover_rollback["73-production-cutover-rollback"]
+    74_evidence_bundle_and_e0_e5_certification["74-evidence-bundle-and-e0-e5-certification"]
+    75_golden_route_benchmark_and_learning_cache["75-golden-route-benchmark-and-learning-cache"]
+  end
+  01_job_contract_and_policy_resolver --> 02_reproducible_repository_snapshot
+  01_job_contract_and_policy_resolver --> 03_checkpoint_resume_cancel
+  02_reproducible_repository_snapshot --> 04_wall_clock_eta_and_cost_model
+  01_job_contract_and_policy_resolver --> 05_tool_authority_and_sandbox
+  02_reproducible_repository_snapshot --> 10_build_and_module_topology
+  10_build_and_module_topology --> 11_framework_and_version_fingerprinting
+  10_build_and_module_topology --> 12_runtime_deployment_topology
+  11_framework_and_version_fingerprinting --> 12_runtime_deployment_topology
+  11_framework_and_version_fingerprinting --> 13_route_ownership_and_conflict_analysis
+  12_runtime_deployment_topology --> 13_route_ownership_and_conflict_analysis
+  10_build_and_module_topology --> 14_environment_config_overlay_analysis
+  12_runtime_deployment_topology --> 14_environment_config_overlay_analysis
+  10_build_and_module_topology --> 15_dependency_compatibility_and_jakarta_readiness
+  11_framework_and_version_fingerprinting --> 15_dependency_compatibility_and_jakarta_readiness
+  14_environment_config_overlay_analysis --> 15_dependency_compatibility_and_jakarta_readiness
+  11_framework_and_version_fingerprinting --> 20_struts1_lifecycle_recovery
+  13_route_ownership_and_conflict_analysis --> 20_struts1_lifecycle_recovery
+  11_framework_and_version_fingerprinting --> 21_struts2_interceptor_pipeline_recovery
+  13_route_ownership_and_conflict_analysis --> 21_struts2_interceptor_pipeline_recovery
+  12_runtime_deployment_topology --> 22_servlet_container_semantics_recovery
+  13_route_ownership_and_conflict_analysis --> 22_servlet_container_semantics_recovery
+  11_framework_and_version_fingerprinting --> 23_jsp_taglib_and_view_semantics
+  12_runtime_deployment_topology --> 23_jsp_taglib_and_view_semantics
+  20_struts1_lifecycle_recovery --> 24_request_binding_and_type_conversion
+  21_struts2_interceptor_pipeline_recovery --> 24_request_binding_and_type_conversion
+  22_servlet_container_semantics_recovery --> 24_request_binding_and_type_conversion
+  20_struts1_lifecycle_recovery --> 25_navigation_dispatch_and_error_semantics
+  21_struts2_interceptor_pipeline_recovery --> 25_navigation_dispatch_and_error_semantics
+  22_servlet_container_semantics_recovery --> 25_navigation_dispatch_and_error_semantics
+  20_struts1_lifecycle_recovery --> 26_session_state_and_scope_semantics
+  21_struts2_interceptor_pipeline_recovery --> 26_session_state_and_scope_semantics
+  22_servlet_container_semantics_recovery --> 26_session_state_and_scope_semantics
+  23_jsp_taglib_and_view_semantics --> 26_session_state_and_scope_semantics
+  13_route_ownership_and_conflict_analysis --> 27_security_authn_authz_csrf_semantics
+  20_struts1_lifecycle_recovery --> 27_security_authn_authz_csrf_semantics
+  21_struts2_interceptor_pipeline_recovery --> 27_security_authn_authz_csrf_semantics
+  22_servlet_container_semantics_recovery --> 27_security_authn_authz_csrf_semantics
+  10_build_and_module_topology --> 28_transaction_and_side_effect_topology
+  14_environment_config_overlay_analysis --> 28_transaction_and_side_effect_topology
+  20_struts1_lifecycle_recovery --> 29_concurrency_lifecycle_and_threadlocal
+  21_struts2_interceptor_pipeline_recovery --> 29_concurrency_lifecycle_and_threadlocal
+  22_servlet_container_semantics_recovery --> 29_concurrency_lifecycle_and_threadlocal
+  10_build_and_module_topology --> 30_repository_evidence_graph
+  13_route_ownership_and_conflict_analysis --> 30_repository_evidence_graph
+  20_struts1_lifecycle_recovery --> 30_repository_evidence_graph
+  21_struts2_interceptor_pipeline_recovery --> 30_repository_evidence_graph
+  22_servlet_container_semantics_recovery --> 30_repository_evidence_graph
+  23_jsp_taglib_and_view_semantics --> 30_repository_evidence_graph
+  24_request_binding_and_type_conversion --> 30_repository_evidence_graph
+  25_navigation_dispatch_and_error_semantics --> 30_repository_evidence_graph
+  26_session_state_and_scope_semantics --> 30_repository_evidence_graph
+  27_security_authn_authz_csrf_semantics --> 30_repository_evidence_graph
+  28_transaction_and_side_effect_topology --> 30_repository_evidence_graph
+  29_concurrency_lifecycle_and_threadlocal --> 30_repository_evidence_graph
+  30_repository_evidence_graph --> 31_legacy_web_semantic_ir
+  31_legacy_web_semantic_ir --> 32_behavioral_contract_and_sequence_mining
+  31_legacy_web_semantic_ir --> 33_unknown_semantics_ledger
+  31_legacy_web_semantic_ir --> 34_semantic_risk_scoring
+  33_unknown_semantics_ledger --> 34_semantic_risk_scoring
+  31_legacy_web_semantic_ir --> 40_preserve_first_migration_strategy
+  34_semantic_risk_scoring --> 40_preserve_first_migration_strategy
+  15_dependency_compatibility_and_jakarta_readiness --> 41_springboot4_target_architecture
+  40_preserve_first_migration_strategy --> 41_springboot4_target_architecture
+  10_build_and_module_topology --> 42_multi_module_conversion_wave_planner
+  34_semantic_risk_scoring --> 42_multi_module_conversion_wave_planner
+  41_springboot4_target_architecture --> 42_multi_module_conversion_wave_planner
+  31_legacy_web_semantic_ir --> 43_compatibility_shim_synthesis
+  41_springboot4_target_architecture --> 43_compatibility_shim_synthesis
+  12_runtime_deployment_topology --> 44_packaging_view_and_container_decision
+  23_jsp_taglib_and_view_semantics --> 44_packaging_view_and_container_decision
+  41_springboot4_target_architecture --> 44_packaging_view_and_container_decision
+  40_preserve_first_migration_strategy --> 45_cutover_strangler_and_dual_run_plan
+  42_multi_module_conversion_wave_planner --> 45_cutover_strangler_and_dual_run_plan
+  40_preserve_first_migration_strategy --> 50_deterministic_ast_and_config_rewrite
+  41_springboot4_target_architecture --> 50_deterministic_ast_and_config_rewrite
+  20_struts1_lifecycle_recovery --> 51_struts1_to_springmvc_generator
+  31_legacy_web_semantic_ir --> 51_struts1_to_springmvc_generator
+  43_compatibility_shim_synthesis --> 51_struts1_to_springmvc_generator
+  50_deterministic_ast_and_config_rewrite --> 51_struts1_to_springmvc_generator
+  21_struts2_interceptor_pipeline_recovery --> 52_struts2_to_springmvc_generator
+  31_legacy_web_semantic_ir --> 52_struts2_to_springmvc_generator
+  43_compatibility_shim_synthesis --> 52_struts2_to_springmvc_generator
+  50_deterministic_ast_and_config_rewrite --> 52_struts2_to_springmvc_generator
+  22_servlet_container_semantics_recovery --> 53_servlet_to_springmvc_generator
+  31_legacy_web_semantic_ir --> 53_servlet_to_springmvc_generator
+  43_compatibility_shim_synthesis --> 53_servlet_to_springmvc_generator
+  50_deterministic_ast_and_config_rewrite --> 53_servlet_to_springmvc_generator
+  15_dependency_compatibility_and_jakarta_readiness --> 54_jakarta_and_dependency_migration
+  50_deterministic_ast_and_config_rewrite --> 54_jakarta_and_dependency_migration
+  24_request_binding_and_type_conversion --> 55_spring_security_validation_transaction_generator
+  27_security_authn_authz_csrf_semantics --> 55_spring_security_validation_transaction_generator
+  28_transaction_and_side_effect_topology --> 55_spring_security_validation_transaction_generator
+  41_springboot4_target_architecture --> 55_spring_security_validation_transaction_generator
+  23_jsp_taglib_and_view_semantics --> 56_jsp_preserve_or_modernize
+  44_packaging_view_and_container_decision --> 56_jsp_preserve_or_modernize
+  50_deterministic_ast_and_config_rewrite --> 57_source_map_change_provenance
+  51_struts1_to_springmvc_generator --> 57_source_map_change_provenance
+  52_struts2_to_springmvc_generator --> 57_source_map_change_provenance
+  53_servlet_to_springmvc_generator --> 57_source_map_change_provenance
+  54_jakarta_and_dependency_migration --> 57_source_map_change_provenance
+  55_spring_security_validation_transaction_generator --> 57_source_map_change_provenance
+  56_jsp_preserve_or_modernize --> 57_source_map_change_provenance
+  03_checkpoint_resume_cancel --> 58_idempotent_change_set_commit
+  57_source_map_change_provenance --> 58_idempotent_change_set_commit
+  31_legacy_web_semantic_ir --> 60_static_semantic_coverage
+  58_idempotent_change_set_commit --> 60_static_semantic_coverage
+  32_behavioral_contract_and_sequence_mining --> 61_test_and_scenario_generation
+  58_idempotent_change_set_commit --> 61_test_and_scenario_generation
+  58_idempotent_change_set_commit --> 62_differential_http_and_view_oracle
+  61_test_and_scenario_generation --> 62_differential_http_and_view_oracle
+  26_session_state_and_scope_semantics --> 63_session_db_and_side_effect_diff
+  28_transaction_and_side_effect_topology --> 63_session_db_and_side_effect_diff
+  62_differential_http_and_view_oracle --> 63_session_db_and_side_effect_diff
+  27_security_authn_authz_csrf_semantics --> 64_security_equivalence_and_hardening
+  55_spring_security_validation_transaction_generator --> 64_security_equivalence_and_hardening
+  62_differential_http_and_view_oracle --> 64_security_equivalence_and_hardening
+  29_concurrency_lifecycle_and_threadlocal --> 65_concurrency_performance_and_fault_verification
+  62_differential_http_and_view_oracle --> 65_concurrency_performance_and_fault_verification
+  03_checkpoint_resume_cancel --> 66_observability_and_trace_correlation
+  62_differential_http_and_view_oracle --> 66_observability_and_trace_correlation
+  60_static_semantic_coverage --> 70_mismatch_classification
+  62_differential_http_and_view_oracle --> 70_mismatch_classification
+  63_session_db_and_side_effect_diff --> 70_mismatch_classification
+  64_security_equivalence_and_hardening --> 70_mismatch_classification
+  65_concurrency_performance_and_fault_verification --> 70_mismatch_classification
+  58_idempotent_change_set_commit --> 71_bounded_semantic_auto_repair
+  70_mismatch_classification --> 71_bounded_semantic_auto_repair
+  32_behavioral_contract_and_sequence_mining --> 72_impact_based_regression_selection
+  57_source_map_change_provenance --> 72_impact_based_regression_selection
+  71_bounded_semantic_auto_repair --> 72_impact_based_regression_selection
+  45_cutover_strangler_and_dual_run_plan --> 73_production_cutover_rollback
+  64_security_equivalence_and_hardening --> 73_production_cutover_rollback
+  65_concurrency_performance_and_fault_verification --> 73_production_cutover_rollback
+  66_observability_and_trace_correlation --> 73_production_cutover_rollback
+  33_unknown_semantics_ledger --> 74_evidence_bundle_and_e0_e5_certification
+  60_static_semantic_coverage --> 74_evidence_bundle_and_e0_e5_certification
+  62_differential_http_and_view_oracle --> 74_evidence_bundle_and_e0_e5_certification
+  63_session_db_and_side_effect_diff --> 74_evidence_bundle_and_e0_e5_certification
+  64_security_equivalence_and_hardening --> 74_evidence_bundle_and_e0_e5_certification
+  65_concurrency_performance_and_fault_verification --> 74_evidence_bundle_and_e0_e5_certification
+  70_mismatch_classification --> 74_evidence_bundle_and_e0_e5_certification
+  72_impact_based_regression_selection --> 74_evidence_bundle_and_e0_e5_certification
+  73_production_cutover_rollback --> 74_evidence_bundle_and_e0_e5_certification
+  04_wall_clock_eta_and_cost_model --> 75_golden_route_benchmark_and_learning_cache
+  74_evidence_bundle_and_e0_e5_certification --> 75_golden_route_benchmark_and_learning_cache

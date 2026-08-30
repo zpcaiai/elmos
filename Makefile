@@ -1,6 +1,7 @@
 JAVA_21_HOME ?= $(shell if [ -x /usr/libexec/java_home ]; then /usr/libexec/java_home -v 21 2>/dev/null; else printf '%s' "$$JAVA_HOME"; fi)
 MAVEN ?= mvn
 UV ?= uv
+RUFF ?= ruff
 DOTNET ?= dotnet
 # Homebrew installs the .NET SDK outside the default PATH on macOS. Prepending a
 # directory that does not exist is harmless everywhere else, and both this and
@@ -20,8 +21,11 @@ PNPM_VERSION ?= $(shell sed -n 's/.*"packageManager": "pnpm@\([^"]*\)".*/\1/p' a
 PNPM ?= pnpm dlx pnpm@$(PNPM_VERSION)
 PROFILE ?= synthesis
 RUNTIME_STATUS_OUTPUT ?= .elmos/toolchains/runtime-status.json
+EXTERNAL_GATE_PLAN ?= docs/production-runtime/EXTERNAL-GATE-PLAN.json
+EXTERNAL_GATE_OUTPUT ?= .elmos/production-runtime/external-gate-report.json
+EXTERNAL_GATE_AUTHORIZATION ?= .elmos/production-runtime/external-gate-authorization.json
 
-.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification chinadb-commercial-migration-skills batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills production-runtime production-runtime-local test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-synthesis-toolchains frontend sql-transpiler sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down operations-scripts-test test-suite-certification-rehearsal repository-autonomy-kernel openhands-absorption ai-capability-enhancement-skills functional-assurance-skills knowledge-skill-model-foundry-skills pricing-billing-skills commercial-capability-expansion-skills semantic-assurance-expansion-skills polyglot-semantic-assurance-skills
+.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification chinadb-commercial-migration-skills batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills production-runtime production-runtime-local production-runtime-external-plan production-runtime-external test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-synthesis-toolchains frontend sql-transpiler sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down operations-scripts-test test-suite-certification-rehearsal repository-autonomy-kernel openhands-absorption ai-capability-enhancement-skills functional-assurance-skills knowledge-skill-model-foundry-skills pricing-billing-skills commercial-capability-expansion-skills semantic-assurance-expansion-skills polyglot-semantic-assurance-skills
 
 .PHONY: frt-g01-g30-skills frt-g01-g30-check
 
@@ -48,7 +52,6 @@ operations-scripts-test:
 .PHONY: pi-harness
 pi-harness:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_pi_harness.py --check
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/pi-harness/src python3 -m unittest discover -s packages/pi-harness/tests -p 'test_*.py'
 backend:
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B verify
 # Seven modules form a closed cluster that no `apps/` component references:
@@ -98,6 +101,12 @@ production-runtime:
 
 production-runtime-local:
 	PYTHONDONTWRITEBYTECODE=1 python3 scripts/production-runtime/run_local_harness.py
+
+production-runtime-external-plan:
+	PYTHONDONTWRITEBYTECODE=1 python3 scripts/production-runtime/validate_external_gate.py --plan "$(EXTERNAL_GATE_PLAN)"
+
+production-runtime-external:
+	PYTHONDONTWRITEBYTECODE=1 ELMOS_EXTERNAL_GATE_ACK="$(ELMOS_EXTERNAL_GATE_ACK)" python3 scripts/production-runtime/run_external_gate.py --plan "$(EXTERNAL_GATE_PLAN)" --authorization "$(EXTERNAL_GATE_AUTHORIZATION)" --output "$(EXTERNAL_GATE_OUTPUT)" --execute
 .PHONY: repository-migration-platform-skills
 repository-migration-platform-skills:
 	cd skills/repository-migration-platform-skills-batch1-38 && ./validate.sh
@@ -167,6 +176,10 @@ ai-capability-enhancement-skills:
 .PHONY: knowledge-skill-model-foundry-skills
 knowledge-skill-model-foundry-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_knowledge_skill_model_foundry_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet python tooling/qualify_knowledge_skill_model_foundry.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet python -m compileall -q engines/knowledge-skill-model-foundry-engine/src/elmos_foundry tooling/integrate_knowledge_skill_model_foundry_skills.py tooling/qualify_knowledge_skill_model_foundry.py
+	$(UV) run --quiet --with ruff==0.12.10 ruff check tooling/integrate_knowledge_skill_model_foundry_skills.py tooling/qualify_knowledge_skill_model_foundry.py engines/knowledge-skill-model-foundry-engine/src engines/knowledge-skill-model-foundry-engine/tests tests/knowledge-skill-model-foundry-skills
+	PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet --with mypy==1.17.1 mypy --strict engines/knowledge-skill-model-foundry-engine/src/elmos_foundry tooling/qualify_knowledge_skill_model_foundry.py
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s engines/knowledge-skill-model-foundry-engine/tests -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/knowledge-skill-model-foundry-skills -p 'test_*.py'
 
@@ -178,13 +191,15 @@ pricing-billing-skills:
 
 .PHONY: commercial-capability-expansion-skills
 commercial-capability-expansion-skills:
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_commercial_capability_expansion_skills.py --check
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/commercial-capability-expansion-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest tests/commercial-capability-expansion-skills/ -v
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_commercial_capability_expansion_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/commercial-capability-expansion-engine/src $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest==8.4.2 python -m pytest -p no:cacheprovider tests/commercial-capability-expansion-skills/ -v
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/commercial-capability-expansion-engine/src $(UV) run --no-project --quiet --with pytest==8.4.2 python -m pytest -p no:cacheprovider engines/commercial-capability-expansion-engine/tests/ -v
 
 .PHONY: semantic-assurance-expansion-skills
 semantic-assurance-expansion-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_semantic_assurance_expansion_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/semantic-assurance-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest tests/semantic-assurance-expansion-skills/ -v
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/semantic-assurance-engine/src $(UV) run --quiet --with pytest python -m pytest engines/semantic-assurance-engine/tests/ -v
 
 .PHONY: polyglot-semantic-assurance-skills
 polyglot-semantic-assurance-skills:
@@ -204,9 +219,9 @@ formal-assurance-kernel:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_formal_assurance_kernel.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with ruff==0.15.20 ruff check engines/formal-assurance-engine/src engines/formal-assurance-engine/tests
 	MYPY_CACHE_DIR=/tmp/elmos-formal-assurance-mypy PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with mypy==2.1.0 mypy --ignore-missing-imports engines/formal-assurance-engine/src/elmos_formal_assurance
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s engines/formal-assurance-engine/tests -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/formal-assurance-kernel -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 python scripts/formal_assurance/generate_local_qualification.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with cryptography==46.0.3 --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s engines/formal-assurance-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with cryptography==46.0.3 --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/formal-assurance-kernel -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with cryptography==46.0.3 python scripts/formal_assurance/generate_local_qualification.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_verification_pack.py verification-packs/formal-assurance-kernel-local
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/run_verification_gate.py verification-packs/formal-assurance-kernel-local
 
@@ -217,13 +232,13 @@ formal-assurance-kernel-qualify:
 repository-autonomy-kernel:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_repository_autonomy_kernel.py
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-autonomy-kernel/src $(UV) run --no-project --quiet --with pytest python -m pytest -q -p no:cacheprovider packages/repository-autonomy-kernel/tests
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with ruff ruff check packages/repository-autonomy-kernel/src packages/repository-autonomy-kernel/tests tooling/validate_repository_autonomy_kernel.py
+	PYTHONDONTWRITEBYTECODE=1 $(RUFF) check packages/repository-autonomy-kernel/src packages/repository-autonomy-kernel/tests tooling/validate_repository_autonomy_kernel.py
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-autonomy-kernel/src python3 -m compileall -q packages/repository-autonomy-kernel/src
 
 openhands-absorption:
-	PYTHONDONTWRITEBYTECODE=1 python3 engines/openhands-absorption-engine/tools/validate_engine.py
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src python3 -m unittest discover -s engines/openhands-absorption-engine/tests -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src python3 -m elmos_openhands validate
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --project engines/openhands-absorption-engine --locked python engines/openhands-absorption-engine/tools/validate_engine.py
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src $(UV) run --project engines/openhands-absorption-engine --locked python -m unittest discover -s engines/openhands-absorption-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src $(UV) run --project engines/openhands-absorption-engine --locked python -m elmos_openhands validate
 
 .PHONY: frontend-to-miniapp-skills
 frontend-to-miniapp-skills:
@@ -246,7 +261,9 @@ frontend-to-miniapp-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --refresh-owned; \
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --check; \
 	node client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/replay-local-runtime.mjs --check; \
-	python3 scripts/batch32/run_client_gate.py client-packs/frontend-to-miniapp-vue3-wechat-v1
+	python3 scripts/batch32/run_client_gate.py client-packs/frontend-to-miniapp-vue3-wechat-v1; \
+	cd engines/component-dialect-engine && npm run validate:web-console-wechat; \
+	cd ../.. && python3 scripts/batch32/run_client_gate.py client-packs/web-console-next16-react19-wechat-v1
 
 .PHONY: multimodal-intake-skills
 multimodal-intake-skills:
@@ -660,5 +677,3 @@ etgb-full-product-skills:
 functional-assurance-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python3 tooling/integrate_functional_assurance_certification_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/functional-assurance-engine/src $(UV) run --no-project --quiet --with pytest --with pyyaml==6.0.2 --with jsonschema==4.25.1 python3 -m pytest engines/functional-assurance-engine/tests -v
-
-

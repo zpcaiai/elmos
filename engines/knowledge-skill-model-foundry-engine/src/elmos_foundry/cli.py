@@ -1,65 +1,156 @@
-"""Command-line interface for Elmos Knowledge-Skill-Model Foundry.
-
-Provides CLI subcommands for verification, pipeline execution, and qualification.
-"""
+"""Fail-closed CLI for local Foundry catalog and preparation operations."""
 
 from __future__ import annotations
 
 import argparse
 import json
 import sys
-from typing import Sequence
+from typing import Any, Mapping, Sequence
 
+from .canonical import strict_json_loads
 from .domain import TenantScope
+from .kernel import KernelSecurityError
 from .service import FoundryService
+from .skills import CatalogValidationError, EXPECTED_PIPELINES
+
+
+def _object(value: str, label: str) -> Mapping[str, Any]:
+    try:
+        parsed = strict_json_loads(value)
+    except (TypeError, ValueError) as exc:
+        raise argparse.ArgumentTypeError(f"{label} must be valid JSON: {exc}") from exc
+    if not isinstance(parsed, dict):
+        raise argparse.ArgumentTypeError(f"{label} must be a JSON object")
+    return parsed
+
+
+def _scope(service: FoundryService, args: argparse.Namespace, capability: str) -> TenantScope:
+    return service.kernel.mint_context(
+        tenant_id=args.tenant,
+        project_id=args.project,
+        actor_id=args.actor,
+        environment_id=args.environment,
+        workspace_digest=args.workspace_digest,
+        revision_set_id=args.revision,
+        purpose="foundry-local-cli-preparation",
+        capabilities=(capability,),
+        ttl_seconds=args.ttl_seconds,
+        invocation_id=args.invocation,
+        lease_id=args.lease,
+    )
+
+
+def _json_ready(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return {str(key): _json_ready(item) for key, item in value.items()}
+    if isinstance(value, (tuple, list)):
+        return [_json_ready(item) for item in value]
+    return value
+
+
+def _add_scope(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--tenant", required=True)
+    parser.add_argument("--project", required=True)
+    parser.add_argument("--actor", required=True)
+    parser.add_argument("--environment", required=True)
+    parser.add_argument("--workspace-digest", required=True, help="sha256:<hex>")
+    parser.add_argument("--revision", required=True, help="sha256:<hex>")
+    parser.add_argument("--invocation", required=True)
+    parser.add_argument("--lease", required=True)
+    parser.add_argument("--ttl-seconds", type=int, default=300)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Elmos Knowledge-Skill-Model Foundry CLI")
-    subparsers = parser.add_subparsers(dest="command")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    subparsers.add_parser("validate", help="Validate the exact compiled runtime catalog")
 
-    # validate command
-    val_parser = subparsers.add_parser("validate", help="Validate schema, skills catalog, and database tables")
+    pipe_parser = subparsers.add_parser("pipeline", help="Prepare an exact pipeline plan")
+    pipe_parser.add_argument("name", choices=sorted(EXPECTED_PIPELINES))
+    pipe_parser.add_argument("--params-json", required=True)
+    _add_scope(pipe_parser)
 
-    # pipeline command
-    pipe_parser = subparsers.add_parser("pipeline", help="Execute a lifecycle pipeline")
-    pipe_parser.add_argument("name", choices=["knowledge-to-skill", "experience-to-dataset", "train-certify-deploy", "customer-private-adapter"])
-    pipe_parser.add_argument("--tenant", default="tenant-cli-001", help="Tenant ID")
-    pipe_parser.add_argument("--project", default="project-cli-001", help="Project ID")
+    route_parser = subparsers.add_parser("route", help="Route through one exact meta Skill")
+    route_parser.add_argument("meta_skill")
+    route_parser.add_argument("--query", default="")
+    route_parser.add_argument("--filters-json", default="{}")
+    route_parser.add_argument("--candidate-limit", type=int)
+    route_parser.add_argument("--activation-limit", type=int)
 
-    # route command
-    route_parser = subparsers.add_parser("route", help="Route query through meta-skill")
-    route_parser.add_argument("meta_skill", help="Name of meta-skill")
-    route_parser.add_argument("--query", default="", help="Query string")
+    skill_parser = subparsers.add_parser("skill", help="Prepare one exact atomic Skill")
+    skill_parser.add_argument("skill_name")
+    skill_parser.add_argument("--inputs-json", required=True)
+    _add_scope(skill_parser)
 
     args = parser.parse_args(argv)
-    service = FoundryService()
-
-    if args.command == "validate":
-        db_res = service.database.validate_schema_structure()
-        out = {
-            "status": "PASS" if db_res["valid"] else "FAIL",
-            "atomicSkills": service.skills.total_atomic_skills,
-            "metaSkills": service.skills.total_meta_skills,
-            "tables": db_res["table_count"],
-        }
-        print(json.dumps(out, indent=2))
-        return 0 if db_res["valid"] else 1
-
-    elif args.command == "pipeline":
-        scope = TenantScope(tenant_id=args.tenant, project_id=args.project)
-        res = service.run_pipeline(args.name, {}, tenant_scope=scope)
-        print(json.dumps(res, indent=2))
-        return 0
-
-    elif args.command == "route":
-        matched = service.route_meta_skill(args.meta_skill, query=args.query)
-        print(json.dumps({"meta_skill": args.meta_skill, "matches": matched}, indent=2))
-        return 0
-
-    else:
-        parser.print_help()
-        return 0
+    try:
+        service = FoundryService()
+        if args.command == "validate":
+            status_out = dict(service.status())
+            status_out["validation_status"] = "LOCAL_STRUCTURAL_VALIDATED_SELF_ATTESTED"
+            print(json.dumps(_json_ready(status_out), indent=2, sort_keys=True))
+            return 0
+        if args.command == "pipeline":
+            pipeline_out = service.run_pipeline(
+                args.name,
+                _object(args.params_json, "--params-json"),
+                tenant_scope=_scope(service, args, "foundry.pipeline.prepare"),
+            )
+            print(json.dumps(_json_ready(pipeline_out), indent=2, sort_keys=True))
+            return 0 if pipeline_out["status"] == "READY_FOR_EXTERNAL_GATE" else 1
+        if args.command == "route":
+            route_out = service.skills.route_meta_skill_plan(
+                args.meta_skill,
+                args.query,
+                filters=_object(args.filters_json, "--filters-json"),
+                candidate_limit=args.candidate_limit,
+                activation_limit=args.activation_limit,
+            )
+            print(json.dumps(_json_ready(route_out), indent=2, sort_keys=True))
+            return 0 if route_out["status"] == "ROUTED" else 1
+        inputs = dict(_object(args.inputs_json, "--inputs-json"))
+        inputs["operation"] = "prepare"
+        result = service.execute_skill(
+            args.skill_name,
+            inputs,
+            tenant_scope=_scope(service, args, "foundry.skill.prepare"),
+        )
+        print(
+            json.dumps(
+                _json_ready(
+                    {
+                        "operation": result.operation,
+                        "status": result.status,
+                        "outputs": result.outputs,
+                        "content_digest": result.evidence_digest,
+                        "error": result.error,
+                    }
+                ),
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0 if result.status == "SUCCESS" else 1
+    except (
+        argparse.ArgumentTypeError,
+        CatalogValidationError,
+        KernelSecurityError,
+        TypeError,
+        ValueError,
+    ) as exc:
+        print(
+            json.dumps(
+                {
+                    "status": "BLOCKED",
+                    "execution_status": "NOT_RUN",
+                    "certification_status": "NOT_CERTIFIED",
+                    "error": str(exc),
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 2
 
 
 if __name__ == "__main__":

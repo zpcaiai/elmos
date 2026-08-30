@@ -1,0 +1,41 @@
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-symbolic-execution-equivalence"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_ADAPTER_REQUIRED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_symbolic_execution_equivalence",
+    "operation": "FORMAL_EXECUTION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-symbolic-execution-equivalence"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-symbolic-execution-equivalence",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-symbolic-execution-equivalence/SKILL.md",
+    "sourceSha256": "sha256:d060171674f0d3a226869409b5f68e1e27936d14b075a4b2e0c8c50c3ace7d2c",
+    "sourceSkillId": "ELMOS-POLY-279"
+  }
+}

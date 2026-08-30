@@ -1,7 +1,7 @@
 {
   "certification_status": "NOT_CERTIFIED",
   "external_evidence_status": "NOT_RUN",
-  "implementation_status": "DECLARED_RUNTIME_UNQUALIFIED",
+  "implementation_status": "LOCAL_EXECUTED_SELF_ATTESTED",
   "kind": "elmos.v3.1.delta-skill-contract",
   "name": "elmos-host-minted-security-context",
   "owners": [

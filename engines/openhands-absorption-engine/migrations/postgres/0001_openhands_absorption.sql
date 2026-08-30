@@ -2,10 +2,10 @@
 -- Large payloads stay in an object store; this schema stores only immutable
 -- metadata and tenant-scoped references.
 CREATE TABLE IF NOT EXISTS oh_execution_runs (
-  tenant_id uuid NOT NULL,
-  run_id uuid NOT NULL,
-  project_id uuid NOT NULL,
-  task_id uuid NOT NULL,
+  tenant_id text NOT NULL,
+  run_id text NOT NULL,
+  project_id text NOT NULL,
+  task_id text NOT NULL,
   node_id text NOT NULL,
   status text NOT NULL CHECK (status IN ('queued','ready','running','waiting','blocked','succeeded','failed','cancelled')),
   manifest_hash text NOT NULL CHECK (manifest_hash LIKE 'sha256:%'),
@@ -14,10 +14,10 @@ CREATE TABLE IF NOT EXISTS oh_execution_runs (
 );
 
 CREATE TABLE IF NOT EXISTS oh_execution_events (
-  tenant_id uuid NOT NULL,
-  run_id uuid NOT NULL,
+  tenant_id text NOT NULL,
+  run_id text NOT NULL,
   seq bigint NOT NULL CHECK (seq >= 0),
-  event_id uuid NOT NULL,
+  event_id text NOT NULL,
   event_type text NOT NULL,
   node_id text,
   agent_id text,
@@ -37,8 +37,8 @@ CREATE TABLE IF NOT EXISTS oh_execution_events (
 
 CREATE TABLE IF NOT EXISTS oh_execution_outbox (
   outbox_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  tenant_id uuid NOT NULL,
-  run_id uuid NOT NULL,
+  tenant_id text NOT NULL,
+  run_id text NOT NULL,
   seq bigint NOT NULL,
   event_json jsonb NOT NULL,
   published_at timestamptz
@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS oh_execution_outbox (
 ALTER TABLE oh_execution_events ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS oh_execution_events_tenant_isolation ON oh_execution_events;
 CREATE POLICY oh_execution_events_tenant_isolation ON oh_execution_events
-  USING (tenant_id = current_setting('elmos.tenant_id', true)::uuid)
-  WITH CHECK (tenant_id = current_setting('elmos.tenant_id', true)::uuid);
+  USING (tenant_id = current_setting('elmos.tenant_id', true))
+  WITH CHECK (tenant_id = current_setting('elmos.tenant_id', true));
 
 CREATE OR REPLACE FUNCTION oh_reject_event_mutation() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN

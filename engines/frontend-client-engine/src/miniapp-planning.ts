@@ -1,4 +1,6 @@
-import type { MiniappConversionRequest, MiniappPlatform, MiniappSourceInventory } from "./miniapp-types.js";
+import { MINIAPP_PLATFORM_CAPABILITY_OPERATIONS, type MiniappConversionRequest, type MiniappPlatform, type MiniappSourceInventory } from "./miniapp-types.js";
+
+export { MINIAPP_PLATFORM_CAPABILITY_OPERATIONS };
 import { validateMiniappConversionRequest } from "./miniapp-contract-validation.js";
 import {
   miniappIrDigest,
@@ -53,6 +55,7 @@ export interface MiniappComponentDecision {
   readonly strategy: "native" | "composite" | "redesign" | "decision" | "unsupported";
   readonly preserve: readonly string[];
   readonly requiredTests: readonly string[];
+  readonly implicitAccessibility: MiniappAnalyzedComponent["implicitAccessibility"];
   readonly sourceRefs: MiniappAnalyzedComponent["sourceRefs"];
 }
 
@@ -425,6 +428,7 @@ export function mapMiniappComponents(
       strategy: unresolved ? "decision" : "native",
       preserve: ["props", "events", "children", "focus-order", "accessible-name"],
       requiredTests: ["render", "interaction", "accessibility-tree", "source-trace"],
+      implicitAccessibility: component.implicitAccessibility ?? null,
       sourceRefs: component.sourceRefs,
     } satisfies MiniappComponentDecision;
   })).sort((left, right) => left.id.localeCompare(right.id, "en-US"));
@@ -533,7 +537,7 @@ const sourceTagToMiniappTag: Readonly<Record<string, string>> = {
   li: "view",
   list: "scroll-view",
   main: "view",
-  nav: "navigator",
+  nav: "view",
   navigator: "navigator",
   ol: "view",
   outlet: "view",
@@ -554,7 +558,15 @@ const sourceTagToMiniappTag: Readonly<Record<string, string>> = {
   view: "view",
 };
 
-function lowerMiniappSelector(selector: string): { value: string; unsupported?: string } {
+function applyScopeClass(selector: string, scopeClass: string): string {
+  const compound = /(^|[\s>+~])((?:(?:\*|[A-Za-z][A-Za-z0-9-]*)?(?:[.#][A-Za-z_][A-Za-z0-9_-]*)+)|(?:\*|[A-Za-z][A-Za-z0-9-]*))(?=$|[\s>+~])/gu;
+  return selector.split(",").map(group => group.trim().replace(
+    compound,
+    (_match, prefix: string, value: string) => `${prefix}${value}.${scopeClass}`,
+  )).join(", ");
+}
+
+function lowerMiniappSelector(selector: string, scopeClass?: string | null): { value: string; unsupported?: string } {
   let unsupported: string | undefined;
   const value = selector.replace(
     /(^|[,\s>+~])([A-Za-z][A-Za-z0-9-]*)(?=[.#,\s>+~]|$)/gu,
@@ -567,7 +579,8 @@ function lowerMiniappSelector(selector: string): { value: string; unsupported?: 
       return `${prefix}${targetTag}`;
     },
   );
-  return unsupported === undefined ? { value } : { value, unsupported };
+  const scoped = scopeClass ? applyScopeClass(value, scopeClass) : value;
+  return unsupported === undefined ? { value: scoped } : { value: scoped, unsupported };
 }
 
 function unsupportedMiniappCssCapability(
@@ -600,7 +613,7 @@ export function lowerMiniappStyles(
       const lowered: Record<string, string> = {};
       const conversions: string[] = [];
       const unsupported: string[] = [];
-      const selector = lowerMiniappSelector(style.selector);
+      const selector = lowerMiniappSelector(style.selector, style.scopeClass);
       if (selector.unsupported) unsupported.push(selector.unsupported);
       if (style.responsive) unsupported.push(`${style.selector}:nested-responsive-rule-requires-css-ast`);
       for (const [property, raw] of Object.entries(style.declarations).sort(([a], [b]) => a.localeCompare(b, "en-US"))) {
@@ -636,7 +649,13 @@ const sourceOnlyPackages = new Set([
   "vue", "vue-router", "pinia", "vuex", "react", "react-dom", "react-router", "react-router-dom",
   "redux", "@reduxjs/toolkit", "zustand", "mobx", "flutter", "typescript", "@tarojs/taro", "@dcloudio/uni-app",
 ]);
-const sourceBuildPackages = new Set(["vite", "webpack", "react-scripts", "@vue/cli-service", "@tarojs/cli", "@dcloudio/vite-plugin-uni"]);
+const sourceBuildPackages = new Set([
+  "vite", "webpack", "react-scripts", "@vue/cli-service", "@vitejs/plugin-vue",
+  "@vitejs/plugin-react", "@tarojs/cli", "@dcloudio/vite-plugin-uni",
+]);
+const sourcePrimaryBuildPackages = new Set([
+  "vite", "webpack", "react-scripts", "@vue/cli-service", "@tarojs/cli", "@dcloudio/vite-plugin-uni",
+]);
 
 export function planMiniappDependencies(
   ir: MiniappSemanticIr,
@@ -652,19 +671,43 @@ export function planMiniappDependencies(
     const declared = inventory?.dependencies.find(item => item.name === dependency);
     const locked = inventory?.lockedDependencies.find(item => item.name === dependency);
     const buildOnly = declared?.scope === "dev" && (dependency === "typescript" || sourceBuildPackages.has(dependency));
+    const requiresVitePluginWiring = dependency === "@vitejs/plugin-vue";
+    const vitePluginConfigs = inventory?.configurationEvidence.filter(item => item.kind === "vite-config"
+      && item.parsed
+      && inventory.files.some(file => file.path === item.path && file.digest === item.digest && file.status === "eligible")
+      && item.signals.includes("plugin-import:@vitejs/plugin-vue:vue")
+      && item.signals.includes("plugin-call:@vitejs/plugin-vue:vue():1")
+      && item.signals.some(signal => signal.startsWith("plugins-wiring:static:")
+        && signal.split(":").at(-1)?.split(",").filter(name => name === "vue").length === 1)) ?? [];
     const manifestEvidence = buildOnly && locked
       ? [`${declared.sourcePath}:declared-${declared.scope}`, `${locked.sourcePath}:locked-${locked.version}`]
       : [];
-    const unresolved = (usageRefs.length === 0 && manifestEvidence.length === 0) || (!sourceOnly && !browserOnly && !buildOnly);
+    const buildConfigEvidence = requiresVitePluginWiring && vitePluginConfigs.length === 1
+      ? [`${vitePluginConfigs[0]!.path}:config-${vitePluginConfigs[0]!.digest}`]
+      : [];
+    const pluginVersionBound = !requiresVitePluginWiring || (
+      declared?.scope === "dev"
+      && locked?.version === declared.version
+      && vitePluginConfigs.length === 1
+    );
+    const unresolved = (usageRefs.length === 0 && manifestEvidence.length === 0)
+      || (!sourceOnly && !browserOnly && !buildOnly)
+      || (requiresVitePluginWiring && (buildConfigEvidence.length !== 1 || !pluginVersionBound));
     return {
       dependency,
-      usageEvidence: [...usageRefs.map(ref => `${ref.path}:${ref.startLine}:${ref.startColumn}`), ...manifestEvidence],
+      usageEvidence: [
+        ...usageRefs.map(ref => `${ref.path}:${ref.startLine}:${ref.startColumn}`),
+        ...manifestEvidence,
+        ...buildConfigEvidence,
+      ],
       action: unresolved ? "blocked" as const : sourceOnly || buildOnly ? "rewrite" as const : browserOnly ? "replace" as const : "retain-shared" as const,
       replacement: unresolved ? null : sourceOnly || buildOnly ? "semantic-ir-native-generation" : browserOnly ? "platform-adapter-or-native-api" : null,
-      rationale: usageRefs.length === 0 && manifestEvidence.length === 0
+      rationale: requiresVitePluginWiring && buildConfigEvidence.length !== 1
+        ? "The Vite Vue plugin requires exactly one digest-bound build configuration with a static import, direct vue() call, and plugins-array wiring."
+        : usageRefs.length === 0 && manifestEvidence.length === 0
         ? "The dependency is declared but no exact source import/call-site evidence was recovered."
         : buildOnly
-          ? "The source-only compiler/build dependency is declared and lock-resolved; it is not shipped into the native miniapp target."
+          ? "The source-only compiler/build dependency is declared, lock-resolved, and configuration-bound where required; it is not shipped into the native miniapp target."
         : sourceOnly
         ? "Source framework runtime is not shipped into a native miniapp target."
         : browserOnly
@@ -742,7 +785,7 @@ function applicationShellAmbiguity(ir: MiniappSemanticIr): string | null {
 }
 
 const emittedStaticAttributes = new Set([
-  "class", "className", "id", "role", "aria-label", "tabindex", "tabIndex", "name", "placeholder",
+  "class", "className", "id", "role", "aria-label", "aria-level", "tabindex", "tabIndex", "name", "placeholder",
   "disabled",
 ]);
 
@@ -1116,11 +1159,24 @@ export function planMiniappConversion(
     ? inventory?.lockedDependencies.find(item => item.name === languageDependency)?.version
     : undefined;
   const declaredRuntimeVersion = inventory?.declaredRuntimes.find(item => item.runtime === "node")?.version;
-  const declaredBuildTools = inventory?.dependencies.filter(item => sourceBuildPackages.has(item.name)) ?? [];
+  const declaredBuildTools = inventory?.dependencies.filter(item => sourcePrimaryBuildPackages.has(item.name)) ?? [];
   const lockedBuildTools = declaredBuildTools.flatMap(item => {
     const locked = inventory?.lockedDependencies.find(candidate => candidate.name === item.name);
     return locked ? [{ name: item.name, declared: item.version, locked: locked.version }] : [];
   });
+  const declaredViteVuePlugins = inventory?.dependencies.filter(item => item.name === "@vitejs/plugin-vue") ?? [];
+  const lockedViteVuePlugins = declaredViteVuePlugins.flatMap(item => {
+    const locked = inventory?.lockedDependencies.find(candidate => candidate.name === item.name);
+    return locked ? [{ declared: item.version, scope: item.scope, locked: locked.version }] : [];
+  });
+  const viteConfigs = inventory?.configurationEvidence.filter(item => item.kind === "vite-config") ?? [];
+  const verifiedViteVueConfigs = inventory?.configurationEvidence.filter(item => item.kind === "vite-config"
+    && item.parsed
+    && inventory.files.some(file => file.path === item.path && file.digest === item.digest && file.status === "eligible")
+    && item.signals.includes("plugin-import:@vitejs/plugin-vue:vue")
+    && item.signals.includes("plugin-call:@vitejs/plugin-vue:vue():1")
+    && item.signals.some(signal => signal.startsWith("plugins-wiring:static:")
+      && signal.split(":").at(-1)?.split(",").filter(name => name === "vue").length === 1)) ?? [];
   const versionFindings = [
     ...(!sourceVersions.includes(request.source.frameworkVersion) ? [{
       code: "MINIAPP_SOURCE_VERSION_TUPLE_UNSUPPORTED",
@@ -1205,6 +1261,35 @@ export function planMiniappConversion(
       classification: "D" as const,
       blocking: true,
       message: `request build tool ${request.source.buildToolVersion} does not match ${lockedBuildTools[0]!.name} manifest/lock ${lockedBuildTools[0]!.declared}/${lockedBuildTools[0]!.locked}.`,
+    }] : []),
+    ...(declaredViteVuePlugins.length !== 1 && viteConfigs.length > 0 ? [{
+      code: "MINIAPP_SOURCE_VITE_PLUGIN_DECLARATION_AMBIGUOUS",
+      platform: "all" as const,
+      classification: "D" as const,
+      blocking: true,
+      message: `@vitejs/plugin-vue must be declared exactly once when a Vite configuration is present; found ${declaredViteVuePlugins.length}.`,
+    }] : []),
+    ...(declaredViteVuePlugins.length === 1 && declaredViteVuePlugins[0]!.scope !== "dev" ? [{
+      code: "MINIAPP_SOURCE_VITE_PLUGIN_SCOPE_INVALID",
+      platform: "all" as const,
+      classification: "D" as const,
+      blocking: true,
+      message: "@vitejs/plugin-vue must be a devDependency and is never shipped to the native target.",
+    }] : []),
+    ...(declaredViteVuePlugins.length === 1 && (lockedViteVuePlugins.length !== 1
+      || lockedViteVuePlugins[0]!.declared !== lockedViteVuePlugins[0]!.locked) ? [{
+      code: "MINIAPP_SOURCE_VITE_PLUGIN_LOCK_MISMATCH",
+      platform: "all" as const,
+      classification: "D" as const,
+      blocking: true,
+      message: "@vitejs/plugin-vue requires one exact manifest/lockfile version binding.",
+    }] : []),
+    ...(declaredViteVuePlugins.length === 1 && (viteConfigs.length !== 1 || verifiedViteVueConfigs.length !== 1) ? [{
+      code: "MINIAPP_SOURCE_BUILD_CONFIG_MISSING_OR_INVALID",
+      platform: "all" as const,
+      classification: "D" as const,
+      blocking: true,
+      message: `@vitejs/plugin-vue requires exactly one parsed, digest-bound Vite configuration with static vue() plugins wiring; found ${verifiedViteVueConfigs.length}.`,
     }] : []),
     ...request.targets.filter(target => !supportedTargetTuples[target.platform].includes(`${target.platformVersion}|${target.toolchainVersion}`)).map(target => ({
       code: "MINIAPP_TARGET_VERSION_TUPLE_UNSUPPORTED",

@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import hashlib
-import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRisk
 
@@ -12,7 +11,7 @@ from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRi
 class AdaptersFrontendsModule:
     """Manages language parser adapters, AST extraction, type checkers, and linters for polyglot languages."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.adapters: Dict[str, Dict[str, Any]] = {
             "csharp": {"parser": "Roslyn", "type_system": "Strong Nominal", "async_model": "Task/async-await"},
             "java": {"parser": "Javac/Tree-sitter", "type_system": "Strong Nominal", "async_model": "CompletableFuture/VirtualThread"},
@@ -23,12 +22,22 @@ class AdaptersFrontendsModule:
         }
 
     def get_adapter_profile(self, language: str) -> Dict[str, Any]:
-        """Returns parser, type system, and AST adapter capabilities for a language."""
-        return self.adapters.get(language.lower(), {
-            "parser": f"{language}-standard-parser",
-            "type_system": "Generic",
-            "async_model": "Sequential",
-        })
+        """Return a declared profile without claiming that a toolchain ran."""
+        profile = self.adapters.get(language.lower())
+        if profile is None:
+            return {
+                "language": language,
+                "supported": False,
+                "status": "UNSUPPORTED",
+                "runtime_evidence": "NOT_RUN",
+            }
+        return {
+            "language": language,
+            **profile,
+            "supported": True,
+            "status": "DECLARED_PROFILE_NOT_EXECUTED",
+            "runtime_evidence": "NOT_RUN",
+        }
 
     def create_adapter_obligation(
         self,
@@ -45,7 +54,7 @@ class AdaptersFrontendsModule:
             source_construct=source_adapter,
             target_construct=target_adapter,
             property_name=property_name,
-            invariants=["ADAPTER_PARSER_CONFORMANCE", "TYPE_SYSTEM_ALIGNMENT"],
+            invariants=("ADAPTER_PARSER_CONFORMANCE", "TYPE_SYSTEM_ALIGNMENT"),
             risk=SemanticRisk.HIGH,
             status=ObligationStatus.NOT_RUN,
         )

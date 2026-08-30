@@ -1448,6 +1448,17 @@ def qualify(repo_root: Path) -> dict[str, Any]:
 
     commands = (
         (
+            "delta-installation-check",
+            (
+                sys.executable,
+                IMPORTER_RELATIVE.as_posix(),
+                "--repo-root",
+                ".",
+                "--check",
+            ),
+            "delta-installation-check.json",
+        ),
+        (
             "delta-engine-tests",
             (
                 sys.executable,
@@ -1474,17 +1485,6 @@ def qualify(repo_root: Path) -> dict[str, Any]:
                 "test_delta_integration.py",
             ),
             "delta-importer-tests.json",
-        ),
-        (
-            "delta-installation-check",
-            (
-                sys.executable,
-                IMPORTER_RELATIVE.as_posix(),
-                "--repo-root",
-                ".",
-                "--check",
-            ),
-            "delta-installation-check.json",
         ),
     )
     raw_directory = repo_root / RAW_RELATIVE
@@ -1568,6 +1568,16 @@ def qualify(repo_root: Path) -> dict[str, Any]:
     )
     if adapter_profile_negotiation != "PASS":
         raise QualificationError("adapter profile negotiation coverage is incomplete")
+    # Keep the receipt's raw-log rows in the stable contract order even though
+    # the installation check intentionally ran first.  Running it first keeps
+    # an existing receipt from becoming temporarily stale while test logs are
+    # refreshed; canonical ordering preserves replay and validator bindings.
+    raw_order = {
+        "delta-engine-tests": 0,
+        "delta-importer-tests": 1,
+        "delta-installation-check": 2,
+    }
+    raw_records.sort(key=lambda item: raw_order[str(item["name"])])
     # The commands run without the promotion lock because installation-check
     # invokes the importer.  Publication then shares the importer's exclusive
     # lock and repeats every engine, input, and raw-log binding before the PASS

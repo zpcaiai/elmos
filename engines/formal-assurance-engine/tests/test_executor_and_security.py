@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from elmos_formal_assurance.artifact_store import (
+    AesGcmEnvelopeCipher,
     ArtifactStoreError,
     ContentAddressedArtifactStore,
 )
@@ -38,7 +39,12 @@ class ExecutorAndSecurityTests(unittest.TestCase):
         self.store = StateStore()
         self.runtime = FormalAssuranceRuntime(
             store=self.store,
-            config=RuntimeConfig(artifact_root=Path(self.temp.name) / "artifacts"),
+            config=RuntimeConfig(
+                artifact_root=Path(self.temp.name) / "artifacts",
+                artifact_envelope_cipher=AesGcmEnvelopeCipher(
+                    b"c" * 32, key_id="executor-test-key"
+                ),
+            ),
         )
         self.scope = make_scope()
         self.scope_payload = self.scope.to_dict()
@@ -191,7 +197,12 @@ class ExecutorAndSecurityTests(unittest.TestCase):
             store.close()
 
     def test_artifact_paths_are_tenant_safe_and_retention_is_enforced(self) -> None:
-        cas = ContentAddressedArtifactStore(Path(self.temp.name) / "cas")
+        cas = ContentAddressedArtifactStore(
+            Path(self.temp.name) / "cas",
+            envelope_cipher=AesGcmEnvelopeCipher(
+                b"d" * 32, key_id="retention-test-key"
+            ),
+        )
         reference = cas.put(
             "organization/tenant-a",
             b"ephemeral",

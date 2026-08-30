@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-object-layout-vtable-semantics"
+  short_description: "Model native object layout, inheritance offsets, vtables, RTTI and COM-style interfaces where bin..."
+  default_prompt: "Use $elmos-object-layout-vtable-semantics through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-object-layout-vtable-semantics"
+  handler_id: "execute_elmos_object_layout_vtable_semantics"
+  operation: "MODEL_NORMALIZATION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

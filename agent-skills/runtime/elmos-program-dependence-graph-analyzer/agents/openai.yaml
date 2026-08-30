@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-program-dependence-graph-analyzer"
+  short_description: "Construct control/data dependence graphs for slicing, business-rule extraction and semantic compa..."
+  default_prompt: "Use $elmos-program-dependence-graph-analyzer through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-program-dependence-graph-analyzer"
+  handler_id: "execute_elmos_program_dependence_graph_analyzer"
+  operation: "GRAPH_ANALYSIS"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

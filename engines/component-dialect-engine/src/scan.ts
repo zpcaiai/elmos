@@ -62,6 +62,7 @@ export type BlockerFamily =
  * readable, never to wrong. */
 const BLOCKER_CATALOG: Record<string, { family: BlockerFamily; what: string }> = {
   CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT: { family: "structure", what: "a statement other than useState/return in the component body -- most often an effect hook, a derived const, or a helper function" },
+  CERTIFIED_COMPONENT_USEMEMO_CALLBACK: { family: "structure", what: "a useMemo callback that contains more than one statement or otherwise cannot be proven to be a pure certified expression" },
   CERTIFIED_COMPONENT_UNSUPPORTED_PROP_TYPE: { family: "props-and-types", what: "a prop whose type is outside string/number/boolean, a list of those, or an on*-callback" },
   CERTIFIED_COMPONENT_UNSUPPORTED_PROPS_TYPE: { family: "props-and-types", what: "props declared by a named type or interface rather than an inline object literal" },
   CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: { family: "props-and-types", what: "a type annotation outside the certified primitive set" },
@@ -89,6 +90,7 @@ const BLOCKER_CATALOG: Record<string, { family: BlockerFamily; what: string }> =
   CERTIFIED_COMPONENT_UNSUPPORTED_SFC: { family: "structure", what: "a single-file component shape outside the certified one (multiple blocks, unsupported lang, etc.)" },
 
   CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION: { family: "expressions", what: "an expression outside identifiers, literals, ! && || + - * / %, comparisons and ternaries -- function calls are the usual cause" },
+  CERTIFIED_COMPONENT_USEMEMO_CALLBACK: { family: "expressions", what: "a useMemo callback with statements or control flow instead of one directly returned pure expression" },
   CERTIFIED_COMPONENT_UNSUPPORTED_OPERATOR: { family: "expressions", what: "an operator outside the certified set" },
   CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS: { family: "expressions", what: "member access on something other than a list item (e.g. `props.a.b`, computed subscripts)" },
   CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL: { family: "expressions", what: "a literal outside string/number/boolean" },
