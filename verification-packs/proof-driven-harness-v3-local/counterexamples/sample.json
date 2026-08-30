@@ -2,12 +2,12 @@
   "artifact_digests": [
     "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
     "sha256:89cd435e1317b3d9b80c506e002e378b6ae42dc8d748ac553ea5f17411ede1f4",
-    "sha256:4e5798326ec6d8d94c6daf3092d7eedef9ca4d1bf436605b672b28777c04c6de"
+    "sha256:58ea85a5c7cda395140b331f41ce57ab251b2f1f8cb242ee6dd37abe92b9805a"
   ],
   "claim_id": "claim.local.qualification-binding",
   "classification": "declared-seeded-negative-control-not-replayed",
   "counterexample_id": "ce.invalid-local-qualification-receipt",
-  "environment_digest": "sha256:5a9a06e2617e8ac281c0329a3ef764e844567064ea0d25db1de34944a5ee57ee",
+  "environment_digest": "sha256:954e89a487127f8d605529f896b826f713ebb316f12099153bdb11941dc2373c",
   "execution_status": "NOT_RUN",
   "failure_fingerprint": "sha256:3e1a1952f5bea5dd117e4fb669cb21decd8036b0f6961be2b1f6a66d117d80ec",
   "fingerprint_classification": "EXPECTED_NOT_OBSERVED",

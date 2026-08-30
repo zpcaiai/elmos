@@ -8,7 +8,7 @@
   ],
   "exact_scope": {
     "controlled_public_dns_rebinding_campaign": "NOT_RUN",
-    "environment_digest": "sha256:5a9a06e2617e8ac281c0329a3ef764e844567064ea0d25db1de34944a5ee57ee",
+    "environment_digest": "sha256:954e89a487127f8d605529f896b826f713ebb316f12099153bdb11941dc2373c",
     "independent_holdout": "NOT_RUN",
     "migration_route": "proof-driven-harness-v3-local-qualification",
     "representative_production_workload": "NOT_RUN",
