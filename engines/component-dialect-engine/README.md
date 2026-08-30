@@ -477,6 +477,12 @@ and fail another, which produces bugs that only appear in some callers:
   validates the SFC/template boundary and `@vue/compiler-dom` supplies the
   normalized template AST; a real Vue 2 runtime test must run in an
   authorized external environment and is reported as unavailable locally.
+- **Retained Vue 2 compatibility input is guarded.** The repository-owned
+  adapters call `src/vue2-security.ts` before parsing: inputs are capped at
+  1 MiB, known raw-text/consecutive-`<` ReDoS shapes are rejected with linear
+  checks, and compiler-sensitive prototype pollution fails closed. These
+  controls reduce compatibility risk; they do not patch Vue 2, certify it, or
+  make it suitable for an unrestricted production renderer.
 
 Because every one of these is reached through a runtime `require(...)`
 rather than a static import, TypeScript cannot verify them and a package

@@ -62,7 +62,7 @@ export type BlockerFamily =
  * readable, never to wrong. */
 const BLOCKER_CATALOG: Record<string, { family: BlockerFamily; what: string }> = {
   CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT: { family: "structure", what: "a statement other than useState/return in the component body -- most often an effect hook, a derived const, or a helper function" },
-  CERTIFIED_COMPONENT_USEMEMO_CALLBACK: { family: "structure", what: "a useMemo callback that contains more than one statement or otherwise cannot be proven to be a pure certified expression" },
+  CERTIFIED_COMPONENT_USEMEMO_CALLBACK: { family: "expressions", what: "a useMemo callback that contains more than one statement or otherwise cannot be proven to be a pure certified expression" },
   CERTIFIED_COMPONENT_UNSUPPORTED_PROP_TYPE: { family: "props-and-types", what: "a prop whose type is outside string/number/boolean, a list of those, or an on*-callback" },
   CERTIFIED_COMPONENT_UNSUPPORTED_PROPS_TYPE: { family: "props-and-types", what: "props declared by a named type or interface rather than an inline object literal" },
   CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: { family: "props-and-types", what: "a type annotation outside the certified primitive set" },
@@ -90,7 +90,6 @@ const BLOCKER_CATALOG: Record<string, { family: BlockerFamily; what: string }> =
   CERTIFIED_COMPONENT_UNSUPPORTED_SFC: { family: "structure", what: "a single-file component shape outside the certified one (multiple blocks, unsupported lang, etc.)" },
 
   CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION: { family: "expressions", what: "an expression outside identifiers, literals, ! && || + - * / %, comparisons and ternaries -- function calls are the usual cause" },
-  CERTIFIED_COMPONENT_USEMEMO_CALLBACK: { family: "expressions", what: "a useMemo callback with statements or control flow instead of one directly returned pure expression" },
   CERTIFIED_COMPONENT_UNSUPPORTED_OPERATOR: { family: "expressions", what: "an operator outside the certified set" },
   CERTIFIED_COMPONENT_UNSUPPORTED_MEMBER_ACCESS: { family: "expressions", what: "member access on something other than a list item (e.g. `props.a.b`, computed subscripts)" },
   CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL: { family: "expressions", what: "a literal outside string/number/boolean" },
@@ -99,6 +98,8 @@ const BLOCKER_CATALOG: Record<string, { family: BlockerFamily; what: string }> =
   CERTIFIED_COMPONENT_UNKNOWN_PROP: { family: "expressions", what: "a reference to a prop that was never declared" },
   CERTIFIED_COMPONENT_OBJECT_PROP_READ: { family: "expressions", what: "a structured object/array prop rendered as a bare value, which would stringify differently across targets" },
   CERTIFIED_COMPONENT_EXPRESSION_PARSE_FAILED: { family: "expressions", what: "an expression the real parser could not read as a certified expression" },
+  CERTIFIED_COMPONENT_USEMEMO_ARITY: { family: "expressions", what: "a useMemo call without exactly one pure callback and one explicit dependency array" },
+  CERTIFIED_COMPONENT_USEMEMO_DEPENDENCIES: { family: "expressions", what: "a useMemo dependency list that is not an explicit array and therefore cannot be replayed deterministically" },
 
   CERTIFIED_COMPONENT_UNSUPPORTED_HANDLER_STATEMENT: { family: "event-handlers", what: "a handler statement outside state assignment and callback invocation -- loops, conditionals, async and arbitrary calls are excluded" },
   CERTIFIED_COMPONENT_UNSUPPORTED_HANDLER_CALL: { family: "event-handlers", what: "a handler calling something other than a setter or a declared callback prop" },
