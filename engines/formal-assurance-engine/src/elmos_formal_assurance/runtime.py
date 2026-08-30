@@ -8,7 +8,11 @@ from typing import Any
 
 from .canonical import canonical_json, digest_value, validate_identifier
 from .contracts import ProofRunState, Scope, TrustedIdentity
-from .artifact_store import ArtifactStore, ContentAddressedArtifactStore
+from .artifact_store import (
+    ArtifactEnvelopeCipher,
+    ArtifactStore,
+    ContentAddressedArtifactStore,
+)
 from .bundles import EvidenceBundleService, EvidenceBundleSigner
 from .executor import LocalBoundedExecutor
 from .execution import ExecutionPermitSigner, ResourceLimits, ToolchainRegistration
@@ -34,6 +38,9 @@ class RuntimeConfig:
     account_concurrency: int = 3
     max_request_bytes: int = 2 * 1024 * 1024
     artifact_root: Path | None = None
+    artifact_envelope_cipher: ArtifactEnvelopeCipher | None = field(
+        default=None, repr=False
+    )
     artifact_store_adapter: ArtifactStore | None = None
     execution_root: Path | None = None
     execution_limits: ResourceLimits = field(default_factory=ResourceLimits)
@@ -63,9 +70,17 @@ class RuntimeConfig:
             raise ValueError(
                 "artifact_root and artifact_store_adapter are mutually exclusive"
             )
+        if self.artifact_root is not None and self.artifact_envelope_cipher is None:
+            raise ValueError(
+                "artifact_envelope_cipher is required when artifact_root is configured"
+            )
+        if self.artifact_root is None and self.artifact_envelope_cipher is not None:
+            raise ValueError(
+                "artifact_envelope_cipher may only be used with artifact_root"
+            )
         if self.artifact_store_adapter is not None and any(
             not callable(getattr(self.artifact_store_adapter, method, None))
-            for method in ("put", "get", "metadata", "delete")
+            for method in ("put", "get", "metadata", "verify_reference", "delete")
         ):
             raise ValueError(
                 "artifact_store_adapter does not implement the CAS contract"
@@ -100,8 +115,10 @@ class FormalAssuranceRuntime:
         self.store = store or StateStore()
         self.artifact_store = self.config.artifact_store_adapter
         if self.artifact_store is None and self.config.artifact_root is not None:
+            assert self.config.artifact_envelope_cipher is not None
             self.artifact_store = ContentAddressedArtifactStore(
-                self.config.artifact_root
+                self.config.artifact_root,
+                envelope_cipher=self.config.artifact_envelope_cipher,
             )
         if registry is None:
             repository_root = Path(__file__).resolve().parents[4]
@@ -216,22 +233,78 @@ class FormalAssuranceRuntime:
     ) -> dict[str, Any]:
         if not isinstance(payload, dict):
             raise RuntimeRequestError("run payload must be an object")
+        self._require_exact_body(
+            payload,
+            {
+                "scope",
+                "runId",
+                "id",
+                "tenant",
+                "obligationId",
+                "accountConcurrency",
+                "engine",
+                "engineVersion",
+                "mode",
+                "formulaHash",
+                "bound",
+                "options",
+                "traceId",
+                "state",
+                "fencingToken",
+            },
+        )
         scope = self._authorized_scope(
             payload.get("scope"), identity, action="submit-proof-run"
         )
-        try:
-            concurrency = int(
-                payload.get("accountConcurrency", self.config.account_concurrency)
+        run_id = validate_identifier(
+            payload.get("runId", payload.get("id")), "runId"
+        )
+        if payload.get("id") is not None and payload["id"] != run_id:
+            raise RuntimeRequestError("id and runId aliases disagree")
+        tenant = payload.get("tenant")
+        if tenant is not None:
+            if not isinstance(tenant, dict) or set(tenant) - {
+                "tenantId",
+                "accountId",
+                "projectId",
+            }:
+                raise RuntimeRequestError("tenant binding is invalid")
+            expected_tenant = {
+                "tenantId": scope.tenant_id,
+                "accountId": scope.account_id,
+                "projectId": scope.project_id,
+            }
+            if any(
+                tenant.get(key) != value
+                for key, value in expected_tenant.items()
+                if key in tenant or value is not None
+            ):
+                raise RuntimeAuthorizationError(
+                    "run tenant binding does not match trusted scope"
+                )
+        if payload.get("state", "QUEUED") != "QUEUED":
+            raise RuntimeRequestError("new proof runs must begin in QUEUED state")
+        fencing_token = payload.get("fencingToken", 1)
+        if (
+            not isinstance(fencing_token, int)
+            or isinstance(fencing_token, bool)
+            or fencing_token != 1
+        ):
+            raise RuntimeRequestError(
+                "new proof runs must begin with fencingToken 1"
             )
-        except (TypeError, ValueError) as exc:
-            raise RuntimeRequestError("accountConcurrency must be an integer") from exc
+        concurrency = payload.get(
+            "accountConcurrency", self.config.account_concurrency
+        )
+        if not isinstance(concurrency, int) or isinstance(concurrency, bool):
+            raise RuntimeRequestError("accountConcurrency must be an integer")
         if concurrency > self.config.account_concurrency:
             raise RuntimeAuthorizationError(
                 "requested account concurrency exceeds the runtime policy"
             )
         run = self.store.submit_run(
             scope,
-            validate_identifier(payload.get("runId"), "runId"),
+            run_id,
             validate_identifier(payload.get("obligationId"), "obligationId"),
             concurrency,
             engine=str(payload.get("engine", "local")),
@@ -249,6 +322,7 @@ class FormalAssuranceRuntime:
     ) -> dict[str, Any]:
         if not isinstance(payload, dict):
             raise RuntimeRequestError("run lookup payload must be an object")
+        self._require_exact_body(payload, {"scope", "runId"})
         run = self.store.get_run(
             self._authorized_scope(
                 payload.get("scope"), identity, action="read-proof-run"
@@ -264,6 +338,17 @@ class FormalAssuranceRuntime:
     ) -> dict[str, Any]:
         if not isinstance(payload, dict):
             raise RuntimeRequestError("run action payload must be an object")
+        self._require_exact_body(
+            payload,
+            {
+                "scope",
+                "runId",
+                "action",
+                "workerId",
+                "token",
+                "idempotencyKey",
+            },
+        )
         scope = self._authorized_scope(
             payload.get("scope"), identity, action="control-proof-run"
         )
@@ -277,7 +362,19 @@ class FormalAssuranceRuntime:
         if action not in transitions:
             raise RuntimeRequestError("action must be PAUSE, RESUME or CANCEL")
         if payload.get("workerId") is not None or payload.get("token") is not None:
+            if payload.get("workerId") is None or payload.get("token") is None:
+                raise RuntimeRequestError(
+                    "workerId and token must be supplied together"
+                )
             worker_id = validate_identifier(payload.get("workerId"), "workerId")
+            if worker_id != identity.actor_id and not set(identity.roles) & {
+                "formal-assurance-executor",
+                "formal-assurance-admin",
+                "admin",
+            }:
+                raise RuntimeAuthorizationError(
+                    "control worker must match the authenticated actor"
+                )
             raw_token = payload.get("token")
             if isinstance(raw_token, bool) or not isinstance(raw_token, (int, str)):
                 raise RuntimeRequestError("token must be an integer")
@@ -308,6 +405,128 @@ class FormalAssuranceRuntime:
         response = self._run_document(self.store.control_run(scope, run_id, action))
         self.store.put_idempotent(
             scope.tenant_id, storage_key, request_digest, response
+        )
+        return response
+
+    def checkpoint_run(
+        self, payload: dict[str, Any], identity: TrustedIdentity
+    ) -> dict[str, Any]:
+        if not isinstance(payload, dict):
+            raise RuntimeRequestError("checkpoint payload must be an object")
+        self._require_exact_body(
+            payload,
+            {
+                "scope",
+                "runId",
+                "workerId",
+                "token",
+                "checkpoint",
+                "progress",
+                "idempotencyKey",
+            },
+        )
+        scope = self._authorized_scope(
+            payload.get("scope"), identity, action="checkpoint-proof-run"
+        )
+        run_id = validate_identifier(payload.get("runId"), "runId")
+        worker_id = validate_identifier(payload.get("workerId"), "workerId")
+        if worker_id != identity.actor_id and not set(identity.roles) & {
+            "formal-assurance-executor",
+            "formal-assurance-admin",
+            "admin",
+        }:
+            raise RuntimeAuthorizationError(
+                "checkpoint worker must match the authenticated actor"
+            )
+        raw_token = payload.get("token")
+        if isinstance(raw_token, bool) or not isinstance(raw_token, (int, str)):
+            raise RuntimeRequestError("token must be an integer")
+        try:
+            token = int(raw_token)
+        except ValueError as exc:
+            raise RuntimeRequestError("token must be an integer") from exc
+        checkpoint = payload.get("checkpoint")
+        progress = payload.get("progress")
+        if not isinstance(checkpoint, dict) or not isinstance(progress, dict):
+            raise RuntimeRequestError("checkpoint and progress must be objects")
+        key = validate_identifier(payload.get("idempotencyKey"), "idempotencyKey")
+        request_document = {
+            "scope": scope.to_dict(),
+            "runId": run_id,
+            "workerId": worker_id,
+            "token": token,
+            "checkpoint": checkpoint,
+            "progress": progress,
+        }
+        request_digest = digest_value(request_document)
+        storage_key = digest_value({"scope": scope.to_dict(), "idempotencyKey": key})
+        response = self._run_document(
+            self.store.checkpoint_run(
+                scope,
+                run_id,
+                worker_id,
+                token,
+                checkpoint,
+                progress,
+                operation_key=storage_key,
+                request_digest=request_digest,
+            )
+        )
+        return response
+
+    def retry_run(
+        self, payload: dict[str, Any], identity: TrustedIdentity
+    ) -> dict[str, Any]:
+        if not isinstance(payload, dict):
+            raise RuntimeRequestError("retry payload must be an object")
+        self._require_exact_body(
+            payload,
+            {
+                "scope",
+                "runId",
+                "retryRunId",
+                "maximumAttempts",
+                "idempotencyKey",
+            },
+        )
+        if not set(identity.roles) & {
+            "formal-assurance-control",
+            "formal-assurance-admin",
+            "admin",
+        }:
+            raise RuntimeAuthorizationError(
+                "proof run retry requires an explicit control role"
+            )
+        scope = self._authorized_scope(
+            payload.get("scope"), identity, action="retry-proof-run"
+        )
+        run_id = validate_identifier(payload.get("runId"), "runId")
+        retry_run_id = validate_identifier(payload.get("retryRunId"), "retryRunId")
+        key = validate_identifier(payload.get("idempotencyKey"), "idempotencyKey")
+        maximum_attempts = payload.get("maximumAttempts")
+        if maximum_attempts is not None and (
+            not isinstance(maximum_attempts, int)
+            or isinstance(maximum_attempts, bool)
+        ):
+            raise RuntimeRequestError("maximumAttempts must be an integer")
+        request_document = {
+            "scope": scope.to_dict(),
+            "runId": run_id,
+            "retryRunId": retry_run_id,
+            "maximumAttempts": maximum_attempts,
+        }
+        request_digest = digest_value(request_document)
+        storage_key = digest_value({"scope": scope.to_dict(), "idempotencyKey": key})
+        response = self._run_document(
+            self.store.retry_run(
+                scope,
+                run_id,
+                retry_run_id,
+                account_concurrency=self.config.account_concurrency,
+                maximum_attempts=maximum_attempts,
+                operation_key=storage_key,
+                request_digest=request_digest,
+            )
         )
         return response
 
@@ -565,7 +784,7 @@ class FormalAssuranceRuntime:
         unknown = sorted(set(body) - allowed)
         if unknown:
             raise RuntimeRequestError(
-                "governance mutation contains unknown fields: " + ", ".join(unknown)
+                "request contains unknown fields: " + ", ".join(unknown)
             )
 
     @staticmethod
@@ -589,6 +808,12 @@ class FormalAssuranceRuntime:
             "completedAt": run.get("completed_at"),
             "wallClockMs": run.get("wall_clock_ms"),
             "traceId": run.get("trace_id"),
+            "retryOf": run.get("retry_parent_run_id"),
+            "retryRootRunId": run.get("retry_root_run_id"),
+            "retryAttempt": run.get("retry_attempt")
+            if run.get("retry_root_run_id") is not None
+            else None,
+            "retryMaximumAttempts": run.get("retry_maximum_attempts"),
             "certification": "NOT_CERTIFIED",
         }
         if run.get("bound_json"):
@@ -597,6 +822,8 @@ class FormalAssuranceRuntime:
             result["options"] = json.loads(run["options_json"])
         if run.get("result_json"):
             result["result"] = json.loads(run["result_json"])
+        if run.get("checkpoint_json"):
+            result["checkpoint"] = json.loads(run["checkpoint_json"])
         if "localEvidence" in run:
             result["localEvidence"] = run["localEvidence"]
         return {key: value for key, value in result.items() if value is not None}

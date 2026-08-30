@@ -11,7 +11,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
 
-from elmos_formal_assurance.artifact_store import ContentAddressedArtifactStore
+from elmos_formal_assurance.artifact_store import (
+    AesGcmEnvelopeCipher,
+    ContentAddressedArtifactStore,
+)
 from elmos_formal_assurance.canonical import digest_bytes, digest_value
 from elmos_formal_assurance.contracts import (
     AssuranceLevel,
@@ -170,6 +173,9 @@ class ProductionExecutionTests(unittest.TestCase):
             store=self.store,
             config=RuntimeConfig(
                 artifact_root=self.root / "artifacts",
+                artifact_envelope_cipher=AesGcmEnvelopeCipher(
+                    b"e" * 32, key_id="production-test-key"
+                ),
                 execution_root=self.root / "executions",
                 execution_permit_signer=self.signer,
                 toolchains=(registration,),
@@ -324,7 +330,12 @@ class ProductionExecutionTests(unittest.TestCase):
     def test_sqlite_differential_executes_disposable_source_and_target(self) -> None:
         executor = SQLiteDifferentialExecutor(
             store=self.store,
-            artifact_store=ContentAddressedArtifactStore(self.root / "cas"),
+            artifact_store=ContentAddressedArtifactStore(
+                self.root / "cas",
+                envelope_cipher=AesGcmEnvelopeCipher(
+                    b"f" * 32, key_id="database-test-key"
+                ),
+            ),
             permit_signer=self.signer,
             limits=ResourceLimits(),
         )

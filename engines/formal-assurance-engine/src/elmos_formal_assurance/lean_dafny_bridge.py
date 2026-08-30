@@ -1,46 +1,59 @@
-"""ELMOS Lean 4 & Dafny Machine-Verifiable Formal Proof Bridge.
+"""Digest-bound Lean 4 and Dafny verification-source generation.
 
-Provides bidirectional compilation from intermediate representation (IR)
-contracts and SMT invariant obligations to interactive theorem prover specifications:
-- Lean 4: Mathematical theorem statements, inductive proofs, and tactic scripts.
-- Dafny: Method specifications with formal preconditions, postconditions, and loop invariants.
+This module only produces candidate source and a replayable verification
+request. It does not execute either native verifier and therefore cannot issue
+a proof certificate. Native execution is delegated to the permit-bound,
+digest-pinned adapters in :mod:`elmos_formal_assurance.execution`.
 """
 
 from __future__ import annotations
 
-import hashlib
-import json
-import time
-from typing import Any, Dict, List, Optional
+import re
+from collections.abc import Mapping, Sequence
+from typing import Any
+
+from .canonical import digest_bytes, digest_value, validate_digest, validate_identifier
+
+
+class FormalProofBridgeError(ValueError):
+    """Raised when a proof-source request is incomplete or unsafe."""
+
+
+_LEAN_IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_']{0,127}$")
+_DAFNY_IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,127}$")
+_GENERATOR_VERSION = "elmos-formal-proof-source/v1"
 
 
 class Lean4Generator:
-    """Generates Lean 4 theorem definitions and proof tactic scripts."""
+    """Generate candidate Lean 4 source without asserting native success."""
 
     @staticmethod
     def generate_theorem(
         theorem_name: str,
-        hypotheses: List[str],
+        hypotheses: Sequence[str],
         conclusion: str,
-        tactics: Optional[List[str]] = None,
+        tactics: Sequence[str] | None = None,
     ) -> str:
-        """Generate a Lean 4 theorem block."""
-        sanitized_name = theorem_name.replace("-", "_").replace(" ", "_")
-        hyp_str = " ".join(f"(h{i}: {h})" for i, h in enumerate(hypotheses))
-        if not hyp_str:
-            hyp_str = ""
+        name = _language_identifier(theorem_name, "Lean", _LEAN_IDENTIFIER)
+        checked_hypotheses = _text_sequence(hypotheses, "hypotheses")
+        checked_conclusion = _formal_text(conclusion, "conclusion")
+        checked_tactics = (
+            _text_sequence(tactics, "tactics") if tactics is not None else ()
+        )
+        hypothesis_text = "".join(
+            f" (h{index} : {value})"
+            for index, value in enumerate(checked_hypotheses)
+        )
+        if checked_tactics:
+            proof_body = "\n  ".join(checked_tactics)
         else:
-            hyp_str = f" {hyp_str}"
-
-        if not tactics:
-            tactics = ["intro h", "exact h"]
-
-        tactic_body = "\n  ".join(tactics)
+            # Deliberately invalid Lean: a missing proof must never compile as a
+            # successful certificate through `sorry`, `admit` or an axiom.
+            proof_body = "ELMOS_PROOF_BODY_REQUIRED"
         return (
-            f"-- ELMOS Verified Theorem (Lean 4 Kernel)\n"
-            f"-- Target: Machine-checkable proof certificate\n"
-            f"theorem {sanitized_name}{hyp_str} : {conclusion} := by\n"
-            f"  {tactic_body}\n"
+            "-- Generated verification candidate; native Lean execution NOT_RUN.\n"
+            f"theorem {name}{hypothesis_text} : {checked_conclusion} := by\n"
+            f"  {proof_body}\n"
         )
 
     @staticmethod
@@ -51,51 +64,55 @@ class Lean4Generator:
         lower_bound: int = 0,
         upper_bound: int = 1000,
     ) -> str:
-        """Generate an invariant proof for bounded arithmetic."""
+        name = _language_identifier(theorem_name, "Lean", _LEAN_IDENTIFIER)
+        variable = _language_identifier(var_name, "Lean", _LEAN_IDENTIFIER)
+        checked_type = _formal_text(var_type, "var_type", maximum=128)
+        if any(isinstance(value, bool) or not isinstance(value, int) for value in (lower_bound, upper_bound)):
+            raise FormalProofBridgeError("bounds must be integers")
+        if lower_bound > upper_bound:
+            raise FormalProofBridgeError("lower_bound must not exceed upper_bound")
         return (
-            f"-- Invariant Equivalence for Bounded Numeric Transformations\n"
-            f"theorem {theorem_name} ({var_name} : {var_type}) "
-            f"(h_lower : {var_name} >= {lower_bound}) (h_upper : {var_name} <= {upper_bound}) :\n"
-            f"  {var_name} + 0 = {var_name} := by\n"
-            f"  intro h1 h2\n"
-            f"  simp\n"
+            "-- Generated verification candidate; native Lean execution NOT_RUN.\n"
+            f"theorem {name} ({variable} : {checked_type}) "
+            f"(_h_lower : {variable} >= {lower_bound}) "
+            f"(_h_upper : {variable} <= {upper_bound}) :\n"
+            f"  {variable} + 0 = {variable} := by\n"
+            "  simp\n"
         )
 
 
 class DafnyGenerator:
-    """Generates Dafny formal verification methods and contracts."""
+    """Generate candidate Dafny source without asserting native success."""
 
     @staticmethod
     def generate_method(
         method_name: str,
-        params: List[Dict[str, str]],
-        returns: List[Dict[str, str]],
-        requires: List[str],
-        ensures: List[str],
-        body: str = "",
+        params: Sequence[Mapping[str, str]],
+        returns: Sequence[Mapping[str, str]],
+        requires: Sequence[str],
+        ensures: Sequence[str],
+        body: str | None = None,
     ) -> str:
-        """Generate a Dafny method verification block."""
-        param_str = ", ".join(f"{p['name']}: {p.get('type', 'int')}" for p in params)
-        ret_str = ", ".join(f"{r['name']}: {r.get('type', 'int')}" for r in returns)
-        
-        req_lines = "\n  ".join(f"requires {req}" for req in requires)
-        ens_lines = "\n  ".join(f"ensures {ens}" for ens in ensures)
-
-        if not body:
-            if returns:
-                first_ret = returns[0]["name"]
-                body = f"{first_ret} := 0;"
-            else:
-                body = "// verified body"
-
+        name = _language_identifier(method_name, "Dafny", _DAFNY_IDENTIFIER)
+        checked_params = _dafny_bindings(params, "params")
+        checked_returns = _dafny_bindings(returns, "returns")
+        checked_requires = _text_sequence(requires, "requires")
+        checked_ensures = _text_sequence(ensures, "ensures")
+        if not checked_ensures:
+            raise FormalProofBridgeError("Dafny method requires at least one postcondition")
+        checked_body = _formal_text(body, "body") if body is not None else None
+        param_text = ", ".join(f"{item['name']}: {item['type']}" for item in checked_params)
+        return_text = ", ".join(f"{item['name']}: {item['type']}" for item in checked_returns)
+        contract_lines = [*(f"requires {item}" for item in checked_requires), *(f"ensures {item}" for item in checked_ensures)]
+        contracts = "\n  ".join(contract_lines)
+        body_text = checked_body or "ELMOS_BODY_REQUIRED;"
         return (
-            f"// ELMOS Verified Method (Dafny Contract Engine)\n"
-            f"method {{:verify true}} {method_name}({param_str}) returns ({ret_str})\n"
-            f"  {req_lines}\n"
-            f"  {ens_lines}\n"
-            f"{{\n"
-            f"  {body}\n"
-            f"}}\n"
+            "// Generated verification candidate; native Dafny execution NOT_RUN.\n"
+            f"method {name}({param_text}) returns ({return_text})\n"
+            f"  {contracts}\n"
+            "{\n"
+            f"  {body_text}\n"
+            "}\n"
         )
 
     @staticmethod
@@ -104,28 +121,31 @@ class DafnyGenerator:
         param_name: str = "n",
         invariant_cond: str = "0 <= i <= n",
     ) -> str:
-        """Generate a method with a formally verified loop invariant."""
+        name = _language_identifier(method_name, "Dafny", _DAFNY_IDENTIFIER)
+        parameter = _language_identifier(param_name, "Dafny", _DAFNY_IDENTIFIER)
+        invariant = _formal_text(invariant_cond, "invariant_cond")
         return (
-            f"method {method_name}({param_name}: int) returns (sum: int)\n"
-            f"  requires {param_name} >= 0\n"
-            f"  ensures sum >= 0\n"
-            f"{{\n"
-            f"  var i := 0;\n"
-            f"  sum := 0;\n"
-            f"  while i < {param_name}\n"
-            f"    invariant {invariant_cond}\n"
-            f"    invariant sum >= 0\n"
-            f"    decreases {param_name} - i\n"
-            f"  {{\n"
-            f"    sum := sum + i;\n"
-            f"    i := i + 1;\n"
-            f"  }}\n"
-            f"}}\n"
+            "// Generated verification candidate; native Dafny execution NOT_RUN.\n"
+            f"method {name}({parameter}: int) returns (sum: int)\n"
+            f"  requires {parameter} >= 0\n"
+            "  ensures sum >= 0\n"
+            "{\n"
+            "  var i := 0;\n"
+            "  sum := 0;\n"
+            f"  while i < {parameter}\n"
+            f"    invariant {invariant}\n"
+            "    invariant sum >= 0\n"
+            f"    decreases {parameter} - i\n"
+            "  {\n"
+            "    sum := sum + i;\n"
+            "    i := i + 1;\n"
+            "  }\n"
+            "}\n"
         )
 
 
 class FormalProofKernelBridge:
-    """Orchestrates Lean 4 and Dafny proof generation and certification."""
+    """Build a deterministic request for separately authorized native verification."""
 
     def __init__(self) -> None:
         self.lean_gen = Lean4Generator()
@@ -137,68 +157,142 @@ class FormalProofKernelBridge:
         formula: str,
         source_lang: str = "generic",
         target_lang: str = "generic",
-        context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """Synthesize a complete proof certificate across Lean 4 and Dafny."""
-        context = context or {}
-        timestamp = time.time()
-        
-        # Generate Lean 4 code
-        lean_code = self.lean_gen.generate_theorem(
-            theorem_name=obligation_name,
-            hypotheses=["P : Prop", "h_premise : P"],
-            conclusion="P",
-            tactics=["intro hP hprem", "exact hprem"],
-        )
+        context: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Return a verification request; never fabricate a proof certificate."""
 
+        obligation = validate_identifier(obligation_name, "obligationName")
+        checked_formula = _formal_text(formula, "formula", maximum=256 * 1024)
+        source = validate_identifier(source_lang, "sourceLang")
+        target = validate_identifier(target_lang, "targetLang")
+        supplied_context = dict(context or {})
+        unknown = set(supplied_context) - {"lean4", "dafny", "assumptionHash", "tcbHash", "environmentDigest"}
+        if unknown:
+            raise FormalProofBridgeError(
+                "unsupported proof bridge context fields: " + ", ".join(sorted(unknown))
+            )
+        bindings: dict[str, str] = {}
+        for field in ("assumptionHash", "tcbHash", "environmentDigest"):
+            if field in supplied_context:
+                bindings[field] = validate_digest(supplied_context[field], field)
 
-        # Generate Dafny code
-        dafny_code = self.dafny_gen.generate_method(
-            method_name=obligation_name,
-            params=[{"name": "x", "type": "int"}],
-            returns=[{"name": "res", "type": "int"}],
-            requires=["x >= 0"],
-            ensures=["res >= 0", "res == x"],
-            body="res := x;",
-        )
+        generated: dict[str, dict[str, Any]] = {}
+        gaps: list[str] = []
+        formula_digest = digest_bytes(checked_formula.encode("utf-8"))
+        lean_context = supplied_context.get("lean4")
+        if lean_context is not None:
+            lean = _mapping(lean_context, "lean4")
+            unknown_lean = set(lean) - {
+                "hypotheses",
+                "conclusion",
+                "tactics",
+                "semanticMappingDigest",
+            }
+            if unknown_lean:
+                raise FormalProofBridgeError(
+                    "unsupported lean4 fields: " + ", ".join(sorted(unknown_lean))
+                )
+            tactics = lean.get("tactics")
+            source_text = self.lean_gen.generate_theorem(
+                obligation,
+                _sequence(lean.get("hypotheses", ()), "lean4.hypotheses"),
+                _required_text(lean, "conclusion", "lean4.conclusion"),
+                _sequence(tactics, "lean4.tactics") if tactics is not None else None,
+            )
+            mapping_digest = _optional_digest(
+                lean.get("semanticMappingDigest"), "lean4.semanticMappingDigest"
+            )
+            generated["lean4"] = _generated_source(
+                source_text,
+                complete=tactics is not None and bool(tactics),
+                semantic_mapping_digest=mapping_digest,
+            )
+            if mapping_digest is None:
+                gaps.append("LEAN4_SEMANTIC_MAPPING_EVIDENCE_REQUIRED")
+            if not tactics:
+                gaps.append("LEAN4_PROOF_BODY_REQUIRED")
+        else:
+            gaps.append("LEAN4_SOURCE_NOT_GENERATED")
 
-        # Build Merkle proof receipt
-        proof_payload = {
-            "obligation_name": obligation_name,
-            "formula": formula,
-            "source_lang": source_lang,
-            "target_lang": target_lang,
-            "lean4_spec": lean_code,
-            "dafny_spec": dafny_code,
-            "timestamp": timestamp,
+        dafny_context = supplied_context.get("dafny")
+        if dafny_context is not None:
+            dafny = _mapping(dafny_context, "dafny")
+            unknown_dafny = set(dafny) - {
+                "params",
+                "returns",
+                "requires",
+                "ensures",
+                "body",
+                "semanticMappingDigest",
+            }
+            if unknown_dafny:
+                raise FormalProofBridgeError(
+                    "unsupported dafny fields: " + ", ".join(sorted(unknown_dafny))
+                )
+            body = dafny.get("body")
+            source_text = self.dafny_gen.generate_method(
+                obligation,
+                _sequence(dafny.get("params", ()), "dafny.params"),
+                _sequence(dafny.get("returns", ()), "dafny.returns"),
+                _sequence(dafny.get("requires", ()), "dafny.requires"),
+                _sequence(dafny.get("ensures", ()), "dafny.ensures"),
+                body if isinstance(body, str) else None,
+            )
+            if body is not None and not isinstance(body, str):
+                raise FormalProofBridgeError("dafny.body must be a string")
+            mapping_digest = _optional_digest(
+                dafny.get("semanticMappingDigest"), "dafny.semanticMappingDigest"
+            )
+            generated["dafny"] = _generated_source(
+                source_text,
+                complete=body is not None,
+                semantic_mapping_digest=mapping_digest,
+            )
+            if mapping_digest is None:
+                gaps.append("DAFNY_SEMANTIC_MAPPING_EVIDENCE_REQUIRED")
+            if body is None:
+                gaps.append("DAFNY_BODY_REQUIRED")
+        else:
+            gaps.append("DAFNY_SOURCE_NOT_GENERATED")
+
+        request_document = {
+            "format": "elmos-native-proof-verification-request/v1",
+            "generatorVersion": _GENERATOR_VERSION,
+            "obligationName": obligation,
+            "formulaDigest": formula_digest,
+            "sourceLanguage": source,
+            "targetLanguage": target,
+            "bindings": bindings,
+            "generatedSources": generated,
+            "gaps": sorted(gaps),
         }
-        
-        serialized = json.dumps(proof_payload, sort_keys=True)
-        merkle_digest = hashlib.sha256(serialized.encode("utf-8")).hexdigest()
-
+        request_digest = digest_value(request_document)
         return {
-            "proof_id": f"PROOF-LEAN4-DFY-{merkle_digest[:12]}",
-            "obligation_name": obligation_name,
-            "formula": formula,
-            "source_lang": source_lang,
-            "target_lang": target_lang,
-            "lean4_specification": lean_code,
-            "dafny_specification": dafny_code,
-            "verification_engine": "Lean4_v4.8.0+Dafny_v4.4.0",
-            "verification_status": "PROVED_VERIFIED",
-            "soundness_guarantee": "MACHINE_CHECKED_MATHEMATICAL_PROOF",
-            "merkle_digest": merkle_digest,
-            "tactics_applied": ["intro", "simp", "omega", "induction"],
-            "timestamp": timestamp,
+            "artifact_kind": "PROOF_VERIFICATION_REQUEST",
+            "request_id": "proof-request-" + request_digest.removeprefix("sha256:")[:24],
+            "request_digest": request_digest,
+            "obligation_name": obligation,
+            "formula_digest": formula_digest,
+            "source_lang": source,
+            "target_lang": target,
+            "generated_sources": generated,
+            "generator_version": _GENERATOR_VERSION,
+            "verification_status": "NATIVE_VERIFICATION_NOT_RUN",
+            "proof_status": "NOT_RUN",
+            "soundness_guarantee": "NOT_ASSESSED",
+            "certificate_issued": False,
+            "external_evidence_status": "NOT_RUN",
+            "independent_verification_status": "NOT_RUN",
+            "certification_status": "NOT_CERTIFIED",
+            "gaps": sorted(gaps),
         }
 
 
-# Global singleton instance
 _formal_bridge = FormalProofKernelBridge()
 
 
 def get_formal_proof_bridge() -> FormalProofKernelBridge:
-    """Retrieve the global FormalProofKernelBridge instance."""
+    """Retrieve the stateless proof-source bridge."""
     return _formal_bridge
 
 
@@ -207,11 +301,106 @@ def generate_lean4_proof(
     formula: str,
     source_lang: str = "generic",
     target_lang: str = "generic",
-) -> Dict[str, Any]:
-    """Top-level helper function for Lean 4 and Dafny proof certificate synthesis."""
+    *,
+    context: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Compatibility helper returning a non-certified verification request."""
     return _formal_bridge.synthesize_proof_certificate(
         obligation_name=obligation_name,
         formula=formula,
         source_lang=source_lang,
         target_lang=target_lang,
+        context=context,
     )
+
+
+def _formal_text(value: Any, path: str, *, maximum: int = 64 * 1024) -> str:
+    if not isinstance(value, str) or not value.strip() or "\x00" in value:
+        raise FormalProofBridgeError(f"{path} must be non-empty text without NUL")
+    encoded = value.encode("utf-8")
+    if len(encoded) > maximum:
+        raise FormalProofBridgeError(f"{path} exceeds the size bound")
+    return value
+
+
+def _language_identifier(value: Any, language: str, pattern: re.Pattern[str]) -> str:
+    if not isinstance(value, str) or not pattern.fullmatch(value):
+        raise FormalProofBridgeError(f"{language} identifier is invalid")
+    return value
+
+
+def _sequence(value: Any, path: str) -> Sequence[Any]:
+    if not isinstance(value, (list, tuple)):
+        raise FormalProofBridgeError(f"{path} must be an array")
+    if len(value) > 256:
+        raise FormalProofBridgeError(f"{path} exceeds the item bound")
+    return value
+
+
+def _text_sequence(value: Sequence[Any], path: str) -> tuple[str, ...]:
+    if isinstance(value, (str, bytes)) or not isinstance(value, Sequence):
+        raise FormalProofBridgeError(f"{path} must be an array")
+    if len(value) > 256:
+        raise FormalProofBridgeError(f"{path} exceeds the item bound")
+    return tuple(_formal_text(item, f"{path}[{index}]") for index, item in enumerate(value))
+
+
+def _mapping(value: Any, path: str) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        raise FormalProofBridgeError(f"{path} must be an object")
+    return dict(value)
+
+
+def _required_text(value: Mapping[str, Any], field: str, path: str) -> str:
+    if field not in value:
+        raise FormalProofBridgeError(f"{path} is required")
+    return _formal_text(value[field], path)
+
+
+def _optional_digest(value: Any, path: str) -> str | None:
+    return None if value is None else validate_digest(value, path)
+
+
+def _dafny_bindings(
+    values: Sequence[Mapping[str, str]], path: str
+) -> tuple[dict[str, str], ...]:
+    result: list[dict[str, str]] = []
+    names: set[str] = set()
+    for index, value in enumerate(values):
+        mapping = _mapping(value, f"{path}[{index}]")
+        if set(mapping) != {"name", "type"}:
+            raise FormalProofBridgeError(
+                f"{path}[{index}] must contain exactly name and type"
+            )
+        name = _language_identifier(
+            mapping["name"], "Dafny", _DAFNY_IDENTIFIER
+        )
+        if name in names:
+            raise FormalProofBridgeError(f"{path} contains duplicate name {name}")
+        names.add(name)
+        result.append(
+            {"name": name, "type": _formal_text(mapping["type"], "type", maximum=256)}
+        )
+    return tuple(result)
+
+
+def _generated_source(
+    source: str, *, complete: bool, semantic_mapping_digest: str | None
+) -> dict[str, Any]:
+    return {
+        "source": source,
+        "sourceDigest": digest_bytes(source.encode("utf-8")),
+        "sourceCompleteness": "CANDIDATE_COMPLETE" if complete else "INCOMPLETE",
+        "semanticMappingDigest": semantic_mapping_digest,
+        "nativeExecutionStatus": "NOT_RUN",
+    }
+
+
+__all__ = [
+    "DafnyGenerator",
+    "FormalProofBridgeError",
+    "FormalProofKernelBridge",
+    "Lean4Generator",
+    "generate_lean4_proof",
+    "get_formal_proof_bridge",
+]

@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from elmos_formal_assurance.artifact_store import (
+    AesGcmEnvelopeCipher,
     ArtifactStoreError,
     ContentAddressedArtifactStore,
 )
@@ -35,7 +36,12 @@ class RuntimeTests(unittest.TestCase):
         self.store = StateStore()
         self.runtime = FormalAssuranceRuntime(
             store=self.store,
-            config=RuntimeConfig(artifact_root=Path(self.temp.name) / "artifacts"),
+            config=RuntimeConfig(
+                artifact_root=Path(self.temp.name) / "artifacts",
+                artifact_envelope_cipher=AesGcmEnvelopeCipher(
+                    b"a" * 32, key_id="runtime-test-key"
+                ),
+            ),
         )
         self.identity = TrustedIdentity("tenant-a", "operator-a", "project-a")
 
@@ -125,6 +131,8 @@ class RuntimeTests(unittest.TestCase):
         )
         artifact = result["output"]["artifact"]
         self.assertTrue(result["output"]["storedInLocalCas"])
+        self.assertTrue(artifact["encrypted"])
+        self.assertEqual(artifact["encryptionKeyId"], "runtime-test-key")
         self.assertEqual(
             self.runtime.artifact_store.get("tenant-a", artifact["sha256"]),
             b"immutable evidence",
@@ -134,7 +142,10 @@ class RuntimeTests(unittest.TestCase):
 
     def test_operator_injected_artifact_adapter_is_explicit_and_exclusive(self) -> None:
         adapter = ContentAddressedArtifactStore(
-            Path(self.temp.name) / "provider-adapter-fixture"
+            Path(self.temp.name) / "provider-adapter-fixture",
+            envelope_cipher=AesGcmEnvelopeCipher(
+                b"b" * 32, key_id="adapter-test-key"
+            ),
         )
         runtime = FormalAssuranceRuntime(
             store=self.store,

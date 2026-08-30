@@ -7,6 +7,7 @@ import tempfile
 import unittest
 
 from elmos_formal_assurance.api import FormalAssuranceApi, make_environ
+from elmos_formal_assurance.artifact_store import AesGcmEnvelopeCipher
 from elmos_formal_assurance.bundles import (
     EvidenceBundleService,
     HmacEvidenceBundleSigner,
@@ -328,6 +329,9 @@ class EvidenceBundleAndEventTests(unittest.TestCase):
             store=self.store,
             config=RuntimeConfig(
                 artifact_root=self.root / "artifacts",
+                artifact_envelope_cipher=AesGcmEnvelopeCipher(
+                    b"g" * 32, key_id="bundle-test-key"
+                ),
                 bundle_signer=HmacEvidenceBundleSigner(b"b" * 32),
             ),
         )
@@ -392,7 +396,12 @@ class EvidenceBundleAndEventTests(unittest.TestCase):
     ) -> None:
         unsigned_runtime = FormalAssuranceRuntime(
             store=self.store,
-            config=RuntimeConfig(artifact_root=self.root / "unsigned-artifacts"),
+            config=RuntimeConfig(
+                artifact_root=self.root / "unsigned-artifacts",
+                artifact_envelope_cipher=AesGcmEnvelopeCipher(
+                    b"h" * 32, key_id="unsigned-bundle-test-key"
+                ),
+            ),
         )
         self.store.put_document(
             self.scope,
@@ -549,6 +558,9 @@ class GovernanceApiTests(unittest.TestCase):
             store=self.store,
             config=RuntimeConfig(
                 artifact_root=Path(self.temporary.name) / "artifacts",
+                artifact_envelope_cipher=AesGcmEnvelopeCipher(
+                    b"i" * 32, key_id="api-test-key"
+                ),
                 bundle_signer=HmacEvidenceBundleSigner(b"a" * 32),
             ),
         )

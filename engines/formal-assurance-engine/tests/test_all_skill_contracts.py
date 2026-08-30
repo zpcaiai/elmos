@@ -5,6 +5,7 @@ import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from elmos_formal_assurance.artifact_store import AesGcmEnvelopeCipher
 from elmos_formal_assurance.canonical import digest_value
 from elmos_formal_assurance.contracts import TrustedIdentity
 from elmos_formal_assurance.runtime import FormalAssuranceRuntime, RuntimeConfig
@@ -285,6 +286,8 @@ def fixtures() -> dict[str, dict[str, object]]:
                     {
                         "proofStatus": "BOUNDED_NO_COUNTEREXAMPLE",
                         "assuranceLevel": "A1_BOUNDED",
+                        "mode": "BOUNDED",
+                        "bound": {"samples": 1},
                     }
                 ]
             },
@@ -533,6 +536,46 @@ def fixtures() -> dict[str, dict[str, object]]:
     return cases
 
 
+def bind_local_artifact_fixtures(
+    cases: dict[str, dict[str, object]], runtime: FormalAssuranceRuntime
+) -> None:
+    """Bind contracts that claim local CAS evidence to real encrypted bytes."""
+    if runtime.artifact_store is None:
+        raise RuntimeError("all-skill contract fixtures require an artifact store")
+    artifact = runtime.artifact_store.put(
+        "tenant-a",
+        b"all-skill proof certificate",
+        media_type="application/octet-stream",
+        retention_class="AUDIT",
+    )
+    assumption_digest = "sha256:" + "5" * 64
+    tcb_digest = "sha256:" + "6" * 64
+    cases["elmos-proof-carrying-conversion"] = {
+        "sourceCommit": "1" * 40,
+        "targetCommit": "2" * 40,
+        "sourceManifestDigest": "sha256:" + "3" * 64,
+        "targetManifestDigest": "sha256:" + "4" * 64,
+        "assumptionDigest": assumption_digest,
+        "tcbDigest": tcb_digest,
+        "artifacts": [{**artifact, "path": "certificates/proof.bin"}],
+        "proofResults": [
+            {
+                "runId": "run-all-skill-proof-package",
+                "obligationId": "obligation-all-skill-proof-package",
+                "status": "BOUNDED_NO_COUNTEREXAMPLE",
+                "assuranceLevel": "A1_BOUNDED",
+                "engine": "local",
+                "mode": "BOUNDED",
+                "assumptionHash": assumption_digest,
+                "tcbHash": tcb_digest,
+                "bound": {"samples": 4},
+            }
+        ],
+        "machineStatus": "BOUNDED_NO_COUNTEREXAMPLE",
+        "marketingStatus": "bounded search found no counterexample",
+    }
+
+
 EXPECTED_OUTPUT_KEYS = {
     "elmos-api-contract-verifier": "consumerDriven",
     "elmos-architecture-constraint-checker": "architectureDigest",
@@ -608,10 +651,14 @@ class AllSkillContractTests(unittest.TestCase):
                 store=store,
                 config=RuntimeConfig(
                     artifact_root=Path(temporary.name) / "artifacts",
+                    artifact_envelope_cipher=AesGcmEnvelopeCipher(
+                        b"j" * 32, key_id="contracts-test-key"
+                    ),
                     execution_root=Path(temporary.name) / "executions",
                 ),
             )
             identity = TrustedIdentity("tenant-a", "operator-a", "project-a")
+            bind_local_artifact_fixtures(cases, runtime)
             self.assertEqual(
                 set(cases), {item["skillId"] for item in runtime.list_skills()}
             )
@@ -634,6 +681,7 @@ class AllSkillContractTests(unittest.TestCase):
                     self.assertEqual(result["externalEvidenceStatus"], "NOT_RUN")
                     self.assertEqual(result["certificationStatus"], "NOT_CERTIFIED")
                     self.assertIsInstance(result["output"], dict)
+                    self.assertIn(EXPECTED_OUTPUT_KEYS[skill_id], result["output"])
                     self.assertTrue(result["requestDigest"].startswith("sha256:"))
         finally:
             store.close()
