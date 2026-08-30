@@ -12,7 +12,7 @@
     "java_21_compile": "PASS",
     "control_plane_dependency_compile": "PASS",
     "postgresql_17_5_testcontainers": "PASS",
-    "tests": 51,
+    "tests": 56,
     "empty_database_v77_apply": "PASS",
     "database_role_installation": "PASS",
     "helm_lint_and_template": "PASS",
@@ -26,8 +26,11 @@
     "provider_runtime": "NOT_RUN",
     "target_cluster_load": "NOT_RUN",
     "chaos": "NOT_RUN",
+    "worker_process_kill": "NOT_RUN",
+    "redis_loss": "NOT_RUN",
     "backup_pitr": "NOT_RUN",
     "independent_verification": "NOT_RUN",
+    "production_deployment": "NOT_RUN",
     "production_certification": "NOT_CERTIFIED"
   }
 }
