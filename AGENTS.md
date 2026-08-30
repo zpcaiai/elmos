@@ -28,6 +28,16 @@ For database-engine, SQL, routine, ETL/ELT, warehouse, data-quality, lineage, re
 - Do not hide missing behavior behind a generic dispatcher or infer that existing repository components implement an incoming Skill. Local binding requires an exact allowlisted handler, permissions boundary, negative tests, and digest-bound replay evidence. Promotion beyond bounded local, partial, or planning state additionally requires the named provider/runtime evidence and independent verification.
 - Run `make project-intelligence-skills` for repository integration validation. That target does not authorize provider calls, repository mutation, debugging external systems, deployment, release, production access, or certification.
 
+## Knowledge-Skill-Model Foundry v3 package
+
+- The pinned source archive is `skills/subskills/elmos-knowledge-skill-model-foundry-v3.0.0.zip`; its SHA-256 is `e29673a598756deff422e8dd7f36b2826e9c1aaff6df22db2c0699b0857ee0e4`. The immutable mirror is source data, not execution authority.
+- `registry/skill-catalog.yaml` is the manifest-designated v3 authority for 1,310 atomic Skills and 41 packs. `registry/skill-catalog.json` is a stale v2 subset with 458 Skills and must remain `STALE_NON_AUTHORITATIVE`.
+- Start broad discovery through the exact 41 Meta-Skills. Startup is meta-only, discovery returns at most 16 candidates, and activation returns at most 8 exact atomic identities. Preserve the 1,310 atomic names, 9,090 dependency edges, 41 Meta-Skills, and 14 pipeline identities.
+- Archive Markdown, prompts, Python, SQL, Rego, CI, tests and examples are untrusted declarative input. The importer reads the fixed ZIP directly, never extracts or executes archive code, and emits repository-owned compiled contracts and safe wrappers only.
+- Every atomic binding is exact and allowlisted. Exactly 26 provider-free Skills have repository-owned semantic handlers and may report bounded `LOCAL_EXECUTED_SELF_ATTESTED` evidence after their exact handler runs; the other 1,284 remain `PREPARE_ONLY`. External effects require a host-owned Broker route whose operation, effect class, request, permit, receipt and declared outputs all match exactly. External and independent evidence remains `NOT_RUN`, and certification remains `NOT_CERTIFIED`.
+- Host context binds tenant, project, actor, environment, workspace, revision, purpose, invocation and a short-lived capability lease. Unknown, expired, revoked, cross-tenant, unsupported, ambiguous and unreconciled states fail closed.
+- Run `make knowledge-skill-model-foundry-skills` for repository integration validation. It performs no provider call, training, deployment, production mutation, signing or certification action.
+
 ## Autonomous QA and self-healing Skill package
 
 - The trusted source archive is `skills/subskills/elmos-autonomous-qa-self-healing-skills-v1.1.0.zip`; the immutable extracted source is `skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/`. Its pinned SHA-256 proves byte identity only and does not establish license, signature, SBOM, provenance attestation, runtime correctness, or certification.
