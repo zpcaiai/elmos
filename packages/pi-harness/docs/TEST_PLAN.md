@@ -2,7 +2,7 @@
 
 版本：`5.1.0`
 
-测试基线：代码实现已完成；外部环境尚未执行
+测试基线：八项代码实现已完成；外部门禁环境尚未执行
 
 外部执行证据：`NOT_RUN`
 
@@ -20,10 +20,21 @@
 
 这些结果只证明 repository-owned local engineering behavior：
 
-- `make pi-harness`：ZIP 不执行安全校验、编译和 18 个单元/集成测试全部通过。
+- 默认包级测试：61 个用例中 57 个单元、集成、负向与失败关闭测试通过；真实 PostgreSQL、Temporal 各 1 个，以及 Identity/Crypto profile 2 个在未配置时明确 skip/`NOT_RUN`。
+- 根级集成门禁固定源 ZIP SHA-256、425,097 bytes、798 entries、581,309 uncompressed bytes，并检查 82 个实现资产、16 项能力、8 个 Schema 和保守状态；4 个正向/负向门禁测试覆盖 archive drift、实现删除和虚假认证提升。
 - `make -C packages/pi-harness check`：Python compileall 通过。
 - Ruff 静态检查通过。
+- mypy 2.1.0 `--strict` 使用 Temporal、psycopg 与 boto3 typed dependency extras 检查 44 个源文件通过，无 ignore 或遗留类型错误。
 - CLI disposable demo、HTTP API 认证/幂等/租户隔离、typed result replay、executor fencing、workspace takeover、sandbox default deny 均有测试。
+- 外部门禁 ledger 覆盖冻结 RC、内容寻址证据、完整 hash chain、CLI、幂等重放、事件/对象篡改、符号链接、错 release/environment/evidence、自证、错误 role、撤销/过期信任重验，以及 `FAILED`/`UNKNOWN` fail-closed；八门禁模拟齐备的结果上限仍为 `READY_FOR_HUMAN_DECISION` / `NOT_CERTIFIED`。
+- S3 Object Lock 归档覆盖精确 account/region/KMS、public-access block、versioning、COMPLIANCE/GOVERNANCE retention、基于服务端 LastModified 的最短保留期、create-only 写入、SHA-256、VersionId receipt、幂等重放、provider timeout reconciliation 和无法观测时的 `UNKNOWN`；Terraform AWS 6.62.0 `init/validate` 为 0 errors/0 warnings，但没有执行 plan/apply。
+- 一次性 PostgreSQL 17.5：001/002 迁移、`NOSUPERUSER NOBYPASSRLS` 服务角色、任务/事件/环境/执行器/工具结果/artifact 全路径通过；结果为本地自证工程证据。
+- 生产 SDK 导入/API：Temporal SDK 1.32.0 workflow/worker versioning 与 sandbox prepare、PyJWT 2.13.0、cryptography 46.0.7、boto3 1.43.83、真实 Ed25519 与 X.509 SPIFFE decode 通过。
+- 一次性 Temporal Server 1.31.2 + Python SDK 1.32.0：原生 workflow/activity、success、pause/resume、cancel 和实际 history replay 通过，并修复了 `PAUSE_REQUESTED` 与提前 resume 的竞态；该 in-memory dev server 没有 TLS、外部 namespace、代表性负载或独立验证，只是本地自证工程证据。
+- 一次性 Identity profile：真实 RS256 token、HTTPS JWKS、CA 签发 server/client certificate、TLS client-certificate chain、SPIFFE tenant/project binding、CRL 和 revoked-certificate/header-spoof 负测通过；loopback TLS 明确禁用环境代理以防本地资格流量被工作站代理改道；本地 CA/JWKS 不是外部 IdP 或生产 PKI。
+- 从干净临时环境构建并安装 wheel，`pip check`、import 和 `qualification-status` 通过；本地 wheel SHA-256 为 `89fa9da2460f0d254dafc5bce0f6c1b289de6229c25d192a3d0c09a90125008e`，其门禁输出仍为八项 `CODE_COMPLETE`、外部 `NOT_RUN`、认证 `NOT_CERTIFIED`。该 wheel 未发布、未签名，也不是生产部署证据。
+- 容器构建使用 digest-pinned Python base 和带 SHA-256 的完整 Python production dependency lock；本地镜像 manifest digest 为 `sha256:4a2e8581b58d2faafa94f6bfe1369d841baf3557d18b22a07f5d306a90d17699`，以 UID/GID 65532 非 root 运行，且内置 001/002 PostgreSQL migrations。该 digest 只记录当前本地自证构建，不是已发布或已签名的生产制品。
+- AWS Terraform 模块在临时目录完成 format/init/validate；没有执行 plan/apply，云证据仍为 `NOT_RUN`。
 
 上述结果不改变下列外部状态：真实 PostgreSQL/Temporal/云 Provider、IdP/mTLS、独立验证器、灾备、客户验收、生产部署均为 `NOT_RUN`；认证为 `NOT_CERTIFIED`。
 

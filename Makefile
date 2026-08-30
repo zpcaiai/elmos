@@ -48,6 +48,7 @@ operations-scripts-test:
 .PHONY: pi-harness
 pi-harness:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_pi_harness.py --check
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/pi-harness -p 'test_*.py' -v
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/pi-harness/src python3 -m unittest discover -s packages/pi-harness/tests -p 'test_*.py'
 backend:
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B verify
@@ -660,5 +661,4 @@ etgb-full-product-skills:
 functional-assurance-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python3 tooling/integrate_functional_assurance_certification_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/functional-assurance-engine/src $(UV) run --no-project --quiet --with pytest --with pyyaml==6.0.2 --with jsonschema==4.25.1 python3 -m pytest engines/functional-assurance-engine/tests -v
-
 
