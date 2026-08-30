@@ -2,6 +2,9 @@
 {{- if lt (int .Values.termination.terminationGracePeriodSeconds) (int $minimumGrace) -}}
 {{- fail "termination.terminationGracePeriodSeconds must be at least preStopDelaySeconds + gracefulShutdownSeconds + 5" -}}
 {{- end -}}
+{{- if and .Values.postgresql.existingSecret .Values.postgresql.authorityExistingSecret (eq .Values.postgresql.existingSecret .Values.postgresql.authorityExistingSecret) (eq .Values.postgresql.dsnKey .Values.postgresql.authorityDsnKey) -}}
+{{- fail "postgresql application and authority writer must use distinct secret keys" -}}
+{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,6 +45,8 @@ spec:
               value: {{ .Values.config.runtimeMode | quote }}
             - name: ELMOS_STORAGE_BACKEND
               value: {{ .Values.config.storageBackend | quote }}
+            - name: ELMOS_RUNTIME_ASSURANCE_FACTORY
+              value: {{ required "runtimeAssurance.factory is required" .Values.runtimeAssurance.factory | quote }}
             - name: ELMOS_AUTH_EXPECTED_ISSUER
               value: {{ required "authentication.expectedIssuer is required" .Values.authentication.expectedIssuer | quote }}
             - name: ELMOS_AUTH_EXPECTED_AUDIENCE
@@ -85,6 +90,11 @@ spec:
                 secretKeyRef:
                   name: {{ required "postgresql.existingSecret is required" .Values.postgresql.existingSecret }}
                   key: {{ required "postgresql.dsnKey is required" .Values.postgresql.dsnKey }}
+            - name: ELMOS_POSTGRES_AUTHORITY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "postgresql.authorityExistingSecret is required" .Values.postgresql.authorityExistingSecret }}
+                  key: {{ required "postgresql.authorityDsnKey is required" .Values.postgresql.authorityDsnKey }}
           envFrom:
             - secretRef:
                 name: {{ required "config.existingSecret is required" .Values.config.existingSecret }}

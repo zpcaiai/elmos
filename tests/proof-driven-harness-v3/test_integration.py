@@ -358,6 +358,30 @@ class ProofDrivenHarnessQualificationTests(unittest.TestCase):
             self.assertEqual(invalid.validation, "INVALID")
             self.assertIsNone(invalid.receipt_sha256)
 
+    def test_qualification_inventory_excludes_generated_build_trees(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary)
+            engine = repo / integration.ENGINE_ROOT
+            source = engine / "src/runtime.py"
+            source.parent.mkdir(parents=True)
+            source.write_bytes(b"runtime\n")
+            generated = (
+                engine / "build/lib/runtime.py",
+                engine / "dist/runtime.whl",
+                engine / "src/runtime.egg-info/PKG-INFO",
+                engine / "src/__pycache__/runtime.pyc",
+            )
+            for path in generated:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b"generated\n")
+            with integration._repo_anchor(repo) as (
+                _absolute,
+                root_fd,
+                _identity,
+            ):
+                records = integration._engine_inventory_at(root_fd)
+            self.assertEqual([record["path"] for record in records], ["src/runtime.py"])
+
     def _write_valid_receipt(self, repo: Path) -> dict[str, object]:
         engine = repo / integration.ENGINE_ROOT
         qualifier = repo / integration.QUALIFIER_RELATIVE_PATH

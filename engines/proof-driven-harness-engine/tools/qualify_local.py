@@ -60,7 +60,17 @@ SKILL_NAMES = tuple(
     )
 )
 COMPONENT_IDS = tuple(f"K{kernel}-C{component:02d}" for kernel in range(1, 9) for component in range(1, 13))
-EXCLUDED_DIRECTORY_NAMES = frozenset({"__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache"})
+EXCLUDED_DIRECTORY_NAMES = frozenset(
+    {
+        ".venv",
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".mypy_cache",
+        "build",
+        "dist",
+    }
+)
 
 
 class QualificationError(RuntimeError):
@@ -170,7 +180,10 @@ def _excluded(relative: PurePosixPath) -> bool:
         return True
     if relative.parts[0] == "qualification":
         return True
-    if any(part in EXCLUDED_DIRECTORY_NAMES for part in relative.parts):
+    if any(
+        part in EXCLUDED_DIRECTORY_NAMES or part.endswith(".egg-info")
+        for part in relative.parts
+    ):
         return True
     return (
         relative.name.endswith(".pyc")

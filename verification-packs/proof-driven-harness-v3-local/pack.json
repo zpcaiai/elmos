@@ -1,0 +1,47 @@
+{
+  "certification": {
+    "decision": "NOT_CERTIFIED",
+    "evidence_path": "certification/evidence.json",
+    "result_path": "certification/gate-result.json"
+  },
+  "contracts": {
+    "assurance_case": "assurance/assurance-case.json",
+    "local_qualification": "contracts/local-qualification-contract.json",
+    "oracle_registry": "oracle-registry.json",
+    "repository_binding": "contracts/repository-binding-contract.json",
+    "status_boundary": "contracts/status-boundary.json",
+    "validation_profile": "validation-profile.json"
+  },
+  "corpus": {
+    "development": "corpus/development",
+    "holdout": "corpus/holdout",
+    "negative": "corpus/negative",
+    "representative_workloads": "corpus/representative-workloads"
+  },
+  "maintenance_owner": "elmos-proof-harness-engineering",
+  "owner": "elmos-proof-harness-engineering",
+  "pack_key": "proof-driven-harness-v3-local",
+  "schema_version": 1,
+  "scope": {
+    "composite_version": "3.1.0",
+    "controlled_public_dns_rebinding_campaign": "NOT_RUN",
+    "delta_source_artifact_digest": "sha256:13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
+    "environment_digest": "sha256:d5da0fcb73d7e9cfb5be18d7ea2125fe7f043d9d0512dd82b19cca98346697eb",
+    "independent_holdout": "NOT_RUN",
+    "migration_route": "proof-driven-harness-v3.1-composite-local-qualification",
+    "representative_production_workload": "NOT_RUN",
+    "risk_tier": "P0",
+    "source_artifact_digest": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+    "target_artifact_digest": "sha256:218b1191cdd9f4d9bd5327c8a232e336da9268cb7c8dbcd0b35343ddc1a5480a",
+    "workload_key": "proof-driven-harness-v3.1-composite-local-development-negative"
+  },
+  "status": "limited",
+  "tags": [
+    "advanced-verification",
+    "proof-driven-harness-v3",
+    "runtime-assurance-delta-v3.1",
+    "local-self-attested",
+    "not-certified"
+  ],
+  "version": "1.1.0"
+}

@@ -1,17 +1,30 @@
 {
-  "artifact": "elmos-proof-driven-harness-engine@3.0.0",
+  "artifact": "elmos-proof-driven-harness-engine@3.1.0",
   "claimBoundary": {
     "certification": "NOT_CERTIFIED",
     "commercialDistribution": "BLOCKED",
     "externalEvidence": "NOT_RUN",
     "localEngineeringMaximum": "READY_FOR_EXTERNAL_GATE"
   },
-  "contractRoot": "sha256:4863567c2bb39d6d61edf28ba099842e3dc268ae4ddde13137eaf733f238b854",
+  "contractRoot": "sha256:12a91c23d0aeeba43869c29726fff7375a1cad165e168565d76f79a14d0fc06c",
   "counts": {
-    "files": 72,
+    "baseSchemas": 18,
+    "deltaSchemas": 15,
+    "files": 133,
     "roles": {
+      "composite-source-integrity": 1,
       "container-build-contract": 1,
+      "database-delta-migration": 1,
       "database-migration": 1,
+      "delta-acceptance-traceability": 1,
+      "delta-adapter-profile": 5,
+      "delta-api-contract": 3,
+      "delta-example": 15,
+      "delta-json-schema": 15,
+      "delta-local-qualification-producer": 1,
+      "delta-observability": 2,
+      "delta-policy-source": 5,
+      "delta-verification-contract": 6,
       "deployment-boundary": 1,
       "helm-release-asset": 11,
       "implementation-boundary": 1,
@@ -21,41 +34,91 @@
       "observability-rule-source": 1,
       "openapi": 1,
       "packaging-contract": 1,
+      "postgres-delta-migration-applicator": 1,
       "postgres-migration-applicator": 1,
       "production-dependency-lock": 1,
       "release-contract-verifier": 1,
-      "runtime-source": 27,
+      "runtime-source": 31,
       "source-dependency-sbom": 1,
       "structured-test-runner": 1,
+      "supply-chain-boundary": 1,
       "supply-chain-policy": 1,
       "verification-pack-publisher": 1
     },
-    "schemas": 18
+    "schemas": 33
   },
   "files": [
     {
-      "bytes": 4018,
+      "bytes": 6416,
       "path": "README.md",
       "role": "implementation-boundary",
-      "sha256": "sha256:b61cd575f533cae7050237e2ae5995e84e2f3946ae95ac3c6cccf48833d4ede5"
+      "sha256": "sha256:bfce0a8967aedb0ec3dbc5130fae74c1087fdfd45ca91c9f5828a86ca048b510"
     },
     {
-      "bytes": 1964,
+      "bytes": 661,
+      "path": "adapters/delta-v3.1/codex-main-2026-08-28.yaml",
+      "role": "delta-adapter-profile",
+      "sha256": "sha256:dd8780075d419d53bb06a1351054e3c614cec2a2270f3ac7f8a8b1acc17dc279"
+    },
+    {
+      "bytes": 606,
+      "path": "adapters/delta-v3.1/codex-stable-0.150.1.yaml",
+      "role": "delta-adapter-profile",
+      "sha256": "sha256:e5e2d308c81f32763b1ec5cc1b04073bfc01e6ab7245613a2011c7661df59a71"
+    },
+    {
+      "bytes": 451,
+      "path": "adapters/delta-v3.1/deepseek-harness-0.1.1-rc.2.yaml",
+      "role": "delta-adapter-profile",
+      "sha256": "sha256:fd1c5d94f75cb91fed0a3e3ff0484b6fbde337e74c74aa837f2c562cc0664063"
+    },
+    {
+      "bytes": 778,
+      "path": "adapters/delta-v3.1/deepseek-harness-0.1.2-alpha.1.yaml",
+      "role": "delta-adapter-profile",
+      "sha256": "sha256:6e4eadd77124562102e0dd726d4c2f3203432174db8aec06f7171d9f218765c8"
+    },
+    {
+      "bytes": 630,
+      "path": "adapters/delta-v3.1/upstream-type-map.yaml",
+      "role": "delta-adapter-profile",
+      "sha256": "sha256:61122c54c843bffd00ab80aeef125a34d5904d2de88e61754ed6a78288807b68"
+    },
+    {
+      "bytes": 503,
+      "path": "api/delta-v3.1/asyncapi-overlay.yaml",
+      "role": "delta-api-contract",
+      "sha256": "sha256:1f43f73e2cee9864dbf244380ef8f37276391105e180d5cb68182a3fd1eca95a"
+    },
+    {
+      "bytes": 515,
+      "path": "api/delta-v3.1/elmos_v3_delta.proto",
+      "role": "delta-api-contract",
+      "sha256": "sha256:75393979f7a42367a84216e8ae49a512e198ffb85f8ce2d8d6d68141e182efda"
+    },
+    {
+      "bytes": 1102,
+      "path": "api/delta-v3.1/openapi-overlay.yaml",
+      "role": "delta-api-contract",
+      "sha256": "sha256:52272cc153409b0b8986aace13280f1a6894f4571dd5f536393c38fe87fc5bb0"
+    },
+    {
+      "bytes": 2630,
       "path": "deploy/Dockerfile",
       "role": "container-build-contract",
-      "sha256": "sha256:8f411dad46722450d87af4a7c30f53116fb52c7af97ecbdcd45c92dca9b32b50"
+      "sha256": "sha256:57a34e1ae284742b3b96246022f31bd158b970bdf418f2648b9a7da56c58dfcc"
     },
     {
-      "bytes": 3544,
+      "bytes": 6940,
       "path": "deploy/README.md",
       "role": "deployment-boundary",
-      "sha256": "sha256:cfc62b5f1318dd7574973c448641d2452b2f4532593bb8cb7ae564ed0142546c"
+      "sha256": "sha256:6eaeb4829e997df2e9077dc4c9b3de595505c3f6cd9dd1f6770a94b24486ec5b"
     },
     {
-      "bytes": 155,
+      "bytes": 154,
       "path": "deploy/helm/proof-harness/Chart.yaml",
       "role": "helm-release-asset",
-      "sha256": "sha256:4e44b5f37fb0a89f5d8d20f2720f02ce0d940104435bcd998f78d2cd0c12e9dc"
+      "sha256": "sha256:50cd6cc6747e3c525f7e7e7bb621e4f9ec48f66e4c142a6323fc729293a8f453"
     },
     {
       "bytes": 796,
@@ -64,10 +127,10 @@
       "sha256": "sha256:04a506ba75769ec4e0c034d308ef80c0e86ce65500c9c7bb2c4b54553445cc0b"
     },
     {
-      "bytes": 7565,
+      "bytes": 8423,
       "path": "deploy/helm/proof-harness/templates/deployment.yaml",
       "role": "helm-release-asset",
-      "sha256": "sha256:e5cebd2bab73089262e57ca9d48d050ddc1809e314a93f419748a0bb9ccb210e"
+      "sha256": "sha256:c44c54a64f47722fb4c99fddfa050542058f41f64694ce47ab9d0a9813ff2e3c"
     },
     {
       "bytes": 1139,
@@ -106,16 +169,16 @@
       "sha256": "sha256:b320b0745048b4c32c0f1ed6932f19c74ffe213f5a1881011aeb73fa032e956e"
     },
     {
-      "bytes": 10143,
+      "bytes": 10729,
       "path": "deploy/helm/proof-harness/values.schema.json",
       "role": "helm-release-asset",
-      "sha256": "sha256:9f48c097885030cc1dc021c6f7f7c481e3eaad708a686af0c23f2424ea402064"
+      "sha256": "sha256:068dbeaddca381d5361d85351e611a262cf716b0aba75c855e3d6fda8d477557"
     },
     {
-      "bytes": 1844,
+      "bytes": 2320,
       "path": "deploy/helm/proof-harness/values.yaml",
       "role": "helm-release-asset",
-      "sha256": "sha256:4dea762b1e8636f79b2507e7403eaf81196b2164d0ff0dc34df69986e3aa7d52"
+      "sha256": "sha256:2b50e2495ba45cbafc4f6c34982dbae6ee83f8f57604c8965e3dcc225e080614"
     },
     {
       "bytes": 180,
@@ -124,16 +187,124 @@
       "sha256": "sha256:ad16099064a6de6d762f9bb2a077b03d5546863031606a10f7760dc825df80a0"
     },
     {
+      "bytes": 313,
+      "path": "examples/delta-v3.1/capability-lease.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:aa8c9685ceffb22b3814e83c6ce1539dc462fa989e1c0588789b1c113e6a5d4a"
+    },
+    {
+      "bytes": 236,
+      "path": "examples/delta-v3.1/delta-invocation.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:e199cecbb172f1eee3416bc975d6ebbb58ef518d91c0d3fdee34d8ff48284389"
+    },
+    {
+      "bytes": 150,
+      "path": "examples/delta-v3.1/delta-result.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:bce22f138f1e2f5563dbd338c79d5e40792ff6d24b59f8bca92c6cf2a3c3d942"
+    },
+    {
+      "bytes": 256,
+      "path": "examples/delta-v3.1/durable-event-registration.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:550711026cf5ad0f932ae95724cd282a8bf62aa958a04a9c4f983ed7d70856b0"
+    },
+    {
+      "bytes": 240,
+      "path": "examples/delta-v3.1/environment-authority-snapshot.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:2d243263f984be6841d756331186f6cfb75da12cbd85452f9dcbeebc26112eb5"
+    },
+    {
+      "bytes": 174,
+      "path": "examples/delta-v3.1/executor-generation.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:ace27cd04917ebf1e8eb1443222bdfc844cec71a12dee140472623e9b49daf0f"
+    },
+    {
+      "bytes": 262,
+      "path": "examples/delta-v3.1/permission-profile-replay.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:23f802da529ab8f3db316aaea1beb6652f2ad6211ddeefe6917fc367955bf0c7"
+    },
+    {
+      "bytes": 356,
+      "path": "examples/delta-v3.1/protocol-capabilities.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:255c8d54b955a7d5c8815ab61a736795c9c2f3dd5b41c648be2854936ec43620"
+    },
+    {
+      "bytes": 326,
+      "path": "examples/delta-v3.1/skill-provenance.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:9f88c7c4dd22d49c490def42ece8ddbc3aaf1ebbc060493e1ee7d4a06e8d7883"
+    },
+    {
+      "bytes": 429,
+      "path": "examples/delta-v3.1/step-execution-plan.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:7e47a322c38a17c725aea746a3122a9537248cddfbe128cc4cdc8cb63cc10f23"
+    },
+    {
+      "bytes": 299,
+      "path": "examples/delta-v3.1/subagent-execution-spec.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:17e4326d8e492173141fa57fdf111bf0ea0c6b049554c5cba524574eeba8c1cb"
+    },
+    {
+      "bytes": 460,
+      "path": "examples/delta-v3.1/tool-result-commit.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:dd22a5cb84c8ad2082666c23ac1e4a6e2f00b209b4bf2e22893392386565547a"
+    },
+    {
+      "bytes": 333,
+      "path": "examples/delta-v3.1/typed-ingress.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:d451dc455d751680a0c2ab05fe06659fa68fc592677bebf7da63d56051456cd5"
+    },
+    {
+      "bytes": 358,
+      "path": "examples/delta-v3.1/verified-security-context.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:e310d2634437e1c5d2ba3e28cef115dee0909384161e3b093c53d401b1938bc7"
+    },
+    {
+      "bytes": 203,
+      "path": "examples/delta-v3.1/workspace-lease.example.json",
+      "role": "delta-example",
+      "sha256": "sha256:9e4d0920b77d3ae1b3b13f22e81da4eaec260bb148f13b680ef98516f40ebaf0"
+    },
+    {
       "bytes": 87382,
       "path": "migrations/V001__proof_harness_core.sql",
       "role": "database-migration",
       "sha256": "sha256:a2e37c035dd4a533759204dd099997ca9b76b56a8494c000bf278c156beeb43d"
     },
     {
+      "bytes": 184730,
+      "path": "migrations/V304__harness_runtime_assurance_delta.sql",
+      "role": "database-delta-migration",
+      "sha256": "sha256:1219e4009391d77ae70b91d7ec70ec10278f41913cf211942b6c34e5f422f963"
+    },
+    {
       "bytes": 2923,
       "path": "observability/alerts.yaml",
       "role": "observability-rule-source",
       "sha256": "sha256:5404a24c6e003473c229317b6de95fdf6c344560b2a24587b640f87acdde034a"
+    },
+    {
+      "bytes": 755,
+      "path": "observability/delta-v3.1/alerts.yaml",
+      "role": "delta-observability",
+      "sha256": "sha256:6ea1bb019d4e8f66cff6cd2a0de752e6689a5f5c56f02ec4a46a6acf5cffd84f"
+    },
+    {
+      "bytes": 4651,
+      "path": "observability/delta-v3.1/metrics.yaml",
+      "role": "delta-observability",
+      "sha256": "sha256:16a26d397dcb06e4d34088db7f3bb08a2fc227b070c22a0613d84c4943c298fe"
     },
     {
       "bytes": 3059,
@@ -145,13 +316,43 @@
       "bytes": 9451,
       "path": "openapi/proof-harness-v3.openapi.yaml",
       "role": "openapi",
-      "sha256": "sha256:95902f6bfe4e9235745e4e8dc8a95a4aebbc0091d8f74a1e18827c3c467a69b7"
+      "sha256": "sha256:e966f45494fa083e2771337e9e516a6c5c8500caaff9653f9936cda8d6df8980"
     },
     {
-      "bytes": 2597,
+      "bytes": 417,
+      "path": "policies/delta-v3.1/capability_authority.rego",
+      "role": "delta-policy-source",
+      "sha256": "sha256:fb4d004b78fa4c23b28a521a51242525b08ea42f189a082ec45b7e5946acb471"
+    },
+    {
+      "bytes": 332,
+      "path": "policies/delta-v3.1/event_ingress.rego",
+      "role": "delta-policy-source",
+      "sha256": "sha256:c0d76bd03f52129613e2e2d486d4abb020fe066b10063c2ae9f1374c26271b70"
+    },
+    {
+      "bytes": 211,
+      "path": "policies/delta-v3.1/permission_replay.rego",
+      "role": "delta-policy-source",
+      "sha256": "sha256:148153461a07dcd464d357255e2e00dc9bf2a3bb0be28dd4f25c8f594cdd6a2d"
+    },
+    {
+      "bytes": 509,
+      "path": "policies/delta-v3.1/result_commit.rego",
+      "role": "delta-policy-source",
+      "sha256": "sha256:66977884ace3b2227e200e3c20884df07c2862cf898ff527bfca3e1d7f1ae3d9"
+    },
+    {
+      "bytes": 301,
+      "path": "policies/delta-v3.1/skill_trust.rego",
+      "role": "delta-policy-source",
+      "sha256": "sha256:b1063a4d222695905d6f0bfce9c62b7a4277dbb7166c887feb4fb19171629e4b"
+    },
+    {
+      "bytes": 6823,
       "path": "pyproject.toml",
       "role": "packaging-contract",
-      "sha256": "sha256:8f1bafd8765986e7a696d019fd73695b808d648674e8adbbaee1f11783a4866a"
+      "sha256": "sha256:25be0bf438b1fc47bb1d28a4ddc70f4ebbd49f7d2537ee34d9042007f766c717"
     },
     {
       "bytes": 1663,
@@ -182,6 +383,96 @@
       "path": "schemas/completion-review.schema.json",
       "role": "json-schema",
       "sha256": "sha256:17b2164ced791da8e707ed606e7845ec6eaf055936365d021037761dc714adbe"
+    },
+    {
+      "bytes": 1119,
+      "path": "schemas/delta-v3.1/capability-lease.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:d1e3df60c23d171d19158e92b21dff1c980bd2f611070f1e1211962685132d1b"
+    },
+    {
+      "bytes": 990,
+      "path": "schemas/delta-v3.1/delta-invocation.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:bb24d97836c1af72d0c2cf7f922a0fa581da3e17d789eaf4df7c8d6f1ac44181"
+    },
+    {
+      "bytes": 801,
+      "path": "schemas/delta-v3.1/delta-result.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:ad31a1f71561b260523c998f8737a98f691acf44295cbf2e4795050891b05f7a"
+    },
+    {
+      "bytes": 997,
+      "path": "schemas/delta-v3.1/durable-event-registration.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:7d77178a7560811d2cbd456732b504c220504906f266ec8bc3421830f94f7862"
+    },
+    {
+      "bytes": 911,
+      "path": "schemas/delta-v3.1/environment-authority-snapshot.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:82480a05d5286d299297c6908ce356fc2dc435f1254db6cec0ce0da6eca0fb0e"
+    },
+    {
+      "bytes": 867,
+      "path": "schemas/delta-v3.1/executor-generation.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:5f167f61d6f9112b55c38807aca71f993ec52ddb9234cde67c0d2e140dcea86e"
+    },
+    {
+      "bytes": 1042,
+      "path": "schemas/delta-v3.1/permission-profile-replay.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:0772d6b372258ee2e9fa4e535560c19f2b233e117c609e8d8e4c9dfce96e4560"
+    },
+    {
+      "bytes": 1287,
+      "path": "schemas/delta-v3.1/protocol-capabilities.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:ca4e8c7d52ea38988ec1755243c3779bbf735fa6a8ded39bb620de95ac9d832e"
+    },
+    {
+      "bytes": 1128,
+      "path": "schemas/delta-v3.1/skill-provenance.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:7229fa552feb0d6a678b4c0c8038ea4d4b553152c7e1a8aaaac07ce695fadf9a"
+    },
+    {
+      "bytes": 1444,
+      "path": "schemas/delta-v3.1/step-execution-plan.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:e21084c5aa64176e54a920828b8ca9c71259151e154e8435bfb235fe3b1f6328"
+    },
+    {
+      "bytes": 994,
+      "path": "schemas/delta-v3.1/subagent-execution-spec.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:438bfe4aa1dcc40ea7af8457b01dd6dfac4e8f2f6ef0f1f3194834548183200a"
+    },
+    {
+      "bytes": 1800,
+      "path": "schemas/delta-v3.1/tool-result-commit.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:e36d0a0c245c967e5799f5bb89a0740b35040dc789430b2b817d814969688b86"
+    },
+    {
+      "bytes": 1168,
+      "path": "schemas/delta-v3.1/typed-ingress.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:441a1035897102117ac0bb46471c629971af1f9aa0d6b7122945dc04403c068f"
+    },
+    {
+      "bytes": 1380,
+      "path": "schemas/delta-v3.1/verified-security-context.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:22b154e1c64ab957bde95bfc844d88836567436ccce3cd6a892f90a3e636e123"
+    },
+    {
+      "bytes": 903,
+      "path": "schemas/delta-v3.1/workspace-lease.schema.json",
+      "role": "delta-json-schema",
+      "sha256": "sha256:b4925faf6e325c4b4f3d83cae8ab454320f90e1163eb09f98ca089773e911f87"
     },
     {
       "bytes": 1941,
@@ -262,10 +553,10 @@
       "sha256": "sha256:1c87e5d0599d1a5091abc39ce1cbcde30b2290a90dfd2239025dea569056a639"
     },
     {
-      "bytes": 1919,
+      "bytes": 2669,
       "path": "src/elmos_proof_harness/__init__.py",
       "role": "runtime-source",
-      "sha256": "sha256:22272f8f70f616caf6c5ec5136324e4716d999e79516582a744b5174f4ba8c7b"
+      "sha256": "sha256:4a43e6bd6b3aed45c752928a9b7f5b164fbb48f06c00f85feb41f47b8e4239f7"
     },
     {
       "bytes": 49,
@@ -284,6 +575,12 @@
       "path": "src/elmos_proof_harness/architecture.py",
       "role": "runtime-source",
       "sha256": "sha256:de5aedfd5fc8d339184f0f2232ca282681fc4839ad22827cbb9dea4485fa2596"
+    },
+    {
+      "bytes": 20228,
+      "path": "src/elmos_proof_harness/assurance_policies.py",
+      "role": "runtime-source",
+      "sha256": "sha256:92e5bb22a545bc8315375fc72e1c01794a6f132d1b46fa2c76d520c1ccc47ee5"
     },
     {
       "bytes": 16417,
@@ -310,10 +607,10 @@
       "sha256": "sha256:68e3139b07fd847324ddd7158e12062daba169f6dbd16defc387c701d3f7f3ed"
     },
     {
-      "bytes": 19787,
+      "bytes": 22921,
       "path": "src/elmos_proof_harness/cli.py",
       "role": "runtime-source",
-      "sha256": "sha256:909c3f6912ae2d6173039f5425ae13dc8c3935db946492c18a8acfeeac50f11b"
+      "sha256": "sha256:f5ce88ffe0cb2c115f463e422166d2f8a7573d285d3710d28655483ae644b5f6"
     },
     {
       "bytes": 23415,
@@ -322,10 +619,22 @@
       "sha256": "sha256:0da0d0d0e61a5e1c896b842f8ecd759fc517ba7ac20a156f85409c8cb05cba50"
     },
     {
-      "bytes": 63103,
+      "bytes": 69100,
       "path": "src/elmos_proof_harness/control_plane.py",
       "role": "runtime-source",
-      "sha256": "sha256:a7952074c8ad3e0f1db873e02c2b6bfc1d1ba33c48b15302192791e8a1730113"
+      "sha256": "sha256:106bf5ff2275157ca9220d4a10ce548f792547baddf7435d1d2d4baad84cf7d2"
+    },
+    {
+      "bytes": 312712,
+      "path": "src/elmos_proof_harness/delta.py",
+      "role": "runtime-source",
+      "sha256": "sha256:2ef61f7ce5a45bcf215ddfe037c45cbda9a6f65360638c96703dc70b2eba58ff"
+    },
+    {
+      "bytes": 103109,
+      "path": "src/elmos_proof_harness/delta_storage.py",
+      "role": "runtime-source",
+      "sha256": "sha256:88459fdbc152b2e34b88d24dc5001b7b923d8b199b01abc14969d77994176d66"
     },
     {
       "bytes": 13758,
@@ -358,10 +667,10 @@
       "sha256": "sha256:8f18312db6fa0eb65ba1d695a3ca206d58f97843c534e001544d543ea533407b"
     },
     {
-      "bytes": 18518,
+      "bytes": 439012,
       "path": "src/elmos_proof_harness/postgres.py",
       "role": "runtime-source",
-      "sha256": "sha256:cca301a7aea9f7a8e8c0a9bbcf0ae2a3946369b45bde524d939d8e997a366684"
+      "sha256": "sha256:f7ddee25f43013017840008024258331afd9ec71e7906a033b4ac7605635096b"
     },
     {
       "bytes": 14746,
@@ -373,7 +682,13 @@
       "bytes": 32129,
       "path": "src/elmos_proof_harness/repository.py",
       "role": "runtime-source",
-      "sha256": "sha256:04498352aa58e3f64397735df799377738cc6186030da63f13f1c05b2e75e235"
+      "sha256": "sha256:fe051ee4064fdb1fd9f0fa4e2f4246acd32843a97458ba48ba43999bb190f602"
+    },
+    {
+      "bytes": 141712,
+      "path": "src/elmos_proof_harness/runtime_assurance.py",
+      "role": "runtime-source",
+      "sha256": "sha256:62c083320afa980a7c051b3e0343a1aba2768d56bf5cedf54a0f0e5444407c15"
     },
     {
       "bytes": 9205,
@@ -388,10 +703,10 @@
       "sha256": "sha256:78cd320737e572d71f4bd65abf512da289dd0d846a385074bce7b400bf847e5f"
     },
     {
-      "bytes": 69741,
+      "bytes": 70899,
       "path": "src/elmos_proof_harness/service.py",
       "role": "runtime-source",
-      "sha256": "sha256:ec51aa2d85a187b19686574ceeb7fc224d0f0d327a442cf5e2ce4d68f7c73b25"
+      "sha256": "sha256:80e7ec21b121e5812042a5e4a047b18add6c887d00da9ad6af6306ed58ccb60a"
     },
     {
       "bytes": 39199,
@@ -400,10 +715,10 @@
       "sha256": "sha256:ba27b781ee157dbb540498018c709fc5310c9895342b45564425ee3cd8301108"
     },
     {
-      "bytes": 8696,
+      "bytes": 9315,
       "path": "src/elmos_proof_harness/storage.py",
       "role": "runtime-source",
-      "sha256": "sha256:dc4104c1c60d21ecbd521be57121c7b8d4d658156ab29850c9c132a3e8568f77"
+      "sha256": "sha256:c06b2625c98b4ddc7d2865d4296da130195feaf9a0a10d37c593cbb8d3025856"
     },
     {
       "bytes": 77590,
@@ -424,16 +739,40 @@
       "sha256": "sha256:b09b4aaf852fc0307464773ca10a19c8be6f623dc2526832761d2969f39dfa56"
     },
     {
-      "bytes": 934,
-      "path": "supply-chain/release-policy.json",
-      "role": "supply-chain-policy",
-      "sha256": "sha256:38b5a40dda46a541bd2eed95541686b80d253020522005e9cc6301656af39553"
+      "bytes": 1541,
+      "path": "supply-chain/README.md",
+      "role": "supply-chain-boundary",
+      "sha256": "sha256:ebedab47db4ef04829fb04ca08edfa258783210873b0e20156596494c758925f"
     },
     {
-      "bytes": 1908,
+      "bytes": 53596,
+      "path": "supply-chain/delta-v3.1-acceptance-bindings.json",
+      "role": "delta-acceptance-traceability",
+      "sha256": "sha256:d315f4e9a2c0de7d0017d39e1de1331c92c10bb9570c131b4de13051fedae529"
+    },
+    {
+      "bytes": 1034,
+      "path": "supply-chain/delta-v3.1-integrity.json",
+      "role": "composite-source-integrity",
+      "sha256": "sha256:3af851716155c1bca11d7a6d661a09e27cd72d57815d4baa9eec0b63a07bc7b4"
+    },
+    {
+      "bytes": 1110,
+      "path": "supply-chain/release-policy.json",
+      "role": "supply-chain-policy",
+      "sha256": "sha256:c6b15188410e1e293954045aef2738a5a54320349a6c1d750ac76946318e5be1"
+    },
+    {
+      "bytes": 2869,
       "path": "supply-chain/sbom.cdx.json",
       "role": "source-dependency-sbom",
-      "sha256": "sha256:2a6548ca058c314848a9c892042ae8e5557e034b65f6fd663d8b4b0b0256cd4d"
+      "sha256": "sha256:028a0435a74a902e0f30dc030f4e7a2bf4836ca79e07a192a0fa78b5806c8fca"
+    },
+    {
+      "bytes": 27920,
+      "path": "tools/apply_delta_migration.py",
+      "role": "postgres-delta-migration-applicator",
+      "sha256": "sha256:322729c358b07fc53d09841d257f2ab63561951e4ffb2f2835c75e8796c31646"
     },
     {
       "bytes": 7113,
@@ -442,31 +781,89 @@
       "sha256": "sha256:236f565e8856a76977042bcdf46aa16a883b2a8fd849e4804e0d3a6121456f38"
     },
     {
-      "bytes": 121884,
+      "bytes": 166630,
       "path": "tools/publish_verification_pack.py",
       "role": "verification-pack-publisher",
-      "sha256": "sha256:114a0db5b8d0891bf43c663fbd306933d87380325c68d0f2d4aa8c2bee6d9d33"
+      "sha256": "sha256:977bdfc4b3601b254255814d654f581deb7beb4a031659d54e9a3b1345c41e7c"
     },
     {
-      "bytes": 31819,
+      "bytes": 66262,
+      "path": "tools/qualify_delta.py",
+      "role": "delta-local-qualification-producer",
+      "sha256": "sha256:9b3ae41c4db99bf5f27ed3cee2799dc4bd9a3999e839ad227e7ca40175dfc945"
+    },
+    {
+      "bytes": 31966,
       "path": "tools/qualify_local.py",
       "role": "local-qualification-producer",
-      "sha256": "sha256:db38bb10a96cded3adfa3b40068ec4a742dddf991e22e99272db2488ac635e95"
+      "sha256": "sha256:f8d1452bffa613c9d7c3621cedd14465cec256e1c59d198790281cfd6cd42289"
     },
     {
-      "bytes": 24073,
+      "bytes": 63173,
       "path": "tools/release_contract.py",
       "role": "release-contract-verifier",
-      "sha256": "sha256:db41974034dbc88819637ce864403d1d6ca29ad220e1b0f7b3c67da3b7096764"
+      "sha256": "sha256:c83911ec51d101b149ea227d30eaaadb47bd9ded86f610692aa3f07ba3e9a8c7"
     },
     {
       "bytes": 9844,
       "path": "tools/run_structured_unittest.py",
       "role": "structured-test-runner",
       "sha256": "sha256:2f590d1901a9d462e1d0398eb54864db6db6bc7ed6d59a4625a0733f117a5991"
+    },
+    {
+      "bytes": 560,
+      "path": "verification/delta-v3.1/delta-gates.yaml",
+      "role": "delta-verification-contract",
+      "sha256": "sha256:51786f61fa30168ef69c8761e3473b636d423226d258060eefc64e94e94a7fca"
+    },
+    {
+      "bytes": 458,
+      "path": "verification/delta-v3.1/matrices/capability-security.yaml",
+      "role": "delta-verification-contract",
+      "sha256": "sha256:04bc4ffec0d5ff3240f9ffc8199112b651f92d6a553aa777067f9bcb9c2f569a"
+    },
+    {
+      "bytes": 529,
+      "path": "verification/delta-v3.1/matrices/ownership-fencing.yaml",
+      "role": "delta-verification-contract",
+      "sha256": "sha256:a9f3d21fbf7bdccc24171d53b4842eb922bfc4a5b95f39b47499bccb922a5410"
+    },
+    {
+      "bytes": 492,
+      "path": "verification/delta-v3.1/matrices/permission-replay.yaml",
+      "role": "delta-verification-contract",
+      "sha256": "sha256:c0c86ebc3c00a107588cca901d65b2dd955ba9b6483be116d7d7cda56c0c22eb"
+    },
+    {
+      "bytes": 663,
+      "path": "verification/delta-v3.1/matrices/protocol-events-ingress.yaml",
+      "role": "delta-verification-contract",
+      "sha256": "sha256:a1c7d65af2334cb33b684e370c4d3c0e0513e3a4388baaa522bf80baa66bbc31"
+    },
+    {
+      "bytes": 712,
+      "path": "verification/delta-v3.1/matrices/tool-result-lifecycle.yaml",
+      "role": "delta-verification-contract",
+      "sha256": "sha256:6de54a81cc052f69f178275fdb660a056ccf4a196a1791bb47a08453be48a8f7"
     }
   ],
   "hashAlgorithm": "sha256",
   "kind": "elmos.proof-harness.release-contract",
-  "schemaVersion": "1.0.0"
+  "schemaVersion": "1.1.0",
+  "sourceMaterials": [
+    {
+      "archiveBytes": 5601254,
+      "archiveSha256": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+      "name": "elmos-proof-driven-agentic-harness-repository-semantic-compiler",
+      "role": "base-declarative-source",
+      "version": "3.0.0"
+    },
+    {
+      "archiveBytes": 173228,
+      "archiveSha256": "sha256:13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
+      "name": "elmos-v3-harness-runtime-assurance-delta",
+      "role": "runtime-assurance-delta-declarative-source",
+      "version": "3.1.0"
+    }
+  ]
 }

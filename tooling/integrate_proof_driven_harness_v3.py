@@ -1373,7 +1373,14 @@ def audit_archive(path: Path) -> ArchiveAudit:
 
 
 _QUALIFICATION_CACHE_DIRECTORIES = frozenset(
-    {"__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache"}
+    {
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".mypy_cache",
+        "build",
+        "dist",
+    }
 )
 _EXPECTED_RAW_LOG_COMMANDS: Mapping[str, tuple[str, ...]] = {
     "qualification/raw/engine-tests.json": (
@@ -1404,7 +1411,10 @@ _EXPECTED_RAW_LOG_COMMANDS: Mapping[str, tuple[str, ...]] = {
 def _engine_member_excluded(relative: PurePosixPath) -> bool:
     if not relative.parts or relative.parts[0] == "qualification":
         return True
-    if any(part in _QUALIFICATION_CACHE_DIRECTORIES for part in relative.parts):
+    if any(
+        part in _QUALIFICATION_CACHE_DIRECTORIES or part.endswith(".egg-info")
+        for part in relative.parts
+    ):
         return True
     return (
         relative.name.endswith(".pyc")

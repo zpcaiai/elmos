@@ -12,10 +12,29 @@ from .adapters import (
     DeclaredAdapterDescriptor,
 )
 from .architecture import ArchitectureDiff, ArchitectureExtractor, ArchitectureGraph
+from .assurance_policies import (
+    HostSecurityContextSigner,
+    ManagedWorktreeIdentity,
+    ManagedWorktreeRegistry,
+    PrivilegedPathContract,
+    PrivilegedPathPolicy,
+    SkillTrustDomainPolicy,
+)
 from .control_plane import DurableControlPlane
 from .domains import DOMAIN_PACKS, DomainPackOrchestrator
+from .delta_storage import HostSignedEnvelope
 from .repository import RepositoryEvidenceGraph, RepositorySnapshotter, SnapshotLimits
-from .semantic import FRAMEWORK_PROFILES, LANGUAGE_PROFILES, SemanticBundle, SemanticCompiler
+from .runtime_assurance import (
+    EvidenceBackedDeltaStore,
+    RegisteredRuntimeAssuranceAuthorityProvider,
+    RuntimeAssuranceControlPlane,
+)
+from .semantic import (
+    FRAMEWORK_PROFILES,
+    LANGUAGE_PROFILES,
+    SemanticBundle,
+    SemanticCompiler,
+)
 from .service import (
     AuthenticationError,
     Authenticator,
@@ -48,18 +67,28 @@ __all__ = [
     "ChangeSet",
     "DOMAIN_PACKS",
     "DurableControlPlane",
+    "EvidenceBackedDeltaStore",
     "DomainPackOrchestrator",
     "FRAMEWORK_PROFILES",
     "FileChange",
     "HarnessService",
+    "HostSecurityContextSigner",
+    "HostSignedEnvelope",
     "LANGUAGE_PROFILES",
+    "ManagedWorktreeIdentity",
+    "ManagedWorktreeRegistry",
+    "PrivilegedPathContract",
+    "PrivilegedPathPolicy",
     "RepositoryEvidenceGraph",
     "RepositorySnapshotter",
+    "RegisteredRuntimeAssuranceAuthorityProvider",
+    "RuntimeAssuranceControlPlane",
     "SERVICE_VERSION",
     "SKILL_REGISTRY",
     "SemanticBundle",
     "SemanticCompiler",
     "SkillRuntime",
+    "SkillTrustDomainPolicy",
     "SnapshotLimits",
     "StaticTokenAuthenticator",
     "VERIFIER_ADAPTER_REGISTRY",

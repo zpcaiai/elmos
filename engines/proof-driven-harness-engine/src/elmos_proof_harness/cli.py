@@ -11,12 +11,13 @@ from pathlib import Path
 import stat
 import unicodedata
 import sys
-from typing import Any, Sequence
+from typing import Any, Sequence, cast
 
 from .architecture import ArchitectureExtractor
 from .control_plane import DurableControlPlane
 from .postgres import PostgresStore
 from .repository import RepositorySnapshotter, SnapshotLimits
+from .runtime_assurance import RuntimeAssuranceControlPlane
 from .semantic import SemanticCompiler
 from .service import (
     AuthPrincipal,
@@ -26,20 +27,30 @@ from .service import (
     serve,
 )
 from .skills import COMPONENT_REGISTRY, SKILL_REGISTRY, SkillRuntime
+from .storage import ControlPlaneStore
 from .store import SQLiteStore
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="elmos-proof-harness", description="Proof-driven repository semantic compiler and harness")
+    parser = argparse.ArgumentParser(
+        prog="elmos-proof-harness",
+        description="Proof-driven repository semantic compiler and harness",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    snapshot = subparsers.add_parser("snapshot", help="create a safe read-only repository evidence graph")
+    snapshot = subparsers.add_parser(
+        "snapshot", help="create a safe read-only repository evidence graph"
+    )
     snapshot.add_argument("repository")
     _add_snapshot_limits(snapshot)
 
-    compile_parser = subparsers.add_parser("compile", help="compile source-linked semantic and architecture IR")
+    compile_parser = subparsers.add_parser(
+        "compile", help="compile source-linked semantic and architecture IR"
+    )
     compile_parser.add_argument("repository")
-    compile_parser.add_argument("--architecture-format", choices=("json", "calm", "rows"), default="json")
+    compile_parser.add_argument(
+        "--architecture-format", choices=("json", "calm", "rows"), default="json"
+    )
     _add_snapshot_limits(compile_parser)
 
     subparsers.add_parser("list-skills", help="list the 16 exact routable Skills")
@@ -57,40 +68,114 @@ def build_parser() -> argparse.ArgumentParser:
     server.add_argument("--host", default="127.0.0.1")
     server.add_argument("--port", type=int, default=8080)
     server.add_argument("--auth-token-env", default="ELMOS_PROOF_HARNESS_TOKEN")
-    server.add_argument("--runtime-mode", choices=("local-engineering", "production"), default=os.environ.get("ELMOS_RUNTIME_MODE", "production"))
+    server.add_argument(
+        "--runtime-mode",
+        choices=("local-engineering", "production"),
+        default=os.environ.get("ELMOS_RUNTIME_MODE", "production"),
+    )
     server.add_argument("--state-db", default=os.environ.get("ELMOS_PROOF_HARNESS_DB"))
     server.add_argument("--postgres-dsn-env", default="ELMOS_POSTGRES_DSN")
-    server.add_argument("--authenticator-factory", default=os.environ.get("ELMOS_AUTHENTICATOR_FACTORY"))
+    server.add_argument(
+        "--authenticator-factory", default=os.environ.get("ELMOS_AUTHENTICATOR_FACTORY")
+    )
+    server.add_argument(
+        "--runtime-assurance-factory",
+        default=os.environ.get("ELMOS_RUNTIME_ASSURANCE_FACTORY"),
+    )
     server.add_argument("--jwks-file", default=os.environ.get("ELMOS_AUTH_JWKS_FILE"))
-    server.add_argument("--jwt-algorithm", default=os.environ.get("ELMOS_AUTH_JWT_ALGORITHM", "RS256"))
-    server.add_argument("--jwks-refresh-seconds", type=int, default=int(os.environ.get("ELMOS_AUTH_JWKS_REFRESH_SECONDS", "300")))
-    server.add_argument("--jwt-leeway-seconds", type=int, default=int(os.environ.get("ELMOS_AUTH_JWT_LEEWAY_SECONDS", "30")))
-    server.add_argument("--expected-issuer", default=os.environ.get("ELMOS_AUTH_EXPECTED_ISSUER"))
-    server.add_argument("--expected-audience", default=os.environ.get("ELMOS_AUTH_EXPECTED_AUDIENCE"))
-    server.add_argument("--transport-mode", choices=("local", "tls", "trusted-proxy"), default=os.environ.get("ELMOS_TRANSPORT_MODE"))
-    server.add_argument("--tls-cert-file", default=os.environ.get("ELMOS_TLS_CERT_FILE"))
+    server.add_argument(
+        "--jwt-algorithm", default=os.environ.get("ELMOS_AUTH_JWT_ALGORITHM", "RS256")
+    )
+    server.add_argument(
+        "--jwks-refresh-seconds",
+        type=int,
+        default=int(os.environ.get("ELMOS_AUTH_JWKS_REFRESH_SECONDS", "300")),
+    )
+    server.add_argument(
+        "--jwt-leeway-seconds",
+        type=int,
+        default=int(os.environ.get("ELMOS_AUTH_JWT_LEEWAY_SECONDS", "30")),
+    )
+    server.add_argument(
+        "--expected-issuer", default=os.environ.get("ELMOS_AUTH_EXPECTED_ISSUER")
+    )
+    server.add_argument(
+        "--expected-audience", default=os.environ.get("ELMOS_AUTH_EXPECTED_AUDIENCE")
+    )
+    server.add_argument(
+        "--transport-mode",
+        choices=("local", "tls", "trusted-proxy"),
+        default=os.environ.get("ELMOS_TRANSPORT_MODE"),
+    )
+    server.add_argument(
+        "--tls-cert-file", default=os.environ.get("ELMOS_TLS_CERT_FILE")
+    )
     server.add_argument("--tls-key-file", default=os.environ.get("ELMOS_TLS_KEY_FILE"))
-    server.add_argument("--tls-client-ca-file", default=os.environ.get("ELMOS_TLS_CLIENT_CA_FILE"))
-    server.add_argument("--trusted-proxy-cidr", action="append", default=_csv_env("ELMOS_TRUSTED_PROXY_CIDRS"))
-    server.add_argument("--request-timeout-seconds", type=float, default=float(os.environ.get("ELMOS_HTTP_REQUEST_TIMEOUT_SECONDS", "30")))
-    server.add_argument("--max-concurrent-requests", type=int, default=int(os.environ.get("ELMOS_HTTP_MAX_CONCURRENT_REQUESTS", "64")))
-    server.add_argument("--graceful-shutdown-seconds", type=float, default=float(os.environ.get("ELMOS_HTTP_GRACEFUL_SHUTDOWN_SECONDS", "30")))
+    server.add_argument(
+        "--tls-client-ca-file", default=os.environ.get("ELMOS_TLS_CLIENT_CA_FILE")
+    )
+    server.add_argument(
+        "--trusted-proxy-cidr",
+        action="append",
+        default=_csv_env("ELMOS_TRUSTED_PROXY_CIDRS"),
+    )
+    server.add_argument(
+        "--request-timeout-seconds",
+        type=float,
+        default=float(os.environ.get("ELMOS_HTTP_REQUEST_TIMEOUT_SECONDS", "30")),
+    )
+    server.add_argument(
+        "--max-concurrent-requests",
+        type=int,
+        default=int(os.environ.get("ELMOS_HTTP_MAX_CONCURRENT_REQUESTS", "64")),
+    )
+    server.add_argument(
+        "--graceful-shutdown-seconds",
+        type=float,
+        default=float(os.environ.get("ELMOS_HTTP_GRACEFUL_SHUTDOWN_SECONDS", "30")),
+    )
     server.add_argument("--tenant-id", default=os.environ.get("ELMOS_TENANT_ID"))
     server.add_argument("--project-id", default=os.environ.get("ELMOS_PROJECT_ID"))
     server.add_argument("--actor-id", default=os.environ.get("ELMOS_ACTOR_ID"))
-    server.add_argument("--authentication-context-digest", default=os.environ.get("ELMOS_AUTHENTICATION_CONTEXT_DIGEST"))
+    server.add_argument(
+        "--authentication-context-digest",
+        default=os.environ.get("ELMOS_AUTHENTICATION_CONTEXT_DIGEST"),
+    )
     server.add_argument("--authority-id", default=os.environ.get("ELMOS_AUTHORITY_ID"))
-    server.add_argument("--authority-revision", default=os.environ.get("ELMOS_AUTHORITY_REVISION"))
-    server.add_argument("--environment-id", default=os.environ.get("ELMOS_ENVIRONMENT_ID"))
-    server.add_argument("--environment-revision", default=os.environ.get("ELMOS_ENVIRONMENT_REVISION"))
-    server.add_argument("--execution-epoch", type=int, default=_optional_int_env("ELMOS_EXECUTION_EPOCH"))
-    server.add_argument("--fencing-generation", type=int, default=_optional_int_env("ELMOS_FENCING_GENERATION"))
-    server.add_argument("--authority-expires-at", default=os.environ.get("ELMOS_AUTHORITY_EXPIRES_AT"))
-    server.add_argument("--authority", action="append", default=_csv_env("ELMOS_PROOF_HARNESS_SCOPES"))
+    server.add_argument(
+        "--authority-revision", default=os.environ.get("ELMOS_AUTHORITY_REVISION")
+    )
+    server.add_argument(
+        "--environment-id", default=os.environ.get("ELMOS_ENVIRONMENT_ID")
+    )
+    server.add_argument(
+        "--environment-revision", default=os.environ.get("ELMOS_ENVIRONMENT_REVISION")
+    )
+    server.add_argument(
+        "--execution-epoch",
+        type=int,
+        default=_optional_int_env("ELMOS_EXECUTION_EPOCH"),
+    )
+    server.add_argument(
+        "--fencing-generation",
+        type=int,
+        default=_optional_int_env("ELMOS_FENCING_GENERATION"),
+    )
+    server.add_argument(
+        "--authority-expires-at", default=os.environ.get("ELMOS_AUTHORITY_EXPIRES_AT")
+    )
+    server.add_argument(
+        "--authority", action="append", default=_csv_env("ELMOS_PROOF_HARNESS_SCOPES")
+    )
     server.add_argument("--workspace-root", action="append", default=[])
     server.add_argument("--max-request-bytes", type=int, default=2 * 1024 * 1024)
     server.add_argument("--lease-ttl-seconds", type=int, default=300)
-    server.add_argument("--owner-id", default=os.environ.get("ELMOS_PROOF_HARNESS_OWNER_ID", "proof-harness-control-plane"))
+    server.add_argument(
+        "--owner-id",
+        default=os.environ.get(
+            "ELMOS_PROOF_HARNESS_OWNER_ID", "proof-harness-control-plane"
+        ),
+    )
     server.add_argument("--allow-legacy-local", action="store_true")
     return parser
 
@@ -137,7 +222,9 @@ def _load_payload(arguments: argparse.Namespace) -> dict[str, Any]:
         try:
             metadata = os.fstat(descriptor)
             if not stat.S_ISREG(metadata.st_mode) or metadata.st_size > 2 * 1024 * 1024:
-                raise ValueError("payload file is not a regular file within the 2 MiB limit")
+                raise ValueError(
+                    "payload file is not a regular file within the 2 MiB limit"
+                )
             chunks: list[bytes] = []
             remaining = metadata.st_size
             while remaining:
@@ -149,14 +236,26 @@ def _load_payload(arguments: argparse.Namespace) -> dict[str, Any]:
             if os.read(descriptor, 1):
                 raise ValueError("payload file grew during read")
             after = os.fstat(descriptor)
-            if (metadata.st_dev, metadata.st_ino, metadata.st_size, metadata.st_mtime_ns, metadata.st_ctime_ns) != (
-                after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns
+            if (
+                metadata.st_dev,
+                metadata.st_ino,
+                metadata.st_size,
+                metadata.st_mtime_ns,
+                metadata.st_ctime_ns,
+            ) != (
+                after.st_dev,
+                after.st_ino,
+                after.st_size,
+                after.st_mtime_ns,
+                after.st_ctime_ns,
             ):
                 raise ValueError("payload file changed during read")
             raw = b"".join(chunks).decode("utf-8")
         finally:
             os.close(descriptor)
-    value = json.loads(raw, object_pairs_hook=_strict_json_object, parse_constant=_reject_json_constant)
+    value = json.loads(
+        raw, object_pairs_hook=_strict_json_object, parse_constant=_reject_json_constant
+    )
     if not isinstance(value, dict):
         raise ValueError("payload must be a JSON object")
     return value
@@ -167,10 +266,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     arguments = parser.parse_args(argv)
     try:
         if arguments.command == "snapshot":
-            graph = RepositorySnapshotter(arguments.repository, limits=_limits(arguments)).snapshot()
+            graph = RepositorySnapshotter(
+                arguments.repository, limits=_limits(arguments)
+            ).snapshot()
             _print_json(graph.to_dict())
         elif arguments.command == "compile":
-            graph = RepositorySnapshotter(arguments.repository, limits=_limits(arguments)).snapshot()
+            graph = RepositorySnapshotter(
+                arguments.repository, limits=_limits(arguments)
+            ).snapshot()
             semantic = SemanticCompiler().compile(graph)
             architecture = ArchitectureExtractor().extract(graph, semantic)
             if arguments.architecture_format == "calm":
@@ -179,18 +282,44 @@ def main(argv: Sequence[str] | None = None) -> int:
                 architecture_value = architecture.graph_rows()
             else:
                 architecture_value = architecture.to_dict()
-            _print_json({"repository": graph.to_dict(), "semantic": semantic.to_dict(), "architecture": architecture_value})
+            _print_json(
+                {
+                    "repository": graph.to_dict(),
+                    "semantic": semantic.to_dict(),
+                    "architecture": architecture_value,
+                }
+            )
         elif arguments.command == "list-skills":
-            _print_json({"skills": [SKILL_REGISTRY[name].to_dict() for name in sorted(SKILL_REGISTRY)]})
+            _print_json(
+                {
+                    "skills": [
+                        SKILL_REGISTRY[name].to_dict()
+                        for name in sorted(SKILL_REGISTRY)
+                    ]
+                }
+            )
         elif arguments.command == "list-components":
-            _print_json({"components": [COMPONENT_REGISTRY[name].to_dict() for name in sorted(COMPONENT_REGISTRY)]})
+            _print_json(
+                {
+                    "components": [
+                        COMPONENT_REGISTRY[name].to_dict()
+                        for name in sorted(COMPONENT_REGISTRY)
+                    ]
+                }
+            )
         elif arguments.command == "invoke":
             runtime = SkillRuntime(workspace_roots=arguments.workspace_root)
-            result = runtime.execute(arguments.skill, _load_payload(arguments), context={"authority": arguments.authority})
+            result = runtime.execute(
+                arguments.skill,
+                _load_payload(arguments),
+                context={"authority": arguments.authority},
+            )
             _print_json(result.to_dict())
             return 0 if result.status not in {"BLOCKED", "FAILED", "DENIED"} else 2
         elif arguments.command == "serve":
             runtime = SkillRuntime(workspace_roots=arguments.workspace_root)
+            store: ControlPlaneStore
+            runtime_assurance: RuntimeAssuranceControlPlane | None = None
             if arguments.runtime_mode == "production":
                 if arguments.state_db:
                     raise ValueError(
@@ -200,6 +329,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "expected issuer": arguments.expected_issuer,
                     "expected audience": arguments.expected_audience,
                     "transport mode": arguments.transport_mode,
+                    "runtime assurance factory": arguments.runtime_assurance_factory,
                 }
                 missing = [
                     name
@@ -222,6 +352,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     raise ValueError(
                         "production requires exactly one authenticator factory or JWKS file"
                     )
+                authenticator: Authenticator
                 if arguments.jwks_file:
                     authenticator = FileJwksAuthenticator(
                         arguments.jwks_file,
@@ -232,11 +363,14 @@ def main(argv: Sequence[str] | None = None) -> int:
                         leeway_seconds=arguments.jwt_leeway_seconds,
                     )
                 else:
-                    authenticator = _load_authenticator(
-                        arguments.authenticator_factory
-                    )
-                store = PostgresStore.from_environment(
+                    authenticator = _load_authenticator(arguments.authenticator_factory)
+                postgres_store = PostgresStore.from_environment(
                     variable=arguments.postgres_dsn_env
+                )
+                store = postgres_store
+                runtime_assurance = _load_runtime_assurance(
+                    arguments.runtime_assurance_factory,
+                    postgres_store,
                 )
                 service_arguments: dict[str, Any] = {
                     "authenticator": authenticator,
@@ -297,6 +431,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     runtime,
                     owner_id=arguments.owner_id,
                     lease_ttl_seconds=arguments.lease_ttl_seconds,
+                    runtime_assurance=runtime_assurance,
                 )
                 service = HarnessService(
                     runtime,
@@ -325,12 +460,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     except KeyboardInterrupt:
         return 130
     except Exception as exc:
-        print(json.dumps({"error": {"type": type(exc).__name__, "message": str(exc)}}, ensure_ascii=False), file=sys.stderr)
+        print(
+            json.dumps(
+                {"error": {"type": type(exc).__name__, "message": str(exc)}},
+                ensure_ascii=False,
+            ),
+            file=sys.stderr,
+        )
         return 2
 
 
 def _print_json(value: Any) -> None:
-    print(json.dumps(value, sort_keys=True, ensure_ascii=False, indent=2, allow_nan=False))
+    print(
+        json.dumps(value, sort_keys=True, ensure_ascii=False, indent=2, allow_nan=False)
+    )
 
 
 def _strict_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -379,7 +522,34 @@ def _load_authenticator(reference: str) -> Authenticator:
             raise ValueError(
                 f"configured authenticator is missing required attribute: {attribute}"
             )
-    return authenticator
+    return cast(Authenticator, authenticator)
+
+
+def _load_runtime_assurance(
+    reference: str,
+    store: PostgresStore,
+) -> RuntimeAssuranceControlPlane:
+    module_name, separator, symbol_name = reference.partition(":")
+    if (
+        not separator
+        or not module_name
+        or not symbol_name
+        or any(character.isspace() for character in reference)
+    ):
+        raise ValueError(
+            "runtime assurance factory must use module.path:factory syntax"
+        )
+    factory = getattr(importlib.import_module(module_name), symbol_name)
+    if not callable(factory):
+        raise ValueError("configured runtime assurance factory is not callable")
+    control = factory(store)
+    if not isinstance(control, RuntimeAssuranceControlPlane):
+        raise ValueError(
+            "runtime assurance factory must return RuntimeAssuranceControlPlane"
+        )
+    if id(control.store) != id(store):
+        raise ValueError("runtime assurance factory returned a different durable store")
+    return control
 
 
 __all__ = ["build_parser", "main"]

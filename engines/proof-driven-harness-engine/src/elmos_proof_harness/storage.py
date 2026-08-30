@@ -17,7 +17,13 @@ from datetime import datetime
 from enum import StrEnum
 from typing import Any, Mapping, Protocol, runtime_checkable
 
-from .contracts import CheckpointRecord, EvidenceRecord, LeaseGrant, MetricPoint, SecurityContext
+from .contracts import (
+    CheckpointRecord,
+    EvidenceRecord,
+    LeaseGrant,
+    MetricPoint,
+    SecurityContext,
+)
 
 
 MAX_INLINE_EVIDENCE_BYTES = 16 * 1024 * 1024
@@ -31,7 +37,18 @@ POSTGRES_SCHEMA_VERSION = 1
 # Detached digest of the complete migration bytes, using the same domain as
 # tools/apply_postgres_migration.py.  It is intentionally computed after the
 # SQL source is finalized; embedding it in the migration would be recursive.
-POSTGRES_MIGRATION_SOURCE_DIGEST = "sha256:bdddb1ff1a962df931df57e4d8d428e08c232b4ac88e5189bf8c2ccde34e388f"
+POSTGRES_MIGRATION_SOURCE_DIGEST = (
+    "sha256:bdddb1ff1a962df931df57e4d8d428e08c232b4ac88e5189bf8c2ccde34e388f"
+)
+# V304 deliberately uses a separate runtime-assurance ledger so applying the
+# optional v3.1 delta does not change the core V001 schema version observed by
+# existing stores.  The applicator requires this exact name, version, digest,
+# and the V001 prerequisite before it can mutate a database.
+POSTGRES_DELTA_SCHEMA_VERSION = 304
+POSTGRES_DELTA_MIGRATION_NAME = "V304__harness_runtime_assurance_delta.sql"
+POSTGRES_DELTA_MIGRATION_SOURCE_DIGEST = (
+    "sha256:e80c79db5ee6105bb551b487f1dd07c81bcb953f1f5b8adbb6ed176402f7a09c"
+)
 
 
 class StorageStatus(StrEnum):
@@ -123,7 +140,9 @@ class ControlPlaneStore(Protocol):
 
     def close(self) -> None: ...
 
-    def register_scope(self, context: SecurityContext, *, now: datetime | None = None) -> None: ...
+    def register_scope(
+        self, context: SecurityContext, *, now: datetime | None = None
+    ) -> None: ...
 
     def assert_scope(self, context: SecurityContext) -> None: ...
 
@@ -172,7 +191,9 @@ class ControlPlaneStore(Protocol):
         now: datetime | None = None,
     ) -> CheckpointRecord: ...
 
-    def get_checkpoint(self, context: SecurityContext, checkpoint_id: str) -> tuple[CheckpointRecord, bytes]: ...
+    def get_checkpoint(
+        self, context: SecurityContext, checkpoint_id: str
+    ) -> tuple[CheckpointRecord, bytes]: ...
 
     def recover_run(
         self,
@@ -193,7 +214,9 @@ class ControlPlaneStore(Protocol):
         idempotency_key: str | None = None,
     ) -> EvidenceRecord: ...
 
-    def get_evidence(self, context: SecurityContext, evidence_id: str) -> tuple[EvidenceRecord, bytes]: ...
+    def get_evidence(
+        self, context: SecurityContext, evidence_id: str
+    ) -> tuple[EvidenceRecord, bytes]: ...
 
     def revoke_evidence(
         self,
@@ -207,7 +230,9 @@ class ControlPlaneStore(Protocol):
 
     def evidence_revoked(self, context: SecurityContext, evidence_id: str) -> bool: ...
 
-    def unsettled_side_effect_count(self, context: SecurityContext, *, run_id: str | None = None) -> int: ...
+    def unsettled_side_effect_count(
+        self, context: SecurityContext, *, run_id: str | None = None
+    ) -> int: ...
 
     def start_external_effect(
         self,

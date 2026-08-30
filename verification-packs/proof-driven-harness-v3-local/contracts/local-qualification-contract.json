@@ -1,0 +1,63 @@
+{
+  "certification": "NOT_CERTIFIED",
+  "delta_acceptance": {
+    "binding_sha256": "sha256:d315f4e9a2c0de7d0017d39e1de1331c92c10bb9570c131b4de13051fedae529",
+    "certification": "NOT_CERTIFIED",
+    "independent_verification": "NOT_RUN",
+    "local_cases": {
+      "evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "failed": 0,
+      "p0_passed": 89,
+      "p1_passed": 15,
+      "passed": 104
+    },
+    "target_environment": "NOT_RUN"
+  },
+  "delta_raw_log_paths": [
+    "qualification/delta-v3.1/raw/delta-engine-tests.json",
+    "qualification/delta-v3.1/raw/delta-importer-tests.json",
+    "qualification/delta-v3.1/raw/delta-installation-check.json"
+  ],
+  "delta_source": {
+    "archive_bytes": 173228,
+    "archive_path": "skills/subskills/elmos-v3-harness-runtime-assurance-delta-v3.1.0.zip",
+    "archive_sha256": "sha256:13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
+    "fixed_receipt_path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/local-qualification.json",
+    "package_version": "3.1.0",
+    "receipt_sha256": "sha256:c64c8df1a1b7eb8a0a11400d71f2838a4fee3dbf5f5290a02e5e4b52afc3953d"
+  },
+  "external_evidence": "NOT_RUN",
+  "fixed_receipt_path": "engines/proof-driven-harness-engine/qualification/local-qualification.json",
+  "kind": "elmos.proof-driven-harness-v3.local-qualification-contract",
+  "postgresql17": {
+    "raw_log": null,
+    "reason": "Disposable PostgreSQL qualification was not explicitly requested.",
+    "required_postgresql_version": "17.5",
+    "required_psycopg_version": "3.2.13",
+    "status": "NOT_RUN"
+  },
+  "promotion_ceiling": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "raw_log_paths": [
+    "qualification/raw/archive-installation-check.json",
+    "qualification/raw/engine-tests.json",
+    "qualification/raw/package-integration-tests.json"
+  ],
+  "registry": {
+    "component_count": 96,
+    "component_ids_sha256": "sha256:3e76361a14ce21d6ad4c56a3d6fc080946c054295263673e9df845ab0e0649a3",
+    "skill_count": 16,
+    "skill_names_sha256": "sha256:dfceeb074cb8525aa6a999fec19dae565383f82c33cb1fbe3eaef76e8d8fb0e4"
+  },
+  "required_status": "PASS",
+  "schema_version": 1,
+  "source": {
+    "archive_bytes": 5601254,
+    "archive_path": "skills/subskills/elmos-proof-driven-agentic-harness-repository-semantic-compiler-v3.0.0.zip",
+    "archive_sha256": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07"
+  },
+  "target": {
+    "engine_root": "engines/proof-driven-harness-engine",
+    "engine_tree_sha256": "sha256:218b1191cdd9f4d9bd5327c8a232e336da9268cb7c8dbcd0b35343ddc1a5480a",
+    "inventory_path": "artifacts/engine-tree-inventory.json"
+  }
+}

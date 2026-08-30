@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Publish the bounded Batch 35 proof-harness local verification pack.
+"""Publish the bounded Batch 35 composite proof-harness verification pack.
 
-The local qualification receipt is untrusted evidence input.  This publisher
-recomputes every receipt binding from repository bytes before it constructs a
-limited, self-attested pack.  It never runs source-package content, promotes
-external evidence, requests certification, or treats a successful local gate
-process as certification.
+The base and runtime-assurance-delta qualification receipts are untrusted
+evidence inputs. This publisher recomputes every receipt binding from
+repository bytes before it constructs a limited, self-attested pack. It never
+runs source-package content, promotes external evidence, requests
+certification, or treats a successful local gate process as certification.
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 import fcntl
 import hashlib
+import io
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -22,11 +23,13 @@ import re
 import secrets
 import stat
 import tempfile
-from typing import Any, Iterator, Mapping, Sequence
+from typing import AbstractSet, Any, Iterator, Mapping, Sequence
+import zipfile
 
 
 PACKAGE_NAME = "elmos-proof-driven-agentic-harness-repository-semantic-compiler"
 PACKAGE_VERSION = "3.0.0"
+COMPOSITE_VERSION = "3.1.0"
 ARCHIVE_SHA256 = "552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07"
 ARCHIVE_BYTES = 5_601_254
 ARCHIVE_RELATIVE = Path(
@@ -37,13 +40,71 @@ ENGINE_ROOT = Path("engines/proof-driven-harness-engine")
 QUALIFIER_RELATIVE = ENGINE_ROOT / "tools/qualify_local.py"
 STRUCTURED_RUNNER_RELATIVE = ENGINE_ROOT / "tools/run_structured_unittest.py"
 PUBLISHER_RELATIVE = ENGINE_ROOT / "tools/publish_verification_pack.py"
-PUBLISHER_TEST_RELATIVE = (
-    ENGINE_ROOT / "tests/test_publish_verification_pack.py"
-)
+PUBLISHER_TEST_RELATIVE = ENGINE_ROOT / "tests/test_publish_verification_pack.py"
 IMPORTER_RELATIVE = Path("tooling/integrate_proof_driven_harness_v3.py")
 IMPORTER_TEST_RELATIVE = Path("tests/proof-driven-harness-v3/test_integration.py")
 POSTGRES_TEST_RELATIVE = ENGINE_ROOT / "tests/postgres17_integration.py"
 RECEIPT_RELATIVE = ENGINE_ROOT / "qualification/local-qualification.json"
+DELTA_PACKAGE_NAME = "elmos-v3-harness-runtime-assurance-delta"
+DELTA_PACKAGE_VERSION = "3.1.0"
+DELTA_ARCHIVE_ROOT = f"{DELTA_PACKAGE_NAME}-v{DELTA_PACKAGE_VERSION}"
+DELTA_ARCHIVE_SHA256 = (
+    "13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37"
+)
+DELTA_ARCHIVE_BYTES = 173_228
+DELTA_ARCHIVE_RELATIVE = Path(
+    "skills/subskills/elmos-v3-harness-runtime-assurance-delta-v3.1.0.zip"
+)
+DELTA_QUALIFIER_RELATIVE = ENGINE_ROOT / "tools/qualify_delta.py"
+DELTA_IMPORTER_RELATIVE = Path("tooling/integrate_harness_runtime_assurance_delta.py")
+DELTA_ACCEPTANCE_BINDINGS_RELATIVE = (
+    ENGINE_ROOT / "supply-chain/delta-v3.1-acceptance-bindings.json"
+)
+DELTA_ENGINE_TEST_PATTERN = "test_delta_*.py"
+DELTA_REQUIRED_ENGINE_TESTS = (
+    ENGINE_ROOT / "tests/test_delta_contract_closure.py",
+    ENGINE_ROOT / "tests/test_delta_migration.py",
+    ENGINE_ROOT / "tests/test_delta_qualification.py",
+    ENGINE_ROOT / "tests/test_delta_skills.py",
+)
+DELTA_OPTIONAL_ENGINE_TESTS = (
+    ENGINE_ROOT / "tests/test_delta_control_plane.py",
+    ENGINE_ROOT / "tests/test_delta_storage.py",
+)
+DELTA_IMPORTER_TEST_RELATIVE = Path(
+    "tests/proof-driven-harness-v3/test_delta_integration.py"
+)
+DELTA_RECEIPT_RELATIVE = (
+    ENGINE_ROOT / "qualification/delta-v3.1/local-qualification.json"
+)
+DELTA_ACCEPTANCE_SKILLS = (
+    ("ELMOS-V3D-001", "elmos-tool-result-interception-commit", "P0"),
+    ("ELMOS-V3D-002", "elmos-step-finalized-execution-plan", "P0"),
+    ("ELMOS-V3D-003", "elmos-lossless-permission-replay", "P0"),
+    ("ELMOS-V3D-004", "elmos-invocation-scoped-capability-lease", "P0"),
+    ("ELMOS-V3D-005", "elmos-host-minted-security-context", "P0"),
+    ("ELMOS-V3D-006", "elmos-environment-attachment-authority", "P0"),
+    ("ELMOS-V3D-007", "elmos-executor-generation-fencing", "P0"),
+    ("ELMOS-V3D-008", "elmos-workspace-ownership-lease", "P0"),
+    ("ELMOS-V3D-009", "elmos-harness-transport-version-negotiation", "P0"),
+    ("ELMOS-V3D-010", "elmos-skill-trust-domain-provenance", "P0"),
+    ("ELMOS-V3D-011", "elmos-registered-durable-plugin-events", "P1"),
+    ("ELMOS-V3D-012", "elmos-typed-external-ingress", "P1"),
+    ("ELMOS-V3D-013", "elmos-subagent-model-execution-spec", "P1"),
+)
+DELTA_ACCEPTANCE_CASE_SUFFIXES = (
+    "A01",
+    "A02",
+    "A03",
+    "A04",
+    "A05",
+    "NEG-STALE",
+    "NEG-REPLAY",
+    "RECOVERY",
+)
+DELTA_ACCEPTANCE_SCENARIOS_PER_SKILL = 8
+DELTA_ACCEPTANCE_SCENARIO_COUNT = 104
+_DELTA_TEST_SELECTOR_PATTERN = re.compile(r"[A-Za-z_]\w*(?:\.[A-Za-z_]\w*){2,}")
 PACK_KEY = "proof-driven-harness-v3-local"
 PACK_RELATIVE = Path("verification-packs") / PACK_KEY
 MAX_RECEIPT_BYTES = 1024 * 1024
@@ -53,7 +114,15 @@ GATE_OUTPUTS = frozenset(
     {Path("certification/gate-result.json"), Path("certification/gate-report.md")}
 )
 EXCLUDED_DIRECTORIES = frozenset(
-    {"__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache"}
+    {
+        ".venv",
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".mypy_cache",
+        "build",
+        "dist",
+    }
 )
 SKILL_NAMES = tuple(
     sorted(
@@ -103,6 +172,32 @@ RAW_LOG_COMMANDS: Mapping[str, tuple[str, ...]] = {
     ),
     "qualification/raw/archive-installation-check.json": (
         "tooling/integrate_proof_driven_harness_v3.py",
+        "--check",
+    ),
+}
+DELTA_RAW_LOG_COMMANDS: Mapping[str, tuple[str, ...]] = {
+    "qualification/delta-v3.1/raw/delta-engine-tests.json": (
+        STRUCTURED_RUNNER_RELATIVE.as_posix(),
+        "--repo-root",
+        ".",
+        "--start-directory",
+        (ENGINE_ROOT / "tests").as_posix(),
+        "--pattern",
+        DELTA_ENGINE_TEST_PATTERN,
+    ),
+    "qualification/delta-v3.1/raw/delta-importer-tests.json": (
+        STRUCTURED_RUNNER_RELATIVE.as_posix(),
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "tests/proof-driven-harness-v3",
+        "--pattern",
+        "test_delta_integration.py",
+    ),
+    "qualification/delta-v3.1/raw/delta-installation-check.json": (
+        DELTA_IMPORTER_RELATIVE.as_posix(),
+        "--repo-root",
+        ".",
         "--check",
     ),
 }
@@ -168,11 +263,21 @@ class ValidatedQualification:
     raw_logs: Mapping[str, FileSnapshot]
     raw_records: Mapping[str, Mapping[str, Any]]
     structured_results: Mapping[str, Mapping[str, Any]]
+    delta_receipt_payload: bytes
+    delta_receipt: Mapping[str, Any]
+    delta_receipt_sha256: str
+    delta_archive: FileSnapshot
+    delta_qualifier: FileSnapshot
+    delta_raw_logs: Mapping[str, FileSnapshot]
+    delta_raw_records: Mapping[str, Mapping[str, Any]]
+    delta_structured_results: Mapping[str, Mapping[str, Any]]
     observed_files: Mapping[Path, FileIdentity]
 
     @property
     def test_count(self) -> int:
-        return int(self.receipt["tests"]["passed"])
+        return int(self.receipt["tests"]["passed"]) + int(
+            self.delta_receipt["tests"]["passed"]
+        )
 
 
 def canonical_bytes(value: Any) -> bytes:
@@ -244,8 +349,7 @@ def repository_anchor(
         if (
             not stat.S_ISDIR(identity.mode)
             or not stat.S_ISDIR(pathname.mode)
-            or (identity.device, identity.inode)
-            != (pathname.device, pathname.inode)
+            or (identity.device, identity.inode) != (pathname.device, pathname.inode)
         ):
             raise VerificationPackError(
                 f"repository root is not a stable real directory: {absolute}"
@@ -262,9 +366,9 @@ def assert_repository_anchor(absolute: Path, expected: FileIdentity) -> None:
         raise VerificationPackError(
             f"repository root pathname cannot be revalidated: {absolute}: {exc}"
         ) from exc
-    if (
-        not stat.S_ISDIR(current.mode)
-        or (current.device, current.inode) != (expected.device, expected.inode)
+    if not stat.S_ISDIR(current.mode) or (current.device, current.inode) != (
+        expected.device,
+        expected.inode,
     ):
         raise VerificationPackError(
             f"repository root pathname identity changed: {absolute}"
@@ -306,7 +410,9 @@ def _open_directory_at(
             opened = os.fstat(following)
             if not stat.S_ISDIR(opened.st_mode):
                 os.close(following)
-                raise VerificationPackError(f"anchored path is not a directory: {relative}")
+                raise VerificationPackError(
+                    f"anchored path is not a directory: {relative}"
+                )
             os.close(current)
             current = following
         return current
@@ -364,11 +470,7 @@ def read_file_at(
     parent_fd, name = parent
     descriptor = -1
     try:
-        flags = (
-            os.O_RDONLY
-            | getattr(os, "O_CLOEXEC", 0)
-            | getattr(os, "O_NOFOLLOW", 0)
-        )
+        flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
         try:
             descriptor = os.open(name, flags, dir_fd=parent_fd)
         except FileNotFoundError:
@@ -415,7 +517,11 @@ def revalidate_file_at(
     expected: FileIdentity,
 ) -> None:
     current = lstat_at(root_fd, relative)
-    if current is None or _identity(current) != expected or not stat.S_ISREG(current.st_mode):
+    if (
+        current is None
+        or _identity(current) != expected
+        or not stat.S_ISREG(current.st_mode)
+    ):
         raise VerificationPackError(f"file pathname identity changed: {relative}")
 
 
@@ -440,7 +546,7 @@ def _load_json(payload: bytes, label: str) -> Any:
         raise VerificationPackError(f"invalid JSON in {label}: {exc}") from exc
 
 
-def _exact_mapping(value: Any, keys: set[str], label: str) -> Mapping[str, Any]:
+def _exact_mapping(value: Any, keys: AbstractSet[str], label: str) -> Mapping[str, Any]:
     if not isinstance(value, dict) or set(value) != keys:
         raise VerificationPackError(f"{label} fields do not match the fixed contract")
     return value
@@ -449,13 +555,16 @@ def _exact_mapping(value: Any, keys: set[str], label: str) -> Mapping[str, Any]:
 def _nonnegative_integer(value: Any, label: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 0:
         raise VerificationPackError(f"{label} must be a non-negative integer")
-    return value
+    return int(value)
 
 
 def _engine_excluded(relative: PurePosixPath) -> bool:
     if not relative.parts or relative.parts[0] == "qualification":
         return True
-    if any(part in EXCLUDED_DIRECTORIES for part in relative.parts):
+    if any(
+        part in EXCLUDED_DIRECTORIES or part.endswith(".egg-info")
+        for part in relative.parts
+    ):
         return True
     return (
         relative.name.endswith(".pyc")
@@ -495,9 +604,7 @@ def _walk_engine(
                 os.close(child_fd)
         elif stat.S_ISREG(metadata.st_mode):
             flags = (
-                os.O_RDONLY
-                | getattr(os, "O_CLOEXEC", 0)
-                | getattr(os, "O_NOFOLLOW", 0)
+                os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
             )
             descriptor = os.open(name, flags, dir_fd=directory_fd)
             try:
@@ -513,7 +620,10 @@ def _walk_engine(
                     relative.as_posix(),
                 )
                 after = os.fstat(descriptor)
-                if _identity(opened) != _identity(after) or len(payload) != opened.st_size:
+                if (
+                    _identity(opened) != _identity(after)
+                    or len(payload) != opened.st_size
+                ):
                     raise VerificationPackError(
                         f"engine file changed while reading: {relative}"
                     )
@@ -628,7 +738,9 @@ def _validate_execution_environment(
             "certification": "NOT_CERTIFIED",
         }
     ):
-        raise VerificationPackError(f"execution environment identity is invalid: {label}")
+        raise VerificationPackError(
+            f"execution environment identity is invalid: {label}"
+        )
     packages = environment["packages"]
     if (
         not isinstance(packages, dict)
@@ -642,7 +754,9 @@ def _validate_execution_environment(
         or "psycopg" not in packages
         or "psycopg-binary" not in packages
     ):
-        raise VerificationPackError(f"execution dependency versions are invalid: {label}")
+        raise VerificationPackError(
+            f"execution dependency versions are invalid: {label}"
+        )
     if not isinstance(environment["postgresql"], dict):
         raise VerificationPackError(f"PostgreSQL environment is invalid: {label}")
     tool_snapshot = read_file_at(
@@ -661,6 +775,7 @@ def _validate_structured_results(
     stdout: str,
     *,
     path: str,
+    commands: Mapping[str, tuple[str, ...]] | None = None,
 ) -> tuple[Mapping[str, Any], int]:
     result = _exact_mapping(
         _load_json(stdout.encode("utf-8"), f"structured stdout {path}"),
@@ -683,9 +798,12 @@ def _validate_structured_results(
         {"start_directory", "pattern"},
         f"test discovery {path}",
     )
-    command = (
-        POSTGRES_RAW_COMMAND if path == POSTGRES_RAW_LOG else RAW_LOG_COMMANDS[path]
-    )
+    if commands is not None:
+        command = commands[path]
+    else:
+        command = (
+            POSTGRES_RAW_COMMAND if path == POSTGRES_RAW_LOG else RAW_LOG_COMMANDS[path]
+        )
     expected_discovery = {
         "start_directory": command[4],
         "pattern": command[6],
@@ -735,7 +853,9 @@ def _validate_structured_results(
     selectors: set[str] = set()
     for index, raw_outcome in enumerate(outcomes):
         if not isinstance(raw_outcome, dict):
-            raise VerificationPackError(f"structured outcome is not an object: {path}#{index}")
+            raise VerificationPackError(
+                f"structured outcome is not an object: {path}#{index}"
+            )
         required = {
             "selector",
             "source_path",
@@ -746,7 +866,9 @@ def _validate_structured_results(
         }
         actual_fields = set(raw_outcome)
         if actual_fields != required and actual_fields != required | {"detail"}:
-            raise VerificationPackError(f"structured outcome fields are not exact: {path}#{index}")
+            raise VerificationPackError(
+                f"structured outcome fields are not exact: {path}#{index}"
+            )
         selector = raw_outcome["selector"]
         source_path = raw_outcome["source_path"]
         if (
@@ -756,13 +878,17 @@ def _validate_structured_results(
             or not isinstance(source_path, str)
             or not source_path
             or raw_outcome["status"] != "PASSED"
-            or not re.fullmatch(r"sha256:[0-9a-f]{64}", str(raw_outcome["source_sha256"]))
+            or not re.fullmatch(
+                r"sha256:[0-9a-f]{64}", str(raw_outcome["source_sha256"])
+            )
             or not re.fullmatch(
                 r"sha256:[0-9a-f]{64}",
                 str(raw_outcome["selector_source_binding_sha256"]),
             )
         ):
-            raise VerificationPackError(f"structured outcome identity is invalid: {path}#{index}")
+            raise VerificationPackError(
+                f"structured outcome identity is invalid: {path}#{index}"
+            )
         _nonnegative_integer(
             raw_outcome["duration_milliseconds"],
             f"structured outcome duration {path}#{index}",
@@ -791,7 +917,9 @@ def _validate_structured_results(
             != digest(canonical_bytes(binding))
             or not selector.startswith(source_relative.stem + ".")
         ):
-            raise VerificationPackError(f"structured selector/source binding drift: {selector}")
+            raise VerificationPackError(
+                f"structured selector/source binding drift: {selector}"
+            )
         selectors.add(selector)
     return result, normalized_totals["passed"]
 
@@ -821,7 +949,10 @@ def _validate_raw_log(
     repository_path = ENGINE_ROOT / Path(*PurePosixPath(path).parts)
     snapshot = read_file_at(root_fd, repository_path, limit=MAX_LOG_BYTES)
     assert snapshot is not None
-    if len(snapshot.payload) != byte_count or sha256_hex(snapshot.payload) != ref["sha256"]:
+    if (
+        len(snapshot.payload) != byte_count
+        or sha256_hex(snapshot.payload) != ref["sha256"]
+    ):
         raise VerificationPackError(f"raw log digest mismatch: {path}")
     record = _exact_mapping(
         _load_json(snapshot.payload, path),
@@ -857,9 +988,7 @@ def _validate_raw_log(
         raise VerificationPackError(f"raw log execution contract failed: {path}")
     _nonnegative_integer(record["wall_clock_milliseconds"], f"duration {path}")
     expected_tool = (
-        STRUCTURED_RUNNER_RELATIVE
-        if path in STRUCTURED_RAW_LOGS
-        else IMPORTER_RELATIVE
+        STRUCTURED_RUNNER_RELATIVE if path in STRUCTURED_RAW_LOGS else IMPORTER_RELATIVE
     )
     _validate_execution_environment(
         root_fd,
@@ -876,6 +1005,665 @@ def _validate_raw_log(
             path=path,
         )
     return path, snapshot, record, structured, passed, repository_path
+
+
+def _delta_acceptance_source_scenarios(
+    payload: bytes,
+    *,
+    skill_id: str,
+    priority: str,
+) -> list[tuple[str, str]]:
+    try:
+        text = payload.decode("utf-8", errors="strict")
+    except UnicodeDecodeError as exc:
+        raise VerificationPackError("delta acceptance source is not UTF-8") from exc
+    if "\x00" in text or "\r" in text:
+        raise VerificationPackError("delta acceptance source line content is invalid")
+    scenarios: list[tuple[str, str]] = []
+    current: str | None = None
+    for line in text.splitlines():
+        identifier = re.fullmatch(
+            r"\s*- id: (ELMOS-V3D-\d{3}-(?:A0[1-5]|NEG-STALE|NEG-REPLAY|RECOVERY))\s*",
+            line,
+        )
+        if identifier is not None:
+            if current is not None:
+                raise VerificationPackError(
+                    "delta acceptance scenario lacks an exact priority"
+                )
+            current = identifier.group(1)
+            continue
+        source_priority = re.fullmatch(r"\s+priority: (P0|P1)\s*", line)
+        if current is not None and source_priority is not None:
+            scenarios.append((current, source_priority.group(1)))
+            current = None
+    expected_ids = [f"{skill_id}-{suffix}" for suffix in DELTA_ACCEPTANCE_CASE_SUFFIXES]
+    if current is not None or [item[0] for item in scenarios] != expected_ids:
+        raise VerificationPackError(
+            f"delta acceptance source scenario inventory drifted: {skill_id}"
+        )
+    return scenarios
+
+
+def _validate_delta_acceptance_bindings(
+    payload: bytes,
+    archive_payload: bytes,
+) -> Mapping[str, Any]:
+    value = _exact_mapping(
+        _load_json(payload, DELTA_ACCEPTANCE_BINDINGS_RELATIVE.as_posix()),
+        {
+            "schema_version",
+            "kind",
+            "package",
+            "source_archive",
+            "binding_semantics",
+            "expected_skill_count",
+            "expected_scenarios_per_skill",
+            "expected_scenario_count",
+            "skills",
+        },
+        "delta acceptance bindings",
+    )
+    if (
+        value["schema_version"] != "1.0.0"
+        or value["kind"] != "elmos.harness-runtime-assurance-delta.acceptance-bindings"
+        or value["package"] != f"{DELTA_PACKAGE_NAME}@{DELTA_PACKAGE_VERSION}"
+        or value["source_archive"]
+        != {
+            "path": DELTA_ARCHIVE_RELATIVE.as_posix(),
+            "sha256": "sha256:" + DELTA_ARCHIVE_SHA256,
+            "bytes": DELTA_ARCHIVE_BYTES,
+            "executed": False,
+        }
+        or value["binding_semantics"]
+        != {
+            "classification": "STATIC_TRACEABILITY_ONLY",
+            "successful_local_result_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+            "target_environment": "NOT_RUN",
+            "independent_verification": "NOT_RUN",
+            "certification": "NOT_CERTIFIED",
+            "static_mapping_is_execution_evidence": False,
+        }
+        or value["expected_skill_count"] != len(DELTA_ACCEPTANCE_SKILLS)
+        or value["expected_scenarios_per_skill"] != DELTA_ACCEPTANCE_SCENARIOS_PER_SKILL
+        or value["expected_scenario_count"] != DELTA_ACCEPTANCE_SCENARIO_COUNT
+    ):
+        raise VerificationPackError("delta acceptance binding header drifted")
+    skills = value["skills"]
+    if not isinstance(skills, list) or len(skills) != len(DELTA_ACCEPTANCE_SKILLS):
+        raise VerificationPackError("delta acceptance skill inventory drifted")
+    try:
+        archive = zipfile.ZipFile(io.BytesIO(archive_payload), "r")
+    except zipfile.BadZipFile as exc:
+        raise VerificationPackError("delta acceptance source ZIP is invalid") from exc
+    cases: list[dict[str, Any]] = []
+    observed_ids: set[str] = set()
+    with archive:
+        members = archive.infolist()
+        member_names = [member.filename for member in members]
+        for raw_skill, (skill_id, skill, priority) in zip(
+            skills, DELTA_ACCEPTANCE_SKILLS, strict=True
+        ):
+            skill_record = _exact_mapping(
+                raw_skill,
+                {"skill", "priority", "source_acceptance", "cases"},
+                "delta acceptance skill binding",
+            )
+            expected_member = (
+                f"{DELTA_ARCHIVE_ROOT}/payload/skills/extensions/"
+                f"{priority}/{skill}/acceptance.yaml"
+            )
+            if member_names.count(expected_member) != 1:
+                raise VerificationPackError(
+                    f"delta acceptance source is missing or duplicated: {skill}"
+                )
+            info = archive.getinfo(expected_member)
+            source_payload = archive.read(info)
+            expected_source = {
+                "archive_member": expected_member,
+                "sha256": digest(source_payload),
+                "bytes": len(source_payload),
+                "executed": False,
+            }
+            source = _exact_mapping(
+                skill_record["source_acceptance"],
+                {"archive_member", "sha256", "bytes", "executed"},
+                "delta acceptance source binding",
+            )
+            if (
+                skill_record["skill"] != skill
+                or skill_record["priority"] != priority
+                or source != expected_source
+            ):
+                raise VerificationPackError(
+                    f"delta acceptance source binding drifted: {skill}"
+                )
+            source_scenarios = _delta_acceptance_source_scenarios(
+                source_payload,
+                skill_id=skill_id,
+                priority=priority,
+            )
+            raw_cases = skill_record["cases"]
+            if (
+                not isinstance(raw_cases, list)
+                or len(raw_cases) != DELTA_ACCEPTANCE_SCENARIOS_PER_SKILL
+            ):
+                raise VerificationPackError(
+                    f"delta acceptance cases are incomplete: {skill}"
+                )
+            for raw_case, (acceptance_id, source_priority) in zip(
+                raw_cases, source_scenarios, strict=True
+            ):
+                case = _exact_mapping(
+                    raw_case,
+                    {
+                        "acceptance_id",
+                        "priority",
+                        "repository_test_selectors",
+                        "local_evidence_boundary",
+                        "target_environment",
+                        "certification",
+                    },
+                    "delta acceptance case binding",
+                )
+                selectors = case["repository_test_selectors"]
+                if (
+                    case["acceptance_id"] != acceptance_id
+                    or acceptance_id in observed_ids
+                    or case["priority"] != source_priority
+                    or not isinstance(selectors, list)
+                    or not 1 <= len(selectors) <= 8
+                    or any(
+                        not isinstance(selector, str)
+                        or len(selector) > 1024
+                        or _DELTA_TEST_SELECTOR_PATTERN.fullmatch(selector) is None
+                        for selector in selectors
+                    )
+                    or len(set(selectors)) != len(selectors)
+                    or case["local_evidence_boundary"] != "LOCAL_EXECUTED_SELF_ATTESTED"
+                    or case["target_environment"] != "NOT_RUN"
+                    or case["certification"] != "NOT_CERTIFIED"
+                ):
+                    raise VerificationPackError(
+                        f"delta acceptance case binding drifted: {acceptance_id}"
+                    )
+                observed_ids.add(acceptance_id)
+                cases.append(
+                    {
+                        "acceptance_id": acceptance_id,
+                        "priority": source_priority,
+                        "skill": skill,
+                        "source_acceptance_sha256": expected_source["sha256"],
+                        "repository_test_selectors": list(selectors),
+                    }
+                )
+    if len(cases) != DELTA_ACCEPTANCE_SCENARIO_COUNT:
+        raise VerificationPackError("delta acceptance binding is not exactly 13x8")
+    return {
+        "path": DELTA_ACCEPTANCE_BINDINGS_RELATIVE.as_posix(),
+        "sha256": digest(payload),
+        "skills": len(DELTA_ACCEPTANCE_SKILLS),
+        "scenarios_per_skill": DELTA_ACCEPTANCE_SCENARIOS_PER_SKILL,
+        "scenarios": DELTA_ACCEPTANCE_SCENARIO_COUNT,
+        "mapping_classification": "STATIC_TRACEABILITY_ONLY",
+        "static_mapping_is_execution_evidence": False,
+        "cases": cases,
+    }
+
+
+def _expected_delta_acceptance_receipt(
+    bindings: Mapping[str, Any],
+    outcomes: Sequence[Mapping[str, Any]],
+) -> Mapping[str, Any]:
+    by_selector: dict[str, Mapping[str, Any]] = {}
+    for outcome in outcomes:
+        selector = outcome.get("selector")
+        if not isinstance(selector, str) or selector in by_selector:
+            raise VerificationPackError("delta acceptance outcomes contain duplicates")
+        by_selector[selector] = outcome
+    raw_cases = bindings["cases"]
+    assert isinstance(raw_cases, list)
+    expected_results: list[dict[str, Any]] = []
+    priorities = {"P0": 0, "P1": 0}
+    for case in raw_cases:
+        assert isinstance(case, Mapping)
+        priority = str(case["priority"])
+        priorities[priority] += 1
+        selectors = case["repository_test_selectors"]
+        assert isinstance(selectors, list)
+        evidence: list[dict[str, str]] = []
+        for selector in selectors:
+            bound_outcome = by_selector.get(str(selector))
+            if bound_outcome is None or bound_outcome.get("status") != "PASSED":
+                raise VerificationPackError(
+                    f"delta acceptance selector did not pass: {case['acceptance_id']}:{selector}"
+                )
+            evidence.append(
+                {
+                    "selector": str(selector),
+                    "source_path": str(bound_outcome["source_path"]),
+                    "source_sha256": str(bound_outcome["source_sha256"]),
+                }
+            )
+        expected_results.append(
+            {
+                "acceptance_id": case["acceptance_id"],
+                "skill": case["skill"],
+                "priority": priority,
+                "source_acceptance_sha256": case["source_acceptance_sha256"],
+                "repository_test_selectors": list(selectors),
+                "repository_test_evidence": evidence,
+                "local_result": "PASSED",
+                "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+                "target_environment": "NOT_RUN",
+                "certification": "NOT_CERTIFIED",
+            }
+        )
+    return {
+        "binding_path": bindings["path"],
+        "binding_sha256": bindings["sha256"],
+        "mapping_classification": "STATIC_TRACEABILITY_ONLY",
+        "static_mapping_is_execution_evidence": False,
+        "skills": len(DELTA_ACCEPTANCE_SKILLS),
+        "scenarios_per_skill": DELTA_ACCEPTANCE_SCENARIOS_PER_SKILL,
+        "scenarios": DELTA_ACCEPTANCE_SCENARIO_COUNT,
+        "local_cases": {
+            "passed": DELTA_ACCEPTANCE_SCENARIO_COUNT,
+            "failed": 0,
+            "p0_passed": priorities["P0"],
+            "p1_passed": priorities["P1"],
+            "evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+        },
+        "target_environment": "NOT_RUN",
+        "independent_verification": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
+        "case_results": expected_results,
+    }
+
+
+def _validate_delta_acceptance_receipt(
+    value: Any,
+    bindings: Mapping[str, Any],
+    outcomes: Sequence[Mapping[str, Any]],
+) -> None:
+    if value != _expected_delta_acceptance_receipt(bindings, outcomes):
+        raise VerificationPackError("delta acceptance receipt evidence drifted")
+
+
+def _validate_delta_qualification(
+    root_fd: int,
+    records: tuple[Mapping[str, Any], ...],
+) -> tuple[
+    FileSnapshot,
+    Mapping[str, Any],
+    FileSnapshot,
+    FileSnapshot,
+    Mapping[str, FileSnapshot],
+    Mapping[str, Mapping[str, Any]],
+    Mapping[str, Mapping[str, Any]],
+    Mapping[Path, FileIdentity],
+]:
+    receipt_snapshot = read_file_at(
+        root_fd, DELTA_RECEIPT_RELATIVE, limit=MAX_RECEIPT_BYTES
+    )
+    assert receipt_snapshot is not None
+    receipt = _exact_mapping(
+        _load_json(receipt_snapshot.payload, DELTA_RECEIPT_RELATIVE.as_posix()),
+        {
+            "schema_version",
+            "kind",
+            "package",
+            "base_package_version",
+            "composite_version",
+            "archive_sha256",
+            "archive_bytes",
+            "engine",
+            "inputs",
+            "raw_logs",
+            "tests",
+            "acceptance",
+            "install_roundtrip",
+            "adapter_profile_negotiation",
+            "postgresql17",
+            "opa",
+            "provider_runtime",
+            "remote_executor",
+            "target_environment_conformance",
+            "independent_verification",
+            "certification",
+            "implementation_status",
+            "status",
+        },
+        "delta qualification receipt",
+    )
+    if receipt_snapshot.payload != json_bytes(receipt):
+        raise VerificationPackError("delta qualification receipt is not canonical JSON")
+    if (
+        receipt["schema_version"] != "1.0.0"
+        or receipt["kind"]
+        != "elmos.harness-runtime-assurance-delta.local-qualification"
+        or receipt["package"] != f"{DELTA_PACKAGE_NAME}@{DELTA_PACKAGE_VERSION}"
+        or receipt["base_package_version"] != PACKAGE_VERSION
+        or receipt["composite_version"] != COMPOSITE_VERSION
+        or receipt["archive_sha256"] != DELTA_ARCHIVE_SHA256
+        or receipt["archive_bytes"] != DELTA_ARCHIVE_BYTES
+        or receipt["status"] != "PASS"
+        or receipt["implementation_status"] != "LOCAL_EXECUTED_SELF_ATTESTED"
+        or receipt["install_roundtrip"] != "PASS"
+        or receipt["adapter_profile_negotiation"] != "PASS"
+        or any(
+            receipt[key] != "NOT_RUN"
+            for key in (
+                "postgresql17",
+                "opa",
+                "provider_runtime",
+                "remote_executor",
+                "target_environment_conformance",
+                "independent_verification",
+            )
+        )
+        or receipt["certification"] != "NOT_CERTIFIED"
+    ):
+        raise VerificationPackError("delta qualification identity/boundary is invalid")
+
+    archive = read_file_at(root_fd, DELTA_ARCHIVE_RELATIVE, limit=DELTA_ARCHIVE_BYTES)
+    assert archive is not None
+    if (
+        len(archive.payload) != DELTA_ARCHIVE_BYTES
+        or sha256_hex(archive.payload) != DELTA_ARCHIVE_SHA256
+    ):
+        raise VerificationPackError("delta source archive identity is invalid")
+
+    acceptance_snapshot = read_file_at(
+        root_fd,
+        DELTA_ACCEPTANCE_BINDINGS_RELATIVE,
+        limit=2 * 1024 * 1024,
+    )
+    assert acceptance_snapshot is not None
+    acceptance_bindings = _validate_delta_acceptance_bindings(
+        acceptance_snapshot.payload,
+        archive.payload,
+    )
+
+    delta_records = [
+        item
+        for item in records
+        if not any(
+            part in {"build", "dist"} or part.endswith(".egg-info")
+            for part in PurePosixPath(str(item["path"])).parts
+        )
+    ]
+    normalized_records = [
+        {
+            "path": item["path"],
+            "bytes": item["bytes"],
+            "sha256": "sha256:" + str(item["sha256"]),
+        }
+        for item in delta_records
+    ]
+    engine = _exact_mapping(
+        receipt["engine"], {"files", "tree_sha256", "inventory"}, "delta engine"
+    )
+    delta_tree_sha256 = digest(canonical_bytes(normalized_records))
+    if (
+        engine["files"] != len(normalized_records)
+        or engine["inventory"] != normalized_records
+        or engine["tree_sha256"] != delta_tree_sha256
+    ):
+        raise VerificationPackError("delta qualification engine binding is invalid")
+
+    discovered_engine_tests = {
+        ENGINE_ROOT / Path(*PurePosixPath(str(item["path"])).parts)
+        for item in delta_records
+        if PurePosixPath(str(item["path"])).parent == PurePosixPath("tests")
+        and PurePosixPath(str(item["path"])).match(DELTA_ENGINE_TEST_PATTERN)
+    }
+    required_engine_tests = set(DELTA_REQUIRED_ENGINE_TESTS)
+    allowed_engine_tests = required_engine_tests | set(DELTA_OPTIONAL_ENGINE_TESTS)
+    missing_engine_tests = required_engine_tests.difference(discovered_engine_tests)
+    unexpected_engine_tests = discovered_engine_tests.difference(allowed_engine_tests)
+    if missing_engine_tests or unexpected_engine_tests:
+        raise VerificationPackError(
+            "delta qualification test inventory is invalid: "
+            f"missing={sorted(map(str, missing_engine_tests))}, "
+            f"unexpected={sorted(map(str, unexpected_engine_tests))}"
+        )
+    expected_inputs = (
+        DELTA_QUALIFIER_RELATIVE,
+        STRUCTURED_RUNNER_RELATIVE,
+        DELTA_IMPORTER_RELATIVE,
+        DELTA_ACCEPTANCE_BINDINGS_RELATIVE,
+        *tuple(sorted(discovered_engine_tests)),
+        DELTA_IMPORTER_TEST_RELATIVE,
+    )
+    inputs = receipt["inputs"]
+    if not isinstance(inputs, dict) or set(inputs) != {
+        path.as_posix() for path in expected_inputs
+    }:
+        raise VerificationPackError("delta fixed input set is invalid")
+    observed: dict[Path, FileIdentity] = {
+        DELTA_RECEIPT_RELATIVE: receipt_snapshot.identity,
+        DELTA_ARCHIVE_RELATIVE: archive.identity,
+        DELTA_ACCEPTANCE_BINDINGS_RELATIVE: acceptance_snapshot.identity,
+    }
+    qualifier: FileSnapshot | None = None
+    for relative in expected_inputs:
+        snapshot = read_file_at(root_fd, relative, limit=MAX_REPOSITORY_FILE_BYTES)
+        assert snapshot is not None
+        contract = _exact_mapping(
+            inputs[relative.as_posix()], {"bytes", "sha256"}, f"delta input {relative}"
+        )
+        if contract != {
+            "bytes": len(snapshot.payload),
+            "sha256": digest(snapshot.payload),
+        }:
+            raise VerificationPackError(f"delta fixed input digest drift: {relative}")
+        observed[relative] = snapshot.identity
+        if relative == DELTA_QUALIFIER_RELATIVE:
+            qualifier = snapshot
+    assert qualifier is not None
+
+    tests = _exact_mapping(receipt["tests"], TEST_TOTAL_KEYS, "delta test totals")
+    expected_totals = {
+        key: _nonnegative_integer(tests[key], f"delta tests {key}")
+        for key in TEST_TOTAL_KEYS
+    }
+    if (
+        expected_totals["selected"] < 25
+        or expected_totals["passed"] != expected_totals["selected"]
+        or any(
+            expected_totals[key] != 0
+            for key in TEST_TOTAL_KEYS.difference({"selected", "passed"})
+        )
+    ):
+        raise VerificationPackError("delta test totals are not fully passing")
+
+    raw_refs = receipt["raw_logs"]
+    if not isinstance(raw_refs, list) or len(raw_refs) != len(DELTA_RAW_LOG_COMMANDS):
+        raise VerificationPackError("delta raw log set is incomplete")
+    raw_logs: dict[str, FileSnapshot] = {}
+    raw_records: dict[str, Mapping[str, Any]] = {}
+    structured_results: dict[str, Mapping[str, Any]] = {}
+    observed_totals = {key: 0 for key in TEST_TOTAL_KEYS}
+    adapter_selectors: set[str] = set()
+    for raw_ref in raw_refs:
+        reference = _exact_mapping(
+            raw_ref,
+            {"name", "path", "sha256", "returncode"},
+            "delta raw log reference",
+        )
+        path = reference["path"]
+        if path not in DELTA_RAW_LOG_COMMANDS or path in raw_logs:
+            raise VerificationPackError(
+                f"unexpected or duplicate delta raw log: {path!r}"
+            )
+        if (
+            reference["name"] != PurePosixPath(path).stem
+            or reference["returncode"] != 0
+            or not re.fullmatch(r"sha256:[0-9a-f]{64}", str(reference["sha256"]))
+        ):
+            raise VerificationPackError(f"delta raw log reference is invalid: {path}")
+        repository_path = ENGINE_ROOT / Path(*PurePosixPath(path).parts)
+        snapshot = read_file_at(root_fd, repository_path, limit=MAX_LOG_BYTES)
+        assert snapshot is not None
+        if reference["sha256"] != digest(snapshot.payload):
+            raise VerificationPackError(f"delta raw log digest mismatch: {path}")
+        record = _exact_mapping(
+            _load_json(snapshot.payload, path),
+            {
+                "schema_version",
+                "name",
+                "argv",
+                "cwd",
+                "returncode",
+                "timed_out",
+                "wall_clock_milliseconds",
+                "stdout",
+                "stderr",
+                "execution_environment",
+            },
+            f"delta raw log {path}",
+        )
+        environment = _exact_mapping(
+            record["execution_environment"],
+            {
+                "python",
+                "os",
+                "network",
+                "external_evidence",
+                "independent_verification",
+                "certification",
+            },
+            f"delta execution environment {path}",
+        )
+        python_record = _exact_mapping(
+            environment["python"],
+            {"implementation", "version", "executable"},
+            f"delta Python environment {path}",
+        )
+        os_record = _exact_mapping(
+            environment["os"],
+            {"system", "release", "machine"},
+            f"delta OS environment {path}",
+        )
+        argv = record["argv"]
+        if (
+            snapshot.payload != json_bytes(record)
+            or record["schema_version"] != "1.0.0"
+            or record["name"] != reference["name"]
+            or record["cwd"] != "."
+            or not isinstance(argv, list)
+            or not argv
+            or any(not isinstance(item, str) or not item for item in argv)
+            or tuple(argv[1:]) != DELTA_RAW_LOG_COMMANDS[path]
+            or argv[0] != python_record["executable"]
+            or record["returncode"] != 0
+            or record["timed_out"] is not False
+            or not isinstance(record["stdout"], str)
+            or not isinstance(record["stderr"], str)
+            or environment["network"] != "LOOPBACK_PROXY_DENY"
+            or environment["external_evidence"] != "NOT_RUN"
+            or environment["independent_verification"] != "NOT_RUN"
+            or environment["certification"] != "NOT_CERTIFIED"
+            or any(
+                not isinstance(value, str) or not value
+                for value in python_record.values()
+            )
+            or any(
+                not isinstance(value, str) or not value for value in os_record.values()
+            )
+        ):
+            raise VerificationPackError(f"delta raw log contract failed: {path}")
+        _nonnegative_integer(
+            record["wall_clock_milliseconds"], f"delta duration {path}"
+        )
+        if path.endswith("-tests.json"):
+            structured, _ = _validate_structured_results(
+                root_fd,
+                record["stdout"],
+                path=path,
+                commands=DELTA_RAW_LOG_COMMANDS,
+            )
+            structured_results[path] = structured
+            for key in TEST_TOTAL_KEYS:
+                observed_totals[key] += int(structured["totals"][key])
+            if path.endswith("delta-engine-tests.json"):
+                observed_sources = {
+                    str(outcome["source_path"]) for outcome in structured["outcomes"]
+                }
+                expected_sources = {
+                    relative.as_posix() for relative in discovered_engine_tests
+                }
+                if observed_sources != expected_sources:
+                    raise VerificationPackError(
+                        "delta engine test evidence omitted a fixed test source"
+                    )
+                adapter_selectors.update(
+                    outcome["selector"]
+                    for outcome in structured["outcomes"]
+                    if any(
+                        token in outcome["selector"].lower()
+                        for token in ("protocol", "adapter", "permission")
+                    )
+                )
+            elif {
+                str(outcome["source_path"]) for outcome in structured["outcomes"]
+            } != {DELTA_IMPORTER_TEST_RELATIVE.as_posix()}:
+                raise VerificationPackError(
+                    "delta importer test evidence source binding is invalid"
+                )
+        else:
+            installation = _load_json(
+                record["stdout"].encode("utf-8"), "delta installation stdout"
+            )
+            if (
+                not isinstance(installation, dict)
+                or installation.get("action") != "check"
+                or installation.get("package")
+                != f"{DELTA_PACKAGE_NAME}@{DELTA_PACKAGE_VERSION}"
+                or not isinstance(installation.get("archive"), dict)
+                or installation["archive"].get("sha256") != DELTA_ARCHIVE_SHA256
+                or installation["archive"].get("bytes") != DELTA_ARCHIVE_BYTES
+                or installation.get("implementation_status")
+                not in {
+                    "DECLARED_RUNTIME_UNQUALIFIED",
+                    "LOCAL_EXECUTED_SELF_ATTESTED",
+                }
+                or installation.get("external_runtime_status") != "NOT_RUN"
+                or installation.get("certification_status") != "NOT_CERTIFIED"
+                or not isinstance(installation.get("installation"), dict)
+                or installation["installation"].get("status") != "PASS"
+            ):
+                raise VerificationPackError("delta installation check is invalid")
+        raw_logs[path] = snapshot
+        raw_records[path] = record
+        observed[repository_path] = snapshot.identity
+    if (
+        set(raw_logs) != set(DELTA_RAW_LOG_COMMANDS)
+        or observed_totals != expected_totals
+        or len(adapter_selectors) < 3
+    ):
+        raise VerificationPackError("delta raw evidence does not match its receipt")
+    engine_results = structured_results.get(
+        "qualification/delta-v3.1/raw/delta-engine-tests.json"
+    )
+    if engine_results is None:
+        raise VerificationPackError("delta acceptance engine outcomes are unavailable")
+    _validate_delta_acceptance_receipt(
+        receipt["acceptance"],
+        acceptance_bindings,
+        engine_results["outcomes"],
+    )
+    return (
+        receipt_snapshot,
+        receipt,
+        archive,
+        qualifier,
+        raw_logs,
+        raw_records,
+        structured_results,
+        observed,
+    )
 
 
 def validate_qualification(repository_root: Path) -> ValidatedQualification:
@@ -906,11 +1694,12 @@ def validate_qualification(repository_root: Path) -> ValidatedQualification:
             raise VerificationPackError("qualification receipt is not canonical JSON")
         if (
             receipt["schema_version"] != "1.1.0"
-            or receipt["kind"]
-            != "elmos.proof-driven-harness-v3.local-qualification"
+            or receipt["kind"] != "elmos.proof-driven-harness-v3.local-qualification"
             or receipt["status"] != "PASS"
         ):
-            raise VerificationPackError("qualification receipt identity/status is invalid")
+            raise VerificationPackError(
+                "qualification receipt identity/status is invalid"
+            )
         package = _exact_mapping(
             receipt["package"],
             {"name", "version", "archive_sha256"},
@@ -929,7 +1718,10 @@ def validate_qualification(repository_root: Path) -> ValidatedQualification:
             limit=ARCHIVE_BYTES,
         )
         assert archive is not None
-        if len(archive.payload) != ARCHIVE_BYTES or sha256_hex(archive.payload) != ARCHIVE_SHA256:
+        if (
+            len(archive.payload) != ARCHIVE_BYTES
+            or sha256_hex(archive.payload) != ARCHIVE_SHA256
+        ):
             raise VerificationPackError("source archive identity is invalid")
 
         engine = _exact_mapping(
@@ -958,7 +1750,9 @@ def validate_qualification(repository_root: Path) -> ValidatedQualification:
             or engine["component_ids_sha256"]
             != sha256_hex(canonical_bytes(list(COMPONENT_IDS)))
         ):
-            raise VerificationPackError("qualification engine/registry binding is invalid")
+            raise VerificationPackError(
+                "qualification engine/registry binding is invalid"
+            )
 
         qualifier = read_file_at(
             root_fd,
@@ -1003,7 +1797,9 @@ def validate_qualification(repository_root: Path) -> ValidatedQualification:
                 or not isinstance(postgres["reason"], str)
                 or not postgres["reason"]
             ):
-                raise VerificationPackError("qualification PostgreSQL NOT_RUN record is invalid")
+                raise VerificationPackError(
+                    "qualification PostgreSQL NOT_RUN record is invalid"
+                )
             allowed_commands = dict(RAW_LOG_COMMANDS)
         elif postgres_status == "LOCAL_EXECUTED_SELF_ATTESTED":
             postgres = _exact_mapping(
@@ -1046,7 +1842,9 @@ def validate_qualification(repository_root: Path) -> ValidatedQualification:
                 or postgres["independent_verification"] != "NOT_RUN"
                 or postgres["certification"] != "NOT_CERTIFIED"
             ):
-                raise VerificationPackError("qualification PostgreSQL exact environment is invalid")
+                raise VerificationPackError(
+                    "qualification PostgreSQL exact environment is invalid"
+                )
             tools = environment["tools"]
             if (
                 not isinstance(tools, list)
@@ -1061,8 +1859,13 @@ def validate_qualification(repository_root: Path) -> ValidatedQualification:
                     if isinstance(item, dict)
                 )
             ):
-                raise VerificationPackError("qualification PostgreSQL tool identities are invalid")
-            allowed_commands = {**RAW_LOG_COMMANDS, POSTGRES_RAW_LOG: POSTGRES_RAW_COMMAND}
+                raise VerificationPackError(
+                    "qualification PostgreSQL tool identities are invalid"
+                )
+            allowed_commands = {
+                **RAW_LOG_COMMANDS,
+                POSTGRES_RAW_LOG: POSTGRES_RAW_COMMAND,
+            }
         else:
             raise VerificationPackError("qualification PostgreSQL status is invalid")
         raw_refs = tests["raw_logs"]
@@ -1078,10 +1881,12 @@ def validate_qualification(repository_root: Path) -> ValidatedQualification:
         }
         observed_totals = {key: 0 for key in TEST_TOTAL_KEYS}
         for raw_ref in raw_refs:
-            path, snapshot, record, structured, passed, repository_path = _validate_raw_log(
-                root_fd,
-                raw_ref,
-                allowed_commands=allowed_commands,
+            path, snapshot, record, structured, passed, repository_path = (
+                _validate_raw_log(
+                    root_fd,
+                    raw_ref,
+                    allowed_commands=allowed_commands,
+                )
             )
             if path in raw_logs:
                 raise VerificationPackError(f"duplicate raw log: {path}")
@@ -1095,7 +1900,9 @@ def validate_qualification(repository_root: Path) -> ValidatedQualification:
             if structured is not None and passed != int(structured["totals"]["passed"]):
                 raise VerificationPackError(f"structured test count mismatch: {path}")
         if set(raw_logs) != set(allowed_commands):
-            raise VerificationPackError("qualification raw log identities are incomplete")
+            raise VerificationPackError(
+                "qualification raw log identities are incomplete"
+            )
         receipt_totals = {
             key: _nonnegative_integer(tests[key], f"qualification {key}")
             for key in TEST_TOTAL_KEYS
@@ -1119,12 +1926,26 @@ def validate_qualification(repository_root: Path) -> ValidatedQualification:
                 or raw_records[POSTGRES_RAW_LOG]["execution_environment"]["postgresql"]
                 != postgres["environment"]
             ):
-                raise VerificationPackError("qualification PostgreSQL receipt binding is invalid")
+                raise VerificationPackError(
+                    "qualification PostgreSQL receipt binding is invalid"
+                )
+
+        (
+            delta_receipt_snapshot,
+            delta_receipt,
+            delta_archive,
+            delta_qualifier,
+            delta_raw_logs,
+            delta_raw_records,
+            delta_structured_results,
+            delta_observed,
+        ) = _validate_delta_qualification(root_fd, records)
+        observed.update(delta_observed)
 
         if engine_inventory_at(root_fd) != records:
             raise VerificationPackError("engine tree changed during receipt validation")
-        for path, identity in observed.items():
-            revalidate_file_at(root_fd, path, identity)
+        for observed_path, identity in observed.items():
+            revalidate_file_at(root_fd, observed_path, identity)
         assert_repository_anchor(absolute, root_identity)
         return ValidatedQualification(
             receipt_payload=receipt_snapshot.payload,
@@ -1137,6 +1958,14 @@ def validate_qualification(repository_root: Path) -> ValidatedQualification:
             raw_logs=raw_logs,
             raw_records=raw_records,
             structured_results=structured_results,
+            delta_receipt_payload=delta_receipt_snapshot.payload,
+            delta_receipt=delta_receipt,
+            delta_receipt_sha256=sha256_hex(delta_receipt_snapshot.payload),
+            delta_archive=delta_archive,
+            delta_qualifier=delta_qualifier,
+            delta_raw_logs=delta_raw_logs,
+            delta_raw_records=delta_raw_records,
+            delta_structured_results=delta_structured_results,
             observed_files=observed,
         )
 
@@ -1144,89 +1973,109 @@ def validate_qualification(repository_root: Path) -> ValidatedQualification:
 def _negative_cases(qualification: ValidatedQualification) -> dict[str, Any]:
     declarations = [
         {
-                "case_id": "NEG-ARCHIVE-SNAPSHOT-SWAP",
-                "selector": (
-                    "test_integration.ProofDrivenHarnessArchiveTests."
-                    "test_archive_audit_uses_one_in_memory_snapshot_and_detects_path_swap"
-                ),
-                "expected": "archive audit rejects pathname replacement after its pinned snapshot",
-                "evidence_raw_log": "qualification/raw/package-integration-tests.json",
-            },
-            {
-                "case_id": "NEG-ARCHIVE-PATH-TRAVERSAL",
-                "selector": (
-                    "test_integration.ProofDrivenHarnessArchiveTests."
-                    "test_traversal_member_fails_closed"
-                ),
-                "expected": "unsafe archive member path is rejected",
-                "evidence_raw_log": "qualification/raw/package-integration-tests.json",
-            },
-            {
-                "case_id": "NEG-ARCHIVE-UNICODE-COLLISION",
-                "selector": (
-                    "test_integration.ProofDrivenHarnessArchiveTests."
-                    "test_unicode_casefold_collision_fails_closed"
-                ),
-                "expected": "Unicode and casefold archive collision is rejected",
-                "evidence_raw_log": "qualification/raw/package-integration-tests.json",
-            },
-            {
-                "case_id": "NEG-ARCHIVE-LINK-ENCRYPTION-RATIO",
-                "selector": (
-                    "test_integration.ProofDrivenHarnessArchiveTests."
-                    "test_symlink_encryption_and_ratio_fail_closed"
-                ),
-                "expected": "linked, encrypted, or over-ratio archive member is rejected",
-                "evidence_raw_log": "qualification/raw/package-integration-tests.json",
-            },
-            {
-                "case_id": "NEG-PUBLISH-SYMLINK-PARENT",
-                "selector": (
-                    "test_integration.ProofDrivenHarnessInstallationTests."
-                    "test_dirfd_publication_rejects_symlink_parent"
-                ),
-                "expected": "publication never traverses a symlink parent",
-                "evidence_raw_log": "qualification/raw/package-integration-tests.json",
-            },
-            {
-                "case_id": "NEG-PUBLISH-PARENT-SWAP",
-                "selector": (
-                    "test_integration.ProofDrivenHarnessInstallationTests."
-                    "test_dirfd_publication_detects_parent_swap_during_rename"
-                ),
-                "expected": "publication detects parent replacement during rename",
-                "evidence_raw_log": "qualification/raw/package-integration-tests.json",
-            },
-            {
-                "case_id": "NEG-QUALIFICATION-TAMPER",
-                "selector": (
-                    "test_integration.ProofDrivenHarnessQualificationTests."
-                    "test_only_exact_digest_bound_receipt_promotes_status"
-                ),
-                "expected": "engine or receipt drift prevents local status promotion",
-                "evidence_raw_log": "qualification/raw/package-integration-tests.json",
-            },
-            {
-                "case_id": "NEG-PACK-RECEIPT-TAMPER",
-                "selector": (
-                    "test_publish_verification_pack."
-                    "ProofDrivenHarnessVerificationPackPublisherTests."
-                    "test_tampered_receipt_fails_closed"
-                ),
-                "expected": "verification pack publisher rejects a tampered receipt",
-                "evidence_raw_log": "qualification/raw/engine-tests.json",
-            },
-            {
-                "case_id": "NEG-PACK-SYMLINK-OUTPUT",
-                "selector": (
-                    "test_publish_verification_pack."
-                    "ProofDrivenHarnessVerificationPackPublisherTests."
-                    "test_symlink_output_fails_closed_without_escape"
-                ),
-                "expected": "verification pack publisher rejects a linked output",
-                "evidence_raw_log": "qualification/raw/engine-tests.json",
-            },
-        ]
+            "case_id": "NEG-ARCHIVE-SNAPSHOT-SWAP",
+            "selector": (
+                "test_integration.ProofDrivenHarnessArchiveTests."
+                "test_archive_audit_uses_one_in_memory_snapshot_and_detects_path_swap"
+            ),
+            "expected": "archive audit rejects pathname replacement after its pinned snapshot",
+            "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+        },
+        {
+            "case_id": "NEG-ARCHIVE-PATH-TRAVERSAL",
+            "selector": (
+                "test_integration.ProofDrivenHarnessArchiveTests."
+                "test_traversal_member_fails_closed"
+            ),
+            "expected": "unsafe archive member path is rejected",
+            "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+        },
+        {
+            "case_id": "NEG-ARCHIVE-UNICODE-COLLISION",
+            "selector": (
+                "test_integration.ProofDrivenHarnessArchiveTests."
+                "test_unicode_casefold_collision_fails_closed"
+            ),
+            "expected": "Unicode and casefold archive collision is rejected",
+            "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+        },
+        {
+            "case_id": "NEG-ARCHIVE-LINK-ENCRYPTION-RATIO",
+            "selector": (
+                "test_integration.ProofDrivenHarnessArchiveTests."
+                "test_symlink_encryption_and_ratio_fail_closed"
+            ),
+            "expected": "linked, encrypted, or over-ratio archive member is rejected",
+            "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+        },
+        {
+            "case_id": "NEG-PUBLISH-SYMLINK-PARENT",
+            "selector": (
+                "test_integration.ProofDrivenHarnessInstallationTests."
+                "test_dirfd_publication_rejects_symlink_parent"
+            ),
+            "expected": "publication never traverses a symlink parent",
+            "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+        },
+        {
+            "case_id": "NEG-PUBLISH-PARENT-SWAP",
+            "selector": (
+                "test_integration.ProofDrivenHarnessInstallationTests."
+                "test_dirfd_publication_detects_parent_swap_during_rename"
+            ),
+            "expected": "publication detects parent replacement during rename",
+            "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+        },
+        {
+            "case_id": "NEG-QUALIFICATION-TAMPER",
+            "selector": (
+                "test_integration.ProofDrivenHarnessQualificationTests."
+                "test_only_exact_digest_bound_receipt_promotes_status"
+            ),
+            "expected": "engine or receipt drift prevents local status promotion",
+            "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+        },
+        {
+            "case_id": "NEG-PACK-RECEIPT-TAMPER",
+            "selector": (
+                "test_publish_verification_pack."
+                "ProofDrivenHarnessVerificationPackPublisherTests."
+                "test_tampered_receipt_fails_closed"
+            ),
+            "expected": "verification pack publisher rejects a tampered receipt",
+            "evidence_raw_log": "qualification/raw/engine-tests.json",
+        },
+        {
+            "case_id": "NEG-PACK-SYMLINK-OUTPUT",
+            "selector": (
+                "test_publish_verification_pack."
+                "ProofDrivenHarnessVerificationPackPublisherTests."
+                "test_symlink_output_fails_closed_without_escape"
+            ),
+            "expected": "verification pack publisher rejects a linked output",
+            "evidence_raw_log": "qualification/raw/engine-tests.json",
+        },
+        {
+            "case_id": "NEG-DELTA-ACCEPTANCE-BINDING-TAMPER-OMISSION",
+            "selector": (
+                "test_publish_verification_pack."
+                "ProofDrivenHarnessVerificationPackPublisherTests."
+                "test_delta_acceptance_binding_tamper_and_omission_fail_closed"
+            ),
+            "expected": "delta acceptance source tamper or case omission is rejected",
+            "evidence_raw_log": "qualification/raw/engine-tests.json",
+        },
+        {
+            "case_id": "NEG-DELTA-ACCEPTANCE-RECEIPT-SELECTOR-DRIFT",
+            "selector": (
+                "test_publish_verification_pack."
+                "ProofDrivenHarnessVerificationPackPublisherTests."
+                "test_delta_acceptance_receipt_selector_drift_fails_closed"
+            ),
+            "expected": "delta acceptance receipt selector drift is rejected",
+            "evidence_raw_log": "qualification/raw/engine-tests.json",
+        },
+    ]
     cases: list[dict[str, Any]] = []
     for declaration in declarations:
         raw_path = declaration["evidence_raw_log"]
@@ -1257,9 +2106,7 @@ def _negative_cases(qualification: ValidatedQualification) -> dict[str, Any]:
                         "selector_source_binding_sha256"
                     ],
                     "outcome_sha256": digest(canonical_bytes(outcome)),
-                    "raw_log_sha256": digest(
-                        qualification.raw_logs[raw_path].payload
-                    ),
+                    "raw_log_sha256": digest(qualification.raw_logs[raw_path].payload),
                 },
             }
         )
@@ -1281,21 +2128,30 @@ def _negative_cases(qualification: ValidatedQualification) -> dict[str, Any]:
 
 def _environment_record(qualification: ValidatedQualification) -> dict[str, Any]:
     commands = []
-    for path in sorted(qualification.raw_records):
-        record = qualification.raw_records[path]
+    all_records = {
+        **qualification.raw_records,
+        **qualification.delta_raw_records,
+    }
+    all_logs = {**qualification.raw_logs, **qualification.delta_raw_logs}
+    all_structured = {
+        **qualification.structured_results,
+        **qualification.delta_structured_results,
+    }
+    for path in sorted(all_records):
+        record = all_records[path]
         commands.append(
             {
                 "name": record["name"],
                 "argv": record["argv"],
                 "cwd": record["cwd"],
-                "raw_log_sha256": digest(qualification.raw_logs[path].payload),
-                "raw_log_bytes": len(qualification.raw_logs[path].payload),
+                "raw_log_sha256": digest(all_logs[path].payload),
+                "raw_log_bytes": len(all_logs[path].payload),
                 "returncode": record["returncode"],
                 "timed_out": record["timed_out"],
                 "execution_environment": record["execution_environment"],
                 "structured_results_sha256": (
-                    digest(canonical_bytes(qualification.structured_results[path]))
-                    if path in qualification.structured_results
+                    digest(canonical_bytes(all_structured[path]))
+                    if path in all_structured
                     else None
                 ),
             }
@@ -1306,7 +2162,16 @@ def _environment_record(qualification: ValidatedQualification) -> dict[str, Any]
         "scope": "FIXED_LOCAL_SELF_ATTESTED_QUALIFICATION",
         "receipt_sha256": digest(qualification.receipt_payload),
         "qualifier_sha256": digest(qualification.qualifier.payload),
+        "delta_receipt_sha256": digest(qualification.delta_receipt_payload),
+        "delta_qualifier_sha256": digest(qualification.delta_qualifier.payload),
         "postgresql17": qualification.receipt["postgresql17"],
+        "delta_external_runtime": {
+            "postgresql17": "NOT_RUN",
+            "opa": "NOT_RUN",
+            "provider_runtime": "NOT_RUN",
+            "remote_executor": "NOT_RUN",
+            "target_environment_conformance": "NOT_RUN",
+        },
         "commands": commands,
         "captured_boundaries": {
             "repository_root": ".",
@@ -1337,6 +2202,30 @@ def _repository_binding(
     }
 
 
+def _delta_engine_test_inputs(
+    qualification: ValidatedQualification,
+) -> tuple[Path, ...]:
+    inputs = qualification.delta_receipt.get("inputs")
+    if not isinstance(inputs, dict):
+        raise VerificationPackError("delta fixed input set is invalid")
+    discovered: set[Path] = set()
+    for value in inputs:
+        if not isinstance(value, str):
+            raise VerificationPackError("delta fixed input path is invalid")
+        pure = PurePosixPath(value)
+        if pure.parent == PurePosixPath(
+            (ENGINE_ROOT / "tests").as_posix()
+        ) and pure.match(DELTA_ENGINE_TEST_PATTERN):
+            discovered.add(Path(*pure.parts))
+    required = set(DELTA_REQUIRED_ENGINE_TESTS)
+    allowed = required | set(DELTA_OPTIONAL_ENGINE_TESTS)
+    if not required.issubset(discovered) or not discovered.issubset(allowed):
+        raise VerificationPackError(
+            "delta repository-binding test inventory is invalid"
+        )
+    return tuple(sorted(discovered))
+
+
 def _read_required_sources(
     repository_root: Path,
     qualification: ValidatedQualification,
@@ -1344,16 +2233,29 @@ def _read_required_sources(
 ) -> list[dict[str, Any]]:
     roles = {
         ARCHIVE_RELATIVE: "source",
+        DELTA_ARCHIVE_RELATIVE: "source-delta",
         QUALIFIER_RELATIVE: "qualification-producer",
+        DELTA_QUALIFIER_RELATIVE: "delta-qualification-producer",
         RECEIPT_RELATIVE: "qualification-receipt",
+        DELTA_RECEIPT_RELATIVE: "delta-qualification-receipt",
         PUBLISHER_RELATIVE: "verification-pack-publisher",
         PUBLISHER_TEST_RELATIVE: "verification-pack-negative-tests",
         IMPORTER_RELATIVE: "archive-importer",
         IMPORTER_TEST_RELATIVE: "archive-importer-negative-tests",
+        DELTA_IMPORTER_RELATIVE: "delta-archive-importer",
+        DELTA_IMPORTER_TEST_RELATIVE: "delta-archive-importer-negative-tests",
+        DELTA_ACCEPTANCE_BINDINGS_RELATIVE: "delta-acceptance-traceability",
     }
+    for path in _delta_engine_test_inputs(qualification):
+        suffix = path.stem.removeprefix("test_delta_").replace("_", "-")
+        roles[path] = f"delta-runtime-test-{suffix}"
     for raw_path in qualification.raw_logs:
         roles[ENGINE_ROOT / Path(*PurePosixPath(raw_path).parts)] = (
             "raw-log-" + PurePosixPath(raw_path).stem
+        )
+    for raw_path in qualification.delta_raw_logs:
+        roles[ENGINE_ROOT / Path(*PurePosixPath(raw_path).parts)] = (
+            "delta-raw-log-" + PurePosixPath(raw_path).stem
         )
     bindings: list[dict[str, Any]] = []
     with repository_anchor(repository_root) as (absolute, root_fd, root_identity):
@@ -1371,7 +2273,9 @@ def _read_required_sources(
     environment_path = PACK_RELATIVE / "environment/local-environment.json"
     bindings.extend(
         (
-            _repository_binding(target_path, "test", generated[target_path.relative_to(PACK_RELATIVE)]),
+            _repository_binding(
+                target_path, "test", generated[target_path.relative_to(PACK_RELATIVE)]
+            ),
             _repository_binding(
                 environment_path,
                 "environment",
@@ -1385,15 +2289,22 @@ def _read_required_sources(
     by_role = {binding["role"]: binding for binding in bindings}
     if by_role["source"]["sha256"] != "sha256:" + ARCHIVE_SHA256:
         raise VerificationPackError("source repository binding does not match archive")
+    if by_role["source-delta"]["sha256"] != "sha256:" + DELTA_ARCHIVE_SHA256:
+        raise VerificationPackError("delta source binding does not match archive")
     if by_role["test"]["sha256"] != "sha256:" + qualification.engine_tree_sha256:
-        raise VerificationPackError("target repository binding does not match engine tree")
+        raise VerificationPackError(
+            "target repository binding does not match engine tree"
+        )
     return bindings
 
 
 def _integrity_manifest(outputs: Mapping[Path, bytes]) -> bytes:
     entries = []
     for path in sorted(outputs, key=lambda item: item.as_posix()):
-        if path == Path("certification/integrity-manifest.json") or path in GATE_OUTPUTS:
+        if (
+            path == Path("certification/integrity-manifest.json")
+            or path in GATE_OUTPUTS
+        ):
             continue
         payload = outputs[path]
         entries.append(
@@ -1420,26 +2331,42 @@ def build_pack_outputs(
 
     outputs: dict[Path, bytes] = {}
     source_digest = "sha256:" + ARCHIVE_SHA256
+    delta_source_digest = "sha256:" + DELTA_ARCHIVE_SHA256
     target_digest = "sha256:" + qualification.engine_tree_sha256
     receipt_digest = "sha256:" + qualification.receipt_sha256
+    delta_receipt_digest = "sha256:" + qualification.delta_receipt_sha256
 
     outputs[Path("artifacts/engine-tree-inventory.json")] = canonical_bytes(
         list(qualification.engine_records)
     )
     if digest(outputs[Path("artifacts/engine-tree-inventory.json")]) != target_digest:
-        raise VerificationPackError("canonical engine inventory does not match target digest")
+        raise VerificationPackError(
+            "canonical engine inventory does not match target digest"
+        )
     outputs[Path("qualification/source-receipt.json")] = qualification.receipt_payload
+    outputs[Path("qualification/delta-v3.1/source-receipt.json")] = (
+        qualification.delta_receipt_payload
+    )
+    outputs[Path("qualification/delta-v3.1/acceptance-results.json")] = json_bytes(
+        qualification.delta_receipt["acceptance"]
+    )
     for path, snapshot in qualification.raw_logs.items():
         outputs[Path("qualification/raw") / PurePosixPath(path).name] = snapshot.payload
+    for path, snapshot in qualification.delta_raw_logs.items():
+        outputs[Path("qualification/delta-v3.1/raw") / PurePosixPath(path).name] = (
+            snapshot.payload
+        )
     outputs[Path("environment/local-environment.json")] = json_bytes(
         _environment_record(qualification)
     )
     environment_digest = digest(outputs[Path("environment/local-environment.json")])
     scope = {
-        "migration_route": "proof-driven-harness-v3-local-qualification",
+        "migration_route": "proof-driven-harness-v3.1-composite-local-qualification",
         "source_artifact_digest": source_digest,
+        "delta_source_artifact_digest": delta_source_digest,
+        "composite_version": COMPOSITE_VERSION,
         "target_artifact_digest": target_digest,
-        "workload_key": "proof-driven-harness-v3-local-development-negative",
+        "workload_key": "proof-driven-harness-v3.1-composite-local-development-negative",
         "risk_tier": "P0",
         "environment_digest": environment_digest,
         "controlled_public_dns_rebinding_campaign": "NOT_RUN",
@@ -1474,6 +2401,37 @@ def build_pack_outputs(
             "certification": "NOT_CERTIFIED",
         }
     )
+    outputs[Path("qualification/delta-v3.1/receipt-validation.json")] = json_bytes(
+        {
+            "schema_version": 1,
+            "kind": "elmos.harness-runtime-assurance-delta.receipt-validation",
+            "status": "PASS",
+            "base_source_version": PACKAGE_VERSION,
+            "delta_source_version": DELTA_PACKAGE_VERSION,
+            "composite_version": COMPOSITE_VERSION,
+            "receipt_sha256": delta_receipt_digest,
+            "source_archive_sha256": delta_source_digest,
+            "engine_tree_sha256": target_digest,
+            "qualifier_sha256": digest(qualification.delta_qualifier.payload),
+            "tests": qualification.delta_receipt["tests"],
+            "acceptance": qualification.delta_receipt["acceptance"]["local_cases"],
+            "acceptance_binding_sha256": qualification.delta_receipt["acceptance"][
+                "binding_sha256"
+            ],
+            "raw_log_count": len(qualification.delta_raw_logs),
+            "adapter_profile_negotiation": qualification.delta_receipt[
+                "adapter_profile_negotiation"
+            ],
+            "postgresql17": "NOT_RUN",
+            "opa": "NOT_RUN",
+            "provider_runtime": "NOT_RUN",
+            "remote_executor": "NOT_RUN",
+            "target_environment_conformance": "NOT_RUN",
+            "external_evidence": "NOT_RUN",
+            "independent_verification": "NOT_RUN",
+            "certification": "NOT_CERTIFIED",
+        }
+    )
 
     negative_cases = _negative_cases(qualification)
     outputs[Path("corpus/negative/cases.json")] = json_bytes(negative_cases)
@@ -1481,8 +2439,11 @@ def build_pack_outputs(
         "schema_version": 1,
         "kind": "elmos.proof-driven-harness-v3.local-development-corpus",
         "receipt_sha256": receipt_digest,
+        "delta_receipt_sha256": delta_receipt_digest,
         "source_digest": source_digest,
+        "delta_source_digest": delta_source_digest,
         "target_digest": target_digest,
+        "delta_acceptance": qualification.delta_receipt["acceptance"]["local_cases"],
         "raw_logs": [
             {
                 "path": path,
@@ -1490,6 +2451,14 @@ def build_pack_outputs(
                 "bytes": len(qualification.raw_logs[path].payload),
             }
             for path in sorted(qualification.raw_logs)
+        ]
+        + [
+            {
+                "path": path,
+                "sha256": digest(qualification.delta_raw_logs[path].payload),
+                "bytes": len(qualification.delta_raw_logs[path].payload),
+            }
+            for path in sorted(qualification.delta_raw_logs)
         ],
         "status": "LOCAL_EXECUTED_SELF_ATTESTED",
         "structured_test_outcomes": [
@@ -1501,6 +2470,16 @@ def build_pack_outputs(
                 "totals": qualification.structured_results[path]["totals"],
             }
             for path in sorted(qualification.structured_results)
+        ]
+        + [
+            {
+                "raw_log": path,
+                "results_sha256": digest(
+                    canonical_bytes(qualification.delta_structured_results[path])
+                ),
+                "totals": qualification.delta_structured_results[path]["totals"],
+            }
+            for path in sorted(qualification.delta_structured_results)
         ],
         "limitations": [
             "This is repository-owned development evidence, not an independent holdout."
@@ -1599,6 +2578,14 @@ def build_pack_outputs(
                 "archive_sha256": source_digest,
                 "archive_bytes": ARCHIVE_BYTES,
             },
+            "delta_source": {
+                "archive_path": DELTA_ARCHIVE_RELATIVE.as_posix(),
+                "archive_sha256": delta_source_digest,
+                "archive_bytes": DELTA_ARCHIVE_BYTES,
+                "package_version": DELTA_PACKAGE_VERSION,
+                "fixed_receipt_path": DELTA_RECEIPT_RELATIVE.as_posix(),
+                "receipt_sha256": delta_receipt_digest,
+            },
             "target": {
                 "engine_root": ENGINE_ROOT.as_posix(),
                 "engine_tree_sha256": target_digest,
@@ -1611,6 +2598,16 @@ def build_pack_outputs(
                 "component_ids_sha256": digest(canonical_bytes(list(COMPONENT_IDS))),
             },
             "raw_log_paths": sorted(qualification.raw_logs),
+            "delta_raw_log_paths": sorted(qualification.delta_raw_logs),
+            "delta_acceptance": {
+                "binding_sha256": qualification.delta_receipt["acceptance"][
+                    "binding_sha256"
+                ],
+                "local_cases": qualification.delta_receipt["acceptance"]["local_cases"],
+                "target_environment": "NOT_RUN",
+                "independent_verification": "NOT_RUN",
+                "certification": "NOT_CERTIFIED",
+            },
             "postgresql17": qualification.receipt["postgresql17"],
             "promotion_ceiling": "LOCAL_EXECUTED_SELF_ATTESTED",
             "external_evidence": "NOT_RUN",
@@ -1621,19 +2618,32 @@ def build_pack_outputs(
         {
             "schema_version": 1,
             "kind": "elmos.batch35.exact-repository-binding-contract",
-            "required_roles": ["source", "test", "environment"],
+            "required_roles": [
+                "source",
+                "source-delta",
+                "test",
+                "environment",
+                "delta-acceptance-traceability",
+            ],
             "role_semantics": {
                 "source": "exact source ZIP bytes",
+                "source-delta": "exact runtime-assurance delta ZIP bytes",
                 "test": (
                     "Batch35 target slot containing exact canonical engine-tree inventory bytes"
                 ),
                 "environment": "exact content-addressed local environment record bytes",
+                "delta-acceptance-traceability": (
+                    "repository-owned static 13x8 mapping; never independent execution evidence"
+                ),
             },
             "required_test_totals": {
                 "tests": qualification.test_count,
                 "passed": qualification.test_count,
                 "failed": 0,
             },
+            "composite_version": COMPOSITE_VERSION,
+            "base_source_version": PACKAGE_VERSION,
+            "delta_source_version": DELTA_PACKAGE_VERSION,
             "all_bindings_require": ["path", "role", "sha256", "byte_size"],
         }
     )
@@ -1788,6 +2798,7 @@ def build_pack_outputs(
                     "version": "1",
                     "evidence_refs": [
                         "qualification/receipt-validation.json",
+                        "qualification/delta-v3.1/receipt-validation.json",
                         "certification/repository-binding.json",
                     ],
                 },
@@ -2051,7 +3062,7 @@ def build_pack_outputs(
         }
     )
 
-    technique_not_run = {
+    technique_not_run: dict[Path, dict[str, Any]] = {
         Path("concurrency/schedule-campaign.json"): {
             "technique": "deterministic-schedule-exploration",
             "max_schedules": 0,
@@ -2091,13 +3102,14 @@ def build_pack_outputs(
             "evidence_trace_coverage": "NOT_RUN",
         },
     }
-    for path, content in technique_not_run.items():
-        outputs[path] = json_bytes(
+    for output_path, content in technique_not_run.items():
+        outputs[output_path] = json_bytes(
             {
                 "schema_version": 1,
                 "status": (
                     "LOCAL_EXECUTED_SELF_ATTESTED"
-                    if path in {
+                    if output_path
+                    in {
                         Path("invariants/invariants.json"),
                         Path("security/security-properties.json"),
                         Path("coverage/local-coverage.json"),
@@ -2193,7 +3205,7 @@ def build_pack_outputs(
                     "owner": "runtime-assurance-owner-unassigned",
                     "required_closure": "Collect independently verified external runtime evidence.",
                 },
-            ]
+            ],
         }
     )
     outputs[Path("assurance/assurance-case.json")] = json_bytes(
@@ -2215,8 +3227,12 @@ def build_pack_outputs(
                         "qualification/receipt-validation.json",
                         "certification/repository-binding.json",
                     ],
-                    "assumptions": ["Repository-owned publisher and qualifier are not independent parties."],
-                    "limitations": ["Local self-attestation is not independent verification."],
+                    "assumptions": [
+                        "Repository-owned publisher and qualifier are not independent parties."
+                    ],
+                    "limitations": [
+                        "Local self-attestation is not independent verification."
+                    ],
                 },
                 {
                     "claim_id": claim_local_publish,
@@ -2226,7 +3242,9 @@ def build_pack_outputs(
                         "corpus/negative/cases.json",
                         "qualification/raw/engine-tests.json",
                     ],
-                    "assumptions": ["The fixed local filesystem semantics match the observed test environment."],
+                    "assumptions": [
+                        "The fixed local filesystem semantics match the observed test environment."
+                    ],
                     "limitations": ["No independent platform replay has occurred."],
                 },
                 {
@@ -2238,7 +3256,9 @@ def build_pack_outputs(
                         "corpus/representative-workloads/not-run.json",
                     ],
                     "assumptions": [],
-                    "limitations": ["Required external and independent evidence is NOT_RUN."],
+                    "limitations": [
+                        "Required external and independent evidence is NOT_RUN."
+                    ],
                 },
             ],
             "evidence": [
@@ -2281,10 +3301,27 @@ def build_pack_outputs(
         raw_log_bindings.append(
             {
                 "repository_path": repository_path.as_posix(),
-                "pack_copy": (Path("qualification/raw") / PurePosixPath(path).name).as_posix(),
+                "pack_copy": (
+                    Path("qualification/raw") / PurePosixPath(path).name
+                ).as_posix(),
                 "sha256": digest(qualification.raw_logs[path].payload),
                 "bytes": len(qualification.raw_logs[path].payload),
                 "argv": qualification.raw_records[path]["argv"],
+                "returncode": 0,
+                "timed_out": False,
+            }
+        )
+    for path in sorted(qualification.delta_raw_logs):
+        repository_path = ENGINE_ROOT / Path(*PurePosixPath(path).parts)
+        raw_log_bindings.append(
+            {
+                "repository_path": repository_path.as_posix(),
+                "pack_copy": (
+                    Path("qualification/delta-v3.1/raw") / PurePosixPath(path).name
+                ).as_posix(),
+                "sha256": digest(qualification.delta_raw_logs[path].payload),
+                "bytes": len(qualification.delta_raw_logs[path].payload),
+                "argv": qualification.delta_raw_records[path]["argv"],
                 "returncode": 0,
                 "timed_out": False,
             }
@@ -2296,17 +3333,34 @@ def build_pack_outputs(
         "status": "passed",
         "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
         "source_digest": source_digest,
+        "delta_source_digest": delta_source_digest,
         "test_digest": target_digest,
         "environment_digest": environment_digest,
         "receipt_sha256": receipt_digest,
+        "delta_receipt_sha256": delta_receipt_digest,
+        "delta_acceptance_binding_sha256": qualification.delta_receipt["acceptance"][
+            "binding_sha256"
+        ],
         "tests": qualification.test_count,
         "passed": qualification.test_count,
         "failed": qualification.receipt["tests"]["failed"]
         + qualification.receipt["tests"]["errors"]
-        + qualification.receipt["tests"]["unexpected_successes"],
+        + qualification.receipt["tests"]["unexpected_successes"]
+        + qualification.delta_receipt["tests"]["failed"]
+        + qualification.delta_receipt["tests"]["errors"]
+        + qualification.delta_receipt["tests"]["unexpected_successes"],
         "skipped": qualification.receipt["tests"]["skipped"]
-        + qualification.receipt["tests"]["expected_failures"],
+        + qualification.receipt["tests"]["expected_failures"]
+        + qualification.delta_receipt["tests"]["skipped"]
+        + qualification.delta_receipt["tests"]["expected_failures"],
         "postgresql17": qualification.receipt["postgresql17"],
+        "delta_runtime_evidence": {
+            "postgresql17": "NOT_RUN",
+            "opa": "NOT_RUN",
+            "provider_runtime": "NOT_RUN",
+            "remote_executor": "NOT_RUN",
+            "target_environment_conformance": "NOT_RUN",
+        },
         "raw_logs": raw_log_bindings,
         "repository_bindings": bindings,
         "external_evidence": "NOT_RUN",
@@ -2344,7 +3398,9 @@ def build_pack_outputs(
                         "corpus/negative/cases.json",
                         "qualification/raw/engine-tests.json",
                     ],
-                    "limitations": ["Independent cross-platform replay remains NOT_RUN."],
+                    "limitations": [
+                        "Independent cross-platform replay remains NOT_RUN."
+                    ],
                 },
                 {
                     "key": "advanced-verification-contracts",
@@ -2381,9 +3437,16 @@ def build_pack_outputs(
         "environment/local-environment.json",
         "qualification/source-receipt.json",
         "qualification/receipt-validation.json",
+        "qualification/delta-v3.1/source-receipt.json",
+        "qualification/delta-v3.1/receipt-validation.json",
+        "qualification/delta-v3.1/acceptance-results.json",
         *[
             (Path("qualification/raw") / PurePosixPath(path).name).as_posix()
             for path in sorted(qualification.raw_logs)
+        ],
+        *[
+            (Path("qualification/delta-v3.1/raw") / PurePosixPath(path).name).as_posix()
+            for path in sorted(qualification.delta_raw_logs)
         ],
         "certification/repository-binding.json",
         "corpus/development/seed.json",
@@ -2400,9 +3463,17 @@ def build_pack_outputs(
             "zero_tolerance": {"local_negative_control_failures": 0},
             "execution_states": {
                 "receipt_revalidation": "LOCAL_EXECUTED_SELF_ATTESTED",
+                "delta_receipt_revalidation": "LOCAL_EXECUTED_SELF_ATTESTED",
+                "delta_adapter_profile_negotiation": "LOCAL_EXECUTED_SELF_ATTESTED",
+                "delta_acceptance_104": "LOCAL_EXECUTED_SELF_ATTESTED",
                 "development_corpus": "LOCAL_EXECUTED_SELF_ATTESTED",
                 "negative_corpus": "LOCAL_EXECUTED_SELF_ATTESTED",
                 "postgresql17": qualification.receipt["postgresql17"]["status"],
+                "delta_postgresql17": "NOT_RUN",
+                "delta_opa": "NOT_RUN",
+                "delta_provider_runtime": "NOT_RUN",
+                "delta_remote_executor": "NOT_RUN",
+                "delta_target_environment_conformance": "NOT_RUN",
                 "mutation_campaign": "NOT_RUN",
                 "fuzz_campaign": "NOT_RUN",
                 "model_campaign": "NOT_RUN",
@@ -2415,13 +3486,11 @@ def build_pack_outputs(
                 "certification": "NOT_CERTIFIED",
             },
             "evidence_refs": evidence_refs,
-            "repository_binding_records": [
-                "certification/repository-binding.json"
-            ],
+            "repository_binding_records": ["certification/repository-binding.json"],
             "integrity_manifest": "certification/integrity-manifest.json",
             "notes": [
                 "Only the development and negative local corpora are passed.",
-                "The qualification receipt and its raw logs are self-attested local engineering evidence.",
+                "Both qualification receipts and their raw logs are self-attested local engineering evidence.",
                 "No source ZIP content was executed by this publisher.",
             ],
         }
@@ -2455,7 +3524,7 @@ def build_pack_outputs(
         {
             "schema_version": 1,
             "pack_key": PACK_KEY,
-            "version": "1.0.0",
+            "version": "1.1.0",
             "status": "limited",
             "owner": "elmos-proof-harness-engineering",
             "maintenance_owner": "elmos-proof-harness-engineering",
@@ -2482,6 +3551,7 @@ def build_pack_outputs(
             "tags": [
                 "advanced-verification",
                 "proof-driven-harness-v3",
+                "runtime-assurance-delta-v3.1",
                 "local-self-attested",
                 "not-certified",
             ],
@@ -2501,7 +3571,8 @@ def build_pack_outputs(
     outputs[Path("README.md")] = (
         f"# {PACK_KEY}\n\n"
         "Deterministically generated Batch 35 local verification pack for the exact "
-        "proof-driven harness v3 qualification receipt. Only development and negative "
+        "proof-driven harness v3.0 base and v3.1 runtime-assurance delta qualification "
+        "receipts for composite artifact 3.1.0. Only development and negative "
         "local corpora are passed. All holdout, representative, external, independent, "
         "production, and certification evidence remains `NOT_RUN` or `NOT_CERTIFIED`.\n\n"
         "Run structural validation and the conservative gate:\n\n"
@@ -2561,9 +3632,7 @@ def _ensure_child_directory(parent_fd: int, name: str) -> int:
     opened = os.fstat(child_fd)
     if (opened.st_dev, opened.st_ino) != (metadata.st_dev, metadata.st_ino):
         os.close(child_fd)
-        raise VerificationPackError(
-            f"private staging directory raced open: {name!r}"
-        )
+        raise VerificationPackError(f"private staging directory raced open: {name!r}")
     return child_fd
 
 
@@ -2610,11 +3679,7 @@ def _read_regular_child(
     metadata: os.stat_result,
     relative: Path,
 ) -> bytes:
-    flags = (
-        os.O_RDONLY
-        | getattr(os, "O_CLOEXEC", 0)
-        | getattr(os, "O_NOFOLLOW", 0)
-    )
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
         descriptor = os.open(name, flags, dir_fd=directory_fd)
     except OSError as exc:
@@ -2623,10 +3688,9 @@ def _read_regular_child(
         ) from exc
     try:
         opened = os.fstat(descriptor)
-        if (
-            not stat.S_ISREG(opened.st_mode)
-            or (opened.st_dev, opened.st_ino)
-            != (metadata.st_dev, metadata.st_ino)
+        if not stat.S_ISREG(opened.st_mode) or (opened.st_dev, opened.st_ino) != (
+            metadata.st_dev,
+            metadata.st_ino,
         ):
             raise VerificationPackError(f"published output raced open: {relative}")
         payload = _read_descriptor(
@@ -2772,13 +3836,35 @@ def _assert_expected_tree(
 def publication_lock(repository_root: Path) -> Iterator[None]:
     absolute = Path(os.path.abspath(os.fspath(repository_root)))
     lock_key = hashlib.sha256(os.fsencode(absolute)).hexdigest()[:32]
-    temporary_root = Path(tempfile.gettempdir())
+    configured_temporary_root = Path(tempfile.gettempdir())
     try:
+        # macOS exposes /tmp as a system-owned symlink to /private/tmp.  Resolve
+        # that alias once, then require the opened target to remain the exact
+        # real directory we inspected.  The lock file itself still uses
+        # O_NOFOLLOW, so an attacker cannot substitute a linked lock target.
+        temporary_root = configured_temporary_root.resolve(strict=True)
+        pathname = _identity(os.stat(temporary_root, follow_symlinks=False))
         temporary_fd = os.open(temporary_root, _directory_flags())
     except OSError as exc:
         raise VerificationPackError(
             f"cannot safely open temporary lock directory: {exc}"
         ) from exc
+    opened = _identity(os.fstat(temporary_fd))
+    effective_uid = os.geteuid()
+    root_owned_sticky = pathname.mode & stat.S_ISVTX and pathname.mode & stat.S_IWOTH
+    if (
+        not stat.S_ISDIR(pathname.mode)
+        or not stat.S_ISDIR(opened.mode)
+        or (pathname.device, pathname.inode) != (opened.device, opened.inode)
+        or (pathname.mode & stat.S_IWOTH and not root_owned_sticky)
+        or (pathname.device == 0 and pathname.inode == 0)
+        or pathname.mode != opened.mode
+        or os.fstat(temporary_fd).st_uid not in {0, effective_uid}
+    ):
+        os.close(temporary_fd)
+        raise VerificationPackError(
+            "temporary lock directory is not a stable, owned, safe directory"
+        )
     lock_fd = -1
     try:
         flags = (
@@ -2818,10 +3904,14 @@ def _qualification_matches(
         and first.engine_tree_sha256 == second.engine_tree_sha256
         and first.archive.payload == second.archive.payload
         and first.qualifier.payload == second.qualifier.payload
-        and {
-            key: snapshot.payload for key, snapshot in first.raw_logs.items()
-        }
+        and first.delta_receipt_payload == second.delta_receipt_payload
+        and first.delta_receipt_sha256 == second.delta_receipt_sha256
+        and first.delta_archive.payload == second.delta_archive.payload
+        and first.delta_qualifier.payload == second.delta_qualifier.payload
+        and {key: snapshot.payload for key, snapshot in first.raw_logs.items()}
         == {key: snapshot.payload for key, snapshot in second.raw_logs.items()}
+        and {key: snapshot.payload for key, snapshot in first.delta_raw_logs.items()}
+        == {key: snapshot.payload for key, snapshot in second.delta_raw_logs.items()}
     )
 
 
@@ -2839,7 +3929,12 @@ def _result(
         "certification_decision": "NOT_CERTIFIED",
         "certification_readiness": "BLOCKED",
         "qualification_receipt_sha256": digest(qualification.receipt_payload),
+        "delta_qualification_receipt_sha256": digest(
+            qualification.delta_receipt_payload
+        ),
         "source_artifact_digest": "sha256:" + ARCHIVE_SHA256,
+        "delta_source_artifact_digest": "sha256:" + DELTA_ARCHIVE_SHA256,
+        "composite_version": COMPOSITE_VERSION,
         "target_artifact_digest": "sha256:" + qualification.engine_tree_sha256,
         "environment_digest": digest(environment_payload),
         "managed_file_count": len(outputs),
@@ -2873,11 +3968,15 @@ def publish_pack(repository_root: Path) -> dict[str, Any]:
             old_moved = False
             stage_moved = False
             try:
-                current = os.stat(
-                    PACK_KEY,
-                    dir_fd=verification_fd,
-                    follow_symlinks=False,
-                ) if _entry_exists(verification_fd, PACK_KEY) else None
+                current = (
+                    os.stat(
+                        PACK_KEY,
+                        dir_fd=verification_fd,
+                        follow_symlinks=False,
+                    )
+                    if _entry_exists(verification_fd, PACK_KEY)
+                    else None
+                )
                 if current is not None and not stat.S_ISDIR(current.st_mode):
                     raise VerificationPackError(
                         "fixed verification pack output is linked or non-directory"
@@ -3082,9 +4181,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     try:
         result = (
-            publish_pack(args.repo_root)
-            if args.publish
-            else check_pack(args.repo_root)
+            publish_pack(args.repo_root) if args.publish else check_pack(args.repo_root)
         )
     except (OSError, ValueError, VerificationPackError) as exc:
         print(

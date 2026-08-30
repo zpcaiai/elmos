@@ -1,0 +1,13 @@
+{
+  "allowed_terminal_states": [
+    "receipt-invalid",
+    "pack-published-limited",
+    "publication-failed"
+  ],
+  "execution_status": "SPECIFIED_NOT_EXECUTED_AS_MODEL_CAMPAIGN",
+  "forbidden_terminal_states": [
+    "certified"
+  ],
+  "model_ref": "models/model.json",
+  "schema_version": 1
+}

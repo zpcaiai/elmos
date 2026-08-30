@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -24,6 +25,7 @@ import socket
 import subprocess
 import tempfile
 import unittest
+from types import ModuleType
 
 from elmos_proof_harness.canonical import digest_bytes
 from elmos_proof_harness.contracts import EvidenceProducer, SecurityContext
@@ -40,7 +42,10 @@ from elmos_proof_harness.workflow import RunState, WorkflowEngine
 
 
 ENGINE_ROOT = Path(__file__).resolve().parents[1]
-MIGRATION = ENGINE_ROOT / "migrations" / "V001__proof_harness_core.sql"
+BASE_MIGRATION = ENGINE_ROOT / "migrations" / "V001__proof_harness_core.sql"
+DELTA_MIGRATION = (
+    ENGINE_ROOT / "migrations" / "V304__harness_runtime_assurance_delta.sql"
+)
 
 
 def _postgres_bin() -> Path:
@@ -55,8 +60,19 @@ def _postgres_bin() -> Path:
 
 PG_BIN = _postgres_bin()
 APP_ROLE = "proof_harness_app_it"
+AUTHORITY_ROLE = "proof_harness_authority_it"
 OWNER_ROLE = "proof_harness_owner_it"
 _DIGEST_A = "sha256:" + "a" * 64
+
+
+def _load_repository_tool(name: str) -> ModuleType:
+    path = ENGINE_ROOT / "tools" / name
+    specification = importlib.util.spec_from_file_location(path.stem, path)
+    if specification is None or specification.loader is None:
+        raise RuntimeError(f"could not load repository migration tool: {name}")
+    module = importlib.util.module_from_spec(specification)
+    specification.loader.exec_module(module)
+    return module
 
 
 def _free_port() -> int:
@@ -80,7 +96,20 @@ class DisposablePostgres17:
     def app_dsn(self) -> str:
         return f"postgresql://{APP_ROLE}@127.0.0.1:{self.port}/postgres?sslmode=disable"
 
-    def _run(self, *arguments: str, input_text: str | None = None) -> subprocess.CompletedProcess[str]:
+    @property
+    def owner_dsn(self) -> str:
+        return (
+            f"host=127.0.0.1 port={self.port} dbname=postgres sslmode=disable "
+            f"options='-c role={OWNER_ROLE}'"
+        )
+
+    @property
+    def authority_dsn(self) -> str:
+        return f"postgresql://{AUTHORITY_ROLE}@127.0.0.1:{self.port}/postgres?sslmode=disable"
+
+    def _run(
+        self, *arguments: str, input_text: str | None = None
+    ) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             arguments,
             check=True,
@@ -94,7 +123,9 @@ class DisposablePostgres17:
     def start(self) -> None:
         for executable in ("initdb", "pg_ctl", "psql"):
             if not (PG_BIN / executable).is_file():
-                raise RuntimeError(f"PostgreSQL 17 executable is missing: {PG_BIN / executable}")
+                raise RuntimeError(
+                    f"PostgreSQL 17 executable is missing: {PG_BIN / executable}"
+                )
         version = self._run(str(PG_BIN / "initdb"), "--version").stdout
         if " 17." not in version:
             raise RuntimeError(f"expected PostgreSQL 17, observed {version.strip()}")
@@ -124,16 +155,39 @@ class DisposablePostgres17:
             f"""
             CREATE ROLE {OWNER_ROLE} NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS;
             CREATE ROLE {APP_ROLE} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS;
+            CREATE ROLE {AUTHORITY_ROLE} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS;
             GRANT CREATE ON DATABASE postgres TO {OWNER_ROLE};
             """
         )
-        self.psql("SET ROLE " + OWNER_ROLE + ";\n" + MIGRATION.read_text(encoding="utf-8") + "\nRESET ROLE;")
+        base_applicator = _load_repository_tool("apply_postgres_migration.py")
+        base_result = base_applicator.apply(
+            dsn=self.owner_dsn,
+            expected_owner_role=OWNER_ROLE,
+            migration_path=BASE_MIGRATION,
+        )
+        if base_result["status"] != "APPLIED":
+            raise RuntimeError(
+                f"unexpected V001 applicator result: {base_result['status']}"
+            )
+        delta_applicator = _load_repository_tool("apply_delta_migration.py")
+        delta_result = delta_applicator.apply(
+            dsn=self.owner_dsn,
+            expected_owner_role=OWNER_ROLE,
+            migration_path=DELTA_MIGRATION,
+        )
+        if delta_result["status"] != "APPLIED":
+            raise RuntimeError(
+                f"unexpected V304 applicator result: {delta_result['status']}"
+            )
         self.psql(
             f"""
             GRANT CONNECT ON DATABASE postgres TO {APP_ROLE};
             GRANT USAGE ON SCHEMA proof_harness, proof_harness_runtime TO {APP_ROLE};
             GRANT EXECUTE ON FUNCTION proof_harness.current_tenant_key(), proof_harness.current_project_key() TO {APP_ROLE};
-            GRANT SELECT ON proof_harness_runtime.schema_migrations TO {APP_ROLE};
+            GRANT SELECT ON proof_harness_runtime.schema_migrations,
+              proof_harness_runtime.migration_digest_ledger,
+              proof_harness_runtime.runtime_assurance_migrations,
+              proof_harness_runtime.runtime_assurance_migration_digest_ledger TO {APP_ROLE};
             GRANT SELECT, INSERT ON proof_harness_runtime.tenants,
               proof_harness_runtime.projects, proof_harness_runtime.actors TO {APP_ROLE};
             GRANT SELECT, INSERT, UPDATE ON proof_harness_runtime.runs,
@@ -149,6 +203,47 @@ class DisposablePostgres17:
               proof_harness_runtime.run_checkpoints,
               proof_harness_runtime.effect_events,
               proof_harness_runtime.metric_points TO {APP_ROLE};
+            GRANT SELECT, INSERT, UPDATE ON
+              proof_harness_runtime.tool_result_commits,
+              proof_harness_runtime.step_execution_plans,
+              proof_harness_runtime.step_plan_tool_bindings,
+              proof_harness_runtime.pending_tool_call_bindings,
+              proof_harness_runtime.capability_leases,
+              proof_harness_runtime.executor_generations,
+              proof_harness_runtime.environment_attachments,
+              proof_harness_runtime.executor_replacement_effects,
+              proof_harness_runtime.durable_event_instances,
+              proof_harness_runtime.runtime_assurance_invocation_receipts,
+              proof_harness_runtime.subagent_execution_specs,
+              proof_harness_runtime.workspace_leases TO {APP_ROLE};
+            GRANT SELECT, INSERT ON
+              proof_harness_runtime.durable_event_registrations,
+              proof_harness_runtime.typed_ingress_records TO {APP_ROLE};
+            GRANT USAGE, SELECT ON SEQUENCE
+              proof_harness_runtime.typed_ingress_records_persisted_sequence_seq TO {APP_ROLE};
+            GRANT EXECUTE ON FUNCTION
+              proof_harness_runtime.is_bounded_text_array(jsonb, integer, integer),
+              proof_harness_runtime.is_valid_interceptor_chain(jsonb),
+              proof_harness_runtime.is_valid_workspace_scopes(jsonb) TO {APP_ROLE};
+            GRANT EXECUTE ON FUNCTION
+              proof_harness_runtime.claim_runtime_assurance_invocation(text,text,text,text,bigint,bigint,text,text,text,text,bigint,timestamptz),
+              proof_harness_runtime.complete_runtime_assurance_invocation(text,text,text,text,bigint,bigint,text,text,text,text,bigint,text,text,timestamptz),
+              proof_harness_runtime.reconcile_runtime_assurance_invocation(text,text,text,text,bigint,bigint,text,text,text,text,bigint,text,text,text,timestamptz) TO {APP_ROLE};
+            GRANT CONNECT ON DATABASE postgres TO {AUTHORITY_ROLE};
+            GRANT USAGE ON SCHEMA proof_harness, proof_harness_runtime TO {AUTHORITY_ROLE};
+            GRANT SELECT ON proof_harness_runtime.runs,
+              proof_harness_runtime.step_execution_plans,
+              proof_harness_runtime.environment_attachments,
+              proof_harness_runtime.runtime_assurance_invocation_receipts,
+              proof_harness_runtime.subagent_execution_specs TO {AUTHORITY_ROLE};
+            GRANT SELECT, INSERT ON
+              proof_harness_runtime.runtime_authority_capability_receipts,
+              proof_harness_runtime.subagent_budget_reservation_bindings TO {AUTHORITY_ROLE};
+            GRANT EXECUTE ON FUNCTION
+              proof_harness_runtime.is_bounded_text_array(jsonb, integer, integer),
+              proof_harness_runtime.is_valid_interceptor_chain(jsonb),
+              proof_harness_runtime.is_valid_workspace_scopes(jsonb),
+              proof_harness_runtime.consume_subagent_reservation_and_spec(text,text,text,text,bigint,bigint,text,text,text,text,text,text,text,timestamptz,text,text,text) TO {AUTHORITY_ROLE};
             """
         )
 
@@ -170,7 +265,15 @@ class DisposablePostgres17:
     def stop(self) -> None:
         try:
             if self.started:
-                self._run(str(PG_BIN / "pg_ctl"), "-D", str(self.data), "-m", "fast", "-w", "stop")
+                self._run(
+                    str(PG_BIN / "pg_ctl"),
+                    "-D",
+                    str(self.data),
+                    "-m",
+                    "fast",
+                    "-w",
+                    "stop",
+                )
         finally:
             # ``root`` was allocated by mkdtemp in this process; no user path,
             # environment variable, glob or workspace directory is accepted.
@@ -186,7 +289,10 @@ class Postgres17IntegrationTests(unittest.TestCase):
         cls.cluster = DisposablePostgres17()
         try:
             cls.cluster.start()
-            cls.store = PostgresStore(cls.cluster.app_dsn)
+            cls.store = PostgresStore(
+                cls.cluster.app_dsn,
+                authority_dsn=cls.cluster.authority_dsn,
+            )
             readiness = cls.store.readiness()
             if not readiness.ready:
                 raise AssertionError(readiness)
@@ -203,7 +309,9 @@ class Postgres17IntegrationTests(unittest.TestCase):
         # Unique scopes make every test independent without deleting durable
         # append-only records.
         suffix = self._testMethodName
-        self.context = SecurityContext(f"tenant-{suffix}", f"project-{suffix}", f"actor-{suffix}")
+        self.context = SecurityContext(
+            f"tenant-{suffix}", f"project-{suffix}", f"actor-{suffix}"
+        )
         self.store.register_scope(self.context)
 
     def test_01_missing_context_and_forced_rls(self) -> None:
@@ -229,8 +337,12 @@ class Postgres17IntegrationTests(unittest.TestCase):
             idempotency_key="create-isolated",
         )
         self.assertEqual(created.actor_id, self.context.actor_id)
-        same_tenant = SecurityContext(self.context.tenant_id, "project-other", "actor-other")
-        other_tenant = SecurityContext("tenant-other", self.context.project_id, "actor-other")
+        same_tenant = SecurityContext(
+            self.context.tenant_id, "project-other", "actor-other"
+        )
+        other_tenant = SecurityContext(
+            "tenant-other", self.context.project_id, "actor-other"
+        )
         self.store.register_scope(same_tenant)
         self.store.register_scope(other_tenant)
         with self.assertRaises(NotFoundError):
@@ -259,7 +371,9 @@ class Postgres17IntegrationTests(unittest.TestCase):
                 revision_set_id=_DIGEST_A,
                 idempotency_key="same-key",
             )
-        other_actor = SecurityContext(self.context.tenant_id, self.context.project_id, "actor-other")
+        other_actor = SecurityContext(
+            self.context.tenant_id, self.context.project_id, "actor-other"
+        )
         self.store.register_scope(other_actor)
         with self.assertRaises(AuthorizationError):
             self.store.create_run(
@@ -303,7 +417,9 @@ class Postgres17IntegrationTests(unittest.TestCase):
 
     def test_04_stale_fence_checkpoint_restart_and_unknown_effect(self) -> None:
         base = datetime(2026, 1, 1, tzinfo=UTC)
-        run = self.store.create_run(self.context, run_id="run-recover", revision_set_id=_DIGEST_A, now=base)
+        run = self.store.create_run(
+            self.context, run_id="run-recover", revision_set_id=_DIGEST_A, now=base
+        )
         run_context = self.context.for_run(run.run_id)
         lease = self.store.acquire_lease(
             run_context,
@@ -312,7 +428,9 @@ class Postgres17IntegrationTests(unittest.TestCase):
             expected_sequence=run.sequence,
             now=base,
         )
-        active = run_context.for_run(run.run_id, fencing_generation=lease.fencing_generation)
+        active = run_context.for_run(
+            run.run_id, fencing_generation=lease.fencing_generation
+        )
         with self.assertRaisesRegex(ConflictError, "fencing generation"):
             self.store.transition_run(
                 run_context,
@@ -336,12 +454,14 @@ class Postgres17IntegrationTests(unittest.TestCase):
             checkpoint_id="checkpoint-restart",
             now=base + timedelta(milliseconds=20),
         )
-        snapshot, recovery_lease, recovered_checkpoint, recovered_bytes = self.store.recover_run(
-            active,
-            owner_id="worker-b",
-            expected_sequence=checkpoint.sequence,
-            ttl_seconds=300,
-            now=base + timedelta(seconds=2),
+        snapshot, recovery_lease, recovered_checkpoint, recovered_bytes = (
+            self.store.recover_run(
+                active,
+                owner_id="worker-b",
+                expected_sequence=checkpoint.sequence,
+                ttl_seconds=300,
+                now=base + timedelta(seconds=2),
+            )
         )
         self.assertEqual(recovered_bytes, b"exact checkpoint bytes")
         self.assertEqual(recovered_checkpoint.payload_sha256, checkpoint.payload_sha256)
@@ -388,8 +508,12 @@ class Postgres17IntegrationTests(unittest.TestCase):
         # New store object proves process-local state is not needed for replay.
         restarted = PostgresStore(self.cluster.app_dsn)
         try:
-            replayed_checkpoint, replayed_bytes = restarted.get_checkpoint(recovered_context, checkpoint.checkpoint_id)
-            self.assertEqual(replayed_checkpoint.payload_sha256, checkpoint.payload_sha256)
+            replayed_checkpoint, replayed_bytes = restarted.get_checkpoint(
+                recovered_context, checkpoint.checkpoint_id
+            )
+            self.assertEqual(
+                replayed_checkpoint.payload_sha256, checkpoint.payload_sha256
+            )
             self.assertEqual(replayed_bytes, recovered_bytes)
             workflow = WorkflowEngine(restarted)
             verifying = workflow.transition(
@@ -432,7 +556,9 @@ class Postgres17IntegrationTests(unittest.TestCase):
                 source="RUNNER",
                 tool_name="postgres17-integration",
                 tool_digest=digest_bytes(b"runner", domain="tool"),
-                environment_revision=digest_bytes(b"postgres-17.5", domain="environment"),
+                environment_revision=digest_bytes(
+                    b"postgres-17.5", domain="environment"
+                ),
             ),
             evidence_id="evidence-byte-bound",
             artifact_id="artifact-byte-bound",
@@ -440,7 +566,11 @@ class Postgres17IntegrationTests(unittest.TestCase):
         )
         verified, content = service.read_verified(self.context, record.evidence_id)
         self.assertEqual(content, b"exact evidence bytes")
-        tampered = replace(verified, evidence_id="evidence-tampered", content=replace(verified.content, byte_length=1))
+        tampered = replace(
+            verified,
+            evidence_id="evidence-tampered",
+            content=replace(verified.content, byte_length=1),
+        )
         with self.assertRaises(IntegrityError):
             self.store.append_evidence(self.context, tampered, b"exact evidence bytes")
 
@@ -457,13 +587,17 @@ class Postgres17IntegrationTests(unittest.TestCase):
                 f"UPDATE proof_harness_runtime.evidence SET content_bytes='tampered'::bytea "
                 f"WHERE tenant_id='{escaped_tenant}' AND project_id='{escaped_project}' AND evidence_id='{escaped_evidence}';"
             )
-        self.store.revoke_evidence(self.context, record.evidence_id, reason="integration revocation")
+        self.store.revoke_evidence(
+            self.context, record.evidence_id, reason="integration revocation"
+        )
         with self.assertRaisesRegex(IntegrityError, "revoked"):
             service.verify(self.context, record.evidence_id)
         self.assertGreaterEqual(self.store.count_rows(self.context, "audit_events"), 2)
         self.assertGreaterEqual(self.store.count_rows(self.context, "outbox_events"), 2)
 
-    def test_06_fake_certified_review_cannot_commit_and_app_role_cannot_write_it(self) -> None:
+    def test_06_fake_certified_review_cannot_commit_and_app_role_cannot_write_it(
+        self,
+    ) -> None:
         psycopg = __import__("psycopg")
         with psycopg.connect(self.cluster.app_dsn, autocommit=True) as connection:
             with connection.cursor() as cursor:

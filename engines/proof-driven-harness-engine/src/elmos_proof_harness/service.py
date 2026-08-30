@@ -32,9 +32,9 @@ from .observability import MetricsRegistry
 from .skills import SKILL_REGISTRY, SkillRuntime
 
 
-SERVICE_VERSION = "3.0.0"
+SERVICE_VERSION = "3.1.0"
 SERVICE_CONTRACT_DIGEST = digest_bytes(
-    b"elmos-proof-harness-http-contract:v3.0.0",
+    b"elmos-proof-harness-http-contract:v3.1.0",
     domain="http-contract",
 )
 _IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:@/-]{0,159}$")
@@ -1119,6 +1119,15 @@ class HarnessService:
                     code="NOT_READY",
                     http_status=503,
                 )
+            assurance_ready, assurance_reason = (
+                self.control_plane.runtime_assurance_ready(production=True)
+            )
+            if not assurance_ready:
+                raise _HttpValidationError(
+                    assurance_reason,
+                    code="NOT_READY",
+                    http_status=503,
+                )
         return self.control_plane
 
     def _readiness(self) -> tuple[bool, dict[str, str]]:
@@ -1130,6 +1139,9 @@ class HarnessService:
         checks["runtimeRegistry"] = "ready" if runtime_ready else "not-ready"
         if self.control_plane is None:
             checks["durableStore"] = "not-configured"
+            checks["runtimeAssurance"] = (
+                "not-ready" if self.runtime_mode == "production" else "ready"
+            )
         else:
             ready, _ = self.control_plane.ready()
             if ready and self.runtime_mode == "production":
@@ -1139,6 +1151,15 @@ class HarnessService:
                 except Exception:
                     ready = False
             checks["durableStore"] = "ready" if ready else "not-ready"
+            try:
+                assurance_ready, _ = self.control_plane.runtime_assurance_ready(
+                    production=self.runtime_mode == "production"
+                )
+            except Exception:
+                assurance_ready = False
+            checks["runtimeAssurance"] = (
+                "ready" if assurance_ready else "not-ready"
+            )
         try:
             auth_value = self.authenticator.readiness()
             auth_ready = (
@@ -1170,13 +1191,20 @@ class HarnessService:
         config_ready = auth_ready and transport_ready
         if self.runtime_mode == "production":
             storage_ready = False
+            assurance_ready = False
             if self.control_plane is not None:
                 try:
                     storage = self.control_plane.store.readiness()
                     storage_ready = storage.ready and storage.backend == "postgresql"
                 except Exception:
                     storage_ready = False
-            config_ready = config_ready and storage_ready
+                try:
+                    assurance_ready, _ = (
+                        self.control_plane.runtime_assurance_ready(production=True)
+                    )
+                except Exception:
+                    assurance_ready = False
+            config_ready = config_ready and storage_ready and assurance_ready
         checks["requiredConfig"] = "ready" if config_ready else "not-ready"
         for name, check in sorted(self._readiness_checks.items()):
             try:

@@ -6,29 +6,33 @@
 # external database, provider, registry, cluster, or production environment.
 
 .DEFAULT_GOAL := help
-.NOTPARALLEL: qic release-local
+.NOTPARALLEL: qic delta-qic release-local
 
 PYTHON ?= python3
 ENGINE := engines/proof-driven-harness-engine
 INTEGRATOR := tooling/integrate_proof_driven_harness_v3.py
+DELTA_INTEGRATOR := tooling/integrate_harness_runtime_assurance_delta.py
 QUALIFIER := $(ENGINE)/tools/qualify_local.py
+DELTA_QUALIFIER := $(ENGINE)/tools/qualify_delta.py
 PUBLISHER := $(ENGINE)/tools/publish_verification_pack.py
 RELEASE_CONTRACT := $(ENGINE)/tools/release_contract.py
 PACK := verification-packs/proof-driven-harness-v3-local
 
-.PHONY: help check test postgres qualify install qic publish publish-check batch35 release-local release-contract-generate wheel-check
+.PHONY: help check test postgres bootstrap qualify install qic delta-bootstrap delta-qualify delta-install delta-check delta-qic publish publish-check batch35 release-local release-contract-generate wheel-check
 
 help:
 	@echo "Proof-harness v3 local targets (distribution remains BLOCKED / NOT_CERTIFIED):"
 	@echo "  test       structured local unit/integration outcomes; no ZIP code executes"
 	@echo "  qualify    Q: create digest-bound local receipt; PostgreSQL stays NOT_RUN"
+	@echo "  bootstrap  install fail-closed DECLARED wrappers before qualification"
 	@echo "  install    I: install wrappers from an already-current qualification receipt"
 	@echo "  check      check: non-mutating release contract + installed wrapper verification"
 	@echo "  qic        run the required Q -> I -> check sequence, serially"
+	@echo "  delta-qic  bootstrap -> qualify -> promote -> check the v3.1 delta"
 	@echo "  postgres   opt-in disposable PostgreSQL 17.5 qualification only"
 	@echo "  publish    publish/check the limited local Batch 35 verification pack"
 	@echo "  batch35    validate and gate the limited pack; never certifies it"
-	@echo "  release-local  qic -> publish -> batch35 local evidence workflow"
+	@echo "  release-local  generate manifest -> base qic -> delta qic -> publish -> Batch 35"
 	@echo "  wheel-check WHEEL=/path/to/wheel  byte-check one built wheel"
 	@echo "No target deploys, pushes, signs, calls providers, or connects to an external DSN."
 
@@ -39,6 +43,9 @@ test:
 qualify:
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(QUALIFIER) --repo-root . --postgres17-mode not-run
 
+bootstrap:
+	$(PYTHON) $(INTEGRATOR) --repo-root . --install
+
 install:
 	$(PYTHON) $(INTEGRATOR) --repo-root . --install
 
@@ -46,7 +53,32 @@ check:
 	$(PYTHON) $(RELEASE_CONTRACT) --root $(ENGINE) --check
 	$(PYTHON) $(INTEGRATOR) --repo-root . --check
 
-qic: qualify install check
+qic:
+	$(PYTHON) $(INTEGRATOR) --repo-root . --install
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(QUALIFIER) --repo-root . --postgres17-mode not-run
+	$(PYTHON) $(INTEGRATOR) --repo-root . --install
+	$(PYTHON) $(RELEASE_CONTRACT) --root $(ENGINE) --check
+	$(PYTHON) $(INTEGRATOR) --repo-root . --check
+
+delta-bootstrap:
+	$(PYTHON) $(DELTA_INTEGRATOR) --repo-root . --install
+
+delta-qualify:
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(DELTA_QUALIFIER) --repo-root .
+
+delta-install:
+	$(PYTHON) $(DELTA_INTEGRATOR) --repo-root . --install
+
+delta-check:
+	$(PYTHON) $(RELEASE_CONTRACT) --root $(ENGINE) --check
+	$(PYTHON) $(DELTA_INTEGRATOR) --repo-root . --check
+
+delta-qic:
+	$(PYTHON) $(DELTA_INTEGRATOR) --repo-root . --install
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(DELTA_QUALIFIER) --repo-root .
+	$(PYTHON) $(DELTA_INTEGRATOR) --repo-root . --install
+	$(PYTHON) $(RELEASE_CONTRACT) --root $(ENGINE) --check
+	$(PYTHON) $(DELTA_INTEGRATOR) --repo-root . --check
 
 postgres:
 	@test "$${ALLOW_DISPOSABLE_POSTGRES17:-}" = "1" || { echo "Refusing: set ALLOW_DISPOSABLE_POSTGRES17=1 for the repository-owned temporary-cluster runner" >&2; exit 2; }
@@ -65,11 +97,11 @@ batch35: publish
 	$(PYTHON) scripts/batch35/run_verification_gate.py $(PACK)
 	$(PYTHON) -c 'import json,pathlib; value=json.loads(pathlib.Path("$(PACK)/certification/gate-result.json").read_text()); assert value["certification_decision"] == "NOT_CERTIFIED" and value["certification_readiness"] == "BLOCKED"'
 
-release-local: qic publish batch35
+release-local: release-contract-generate qic delta-qic publish batch35
 
 release-contract-generate:
 	$(PYTHON) $(RELEASE_CONTRACT) --root $(ENGINE) --generate
 
 wheel-check:
-	@test -n "$(WHEEL)" || { echo "WHEEL=/exact/path/to/elmos_proof_driven_harness_engine-3.0.0-*.whl is required" >&2; exit 2; }
+	@test -n "$(WHEEL)" || { echo "WHEEL=/exact/path/to/elmos_proof_driven_harness_engine-3.1.0-*.whl is required" >&2; exit 2; }
 	$(PYTHON) $(RELEASE_CONTRACT) --root $(ENGINE) --check-wheel "$(WHEEL)"

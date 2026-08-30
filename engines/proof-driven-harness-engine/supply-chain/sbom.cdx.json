@@ -6,11 +6,11 @@
   "metadata": {
     "component": {
       "type": "application",
-      "bom-ref": "pkg:pypi/elmos-proof-driven-harness-engine@3.0.0",
+      "bom-ref": "pkg:pypi/elmos-proof-driven-harness-engine@3.1.0",
       "group": "ai.elmos",
       "name": "elmos-proof-driven-harness-engine",
-      "version": "3.0.0",
-      "purl": "pkg:pypi/elmos-proof-driven-harness-engine@3.0.0",
+      "version": "3.1.0",
+      "purl": "pkg:pypi/elmos-proof-driven-harness-engine@3.1.0",
       "properties": [
         {"name": "ai.elmos.implementation", "value": "repository-owned"},
         {"name": "ai.elmos.license-review", "value": "PENDING"},
@@ -38,9 +38,28 @@
         {"name": "ai.elmos.signature", "value": "ABSENT"},
         {"name": "ai.elmos.provenance-attestation", "value": "ABSENT"}
       ]
+    },
+    {
+      "type": "file",
+      "bom-ref": "source-archive:sha256:13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
+      "name": "elmos-v3-harness-runtime-assurance-delta",
+      "version": "3.1.0",
+      "hashes": [
+        {"alg": "SHA-256", "content": "13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37"}
+      ],
+      "properties": [
+        {"name": "ai.elmos.role", "value": "untrusted-input-specification"},
+        {"name": "ai.elmos.executed", "value": "false"},
+        {"name": "ai.elmos.selective-inert-data-materialized", "value": "true"},
+        {"name": "ai.elmos.executable-content-materialized", "value": "false"},
+        {"name": "ai.elmos.instruction-content-materialized", "value": "false"},
+        {"name": "ai.elmos.approved-license", "value": "ABSENT"},
+        {"name": "ai.elmos.signature", "value": "ABSENT"},
+        {"name": "ai.elmos.provenance-attestation", "value": "ABSENT"}
+      ]
     }
   ],
   "dependencies": [
-    {"ref": "pkg:pypi/elmos-proof-driven-harness-engine@3.0.0", "dependsOn": []}
+    {"ref": "pkg:pypi/elmos-proof-driven-harness-engine@3.1.0", "dependsOn": []}
   ]
 }

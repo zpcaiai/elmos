@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Elmos Proof-Driven Harness API
-  version: 3.0.0
+  version: 3.1.0
   description: >-
     Tenant-scoped control-plane API. Transport authentication must derive the
     tenant, project, actor and grants; request bodies cannot grant authority.

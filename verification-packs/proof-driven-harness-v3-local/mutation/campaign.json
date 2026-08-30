@@ -1,0 +1,32 @@
+{
+  "budgets": {
+    "max_minutes": 0,
+    "max_mutants": 0
+  },
+  "campaign_key": "mutation.proof-harness-v3-external",
+  "equivalent_mutant_policy": "independent-review-required",
+  "execution_status": "NOT_RUN",
+  "operators": [
+    {
+      "key": "accept-invalid-receipt-status",
+      "risk": "P0"
+    },
+    {
+      "key": "skip-engine-tree-digest-check",
+      "risk": "P0"
+    },
+    {
+      "key": "follow-output-symlink",
+      "risk": "P0"
+    }
+  ],
+  "owner": "elmos-proof-harness-engineering",
+  "required_tests": [
+    "test_tampered_receipt_fails_closed",
+    "test_symlink_output_fails_closed_without_escape"
+  ],
+  "schema_version": 1,
+  "target_scope": [
+    "engines/proof-driven-harness-engine/tools/publish_verification_pack.py"
+  ]
+}

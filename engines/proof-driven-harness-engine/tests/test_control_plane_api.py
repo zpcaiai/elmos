@@ -426,6 +426,7 @@ class DurableControlPlaneApiTests(unittest.TestCase):
                     "authentication": "ready",
                     "runtimeRegistry": "ready",
                     "durableStore": "ready",
+                    "runtimeAssurance": "ready",
                     "transportSecurity": "ready",
                     "requiredConfig": "ready",
                 },

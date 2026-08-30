@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "tooling/integrate_harness_runtime_assurance_delta.py",
+    "--repo-root",
+    ".",
+    "--check"
+  ],
+  "cwd": ".",
+  "execution_environment": {
+    "certification": "NOT_CERTIFIED",
+    "external_evidence": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "network": "LOOPBACK_PROXY_DENY",
+    "os": {
+      "machine": "arm64",
+      "release": "25.6.0",
+      "system": "Darwin"
+    },
+    "python": {
+      "executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "implementation": "CPython",
+      "version": "3.14.6"
+    }
+  },
+  "name": "delta-installation-check",
+  "returncode": 0,
+  "schema_version": "1.0.0",
+  "stderr": "",
+  "stdout": "{\n  \"action\": \"check\",\n  \"archive\": {\n    \"bytes\": 173228,\n    \"checksum_rows\": 149,\n    \"entries\": 150,\n    \"files\": 150,\n    \"sha256\": \"13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37\",\n    \"uncompressed_bytes\": 339731\n  },\n  \"certification_status\": \"NOT_CERTIFIED\",\n  \"counts\": {\n    \"P0\": 10,\n    \"P1\": 3,\n    \"adapterProfiles\": 4,\n    \"databaseMigrations\": 1,\n    \"extensionSkills\": 13,\n    \"payloadFiles\": 130,\n    \"regoModules\": 5,\n    \"schemas\": 15\n  },\n  \"external_runtime_status\": \"NOT_RUN\",\n  \"implementation_status\": \"DECLARED_RUNTIME_UNQUALIFIED\",\n  \"installation\": {\n    \"dual_roots_byte_identical\": true,\n    \"files\": 133,\n    \"sha256\": \"022cb2e477381f9526d9df16782cfe348b66b696192b0a1d37570bff4940291b\",\n    \"skills\": 13,\n    \"status\": \"PASS\"\n  },\n  \"package\": \"elmos-v3-harness-runtime-assurance-delta@3.1.0\",\n  \"schema_version\": \"1.0.0\",\n  \"security\": {\n    \"archiveContentExecuted\": false,\n    \"archiveExecutableContentMaterializedAsAuthority\": false,\n    \"archiveInstructionContentMaterialized\": false,\n    \"checksumsVerified\": 149,\n    \"declarativeSourceAssetsMaterializedAsUntrustedData\": 21,\n    \"referenceImplementationMaterialized\": false,\n    \"schemasValidated\": 15,\n    \"sourceMigrationValidatedButNotMaterialized\": true\n  }\n}\n",
+  "timed_out": false,
+  "wall_clock_milliseconds": 1006
+}

@@ -26,6 +26,10 @@ authentication:
     leewaySeconds: 30
   factory:
     value: ""
+runtimeAssurance:
+  # Exact Python import reference for the deployment-owned factory. The CLI
+  # passes the same PostgresStore used by the durable control plane.
+  factory: ""
 transport:
   mode: tls
   tls:
@@ -44,6 +48,11 @@ termination:
 postgresql:
   existingSecret: ""
   dsnKey: postgres-dsn
+  # A distinct database identity is mandatory for Host-minted authority and
+  # budget-reservation receipts. The application identity is read-only for
+  # those relations; this writer is constrained to the migration-owned ACL.
+  authorityExistingSecret: ""
+  authorityDsnKey: postgres-authority-dsn
   port: 5432
   # TEST-NET default is intentionally unreachable. Production must supply the
   # exact external PostgreSQL network CIDR or the readiness probe stays failed.

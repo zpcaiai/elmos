@@ -1,0 +1,294 @@
+{
+  "captured_boundaries": {
+    "external_network_evidence": "NOT_RUN",
+    "external_provider_evidence": "NOT_RUN",
+    "independent_verifier": "NOT_RUN",
+    "production_environment": "NOT_RUN",
+    "repository_root": ".",
+    "representative_environment": "NOT_RUN",
+    "source_archive_executed": false
+  },
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "engines/proof-driven-harness-engine/tests",
+        "--pattern",
+        "test_delta_*.py"
+      ],
+      "cwd": ".",
+      "execution_environment": {
+        "certification": "NOT_CERTIFIED",
+        "external_evidence": "NOT_RUN",
+        "independent_verification": "NOT_RUN",
+        "network": "LOOPBACK_PROXY_DENY",
+        "os": {
+          "machine": "arm64",
+          "release": "25.6.0",
+          "system": "Darwin"
+        },
+        "python": {
+          "executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "implementation": "CPython",
+          "version": "3.14.6"
+        }
+      },
+      "name": "delta-engine-tests",
+      "raw_log_bytes": 102088,
+      "raw_log_sha256": "sha256:55a2d55d6252293b16b4e91fe4921933300b17f456ab8aa79c9d2adf93a3e2de",
+      "returncode": 0,
+      "structured_results_sha256": "sha256:5cc46a6a711326386f5bf43cb559d9e38f3ad3258df2e4d28b2cbc658987e845",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "tests/proof-driven-harness-v3",
+        "--pattern",
+        "test_delta_integration.py"
+      ],
+      "cwd": ".",
+      "execution_environment": {
+        "certification": "NOT_CERTIFIED",
+        "external_evidence": "NOT_RUN",
+        "independent_verification": "NOT_RUN",
+        "network": "LOOPBACK_PROXY_DENY",
+        "os": {
+          "machine": "arm64",
+          "release": "25.6.0",
+          "system": "Darwin"
+        },
+        "python": {
+          "executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "implementation": "CPython",
+          "version": "3.14.6"
+        }
+      },
+      "name": "delta-importer-tests",
+      "raw_log_bytes": 18394,
+      "raw_log_sha256": "sha256:7b3a276b2df81bb29e8c755e16077bd2e7f640c05e1399682144baafdfc1b630",
+      "returncode": 0,
+      "structured_results_sha256": "sha256:86e748884bcb96751fe03fe029b11b4e2de1c2189a15e918e4eeb630bdb145a1",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "tooling/integrate_harness_runtime_assurance_delta.py",
+        "--repo-root",
+        ".",
+        "--check"
+      ],
+      "cwd": ".",
+      "execution_environment": {
+        "certification": "NOT_CERTIFIED",
+        "external_evidence": "NOT_RUN",
+        "independent_verification": "NOT_RUN",
+        "network": "LOOPBACK_PROXY_DENY",
+        "os": {
+          "machine": "arm64",
+          "release": "25.6.0",
+          "system": "Darwin"
+        },
+        "python": {
+          "executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "implementation": "CPython",
+          "version": "3.14.6"
+        }
+      },
+      "name": "delta-installation-check",
+      "raw_log_bytes": 2206,
+      "raw_log_sha256": "sha256:b61e1a13b670fb8d873b6dd7891726763f456294c03d13a1a8eb25f6b25396be",
+      "returncode": 0,
+      "structured_results_sha256": null,
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "tooling/integrate_proof_driven_harness_v3.py",
+        "--check"
+      ],
+      "cwd": ".",
+      "execution_environment": {
+        "evidence_boundary": {
+          "certification": "NOT_CERTIFIED",
+          "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "external_evidence": "NOT_RUN",
+          "independent_verification": "NOT_RUN"
+        },
+        "os": {
+          "machine": "arm64",
+          "release": "25.6.0",
+          "system": "Darwin",
+          "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:29 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8122"
+        },
+        "packages": {
+          "psycopg": "NOT_INSTALLED",
+          "psycopg-binary": "NOT_INSTALLED"
+        },
+        "postgresql": {
+          "required_version": "17.5",
+          "status": "NOT_APPLICABLE_TO_COMMAND"
+        },
+        "python": {
+          "cache_tag": "cpython-314",
+          "executable": "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+          "executable_sha256": "sha256:b502cb4c5b46b8d4192ec6bcb600ce8922f1afc396fcf646e8765c6eba74a0bf",
+          "implementation": "CPython",
+          "version": "3.14.6"
+        },
+        "schema_version": "1.0.0",
+        "tool": {
+          "path": "tooling/integrate_proof_driven_harness_v3.py",
+          "sha256": "sha256:cf15f1e0a5e3aa4dfaf5968860faf050caf8b3ddd91b772e654f3c9c4f140cc0",
+          "version": "3.0.0"
+        }
+      },
+      "name": "archive-installation-check",
+      "raw_log_bytes": 10182,
+      "raw_log_sha256": "sha256:8ad6faba25af6e8b60e2925a1713d67c92e8f79275d18464b27bc30cf8c31875",
+      "returncode": 0,
+      "structured_results_sha256": null,
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "engines/proof-driven-harness-engine/tests",
+        "--pattern",
+        "test_*.py"
+      ],
+      "cwd": ".",
+      "execution_environment": {
+        "evidence_boundary": {
+          "certification": "NOT_CERTIFIED",
+          "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "external_evidence": "NOT_RUN",
+          "independent_verification": "NOT_RUN"
+        },
+        "os": {
+          "machine": "arm64",
+          "release": "25.6.0",
+          "system": "Darwin",
+          "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:29 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8122"
+        },
+        "packages": {
+          "psycopg": "NOT_INSTALLED",
+          "psycopg-binary": "NOT_INSTALLED"
+        },
+        "postgresql": {
+          "required_version": "17.5",
+          "status": "NOT_APPLICABLE_TO_COMMAND"
+        },
+        "python": {
+          "cache_tag": "cpython-314",
+          "executable": "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+          "executable_sha256": "sha256:b502cb4c5b46b8d4192ec6bcb600ce8922f1afc396fcf646e8765c6eba74a0bf",
+          "implementation": "CPython",
+          "version": "3.14.6"
+        },
+        "schema_version": "1.0.0",
+        "tool": {
+          "path": "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+          "sha256": "sha256:2f590d1901a9d462e1d0398eb54864db6db6bc7ed6d59a4625a0733f117a5991",
+          "version": "3.0.0"
+        }
+      },
+      "name": "engine-tests",
+      "raw_log_bytes": 177039,
+      "raw_log_sha256": "sha256:11d932c6c53d44a637b0565b5f05655b72d0345738aa753e0585ce1b56794a06",
+      "returncode": 0,
+      "structured_results_sha256": "sha256:caaccb53be441b0e2667dc4b9c4a6bc7b29778ab2dfb618fd04a5af97011d6a6",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "tests/proof-driven-harness-v3",
+        "--pattern",
+        "test_*.py"
+      ],
+      "cwd": ".",
+      "execution_environment": {
+        "evidence_boundary": {
+          "certification": "NOT_CERTIFIED",
+          "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "external_evidence": "NOT_RUN",
+          "independent_verification": "NOT_RUN"
+        },
+        "os": {
+          "machine": "arm64",
+          "release": "25.6.0",
+          "system": "Darwin",
+          "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:29 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8122"
+        },
+        "packages": {
+          "psycopg": "NOT_INSTALLED",
+          "psycopg-binary": "NOT_INSTALLED"
+        },
+        "postgresql": {
+          "required_version": "17.5",
+          "status": "NOT_APPLICABLE_TO_COMMAND"
+        },
+        "python": {
+          "cache_tag": "cpython-314",
+          "executable": "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+          "executable_sha256": "sha256:b502cb4c5b46b8d4192ec6bcb600ce8922f1afc396fcf646e8765c6eba74a0bf",
+          "implementation": "CPython",
+          "version": "3.14.6"
+        },
+        "schema_version": "1.0.0",
+        "tool": {
+          "path": "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+          "sha256": "sha256:2f590d1901a9d462e1d0398eb54864db6db6bc7ed6d59a4625a0733f117a5991",
+          "version": "3.0.0"
+        }
+      },
+      "name": "package-integration-tests",
+      "raw_log_bytes": 29525,
+      "raw_log_sha256": "sha256:2352fd90dc3a96197d4bb9b111e1b86b6d0b0f98889898392e013f78f822b2b3",
+      "returncode": 0,
+      "structured_results_sha256": "sha256:e1a31bb6f6e171ff583e2b20a94a0653d305e60326c1939f902096e4ba7bf680",
+      "timed_out": false
+    }
+  ],
+  "content_addressing": "The environment digest is SHA-256 of this exact file and is bound by pack.json plus certification/repository-binding.json.",
+  "delta_external_runtime": {
+    "opa": "NOT_RUN",
+    "postgresql17": "NOT_RUN",
+    "provider_runtime": "NOT_RUN",
+    "remote_executor": "NOT_RUN",
+    "target_environment_conformance": "NOT_RUN"
+  },
+  "delta_qualifier_sha256": "sha256:9b3ae41c4db99bf5f27ed3cee2799dc4bd9a3999e839ad227e7ca40175dfc945",
+  "delta_receipt_sha256": "sha256:c64c8df1a1b7eb8a0a11400d71f2838a4fee3dbf5f5290a02e5e4b52afc3953d",
+  "kind": "elmos.proof-driven-harness-v3.content-addressed-local-environment",
+  "postgresql17": {
+    "raw_log": null,
+    "reason": "Disposable PostgreSQL qualification was not explicitly requested.",
+    "required_postgresql_version": "17.5",
+    "required_psycopg_version": "3.2.13",
+    "status": "NOT_RUN"
+  },
+  "qualifier_sha256": "sha256:f8d1452bffa613c9d7c3621cedd14465cec256e1c59d198790281cfd6cd42289",
+  "receipt_sha256": "sha256:4e5c1dd835de315ae297f6d2f5499ae6ad8838245f86c4583e65ca59facef179",
+  "schema_version": 1,
+  "scope": "FIXED_LOCAL_SELF_ATTESTED_QUALIFICATION"
+}

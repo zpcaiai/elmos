@@ -1,7 +1,7 @@
 {
   "compiler": {
     "path": "tooling/integrate_proof_driven_harness_v3.py",
-    "sha256": "6e202605781f44c1b8703656e9a5870df3bc1729b9a10a832efad37c036e33ec"
+    "sha256": "cf15f1e0a5e3aa4dfaf5968860faf050caf8b3ddd91b772e654f3c9c4f140cc0"
   },
   "counts": {
     "commercialGoldenRoutes": 5,

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "elmos-proof-driven-harness-engine"
-version = "3.0.0"
-description = "Fail-closed proof-driven repository semantic compiler and agentic harness"
+version = "3.1.0"
+description = "Fail-closed proof-driven semantic compiler and v3.1 runtime-assured agentic harness"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
@@ -17,10 +17,9 @@ postgres = ["psycopg[binary]==3.2.13"]
 elmos-proof-harness = "elmos_proof_harness.cli:main"
 
 [tool.setuptools]
+include-package-data = false
 package-dir = {"" = "src"}
-
-[tool.setuptools.packages.find]
-where = ["src"]
+packages = ["elmos_proof_harness"]
 
 # The runtime package is accompanied by a byte-addressed, fail-closed release
 # contract.  Keep every manifest-owned non-Python asset at the same relative
@@ -28,11 +27,101 @@ where = ["src"]
 # can be checked against the repository manifest without relying on cwd.
 [tool.setuptools.data-files]
 "share/elmos-proof-harness" = ["README.md", "pyproject.toml"]
-"share/elmos-proof-harness/schemas" = ["schemas/*.schema.json"]
+"share/elmos-proof-harness/schemas" = [
+  "schemas/adapter-contract.schema.json",
+  "schemas/admission.schema.json",
+  "schemas/architecture-graph.schema.json",
+  "schemas/completion-certificate.schema.json",
+  "schemas/completion-review.schema.json",
+  "schemas/domain-pack.schema.json",
+  "schemas/environment-authority.schema.json",
+  "schemas/evidence.schema.json",
+  "schemas/goal-contract.schema.json",
+  "schemas/invocation.schema.json",
+  "schemas/proof-obligation-graph.schema.json",
+  "schemas/proof-result.schema.json",
+  "schemas/repository-evidence-graph.schema.json",
+  "schemas/result.schema.json",
+  "schemas/revision-set.schema.json",
+  "schemas/semantic-ir.schema.json",
+  "schemas/semantic-profile.schema.json",
+  "schemas/workflow-ir.schema.json",
+]
+"share/elmos-proof-harness/schemas/delta-v3.1" = [
+  "schemas/delta-v3.1/capability-lease.schema.json",
+  "schemas/delta-v3.1/delta-invocation.schema.json",
+  "schemas/delta-v3.1/delta-result.schema.json",
+  "schemas/delta-v3.1/durable-event-registration.schema.json",
+  "schemas/delta-v3.1/environment-authority-snapshot.schema.json",
+  "schemas/delta-v3.1/executor-generation.schema.json",
+  "schemas/delta-v3.1/permission-profile-replay.schema.json",
+  "schemas/delta-v3.1/protocol-capabilities.schema.json",
+  "schemas/delta-v3.1/skill-provenance.schema.json",
+  "schemas/delta-v3.1/step-execution-plan.schema.json",
+  "schemas/delta-v3.1/subagent-execution-spec.schema.json",
+  "schemas/delta-v3.1/tool-result-commit.schema.json",
+  "schemas/delta-v3.1/typed-ingress.schema.json",
+  "schemas/delta-v3.1/verified-security-context.schema.json",
+  "schemas/delta-v3.1/workspace-lease.schema.json",
+]
+"share/elmos-proof-harness/examples/delta-v3.1" = [
+  "examples/delta-v3.1/capability-lease.example.json",
+  "examples/delta-v3.1/delta-invocation.example.json",
+  "examples/delta-v3.1/delta-result.example.json",
+  "examples/delta-v3.1/durable-event-registration.example.json",
+  "examples/delta-v3.1/environment-authority-snapshot.example.json",
+  "examples/delta-v3.1/executor-generation.example.json",
+  "examples/delta-v3.1/permission-profile-replay.example.json",
+  "examples/delta-v3.1/protocol-capabilities.example.json",
+  "examples/delta-v3.1/skill-provenance.example.json",
+  "examples/delta-v3.1/step-execution-plan.example.json",
+  "examples/delta-v3.1/subagent-execution-spec.example.json",
+  "examples/delta-v3.1/tool-result-commit.example.json",
+  "examples/delta-v3.1/typed-ingress.example.json",
+  "examples/delta-v3.1/verified-security-context.example.json",
+  "examples/delta-v3.1/workspace-lease.example.json",
+]
 "share/elmos-proof-harness/openapi" = ["openapi/proof-harness-v3.openapi.yaml"]
-"share/elmos-proof-harness/migrations" = ["migrations/V001__proof_harness_core.sql"]
+"share/elmos-proof-harness/api/delta-v3.1" = [
+  "api/delta-v3.1/asyncapi-overlay.yaml",
+  "api/delta-v3.1/elmos_v3_delta.proto",
+  "api/delta-v3.1/openapi-overlay.yaml",
+]
+"share/elmos-proof-harness/adapters/delta-v3.1" = [
+  "adapters/delta-v3.1/codex-main-2026-08-28.yaml",
+  "adapters/delta-v3.1/codex-stable-0.150.1.yaml",
+  "adapters/delta-v3.1/deepseek-harness-0.1.1-rc.2.yaml",
+  "adapters/delta-v3.1/deepseek-harness-0.1.2-alpha.1.yaml",
+  "adapters/delta-v3.1/upstream-type-map.yaml",
+]
+"share/elmos-proof-harness/migrations" = [
+  "migrations/V001__proof_harness_core.sql",
+  "migrations/V304__harness_runtime_assurance_delta.sql",
+]
 "share/elmos-proof-harness/observability" = ["observability/metrics.yaml", "observability/alerts.yaml"]
+"share/elmos-proof-harness/observability/delta-v3.1" = [
+  "observability/delta-v3.1/metrics.yaml",
+  "observability/delta-v3.1/alerts.yaml",
+]
+"share/elmos-proof-harness/policies/delta-v3.1" = [
+  "policies/delta-v3.1/capability_authority.rego",
+  "policies/delta-v3.1/event_ingress.rego",
+  "policies/delta-v3.1/permission_replay.rego",
+  "policies/delta-v3.1/result_commit.rego",
+  "policies/delta-v3.1/skill_trust.rego",
+]
+"share/elmos-proof-harness/verification/delta-v3.1" = ["verification/delta-v3.1/delta-gates.yaml"]
+"share/elmos-proof-harness/verification/delta-v3.1/matrices" = [
+  "verification/delta-v3.1/matrices/capability-security.yaml",
+  "verification/delta-v3.1/matrices/ownership-fencing.yaml",
+  "verification/delta-v3.1/matrices/permission-replay.yaml",
+  "verification/delta-v3.1/matrices/protocol-events-ingress.yaml",
+  "verification/delta-v3.1/matrices/tool-result-lifecycle.yaml",
+]
 "share/elmos-proof-harness/supply-chain" = [
+  "supply-chain/README.md",
+  "supply-chain/delta-v3.1-acceptance-bindings.json",
+  "supply-chain/delta-v3.1-integrity.json",
   "supply-chain/release-policy.json",
   "supply-chain/sbom.cdx.json",
   "supply-chain/release-contract-manifest.json",
@@ -58,8 +147,10 @@ where = ["src"]
   "deploy/helm/proof-harness/templates/servicemonitor.yaml",
 ]
 "share/elmos-proof-harness/tools" = [
+  "tools/apply_delta_migration.py",
   "tools/apply_postgres_migration.py",
   "tools/publish_verification_pack.py",
+  "tools/qualify_delta.py",
   "tools/qualify_local.py",
   "tools/release_contract.py",
   "tools/run_structured_unittest.py",

@@ -21,30 +21,56 @@ from .canonical import canonical_json_bytes, digest_bytes, digest_object
 from .contracts import EvidenceProducer, SecurityContext
 from .errors import ConflictError, NotFoundError, ValidationError
 from .evidence import EvidenceService
+from .delta import DeltaInvocation, DeltaResult, RuntimeAssuranceAuthority
+from .delta_storage import CapabilityRevocationReason
+from .runtime_assurance import RuntimeAssuranceControlPlane
 from .skills import SkillExecutionResult, SkillRuntime
 from .storage import ControlPlaneReceipt, ControlPlaneStore
 from .workflow import RunState, TERMINAL_STATES, WorkflowEngine
 
 
 CONTROL_PLANE_TOOL_DIGEST = digest_bytes(
-    b"elmos-proof-driven-harness-engine:3.0.0:durable-control-plane",
+    b"elmos-proof-driven-harness-engine:3.1.0:durable-control-plane",
     domain="tool-identity",
 )
 
 
 class AuthenticatedPrincipal(Protocol):
-    tenant_id: str
-    project_id: str
-    actor_id: str
-    authority: tuple[str, ...]
-    authentication_context_digest: str
-    authority_id: str
-    authority_revision: str
-    environment_id: str
-    environment_revision: str
-    execution_epoch: int
-    fencing_generation: int
-    expires_at: datetime
+    @property
+    def tenant_id(self) -> str: ...
+
+    @property
+    def project_id(self) -> str: ...
+
+    @property
+    def actor_id(self) -> str: ...
+
+    @property
+    def authority(self) -> tuple[str, ...]: ...
+
+    @property
+    def authentication_context_digest(self) -> str: ...
+
+    @property
+    def authority_id(self) -> str: ...
+
+    @property
+    def authority_revision(self) -> str: ...
+
+    @property
+    def environment_id(self) -> str: ...
+
+    @property
+    def environment_revision(self) -> str: ...
+
+    @property
+    def execution_epoch(self) -> int: ...
+
+    @property
+    def fencing_generation(self) -> int: ...
+
+    @property
+    def expires_at(self) -> datetime: ...
 
 
 class RunSnapshotLike(Protocol):
@@ -57,6 +83,16 @@ class RunSnapshotLike(Protocol):
     deadline_at: datetime | None
     last_checkpoint_id: str | None
     updated_at: datetime
+
+
+class _ProcessLike(Protocol):
+    def is_alive(self) -> bool: ...
+
+    def join(self, timeout: float | None = None) -> None: ...
+
+    def terminate(self) -> None: ...
+
+    def kill(self) -> None: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -216,6 +252,7 @@ class DurableControlPlane:
         lease_ttl_seconds: int = 300,
         auto_start_workers: bool = True,
         cost_meter: Callable[[str, int, int, int], int] | None = None,
+        runtime_assurance: RuntimeAssuranceControlPlane | None = None,
     ) -> None:
         if not owner_id:
             raise ValueError("owner_id is required")
@@ -225,6 +262,9 @@ class DurableControlPlane:
         self.runtime = runtime
         self.workflow = WorkflowEngine(store)
         self.evidence = EvidenceService(store)
+        if runtime_assurance is not None and id(runtime_assurance.store) != id(store):
+            raise ValueError("runtime assurance must use the same durable store")
+        self.runtime_assurance = runtime_assurance
         # A process incarnation must never impersonate a crashed predecessor.
         # Recovery, rather than a same-owner lease renewal, increments epoch and
         # fence after the old lease expires.
@@ -248,12 +288,108 @@ class DurableControlPlane:
                 getattr(self.store, "list_pending_control_plane_receipts", None)
             ):
                 return False, "durable pending-invocation reconciliation is unavailable"
+            if self.runtime_assurance is not None:
+                assurance_ready, assurance_reason = self.runtime_assurance.ready()
+                if not assurance_ready:
+                    return False, assurance_reason
             return (
                 True,
                 f"{storage.backend} store, workflow, evidence, and Skill runtime are ready",
             )
         except Exception:
             return False, "durable control-plane readiness check failed"
+
+    def runtime_assurance_ready(
+        self,
+        *,
+        production: bool,
+    ) -> tuple[bool, str]:
+        if self.runtime_assurance is None:
+            if production:
+                return False, "production runtime assurance is not configured"
+            return True, "runtime assurance is not enabled for local engineering"
+        return self.runtime_assurance.ready(production=production)
+
+    def register_runtime_assurance_authority(
+        self,
+        principal: AuthenticatedPrincipal,
+        invocation: DeltaInvocation,
+        authority: RuntimeAssuranceAuthority,
+    ) -> SecurityContext:
+        """Register one host-minted authority for an internal delta invocation."""
+
+        if self.runtime_assurance is None:
+            raise ValidationError("runtime assurance is not configured")
+        base = self.register_scope(principal)
+        context = base.for_run(
+            invocation.run_id,
+            execution_epoch=invocation.execution_epoch,
+            fencing_generation=principal.fencing_generation,
+        )
+        self.runtime_assurance.register_authority(context, invocation, authority)
+        return context
+
+    def execute_runtime_assurance(
+        self,
+        principal: AuthenticatedPrincipal,
+        invocation: DeltaInvocation,
+        *,
+        deadline: datetime | None = None,
+    ) -> DeltaResult:
+        """Execute an exact delta Skill through the non-routable host boundary."""
+
+        if self.runtime_assurance is None:
+            raise ValidationError("runtime assurance is not configured")
+        base = self.register_scope(principal)
+        context = base.for_run(
+            invocation.run_id,
+            execution_epoch=invocation.execution_epoch,
+            fencing_generation=principal.fencing_generation,
+        )
+        return self.runtime_assurance.execute_internal(
+            context,
+            invocation,
+            deadline=deadline,
+        )
+
+    def terminate_runtime_assurance_invocation(
+        self,
+        principal: AuthenticatedPrincipal,
+        invocation: DeltaInvocation,
+        *,
+        reason: CapabilityRevocationReason,
+    ) -> tuple[Any, ...]:
+        """Revoke all durable capabilities borrowed by an exact invocation."""
+
+        if self.runtime_assurance is None:
+            raise ValidationError("runtime assurance is not configured")
+        base = self.register_scope(principal)
+        context = base.for_run(
+            invocation.run_id,
+            execution_epoch=invocation.execution_epoch,
+            fencing_generation=principal.fencing_generation,
+        )
+        return self.runtime_assurance.terminate_invocation_capabilities(
+            context,
+            revision_set_id=invocation.revision_set_id,
+            invocation_id=invocation.invocation_id,
+            reason=reason,
+        )
+
+    def _revoke_run_capabilities(
+        self,
+        context: SecurityContext,
+        *,
+        reason: CapabilityRevocationReason,
+    ) -> None:
+        """Fail closed before a run loses the authority to use its leases."""
+
+        if self.runtime_assurance is None:
+            return
+        self.runtime_assurance.store.revoke_run_capability_leases(
+            context,
+            reason=reason,
+        )
 
     def register_scope(self, principal: AuthenticatedPrincipal) -> SecurityContext:
         context = SecurityContext(
@@ -506,6 +642,15 @@ class DurableControlPlane:
         base_context = self.register_scope(principal)
         snapshot = self.store.get_run(base_context, receipt.run_id)
         if RunState(snapshot.state) in TERMINAL_STATES:
+            terminal_context = base_context.for_run(
+                snapshot.run_id,
+                execution_epoch=snapshot.execution_epoch,
+                fencing_generation=snapshot.fencing_generation,
+            )
+            self._revoke_run_capabilities(
+                terminal_context,
+                reason=_capability_reason_for_terminal(RunState(snapshot.state)),
+            )
             result = self._replay_result(base_context, snapshot)
             if receipt.response is None:
                 self._complete(
@@ -783,7 +928,9 @@ class DurableControlPlane:
                         else 16 * 1024 * 1024
                     ),
                 )
-                raw_result = receive.recv_bytes(maxlength=max(64 * 1024, maximum_transfer))
+                raw_result = receive.recv_bytes(
+                    maxlength=max(64 * 1024, maximum_transfer)
+                )
                 execution = _skill_result_from_bytes(raw_result, str(request["skill"]))
                 process.join(1.0)
                 if process.is_alive():
@@ -943,6 +1090,10 @@ class DurableControlPlane:
             if bounded.timed_out
             else _terminal_state_for_result(str(result["status"]))
         )
+        self._revoke_run_capabilities(
+            lease.context,
+            reason=_capability_reason_for_terminal(terminal),
+        )
         self._transition_checkpoint_to_terminal(
             lease.context,
             lease.token,
@@ -973,6 +1124,10 @@ class DurableControlPlane:
         result: Mapping[str, Any],
     ) -> None:
         terminal = _terminal_state_for_result(str(result["status"]))
+        self._revoke_run_capabilities(
+            lease.context,
+            reason=_capability_reason_for_terminal(terminal),
+        )
         self._transition_checkpoint_to_terminal(
             lease.context,
             lease.token,
@@ -1202,6 +1357,10 @@ class DurableControlPlane:
             execution_epoch=lease.execution_epoch,
             fencing_generation=lease.fencing_generation,
         )
+        self._revoke_run_capabilities(
+            active_context,
+            reason=CapabilityRevocationReason.CANCELLED,
+        )
         self.workflow.cancel(
             active_context,
             expected_sequence=lease.sequence,
@@ -1267,7 +1426,9 @@ class DurableControlPlane:
                     f"authority.{name} is not server-bound",
                     code=code,
                 )
-        expires_at = _parse_datetime(authority.get("expiresAt"), field="authority.expiresAt")
+        expires_at = _parse_datetime(
+            authority.get("expiresAt"), field="authority.expiresAt"
+        )
         if expires_at != principal.expires_at.astimezone(UTC):
             raise ValidationError(
                 "authority expiry is not server-bound",
@@ -1471,7 +1632,7 @@ def _runtime_context(
     }
 
 
-def _terminate_process(process: multiprocessing.Process) -> None:
+def _terminate_process(process: _ProcessLike) -> None:
     if not process.is_alive():
         process.join(0.1)
         return
@@ -1482,7 +1643,9 @@ def _terminate_process(process: multiprocessing.Process) -> None:
         process.join(1.0)
 
 
-def _skill_result_from_bytes(payload: bytes, expected_skill: str) -> SkillExecutionResult:
+def _skill_result_from_bytes(
+    payload: bytes, expected_skill: str
+) -> SkillExecutionResult:
     try:
         value = json.loads(payload)
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -1537,17 +1700,27 @@ def _parse_job_record(
     }:
         raise ConflictError("admission job is malformed", code="ADMISSION_INVALID")
     if job.get("checkpointKind") not in {"ADMISSION", "EXECUTION_READY"}:
-        raise ConflictError("admission checkpoint kind is invalid", code="ADMISSION_INVALID")
+        raise ConflictError(
+            "admission checkpoint kind is invalid", code="ADMISSION_INVALID"
+        )
     request = job.get("request")
     trusted = job.get("authenticatedPrincipal")
     input_bytes = job.get("inputBytes")
     request_digest = job.get("requestDigest")
     if not isinstance(request, Mapping) or not isinstance(trusted, Mapping):
-        raise ConflictError("admission job payload is invalid", code="ADMISSION_INVALID")
-    if not isinstance(input_bytes, int) or isinstance(input_bytes, bool) or input_bytes < 0:
+        raise ConflictError(
+            "admission job payload is invalid", code="ADMISSION_INVALID"
+        )
+    if (
+        not isinstance(input_bytes, int)
+        or isinstance(input_bytes, bool)
+        or input_bytes < 0
+    ):
         raise ConflictError("admission input size is invalid", code="ADMISSION_INVALID")
     if not isinstance(request_digest, str) or request_digest != receipt.request_sha256:
-        raise ConflictError("admission digest binding is invalid", code="ADMISSION_INVALID")
+        raise ConflictError(
+            "admission digest binding is invalid", code="ADMISSION_INVALID"
+        )
     required = {
         "tenantId",
         "projectId",
@@ -1563,12 +1736,16 @@ def _parse_job_record(
         "expiresAt",
     }
     if set(trusted) != required:
-        raise ConflictError("persisted principal is malformed", code="ADMISSION_INVALID")
+        raise ConflictError(
+            "persisted principal is malformed", code="ADMISSION_INVALID"
+        )
     authority = trusted["authority"]
     if not isinstance(authority, list) or any(
         not isinstance(item, str) or not item for item in authority
     ):
-        raise ConflictError("persisted authority is malformed", code="ADMISSION_INVALID")
+        raise ConflictError(
+            "persisted authority is malformed", code="ADMISSION_INVALID"
+        )
     principal = _PersistedPrincipal(
         tenant_id=str(trusted["tenantId"]),
         project_id=str(trusted["projectId"]),
@@ -1585,7 +1762,9 @@ def _parse_job_record(
         or datetime.min.replace(tzinfo=UTC),
     )
     if principal.actor_id != receipt.actor_id:
-        raise ConflictError("persisted principal scope is invalid", code="ADMISSION_INVALID")
+        raise ConflictError(
+            "persisted principal scope is invalid", code="ADMISSION_INVALID"
+        )
     return principal, request, input_bytes, request_digest
 
 
@@ -1717,6 +1896,18 @@ def _terminal_state_for_result(status: str) -> RunState:
     return RunState.PARTIAL
 
 
+def _capability_reason_for_terminal(
+    terminal: RunState,
+) -> CapabilityRevocationReason:
+    if terminal is RunState.COMPLETED:
+        return CapabilityRevocationReason.COMPLETED
+    if terminal is RunState.CANCELLED:
+        return CapabilityRevocationReason.CANCELLED
+    if terminal is RunState.TIMED_OUT:
+        return CapabilityRevocationReason.TIMED_OUT
+    return CapabilityRevocationReason.TURN_ABORTED
+
+
 def _run_envelope(snapshot: RunSnapshotLike) -> dict[str, Any]:
     return {
         "runId": snapshot.run_id,
@@ -1745,8 +1936,8 @@ def _parse_datetime(value: Any, *, field: str) -> datetime | None:
 def _format_datetime(value: datetime) -> str:
     if value.tzinfo is None or value.utcoffset() is None:
         raise ValidationError("datetime must be timezone-aware")
-    return value.astimezone(UTC).isoformat(timespec="microseconds").replace(
-        "+00:00", "Z"
+    return (
+        value.astimezone(UTC).isoformat(timespec="microseconds").replace("+00:00", "Z")
     )
 
 

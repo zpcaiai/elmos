@@ -1,0 +1,305 @@
+{
+  "certification": "NOT_CERTIFIED",
+  "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "delta_acceptance_binding_sha256": "sha256:d315f4e9a2c0de7d0017d39e1de1331c92c10bb9570c131b4de13051fedae529",
+  "delta_receipt_sha256": "sha256:c64c8df1a1b7eb8a0a11400d71f2838a4fee3dbf5f5290a02e5e4b52afc3953d",
+  "delta_runtime_evidence": {
+    "opa": "NOT_RUN",
+    "postgresql17": "NOT_RUN",
+    "provider_runtime": "NOT_RUN",
+    "remote_executor": "NOT_RUN",
+    "target_environment_conformance": "NOT_RUN"
+  },
+  "delta_source_digest": "sha256:13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
+  "environment_digest": "sha256:d5da0fcb73d7e9cfb5be18d7ea2125fe7f043d9d0512dd82b19cca98346697eb",
+  "external_evidence": "NOT_RUN",
+  "failed": 0,
+  "independent_verification": "NOT_RUN",
+  "kind": "elmos.batch35.exact-repository-binding",
+  "limitations": [
+    "The Batch35-required test role binds canonical engine-tree inventory bytes; it is the exact target artifact, not a claim that a single test file represents the engine.",
+    "Local executor and verifier are repository-owned and not independent."
+  ],
+  "pack_key": "proof-driven-harness-v3-local",
+  "passed": 485,
+  "postgresql17": {
+    "raw_log": null,
+    "reason": "Disposable PostgreSQL qualification was not explicitly requested.",
+    "required_postgresql_version": "17.5",
+    "required_psycopg_version": "3.2.13",
+    "status": "NOT_RUN"
+  },
+  "raw_logs": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "tooling/integrate_proof_driven_harness_v3.py",
+        "--check"
+      ],
+      "bytes": 10182,
+      "pack_copy": "qualification/raw/archive-installation-check.json",
+      "repository_path": "engines/proof-driven-harness-engine/qualification/raw/archive-installation-check.json",
+      "returncode": 0,
+      "sha256": "sha256:8ad6faba25af6e8b60e2925a1713d67c92e8f79275d18464b27bc30cf8c31875",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "engines/proof-driven-harness-engine/tests",
+        "--pattern",
+        "test_*.py"
+      ],
+      "bytes": 177039,
+      "pack_copy": "qualification/raw/engine-tests.json",
+      "repository_path": "engines/proof-driven-harness-engine/qualification/raw/engine-tests.json",
+      "returncode": 0,
+      "sha256": "sha256:11d932c6c53d44a637b0565b5f05655b72d0345738aa753e0585ce1b56794a06",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "tests/proof-driven-harness-v3",
+        "--pattern",
+        "test_*.py"
+      ],
+      "bytes": 29525,
+      "pack_copy": "qualification/raw/package-integration-tests.json",
+      "repository_path": "engines/proof-driven-harness-engine/qualification/raw/package-integration-tests.json",
+      "returncode": 0,
+      "sha256": "sha256:2352fd90dc3a96197d4bb9b111e1b86b6d0b0f98889898392e013f78f822b2b3",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "engines/proof-driven-harness-engine/tests",
+        "--pattern",
+        "test_delta_*.py"
+      ],
+      "bytes": 102088,
+      "pack_copy": "qualification/delta-v3.1/raw/delta-engine-tests.json",
+      "repository_path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-engine-tests.json",
+      "returncode": 0,
+      "sha256": "sha256:55a2d55d6252293b16b4e91fe4921933300b17f456ab8aa79c9d2adf93a3e2de",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "tests/proof-driven-harness-v3",
+        "--pattern",
+        "test_delta_integration.py"
+      ],
+      "bytes": 18394,
+      "pack_copy": "qualification/delta-v3.1/raw/delta-importer-tests.json",
+      "repository_path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-importer-tests.json",
+      "returncode": 0,
+      "sha256": "sha256:7b3a276b2df81bb29e8c755e16077bd2e7f640c05e1399682144baafdfc1b630",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "tooling/integrate_harness_runtime_assurance_delta.py",
+        "--repo-root",
+        ".",
+        "--check"
+      ],
+      "bytes": 2206,
+      "pack_copy": "qualification/delta-v3.1/raw/delta-installation-check.json",
+      "repository_path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-installation-check.json",
+      "returncode": 0,
+      "sha256": "sha256:b61e1a13b670fb8d873b6dd7891726763f456294c03d13a1a8eb25f6b25396be",
+      "timed_out": false
+    }
+  ],
+  "receipt_sha256": "sha256:4e5c1dd835de315ae297f6d2f5499ae6ad8838245f86c4583e65ca59facef179",
+  "repository_bindings": [
+    {
+      "byte_size": 148422,
+      "path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/local-qualification.json",
+      "role": "delta-qualification-receipt",
+      "sha256": "sha256:c64c8df1a1b7eb8a0a11400d71f2838a4fee3dbf5f5290a02e5e4b52afc3953d"
+    },
+    {
+      "byte_size": 102088,
+      "path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-engine-tests.json",
+      "role": "delta-raw-log-delta-engine-tests",
+      "sha256": "sha256:55a2d55d6252293b16b4e91fe4921933300b17f456ab8aa79c9d2adf93a3e2de"
+    },
+    {
+      "byte_size": 18394,
+      "path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-importer-tests.json",
+      "role": "delta-raw-log-delta-importer-tests",
+      "sha256": "sha256:7b3a276b2df81bb29e8c755e16077bd2e7f640c05e1399682144baafdfc1b630"
+    },
+    {
+      "byte_size": 2206,
+      "path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-installation-check.json",
+      "role": "delta-raw-log-delta-installation-check",
+      "sha256": "sha256:b61e1a13b670fb8d873b6dd7891726763f456294c03d13a1a8eb25f6b25396be"
+    },
+    {
+      "byte_size": 25836,
+      "path": "engines/proof-driven-harness-engine/qualification/local-qualification.json",
+      "role": "qualification-receipt",
+      "sha256": "sha256:4e5c1dd835de315ae297f6d2f5499ae6ad8838245f86c4583e65ca59facef179"
+    },
+    {
+      "byte_size": 10182,
+      "path": "engines/proof-driven-harness-engine/qualification/raw/archive-installation-check.json",
+      "role": "raw-log-archive-installation-check",
+      "sha256": "sha256:8ad6faba25af6e8b60e2925a1713d67c92e8f79275d18464b27bc30cf8c31875"
+    },
+    {
+      "byte_size": 177039,
+      "path": "engines/proof-driven-harness-engine/qualification/raw/engine-tests.json",
+      "role": "raw-log-engine-tests",
+      "sha256": "sha256:11d932c6c53d44a637b0565b5f05655b72d0345738aa753e0585ce1b56794a06"
+    },
+    {
+      "byte_size": 29525,
+      "path": "engines/proof-driven-harness-engine/qualification/raw/package-integration-tests.json",
+      "role": "raw-log-package-integration-tests",
+      "sha256": "sha256:2352fd90dc3a96197d4bb9b111e1b86b6d0b0f98889898392e013f78f822b2b3"
+    },
+    {
+      "byte_size": 53596,
+      "path": "engines/proof-driven-harness-engine/supply-chain/delta-v3.1-acceptance-bindings.json",
+      "role": "delta-acceptance-traceability",
+      "sha256": "sha256:d315f4e9a2c0de7d0017d39e1de1331c92c10bb9570c131b4de13051fedae529"
+    },
+    {
+      "byte_size": 81637,
+      "path": "engines/proof-driven-harness-engine/tests/test_delta_contract_closure.py",
+      "role": "delta-runtime-test-contract-closure",
+      "sha256": "sha256:2a201bffdcc106c4c17da6f7fab5d7156f503fa115a9c50fb356a723f2bee1b0"
+    },
+    {
+      "byte_size": 116408,
+      "path": "engines/proof-driven-harness-engine/tests/test_delta_control_plane.py",
+      "role": "delta-runtime-test-control-plane",
+      "sha256": "sha256:60b8a80173caac1629383c88d67a67cf79a5e8378fc9d0055135d446cb55afdd"
+    },
+    {
+      "byte_size": 19048,
+      "path": "engines/proof-driven-harness-engine/tests/test_delta_migration.py",
+      "role": "delta-runtime-test-migration",
+      "sha256": "sha256:0f2c6268486f3776d11168f86fdf7a96595e040e1ccaa29a59c8865eca4936e6"
+    },
+    {
+      "byte_size": 20807,
+      "path": "engines/proof-driven-harness-engine/tests/test_delta_qualification.py",
+      "role": "delta-runtime-test-qualification",
+      "sha256": "sha256:e8f10da8de73bee5a57877d81a7f5c9a9312c2a5a0369bfcc7c5e38185f7a2c4"
+    },
+    {
+      "byte_size": 40921,
+      "path": "engines/proof-driven-harness-engine/tests/test_delta_skills.py",
+      "role": "delta-runtime-test-skills",
+      "sha256": "sha256:3202353575d1bcddc3d0371b812c874a828262c2ab03605275ed13403df97918"
+    },
+    {
+      "byte_size": 102370,
+      "path": "engines/proof-driven-harness-engine/tests/test_delta_storage.py",
+      "role": "delta-runtime-test-storage",
+      "sha256": "sha256:e8e82f99dcc30ceeab533e3bfd78c76eb6aff402e727b37b674a1a6ec957eab4"
+    },
+    {
+      "byte_size": 35574,
+      "path": "engines/proof-driven-harness-engine/tests/test_publish_verification_pack.py",
+      "role": "verification-pack-negative-tests",
+      "sha256": "sha256:92cb1447cf47c352d41b0009811278a75d0fa375e61280a5c60624a26b6f3d20"
+    },
+    {
+      "byte_size": 166630,
+      "path": "engines/proof-driven-harness-engine/tools/publish_verification_pack.py",
+      "role": "verification-pack-publisher",
+      "sha256": "sha256:977bdfc4b3601b254255814d654f581deb7beb4a031659d54e9a3b1345c41e7c"
+    },
+    {
+      "byte_size": 66262,
+      "path": "engines/proof-driven-harness-engine/tools/qualify_delta.py",
+      "role": "delta-qualification-producer",
+      "sha256": "sha256:9b3ae41c4db99bf5f27ed3cee2799dc4bd9a3999e839ad227e7ca40175dfc945"
+    },
+    {
+      "byte_size": 31966,
+      "path": "engines/proof-driven-harness-engine/tools/qualify_local.py",
+      "role": "qualification-producer",
+      "sha256": "sha256:f8d1452bffa613c9d7c3621cedd14465cec256e1c59d198790281cfd6cd42289"
+    },
+    {
+      "byte_size": 5601254,
+      "path": "skills/subskills/elmos-proof-driven-agentic-harness-repository-semantic-compiler-v3.0.0.zip",
+      "role": "source",
+      "sha256": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07"
+    },
+    {
+      "byte_size": 173228,
+      "path": "skills/subskills/elmos-v3-harness-runtime-assurance-delta-v3.1.0.zip",
+      "role": "source-delta",
+      "sha256": "sha256:13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37"
+    },
+    {
+      "byte_size": 40908,
+      "path": "tests/proof-driven-harness-v3/test_delta_integration.py",
+      "role": "delta-archive-importer-negative-tests",
+      "sha256": "sha256:6826ce85b48d9a0f26d6fb1dd828ff342452cfb5b332a66856a08ff14e860e28"
+    },
+    {
+      "byte_size": 23203,
+      "path": "tests/proof-driven-harness-v3/test_integration.py",
+      "role": "archive-importer-negative-tests",
+      "sha256": "sha256:53d926d783f6a656059971615608d3a00c6a82fd94d5ddb2dfd8c6120288b42d"
+    },
+    {
+      "byte_size": 119826,
+      "path": "tooling/integrate_harness_runtime_assurance_delta.py",
+      "role": "delta-archive-importer",
+      "sha256": "sha256:c52d8a428e97b76a1833b5e88b46b8b6b9a16b644eb524669fa802545b9c4266"
+    },
+    {
+      "byte_size": 108171,
+      "path": "tooling/integrate_proof_driven_harness_v3.py",
+      "role": "archive-importer",
+      "sha256": "sha256:cf15f1e0a5e3aa4dfaf5968860faf050caf8b3ddd91b772e654f3c9c4f140cc0"
+    },
+    {
+      "byte_size": 24239,
+      "path": "verification-packs/proof-driven-harness-v3-local/artifacts/engine-tree-inventory.json",
+      "role": "test",
+      "sha256": "sha256:218b1191cdd9f4d9bd5327c8a232e336da9268cb7c8dbcd0b35343ddc1a5480a"
+    },
+    {
+      "byte_size": 10806,
+      "path": "verification-packs/proof-driven-harness-v3-local/environment/local-environment.json",
+      "role": "environment",
+      "sha256": "sha256:d5da0fcb73d7e9cfb5be18d7ea2125fe7f043d9d0512dd82b19cca98346697eb"
+    }
+  ],
+  "schema_version": 1,
+  "skipped": 0,
+  "source_digest": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+  "status": "passed",
+  "test_digest": "sha256:218b1191cdd9f4d9bd5327c8a232e336da9268cb7c8dbcd0b35343ddc1a5480a",
+  "tests": 485
+}

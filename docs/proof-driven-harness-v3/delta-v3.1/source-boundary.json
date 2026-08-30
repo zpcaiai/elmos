@@ -4,9 +4,127 @@
   "base_version": "3.0.0",
   "certification_status": "NOT_CERTIFIED",
   "composite_version": "3.1.0",
+  "declarative_source_assets": {
+    "classification": "UNTRUSTED_DATA_NOT_RUNTIME_AUTHORITY",
+    "count": 21,
+    "members": [
+      {
+        "sha256": "sha256:1f43f73e2cee9864dbf244380ef8f37276391105e180d5cb68182a3fd1eca95a",
+        "source": "payload/api/delta-v3.1/asyncapi-overlay.yaml",
+        "target": "engines/proof-driven-harness-engine/api/delta-v3.1/asyncapi-overlay.yaml"
+      },
+      {
+        "sha256": "sha256:75393979f7a42367a84216e8ae49a512e198ffb85f8ce2d8d6d68141e182efda",
+        "source": "payload/api/delta-v3.1/elmos_v3_delta.proto",
+        "target": "engines/proof-driven-harness-engine/api/delta-v3.1/elmos_v3_delta.proto"
+      },
+      {
+        "sha256": "sha256:52272cc153409b0b8986aace13280f1a6894f4571dd5f536393c38fe87fc5bb0",
+        "source": "payload/api/delta-v3.1/openapi-overlay.yaml",
+        "target": "engines/proof-driven-harness-engine/api/delta-v3.1/openapi-overlay.yaml"
+      },
+      {
+        "sha256": "sha256:dd8780075d419d53bb06a1351054e3c614cec2a2270f3ac7f8a8b1acc17dc279",
+        "source": "payload/harness/adapters/delta-v3.1/codex-main-2026-08-28.yaml",
+        "target": "engines/proof-driven-harness-engine/adapters/delta-v3.1/codex-main-2026-08-28.yaml"
+      },
+      {
+        "sha256": "sha256:e5e2d308c81f32763b1ec5cc1b04073bfc01e6ab7245613a2011c7661df59a71",
+        "source": "payload/harness/adapters/delta-v3.1/codex-stable-0.150.1.yaml",
+        "target": "engines/proof-driven-harness-engine/adapters/delta-v3.1/codex-stable-0.150.1.yaml"
+      },
+      {
+        "sha256": "sha256:fd1c5d94f75cb91fed0a3e3ff0484b6fbde337e74c74aa837f2c562cc0664063",
+        "source": "payload/harness/adapters/delta-v3.1/deepseek-harness-0.1.1-rc.2.yaml",
+        "target": "engines/proof-driven-harness-engine/adapters/delta-v3.1/deepseek-harness-0.1.1-rc.2.yaml"
+      },
+      {
+        "sha256": "sha256:6e4eadd77124562102e0dd726d4c2f3203432174db8aec06f7171d9f218765c8",
+        "source": "payload/harness/adapters/delta-v3.1/deepseek-harness-0.1.2-alpha.1.yaml",
+        "target": "engines/proof-driven-harness-engine/adapters/delta-v3.1/deepseek-harness-0.1.2-alpha.1.yaml"
+      },
+      {
+        "sha256": "sha256:61122c54c843bffd00ab80aeef125a34d5904d2de88e61754ed6a78288807b68",
+        "source": "payload/harness/adapters/delta-v3.1/upstream-type-map.yaml",
+        "target": "engines/proof-driven-harness-engine/adapters/delta-v3.1/upstream-type-map.yaml"
+      },
+      {
+        "sha256": "sha256:6ea1bb019d4e8f66cff6cd2a0de752e6689a5f5c56f02ec4a46a6acf5cffd84f",
+        "source": "payload/observability/delta-v3.1/alerts.yaml",
+        "target": "engines/proof-driven-harness-engine/observability/delta-v3.1/alerts.yaml"
+      },
+      {
+        "sha256": "sha256:16a26d397dcb06e4d34088db7f3bb08a2fc227b070c22a0613d84c4943c298fe",
+        "source": "payload/observability/delta-v3.1/metrics.yaml",
+        "target": "engines/proof-driven-harness-engine/observability/delta-v3.1/metrics.yaml"
+      },
+      {
+        "sha256": "sha256:fb4d004b78fa4c23b28a521a51242525b08ea42f189a082ec45b7e5946acb471",
+        "source": "payload/policy/delta-rego/capability_authority.rego",
+        "target": "engines/proof-driven-harness-engine/policies/delta-v3.1/capability_authority.rego"
+      },
+      {
+        "sha256": "sha256:c0d76bd03f52129613e2e2d486d4abb020fe066b10063c2ae9f1374c26271b70",
+        "source": "payload/policy/delta-rego/event_ingress.rego",
+        "target": "engines/proof-driven-harness-engine/policies/delta-v3.1/event_ingress.rego"
+      },
+      {
+        "sha256": "sha256:148153461a07dcd464d357255e2e00dc9bf2a3bb0be28dd4f25c8f594cdd6a2d",
+        "source": "payload/policy/delta-rego/permission_replay.rego",
+        "target": "engines/proof-driven-harness-engine/policies/delta-v3.1/permission_replay.rego"
+      },
+      {
+        "sha256": "sha256:66977884ace3b2227e200e3c20884df07c2862cf898ff527bfca3e1d7f1ae3d9",
+        "source": "payload/policy/delta-rego/result_commit.rego",
+        "target": "engines/proof-driven-harness-engine/policies/delta-v3.1/result_commit.rego"
+      },
+      {
+        "sha256": "sha256:b1063a4d222695905d6f0bfce9c62b7a4277dbb7166c887feb4fb19171629e4b",
+        "source": "payload/policy/delta-rego/skill_trust.rego",
+        "target": "engines/proof-driven-harness-engine/policies/delta-v3.1/skill_trust.rego"
+      },
+      {
+        "sha256": "sha256:51786f61fa30168ef69c8761e3473b636d423226d258060eefc64e94e94a7fca",
+        "source": "payload/verification/delta-gates.yaml",
+        "target": "engines/proof-driven-harness-engine/verification/delta-v3.1/delta-gates.yaml"
+      },
+      {
+        "sha256": "sha256:04bc4ffec0d5ff3240f9ffc8199112b651f92d6a553aa777067f9bcb9c2f569a",
+        "source": "payload/verification/matrices/capability-security.yaml",
+        "target": "engines/proof-driven-harness-engine/verification/delta-v3.1/matrices/capability-security.yaml"
+      },
+      {
+        "sha256": "sha256:a9f3d21fbf7bdccc24171d53b4842eb922bfc4a5b95f39b47499bccb922a5410",
+        "source": "payload/verification/matrices/ownership-fencing.yaml",
+        "target": "engines/proof-driven-harness-engine/verification/delta-v3.1/matrices/ownership-fencing.yaml"
+      },
+      {
+        "sha256": "sha256:c0c86ebc3c00a107588cca901d65b2dd955ba9b6483be116d7d7cda56c0c22eb",
+        "source": "payload/verification/matrices/permission-replay.yaml",
+        "target": "engines/proof-driven-harness-engine/verification/delta-v3.1/matrices/permission-replay.yaml"
+      },
+      {
+        "sha256": "sha256:a1c7d65af2334cb33b684e370c4d3c0e0513e3a4388baaa522bf80baa66bbc31",
+        "source": "payload/verification/matrices/protocol-events-ingress.yaml",
+        "target": "engines/proof-driven-harness-engine/verification/delta-v3.1/matrices/protocol-events-ingress.yaml"
+      },
+      {
+        "sha256": "sha256:6de54a81cc052f69f178275fdb660a056ccf4a196a1791bb47a08453be48a8f7",
+        "source": "payload/verification/matrices/tool-result-lifecycle.yaml",
+        "target": "engines/proof-driven-harness-engine/verification/delta-v3.1/matrices/tool-result-lifecycle.yaml"
+      }
+    ]
+  },
   "external_runtime_status": "NOT_RUN",
   "instruction_content_materialized": false,
   "local_qualification": "DECLARED_RUNTIME_UNQUALIFIED",
   "reference_implementation_materialized": false,
-  "schema_version": "1.0.0"
+  "schema_version": "1.0.0",
+  "source_migration": {
+    "authority": "NONE",
+    "executed": false,
+    "materialized": false,
+    "path": "payload/database/delta-migrations/V304__harness_runtime_assurance_delta.sql",
+    "sha256": "sha256:cf8ec23490924cc7ce050bc6d9d9cb0b3ddad6c92b8f0192772df4951bd44f4d"
+  }
 }

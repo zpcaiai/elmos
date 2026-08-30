@@ -1,0 +1,16 @@
+{
+  "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "dataset_digest": "sha256:ae2eaf350a72adfaf85c6fa87dc4dce47bf5183ba790075853c58fb9b2bf207a",
+  "evidence_refs": [
+    "corpus/negative/cases.json",
+    "qualification/raw/engine-tests.json",
+    "qualification/raw/package-integration-tests.json",
+    "qualification/receipt-validation.json"
+  ],
+  "limitations": [
+    "Repository-owned negative controls; no independent adversarial corpus was executed."
+  ],
+  "schema_version": 1,
+  "source_digest": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+  "status": "passed"
+}

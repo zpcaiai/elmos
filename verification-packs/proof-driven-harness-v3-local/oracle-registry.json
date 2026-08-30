@@ -1,0 +1,83 @@
+{
+  "approvals": [],
+  "conflicts": [],
+  "oracles": [
+    {
+      "evidence_refs": [
+        "contracts/local-qualification-contract.json",
+        "qualification/source-receipt.json"
+      ],
+      "independence": "dependent",
+      "oracle_id": "oracle.fixed-qualification-contract",
+      "owner": "elmos-proof-harness-engineering",
+      "scope": [
+        "claim.local.qualification-binding"
+      ],
+      "trust_level": "supporting",
+      "type": "contract",
+      "version": "1"
+    },
+    {
+      "evidence_refs": [
+        "qualification/receipt-validation.json",
+        "qualification/delta-v3.1/receipt-validation.json",
+        "certification/repository-binding.json"
+      ],
+      "independence": "dependent",
+      "oracle_id": "oracle.byte-recomputation",
+      "owner": "elmos-proof-harness-engineering",
+      "scope": [
+        "claim.local.qualification-binding",
+        "claim.local.safe-deterministic-publication"
+      ],
+      "trust_level": "supporting",
+      "type": "invariant",
+      "version": "1"
+    },
+    {
+      "evidence_refs": [
+        "corpus/negative/cases.json",
+        "qualification/raw/engine-tests.json",
+        "qualification/raw/package-integration-tests.json"
+      ],
+      "independence": "dependent",
+      "oracle_id": "oracle.local-negative-tests",
+      "owner": "elmos-proof-harness-engineering",
+      "scope": [
+        "claim.local.qualification-binding",
+        "claim.local.safe-deterministic-publication"
+      ],
+      "trust_level": "supporting",
+      "type": "test",
+      "version": "1"
+    },
+    {
+      "evidence_refs": [
+        "corpus/holdout/not-run.json"
+      ],
+      "execution_status": "NOT_RUN",
+      "independence": "independent",
+      "oracle_id": "oracle.independent-verifier-not-run",
+      "owner": "independent-qualified-verifier-unassigned",
+      "scope": [
+        "claim.external.production-assurance"
+      ],
+      "trust_level": "advisory",
+      "type": "human-expert",
+      "version": "NOT_RUN"
+    }
+  ],
+  "pack_key": "proof-driven-harness-v3-local",
+  "precedence_rules": [
+    {
+      "claim_type": "local-byte-identity",
+      "on_conflict": "BLOCK",
+      "ordered_oracles": [
+        "oracle.fixed-qualification-contract",
+        "oracle.byte-recomputation",
+        "oracle.local-negative-tests"
+      ]
+    }
+  ],
+  "schema_version": 1
+}

@@ -1,7 +1,11 @@
 {
   "schema_version": "1.0.0",
   "kind": "elmos.proof-harness.release-policy",
-  "artifact": "elmos-proof-driven-harness-engine@3.0.0",
+  "artifact": "elmos-proof-driven-harness-engine@3.1.0",
+  "source_materials": {
+    "base": "elmos-proof-driven-agentic-harness-repository-semantic-compiler@3.0.0",
+    "delta": "elmos-v3-harness-runtime-assurance-delta@3.1.0"
+  },
   "local_maximum": "READY_FOR_EXTERNAL_GATE",
   "required_before_distribution": {
     "approved_license": "NOT_RUN",

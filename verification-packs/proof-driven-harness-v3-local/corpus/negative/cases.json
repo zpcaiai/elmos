@@ -1,0 +1,196 @@
+{
+  "cases": [
+    {
+      "case_id": "NEG-ARCHIVE-SNAPSHOT-SWAP",
+      "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+      "expected": "archive audit rejects pathname replacement after its pinned snapshot",
+      "outcome_binding": {
+        "outcome_sha256": "sha256:be9499db8b48403496f593e997b6d2d81d0d2e62d594b4627b210592ffa12a22",
+        "raw_log_sha256": "sha256:2352fd90dc3a96197d4bb9b111e1b86b6d0b0f98889898392e013f78f822b2b3",
+        "selector": "test_integration.ProofDrivenHarnessArchiveTests.test_archive_audit_uses_one_in_memory_snapshot_and_detects_path_swap",
+        "selector_source_binding_sha256": "sha256:2b8a99ebc1d711922bcb3f63580630370471d55b1d10ec49323b5ae88f7a8b2e",
+        "source_path": "tests/proof-driven-harness-v3/test_integration.py",
+        "source_sha256": "sha256:53d926d783f6a656059971615608d3a00c6a82fd94d5ddb2dfd8c6120288b42d"
+      },
+      "selector": "test_integration.ProofDrivenHarnessArchiveTests.test_archive_audit_uses_one_in_memory_snapshot_and_detects_path_swap",
+      "status": "PASSED"
+    },
+    {
+      "case_id": "NEG-ARCHIVE-PATH-TRAVERSAL",
+      "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+      "expected": "unsafe archive member path is rejected",
+      "outcome_binding": {
+        "outcome_sha256": "sha256:48eeb84d40939f4e94754807b4fd92a931dba75ac766e6bfa791c66cc1ada9b2",
+        "raw_log_sha256": "sha256:2352fd90dc3a96197d4bb9b111e1b86b6d0b0f98889898392e013f78f822b2b3",
+        "selector": "test_integration.ProofDrivenHarnessArchiveTests.test_traversal_member_fails_closed",
+        "selector_source_binding_sha256": "sha256:047a7072fbf34866d6c5863b3bda1d33334f1c1163e3a067fb2d1afffd3f01dd",
+        "source_path": "tests/proof-driven-harness-v3/test_integration.py",
+        "source_sha256": "sha256:53d926d783f6a656059971615608d3a00c6a82fd94d5ddb2dfd8c6120288b42d"
+      },
+      "selector": "test_integration.ProofDrivenHarnessArchiveTests.test_traversal_member_fails_closed",
+      "status": "PASSED"
+    },
+    {
+      "case_id": "NEG-ARCHIVE-UNICODE-COLLISION",
+      "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+      "expected": "Unicode and casefold archive collision is rejected",
+      "outcome_binding": {
+        "outcome_sha256": "sha256:0f58efbac99ef567771db7e003336982a5601408df8b375cb913dce7cae399b3",
+        "raw_log_sha256": "sha256:2352fd90dc3a96197d4bb9b111e1b86b6d0b0f98889898392e013f78f822b2b3",
+        "selector": "test_integration.ProofDrivenHarnessArchiveTests.test_unicode_casefold_collision_fails_closed",
+        "selector_source_binding_sha256": "sha256:6650ed7ed16d7f84a78a479fbed8625eabda6335eb4d915b5097b3a89f014dab",
+        "source_path": "tests/proof-driven-harness-v3/test_integration.py",
+        "source_sha256": "sha256:53d926d783f6a656059971615608d3a00c6a82fd94d5ddb2dfd8c6120288b42d"
+      },
+      "selector": "test_integration.ProofDrivenHarnessArchiveTests.test_unicode_casefold_collision_fails_closed",
+      "status": "PASSED"
+    },
+    {
+      "case_id": "NEG-ARCHIVE-LINK-ENCRYPTION-RATIO",
+      "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+      "expected": "linked, encrypted, or over-ratio archive member is rejected",
+      "outcome_binding": {
+        "outcome_sha256": "sha256:abc7123c2b9fc032d4d9e14acba51706db6788c0b993fe6b2ba846c103283aaf",
+        "raw_log_sha256": "sha256:2352fd90dc3a96197d4bb9b111e1b86b6d0b0f98889898392e013f78f822b2b3",
+        "selector": "test_integration.ProofDrivenHarnessArchiveTests.test_symlink_encryption_and_ratio_fail_closed",
+        "selector_source_binding_sha256": "sha256:d200fce48c9b9516bb29e64bba022855f35e69a6358b6d1a6acefda364f3121d",
+        "source_path": "tests/proof-driven-harness-v3/test_integration.py",
+        "source_sha256": "sha256:53d926d783f6a656059971615608d3a00c6a82fd94d5ddb2dfd8c6120288b42d"
+      },
+      "selector": "test_integration.ProofDrivenHarnessArchiveTests.test_symlink_encryption_and_ratio_fail_closed",
+      "status": "PASSED"
+    },
+    {
+      "case_id": "NEG-PUBLISH-SYMLINK-PARENT",
+      "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+      "expected": "publication never traverses a symlink parent",
+      "outcome_binding": {
+        "outcome_sha256": "sha256:d243cc0ddaea8ebc7caec276b8cd0010c5ea200b69e812fb8ce39fad1cffa282",
+        "raw_log_sha256": "sha256:2352fd90dc3a96197d4bb9b111e1b86b6d0b0f98889898392e013f78f822b2b3",
+        "selector": "test_integration.ProofDrivenHarnessInstallationTests.test_dirfd_publication_rejects_symlink_parent",
+        "selector_source_binding_sha256": "sha256:925c228300159d99335175b047e8c6efd8553b6c7ec0ce54bbfe33cbf5e20d50",
+        "source_path": "tests/proof-driven-harness-v3/test_integration.py",
+        "source_sha256": "sha256:53d926d783f6a656059971615608d3a00c6a82fd94d5ddb2dfd8c6120288b42d"
+      },
+      "selector": "test_integration.ProofDrivenHarnessInstallationTests.test_dirfd_publication_rejects_symlink_parent",
+      "status": "PASSED"
+    },
+    {
+      "case_id": "NEG-PUBLISH-PARENT-SWAP",
+      "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+      "expected": "publication detects parent replacement during rename",
+      "outcome_binding": {
+        "outcome_sha256": "sha256:322cfb481419bd13817670eb41cd7668f03ea968e50f09d0cfc52b2e966bf050",
+        "raw_log_sha256": "sha256:2352fd90dc3a96197d4bb9b111e1b86b6d0b0f98889898392e013f78f822b2b3",
+        "selector": "test_integration.ProofDrivenHarnessInstallationTests.test_dirfd_publication_detects_parent_swap_during_rename",
+        "selector_source_binding_sha256": "sha256:8af052a3407cca420b60462186291a04f4c9739d11d5ba56f3e85e813f26c5c1",
+        "source_path": "tests/proof-driven-harness-v3/test_integration.py",
+        "source_sha256": "sha256:53d926d783f6a656059971615608d3a00c6a82fd94d5ddb2dfd8c6120288b42d"
+      },
+      "selector": "test_integration.ProofDrivenHarnessInstallationTests.test_dirfd_publication_detects_parent_swap_during_rename",
+      "status": "PASSED"
+    },
+    {
+      "case_id": "NEG-QUALIFICATION-TAMPER",
+      "evidence_raw_log": "qualification/raw/package-integration-tests.json",
+      "expected": "engine or receipt drift prevents local status promotion",
+      "outcome_binding": {
+        "outcome_sha256": "sha256:54829f056e2e5039b0a87b72dd0f8d17b74326e01d04ff4d9b7fc73e759dc5cd",
+        "raw_log_sha256": "sha256:2352fd90dc3a96197d4bb9b111e1b86b6d0b0f98889898392e013f78f822b2b3",
+        "selector": "test_integration.ProofDrivenHarnessQualificationTests.test_only_exact_digest_bound_receipt_promotes_status",
+        "selector_source_binding_sha256": "sha256:dce94492a5a8eabbc80f0d05caf53b4208646a2d7b4fac0af838e852030de906",
+        "source_path": "tests/proof-driven-harness-v3/test_integration.py",
+        "source_sha256": "sha256:53d926d783f6a656059971615608d3a00c6a82fd94d5ddb2dfd8c6120288b42d"
+      },
+      "selector": "test_integration.ProofDrivenHarnessQualificationTests.test_only_exact_digest_bound_receipt_promotes_status",
+      "status": "PASSED"
+    },
+    {
+      "case_id": "NEG-PACK-RECEIPT-TAMPER",
+      "evidence_raw_log": "qualification/raw/engine-tests.json",
+      "expected": "verification pack publisher rejects a tampered receipt",
+      "outcome_binding": {
+        "outcome_sha256": "sha256:17edd372300a0a23ec187d2204bdfa84f7dfe514e2913fae29f55bb1b7837d1f",
+        "raw_log_sha256": "sha256:11d932c6c53d44a637b0565b5f05655b72d0345738aa753e0585ce1b56794a06",
+        "selector": "test_publish_verification_pack.ProofDrivenHarnessVerificationPackPublisherTests.test_tampered_receipt_fails_closed",
+        "selector_source_binding_sha256": "sha256:2882c30ea0bc7b8119faaf47da1bb290234b0cc1f55b46dd1455bc35826adc33",
+        "source_path": "engines/proof-driven-harness-engine/tests/test_publish_verification_pack.py",
+        "source_sha256": "sha256:92cb1447cf47c352d41b0009811278a75d0fa375e61280a5c60624a26b6f3d20"
+      },
+      "selector": "test_publish_verification_pack.ProofDrivenHarnessVerificationPackPublisherTests.test_tampered_receipt_fails_closed",
+      "status": "PASSED"
+    },
+    {
+      "case_id": "NEG-PACK-SYMLINK-OUTPUT",
+      "evidence_raw_log": "qualification/raw/engine-tests.json",
+      "expected": "verification pack publisher rejects a linked output",
+      "outcome_binding": {
+        "outcome_sha256": "sha256:46b25f1de7b70e8f05c999c1f411204714dc16c83c10b275466193ec7e8010bf",
+        "raw_log_sha256": "sha256:11d932c6c53d44a637b0565b5f05655b72d0345738aa753e0585ce1b56794a06",
+        "selector": "test_publish_verification_pack.ProofDrivenHarnessVerificationPackPublisherTests.test_symlink_output_fails_closed_without_escape",
+        "selector_source_binding_sha256": "sha256:85b2ceb3701ccc85f497547a525f52f2c82f4d303d1170c6f4f6e0680e06cb81",
+        "source_path": "engines/proof-driven-harness-engine/tests/test_publish_verification_pack.py",
+        "source_sha256": "sha256:92cb1447cf47c352d41b0009811278a75d0fa375e61280a5c60624a26b6f3d20"
+      },
+      "selector": "test_publish_verification_pack.ProofDrivenHarnessVerificationPackPublisherTests.test_symlink_output_fails_closed_without_escape",
+      "status": "PASSED"
+    },
+    {
+      "case_id": "NEG-DELTA-ACCEPTANCE-BINDING-TAMPER-OMISSION",
+      "evidence_raw_log": "qualification/raw/engine-tests.json",
+      "expected": "delta acceptance source tamper or case omission is rejected",
+      "outcome_binding": {
+        "outcome_sha256": "sha256:555524c403d096e7f15255bdaf6940fed7e1646deeaaf70b5b1fe07ff6ccc24a",
+        "raw_log_sha256": "sha256:11d932c6c53d44a637b0565b5f05655b72d0345738aa753e0585ce1b56794a06",
+        "selector": "test_publish_verification_pack.ProofDrivenHarnessVerificationPackPublisherTests.test_delta_acceptance_binding_tamper_and_omission_fail_closed",
+        "selector_source_binding_sha256": "sha256:a117f68cffc25c94820c33f2b3a62c45a5f5862c6f3868a633d772ce8329271c",
+        "source_path": "engines/proof-driven-harness-engine/tests/test_publish_verification_pack.py",
+        "source_sha256": "sha256:92cb1447cf47c352d41b0009811278a75d0fa375e61280a5c60624a26b6f3d20"
+      },
+      "selector": "test_publish_verification_pack.ProofDrivenHarnessVerificationPackPublisherTests.test_delta_acceptance_binding_tamper_and_omission_fail_closed",
+      "status": "PASSED"
+    },
+    {
+      "case_id": "NEG-DELTA-ACCEPTANCE-RECEIPT-SELECTOR-DRIFT",
+      "evidence_raw_log": "qualification/raw/engine-tests.json",
+      "expected": "delta acceptance receipt selector drift is rejected",
+      "outcome_binding": {
+        "outcome_sha256": "sha256:37e16ade8b7d9c89a1cfba23574dd9da300ad5a57bdf5559a0e4fb750c6f7ce8",
+        "raw_log_sha256": "sha256:11d932c6c53d44a637b0565b5f05655b72d0345738aa753e0585ce1b56794a06",
+        "selector": "test_publish_verification_pack.ProofDrivenHarnessVerificationPackPublisherTests.test_delta_acceptance_receipt_selector_drift_fails_closed",
+        "selector_source_binding_sha256": "sha256:ce5515573aa0967d5af38f5b8b7f970761d454da8d3786578e811debf23941e2",
+        "source_path": "engines/proof-driven-harness-engine/tests/test_publish_verification_pack.py",
+        "source_sha256": "sha256:92cb1447cf47c352d41b0009811278a75d0fa375e61280a5c60624a26b6f3d20"
+      },
+      "selector": "test_publish_verification_pack.ProofDrivenHarnessVerificationPackPublisherTests.test_delta_acceptance_receipt_selector_drift_fails_closed",
+      "status": "PASSED"
+    }
+  ],
+  "discovery_commands": [
+    [
+      "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+      "--repo-root",
+      ".",
+      "--start-directory",
+      "engines/proof-driven-harness-engine/tests",
+      "--pattern",
+      "test_*.py"
+    ],
+    [
+      "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+      "--repo-root",
+      ".",
+      "--start-directory",
+      "tests/proof-driven-harness-v3",
+      "--pattern",
+      "test_*.py"
+    ]
+  ],
+  "execution": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "kind": "elmos.proof-driven-harness-v3.local-negative-corpus",
+  "limitations": [
+    "Each listed negative control is bound to one PASSED selector, its exact source digest, and the containing raw-log digest; evidence remains self-attested and local.",
+    "No independent adversarial corpus or external verifier executed these cases."
+  ],
+  "schema_version": 1
+}

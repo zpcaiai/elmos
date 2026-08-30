@@ -20,7 +20,7 @@ from typing import Any, Iterable, Mapping, Sequence
 import unicodedata
 
 
-ENGINE_VERSION = "3.0.0"
+ENGINE_VERSION = "3.1.0"
 
 
 class SnapshotError(RuntimeError):

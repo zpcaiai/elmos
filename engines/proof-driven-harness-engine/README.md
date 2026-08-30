@@ -1,8 +1,12 @@
 # Elmos Proof-Driven Harness Engine
 
-This stdlib-first Python engine is the repository-owned implementation for
-the 16 routable entry points in the Elmos proof-driven agentic harness and
-repository semantic compiler v3 package. It combines eight explicit kernels:
+This stdlib-first Python engine is the repository-owned composite v3.1
+implementation for the 16 routable entry points in the Elmos proof-driven
+agentic harness and repository semantic compiler v3.0 source package, plus 13
+non-routable runtime-assurance extensions from the v3.1 delta source package.
+The distinct source identities remain pinned in
+`supply-chain/delta-v3.1-integrity.json`; neither ZIP is execution authority.
+The engine combines eight explicit kernels:
 
 1. goal and observable-contract compilation;
 2. repository evidence acquisition;
@@ -31,6 +35,13 @@ archive is quarantined from the installed source-data view.
   session scope; composite foreign keys plus forced RLS provide a second
   isolation boundary. The application refuses missing drivers, DSNs,
   migrations, unsafe roles, incomplete RLS, and every SQLite production path.
+- Production also requires an exact
+  `ELMOS_RUNTIME_ASSURANCE_FACTORY=module.path:factory` binding. The CLI passes
+  that factory the same `PostgresStore` used by the durable control plane and
+  accepts only a fully configured `RuntimeAssuranceControlPlane` bound to that
+  exact store. A missing or malformed reference, import/call failure, wrong
+  return type, different store, or unready configured dependency blocks
+  startup/readiness; there is no empty-provider production fallback.
 - Evidence and checkpoints persist their exact bytes inline with a 16 MiB hard
   bound. The production schema does not manufacture object URIs; a future
   external object backend must implement a typed, digest-verifying ObjectStore.
@@ -49,8 +60,20 @@ archive is quarantined from the installed source-data view.
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -m unittest discover -s tests -p 'test_*.py'
-ruff check src tests tools/qualify_local.py
+ruff check src tests tools
 ```
+
+The complete composite local workflow is `make -f Makefile.proof-harness-v3
+release-local`. It independently qualifies the base and delta bytes before it
+publishes the bounded Batch 35 pack. A successful local workflow does not
+authorize distribution or certification.
+
+The delta qualifier also validates the repository-owned static mapping from all
+13 source acceptance documents to 104 exact local test cases. Every mapped
+selector must pass with its source-file digest intact. This is bounded,
+self-attested local engineering evidence only: source acceptance text is not
+executed, and target-runtime, provider, independent, and certification evidence
+remain `NOT_RUN` / `NOT_CERTIFIED`.
 
 ## PostgreSQL 17 production store
 
@@ -63,13 +86,29 @@ python3 -m pip install -e '.[postgres]'
 export ELMOS_MIGRATION_OWNER_DSN='postgresql://...'
 python3 tools/apply_postgres_migration.py \
   --expected-owner-role proof_harness_owner
+python3 tools/apply_delta_migration.py \
+  --expected-owner-role proof_harness_owner
 export ELMOS_STORAGE_BACKEND=postgresql
 export ELMOS_POSTGRES_DSN='postgresql://...'
+export ELMOS_POSTGRES_AUTHORITY_DSN='postgresql://proof_harness_authority_writer@...'
+export ELMOS_RUNTIME_ASSURANCE_FACTORY='company.proof_harness.runtime:create_control_plane'
 ```
 
-`PostgresStore.readiness()` verifies PostgreSQL 17.x, schema version 1, all
-forced-RLS runtime tables, and a `NOSUPERUSER` / `NOBYPASSRLS` application
-role. The DSN is never logged and the application role cannot migrate schema.
+The referenced module is deployment-owned, reviewed code included in the
+runtime image. Its callable has the contract
+`create_control_plane(store: PostgresStore) -> RuntimeAssuranceControlPlane`
+and must configure the trusted authority provider, evidence service, exact
+permission/protocol profiles, producer and model allowlists, signature
+verification, interceptors, and event validators/upgraders required by that
+deployment. The repository deliberately supplies no permissive default.
+
+`PostgresStore.readiness()` verifies PostgreSQL 17.x, the required base and
+delta migrations, all forced-RLS runtime tables, and distinct least-privileged
+application and authority-writer identities. The application identity cannot
+write Host authority or budget-reservation receipts; the authority writer
+cannot own or migrate schema, and its grants are checked against the exact
+allowlist. Both identities are `NOSUPERUSER` / `NOBYPASSRLS`. DSNs are never
+logged.
 The independent integration runner creates and destroys only its own temporary
 cluster; it never accepts an external DSN:
 

@@ -1,0 +1,8 @@
+{
+  "command": "python3 -m unittest discover -s engines/proof-driven-harness-engine/tests -p test_publish_verification_pack.py",
+  "counterexample_ref": "counterexamples/sample.json",
+  "execution_status": "NOT_RUN",
+  "expected_fingerprint": "sha256:3e1a1952f5bea5dd117e4fb669cb21decd8036b0f6961be2b1f6a66d117d80ec",
+  "external_replay": "NOT_RUN",
+  "schema_version": 1
+}

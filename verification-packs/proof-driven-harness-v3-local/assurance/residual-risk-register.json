@@ -1,0 +1,26 @@
+{
+  "risks": [
+    {
+      "owner": "independent-verification-owner-unassigned",
+      "required_closure": "Execute untouched holdout with distinct executor and verifier.",
+      "risk_id": "RISK-INDEPENDENT-HOLDOUT",
+      "severity": "P0",
+      "status": "OPEN_NOT_RUN"
+    },
+    {
+      "owner": "product-assurance-owner-unassigned",
+      "required_closure": "Authorize and execute production-derived representative workloads.",
+      "risk_id": "RISK-REPRESENTATIVE-WORKLOAD",
+      "severity": "P0",
+      "status": "OPEN_NOT_RUN"
+    },
+    {
+      "owner": "runtime-assurance-owner-unassigned",
+      "required_closure": "Collect independently verified external runtime evidence.",
+      "risk_id": "RISK-EXTERNAL-RUNTIME",
+      "severity": "P0",
+      "status": "OPEN_NOT_RUN"
+    }
+  ],
+  "schema_version": 1
+}
