@@ -5,20 +5,11 @@ from __future__ import annotations
 import unittest
 
 from elmos_foundry.domain import (
-    ConsentStatus,
     ContentDigest,
-    DatasetItem,
-    EvidenceBundle,
-    ExperienceEpisode,
-    GateLevel,
-    KnowledgeObject,
     LifecycleState,
-    ModelRelease,
-    RightsClass,
-    SkillContract,
     TenantScope,
 )
-from elmos_foundry.kernel import ExecutionKernel, KernelSecurityError, KernelStateError
+from elmos_foundry.kernel import ExecutionKernel, KernelStateError
 
 
 class DomainModelsTests(unittest.TestCase):

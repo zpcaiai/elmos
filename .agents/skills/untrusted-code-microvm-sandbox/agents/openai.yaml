@@ -1,0 +1,6 @@
+interface:
+  display_name: "Untrusted Code Microvm Sandbox"
+  short_description: "Run untrusted-code-microvm-sandbox with bounded commercial controls"
+  default_prompt: "Use $untrusted-code-microvm-sandbox through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

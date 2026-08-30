@@ -1,0 +1,6 @@
+interface:
+  display_name: "Repository Semantic Code Graph"
+  short_description: "Run repository-semantic-code-graph with bounded commercial controls"
+  default_prompt: "Use $repository-semantic-code-graph through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

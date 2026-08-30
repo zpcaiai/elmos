@@ -1,0 +1,6 @@
+interface:
+  display_name: "Property Based Test Generation"
+  short_description: "Run property-based-test-generation with bounded commercial controls"
+  default_prompt: "Use $property-based-test-generation through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

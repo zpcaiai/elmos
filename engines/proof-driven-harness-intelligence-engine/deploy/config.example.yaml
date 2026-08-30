@@ -1,0 +1,31 @@
+schemaVersion: "1.0.0"
+service:
+  audience: elmos-pdhi
+  maxRequestBytes: 1048576
+  shutdownGraceSeconds: 30
+  trustedTransport: mtls-service-mesh
+identity:
+  mode: host-injected-authenticator
+  jwksPath: /var/run/secrets/pdhi-identity/jwks.json
+  issuer: REPLACE_WITH_EXACT_ISSUER
+  requiredPermissions:
+    - pdhi.control.invoke
+    - pdhi.control.read
+    - pdhi.control.observe
+storage:
+  mode: postgresql-forced-rls
+  dsnFile: /var/run/secrets/pdhi-database/dsn
+  statementTimeoutMilliseconds: 30000
+  lockTimeoutMilliseconds: 5000
+baseV3Bridge:
+  evidencePort: NOT_CONFIGURED
+  externalEffectPort: NOT_CONFIGURED
+  independentCertificationPort: NOT_CONFIGURED
+evidenceStatus:
+  externalDatabase: NOT_RUN
+  identityProvider: NOT_RUN
+  policyProvider: NOT_RUN
+  objectStore: NOT_RUN
+  kubernetes: NOT_RUN
+  independentVerification: NOT_RUN
+  certification: NOT_CERTIFIED

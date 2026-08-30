@@ -1,0 +1,6 @@
+interface:
+  display_name: "Compiler Api Rewrite"
+  short_description: "Run compiler-api-rewrite with bounded commercial controls"
+  default_prompt: "Use $compiler-api-rewrite through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

@@ -1,169 +1,186 @@
-"""CLI for Elmos Commercial Capability Expansion Engine."""
+"""JSON-only, secret-free CLI for bounded local control-plane operations."""
 
 from __future__ import annotations
 
 import argparse
-import json
-from pathlib import Path
 import sys
-from typing import Any, Dict
+from collections.abc import Mapping
+from pathlib import Path
+from typing import Any
 
-from .models import GateLevel, KernelType, TaskContext
-from .service import CommercialCapabilityExpansionService
+from .canonical import canonical_json, require_digest, strict_json_loads
+from .contracts import GateLevel, Scope, utc_now
+from .errors import CommercialRuntimeError, ContractError
+from .service import get_commercial_status, list_capability_kernels
+from .store import ReadonlyControlPlaneStore
+from .trusted_paths import PathBoundaryError, read_regular_bytes
+
+_SECRET_KEY_FRAGMENTS = ("api_key", "credential", "password", "private_key", "secret", "token")
 
 
-def get_default_service() -> CommercialCapabilityExpansionService:
-    root = Path(__file__).resolve().parents[4]
-    manifest_path = root / "skills/elmos-commercial-capability-expansion-skills-v2.0.0/manifest.json"
-    manifest_data = {}
-    if manifest_path.is_file():
+def _read_request(source: str) -> Mapping[str, Any]:
+    if source == "-":
+        document = sys.stdin.buffer.read(1_048_577)
+    else:
+        path = Path(source)
+        if not path.is_absolute():
+            raise ContractError("input JSON file path must be absolute")
         try:
-            manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
-        except Exception:
-            pass
-    return CommercialCapabilityExpansionService(manifest_data)
+            document = read_regular_bytes(path, label="CLI input JSON", maximum=1_048_576)
+        except PathBoundaryError as exc:
+            raise ContractError("input must be a bounded owner-only regular JSON file") from exc
+    value = strict_json_loads(document)
+    if not isinstance(value, Mapping):
+        raise ContractError("CLI request must be a JSON object")
+    return value
+
+
+def _reject_secret_material(value: Any, *, path: str = "request") -> None:
+    if isinstance(value, Mapping):
+        for key, child in value.items():
+            lowered = key.lower()
+            if any(fragment in lowered for fragment in _SECRET_KEY_FRAGMENTS):
+                raise ContractError(
+                    "CLI requests must not contain secret material",
+                    code="SECRET_INPUT_FORBIDDEN",
+                    details={"field": f"{path}.{key}"},
+                )
+            _reject_secret_material(child, path=f"{path}.{key}")
+    elif isinstance(value, (tuple, list)):
+        for index, child in enumerate(value):
+            _reject_secret_material(child, path=f"{path}[{index}]")
+
+
+def _scope(value: Any) -> Scope:
+    if not isinstance(value, Mapping):
+        raise ContractError("scope must be an object")
+    exact = {"tenant_id", "project_id", "actor_id", "revision", "environment_id"}
+    if set(value) != exact:
+        raise ContractError("scope fields must be exact")
+    return Scope(
+        tenant_id=value["tenant_id"],
+        project_id=value["project_id"],
+        actor_id=value["actor_id"],
+        revision=value["revision"],
+        environment_id=value["environment_id"],
+    )
+def _catalog(request: Mapping[str, Any]) -> dict[str, Any]:
+    allowed = {"kernel"}
+    if set(request) - allowed:
+        raise ContractError("catalog request contains unknown fields")
+    kernels = list_capability_kernels()
+    kernel = request.get("kernel")
+    if kernel is not None:
+        if not isinstance(kernel, str):
+            raise ContractError("catalog.kernel must be text")
+        kernels = [item for item in kernels if item["kernel"] == kernel]
+    status = get_commercial_status()
+    return {
+        "status": status["status"],
+        "registry_digest": status["registry_digest"],
+        "kernels": kernels,
+        "external_evidence_status": "NOT_RUN",
+        "certification_status": "NOT_CERTIFIED",
+    }
+
+
+def _invoke(request: Mapping[str, Any]) -> tuple[dict[str, Any], int]:
+    _reject_secret_material(request)
+    allowed = {"schema_version", "skill_id", "action", "scope", "inputs", "idempotency_key", "authority_proof"}
+    unknown = set(request) - allowed
+    if unknown:
+        raise ContractError("invoke request contains unknown fields")
+    if request.get("schema_version") != "1.0":
+        raise ContractError("invoke.schema_version must be '1.0'")
+    # The standalone CLI intentionally has no private signing material or
+    # trusted host verifier.  A JSON authority-shaped value never gains power.
+    return (
+        {
+            "status": "DENIED",
+            "outcome": "NOT_RUN",
+            "reason_code": "AUTHORITY_VERIFIER_UNAVAILABLE",
+            "external_evidence_status": "NOT_RUN",
+            "certification_status": "NOT_CERTIFIED",
+        },
+        3,
+    )
+
+
+def _check_store(request: Mapping[str, Any]) -> dict[str, Any]:
+    if set(request) != {"database_path"} or not isinstance(request.get("database_path"), str):
+        raise ContractError("check-store requires only database_path")
+    path = Path(request["database_path"])
+    if not path.is_absolute():
+        raise ContractError("check-store database_path must be absolute")
+    with ReadonlyControlPlaneStore(path) as store:
+        return store.verify_all_integrity()
+
+
+def _gate(request: Mapping[str, Any]) -> dict[str, Any]:
+    allowed = {
+        "gate",
+        "scope",
+        "subject_digest",
+        "evidence",
+        "obligations",
+        "authorization_id",
+    }
+    if set(request) - allowed:
+        raise ContractError("gate request contains unknown fields")
+    scope = _scope(request.get("scope"))
+    evidence_value = request.get("evidence", ())
+    obligations_value = request.get("obligations", ())
+    if not isinstance(evidence_value, (tuple, list)) or not isinstance(obligations_value, (tuple, list)):
+        raise ContractError("gate evidence and obligations must be arrays")
+    gate = GateLevel(request.get("gate"))
+    subject_digest = require_digest(request.get("subject_digest"), "gate.subject_digest")
+    return {
+        "gate": gate.value,
+        "passed": False,
+        "status": "NOT_RUN",
+        "subject_digest": subject_digest,
+        "scope_digest": scope.digest,
+        "evidence_ids": [],
+        "candidate_evidence_count": len(evidence_value),
+        "candidate_obligation_count": len(obligations_value),
+        "reasons": ["TRUSTED_EVIDENCE_VERIFIER_UNAVAILABLE"],
+        "evaluated_at": utc_now(),
+        "external_evidence_status": "NOT_RUN",
+        "certification_status": "NOT_CERTIFIED",
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="elmos-commercial-expansion",
-        description="Elmos Commercial Capability Expansion Engine v2.0.0",
+        description="Fail-closed local Commercial Capability Expansion control plane",
     )
-    subparsers = parser.add_subparsers(dest="command", required=True)
-
-    # status
-    p_status = subparsers.add_parser("status", help="Show engine status and registered skills")
-    p_status.add_argument("--json", action="store_true", help="Output as JSON")
-
-    # catalog
-    p_cat = subparsers.add_parser("catalog", help="List all skills in catalog")
-    p_cat.add_argument("--kernel", type=str, help="Filter by kernel (e.g. K1-skill-runtime)")
-    p_cat.add_argument("--json", action="store_true", help="Output as JSON")
-
-    # dag
-    p_dag = subparsers.add_parser("dag", help="Show cross-kernel execution DAG")
-    p_dag.add_argument("--json", action="store_true", help="Output as JSON")
-
-    # orchestrate
-    p_orch = subparsers.add_parser("orchestrate", help="Run full 8-kernel transformation workflow")
-    p_orch.add_argument("--repo-id", default="repo-sample", help="Repository ID")
-    p_orch.add_argument("--tenant-id", default="tenant-commercial", help="Tenant ID")
-    p_orch.add_argument("--intent", default="Migrate to modern framework", help="Change intent")
-    p_orch.add_argument("--files", nargs="+", default=["src/main.py"], help="Target files")
-    p_orch.add_argument("--gate", default="E3", choices=["E0", "E1", "E2", "E3", "E4", "E5"], help="Target Gate")
-    p_orch.add_argument("--json", action="store_true", help="Output as JSON")
-
-    # provenance
-    p_prov = subparsers.add_parser("provenance", help="Generate SLSA provenance attestation")
-    p_prov.add_argument("--subject", default="target-artifact", help="Subject artifact name")
-    p_prov.add_argument("--digest", default="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", help="Subject SHA-256 digest")
-    p_prov.add_argument("--json", action="store_true", help="Output as JSON")
-
+    parser.add_argument("command", choices=("catalog", "invoke", "check-store", "gate"))
+    parser.add_argument("--input", required=True, help="JSON file path, or '-' for stdin")
     args = parser.parse_args(argv)
-    svc = get_default_service()
-
-    if args.command == "status":
-        status_info = {
-            "engine": "elmos-commercial-capability-expansion-engine",
-            "version": "2.0.0",
-            "registered_skills_count": len(svc.k1.registry),
-            "kernels_ready": [k.value for k in KernelType],
-            "status": "READY",
+    try:
+        request = _read_request(args.input)
+        if args.command == "catalog":
+            response, exit_code = _catalog(request), 0
+        elif args.command == "invoke":
+            response, exit_code = _invoke(request)
+        elif args.command == "check-store":
+            response, exit_code = _check_store(request), 0
+        else:
+            response = _gate(request)
+            exit_code = 0 if response["passed"] else 4
+    except (CommercialRuntimeError, ValueError) as exc:
+        code = exc.code if isinstance(exc, CommercialRuntimeError) else "INVALID_REQUEST"
+        response = {
+            "status": "ERROR",
+            "code": code,
+            "message": str(exc),
+            "certification_status": "NOT_CERTIFIED",
         }
-        if args.json:
-            print(json.dumps(status_info, indent=2))
-        else:
-            print(f"Elmos Commercial Capability Expansion Engine v{status_info['version']}")
-            print(f"Registered Skills: {status_info['registered_skills_count']}")
-            print(f"Kernels Ready: {len(status_info['kernels_ready'])}")
-        return 0
-
-    elif args.command == "catalog":
-        skills = list(svc.k1.registry.values())
-        if args.kernel:
-            skills = [s for s in skills if s.kernel.value == args.kernel]
-        if args.json:
-            print(json.dumps([s.to_dict() for s in skills], indent=2))
-        else:
-            print(f"Total skills listed: {len(skills)}")
-            for s in skills:
-                print(f"  [{s.kernel.value}] {s.id} ({s.priority.value}): {s.objective[:70]}")
-        return 0
-
-    elif args.command == "dag":
-        pipeline = [
-            "K1-skill-runtime",
-            "K2-repository-intelligence",
-            "K3-transformation",
-            "K4-build-execution",
-            "K5-verification",
-            "K6-security-governance",
-            "K7-database-data",
-            "K8-observability-evolution",
-        ]
-        dag_info = {
-            "pipeline": pipeline,
-            "acyclic": True,
-            "mandatory_flow": "Task -> Policy -> Repository Graph -> Risk/Evidence Plan -> Transformation -> Sandboxed Build/Run -> Verification -> Evidence Bundle -> E0-E5 Decision -> Artifact/Provenance -> Trajectory Dataset",
-        }
-        if args.json:
-            print(json.dumps(dag_info, indent=2))
-        else:
-            print("Cross-Kernel Pipeline:")
-            for i, k in enumerate(pipeline):
-                print(f"  {i+1}. {k}")
-            print(f"\nMandatory flow: {dag_info['mandatory_flow']}")
-        return 0
-
-    elif args.command == "orchestrate":
-        gate_map = {
-            "E0": GateLevel.E0_INGESTION,
-            "E1": GateLevel.E1_SYNTAX_COMPILE,
-            "E2": GateLevel.E2_UNIT_INTEGRATION,
-            "E3": GateLevel.E3_SECURITY_ISOLATION,
-            "E4": GateLevel.E4_DIFFERENTIAL_RUNTIME,
-            "E5": GateLevel.E5_FORMAL_PROVENANCE,
-        }
-        target_gate = gate_map.get(args.gate, GateLevel.E3_SECURITY_ISOLATION)
-        ctx = TaskContext(
-            tenant_id=args.tenant_id,
-            repository_id=args.repo_id,
-            objective=args.intent,
-        )
-        res = svc.run_commercial_workflow(
-            context=ctx,
-            target_files=args.files,
-            change_intent=args.intent,
-            target_gate=target_gate,
-        )
-        if args.json:
-            print(json.dumps(res, indent=2))
-        else:
-            print(f"Orchestration Outcome: {res['status']}")
-            print(f"Task ID: {res['task_id']}")
-            print(f"Gate Evaluated: {args.gate} -> Passed: {res['gate_decision']['passed']}")
-            print(f"SLSA Attestation ID: {res['provenance']['attestation_id']}")
-            print(f"Duration: {res['duration_ms']} ms")
-        return 0
-
-    elif args.command == "provenance":
-        prov = svc.k6.generate_slsa_provenance(
-            subject_name=args.subject,
-            subject_digest=args.digest,
-            materials=[{"uri": "git+repo", "digest": "HEAD"}],
-            invocation_params={"builder": "cli"},
-        )
-        if args.json:
-            print(json.dumps(prov.to_dict(), indent=2))
-        else:
-            print(f"SLSA Provenance Attestation ID: {prov.attestation_id}")
-            print(f"Signature: {prov.signature}")
-            print(f"Builder ID: {prov.builder_id}")
-            print(f"Level: {prov.slsa_level}")
-        return 0
-
-    return 0
+        exit_code = 2
+    print(canonical_json(response))
+    return exit_code
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

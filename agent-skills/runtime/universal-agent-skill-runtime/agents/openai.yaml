@@ -1,0 +1,6 @@
+interface:
+  display_name: "Universal Agent Skill Runtime"
+  short_description: "Run universal-agent-skill-runtime with bounded commercial controls"
+  default_prompt: "Use $universal-agent-skill-runtime through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

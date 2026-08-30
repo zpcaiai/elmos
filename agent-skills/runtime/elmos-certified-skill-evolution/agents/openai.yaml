@@ -1,0 +1,6 @@
+interface:
+  display_name: "Certified Skill Evolution"
+  short_description: "Govern memory-to-skill promotion through independent regression evidence."
+  default_prompt: "Use $elmos-certified-skill-evolution through the exact PDHI v1 K7 runtime with typed scope, allowlisted operations, replayable evidence, and fail-closed external gates."
+policy:
+  allow_implicit_invocation: true
