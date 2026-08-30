@@ -1,0 +1,286 @@
+STAGE IMPORT_GIT Reading pre-materialized immutable snapshot
+STAGE LOCK_SNAPSHOT Creating deterministic immutable source snapshot
+snapshot locked sha256:68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581
+STAGE FINGERPRINT Detecting exact Java, Spring Boot, build and active capability tuple
+fingerprint spring-boot=UNKNOWN source-framework=spring-mvc:5.3.39 java=11 build=maven route=spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21 evidence=PASSED_LOCAL
+STAGE SOURCE_BASELINE Running the source repository's complete maven baseline with Java 11
+dependency seed copied into the isolated per-run repository
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------< io.elmos.fixtures:legacy-spring-mvc >-----------------
+[INFO] Building legacy-spring-mvc 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ legacy-spring-mvc ---
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ legacy-spring-mvc ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 5 source files with javac [debug release 11] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ legacy-spring-mvc ---
+[INFO] skip non existing resourceDirectory /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/source-baseline/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ legacy-spring-mvc ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug release 11] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.2:test (default-test) @ legacy-spring-mvc ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.legacy.web.LegacyOrderControllerTest
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+Aug 30, 2026 5:21:47 PM org.hibernate.validator.internal.util.Version <clinit>
+INFO: HV000001: Hibernate Validator 6.2.5.Final
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.421 s -- in io.elmos.legacy.web.LegacyOrderControllerTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- war:3.4.0:war (default-war) @ legacy-spring-mvc ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [legacy-spring-mvc] in [/private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/source-baseline/target/legacy-spring-mvc]
+[INFO] Processing war project
+[INFO] Copying webapp resources [/private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/source-baseline/src/main/webapp]
+[INFO] Building war: /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/source-baseline/target/legacy-spring-mvc.war
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  59.205 s
+[INFO] Finished at: 2026-08-30T09:22:00Z
+[INFO] ------------------------------------------------------------------------
+STAGE HEALTH_CHECK Starting source WAR in the digest-bound external Tomcat 9 runtime
+captured explicit source GET readiness case on loopback
+source Tomcat stopped inside the bounded shutdown window
+preserved the exact source WAR used by the Tomcat 9 runtime oracle
+source snapshot remained immutable after baseline execution
+STAGE EXTRACT_FCM Extracting versioned Framework Contract Model before transformation
+STAGE OPENREWRITE Applying pinned OpenRewrite recipe io.elmos.openrewrite.SpringFramework5_3MvcToSpringBoot3_5_3Java21 for route spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------< io.elmos.fixtures:legacy-spring-mvc >-----------------
+[INFO] Building legacy-spring-mvc 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] >>> rewrite:6.44.0:run (default-cli) > process-test-classes @ legacy-spring-mvc >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ legacy-spring-mvc ---
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ legacy-spring-mvc ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 5 source files with javac [debug release 11] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ legacy-spring-mvc ---
+[INFO] skip non existing resourceDirectory /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ legacy-spring-mvc ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug release 11] to target/test-classes
+[INFO] 
+[INFO] <<< rewrite:6.44.0:run (default-cli) < process-test-classes @ legacy-spring-mvc <<<
+[INFO] 
+[INFO] 
+[INFO] --- rewrite:6.44.0:run (default-cli) @ legacy-spring-mvc ---
+[INFO] Using active recipe(s) [io.elmos.openrewrite.SpringFramework5_3MvcToSpringBoot3_5_3Java21]
+[INFO] Using active styles(s) []
+[INFO] Validating active recipes...
+[INFO] Project [legacy-spring-mvc] Resolving Poms...
+[INFO] Project [legacy-spring-mvc] Parsing source files
+[INFO] Running recipe(s)...
+[INFO] Printing available datatables to: target/rewrite/datatables/2026-08-30_09-23-31-297
+[WARNING] Changes have been made to pom.xml by:
+[WARNING]     org.openrewrite.java.migrate.UpgradeToJava21
+[WARNING]         org.openrewrite.java.migrate.UpgradeToJava17
+[WARNING]             org.openrewrite.java.migrate.UpgradeBuildToJava17
+[WARNING]                 org.openrewrite.java.migrate.UpgradeJavaVersion
+[WARNING]                     org.openrewrite.maven.UseMavenCompilerPluginReleaseConfiguration
+[WARNING]                     org.openrewrite.maven.UpdateMavenProjectPropertyJavaVersion
+[WARNING]             org.openrewrite.java.migrate.UpgradePluginsForJava17
+[WARNING]                 org.openrewrite.maven.UpgradePluginVersion
+[WARNING]         org.openrewrite.java.migrate.UpgradeBuildToJava21
+[WARNING]             org.openrewrite.java.migrate.UpgradeJavaVersion
+[WARNING]                 org.openrewrite.maven.UseMavenCompilerPluginReleaseConfiguration
+[WARNING]                 org.openrewrite.maven.UpdateMavenProjectPropertyJavaVersion
+[WARNING]         org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta
+[WARNING]             org.openrewrite.java.migrate.jakarta.JavaxServletToJakartaServlet
+[WARNING]                 org.openrewrite.java.dependencies.ChangeDependency
+[WARNING]                 org.openrewrite.java.dependencies.AddDependency
+[WARNING]             org.openrewrite.java.migrate.jakarta.JavaxValidationMigrationToJakartaValidation
+[WARNING]                 org.openrewrite.java.dependencies.ChangeDependency
+[WARNING]             org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_2
+[WARNING]                 org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_1
+[WARNING]                     org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_0
+[WARNING]                         org.openrewrite.java.migrate.jakarta.JakartaEE10
+[WARNING]                             org.openrewrite.java.migrate.jakarta.MigrationToJakarta10Apis
+[WARNING]                                 org.openrewrite.java.dependencies.UpgradeDependencyVersion
+[WARNING]                         org.openrewrite.java.dependencies.UpgradeDependencyVersion
+[WARNING]                     org.openrewrite.java.dependencies.UpgradeDependencyVersion
+[WARNING]                 org.openrewrite.java.dependencies.UpgradeDependencyVersion: {groupId=org.springframework, artifactId=*, newVersion=6.2.x}
+[WARNING]                 org.openrewrite.java.dependencies.ChangeDependency: {oldGroupId=org.springframework, oldArtifactId=spring-webmvc, newGroupId=org.springframework.boot, newArtifactId=spring-boot-starter-web, newVersion=3.5.3, overrideManagedVersion=false}
+[WARNING]                     org.openrewrite.maven.AddParentPom: {groupId=org.springframework.boot, artifactId=spring-boot-starter-parent, version=3.5.3, relativePath=}
+[WARNING]                         org.openrewrite.maven.ChangePropertyValue: {key=java.version, newValue=21, addIfMissing=true, trustParent=false}
+[WARNING] Changes have been made to src/main/java/io/elmos/legacy/web/RequestAuditInterceptor.java by:
+[WARNING]     org.openrewrite.java.migrate.UpgradeToJava21
+[WARNING]         org.openrewrite.java.migrate.UpgradeToJava17
+[WARNING]             org.openrewrite.java.migrate.UpgradeBuildToJava17
+[WARNING]                 org.openrewrite.java.migrate.UpgradeJavaVersion
+[WARNING]         org.openrewrite.java.migrate.UpgradeBuildToJava21
+[WARNING]             org.openrewrite.java.migrate.UpgradeJavaVersion
+[WARNING]         org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta
+[WARNING]             org.openrewrite.java.migrate.jakarta.JavaxServletToJakartaServlet
+[WARNING]                 org.openrewrite.java.ChangePackage
+[WARNING] Changes have been made to src/main/java/io/elmos/legacy/web/LegacyOrderForm.java by:
+[WARNING]     org.openrewrite.java.migrate.UpgradeToJava21
+[WARNING]         org.openrewrite.java.migrate.UpgradeToJava17
+[WARNING]             org.openrewrite.java.migrate.UpgradeBuildToJava17
+[WARNING]                 org.openrewrite.java.migrate.UpgradeJavaVersion
+[WARNING]         org.openrewrite.java.migrate.UpgradeBuildToJava21
+[WARNING]             org.openrewrite.java.migrate.UpgradeJavaVersion
+[WARNING]         org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta
+[WARNING]             org.openrewrite.java.migrate.jakarta.JavaxValidationMigrationToJakartaValidation
+[WARNING]                 org.openrewrite.java.ChangePackage
+[WARNING] Changes have been made to src/main/java/io/elmos/legacy/web/ApiExceptionHandler.java by:
+[WARNING]     org.openrewrite.java.migrate.UpgradeToJava21
+[WARNING]         org.openrewrite.java.migrate.UpgradeToJava17
+[WARNING]             org.openrewrite.java.migrate.UpgradeBuildToJava17
+[WARNING]                 org.openrewrite.java.migrate.UpgradeJavaVersion
+[WARNING]         org.openrewrite.java.migrate.UpgradeBuildToJava21
+[WARNING]             org.openrewrite.java.migrate.UpgradeJavaVersion
+[WARNING]         org.openrewrite.java.migrate.util.SequencedCollection
+[WARNING]             org.openrewrite.java.migrate.util.ListFirstAndLast
+[WARNING] Changes have been made to src/main/java/io/elmos/legacy/web/LegacyOrderController.java by:
+[WARNING]     org.openrewrite.java.migrate.UpgradeToJava21
+[WARNING]         org.openrewrite.java.migrate.UpgradeToJava17
+[WARNING]             org.openrewrite.java.migrate.UpgradeBuildToJava17
+[WARNING]                 org.openrewrite.java.migrate.UpgradeJavaVersion
+[WARNING]         org.openrewrite.java.migrate.UpgradeBuildToJava21
+[WARNING]             org.openrewrite.java.migrate.UpgradeJavaVersion
+[WARNING]         org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta
+[WARNING]             org.openrewrite.java.migrate.jakarta.JavaxValidationMigrationToJakartaValidation
+[WARNING]                 org.openrewrite.java.ChangePackage
+[WARNING] Changes have been made to src/main/webapp/WEB-INF/web.xml by:
+[WARNING]     org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta
+[WARNING]         org.openrewrite.java.migrate.jakarta.Faces2xMigrationToJakartaFaces3x
+[WARNING]             org.openrewrite.java.migrate.jakarta.JavaxWebXmlToJakartaWebXml
+[WARNING]                 org.openrewrite.xml.ChangeTagAttribute
+[WARNING]         org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_2
+[WARNING]             org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_1
+[WARNING]                 org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_0
+[WARNING]                     org.openrewrite.java.migrate.jakarta.JakartaEE10
+[WARNING]                         org.openrewrite.java.migrate.jakarta.Faces3xMigrationToFaces4x
+[WARNING]                             org.openrewrite.java.migrate.jakarta.JakartaWebXml6
+[WARNING]                                 org.openrewrite.xml.ChangeTagAttribute
+[WARNING] Please review and commit the results.
+[WARNING] Estimate time saved: 2h 5m
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  02:22 min
+[INFO] Finished at: 2026-08-30T09:24:28Z
+[INFO] ------------------------------------------------------------------------
+exact MVC target materialized status=MATERIALIZED_STATIC_NOT_RUNTIME_VERIFIED manifest-sha256:f982de2d2daca2247f5f3efa788a64f653bb2d576a4c8516fafc0cd96d34fe74 source-files=13
+STAGE BUILD_AND_TEST Running the target repository's complete maven build with Java 21
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------< io.elmos.fixtures:legacy-spring-mvc-boot >--------------
+[INFO] Building legacy-spring-mvc-boot 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ legacy-spring-mvc-boot ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ legacy-spring-mvc-boot ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 7 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ legacy-spring-mvc-boot ---
+[INFO] skip non existing resourceDirectory /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ legacy-spring-mvc-boot ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ legacy-spring-mvc-boot ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.legacy.web.LegacyOrderControllerTest
+17:25:06.901 [main] INFO org.hibernate.validator.internal.util.Version -- HV000001: Hibernate Validator 8.0.2.Final
+17:25:07.190 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+17:25:07.190 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+17:25:07.192 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.510 s -- in io.elmos.legacy.web.LegacyOrderControllerTest
+[INFO] Running io.elmos.legacy.LegacyMvcApplicationTest
+17:25:07.351 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [io.elmos.legacy.LegacyMvcApplicationTest]: LegacyMvcApplicationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+17:25:07.390 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration io.elmos.legacy.LegacyMvcApplication for test class io.elmos.legacy.LegacyMvcApplicationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2026-08-30T17:25:07.549+08:00  INFO 84118 --- [           main] i.elmos.legacy.LegacyMvcApplicationTest  : Starting LegacyMvcApplicationTest using Java 21.0.11 with PID 84118 (started by stephen in /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated)
+2026-08-30T17:25:07.551+08:00  INFO 84118 --- [           main] i.elmos.legacy.LegacyMvcApplicationTest  : No active profile set, falling back to 1 default profile: "default"
+2026-08-30T17:25:08.146+08:00  INFO 84118 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-08-30T17:25:08.146+08:00  INFO 84118 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-08-30T17:25:08.149+08:00  INFO 84118 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-08-30T17:25:08.153+08:00  INFO 84118 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 7 ms
+2026-08-30T17:25:08.180+08:00  INFO 84118 --- [           main] i.elmos.legacy.LegacyMvcApplicationTest  : Started LegacyMvcApplicationTest in 0.756 seconds (process running for 1.623)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (/private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/maven-home/.m2/repository/net/bytebuddy/byte-buddy-agent/1.17.6/byte-buddy-agent-1.17.6.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.304 s -- in io.elmos.legacy.LegacyMvcApplicationTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- war:3.4.0:war (default-war) @ legacy-spring-mvc-boot ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [legacy-spring-mvc-boot] in [/private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot]
+[INFO] Processing war project
+[INFO] Copying webapp resources [/private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/src/main/webapp]
+[INFO] Building war: /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot.war
+[INFO] 
+[INFO] --- spring-boot:3.5.3:repackage (repackage) @ legacy-spring-mvc-boot ---
+[INFO] Replacing main artifact /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot.war with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot.war.original
+[INFO] 
+[INFO] --- spring-boot:3.5.3:repackage (default) @ legacy-spring-mvc-boot ---
+[INFO] Replacing main artifact /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot.war with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot.war.original
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  48.403 s
+[INFO] Finished at: 2026-08-30T09:25:18Z
+[INFO] ------------------------------------------------------------------------
+complex capability verification status=NOT_APPLICABLE
+STAGE HEALTH_CHECK Starting the target executable WAR and comparing the exact source HTTP oracle
+captured independent target-only actuator health probe on loopback
+target WarLauncher stopped inside the bounded shutdown window
+Spring MVC source/target HTTP oracle matched for every configured path
+STAGE PACKAGE_ARTIFACT Packaging migrated repository as a content-addressed ZIP
+artifact sha256:f85763c1d86a6af8e39cbdcb0d98571595e58e9ecf8a047b1df6e0ebf1fcd298 bytes=17347

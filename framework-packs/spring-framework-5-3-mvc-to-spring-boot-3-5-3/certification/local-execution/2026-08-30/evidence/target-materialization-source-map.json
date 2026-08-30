@@ -1,0 +1,34 @@
+{
+  "mappings" : [ {
+    "mapping" : "copy-with-exact-javax-validation-and-servlet-namespace-migration",
+    "source" : "src/main/java/io/elmos/legacy/service/LegacyOrderService.java",
+    "source_sha256" : "b22dfc833b96b307093a2b87b422d60234069281fa74addb5a91e05597c4d06d",
+    "target" : "src/main/java/io/elmos/legacy/service/LegacyOrderService.java"
+  }, {
+    "mapping" : "copy-with-exact-javax-validation-and-servlet-namespace-migration",
+    "source" : "src/main/java/io/elmos/legacy/web/ApiExceptionHandler.java",
+    "source_sha256" : "6059741065bcf4ac848babc750ec76d69e16bf2955138ab6680b0e4613d4ad79",
+    "target" : "src/main/java/io/elmos/legacy/web/ApiExceptionHandler.java"
+  }, {
+    "mapping" : "copy-with-exact-javax-validation-and-servlet-namespace-migration",
+    "source" : "src/main/java/io/elmos/legacy/web/LegacyOrderController.java",
+    "source_sha256" : "d25a3ad3d162c70692f1f3fbb9afefc7b21eef9c9a3e991165adf21bc101c0fc",
+    "target" : "src/main/java/io/elmos/legacy/web/LegacyOrderController.java"
+  }, {
+    "mapping" : "copy-with-exact-javax-validation-and-servlet-namespace-migration",
+    "source" : "src/main/java/io/elmos/legacy/web/LegacyOrderForm.java",
+    "source_sha256" : "92a9a20ec72eddb1987b735a54c48ac21973ecc4bd752de5489a728205d28bdf",
+    "target" : "src/main/java/io/elmos/legacy/web/LegacyOrderForm.java"
+  }, {
+    "mapping" : "copy-with-exact-javax-validation-and-servlet-namespace-migration",
+    "source" : "src/main/java/io/elmos/legacy/web/RequestAuditInterceptor.java",
+    "source_sha256" : "83594376886907525e0075e8631f7b1e4d92c3a933c957b6098f0c4b4087a597",
+    "target" : "src/main/java/io/elmos/legacy/web/RequestAuditInterceptor.java"
+  }, {
+    "mapping" : "copy-with-exact-javax-validation-and-servlet-namespace-migration",
+    "source" : "src/test/java/io/elmos/legacy/web/LegacyOrderControllerTest.java",
+    "source_sha256" : "e3ab30e8c9839af612e78479cae5cdc5c051f0273b28ff93dd550900f84d4f68",
+    "target" : "src/test/java/io/elmos/legacy/web/LegacyOrderControllerTest.java"
+  } ],
+  "schema_version" : 1
+}

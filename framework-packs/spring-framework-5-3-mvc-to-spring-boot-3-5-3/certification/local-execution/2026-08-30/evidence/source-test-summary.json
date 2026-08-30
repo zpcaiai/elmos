@@ -1,0 +1,9 @@
+{
+  "reports" : [ "target/surefire-reports/TEST-io.elmos.legacy.web.LegacyOrderControllerTest.xml" ],
+  "tests" : 6,
+  "failures" : 0,
+  "errors" : 0,
+  "skipped" : 0,
+  "executed" : 6,
+  "testIdentities" : [ "io.elmos.legacy.web.LegacyOrderControllerTest#preservesBlankCustomerValidationErrorContract", "io.elmos.legacy.web.LegacyOrderControllerTest#preservesCreateLocationUnicodeAndInterceptorContract", "io.elmos.legacy.web.LegacyOrderControllerTest#preservesJsonAndInterceptorContract", "io.elmos.legacy.web.LegacyOrderControllerTest#preservesOddOrderStatusContract", "io.elmos.legacy.web.LegacyOrderControllerTest#preservesPositiveAmountValidationErrorContract", "io.elmos.legacy.web.LegacyOrderControllerTest#preservesViewNameAndModelContract" ]
+}

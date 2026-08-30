@@ -19,6 +19,15 @@
 
 结果只允许：`PASS`、`FAIL`、`BLOCKED`、`UNKNOWN`、`NOT_RUN`。`UNKNOWN` 不能重试副作用操作，必须先 reconciliation；`NOT_RUN`、缺原始证据、self-verification、只测 mock、缺 holdout 或不完整 repeat 都不能进入认证汇总。
 
+本地工程测试另外覆盖外部 sidecar 的 executable digest 漂移、协议越权、环境引用缺失、二进制载荷、超时、输出洪泛、畸形响应、secret 泄漏和进程组终止。统一执行前运行：
+
+```bash
+PYTHONPATH=src python -m elmos_repository_autonomy.cli external-preflight \
+  --manifest /approved/path/external-qualification-manifest.json
+```
+
+返回 `READY_FOR_AUTHORIZED_EXECUTION` 只表示绑定完整；命令不会执行 manifest 中的 adapter，也不会把 T01–T08、E1–E5 或 P05 改为通过。
+
 ## 3. 测试矩阵
 
 ### T00：本地合同和反伪造基线

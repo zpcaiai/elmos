@@ -1,6 +1,7 @@
 JAVA_21_HOME ?= $(shell if [ -x /usr/libexec/java_home ]; then /usr/libexec/java_home -v 21 2>/dev/null; else printf '%s' "$$JAVA_HOME"; fi)
 MAVEN ?= mvn
 UV ?= uv
+RUFF ?= ruff
 DOTNET ?= dotnet
 # Homebrew installs the .NET SDK outside the default PATH on macOS. Prepending a
 # directory that does not exist is harmless everywhere else, and both this and
@@ -217,7 +218,7 @@ formal-assurance-kernel-qualify:
 repository-autonomy-kernel:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_repository_autonomy_kernel.py
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-autonomy-kernel/src $(UV) run --no-project --quiet --with pytest python -m pytest -q -p no:cacheprovider packages/repository-autonomy-kernel/tests
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with ruff ruff check packages/repository-autonomy-kernel/src packages/repository-autonomy-kernel/tests tooling/validate_repository_autonomy_kernel.py
+	PYTHONDONTWRITEBYTECODE=1 $(RUFF) check packages/repository-autonomy-kernel/src packages/repository-autonomy-kernel/tests tooling/validate_repository_autonomy_kernel.py
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-autonomy-kernel/src python3 -m compileall -q packages/repository-autonomy-kernel/src
 
 openhands-absorption:
