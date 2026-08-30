@@ -1,0 +1,6 @@
+{
+  "reason": "No money, quantity, floating-point, or tolerance claim is executed.",
+  "schema_version": 1,
+  "status": "NOT_RUN",
+  "technique": "numeric-verification"
+}

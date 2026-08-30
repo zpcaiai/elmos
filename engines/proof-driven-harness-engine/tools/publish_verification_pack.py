@@ -104,6 +104,7 @@ RAW_LOG_COMMANDS: Mapping[str, tuple[str, ...]] = {
     "qualification/raw/archive-installation-check.json": (
         "tooling/integrate_proof_driven_harness_v3.py",
         "--check",
+        "--qualification-phase",
     ),
 }
 POSTGRES_RAW_LOG = "qualification/raw/postgres17-integration.json"
@@ -216,6 +217,48 @@ def _directory_flags() -> int:
         | getattr(os, "O_DIRECTORY", 0)
         | getattr(os, "O_NOFOLLOW", 0)
     )
+
+
+def _open_safe_temporary_lock_directory() -> int:
+    """Open the system temporary directory only after identity checks.
+
+    macOS exposes ``/tmp`` as a symlink. Resolving that alias is safe only
+    when the resolved pathname and the opened descriptor still identify the
+    same directory and the directory has the expected owner/write policy.
+    The descriptor is then used for the lock file, so later pathname swaps do
+    not redirect publication coordination.
+    """
+
+    configured = Path(tempfile.gettempdir())
+    try:
+        canonical = configured.resolve(strict=True)
+        pathname = _identity(os.stat(canonical, follow_symlinks=False))
+        descriptor = os.open(canonical, _directory_flags())
+    except (OSError, RuntimeError) as exc:
+        raise VerificationPackError(
+            f"cannot safely open temporary lock directory: {exc}"
+        ) from exc
+
+    opened = _identity(os.fstat(descriptor))
+    current_uid = os.geteuid()
+    unsafe_world_writable = bool(opened.mode & stat.S_IWOTH) and not bool(
+        opened.mode & stat.S_ISVTX
+    )
+    safe = (
+        stat.S_ISDIR(pathname.mode)
+        and stat.S_ISDIR(opened.mode)
+        and (pathname.device, pathname.inode) == (opened.device, opened.inode)
+        and opened.device != 0
+        and opened.inode != 0
+        and os.fstat(descriptor).st_uid in {0, current_uid}
+        and not unsafe_world_writable
+    )
+    if not safe:
+        os.close(descriptor)
+        raise VerificationPackError(
+            "temporary lock directory is not a stable, owned, safe directory"
+        )
+    return descriptor
 
 
 def _relative_parts(relative: Path) -> tuple[str, ...]:
@@ -2772,13 +2815,7 @@ def _assert_expected_tree(
 def publication_lock(repository_root: Path) -> Iterator[None]:
     absolute = Path(os.path.abspath(os.fspath(repository_root)))
     lock_key = hashlib.sha256(os.fsencode(absolute)).hexdigest()[:32]
-    temporary_root = Path(tempfile.gettempdir())
-    try:
-        temporary_fd = os.open(temporary_root, _directory_flags())
-    except OSError as exc:
-        raise VerificationPackError(
-            f"cannot safely open temporary lock directory: {exc}"
-        ) from exc
+    temporary_fd = _open_safe_temporary_lock_directory()
     lock_fd = -1
     try:
         flags = (

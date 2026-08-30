@@ -1,7 +1,7 @@
 {
   "compiler": {
     "path": "tooling/integrate_proof_driven_harness_v3.py",
-    "sha256": "6e202605781f44c1b8703656e9a5870df3bc1729b9a10a832efad37c036e33ec"
+    "sha256": "2c8d40cbc82e110e74c6c801987d02175f9a4a246e75dc22f8c6a6fc7eba063d"
   },
   "counts": {
     "commercialGoldenRoutes": 5,
@@ -38,10 +38,10 @@
     "version": "3.0.0"
   },
   "qualification": {
-    "engine_tree_sha256": null,
+    "engine_tree_sha256": "89cd435e1317b3d9b80c506e002e378b6ae42dc8d748ac553ea5f17411ede1f4",
     "path": "engines/proof-driven-harness-engine/qualification/local-qualification.json",
-    "receipt_sha256": null,
-    "validation": "INVALID"
+    "receipt_sha256": "4e5798326ec6d8d94c6daf3092d7eedef9ca4d1bf436605b672b28777c04c6de",
+    "validation": "VALID"
   },
   "schema_version": "1.0.0",
   "skills": {
@@ -52,16 +52,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3050,
-          "sha256": "2d10a2d047afcda8761f54a30f27ef327e4b2459c846f26d2fea66d22fd351b9"
+          "bytes": 3048,
+          "sha256": "06b7ca8086a0eda01697544038e82ddf98efce25cc06efa8e58b1cac4be485c0"
         },
         "agents/openai.yaml": {
           "bytes": 349,
           "sha256": "24e796a834f0ad0d7c78af516f6f98981e41cb7dd8d5c8ec7b15f39b1e5a3441"
         },
         "compiled-contract.json": {
-          "bytes": 3309,
-          "sha256": "04edca781b7411f28095c2a4a1bb911aed533d338eb43671fda8617179002482"
+          "bytes": 3431,
+          "sha256": "1ab26bb313994a4ccb54bfd7a397022c7880fa868ee6228f57486d8c353e0a19"
         }
       },
       "id": "ELMOS-V3-004",
@@ -78,16 +78,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3063,
-          "sha256": "d09cab64f3401de0990829665cd17c615c16b4366d420a6964605e906fb9fb03"
+          "bytes": 3061,
+          "sha256": "3f08099c9b1192c10612d4fba9526d7341f58e1a9d42275551e6d194069df960"
         },
         "agents/openai.yaml": {
           "bytes": 341,
           "sha256": "a0d58e9a4e6cc95024769e86428394e9e05940908cc4b56e8415788171acf8d8"
         },
         "compiled-contract.json": {
-          "bytes": 3326,
-          "sha256": "4e2343489396020ca607b96b3f9cf6b6ad1188fe93449c0c19e14de044a93a09"
+          "bytes": 3448,
+          "sha256": "4441e9f21797be25c00564a552048a64fe40a76a3d7617d2c4611654b55423d1"
         }
       },
       "id": "ELMOS-V3-008",
@@ -109,16 +109,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3323,
-          "sha256": "908c167920019c2f9af6ea8d24f1143c17fda0fbbc3f0d6a067001afbf9eb5f8"
+          "bytes": 3321,
+          "sha256": "4e0a4e13a2facf570395741423b6e5d16ba404055fcba38a0961be199c05e900"
         },
         "agents/openai.yaml": {
           "bytes": 361,
           "sha256": "0029178e83b92d8b647fee96c9068b6a112ed00bc0ba503e8988e3068d48524c"
         },
         "compiled-contract.json": {
-          "bytes": 3596,
-          "sha256": "b65a87b3e9661d67fcff5b9b37f7cbcc71001694551ae297a41cd644f73eda91"
+          "bytes": 3718,
+          "sha256": "32248ad76c250a699bfd62d71a4931691dd42ff431bf8afedb85a8e053fb4ac5"
         }
       },
       "id": "ELMOS-V3-016",
@@ -140,16 +140,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3339,
-          "sha256": "dcb56a33410847f017e6f8f7f512eb8575309de4dd2dae2337fc5a817776645d"
+          "bytes": 3337,
+          "sha256": "0e53448bbf6541c31cce63af0ad96882de9c4f0949f328acea3c2e149ffe391d"
         },
         "agents/openai.yaml": {
           "bytes": 370,
           "sha256": "031f6fab3728ff6334d4023781a846b7db583dea4933f6e7e65bfe93cb969883"
         },
         "compiled-contract.json": {
-          "bytes": 3605,
-          "sha256": "fb38222aaa428611d2906485d9b18db827a91333964833bdd40c5dde0e724fdd"
+          "bytes": 3727,
+          "sha256": "6a65225801755fa4237b714aa2fedecc3e4e4628ccde4d5eacf205ead18e5236"
         }
       },
       "id": "ELMOS-V3-010",
@@ -171,16 +171,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3382,
-          "sha256": "f58fe6cd8ea0f8966b3a5eb299af3383c71514ca810d7dfe6d5a8f1023b64dcb"
+          "bytes": 3380,
+          "sha256": "3a0224851a3e80d0a9afaea710c0909c35191121bf495651804f260ab0fb3ca7"
         },
         "agents/openai.yaml": {
           "bytes": 386,
           "sha256": "49838025c22b326304126cbed21f4a0141c4e163f52d0e005a8c093aa2501948"
         },
         "compiled-contract.json": {
-          "bytes": 3644,
-          "sha256": "d2cd4dc355dc704c54dd33d25175abcb298921f727469b5662e6990a04018014"
+          "bytes": 3766,
+          "sha256": "285801c036b7d6efd99ceb72d61df03a1f58cc272d2e77164eb8e6a2d1968a33"
         }
       },
       "id": "ELMOS-V3-011",
@@ -202,16 +202,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3350,
-          "sha256": "83a7724aeb2cac36965d2b51844550c8cb5863e8a495688cb9c3397756d58fbe"
+          "bytes": 3348,
+          "sha256": "838a253f0afc05eccde3fec020ac0b463782fce6797deef67cfff5da195434d7"
         },
         "agents/openai.yaml": {
           "bytes": 364,
           "sha256": "aae41671b628f6f2be13f6d32151bf608c34663f2d2be14a86c56aaa061524c3"
         },
         "compiled-contract.json": {
-          "bytes": 3608,
-          "sha256": "733014a880b6fa26c8ebf7ae67f4b6b146bde2a731f9815087999f3f19d83788"
+          "bytes": 3730,
+          "sha256": "18271a88abe42ab72d734c616a712ff760ed9906af3ecc0054c20b38fc56f18b"
         }
       },
       "id": "ELMOS-V3-013",
@@ -233,16 +233,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3376,
-          "sha256": "48c041509d2638c24898a451a5b8db1eb56def82a16f789a595b8a50898242ce"
+          "bytes": 3374,
+          "sha256": "1477d503e35aa6e069b50f4027e203c46d0a929a0143781fd6c14495a893b53d"
         },
         "agents/openai.yaml": {
           "bytes": 374,
           "sha256": "f9c9a155e441635fe3a740750ef42e266ce40d1cf47a843ffeec5e33e2a266a3"
         },
         "compiled-contract.json": {
-          "bytes": 3636,
-          "sha256": "ac1f2a7e5c46d9e6c88c4d25497b68363ce4f5f54af9ff282a6f28a3ac970e4d"
+          "bytes": 3758,
+          "sha256": "8f9c25f57ace1a207892e09a89df69e71b0dfa2aed61667355d39837a41b6251"
         }
       },
       "id": "ELMOS-V3-009",
@@ -264,16 +264,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3363,
-          "sha256": "3486e6eab40288c1389a0d9205c826e6f58d0363a035888bb6b2c405fb68e38f"
+          "bytes": 3361,
+          "sha256": "2de6a3f42bbb68398b9fb9c2dd4f6fbf22fde4ec5a722d0fed9330f05b92806f"
         },
         "agents/openai.yaml": {
           "bytes": 384,
           "sha256": "a836d58ca9777512a95f8f6768552d51e7117acdbb08de61f056b08b4045704c"
         },
         "compiled-contract.json": {
-          "bytes": 3625,
-          "sha256": "792f7e2ee558e4bfb5a9eb564ba5ac0a3146260682303495107c0ce376e2c497"
+          "bytes": 3747,
+          "sha256": "4e3e94d3cf5e89e2edcc4c147f67a45b6abf0f2dc9c2b62a7288a666e75ed1d1"
         }
       },
       "id": "ELMOS-V3-012",
@@ -295,16 +295,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3283,
-          "sha256": "626a6a07b0776ebe1a426052b5bbcbcc1aa2facce8ada3c5a3646a5c1be0f075"
+          "bytes": 3281,
+          "sha256": "44df638262bb47852050df057fdbce29d28bdbe0d5ae82de9bc7d56227c0251a"
         },
         "agents/openai.yaml": {
           "bytes": 343,
           "sha256": "53c9454237b63080ed87dad12140ac78cc72d56f494987099e159cc91282ddc4"
         },
         "compiled-contract.json": {
-          "bytes": 3560,
-          "sha256": "499e5def842c920599f66cf0197d2a3c47c8c90faa10ff376d0d9bf9d90a762f"
+          "bytes": 3682,
+          "sha256": "324110f5700bf3783388e399c8871cf6db3c38cc196525569e2dc474437a53ed"
         }
       },
       "id": "ELMOS-V3-014",
@@ -317,16 +317,16 @@
       "dependencies": [],
       "files": {
         "SKILL.md": {
-          "bytes": 2997,
-          "sha256": "b374518e3d695b5a0df4cb5ec7a028e991e3e9211224bef5a2da439928c9304d"
+          "bytes": 2995,
+          "sha256": "aa325ed00c5a3d8e9745d1348ccb973f2f2f1f2eb056b387ddc5d1feffad9b0f"
         },
         "agents/openai.yaml": {
           "bytes": 351,
           "sha256": "ea6bb7389144af5ca059f9d7269779bb4a846aea1f267c152abb897cd03ff590"
         },
         "compiled-contract.json": {
-          "bytes": 3237,
-          "sha256": "315b816d76cf2e57f44a872561f3eb6cabc4dede4b2f8fc0574514e7dc144cb5"
+          "bytes": 3359,
+          "sha256": "adf1ae91515492498c61e545d038ab3c27e94aa79f27e1bfbb65dccfb65b8a2d"
         }
       },
       "id": "ELMOS-V3-001",
@@ -339,16 +339,16 @@
       "dependencies": [],
       "files": {
         "SKILL.md": {
-          "bytes": 2973,
-          "sha256": "fecfe1d7421bebda4d104fb676ef1d278e5beef83fe47bbd4b0770870bc0acd4"
+          "bytes": 2971,
+          "sha256": "88e649452975bfa176dd1a16ab43d06cb65f80f9c9bbbddfdc9c57c3104251eb"
         },
         "agents/openai.yaml": {
           "bytes": 345,
           "sha256": "be3b432fd8805562eab175f27fd7363cbe8792c7541e1919b5c037c6ca1fdc6e"
         },
         "compiled-contract.json": {
-          "bytes": 3213,
-          "sha256": "200641135a6b53e4dcf865030ebbea6c78858d99edbcbac6192b52fef141b0a7"
+          "bytes": 3335,
+          "sha256": "96068075335e3056c901b03ae27bddbd7498b2c944a2d1103d28e43a2e883bc4"
         }
       },
       "id": "ELMOS-V3-007",
@@ -364,16 +364,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3054,
-          "sha256": "0d27f381460ce274d796cd9185be80034202764309bc3be7266965ac54af3809"
+          "bytes": 3052,
+          "sha256": "c0d567cb4c4f8212ec86426c20549a02d77c89520773858b5e44c23392853e57"
         },
         "agents/openai.yaml": {
           "bytes": 351,
           "sha256": "0f17cec770649927c01be94aa0802b4c630595ef4a5aac93d2f7bfae74d60ce9"
         },
         "compiled-contract.json": {
-          "bytes": 3313,
-          "sha256": "1e901956f095e39e831b2656bd24896e932759c5ec85a377668b78325b516ea4"
+          "bytes": 3435,
+          "sha256": "a089d067dafc817b12176a3f86c5a7eeef4f0d0256ec1d9498a02e3e2af7cf6d"
         }
       },
       "id": "ELMOS-V3-006",
@@ -388,16 +388,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3037,
-          "sha256": "08a350d9d575d109c4c3f07ff78117f749ed353433e311fa560af078812c067c"
+          "bytes": 3035,
+          "sha256": "d1167777ac44dfc9e01436f51e813c86a8794912334141fd3e75db1c6cefd0d1"
         },
         "agents/openai.yaml": {
           "bytes": 361,
           "sha256": "076bf35a1a8adad6b520c87697334cf4fb36e2ba753218cd3171ca2a9ce17744"
         },
         "compiled-contract.json": {
-          "bytes": 3292,
-          "sha256": "7da078e61d78ecb7de3413c957a5b6b1bb51b8373f68be03451d4a76dc77c291"
+          "bytes": 3414,
+          "sha256": "7d62f015520a91f323480a6856b6c7fe9dfe535bcc8a8b99948134304022030e"
         }
       },
       "id": "ELMOS-V3-002",
@@ -412,16 +412,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3044,
-          "sha256": "3b7bcf655df77b52643150629caa971e9e9e95569df618ad53719a65ff73d02a"
+          "bytes": 3042,
+          "sha256": "cb5849b112a8b9bbd4ce132ca601f8a0201a59b9b6dec8ca0828b74b2bd4b391"
         },
         "agents/openai.yaml": {
           "bytes": 371,
           "sha256": "d1d6908fd0e63980466da5784e67e5aacb03395f7fee44bf0af2201e0089b9c3"
         },
         "compiled-contract.json": {
-          "bytes": 3299,
-          "sha256": "b7661ca360846ab90c0d7d9f83522ec6c70bafe0f9b951180b6711347fd01b7b"
+          "bytes": 3421,
+          "sha256": "e17f11634e5b2946d93e76f43ad2b8789b182c63c65e8a10795e83a1a5eac12b"
         }
       },
       "id": "ELMOS-V3-003",
@@ -443,16 +443,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3311,
-          "sha256": "adfb4be27164a9c6df8ec516535ebb4b3435b81d831c3b55afb526df4ed263e9"
+          "bytes": 3309,
+          "sha256": "29c5cdbd596b13cedbbf5aa8bd5f1a53afeb2668b884734ea741ae376808c280"
         },
         "agents/openai.yaml": {
           "bytes": 355,
           "sha256": "6baea02fc797858b104a4644eaf0724b76d167e613b6c1a30104bf036a4b039f"
         },
         "compiled-contract.json": {
-          "bytes": 3588,
-          "sha256": "3406ec735e2e26e7968b5cc42a7c7b9310e140b288fbce894a72438453b10351"
+          "bytes": 3710,
+          "sha256": "2803eeccfe9114297a554eeefac0c965b8b102308b0a27ba59976edc3fa5e1e6"
         }
       },
       "id": "ELMOS-V3-015",
@@ -469,16 +469,16 @@
       ],
       "files": {
         "SKILL.md": {
-          "bytes": 3062,
-          "sha256": "6589c3a4f86fca6c43027d56c8f5f5b2e9e4cd81bb1217348a2d9eada3043623"
+          "bytes": 3060,
+          "sha256": "d4b477c5f4c846a489d62109f848d2dda6bc787f8c7f43f4d5707d71ca2b916e"
         },
         "agents/openai.yaml": {
           "bytes": 343,
           "sha256": "23006aabb01bf8f5eda37cd13cd540e5c0981ffcf33a497e84d9e22c7988800c"
         },
         "compiled-contract.json": {
-          "bytes": 3325,
-          "sha256": "0e97568864211abd84e2b5cfe76b8f3f28141d3c86ee80c14a6281e9ef6559ce"
+          "bytes": 3447,
+          "sha256": "01ca00c446da989591ca980ae60d66c6e0b7f17eece19d5816ef81a6d7766453"
         }
       },
       "id": "ELMOS-V3-005",
@@ -534,6 +534,6 @@
     "certification": "NOT_CERTIFIED",
     "external_evidence": "NOT_RUN",
     "external_runtime": "NOT_RUN",
-    "implementation": "DECLARED_RUNTIME_UNQUALIFIED"
+    "implementation": "LOCAL_EXECUTED_SELF_ATTESTED"
   }
 }

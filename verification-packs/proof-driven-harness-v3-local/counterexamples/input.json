@@ -1,0 +1,11 @@
+{
+  "case_id": "NEG-PACK-RECEIPT-TAMPER",
+  "expected_effect": "NO_PACK_PUBLICATION",
+  "expected_exception": "VerificationPackError",
+  "mutation": {
+    "field": "status",
+    "from": "PASS",
+    "to": "FAILED"
+  },
+  "schema_version": 1
+}

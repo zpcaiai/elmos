@@ -1,0 +1,22 @@
+{
+  "budgets": {
+    "max_inputs": 0,
+    "max_memory_mb": 0,
+    "max_seconds": 0
+  },
+  "campaign_key": "fuzz.proof-harness-v3-receipt-parser",
+  "coverage_signal": "NOT_RUN",
+  "dictionary_refs": [
+    "fuzz/dictionary.json"
+  ],
+  "execution_status": "NOT_RUN",
+  "owner": "elmos-proof-harness-engineering",
+  "sanitizers": [],
+  "schema_version": 1,
+  "seed_corpus": [
+    "corpus/development/seed.json"
+  ],
+  "targets": [
+    "qualification-receipt-json-parser"
+  ]
+}

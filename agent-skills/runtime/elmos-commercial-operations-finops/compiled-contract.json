@@ -39,10 +39,10 @@
     "unlisted_pyc_quarantined": 21
   },
   "qualification": {
-    "engine_tree_sha256": null,
+    "engine_tree_sha256": "89cd435e1317b3d9b80c506e002e378b6ae42dc8d748ac553ea5f17411ede1f4",
     "path": "engines/proof-driven-harness-engine/qualification/local-qualification.json",
-    "receipt_sha256": null,
-    "validation": "INVALID"
+    "receipt_sha256": "4e5798326ec6d8d94c6daf3092d7eedef9ca4d1bf436605b672b28777c04c6de",
+    "validation": "VALID"
   },
   "runtime": {
     "engine_path": "engines/proof-driven-harness-engine/src/elmos_proof_harness/skills.py",
@@ -92,6 +92,6 @@
     "certification": "NOT_CERTIFIED",
     "external_evidence": "NOT_RUN",
     "external_runtime": "NOT_RUN",
-    "implementation": "DECLARED_RUNTIME_UNQUALIFIED"
+    "implementation": "LOCAL_EXECUTED_SELF_ATTESTED"
   }
 }

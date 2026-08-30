@@ -1,0 +1,22 @@
+{
+  "assumptions": [
+    "No solver or independent encoding has been executed for this pack."
+  ],
+  "evidence_refs": [
+    "symbolic/not-run.json"
+  ],
+  "input_digest": "sha256:7b7665761232fc0efcb4268da39937611768f2376ab01c5af5909ee609daefcd",
+  "model_ref": "models/model.json",
+  "proof_id": "proof.proof-harness-v3-publication-model",
+  "property_id": "property.invalid-receipt-never-publishes",
+  "schema_version": 1,
+  "solver": {
+    "name": "NOT_RUN",
+    "options": {
+      "bounds": "NOT_RUN"
+    },
+    "timeout_ms": 1,
+    "version": "NOT_RUN"
+  },
+  "status": "unknown"
+}

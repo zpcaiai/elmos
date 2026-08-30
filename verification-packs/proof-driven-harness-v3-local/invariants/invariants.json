@@ -1,0 +1,11 @@
+{
+  "local_invariants": [
+    "archive-byte-count-and-digest-exact",
+    "engine-tree-digest-exact",
+    "test-passed-equals-tests-and-failed-zero"
+  ],
+  "reason": "Only byte identity and count equality invariants execute locally.",
+  "schema_version": 1,
+  "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "technique": "data-money-invariants"
+}

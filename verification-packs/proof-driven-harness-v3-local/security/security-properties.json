@@ -1,0 +1,9 @@
+{
+  "external_security_campaign": "NOT_RUN",
+  "local_negative_cases_ref": "corpus/negative/cases.json",
+  "network_authority_validation": "NOT_RUN",
+  "schema_version": 1,
+  "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "technique": "security-properties",
+  "tenant_noninterference": "NOT_RUN"
+}

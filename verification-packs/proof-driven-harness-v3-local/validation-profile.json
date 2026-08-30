@@ -1,0 +1,94 @@
+{
+  "approvals": [],
+  "budgets": {
+    "max_engine_file_bytes_each": 134217728,
+    "max_fuzz_seconds": 0,
+    "max_mutants": 0,
+    "max_raw_log_bytes_each": 33554432,
+    "max_receipt_bytes": 1048576,
+    "max_schedules": 0,
+    "max_solver_seconds": 0,
+    "max_wall_time_minutes": 15
+  },
+  "claims": [
+    {
+      "claim_id": "claim.local.qualification-binding",
+      "criticality": "P0",
+      "description": "The publisher rejects any qualification receipt not exactly bound to current archive, engine, registry, qualifier, and raw-log bytes.",
+      "required_oracles": [
+        "oracle.fixed-qualification-contract",
+        "oracle.byte-recomputation"
+      ],
+      "required_techniques": [
+        "contract",
+        "security",
+        "counterexample-replay"
+      ]
+    },
+    {
+      "claim_id": "claim.local.safe-deterministic-publication",
+      "criticality": "P0",
+      "description": "Identical validated receipt inputs generate identical pack bytes and linked or swapped output paths fail closed.",
+      "required_oracles": [
+        "oracle.byte-recomputation",
+        "oracle.local-negative-tests"
+      ],
+      "required_techniques": [
+        "property",
+        "metamorphic",
+        "model",
+        "security"
+      ]
+    },
+    {
+      "claim_id": "claim.external.production-assurance",
+      "criticality": "P0",
+      "description": "External runtime correctness, independent holdout behavior, and representative production suitability are established.",
+      "required_oracles": [
+        "oracle.independent-verifier-not-run"
+      ],
+      "required_techniques": [
+        "mutation",
+        "fuzz",
+        "solver",
+        "data-money",
+        "concurrency",
+        "query",
+        "numeric",
+        "holdout",
+        "assurance-case"
+      ]
+    }
+  ],
+  "profile_key": "proof-driven-harness-v3-local-profile-v1",
+  "risk_tier": "P0",
+  "schema_version": 1,
+  "stop_conditions": [
+    "receipt-missing-or-invalid",
+    "archive-digest-drift",
+    "engine-tree-drift",
+    "raw-log-drift",
+    "repository-binding-drift",
+    "symlink-or-special-output",
+    "unknown-p0-external-obligation"
+  ],
+  "techniques": [
+    "property",
+    "metamorphic",
+    "mutation",
+    "fuzz",
+    "model",
+    "contract",
+    "data-money",
+    "security",
+    "concurrency",
+    "query",
+    "numeric",
+    "solver",
+    "counterexample-replay",
+    "oracle-governance",
+    "holdout",
+    "assurance-case"
+  ],
+  "version": 1
+}

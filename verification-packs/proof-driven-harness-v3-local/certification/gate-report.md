@@ -1,0 +1,63 @@
+# Batch 35 gate: proof-driven-harness-v3-local
+
+- Pack status: `limited`
+- Structural gate status: `passed`
+- Certification decision: `NOT_CERTIFIED`
+- Certification readiness: `BLOCKED`
+- Evaluated pack digest: `sha256:677109e6e6c5b8d1d0c55ec6c51f3d8c49dc9676b2530e77af5ed312367dc163`
+
+## Certification blockers
+- pack and certification status must both request certified
+- representative_workload_pass_rate below 1.0
+- source_map_coverage below 0.95
+- evidence_trace_coverage below 0.95
+- assurance_claim_support_rate below 1.0
+- p0_contract_pass_rate below 1.0
+- counterexample_replay_pass_rate below 1.0
+- data_money_invariant_pass_rate below 1.0
+- fuzz_campaign_pass_rate below 1.0
+- metamorphic_pass_rate below 1.0
+- model_transition_coverage below 0.95
+- mutation_score below 0.8
+- numeric_verification_pass_rate below 1.0
+- property_pass_rate below 1.0
+- query_equivalence_pass_rate below 1.0
+- security_property_pass_rate below 1.0
+- critical_fuzz_crashes must be explicitly zero
+- critical_unknown_obligations must be explicitly zero
+- forbidden_concurrency_outcomes must be explicitly zero
+- invalid_or_unknown_required_proofs must be explicitly zero
+- money_invariant_violations must be explicitly zero
+- numeric_precision_regressions must be explicitly zero
+- query_equivalence_failures must be explicitly zero
+- race_deadlock_liveness_violations must be explicitly zero
+- security_property_violations must be explicitly zero
+- surviving_critical_mutants must be explicitly zero
+- test_integrity_violations must be explicitly zero
+- unapproved_oracle_changes must be explicitly zero
+- unapproved_tolerance_changes must be explicitly zero
+- unreplayed_counterexamples must be explicitly zero
+- unresolved_oracle_conflicts must be explicitly zero
+- unsupported_p0_claims must be explicitly zero
+- required P0 property proof is not proved
+- P0 solver claim claim.local.safe-deterministic-publication has no governed property
+- P0 solver claim claim.external.production-assurance has no governed property
+- holdout corpus status must be passed
+- holdout corpus is not independently verified
+- holdout corpus independent verifier missing
+- holdout corpus executor missing
+- representative-workloads corpus status must be passed
+- representative workload corpus is not production-derived
+- representative workload authorization record is missing, invalid, or not content-bound locally
+- assurance claim claim.local.qualification-binding is not fully supported
+- assurance claim claim.local.safe-deterministic-publication is not fully supported
+- assurance claim claim.external.production-assurance is not fully supported
+- assurance case approvals empty
+- validation profile approvals empty
+- oracle registry approvals empty
+- certification approval timestamp missing
+- P0 claim claim.local.qualification-binding has no independent external oracle evidence
+- P0 claim claim.local.safe-deterministic-publication has no independent external oracle evidence
+- scope controlled_public_dns_rebinding_campaign must be passed (found 'NOT_RUN')
+- scope independent_holdout must be passed (found 'NOT_RUN')
+- scope representative_production_workload must be passed (found 'NOT_RUN')

@@ -12,7 +12,16 @@ from _common import load, local_ref_path
 try:
     import jsonschema
 except ImportError as exc:
-    jsonschema = None
+    from _local_jsonschema import (
+        exceptions as _local_jsonschema_exceptions,
+        validate as _local_jsonschema_validate,
+    )
+
+    class _LocalJsonSchema:
+        exceptions = _local_jsonschema_exceptions
+        validate = staticmethod(_local_jsonschema_validate)
+
+    jsonschema = _LocalJsonSchema()
     JSONSCHEMA_IMPORT_ERROR = str(exc)
 else:
     JSONSCHEMA_IMPORT_ERROR = None
@@ -323,11 +332,6 @@ def main():
     )
     schemas = Path(__file__).resolve().parents[2] / "schemas/batch35"
     errors = []
-    if jsonschema is None:
-        errors.append(
-            "jsonschema dependency is required for fail-closed validation: "
-            f"{JSONSCHEMA_IMPORT_ERROR}"
-        )
     for rel, schema in PAIRS:
         document_path = local_ref_path(pack, rel)
         if document_path is None:

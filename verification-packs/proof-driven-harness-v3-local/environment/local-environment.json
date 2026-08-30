@@ -1,0 +1,184 @@
+{
+  "captured_boundaries": {
+    "external_network_evidence": "NOT_RUN",
+    "external_provider_evidence": "NOT_RUN",
+    "independent_verifier": "NOT_RUN",
+    "production_environment": "NOT_RUN",
+    "repository_root": ".",
+    "representative_environment": "NOT_RUN",
+    "source_archive_executed": false
+  },
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "tooling/integrate_proof_driven_harness_v3.py",
+        "--check",
+        "--qualification-phase"
+      ],
+      "cwd": ".",
+      "execution_environment": {
+        "evidence_boundary": {
+          "certification": "NOT_CERTIFIED",
+          "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "external_evidence": "NOT_RUN",
+          "independent_verification": "NOT_RUN"
+        },
+        "os": {
+          "machine": "arm64",
+          "release": "25.6.0",
+          "system": "Darwin",
+          "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:29 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8122"
+        },
+        "packages": {
+          "psycopg": "NOT_INSTALLED",
+          "psycopg-binary": "NOT_INSTALLED"
+        },
+        "postgresql": {
+          "required_version": "17.5",
+          "status": "NOT_APPLICABLE_TO_COMMAND"
+        },
+        "python": {
+          "cache_tag": "cpython-314",
+          "executable": "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+          "executable_sha256": "sha256:b502cb4c5b46b8d4192ec6bcb600ce8922f1afc396fcf646e8765c6eba74a0bf",
+          "implementation": "CPython",
+          "version": "3.14.6"
+        },
+        "schema_version": "1.0.0",
+        "tool": {
+          "path": "tooling/integrate_proof_driven_harness_v3.py",
+          "sha256": "sha256:2c8d40cbc82e110e74c6c801987d02175f9a4a246e75dc22f8c6a6fc7eba063d",
+          "version": "3.0.0"
+        }
+      },
+      "name": "archive-installation-check",
+      "raw_log_bytes": 10226,
+      "raw_log_sha256": "sha256:18b0e2c21bb26cfff99914a13c84af8496ef468d5f16674cee53ffc6c9f71401",
+      "returncode": 0,
+      "structured_results_sha256": null,
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "engines/proof-driven-harness-engine/tests",
+        "--pattern",
+        "test_*.py"
+      ],
+      "cwd": ".",
+      "execution_environment": {
+        "evidence_boundary": {
+          "certification": "NOT_CERTIFIED",
+          "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "external_evidence": "NOT_RUN",
+          "independent_verification": "NOT_RUN"
+        },
+        "os": {
+          "machine": "arm64",
+          "release": "25.6.0",
+          "system": "Darwin",
+          "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:29 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8122"
+        },
+        "packages": {
+          "psycopg": "NOT_INSTALLED",
+          "psycopg-binary": "NOT_INSTALLED"
+        },
+        "postgresql": {
+          "required_version": "17.5",
+          "status": "NOT_APPLICABLE_TO_COMMAND"
+        },
+        "python": {
+          "cache_tag": "cpython-314",
+          "executable": "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+          "executable_sha256": "sha256:b502cb4c5b46b8d4192ec6bcb600ce8922f1afc396fcf646e8765c6eba74a0bf",
+          "implementation": "CPython",
+          "version": "3.14.6"
+        },
+        "schema_version": "1.0.0",
+        "tool": {
+          "path": "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+          "sha256": "sha256:2f590d1901a9d462e1d0398eb54864db6db6bc7ed6d59a4625a0733f117a5991",
+          "version": "3.0.0"
+        }
+      },
+      "name": "engine-tests",
+      "raw_log_bytes": 62207,
+      "raw_log_sha256": "sha256:49be2f4aa2f10cfc25241cce884dac93e024726d1d89d78eb0522d3b2061a90b",
+      "returncode": 0,
+      "structured_results_sha256": "sha256:9daa3694dd81cf1b9164dd61223d5891d485c9f16d70f3cf579c5660e368f20c",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "tests/proof-driven-harness-v3",
+        "--pattern",
+        "test_*.py"
+      ],
+      "cwd": ".",
+      "execution_environment": {
+        "evidence_boundary": {
+          "certification": "NOT_CERTIFIED",
+          "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "external_evidence": "NOT_RUN",
+          "independent_verification": "NOT_RUN"
+        },
+        "os": {
+          "machine": "arm64",
+          "release": "25.6.0",
+          "system": "Darwin",
+          "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:29 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8122"
+        },
+        "packages": {
+          "psycopg": "NOT_INSTALLED",
+          "psycopg-binary": "NOT_INSTALLED"
+        },
+        "postgresql": {
+          "required_version": "17.5",
+          "status": "NOT_APPLICABLE_TO_COMMAND"
+        },
+        "python": {
+          "cache_tag": "cpython-314",
+          "executable": "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+          "executable_sha256": "sha256:b502cb4c5b46b8d4192ec6bcb600ce8922f1afc396fcf646e8765c6eba74a0bf",
+          "implementation": "CPython",
+          "version": "3.14.6"
+        },
+        "schema_version": "1.0.0",
+        "tool": {
+          "path": "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+          "sha256": "sha256:2f590d1901a9d462e1d0398eb54864db6db6bc7ed6d59a4625a0733f117a5991",
+          "version": "3.0.0"
+        }
+      },
+      "name": "package-integration-tests",
+      "raw_log_bytes": 12169,
+      "raw_log_sha256": "sha256:673c0bc385ece1335789db6610e1dadf584b06f659461a582097a9ec178dfc58",
+      "returncode": 0,
+      "structured_results_sha256": "sha256:1ddcd69604ee37e49ef5f9813adfd1871b14ba47d7ed5f58dd065fff111c185a",
+      "timed_out": false
+    }
+  ],
+  "content_addressing": "The environment digest is SHA-256 of this exact file and is bound by pack.json plus certification/repository-binding.json.",
+  "kind": "elmos.proof-driven-harness-v3.content-addressed-local-environment",
+  "postgresql17": {
+    "raw_log": null,
+    "reason": "Disposable PostgreSQL qualification was not explicitly requested.",
+    "required_postgresql_version": "17.5",
+    "required_psycopg_version": "3.2.13",
+    "status": "NOT_RUN"
+  },
+  "qualifier_sha256": "sha256:ab3afa1149db2efa46fa473de573dea5f95a554f620ff0d5233f9e82cb36a60e",
+  "receipt_sha256": "sha256:4e5798326ec6d8d94c6daf3092d7eedef9ca4d1bf436605b672b28777c04c6de",
+  "schema_version": 1,
+  "scope": "FIXED_LOCAL_SELF_ATTESTED_QUALIFICATION"
+}
