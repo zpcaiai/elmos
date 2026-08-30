@@ -66,7 +66,10 @@ class ToolRuntime:
 
         begun = self.store.begin_tool_call(tenant_id, invocation, executor)
         if begun.get("replayed"):
-            return begun["result"]
+            replayed_result = begun.get("result")
+            if not isinstance(replayed_result, ToolResult):
+                raise TypeError("durable tool replay is not a ToolResult")
+            return replayed_result
         self.store.mark_tool_executing(tenant_id, invocation.call_id, executor)
         try:
             result = tool.handler(invocation, policy)
