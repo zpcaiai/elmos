@@ -41,7 +41,6 @@
   "runtime_evidence": [],
   "evidence_refs": ["source-snapshots/manifest.json", "certification/source-build-evidence.json", "source-fingerprint/evidence.json", "certification/local-runtime-candidate-evidence.json"],
   "critical_unknowns": [
-    "The source snapshot includes exact Vue, Vue Router and Pinia versions bound to pnpm-lock.yaml.",
     "The source application has a locally replayed typecheck/build but has not been launched in an approved runtime."
   ]
 }

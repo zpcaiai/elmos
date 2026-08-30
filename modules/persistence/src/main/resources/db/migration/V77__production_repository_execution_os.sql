@@ -862,6 +862,8 @@ LANGUAGE sql SECURITY DEFINER SET search_path = runtime, orchestration, billing,
           FROM orchestration.work_items wi
           JOIN orchestration.jobs j
             ON j.tenant_id = wi.tenant_id AND j.id = wi.job_id
+          JOIN orchestration.job_stages js
+            ON js.tenant_id = wi.tenant_id AND js.id = wi.stage_id
           LEFT JOIN LATERAL (
               SELECT (array_agg(w.id ORDER BY w.id))[1] AS wallet_id
                 FROM billing.billing_accounts ba
@@ -894,6 +896,7 @@ LANGUAGE sql SECURITY DEFINER SET search_path = runtime, orchestration, billing,
                LIMIT 1
           ) worker ON true
          WHERE wi.status IN ('READY', 'RETRY_WAIT')
+           AND js.status IN ('READY', 'RUNNING')
            AND NOT EXISTS (
                SELECT 1
                  FROM orchestration.work_item_dependencies dep

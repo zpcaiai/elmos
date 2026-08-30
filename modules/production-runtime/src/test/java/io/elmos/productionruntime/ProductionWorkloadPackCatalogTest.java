@@ -22,4 +22,12 @@ class ProductionWorkloadPackCatalogTest {
         assertThrows(ProductionRuntimeException.class, () -> ProductionWorkloadPackCatalog.require("UNKNOWN", List.of("stage")));
         assertThrows(ProductionRuntimeException.class, () -> ProductionWorkloadPackCatalog.require("SQL_CONVERSION", List.of("target-compile", "inventory-parse")));
     }
+
+    @Test
+    void exposesTheCompleteOrderedStageContractForEachZipWorkload() {
+        assertEquals(17, ProductionWorkloadPackCatalog.requireComplete("SPRING_MODERNIZATION").stages().size());
+        assertEquals(13, ProductionWorkloadPackCatalog.requireComplete("LANGUAGE_CONVERSION").stages().size());
+        assertEquals(12, ProductionWorkloadPackCatalog.requireComplete("PROJECT_GENERATION").stages().size());
+        assertEquals(12, ProductionWorkloadPackCatalog.requireComplete("SQL_CONVERSION").stages().size());
+    }
 }

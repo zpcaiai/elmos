@@ -91,8 +91,8 @@ class ProductionRuntimeBillingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json.writeValueAsBytes(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value(
-                        "PRODUCTION_RUNTIME_WORKLOAD_AUTH_INVALID"));
+                .andExpect(jsonPath("$.code").value("UNAUTHORIZED"))
+                .andExpect(jsonPath("$.message").doesNotExist());
     }
 
     @Test
@@ -102,8 +102,8 @@ class ProductionRuntimeBillingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json.writeValueAsBytes(topUp)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value(
-                        "PRODUCTION_RUNTIME_TOPUP_AUTH_INVALID"));
+                .andExpect(jsonPath("$.code").value("UNAUTHORIZED"))
+                .andExpect(jsonPath("$.message").doesNotExist());
 
         mvc.perform(post("/internal/v1/production-runtime/billing/topups")
                         .header("Authorization", "Bearer " + TOPUP_TOKEN)
@@ -117,8 +117,8 @@ class ProductionRuntimeBillingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json.writeValueAsBytes(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value(
-                        "PRODUCTION_RUNTIME_WORKLOAD_AUTH_INVALID"));
+                .andExpect(jsonPath("$.code").value("UNAUTHORIZED"))
+                .andExpect(jsonPath("$.message").doesNotExist());
     }
 
     private Path credential(String name, String value) throws Exception {

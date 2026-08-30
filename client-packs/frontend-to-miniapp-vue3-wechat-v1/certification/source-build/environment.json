@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "source_snapshot_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
+  "node": "26.0.0",
+  "pnpm": "10.12.4",
+  "vue": "3.5.39",
+  "vue_router": "4.5.0",
+  "pinia": "2.3.1",
+  "typescript": "5.9.2",
+  "vite": "6.0.0",
+  "vite_plugin_vue": "5.2.1",
+  "network": "registry.npmjs.org",
+  "scripts_executed": false,
+  "commands": [
+    {"command": "pnpm install --frozen-lockfile --ignore-scripts --prefer-offline", "exit_code": 0, "log": "install.log"},
+    {"command": "pnpm run typecheck", "exit_code": 0, "log": "typecheck.log"},
+    {"command": "pnpm run build", "exit_code": 0, "log": "build.log"}
+  ]
+}

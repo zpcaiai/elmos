@@ -7,26 +7,39 @@
   "semantic_core": "typed-ui-interaction-ir",
   "regex_or_template_replacement_core": false,
   "mappings": [
-    {"source_node": "route.home", "target_contract": "app.json pages[0] plus pages/index/index.json"},
-    {"source_node": "component.app-shell", "target_contract": "pages/index/index.wxml view shell"},
-    {"source_node": "component.todo-input", "target_contract": "input value bound to todoText with bindinput handler"},
-    {"source_node": "component.add-button", "target_contract": "button disabled for blank trimmed todoText with bindtap handler"},
-    {"source_node": "component.todo-list", "target_contract": "wx:for over todoItems with deterministic item-plus-index key contract"},
-    {"source_node": "effect.add-todo", "target_contract": "synchronous setData append trimmed value then clear todoText"},
-    {"source_node": "token.app-shell", "target_contract": "wxss shell width margin and padding candidate"},
-    {"source_node": "permission.local-only", "target_contract": "no generated network identity payment upload review or release effect"}
+    {"source_node": "route.home", "target_contract": "app.json pages[0] equals pages/index/index and pages/index/index.json exists"},
+    {"source_node": "component.app-shell", "target_contract": "pages/index/index.wxml contains the source-traced application shell"},
+    {"source_node": "component.todo-input", "target_contract": "pages/index/index.wxml input value binds text and bindinput targets handleInput0"},
+    {"source_node": "component.add-button", "target_contract": "pages/index/index.wxml button disabled binds !canSubmit0 and bindtap targets handleSubmit0"},
+    {"source_node": "component.todo-list", "target_contract": "pages/index/index.wxml iterates itemsRender with __elmosKey and pages/index/index.js derives each key from item plus source index"},
+    {"source_node": "effect.add-todo", "target_contract": "pages/index/index.js trims text appends one value persists application items and clears text"},
+    {"source_node": "token.app-shell", "target_contract": "pages/index/index.wxss scopes .app-shell with the deterministic scope class and preserves max-width auto margins and padding"},
+    {"source_node": "permission.local-only", "target_contract": "adapters/platform.js exposes no network identity payment upload review or release capability"}
   ],
   "fallbacks": {"webview": "DENIED", "full_page_canvas": "DENIED", "silent_drop": "DENIED"},
   "ownership": {"generated_files": "generated-candidate", "manual_regions": [], "protected_regions": []},
-  "local_contract_state": "REVIEW_ONLY_NOT_EXECUTED",
+  "local_contract_state": "LOCAL_REPLAY_VERIFIED_DIRECTIONAL_MAPPING_ONLY_NOT_CERTIFIED",
   "execution_binding": {
-    "state": "NOT_RUN",
-    "reason": "The checked-in Batch 32 UI IR and this mapping contract are review artifacts. The local runtime builds a separate source-derived IR and does not consume or verify either artifact digest.",
-    "runtime_input_digest": null,
-    "runtime_mapping_coverage": null
+    "state": "PASSED_LOCAL_SELF_ATTESTED_MAPPING_ONLY",
+    "scope": "one-way review UI IR to source-derived runtime subjects and content-addressed generated artifacts",
+    "evidence": "certification/local-runtime-candidate-evidence.json",
+    "source_snapshot_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
+    "runtime_input_digest": "sha256:b6a19721a46a0ebce0faef7d037e214718eda0ae598ed5dcebd6e55c0c7480b7",
+    "runtime_semantic_ir_digest": "sha256:2b6ef6399d4d223bb472d9224dd61fdf5d105ce8bc0106c70eabf9a540a8a75a",
+    "runtime_plan_digest": "sha256:9eb50cbee9e36b48aba28394b88479b850c510c64fdadcd1c27a12956e374fb4",
+    "generated_project_digest": "sha256:599711da49a22092244a2852bbdc7969258fe0ee01fb6893905af184faae7d14",
+    "runtime_mapping_coverage": {
+      "declared_mappings": 8,
+      "verified_mappings": 8,
+      "review_nodes": 20,
+      "review_node_source_ref_coverage": 1
+    },
+    "full_runtime_ir_reverse_equivalence": "NOT_EVALUATED",
+    "independent_verification": "NOT_RUN",
+    "official_runtime_verification": "NOT_RUN"
   },
   "local_runtime_evidence": "certification/local-runtime-candidate-evidence.json",
   "official_build_state": "NOT_RUN",
-  "runtime_equivalence_state": "NOT_RUN",
+  "runtime_equivalence_state": "LOCAL_DIRECTIONAL_MAPPING_ONLY_FULL_REVERSE_NOT_EVALUATED",
   "certification": "NOT_CERTIFIED"
 }
