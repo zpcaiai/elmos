@@ -71,7 +71,7 @@ export const ALL_FRAMEWORKS: readonly Framework[] = [
  * because a real parser for them is installed and runs here:
  *   react / typescript / react-native -> TypeScript Compiler API (JSX)
  *   vue3                              -> @vue/compiler-sfc
- *   vue2                              -> vue-template-compiler
+ *   vue2                              -> maintained Vue compiler compatibility adapter
  *   angular                           -> @angular/compiler
  *   svelte                            -> svelte/compiler
  *   miniprogram                       -> @wxml/parser + TypeScript API
@@ -102,7 +102,10 @@ export const PARSEABLE_FRAMEWORKS: ReadonlySet<Framework> = new Set<Framework>([
  *   arkui        -- needs DevEco Studio / a HarmonyOS device
  *   flutter      -- needs the Flutter/Dart SDK
  */
-export const EXECUTABLE_FRAMEWORKS: ReadonlySet<Framework> = new Set<Framework>(["react", "typescript", "vue3", "vue2", "svelte"]);
+/** Vue 2 remains a static compatibility source/target. Its unmaintained
+ * runtime/compiler packages are intentionally not installed, so behavioral
+ * execution evidence must come from an authorized external Vue 2 environment. */
+export const EXECUTABLE_FRAMEWORKS: ReadonlySet<Framework> = new Set<Framework>(["react", "typescript", "vue3", "svelte"]);
 
 export function isParseable(framework: Framework): boolean {
   return PARSEABLE_FRAMEWORKS.has(framework);

@@ -4,8 +4,7 @@
  * in `package.json`.
  *
  * Every framework toolchain here is loaded with a runtime `require(...)`
- * rather than a static import, because several must be reached via a
- * non-default entry point (`vue-template-compiler/build`) or are ESM-only
+ * rather than a static import, because several are ESM-only
  * and driven in a subprocess. TypeScript therefore cannot verify them, and
  * a locally-installed-but-undeclared package makes the whole suite pass on
  * the author's machine and fail on a fresh clone with
@@ -54,8 +53,7 @@ function sourceFiles(dir: string, out: string[] = []): string[] {
   return out;
 }
 
-/** `require("vue-template-compiler/build")` resolves against the package
- * `vue-template-compiler`; `@vue/compiler-sfc` is already a package name. */
+/** Resolve a package name from a runtime module specifier. */
 function packageNameOf(specifier: string): string {
   const parts = specifier.split("/");
   return specifier.startsWith("@") ? parts.slice(0, 2).join("/") : (parts[0] as string);
@@ -94,7 +92,7 @@ describe("every runtime dependency is declared", () => {
     // vacuously pass, so assert it really sees the runtime-loaded compilers.
     const packages = new Set([...specifiers.keys()].map(packageNameOf));
     for (const expected of [
-      "@vue/compiler-sfc", "vue-template-compiler", "vue-server-renderer",
+      "@vue/compiler-sfc",
       "svelte", "@wxml/parser", "@angular/compiler", "react", "react-dom", "vue",
     ]) {
       expect(packages).toContain(expected);
@@ -110,10 +108,13 @@ describe("every runtime dependency is declared", () => {
     expect(missing).toEqual([]);
   });
 
-  it("resolves every in-process specifier, entry point and alias included", () => {
-    // Declaration alone is not enough: the `vue2` alias must resolve, and a
-    // non-default entry point like `vue-template-compiler/build` must exist
-    // in the published package.
+  it("does not reintroduce the retired Vue 2 runtime toolchain", () => {
+    expect(declared.has("vue-template-compiler")).toBe(false);
+    expect(declared.has("vue-server-renderer")).toBe(false);
+    expect(declared.has("vue2")).toBe(false);
+  });
+
+  it("resolves every in-process specifier", () => {
     const unresolvable: string[] = [];
     for (const specifier of specifiers.keys()) {
       if ((SUBPROCESS_SPECIFIERS as readonly string[]).includes(specifier)) continue;

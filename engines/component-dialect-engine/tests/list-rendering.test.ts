@@ -154,7 +154,7 @@ describe("real SSR comparison with genuine sample rows", () => {
     expect((second?.props["rows"] as unknown[]).length).toBe(3);
   });
 
-  it.each(["vue3", "vue2", "svelte"] as const)("react and %s render identical DOM for both list shapes", async (target) => {
+  it.each(["vue3", "svelte"] as const)("react and %s render identical DOM for both list shapes", async (target) => {
     const emit = { vue3: emitVue3, vue2: emitVue2, svelte: emitSvelte }[target];
     const result = await compareRendered(
       { framework: "react", source: emitReact(IR) },
@@ -162,6 +162,16 @@ describe("real SSR comparison with genuine sample rows", () => {
       defaultExecutionCases(IR),
     );
     expect(result).toEqual({ status: "PASSED", diagnostics: [] });
+  }, 60000);
+
+  it("does not claim local Vue 2 runtime evidence", async () => {
+    const result = await compareRendered(
+      { framework: "react", source: emitReact(IR) },
+      { framework: "vue2", source: emitVue2(IR) },
+      defaultExecutionCases(IR),
+    );
+    expect(result.status).toBe("FAILED");
+    expect(result.diagnostics[0]).toMatch(/vue2 render threw: EXECUTION_NOT_AVAILABLE/);
   }, 60000);
 });
 
