@@ -11,7 +11,7 @@ from typing import Any
 from .adapters import EXTERNAL_ADAPTERS
 from .attestation import verify_signed_record
 from .canonical import digest_json, sha256_file
-from .planner import validate_plan
+from .planner import validate_plan_scope
 from .runner import case_seeds, expected_case_runs
 from .validation import load_cases, validate_results
 
@@ -60,7 +60,7 @@ def validate_release_result_set(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Validate every expected case/seed result and signed outcome exactly once."""
 
-    errors = list(initial_errors or []) + validate_plan(dict(plan))
+    errors = list(initial_errors or []) + validate_plan_scope(package_root, dict(plan))
     if plan.get("profile") not in {"release", "golden"}:
         errors.append("result aggregation requires a release or golden plan")
     if plan.get("candidate_digest") != candidate_digest:

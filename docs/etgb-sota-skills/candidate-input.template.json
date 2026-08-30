@@ -1,0 +1,12 @@
+{
+  "candidate_id": null,
+  "source_commit": null,
+  "model": null,
+  "model_revision": null,
+  "prompt_digest": null,
+  "skill_manifest_digest": null,
+  "rule_bundle_digest": null,
+  "toolchain_image_digest": null,
+  "oracle_version": null,
+  "normalization_version": null
+}

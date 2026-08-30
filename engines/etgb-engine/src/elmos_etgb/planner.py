@@ -9,6 +9,7 @@ import subprocess
 from pathlib import Path
 from typing import Any, Iterable
 
+from .adapters import EXTERNAL_ADAPTERS
 from .canonical import digest_json
 from .risk import select_risk_plan
 from .validation import load_cases
@@ -102,6 +103,43 @@ def build_plan(root: Path, changed_from: str | None = None, *, history_path: Pat
     return plan
 
 
+def build_external_canary_plan(
+    root: Path,
+    *,
+    candidate_digest: str,
+    shard_count: int = 1,
+) -> dict[str, Any]:
+    """Select one stable release case for every package-required adapter."""
+
+    if not re.fullmatch(r"sha256:[0-9a-f]{64}", candidate_digest):
+        raise ValueError("external canary plans require a frozen candidate digest")
+    by_adapter: dict[str, list[str]] = {}
+    for case in load_cases(root):
+        adapter = str(case.get("execution", {}).get("adapter", ""))
+        if adapter in EXTERNAL_ADAPTERS and "release" in case.get("profiles", []):
+            by_adapter.setdefault(adapter, []).append(str(case["id"]))
+    if not by_adapter:
+        raise ValueError("immutable package does not declare external release adapters")
+    case_ids = sorted(min(values) for values in by_adapter.values())
+    plan: dict[str, Any] = {
+        "schema_version": "1.1",
+        "selection_policy": "one-stable-release-case-per-external-adapter-v1",
+        "profile": "release-canary",
+        "candidate_digest": candidate_digest,
+        "required_adapters": sorted(by_adapter),
+        "case_ids": case_ids,
+    }
+    plan["scope_digest"] = "sha256:" + digest_json(plan)
+    plan["shards"] = stable_shards(
+        case_ids,
+        shard_count,
+        scope_digest=plan["scope_digest"],
+        candidate_digest=candidate_digest,
+    )
+    plan["plan_digest"] = "sha256:" + digest_json(plan)
+    return plan
+
+
 def validate_plan(plan: Any) -> list[str]:
     """Validate full plan integrity, shard coverage, and candidate binding."""
 
@@ -115,8 +153,8 @@ def validate_plan(plan: Any) -> list[str]:
         case_ids = []
     if len(case_ids) != len(set(case_ids)):
         errors.append("plan case_ids contain duplicates")
-    if plan.get("profile") in {"release", "golden"} and (not isinstance(plan.get("candidate_digest"), str) or re.fullmatch(r"sha256:[0-9a-f]{64}", plan["candidate_digest"]) is None):
-        errors.append("release/golden plan candidate_digest is missing or invalid")
+    if plan.get("profile") in {"release", "golden", "release-canary"} and (not isinstance(plan.get("candidate_digest"), str) or re.fullmatch(r"sha256:[0-9a-f]{64}", plan["candidate_digest"]) is None):
+        errors.append("release/golden/canary plan candidate_digest is missing or invalid")
     expected_scope = {key: value for key, value in plan.items() if key not in {"scope_digest", "shards", "plan_digest"}}
     expected_scope_digest = "sha256:" + digest_json(expected_scope)
     if plan.get("scope_digest") != expected_scope_digest:
@@ -160,6 +198,36 @@ def validate_plan(plan: Any) -> list[str]:
         errors.append("shard_count declarations are inconsistent")
     if sorted(observed) != sorted(case_ids):
         errors.append("shards do not form an exact, duplicate-free case partition")
+    return errors
+
+
+def validate_plan_scope(root: Path, plan: Any) -> list[str]:
+    """Validate plan integrity plus its exact immutable package scope."""
+
+    errors = validate_plan(plan)
+    if errors or not isinstance(plan, dict):
+        return errors
+    profile = plan.get("profile")
+    case_ids = list(plan.get("case_ids", []))
+    cases = list(load_cases(root))
+    known = {str(case["id"]): case for case in cases}
+    absent = sorted(set(case_ids) - set(known))
+    if absent:
+        errors.append(f"plan contains {len(absent)} cases absent from the immutable package")
+    if profile in {"release", "golden"}:
+        expected = sorted(str(case["id"]) for case in cases if profile in case.get("profiles", []))
+        if case_ids != expected:
+            errors.append(
+                f"{profile} plan must contain the exact immutable scope of {len(expected)} cases"
+            )
+    elif profile == "release-canary":
+        expected = build_external_canary_plan(
+            root,
+            candidate_digest=str(plan.get("candidate_digest", "")),
+            shard_count=next(iter({shard.get("shard_count") for shard in plan.get("shards", [])}), 1),
+        )
+        if case_ids != expected["case_ids"] or plan.get("required_adapters") != expected["required_adapters"]:
+            errors.append("release-canary plan does not contain exactly one stable case per external adapter")
     return errors
 
 

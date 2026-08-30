@@ -20,6 +20,12 @@ from .state import StateConflict, StateStore
 TERMINAL_STATUSES = frozenset({"passed", "failed", "skipped", "unavailable", "error"})
 
 
+def _runtime_identity(root: Path) -> tuple[str, str]:
+    if "full-product-assurance" in root.name or root.name.endswith("v2.0.0"):
+        return "elmos-etgb-full-product-v2-0", "elmos-etgb-runtime-2.0.0"
+    return "elmos-etgb-sota-v1-1", "elmos-etgb-runtime-1.1.0"
+
+
 def utc_now() -> str:
     return dt.datetime.now(dt.timezone.utc).isoformat()
 
@@ -59,6 +65,7 @@ def execute_case(
     run_id: str | None = None,
     seed: int = 0,
     attempt: int = 1,
+    profile: str | None = None,
     external_router: ExternalHarnessRouter | None = None,
     external_context: ExternalExecutionContext | None = None,
 ) -> dict[str, Any]:
@@ -144,7 +151,7 @@ def execute_case(
         "seed": seed,
         "attempt": attempt,
         "probabilistic": bool(case.get("execution", {}).get("random_seeds")),
-        "required_seed_count": len(case.get("execution", {}).get("random_seeds", [])) or 1,
+        "required_seed_count": len(case_seeds(case, profile)),
         "status": status,
         "started_at": started_at,
         "finished_at": finished_at,
@@ -163,7 +170,7 @@ def execute_case(
     }
     evidence.update({
         "toolchain_digest": digest_json(evidence["environment"]),
-        "skill_version": "elmos-etgb-runtime-1.1.0",
+        "skill_version": _runtime_identity(root)[1],
         "commands": [case.get("execution", {}).get("command"), case.get("execution", {}).get("source_command"), case.get("execution", {}).get("target_command")],
         "oracle_results_digest": digest_json(oracles),
         "wall_clock_ms": result["cost"]["wall_clock_ms"],
@@ -178,6 +185,8 @@ def case_seeds(case: dict[str, Any], profile: str | None) -> list[int]:
     """Return the exact execution seeds required for one case/profile."""
 
     declared = case.get("execution", {}).get("random_seeds")
+    if declared and profile == "release-canary":
+        return [int(declared[0])]
     if not declared or profile not in {"nightly", "weekly", "release", "golden", "exhaustive"}:
         return [0]
     return [int(seed) for seed in declared]
@@ -215,7 +224,7 @@ def run_cases(
     try:
         if durable:
             plan_digest = digest_json([case["id"] for case in cases])
-            row = durable.create_run(run_id=selected_run_id, idempotency_key=digest_json({"plan": plan_digest, "profile": profile or "adhoc", "candidate": candidate or {}}), suite_id="elmos-etgb-sota-v1-1", profile=profile or "adhoc", owner=owner, plan_digest=plan_digest, candidate=candidate or {}, budget={})
+            row = durable.create_run(run_id=selected_run_id, idempotency_key=digest_json({"plan": plan_digest, "profile": profile or "adhoc", "candidate": candidate or {}}), suite_id=_runtime_identity(root)[0], profile=profile or "adhoc", owner=owner, plan_digest=plan_digest, candidate=candidate or {}, budget={})
             selected_run_id = row["run_id"]
             store = EvidenceStore((artifact_root or root / ".etgb" / "evidence") / selected_run_id)
             if row["status"] in {"COMPLETED", "FAILED", "CANCELLED"}:
@@ -246,6 +255,7 @@ def run_cases(
                     store=store,
                     run_id=selected_run_id,
                     seed=seed,
+                    profile=profile,
                     external_router=external_router,
                     external_context=external_context,
                 )
