@@ -18,6 +18,13 @@ from .contracts import (
     TrustedIdentity,
 )
 from .gate import evaluate_release_gate, validate_result
+from .gate_evidence import (
+    Ed25519GateEvidenceVerifier,
+    ExternalGateEvidenceReceipt,
+    GateEvidenceError,
+    GateEvidenceVerifier,
+    VerifiedGateEvidence,
+)
 from .executor import LocalBoundedExecutor, LocalEvaluationError
 from .execution import (
     ExecutionPermit,
@@ -108,6 +115,11 @@ __all__ = [
     "execution_binding_digest",
     "load_toolchain_registry",
     "validate_result",
+    "Ed25519GateEvidenceVerifier",
+    "ExternalGateEvidenceReceipt",
+    "GateEvidenceError",
+    "GateEvidenceVerifier",
+    "VerifiedGateEvidence",
     "FormalProofBridgeError",
     "Lean4Generator",
     "DafnyGenerator",
@@ -129,4 +141,3 @@ __all__ = [
     "SlsaProvenanceStatement",
     "sign_artifact_sbom",
 ]
-

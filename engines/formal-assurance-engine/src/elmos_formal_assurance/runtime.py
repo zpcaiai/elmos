@@ -17,6 +17,7 @@ from .bundles import EvidenceBundleService, EvidenceBundleSigner
 from .executor import LocalBoundedExecutor
 from .execution import ExecutionPermitSigner, ResourceLimits, ToolchainRegistration
 from .events import EventPublisher, OutboxDispatcher
+from .gate_evidence import GateEvidenceVerifier
 from .governance import GovernanceAuthorizationError, GovernanceService
 from .handlers import HandlerContext
 from .observability import FormalObservabilityService, TelemetryExporter
@@ -48,6 +49,7 @@ class RuntimeConfig:
     toolchains: tuple[ToolchainRegistration, ...] = ()
     telemetry_exporter: TelemetryExporter | None = None
     bundle_signer: EvidenceBundleSigner | None = None
+    gate_evidence_verifier: GateEvidenceVerifier | None = None
     event_publisher: EventPublisher | None = None
     outbox_max_attempts: int = 10
 
@@ -93,6 +95,10 @@ class RuntimeConfig:
             getattr(self.event_publisher, "publish", None)
         ):
             raise ValueError("event_publisher must implement publish")
+        if self.gate_evidence_verifier is not None and not callable(
+            getattr(self.gate_evidence_verifier, "verify", None)
+        ):
+            raise ValueError("gate_evidence_verifier must implement verify")
         if (
             not isinstance(self.outbox_max_attempts, int)
             or isinstance(self.outbox_max_attempts, bool)
@@ -206,6 +212,7 @@ class FormalAssuranceRuntime:
             store=self.store,
             artifact_store=self.artifact_store,
             production=self.production_executor,
+            gate_evidence_verifier=self.config.gate_evidence_verifier,
         )
         started_ns = time.monotonic_ns()
         outcome = self.registry.handler(skill_id)(context)
