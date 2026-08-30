@@ -1,43 +1,72 @@
 {
-  "archive_bytes": 161254,
-  "archive_sha256": "7a73cf924f4ebab3eddba327ba4feeb64b8575e39f2baf03fc53315cbc868380",
-  "compliance": {
+  "compiled_catalog": {
+    "origin": "REPOSITORY_OWNED_COMPILED",
+    "path": "docs/commercial-capability-expansion/COMPILED_SKILL_CATALOG.json",
+    "sha256": "25b8912a9dcf425982af962ac08cb3203660c7ad5e66887f8a9054a9cfa83178",
+    "tree_sha256": "ce9c48435f4a6ade24e489155d4880aee42423e88290b0ea077ecdc1ef54183b"
+  },
+  "dependency_model": {
+    "repository_graph_acyclic": true,
+    "repository_graph_edge_count": 89,
+    "repository_graph_node_count": 85,
+    "repository_graph_origin": "REPOSITORY_OWNED_NORMALIZATION",
+    "source_dependency_gap": true,
+    "source_graph_edge_count": 0,
+    "source_graph_node_count": 85,
+    "source_owned_dag_claimed": false
+  },
+  "evidence": {
     "certification": "NOT_CERTIFIED",
-    "dual_root_installed": true,
-    "external_runtime_evidence": "NOT_RUN",
-    "frontmatters_validated": true,
-    "immutable_extraction": true,
-    "schemas_validated": true
+    "external_runtime": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "local_runtime": "NOT_RUN",
+    "provider_database_stream_lakehouse": "NOT_RUN"
   },
-  "dag": {
-    "acyclic": true,
-    "kernel_pipeline": [
-      "K1-skill-runtime",
-      "K2-repository-intelligence",
-      "K3-transformation",
-      "K4-build-execution",
-      "K5-verification",
-      "K6-security-governance",
-      "K7-database-data",
-      "K8-observability-evolution"
-    ],
-    "node_count": 85,
-    "status": "VALID"
+  "immutable_extraction": {
+    "file_count": 105,
+    "path": "skills/elmos-commercial-capability-expansion-skills-v2.0.0",
+    "status": "BYTE_IDENTICAL_IMMUTABLE",
+    "tree_digest_schema": "elmos-tree-sha256-v1-path-and-bytes",
+    "tree_sha256": "b64dc5fb6592743b198c88d3618d56c77dfbff19f7643789a08304d683dc97d1"
   },
-  "kernel_counts": {
-    "K1-skill-runtime": 10,
-    "K2-repository-intelligence": 10,
-    "K3-transformation": 10,
-    "K4-build-execution": 9,
-    "K5-verification": 14,
-    "K6-security-governance": 10,
-    "K7-database-data": 10,
-    "K8-observability-evolution": 12
+  "installed_wrappers": {
+    "dual_roots_byte_identical": true,
+    "files_per_wrapper": 3,
+    "master_count": 1,
+    "runtime_root": "agent-skills/runtime",
+    "skill_count": 85,
+    "source_instructions_installed": false,
+    "tree_sha256": "062c3abac46b5364dd08f962524d60ef2ef1ef430199d4a66748bf534c761ae1",
+    "workspace_root": ".agents/skills"
   },
   "package_id": "elmos-commercial-capability-expansion-skills-v2.0.0",
-  "package_name": "elmos-commercial-capability-expansion-skills",
-  "package_version": "2.0.0",
-  "qualified_at": "2026-08-29T07:12:49Z",
-  "schema_version": 1,
-  "skill_count": 85
+  "qualification_level": "LOCAL_STRUCTURAL_SELF_ATTESTED",
+  "qualified_at": "2026-08-30T12:36:22Z",
+  "runtime_binding": {
+    "authentication_required": true,
+    "entrypoint": "CommercialCapabilityExpansionService.execute",
+    "input_contract_catalog_entrypoint": "list_capability_kernels",
+    "input_contract_policy": "EXACT_REQUIRED_OPTIONAL_FAIL_CLOSED",
+    "module": "elmos_commercial_expansion",
+    "preparation_entrypoint": "CommercialCapabilityRuntime.prepare_invocation",
+    "preparation_module": "elmos_commercial_expansion.runtime",
+    "service": "CommercialCapabilityExpansionService"
+  },
+  "schema_version": "2.0.0",
+  "security": {
+    "all_members_prevalidated_before_write": true,
+    "archive_identity_pinned": true,
+    "crc_validated": true,
+    "sha256sums_complete": true,
+    "source_executables_treated_as_inert_data": true
+  },
+  "source_archive": {
+    "bytes": 161254,
+    "member_count": 105,
+    "path": "skills/subskills/elmos-commercial-capability-expansion-skills-v2.0.0.zip",
+    "rego_executed": false,
+    "scripts_executed": false,
+    "sha256": "7a73cf924f4ebab3eddba327ba4feeb64b8575e39f2baf03fc53315cbc868380",
+    "uncompressed_bytes": 294029
+  }
 }
