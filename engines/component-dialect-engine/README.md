@@ -41,7 +41,7 @@ component is `PARTIAL`, never rounded up to `COMPLETE` — the same rule
 | React | ✅ TypeScript Compiler API | ✅ | ✅ TypeScript | ✅ `react-dom/server` |
 | TypeScript (web) | ✅ TypeScript Compiler API | ✅ | ✅ TypeScript | ✅ `react-dom/server` |
 | Vue 3 | ✅ `@vue/compiler-sfc` | ✅ | ✅ `@vue/compiler-sfc` | ✅ `@vue/server-renderer` |
-| Vue 2 | ✅ `vue-template-compiler` | ✅ | ✅ `vue-template-compiler` | ✅ `vue-server-renderer` |
+| Vue 2-compatible SFC | ✅ `@vue/compiler-dom` + `@vue/compiler-sfc` | ✅ | ✅ `@vue/compiler-sfc` | ❌ external Vue 2 runtime required |
 | Svelte | ✅ `svelte/compiler` | ✅ | ✅ `svelte/compiler` | ✅ `svelte/server` |
 | Angular | ✅ `@angular/compiler` + TS API | ✅ | ✅ `@angular/compiler` | ❌ needs a platform-server bootstrap |
 | WeChat Mini Program | ✅ `@wxml/parser` + TS API | ✅ | ✅ `@wxml/parser` + TypeScript | ❌ needs WeChat DevTools |
@@ -51,9 +51,10 @@ component is `PARTIAL`, never rounded up to `COMPLETE` — the same rule
 
 **All 54 direction pairs** (6 real source frameworks x 10 targets, minus
 self-pairs) are exercised by tests that run the target's own real compiler.
-Where both sides have a real server renderer, the components are actually
-rendered and their DOM compared — 20 of the 54 pairs get that stronger
-behavioral proof.
+Where both sides have a real server renderer installed here, the components
+are actually rendered and their DOM compared — 12 of the 54 pairs get that
+stronger behavioral proof. Vue 2-compatible output is intentionally static
+only; it is not presented as local Vue 2 runtime evidence.
 
 Round trips through each real parser are asserted **equal to the canonical
 model**, not merely similar: React → Vue 3 → canonical, React → Svelte →
@@ -202,10 +203,10 @@ locked down by a test:
    around text; React strips it, so pretty-printing alone changes
    `<strong>small</strong>` into `<strong> small </strong>`. Caught by the
    SSR comparison, fixed by inlining text-only children.
-5. **Vue 2 hides `class` from `attrsList`.** `vue-template-compiler`
-   hoists `class`/`:class` into dedicated `staticClass`/`classBinding`
-   fields, so a parser reading only `attrsList` drops every class
-   attribute silently. Caught by the round-trip equality assertion.
+5. **Vue 2-compatible templates need a maintained parser boundary.** The
+   adapter normalizes `@vue/compiler-dom`'s AST into the Vue 2 compatibility
+   shape, preserving class bindings while failing closed on unsupported
+   directives and list element shapes.
 
 ## Known, documented information loss
 
@@ -244,8 +245,8 @@ npm test
 
 `npm ci` rather than `npm install`: `package-lock.json` is committed, and
 the exact toolchain versions are part of the contract. This engine's
-behavior depends on specific compiler internals — `vue-template-compiler`
-hoisting `class` out of `attrsList`, Svelte's TypeScript AST naming a
+behavior depends on specific compiler internals — the Vue compatibility
+normalizer preserving class bindings, Svelte's TypeScript AST naming a
 parameter list `parameters`, Angular's `*ngIf` else branch living in a
 sibling `<ng-template>` — so a resolver that quietly picked a different
 minor version could change results without changing a line of source.
@@ -449,15 +450,15 @@ engine to actually convert the components it identified.
 
 ## Status
 
-`certified-component-v1` is `EXPERIMENTAL`. 263 tests pass locally against
-the real toolchains — TypeScript, `@vue/compiler-sfc`,
-`vue-template-compiler`, `@angular/compiler`, `svelte/compiler`,
+`certified-component-v1` is `EXPERIMENTAL`. The local suite runs against
+maintained toolchains — TypeScript, `@vue/compiler-dom`,
+`@vue/compiler-sfc`, `@angular/compiler`, `svelte/compiler`, and
 `@wxml/parser` — including all 54 direction pairs, plus real SSR rendering
-with `react-dom/server`, `@vue/server-renderer`, `vue-server-renderer`, and
-`svelte/server`. The generated Vue 3 project has been really built with
-`vite build`. Independent and external certification remain `NOT_RUN`,
-consistent with how this repository reports certification for its other
-engines.
+with `react-dom/server`, `@vue/server-renderer`, and `svelte/server`.
+Vue 2 compatibility is statically validated and requires an authorized
+external runtime for behavioral evidence. Independent and external
+certification remain `NOT_RUN`, consistent with how this repository reports
+certification for its other engines.
 
 ## Environment-dependent breakage this engine guards against
 
@@ -471,14 +472,11 @@ and fail another, which produces bugs that only appear in some callers:
   therefore driven in short-lived Node subprocesses under native ESM. It
   is the genuine compiler/renderer, not a substitute, and it behaves the
   same regardless of how the caller was started.
-- **`vue-template-compiler` and `vue-server-renderer` refuse to load** from
-  their package entry point when `vue@3` is installed alongside them (a
-  hard version-mismatch guard). Their published `build.js` /
-  `build.prod.js` artifacts are the same compilers without that guard and
-  are used directly.
-- **Both Vue majors are installed at once.** `vue` is Vue 3; the Vue 2
-  runtime is aliased as `"vue2": "npm:vue@2.7.16"` because one npm name
-  cannot hold two versions. It is a real alias, not a typo.
+- **Vue 2 compatibility is intentionally static here.** The retired Vue 2
+  compiler, server renderer, and runtime are not installed. `@vue/compiler-sfc`
+  validates the SFC/template boundary and `@vue/compiler-dom` supplies the
+  normalized template AST; a real Vue 2 runtime test must run in an
+  authorized external environment and is reported as unavailable locally.
 
 Because every one of these is reached through a runtime `require(...)`
 rather than a static import, TypeScript cannot verify them and a package

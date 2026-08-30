@@ -1,11 +1,9 @@
 /**
- * Parses one Vue 2 SFC (Options API) into the certified-component-v1
- * canonical model using the real `vue-template-compiler` 2.7.16.
- *
- * `vue-template-compiler`'s `index.js` refuses to load when `vue@3` is
- * also installed (a hard version-mismatch guard). The compiler itself is
- * in `build.js` without that guard, so it is required directly -- this is
- * the officially published build artifact, not a private internal.
+ * Parses one Vue 2-compatible SFC (Options API) into the
+ * certified-component-v1 canonical model using the maintained Vue 3
+ * compiler packages. Vue 2 syntax is retained as a source/target format,
+ * but this package deliberately does not install or execute the unmaintained
+ * Vue 2 runtime toolchain.
  *
  * Recognized shape:
  *
@@ -19,6 +17,8 @@
  *   </script>
  */
 import * as ts from "typescript";
+import { parse as parseVueTemplate } from "@vue/compiler-dom";
+import { compileTemplate, parse as parseSfc } from "@vue/compiler-sfc";
 import {
   at, AttrBinding, AttrName, ATTR_NAMES, CallbackPropDef, ComponentDef, DataPropDef, EventName,
   Expr, fail, HtmlTag, HTML_TAGS, Node as CNode, PrimitiveType, PropDef, requireDefined,
@@ -43,15 +43,15 @@ interface V2Node {
   tag?: string;
   text?: string;
   expression?: string;
-  /** vue-template-compiler lifts v-for out of attrsList into these. */
+  /** The compatibility normalizer records v-for so the certified subset can
+   * fail closed rather than guessing a list element shape. */
   for?: string;
   alias?: string;
   iterator1?: string;
   key?: string;
   attrsList?: { name: string; value: string }[];
-  /** `vue-template-compiler` hoists `class`/`:class` out of `attrsList`
-   * into these dedicated fields, so reading only `attrsList` silently
-   * loses every class attribute. */
+  /** The compatibility normalizer hoists `class`/`:class` into these
+   * dedicated fields, matching the canonical Vue 2 adapter contract. */
   staticClass?: string;
   classBinding?: string;
   staticStyle?: string;
@@ -68,6 +68,126 @@ interface ScriptInfo {
   props: PropDef[];
   state: StateDef[];
   emittedEvents: Set<string>;
+}
+
+/** The compiler-dom AST is deliberately normalized into the small shape the
+ * Vue 2 adapter consumes. Keeping this boundary explicit prevents compiler
+ * implementation details from leaking into the canonical parser. */
+interface VueTemplateExpression {
+  readonly content: string;
+}
+
+interface VueTemplateArgument extends VueTemplateExpression {
+  readonly isStatic?: boolean;
+}
+
+interface VueTemplateProp {
+  readonly type: number;
+  readonly name?: string;
+  readonly rawName?: string;
+  readonly value?: VueTemplateExpression | null;
+  readonly arg?: VueTemplateArgument | null;
+  readonly exp?: VueTemplateExpression | null;
+  readonly modifiers?: readonly unknown[];
+}
+
+interface VueTemplateNode {
+  readonly type: number;
+  readonly tag?: string;
+  readonly content?: string | VueTemplateExpression;
+  readonly props?: readonly VueTemplateProp[];
+  readonly children?: readonly VueTemplateNode[];
+}
+
+interface VueTemplateRoot {
+  readonly children?: readonly VueTemplateNode[];
+}
+
+const VUE_NODE_ELEMENT = 1;
+const VUE_NODE_TEXT = 2;
+const VUE_NODE_COMMENT = 3;
+const VUE_NODE_INTERPOLATION = 5;
+const VUE_NODE_ATTRIBUTE = 6;
+const VUE_NODE_DIRECTIVE = 7;
+
+function expressionContent(expression: VueTemplateExpression | null | undefined): string {
+  return expression?.content ?? "";
+}
+
+function rawContent(content: string | VueTemplateExpression | undefined): string {
+  return typeof content === "string" ? content : (content?.content ?? "");
+}
+
+function appendEvent(node: V2Node, name: string, value: string): void {
+  const existing = node.events?.[name];
+  const next = existing === undefined
+    ? { value }
+    : Array.isArray(existing)
+      ? [...existing, { value }]
+      : [existing, { value }];
+  node.events = { ...(node.events ?? {}), [name]: next };
+}
+
+function convertVueTemplateNode(node: VueTemplateNode): V2Node | null {
+  if (node.type === VUE_NODE_COMMENT) return null;
+  if (node.type === VUE_NODE_TEXT) {
+    return { type: NODE_TEXT, text: rawContent(node.content) };
+  }
+  if (node.type === VUE_NODE_INTERPOLATION) {
+    return { type: NODE_INTERPOLATION, text: `{{${rawContent(node.content)}}}` };
+  }
+  require_(node.type === VUE_NODE_ELEMENT, "CERTIFIED_COMPONENT_UNSUPPORTED_TEMPLATE_NODE", `template node type ${node.type} is outside certified-component-v1`);
+
+  const tag = requireDefined(node.tag, "CERTIFIED_COMPONENT_UNSUPPORTED_TAG", "template element has no tag");
+  const converted: V2Node = { type: NODE_ELEMENT, tag, attrsList: [], children: [] };
+  for (const prop of node.props ?? []) {
+    const rawName = prop.rawName ?? prop.name ?? "";
+    const value = expressionContent(prop.value);
+    if (prop.type === VUE_NODE_ATTRIBUTE) {
+      if (rawName === "class") converted.staticClass = JSON.stringify(value);
+      else if (rawName === "style") converted.staticStyle = JSON.stringify(value);
+      else converted.attrsList?.push({ name: rawName, value });
+      continue;
+    }
+
+    require_(prop.type === VUE_NODE_DIRECTIVE, "CERTIFIED_COMPONENT_UNSUPPORTED_TEMPLATE_NODE", `template prop ${JSON.stringify(rawName)} is outside compiler-dom's certified AST`);
+    require_((prop.modifiers ?? []).length === 0, "CERTIFIED_COMPONENT_UNSUPPORTED_DIRECTIVE", `${tag}: directive modifiers are outside certified-component-v1`);
+    const directive = prop.name ?? "";
+    const argument = prop.arg?.isStatic === false ? undefined : prop.arg?.content;
+    const expression = expressionContent(prop.exp);
+    if (directive === "bind" && argument === "class") converted.classBinding = expression;
+    else if (directive === "bind" && argument === "style") converted.styleBinding = expression;
+    else if (directive === "bind") converted.attrsList?.push({ name: rawName, value: expression });
+    else if (directive === "on" && argument !== undefined) appendEvent(converted, argument, expression);
+    else if (directive === "if") converted.if = expression;
+    else if (directive === "else") converted.else = true;
+    else if (directive === "else-if") converted.elseif = expression;
+    else if (directive === "for") converted.for = expression;
+    else converted.attrsList?.push({ name: rawName, value: expression });
+  }
+  converted.children = convertVueTemplateChildren(node.children ?? []);
+  return converted;
+}
+
+function convertVueTemplateChildren(children: readonly VueTemplateNode[]): V2Node[] {
+  const converted: V2Node[] = [];
+  for (const child of children) {
+    const node = convertVueTemplateNode(child);
+    if (node === null) continue;
+    if (node.if !== undefined) {
+      node.ifConditions = [{ exp: node.if, block: node }];
+      converted.push(node);
+      continue;
+    }
+    if (node.else === true || node.elseif !== undefined) {
+      const previous = converted[converted.length - 1];
+      require_(previous?.ifConditions !== undefined, "CERTIFIED_COMPONENT_PARSE_FAILED", "v-else/v-else-if must follow a v-if in the same parent");
+      previous.ifConditions?.push({ exp: node.elseif, block: node });
+      continue;
+    }
+    converted.push(node);
+  }
+  return converted;
 }
 
 /**
@@ -274,15 +394,20 @@ function parseNode(node: V2Node, script: ScriptInfo, stateNames: ReadonlySet<str
 }
 
 export function parseVue2Component(source: string, fileName = "Component.vue"): ComponentDef {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const compiler = require("vue-template-compiler/build");
-  const descriptor = compiler.parseComponent(source);
+  const parsed = parseSfc(source, { filename: fileName });
+  require_(parsed.errors.length === 0, "CERTIFIED_COMPONENT_PARSE_FAILED", `@vue/compiler-sfc rejected the SFC: ${parsed.errors.map((error) => String(error)).join("; ")}`);
+  const descriptor = parsed.descriptor;
   const template = requireDefined(descriptor.template, "CERTIFIED_COMPONENT_UNSUPPORTED_SFC", "SFC must have a <template> block");
   const script = requireDefined(descriptor.script, "CERTIFIED_COMPONENT_UNSUPPORTED_SFC", "SFC must have a <script> block");
 
-  const compiled = compiler.compile(template.content);
-  require_((compiled.errors ?? []).length === 0, "CERTIFIED_COMPONENT_PARSE_FAILED", `vue-template-compiler rejected the template: ${(compiled.errors ?? []).join("; ")}`);
-  const ast = requireDefined(compiled.ast, "CERTIFIED_COMPONENT_PARSE_FAILED", "template produced no AST") as V2Node;
+  const compiled = compileTemplate({ id: `vue2-compat-${fileName}`, filename: fileName, source: template.content });
+  require_(compiled.errors.length === 0, "CERTIFIED_COMPONENT_PARSE_FAILED", `@vue/compiler-sfc rejected the Vue 2-compatible template: ${compiled.errors.map((error) => String(error)).join("; ")}`);
+  const parseErrors: unknown[] = [];
+  const templateAst = parseVueTemplate(template.content, { onError: (error) => parseErrors.push(error) }) as unknown as VueTemplateRoot;
+  require_(parseErrors.length === 0, "CERTIFIED_COMPONENT_PARSE_FAILED", `@vue/compiler-dom rejected the template: ${parseErrors.map((error) => String(error)).join("; ")}`);
+  const roots = convertVueTemplateChildren(templateAst.children ?? []);
+  require_(roots.length === 1, "CERTIFIED_COMPONENT_UNSUPPORTED_SFC", "Vue 2-compatible SFC must have exactly one non-empty root element");
+  const ast = requireDefined(roots[0], "CERTIFIED_COMPONENT_PARSE_FAILED", "template produced no root AST");
 
   const emittedEvents = new Set<string>();
   collectEmittedEvents(ast, emittedEvents);

@@ -189,7 +189,7 @@ describe("controlled mini-app JSON worker", () => {
       packageJson.dependencies["@vue/compiler-sfc"],
     );
     expect(MINI_APP_SOURCE_PARSER_PROFILES.vue2.parserVersion).toBe(
-      packageJson.dependencies["vue-template-compiler"],
+      packageJson.dependencies["@vue/compiler-sfc"],
     );
     expect(MINI_APP_SOURCE_PARSER_PROFILES.miniprogram.parserVersion).toBe(
       packageJson.dependencies["@wxml/parser"],

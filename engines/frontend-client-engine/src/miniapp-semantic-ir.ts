@@ -2,7 +2,6 @@ import { createHash } from "node:crypto";
 
 import { compileTemplate, parse as parseVueSfc } from "@vue/compiler-sfc";
 import ts from "typescript";
-import * as vue2Compiler from "vue-template-compiler";
 
 import type {
   MiniappConversionRequest,
@@ -2175,40 +2174,57 @@ function syntheticNode(path: string, source: string, line: number): ts.Node {
 }
 
 function analyzeVue2(path: string, source: string, state: MutableAnalysis): void {
-  const descriptor = vue2Compiler.parseComponent(source, { pad: "space" });
-  state.parserEvidence.add("vue-template-compiler@2.7.16");
+  const result = parseVueSfc(source, { filename: path });
+  state.parserEvidence.add("@vue/compiler-sfc@3.5.39-vue2-compat");
+  if (result.errors.length > 0) {
+    state.failedFiles.add(path);
+    state.findings.push(finding(
+      "MINIAPP_VUE2_SFC_PARSE_FAILED",
+      `Vue 2-compatible SFC parsing reported ${result.errors.length} error(s).`,
+      "D",
+      [lineRef(path, source, 1)],
+      "error",
+      true,
+    ));
+    return;
+  }
+  const descriptor = result.descriptor;
   if (descriptor.script) {
     analyzeTypeScript(path, descriptor.script.content, state, {
       source,
-      offset: descriptor.script.start ?? 0,
+      offset: descriptor.script.loc.start.offset,
       scriptKind: descriptor.script.lang === "js" ? ts.ScriptKind.JS : ts.ScriptKind.TS,
       recordParsedFile: false,
     });
   }
   if (descriptor.template) {
-    const compiled = vue2Compiler.compile(descriptor.template.content, { outputSourceRange: true });
+    const compiled = compileTemplate({
+      id: stableId("vue2-template", path, "template"),
+      filename: path,
+      source: descriptor.template.content,
+    });
     if (compiled.errors.length > 0) {
       state.failedFiles.add(path);
       state.findings.push(finding(
         "MINIAPP_VUE2_TEMPLATE_COMPILE_FAILED",
-        `Vue 2 template compiler reported ${compiled.errors.length} error(s).`,
+        `Vue 2-compatible template compiler reported ${compiled.errors.length} error(s).`,
         "D",
         [lineRef(path, source, 1)],
         "error",
         true,
       ));
     } else {
-      const lineOffset = source.slice(0, descriptor.template.start ?? 0).split("\n").length - 1;
+      const lineOffset = Math.max(0, descriptor.template.loc.start.line - 1);
       analyzeMarkup(path, descriptor.template.content, "template-ast", state, {
         source,
         lineOffset,
         recordParsedFile: false,
-        parserEvidence: "vue-template-compiler@2.7.16",
+        parserEvidence: "@vue/compiler-sfc-template@3.5.39-vue2-compat",
       });
     }
   }
   for (const block of descriptor.styles) {
-    const lineOffset = source.slice(0, block.start ?? 0).split("\n").length - 1;
+    const lineOffset = Math.max(0, block.loc.start.line - 1);
     const scopedStyle = block as typeof block & { readonly scoped?: boolean; readonly module?: string | boolean };
     if (scopedStyle.scoped || scopedStyle.module) {
       state.findings.push(finding(

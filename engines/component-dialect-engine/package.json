@@ -1,7 +1,7 @@
 {
   "name": "@elmos/component-dialect-engine",
   "version": "0.1.0",
-  "description": "Certified-subset UI component translation (certified-component-v1) across React, TypeScript, Vue 3, Vue 2, Angular, Svelte, React Native, WeChat Mini Program, HarmonyOS ArkUI and Flutter, built on each framework's real compiler frontend rather than string templates. Fails closed outside the certified subset.",
+  "description": "Certified-subset UI component translation (certified-component-v1) across React, TypeScript, Vue 3, Vue 2-compatible SFCs, Angular, Svelte, React Native, WeChat Mini Program, HarmonyOS ArkUI and Flutter, built on maintained compiler frontends rather than string templates. Fails closed outside the certified subset.",
   "private": true,
   "bin": {
     "elmos-component-dialect": "dist/cli.js"
@@ -15,11 +15,9 @@
   "dependencies": {
     "typescript": "5.9.2",
     "vue": "3.5.42",
+    "@vue/compiler-dom": "3.5.42",
     "@vue/compiler-sfc": "3.5.42",
     "@vue/server-renderer": "3.5.42",
-    "vue-template-compiler": "2.7.16",
-    "vue-server-renderer": "2.7.16",
-    "vue2": "npm:vue@2.7.16",
     "svelte": "5.56.10",
     "@angular/compiler": "22.1.4",
     "@wxml/parser": "0.4.0",
