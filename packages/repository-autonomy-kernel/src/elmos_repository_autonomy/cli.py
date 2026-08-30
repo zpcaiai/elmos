@@ -11,6 +11,8 @@ from pathlib import Path
 from .adapters import all_local_conformance
 from .catalog import PACKAGE_ID, PACKAGE_VERSION, SKILL_SPECS
 from .dispatcher import AutonomyRuntime
+from .errors import KernelError
+from .external_runtime import ExternalQualificationPreflight, load_qualification_manifest
 from .postgres import PostgresMigrationRunner, PostgresSessionFactory
 from .postgres_wave_store import PostgresWaveStore
 from .server import serve
@@ -60,6 +62,8 @@ def main(argv: list[str] | None = None) -> int:
     replay_parser.add_argument("--db", required=True)
     replay_parser.add_argument("run_id")
     replay_parser.add_argument("--tenant")
+    preflight_parser = sub.add_parser("external-preflight")
+    preflight_parser.add_argument("--manifest", required=True)
     args = parser.parse_args(argv)
     if args.command == "catalog":
         print(json.dumps({"package": PACKAGE_ID, "version": PACKAGE_VERSION, "skills": [{"name": item.name, "priority": item.priority, "pack": item.pack, "inputs": item.inputs, "outputs": item.outputs} for item in SKILL_SPECS.values()]}, ensure_ascii=False, indent=2))
@@ -142,6 +146,24 @@ def main(argv: list[str] | None = None) -> int:
         finally:
             with_store.close()
         return 0
+    if args.command == "external-preflight":
+        try:
+            manifest = load_qualification_manifest(args.manifest)
+            result = ExternalQualificationPreflight().evaluate(manifest)
+        except KernelError as exc:
+            result = {
+                "ready_for_authorized_execution": False,
+                "execution_performed": False,
+                "external_evidence": "NOT_RUN",
+                "certification": "NOT_CERTIFIED",
+                "p05": {
+                    "issued": False,
+                    "decision": "P05_DEPLOYMENT_COMPLETE_NOT_ISSUED",
+                },
+                "error": exc.info.to_dict(),
+            }
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["ready_for_authorized_execution"] else 1
     return 2
 
 

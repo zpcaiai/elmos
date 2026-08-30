@@ -85,7 +85,8 @@ def arena(task_set: Any, candidates: Any, environments: Any, budgets: Any, proto
             score = float(agent.get("quality", task.get("quality", 0)))
             runs.append({"run_id": str(uuid.uuid4()), "candidate_id": require_string(agent.get("id"), "agent_candidates[].id"), "task_id": str(task.get("id", digest(task))), "environment_hash": digest(environments), "budget_hash": digest(budgets), "score": score, "status": "PASS" if score >= float(protocol.get("pass_score", .5)) else "FAIL"})
     grouped: dict[str, list[float]] = defaultdict(list)
-    for run in runs: grouped[run["candidate_id"]].append(run["score"])
+    for run in runs:
+        grouped[run["candidate_id"]].append(run["score"])
     means = {key: statistics.fmean(value) for key, value in grouped.items()}
     ordered = sorted(means, key=lambda key: (-means[key], key))
     pairs = [{"winner": ordered[index], "loser": ordered[index + 1], "margin": means[ordered[index]] - means[ordered[index + 1]]} for index in range(len(ordered) - 1)]
