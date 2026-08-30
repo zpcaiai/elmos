@@ -15,6 +15,8 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 import elmos_sql_transpiler.production_qualification as qualification_module
 from elmos_sql_transpiler.cli import main
 from elmos_sql_transpiler.production_qualification import (
+    REQUIRED_EXECUTION_ARTIFACT_DIGESTS,
+    REQUIRED_EXECUTION_EVIDENCE_DIGESTS,
     REQUIRED_EXTERNAL_OPERATIONS,
     TRUST_DOMAIN,
     evaluate_production_qualification,
@@ -44,6 +46,11 @@ def _canonical(value: object) -> bytes:
 
 def _digest(value: object) -> str:
     return "sha256:" + hashlib.sha256(_canonical(value)).hexdigest()
+
+
+def _role_digest(target_id: str, role: str) -> str:
+    value = f"{target_id}\x00{role}".encode()
+    return "sha256:" + hashlib.sha256(value).hexdigest()
 
 
 def _public(private: Ed25519PrivateKey) -> str:
@@ -194,13 +201,14 @@ def _sign_all_receipts(
             "environmentId": target["disposableEnvironment"]["environmentId"],
             "exactTupleDigest": plan["exactTupleDigest"],
             "vendorToolDigests": plan["vendorToolDigests"],
-            "runnerDigest": _DIGEST,
-            "developmentCorpusDigest": _DIGEST,
-            "negativeCorpusDigest": _DIGEST,
-            "holdoutCorpusDigest": _DIGEST,
-            "representativeWorkloadDigest": _DIGEST,
-            "targetSqlDigest": _DIGEST,
-            "rawEvidenceDigest": _DIGEST,
+            "artifactDigests": {
+                field: _role_digest(target_id, f"artifact:{field}")
+                for field in REQUIRED_EXECUTION_ARTIFACT_DIGESTS
+            },
+            "evidenceDigests": {
+                field: _role_digest(target_id, f"evidence:{field}")
+                for field in REQUIRED_EXECUTION_EVIDENCE_DIGESTS
+            },
             "executedAt": "2026-08-28T10:00:00Z",
             "checks": {
                 "capabilityProbe": "PASSED",
@@ -230,9 +238,13 @@ def _sign_all_receipts(
             "qualificationInputDigest": qualification_digest,
             "executionRecordId": execution_payload["recordId"],
             "executionEnvelopeDigest": _digest(execution),
-            "rawEvidenceDigest": execution_payload["rawEvidenceDigest"],
-            "holdoutCorpusDigest": execution_payload["holdoutCorpusDigest"],
-            "representativeWorkloadDigest": execution_payload[
+            "rawEvidenceDigest": execution_payload["evidenceDigests"][
+                "rawEvidenceDigest"
+            ],
+            "holdoutCorpusDigest": execution_payload["artifactDigests"][
+                "holdoutCorpusDigest"
+            ],
+            "representativeWorkloadDigest": execution_payload["artifactDigests"][
                 "representativeWorkloadDigest"
             ],
             "decision": "PASSED",
@@ -274,6 +286,16 @@ def test_requirements_and_draft_keep_every_production_boundary_closed() -> None:
     requirements = production_qualification_requirements()
     assert requirements["targetCount"] == 13
     assert len({item["targetId"] for item in requirements["targets"]}) == 13
+    assert all(
+        item["requiredArtifactDigests"]
+        == list(REQUIRED_EXECUTION_ARTIFACT_DIGESTS)
+        for item in requirements["targets"]
+    )
+    assert all(
+        item["requiredEvidenceDigests"]
+        == list(REQUIRED_EXECUTION_EVIDENCE_DIGESTS)
+        for item in requirements["targets"]
+    )
     assert requirements["productionBoundaries"] == {
         "externalExecution": "NOT_RUN",
         "independentVerification": "NOT_RUN",
@@ -395,6 +417,62 @@ def test_tampered_execution_receipt_fails_one_target_without_hiding_partial_stat
     assert result["targets"][0]["state"] == "BLOCKED_EVIDENCE"
     assert result["targets"][0]["externalExecution"] == "NOT_RUN"
     assert result["targets"][0]["blockers"][0]["code"] == "EXECUTION_RECEIPT_INVALID"
+
+
+@pytest.mark.parametrize(
+    ("digest_set", "missing_field"),
+    (
+        ("artifactDigests", "canonicalIrDigest"),
+        ("evidenceDigests", "rollbackDigest"),
+    ),
+)
+def test_execution_requires_every_named_evidence_digest(
+    digest_set: str,
+    missing_field: str,
+) -> None:
+    request, trust_store, keys = _complete_inputs()
+    _sign_all_receipts(request, trust_store, keys)
+    execution = request["targets"][0]["receipts"]["execution"]
+    payload = deepcopy(execution["payload"])
+    del payload[digest_set][missing_field]
+    request["targets"][0]["receipts"]["execution"] = signed_envelope(
+        key_id="executor-key",
+        private_key=keys["executor-key"],
+        payload=payload,
+    )
+
+    result = evaluate_production_qualification(request, trust_store=trust_store, now=NOW)
+
+    assert result["summary"]["productionDefinitionOfDoneCount"] == 12
+    assert result["targets"][0]["state"] == "BLOCKED_EVIDENCE"
+    assert result["targets"][0]["blockers"][-1]["code"] == "EXECUTION_RECEIPT_INVALID"
+
+
+@pytest.mark.parametrize("alias_scope", ("within-evidence", "across-sets"))
+def test_execution_rejects_aliased_evidence_roles(alias_scope: str) -> None:
+    request, trust_store, keys = _complete_inputs()
+    _sign_all_receipts(request, trust_store, keys)
+    execution = request["targets"][0]["receipts"]["execution"]
+    payload = deepcopy(execution["payload"])
+    if alias_scope == "within-evidence":
+        payload["evidenceDigests"]["rollbackDigest"] = payload["evidenceDigests"][
+            "cleanupDigest"
+        ]
+    else:
+        payload["evidenceDigests"]["rawEvidenceDigest"] = payload["artifactDigests"][
+            "gateResultDigest"
+        ]
+    request["targets"][0]["receipts"]["execution"] = signed_envelope(
+        key_id="executor-key",
+        private_key=keys["executor-key"],
+        payload=payload,
+    )
+
+    result = evaluate_production_qualification(request, trust_store=trust_store, now=NOW)
+
+    assert result["summary"]["productionDefinitionOfDoneCount"] == 12
+    assert result["targets"][0]["state"] == "BLOCKED_EVIDENCE"
+    assert result["targets"][0]["blockers"][-1]["code"] == "EXECUTION_RECEIPT_INVALID"
 
 
 @pytest.mark.parametrize(

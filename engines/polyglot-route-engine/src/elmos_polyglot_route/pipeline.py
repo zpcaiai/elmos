@@ -514,6 +514,52 @@ def _incident_batch(discovery: dict[str, Any], reason: str) -> dict[str, Any]:
     }
 
 
+def _uniform_discovery_not_run_diagnostic(discovery: dict[str, Any]) -> str | None:
+    """Return one structured analyzer non-execution diagnostic when exact.
+
+    A batch with no verified units normally fails with the generic pipeline
+    error. When compiler-backed module enumeration did not run for *every*
+    discovered unit, discovery already carries the more useful fail-closed
+    reason in its structured module inventories. Preserve that reason only
+    when every relevant status and diagnostic agrees; mixed or malformed
+    evidence must continue to use the generic refusal.
+    """
+
+    results = discovery.get("results")
+    inventories = discovery.get("module_inventories")
+    if (
+        not isinstance(results, list)
+        or not results
+        or not isinstance(inventories, list)
+        or not inventories
+        or len(inventories) != len(results)
+    ):
+        return None
+    if any(
+        not isinstance(result, dict) or result.get("verdict") != "NOT_RUN"
+        for result in results
+    ):
+        return None
+
+    diagnostics: set[str] = set()
+    for inventory in inventories:
+        if not isinstance(inventory, dict) or inventory.get("enumeration_status") != "NOT_RUN":
+            return None
+        observed = inventory.get("diagnostics")
+        if (
+            not isinstance(observed, list)
+            or len(observed) != 1
+            or not isinstance(observed[0], str)
+            or not observed[0]
+        ):
+            return None
+        diagnostic = observed[0]
+        if re.fullmatch(r"[A-Z][A-Z0-9_]*(?::[A-Za-z0-9_.:/<>=+,\-]+)*", diagnostic) is None:
+            return None
+        diagnostics.add(diagnostic)
+    return next(iter(diagnostics)) if len(diagnostics) == 1 else None
+
+
 def _commit_owned_directory(output: Path, staging_name: str, final_name: str) -> Path:
     staging = _owned_directory(output, staging_name)
     final = _owned_directory(output, final_name)
@@ -992,6 +1038,9 @@ def _run_repository_pipeline_attempt(
     # reads like a result.  A *discovery* incident still takes the diagnostic
     # path below, which is the tolerance the other side of this merge added.
     if passed < 1 and discovery_incident is None:
+        not_run_diagnostic = _uniform_discovery_not_run_diagnostic(discovery)
+        if not_run_diagnostic is not None:
+            raise RouteError(not_run_diagnostic)
         raise RouteError("PIPELINE_NO_VERIFIED_UNITS")
     assembly: dict[str, Any] | None = None
     assembly_failure: str | None = discovery_incident
