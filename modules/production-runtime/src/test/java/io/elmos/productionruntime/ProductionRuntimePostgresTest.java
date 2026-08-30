@@ -180,6 +180,104 @@ class ProductionRuntimePostgresTest {
     }
 
     @Test
+    void blockedWorkloadStageCannotRunAndCompletingItsPredecessorActivatesIt() {
+        UUID tenant = UUID.randomUUID();
+        UUID account = UUID.randomUUID();
+        var tenantAccount = runtime.provisionTenant(tenant, account, "stage-" + tenant, "CNY");
+        UUID project = runtime.createProject(new ProjectRequest(
+                tenant, account, "stage-project-" + tenant, "MODERNIZATION"));
+        UUID job = runtime.createJob(new JobRequest(
+                tenant, account, project, "SPRING_MODERNIZATION",
+                List.of("inventory", "compile"), 2, 100));
+        List<UUID> stages = jdbc.sql("""
+                        select id from orchestration.job_stages
+                         where tenant_id = :tenantId and job_id = :jobId
+                         order by sequence_no
+                        """)
+                .param("tenantId", tenant).param("jobId", job)
+                .query(UUID.class).list();
+        assertEquals(2, stages.size());
+        UUID firstItem = runtime.createWorkItem(new WorkItemRequest(
+                tenant, job, stages.get(0), "inventory", "repo/source",
+                10, BigDecimal.ONE, 1, "stage-first-" + tenant));
+        UUID secondItem = runtime.createWorkItem(new WorkItemRequest(
+                tenant, job, stages.get(1), "compile", "repo/target",
+                10, BigDecimal.ONE, 1, "stage-second-" + tenant));
+
+        assertEquals("PENDING", status(tenant, secondItem));
+        assertEquals("BLOCKED", stageStatus(tenant, stages.get(1)));
+
+        UUID worker = UUID.randomUUID();
+        runtime.registerWorker(new WorkerRegistration(
+                worker, "stage-worker-" + worker, "POLYGLOT",
+                "http://worker.invalid/" + worker, "local", "local-1",
+                Map.of("routeTuples", List.of(
+                        "SPRING_MODERNIZATION:inventory", "SPRING_MODERNIZATION:compile"),
+                        "maxConcurrent", 2)));
+        billing.applyVerifiedTopUp(new TopUpRequest(
+                tenant, tenantAccount.walletId(), "test-pay", "stage-payment-" + tenant,
+                BigDecimal.TEN, "stage-payment-hash"));
+        assertTrue(runtime.selectFairReady(100).stream()
+                .anyMatch(item -> item.workItemId().equals(firstItem)));
+        assertTrue(runtime.selectFairReady(100).stream()
+                .noneMatch(item -> item.workItemId().equals(secondItem)));
+
+        var dispatch = coordinator.dispatch(new DispatchRequest(
+                tenant, project, job, firstItem, tenantAccount.walletId(), worker,
+                BigDecimal.ONE, Instant.now().plusSeconds(300), Duration.ofSeconds(30),
+                "stage-reserve-" + tenant, "stage-dispatch-" + tenant, Map.of()),
+                envelope -> WorkerGatewayResult.ACKED);
+        coordinator.complete(new ProductionRuntimeModels.Completion(
+                tenant, firstItem, dispatch.envelope().attemptId(), worker,
+                dispatch.envelope().fencingToken(), AttemptStatus.SUCCEEDED, null, null), null, null);
+
+        assertEquals("SUCCEEDED", stageStatus(tenant, stages.get(0)));
+        assertEquals("READY", stageStatus(tenant, stages.get(1)));
+        assertEquals("READY", status(tenant, secondItem));
+        assertEquals("RUNNING", jdbc.sql("select status from orchestration.jobs where tenant_id = :tenantId and id = :jobId")
+                .param("tenantId", tenant).param("jobId", job).query(String.class).single());
+    }
+
+    @Test
+    void dependencyCycleAndCrossJobDependencyAreRejectedBeforePersistence() {
+        Fixture first = fixture();
+        UUID secondItem = runtime.createWorkItem(new WorkItemRequest(
+                first.tenantId, first.jobId, first.stageId, "inventory", "repo/second",
+                10, BigDecimal.ONE, 1, "dependency-second-" + first.tenantId));
+        runtime.addDependency(first.tenantId, first.workItemId, secondItem);
+        ProductionRuntimeException cycle = assertThrows(
+                ProductionRuntimeException.class,
+                () -> runtime.addDependency(first.tenantId, secondItem, first.workItemId));
+        assertEquals("WORK_ITEM_DEPENDENCY_CYCLE", cycle.code());
+
+        UUID otherJob = runtime.createJob(new JobRequest(
+                first.tenantId, first.accountId, first.projectId,
+                "SPRING_MODERNIZATION", List.of("inventory"), 2, 100));
+        UUID otherStage = jdbc.sql("select id from orchestration.job_stages where tenant_id = :tenantId and job_id = :jobId")
+                .param("tenantId", first.tenantId).param("jobId", otherJob)
+                .query(UUID.class).single();
+        UUID otherItem = runtime.createWorkItem(new WorkItemRequest(
+                first.tenantId, otherJob, otherStage, "inventory", "repo/other-job",
+                10, BigDecimal.ONE, 1, "dependency-other-job-" + first.tenantId));
+        ProductionRuntimeException mismatch = assertThrows(
+                ProductionRuntimeException.class,
+                () -> runtime.addDependency(first.tenantId, secondItem, otherItem));
+        assertEquals("WORK_ITEM_DEPENDENCY_JOB_MISMATCH", mismatch.code());
+    }
+
+    private String status(UUID tenantId, UUID workItemId) {
+        return jdbc.sql("select status from orchestration.work_items where tenant_id = :tenantId and id = :id")
+                .param("tenantId", tenantId).param("id", workItemId)
+                .query(String.class).single();
+    }
+
+    private String stageStatus(UUID tenantId, UUID stageId) {
+        return jdbc.sql("select status from orchestration.job_stages where tenant_id = :tenantId and id = :id")
+                .param("tenantId", tenantId).param("id", stageId)
+                .query(String.class).single();
+    }
+
+    @Test
     void modelCallReplayIsStableAndProviderUncertaintyBlocksBlindRetry() {
         Fixture fixture = fixture();
         billing.applyVerifiedTopUp(new TopUpRequest(fixture.tenantId, fixture.walletId, "test-pay", "payment-" + fixture.tenantId, BigDecimal.TEN, "hash-replay"));
@@ -241,6 +339,199 @@ class ProductionRuntimePostgresTest {
         ProductionRuntimeException conflict = assertThrows(ProductionRuntimeException.class, () -> billing.applyVerifiedTopUp(new TopUpRequest(fixture.tenantId, fixture.walletId, original.provider(), original.providerPaymentId(), BigDecimal.valueOf(99), "hash-changed")));
         assertEquals("IDEMPOTENCY_CONFLICT", conflict.code());
         assertEquals(BigDecimal.TEN.setScale(12), jdbc.sql("select available_balance from billing.wallet_balances where wallet_id = :walletId").param("walletId", fixture.walletId).query(BigDecimal.class).single());
+    }
+
+    @Test
+    void topUpReplayIsExactlyOnceAcrossMoneyJournalAndOutbox() {
+        Fixture fixture = fixture();
+        TopUpRequest request = new TopUpRequest(
+                fixture.tenantId, fixture.walletId, "test-pay",
+                "topup-replay-" + fixture.tenantId, BigDecimal.TEN,
+                "topup-replay-hash");
+
+        var first = billing.applyVerifiedTopUp(request);
+        var replay = billing.applyVerifiedTopUp(request);
+
+        assertEquals(first, replay);
+        assertEquals(BigDecimal.TEN.setScale(12), jdbc.sql(
+                        "select available_balance from billing.wallet_balances where tenant_id = :tenantId and wallet_id = :walletId")
+                .param("tenantId", fixture.tenantId).param("walletId", fixture.walletId)
+                .query(BigDecimal.class).single());
+        assertEquals(1L, jdbc.sql(
+                        "select count(*) from billing.topups where tenant_id = :tenantId and id = :topUpId")
+                .param("tenantId", fixture.tenantId).param("topUpId", first.topUpId())
+                .query(Long.class).single());
+        assertEquals(1L, jdbc.sql(
+                        "select count(*) from billing.ledger_entries where tenant_id = :tenantId and reference_id = :topUpId and entry_type = 'TOPUP'")
+                .param("tenantId", fixture.tenantId).param("topUpId", first.topUpId())
+                .query(Long.class).single());
+        assertEquals(1L, jdbc.sql(
+                        "select count(*) from billing.billing_journals where tenant_id = :tenantId and reference_id = :topUpId and journal_type = 'TOPUP'")
+                .param("tenantId", fixture.tenantId).param("topUpId", first.topUpId())
+                .query(Long.class).single());
+        assertEquals(1L, jdbc.sql(
+                        "select count(*) from observability.outbox_events where tenant_id = :tenantId and aggregate_id = :topUpId and event_type = 'TOPUP_COMPLETED'")
+                .param("tenantId", fixture.tenantId).param("topUpId", first.topUpId())
+                .query(Long.class).single());
+    }
+
+    @Test
+    void reservingStateCanBeReplayedAfterSchedulerRestart() {
+        Fixture fixture = fixture();
+        billing.applyVerifiedTopUp(new TopUpRequest(
+                fixture.tenantId, fixture.walletId, "test-pay",
+                "reserving-restart-" + fixture.tenantId, BigDecimal.TEN,
+                "reserving-restart-hash"));
+        var intent = runtime.prepareReservation(
+                fixture.tenantId, fixture.projectId, fixture.jobId, fixture.workItemId,
+                fixture.walletId, fixture.workerId, BigDecimal.ONE,
+                Instant.now().plusSeconds(300), Map.of("restart", "reserving"),
+                "reserving-restart-reserve-" + fixture.workItemId,
+                "reserving-restart-dispatch-" + fixture.workItemId);
+        assertEquals("RESERVING", jdbc.sql(
+                        "select state from runtime.dispatch_intents where tenant_id = :tenantId and id = :id")
+                .param("tenantId", fixture.tenantId).param("id", intent.id())
+                .query(String.class).single());
+
+        var report = recovery.recover(1_000, envelope -> WorkerGatewayResult.ACKED);
+
+        assertTrue(report.inspected() >= 1);
+        assertTrue(report.advanced() >= 2);
+        assertEquals("ACKED", jdbc.sql(
+                        "select state from runtime.dispatch_intents where tenant_id = :tenantId and id = :id")
+                .param("tenantId", fixture.tenantId).param("id", intent.id())
+                .query(String.class).single());
+        assertEquals(1L, jdbc.sql(
+                        "select count(*) from billing.credit_reservations where tenant_id = :tenantId and work_item_id = :workItemId")
+                .param("tenantId", fixture.tenantId).param("workItemId", fixture.workItemId)
+                .query(Long.class).single());
+        recovery.recover(1_000, envelope -> WorkerGatewayResult.ACKED);
+        assertEquals(1L, jdbc.sql(
+                        "select count(*) from billing.credit_reservations where tenant_id = :tenantId and work_item_id = :workItemId")
+                .param("tenantId", fixture.tenantId).param("workItemId", fixture.workItemId)
+                .query(Long.class).single());
+    }
+
+    @Test
+    void streamingUsageReconciliationIsMonotonicAndFinal() {
+        Fixture fixture = fixture();
+        billing.applyVerifiedTopUp(new TopUpRequest(
+                fixture.tenantId, fixture.walletId, "test-pay",
+                "streaming-usage-" + fixture.tenantId, BigDecimal.TEN,
+                "streaming-usage-hash"));
+        UsageContext context = prepareUsage(fixture, fixture.workItemId, "streaming", BigDecimal.valueOf(4));
+        MeterSnapshot first = meter(fixture, context, 1, 4);
+        MeterSnapshot second = meter(fixture, context, 2, 8);
+
+        assertEquals(first, billing.recordMeter(first));
+        assertEquals(first, billing.recordMeter(first));
+        ProductionRuntimeException replayConflict = assertThrows(
+                ProductionRuntimeException.class,
+                () -> billing.recordMeter(meter(fixture, context, 1, 5)));
+        assertEquals("USAGE_METER_CONFLICT", replayConflict.code());
+        assertEquals(second, billing.recordMeter(second));
+        ProductionRuntimeException regression = assertThrows(
+                ProductionRuntimeException.class,
+                () -> billing.recordMeter(meter(fixture, context, 3, 7)));
+        assertEquals("USAGE_METER_NOT_MONOTONIC", regression.code());
+
+        billing.completeModelCall(
+                fixture.tenantId, context.modelCallId, context.providerRequestId,
+                context.responseArtifactId);
+        ProductionRuntimeException belowMeter = assertThrows(
+                ProductionRuntimeException.class,
+                () -> billing.settle(finalUsage(fixture, context, "streaming-final-below", 7)));
+        assertEquals("FINAL_USAGE_BELOW_STREAM_METER", belowMeter.code());
+        FinalUsage finalUsage = finalUsage(fixture, context, "streaming-final", 10);
+        billing.settle(finalUsage);
+        assertDoesNotThrow(() -> billing.settle(finalUsage));
+
+        assertEquals(2L, jdbc.sql(
+                        "select count(*) from billing.usage_meter_events where tenant_id = :tenantId and model_call_id = :modelCallId")
+                .param("tenantId", fixture.tenantId).param("modelCallId", context.modelCallId)
+                .query(Long.class).single());
+        assertEquals(1L, jdbc.sql(
+                        "select count(*) from billing.token_usage_events where tenant_id = :tenantId and model_call_id = :modelCallId")
+                .param("tenantId", fixture.tenantId).param("modelCallId", context.modelCallId)
+                .query(Long.class).single());
+    }
+
+    @Test
+    void duplicateProviderUsageCannotSettleAnotherModelCall() {
+        Fixture fixture = fixture();
+        billing.applyVerifiedTopUp(new TopUpRequest(
+                fixture.tenantId, fixture.walletId, "test-pay",
+                "duplicate-usage-" + fixture.tenantId, BigDecimal.TEN,
+                "duplicate-usage-hash"));
+        UUID secondWorkItem = runtime.createWorkItem(new WorkItemRequest(
+                fixture.tenantId, fixture.jobId, fixture.stageId, "inventory",
+                "repo/duplicate-usage", 10, BigDecimal.ONE, 1,
+                "duplicate-usage-item-" + fixture.tenantId));
+        UsageContext first = prepareUsage(
+                fixture, fixture.workItemId, "duplicate-usage-first", BigDecimal.valueOf(4));
+        UsageContext second = prepareUsage(
+                fixture, secondWorkItem, "duplicate-usage-second", BigDecimal.valueOf(4));
+        billing.completeModelCall(
+                fixture.tenantId, first.modelCallId, first.providerRequestId,
+                first.responseArtifactId);
+        billing.completeModelCall(
+                fixture.tenantId, second.modelCallId, second.providerRequestId,
+                second.responseArtifactId);
+        String providerUsageId = "provider-usage-duplicate-" + fixture.tenantId;
+
+        billing.settle(finalUsage(fixture, first, providerUsageId, 10));
+        ProductionRuntimeException conflict = assertThrows(
+                ProductionRuntimeException.class,
+                () -> billing.settle(finalUsage(fixture, second, providerUsageId, 10)));
+
+        assertEquals("BILLING_PROVIDER_USAGE_CONFLICT", conflict.code());
+        assertEquals(1L, jdbc.sql(
+                        "select count(*) from billing.token_usage_events where provider = 'test-provider' and provider_usage_id = :providerUsageId")
+                .param("providerUsageId", providerUsageId).query(Long.class).single());
+        assertEquals("ACTIVE", jdbc.sql(
+                        "select status from billing.credit_reservations where tenant_id = :tenantId and id = :reservationId")
+                .param("tenantId", fixture.tenantId).param("reservationId", second.reservationId)
+                .query(String.class).single());
+        assertTrue(runtime.invariantViolations(fixture.tenantId).stream()
+                .noneMatch(value -> value.startsWith("DUPLICATE_PROVIDER_USAGE")));
+    }
+
+    @Test
+    void journalEntriesRemainBalancedForTopUpAndUsage() {
+        Fixture fixture = fixture();
+        billing.applyVerifiedTopUp(new TopUpRequest(
+                fixture.tenantId, fixture.walletId, "test-pay",
+                "journal-balance-" + fixture.tenantId, BigDecimal.TEN,
+                "journal-balance-hash"));
+        UsageContext context = prepareUsage(
+                fixture, fixture.workItemId, "journal-balance", BigDecimal.valueOf(4));
+        billing.completeModelCall(
+                fixture.tenantId, context.modelCallId, context.providerRequestId,
+                context.responseArtifactId);
+        billing.settle(finalUsage(
+                fixture, context, "journal-usage-" + fixture.tenantId, 10));
+
+        assertEquals(0L, jdbc.sql("""
+                        select count(*) from (
+                            select journal_id, currency
+                              from billing.billing_journal_lines
+                             where tenant_id = :tenantId
+                             group by journal_id, currency
+                            having sum(debit) <> sum(credit)
+                        ) unbalanced
+                        """)
+                .param("tenantId", fixture.tenantId).query(Long.class).single());
+        assertEquals(2L, jdbc.sql(
+                        "select count(*) from billing.billing_journals where tenant_id = :tenantId")
+                .param("tenantId", fixture.tenantId).query(Long.class).single());
+        assertEquals(4L, jdbc.sql(
+                        "select count(*) from billing.billing_journal_lines where tenant_id = :tenantId")
+                .param("tenantId", fixture.tenantId).query(Long.class).single());
+        assertEquals(BigDecimal.valueOf(7).setScale(12), jdbc.sql(
+                        "select sum(amount) from billing.ledger_entries where tenant_id = :tenantId")
+                .param("tenantId", fixture.tenantId).query(BigDecimal.class).single());
+        assertTrue(runtime.invariantViolations(fixture.tenantId).stream()
+                .noneMatch(value -> value.startsWith("UNBALANCED_JOURNAL")));
     }
 
     @Test
@@ -627,6 +918,62 @@ class ProductionRuntimePostgresTest {
                 .query(String.class).single());
     }
 
+    private UsageContext prepareUsage(
+            Fixture fixture, UUID workItemId, String suffix, BigDecimal reservationAmount) {
+        var outcome = coordinator.dispatch(new DispatchRequest(
+                fixture.tenantId, fixture.projectId, fixture.jobId, workItemId,
+                fixture.walletId, fixture.workerId, reservationAmount,
+                Instant.now().plusSeconds(300), Duration.ofSeconds(30),
+                "usage-reserve-" + suffix + "-" + workItemId,
+                "usage-dispatch-" + suffix + "-" + workItemId,
+                Map.of("usageScenario", suffix)), envelope -> WorkerGatewayResult.ACKED);
+        assertEquals(ProductionRuntimeCoordinator.DispatchStatus.ACKED, outcome.status());
+        String providerRequestId = "provider-request-" + suffix + "-" + workItemId;
+        var call = billing.beginModelCall(new ModelCallRequest(
+                fixture.tenantId, fixture.accountId, fixture.projectId, fixture.jobId,
+                fixture.stageId, workItemId, outcome.envelope().attemptId(),
+                "test-provider", "test-model",
+                "model-call-" + suffix + "-" + workItemId,
+                "request-hash-" + suffix));
+        billing.claimProviderDispatch(fixture.tenantId, call.modelCallId());
+        billing.markProviderAccepted(fixture.tenantId, call.modelCallId(), providerRequestId);
+        UUID responseArtifactId = artifacts.registerArtifact(
+                new ProductionRuntimeModels.ArtifactRequest(
+                        fixture.tenantId, fixture.projectId, fixture.jobId, workItemId,
+                        "MODEL_PROVIDER_RESPONSE",
+                        "cas://provider-response/" + call.modelCallId(),
+                        "f".repeat(64), 256));
+        UUID providerPricing = jdbc.sql(
+                        "select id from billing.provider_pricing_versions order by effective_from desc limit 1")
+                .query(UUID.class).single();
+        UUID commercialPricing = jdbc.sql(
+                        "select id from billing.commercial_pricing_versions order by effective_from desc limit 1")
+                .query(UUID.class).single();
+        return new UsageContext(
+                outcome.intent().reservationId(), call.modelCallId(), providerRequestId,
+                responseArtifactId, providerPricing, commercialPricing);
+    }
+
+    private MeterSnapshot meter(
+            Fixture fixture, UsageContext context, long sequenceNo, long inputTokens) {
+        return new MeterSnapshot(
+                fixture.tenantId, context.reservationId, context.modelCallId,
+                sequenceNo, inputTokens, 0, 0, 0,
+                BigDecimal.valueOf(inputTokens).multiply(BigDecimal.valueOf(0.1)),
+                BigDecimal.valueOf(inputTokens).multiply(BigDecimal.valueOf(0.3)));
+    }
+
+    private FinalUsage finalUsage(
+            Fixture fixture, UsageContext context, String providerUsageId, long inputTokens) {
+        return new FinalUsage(
+                fixture.tenantId, context.reservationId, context.modelCallId,
+                "test-provider", "test-model", providerUsageId,
+                context.providerPricingVersionId, context.commercialPricingVersionId,
+                inputTokens, 0, 0, 0,
+                BigDecimal.valueOf(inputTokens).multiply(BigDecimal.valueOf(0.1)),
+                BigDecimal.valueOf(inputTokens).multiply(BigDecimal.valueOf(0.3)));
+    }
+
     private Fixture fixture() {
         UUID tenant = UUID.randomUUID();
         UUID account = UUID.randomUUID();
@@ -654,6 +1001,14 @@ class ProductionRuntimePostgresTest {
         }
         throw new IllegalStateException("V77 migration not found");
     }
+
+    private record UsageContext(
+            UUID reservationId,
+            UUID modelCallId,
+            String providerRequestId,
+            UUID responseArtifactId,
+            UUID providerPricingVersionId,
+            UUID commercialPricingVersionId) {}
 
     private record Fixture(UUID tenantId, UUID accountId, UUID walletId, UUID projectId, UUID jobId, UUID stageId, UUID workItemId, UUID workerId) {}
 }
