@@ -11,7 +11,6 @@ from pathlib import Path
 from scripts.batch30.evaluate_spring_corpus_equivalence import (
     MANIFEST_SCHEMA_VERSION,
     PROJECT_EVIDENCE_SCHEMA_VERSION,
-    PROJECT_EVIDENCE_TYPES,
     RESULT_SCHEMA_VERSION,
     CorpusEquivalenceError,
     canonical_digest,
@@ -26,7 +25,7 @@ SCHEMAS = ROOT / "schemas" / "batch30"
 
 
 class SpringCorpusEquivalenceTests(unittest.TestCase):
-    """The positive aggregate fixture is a full nine-role Ed25519 intake.
+    """The positive aggregate fixture is a full fourteen-role Ed25519 intake.
 
     These signatures are test-only cryptographic fixtures. They prove the evaluator's
     fail-closed trust wiring, not customer acceptance or repository certification.
@@ -141,16 +140,15 @@ class SpringCorpusEquivalenceTests(unittest.TestCase):
             return None
         evidence = self.external.intake["evidence"]
         supporting = {}
+        supporting["independent_review"] = evidence["independent_review"]["content"]["digest"]
         if role == "customer":
-            supporting = {
-                "customer_acceptance": evidence["customer_acceptance"]["content"]["digest"]
-            }
+            supporting["customer_acceptance"] = evidence["customer_acceptance"]["content"]["digest"]
         return {
             "artifact_digest": self.external.binding["artifact_digest"],
             "execution_profile_digest": self.external.binding["execution_profile_digest"],
             "runnable_evidence_digests": {
                 name: evidence[name]["content"]["digest"]
-                for name in ("rootless_runner", "rootless_transformer", "rootless_verifier")
+                for name in ("source_build", "target_build", "source_startup", "target_startup")
             },
             "supporting_evidence_digests": supporting,
         }
@@ -238,14 +236,35 @@ class SpringCorpusEquivalenceTests(unittest.TestCase):
         }
 
     def _seal_signed_external_intake(self) -> None:
-        for role, outcome_path in self.outcome_paths.items():
-            evidence_type = PROJECT_EVIDENCE_TYPES[role]
+        project_digests = {}
+        raw_evidence = []
+        for role in ("holdout", "representative", "customer"):
+            outcome_path = self.outcome_paths.get(role)
+            if outcome_path is None:
+                outcome_path = self._write_json(
+                    f"corpora/{role}/not-selected.json",
+                    {"corpus_role": role, "status": "NOT_RUN"},
+                )
             reference = self.external.content_ref(outcome_path)
-            evidence_item = self.external.intake["evidence"][evidence_type]
-            evidence_item["content"] = reference
-            payload = evidence_item["attestation"]["payload"]
-            payload["content_digest"] = reference["digest"]
-            payload["content_size_bytes"] = reference["size_bytes"]
+            project_digests[role] = reference["digest"]
+            raw_evidence.append(reference)
+        behavior_path = self._write_json(
+            "behavioral-equivalence-signed-content.json",
+            {
+                "schema_version": "elmos.batch30.external-evidence.v1",
+                "evidence_type": "behavioral_equivalence",
+                "campaign_digest": "sha256:" + "c" * 64,
+                "binding_digest": self.external.binding_digest,
+                "metrics": {"project_outcome_evidence_digests": project_digests},
+                "raw_evidence": raw_evidence,
+            },
+        )
+        behavior_reference = self.external.content_ref(behavior_path)
+        behavior = self.external.intake["evidence"]["behavioral_equivalence"]
+        behavior["content"] = behavior_reference
+        behavior_payload = behavior["attestation"]["payload"]
+        behavior_payload["content_digest"] = behavior_reference["digest"]
+        behavior_payload["content_size_bytes"] = behavior_reference["size_bytes"]
         authorization = self.external.intake["customer_authorization"]["payload"]
         authorization["scope"]["evidence_content_digests"] = {
             evidence_type: item["content"]["digest"]
@@ -335,6 +354,22 @@ class SpringCorpusEquivalenceTests(unittest.TestCase):
         self.assertIsNone(overall["numerator_equivalent_projects"])
         self.assertIsNone(overall["denominator_eligible_projects"])
         self.assertIsNone(overall["percentage"])
+
+    def test_signed_behavior_for_a_different_checked_in_campaign_is_not_evaluated(self) -> None:
+        self._add_project("campaign-holdout", "holdout")
+        self._add_project("campaign-representative", "representative")
+        self._add_project("campaign-customer", "customer")
+        self._seal_signed_external_intake()
+        campaign = self.pack / "certification" / "p0-p11-campaign.json"
+        campaign.parent.mkdir(parents=True, exist_ok=True)
+        campaign.write_text('{"campaign_id":"different-campaign"}\n', encoding="utf-8")
+        result = self._evaluate()
+        self.assertEqual(result["external_intake_verification"]["status"], "INVALID")
+        self.assertIn(
+            "different campaign",
+            result["external_intake_verification"]["reason"],
+        )
+        self.assertEqual(result["overall_equivalence"]["status"], "NOT_EVALUATED")
 
     def test_signed_customer_outcome_must_bind_customer_acceptance(self) -> None:
         self._add_project("acceptance-holdout", "holdout")
@@ -482,7 +517,15 @@ class SpringCorpusEquivalenceTests(unittest.TestCase):
         self._seal_signed_external_intake()
         self.outcome_paths["representative"].write_bytes(b"tampered after Ed25519 signing\n")
         result = self._evaluate()
-        self.assertEqual(result["external_intake_verification"]["status"], "INVALID")
+        self.assertEqual(result["external_intake_verification"]["status"], "VERIFIED")
+        representative = next(
+            item for item in result["projects"] if item["corpus_role"] == "representative"
+        )
+        self.assertFalse(representative["aggregate_eligible"])
+        self.assertIn(
+            "OUTCOME_EVIDENCE_CONTENT_INVALID",
+            representative["aggregate_exclusion_reasons"],
+        )
         self.assertEqual(result["overall_equivalence"]["status"], "NOT_EVALUATED")
 
     def test_tampered_actual_recipe_manifest_is_not_evaluated(self) -> None:

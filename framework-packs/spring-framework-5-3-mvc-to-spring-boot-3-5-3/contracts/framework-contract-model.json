@@ -5,7 +5,7 @@
   "extraction_status": "PASSED_LOCAL_EXACT_FIXTURE",
   "source_snapshot_sha256": "68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581",
   "source_commit": "7e1c098541143c96cce7d9a637fffe57d0e2baae",
-  "execution_evidence_ref": "certification/local-execution/2026-08-27/evidence-index.json",
+  "execution_evidence_ref": "certification/local-execution/2026-08-30/evidence-index.json",
   "exact_tuple": {
     "framework": "spring-framework-mvc",
     "framework_version": "5.3.39",
@@ -35,7 +35,7 @@
         "routes and media types outside the exact fixture remain NOT_RUN"
       ],
       "evidence_refs": [
-        "certification/local-execution/2026-08-27/evidence-index.json"
+        "certification/local-execution/2026-08-30/evidence-index.json"
       ]
     },
     {
@@ -98,7 +98,7 @@
         "validation groups, locale variants and alternate providers remain NOT_RUN"
       ],
       "evidence_refs": [
-        "certification/local-execution/2026-08-27/evidence-index.json"
+        "certification/local-execution/2026-08-30/evidence-index.json"
       ]
     },
     {
@@ -182,7 +182,7 @@
         "non-validation exception families and independent negative corpus remain NOT_RUN"
       ],
       "evidence_refs": [
-        "certification/local-execution/2026-08-27/evidence-index.json"
+        "certification/local-execution/2026-08-30/evidence-index.json"
       ]
     },
     {
@@ -205,7 +205,7 @@
         "async and error-dispatch ordering remain NOT_RUN"
       ],
       "evidence_refs": [
-        "certification/local-execution/2026-08-27/evidence-index.json"
+        "certification/local-execution/2026-08-30/evidence-index.json"
       ]
     },
     {
@@ -268,7 +268,7 @@
         "static resource delivery and other JSP pages remain NOT_RUN"
       ],
       "evidence_refs": [
-        "certification/local-execution/2026-08-27/evidence-index.json"
+        "certification/local-execution/2026-08-30/evidence-index.json"
       ]
     },
     {
@@ -289,7 +289,7 @@
         "alternate containers and production lifecycle integrations remain NOT_RUN"
       ],
       "evidence_refs": [
-        "certification/local-execution/2026-08-27/evidence-index.json"
+        "certification/local-execution/2026-08-30/evidence-index.json"
       ]
     }
   ],

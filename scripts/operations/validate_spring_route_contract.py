@@ -819,9 +819,30 @@ def check_feature_catalog() -> None:
     catalog = SPRING_FEATURE_CATALOG.read_text(encoding="utf-8")
     declared = set(re.findall(r'feature\("([^"]+)"', catalog))
     require(declared, "SPRING_FEATURE_CATALOG_EMPTY")
+    # The feature catalog is shared by every directed Spring route.  It must
+    # bind the exact target selected by the route instead of retaining a
+    # hard-coded Boot 4.1.1 constant that would mislabel Boot 3.5.3 output.
+    for token in (
+        "String targetBoot",
+        "String targetJava",
+        "EXACT_VERSION.matcher(targetBoot).matches()",
+        "EXACT_VERSION.matcher(targetJava).matches()",
+        'String target = "spring-boot-" + targetBoot;',
+        'String targetObligation = "bind-to-exact-spring-boot-" + targetBoot',
+        'item.put("target", target);',
+        'item.put("target_applicability", incompatibleBoot4Strategy ? "blocked" : "applicable");',
+        '"blocked-incompatible-target-strategy:"',
+    ):
+        require(token in catalog, f"SPRING_FEATURE_CATALOG_TARGET_NOT_BOUND:{token}")
+    execution_port = EXECUTION_PORT.read_text(encoding="utf-8")
     require(
-        'SpringRouteCatalog.TARGET_BOOT_4_1_1' in catalog,
-        "SPRING_FEATURE_CATALOG_TARGET_NOT_BOUND",
+        re.search(
+            r"SpringFeatureCatalog\.render\(\s*fingerprint\.features\(\),\s*"
+            r"route\.targetBoot\(\),\s*route\.targetJava\(\)\)",
+            execution_port,
+        )
+        is not None,
+        "SPRING_FEATURE_CATALOG_ROUTE_TARGET_NOT_WIRED",
     )
     matrix = json.loads(SPRING_4_1_1_FEATURE_MATRIX.read_text(encoding="utf-8"))
     languages = {
