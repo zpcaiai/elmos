@@ -216,8 +216,8 @@ def build_temporal_workflow_definitions() -> tuple[type[Any], type[Any]]:
     return ElmosTaskWorkflow, ElmosChildAgentWorkflow
 
     try:
-        from temporalio import workflow  # type: ignore[import-not-found]
-        from temporalio.common import RetryPolicy  # type: ignore[import-not-found]
+        from temporalio import workflow
+        from temporalio.common import RetryPolicy
     except ImportError as error:  # pragma: no cover - optional production dependency
         raise NotConfigured("temporalio is required for Temporal execution") from error
     if not callable(getattr(workflow, "update", None)):
@@ -234,7 +234,7 @@ def build_temporal_workflow_definitions() -> tuple[type[Any], type[Any]]:
         def __init__(self) -> None:
             self.cancel_requested = False
 
-        @workflow.signal(name="request_cancel")  # type: ignore[untyped-decorator]
+        @workflow.signal(name="request_cancel")
         async def request_cancel(self, payload: Mapping[str, Any]) -> None:
             self.cancel_requested = True
 
@@ -272,7 +272,7 @@ def build_temporal_workflow_definitions() -> tuple[type[Any], type[Any]]:
             self.start_manifest_digest = ""
             self.start_idempotency_key = ""
 
-        @workflow.update(name="amend_plan")  # type: ignore[untyped-decorator]
+        @workflow.update(name="amend_plan")
         async def amend_plan(self, payload: Mapping[str, Any]) -> Mapping[str, Any]:
             if int(payload["expected_version"]) != self.plan_version:
                 raise RuntimeError("plan version conflict")
@@ -293,7 +293,7 @@ def build_temporal_workflow_definitions() -> tuple[type[Any], type[Any]]:
             self.plan, self.plan_version = plan, int(plan["version"])
             return {"status": "applied", "version": self.plan_version, "digest": self.plan["digest"]}
 
-        @workflow.signal(name="request_cancel")  # type: ignore[untyped-decorator]
+        @workflow.signal(name="request_cancel")
         async def request_cancel(self, payload: Mapping[str, Any]) -> None:
             actor, reason = str(payload.get("actor", "")), str(payload.get("reason", ""))
             idempotency_key = str(payload.get("idempotency_key", ""))
@@ -308,7 +308,7 @@ def build_temporal_workflow_definitions() -> tuple[type[Any], type[Any]]:
             self.cancel_requested = True
             self.cancel_reason = {"actor": actor, "reason": reason}
 
-        @workflow.query(name="runtime_status")  # type: ignore[untyped-decorator]
+        @workflow.query(name="runtime_status")
         def runtime_status(self) -> Mapping[str, Any]:
             return {
                 "phase": self.phase,
@@ -513,7 +513,7 @@ def _reject_duplicate_policy() -> Any:
     """Return the native SDK enum without making Temporal a base dependency."""
 
     try:
-        from temporalio.common import WorkflowIDReusePolicy  # type: ignore[import-not-found]
+        from temporalio.common import WorkflowIDReusePolicy
     except ImportError:  # pragma: no cover - exercised by dependency-free unit tests
         return "REJECT_DUPLICATE"
     return WorkflowIDReusePolicy.REJECT_DUPLICATE

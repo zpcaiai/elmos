@@ -16,6 +16,7 @@ from elmos_openhands.tools import ToolGateway, ToolRegistry
 class ObservabilityServiceTests(unittest.TestCase):
     def test_cost_meter_is_exact_and_reconciles_with_invoice(self):
         ledger = EventLedger()
+        self.addCleanup(ledger.close)
         identity = Identity("tenant-a", "project-a", "task-a", "run-a")
         ledger.create_run(identity, "sha256:" + "a" * 64)
         meter = CostMeter(ledger)
@@ -31,6 +32,7 @@ class ObservabilityServiceTests(unittest.TestCase):
         self.assertEqual(metrics.snapshot()["turns{tenant_id=tenant-a}"], 1)
         with tempfile.TemporaryDirectory() as root:
             ledger = EventLedger(str(Path(root) / "ledger.sqlite"))
+            self.addCleanup(ledger.close)
             identity = Identity("tenant-a", "project-a", "task-a", "run-a")
             manifest = ExecutionManifest("commit", "policy", "native", "model")
             runtime = AgentRuntime(ledger, NativeAgentAdapter(decisions=[ProviderResponse(completion=__import__("elmos_openhands.models", fromlist=["CompletionProposal"]).CompletionProposal(identity.run_id, "proposed"))]), ToolGateway(ledger, ActionFirewall(), ToolRegistry(), ContentAddressedStore(Path(root) / "cas")))

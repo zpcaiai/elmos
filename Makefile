@@ -228,9 +228,9 @@ repository-autonomy-kernel:
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-autonomy-kernel/src python3 -m compileall -q packages/repository-autonomy-kernel/src
 
 openhands-absorption:
-	PYTHONDONTWRITEBYTECODE=1 python3 engines/openhands-absorption-engine/tools/validate_engine.py
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src python3 -m unittest discover -s engines/openhands-absorption-engine/tests -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src python3 -m elmos_openhands validate
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --project engines/openhands-absorption-engine --locked python engines/openhands-absorption-engine/tools/validate_engine.py
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src $(UV) run --project engines/openhands-absorption-engine --locked python -m unittest discover -s engines/openhands-absorption-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/openhands-absorption-engine/src $(UV) run --project engines/openhands-absorption-engine --locked python -m elmos_openhands validate
 
 .PHONY: frontend-to-miniapp-skills
 frontend-to-miniapp-skills:

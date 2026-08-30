@@ -21,7 +21,7 @@ PARTIAL、BLOCKED、EVIDENCE_PENDING、NOT_RUN 和 NOT_CERTIFIED 都是有效状
 | 范围 | 已有实现/证据 | 当前状态 |
 |---|---|---|
 | P0/P1 运行时 | engines/openhands-absorption-engine/ 下的 typed contracts、runtime、ledger、CAS、workspace、firewall、gates、DAG、provider、browser、observability | IMPLEMENTED |
-| 本地验证 | 22 个单元/安全/恢复/生命周期测试；make openhands-absorption；ruff、mypy、pyright；CLI demo；wheel 内容校验 | LOCAL_ENGINEERING_EVIDENCE |
+| 本地验证 | 60 个单元/安全/恢复/生命周期测试；make openhands-absorption；Ruff；44 个源文件的 mypy/pyright；CLI demo；wheel 内容校验 | LOCAL_ENGINEERING_EVIDENCE |
 | 数据库 | PostgreSQL migration 已提供；实际 PostgreSQL 连接、RLS、故障切换和恢复演练尚未执行 | NOT_RUN |
 | 工作流 | Durable DAG 和适配器契约已提供；真实 Temporal worker/history/retry/continue-as-new 尚未执行 | NOT_RUN |
 | 隔离 | L0 本地 provider 和 L1/L2 hardened container command builder；生产 Firecracker/gVisor/Kata 等尚未执行 | NOT_RUN |
