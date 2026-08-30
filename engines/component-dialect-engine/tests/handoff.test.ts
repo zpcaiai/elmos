@@ -101,6 +101,67 @@ describe("a re-run never destroys hand-written code", () => {
   }, 120000);
 });
 
+describe("handoff identity is component-granular", () => {
+  const MULTI_BLOCKED = `
+function First({ label }: { label: string }) {
+  useEffect(() => { console.log(label); }, [label]);
+  return (<div>{label}</div>);
+}
+
+function Second({ label }: { label: string }) {
+  useEffect(() => { console.log(label, 2); }, [label]);
+  return (<div>{label}</div>);
+}
+`;
+
+  it("protects two independently ported Mini Program components declared in one source file", async () => {
+    const repo = makeRepo({ "Pair.tsx": MULTI_BLOCKED });
+    const destination = fs.mkdtempSync(path.join(os.tmpdir(), "elmos-ho-multi-"));
+    await runRepository({ repository: repo, sourceFramework: "react", targetFramework: "miniprogram", destination, skipExecution: true });
+
+    for (const name of ["First", "Second"]) {
+      const target = path.join("components", name);
+      const dir = path.join(destination, target);
+      fs.writeFileSync(path.join(dir, "index.js"), `Component({ data: { name: "${name}" } });\n`);
+      fs.writeFileSync(path.join(dir, "index.wxml"), `<view>${name}</view>\n`);
+      markPorted({
+        destination,
+        repository: repo,
+        sourcePath: path.join("src", "components", "Pair.tsx"),
+        componentName: name,
+        targetPath: target,
+        assignee: "migration-team",
+      });
+    }
+
+    const coverage = await runRepository({ repository: repo, sourceFramework: "react", targetFramework: "miniprogram", destination, skipExecution: true });
+    expect(coverage.totals).toEqual({ discovered: 2, converted: 0, blocked: 0, manuallyPorted: 2 });
+    expect(coverage.deliveryStatus).toBe("COMPLETE_WITH_HANDOFF");
+    expect(loadManifest(destination).entries.map((entry) => entry.componentName)).toEqual(["First", "Second"]);
+    expect(fs.readFileSync(path.join(destination, "components", "First", "index.js"), "utf8")).not.toContain("NOT TRANSLATED");
+    expect(fs.readFileSync(path.join(destination, "components", "Second", "index.js"), "utf8")).not.toContain("NOT TRANSLATED");
+  }, 180000);
+
+  it("does not let one component mark hide its blocked sibling", async () => {
+    const repo = makeRepo({ "Pair.tsx": MULTI_BLOCKED });
+    const destination = fs.mkdtempSync(path.join(os.tmpdir(), "elmos-ho-multi-partial-"));
+    await runRepository({ repository: repo, sourceFramework: "react", targetFramework: "miniprogram", destination, skipExecution: true });
+    const target = path.join("components", "First");
+    fs.writeFileSync(path.join(destination, target, "index.js"), `Component({ data: { name: "First" } });\n`);
+    markPorted({
+      destination,
+      repository: repo,
+      sourcePath: path.join("src", "components", "Pair.tsx"),
+      componentName: "First",
+      targetPath: target,
+    });
+
+    const coverage = await runRepository({ repository: repo, sourceFramework: "react", targetFramework: "miniprogram", destination, skipExecution: true });
+    expect(coverage.totals).toEqual({ discovered: 2, converted: 0, blocked: 1, manuallyPorted: 1 });
+    expect(coverage.files.find((item) => item.targetPath.endsWith("Second"))?.status).toBe("BLOCKED");
+  }, 180000);
+});
+
 describe("a stale hand port is loud, never silent", () => {
   it("flags SOURCE_CHANGED_SINCE_PORT when the source moves on", async () => {
     const { repo, destination } = await migrationWithHandPort();

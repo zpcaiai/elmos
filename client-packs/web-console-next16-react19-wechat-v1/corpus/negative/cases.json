@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "independence": "negative",
+  "cases": [
+    {
+      "id": "neg-source-drift",
+      "expected": "closure validation fails"
+    },
+    {
+      "id": "neg-api-base-absent",
+      "expected": "configuration-required and no request"
+    },
+    {
+      "id": "neg-stale-response",
+      "expected": "epoch mismatch suppresses setData"
+    },
+    {
+      "id": "neg-placeholder",
+      "expected": "target validation fails"
+    }
+  ]
+}

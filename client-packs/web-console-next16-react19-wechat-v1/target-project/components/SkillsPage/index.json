@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "skills-workspace": "/components/SkillsWorkspace/index"
+  }
+}

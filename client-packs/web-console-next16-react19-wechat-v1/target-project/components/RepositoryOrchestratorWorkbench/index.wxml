@@ -1,0 +1,16 @@
+<view class="card" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <view class="source-labels">
+    <text class="source-label">/5</text>
+    <text class="source-label">/api/repository-orchestrator/models</text>
+    <text class="source-label">/api/repository-orchestrator/preflight</text>
+    <text class="source-label">1.0</text>
+    <text class="source-label">784 路线精确语义重写</text>
+    <text class="source-label">AST 抽象树提取与依赖图</text>
+  </view>
+  <view class="actions">
+    <button wx:for="{{actions}}" wx:key="id" size="mini" data-action="{{item.id}}" bindtap="runAction">{{item.label}}</button>
+  </view>
+  <view wx:for="{{rows}}" wx:key="key" class="data-row"><text>{{item.key}}</text><text>{{item.value}}</text></view>
+</view>

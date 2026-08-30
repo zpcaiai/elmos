@@ -1,0 +1,16 @@
+<view class="card" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <view class="source-labels">
+    <text class="source-label">AST 拓扑与数据流</text>
+    <text class="source-label">Action Cache: CAS Enabled</text>
+    <text class="source-label">C# (.NET 9 / Modern)</text>
+    <text class="source-label">C# (.NET Core)</text>
+    <text class="source-label">COBOL (Mainframe / IBM)</text>
+    <text class="source-label">Canonical Type Algebra</text>
+  </view>
+  <view class="actions">
+    <button wx:for="{{actions}}" wx:key="id" size="mini" data-action="{{item.id}}" bindtap="runAction">{{item.label}}</button>
+  </view>
+  <view wx:for="{{rows}}" wx:key="key" class="data-row"><text>{{item.key}}</text><text>{{item.value}}</text></view>
+</view>

@@ -1,0 +1,114 @@
+{
+  "profile_key": "web-console-next16-react19-wechat-v1-acceptance",
+  "version": "1.0.0",
+  "owner": "elmos-web-console-miniapp-review",
+  "browser_matrix": [],
+  "device_matrix": [
+    "wechat-devtools-emulator-NOT_RUN",
+    "wechat-physical-device-NOT_RUN"
+  ],
+  "locales": [
+    "zh-CN",
+    "en-US"
+  ],
+  "themes": [
+    "wechat-candidate-default"
+  ],
+  "rendering": {
+    "modes": [
+      "native-wxml"
+    ],
+    "webview": "forbidden",
+    "official_runtime_state": "NOT_RUN"
+  },
+  "visual": {
+    "baseline_policy": "approved-only-no-auto-update",
+    "max_unapproved_differences": 0,
+    "state": "NOT_RUN"
+  },
+  "accessibility": {
+    "standard": "source-contract-plus-native-control-review",
+    "critical_violations": null,
+    "automated_state": "NOT_RUN",
+    "assistive_technology_state": "NOT_RUN"
+  },
+  "interaction": {
+    "p0_pass_rate": 1,
+    "state": "NOT_RUN"
+  },
+  "performance": {
+    "budgets": {
+      "launch_ms": 2500,
+      "interaction_ms": 150
+    },
+    "state": "NOT_RUN"
+  },
+  "seo": {
+    "required": false,
+    "reason": "native Mini Program"
+  },
+  "i18n": {
+    "missing_keys": null,
+    "state": "NOT_RUN"
+  },
+  "security": {
+    "authorization_regressions": null,
+    "forbidden_generated_capabilities": [
+      "upload",
+      "review",
+      "release",
+      "payment",
+      "refund",
+      "undeclared-network"
+    ],
+    "state": "NOT_RUN"
+  },
+  "p0_journeys": [
+    {
+      "id": "catalog-open-component",
+      "steps": [
+        "open catalog",
+        "select every migrated component",
+        "observe non-placeholder native view"
+      ],
+      "source_expected": "all 71 source components have an explicit target implementation",
+      "target_runtime_state": "NOT_RUN"
+    },
+    {
+      "id": "async-resource-cancellation",
+      "steps": [
+        "configure approved API base",
+        "start request",
+        "detach component",
+        "observe task abort and stale response suppression"
+      ],
+      "source_expected": "no write after unmount and no stale response overwrite",
+      "target_runtime_state": "NOT_RUN"
+    },
+    {
+      "id": "platform-semantics",
+      "steps": [
+        "open table disclosure icon slot and document-root ports",
+        "exercise native controls"
+      ],
+      "source_expected": "explicit target semantics without silent drop",
+      "target_runtime_state": "NOT_RUN"
+    }
+  ],
+  "thresholds": {
+    "source_fingerprint_coverage": 1,
+    "ui_ir_source_map_coverage": 1,
+    "implementation_coverage": 1,
+    "unhandled_components": 0,
+    "target_build_green_rate": 1,
+    "target_startup_or_launch_rate": 1,
+    "p0_journey_pass_rate": 1,
+    "visual_regressions": 0,
+    "critical_accessibility_violations": 0
+  },
+  "exclusions": [
+    "upload review release payment refund",
+    "production credentials and data",
+    "reverse route"
+  ]
+}

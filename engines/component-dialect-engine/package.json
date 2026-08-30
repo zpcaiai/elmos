@@ -10,6 +10,8 @@
     "build": "tsc -p tsconfig.json",
     "test": "jest",
     "miniapp-worker": "node dist/miniapp-worker.js",
+    "generate:web-console-wechat": "npm run build && node ../../client-packs/web-console-next16-react19-wechat-v1/tooling/generate-pack.mjs",
+    "validate:web-console-wechat": "npm run build && node ../../client-packs/web-console-next16-react19-wechat-v1/tooling/validate-pack.mjs",
     "check": "npm run build && npm test"
   },
   "dependencies": {

@@ -1,0 +1,15 @@
+<view class="card" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <view class="chart" wx:if="{{rows.length}}">
+    <view wx:for="{{rows}}" wx:key="key" class="bar-row"><text class="bar-label">{{item.key}}</text><view class="bar" style="width: {{item.width}}%"></view><text>{{item.value}}</text></view>
+  </view>
+  <view wx:else class="source-labels">
+    <text class="source-label">/api/usage/alerts</text>
+    <text class="source-label">/api/usage/current</text>
+    <text class="source-label">AbortError</text>
+    <text class="source-label">CURRENT</text>
+    <text class="source-label">Content-Type</text>
+    <text class="source-label">Credit</text>
+  </view>
+</view>

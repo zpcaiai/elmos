@@ -1,0 +1,16 @@
+<view class="card" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <view class="source-labels">
+    <text class="source-label">/api/capabilities/product</text>
+    <text class="source-label">1,351 Skills</text>
+    <text class="source-label">1,351 Skills Total</text>
+    <text class="source-label">18 个 Batches (A–R)</text>
+    <text class="source-label">2-digit</text>
+    <text class="source-label">41 大能力 Pack (v3.0.0)</text>
+  </view>
+  <view class="actions">
+    <button wx:for="{{actions}}" wx:key="id" size="mini" data-action="{{item.id}}" bindtap="runAction">{{item.label}}</button>
+  </view>
+  <view wx:for="{{rows}}" wx:key="key" class="data-row"><text>{{item.key}}</text><text>{{item.value}}</text></view>
+</view>

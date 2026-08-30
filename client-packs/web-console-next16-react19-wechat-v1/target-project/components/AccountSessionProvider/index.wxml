@@ -1,0 +1,4 @@
+<view class="provider" data-component="{{componentName}}">
+  <slot />
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+</view>

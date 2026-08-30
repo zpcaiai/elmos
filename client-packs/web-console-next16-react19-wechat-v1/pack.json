@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "pack_key": "web-console-next16-react19-wechat-v1",
+  "version": "1.0.0",
+  "mode": "migration",
+  "status": "experimental",
+  "owner": "elmos-frontend-client-engine",
+  "maintenance_owner": "elmos-client-modernization-maintainers",
+  "ux_owner": "elmos-web-console-miniapp-review",
+  "accessibility_owner": "elmos-accessibility-review",
+  "source": {
+    "stack": "nextjs-react-web-console",
+    "versions": [
+      "next-16.3.0-react-19.2.7-typescript-5.9.2"
+    ],
+    "language": "typescript",
+    "language_versions": [
+      "5.9.2"
+    ],
+    "runtime": "nodejs",
+    "runtime_versions": [
+      "26.0.0"
+    ],
+    "build_tool": "next-16.3.0",
+    "package_manager": "pnpm-10.12.4",
+    "router": [
+      "next-app-router-16.3.0"
+    ],
+    "renderer": [
+      "react-dom-19.2.7",
+      "next-server-client-components-16.3.0"
+    ],
+    "state": [
+      "react-hooks-19.2.7",
+      "context-providers"
+    ],
+    "forms": [
+      "react-controlled-and-uncontrolled-forms"
+    ],
+    "styling": [
+      "css-modules",
+      "global-css",
+      "inline-style"
+    ],
+    "design_system": [
+      "web-console-local-design-system"
+    ],
+    "api_client": [
+      "fetch-relative-api-contract"
+    ],
+    "identity": [
+      "account-session-context",
+      "server-cookie-session"
+    ],
+    "i18n": [
+      "zh-CN",
+      "en-US"
+    ],
+    "test_tools": [
+      "typescript-5.9.2",
+      "next-build-16.3.0",
+      "playwright-1.61.1"
+    ],
+    "browsers": [
+      "chromium-playwright-source-NOT_RUN"
+    ],
+    "devices": []
+  },
+  "target": {
+    "stack": "wechat-native-miniapp-candidate",
+    "versions": [
+      "wechat-base-library-3.9.1"
+    ],
+    "language": "javascript",
+    "language_versions": [
+      "ecmascript-2022"
+    ],
+    "runtime": "wechat-miniapp-runtime-candidate",
+    "runtime_versions": [
+      "3.9.1"
+    ],
+    "build_tool": "wechat-devtools-2.01.2510290",
+    "package_manager": "none-native-project",
+    "router": [
+      "app-json-native-pages-v1"
+    ],
+    "renderer": [
+      "native-wxml"
+    ],
+    "state": [
+      "component-data-setData",
+      "typed-plain-state-decoder-v1"
+    ],
+    "forms": [
+      "native-input-change-contract-v1"
+    ],
+    "styling": [
+      "native-wxss",
+      "css-module-token-map-v1"
+    ],
+    "design_system": [
+      "web-console-wechat-token-adapter-v1"
+    ],
+    "api_client": [
+      "cancellable-wx-request-adapter-v1"
+    ],
+    "identity": [
+      "storage-backed-session-adapter-v1"
+    ],
+    "i18n": [
+      "zh-CN-source-copy-candidate",
+      "en-US-source-copy-candidate"
+    ],
+    "test_tools": [
+      "component-dialect-real-wxml-parser",
+      "wechat-devtools-2.01.2510290-local-installation"
+    ],
+    "browsers": [],
+    "devices": [
+      "wechat-devtools-emulator-NOT_RUN",
+      "wechat-physical-device-NOT_RUN"
+    ]
+  },
+  "scope": {
+    "journeys": [
+      "catalog-open-component",
+      "configure-api-base",
+      "load-workbench-data",
+      "session-and-preference-provider",
+      "table-disclosure-icon-slot-rendering"
+    ],
+    "routes": [
+      "/account",
+      "/admin",
+      "/commercialization",
+      "/frontend",
+      "/generation",
+      "/governance",
+      "/help",
+      "/intake",
+      "/login",
+      "/migration",
+      "/migration/sql",
+      "/observability",
+      "/orchestration",
+      "/",
+      "/playground",
+      "/pricing",
+      "/proof-loop",
+      "/repositories",
+      "/skills",
+      "/smoke",
+      "/spring",
+      "/translation"
+    ],
+    "component_roots": [
+      "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "apps/web-console/app/account/AccountWalletPanel.tsx",
+      "apps/web-console/app/account/page.tsx",
+      "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "apps/web-console/app/admin/page.tsx",
+      "apps/web-console/app/admin/PlatformJobsPanel.tsx",
+      "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "apps/web-console/app/commercialization/CommercializationConsole.tsx",
+      "apps/web-console/app/commercialization/page.tsx",
+      "apps/web-console/app/components/AccountSessionProvider.tsx",
+      "apps/web-console/app/components/AppShell.tsx",
+      "apps/web-console/app/components/Icon.tsx",
+      "apps/web-console/app/components/ProjectEvidenceCharts.tsx",
+      "apps/web-console/app/components/RuntimeDeploymentGuide.tsx",
+      "apps/web-console/app/components/SmokeRunButton.tsx",
+      "apps/web-console/app/components/StatusChip.tsx",
+      "apps/web-console/app/components/UiPreferencesProvider.tsx",
+      "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "apps/web-console/app/frontend/page.tsx",
+      "apps/web-console/app/generation/page.tsx",
+      "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "apps/web-console/app/governance/GovernanceWorkspace.tsx",
+      "apps/web-console/app/governance/page.tsx",
+      "apps/web-console/app/help/HelpCenter.tsx",
+      "apps/web-console/app/help/page.tsx",
+      "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "apps/web-console/app/intake/page.tsx",
+      "apps/web-console/app/layout.tsx",
+      "apps/web-console/app/login/page.tsx",
+      "apps/web-console/app/migration/MigrationStudio.tsx",
+      "apps/web-console/app/migration/page.tsx",
+      "apps/web-console/app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "apps/web-console/app/migration/sql/page.tsx",
+      "apps/web-console/app/observability/ObservabilityWorkspace.tsx",
+      "apps/web-console/app/observability/page.tsx",
+      "apps/web-console/app/orchestration/page.tsx",
+      "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "apps/web-console/app/page.tsx",
+      "apps/web-console/app/playground/page.tsx",
+      "apps/web-console/app/playground/PlaygroundWorkspace.tsx",
+      "apps/web-console/app/pricing/BillingActions.tsx",
+      "apps/web-console/app/pricing/page.tsx",
+      "apps/web-console/app/pricing/UsageDashboard.tsx",
+      "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "apps/web-console/app/proof-loop/page.tsx",
+      "apps/web-console/app/repositories/page.tsx",
+      "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "apps/web-console/app/skills/page.tsx",
+      "apps/web-console/app/skills/PrecisionMigrationJobs.tsx",
+      "apps/web-console/app/skills/SkillsWorkspace.tsx",
+      "apps/web-console/app/smoke/page.tsx",
+      "apps/web-console/app/smoke/SmokeConsole.tsx",
+      "apps/web-console/app/spring/page.tsx",
+      "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "apps/web-console/app/translation/page.tsx",
+      "apps/web-console/app/translation/TranslationStudio.tsx"
+    ],
+    "excluded": [
+      "reverse MiniApp-to-frontend route",
+      "upload review release payment refund",
+      "production data and credentials",
+      "certification without official runtime device and independent evidence"
+    ]
+  },
+  "paths": {
+    "source_fingerprint": "source-fingerprint/fingerprint.json",
+    "ui_ir": "ui-ir/model.json",
+    "target_profile": "target-profile/profile.json",
+    "acceptance_profile": "acceptance/acceptance-profile.json",
+    "support_matrix": "support-matrix.json",
+    "evidence": "certification/evidence.json",
+    "certification": "certification/certification.json",
+    "component_closure": "transformations/component-migration-closure.json",
+    "target_project": "target-project"
+  },
+  "gates": {
+    "build": "required-NOT_RUN",
+    "startup_or_launch": "required-NOT_RUN",
+    "p0_journeys": "required-NOT_RUN",
+    "visual": "required-NOT_RUN",
+    "accessibility": "required-NOT_RUN",
+    "security": "required-NOT_RUN",
+    "holdout": "required-NOT_RUN"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "pack_key": "web-console-next16-react19-wechat-v1",
+  "status": "NOT_RUN",
+  "toolchain": "wechat-devtools-2.01.2510290",
+  "command": "/Applications/wechatwebdevtools.app/Contents/MacOS/cli open --project client-packs/web-console-next16-react19-wechat-v1/target-project",
+  "executor": "codex-local-wechat-devtools-cli",
+  "project_open": {
+    "status": "PASSED_LOCAL_TOOL_OPEN",
+    "exit_code": 0,
+    "result": "The official IDE server started and accepted the target project.",
+    "login": false,
+    "evidence_scope": "Project-open evidence only; it does not establish target compilation, preview, emulator, physical-device, independent, production, or certification evidence."
+  },
+  "official_target_build": "NOT_RUN",
+  "artifact_digest": null,
+  "preview": "NOT_RUN",
+  "emulator": "NOT_RUN",
+  "physical_device": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,11 @@
+<view class="shell" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <slot />
+  <view class="source-labels">
+    <text class="source-label">#main-content</text>
+    <text class="source-label">skip-link</text>
+    <text class="source-label">zh-CN</text>
+    <text class="source-label">跳到主要内容</text>
+  </view>
+</view>

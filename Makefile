@@ -247,7 +247,9 @@ frontend-to-miniapp-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --refresh-owned; \
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --check; \
 	node client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/replay-local-runtime.mjs --check; \
-	python3 scripts/batch32/run_client_gate.py client-packs/frontend-to-miniapp-vue3-wechat-v1
+	python3 scripts/batch32/run_client_gate.py client-packs/frontend-to-miniapp-vue3-wechat-v1; \
+	cd engines/component-dialect-engine && npm run validate:web-console-wechat; \
+	cd ../.. && python3 scripts/batch32/run_client_gate.py client-packs/web-console-next16-react19-wechat-v1
 
 .PHONY: multimodal-intake-skills
 multimodal-intake-skills:
@@ -661,4 +663,3 @@ etgb-full-product-skills:
 functional-assurance-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python3 tooling/integrate_functional_assurance_certification_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/functional-assurance-engine/src $(UV) run --no-project --quiet --with pytest --with pyyaml==6.0.2 --with jsonschema==4.25.1 python3 -m pytest engines/functional-assurance-engine/tests -v
-

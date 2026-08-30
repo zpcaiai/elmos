@@ -1,0 +1,409 @@
+{
+  "schema_version": 1,
+  "pack_key": "web-console-next16-react19-wechat-v1",
+  "tuples": [
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/account",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/admin",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/commercialization",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/frontend",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/generation",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/governance",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/help",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/intake",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/login",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/migration",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/migration/sql",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/observability",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/orchestration",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/playground",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/pricing",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/proof-loop",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/repositories",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/skills",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/smoke",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/spring",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_stack": "nextjs-react-web-console",
+      "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
+      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "target_version": "wechat-base-library-3.9.1",
+      "target_toolchain_version": "wechat-devtools-2.01.2510290",
+      "generator_profile": "2026-08-30.1",
+      "journey": "web-console-component-catalog",
+      "route": "/translation",
+      "status": "experimental",
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "ui-ir/model.json"
+      ],
+      "runtime_state": "LOCAL_GENERATED_NOT_OFFICIALLY_EXECUTED",
+      "certification": "NOT_CERTIFIED"
+    }
+  ],
+  "recertification_triggers": [
+    "source revision or tracked file digest change",
+    "component inventory or blocker change",
+    "Next React TypeScript pnpm Node version change",
+    "WeChat base library DevTools runtime or generator change",
+    "adapter policy IR corpus baseline or acceptance change"
+  ]
+}

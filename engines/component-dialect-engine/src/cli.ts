@@ -72,10 +72,10 @@ Commands:
   repository  --repository <dir> --source-framework <f> --target-framework <f>
               --destination <dir> [--skip-execution] [--verify]
 
-  handoff     assign      --destination <dir> --source-path <p> --assignee <who> [--note <text>]
+  handoff     assign      --destination <dir> --source-path <p> [--component-name <n>] --assignee <who> [--note <text>]
               mark-ported --destination <dir> --repository <dir> --source-path <p> --target-path <p>
-                          [--assignee <who>] [--note <text>]
-              unmark      --destination <dir> --source-path <p>
+                          [--component-name <n>] [--assignee <who>] [--note <text>]
+              unmark      --destination <dir> --source-path <p> [--component-name <n>]
               status      --destination <dir>
               A component marked hand-ported is never overwritten by a
               later 'repository' run, and that run reports it stale if
@@ -179,6 +179,7 @@ function commandHandoff(args: Args): number {
     const entry = assign({
       destination: required(args, "destination"),
       sourcePath: required(args, "source-path"),
+      ...(args.values["component-name"] !== undefined ? { componentName: args.values["component-name"] } : {}),
       assignee: required(args, "assignee"),
       ...(args.values["note"] !== undefined ? { note: args.values["note"] } : {}),
     });
@@ -190,6 +191,7 @@ function commandHandoff(args: Args): number {
       destination: required(args, "destination"),
       repository: required(args, "repository"),
       sourcePath: required(args, "source-path"),
+      ...(args.values["component-name"] !== undefined ? { componentName: args.values["component-name"] } : {}),
       targetPath: required(args, "target-path"),
       ...(args.values["assignee"] !== undefined ? { assignee: args.values["assignee"] } : {}),
       ...(args.values["note"] !== undefined ? { note: args.values["note"] } : {}),
@@ -198,7 +200,11 @@ function commandHandoff(args: Args): number {
     return 0;
   }
   if (sub === "unmark") {
-    console.log(JSON.stringify(unmark(required(args, "destination"), required(args, "source-path")), null, 2));
+    console.log(JSON.stringify(unmark(
+      required(args, "destination"),
+      required(args, "source-path"),
+      args.values["component-name"],
+    ), null, 2));
     return 0;
   }
   if (sub === "status") {
