@@ -205,6 +205,18 @@ def main() -> int:
         ):
             if phrase not in migration:
                 fail(f"migration is missing required production boundary: {phrase}")
+        stage_migration = migration_dir / "V78__production_workload_stage_lifecycle.sql"
+        stage_sql = stage_migration.read_text(encoding="utf-8")
+        for phrase in (
+            "CREATE OR REPLACE FUNCTION orchestration.advance_job_stages",
+            "STAGE_TENANT_CONTEXT_REQUIRED",
+            "status = 'SUCCEEDED'",
+            "status = 'FAILED'",
+        ):
+            if phrase not in stage_sql:
+                fail(f"workload stage lifecycle is missing required boundary: {phrase}")
+        if "js.status IN ('READY', 'RUNNING')" not in migration:
+            fail("fair scheduler can bypass a blocked workload stage")
 
         role_script = (root / "deploy/production/postgres/production_runtime_roles.sql").read_text(encoding="utf-8")
         for role in (
@@ -366,8 +378,8 @@ def main() -> int:
                 fail(f"external deployment gate is missing required pre-mutation control: {phrase}")
 
         source_identity = json.loads((root / "docs/production-runtime/SOURCE-IDENTITY.json").read_text(encoding="utf-8"))
-        if source_identity.get("database_migration") != str(migration_path.relative_to(root)):
-            fail("source identity is not bound to the active V77 migration")
+        if source_identity.get("database_migration") != str(stage_migration.relative_to(root)):
+            fail("source identity is not bound to the active production stage lifecycle migration")
         actual_test_count = sum(len(JUNIT_TEST.findall(path.read_text(encoding="utf-8"))) for test_root in test_roots for path in test_root.rglob("*.java"))
         if source_identity.get("local_engineering_evidence", {}).get("tests") != actual_test_count:
             fail("source identity test count does not match the executable JUnit inventory")

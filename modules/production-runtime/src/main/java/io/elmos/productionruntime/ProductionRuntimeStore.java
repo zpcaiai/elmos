@@ -26,6 +26,8 @@ public interface ProductionRuntimeStore {
     void upsertAdmissionPolicy(ProductionRuntimeModels.AdmissionPolicy policy);
     UUID createProject(ProjectRequest request);
     UUID createJob(JobRequest request);
+    /** Advance the database-owned workload stage state machine for one job. */
+    int advanceJobStages(UUID tenantId, UUID jobId);
     UUID createWorkItem(WorkItemRequest request);
     void addDependency(UUID tenantId, UUID workItemId, UUID dependsOnWorkItemId);
     void registerWorker(WorkerRegistration registration);

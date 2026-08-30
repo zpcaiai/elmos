@@ -180,6 +180,104 @@ class ProductionRuntimePostgresTest {
     }
 
     @Test
+    void blockedWorkloadStageCannotRunAndCompletingItsPredecessorActivatesIt() {
+        UUID tenant = UUID.randomUUID();
+        UUID account = UUID.randomUUID();
+        var tenantAccount = runtime.provisionTenant(tenant, account, "stage-" + tenant, "CNY");
+        UUID project = runtime.createProject(new ProjectRequest(
+                tenant, account, "stage-project-" + tenant, "MODERNIZATION"));
+        UUID job = runtime.createJob(new JobRequest(
+                tenant, account, project, "SPRING_MODERNIZATION",
+                List.of("inventory", "compile"), 2, 100));
+        List<UUID> stages = jdbc.sql("""
+                        select id from orchestration.job_stages
+                         where tenant_id = :tenantId and job_id = :jobId
+                         order by sequence_no
+                        """)
+                .param("tenantId", tenant).param("jobId", job)
+                .query(UUID.class).list();
+        assertEquals(2, stages.size());
+        UUID firstItem = runtime.createWorkItem(new WorkItemRequest(
+                tenant, job, stages.get(0), "inventory", "repo/source",
+                10, BigDecimal.ONE, 1, "stage-first-" + tenant));
+        UUID secondItem = runtime.createWorkItem(new WorkItemRequest(
+                tenant, job, stages.get(1), "compile", "repo/target",
+                10, BigDecimal.ONE, 1, "stage-second-" + tenant));
+
+        assertEquals("PENDING", status(tenant, secondItem));
+        assertEquals("BLOCKED", stageStatus(tenant, stages.get(1)));
+
+        UUID worker = UUID.randomUUID();
+        runtime.registerWorker(new WorkerRegistration(
+                worker, "stage-worker-" + worker, "POLYGLOT",
+                "http://worker.invalid/" + worker, "local", "local-1",
+                Map.of("routeTuples", List.of(
+                        "SPRING_MODERNIZATION:inventory", "SPRING_MODERNIZATION:compile"),
+                        "maxConcurrent", 2)));
+        billing.applyVerifiedTopUp(new TopUpRequest(
+                tenant, tenantAccount.walletId(), "test-pay", "stage-payment-" + tenant,
+                BigDecimal.TEN, "stage-payment-hash"));
+        assertTrue(runtime.selectFairReady(100).stream()
+                .anyMatch(item -> item.workItemId().equals(firstItem)));
+        assertTrue(runtime.selectFairReady(100).stream()
+                .noneMatch(item -> item.workItemId().equals(secondItem)));
+
+        var dispatch = coordinator.dispatch(new DispatchRequest(
+                tenant, project, job, firstItem, tenantAccount.walletId(), worker,
+                BigDecimal.ONE, Instant.now().plusSeconds(300), Duration.ofSeconds(30),
+                "stage-reserve-" + tenant, "stage-dispatch-" + tenant, Map.of()),
+                envelope -> WorkerGatewayResult.ACKED);
+        coordinator.complete(new ProductionRuntimeModels.Completion(
+                tenant, firstItem, dispatch.envelope().attemptId(), worker,
+                dispatch.envelope().fencingToken(), AttemptStatus.SUCCEEDED, null, null), null, null);
+
+        assertEquals("SUCCEEDED", stageStatus(tenant, stages.get(0)));
+        assertEquals("READY", stageStatus(tenant, stages.get(1)));
+        assertEquals("READY", status(tenant, secondItem));
+        assertEquals("RUNNING", jdbc.sql("select status from orchestration.jobs where tenant_id = :tenantId and id = :jobId")
+                .param("tenantId", tenant).param("jobId", job).query(String.class).single());
+    }
+
+    @Test
+    void dependencyCycleAndCrossJobDependencyAreRejectedBeforePersistence() {
+        Fixture first = fixture();
+        UUID secondItem = runtime.createWorkItem(new WorkItemRequest(
+                first.tenantId, first.jobId, first.stageId, "inventory", "repo/second",
+                10, BigDecimal.ONE, 1, "dependency-second-" + first.tenantId));
+        runtime.addDependency(first.tenantId, first.workItemId, secondItem);
+        ProductionRuntimeException cycle = assertThrows(
+                ProductionRuntimeException.class,
+                () -> runtime.addDependency(first.tenantId, secondItem, first.workItemId));
+        assertEquals("WORK_ITEM_DEPENDENCY_CYCLE", cycle.code());
+
+        UUID otherJob = runtime.createJob(new JobRequest(
+                first.tenantId, first.accountId, first.projectId,
+                "SPRING_MODERNIZATION", List.of("inventory"), 2, 100));
+        UUID otherStage = jdbc.sql("select id from orchestration.job_stages where tenant_id = :tenantId and job_id = :jobId")
+                .param("tenantId", first.tenantId).param("jobId", otherJob)
+                .query(UUID.class).single();
+        UUID otherItem = runtime.createWorkItem(new WorkItemRequest(
+                first.tenantId, otherJob, otherStage, "inventory", "repo/other-job",
+                10, BigDecimal.ONE, 1, "dependency-other-job-" + first.tenantId));
+        ProductionRuntimeException mismatch = assertThrows(
+                ProductionRuntimeException.class,
+                () -> runtime.addDependency(first.tenantId, secondItem, otherItem));
+        assertEquals("WORK_ITEM_DEPENDENCY_JOB_MISMATCH", mismatch.code());
+    }
+
+    private String status(UUID tenantId, UUID workItemId) {
+        return jdbc.sql("select status from orchestration.work_items where tenant_id = :tenantId and id = :id")
+                .param("tenantId", tenantId).param("id", workItemId)
+                .query(String.class).single();
+    }
+
+    private String stageStatus(UUID tenantId, UUID stageId) {
+        return jdbc.sql("select status from orchestration.job_stages where tenant_id = :tenantId and id = :id")
+                .param("tenantId", tenantId).param("id", stageId)
+                .query(String.class).single();
+    }
+
+    @Test
     void modelCallReplayIsStableAndProviderUncertaintyBlocksBlindRetry() {
         Fixture fixture = fixture();
         billing.applyVerifiedTopUp(new TopUpRequest(fixture.tenantId, fixture.walletId, "test-pay", "payment-" + fixture.tenantId, BigDecimal.TEN, "hash-replay"));

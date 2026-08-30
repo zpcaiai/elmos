@@ -27,5 +27,9 @@ public final class ProductionRuntimeScheduler {
 
     public int resumeAfterTopUp(UUID tenantId, int limit) { return store.resumeCreditWaiting(tenantId, limit); }
 
+    public int advanceJobStages(UUID tenantId, UUID jobId) {
+        return store.advanceJobStages(tenantId, jobId);
+    }
+
     public ProgressSnapshot rebuildProgress(UUID tenantId, UUID jobId) { return store.rebuildProgress(tenantId, jobId); }
 }

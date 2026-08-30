@@ -132,17 +132,47 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
     }
 
     @Override
+    public int advanceJobStages(UUID tenantId, UUID jobId) {
+        ProductionRuntimeModels.require(tenantId, "tenantId");
+        ProductionRuntimeModels.require(jobId, "jobId");
+        return inTenant(tenantId, () -> jdbc.sql(
+                        "select orchestration.advance_job_stages(:tenantId, :jobId)")
+                .param("tenantId", tenantId)
+                .param("jobId", jobId)
+                .query(Integer.class)
+                .single());
+    }
+
+    @Override
     public UUID createWorkItem(WorkItemRequest request) {
         return inTenant(request.tenantId(), () -> {
             assertStageJob(request.tenantId(), request.jobId(), request.stageId());
+            String stageStatus = jdbc.sql("select status from orchestration.job_stages where tenant_id = :tenantId and id = :stageId for update")
+                    .param("tenantId", request.tenantId())
+                    .param("stageId", request.stageId())
+                    .query(String.class)
+                    .single();
+            if (stageStatus.equals("SUCCEEDED") || stageStatus.equals("FAILED")
+                    || stageStatus.equals("CANCELLED")) {
+                throw new ProductionRuntimeException(
+                        "STAGE_NOT_OPEN", "cannot add work to a terminal workload stage");
+            }
+            String initialStatus = stageStatus.equals("READY") || stageStatus.equals("RUNNING")
+                    ? "READY" : "PENDING";
             UUID itemId = UUID.randomUUID();
             jdbc.sql("""
                     insert into orchestration.work_items
                       (id, tenant_id, job_id, stage_id, work_type, resource_key, status,
                        estimated_tokens, estimated_cost, max_retries, idempotency_key, ready_at)
-                    values (:id, :tenantId, :jobId, :stageId, :workType, :resourceKey, 'READY',
-                            :estimatedTokens, :estimatedCredits, :maxRetries, :idempotencyKey, now())
-                    """).param("id", itemId).param("tenantId", request.tenantId()).param("jobId", request.jobId()).param("stageId", request.stageId()).param("workType", request.workType()).param("resourceKey", request.resourceKey()).param("estimatedTokens", request.estimatedTokens()).param("estimatedCredits", request.estimatedCredits()).param("maxRetries", request.maxRetries()).param("idempotencyKey", request.idempotencyKey()).update();
+                    values (:id, :tenantId, :jobId, :stageId, :workType, :resourceKey, :status,
+                            :estimatedTokens, :estimatedCredits, :maxRetries, :idempotencyKey,
+                            case when :status = 'READY' then now() else null end)
+                    """).param("id", itemId).param("tenantId", request.tenantId()).param("jobId", request.jobId()).param("stageId", request.stageId()).param("workType", request.workType()).param("resourceKey", request.resourceKey()).param("status", initialStatus).param("estimatedTokens", request.estimatedTokens()).param("estimatedCredits", request.estimatedCredits()).param("maxRetries", request.maxRetries()).param("idempotencyKey", request.idempotencyKey()).update();
+            jdbc.sql("select orchestration.advance_job_stages(:tenantId, :jobId)")
+                    .param("tenantId", request.tenantId())
+                    .param("jobId", request.jobId())
+                    .query(Integer.class)
+                    .single();
             return itemId;
         });
     }
@@ -153,10 +183,42 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
             if (workItemId.equals(dependsOnWorkItemId)) throw new ProductionRuntimeException("WORK_ITEM_DEPENDENCY_CYCLE", "work item cannot depend on itself");
             assertWorkItemTenant(tenantId, workItemId);
             assertWorkItemTenant(tenantId, dependsOnWorkItemId);
+            var jobs = jdbc.sql("select wi.id, wi.job_id from orchestration.work_items wi where wi.tenant_id = :tenantId and wi.id in (:workItemId, :dependsOn)")
+                    .param("tenantId", tenantId).param("workItemId", workItemId).param("dependsOn", dependsOnWorkItemId)
+                    .query((rs, row) -> Map.entry(rs.getObject("id", UUID.class), rs.getObject("job_id", UUID.class))).list();
+            if (jobs.size() != 2 || !jobs.get(0).getValue().equals(jobs.get(1).getValue())) {
+                throw new ProductionRuntimeException(
+                        "WORK_ITEM_DEPENDENCY_JOB_MISMATCH",
+                        "work item dependencies must belong to the same job");
+            }
+            Boolean cycle = jdbc.sql("""
+                    with recursive reachable(id) as (
+                        select depends_on_work_item_id
+                          from orchestration.work_item_dependencies
+                         where tenant_id = :tenantId and work_item_id = :workItemId
+                        union
+                        select dep.depends_on_work_item_id
+                          from orchestration.work_item_dependencies dep
+                          join reachable r on r.id = dep.work_item_id
+                         where dep.tenant_id = :tenantId
+                    )
+                    select exists (select 1 from reachable where id = :dependsOn)
+                    """)
+                    .param("tenantId", tenantId)
+                    .param("workItemId", dependsOnWorkItemId)
+                    .param("dependsOn", workItemId)
+                    .query(Boolean.class)
+                    .single();
+            if (Boolean.TRUE.equals(cycle)) {
+                throw new ProductionRuntimeException(
+                        "WORK_ITEM_DEPENDENCY_CYCLE",
+                        "dependency would create a cycle");
+            }
             jdbc.sql("insert into orchestration.work_item_dependencies (tenant_id, work_item_id, depends_on_work_item_id) values (:tenantId, :workItemId, :dependsOn) on conflict do nothing")
                     .param("tenantId", tenantId).param("workItemId", workItemId).param("dependsOn", dependsOnWorkItemId).update();
             jdbc.sql("update orchestration.work_items set status = 'PENDING', ready_at = null, updated_at = now() where tenant_id = :tenantId and id = :id and status = 'READY'")
                     .param("tenantId", tenantId).param("id", workItemId).update();
+            advanceJobStages(tenantId, jobs.get(0).getValue());
             return null;
         });
     }
@@ -452,6 +514,16 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
                         .param("tenantId", completion.tenantId()).param("attemptId", completion.attemptId()).param("error", completion.errorCode()).update();
             }
             event(completion.tenantId(), "WORK_ITEM", completion.workItemId(), "ATTEMPT_COMPLETED", Map.of("attemptId", completion.attemptId(), "status", completion.status().name()));
+            UUID jobId = jdbc.sql("select job_id from orchestration.work_items where tenant_id = :tenantId and id = :workItemId")
+                    .param("tenantId", completion.tenantId())
+                    .param("workItemId", completion.workItemId())
+                    .query(UUID.class)
+                    .single();
+            jdbc.sql("select orchestration.advance_job_stages(:tenantId, :jobId)")
+                    .param("tenantId", completion.tenantId())
+                    .param("jobId", jobId)
+                    .query(Integer.class)
+                    .single();
             return null;
         });
     }

@@ -4,7 +4,7 @@
   "archive_sha256": "7685f34453d896747c177b9299c01f1a101c94a1ea4808ae6dc92fec51203c37",
   "immutable_extracted_root": "skills/elmos-production-runtime-skillpack-v1.2.0",
   "implementation_module": "modules/production-runtime",
-  "database_migration": "modules/persistence/src/main/resources/db/migration/V77__production_repository_execution_os.sql",
+  "database_migration": "modules/persistence/src/main/resources/db/migration/V78__production_workload_stage_lifecycle.sql",
   "source_material_policy": "archive-and-documents-are-untrusted-declarative-input; repository-owned handlers are authoritative",
   "local_engineering_evidence": {
     "package_static_validation": "PASS",
@@ -12,7 +12,7 @@
     "java_21_compile": "PASS",
     "control_plane_dependency_compile": "PASS",
     "postgresql_17_5_testcontainers": "PASS",
-    "tests": 56,
+    "tests": 59,
     "empty_database_v77_apply": "PASS",
     "database_role_installation": "PASS",
     "helm_lint_and_template": "PASS",
