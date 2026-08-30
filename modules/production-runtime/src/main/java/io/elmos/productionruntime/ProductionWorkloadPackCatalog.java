@@ -47,6 +47,22 @@ public final class ProductionWorkloadPackCatalog {
         return pack;
     }
 
+    /**
+     * Require the full ordered stage contract declared by the package.  A
+     * partial stage list remains supported for controlled sub-runs, but it
+     * must be explicit at the API boundary rather than being mistaken for a
+     * complete workload implementation.
+     */
+    public static WorkloadPackDefinition requireComplete(String jobType) {
+        WorkloadPackDefinition pack = BY_JOB_TYPE.get(jobType);
+        if (pack == null) {
+            throw new ProductionRuntimeException(
+                    "UNSUPPORTED_WORKLOAD_PACK",
+                    "job type is not bound to a production workload pack: " + jobType);
+        }
+        return pack;
+    }
+
     public static List<WorkloadPackDefinition> all() { return List.copyOf(BY_JOB_TYPE.values()); }
 
     private static WorkloadPackDefinition pack(String id, String jobType, List<String> stages, Map<String, Object> gates) {

@@ -34,21 +34,84 @@ def docker(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
     return result
 
 
-def wait_ready(container: str, timeout_seconds: float = 45.0) -> None:
+def wait_ready(container: str, database: str = "postgres", timeout_seconds: float = 45.0) -> None:
     deadline = time.monotonic() + timeout_seconds
     while time.monotonic() < deadline:
-        result = docker("exec", container, "pg_isready", "-U", "postgres", "-d", "runtime", check=False)
+        result = docker("exec", container, "pg_isready", "-U", "postgres", "-d", database, check=False)
         if result.returncode == 0:
-            return
+            probe = docker(
+                "exec",
+                container,
+                "psql",
+                "-v",
+                "ON_ERROR_STOP=1",
+                "-U",
+                "postgres",
+                "-d",
+                database,
+                "-At",
+                "-c",
+                "select 1",
+                check=False,
+            )
+            if probe.returncode == 0 and probe.stdout.strip() == "1":
+                return
         time.sleep(0.5)
     logs = docker("logs", container, check=False)
     raise DrillError(f"container {container} did not become ready: {logs.stdout[-4000:]}")
 
 
-def psql(container: str, statement: str) -> str:
+def psql(container: str, statement: str, database: str = "runtime") -> str:
     return docker(
-        "exec", container, "psql", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", "runtime", "-At", "-c", statement
+        "exec", container, "psql", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", database, "-At", "-c", statement
     ).stdout.strip()
+
+
+def ensure_database(container: str, database: str) -> None:
+    """Make the drill independent of image entrypoint database initialization."""
+    deadline = time.monotonic() + 45.0
+    last_error = "database initialization did not settle"
+    while time.monotonic() < deadline:
+        result = docker(
+            "exec",
+            container,
+            "psql",
+            "-v",
+            "ON_ERROR_STOP=1",
+            "-U",
+            "postgres",
+            "-d",
+            "postgres",
+            "-At",
+            "-c",
+            f"select 1 from pg_database where datname = '{database}'",
+            check=False,
+        )
+        if result.returncode == 0:
+            if result.stdout.strip() != "1":
+                create = docker(
+                    "exec",
+                    container,
+                    "psql",
+                    "-v",
+                    "ON_ERROR_STOP=1",
+                    "-U",
+                    "postgres",
+                    "-d",
+                    "postgres",
+                    "-At",
+                    "-c",
+                    f"create database {database}",
+                    check=False,
+                )
+                if create.returncode != 0:
+                    last_error = create.stderr.strip() or create.stdout.strip()
+                    time.sleep(0.5)
+                    continue
+            return
+        last_error = result.stderr.strip() or result.stdout.strip()
+        time.sleep(0.5)
+    raise DrillError(f"could not establish database {database}: {last_error}")
 
 
 def wait_for_archives(archive_dir: Path, timeout_seconds: float = 30.0) -> None:
@@ -125,7 +188,12 @@ def run(output: Path | None) -> dict[str, object]:
             "-c",
             "archive_command=test ! -f /var/lib/postgresql/wal_archive/%f && cp %p /var/lib/postgresql/wal_archive/%f",
         )
-        wait_ready(primary)
+        # pg_isready can report a healthy server even when the requested
+        # database was not created by an image entrypoint. Wait for the
+        # maintenance database first, then establish the drill database.
+        wait_ready(primary, database="postgres")
+        ensure_database(primary, "runtime")
+        wait_ready(primary, database="runtime")
         psql(primary, "create table pitr_probe (marker text primary key, created_at timestamptz not null default now())")
         psql(primary, f"insert into pitr_probe(marker) values ('{markers['base']}')")
         prepare_base_backup(primary)

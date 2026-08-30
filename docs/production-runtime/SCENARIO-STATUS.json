@@ -8,9 +8,9 @@
     "ConcurrentReserve": {"status": "LOCAL_TEST_PASS", "test": "concurrentReservationsNeverDriveWalletNegative"},
     "CreditExhaustionResume": {"status": "LOCAL_TEST_PASS", "test": "creditExhaustionResumesAfterVerifiedTopUp"},
     "DuplicateProviderCallReplay": {"status": "LOCAL_TEST_PASS", "test": "modelCallReplayIsStableAndProviderUncertaintyBlocksBlindRetry"},
-    "DuplicateUsage": {"status": "LOCAL_TEST_PASS", "test": "provisionsAggregateAndCompletesPrepaidDispatchSaga"},
+    "DuplicateUsage": {"status": "LOCAL_TEST_PASS", "test": "duplicateProviderUsageCannotSettleAnotherModelCall"},
     "IdempotencyConflict": {"status": "LOCAL_TEST_PASS", "test": "topUpIdempotencyConflictCannotChangeMoney"},
-    "JournalBalance": {"status": "LOCAL_TEST_PASS", "test": "provisionsAggregateAndCompletesPrepaidDispatchSaga"},
+    "JournalBalance": {"status": "LOCAL_TEST_PASS", "test": "journalEntriesRemainBalancedForTopUpAndUsage"},
     "LeaseExpiry": {"status": "LOCAL_TEST_PASS", "test": "leaseExpiryRemovesLeaseAndMakesWorkRetryable"},
     "PITRRestore": {"status": "LOCAL_HARNESS_PASS", "test": "scripts/production-runtime/run_pitr_drill.py"},
     "ProjectorReplay": {"status": "LOCAL_TEST_PASS", "test": "projectorReplayRebuildsTheSameAuthoritativeCounts"},
@@ -18,10 +18,10 @@
     "RedisLoss": {"status": "LOCAL_HARNESS_PASS", "test": "redisLossDoesNotDeleteDurableDispatchOrMoneyState"},
     "SchedulerRestartAtDispatching": {"status": "LOCAL_TEST_PASS", "test": "dispatchingUnknownOutcomeConvergesThroughDurableRecovery"},
     "SchedulerRestartAtReserved": {"status": "LOCAL_TEST_PASS", "test": "reservedStateCanBeReplayedAfterSchedulerRestart"},
-    "SchedulerRestartAtReserving": {"status": "LOCAL_TEST_PASS", "test": "creditExhaustionResumesAfterVerifiedTopUp"},
+    "SchedulerRestartAtReserving": {"status": "LOCAL_TEST_PASS", "test": "reservingStateCanBeReplayedAfterSchedulerRestart"},
     "StaleFence": {"status": "LOCAL_TEST_PASS", "test": "staleFenceCannotCommitTerminalResult"},
-    "StreamingUsageReconciliation": {"status": "LOCAL_TEST_PASS", "test": "provisionsAggregateAndCompletesPrepaidDispatchSaga"},
-    "TopUpReplay": {"status": "LOCAL_TEST_PASS", "test": "provisionsAggregateAndCompletesPrepaidDispatchSaga"},
+    "StreamingUsageReconciliation": {"status": "LOCAL_TEST_PASS", "test": "streamingUsageReconciliationIsMonotonicAndFinal"},
+    "TopUpReplay": {"status": "LOCAL_TEST_PASS", "test": "topUpReplayIsExactlyOnceAcrossMoneyJournalAndOutbox"},
     "WorkerCrashCheckpointResume": {"status": "LOCAL_TEST_PASS", "test": "ProductionWorkerRestartRecoveryTest"}
   },
   "external_required": [
@@ -31,6 +31,7 @@
     "worker-process-kill",
     "backup-pitr-restore",
     "chaos-matrix",
-    "independent-verification"
+    "independent-verification",
+    "production-deployment"
   ]
 }
