@@ -20,6 +20,11 @@ The local engine provides:
   cannot weaken;
 - bounded repository inventory, planning, model comparison, corpus, proof,
   native-lab, fuzz-result, and quality-gate control-plane operations;
+- an opt-in host-authorized external runner for named local toolchains. Each
+  profile is strict JSON, uses a private ephemeral sandbox, no shell, a
+  sanitized environment, disabled networking, bounded files/stdin/stdout, and
+  a process-group timeout. Provider calls use an explicit host adapter
+  registry and never inherit credentials or network access;
 - conservative service and CLI facades that never manufacture target code,
   native execution, proof, fuzz, independent verification, or certification.
 
@@ -36,6 +41,15 @@ qualification. Native language adapters, real source/target toolchains,
 representative corpora, provider execution, independent verification, and the
 external certification authority remain `NOT_RUN`. Production certification
 remains `NOT_CERTIFIED` until those exact evidence gates are executed.
+
+The local runner can execute an explicitly authorized probe or compiler in an
+ephemeral sandbox and records a digest-bound, self-attested observation. A
+successful process is therefore `EXTERNAL_EXECUTED_UNVERIFIED`, not an
+independent receipt. Hosts must independently verify the observation and mint
+the receipt digest into `ExecutionAuthority.verified_evidence_digests` before a
+quality gate can become `READY_FOR_EXTERNAL_GATE`. Missing binaries,
+credentials, customer environments, or independent verifiers are reported as
+unavailable rather than inferred as success.
 
 The immutable source package contains a known contract defect: its bundle
 Schema admits Batches A-I but its manifest contains Batches A-R. The importer

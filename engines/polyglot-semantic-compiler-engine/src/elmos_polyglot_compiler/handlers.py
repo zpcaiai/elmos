@@ -9,6 +9,7 @@ adapter and exact evidence are supplied by the host.
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 from pathlib import Path
 import stat
@@ -17,6 +18,12 @@ from typing import Any, Mapping, Sequence
 from .catalog import CompiledCatalog
 from .contracts import ContractError, ExecutionAuthority, RuntimeRequest, digest_json, require_digest
 from .evidence import evaluate_evidence_set
+from .external import (
+    ExternalExecutionError,
+    ExternalExecutionResult,
+    ExternalRunner,
+    execution_subject_digest,
+)
 from .models import (
     CertificationState,
     EvidenceState,
@@ -38,6 +45,8 @@ _FAMILY_INPUTS: Mapping[str, frozenset[str]] = {
             "target_profile",
             "transformation_rules",
             "evidence_receipts",
+            "execution_profile",
+            "provider_profile",
         }
     ),
     "verification-delivery": frozenset(
@@ -51,19 +60,50 @@ _FAMILY_INPUTS: Mapping[str, frozenset[str]] = {
         }
     ),
     "technology-adapter": frozenset(
-        {"technology", "version", "source_artifact", "target_profile", "evidence_receipts"}
+        {
+            "technology",
+            "version",
+            "source_artifact",
+            "target_profile",
+            "evidence_receipts",
+            "execution_profile",
+            "provider_profile",
+        }
     ),
     "legacy-intelligence": frozenset(
         {"goal", "model", "repository_snapshot", "requested_skills", "route_id"}
     ),
     "legacy-adapter": frozenset(
-        {"technology", "version", "source_artifact", "target_profile", "evidence_receipts"}
+        {
+            "technology",
+            "version",
+            "source_artifact",
+            "target_profile",
+            "evidence_receipts",
+            "execution_profile",
+            "provider_profile",
+        }
     ),
     "legacy-transformation": frozenset(
-        {"route_id", "source_artifact", "target_profile", "model", "evidence_receipts"}
+        {
+            "route_id",
+            "source_artifact",
+            "target_profile",
+            "model",
+            "evidence_receipts",
+            "execution_profile",
+            "provider_profile",
+        }
     ),
     "route-execution": frozenset(
-        {"route_id", "source_artifact", "target_profile", "evidence_receipts"}
+        {
+            "route_id",
+            "source_artifact",
+            "target_profile",
+            "evidence_receipts",
+            "execution_profile",
+            "provider_profile",
+        }
     ),
     "legacy-validation": frozenset(
         {"route_id", "source_model", "target_model", "evidence_receipts"}
@@ -89,12 +129,12 @@ _FAMILY_INPUTS: Mapping[str, frozenset[str]] = {
         }
     ),
     "corpus-governance": frozenset({"fixtures", "coverage", "evidence_receipts"}),
-    "native-runtime-lab": frozenset({"lab_profile", "evidence_receipts"}),
+    "native-runtime-lab": frozenset({"lab_profile", "evidence_receipts", "execution_profile"}),
     "formal-assurance": frozenset(
-        {"formula", "assumptions", "solver", "timeout_ms", "evidence_receipts"}
+        {"formula", "assumptions", "solver", "timeout_ms", "evidence_receipts", "execution_profile"}
     ),
     "semantic-fuzzing": frozenset(
-        {"route_id", "campaign", "results", "evidence_receipts"}
+        {"route_id", "campaign", "results", "evidence_receipts", "execution_profile"}
     ),
     "quality-gate": frozenset(
         {"route_id", "evidence_receipts", "required_evidence_types"}
@@ -291,6 +331,55 @@ def _artifact_digest(value: Any, label: str) -> str:
         digest = value.get("digest")
         return require_digest(digest, f"{label}.digest")
     raise ContractError(f"{label} must be a digest or artifact reference")
+
+
+def _run_external_profile(
+    inputs: Mapping[str, Any],
+    request: RuntimeRequest,
+    authority: ExecutionAuthority,
+    external_runner: ExternalRunner | None,
+) -> tuple[ExternalExecutionResult | None, str | None]:
+    """Execute only an explicit profile, returning a bounded local observation."""
+
+    profile = inputs.get("execution_profile")
+    if profile is None:
+        return None, None
+    if external_runner is None:
+        return None, "host-authorized external runner"
+    try:
+        return external_runner.run(profile, request=request, authority=authority), None
+    except ExternalExecutionError as exc:
+        return None, str(exc)
+
+
+def _run_provider_profile(
+    inputs: Mapping[str, Any],
+    request: RuntimeRequest,
+    authority: ExecutionAuthority,
+    external_runner: ExternalRunner | None,
+) -> tuple[Mapping[str, Any] | None, str | None]:
+    """Invoke a host-registered observation adapter, never a caller URL."""
+
+    profile = inputs.get("provider_profile")
+    if profile is None:
+        return None, None
+    if not isinstance(profile, Mapping) or set(profile) != {"provider_id", "payload"}:
+        raise ContractError("provider_profile fields differ from the exact adapter contract")
+    provider_id = profile.get("provider_id")
+    payload = profile.get("payload")
+    if not isinstance(provider_id, str) or not isinstance(payload, Mapping):
+        raise ContractError("provider_profile requires provider_id and object payload")
+    if external_runner is None:
+        return None, "host-registered provider adapter"
+    try:
+        return (
+            external_runner.providers.invoke(
+                provider_id, request, authority, payload
+            ),
+            None,
+        )
+    except ExternalExecutionError as exc:
+        return None, str(exc)
 
 
 def _scan_repository(root: Path, revision_digest: str) -> dict[str, Any]:
@@ -525,6 +614,7 @@ def _external_plan(
     request: RuntimeRequest,
     authority: ExecutionAuthority,
     catalog: CompiledCatalog,
+    external_runner: ExternalRunner | None,
 ) -> dict[str, Any]:
     inputs = request.inputs
     source_artifact = inputs.get("source_artifact")
@@ -555,6 +645,89 @@ def _external_plan(
         route = catalog.routes_by_id.get(route_id) or catalog.reference_routes_by_id.get(route_id)
         if route is None:
             raise ContractError("route_id is not present in the compiled catalog")
+    provider_result, provider_unavailable = _run_provider_profile(
+        inputs, request, authority, external_runner
+    )
+    if inputs.get("provider_profile") is not None:
+        if provider_result is None:
+            return _operation(
+                state=ExecutionState.BLOCKED,
+                code="PROVIDER_OBSERVATION_NOT_RUN",
+                definition=definition,
+                outputs={
+                    "source_artifact_digest": source_digest,
+                    "target_profile_digest": digest_json(target_profile)
+                    if target_profile is not None
+                    else None,
+                    "route_id": route_id,
+                },
+                unavailable=(provider_unavailable or "host-registered provider adapter",),
+                evidence_state=EvidenceState.NOT_RUN,
+            )
+        return _operation(
+            state=ExecutionState.SUCCEEDED,
+            code="PROVIDER_OBSERVATION_COMPLETED_UNVERIFIED",
+            definition=definition,
+            outputs={
+                "source_artifact_digest": source_digest,
+                "target_profile_digest": digest_json(target_profile)
+                if target_profile is not None
+                else None,
+                "route_id": route_id,
+                "provider_result": dict(provider_result),
+                "provider_result_digest": digest_json(provider_result),
+                "external_execution_performed": True,
+            },
+            unavailable=("independent provider evidence",),
+            evidence_state=EvidenceState.EXTERNAL_EXECUTED_UNVERIFIED,
+        )
+    execution, unavailable = _run_external_profile(
+        inputs, request, authority, external_runner
+    )
+    if inputs.get("execution_profile") is not None:
+        if execution is None:
+            return _operation(
+                state=ExecutionState.BLOCKED,
+                code="EXTERNAL_EXECUTION_NOT_RUN",
+                definition=definition,
+                outputs={
+                    "source_artifact_digest": source_digest,
+                    "target_profile_digest": digest_json(target_profile)
+                    if target_profile is not None
+                    else None,
+                    "route_id": route_id,
+                    "declared_outputs": list(definition.outputs),
+                },
+                unavailable=(unavailable or "host-authorized external runner",),
+                evidence_state=EvidenceState.NOT_RUN,
+            )
+        execution_output = execution.to_dict()
+        return _operation(
+            state=(
+                ExecutionState.SUCCEEDED
+                if execution.exit_code == 0 and not execution.timed_out
+                else ExecutionState.FAILED
+            ),
+            code=(
+                "EXTERNAL_EXECUTION_COMPLETED_UNVERIFIED"
+                if execution.exit_code == 0 and not execution.timed_out
+                else "EXTERNAL_EXECUTION_FAILED"
+            ),
+            definition=definition,
+            outputs={
+                "source_artifact_digest": source_digest,
+                "target_profile_digest": digest_json(target_profile)
+                if target_profile is not None
+                else None,
+                "route_id": route_id,
+                "declared_outputs": list(definition.outputs),
+                "execution_result": execution_output,
+                "execution_subject_digest": execution_subject_digest(execution),
+                "external_execution_performed": True,
+            },
+            unavailable=("independent external evidence",),
+            evidence_state=EvidenceState.EXTERNAL_EXECUTED_UNVERIFIED,
+        )
     return _operation(
         state=ExecutionState.READY_FOR_EXTERNAL_GATE,
         code="EXTERNAL_EXECUTION_PLAN_READY",
@@ -577,6 +750,7 @@ def _native_runtime_lab(
     request: RuntimeRequest,
     authority: ExecutionAuthority,
     catalog: CompiledCatalog,
+    external_runner: ExternalRunner | None,
 ) -> dict[str, Any]:
     """Bind an exact native-lab profile without pretending to execute it."""
 
@@ -598,11 +772,36 @@ def _native_runtime_lab(
         subject={"lab_profile": profile, "required_evidence_types": sorted(_NATIVE_EVIDENCE_TYPES)},
         required_types=_NATIVE_EVIDENCE_TYPES,
     )
-    output = {
+    output: dict[str, Any] = {
         "lab_profile_digest": digest_json(profile),
         "evidence_evaluation": evidence,
         "declared_outputs": list(definition.outputs),
     }
+    execution, unavailable = _run_external_profile(
+        request.inputs, request, authority, external_runner
+    )
+    if request.inputs.get("execution_profile") is not None:
+        if execution is None:
+            return _operation(
+                state=ExecutionState.BLOCKED,
+                code="NATIVE_RUNTIME_NOT_RUN",
+                definition=definition,
+                outputs=output,
+                unavailable=(unavailable or "host-authorized external runner",),
+                evidence_state=EvidenceState.NOT_RUN,
+            )
+        output["execution_result"] = execution.to_dict()
+        output["execution_subject_digest"] = execution_subject_digest(execution)
+        output["external_execution_performed"] = True
+        if execution.exit_code != 0 or execution.timed_out:
+            return _operation(
+                state=ExecutionState.FAILED,
+                code="NATIVE_RUNTIME_EXECUTION_FAILED",
+                definition=definition,
+                outputs=output,
+                unavailable=("successful native runner execution",),
+                evidence_state=EvidenceState.EXTERNAL_EXECUTED_UNVERIFIED,
+            )
     if not evidence or not evidence["all_required_independently_verified"]:
         return _operation(
             state=ExecutionState.BLOCKED,
@@ -611,7 +810,9 @@ def _native_runtime_lab(
             outputs=output,
             unavailable=("native runner execution", "host-verified independent evidence"),
             evidence_state=(
-                EvidenceState.NOT_RUN
+                EvidenceState.EXTERNAL_EXECUTED_UNVERIFIED
+                if execution is not None
+                else EvidenceState.NOT_RUN
                 if evidence is None
                 else EvidenceState.EXTERNAL_EXECUTED_UNVERIFIED
             ),
@@ -747,6 +948,7 @@ def _formal(
     request: RuntimeRequest,
     authority: ExecutionAuthority,
     catalog: CompiledCatalog,
+    external_runner: ExternalRunner | None,
 ) -> dict[str, Any]:
     del catalog
     formula = request.inputs.get("formula")
@@ -774,6 +976,30 @@ def _formal(
         "solver": solver,
         "status": ObligationStatus.NOT_RUN.value,
     }
+    execution, unavailable = _run_external_profile(
+        request.inputs, request, authority, external_runner
+    )
+    execution_output: dict[str, Any] | None = None
+    if request.inputs.get("execution_profile") is not None:
+        if execution is None:
+            return _operation(
+                state=ExecutionState.BLOCKED,
+                code="PROOF_EXECUTION_NOT_RUN",
+                definition=definition,
+                outputs={"proof_obligation": obligation},
+                unavailable=(unavailable or "host-authorized external runner",),
+                evidence_state=EvidenceState.NOT_RUN,
+            )
+        execution_output = execution.to_dict()
+        solver_output = execution.stdout.strip().splitlines()[0] if execution.stdout.strip() else ""
+        if execution.exit_code == 0 and not execution.timed_out and solver_output in {"sat", "unsat", "unknown"}:
+            obligation["status"] = (
+                ObligationStatus.PROVED_UNDER_ASSUMPTIONS.value
+                if solver_output == "unsat"
+                else ObligationStatus.DISPROVED.value
+                if solver_output == "sat"
+                else ObligationStatus.INCONCLUSIVE.value
+            )
     evidence = _evidence(
         request.inputs,
         request,
@@ -793,7 +1019,19 @@ def _formal(
             state=ExecutionState.READY_FOR_EXTERNAL_GATE,
             code="INDEPENDENT_PROOF_EVIDENCE_BOUND",
             definition=definition,
-            outputs={"proof_obligation": obligation, "evidence_evaluation": evidence},
+            outputs={
+                "proof_obligation": obligation,
+                "evidence_evaluation": evidence,
+                **(
+                    {
+                        "execution_result": execution_output,
+                        "execution_subject_digest": execution_subject_digest(execution),
+                        "external_execution_performed": True,
+                    }
+                    if execution is not None
+                    else {}
+                ),
+            },
             evidence_state=EvidenceState.INDEPENDENTLY_VERIFIED,
             certification=CertificationState.READY_FOR_EXTERNAL_GATE,
         )
@@ -801,9 +1039,27 @@ def _formal(
         state=ExecutionState.BLOCKED,
         code="PROOF_EXECUTION_NOT_RUN",
         definition=definition,
-        outputs={"proof_obligation": obligation, "evidence_evaluation": evidence},
+        outputs={
+            "proof_obligation": obligation,
+            "evidence_evaluation": evidence,
+            **(
+                {
+                    "execution_result": execution_output,
+                    "execution_subject_digest": execution_subject_digest(execution),
+                    "external_execution_performed": True,
+                }
+                if execution is not None
+                else {}
+            ),
+        },
         unavailable=("trusted solver execution", "independent proof verification"),
-        evidence_state=EvidenceState.NOT_RUN if evidence is None else EvidenceState.EXTERNAL_EXECUTED_UNVERIFIED,
+        evidence_state=(
+            EvidenceState.EXTERNAL_EXECUTED_UNVERIFIED
+            if execution is not None
+            else EvidenceState.NOT_RUN
+            if evidence is None
+            else EvidenceState.EXTERNAL_EXECUTED_UNVERIFIED
+        ),
     )
 
 
@@ -812,6 +1068,7 @@ def _fuzz(
     request: RuntimeRequest,
     authority: ExecutionAuthority,
     catalog: CompiledCatalog,
+    external_runner: ExternalRunner | None,
 ) -> dict[str, Any]:
     route_id = request.inputs.get("route_id")
     if not isinstance(route_id, str) or (
@@ -823,6 +1080,45 @@ def _fuzz(
     if not isinstance(campaign, Mapping) or not campaign:
         raise ContractError("fuzz campaign must be a non-empty exact profile object")
     results = request.inputs.get("results")
+    execution, unavailable = _run_external_profile(
+        request.inputs, request, authority, external_runner
+    )
+    execution_output: dict[str, Any] | None = None
+    if request.inputs.get("execution_profile") is not None:
+        if execution is None:
+            return _operation(
+                state=ExecutionState.BLOCKED,
+                code="FUZZ_CAMPAIGN_NOT_RUN",
+                definition=definition,
+                outputs={
+                    "cases_run": 0,
+                    "verdict": VerdictStatus.UNDETERMINED.value,
+                    "required_evidence_types": sorted(_FUZZ_EVIDENCE_TYPES),
+                },
+                unavailable=(unavailable or "host-authorized external runner",),
+                evidence_state=EvidenceState.NOT_RUN,
+            )
+        execution_output = execution.to_dict()
+        if execution.exit_code == 0 and not execution.timed_out and not results:
+            try:
+                results = json.loads(execution.stdout)
+            except json.JSONDecodeError as exc:
+                raise ContractError("external fuzz runner stdout must be a JSON result array") from exc
+        if execution.exit_code != 0 or execution.timed_out:
+            return _operation(
+                state=ExecutionState.FAILED,
+                code="FUZZ_EXTERNAL_EXECUTION_FAILED",
+                definition=definition,
+                outputs={
+                    "cases_run": 0,
+                    "verdict": VerdictStatus.UNDETERMINED.value,
+                    "execution_result": execution_output,
+                    "execution_subject_digest": execution_subject_digest(execution),
+                    "external_execution_performed": True,
+                },
+                unavailable=("successful fuzz runner execution",),
+                evidence_state=EvidenceState.EXTERNAL_EXECUTED_UNVERIFIED,
+            )
     if not isinstance(results, list) or not results:
         return _operation(
             state=ExecutionState.BLOCKED,
@@ -832,6 +1128,15 @@ def _fuzz(
                 "cases_run": 0,
                 "verdict": VerdictStatus.UNDETERMINED.value,
                 "required_evidence_types": sorted(_FUZZ_EVIDENCE_TYPES),
+                **(
+                    {
+                        "execution_result": execution_output,
+                        "execution_subject_digest": execution_subject_digest(execution),
+                        "external_execution_performed": True,
+                    }
+                    if execution is not None
+                    else {}
+                ),
             },
             unavailable=("executed differential fuzz results",),
             evidence_state=EvidenceState.NOT_RUN,
@@ -898,6 +1203,15 @@ def _fuzz(
             "results_digest": digest_json(normalized),
             "evidence_evaluation": evidence,
             "required_evidence_types": sorted(_FUZZ_EVIDENCE_TYPES),
+            **(
+                {
+                    "execution_result": execution_output,
+                    "execution_subject_digest": execution_subject_digest(execution),
+                    "external_execution_performed": True,
+                }
+                if execution is not None
+                else {}
+            ),
         },
         unavailable=(
             ()
@@ -1007,6 +1321,7 @@ def execute_compiled_skill(
     request: RuntimeRequest,
     authority: ExecutionAuthority,
     catalog: CompiledCatalog,
+    external_runner: ExternalRunner | None = None,
 ) -> dict[str, Any]:
     _validate_inputs(definition, request.inputs)
     family = definition.operation_family
@@ -1019,9 +1334,9 @@ def execute_compiled_skill(
         "legacy-transformation",
         "route-execution",
     }:
-        return _external_plan(definition, request, authority, catalog)
+        return _external_plan(definition, request, authority, catalog, external_runner)
     if family == "native-runtime-lab":
-        return _native_runtime_lab(definition, request, authority, catalog)
+        return _native_runtime_lab(definition, request, authority, catalog, external_runner)
     if family in {
         "verification-delivery",
         "legacy-validation",
@@ -1035,9 +1350,9 @@ def execute_compiled_skill(
     if family == "corpus-governance":
         return _corpus(definition, request, authority, catalog)
     if family == "formal-assurance":
-        return _formal(definition, request, authority, catalog)
+        return _formal(definition, request, authority, catalog, external_runner)
     if family == "semantic-fuzzing":
-        return _fuzz(definition, request, authority, catalog)
+        return _fuzz(definition, request, authority, catalog, external_runner)
     if family == "quality-gate":
         return _quality_gate(definition, request, authority, catalog)
     raise ContractError(f"no repository-owned operation for family: {family}")
