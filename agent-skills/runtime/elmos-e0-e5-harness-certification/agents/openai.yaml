@@ -1,0 +1,6 @@
+interface:
+  display_name: "E0-E5 Harness Certification"
+  short_description: "Assemble conservative E0-E5 decisions from exact evidence."
+  default_prompt: "Use $elmos-e0-e5-harness-certification through the exact PDHI v1 K10 runtime with typed scope, allowlisted operations, replayable evidence, and fail-closed external gates."
+policy:
+  allow_implicit_invocation: true

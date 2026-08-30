@@ -1,0 +1,44 @@
+schemaVersion: "1.0.0"
+status: DECLARED_NOT_RUN
+privacy:
+  forbiddenLabels:
+    - tenant_id
+    - project_id
+    - actor_id
+    - repository_url
+    - source_path
+    - prompt
+    - token
+metrics:
+  - name: elmos_pdhi_http_requests_total
+    type: counter
+    requiredLabels: [route, status]
+    source: in-process-service
+  - name: elmos_pdhi_http_request_duration_seconds_sum
+    type: counter
+    requiredLabels: [route]
+    source: in-process-service
+  - name: elmos_pdhi_readiness
+    type: gauge
+    requiredLabels: [component]
+    source: production-host-adapter
+  - name: elmos_pdhi_unsettled_effects
+    type: gauge
+    requiredLabels: [state]
+    source: production-host-adapter
+  - name: elmos_pdhi_outbox_oldest_pending_seconds
+    type: gauge
+    requiredLabels: []
+    source: production-host-adapter
+  - name: elmos_pdhi_authentication_failures_total
+    type: counter
+    requiredLabels: [reason_class]
+    source: trusted-identity-adapter
+  - name: elmos_pdhi_rls_scope_failures_total
+    type: counter
+    requiredLabels: []
+    source: postgresql-adapter
+  - name: elmos_pdhi_certification_unknown_total
+    type: counter
+    requiredLabels: [gate]
+    source: independent-certification-adapter
