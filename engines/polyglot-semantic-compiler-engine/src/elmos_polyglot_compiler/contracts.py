@@ -175,6 +175,8 @@ class ExecutionAuthority:
     environment_authority_id: str
     allowed_skills: frozenset[str]
     allowed_effects: frozenset[str] = frozenset({"local-analysis"})
+    allowed_toolchains: frozenset[str] = frozenset()
+    allowed_providers: frozenset[str] = frozenset()
     verified_evidence_digests: frozenset[str] = frozenset()
     repository_root: Path | None = None
     expires_at_epoch_seconds: int | None = None
@@ -194,6 +196,10 @@ class ExecutionAuthority:
                 require_identifier(skill, "authority.allowed_skills[]")
         for effect in self.allowed_effects:
             require_identifier(effect, "authority.allowed_effects[]")
+        for toolchain in self.allowed_toolchains:
+            require_identifier(toolchain, "authority.allowed_toolchains[]")
+        for provider in self.allowed_providers:
+            require_identifier(provider, "authority.allowed_providers[]")
         for evidence_digest in self.verified_evidence_digests:
             require_digest(evidence_digest, "authority.verified_evidence_digests[]")
         if self.repository_root is not None:

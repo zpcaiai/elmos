@@ -17,6 +17,7 @@ from .contracts import (
     digest_json,
 )
 from .evidence import ContentAddressedArtifactStore
+from .external import ExternalRunner
 from .handlers import execute_compiled_skill
 from .models import (
     CapabilityMode,
@@ -65,13 +66,21 @@ class HandlerBinding:
         }
 
 
-def _make_handler(definition: SkillDefinition) -> SkillHandler:
+def _make_handler(
+    definition: SkillDefinition, external_runner: ExternalRunner | None = None
+) -> SkillHandler:
     def handler(
         request: RuntimeRequest,
         authority: ExecutionAuthority,
         catalog: CompiledCatalog,
     ) -> Mapping[str, Any]:
-        return execute_compiled_skill(definition, request, authority, catalog)
+        return execute_compiled_skill(
+            definition,
+            request,
+            authority,
+            catalog,
+            external_runner=external_runner,
+        )
 
     handler.__name__ = "execute_" + definition.name.replace("-", "_")
     handler.__qualname__ = handler.__name__
@@ -79,10 +88,12 @@ def _make_handler(definition: SkillDefinition) -> SkillHandler:
     return handler
 
 
-def build_registry(catalog: CompiledCatalog) -> Mapping[str, HandlerBinding]:
+def build_registry(
+    catalog: CompiledCatalog, external_runner: ExternalRunner | None = None
+) -> Mapping[str, HandlerBinding]:
     registry: dict[str, HandlerBinding] = {}
     for definition in catalog.skills:
-        handler = _make_handler(definition)
+        handler = _make_handler(definition, external_runner)
         registry[definition.name] = HandlerBinding(
             ordinal=definition.ordinal,
             source_id=definition.source_id,
@@ -195,9 +206,11 @@ class SkillRuntime:
         artifact_store: ContentAddressedArtifactStore,
         catalog: CompiledCatalog | None = None,
         registry: Mapping[str, HandlerBinding] | None = None,
+        external_runner: ExternalRunner | None = None,
     ):
         self.catalog = catalog or load_catalog()
-        self.registry = registry or build_registry(self.catalog)
+        self.external_runner = external_runner
+        self.registry = registry or build_registry(self.catalog, external_runner)
         validate_registry(self.catalog, self.registry)
         self.runtime_contract_digest = digest_json(
             {
