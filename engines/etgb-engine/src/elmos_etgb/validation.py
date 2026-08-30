@@ -10,6 +10,7 @@ from typing import Any, Iterator
 import yaml
 from jsonschema import Draft202012Validator
 
+from .adapters import EXECUTORS, EXTERNAL_ADAPTERS
 from .contracts import validate_domain_case
 from .corpus import verify_lock
 from .package import verify_source_package
@@ -40,6 +41,32 @@ def load_cases(package_root: Path) -> Iterator[dict[str, Any]]:
         except ValueError as exc:
             raise ValueError(f"case file escapes package root: {relative}") from exc
         yield from iter_jsonl(path)
+
+
+def _runtime_adapter_report(counts: Counter[str]) -> dict[str, Any]:
+    declared = set(counts)
+    external = {name for name in declared if name.startswith("external-")}
+    local = declared - external
+    unsupported_external = sorted(external - EXTERNAL_ADAPTERS)
+    unsupported_local = sorted(local - set(EXECUTORS))
+    return {
+        "complete": not unsupported_external and not unsupported_local,
+        "declared_adapters": sorted(declared),
+        "declared_external_adapters": sorted(external),
+        "declared_local_adapters": sorted(local),
+        "adapter_case_counts": dict(sorted(counts.items())),
+        "unsupported_external_adapters": unsupported_external,
+        "unsupported_local_adapters": unsupported_local,
+    }
+
+
+def runtime_adapter_report(package_root: Path) -> dict[str, Any]:
+    """Bind every immutable case adapter to an exact repository runtime path."""
+
+    counts: Counter[str] = Counter(
+        str(case.get("execution", {}).get("adapter", "")) for case in load_cases(package_root)
+    )
+    return _runtime_adapter_report(counts)
 
 
 def _expected_cells(package_root: Path) -> dict[str, set[tuple[tuple[str, str], ...]]]:
@@ -145,6 +172,7 @@ def validate_package(package_root: Path, *, release: bool = False, archive: Path
         case_validator = Draft202012Validator(_load_json(package_root / "schemas/test-case.schema.json"))
         seen: set[str] = set()
         counts: Counter[str] = Counter()
+        adapter_counts: Counter[str] = Counter()
         total = 0
         for case in load_cases(package_root):
             total += 1
@@ -153,6 +181,7 @@ def validate_package(package_root: Path, *, release: bool = False, archive: Path
                 errors.append(f"duplicate case id: {case_id}")
             seen.add(case_id)
             counts[str(case.get("business_line"))] += 1
+            adapter_counts[str(case.get("execution", {}).get("adapter", ""))] += 1
             errors.extend(f"case {case_id}: {error.message}" for error in case_validator.iter_errors(case))
             errors.extend(f"case {case_id}: {error}" for error in validate_domain_case(case))
             if len(errors) >= max_errors:
@@ -160,6 +189,15 @@ def validate_package(package_root: Path, *, release: bool = False, archive: Path
         minimum = int(suite.get("expected_minimum_case_count", 1))
         if total < minimum:
             errors.append(f"case count {total} is below minimum {minimum}")
+        runtime_adapters = _runtime_adapter_report(adapter_counts)
+        errors.extend(
+            f"unsupported external runtime adapter: {name}"
+            for name in runtime_adapters["unsupported_external_adapters"]
+        )
+        errors.extend(
+            f"unsupported local runtime adapter: {name}"
+            for name in runtime_adapters["unsupported_local_adapters"]
+        )
         expected_manifest = package_root / "PACKAGE_MANIFEST.json"
         if expected_manifest.is_file():
             manifest = _load_json(expected_manifest)
@@ -211,7 +249,7 @@ def validate_package(package_root: Path, *, release: bool = False, archive: Path
         if source_package and not source_package["valid"]:
             errors.extend(f"source package: {message}" for message in source_package["errors"])
             warnings.extend(f"source package: {message}" for message in source_package["warnings"])
-        return {"valid": not errors, "release_mode": release, "case_count": total, "case_files": dict(counts), "coverage": coverage, "skills": skills, "corpus": corpus, "source_package": source_package, "errors": errors[:max_errors], "warnings": warnings}
+        return {"valid": not errors, "release_mode": release, "case_count": total, "case_files": dict(counts), "coverage": coverage, "runtime_adapters": runtime_adapters, "skills": skills, "corpus": corpus, "source_package": source_package, "errors": errors[:max_errors], "warnings": warnings}
     except (OSError, ValueError, KeyError, TypeError, yaml.YAMLError) as exc:
         return {"valid": False, "release_mode": release, "case_count": 0, "case_files": {}, "errors": [str(exc)], "warnings": warnings}
 

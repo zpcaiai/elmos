@@ -18,7 +18,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -150,6 +150,8 @@ class HarnessPolicy:
     max_response_bytes: int = 16 * 1024 * 1024
     allow_loopback_http: bool = False
     allow_environment_proxy: bool = False
+    require_custom_ca: bool = False
+    require_mtls: bool = False
 
     @classmethod
     def parse(cls, value: Mapping[str, Any]) -> "HarnessPolicy":
@@ -161,6 +163,8 @@ class HarnessPolicy:
             "max_response_bytes",
             "allow_loopback_http",
             "allow_environment_proxy",
+            "require_custom_ca",
+            "require_mtls",
         }
         unexpected = set(value) - allowed
         if unexpected:
@@ -173,6 +177,8 @@ class HarnessPolicy:
             max_response_bytes=int(value.get("max_response_bytes", 16 * 1024 * 1024)),
             allow_loopback_http=bool(value.get("allow_loopback_http", False)),
             allow_environment_proxy=bool(value.get("allow_environment_proxy", False)),
+            require_custom_ca=bool(value.get("require_custom_ca", False)),
+            require_mtls=bool(value.get("require_mtls", False)),
         )
         if not 1 <= policy.max_attempts <= 8:
             raise ValueError("max_attempts must be between 1 and 8")
@@ -239,6 +245,10 @@ class HttpJsonTransport:
         self.environ = environ if environ is not None else os.environ
 
     def __call__(self, endpoint: AdapterEndpoint, body: bytes, headers: Mapping[str, str], policy: HarnessPolicy) -> Mapping[str, Any]:
+        if policy.require_custom_ca and endpoint.ca_bundle is None:
+            raise ExternalHarnessError("production Harness transport requires a custom CA bundle", failure_class="security/policy")
+        if policy.require_mtls and (endpoint.client_cert is None or endpoint.client_key_env is None):
+            raise ExternalHarnessError("production Harness transport requires mTLS", failure_class="security/policy")
         handlers: list[Any] = [_NoRedirect()]
         if not policy.allow_environment_proxy:
             handlers.append(urllib.request.ProxyHandler({}))
@@ -397,17 +407,71 @@ class ExternalHarnessRouter:
             environ=environ,
         )
 
-    def capability_report(self) -> dict[str, Any]:
-        missing = sorted(EXTERNAL_ADAPTERS - set(self.endpoints))
+    def configured_executor_ids(self, required_adapters: Iterable[str] | None = None) -> set[str]:
+        required = set(required_adapters) if required_adapters is not None else set(self.endpoints)
+        unknown = required - EXTERNAL_ADAPTERS
+        if unknown:
+            raise ValueError(f"unknown required external Harness adapters: {sorted(unknown)}")
+        return {self.endpoints[name].executor_id for name in required if name in self.endpoints}
+
+    def capability_report(
+        self,
+        required_adapters: Iterable[str] | None = None,
+        *,
+        require_production_transport: bool = False,
+    ) -> dict[str, Any]:
+        """Report exact package/campaign readiness without exposing secrets.
+
+        ``required_adapters`` is deliberately supplied by the immutable package
+        or plan.  This keeps a v1.1 seven-adapter campaign compatible while a
+        v2.0 campaign fails closed unless all 32 exact adapters are present.
+        """
+
+        required = set(required_adapters) if required_adapters is not None else set(EXTERNAL_ADAPTERS)
+        unknown = required - EXTERNAL_ADAPTERS
+        if unknown:
+            raise ValueError(f"unknown required external Harness adapters: {sorted(unknown)}")
+        missing = sorted(required - set(self.endpoints))
+        missing_credentials: list[str] = []
+        invalid_mtls_keys: list[str] = []
+        missing_ca_bundles: list[str] = []
+        missing_mtls: list[str] = []
+        for adapter in sorted(required & set(self.endpoints)):
+            endpoint = self.endpoints[adapter]
+            token = self.environ.get(endpoint.auth_token_env)
+            if not token or len(token.encode("utf-8")) > 16_384:
+                missing_credentials.append(adapter)
+            if endpoint.client_key_env:
+                key_value = self.environ.get(endpoint.client_key_env)
+                key_path = Path(key_value) if key_value else None
+                if key_path is None or key_path.is_symlink() or not key_path.is_file():
+                    invalid_mtls_keys.append(adapter)
+            if require_production_transport and endpoint.ca_bundle is None:
+                missing_ca_bundles.append(adapter)
+            if require_production_transport and (endpoint.client_cert is None or endpoint.client_key_env is None):
+                missing_mtls.append(adapter)
+        hardening_missing = require_production_transport and (
+            not self.policy.require_custom_ca or not self.policy.require_mtls
+        )
+        ready = not missing and not missing_credentials and not invalid_mtls_keys and not missing_ca_bundles and not missing_mtls and not hardening_missing
         return {
             "schema_version": "1.0",
-            "status": "READY_FOR_EXTERNAL_EXECUTION_CONFIG" if not missing else "BLOCKED",
+            "status": "READY_FOR_EXTERNAL_EXECUTION_CONFIG" if ready else "BLOCKED",
+            "required_adapters": sorted(required),
             "configured_adapters": sorted(self.endpoints),
             "missing_adapters": missing,
+            "missing_credential_adapters": missing_credentials,
+            "invalid_mtls_key_adapters": invalid_mtls_keys,
+            "missing_ca_bundle_adapters": missing_ca_bundles,
+            "missing_mtls_adapters": missing_mtls,
+            "configured_executor_ids": sorted(self.configured_executor_ids(required)),
             "config_digest": self.config_digest,
             "transport": "signed-json-https-v1",
             "trusted_public_key_count": len(self.trust_store.get("keys", [])),
             "private_keys_loaded": False,
+            "production_transport_required": require_production_transport,
+            "policy_requires_custom_ca": self.policy.require_custom_ca,
+            "policy_requires_mtls": self.policy.require_mtls,
             "certification_status": "NOT_CERTIFIED",
         }
 

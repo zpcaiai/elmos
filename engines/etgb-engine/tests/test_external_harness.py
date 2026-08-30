@@ -145,6 +145,50 @@ class ExternalHarnessTests(unittest.TestCase):
         roles = {item["role"] for item in result["evidence"]["artifacts"]}
         self.assertIn("external-harness-signed-response", roles)
 
+    def test_capability_preflight_requires_exact_credentials_without_exposing_them(self) -> None:
+        required = {"external-transformation-harness"}
+        ready = ExternalHarnessRouter.load(
+            self.root / "harness.json",
+            environ={"ETGB_TEST_TOKEN": "opaque-test-token"},
+        ).capability_report(required)
+        self.assertEqual(ready["status"], "READY_FOR_EXTERNAL_EXECUTION_CONFIG")
+        self.assertEqual(ready["configured_executor_ids"], ["executor-1"])
+        self.assertNotIn("opaque-test-token", json.dumps(ready))
+        production = ExternalHarnessRouter.load(
+            self.root / "harness.json",
+            environ={"ETGB_TEST_TOKEN": "opaque-test-token"},
+        ).capability_report(required, require_production_transport=True)
+        self.assertEqual(production["status"], "BLOCKED")
+        self.assertEqual(production["missing_ca_bundle_adapters"], ["external-transformation-harness"])
+        self.assertEqual(production["missing_mtls_adapters"], ["external-transformation-harness"])
+
+        blocked = ExternalHarnessRouter.load(
+            self.root / "harness.json",
+            environ={},
+        ).capability_report(required)
+        self.assertEqual(blocked["status"], "BLOCKED")
+        self.assertEqual(blocked["missing_credential_adapters"], ["external-transformation-harness"])
+
+    def test_v20_external_adapter_uses_the_same_signed_protocol(self) -> None:
+        config = json.loads(json.dumps(self.config))
+        endpoint = config["adapters"].pop("external-transformation-harness")
+        config["adapters"]["external-identity-access-harness"] = endpoint
+        path = self.root / "harness-v20.json"
+        path.write_text(json.dumps(config), encoding="utf-8")
+        case = json.loads(json.dumps(self.case))
+        case["execution"]["adapter"] = "external-identity-access-harness"
+
+        def transport(_endpoint: Any, body: bytes, _headers: Any, _policy: Any) -> dict[str, Any]:
+            return self.signed_response(json.loads(body))
+
+        router = ExternalHarnessRouter.load(
+            path,
+            transport=transport,
+            environ={"ETGB_TEST_TOKEN": "opaque-test-token"},
+        )
+        result = execute_case(case, PACKAGE, run_id="run-v20", external_router=router, external_context=self.context)
+        self.assertEqual(result["status"], "passed")
+
     def test_signed_but_misbound_response_fails_closed(self) -> None:
         def transport(_endpoint: Any, body: bytes, _headers: Any, _policy: Any) -> dict[str, Any]:
             return self.signed_response(json.loads(body), request_digest="sha256:" + "f" * 64)

@@ -223,7 +223,7 @@ EXECUTORS: dict[str, Callable[..., tuple[str, list[dict[str, Any]], dict[str, An
 }
 
 
-EXTERNAL_ADAPTERS = frozenset({
+V11_EXTERNAL_ADAPTERS = frozenset({
     "external-transformation-harness",
     "external-repository-translation-harness",
     "external-project-generation-harness",
@@ -232,3 +232,38 @@ EXTERNAL_ADAPTERS = frozenset({
     "external-dual-database-harness",
     "external-fault-injection-harness",
 })
+
+
+V20_EXTERNAL_ADAPTERS = frozenset({
+    "external-agent-protocol-harness",
+    "external-ai-runtime-harness",
+    "external-ai-solution-factory-harness",
+    "external-analytics-admin-harness",
+    "external-api-sdk-harness",
+    "external-artifact-render-harness",
+    "external-billing-ledger-harness",
+    "external-collaboration-integration-harness",
+    "external-commercial-certification-harness",
+    "external-control-plane-harness",
+    "external-data-platform-harness",
+    "external-deployment-chaos-harness",
+    "external-identity-access-harness",
+    "external-ingestion-harness",
+    "external-multimodal-processing-harness",
+    "external-notification-scheduler-harness",
+    "external-online-ide-debug-harness",
+    "external-payment-sandbox-harness",
+    "external-product-journey-harness",
+    "external-project-intelligence-harness",
+    "external-rag-memory-harness",
+    "external-security-compliance-harness",
+    "external-standards-assurance-harness",
+    "external-storage-search-cache-harness",
+    "external-ui-accessibility-harness",
+})
+
+
+# The caller accepts only package-owned, exact adapter identities.  Keeping the
+# v1.1 and v2.0 sets explicit prevents a package from gaining network authority
+# by inventing an ``external-*`` name in repository content.
+EXTERNAL_ADAPTERS = V11_EXTERNAL_ADAPTERS | V20_EXTERNAL_ADAPTERS
