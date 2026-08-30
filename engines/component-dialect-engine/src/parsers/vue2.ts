@@ -25,6 +25,7 @@ import {
   require_, StateDef, validateComponent,
 } from "../models";
 import { callbackNameForEvent, literalFromNode, parseHandlerStatements, parseTemplateExpression } from "./expressions";
+import { assertVue2CompilerInput } from "../vue2-security";
 
 const NODE_ELEMENT = 1;
 const NODE_INTERPOLATION = 2;
@@ -394,6 +395,7 @@ function parseNode(node: V2Node, script: ScriptInfo, stateNames: ReadonlySet<str
 }
 
 export function parseVue2Component(source: string, fileName = "Component.vue"): ComponentDef {
+  assertVue2CompilerInput(source, fileName);
   const parsed = parseSfc(source, { filename: fileName });
   require_(parsed.errors.length === 0, "CERTIFIED_COMPONENT_PARSE_FAILED", `@vue/compiler-sfc rejected the SFC: ${parsed.errors.map((error) => String(error)).join("; ")}`);
   const descriptor = parsed.descriptor;
