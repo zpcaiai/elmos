@@ -1,22 +1,20 @@
-"""ELMOS Semantic Regression Bisector Engine.
-
-Performs O(log N) binary search across repository revisions and transformation rule
-sequences to pinpoint the exact commit or AST modification that introduced a semantic flaw.
-"""
+"""Semantic regression localization over explicitly evaluated revisions."""
 
 from __future__ import annotations
 
-import hashlib
 import time
 from dataclasses import asdict, dataclass
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Mapping, Optional, Union
+
+
+ExplicitVerdict = Union[bool, str]
 
 
 @dataclass
 class BisectStep:
     step_index: int
     rev_id: str
-    evaluated_verdict: str  # PASS / FAIL
+    evaluated_verdict: str
     evaluated_at: float
 
 
@@ -31,89 +29,156 @@ class BisectResult:
     steps: List[BisectStep]
 
 
+def _normalize_verdict(value: ExplicitVerdict) -> str:
+    if type(value) is bool:
+        return "PASS" if value else "FAIL"
+    if isinstance(value, str) and value in {"PASS", "FAIL"}:
+        return value
+    raise ValueError("evaluator verdict must be bool, PASS, or FAIL")
+
+
+def _not_run(history_length: int, message: str) -> BisectResult:
+    return BisectResult(
+        status="NOT_RUN",
+        first_bad_revision=None,
+        total_steps=0,
+        culprit_message=message,
+        history_length=history_length,
+        bisect_duration_ms=0.0,
+        steps=[],
+    )
+
+
 class SemanticRegressionBisector:
-    """Automated binary search over revision history to locate regression origins."""
+    """Locate a regression from a real evaluator or explicit PASS/FAIL facts."""
 
     def bisect_revisions(
         self,
         revisions: List[Dict[str, Any]],
-        evaluator_fn: Optional[Callable[[Dict[str, Any]], bool]] = None,
+        evaluator_fn: Optional[Callable[[Dict[str, Any]], ExplicitVerdict]] = None,
     ) -> BisectResult:
-        """Execute binary search over a linear list of revisions (oldest to newest)."""
-        start_time = time.perf_counter()
+        """Evaluate a linear oldest-to-newest history and locate its first FAIL.
+
+        The full result sequence is checked for monotonicity before a culprit is
+        reported. This avoids returning a false boundary when a flaky or
+        non-monotonic evaluator violates binary-bisection assumptions.
+        """
+
+        if not isinstance(revisions, list):
+            raise ValueError("revisions must be a list")
         if not revisions:
-            return BisectResult(
-                status="EMPTY_HISTORY",
-                first_bad_revision=None,
-                total_steps=0,
-                culprit_message="No revisions provided for bisect",
-                history_length=0,
-                bisect_duration_ms=0.0,
-                steps=[],
+            return _not_run(0, "No revisions were provided")
+        if len(revisions) > 1_000_000:
+            raise ValueError("revision history exceeds the bounded limit")
+
+        normalized: List[Dict[str, Any]] = []
+        seen_ids: set[str] = set()
+        for index, revision in enumerate(revisions):
+            if not isinstance(revision, Mapping):
+                raise ValueError(f"revisions[{index}] must be an object")
+            rev_id = revision.get("id")
+            if (
+                not isinstance(rev_id, str)
+                or not rev_id
+                or len(rev_id.encode("utf-8")) > 200
+            ):
+                raise ValueError(f"revisions[{index}].id is invalid")
+            if rev_id in seen_ids:
+                raise ValueError(f"duplicate revision id: {rev_id}")
+            seen_ids.add(rev_id)
+            normalized.append(dict(revision))
+
+        if evaluator_fn is None and not all(
+            revision.get("verdict") in {"PASS", "FAIL"}
+            for revision in normalized
+        ):
+            return _not_run(
+                len(normalized),
+                "A real evaluator or an explicit PASS/FAIL verdict per revision is required",
             )
 
-        if evaluator_fn is None:
-            # Default built-in evaluator: inspects 'is_valid' flag or test presence
-            evaluator_fn = lambda rev: rev.get("is_valid", True) is True
-
-        low = 0
-        high = len(revisions) - 1
-        first_bad_idx: Optional[int] = None
+        started = time.perf_counter()
         steps: List[BisectStep] = []
-        step_counter = 1
-
-        while low <= high:
-            mid = (low + high) // 2
-            current_rev = revisions[mid]
-            rev_id = current_rev.get("id", f"rev-{mid}")
-
-            is_pass = evaluator_fn(current_rev)
-            verdict = "PASS" if is_pass else "FAIL"
-
+        verdicts: List[str] = []
+        for index, revision in enumerate(normalized):
+            try:
+                raw_verdict: ExplicitVerdict
+                if evaluator_fn is None:
+                    raw_verdict = revision["verdict"]
+                else:
+                    raw_verdict = evaluator_fn(revision)
+                verdict = _normalize_verdict(raw_verdict)
+            except Exception as exc:
+                return BisectResult(
+                    status="EVALUATION_FAILED",
+                    first_bad_revision=None,
+                    total_steps=len(steps),
+                    culprit_message=(
+                        f"Evaluator failed for {revision['id']}: {type(exc).__name__}"
+                    ),
+                    history_length=len(normalized),
+                    bisect_duration_ms=round(
+                        (time.perf_counter() - started) * 1000, 3
+                    ),
+                    steps=steps,
+                )
+            verdicts.append(verdict)
             steps.append(
                 BisectStep(
-                    step_index=step_counter,
-                    rev_id=rev_id,
+                    step_index=index + 1,
+                    rev_id=revision["id"],
                     evaluated_verdict=verdict,
                     evaluated_at=time.time(),
                 )
             )
-            step_counter += 1
 
-            if not is_pass:
-                first_bad_idx = mid
-                high = mid - 1  # Look for earlier bad revisions
-            else:
-                low = mid + 1  # Look in newer revisions
-
-        duration_ms = round((time.perf_counter() - start_time) * 1000, 3)
-
-        if first_bad_idx is not None:
-            culprit = revisions[first_bad_idx]
-            culprit_id = culprit.get("id", f"rev-{first_bad_idx}")
-            culprit_msg = culprit.get("message", "Semantic constraint violation introduced")
+        duration_ms = round((time.perf_counter() - started) * 1000, 3)
+        first_fail = next(
+            (index for index, verdict in enumerate(verdicts) if verdict == "FAIL"),
+            None,
+        )
+        if first_fail is None:
             return BisectResult(
-                status="FOUND_CULPRIT",
-                first_bad_revision=culprit_id,
+                status="ALL_PASSING",
+                first_bad_revision=None,
                 total_steps=len(steps),
-                culprit_message=culprit_msg,
-                history_length=len(revisions),
+                culprit_message="Every supplied revision evaluated PASS",
+                history_length=len(normalized),
+                bisect_duration_ms=duration_ms,
+                steps=steps,
+            )
+        if any(verdict == "PASS" for verdict in verdicts[first_fail + 1 :]):
+            return BisectResult(
+                status="NON_MONOTONIC_HISTORY",
+                first_bad_revision=None,
+                total_steps=len(steps),
+                culprit_message=(
+                    "PASS appears after FAIL; a unique regression boundary cannot be established"
+                ),
+                history_length=len(normalized),
                 bisect_duration_ms=duration_ms,
                 steps=steps,
             )
 
+        culprit = normalized[first_fail]
+        culprit_id = str(culprit["id"])
+        supplied_message = culprit.get("message")
+        culprit_message = (
+            supplied_message
+            if isinstance(supplied_message, str) and supplied_message
+            else f"Revision {culprit_id} is the first explicit FAIL"
+        )
         return BisectResult(
-            status="ALL_PASSING",
-            first_bad_revision=None,
+            status="FOUND_CULPRIT",
+            first_bad_revision=culprit_id,
             total_steps=len(steps),
-            culprit_message="All revisions passed verification",
-            history_length=len(revisions),
+            culprit_message=culprit_message,
+            history_length=len(normalized),
             bisect_duration_ms=duration_ms,
             steps=steps,
         )
 
 
-# Global singleton
 _regression_bisector = SemanticRegressionBisector()
 
 
@@ -121,26 +186,62 @@ def run_semantic_bisect(
     revisions: Optional[List[Dict[str, Any]]] = None,
     good_rev: Optional[str] = None,
     bad_rev: Optional[str] = None,
+    *,
+    evaluator_fn: Optional[Callable[[Dict[str, Any]], ExplicitVerdict]] = None,
 ) -> Dict[str, Any]:
-    """Top-level helper for semantic regression bisecting."""
-    if revisions is None:
-        # Generate representative sample historical sequence
-        revisions = [
-            {"id": "c101", "message": "Initial Java Spring setup", "is_valid": True},
-            {"id": "c102", "message": "Add OrderController REST API", "is_valid": True},
-            {"id": "c103", "message": "Introduce PaymentService decimal arithmetic", "is_valid": True},
-            {"id": "c104", "message": "Refactor Collections to fast hashtables (Regression: Unsafe Mutability)", "is_valid": False},
-            {"id": "c105", "message": "Add Kafka notification dispatcher", "is_valid": False},
-            {"id": "c106", "message": "Bump Spring Boot version to 3.4.0", "is_valid": False},
-        ]
+    """Top-level helper without generated history or implicit verdicts."""
 
-    res = _regression_bisector.bisect_revisions(revisions)
+    if revisions is None:
+        result = _not_run(0, "Revision history is required")
+    else:
+        selected = revisions
+        if (good_rev is None) != (bad_rev is None):
+            result = _not_run(
+                len(revisions), "good_rev and bad_rev must be supplied together"
+            )
+        elif good_rev is not None and bad_rev is not None:
+            identifiers = [revision.get("id") for revision in revisions]
+            if identifiers.count(good_rev) != 1 or identifiers.count(bad_rev) != 1:
+                result = _not_run(
+                    len(revisions), "good_rev and bad_rev must identify unique revisions"
+                )
+            else:
+                good_index = identifiers.index(good_rev)
+                bad_index = identifiers.index(bad_rev)
+                if good_index >= bad_index:
+                    result = _not_run(
+                        len(revisions), "good_rev must precede bad_rev"
+                    )
+                else:
+                    selected = revisions[good_index : bad_index + 1]
+                    result = _regression_bisector.bisect_revisions(
+                        selected, evaluator_fn=evaluator_fn
+                    )
+                    if result.status != "EVALUATION_FAILED" and result.steps and (
+                        result.steps[0].evaluated_verdict != "PASS"
+                        or result.steps[-1].evaluated_verdict != "FAIL"
+                    ):
+                        result = BisectResult(
+                            status="BOUNDARY_VERDICT_MISMATCH",
+                            first_bad_revision=None,
+                            total_steps=result.total_steps,
+                            culprit_message=(
+                                "good_rev must evaluate PASS and bad_rev must evaluate FAIL"
+                            ),
+                            history_length=result.history_length,
+                            bisect_duration_ms=result.bisect_duration_ms,
+                            steps=result.steps,
+                        )
+        else:
+            result = _regression_bisector.bisect_revisions(
+                selected, evaluator_fn=evaluator_fn
+            )
     return {
-        "status": res.status,
-        "first_bad_revision": res.first_bad_revision,
-        "culprit_message": res.culprit_message,
-        "total_steps": res.total_steps,
-        "history_length": res.history_length,
-        "bisect_duration_ms": res.bisect_duration_ms,
-        "steps": [asdict(s) for s in res.steps],
+        "status": result.status,
+        "first_bad_revision": result.first_bad_revision,
+        "culprit_message": result.culprit_message,
+        "total_steps": result.total_steps,
+        "history_length": result.history_length,
+        "bisect_duration_ms": result.bisect_duration_ms,
+        "steps": [asdict(step) for step in result.steps],
     }

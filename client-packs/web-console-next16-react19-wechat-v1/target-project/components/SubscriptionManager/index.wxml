@@ -1,0 +1,16 @@
+<view class="card" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <view class="source-labels">
+    <text class="source-label">/api/billing/cancel</text>
+    <text class="source-label">/api/billing/subscription</text>
+    <text class="source-label">ACTIVE_SUBSCRIPTION_NOT_FOUND</text>
+    <text class="source-label">AUTH</text>
+    <text class="source-label">EMPTY</text>
+    <text class="source-label">Idempotency-Key</text>
+  </view>
+  <view class="actions">
+    <button wx:for="{{actions}}" wx:key="id" size="mini" data-action="{{item.id}}" bindtap="runAction">{{item.label}}</button>
+  </view>
+  <view wx:for="{{rows}}" wx:key="key" class="data-row"><text>{{item.key}}</text><text>{{item.value}}</text></view>
+</view>

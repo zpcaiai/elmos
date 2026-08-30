@@ -1,50 +1,22 @@
-"""Elmos Commercial Capability Expansion Engine v2.0.0.
+"""Read-only public surface for Commercial Capability Expansion.
 
-Provides top-tier commercial production-grade capabilities across 8 kernels:
-- K1: Skill Runtime
-- K2: Repository Intelligence
-- K3: Transformation
-- K4: Build & Execution
-- K5: Verification
-- K6: Security & Governance
-- K7: Database & Data
-- K8: Observability & Evolution
+Execution contracts, registries, mutable stores and handler requests are not
+re-exported.  Trusted hosts integrate the explicit runtime submodule; ordinary
+package callers receive catalog/status and read-only integrity inspection.
 """
 
-from .models import (
-    KernelType,
-    Priority,
-    GateLevel,
-    DecisionStatus,
-    RiskLevel,
-    TaskContext,
-    SkillDefinition,
-    PolicyDecision,
-    RiskAssessment,
-    EvidenceRecord,
-    ProvenanceAttestation,
-    E0E5GateDecision,
-    Checkpoint,
-    TrajectoryRecord,
+from .service import (
+    CommercialCapabilityExpansionService,
+    get_commercial_status,
+    list_capability_kernels,
 )
-from .service import CommercialCapabilityExpansionService
+from .store import ReadonlyControlPlaneStore
 
 __version__ = "2.0.0"
 
 __all__ = [
-    "KernelType",
-    "Priority",
-    "GateLevel",
-    "DecisionStatus",
-    "RiskLevel",
-    "TaskContext",
-    "SkillDefinition",
-    "PolicyDecision",
-    "RiskAssessment",
-    "EvidenceRecord",
-    "ProvenanceAttestation",
-    "E0E5GateDecision",
-    "Checkpoint",
-    "TrajectoryRecord",
     "CommercialCapabilityExpansionService",
+    "ReadonlyControlPlaneStore",
+    "get_commercial_status",
+    "list_capability_kernels",
 ]

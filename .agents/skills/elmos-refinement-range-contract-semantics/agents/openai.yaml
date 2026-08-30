@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-refinement-range-contract-semantics"
+  short_description: "Represent Ada/SPARK subtypes, ranges, invariants, pre/postconditions and other refinement constra..."
+  default_prompt: "Use $elmos-refinement-range-contract-semantics through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-refinement-range-contract-semantics"
+  handler_id: "execute_elmos_refinement_range_contract_semantics"
+  operation: "MODEL_NORMALIZATION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

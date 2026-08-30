@@ -1,0 +1,12 @@
+<view class="card" data-component="{{componentName}}">
+  <button class="heading" bindtap="toggleExpanded" aria-expanded="{{expanded}}">{{title}}</button>
+  <view wx:if="{{expanded}}" class="content">
+    <text class="source-label">&quot;&quot;</text>
+    <text class="source-label">/api/capabilities/translation</text>
+    <text class="source-label">/api/translation/discovery-report</text>
+    <text class="source-label">/api/translation/health</text>
+    <text class="source-label">/api/translation/jobs</text>
+    <text class="source-label">/api/translation/repository-plan</text>
+    <view wx:for="{{rows}}" wx:key="key"><text>{{item.key}}: {{item.value}}</text></view>
+  </view>
+</view>

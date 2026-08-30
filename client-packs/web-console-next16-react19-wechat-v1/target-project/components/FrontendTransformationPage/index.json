@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "frontend-transformation-studio": "/components/FrontendTransformationStudio/index"
+  }
+}

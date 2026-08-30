@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "pack_key": "web-console-next16-react19-wechat-v1",
+  "capabilities": [
+    {
+      "id": "component-implementation-closure",
+      "domain": "component",
+      "status": "experimental",
+      "owner": "elmos-frontend-client-engine",
+      "source_versions": [
+        "next-16.3.0-react-19.2.7-typescript-5.9.2"
+      ],
+      "target_versions": [
+        "wechat-base-library-3.9.1"
+      ],
+      "evidence_refs": [
+        "transformations/component-migration-closure.json",
+        "target-project/coverage-report.json"
+      ],
+      "reason": "71/71 components have target implementations: 32 automatic and 39 explicit hand ports; runtime equivalence remains NOT_RUN."
+    },
+    {
+      "id": "typed-hook-effect-and-collection-ir",
+      "domain": "semantic-ir",
+      "status": "experimental",
+      "owner": "elmos-frontend-client-engine",
+      "source_versions": [
+        "next-16.3.0-react-19.2.7-typescript-5.9.2"
+      ],
+      "target_versions": [
+        "wechat-base-library-3.9.1"
+      ],
+      "evidence_refs": [
+        "manual-ir/components.json",
+        "ui-ir/model.json"
+      ],
+      "reason": "All blocked components carry exact AST ranges, source digests, hooks, state, effects, cleanup obligations, collections, platform semantics and target adapters."
+    },
+    {
+      "id": "wechat-native-target-adapters",
+      "domain": "target-generation",
+      "status": "experimental",
+      "owner": "elmos-client-modernization-maintainers",
+      "source_versions": [
+        "next-16.3.0-react-19.2.7-typescript-5.9.2"
+      ],
+      "target_versions": [
+        "wechat-base-library-3.9.1"
+      ],
+      "evidence_refs": [
+        "target-project/runtime/hand-port-runtime.js",
+        "target-project/runtime/platform-adapters.js"
+      ],
+      "reason": "Native WXML/WXSS/JS implements cancellable requests, typed plain-state projection, Map/Set projection, session/preferences, table, disclosure, icon, slot and document lifecycle adapters without WebView or full-page Canvas."
+    },
+    {
+      "id": "official-wechat-build-and-device",
+      "domain": "runtime-validation",
+      "status": "blocked",
+      "owner": "elmos-web-console-miniapp-review",
+      "source_versions": [
+        "next-16.3.0-react-19.2.7-typescript-5.9.2"
+      ],
+      "target_versions": [
+        "wechat-base-library-3.9.1"
+      ],
+      "evidence_refs": [],
+      "reason": "The installed wechat-devtools-2.01.2510290 has been detected, but official compile, preview, emulator and physical-device evidence are NOT_RUN until executed and attached."
+    },
+    {
+      "id": "independent-equivalence-and-quality",
+      "domain": "quality",
+      "status": "blocked",
+      "owner": "elmos-accessibility-review",
+      "source_versions": [
+        "next-16.3.0-react-19.2.7-typescript-5.9.2"
+      ],
+      "target_versions": [
+        "wechat-base-library-3.9.1"
+      ],
+      "evidence_refs": [],
+      "reason": "Independent holdout, differential behavior, visual, accessibility, privacy, performance, security and customer acceptance remain NOT_RUN."
+    }
+  ]
+}

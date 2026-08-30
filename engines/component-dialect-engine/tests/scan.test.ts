@@ -156,6 +156,24 @@ describe("blockers are ranked so the report is actionable", () => {
     const total = report.families.reduce((sum, f) => sum + f.count, 0);
     expect(total).toBe(report.totals.outOfSubset);
   });
+
+  it("classifies an impure useMemo callback as an explained expression blocker", () => {
+    const repo = makeRepo({
+      "Derived.tsx": `
+function Derived({ values }: { values: number[] }) {
+  const total = useMemo(() => { const copied = [...values]; return copied.length; }, [values]);
+  return (<p>{total}</p>);
+}
+`,
+    });
+    const report = scanRepository({ repository: repo, sourceFramework: "react", includeAllFindings: true });
+    expect(report.findings[0]).toMatchObject({
+      status: "OUT_OF_SUBSET",
+      reasonCode: "CERTIFIED_COMPONENT_USEMEMO_CALLBACK",
+      family: "expressions",
+    });
+    expect(report.blockers[0]?.what).toMatch(/useMemo callback/);
+  });
 });
 
 describe("the number is presented as an upper bound, not a promise", () => {

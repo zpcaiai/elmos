@@ -1,0 +1,42 @@
+.card, .shell, .provider { box-sizing: border-box; margin: 20rpx 0; padding: 24rpx; border: 1rpx solid #d7deea; border-radius: 16rpx; background: #fff; color: #172033; }
+.heading { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; font-size: 30rpx; font-weight: 600; }
+.status { margin: 12rpx 0; color: #58677d; font-size: 24rpx; }
+.status--failed, .status--configuration-required { color: #a51d2d; }
+.source-labels, .content { display: flex; flex-direction: column; gap: 8rpx; margin-top: 12rpx; }
+.source-label { color: #46566f; font-size: 24rpx; }
+.actions { display: flex; flex-wrap: wrap; gap: 12rpx; margin: 16rpx 0; }
+.data-row, .table-row, .bar-row { display: flex; align-items: center; gap: 16rpx; min-height: 56rpx; border-top: 1rpx solid #edf0f5; }
+.data-row > text:first-child, .table-key, .bar-label { width: 220rpx; color: #59677a; }
+.table-scroll { width: 100%; }
+.table-row { min-width: 900rpx; }
+.chart { display: flex; flex-direction: column; gap: 12rpx; }
+.bar { min-width: 4rpx; max-width: 280rpx; height: 20rpx; border-radius: 10rpx; background: #3568d4; }
+.icon { display: inline-flex; align-items: center; justify-content: center; width: 48rpx; height: 48rpx; font-size: 36rpx; }
+.source-boundary { box-sizing: border-box; }
+.source-catalogReasons { box-sizing: border-box; }
+.source-catalogSection { box-sizing: border-box; }
+.source-digest { box-sizing: border-box; }
+.source-error { box-sizing: border-box; }
+.source-evidenceStrip { box-sizing: border-box; }
+.source-eyebrow { box-sizing: border-box; }
+.source-hero { box-sizing: border-box; }
+.source-longHorizon { box-sizing: border-box; }
+.source-modeCopy { box-sizing: border-box; }
+.source-modeFieldset { box-sizing: border-box; }
+.source-modelGrid { box-sizing: border-box; }
+.source-modelMeta { box-sizing: border-box; }
+.source-modelTitle { box-sizing: border-box; }
+.source-notice { box-sizing: border-box; }
+.source-policyRow { box-sizing: border-box; }
+.source-preflightAction { box-sizing: border-box; }
+.source-readinessGrid { box-sizing: border-box; }
+.source-resultColumns { box-sizing: border-box; }
+.source-resultSection { box-sizing: border-box; }
+.source-riskGrid { box-sizing: border-box; }
+.source-riskSection { box-sizing: border-box; }
+.source-routerPolicy { box-sizing: border-box; }
+.source-sectionHeader { box-sizing: border-box; }
+.source-status { box-sizing: border-box; }
+.source-toggle { box-sizing: border-box; }
+.source-unavailable { box-sizing: border-box; }
+.source-workbench { box-sizing: border-box; }

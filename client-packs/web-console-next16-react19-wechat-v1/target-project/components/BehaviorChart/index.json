@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "empty-evidence": "/components/EmptyEvidence/index",
+    "equivalence-matrix": "/components/EquivalenceMatrix/index",
+    "status-mark": "/components/StatusMark/index"
+  }
+}

@@ -4,8 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import re
-import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRisk
 
@@ -13,8 +12,8 @@ from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRi
 class FrontendSyntaxSemanticsModule:
     """Manages lossless CST, dialect/version detection, macro expansion, and parse error recovery."""
 
-    def __init__(self):
-        self.dialect_rules: Dict[str, Dict[str, re.Pattern]] = {
+    def __init__(self) -> None:
+        self.dialect_rules: Dict[str, Dict[str, re.Pattern[str]]] = {
             "python": {
                 "python2": re.compile(r"\bprint\s+['\"]|\braw_input\s*\("),
                 "python3": re.compile(r"\bprint\s*\(|\basync\s+def\b|:\s*[a-zA-Z_][a-zA-Z0-9_]*\s*="),
@@ -35,16 +34,26 @@ class FrontendSyntaxSemanticsModule:
         """Detects dialect version from code markers."""
         lang_key = language.lower()
         signatures = self.dialect_rules.get(lang_key, {})
-        detected = "unknown"
-
+        matches = []
         for ver, pat in signatures.items():
             if pat.search(source_code):
-                detected = ver
+                matches.append(ver)
+
+        detected = matches[0] if len(matches) == 1 else None
+        status = (
+            "HEURISTIC_CANDIDATE_NOT_VERIFIED"
+            if detected is not None
+            else "AMBIGUOUS_HEURISTIC_NOT_VERIFIED"
+            if matches
+            else "UNDETERMINED"
+        )
 
         return {
             "language": language,
-            "detected_version": detected if detected != "unknown" else f"{language}-latest",
-            "status": "DIALECT_DETECTED",
+            "detected_version": detected,
+            "candidate_versions": matches,
+            "status": status,
+            "parser_evidence": "NOT_RUN",
         }
 
     def create_frontend_obligation(
@@ -62,7 +71,7 @@ class FrontendSyntaxSemanticsModule:
             source_construct=source_grammar,
             target_construct=target_grammar,
             property_name=property_name,
-            invariants=["LOSSLESS_CST_FIDELITY", "SYNTACTIC_ISOMORPHISM"],
+            invariants=("LOSSLESS_CST_FIDELITY", "SYNTACTIC_ISOMORPHISM"),
             risk=SemanticRisk.CRITICAL,
             status=ObligationStatus.NOT_RUN,
         )

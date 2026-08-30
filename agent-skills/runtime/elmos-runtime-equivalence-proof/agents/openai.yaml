@@ -1,0 +1,6 @@
+interface:
+  display_name: "Runtime Equivalence Proof"
+  short_description: "Compare normalized runtime evidence without hiding uncertainty."
+  default_prompt: "Use $elmos-runtime-equivalence-proof through the exact PDHI v1 K3 runtime with typed scope, allowlisted operations, replayable evidence, and fail-closed external gates."
+policy:
+  allow_implicit_invocation: true

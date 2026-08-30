@@ -4,14 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "elmos-knowledge-skill-model-foundry-engine"
-version = "2.0.0"
-description = "Elmos Knowledge-Skill-Model Foundry Runtime Engine"
+version = "3.0.0"
+description = "Fail-closed Elmos Knowledge-Skill-Model Foundry runtime"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = [
-    "pyyaml>=6.0.2",
-    "jsonschema>=4.25.1",
-]
+dependencies = []
 
 [project.optional-dependencies]
 dev = [
@@ -26,6 +23,18 @@ elmos-foundry = "elmos_foundry.cli:main"
 [tool.hatch.build.targets.wheel]
 packages = ["src/elmos_foundry"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"catalog/compiled-catalog.json" = "elmos_foundry/catalog/compiled-catalog.json"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = true

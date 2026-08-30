@@ -15,6 +15,7 @@ from typing import Any, Mapping
 
 import yaml
 
+from .adapters import EXTERNAL_ADAPTERS
 from .benchmark import validate_hidden_test_boundary
 from .budget import BudgetLedger, estimate_machine_eta
 from .campaigns import metamorphic_relation, mutation_summary
@@ -30,8 +31,8 @@ from .harness import phase_plan
 from .incidents import regression_from_incident
 from .materializer import materialize
 from .oracles import compare_json, compare_trace
-from .orchestrator import build_plan, gate_profile, release_attestation_request, release_preflight, run_profile, select_cases
-from .planner import select_plan_shard, validate_plan
+from .orchestrator import build_plan, external_campaign_preflight, gate_profile, release_attestation_request, release_preflight, run_profile, select_cases
+from .planner import build_external_canary_plan, select_plan_shard, validate_plan, validate_plan_scope
 from .performance import evaluate_performance
 from .policy import authorize, authority_digest
 from .risk import select_risk_plan
@@ -54,7 +55,7 @@ class SkillRegistry:
     """Bind all 50 exact source names to repository-owned handlers."""
 
     _OPERATIONS: dict[str, tuple[str, ...]] = {
-        "etgb-orchestrator": ("plan", "run", "merge_results", "score", "gate", "preflight", "attestation_request", "eta", "stability", "triage"),
+        "etgb-orchestrator": ("plan", "canary_plan", "run", "merge_results", "score", "gate", "preflight", "campaign_preflight", "attestation_request", "eta", "stability", "triage"),
         "test-case-authoring": ("validate", "coverage", "materialized", "validate_case"),
         "spring-modernization-validation": ("validate_case", "capability"),
         "repository-translation-validation": ("validate_case", "capability"),
@@ -64,7 +65,7 @@ class SkillRegistry:
         "metamorphic-fuzz-mutation": ("metamorphic", "mutation_summary", "property_campaign"),
         "corpus-governance": ("verify", "review_request", "review_verify"),
         "release-certification": ("gate", "preflight", "attestation_request"),
-        "production-harness-integration": ("phase_plan", "harness_preflight"),
+        "production-harness-integration": ("phase_plan", "harness_preflight", "campaign_preflight"),
         "environment-authority-sandbox": ("authorize", "authority_digest", "hidden_boundary"),
         "checkpoint-resume-recovery": ("verify_checkpoint", "resume_contract"),
         "evidence-provenance-ledger": ("verify_evidence",),
@@ -136,6 +137,14 @@ class SkillRegistry:
         return [dict(item) for item in value]
 
     @staticmethod
+    def _object(payload: Mapping[str, Any], key: str) -> dict[str, Any] | None:
+        value = payload.get(key)
+        if isinstance(value, Mapping):
+            return dict(value)
+        path = payload.get(f"{key}_path")
+        return load_json_object(Path(str(path))) if path else None
+
+    @staticmethod
     def _unavailable(skill: str, reason: str) -> dict[str, Any]:
         return {"skill": skill, "status": "EXTERNAL_ADAPTER_REQUIRED", "claimable": False, "reason": reason, "external_evidence": "NOT_RUN"}
 
@@ -198,21 +207,32 @@ class SkillRegistry:
         if operation == "plan":
             repo_root = Path(str(data.get("repo_root", self.package_root.parents[2])))
             return build_plan(self.package_root, changed_from=data.get("changed_from"), root_for_git=repo_root, history_path=Path(data["history"]) if data.get("history") else None, max_cases=int(data.get("max_cases", 500)), seed=int(data.get("seed", 17)), shard_count=int(data.get("shards", 8)), candidate_digest=data.get("candidate_digest"), profile=data.get("profile"))
+        if operation == "canary_plan":
+            return build_external_canary_plan(
+                self.package_root,
+                candidate_digest=str(data.get("candidate_digest", "")),
+                shard_count=int(data.get("shards", 1)),
+            )
         if operation == "run":
             output = data.get("output")
             if not output:
                 raise ValueError("run requires an explicit output path")
             plan_value = None
             plan_ids = set(str(value) for value in data.get("case_ids", [])) or None
-            if data.get("plan_path"):
-                plan_value = json.loads(Path(str(data["plan_path"])).read_text(encoding="utf-8"))
-                plan_errors = validate_plan(plan_value)
+            if isinstance(data.get("plan"), Mapping) or data.get("plan_path"):
+                plan_value = dict(data["plan"]) if isinstance(data.get("plan"), Mapping) else load_json_object(Path(str(data["plan_path"])))
+                profile = str(data.get("profile", "smoke"))
+                plan_errors = validate_plan_scope(self.package_root, plan_value) if profile in {"release", "golden", "release-canary"} else validate_plan(plan_value)
                 if plan_errors:
                     raise ValueError("invalid run plan: " + "; ".join(plan_errors))
                 plan_ids = select_plan_shard(plan_value, int(data["shard_id"])) if data.get("shard_id") is not None else set(plan_value["case_ids"])
-            selected = select_cases(self.package_root, profile=str(data.get("profile", "smoke")), business_line=data.get("business_line"), priority=data.get("priority"), case_id=data.get("case_id"), plan_ids=plan_ids, limit=int(data["limit"]) if data.get("limit") is not None else None)
-            candidate = load_spec(Path(str(data["candidate"]))) if data.get("candidate") else None
-            trust_store = load_json_object(Path(str(data["trust_store_path"]))) if data.get("trust_store_path") else None
+            profile = str(data.get("profile", "smoke"))
+            case_profile = "release" if profile == "release-canary" else profile
+            selected = select_cases(self.package_root, profile=case_profile, business_line=data.get("business_line"), priority=data.get("priority"), case_id=data.get("case_id"), plan_ids=plan_ids, limit=int(data["limit"]) if data.get("limit") is not None else None)
+            candidate = dict(data["candidate"]) if isinstance(data.get("candidate"), Mapping) else (load_spec(Path(str(data["candidate"]))) if data.get("candidate") else None)
+            trust_store = dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else (load_json_object(Path(str(data["trust_store_path"]))) if data.get("trust_store_path") else None)
+            role_assignment = self._object(data, "role_assignment")
+            production_authority = self._object(data, "production_authority")
             external_router = None
             external_context = None
             if data.get("harness_config"):
@@ -237,7 +257,7 @@ class SkillRegistry:
             results, score = run_profile(
                 self.package_root,
                 selected,
-                profile=str(data.get("profile", "smoke")),
+                profile=profile,
                 output=Path(str(output)).resolve(),
                 state_db=Path(str(data["state_db"])).resolve() if data.get("state_db") else None,
                 artifact_root=Path(str(data["artifact_root"])).resolve() if data.get("artifact_root") else None,
@@ -250,6 +270,9 @@ class SkillRegistry:
                 external_context=external_context,
                 trust_store=trust_store,
                 license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None,
+                plan=plan_value,
+                role_assignment=role_assignment,
+                production_authority=production_authority,
             )
             return {"selected": len(selected), "results": results, "score": score}
         if operation == "score":
@@ -265,11 +288,34 @@ class SkillRegistry:
             return receipt
         if operation == "gate":
             results = self._results(data)
-            return gate_profile(self.package_root, results, profile=str(data.get("profile", "release")), external_attested=bool(data.get("external_attested")), independent_verifier=data.get("independent_verifier"), external_attestation=dict(data["external_attestation"]) if isinstance(data.get("external_attestation"), Mapping) else None, trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, candidate_digest=data.get("candidate_digest"), license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None, plan=dict(data["plan"]) if isinstance(data.get("plan"), Mapping) else None)
+            return gate_profile(self.package_root, results, profile=str(data.get("profile", "release")), external_attested=bool(data.get("external_attested")), independent_verifier=data.get("independent_verifier"), external_attestation=dict(data["external_attestation"]) if isinstance(data.get("external_attestation"), Mapping) else None, trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, candidate_digest=data.get("candidate_digest"), license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None, plan=dict(data["plan"]) if isinstance(data.get("plan"), Mapping) else None, role_assignment=self._object(data, "role_assignment"), production_authority=self._object(data, "production_authority"))
         if operation == "preflight":
             return release_preflight(self.package_root, profile=str(data.get("profile", "release")), results=self._results(data) if data.get("results") is not None or data.get("results_path") else None, candidate_digest=data.get("candidate_digest"), trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None, plan=dict(data["plan"]) if isinstance(data.get("plan"), Mapping) else None)
         if operation == "attestation_request":
-            return release_attestation_request(self.package_root, self._results(data), profile=str(data.get("profile", "release")), candidate_digest=data.get("candidate_digest"), trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None, plan=dict(data["plan"]) if isinstance(data.get("plan"), Mapping) else None)
+            return release_attestation_request(self.package_root, self._results(data), profile=str(data.get("profile", "release")), candidate_digest=data.get("candidate_digest"), trust_store=dict(data["trust_store"]) if isinstance(data.get("trust_store"), Mapping) else None, license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None, plan=dict(data["plan"]) if isinstance(data.get("plan"), Mapping) else None, role_assignment=self._object(data, "role_assignment"), production_authority=self._object(data, "production_authority"))
+        if operation == "campaign_preflight":
+            required = ("candidate", "plan", "config_path", "trust_store", "tenant_id", "project_id", "task_id", "environment_id", "authority_id", "owner_ids")
+            missing = [field for field in required if not data.get(field)]
+            if missing:
+                raise ValueError("campaign_preflight requires " + ", ".join(missing))
+            if not isinstance(data["candidate"], Mapping) or not isinstance(data["plan"], Mapping) or not isinstance(data["trust_store"], Mapping) or not isinstance(data["owner_ids"], list):
+                raise ValueError("campaign_preflight candidate, plan, trust_store, and owner_ids have invalid types")
+            return external_campaign_preflight(
+                self.package_root,
+                candidate=dict(data["candidate"]),
+                plan=dict(data["plan"]),
+                router=ExternalHarnessRouter.load(Path(str(data["config_path"]))),
+                role_assignment=self._object(data, "role_assignment"),
+                production_authority=self._object(data, "production_authority"),
+                trust_store=dict(data["trust_store"]),
+                license_reviews_path=Path(str(data["license_reviews_path"])) if data.get("license_reviews_path") else None,
+                tenant_id=str(data["tenant_id"]),
+                project_id=str(data["project_id"]),
+                task_id=str(data["task_id"]),
+                environment_id=str(data["environment_id"]),
+                authority_id=str(data["authority_id"]),
+                owner_ids=[str(value) for value in data["owner_ids"]],
+            )
         if operation == "eta":
             cases = data.get("cases")
             if cases is None and data.get("plan_path"):
@@ -289,7 +335,30 @@ class SkillRegistry:
         if operation == "harness_preflight":
             if not data.get("config_path"):
                 raise ValueError("harness_preflight requires config_path")
-            return ExternalHarnessRouter.load(Path(str(data["config_path"]))).capability_report()
+            if isinstance(data.get("required_adapters"), list):
+                required_adapters = {str(value) for value in data["required_adapters"]}
+            else:
+                plan = data.get("plan")
+                if isinstance(plan, Mapping):
+                    plan_errors = validate_plan_scope(self.package_root, dict(plan))
+                    if plan_errors:
+                        raise ValueError("invalid Harness preflight plan: " + "; ".join(plan_errors))
+                    planned_ids = set(str(value) for value in plan.get("case_ids", []))
+                else:
+                    planned_ids = {str(case["id"]) for case in load_cases(self.package_root)}
+                required_adapters = {
+                    str(case.get("execution", {}).get("adapter", ""))
+                    for case in load_cases(self.package_root)
+                    if str(case.get("id")) in planned_ids and str(case.get("execution", {}).get("adapter", "")) in EXTERNAL_ADAPTERS
+                }
+            production_transport = bool(data.get("production")) or (
+                isinstance(data.get("plan"), Mapping)
+                and data["plan"].get("profile") in {"release", "golden", "release-canary"}
+            )
+            return ExternalHarnessRouter.load(Path(str(data["config_path"]))).capability_report(
+                required_adapters,
+                require_production_transport=production_transport,
+            )
         if operation == "authorize":
             authority = data.get("authority")
             request = data.get("request")
@@ -354,10 +423,16 @@ class SkillRegistry:
                 dispatched.append(item)
             return {"dispatched": dispatched, "snapshot": scheduler.snapshot()}
         if operation == "validate_plan":
-            errors = validate_plan(data.get("plan"))
+            plan = data.get("plan")
+            errors = validate_plan_scope(self.package_root, plan) if isinstance(plan, Mapping) and plan.get("profile") in {"release", "golden", "release-canary"} else validate_plan(plan)
             return {"valid": not errors, "errors": errors}
         if operation == "select_shard":
-            return {"case_ids": sorted(select_plan_shard(data.get("plan"), int(data["shard_id"])))}
+            plan = data.get("plan")
+            if isinstance(plan, Mapping) and plan.get("profile") in {"release", "golden", "release-canary"}:
+                errors = validate_plan_scope(self.package_root, plan)
+                if errors:
+                    raise ValueError("invalid protected plan: " + "; ".join(errors))
+            return {"case_ids": sorted(select_plan_shard(plan, int(data["shard_id"])))}
         if operation == "freeze":
             candidate = data.get("candidate")
             if not isinstance(candidate, Mapping):

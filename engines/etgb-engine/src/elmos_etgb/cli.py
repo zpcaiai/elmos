@@ -9,6 +9,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from .adapters import EXTERNAL_ADAPTERS
 from .attestation import load_json_object
 from .budget import estimate_machine_eta
 from .candidate import freeze_candidate_file, load_spec
@@ -16,15 +17,15 @@ from .campaign import merge_release_results
 from .evidence import create_deterministic_bundle
 from .corpus import build_license_review_request, verify_license_reviews
 from .external_harness import ExternalExecutionContext, ExternalHarnessRouter
-from .orchestrator import build_plan, gate_profile, release_attestation_request, release_preflight, run_profile, select_cases
+from .orchestrator import build_plan, external_campaign_preflight, gate_profile, release_attestation_request, release_preflight, run_profile, select_cases
 from .package import PACKAGE_ROOT_NAME
-from .planner import select_plan_shard, validate_plan
+from .planner import build_external_canary_plan, select_plan_shard, validate_plan, validate_plan_scope
 from .policy import authorize, load_document
 from .registry import SkillRegistry
 from .scoring import score_results
 from .statistics import multi_seed_stability
 from .triage import cluster_failures
-from .validation import coverage_report, validate_package, validate_results
+from .validation import coverage_report, load_cases, validate_package, validate_results
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -86,8 +87,12 @@ def main(argv: list[str] | None = None) -> int:
     plan.add_argument("--candidate-digest")
     plan.add_argument("--profile", choices=["release", "golden"])
     plan.add_argument("--output", type=Path, required=True)
+    canary_plan = sub.add_parser("canary-plan")
+    canary_plan.add_argument("--candidate-digest", required=True)
+    canary_plan.add_argument("--shards", type=int, default=1)
+    canary_plan.add_argument("--output", type=Path, required=True)
     run = sub.add_parser("run")
-    run.add_argument("--profile", choices=["smoke", "pr", "nightly", "weekly", "release", "golden", "exhaustive"], required=True)
+    run.add_argument("--profile", choices=["smoke", "pr", "nightly", "weekly", "release", "golden", "release-canary", "exhaustive"], required=True)
     run.add_argument("--business-line")
     run.add_argument("--priority", choices=["P0", "P1", "P2"])
     run.add_argument("--case-id")
@@ -104,6 +109,8 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--candidate", type=Path)
     run.add_argument("--trust-store", type=Path)
     run.add_argument("--license-reviews", type=Path)
+    run.add_argument("--role-assignments", type=Path)
+    run.add_argument("--production-authority", type=Path)
     run.add_argument("--harness-config", type=Path)
     run.add_argument("--tenant-id")
     run.add_argument("--project-id")
@@ -138,6 +145,8 @@ def main(argv: list[str] | None = None) -> int:
     gate.add_argument("--candidate-digest")
     gate.add_argument("--license-reviews", type=Path)
     gate.add_argument("--plan", type=Path)
+    gate.add_argument("--role-assignments", type=Path)
+    gate.add_argument("--production-authority", type=Path)
     preflight = sub.add_parser("preflight")
     preflight.add_argument("--profile", choices=["release", "golden"], default="release")
     preflight.add_argument("--results", type=Path)
@@ -159,10 +168,29 @@ def main(argv: list[str] | None = None) -> int:
     attestation_request.add_argument("--trust-store", type=Path)
     attestation_request.add_argument("--license-reviews", type=Path)
     attestation_request.add_argument("--plan", type=Path, required=True)
+    attestation_request.add_argument("--role-assignments", type=Path, required=True)
+    attestation_request.add_argument("--production-authority", type=Path, required=True)
     attestation_request.add_argument("--output", type=Path, required=True)
     harness_preflight = sub.add_parser("harness-preflight")
     harness_preflight.add_argument("--config", type=Path, required=True)
+    harness_preflight.add_argument("--plan", type=Path)
+    harness_preflight.add_argument("--production", action="store_true")
     harness_preflight.add_argument("--output", type=Path)
+    campaign_preflight = sub.add_parser("campaign-preflight")
+    campaign_preflight.add_argument("--config", type=Path, required=True)
+    campaign_preflight.add_argument("--candidate", type=Path, required=True)
+    campaign_preflight.add_argument("--plan", type=Path, required=True)
+    campaign_preflight.add_argument("--role-assignments", type=Path, required=True)
+    campaign_preflight.add_argument("--production-authority", type=Path, required=True)
+    campaign_preflight.add_argument("--trust-store", type=Path, required=True)
+    campaign_preflight.add_argument("--license-reviews", type=Path, required=True)
+    campaign_preflight.add_argument("--tenant-id", required=True)
+    campaign_preflight.add_argument("--project-id", required=True)
+    campaign_preflight.add_argument("--task-id", required=True)
+    campaign_preflight.add_argument("--environment-id", required=True)
+    campaign_preflight.add_argument("--authority-id", required=True)
+    campaign_preflight.add_argument("--owner", action="append", required=True)
+    campaign_preflight.add_argument("--output", type=Path, required=True)
     freeze = sub.add_parser("freeze-candidate")
     freeze.add_argument("input", type=Path)
     freeze.add_argument("--output", type=Path, required=True)
@@ -231,12 +259,26 @@ def main(argv: list[str] | None = None) -> int:
         _write_json(args.output, result)
         print(json.dumps({"output": str(args.output), "selected": len(result["case_ids"]), "affected": result["affected_business_lines"], "plan_digest": result["plan_digest"]}, ensure_ascii=False, indent=2))
         return 0
+    if args.command == "canary-plan":
+        result = build_external_canary_plan(
+            package_root,
+            candidate_digest=args.candidate_digest,
+            shard_count=args.shards,
+        )
+        _write_json(args.output, result)
+        print(json.dumps({
+            "output": str(args.output),
+            "selected": len(result["case_ids"]),
+            "required_adapters": len(result["required_adapters"]),
+            "plan_digest": result["plan_digest"],
+        }, ensure_ascii=False, indent=2))
+        return 0
     if args.command == "run":
         plan_ids = None
         plan_value = None
         if args.plan:
             plan_value = load_json_object(args.plan)
-            plan_errors = validate_plan(plan_value)
+            plan_errors = validate_plan_scope(package_root, plan_value) if args.profile in {"release", "golden", "release-canary"} else validate_plan(plan_value)
             if plan_errors:
                 raise ValueError("invalid run plan: " + "; ".join(plan_errors))
             if plan_value.get("profile") and plan_value.get("profile") != args.profile:
@@ -244,9 +286,12 @@ def main(argv: list[str] | None = None) -> int:
             plan_ids = select_plan_shard(plan_value, args.shard_id) if args.shard_id is not None else set(plan_value.get("case_ids", []))
         elif args.shard_id is not None:
             raise ValueError("--shard-id requires --plan")
-        cases = select_cases(package_root, profile=args.profile, business_line=args.business_line, priority=args.priority, case_id=args.case_id, plan_ids=plan_ids, limit=args.limit)
+        case_profile = "release" if args.profile == "release-canary" else args.profile
+        cases = select_cases(package_root, profile=case_profile, business_line=args.business_line, priority=args.priority, case_id=args.case_id, plan_ids=plan_ids, limit=args.limit)
         candidate = load_spec(args.candidate) if args.candidate else None
         trust_store = load_json_object(args.trust_store) if args.trust_store else None
+        role_assignment = load_json_object(args.role_assignments) if args.role_assignments else None
+        production_authority = load_json_object(args.production_authority) if args.production_authority else None
         external_router = None
         external_context = None
         if args.harness_config:
@@ -262,6 +307,13 @@ def main(argv: list[str] | None = None) -> int:
                 "--fencing-token": args.fencing_token,
                 "--checkpoint-digest": args.checkpoint_digest,
             }
+            if args.profile in {"release", "golden", "release-canary"}:
+                required_context.update({
+                    "--trust-store": args.trust_store,
+                    "--license-reviews": args.license_reviews,
+                    "--role-assignments": args.role_assignments,
+                    "--production-authority": args.production_authority,
+                })
             missing = sorted(key for key, value in required_context.items() if value is None)
             if missing:
                 raise ValueError("external Harness execution requires " + ", ".join(missing))
@@ -298,6 +350,9 @@ def main(argv: list[str] | None = None) -> int:
             external_context=external_context,
             trust_store=trust_store,
             license_reviews_path=args.license_reviews if args.license_reviews else None,
+            plan=plan_value,
+            role_assignment=role_assignment,
+            production_authority=production_authority,
         )
         print(json.dumps({"selected": len(cases), "results": len(results), "output": str(args.output), "score": score_value}, ensure_ascii=False, indent=2))
         return 0 if all(result["status"] in {"passed", "unavailable", "skipped"} for result in results) and (args.allow_unavailable or all(result["status"] == "passed" for result in results)) else 2
@@ -353,7 +408,9 @@ def main(argv: list[str] | None = None) -> int:
         attestation = load_json_object(args.attestation) if args.attestation else None
         trust_store = load_json_object(args.trust_store) if args.trust_store else None
         plan_value = load_json_object(args.plan) if args.plan else None
-        result = gate_profile(package_root, results, profile=args.profile, external_attested=args.external_attested, independent_verifier=args.independent_verifier, external_attestation=attestation, trust_store=trust_store, candidate_digest=args.candidate_digest, license_reviews_path=args.license_reviews if args.license_reviews else None, plan=plan_value)
+        role_assignment = load_json_object(args.role_assignments) if args.role_assignments else None
+        production_authority = load_json_object(args.production_authority) if args.production_authority else None
+        result = gate_profile(package_root, results, profile=args.profile, external_attested=args.external_attested, independent_verifier=args.independent_verifier, external_attestation=attestation, trust_store=trust_store, candidate_digest=args.candidate_digest, license_reviews_path=args.license_reviews if args.license_reviews else None, plan=plan_value, role_assignment=role_assignment, production_authority=production_authority)
         if args.output:
             _write_json(args.output, result)
         print(json.dumps(result, ensure_ascii=False, indent=2))
@@ -381,16 +438,55 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "attestation-request":
         results = _read_jsonl(args.results)
         trust_store = load_json_object(args.trust_store) if args.trust_store else None
-        result = release_attestation_request(package_root, results, profile=args.profile, candidate_digest=args.candidate_digest, trust_store=trust_store, license_reviews_path=args.license_reviews if args.license_reviews else None, plan=load_json_object(args.plan))
+        result = release_attestation_request(package_root, results, profile=args.profile, candidate_digest=args.candidate_digest, trust_store=trust_store, license_reviews_path=args.license_reviews if args.license_reviews else None, plan=load_json_object(args.plan), role_assignment=load_json_object(args.role_assignments), production_authority=load_json_object(args.production_authority))
         _write_json(args.output, result)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result["status"] == "READY_FOR_INDEPENDENT_VERIFICATION" else 2
     if args.command == "harness-preflight":
-        result = ExternalHarnessRouter.load(args.config).capability_report()
+        plan_value = load_json_object(args.plan) if args.plan else None
+        if plan_value is not None:
+            plan_errors = validate_plan_scope(package_root, plan_value)
+            if plan_errors:
+                raise ValueError("invalid Harness preflight plan: " + "; ".join(plan_errors))
+            planned_ids = set(str(value) for value in plan_value.get("case_ids", []))
+        else:
+            planned_ids = {str(case["id"]) for case in load_cases(package_root)}
+        required_adapters = {
+            str(case.get("execution", {}).get("adapter", ""))
+            for case in load_cases(package_root)
+            if str(case.get("id")) in planned_ids and str(case.get("execution", {}).get("adapter", "")) in EXTERNAL_ADAPTERS
+        }
+        production_transport = args.production or (
+            plan_value is not None and plan_value.get("profile") in {"release", "golden", "release-canary"}
+        )
+        result = ExternalHarnessRouter.load(args.config).capability_report(
+            required_adapters,
+            require_production_transport=production_transport,
+        )
         if args.output:
             _write_json(args.output, result)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result["status"] == "READY_FOR_EXTERNAL_EXECUTION_CONFIG" else 2
+    if args.command == "campaign-preflight":
+        result = external_campaign_preflight(
+            package_root,
+            candidate=load_spec(args.candidate),
+            plan=load_json_object(args.plan),
+            router=ExternalHarnessRouter.load(args.config),
+            role_assignment=load_json_object(args.role_assignments),
+            production_authority=load_json_object(args.production_authority),
+            trust_store=load_json_object(args.trust_store),
+            license_reviews_path=args.license_reviews,
+            tenant_id=args.tenant_id,
+            project_id=args.project_id,
+            task_id=args.task_id,
+            environment_id=args.environment_id,
+            authority_id=args.authority_id,
+            owner_ids=list(args.owner),
+        )
+        _write_json(args.output, result)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["status"] == "READY_FOR_EXTERNAL_EXECUTION" else 2
     if args.command == "bundle":
         result = create_deterministic_bundle(args.source, args.output)
         print(json.dumps(result, ensure_ascii=False, indent=2))

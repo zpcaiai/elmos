@@ -1,0 +1,12 @@
+<view class="card" data-component="{{componentName}}">
+  <button class="heading" bindtap="toggleExpanded" aria-expanded="{{expanded}}">{{title}}</button>
+  <view wx:if="{{expanded}}" class="content">
+    <text class="source-label">/api/precision-migration/jobs</text>
+    <text class="source-label">ARTIFACT_DOWNLOAD_FAILED</text>
+    <text class="source-label">DELETE</text>
+    <text class="source-label">JOB_STATUS_FAILED</text>
+    <text class="source-label">JOB_SUBMIT_FAILED</text>
+    <text class="source-label">Job ID</text>
+    <view wx:for="{{rows}}" wx:key="key"><text>{{item.key}}: {{item.value}}</text></view>
+  </view>
+</view>

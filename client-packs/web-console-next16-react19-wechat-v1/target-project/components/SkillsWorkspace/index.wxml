@@ -1,0 +1,13 @@
+<view class="shell" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <slot />
+  <view class="source-labels">
+    <text class="source-label">/commercialization</text>
+    <text class="source-label">/translation</text>
+    <text class="source-label">1,004</text>
+    <text class="source-label">1,351</text>
+    <text class="source-label">1,351 Skills</text>
+    <text class="source-label">100%</text>
+  </view>
+</view>

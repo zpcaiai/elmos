@@ -558,6 +558,6 @@ test_p0_security_cannot_be_waived (test_store_and_gate.StoreAndGateTests.test_p0
 test_tenant_scoped_cache_and_event_queries (test_store_and_gate.StoreAndGateTests.test_tenant_scoped_cache_and_event_queries) ... ok
 
 ----------------------------------------------------------------------
-Ran 558 tests in 2.118s
+Ran 558 tests in 16.842s
 
 OK

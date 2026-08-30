@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "independence": "representative",
+  "state": "NOT_RUN",
+  "cases": [
+    {
+      "id": "representative-all-71-components",
+      "evidence": "NOT_RUN"
+    },
+    {
+      "id": "representative-console-journeys",
+      "evidence": "NOT_RUN"
+    }
+  ]
+}

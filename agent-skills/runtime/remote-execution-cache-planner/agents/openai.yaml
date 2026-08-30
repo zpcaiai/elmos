@@ -1,0 +1,6 @@
+interface:
+  display_name: "Remote Execution Cache Planner"
+  short_description: "Run remote-execution-cache-planner with bounded commercial controls"
+  default_prompt: "Use $remote-execution-cache-planner through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

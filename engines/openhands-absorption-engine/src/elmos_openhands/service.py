@@ -48,4 +48,4 @@ class RuntimeControlPlane:
         return self.events.read(identity, after_seq=after_seq, limit=limit)
 
     def health(self) -> ServiceHealth:
-        return ServiceHealth("ok", "configured", "adapter-bound", "NOT_CERTIFIED")
+        return ServiceHealth("ok", "configured", "NOT_RUN", "NOT_CERTIFIED")

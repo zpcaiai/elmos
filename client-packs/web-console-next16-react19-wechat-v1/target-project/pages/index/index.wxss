@@ -1,0 +1,5 @@
+.page { padding: 24rpx; background: #f4f6fa; min-height: 100vh; }
+.config { padding: 20rpx; background: #fff; border-radius: 16rpx; }
+.config input { margin-top: 12rpx; padding: 12rpx; border: 1rpx solid #ccd5e3; }
+.tabs { width: 100%; white-space: nowrap; margin: 20rpx 0; }
+.tabs button { margin-right: 10rpx; }

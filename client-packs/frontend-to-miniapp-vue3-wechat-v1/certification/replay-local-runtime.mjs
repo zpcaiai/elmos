@@ -190,9 +190,15 @@ const requestedTarget = {
 };
 assert.equal(targetProfile.profile_key, "frontend-to-miniapp-vue3-wechat-v1-target", "target profile identity drift");
 assert.equal(targetProfile.framework, "wechat-native-miniapp-candidate", "target framework drift");
-assert.deepEqual(targetProfile.versions, [`wechat-base-library-${requestedTarget.platformVersion}-requested-NOT_RUN`], "target base-library tuple drift");
-assert.deepEqual(targetProfile.runtime_versions, [`wechat-base-library-${requestedTarget.platformVersion}-requested-NOT_RUN`], "target runtime tuple drift");
-assert.equal(targetProfile.official_toolchain_version, `wechat-devtools-${requestedTarget.toolchainVersion}-NOT_RUN`, "target toolchain tuple drift");
+assert.deepEqual(targetProfile.versions, [requestedTarget.platformVersion], "target base-library tuple drift");
+assert.deepEqual(targetProfile.runtime_versions, [requestedTarget.platformVersion], "target runtime tuple drift");
+assert.equal(targetProfile.official_toolchain_version, requestedTarget.toolchainVersion, "target toolchain tuple drift");
+assert.deepEqual(targetProfile.toolchain_resolution, {
+  requested_platform_version: requestedTarget.platformVersion,
+  requested_toolchain_version: requestedTarget.toolchainVersion,
+  resolved_toolchain_digest: null,
+  evidence_state: "NOT_RUN",
+}, "target toolchain resolution must remain explicit and unresolved");
 assert.equal(targetProfile.generator_profile_version, "2026-08-20.1", "generator profile tuple drift");
 assert.deepEqual(targetProfile.authorization, {
   official_build: false,
@@ -208,6 +214,115 @@ assert.deepEqual(targetProfile.file_model, {
   style_extension: ".wxss",
   script_extension: ".js",
 }, "target file model drift");
+const readBoundedRepositoryEntry = (path, maximumBytes = MAX_CONTROL_FILE_BYTES) => {
+  const candidate = resolve(repositoryRoot, path);
+  assertStrictDescendant(repositoryRoot, candidate, `${path}: evidence-root entry`);
+  const stat = lstatSync(candidate);
+  assert.ok(stat.isFile() && !stat.isSymbolicLink(), `${path}: regular non-symlink evidence-root entry required`);
+  assert.ok(stat.size <= maximumBytes, `${path}: evidence-root entry exceeds bounded size`);
+  const canonical = realpathSync(candidate);
+  assertStrictDescendant(repositoryRoot, canonical, `${path}: canonical evidence-root entry`);
+  const raw = readFileSync(canonical);
+  return {
+    path,
+    bytes: raw.byteLength,
+    sha256: `sha256:${createHash("sha256").update(raw).digest("hex")}`,
+    raw,
+  };
+};
+const evidenceControlPaths = [
+  "client-packs/frontend-to-miniapp-vue3-wechat-v1/pack.json",
+  "client-packs/frontend-to-miniapp-vue3-wechat-v1/route-matrix.json",
+  "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/manifest.json",
+  "client-packs/frontend-to-miniapp-vue3-wechat-v1/target-profile/profile.json",
+  "client-packs/frontend-to-miniapp-vue3-wechat-v1/acceptance/acceptance-profile.json",
+  "client-packs/frontend-to-miniapp-vue3-wechat-v1/ui-ir/model.json",
+  "client-packs/frontend-to-miniapp-vue3-wechat-v1/transformations/vue3-todo-to-wechat-native.json",
+  "client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/source-build-evidence.json",
+  "client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/external-evidence-status.json",
+  "client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/certification.json",
+  "scripts/batch32/validate_client_pack.py",
+  "scripts/batch32/validate_ui_ir.py",
+  "scripts/batch32/run_client_gate.py",
+  sourceArchiveRelative,
+];
+const evidenceControlEntries = evidenceControlPaths.map(path => readBoundedRepositoryEntry(
+  path,
+  path === sourceArchiveRelative ? MAX_SOURCE_ARCHIVE_BYTES : MAX_CONTROL_FILE_BYTES,
+));
+const evidenceRootEntries = [
+  ...implementationEntries,
+  ...evidenceControlEntries.map(({ raw: _raw, ...entry }) => entry),
+].sort((left, right) => left.path < right.path ? -1 : left.path > right.path ? 1 : 0);
+const evidenceRootDigest = `sha256:${createHash("sha256").update(
+  evidenceRootEntries.map(entry => `${entry.path}\u0000${entry.sha256}\u0000${entry.bytes}`).join("\n"),
+  "utf8",
+).digest("hex")}`;
+const uiIrEntry = evidenceControlEntries.find(entry => entry.path.endsWith("/ui-ir/model.json"));
+const transformationEntry = evidenceControlEntries.find(entry => entry.path.endsWith("/transformations/vue3-todo-to-wechat-native.json"));
+assert.ok(uiIrEntry && transformationEntry, "review UI IR and transformation evidence-root entries are required");
+const reviewUiIr = JSON.parse(uiIrEntry.raw.toString("utf8"));
+const transformation = JSON.parse(transformationEntry.raw.toString("utf8"));
+assert.equal(reviewUiIr.schema_version, 1, "review UI IR schema drift");
+assert.equal(reviewUiIr.pack_key, "frontend-to-miniapp-vue3-wechat-v1", "review UI IR pack drift");
+assert.equal(reviewUiIr.source_snapshot_digest, snapshotDigest, "review UI IR source digest drift");
+const reviewGroups = [
+  "routes", "views", "components", "states", "actions", "effects", "forms", "bindings",
+  "permissions", "resources", "design_tokens", "accessibility",
+];
+const reviewNodes = reviewGroups.flatMap(group => {
+  assert.ok(Array.isArray(reviewUiIr[group]), `review UI IR ${group} must be an array`);
+  return reviewUiIr[group];
+});
+const reviewNodeIds = reviewNodes.map(node => node.id);
+assert.equal(new Set(reviewNodeIds).size, reviewNodeIds.length, "review UI IR node IDs must be unique");
+const sourceManifestByPath = new Map(sourceManifest.files.map(entry => [entry.path, entry]));
+const reviewSourcePrefix = `${sourceRootRelative}/`;
+const reviewSourcePaths = new Map(reviewNodes.map(node => {
+  assert.ok(Array.isArray(node.source_refs) && node.source_refs.length > 0, `${node.id}: review source_refs required`);
+  const normalized = node.source_refs.map((sourceRef, index) => {
+    assert.equal(typeof sourceRef, "string", `${node.id}: source_refs[${index}] must be a string`);
+    assert.ok(sourceRef.startsWith(reviewSourcePrefix), `${node.id}: source ref must stay inside the pinned source snapshot`);
+    const sourcePath = sourceRef.slice(reviewSourcePrefix.length);
+    assert.ok(sourcePath && sourceManifestByPath.has(sourcePath), `${node.id}: source ref is absent from the source manifest`);
+    return sourcePath;
+  });
+  assert.equal(new Set(normalized).size, normalized.length, `${node.id}: duplicate review source refs`);
+  return [node.id, normalized.sort()];
+}));
+assert.deepEqual(
+  [...reviewUiIr.source_map.map(entry => entry.node_id)].sort(),
+  [...reviewNodeIds].sort(),
+  "review UI IR source map must cover every declared node exactly once",
+);
+assert.equal(transformation.source_snapshot_digest, snapshotDigest, "transformation source digest drift");
+assert.equal(transformation.input_contract, "ui-ir/model.json", "transformation input contract drift");
+assert.equal(transformation.target_profile, "target-profile/profile.json", "transformation target profile drift");
+assert.deepEqual(transformation.fallbacks, { webview: "DENIED", full_page_canvas: "DENIED", silent_drop: "DENIED" });
+assert.ok(Array.isArray(transformation.mappings) && transformation.mappings.length === 8, "eight declared transformation mappings required");
+const expectedTransformationContracts = new Map([
+  ["route.home", "app.json pages[0] equals pages/index/index and pages/index/index.json exists"],
+  ["component.app-shell", "pages/index/index.wxml contains the source-traced application shell"],
+  ["component.todo-input", "pages/index/index.wxml input value binds text and bindinput targets handleInput0"],
+  ["component.add-button", "pages/index/index.wxml button disabled binds !canSubmit0 and bindtap targets handleSubmit0"],
+  ["component.todo-list", "pages/index/index.wxml iterates itemsRender with __elmosKey and pages/index/index.js derives each key from item plus source index"],
+  ["effect.add-todo", "pages/index/index.js trims text appends one value persists application items and clears text"],
+  ["token.app-shell", "pages/index/index.wxss scopes .app-shell with the deterministic scope class and preserves max-width auto margins and padding"],
+  ["permission.local-only", "adapters/platform.js exposes no network identity payment upload review or release capability"],
+]);
+assert.deepEqual(
+  transformation.mappings.map(mapping => mapping.source_node).sort(),
+  [...expectedTransformationContracts.keys()].sort(),
+  "transformation mapping identities must be exact",
+);
+for (const mapping of transformation.mappings) {
+  assert.ok(reviewNodeIds.includes(mapping.source_node), `${mapping.source_node}: transformation source node is not in review UI IR`);
+  assert.equal(
+    mapping.target_contract,
+    expectedTransformationContracts.get(mapping.source_node),
+    `${mapping.source_node}: target_contract drift`,
+  );
+}
 const request = {
   schemaVersion: "1.0",
   requestId: "conv-vue3-todo-wechat",
@@ -238,7 +353,7 @@ const request = {
     state: "PASSED",
     executor: "local-frontend-client-engine",
     verifier: "local-deterministic-validator",
-    synthetic: false,
+    synthetic: true,
     byteCount,
   }],
 };
@@ -250,6 +365,214 @@ assert.equal(project.platform, request.targets[0].platform, "generated platform 
 assert.equal(project.platformVersion, request.targets[0].platformVersion, "generated platform version drift");
 assert.equal(project.toolchainVersion, request.targets[0].toolchainVersion, "generated toolchain version drift");
 assert.equal(project.profileVersion, targetProfile.generator_profile_version, "generated profile version drift");
+const one = (values, label) => {
+  assert.equal(values.length, 1, `${label}: exactly one runtime subject is required`);
+  return values[0];
+};
+const runtimeRoute = one(run.semanticIr.routes.filter(route => route.path === "/"), "root route");
+const appShell = one(run.semanticIr.components.filter(component => component.sourceTag === "main" && component.sourceRefs.some(ref => ref.path === "src/App.vue")), "app shell");
+const homeView = one(run.semanticIr.components.filter(component => component.sourceTag === "section" && component.sourceRefs.some(ref => ref.path === "src/views/HomeView.vue")), "home view");
+const todoInput = one(run.semanticIr.components.filter(component => component.sourceTag === "input" && component.modelBinding === "text"), "todo input");
+const addButton = one(run.semanticIr.components.filter(component => component.sourceTag === "button" && component.textContent === "Add"), "add button");
+const todoList = one(run.semanticIr.components.filter(component => component.collectionBinding?.collection === "todos.items"), "todo list");
+const todoText = one(run.semanticIr.states.filter(state => state.name === "text" && state.scope === "component"), "todo text state");
+const todoItems = one(run.semanticIr.states.filter(state => state.name === "items" && state.scope === "application"), "todo items state");
+const todoInteraction = one(run.semanticIr.interactions.filter(interaction => interaction.draftStateId === todoText.id
+  && interaction.collectionStateId === todoItems.id
+  && interaction.inputComponentId === todoInput.id
+  && interaction.submitComponentId === addButton.id
+  && interaction.listComponentId === todoList.id), "todo interaction");
+const todoForm = one(run.semanticIr.forms.filter(form => form.sourceRefs.some(ref => ref.path === "src/views/HomeView.vue")), "todo form");
+const appShellStyle = one(run.semanticIr.styles.filter(style => style.selector === ".app-shell"), "app shell style");
+const templateEntry = one(Object.entries(project.files).filter(([path]) => path.endsWith(".wxml")), "generated WXML");
+const styleEntry = one(Object.entries(project.files).filter(([path]) => path.endsWith(".wxss") && path.startsWith("pages/")), "generated page WXSS");
+const scriptEntry = one(Object.entries(project.files).filter(([path]) => path.endsWith(".js") && path.startsWith("pages/")), "generated page script");
+const adapterSource = project.files["adapters/platform.js"] ?? "";
+const appManifest = JSON.parse(project.files["app.json"] ?? "{}");
+assert.equal(transformation.local_contract_state, "LOCAL_REPLAY_VERIFIED_DIRECTIONAL_MAPPING_ONLY_NOT_CERTIFIED", "transformation local contract state drift");
+assert.deepEqual(transformation.execution_binding, {
+  state: "PASSED_LOCAL_SELF_ATTESTED_MAPPING_ONLY",
+  scope: "one-way review UI IR to source-derived runtime subjects and content-addressed generated artifacts",
+  evidence: "certification/local-runtime-candidate-evidence.json",
+  source_snapshot_digest: snapshotDigest,
+  runtime_input_digest: run.requestDigest,
+  runtime_semantic_ir_digest: run.semanticIr.deterministicDigest,
+  runtime_plan_digest: run.plan.deterministicDigest,
+  generated_project_digest: project.deterministicDigest,
+  runtime_mapping_coverage: {
+    declared_mappings: 8,
+    verified_mappings: 8,
+    review_nodes: reviewNodeIds.length,
+    review_node_source_ref_coverage: 1,
+  },
+  full_runtime_ir_reverse_equivalence: "NOT_EVALUATED",
+  independent_verification: "NOT_RUN",
+  official_runtime_verification: "NOT_RUN",
+}, "transformation execution binding must match this exact one-way local replay");
+assert.equal(transformation.local_runtime_evidence, "certification/local-runtime-candidate-evidence.json", "transformation local evidence path drift");
+assert.equal(transformation.official_build_state, "NOT_RUN", "official build must remain NOT_RUN");
+assert.equal(transformation.runtime_equivalence_state, "LOCAL_DIRECTIONAL_MAPPING_ONLY_FULL_REVERSE_NOT_EVALUATED", "full reverse runtime equivalence must remain unevaluated");
+assert.equal(transformation.certification, "NOT_CERTIFIED", "transformation certification must remain NOT_CERTIFIED");
+const artifactByPath = new Map(project.artifacts.map(artifact => {
+  assert.equal(typeof project.files[artifact.path], "string", `${artifact.path}: generated artifact content missing`);
+  const raw = Buffer.from(project.files[artifact.path], "utf8");
+  assert.equal(artifact.bytes, raw.byteLength, `${artifact.path}: generated artifact byte count drift`);
+  assert.equal(
+    artifact.sha256,
+    `sha256:${createHash("sha256").update(raw).digest("hex")}`,
+    `${artifact.path}: generated artifact digest drift`,
+  );
+  return [artifact.path, { path: artifact.path, sha256: artifact.sha256, bytes: artifact.bytes }];
+}));
+assert.equal(artifactByPath.size, project.artifacts.length, "generated artifact paths must be unique");
+const sourceManifestArtifact = {
+  path: "source-snapshots/manifest.json",
+  sha256: sourceManifestDigest,
+  bytes: sourceManifestRaw.byteLength,
+};
+const bindTargetArtifacts = (paths, label) => paths.map(path => {
+  if (path === sourceManifestArtifact.path) return sourceManifestArtifact;
+  const artifact = artifactByPath.get(path);
+  assert.ok(artifact, `${label}: generated target artifact ${path} is missing`);
+  return artifact;
+});
+
+const templateLines = new Set(templateEntry[1].split("\n").map(line => line.trim()).filter(Boolean));
+const stylePlan = one(run.plan.styles.filter(item => item.platform === "wechat"), "WeChat style plan");
+const appShellRule = one(stylePlan.rules.filter(rule => rule.styleId === appShellStyle.id), "app shell style rule");
+assert.deepEqual(appManifest.pages, ["pages/index/index"], "route.home must be the only emitted WeChat page");
+assert.deepEqual(JSON.parse(project.files["pages/index/index.json"] ?? "null"), {
+  navigationBarTitleText: "Todo",
+  usingComponents: {},
+}, "route.home page configuration drift");
+assert.match(appShellStyle.scopeClass ?? "", /^elmos-scope-[a-f0-9]{12}$/u, "app shell deterministic scope class missing");
+assert.deepEqual(appShell.styleScopeClasses, [appShellStyle.scopeClass], "app shell template/style scope binding drift");
+assert.deepEqual(appShellStyle.declarations, { margin: "0 auto", "max-width": "640px", padding: "16px" }, "source app shell layout token drift");
+assert.equal(appShellRule.selector, `.app-shell.${appShellStyle.scopeClass}`, "scoped app shell selector drift");
+assert.deepEqual(appShellRule.declarations, { margin: "0 auto", "max-width": "1280rpx", padding: "32rpx" }, "lowered app shell layout token drift");
+const exactAppShellRule = `${appShellRule.selector} {\n  margin: 0 auto;\n  max-width: 1280rpx;\n  padding: 32rpx;\n}`;
+assert.ok(styleEntry[1].includes(exactAppShellRule), "generated WXSS must contain the exact scoped app shell rule");
+assert.ok(templateLines.has(`<view class="elmos-node app-shell ${appShellStyle.scopeClass}" data-source-node="${appShell.id}" aria-role="main">`), "generated WXML app shell opening tag drift");
+assert.ok(templateLines.has(`<input class="elmos-control" data-source-node="${todoInput.id}" aria-label="Todo text" value="{{text}}" bindinput="handleInput0" />`), "generated WXML todo input contract drift");
+assert.ok(templateLines.has(`<button class="elmos-control" data-source-node="${addButton.id}" disabled="{{!canSubmit0}}" bindtap="handleSubmit0">Add</button>`), "generated WXML add button contract drift");
+assert.ok(templateLines.has('<block wx:for="{{itemsRender}}" wx:for-item="item" wx:key="__elmosKey">'), "generated WXML todo iteration contract drift");
+assert.ok(templateLines.has(`<view class="elmos-list-item" data-source-node="${todoList.id}" aria-role="listitem"><text>{{item.value}}</text></view>`), "generated WXML todo item contract drift");
+assert.equal(todoInput.modelBinding, "text", "typed todo input model binding drift");
+assert.equal(todoInteraction.draftStateId, todoText.id, "typed todo draft-state edge drift");
+assert.equal(todoInteraction.collectionStateId, todoItems.id, "typed todo collection-state edge drift");
+assert.equal(todoInteraction.inputComponentId, todoInput.id, "typed todo input edge drift");
+assert.equal(todoInteraction.submitComponentId, addButton.id, "typed todo submit edge drift");
+assert.equal(todoInteraction.listComponentId, todoList.id, "typed todo list edge drift");
+assert.deepEqual(todoList.collectionBinding, {
+  collection: "todos.items",
+  itemAlias: "item",
+  indexAlias: "index",
+  keyExpression: "`${item}-${index}`",
+  valueExpression: "item",
+}, "typed todo item-plus-index binding drift");
+assert.equal(todoInteraction.ignoreBlank, true, "typed blank-todo rejection drift");
+assert.equal(todoInteraction.clearAfterSubmit, true, "typed todo clear-after-submit drift");
+assert.equal(todoForm.binding, "template-event-binding", "typed todo form binding drift");
+const itemIndexKeyExpression = '__elmosKey: `${item}-${index}`';
+assert.equal(scriptEntry[1].split(itemIndexKeyExpression).length - 1, 2, "item-plus-source-index key must be derived on load and submit");
+assert.ok(scriptEntry[1].includes('const value = String(this.data.text ?? "").trim();'), "todo submit must trim the draft value");
+assert.ok(scriptEntry[1].includes("const next = [...current, value];"), "todo submit must append exactly one trimmed value");
+assert.ok(scriptEntry[1].includes('if (application && application.globalData) application.globalData.items = next;'), "todo submit must persist application-scoped items");
+assert.ok(scriptEntry[1].includes('this.setData({ items: next, itemsRender: rendered, text: "", canSubmit0: false });'), "todo submit must atomically render and clear the draft");
+assert.ok(scriptEntry[1].includes('this.setData({ text: value, canSubmit0: value.trim().length > 0 });'), "todo input must derive disabled state from the trimmed value");
+assert.equal(project.files["app.js"]?.includes('"items":[]'), true, "application-scoped todo state drift");
+assert.equal(adapterSource, [
+  '"use strict";',
+  'const platformApi = typeof wx === "object" ? wx : null;',
+  "module.exports = Object.freeze({",
+  '  platform: "wechat",',
+  "});",
+  "",
+].join("\n"), "zero-capability platform adapter drift");
+assert.equal(run.semanticIr.capabilities.length, 0, "local-only fixture must not declare platform capabilities");
+assert.equal(run.sourceFileSetDigest, snapshotDigest, "runtime source file-set digest drift");
+
+const runtimeSourcePathsFor = (subjects, reviewNodeId) => {
+  const sourcePaths = subjects.flatMap(subject => {
+    assert.ok(subject && typeof subject === "object", `${reviewNodeId}: runtime subject object required`);
+    assert.ok(Array.isArray(subject.sourceRefs), `${reviewNodeId}: runtime subject sourceRefs required`);
+    return subject.sourceRefs.map(sourceRef => {
+      const manifestEntry = sourceManifestByPath.get(sourceRef.path);
+      assert.ok(manifestEntry, `${reviewNodeId}: runtime source ref ${sourceRef.path} is absent from the source manifest`);
+      assert.equal(sourceRef.sha256, manifestEntry.sha256, `${reviewNodeId}: runtime source ref digest drift for ${sourceRef.path}`);
+      return sourceRef.path;
+    });
+  });
+  return [...new Set(sourcePaths)].sort();
+};
+const crosswalkItem = ({ reviewNodeId, runtimeSubjects = [], runtimeSubjectIds, targetArtifactPaths, manifestOnly = false }) => {
+  const reviewPaths = reviewSourcePaths.get(reviewNodeId);
+  assert.ok(reviewPaths, `${reviewNodeId}: review source binding missing`);
+  const runtimePaths = runtimeSourcePathsFor(runtimeSubjects, reviewNodeId);
+  if (!manifestOnly) {
+    assert.ok(runtimePaths.length > 0, `${reviewNodeId}: runtime source refs required`);
+    for (const path of reviewPaths) {
+      assert.ok(runtimePaths.includes(path), `${reviewNodeId}: review source ${path} is not covered by runtime source refs`);
+    }
+  }
+  const subjectIds = runtimeSubjectIds ?? runtimeSubjects.map(subject => subject.id);
+  assert.ok(subjectIds.length > 0 && subjectIds.every(value => typeof value === "string" && value), `${reviewNodeId}: runtime subject IDs required`);
+  return {
+    review_node_id: reviewNodeId,
+    runtime_subject_ids: subjectIds,
+    review_source_paths: reviewPaths,
+    runtime_source_paths: runtimePaths,
+    source_manifest_entries: reviewPaths.map(path => {
+      const entry = sourceManifestByPath.get(path);
+      return { path, sha256: entry.sha256, bytes: entry.bytes };
+    }),
+    source_ref_coverage: 1,
+    source_binding: manifestOnly ? "SOURCE_MANIFEST_ONLY_NEGATIVE_OR_RESOURCE_CONTRACT" : "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+    target_artifacts: bindTargetArtifacts(targetArtifactPaths, reviewNodeId),
+    verified: true,
+  };
+};
+const crosswalk = [
+  crosswalkItem({ reviewNodeId: "route.home", runtimeSubjects: [runtimeRoute], targetArtifactPaths: ["app.json", "pages/index/index.json"] }),
+  crosswalkItem({ reviewNodeId: "view.app-shell", runtimeSubjects: [appShell], targetArtifactPaths: [templateEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "view.home", runtimeSubjects: [homeView], targetArtifactPaths: [templateEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "component.app-shell", runtimeSubjects: [appShell], targetArtifactPaths: [templateEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "component.home-view", runtimeSubjects: [homeView], targetArtifactPaths: [templateEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "component.todo-input", runtimeSubjects: [todoInput], targetArtifactPaths: [templateEntry[0], scriptEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "component.add-button", runtimeSubjects: [addButton], targetArtifactPaths: [templateEntry[0], scriptEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "component.todo-list", runtimeSubjects: [todoList], targetArtifactPaths: [templateEntry[0], scriptEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "state.todo-text", runtimeSubjects: [todoText], targetArtifactPaths: [scriptEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "state.todo-items", runtimeSubjects: [todoItems], targetArtifactPaths: ["app.js", scriptEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "action.input-todo", runtimeSubjects: [todoInteraction], targetArtifactPaths: [scriptEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "action.submit-todo", runtimeSubjects: [todoInteraction], targetArtifactPaths: [scriptEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "effect.add-todo", runtimeSubjects: [todoInteraction], targetArtifactPaths: [scriptEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "form.todo-entry", runtimeSubjects: [todoForm], targetArtifactPaths: [templateEntry[0], scriptEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "binding.todo-text", runtimeSubjects: [todoInteraction, todoInput], targetArtifactPaths: [templateEntry[0], scriptEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "permission.local-only", runtimeSubjectIds: ["policy.no-declared-platform-capabilities"], targetArtifactPaths: ["adapters/platform.js"], manifestOnly: true }),
+  crosswalkItem({ reviewNodeId: "resource.source-snapshot", runtimeSubjectIds: [snapshotDigest], targetArtifactPaths: [sourceManifestArtifact.path], manifestOnly: true }),
+  crosswalkItem({ reviewNodeId: "token.app-shell", runtimeSubjects: [appShellStyle], targetArtifactPaths: [styleEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "a11y.todo-input-label", runtimeSubjects: [todoInput], targetArtifactPaths: [templateEntry[0]] }),
+  crosswalkItem({ reviewNodeId: "a11y.disabled-state", runtimeSubjects: [addButton, todoText, todoInteraction], targetArtifactPaths: [templateEntry[0], scriptEntry[0]] }),
+];
+assert.deepEqual(crosswalk.map(item => item.review_node_id).sort(), [...reviewNodeIds].sort(), "runtime crosswalk must cover every review UI IR node exactly once");
+for (const item of crosswalk) assert.equal(item.verified, true, `${item.review_node_id}: local runtime crosswalk failed`);
+const declaredTransformationArtifactPaths = new Map([
+  ["route.home", ["app.json", "pages/index/index.json"]],
+  ["component.app-shell", [templateEntry[0]]],
+  ["component.todo-input", [templateEntry[0], scriptEntry[0]]],
+  ["component.add-button", [templateEntry[0], scriptEntry[0]]],
+  ["component.todo-list", [templateEntry[0], scriptEntry[0]]],
+  ["effect.add-todo", [scriptEntry[0]]],
+  ["token.app-shell", [styleEntry[0]]],
+  ["permission.local-only", ["adapters/platform.js"]],
+]);
+const declaredTransformationBindings = transformation.mappings.map(mapping => ({
+  source_node: mapping.source_node,
+  target_contract: mapping.target_contract,
+  target_artifacts: bindTargetArtifacts(declaredTransformationArtifactPaths.get(mapping.source_node), mapping.source_node),
+  verified: true,
+}));
+assert.equal(declaredTransformationBindings.length, 8, "all declared transformation mappings must be bound to artifacts");
 const countStates = values => Object.fromEntries(
   [...new Set(values)].sort().map(state => [state, values.filter(item => item === state).length]),
 );
@@ -277,6 +600,11 @@ const observed = {
     node_version: process.versions.node,
     typescript_version: enginePackage.devDependencies.typescript,
     vue_compiler_sfc_version: enginePackage.dependencies["@vue/compiler-sfc"],
+  },
+  evidence_root: {
+    digest: evidenceRootDigest,
+    entry_count: evidenceRootEntries.length,
+    entries: evidenceRootEntries,
   },
   request: {
     request_id: request.requestId,
@@ -318,6 +646,21 @@ const observed = {
     node_count: run.semanticIr.nodes.length,
     trace_coverage: run.semanticIr.coverage.tracedNodes,
     batch32_pack_model: "ui-ir/model.json is a separate 20-node review model, not this runtime IR",
+  },
+  review_model_binding: {
+    ui_ir_digest: uiIrEntry.sha256,
+    transformation_digest: transformationEntry.sha256,
+    review_node_count: reviewNodeIds.length,
+    review_node_mapping_coverage: 1,
+    declared_transformation_mapping_count: transformation.mappings.length,
+    declared_transformation_mapping_coverage: 1,
+    directional_scope: transformation.execution_binding.scope,
+    declared_transformation_bindings: declaredTransformationBindings,
+    crosswalk,
+    state: "PASSED_LOCAL_SELF_ATTESTED_MAPPING_ONLY",
+    full_runtime_ir_reverse_equivalence: "NOT_EVALUATED",
+    independent_verification: "NOT_RUN",
+    official_runtime_verification: "NOT_RUN",
   },
   plan: { summary: run.plan.summary, findings: run.plan.findings },
   generated_project: {
