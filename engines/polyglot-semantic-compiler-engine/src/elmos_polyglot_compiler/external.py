@@ -61,7 +61,7 @@ class ToolchainDescriptor:
         executable = Path(self.executable)
         if not executable.is_absolute() or not executable.is_file():
             raise ExternalExecutionError("toolchain executable must be an existing absolute file")
-        if executable.is_symlink() or not os.access(executable, os.X_OK):
+        if executable.is_symlink() or executable.resolve() != executable or not os.access(executable, os.X_OK):
             raise ExternalExecutionError("toolchain executable must be a non-symlink executable")
         for entry in self.path_entries:
             path = Path(entry)
@@ -181,6 +181,7 @@ class ExternalExecutionResult:
     stderr: str
     stdout_digest: str
     stderr_digest: str
+    output_truncated: bool
     files_digest: str
     command_digest: str
     started_at_epoch_seconds: int
@@ -198,6 +199,7 @@ class ExternalExecutionResult:
             "stderr": self.stderr,
             "stdout_digest": self.stdout_digest,
             "stderr_digest": self.stderr_digest,
+            "output_truncated": self.output_truncated,
             "files_digest": self.files_digest,
             "command_digest": self.command_digest,
             "started_at_epoch_seconds": self.started_at_epoch_seconds,
@@ -222,10 +224,15 @@ def _default_toolchains() -> dict[str, ToolchainDescriptor]:
         "swift": ("swift",),
         "z3": ("z3",),
     }
+    path_candidates = (
+        "/opt/homebrew/bin",
+        "/usr/local/bin",
+        "/usr/bin",
+        "/bin",
+        str(Path.home() / ".local/bin"),
+    )
     path_entries = tuple(
-        path
-        for path in ("/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin", "/Users/stephen/.local/bin")
-        if Path(path).is_dir() and not Path(path).is_symlink()
+        path for path in path_candidates if Path(path).is_dir() and not Path(path).is_symlink()
     )
     registry: dict[str, ToolchainDescriptor] = {}
     for toolchain_id, names in candidates.items():
@@ -256,12 +263,13 @@ def _bounded_communicate(
     process: subprocess.Popen[bytes],
     stdin: bytes,
     timeout_ms: int,
-) -> tuple[bytes, bytes, bool]:
+) -> tuple[bytes, bytes, bool, bool]:
     """Communicate while bounding both output streams and process lifetime."""
     selector = selectors.DefaultSelector()
     stdout_buffer = bytearray()
     stderr_buffer = bytearray()
     timed_out = False
+    output_truncated = False
     input_offset = 0
     stdin_fd = process.stdin.fileno() if process.stdin is not None else None
     if stdin_fd is not None:
@@ -308,6 +316,7 @@ def _bounded_communicate(
                     remaining_bytes = MAX_CAPTURE_BYTES - len(target)
                     if remaining_bytes > 0:
                         target.extend(chunk[:remaining_bytes])
+                    output_truncated = True
                     _kill_process_group(process)
                 else:
                     target.extend(chunk)
@@ -326,7 +335,7 @@ def _bounded_communicate(
                 stream.close()
             except OSError:
                 pass
-    return bytes(stdout_buffer), bytes(stderr_buffer), timed_out
+    return bytes(stdout_buffer), bytes(stderr_buffer), timed_out, output_truncated
 
 
 class ProviderAdapter(Protocol):
@@ -346,7 +355,13 @@ class ProviderRegistry:
     """Explicit provider adapters without implicit network or credential access."""
 
     def __init__(self, adapters: Sequence[ProviderAdapter] = ()):
-        self._adapters = {adapter.provider_id: adapter for adapter in adapters}
+        adapter_map: dict[str, ProviderAdapter] = {}
+        for adapter in adapters:
+            require_identifier(adapter.provider_id, "provider_id")
+            if adapter.provider_id in adapter_map:
+                raise ExternalExecutionError("provider adapter IDs must be unique")
+            adapter_map[adapter.provider_id] = adapter
+        self._adapters = adapter_map
 
     def invoke(
         self,
@@ -445,7 +460,7 @@ class ExternalRunner:
                     "NO_PROXY": "*",
                 },
             )
-            stdout, stderr, timed_out = _bounded_communicate(
+            stdout, stderr, timed_out, output_truncated = _bounded_communicate(
                 process, spec.stdin.encode("utf-8"), spec.timeout_ms
             )
             finished = int(time.time())
@@ -463,6 +478,7 @@ class ExternalRunner:
                 stderr=stderr.decode("utf-8", errors="replace"),
                 stdout_digest="sha256:" + hashlib.sha256(stdout).hexdigest(),
                 stderr_digest="sha256:" + hashlib.sha256(stderr).hexdigest(),
+                output_truncated=output_truncated,
                 files_digest=digest_json(file_digests),
                 command_digest=digest_json(
                     {
@@ -546,7 +562,11 @@ def build_execution_receipt(
         "environment_authority_id": request.environment_authority_id,
         "subject_digest": execution_subject_digest(result),
         "artifact_digest": artifact_digest,
-        "status": "PASSED" if result.exit_code == 0 and not result.timed_out else "FAILED",
+        "status": (
+            "PASSED"
+            if result.exit_code == 0 and not result.timed_out and not result.output_truncated
+            else "FAILED"
+        ),
         "independent": independent,
         "executed_at_epoch_seconds": result.started_at_epoch_seconds,
         "expires_at_epoch_seconds": expiry,
