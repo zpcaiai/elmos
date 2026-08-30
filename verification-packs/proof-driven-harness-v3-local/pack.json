@@ -24,7 +24,7 @@
   "schema_version": 1,
   "scope": {
     "controlled_public_dns_rebinding_campaign": "NOT_RUN",
-    "environment_digest": "sha256:c6c77b157d37570591dc72f34a16976d40884f2d58e5e7624e630c147ec02d4f",
+    "environment_digest": "sha256:a3daa4fd5229e18df5fb20a9fc56425c175fb6200655c2c5f58beb9b1b889a31",
     "independent_holdout": "NOT_RUN",
     "migration_route": "proof-driven-harness-v3-local-qualification",
     "representative_production_workload": "NOT_RUN",

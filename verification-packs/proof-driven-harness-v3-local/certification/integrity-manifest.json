@@ -24,7 +24,7 @@
     {
       "byte_size": 1502,
       "path": "certification/certification.json",
-      "sha256": "01b2693d20bf7f1bdde47468ecc7fa16220d290874dae3a4923d9a1d4257976e"
+      "sha256": "b03eb7cf784c50790c934b718d4513f36aa4333d3ae1b691979fa0d1c2fd4df1"
     },
     {
       "byte_size": 1682,
@@ -39,7 +39,7 @@
     {
       "byte_size": 6293,
       "path": "certification/repository-binding.json",
-      "sha256": "b21ad8073bde96a144afc2bc638a377853bd911b49d679b7aa3a0835bcf35ba2"
+      "sha256": "21d3c1e5617002dbba71509f06c82016e837b838b0b8edb241dbdf6226592bdb"
     },
     {
       "byte_size": 210,
@@ -64,12 +64,12 @@
     {
       "byte_size": 610,
       "path": "corpus/development/manifest.json",
-      "sha256": "0baaff5c2f5f0a736687f1ae026fc81fdd50374c3c785e73c71c1a5b153fd47b"
+      "sha256": "49f8f99b1b757a3ea8c9b0cba7313b3fbbe23e7450e57ceb3a6f590c3b7a9cfa"
     },
     {
       "byte_size": 1896,
       "path": "corpus/development/seed.json",
-      "sha256": "073f96e27c64b668fb44911f2a87d9e6b5f0f9cb590e5785fa19067351b71b1d"
+      "sha256": "2d2db2fe2e2e052180e4a7c048440b0ebb51ad39003728e69136f6ab8c64d33d"
     },
     {
       "byte_size": 437,
@@ -84,12 +84,12 @@
     {
       "byte_size": 10145,
       "path": "corpus/negative/cases.json",
-      "sha256": "cdde009519ec66bc3e70dd7b8f0fc81dbb781ba6b61dad97c19aa5eb0de3cc60"
+      "sha256": "528f2e8a3393f13e83010ec6b047804d59996c530915ab8ed8a8b0f435233e83"
     },
     {
       "byte_size": 606,
       "path": "corpus/negative/manifest.json",
-      "sha256": "03302210395e2c2fadf3f9b0a727e5d74e832daf163645c2ee080dbb6cda5196"
+      "sha256": "53b95e0d35716b6cac04c1efce90a4ba263ff5fab164b218a0b51abd1b2fb24a"
     },
     {
       "byte_size": 437,
@@ -114,7 +114,7 @@
     {
       "byte_size": 1353,
       "path": "counterexamples/sample.json",
-      "sha256": "72cbbd582215591d955666333a1c437b79716a841cc850458baf2c07fc096bfe"
+      "sha256": "298c2b5ad5821fdf9f321e796d5cbdfe5f75abfd077c2036b3958d0c33f73a5f"
     },
     {
       "byte_size": 288,
@@ -124,7 +124,7 @@
     {
       "byte_size": 7076,
       "path": "environment/local-environment.json",
-      "sha256": "c6c77b157d37570591dc72f34a16976d40884f2d58e5e7624e630c147ec02d4f"
+      "sha256": "a3daa4fd5229e18df5fb20a9fc56425c175fb6200655c2c5f58beb9b1b889a31"
     },
     {
       "byte_size": 475,
@@ -169,7 +169,7 @@
     {
       "byte_size": 1727,
       "path": "pack.json",
-      "sha256": "1a8b1310cf1283469a2c9b4a3559f8777c1bef4e08dd37f595f41ff4200b2be3"
+      "sha256": "bea606acbde8d31437a0eacc27641dcb288fd08968828bd7734cdf9b0edd0b9b"
     },
     {
       "byte_size": 1127,
@@ -179,27 +179,27 @@
     {
       "byte_size": 10226,
       "path": "qualification/raw/archive-installation-check.json",
-      "sha256": "bc18f1b7fd0dd731d7cf9cba4e62946fd10a3ac29cef6318fcf78d1e22a40e38"
+      "sha256": "12384730bcff3caf0f9e1d5fbe03c11851bfbfd06464d9472c8f56109082c049"
     },
     {
-      "byte_size": 62214,
+      "byte_size": 62206,
       "path": "qualification/raw/engine-tests.json",
-      "sha256": "5de6f8b82f7f779cc60778dd476c33c576951f992451a5c62395eead20f9ad3a"
+      "sha256": "386c3e81a0814a30f9b4000c85b3b06c4eb5efd438c86e88e7a0e5baa4811cf2"
     },
     {
-      "byte_size": 12171,
+      "byte_size": 12169,
       "path": "qualification/raw/package-integration-tests.json",
-      "sha256": "7777c95696057ebd70d1800b5a0c9031b4f3a993808dc04a7f4111bf3ec9b8b7"
+      "sha256": "f583cecd1973466a5fe8a54c6d1e67f2eab7edc37f4fcd08e71e918c7e07a917"
     },
     {
       "byte_size": 1310,
       "path": "qualification/receipt-validation.json",
-      "sha256": "dfb99289e99fad3cdbdc332c4bfbb44917fda3d770a0895d09425ee9937eb8bf"
+      "sha256": "4ee05ff2b0f39d8de1f916760e5d5bd69f4a02bb65faad4da1659671eb4e375e"
     },
     {
       "byte_size": 24471,
       "path": "qualification/source-receipt.json",
-      "sha256": "53acb0ef373a431ede99132cf9c1d19e4d7e9afe5c126a755f502e7c851332e6"
+      "sha256": "fa18d1d356f6ece0506339b773b2f2ecd2db863c16b8b11b11c7bd93c0422fa6"
     },
     {
       "byte_size": 158,

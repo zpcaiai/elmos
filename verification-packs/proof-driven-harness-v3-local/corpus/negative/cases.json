@@ -5,8 +5,8 @@
       "evidence_raw_log": "qualification/raw/package-integration-tests.json",
       "expected": "archive audit rejects pathname replacement after its pinned snapshot",
       "outcome_binding": {
-        "outcome_sha256": "sha256:7c627a6e025f81e4f3a11f3317e283fe04f67335af509bf831ec52884fa577c9",
-        "raw_log_sha256": "sha256:7777c95696057ebd70d1800b5a0c9031b4f3a993808dc04a7f4111bf3ec9b8b7",
+        "outcome_sha256": "sha256:0860d4d2e3245642ec55d78479b9f2af81b0d76a52f30d021a1633e0304e3105",
+        "raw_log_sha256": "sha256:f583cecd1973466a5fe8a54c6d1e67f2eab7edc37f4fcd08e71e918c7e07a917",
         "selector": "test_integration.ProofDrivenHarnessArchiveTests.test_archive_audit_uses_one_in_memory_snapshot_and_detects_path_swap",
         "selector_source_binding_sha256": "sha256:b25d6149ca202d3ba1c181385f349105457405d774cc5989d5c1b851106ee5fe",
         "source_path": "tests/proof-driven-harness-v3/test_integration.py",
@@ -21,7 +21,7 @@
       "expected": "unsafe archive member path is rejected",
       "outcome_binding": {
         "outcome_sha256": "sha256:c423d20e48d35b44d03bca24bed0763197dbf4722dc21ae5df354bb3acd75f4e",
-        "raw_log_sha256": "sha256:7777c95696057ebd70d1800b5a0c9031b4f3a993808dc04a7f4111bf3ec9b8b7",
+        "raw_log_sha256": "sha256:f583cecd1973466a5fe8a54c6d1e67f2eab7edc37f4fcd08e71e918c7e07a917",
         "selector": "test_integration.ProofDrivenHarnessArchiveTests.test_traversal_member_fails_closed",
         "selector_source_binding_sha256": "sha256:da6b1086157dd3ec69ea15b4cacaba7899100681d40e77fbf593901689c16de5",
         "source_path": "tests/proof-driven-harness-v3/test_integration.py",
@@ -36,7 +36,7 @@
       "expected": "Unicode and casefold archive collision is rejected",
       "outcome_binding": {
         "outcome_sha256": "sha256:30cf23f9cbcee4408b87a291d4c3786d432b114a7b477552c23e866417496872",
-        "raw_log_sha256": "sha256:7777c95696057ebd70d1800b5a0c9031b4f3a993808dc04a7f4111bf3ec9b8b7",
+        "raw_log_sha256": "sha256:f583cecd1973466a5fe8a54c6d1e67f2eab7edc37f4fcd08e71e918c7e07a917",
         "selector": "test_integration.ProofDrivenHarnessArchiveTests.test_unicode_casefold_collision_fails_closed",
         "selector_source_binding_sha256": "sha256:a2ac024e34903833bc2e26fdff6aab99b517b8e96b29c1bf05f2554a73213402",
         "source_path": "tests/proof-driven-harness-v3/test_integration.py",
@@ -51,7 +51,7 @@
       "expected": "linked, encrypted, or over-ratio archive member is rejected",
       "outcome_binding": {
         "outcome_sha256": "sha256:4d90af7d5ff6122eee93a0e6a4b8116383e9d38d9be80c4d0fb83379838c47d6",
-        "raw_log_sha256": "sha256:7777c95696057ebd70d1800b5a0c9031b4f3a993808dc04a7f4111bf3ec9b8b7",
+        "raw_log_sha256": "sha256:f583cecd1973466a5fe8a54c6d1e67f2eab7edc37f4fcd08e71e918c7e07a917",
         "selector": "test_integration.ProofDrivenHarnessArchiveTests.test_symlink_encryption_and_ratio_fail_closed",
         "selector_source_binding_sha256": "sha256:6140e3399504621300c158f6a67a9bec93acce85e9a611a7e8c3c5a098291178",
         "source_path": "tests/proof-driven-harness-v3/test_integration.py",
@@ -66,7 +66,7 @@
       "expected": "publication never traverses a symlink parent",
       "outcome_binding": {
         "outcome_sha256": "sha256:98feb34b782b9dc1b00ab7c698d3996187754f7f71e106f34dae4f9fe97804cc",
-        "raw_log_sha256": "sha256:7777c95696057ebd70d1800b5a0c9031b4f3a993808dc04a7f4111bf3ec9b8b7",
+        "raw_log_sha256": "sha256:f583cecd1973466a5fe8a54c6d1e67f2eab7edc37f4fcd08e71e918c7e07a917",
         "selector": "test_integration.ProofDrivenHarnessInstallationTests.test_dirfd_publication_rejects_symlink_parent",
         "selector_source_binding_sha256": "sha256:58648309dfb5d95792977f25964c0cd349a0173b2f5319a61697b375a5109c98",
         "source_path": "tests/proof-driven-harness-v3/test_integration.py",
@@ -81,7 +81,7 @@
       "expected": "publication detects parent replacement during rename",
       "outcome_binding": {
         "outcome_sha256": "sha256:825b638a4b2ce5898ad7a3f74d6e4b20834d105fa0460e05a966e94fd0c08c35",
-        "raw_log_sha256": "sha256:7777c95696057ebd70d1800b5a0c9031b4f3a993808dc04a7f4111bf3ec9b8b7",
+        "raw_log_sha256": "sha256:f583cecd1973466a5fe8a54c6d1e67f2eab7edc37f4fcd08e71e918c7e07a917",
         "selector": "test_integration.ProofDrivenHarnessInstallationTests.test_dirfd_publication_detects_parent_swap_during_rename",
         "selector_source_binding_sha256": "sha256:51ba6607688c2e019baee9c496c96adacd902d283deb48ee0365575c18aa877d",
         "source_path": "tests/proof-driven-harness-v3/test_integration.py",
@@ -95,8 +95,8 @@
       "evidence_raw_log": "qualification/raw/package-integration-tests.json",
       "expected": "engine or receipt drift prevents local status promotion",
       "outcome_binding": {
-        "outcome_sha256": "sha256:22996cf340b0ff859b475bf1429923f32f602a9a2ce2d5e966c42000e7951950",
-        "raw_log_sha256": "sha256:7777c95696057ebd70d1800b5a0c9031b4f3a993808dc04a7f4111bf3ec9b8b7",
+        "outcome_sha256": "sha256:c6d7db4c1970d095041d5198715afc226ff6d237f29a7ca61fca23a70efdb471",
+        "raw_log_sha256": "sha256:f583cecd1973466a5fe8a54c6d1e67f2eab7edc37f4fcd08e71e918c7e07a917",
         "selector": "test_integration.ProofDrivenHarnessQualificationTests.test_only_exact_digest_bound_receipt_promotes_status",
         "selector_source_binding_sha256": "sha256:209efe3115796f16f2778edde2b1a10965420914560f78a7cae87d78ac32920b",
         "source_path": "tests/proof-driven-harness-v3/test_integration.py",
@@ -110,8 +110,8 @@
       "evidence_raw_log": "qualification/raw/engine-tests.json",
       "expected": "verification pack publisher rejects a tampered receipt",
       "outcome_binding": {
-        "outcome_sha256": "sha256:85a00e7582ac5a148868c30d8bfaf200a5cc3ea568a350f37f44643082c71511",
-        "raw_log_sha256": "sha256:5de6f8b82f7f779cc60778dd476c33c576951f992451a5c62395eead20f9ad3a",
+        "outcome_sha256": "sha256:9b8d49c0787c11c9d1fda1abf39a294a962c7fd2755ca1cd4380f9b61c80df1d",
+        "raw_log_sha256": "sha256:386c3e81a0814a30f9b4000c85b3b06c4eb5efd438c86e88e7a0e5baa4811cf2",
         "selector": "test_publish_verification_pack.ProofDrivenHarnessVerificationPackPublisherTests.test_tampered_receipt_fails_closed",
         "selector_source_binding_sha256": "sha256:3d47ba9f069860491c4e70d28878c782f2e1dad2fb8551df78bf669c10489590",
         "source_path": "engines/proof-driven-harness-engine/tests/test_publish_verification_pack.py",
@@ -125,8 +125,8 @@
       "evidence_raw_log": "qualification/raw/engine-tests.json",
       "expected": "verification pack publisher rejects a linked output",
       "outcome_binding": {
-        "outcome_sha256": "sha256:feb6a4e11db636f2a9da897adb7515427ca9df401c5d7d5cc9aeb84db14df10b",
-        "raw_log_sha256": "sha256:5de6f8b82f7f779cc60778dd476c33c576951f992451a5c62395eead20f9ad3a",
+        "outcome_sha256": "sha256:bc25b2b1c8429326f84b6788cc2addbfa18a829804cb067e88770fc9cb1bf422",
+        "raw_log_sha256": "sha256:386c3e81a0814a30f9b4000c85b3b06c4eb5efd438c86e88e7a0e5baa4811cf2",
         "selector": "test_publish_verification_pack.ProofDrivenHarnessVerificationPackPublisherTests.test_symlink_output_fails_closed_without_escape",
         "selector_source_binding_sha256": "sha256:ef2fcd2bde0715411519d841a944ea099451abfd58e20666e18e97d0aee5295f",
         "source_path": "engines/proof-driven-harness-engine/tests/test_publish_verification_pack.py",
