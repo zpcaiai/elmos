@@ -48,7 +48,7 @@
     "contracts/framework-contract-model.json",
     "recipes/manifest.json",
     "target-profile/scaffold/manifest.json",
-    "certification/local-execution/2026-08-27/evidence-index.json"
+    "certification/local-execution/2026-08-30/evidence-index.json"
   ],
   "residual_risks": [
     "Traditional Spring MVC bootstrap can be split across web.xml, parent/child XML contexts, ServletContainerInitializer code and container descriptors.",
@@ -58,6 +58,6 @@
     "The exact development fixture passed local Java 11/Maven 3.9.11 source and Java 21/Maven 3.9.11 target execution only.",
     "Holdout, representative repository, customer and independent evidence remain NOT_RUN."
   ],
-  "issued_at": "2026-08-27",
+  "issued_at": "2026-08-30",
   "next_review_at": "2026-11-09"
 }

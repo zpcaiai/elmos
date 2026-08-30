@@ -6,12 +6,12 @@
     "source_commit": "7e1c098541143c96cce7d9a637fffe57d0e2baae",
     "source_snapshot_digest": "sha256:68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581",
     "exact_tuple": {
-      "path": "certification/local-execution/2026-08-27/exact-tuple-binding.json",
-      "digest": "sha256:c64968d3b9b18a93730308afaaf92fd08f54f8afabab028a1d58f727c864240e"
+      "path": "certification/local-execution/2026-08-30/exact-tuple-binding.json",
+      "digest": "sha256:f487c24648b0c0480653b41f6fb9f2c5fb701c1774c1859353e4e400130c0103"
     },
     "target_artifact": {
-      "path": "certification/local-execution/2026-08-27/artifacts/executed-spring-boot-3.5.3.war",
-      "digest": "sha256:d97a8f267d824a540e0f59763776afe0679c35945503e9935a321f59f592d4c5",
+      "path": "certification/local-execution/2026-08-30/artifacts/executed-spring-boot-3.5.3.war",
+      "digest": "sha256:7a326b69fc5651fe4986d00742dbae7a4f8b6e81aacdecc361a0d9cf30ec1d97",
       "size_bytes": 28990394
     },
     "target_profile": {
@@ -19,8 +19,8 @@
       "digest": "sha256:8042f1bed7cde57d13e9794b7a694437d5b12d40f0eb4948c656d942a9297ee1"
     },
     "policy": {
-      "path": "certification/local-execution/2026-08-27/qualification-policy.json",
-      "digest": "sha256:1b30855b88e5ddd22cd35a7324412cc786f7e3592a5afeb652bd16ad94b1f361"
+      "path": "certification/local-execution/2026-08-30/qualification-policy.json",
+      "digest": "sha256:e7e1e19b10a2e7545f859204542c9a1afbe3aeaa49478415c4050340bac7e88c"
     },
     "version_tuple": {
       "source": {
@@ -65,7 +65,7 @@
       "cache",
       "scheduler"
     ],
-    "support_matrix_subject_digest": "sha256:da3f9197f163e49743386d37baa3477f0be19c3d7caaed30e9232977de11412c"
+    "support_matrix_subject_digest": "sha256:180e3b939ad110023683c33c09d94e63455c43fa7ee044d08f279a1aa72360ba"
   },
   "corpora": {
     "development": {
@@ -98,8 +98,8 @@
       "path": "recipes/spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml",
       "digest": "sha256:e6b648f5dfdf350c1f6ac0ccc9636b40453af13a48e18974076e455dc872b75b"
     },
-    "recipe_manifest_digest": "sha256:5aa47a02717986d9173a4108da97781b34b83b5f8e52be33b8601623ea81f36c",
-    "frozen_at": "2026-08-27T00:00:00Z",
+    "recipe_manifest_digest": "sha256:7c62886fb3dda01cf479658f93fdb2c01df69f71316b68d7fbeef0faba407bdd",
+    "frozen_at": "2026-08-30T09:25:20.533130Z",
     "holdout_authoring_forbidden": true
   },
   "phases": [

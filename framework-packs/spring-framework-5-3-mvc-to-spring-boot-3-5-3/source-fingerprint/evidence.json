@@ -6,16 +6,16 @@
   "coverage": null,
   "runs": [
     {
-      "id": "spring-mvc-5.3.39-to-boot-3.5.3-local-2026-08-27",
+      "id": "spring-mvc-5.3.39-to-boot-3.5.3-local-2026-08-30",
       "status": "PASSED_LOCAL",
-      "evidence_index": "certification/local-execution/2026-08-27/evidence-index.json"
+      "evidence_index": "certification/local-execution/2026-08-30/evidence-index.json"
     }
   ],
   "source_snapshot_sha256": "68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581",
   "source_commit": "7e1c098541143c96cce7d9a637fffe57d0e2baae",
   "runtime_facts_collected": 5,
   "evidence_refs": [
-    "certification/local-execution/2026-08-27/evidence-index.json"
+    "certification/local-execution/2026-08-30/evidence-index.json"
   ],
   "limitations": [
     "The checked-in fixture is not a fingerprint result for a customer repository.",
