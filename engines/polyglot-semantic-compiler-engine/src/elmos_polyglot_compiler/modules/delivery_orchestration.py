@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import hashlib
-import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRisk
 
@@ -12,7 +11,7 @@ from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRi
 class DeliveryOrchestrationModule:
     """Manages project generation, complete project manifests, build/run validation, and release certification."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.deliveries: Dict[str, Dict[str, Any]] = {}
 
     def assemble_project_manifest(
@@ -21,7 +20,7 @@ class DeliveryOrchestrationModule:
         target_stack: str,
         generated_files: List[str],
     ) -> Dict[str, Any]:
-        """Assembles immutable complete project manifest with build and run instructions."""
+        """Create an unverified manifest plan without inventing build commands."""
         manifest_id = f"pkg-manifest-{project_name}-{len(generated_files)}"
         manifest = {
             "manifest_id": manifest_id,
@@ -29,10 +28,12 @@ class DeliveryOrchestrationModule:
             "target_stack": target_stack,
             "total_files": len(generated_files),
             "generated_files": generated_files,
-            "build_command": "dotnet build" if "csharp" in target_stack.lower() else "mvn package",
-            "run_command": "dotnet run" if "csharp" in target_stack.lower() else "mvn spring-boot:run",
-            "assembled_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "status": "ASSEMBLED",
+            "build_command": None,
+            "run_command": None,
+            "status": "MANIFEST_PLAN_UNVERIFIED",
+            "build_evidence": "NOT_RUN",
+            "runtime_evidence": "NOT_RUN",
+            "certification": "NOT_CERTIFIED",
         }
         self.deliveries[manifest_id] = manifest
         return manifest
@@ -52,7 +53,7 @@ class DeliveryOrchestrationModule:
             source_construct=source_manifest,
             target_construct=target_manifest,
             property_name=property_name,
-            invariants=["COMPLETE_PROJECT_BUILD_GREEN", "RUNTIME_CLEAN_BOOT_AND_SHUTDOWN"],
+            invariants=("COMPLETE_PROJECT_BUILD_GREEN", "RUNTIME_CLEAN_BOOT_AND_SHUTDOWN"),
             risk=SemanticRisk.CRITICAL,
             status=ObligationStatus.NOT_RUN,
         )

@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-from pathlib import Path
-import time
 from typing import Any, Dict, List, Optional
 
 from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRisk
@@ -13,7 +11,7 @@ from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRi
 class DiscoveryIngestionModule:
     """Manages repository inventory scanning, symbol recovery, dependency graph discovery, and intake snapshots."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.snapshots: Dict[str, Dict[str, Any]] = {}
 
     def scan_repository_surface(
@@ -21,17 +19,18 @@ class DiscoveryIngestionModule:
         repository_path: str,
         detected_languages: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
-        """Performs initial intake scanning of repository files, languages, and modules."""
+        """Create a bounded intake plan; the trusted runtime performs the scan."""
         snap_id = f"snap-{hashlib.sha256(repository_path.encode('utf-8')).hexdigest()[:10]}"
-        languages = detected_languages or ["java", "csharp", "python", "typescript"]
+        languages = list(detected_languages or [])
         result = {
             "snapshot_id": snap_id,
             "repository_path": repository_path,
-            "detected_languages": languages,
-            "total_files": 42,
-            "build_systems": ["maven", "dotnet-sln", "npm"],
-            "status": "DISCOVERED",
-            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "caller_supplied_languages": languages,
+            "detected_languages": [],
+            "total_files": None,
+            "build_systems": [],
+            "status": "TRUSTED_REPOSITORY_SCAN_REQUIRED",
+            "execution_evidence": "NOT_RUN",
         }
         self.snapshots[snap_id] = result
         return result
@@ -50,7 +49,7 @@ class DiscoveryIngestionModule:
             source_construct=surface_name,
             target_construct="canonical-inventory",
             property_name=property_name,
-            invariants=["COMPLETE_FILE_INVENTORY", "DETERMINISTIC_SNAPSHOT_HASH"],
+            invariants=("COMPLETE_FILE_INVENTORY", "DETERMINISTIC_SNAPSHOT_HASH"),
             risk=SemanticRisk.HIGH,
             status=ObligationStatus.NOT_RUN,
         )

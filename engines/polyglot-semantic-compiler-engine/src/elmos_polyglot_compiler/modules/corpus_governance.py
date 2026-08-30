@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRisk
 
@@ -12,7 +12,7 @@ from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRi
 class CorpusGovernanceModule:
     """Manages fixture corpus registry, license provenance, feature coverage threshold, and test minimization."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.fixtures: Dict[str, Dict[str, Any]] = {}
 
     def register_fixture(
@@ -39,14 +39,20 @@ class CorpusGovernanceModule:
 
     def assess_feature_coverage(self, total_features: int, covered_features: List[str]) -> Dict[str, Any]:
         """Computes coverage percentage against route language specifications."""
+        if total_features <= 0:
+            raise ValueError("total_features must be positive")
         unique_cnt = len(set(covered_features))
-        ratio = unique_cnt / total_features if total_features > 0 else 1.0
+        if unique_cnt > total_features:
+            raise ValueError("covered feature count exceeds total_features")
+        ratio = unique_cnt / total_features
         return {
             "total_features": total_features,
             "covered_features": unique_cnt,
             "coverage_ratio": ratio,
-            "is_certification_eligible": ratio >= 0.80,
-            "status": "PASS" if ratio >= 0.80 else "INSUFFICIENT_COVERAGE",
+            "coverage_threshold_met": ratio >= 0.80,
+            "is_certification_eligible": False,
+            "status": "LOCAL_METRIC_ONLY_NOT_CERTIFIED",
+            "representative_execution_evidence": "NOT_RUN",
         }
 
     def create_corpus_obligation(
@@ -64,7 +70,7 @@ class CorpusGovernanceModule:
             source_construct=corpus_id,
             target_construct=target_suite,
             property_name=property_name,
-            invariants=["CORPUS_PROVENANCE_ASSURANCE", "LICENSE_IP_CLEANLINESS", "FEATURE_COVERAGE_METRIC_PASS"],
+            invariants=("CORPUS_PROVENANCE_ASSURANCE", "LICENSE_IP_CLEANLINESS", "FEATURE_COVERAGE_METRIC_PASS"),
             risk=SemanticRisk.CRITICAL,
             status=ObligationStatus.NOT_RUN,
         )
