@@ -89,8 +89,8 @@ export const MINI_APP_SOURCE_PARSER_PROFILES = {
   vue2: {
     sourceFrameworkVersion: "2.7.16",
     sourceLanguageVersion: "5.9.2",
-    parser: "vue-template-compiler/build",
-    parserVersion: "2.7.16",
+    parser: "@vue/compiler-sfc",
+    parserVersion: "3.5.42",
     expressionParser: "typescript",
     expressionParserVersion: "5.9.2",
     semanticAdapter: "vue2-component-v1",
@@ -530,12 +530,20 @@ function executableSourceUnits(
               scriptKind: ts.ScriptKind.TSX,
             }]);
     }
-    const compiler = require("vue-template-compiler/build") as {
-      readonly parseComponent: (input: string) => {
-        readonly script?: { readonly content: string } | null;
+    const compiler = require("@vue/compiler-sfc") as {
+      readonly parse: (input: string, options: { readonly filename: string }) => {
+        readonly errors: readonly unknown[];
+        readonly descriptor: { readonly script?: { readonly content: string } | null };
       };
     };
-    const descriptor = compiler.parseComponent(source);
+    const parsed = compiler.parse(source, { filename: label });
+    if (parsed.errors.length > 0) {
+      block(
+        "MINIAPP_WORKER_SECRET_SCAN_PARSE_BLOCKED",
+        `${label} could not be structurally segmented for secret scanning`,
+      );
+    }
+    const descriptor = parsed.descriptor;
     return descriptor.script === null || descriptor.script === undefined
       ? []
       : [{
@@ -606,19 +614,28 @@ function assertVueTemplateSensitiveBindingsSafe(
       }
       root = parsed.descriptor.template?.ast ?? null;
     } else {
-      const compiler = require("vue-template-compiler/build") as {
-        readonly parseComponent: (input: string) => {
-          readonly template?: { readonly content: string } | null;
+      const compiler = require("@vue/compiler-sfc") as {
+        readonly parse: (input: string, options: { readonly filename: string }) => {
+          readonly errors: readonly unknown[];
+          readonly descriptor: { readonly template?: { readonly content: string } | null };
         };
-        readonly compile: (input: string) => {
+        readonly compileTemplate: (options: { readonly id: string; readonly source: string; readonly filename: string }) => {
           readonly ast?: unknown;
-          readonly errors?: readonly unknown[];
+          readonly errors: readonly unknown[];
         };
       };
-      const descriptor = compiler.parseComponent(source);
+      const parsed = compiler.parse(source, { filename: label });
+      if (parsed.errors.length > 0) {
+        block(
+          "MINIAPP_WORKER_SECRET_SCAN_PARSE_BLOCKED",
+          `${label} could not be structurally segmented for template binding scanning`,
+          "source-parse",
+        );
+      }
+      const descriptor = parsed.descriptor;
       if (descriptor.template !== null && descriptor.template !== undefined) {
-        const compiled = compiler.compile(descriptor.template.content);
-        if ((compiled.errors ?? []).length > 0) {
+        const compiled = compiler.compileTemplate({ id: "miniapp-worker-vue2-compat", source: descriptor.template.content, filename: label });
+        if (compiled.errors.length > 0) {
           block(
             "MINIAPP_WORKER_SECRET_SCAN_PARSE_BLOCKED",
             `${label} could not be structurally segmented for template binding scanning`,
@@ -1287,8 +1304,8 @@ function installedParserPackageIdentities(
     vue2: [
       typescript,
       {
-        packageName: "vue-template-compiler",
-        entryModule: "vue-template-compiler/build",
+        packageName: "@vue/compiler-sfc",
+        entryModule: "@vue/compiler-sfc",
         expectedVersion: profile.parserVersion,
       },
     ],

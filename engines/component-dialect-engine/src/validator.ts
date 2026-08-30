@@ -4,21 +4,22 @@
  *
  *   1. SYNTAX  -- always runs. The emitted source is fed back through the
  *      target framework's own real compiler (TypeScript for React/RN/TS,
- *      @vue/compiler-sfc for Vue 3, vue-template-compiler for Vue 2,
+ *      @vue/compiler-sfc for Vue 3 and Vue 2-compatible SFCs,
  *      @angular/compiler for Angular, @wxml/parser for the mini program).
  *      A canonical-model bug that produces syntactically invalid target
  *      source is caught here rather than trusted on faith.
  *
  *   2. EXECUTION -- runs only for frameworks with a real, dependency-free
  *      server renderer available (react-dom/server, @vue/server-renderer,
- *      vue-server-renderer). The source and target components are both
+ *      @vue/server-renderer). The source and target components are both
  *      actually rendered with the same prop values and their normalized
  *      DOM output compared. This is the leg that catches "compiles clean,
  *      behaves wrong" defects -- for example emitting `count.value = ...`
  *      inside a Vue template, which @vue/compiler-sfc accepts silently but
  *      which never updates state at runtime.
  *
- * Frameworks whose real runtime is not obtainable here (Angular needs a
+ * Frameworks whose real runtime is not obtainable here (Vue 2 compatibility
+ * targets use static maintained compiler validation only; Angular needs a
  * platform-server bootstrap, React Native needs Metro/a simulator, the
  * WeChat mini program needs the official devtools, HarmonyOS ArkUI needs
  * DevEco, Flutter needs the Dart SDK) report EXECUTION_NOT_AVAILABLE.
@@ -77,19 +78,22 @@ function validateVue3Source(source: string): string[] {
 }
 
 function validateVue2Source(source: string): string[] {
-  // `vue-template-compiler`'s index.js hard-fails when vue@3 is also
-  // installed (a version-mismatch guard). `build.js` is the same published
-  // compiler without that guard -- see parsers/vue2.ts.
+  // Vue 2 compatibility remains a supported syntax/emit format, but the
+  // unmaintained Vue 2 compiler/runtime packages are intentionally absent.
+  // The maintained Vue 3 SFC compiler validates the SFC boundary and template
+  // grammar without claiming a Vue 2 runtime execution result.
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const compiler = require("vue-template-compiler/build");
+  const compiler = require("@vue/compiler-sfc");
   const diagnostics: string[] = [];
-  const descriptor = compiler.parseComponent(source);
+  const { descriptor, errors } = compiler.parse(source, { filename: "Emitted.vue" });
+  for (const error of errors) diagnostics.push(`vue2-parse: ${String(error)}`);
+  if (diagnostics.length > 0) return diagnostics;
   if (!descriptor.template) {
     diagnostics.push("vue2-parse: emitted SFC has no <template> block");
     return diagnostics;
   }
-  const compiled = compiler.compile(descriptor.template.content);
-  for (const e of compiled.errors ?? []) diagnostics.push(`vue2-compile-template: ${String(e)}`);
+  const compiled = compiler.compileTemplate({ id: "emitted-vue2-compat", source: descriptor.template.content, filename: "Emitted.vue" });
+  for (const error of compiled.errors) diagnostics.push(`vue2-compile-template: ${String(error)}`);
   if (descriptor.script) {
     diagnostics.push(...validateTypeScriptSource(descriptor.script.content, "Emitted.vue.ts"));
   }

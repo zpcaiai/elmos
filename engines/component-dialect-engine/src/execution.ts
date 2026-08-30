@@ -13,7 +13,8 @@
  * their normalized DOM output is compared. A mismatch is reported as
  * FAILED -- never rounded up to a pass.
  *
- * Frameworks needing an external runtime (Angular's platform-server
+ * Frameworks needing an external runtime (Vue 2 compatibility has no
+ * installed runtime by design; Angular's platform-server
  * bootstrap, React Native's Metro/simulator, WeChat devtools, HarmonyOS
  * DevEco, the Flutter/Dart SDK) are honestly reported as
  * EXECUTION_NOT_AVAILABLE by `validator.ts` rather than silently skipped.
@@ -218,49 +219,6 @@ async function renderVue3(source: string, props: Record<string, unknown>): Promi
 }
 
 /**
- * Renders a Vue 2 SFC with the real `vue-server-renderer`.
- *
- * `vue-template-compiler` and `vue-server-renderer` both refuse to load
- * from their package entry point when vue@3 is installed alongside them (a
- * hard version-mismatch guard). `build.js` is the same published compiler
- * without that guard, and `vue2` is this package's aliased vue@2 install,
- * so the real Vue 2 runtime is used -- not a stand-in.
- */
-async function renderVue2(source: string, props: Record<string, unknown>): Promise<string> {
-  /* eslint-disable @typescript-eslint/no-var-requires */
-  const compiler = require("vue-template-compiler/build");
-  const Vue2 = require("vue2");
-  const { createRenderer } = require("vue-server-renderer/build.prod");
-  /* eslint-enable @typescript-eslint/no-var-requires */
-
-  const descriptor = compiler.parseComponent(source);
-  if (!descriptor.template || !descriptor.script) throw new Error("Vue 2 SFC needs both <template> and <script>");
-
-  const compiled = compiler.compileToFunctions(descriptor.template.content);
-  const dir = tempDir();
-  try {
-    const js = ts.transpileModule(descriptor.script.content, {
-      compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, esModuleInterop: true },
-    }).outputText;
-    const file = path.join(dir, "Options.js");
-    fs.writeFileSync(file, js, "utf8");
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const mod = require(file);
-    const options = mod.default ?? mod;
-
-    const Component = Vue2.extend({
-      ...options,
-      render: compiled.render,
-      staticRenderFns: compiled.staticRenderFns,
-    });
-    const app = new Component({ propsData: props });
-    return await createRenderer().renderToString(app);
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
-}
-
-/**
  * Renders a Svelte 5 component with the real `svelte/compiler` +
  * `svelte/server`. The compiler emits an ES module, so it is written to
  * disk and loaded with a dynamic `import()`; a cache-busting query keeps
@@ -312,7 +270,6 @@ export type Renderable = { framework: Framework; source: string };
 async function render(target: Renderable, props: Record<string, unknown>): Promise<string> {
   if (target.framework === "react" || target.framework === "typescript") return renderReact(target.source, props);
   if (target.framework === "vue3") return renderVue3(target.source, props);
-  if (target.framework === "vue2") return renderVue2(target.source, props);
   if (target.framework === "svelte") return renderSvelte(target.source, props);
   throw new Error(`EXECUTION_NOT_AVAILABLE for framework ${target.framework}`);
 }
