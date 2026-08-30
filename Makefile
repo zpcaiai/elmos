@@ -1,6 +1,7 @@
 JAVA_21_HOME ?= $(shell if [ -x /usr/libexec/java_home ]; then /usr/libexec/java_home -v 21 2>/dev/null; else printf '%s' "$$JAVA_HOME"; fi)
 MAVEN ?= mvn
 UV ?= uv
+RUFF ?= ruff
 DOTNET ?= dotnet
 # Homebrew installs the .NET SDK outside the default PATH on macOS. Prepending a
 # directory that does not exist is harmless everywhere else, and both this and
@@ -48,6 +49,7 @@ operations-scripts-test:
 .PHONY: pi-harness
 pi-harness:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_pi_harness.py --check
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/pi-harness -p 'test_*.py' -v
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/pi-harness/src python3 -m unittest discover -s packages/pi-harness/tests -p 'test_*.py'
 backend:
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B verify
@@ -208,20 +210,20 @@ formal-assurance-kernel:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_formal_assurance_kernel.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with ruff==0.15.20 ruff check engines/formal-assurance-engine/src engines/formal-assurance-engine/tests
 	MYPY_CACHE_DIR=/tmp/elmos-formal-assurance-mypy PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with mypy==2.1.0 mypy --ignore-missing-imports engines/formal-assurance-engine/src/elmos_formal_assurance
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s engines/formal-assurance-engine/tests -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/formal-assurance-kernel -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 python scripts/formal_assurance/generate_local_qualification.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with cryptography==46.0.3 --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s engines/formal-assurance-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with cryptography==46.0.3 --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/formal-assurance-kernel -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with cryptography==46.0.3 python scripts/formal_assurance/generate_local_qualification.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_verification_pack.py verification-packs/formal-assurance-kernel-local
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/run_verification_gate.py verification-packs/formal-assurance-kernel-local
 
 .PHONY: formal-assurance-kernel-qualify
 formal-assurance-kernel-qualify:
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python scripts/formal_assurance/generate_local_qualification.py
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with cryptography==46.0.3 --with pyyaml==6.0.2 --with jsonschema==4.25.1 python scripts/formal_assurance/generate_local_qualification.py
 
 repository-autonomy-kernel:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_repository_autonomy_kernel.py
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-autonomy-kernel/src $(UV) run --no-project --quiet --with pytest python -m pytest -q -p no:cacheprovider packages/repository-autonomy-kernel/tests
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with ruff ruff check packages/repository-autonomy-kernel/src packages/repository-autonomy-kernel/tests tooling/validate_repository_autonomy_kernel.py
+	PYTHONDONTWRITEBYTECODE=1 $(RUFF) check packages/repository-autonomy-kernel/src packages/repository-autonomy-kernel/tests tooling/validate_repository_autonomy_kernel.py
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-autonomy-kernel/src python3 -m compileall -q packages/repository-autonomy-kernel/src
 
 openhands-absorption:

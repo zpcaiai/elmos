@@ -90,12 +90,18 @@ def release_gate(payload: Mapping[str, Any]) -> dict[str, Any]:
     critical_open = any(str(item.get("severity", "P1")) in {"P0", "P1"} for item in open_findings)
     health_ok = all(health.get(name) is True for name in ("livez", "readyz", "metrics", "version"))
     missing: list[str] = []
-    if not all_pass: missing.append("all-mandatory-gates-pass")
-    if critical_open: missing.append("no-open-P0-P1")
-    if not rollback_ready: missing.append("rollback-ready")
-    if not health_ok: missing.append("deployment-health")
-    if not artifact_valid: missing.append("artifact-integrity")
-    if not approved: missing.append("independent-approval")
+    if not all_pass:
+        missing.append("all-mandatory-gates-pass")
+    if critical_open:
+        missing.append("no-open-P0-P1")
+    if not rollback_ready:
+        missing.append("rollback-ready")
+    if not health_ok:
+        missing.append("deployment-health")
+    if not artifact_valid:
+        missing.append("artifact-integrity")
+    if not approved:
+        missing.append("independent-approval")
     deployment_evidence = deployment.get("deployment_evidence")
     if not isinstance(deployment_evidence, list) or not deployment_evidence:
         missing.append("deployment-evidence")

@@ -4,7 +4,7 @@ import json
 import unittest
 
 from elmos_formal_assurance.api import FormalAssuranceApi, make_environ
-from elmos_formal_assurance.contracts import Scope, TrustedIdentity
+from elmos_formal_assurance.contracts import ProofRunState, Scope, TrustedIdentity
 from elmos_formal_assurance.runtime import FormalAssuranceRuntime
 from elmos_formal_assurance.store import StateStore
 
@@ -158,7 +158,6 @@ class ApiTests(unittest.TestCase):
             "bound": {"scope": 1},
             "state": "QUEUED",
             "fencingToken": 1,
-            "startedAt": "2026-08-28T00:00:00Z",
         }
         headers = self.resource_headers("run-api-request")
         status, result = self.call(
@@ -167,12 +166,28 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(status, "202 Accepted")
         self.assertEqual(result["id"], "run-api")
         self.assertEqual(result["state"], "QUEUED")
+        self.assertIn("startedAt", result)
 
         status, result = self.call(
             "/v1/proof-runs/run-api", "GET", identity=self.identity, headers=headers
         )
         self.assertEqual(status, "200 OK")
         self.assertEqual(result["tenant"]["accountId"], "account-a")
+
+        invalid = {
+            **run,
+            "id": "run-api-forged-time",
+            "startedAt": "2026-08-28T00:00:00Z",
+        }
+        status, rejected = self.call(
+            "/v1/proof-runs",
+            "POST",
+            invalid,
+            self.identity,
+            headers=self.resource_headers("run-api-forged-time"),
+        )
+        self.assertEqual(status, "400 Bad Request")
+        self.assertIn("unknown fields", rejected["error"])
 
         status, gate = self.call(
             "/v1/gates/evaluate",
@@ -283,6 +298,20 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(status, "403 Forbidden")
         self.assertIn("control role", denied["error"])
 
+        status, impersonation = self.call(
+            "/v1/proof-runs/run-control/actions",
+            "POST",
+            {
+                "action": "PAUSE",
+                "workerId": "worker-a",
+                "token": leased["fencing_token"],
+            },
+            self.identity,
+            headers=headers,
+        )
+        self.assertEqual(status, "403 Forbidden")
+        self.assertIn("authenticated actor", impersonation["error"])
+
         controller = TrustedIdentity(
             "tenant-a",
             "controller-a",
@@ -307,6 +336,192 @@ class ApiTests(unittest.TestCase):
         )
         self.assertEqual(status, "202 Accepted")
         self.assertEqual(paused, replay)
+
+    def test_checkpoint_and_retry_routes_preserve_fencing_and_terminal_history(self) -> None:
+        headers = self.resource_headers("checkpoint-api-request")
+        scope_payload = {
+            "tenantId": "tenant-a",
+            "accountId": "account-a",
+            "projectId": "project-a",
+            "sourceArtifactDigest": "a" * 64,
+            "targetArtifactDigest": "b" * 64,
+            "environmentDigest": "c" * 64,
+            "workloadKey": "api-contract",
+        }
+        worker = TrustedIdentity("tenant-a", "worker-a", "project-a")
+        self.api.runtime.submit_run(
+            {
+                "scope": scope_payload,
+                "runId": "run-checkpoint",
+                "obligationId": "obl-checkpoint",
+            },
+            worker,
+        )
+        trusted_scope = self.api.runtime._scope(scope_payload, worker)
+        leased = self.store.lease_run(
+            trusted_scope, "run-checkpoint", "worker-a", 1
+        )
+        self.store.start_run(
+            trusted_scope,
+            "run-checkpoint",
+            "worker-a",
+            leased["fencing_token"],
+        )
+        status, checkpointed = self.call(
+            "/v1/proof-runs/run-checkpoint/checkpoints",
+            "POST",
+            {
+                "workerId": "worker-a",
+                "token": leased["fencing_token"],
+                "checkpoint": {"cursor": 7},
+                "progress": {
+                    "completed": 1,
+                    "total": 2,
+                    "phase": "solver",
+                    "etaWallClockSeconds": 3,
+                },
+            },
+            worker,
+            headers=headers,
+        )
+        self.assertEqual(status, "202 Accepted")
+        self.assertEqual(checkpointed["checkpoint"]["sequence"], 1)
+        self.assertEqual(
+            checkpointed["checkpoint"]["progress"]["etaUnit"],
+            "wall-clock-seconds",
+        )
+        status, replay = self.call(
+            "/v1/proof-runs/run-checkpoint/checkpoints",
+            "POST",
+            {
+                "workerId": "worker-a",
+                "token": leased["fencing_token"],
+                "checkpoint": {"cursor": 7},
+                "progress": {
+                    "completed": 1,
+                    "total": 2,
+                    "phase": "solver",
+                    "etaWallClockSeconds": 3,
+                },
+            },
+            worker,
+            headers=headers,
+        )
+        self.assertEqual(status, "202 Accepted")
+        self.assertEqual(checkpointed, replay)
+
+        self.store.authorized_transition(
+            trusted_scope,
+            "run-checkpoint",
+            "worker-a",
+            leased["fencing_token"],
+            ProofRunState.TIMED_OUT,
+        )
+        controller = TrustedIdentity(
+            "tenant-a",
+            "controller-a",
+            "project-a",
+            roles=("formal-assurance-control",),
+        )
+        retry_headers = self.resource_headers("retry-api-request")
+        status, retried = self.call(
+            "/v1/proof-runs/run-checkpoint/retries",
+            "POST",
+            {"retryRunId": "run-checkpoint-retry", "maximumAttempts": 2},
+            controller,
+            headers=retry_headers,
+        )
+        self.assertEqual(status, "202 Accepted")
+        self.assertEqual(retried["state"], "QUEUED")
+        self.assertEqual(retried["options"]["retryOf"], "run-checkpoint")
+        self.assertEqual(retried["retryRootRunId"], "run-checkpoint")
+        self.assertEqual(retried["retryAttempt"], 1)
+        self.assertEqual(retried["retryMaximumAttempts"], 2)
+        self.assertEqual(
+            self.store.get_run(trusted_scope, "run-checkpoint")["state"],
+            "TIMED_OUT",
+        )
+        status, replayed_retry = self.call(
+            "/v1/proof-runs/run-checkpoint/retries",
+            "POST",
+            {"retryRunId": "run-checkpoint-retry", "maximumAttempts": 2},
+            controller,
+            headers=retry_headers,
+        )
+        self.assertEqual(status, "202 Accepted")
+        self.assertEqual(retried, replayed_retry)
+
+        status, duplicate_parent = self.call(
+            "/v1/proof-runs/run-checkpoint/retries",
+            "POST",
+            {"retryRunId": "run-checkpoint-retry-branch"},
+            controller,
+            headers=self.resource_headers("retry-api-branch"),
+        )
+        self.assertEqual(status, "400 Bad Request")
+        self.assertIn("immutable retry child", duplicate_parent["error"])
+
+        retry_lease = self.store.lease_run(
+            trusted_scope, "run-checkpoint-retry", "worker-a", 1
+        )
+        self.store.start_run(
+            trusted_scope,
+            "run-checkpoint-retry",
+            "worker-a",
+            retry_lease["fencing_token"],
+        )
+        self.store.authorized_transition(
+            trusted_scope,
+            "run-checkpoint-retry",
+            "worker-a",
+            retry_lease["fencing_token"],
+            ProofRunState.TIMED_OUT,
+        )
+        status, changed_limit = self.call(
+            "/v1/proof-runs/run-checkpoint-retry/retries",
+            "POST",
+            {"retryRunId": "run-checkpoint-retry-two", "maximumAttempts": 3},
+            controller,
+            headers=self.resource_headers("retry-api-changed-limit"),
+        )
+        self.assertEqual(status, "400 Bad Request")
+        self.assertIn("immutable", changed_limit["error"])
+
+        status, retry_two = self.call(
+            "/v1/proof-runs/run-checkpoint-retry/retries",
+            "POST",
+            {"retryRunId": "run-checkpoint-retry-two"},
+            controller,
+            headers=self.resource_headers("retry-api-two"),
+        )
+        self.assertEqual(status, "202 Accepted")
+        self.assertEqual(retry_two["retryAttempt"], 2)
+        self.assertEqual(retry_two["retryRootRunId"], "run-checkpoint")
+        retry_two_lease = self.store.lease_run(
+            trusted_scope, "run-checkpoint-retry-two", "worker-a", 1
+        )
+        self.store.start_run(
+            trusted_scope,
+            "run-checkpoint-retry-two",
+            "worker-a",
+            retry_two_lease["fencing_token"],
+        )
+        self.store.authorized_transition(
+            trusted_scope,
+            "run-checkpoint-retry-two",
+            "worker-a",
+            retry_two_lease["fencing_token"],
+            ProofRunState.TIMED_OUT,
+        )
+        status, exceeded = self.call(
+            "/v1/proof-runs/run-checkpoint-retry-two/retries",
+            "POST",
+            {"retryRunId": "run-checkpoint-retry-three"},
+            controller,
+            headers=self.resource_headers("retry-api-three"),
+        )
+        self.assertEqual(status, "400 Bad Request")
+        self.assertIn("retry limit exceeded", exceeded["error"])
 
 
 if __name__ == "__main__":

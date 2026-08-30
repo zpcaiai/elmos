@@ -7,6 +7,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
+from elmos_formal_assurance.artifact_store import AesGcmEnvelopeCipher
 from elmos_formal_assurance.contracts import (
     AssuranceLevel,
     Criticality,
@@ -23,7 +24,12 @@ from elmos_formal_assurance.runtime import (
     RuntimeConfig,
 )
 from elmos_formal_assurance.store import StateStore, StoreError
-from test_all_skill_contracts import EXPECTED_OUTPUT_KEYS, fixtures, scope
+from test_all_skill_contracts import (
+    EXPECTED_OUTPUT_KEYS,
+    bind_local_artifact_fixtures,
+    fixtures,
+    scope,
+)
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -54,6 +60,9 @@ class AcceptanceCriteriaTests(unittest.TestCase):
             store=cls.store,
             config=RuntimeConfig(
                 artifact_root=Path(cls.temporary.name) / "artifacts",
+                artifact_envelope_cipher=AesGcmEnvelopeCipher(
+                    b"k" * 32, key_id="acceptance-test-key"
+                ),
                 execution_root=Path(cls.temporary.name) / "executions",
             ),
         )
@@ -68,6 +77,7 @@ class AcceptanceCriteriaTests(unittest.TestCase):
             "all-skill-contracts",
         )
         cls.cases = fixtures()
+        bind_local_artifact_fixtures(cls.cases, cls.runtime)
         runtime_skills = {item["skillId"] for item in cls.runtime.list_skills()}
         if (
             set(cls.cases) != runtime_skills

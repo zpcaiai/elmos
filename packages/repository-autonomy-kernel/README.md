@@ -15,6 +15,9 @@ PYTHONPATH=src python -m elmos_repository_autonomy.cli dispatch \
 PYTHONPATH=src python -m elmos_repository_autonomy.cli serve --db /tmp/elmos-autonomy.db
 PYTHONPATH=src python -m elmos_repository_autonomy.cli local-conformance
 PYTHONPATH=src python -m elmos_repository_autonomy.cli matrix --tenant local
+# Validate exact external bindings without executing them:
+PYTHONPATH=src python -m elmos_repository_autonomy.cli external-preflight \
+  --manifest /approved/path/external-qualification-manifest.json
 # After an approved PostgreSQL service is configured and before serving:
 PYTHONPATH=src python -m elmos_repository_autonomy.cli postgres-migrate \
   --service elmos-autonomy --operator migration-operator \
@@ -46,6 +49,18 @@ object-storage, event-bus, provider, Kubernetes, customer or
 independent-certification evidence merely because local tests pass.
 Unknown tools, missing authority, stale fencing, partial results, unverified
 findings and missing deployment evidence fail closed.
+
+Approved external implementations can be attached through `CommandBinding`
+and the PostgreSQL, SCM, S3, Event Bus, Secrets Broker, Kubernetes,
+independent-verifier and seven-provider command transports. A binding uses an
+absolute non-symlink executable, SHA-256 pin,
+explicit protocol allowlist, environment-variable references, bounded
+canonical JSON input/output, no shell, process-group timeout and digest-only
+execution evidence. The manifest contract is
+[`external-qualification-manifest.schema.json`](contracts/external-qualification-manifest.schema.json).
+`external-preflight` only proves that bindings are structurally ready for a
+separately authorized run; it always leaves external evidence `NOT_RUN`,
+E1-E5 `NOT_RUN`, certification `NOT_CERTIFIED`, and P05 unissued.
 
 外部能力的补全路线见
 [EXTERNAL_COMPLETION_PLAN.md](docs/EXTERNAL_COMPLETION_PLAN.md)，逐项测试矩阵见

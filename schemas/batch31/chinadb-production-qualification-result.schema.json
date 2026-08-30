@@ -26,7 +26,7 @@
   ],
   "properties": {
     "schemaVersion": { "const": "1.0" },
-    "protocolVersion": { "const": "1.0.0" },
+    "protocolVersion": { "const": "1.1.0" },
     "package": { "const": "chinadb-commercial-migration-skills" },
     "scope": { "$ref": "#/$defs/scope" },
     "scopeDigest": { "$ref": "#/$defs/digest" },

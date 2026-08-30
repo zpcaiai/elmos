@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import stat
 
+from .artifact_store import AesGcmEnvelopeCipher
 from .bundles import HmacEvidenceBundleSigner
 from .contracts import TrustedIdentity
 from .execution import (
@@ -65,6 +66,12 @@ def _runtime_config(
         parser.error(
             "--toolchain-registry and --toolchain-registry-sha256 must be supplied together"
         )
+    if bool(args.artifact_root) != bool(args.artifact_encryption_key_file):
+        parser.error(
+            "--artifact-root and --artifact-encryption-key-file must be supplied together"
+        )
+    if args.artifact_root is not None and not args.artifact_encryption_key_id:
+        parser.error("--artifact-encryption-key-id is required with --artifact-root")
     try:
         toolchains = (
             load_toolchain_registry(registry_path, registry_digest)
@@ -84,8 +91,17 @@ def _runtime_config(
             if args.bundle_signing_key_file is not None
             else None
         )
+        artifact_cipher = (
+            AesGcmEnvelopeCipher(
+                _read_permit_key(args.artifact_encryption_key_file),
+                key_id=args.artifact_encryption_key_id,
+            )
+            if args.artifact_encryption_key_file is not None
+            else None
+        )
         return RuntimeConfig(
             artifact_root=args.artifact_root,
+            artifact_envelope_cipher=artifact_cipher,
             execution_root=args.execution_root,
             execution_permit_signer=signer,
             toolchains=toolchains,
@@ -103,6 +119,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--actor", default="local-operator")
     parser.add_argument("--project")
     parser.add_argument("--artifact-root", type=Path)
+    parser.add_argument("--artifact-encryption-key-file", type=Path)
+    parser.add_argument("--artifact-encryption-key-id")
     parser.add_argument("--execution-root", type=Path)
     parser.add_argument("--permit-key-file", type=Path)
     parser.add_argument("--bundle-signing-key-file", type=Path)

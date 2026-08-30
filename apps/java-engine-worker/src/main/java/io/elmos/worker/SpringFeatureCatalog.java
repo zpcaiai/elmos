@@ -15,15 +15,15 @@ import java.util.regex.Pattern;
 import static io.elmos.worker.SpringUpgradeModels.FeatureObservation;
 
 /**
- * Typed inventory of Spring source features which have a distinct Boot 4
+ * Typed inventory of Spring source features which have a distinct target
  * migration contract. The catalog is used for discovery and target planning;
  * it is not a claim that a source construct can be rewritten without its
  * runtime/provider contract. Features marked with an FCM strategy therefore
  * remain conditional until the source and target behavior has been executed.
  */
 final class SpringFeatureCatalog {
-    private static final String TARGET = "spring-boot-" + SpringRouteCatalog.TARGET_BOOT_4_1_1;
     private static final int MAX_OBSERVATIONS_PER_FEATURE = 100;
+    private static final Pattern EXACT_VERSION = Pattern.compile("[0-9]+(?:\\.[0-9A-Za-z-]+)*");
     private static final Pattern SPRING_CANDIDATE = Pattern.compile(
             "(?i)org\\.springframework\\.|@(?:SpringBootApplication|Configuration|Controller|Service|Repository|Bean|Autowired|Transactional|RequestMapping|EnableWebSecurity)\\b|spring\\.(?:config|profiles|datasource|jpa|web|security)\\.",
             Pattern.MULTILINE);
@@ -52,7 +52,7 @@ final class SpringFeatureCatalog {
 
     private static final List<String> COMMON_OBLIGATIONS = List.of(
             "preserve-source-order-and-conditions",
-            "bind-to-exact-spring-boot-4.1.1-java-21-profile",
+            "bind-to-exact-selected-target-profile",
             "run-source-target-contract-before-promotion");
 
     /**
@@ -306,7 +306,18 @@ final class SpringFeatureCatalog {
                 .sorted(Comparator.comparing(FeatureObservation::id)).toList();
     }
 
-    static List<Map<String, Object>> render(List<FeatureObservation> observations) {
+    static List<Map<String, Object>> render(List<FeatureObservation> observations,
+                                             String targetBoot,
+                                             String targetJava) {
+        if (targetBoot == null || !EXACT_VERSION.matcher(targetBoot).matches()) {
+            throw new IllegalArgumentException("targetBoot must be an exact version");
+        }
+        if (targetJava == null || !EXACT_VERSION.matcher(targetJava).matches()) {
+            throw new IllegalArgumentException("targetJava must be an exact version");
+        }
+        String target = "spring-boot-" + targetBoot;
+        String targetObligation = "bind-to-exact-spring-boot-" + targetBoot
+                + "-java-" + targetJava + "-profile";
         Map<String, FeatureObservation> unique = new LinkedHashMap<>();
         for (FeatureObservation observation : observations) unique.put(observation.id(), observation);
         List<Map<String, Object>> rendered = new ArrayList<>();
@@ -318,10 +329,20 @@ final class SpringFeatureCatalog {
             item.put("evidence_state", observation.evidenceState());
             item.put("source_languages", observation.sourceLanguages());
             item.put("source_traces", observation.sourceTraces());
-            item.put("target", TARGET);
+            item.put("target", target);
             item.put("target_apis", observation.targetApis());
-            item.put("target_strategy", observation.targetStrategy());
-            item.put("obligations", observation.obligations());
+            boolean incompatibleBoot4Strategy = !targetBoot.startsWith("4.")
+                    && (observation.targetStrategy().contains("boot-4")
+                    || observation.targetStrategy().contains("4.1.1")
+                    || observation.targetStrategy().contains("spring-framework-7"));
+            item.put("target_strategy", incompatibleBoot4Strategy
+                    ? "blocked-incompatible-target-strategy:" + observation.targetStrategy()
+                    : observation.targetStrategy());
+            item.put("target_applicability", incompatibleBoot4Strategy ? "blocked" : "applicable");
+            item.put("obligations", observation.obligations().stream()
+                    .map(value -> value.equals("bind-to-exact-selected-target-profile")
+                            ? targetObligation : value)
+                    .toList());
             rendered.add(item);
         }
         return List.copyOf(rendered);

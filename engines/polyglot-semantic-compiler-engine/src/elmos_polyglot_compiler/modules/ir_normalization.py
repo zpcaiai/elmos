@@ -3,16 +3,16 @@
 from __future__ import annotations
 
 import hashlib
-import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRisk
+from ..contracts import digest_json
 
 
 class IrNormalizationModule:
     """Manages Universal IR (UIR) lifting, lossless CST preservation, symbol tables, and type-attributed trees."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.uir_trees: Dict[str, Dict[str, Any]] = {}
 
     def lift_to_uir(
@@ -20,15 +20,18 @@ class IrNormalizationModule:
         source_language: str,
         ast_nodes: List[Dict[str, Any]],
     ) -> Dict[str, Any]:
-        """Lifts source language AST into canonical typed Universal IR (UIR)."""
+        """Create an IR lifting plan without treating caller data as normalized IR."""
         uir_id = f"uir-{source_language}-{len(ast_nodes)}"
         uir_document = {
             "uir_id": uir_id,
             "source_language": source_language,
             "schema_version": "3.0.0",
-            "nodes_count": len(ast_nodes),
-            "modules": [{"name": "MainModule", "declarations": ast_nodes}],
-            "status": "NORMALIZED",
+            "source_nodes_count": len(ast_nodes),
+            "source_nodes_digest": digest_json(ast_nodes),
+            "modules": [],
+            "status": "TYPED_IR_ADAPTER_REQUIRED",
+            "roundtrip_verified": False,
+            "execution_evidence": "NOT_RUN",
         }
         self.uir_trees[uir_id] = uir_document
         return uir_document
@@ -48,7 +51,7 @@ class IrNormalizationModule:
             source_construct=source_ast,
             target_construct=target_uir,
             property_name=property_name,
-            invariants=["LOSSLESS_ROUNDTRIP_UIR", "TYPE_ATTRIBUTION_CONFORMANCE"],
+            invariants=("LOSSLESS_ROUNDTRIP_UIR", "TYPE_ATTRIBUTION_CONFORMANCE"),
             risk=SemanticRisk.CRITICAL,
             status=ObligationStatus.NOT_RUN,
         )

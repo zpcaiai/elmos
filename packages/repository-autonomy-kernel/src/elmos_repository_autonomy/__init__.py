@@ -17,6 +17,20 @@ from .external import (
     S3PresignService,
     provider_adapters,
 )
+from .external_runtime import (
+    CommandBinding,
+    CommandEventBusTransport,
+    CommandIndependentVerifierTransport,
+    CommandKubernetesTransport,
+    CommandPostgresTransport,
+    CommandProviderTransport,
+    CommandS3Transport,
+    CommandSCMTransport,
+    CommandSecretsBrokerTransport,
+    ExternalQualificationPreflight,
+    JsonCommandRunner,
+    load_qualification_manifest,
+)
 from .golden import CustomerAcceptanceRegistry, GoldenRouteEvaluator, RepositoryBinding
 from .models import DispatchResult, Status
 from .postgres import PostgresDisasterRecovery, PostgresMigrationRunner, PostgresSessionFactory
@@ -41,6 +55,15 @@ __all__ = [
     "AutonomyRuntime",
     "CanonicalSCMAdapter",
     "CertificationEngine",
+    "CommandBinding",
+    "CommandEventBusTransport",
+    "CommandIndependentVerifierTransport",
+    "CommandKubernetesTransport",
+    "CommandPostgresTransport",
+    "CommandProviderTransport",
+    "CommandS3Transport",
+    "CommandSCMTransport",
+    "CommandSecretsBrokerTransport",
     "ConformanceHarness",
     "ContractError",
     "CustomerAcceptanceRegistry",
@@ -52,11 +75,13 @@ __all__ = [
     "EvidenceTrustStore",
     "ExternalOperationCoordinator",
     "ExternalOperationRequest",
+    "ExternalQualificationPreflight",
     "GoldenRouteEvaluator",
     "IdempotentEventConsumer",
     "KernelError",
     "KubernetesAdapter",
     "KubernetesFailureAdapter",
+    "JsonCommandRunner",
     "PostgresDisasterRecovery",
     "PostgresMigrationRunner",
     "PostgresSessionFactory",
@@ -70,6 +95,7 @@ __all__ = [
     "all_local_conformance",
     "deployment_evidence_status",
     "dispatch",
+    "load_qualification_manifest",
     "provider_adapters",
     "route_definition",
 ]

@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import hashlib
-import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRisk
 
@@ -12,7 +11,7 @@ from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRi
 class DatabaseDataTransformationModule:
     """Manages database schema IR, stored procedures (PL/SQL, T-SQL), ORM contracts, and dialect transpilation."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.schemas: Dict[str, Dict[str, Any]] = {}
 
     def transform_schema_ddl(
@@ -21,14 +20,17 @@ class DatabaseDataTransformationModule:
         target_dialect: str,
         ddl_statements: List[str],
     ) -> Dict[str, Any]:
-        """Translates DDL statements, table constraints, indices, and sequences across dialects."""
+        """Create an exact database conversion plan; do not perform text conversion."""
         schema_id = f"schema-{source_dialect}-to-{target_dialect}-{len(ddl_statements)}"
         res = {
             "schema_id": schema_id,
             "source_dialect": source_dialect,
             "target_dialect": target_dialect,
             "statements_count": len(ddl_statements),
-            "status": "DDL_CONVERTED",
+            "converted_statements": [],
+            "status": "EXACT_DATABASE_ADAPTER_REQUIRED",
+            "execution_evidence": "NOT_RUN",
+            "certification": "NOT_CERTIFIED",
         }
         self.schemas[schema_id] = res
         return res
@@ -48,7 +50,7 @@ class DatabaseDataTransformationModule:
             source_construct=source_schema,
             target_construct=target_schema,
             property_name=property_name,
-            invariants=["SCHEMA_CONSTRAINT_PRESERVATION", "TRANSACTION_ISOLATION_EQUIVALENCE"],
+            invariants=("SCHEMA_CONSTRAINT_PRESERVATION", "TRANSACTION_ISOLATION_EQUIVALENCE"),
             risk=SemanticRisk.CRITICAL,
             status=ObligationStatus.NOT_RUN,
         )

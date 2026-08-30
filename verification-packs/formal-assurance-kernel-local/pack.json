@@ -19,11 +19,11 @@
   "pack_key": "formal-assurance-kernel-local",
   "schema_version": 1,
   "scope": {
-    "environment_digest": "sha256:52654ab6a82a0654a1f741e77be914741a900e02807c542ea3e9e2b2887044f9",
+    "environment_digest": "sha256:2ad9c85fd862ac09917cedfa76a506b6e3a07a7c4810ba7272236e8b56b6dac4",
     "migration_route": "formal-assurance-kernel-local-runtime",
     "risk_tier": "P1",
     "source_artifact_digest": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
-    "target_artifact_digest": "sha256:d31a8f3213e40c0d4be84d74eac09c3549ad29c7d899ed399f8caa30771c9f4b",
+    "target_artifact_digest": "sha256:f25a8908dc346254518ae69fe27a7dac2763a9dde6f81dc776a04e93492d5663",
     "workload_key": "formal-assurance-kernel-60-skills"
   },
   "status": "experimental",

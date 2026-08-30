@@ -1,0 +1,45 @@
+{
+  "claim_scope": "LOCAL_ISOLATED_EXACT_TUPLE_ONLY",
+  "evidence_class": "LOCAL_ENGINEERING_SUPPLEMENTAL",
+  "external_evidence": "NOT_RUN",
+  "files": [
+    {
+      "bytes": 3223,
+      "path": "raw/source-build.log",
+      "sha256": "9e399420de5c0cef8f9c0a4481e3e6e2a60536e06b6cf6950ba1b35fc5cc8e5e"
+    },
+    {
+      "bytes": 8254,
+      "path": "raw/source-rollback.log",
+      "sha256": "0b8353c317b63b83dc7b689019a3ee4afdfebfd0e6dddf99b6c94246286def32"
+    },
+    {
+      "bytes": 1328,
+      "path": "raw/target-ab.txt",
+      "sha256": "aaea3e1b747883e93d544b26e8c3bab7d0fa09ebebaea98dde9d541eb1c597ca"
+    },
+    {
+      "bytes": 3355,
+      "path": "raw/target-startup.log",
+      "sha256": "075784f79eb7798bc55a0ba0e90e1246037ae37714555c7b46e58713947e7dd2"
+    },
+    {
+      "bytes": 24767,
+      "path": "sbom-local-inventory.json",
+      "sha256": "4282ef22785543b4821d9a9673522fddc8d100493bd3d49bfbd665fa6d65f40a"
+    },
+    {
+      "bytes": 9873951,
+      "path": "source-artifacts/legacy-spring-mvc-5.3.39.war",
+      "sha256": "ad40f44d02fbebe7300f2c1aefa4ba27fcae3dd180d2ae839e0e3685e3aba42d"
+    },
+    {
+      "bytes": 5473,
+      "path": "supplemental-local-evidence.json",
+      "sha256": "c423ad83882bf50bddc8c572ffcbd5cf2e25a91540b0b7f0bc58603d5bd67dc2"
+    }
+  ],
+  "index_does_not_self_reference": true,
+  "production_certification": "NOT_CERTIFIED",
+  "schema_version": 1
+}
