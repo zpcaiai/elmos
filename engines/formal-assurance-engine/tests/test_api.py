@@ -216,7 +216,11 @@ class ApiTests(unittest.TestCase):
                 "evaluatedAt",
                 "blockingReasons",
                 "evidenceHash",
+                "gateEvidence",
             },
+        )
+        self.assertEqual(
+            gate_document["gateEvidence"]["verificationStatus"], "NOT_RUN"
         )
         self.assertEqual(len(gate_document["evidenceHash"]), 64)
         status, latest = self.call(

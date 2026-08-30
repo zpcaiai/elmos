@@ -32,6 +32,11 @@ from .contracts import (
     utc_now,
 )
 from .gate import evaluate_release_gate, validate_result, validate_status_claim
+from .gate_evidence import (
+    GateEvidenceError,
+    GateEvidenceVerifier,
+    VerifiedGateEvidence,
+)
 from .governance import GovernanceError, GovernanceService
 from .lean_dafny_bridge import FormalProofBridgeError, FormalProofKernelBridge
 from .planner import PlanError, serialize_plan, topological_order
@@ -65,6 +70,7 @@ class HandlerContext:
     store: StateStore
     artifact_store: ArtifactStore | None = None
     production: Any | None = None
+    gate_evidence_verifier: GateEvidenceVerifier | None = None
 
 
 def _required(ctx: HandlerContext, key: str) -> Any:
@@ -103,6 +109,7 @@ def _bounded(
     assurance: AssuranceLevel = AssuranceLevel.A1_BOUNDED,
     mode: str = "BOUNDED",
     capability_state: str | None = None,
+    external_evidence_status: str = "NOT_RUN",
 ) -> SkillOutcome:
     normalized_output = dict(output)
     if status == ProofStatus.BOUNDED_NO_COUNTEREXAMPLE:
@@ -130,6 +137,7 @@ def _bounded(
         mode=mode,
         output=normalized_output,
         diagnostics=diagnostics,
+        external_evidence_status=external_evidence_status,
     )
 
 
@@ -1281,28 +1289,92 @@ def _release_gate(ctx: HandlerContext) -> SkillOutcome:
             compensating_controls=tuple(record.get("compensatingControls", [])),
             expires_at=str(record.get("expiresAt")),
         )
+    policy_revision = str(ctx.payload.get("policyRevision", "local-policy-v1"))
+    gate = str(ctx.payload.get("requiredGate", "E2_MODEL"))
+    decision_input = {
+        "scope": ctx.scope.to_dict(),
+        "subjectId": ctx.subject_id,
+        "gate": gate,
+        "obligations": [
+            {
+                "id": item.id,
+                "criticality": item.criticality.value,
+                "propertyKind": item.property_kind,
+                "requiredAssurance": item.required_assurance.value,
+                "formulaHash": item.formula_hash,
+                "allowBounded": item.allow_bounded,
+                "required": item.required,
+                "dependencies": list(item.dependencies),
+            }
+            for item in obligations
+        ],
+        "results": [result_to_dict(item) for item in parsed_results],
+        "waivers": [
+            {
+                "obligationId": item.obligation_id,
+                "status": item.status,
+                "risk": item.risk,
+                "approvals": list(item.approvals),
+                "compensatingControls": list(item.compensating_controls),
+                "expiresAt": item.expires_at,
+            }
+            for item in (waivers[key] for key in sorted(waivers))
+        ],
+        "policyRevision": policy_revision,
+    }
+    decision_input_digest = digest_value(decision_input)
+    verified_evidence: VerifiedGateEvidence | None = None
+    raw_evidence = ctx.payload.get("gateEvidenceReceipt")
+    if raw_evidence is not None:
+        if ctx.gate_evidence_verifier is None:
+            raise HandlerError(
+                "gateEvidenceReceipt requires an independently configured verifier"
+            )
+        try:
+            verified_evidence = ctx.gate_evidence_verifier.verify(
+                raw_evidence,
+                scope=ctx.scope,
+                subject_id=ctx.subject_id,
+                gate=gate,
+                decision_input_digest=decision_input_digest,
+            )
+        except GateEvidenceError as exc:
+            raise HandlerError(str(exc)) from exc
+    requested_deployment = ctx.payload.get("deploymentComplete")
+    requested_external = ctx.payload.get("externalEvidenceComplete")
+    if requested_deployment is not None and not isinstance(requested_deployment, bool):
+        raise HandlerError("deploymentComplete must be a boolean")
+    if requested_external is not None and not isinstance(requested_external, bool):
+        raise HandlerError("externalEvidenceComplete must be a boolean")
+    deployment_complete = (
+        verified_evidence.deployment_complete if verified_evidence else False
+    )
+    external_evidence_complete = (
+        verified_evidence.external_evidence_complete if verified_evidence else False
+    )
+    for field, requested, verified in (
+        ("deploymentComplete", requested_deployment, deployment_complete),
+        ("externalEvidenceComplete", requested_external, external_evidence_complete),
+    ):
+        if requested is not None and requested != verified:
+            raise HandlerError(
+                f"{field} cannot be asserted without matching signed evidence"
+            )
     decision = evaluate_release_gate(
         obligations,
         results,
         waivers,
-        required_gate=str(ctx.payload.get("requiredGate", "E2_MODEL")),
-        deployment_complete=bool(ctx.payload.get("deploymentComplete", False)),
-        external_evidence_complete=bool(
-            ctx.payload.get("externalEvidenceComplete", False)
-        ),
+        required_gate=gate,
+        deployment_complete=deployment_complete,
+        external_evidence_complete=external_evidence_complete,
     )
     evaluated_at = utc_now()
-    policy_revision = str(ctx.payload.get("policyRevision", "local-policy-v1"))
-    gate = str(ctx.payload.get("requiredGate", "E2_MODEL"))
     evidence_hash = digest_value(
         {
-            "scope": ctx.scope.to_dict(),
-            "subjectId": ctx.subject_id,
-            "gate": gate,
-            "obligations": [item.id for item in obligations],
-            "results": [result_to_dict(item) for item in parsed_results],
-            "waivers": sorted(waivers),
-            "policyRevision": policy_revision,
+            "decisionInputDigest": decision_input_digest,
+            "gateEvidenceReceiptDigest": (
+                verified_evidence.receipt_digest if verified_evidence else None
+            ),
         }
     ).removeprefix("sha256:")
     decision_id = "gate-" + evidence_hash[:32]
@@ -1325,6 +1397,15 @@ def _release_gate(ctx: HandlerContext) -> SkillOutcome:
         "evaluatedAt": evaluated_at,
         "blockingReasons": list(decision.blocking_reasons),
         "evidenceHash": evidence_hash,
+        "gateEvidence": (
+            verified_evidence.to_dict()
+            if verified_evidence
+            else {
+                "verificationStatus": "NOT_RUN",
+                "deploymentComplete": False,
+                "externalEvidenceComplete": False,
+            }
+        ),
     }
     registration = ctx.store.put_document(
         ctx.scope,
@@ -1339,6 +1420,8 @@ def _release_gate(ctx: HandlerContext) -> SkillOutcome:
             "gateDecision": decision.to_dict(),
             "gateDocument": decision_document,
             "policy": "unknown-and-bounded-fail-closed",
+            "decisionInputDigest": decision_input_digest,
+            "gateEvidenceVerification": decision_document["gateEvidence"],
             "certification": "NOT_CERTIFIED",
             "registration": registration,
         },
@@ -1348,6 +1431,11 @@ def _release_gate(ctx: HandlerContext) -> SkillOutcome:
         assurance=AssuranceLevel.A1_BOUNDED
         if decision.decision != "DENY"
         else AssuranceLevel.NONE,
+        external_evidence_status=(
+            verified_evidence.verification_status
+            if verified_evidence is not None
+            else "NOT_RUN"
+        ),
     )
 
 

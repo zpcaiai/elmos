@@ -632,9 +632,9 @@
       "sha256": "sha256:38f7e13c3c6162d6535e91c606842e27b2cb4a03f3b2d1406168af567fece637"
     },
     {
-      "byte_size": 3573,
+      "byte_size": 3895,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/__init__.py",
-      "sha256": "sha256:89b0ada3fa6556df4f63fc49b5bc00aee83fe55e6090a92b85676ece90bda54e"
+      "sha256": "sha256:ae262e5ee7cd45392166e6d611494e8a7bf79e0bd10ac34cd250c19ce4b99193"
     },
     {
       "byte_size": 28090,
@@ -682,9 +682,9 @@
       "sha256": "sha256:2939884f7c978674336a927a863f2e4b6b2495fa3e210f9429eb7172ee69c887"
     },
     {
-      "byte_size": 52579,
+      "byte_size": 55104,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/execution.py",
-      "sha256": "sha256:f05deaf3244a5d12e5414044c2aada5beffd577fa1b1f3f03a0602154c5ce9a9"
+      "sha256": "sha256:c9f69e32a6fda4c719d8bc8b209ae6295294068c9ec0ea3ca7cc90aade99be4c"
     },
     {
       "byte_size": 8702,
@@ -697,14 +697,19 @@
       "sha256": "sha256:944755017bcbbdaf650d3241606f80584d80a76d87af67af8392be7b0383fdc8"
     },
     {
+      "byte_size": 11703,
+      "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/gate_evidence.py",
+      "sha256": "sha256:e121a64ed86db55519780485526b492f1898f8e910dd65215f8b16e342bb3187"
+    },
+    {
       "byte_size": 22933,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/governance.py",
       "sha256": "sha256:235730f4826344f260a382989132d6bcc886224b102744bcc7a81e999c64a8c0"
     },
     {
-      "byte_size": 157951,
+      "byte_size": 161561,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/handlers.py",
-      "sha256": "sha256:d231b22e02e19509110caf8d022d72d6aac6404de15cb8caf9fdb1063122a4fb"
+      "sha256": "sha256:7b9caca70bb64290af8a5a59d8f7e8b2da26fd9f526bb394c44f38a475fa88f0"
     },
     {
       "byte_size": 11613,
@@ -712,9 +717,9 @@
       "sha256": "sha256:c8f05132861402130a73dcc1404623e07c6408056365a029037d8c148e17fd41"
     },
     {
-      "byte_size": 16044,
+      "byte_size": 16676,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/lean_dafny_bridge.py",
-      "sha256": "sha256:ab61013bffdd065c79eff6a32a5fd0fd6ab5e86fe8bac0dd3f7c3b30b9e558dd"
+      "sha256": "sha256:4ef2fb3f420316970539af99e167b8ca348972c9796cfe4d91c1742f6dff5f1b"
     },
     {
       "byte_size": 7672,
@@ -742,9 +747,9 @@
       "sha256": "sha256:3b184ae2a21fac75d5177af8df02f6548fa046f27e6e45e387a65fa39b7e4fb2"
     },
     {
-      "byte_size": 35835,
+      "byte_size": 36239,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/runtime.py",
-      "sha256": "sha256:4c1e7eeaff9330a55d0bf175f48065c1e9b069f65d373b4aa778e8d35d332aad"
+      "sha256": "sha256:cc0bf2d72a331729d9d1004709b53120be2f1075448c8344cf6bdab3e97b0743"
     },
     {
       "byte_size": 14223,
@@ -767,9 +772,9 @@
       "sha256": "sha256:e78b3be011f4b5ed6651de228dd5d24e41d926166d0153d16de956f7aa114034"
     },
     {
-      "byte_size": 19106,
+      "byte_size": 19249,
       "path": "engines/formal-assurance-engine/tests/test_api.py",
-      "sha256": "sha256:1766513e1907b59915f811b6957a4490c975f1adba627890c1c078d5c06ce824"
+      "sha256": "sha256:422d43c15379d09d80eb850896f636f5afc7a917240a67ab12ecc8a320fb9e32"
     },
     {
       "byte_size": 35256,
@@ -787,9 +792,19 @@
       "sha256": "sha256:530e7c665848ff9decf45c2e63d369f6cee85a810742ff73b035710869cf3ac8"
     },
     {
+      "byte_size": 6988,
+      "path": "engines/formal-assurance-engine/tests/test_external_gate_evidence.py",
+      "sha256": "sha256:115b8507aa89ebb996b17b5c713eb698b16832c41888e4c45b1ee52feb941e3b"
+    },
+    {
       "byte_size": 23240,
       "path": "engines/formal-assurance-engine/tests/test_governance_bundles_events.py",
       "sha256": "sha256:90666452862fd60a2e5fceac9fe477b21f0f267ce0429831df6a727743916eaf"
+    },
+    {
+      "byte_size": 4099,
+      "path": "engines/formal-assurance-engine/tests/test_native_source_boundaries.py",
+      "sha256": "sha256:c2ebc62d66531c02237e5b6976daae8c63be9ce8a56f99694206a26e6b43d885"
     },
     {
       "byte_size": 3554,

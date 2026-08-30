@@ -22,6 +22,12 @@ class FormalProofBridgeError(ValueError):
 _LEAN_IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_']{0,127}$")
 _DAFNY_IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,127}$")
 _GENERATOR_VERSION = "elmos-formal-proof-source/v1"
+_LEAN_TRUST_ESCAPE = re.compile(
+    r"(?mi)(?:\bsorry\b|\badmit\b|\baxiom\b|\bunsafe\b)"
+)
+_DAFNY_TRUST_ESCAPE = re.compile(
+    r"(?mi)(?:\{:verify\s+false\}|\{:axiom\b|\bassume\b|\bexpect\b)"
+)
 
 
 class Lean4Generator:
@@ -50,11 +56,13 @@ class Lean4Generator:
             # Deliberately invalid Lean: a missing proof must never compile as a
             # successful certificate through `sorry`, `admit` or an axiom.
             proof_body = "ELMOS_PROOF_BODY_REQUIRED"
-        return (
+        source = (
             "-- Generated verification candidate; native Lean execution NOT_RUN.\n"
             f"theorem {name}{hypothesis_text} : {checked_conclusion} := by\n"
             f"  {proof_body}\n"
         )
+        _reject_trust_escape(source, "Lean")
+        return source
 
     @staticmethod
     def generate_arithmetic_invariance_proof(
@@ -106,7 +114,7 @@ class DafnyGenerator:
         contract_lines = [*(f"requires {item}" for item in checked_requires), *(f"ensures {item}" for item in checked_ensures)]
         contracts = "\n  ".join(contract_lines)
         body_text = checked_body or "ELMOS_BODY_REQUIRED;"
-        return (
+        source = (
             "// Generated verification candidate; native Dafny execution NOT_RUN.\n"
             f"method {name}({param_text}) returns ({return_text})\n"
             f"  {contracts}\n"
@@ -114,6 +122,8 @@ class DafnyGenerator:
             f"  {body_text}\n"
             "}\n"
         )
+        _reject_trust_escape(source, "Dafny")
+        return source
 
     @staticmethod
     def generate_loop_invariance(
@@ -321,6 +331,14 @@ def _formal_text(value: Any, path: str, *, maximum: int = 64 * 1024) -> str:
     if len(encoded) > maximum:
         raise FormalProofBridgeError(f"{path} exceeds the size bound")
     return value
+
+
+def _reject_trust_escape(source: str, language: str) -> None:
+    pattern = _LEAN_TRUST_ESCAPE if language == "Lean" else _DAFNY_TRUST_ESCAPE
+    if pattern.search(source):
+        raise FormalProofBridgeError(
+            f"{language} proof source contains a forbidden trust escape"
+        )
 
 
 def _language_identifier(value: Any, language: str, pattern: re.Pattern[str]) -> str:
