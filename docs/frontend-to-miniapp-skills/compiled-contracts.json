@@ -69,31 +69,31 @@
   },
   "runtime_implementation": {
     "state": "HANDLER_IMPLEMENTED",
-    "implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+    "implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
     "files": [
       {
         "path": "tooling/integrate_frontend_to_miniapp_skills.py",
         "bytes": 176157,
         "mode": "0755",
-        "sha256": "sha256:df907a5760025cc7aa76f98502b5eec947c67c13503f46b3e286e3f09b5c8e14"
+        "sha256": "sha256:aba9f30518bb3afede55cf56a8637ae4687dab57c8eac157f07c60a84366357a"
       },
       {
         "path": "tests/frontend-to-miniapp/test_integration.py",
         "bytes": 63718,
         "mode": "0644",
-        "sha256": "sha256:abd9600d3ddca4a82672d04279674e2f80e32a8586edbc7b86b9e4be2e759c53"
+        "sha256": "sha256:554b9d185de363cf289dfc2efd4dd436bb0f84b3264bf97bd62470e229eaac78"
       },
       {
         "path": "engines/frontend-client-engine/package.json",
-        "bytes": 973,
+        "bytes": 1123,
         "mode": "0644",
-        "sha256": "sha256:973b739df4790ad977eb064ad88c956d9f21ed63e2fbed3ccdf6733b76ebc927"
+        "sha256": "sha256:4e15dd29f10d03cc76f2d91cca03ce7ddfa14f57a078ef06a6b005c807a13b81"
       },
       {
         "path": "engines/frontend-client-engine/pnpm-lock.yaml",
-        "bytes": 8841,
+        "bytes": 8878,
         "mode": "0644",
-        "sha256": "sha256:547799cf74324119abd2d0f601362384018bcb11e553fd63afc947570962604e"
+        "sha256": "sha256:77592e787157ec5fb0fad3548906ee8d06524674b0698557ce15134a34b28603"
       },
       {
         "path": "engines/frontend-client-engine/tsconfig.json",
@@ -109,9 +109,9 @@
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-types.ts",
-        "bytes": 7384,
+        "bytes": 8119,
         "mode": "0644",
-        "sha256": "sha256:4ac1556278473e456cb9a30812baabe230c1a679b01b90a6655e790cf3d8d41d"
+        "sha256": "sha256:50994ce2045a857cf409c394513f7b47d73417f54eb8de06347257df16900182"
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-contract-validation.ts",
@@ -121,27 +121,27 @@
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-inventory.ts",
-        "bytes": 39360,
+        "bytes": 54784,
         "mode": "0644",
-        "sha256": "sha256:a72b46e15e251d7160daaa81ab57390208237bc6d14b2f53f4d8c14aaa24106b"
+        "sha256": "sha256:f8d697e092d1b7be8a09140e19785183fcd824aef925674e78d51d7f308f46db"
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-semantic-ir.ts",
-        "bytes": 147452,
+        "bytes": 160447,
         "mode": "0644",
-        "sha256": "sha256:c3ced046055a22322baade5b92b97dfc1b846c95cc22c3e2f4e056a243adc1c4"
+        "sha256": "sha256:1b8e1170c07ecc89faef8ccb898bbff0dce41dafaa41798275a1b95d89954ba5"
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-planning.ts",
-        "bytes": 61321,
+        "bytes": 66447,
         "mode": "0644",
-        "sha256": "sha256:8d76057f5e792b0318c5b18437200352eab28698455e9cf65f6dd66ea6ebc0d1"
+        "sha256": "sha256:96068e28216f023f70824a61927bccd5a6af22d0fd406845d8f66bfc1c25912e"
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-target-generation.ts",
-        "bytes": 36237,
+        "bytes": 38014,
         "mode": "0644",
-        "sha256": "sha256:9a6dd98252d3668a7daff0832c26af1685422c21756fa69f1140928548218fcb"
+        "sha256": "sha256:a151c22924c58ef5dc2322b621aca36b2c5e8090ba2428873efa58e1be59aa5e"
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-skill-runtime.ts",
@@ -169,9 +169,9 @@
       },
       {
         "path": "engines/frontend-client-engine/src/miniapp-output-contracts.ts",
-        "bytes": 95108,
+        "bytes": 95692,
         "mode": "0644",
-        "sha256": "sha256:40689fe840db4ebf19a0ccfed6e86198f44d2c4274f4ed4f611a2187a3905741"
+        "sha256": "sha256:aba64390442b46260afc2ffc84c2f96b4e4e3089647725c8dbb0b013fc6875df"
       },
       {
         "path": "engines/frontend-client-engine/test/miniapp-contract-validation.test.ts",
@@ -181,15 +181,15 @@
       },
       {
         "path": "engines/frontend-client-engine/test/miniapp-inventory.test.ts",
-        "bytes": 12714,
+        "bytes": 16650,
         "mode": "0644",
-        "sha256": "sha256:6e325e54557627bcee3edd4d2f5d4ba73ec423dfbe9115d0ae5d7e2f9361071d"
+        "sha256": "sha256:f47e48274bb1d4daf0f2808298e7b6d5441ee5681c1e916f0c3134973c707d34"
       },
       {
         "path": "engines/frontend-client-engine/test/miniapp-semantic-ir.test.ts",
-        "bytes": 5576,
+        "bytes": 10013,
         "mode": "0644",
-        "sha256": "sha256:14f64b1faa393c1db6cf43dd110bf1bb4e54cfd1fb6324f6efeef280b6eb6371"
+        "sha256": "sha256:c22d305fd395af410f49cee309995ff020b72cb787c828364785b3fb8bf9d52a"
       },
       {
         "path": "engines/frontend-client-engine/test/miniapp-four-platform-generation.test.ts",
@@ -199,9 +199,9 @@
       },
       {
         "path": "engines/frontend-client-engine/test/miniapp-skill-runtime.test.ts",
-        "bytes": 35404,
+        "bytes": 43928,
         "mode": "0644",
-        "sha256": "sha256:121236b9f8896e712fb86a93a111244633fac0b3681aa12b7120abca954fdbec"
+        "sha256": "sha256:01d830f0f4e6ba3f16a74cdb7d211d8e01821ceb26148a727ad3255701493408"
       },
       {
         "path": "engines/frontend-client-engine/test/miniapp-validation.test.ts",
@@ -229,9 +229,9 @@
       },
       {
         "path": "engines/component-dialect-engine/package.json",
-        "bytes": 1240,
+        "bytes": 1722,
         "mode": "0644",
-        "sha256": "sha256:e4f9901d1dd9baa70a9626e569071944440f26b77c91d6270ffeb328202e8b84"
+        "sha256": "sha256:31c10dea3c95a29b7d4d101bae0edd32681ffb1564ab2b8f27c30f7a72f9463c"
       },
       {
         "path": "engines/component-dialect-engine/jest.config.js",
@@ -241,15 +241,15 @@
       },
       {
         "path": "engines/component-dialect-engine/package-lock.json",
-        "bytes": 161733,
+        "bytes": 161371,
         "mode": "0644",
-        "sha256": "sha256:5d41eed014b3a7c6988fb0eba218de73e12867ce2de5fe382ede69b1aa4cfec3"
+        "sha256": "sha256:33544b884197f00b45b737ecb4cb0b170410319e01529a40395ea831ab832c9c"
       },
       {
         "path": "engines/component-dialect-engine/pnpm-lock.yaml",
-        "bytes": 99744,
+        "bytes": 99816,
         "mode": "0644",
-        "sha256": "sha256:7ebffb4302a371489abea414e4de55aed5ed0cd4fd1da7dd6b644a0cab99980f"
+        "sha256": "sha256:563df9a747510577c78d9f6036f975c1d65d94903e3a4ebdf8e5f6cb518652b1"
       },
       {
         "path": "engines/component-dialect-engine/tsconfig.json",
@@ -259,69 +259,69 @@
       },
       {
         "path": "engines/component-dialect-engine/src/models.ts",
-        "bytes": 21824,
+        "bytes": 70931,
         "mode": "0644",
-        "sha256": "sha256:c014fa747e4e8b18ca8b02754dedb1c6e8f6a77255cf528a7411d1f998f27304"
+        "sha256": "sha256:e5e4a571a41b2b7fc4d6eb0a5bc4970ac522de918f4206dd34972c36dc678cbf"
       },
       {
         "path": "engines/component-dialect-engine/src/miniapp-worker.ts",
-        "bytes": 75323,
+        "bytes": 77562,
         "mode": "0644",
-        "sha256": "sha256:d98d97b7af0f61f8076f25bc99e6815b8faeffe29c8870a9c2d8263b666e0be6"
+        "sha256": "sha256:c1047a8570fe89b4e6c21c0630d531d7c234a63aa49b6cbdbf59d4db82e4ac2e"
       },
       {
         "path": "engines/component-dialect-engine/src/parsers/expressions.ts",
-        "bytes": 10806,
+        "bytes": 16048,
         "mode": "0644",
-        "sha256": "sha256:b27a8f0ce8844a25bf355a7ea05becc2d04b070b838c0a036cc9866356bcc737"
+        "sha256": "sha256:c9d7df5ee766d3d578c6751a6939acee85131307cbc238b88abd86d6f8493897"
       },
       {
         "path": "engines/component-dialect-engine/src/parsers/miniprogram.ts",
-        "bytes": 19943,
+        "bytes": 22921,
         "mode": "0644",
-        "sha256": "sha256:6187d65d03aac7636e4cb966e7ab603553b38e47fa0f4a93ee09a7eba8faa44d"
+        "sha256": "sha256:046b1c82c84bd53d14d01b6bc8f39998d29ca7955076921fff12ce2c145a0f7e"
       },
       {
         "path": "engines/component-dialect-engine/src/parsers/react.ts",
-        "bytes": 32943,
-        "mode": "0600",
-        "sha256": "sha256:b91a3bad4e3b9f905717c9cb5afe1b061a394e4dc89d65ef635bc0f7b52ec5b3"
+        "bytes": 169748,
+        "mode": "0644",
+        "sha256": "sha256:20cc8ce2fbfc0b7cd227d2a9e8275bb780836dfe9c84bb9d2f4c8e3b730d22ec"
       },
       {
         "path": "engines/component-dialect-engine/src/parsers/vue2.ts",
-        "bytes": 16804,
+        "bytes": 16897,
         "mode": "0644",
-        "sha256": "sha256:4a92de46d84101f00db7e39ae96abcbffb993ec8ed23623e109665ab6522f69d"
+        "sha256": "sha256:94bee0e97cbeaafd76041f2676ba5053fd8e03e856da288ed2eb1c216d04342a"
       },
       {
         "path": "engines/component-dialect-engine/src/parsers/vue3.ts",
-        "bytes": 19264,
-        "mode": "0600",
-        "sha256": "sha256:d1a85c5060abc43fde65c47ab85eb363f27eea709dbcbcd4cb5c3954172d7b4c"
+        "bytes": 19357,
+        "mode": "0644",
+        "sha256": "sha256:be016bfd18ec2fc7bc617399c9817c83a55cb9145c4230e834b2f0af93630d5c"
       },
       {
         "path": "engines/component-dialect-engine/src/emitters/miniprogram.ts",
-        "bytes": 15862,
+        "bytes": 21475,
         "mode": "0644",
-        "sha256": "sha256:9141cc2783bae53f5337f1e8241d4540ff3c2bd4e48869ac54699d39b199653c"
+        "sha256": "sha256:1f5aa6a4555b515aa3a174bb627c8a033d0f6a5d5a69558dcbe131dfc40ef76b"
       },
       {
         "path": "engines/component-dialect-engine/src/emitters/platform-miniapps.ts",
-        "bytes": 22607,
+        "bytes": 30374,
         "mode": "0644",
-        "sha256": "sha256:03fb715c642c1ceb29439fc24edeec715b21d7ea059df59275ef9b4ab8304892"
+        "sha256": "sha256:770ac51a15773dc03c845db145a5a1374dcfa855834ae1edf3fe675a28566fb1"
       },
       {
         "path": "engines/component-dialect-engine/src/emitters/react.ts",
-        "bytes": 8987,
+        "bytes": 14998,
         "mode": "0644",
-        "sha256": "sha256:9dab15c2cb34c929b6318b33a095ab07864ea35cbf216c970b5e869f5d00515b"
+        "sha256": "sha256:49433985e43d61a13e3cf9062ecb3b7997eb3fd25f23cca53c931c21fd960bfe"
       },
       {
         "path": "engines/component-dialect-engine/src/emitters/vue3.ts",
-        "bytes": 11692,
+        "bytes": 15347,
         "mode": "0644",
-        "sha256": "sha256:9ca053d05e25b2652ca0af4eb150d5d5884fa366c02ddaff5dcbe55732d8e613"
+        "sha256": "sha256:0dd64013fbc09a07b02ee566b810f783a5913bbb52ba5f035d6188246012ad70"
       },
       {
         "path": "engines/component-dialect-engine/src/validator.ts",
@@ -333,7 +333,7 @@
         "path": "engines/component-dialect-engine/tests/miniapp-worker.test.ts",
         "bytes": 38967,
         "mode": "0644",
-        "sha256": "sha256:190d7213c14ea3f46cac8984b9ef9c55b6e18df1c3eebc64f103e22bf71c2ddd"
+        "sha256": "sha256:d7da158c0c26160a74e8d15001f9790f37eaf38bdeb942f0c14541670816dedf"
       },
       {
         "path": "engines/component-dialect-engine/tests/platform-miniapps.test.ts",
@@ -499,7 +499,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -609,7 +609,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -726,7 +726,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -843,7 +843,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -960,7 +960,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1078,7 +1078,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1190,7 +1190,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1298,7 +1298,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1415,7 +1415,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1528,7 +1528,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1641,7 +1641,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1754,7 +1754,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1863,7 +1863,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1972,7 +1972,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2081,7 +2081,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2193,7 +2193,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2314,7 +2314,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2429,7 +2429,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2542,7 +2542,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2660,7 +2660,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2782,7 +2782,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2906,7 +2906,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:b7e2814b6108deddfd65db04688deb206a728b24a2b07bb7a2b076071729525e",
+      "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",

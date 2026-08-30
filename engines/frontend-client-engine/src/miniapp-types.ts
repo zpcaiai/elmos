@@ -7,6 +7,23 @@ export const MINIAPP_PLATFORMS = [
 
 export type MiniappPlatform = typeof MINIAPP_PLATFORMS[number];
 
+/** Exact native operation bindings understood by the generated platform adapter. */
+export const MINIAPP_PLATFORM_CAPABILITY_OPERATIONS = {
+  request: "network.request",
+  getStorage: "storage.get",
+  setStorage: "storage.set",
+  removeStorage: "storage.remove",
+  clearStorage: "storage.clear",
+  navigateTo: "navigation.navigateTo",
+  redirectTo: "navigation.redirectTo",
+  reLaunch: "navigation.reLaunch",
+  switchTab: "navigation.switchTab",
+  navigateBack: "navigation.navigateBack",
+} as const;
+
+export type MiniappPlatformCapabilityOperation =
+  typeof MINIAPP_PLATFORM_CAPABILITY_OPERATIONS[keyof typeof MINIAPP_PLATFORM_CAPABILITY_OPERATIONS];
+
 /**
  * Source labels are deliberately more exact than a broad "web" family. A route
  * for one label never implies support for another label or version.
@@ -188,7 +205,15 @@ export interface MiniappDeclaredRuntimeEvidence {
   readonly evidenceKind: "manifest-declaration";
 }
 
-export type MiniappConfigurationKind = "package-json" | "package-lock" | "pnpm-lock" | "pubspec" | "app-config";
+export type MiniappConfigurationKind =
+  | "package-json"
+  | "package-lock"
+  | "pnpm-lock"
+  | "pubspec"
+  | "app-config"
+  | "tsconfig"
+  | "npmrc"
+  | "vite-config";
 
 export interface MiniappConfigurationEvidence {
   readonly kind: MiniappConfigurationKind;

@@ -32,13 +32,19 @@
   },
   "target": {
     "stack": "wechat-native-miniapp-candidate",
-    "versions": ["wechat-base-library-3.9.1-requested-NOT_RUN"],
+    "versions": ["3.9.1"],
     "language": "javascript",
     "language_versions": ["ecmascript-2022-output-contract"],
     "runtime": "wechat-miniapp-runtime-candidate",
-    "runtime_versions": ["wechat-base-library-3.9.1-requested-NOT_RUN"],
+    "runtime_versions": ["3.9.1"],
     "generator_profile_version": "2026-08-20.1",
-    "official_toolchain_version": "wechat-devtools-1.06.2504010-NOT_RUN",
+    "official_toolchain_version": "1.06.2504010",
+    "toolchain_resolution": {
+      "requested_platform_version": "3.9.1",
+      "requested_toolchain_version": "1.06.2504010",
+      "resolved_toolchain_digest": null,
+      "evidence_state": "NOT_RUN"
+    },
     "build_tool": "local-semantic-ir-candidate-generator-1.0.0",
     "package_manager": "none-generated-native-project",
     "router": ["app-json-native-pages-contract-1"],
