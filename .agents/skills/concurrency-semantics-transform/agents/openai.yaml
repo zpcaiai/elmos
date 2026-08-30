@@ -1,0 +1,6 @@
+interface:
+  display_name: "Concurrency Semantics Transform"
+  short_description: "Run concurrency-semantics-transform with bounded commercial controls"
+  default_prompt: "Use $concurrency-semantics-transform through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

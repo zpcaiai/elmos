@@ -1,0 +1,6 @@
+interface:
+  display_name: "Agentic Execution Runtime"
+  short_description: "Supervise typed agents through scoped workspaces, leases, and fences."
+  default_prompt: "Use $elmos-agentic-execution-runtime through the exact PDHI v1 K4 runtime with typed scope, allowlisted operations, replayable evidence, and fail-closed external gates."
+policy:
+  allow_implicit_invocation: true
