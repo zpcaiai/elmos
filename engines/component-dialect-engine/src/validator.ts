@@ -30,6 +30,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as ts from "typescript";
 import { EXECUTABLE_FRAMEWORKS, Framework } from "./models";
+import { assertVue2CompilerInput } from "./vue2-security";
 
 export type SyntaxStatus = "PASSED" | "FAILED";
 export type ExecutionStatus = "PASSED" | "FAILED" | "EXECUTION_NOT_AVAILABLE" | "EXECUTION_NOT_ATTEMPTED";
@@ -78,6 +79,7 @@ function validateVue3Source(source: string): string[] {
 }
 
 function validateVue2Source(source: string): string[] {
+  assertVue2CompilerInput(source, "Emitted.vue");
   // Vue 2 compatibility remains a supported syntax/emit format, but the
   // unmaintained Vue 2 compiler/runtime packages are intentionally absent.
   // The maintained Vue 3 SFC compiler validates the SFC boundary and template

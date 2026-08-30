@@ -4,6 +4,14 @@ This independently runnable TypeScript/Node worker is ELMOS's fourth execution e
 
 The engine also exposes a typed UI project generator for nine exact core profiles: Vue 2, Vue 3, React, React Native with Expo, jQuery, Flutter, HarmonyOS ArkUI, Angular, and Svelte. It generates all 72 directed source-to-target route plans, a target application shell, exact dependency/config manifests, routes, UI IR, target profile, ownership metadata, CI, and fail-closed verification scripts. Static generation is not runtime or certification evidence.
 
+The exact Vue 2.7.16 source route is retained for legacy modernization even
+though Vue 2 is end-of-life and the upstream `vue` / `vue-template-compiler`
+advisories have no Vue 2 patch. `src/vue2-security.ts` places every Vue 2 SFC
+analysis behind a 1 MiB bound, linear rejection of the known raw-text and
+adversarial-`<` parser shapes, and fail-closed prototype-pollution checks.
+This is a compensating control, not a claim that the EOL dependencies are
+fixed or that independent production security review has run.
+
 ```bash
 pnpm install --frozen-lockfile
 pnpm check

@@ -26,6 +26,7 @@ import { referencedComponents } from "./emitters/react";
 import { parseMiniProgramComponent, MiniProgramSource } from "./parsers/miniprogram";
 import { parseReactComponent } from "./parsers/react";
 import { parseVue2Component } from "./parsers/vue2";
+import { assertVue2CompilerInput } from "./vue2-security";
 import { parseVue3Component } from "./parsers/vue3";
 
 export const MINI_APP_SOURCE_FRAMEWORKS = [
@@ -530,6 +531,7 @@ function executableSourceUnits(
               scriptKind: ts.ScriptKind.TSX,
             }]);
     }
+    assertVue2CompilerInput(source, label);
     const compiler = require("@vue/compiler-sfc") as {
       readonly parse: (input: string, options: { readonly filename: string }) => {
         readonly errors: readonly unknown[];
@@ -614,6 +616,7 @@ function assertVueTemplateSensitiveBindingsSafe(
       }
       root = parsed.descriptor.template?.ast ?? null;
     } else {
+      assertVue2CompilerInput(source, label);
       const compiler = require("@vue/compiler-sfc") as {
         readonly parse: (input: string, options: { readonly filename: string }) => {
           readonly errors: readonly unknown[];
