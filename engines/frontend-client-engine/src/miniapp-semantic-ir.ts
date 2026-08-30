@@ -9,6 +9,7 @@ import type {
   MiniappSourceInventory,
   MiniappSourceLabel,
 } from "./miniapp-types.js";
+import { MINIAPP_PLATFORM_CAPABILITY_OPERATIONS } from "./miniapp-types.js";
 
 export type MiniappCompatibilityClass = "A" | "B" | "C" | "D" | "E";
 
@@ -30,6 +31,13 @@ export interface MiniappSourceFinding {
   readonly sourceRefs: readonly MiniappSourceRef[];
 }
 
+export interface MiniappImplicitAccessibility {
+  readonly provenance: "html-implicit";
+  readonly role: "article" | "complementary" | "heading" | "list" | "listitem" | "main" | "navigation" | "region";
+  readonly level: number | null;
+  readonly officialRuntimeVerification: "NOT_RUN";
+}
+
 export interface MiniappAnalyzedComponent {
   readonly id: string;
   readonly name: string;
@@ -39,6 +47,8 @@ export interface MiniappAnalyzedComponent {
   readonly events: readonly string[];
   readonly children: readonly string[];
   readonly accessibility: readonly string[];
+  readonly implicitAccessibility?: MiniappImplicitAccessibility | null;
+  readonly styleScopeClasses?: readonly string[];
   readonly sourceTag: string;
   readonly attributes: Readonly<Record<string, string>>;
   readonly textContent: string;
@@ -129,6 +139,7 @@ export interface MiniappAnalyzedStyle {
   readonly selector: string;
   readonly declarations: Readonly<Record<string, string>>;
   readonly responsive: boolean;
+  readonly scopeClass?: string | null;
   readonly sourceRefs: readonly MiniappSourceRef[];
 }
 
@@ -374,10 +385,46 @@ function literalText(node: ts.Expression | undefined): string | undefined {
 }
 
 const sourceSecretReference = /^(?:vault|secret|kms):\/\/[A-Za-z0-9][A-Za-z0-9._/@:-]{0,511}$/u;
-const implicitHtmlSemanticTags = new Set([
-  "article", "aside", "footer", "header", "h1", "h2", "h3", "h4", "h5", "h6",
-  "label", "li", "main", "nav", "ol", "section", "ul",
-]);
+const unresolvedImplicitHtmlSemanticTags = new Set(["footer", "header", "label"]);
+
+function implicitAccessibility(
+  tag: string,
+  attributes: Readonly<Record<string, string>>,
+): MiniappImplicitAccessibility | null {
+  const explicitRole = attributes.role?.trim();
+  if (explicitRole && !/^\{\{[\s\S]*\}\}$/u.test(explicitRole)) return null;
+  const labelled = attributes["aria-label"]?.trim() || attributes["aria-labelledby"]?.trim();
+  const normalized = tag.toLowerCase();
+  const heading = /^h([1-6])$/u.exec(normalized);
+  const role = heading ? "heading"
+    : normalized === "main" ? "main"
+      : normalized === "nav" ? "navigation"
+        : normalized === "article" ? "article"
+          : normalized === "aside" ? "complementary"
+            : normalized === "ul" || normalized === "ol" ? "list"
+              : normalized === "li" ? "listitem"
+                : normalized === "section" && labelled && !/^\{\{[\s\S]*\}\}$/u.test(labelled)
+                  ? "region"
+                  : null;
+  return role === null ? null : {
+    provenance: "html-implicit",
+    role,
+    level: heading ? Number(heading[1]) : null,
+    officialRuntimeVerification: "NOT_RUN",
+  };
+}
+
+function unresolvedImplicitAccessibility(
+  tag: string,
+  attributes: Readonly<Record<string, string>>,
+): boolean {
+  const role = attributes.role?.trim();
+  return (!role || /^\{\{[\s\S]*\}\}$/u.test(role)) && unresolvedImplicitHtmlSemanticTags.has(tag.toLowerCase());
+}
+
+function vueStyleScopeClass(path: string): string {
+  return `elmos-scope-${createHash("sha256").update(path.normalize("NFC"), "utf8").digest("hex").slice(0, 12)}`;
+}
 
 function sensitiveSourceKey(key: string): boolean {
   const normalized = key.normalize("NFKC").replace(/[^A-Za-z0-9]/gu, "").toLowerCase();
@@ -1545,13 +1592,11 @@ function analyzeTypeScript(
           ? calleePath.join(".")
           : importBinding && importBinding.imported !== "default" ? importBinding.imported : "unknown";
         const sensitive = /(?:address|album|authorize|biometric|bluetooth|camera|clipboard|contact|health|invoice|location|login|media|microphone|motion|payment|pay|phone|record|scan|setting|user)/iu.test(operation);
-        const canonicalCapability = /(?:^|\.)request$/iu.test(operation)
-          ? "network.request"
-          : /(?:^|\.)(?:getStorage|setStorage|removeStorage|clearStorage)$/u.test(operation)
-            ? "storage.local"
-            : /(?:^|\.)(?:navigateTo|redirectTo|reLaunch|switchTab|navigateBack)$/u.test(operation)
-              ? "navigation.route"
-              : `platform.${operation}`;
+        const operationName = operation.split(".").at(-1) ?? operation;
+        const exactOperation = Object.hasOwn(MINIAPP_PLATFORM_CAPABILITY_OPERATIONS, operationName)
+          ? MINIAPP_PLATFORM_CAPABILITY_OPERATIONS[operationName as keyof typeof MINIAPP_PLATFORM_CAPABILITY_OPERATIONS]
+          : null;
+        const canonicalCapability = exactOperation ?? `platform.${operation}`;
         const provider = directPlatformRoot ? calleeRoot : importBinding?.module ?? "unknown";
         addCapability(state, path, source, canonicalCapability, `platform-api:${provider}`, node, sensitive, nodeRef(node));
         const implicitDependency = calleeRoot === "uni" ? "@dcloudio/uni-app" : calleeRoot === "Taro" ? "@tarojs/taro" : undefined;
@@ -1762,7 +1807,7 @@ function analyzeTypeScript(
       const events = attrs.filter(name => /^on[A-Z]/.test(name)).sort();
       const accessibility = attrs.filter(name => /^(?:aria-|role|tabIndex)/.test(name)).sort();
       const name = /^[a-z]/.test(tag) ? `${tag}-${absoluteStart(node)}` : tag;
-      if (implicitHtmlSemanticTags.has(tag.toLowerCase())) {
+      if (unresolvedImplicitAccessibility(tag, attributes)) {
         state.findings.push(finding(
           "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
           `${tag} carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile.`,
@@ -1793,6 +1838,8 @@ function analyzeTypeScript(
           events,
           children,
           accessibility,
+          implicitAccessibility: implicitAccessibility(tag, attributes),
+          styleScopeClasses: [],
           ...analyzedComponentBindings(tag, attributes, textContent),
           sourceRefs: [nodeRef(node)],
         });
@@ -1864,9 +1911,9 @@ function semanticRole(tag: string): string {
   if (["input", "textarea", "select", "picker"].includes(normalized)) return "form-control";
   if (["img", "image", "video"].includes(normalized)) return "media";
   if (["list", "scroll-view", "scrollview", "flatlist"].includes(normalized)) return "list";
-  if (["nav", "navigator"].includes(normalized)) return "navigation";
+  if (normalized === "navigator") return "navigation";
   if (["text", "span", "p", "label", "h1", "h2", "h3", "h4", "h5", "h6"].includes(normalized)) return "text";
-  if (["view", "block", "div", "main", "section", "article", "header", "footer", "ul", "ol", "li", "form"].includes(normalized)) return "container";
+  if (["view", "block", "div", "main", "nav", "section", "article", "header", "footer", "ul", "ol", "li", "form"].includes(normalized)) return "container";
   return /^[A-Z]/.test(tag) ? "custom-component" : "unsupported-component";
 }
 
@@ -2015,6 +2062,7 @@ interface EmbeddedTraceContext {
   readonly lineOffset: number;
   readonly recordParsedFile: boolean;
   readonly parserEvidence?: string;
+  readonly styleScopeClass?: string;
 }
 
 function analyzeMarkup(
@@ -2048,6 +2096,8 @@ function analyzeMarkup(
         events,
         children: children.get(tagIndex) ?? [],
         accessibility,
+        implicitAccessibility: implicitAccessibility(tag.name, tag.attributes),
+        styleScopeClasses: trace?.styleScopeClass ? [trace.styleScopeClass] : [],
         ...analyzedComponentBindings(tag.name, tag.attributes, tag.textContent),
         sourceRefs: [ref(tag.line, tag.column)],
       };
@@ -2063,7 +2113,7 @@ function analyzeMarkup(
           true,
         ));
       }
-      if (implicitHtmlSemanticTags.has(tag.name.toLowerCase())) {
+      if (unresolvedImplicitAccessibility(tag.name, tag.attributes)) {
         state.findings.push(finding(
           "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
           `${tag.name} carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile.`,
@@ -2185,6 +2235,10 @@ function analyzeVue2(path: string, source: string, state: MutableAnalysis): void
       recordParsedFile: false,
     });
   }
+  const styleScopeClass = descriptor.styles.some(block => {
+    const candidate = block as typeof block & { readonly scoped?: boolean; readonly module?: string | boolean; readonly src?: string };
+    return Boolean(candidate.scoped) && !candidate.module && !candidate.src;
+  }) ? vueStyleScopeClass(path) : undefined;
   if (descriptor.template) {
     const compiled = vue2Compiler.compile(descriptor.template.content, { outputSourceRange: true });
     if (compiled.errors.length > 0) {
@@ -2204,16 +2258,28 @@ function analyzeVue2(path: string, source: string, state: MutableAnalysis): void
         lineOffset,
         recordParsedFile: false,
         parserEvidence: "vue-template-compiler@2.7.16",
+        ...(styleScopeClass ? { styleScopeClass } : {}),
       });
     }
   }
   for (const block of descriptor.styles) {
     const lineOffset = source.slice(0, block.start ?? 0).split("\n").length - 1;
-    const scopedStyle = block as typeof block & { readonly scoped?: boolean; readonly module?: string | boolean };
-    if (scopedStyle.scoped || scopedStyle.module) {
+    const scopedStyle = block as typeof block & { readonly scoped?: boolean; readonly module?: string | boolean; readonly src?: string };
+    if (scopedStyle.src) {
+      state.findings.push(finding(
+        "MINIAPP_EXTERNAL_STYLE_SOURCE_UNRESOLVED",
+        `Vue style source ${scopedStyle.src} is not inventory-resolved and bound to this SFC before target lowering.`,
+        "D",
+        [lineRef(path, source, Math.max(1, lineOffset + 1))],
+        "error",
+        true,
+      ));
+      continue;
+    }
+    if (scopedStyle.module) {
       state.findings.push(finding(
         "MINIAPP_SCOPED_STYLE_NOT_LOWERED",
-        "Vue scoped/module style ownership requires deterministic scope selectors and matching template attributes before target emission.",
+        "Vue CSS module ownership requires a typed class-name binding model before target emission.",
         "C",
         [lineRef(path, source, Math.max(1, lineOffset + 1))],
       ));
@@ -2228,7 +2294,12 @@ function analyzeVue2(path: string, source: string, state: MutableAnalysis): void
       ));
       continue;
     }
-    analyzeCss(path, block.content, state, { source, lineOffset, recordParsedFile: false });
+    analyzeCss(path, block.content, state, {
+      source,
+      lineOffset,
+      recordParsedFile: false,
+      ...(scopedStyle.scoped && styleScopeClass ? { styleScopeClass } : {}),
+    });
   }
   state.parsedFiles.add(path);
 }
@@ -2253,6 +2324,9 @@ function analyzeVue(path: string, source: string, state: MutableAnalysis, source
   }
   state.parserEvidence.add("@vue/compiler-sfc");
   const descriptor = result.descriptor;
+  const styleScopeClass = descriptor.styles.some(block => block.scoped && !block.module && !block.src)
+    ? vueStyleScopeClass(path)
+    : undefined;
   const scriptBlocks = [descriptor.script, descriptor.scriptSetup].filter((item): item is NonNullable<typeof item> => item !== null);
   for (const block of scriptBlocks) {
     const language = block.lang?.toLowerCase();
@@ -2289,14 +2363,26 @@ function analyzeVue(path: string, source: string, state: MutableAnalysis, source
         lineOffset: Math.max(0, descriptor.template.loc.start.line - 1),
         recordParsedFile: false,
         parserEvidence: "@vue/compiler-sfc-template@3.5.39",
+        ...(styleScopeClass ? { styleScopeClass } : {}),
       });
     }
   }
   for (const block of descriptor.styles) {
-    if (block.scoped || block.module) {
+    if (block.src) {
+      state.findings.push(finding(
+        "MINIAPP_EXTERNAL_STYLE_SOURCE_UNRESOLVED",
+        `Vue style source ${block.src} is not inventory-resolved and bound to this SFC before target lowering.`,
+        "D",
+        [lineRef(path, source, Math.max(1, block.loc.start.line))],
+        "error",
+        true,
+      ));
+      continue;
+    }
+    if (block.module) {
       state.findings.push(finding(
         "MINIAPP_SCOPED_STYLE_NOT_LOWERED",
-        "Vue scoped/module style ownership requires deterministic scope selectors and matching template attributes before target emission.",
+        "Vue CSS module ownership requires a typed class-name binding model before target emission.",
         "C",
         [lineRef(path, source, Math.max(1, block.loc.start.line))],
       ));
@@ -2315,6 +2401,7 @@ function analyzeVue(path: string, source: string, state: MutableAnalysis, source
       source,
       lineOffset: Math.max(0, block.loc.start.line - 1),
       recordParsedFile: false,
+      ...(block.scoped && styleScopeClass ? { styleScopeClass } : {}),
     });
   }
   state.parsedFiles.add(path);
@@ -2418,6 +2505,7 @@ function analyzeCss(path: string, source: string, state: MutableAnalysis, trace?
       selector: clean,
       declarations: Object.fromEntries(Object.entries(declarations).sort(([a], [b]) => a.localeCompare(b, "en-US"))),
       responsive: clean.startsWith("@media") || source.includes("@media"),
+      scopeClass: trace?.styleScopeClass ?? null,
       sourceRefs: [ref(blockLine)],
     });
     selector = ""; property = ""; value = "";
@@ -3353,6 +3441,38 @@ export function validateMiniappSemanticIr(
   }
   if (canonical([...value.application.componentIds].sort()) !== canonical(value.components.map(component => component.id).sort())) {
     throw new Error("application component index is not closed");
+  }
+  const scopeClassPattern = /^elmos-scope-[a-f0-9]{12}$/u;
+  for (const component of value.components) {
+    const expectedAccessibility = implicitAccessibility(component.sourceTag, component.attributes);
+    if (canonical(component.implicitAccessibility ?? null) !== canonical(expectedAccessibility)) {
+      throw new Error(`component implicit accessibility is not derived from its source semantics: ${component.id}`);
+    }
+    const scopeClasses = component.styleScopeClasses ?? [];
+    if (scopeClasses.length !== new Set(scopeClasses).size || scopeClasses.length > 1) {
+      throw new Error(`component scoped-style ownership is ambiguous: ${component.id}`);
+    }
+    for (const scopeClass of scopeClasses) {
+      if (!scopeClassPattern.test(scopeClass)
+        || !component.sourceRefs.some(ref => vueStyleScopeClass(ref.path) === scopeClass)) {
+        throw new Error(`component scoped-style class is not bound to its source path: ${component.id}`);
+      }
+    }
+  }
+  for (const style of value.styles) {
+    const scopeClass = style.scopeClass ?? null;
+    if (scopeClass === null) continue;
+    if (!scopeClassPattern.test(scopeClass)
+      || !style.sourceRefs.some(ref => vueStyleScopeClass(ref.path) === scopeClass)) {
+      throw new Error(`style scoped-style class is not bound to its source path: ${style.id}`);
+    }
+    const ownedTemplateComponents = value.components.filter(component =>
+      component.sourceKind === "template-ast"
+      && component.sourceRefs.some(componentRef => style.sourceRefs.some(styleRef => styleRef.path === componentRef.path)));
+    if (ownedTemplateComponents.length === 0
+      || ownedTemplateComponents.some(component => !(component.styleScopeClasses ?? []).includes(scopeClass))) {
+      throw new Error(`style scoped-style class is not consistently owned by source components: ${style.id}`);
+    }
   }
   if (value.coverage.parsedSource < 0 || value.coverage.parsedSource > 1
       || value.coverage.tracedNodes < 0 || value.coverage.tracedNodes > 1) {

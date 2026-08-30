@@ -99,6 +99,32 @@ def complete_pack(pack: Path) -> None:
     (pack / 'certification' / 'certification.json').write_text(json.dumps(certification, indent=2) + '\n')
 
 
+def scaffold_complete_pack(repo: Path) -> Path:
+    subprocess.run([
+        sys.executable, str(SCRIPTS / 'scaffold_client_pack.py'),
+        '--source-stack', 'angularjs',
+        '--target-stack', 'react',
+        '--source-version', '1.8.3',
+        '--target-version', '19.1.0',
+        '--source-language', 'javascript',
+        '--target-language', 'typescript',
+        '--source-language-version', 'es5',
+        '--target-language-version', '5.8',
+        '--source-runtime', 'browser',
+        '--target-runtime', 'browser',
+        '--source-runtime-version', 'chromium-126',
+        '--target-runtime-version', 'chromium-126',
+        '--source-build-tool', 'grunt-1.6',
+        '--target-build-tool', 'vite-6.3',
+        '--source-package-manager', 'npm-10',
+        '--target-package-manager', 'npm-10',
+        '--repo-root', str(repo),
+    ], check=True)
+    pack = repo / 'client-packs' / 'angularjs-to-react'
+    complete_pack(pack)
+    return pack
+
+
 class ToolkitTests(unittest.TestCase):
     def ui_project_request(self, framework='vue2', version='2.7.16', platform='WEB'):
         node = {
@@ -330,38 +356,125 @@ class ToolkitTests(unittest.TestCase):
     def test_conservative_gate_rejects_fake_certification(self):
         with tempfile.TemporaryDirectory() as directory:
             repo = Path(directory)
-            subprocess.run([
-                sys.executable, str(SCRIPTS / 'scaffold_client_pack.py'),
-                '--source-stack', 'angularjs',
-                '--target-stack', 'react',
-                '--source-version', '1.8.3',
-                '--target-version', '19.1.0',
-                '--source-language', 'javascript',
-                '--target-language', 'typescript',
-                '--source-language-version', 'es5',
-                '--target-language-version', '5.8',
-                '--source-runtime', 'browser',
-                '--target-runtime', 'browser',
-                '--source-runtime-version', 'chromium-126',
-                '--target-runtime-version', 'chromium-126',
-                '--source-build-tool', 'grunt-1.6',
-                '--target-build-tool', 'vite-6.3',
-                '--source-package-manager', 'npm-10',
-                '--target-package-manager', 'npm-10',
-                '--repo-root', str(repo),
-            ], check=True)
-            pack = repo / 'client-packs' / 'angularjs-to-react'
-            complete_pack(pack)
+            pack = scaffold_complete_pack(repo)
             manifest = json.loads((pack / 'pack.json').read_text())
             manifest['status'] = 'certified'
             (pack / 'pack.json').write_text(json.dumps(manifest, indent=2) + '\n')
             certification = json.loads((pack / 'certification' / 'certification.json').read_text())
             certification['status'] = 'certified'
+            certification['evidence_refs'] = ['certification/placeholder-evidence.json']
             (pack / 'certification' / 'certification.json').write_text(json.dumps(certification, indent=2) + '\n')
+
+            support_path = pack / 'support-matrix.json'
+            support = json.loads(support_path.read_text())
+            support['capabilities'][0]['status'] = 'certified'
+            support['capabilities'][0]['evidence_refs'] = [
+                'certification/placeholder-evidence.json'
+            ]
+            support_path.write_text(json.dumps(support, indent=2) + '\n')
+
+            placeholder_case = {
+                'schema_version': 1,
+                'cases': [{
+                    'case_id': 'PLACEHOLDER-001',
+                    'input_availability': 'NOT_PROVIDED',
+                    'executor': 'UNASSIGNED_EXTERNAL',
+                    'independent_verifier': 'UNASSIGNED_EXTERNAL',
+                    'runtime_state': 'NOT_RUN',
+                }],
+                'certification': 'NOT_CERTIFIED',
+            }
+            for relative in (
+                'corpus/holdout/cases.json',
+                'corpus/representative-workloads/cases.json',
+                'visual-baselines/approved/cases.json',
+            ):
+                path = pack / relative
+                path.write_text(json.dumps(placeholder_case, indent=2) + '\n')
+            (pack / 'certification' / 'placeholder-evidence.json').write_text(
+                json.dumps({
+                    'schema_version': 1,
+                    'pack_key': manifest['pack_key'],
+                    'external_evidence_status': 'NOT_RUN',
+                    'executor': 'UNASSIGNED_EXTERNAL',
+                }, indent=2) + '\n'
+            )
             result = subprocess.run([
                 sys.executable, str(SCRIPTS / 'run_client_gate.py'), str(pack)
-            ])
+            ], capture_output=True, text=True)
             self.assertEqual(result.returncode, 2)
+            self.assertIn(
+                'holdout corpus has no executed, independently verified, content-bound evidence',
+                result.stderr,
+            )
+            self.assertIn(
+                'representative workload corpus has no executed, independent, content-bound evidence',
+                result.stderr,
+            )
+            self.assertIn(
+                'approved visual baselines have no passed, content-bound visual artifact',
+                result.stderr,
+            )
+            self.assertIn(
+                'certification evidence has no passed independent/external content-bound record',
+                result.stderr,
+            )
+
+    def test_experimental_gate_keeps_placeholder_external_work_not_certified(self):
+        with tempfile.TemporaryDirectory() as directory:
+            pack = scaffold_complete_pack(Path(directory))
+            placeholder = pack / 'certification' / 'external-placeholder.json'
+            placeholder.write_text(json.dumps({
+                'schema_version': 1,
+                'pack_key': 'angularjs-to-react',
+                'external_evidence_status': 'NOT_RUN',
+                'certification': 'NOT_CERTIFIED',
+            }, indent=2) + '\n')
+            evidence_path = pack / 'certification' / 'evidence.json'
+            evidence = json.loads(evidence_path.read_text())
+            evidence['evidence_refs'] = ['certification/external-placeholder.json']
+            evidence_path.write_text(json.dumps(evidence, indent=2) + '\n')
+
+            result = subprocess.run([
+                sys.executable, str(SCRIPTS / 'run_client_gate.py'), str(pack)
+            ], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            gate_result = json.loads(
+                (pack / 'certification' / 'gate-result.json').read_text()
+            )
+            self.assertEqual(gate_result['structural_status'], 'PASSED')
+            self.assertEqual(gate_result['certification_decision'], 'NOT_CERTIFIED')
+
+    def test_gate_rejects_stale_referenced_local_runtime_evidence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            pack = scaffold_complete_pack(Path(directory))
+            fingerprint_path = pack / 'source-fingerprint' / 'fingerprint.json'
+            fingerprint = json.loads(fingerprint_path.read_text())
+            fingerprint['snapshot_digest'] = 'sha256:' + '1' * 64
+            fingerprint['evidence_refs'] = [
+                'certification/local-runtime-receipt.json'
+            ]
+            fingerprint_path.write_text(json.dumps(fingerprint, indent=2) + '\n')
+            (pack / 'certification' / 'local-runtime-receipt.json').write_text(
+                json.dumps({
+                    'schema_version': 1,
+                    'pack_key': 'angularjs-to-react',
+                    'source_snapshot_digest': 'sha256:' + '2' * 64,
+                    'runtime_implementation': {
+                        'digest': 'sha256:' + '3' * 64,
+                    },
+                }, indent=2) + '\n'
+            )
+
+            result = subprocess.run([
+                sys.executable, str(SCRIPTS / 'run_client_gate.py'), str(pack)
+            ], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn(
+                'referenced evidence is stale at '
+                'certification/local-runtime-receipt.json:source_snapshot_digest',
+                result.stderr,
+            )
 
 
 if __name__ == '__main__':

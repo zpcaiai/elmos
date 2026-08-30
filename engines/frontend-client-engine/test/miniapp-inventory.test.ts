@@ -54,8 +54,44 @@ test("the in-memory scanner fingerprints files, dependencies, entrypoints, and c
   const packageEvidence = inventory.configurationEvidence.find(item => item.kind === "package-json")!;
   assert.equal(packageEvidence.parsed, true);
   assert.ok(packageEvidence.signals.includes("scripts-declared-not-executed:build,postinstall"));
+  const tsconfigEvidence = inventory.configurationEvidence.find(item => item.kind === "tsconfig")!;
+  assert.equal(tsconfigEvidence.parsed, true);
+  assert.ok(tsconfigEvidence.signals.includes("compiler-options:strict"));
   const expectedDigest = `sha256:${createHash("sha256").update(reactFiles[0].content).digest("hex")}`;
   assert.equal(inventory.files.find(file => file.path === "package.json")?.digest, expectedDigest);
+});
+
+test("tsconfig and npmrc are parsed as digest-bound build configuration without executing lifecycle scripts", () => {
+  const inventory = inventoryMiniappSource(inventoryInput([
+    ...reactFiles,
+    { path: ".npmrc", content: "auto-install-peers=false\nignore-scripts=true\n" },
+    { path: "vite.config.ts", content: 'import { defineConfig } from "vite"; export default defineConfig({ plugins: [] });' },
+  ]));
+  assert.deepEqual(inventory.findings, []);
+  const npmrc = inventory.configurationEvidence.find(item => item.kind === "npmrc");
+  assert.equal(npmrc?.parsed, true);
+  assert.ok(npmrc?.signals.includes("key:auto-install-peers"));
+  assert.ok(npmrc?.signals.includes("lifecycle-scripts:disabled"));
+  assert.equal(inventory.configurationEvidence.find(item => item.kind === "tsconfig")?.parsed, true);
+  const vite = inventory.configurationEvidence.find(item => item.kind === "vite-config");
+  assert.equal(vite?.parsed, true);
+  assert.match(vite?.digest ?? "", /^sha256:[a-f0-9]{64}$/u);
+  assert.ok(vite?.signals.includes("define-config-call:direct-object"));
+  assert.ok(vite?.signals.includes("plugin-import:@vitejs/plugin-vue:absent"));
+
+  const duplicate = [...reactFiles, { path: ".npmrc", content: "ignore-scripts=true\nignore-scripts=false\n" }];
+  const invalid = inventoryMiniappSource(inventoryInput(duplicate));
+  assert.ok(invalid.findings.some(item => item.code === "MINIAPP_CONFIG_PARSE_ERROR" && item.paths.includes(".npmrc")));
+
+  assert.throws(
+    () => inventoryMiniappSource(inventoryInput([...reactFiles, { path: ".npmrc", content: "auth-token=raw-secret-value\n" }])),
+    (error: unknown) => error instanceof MiniappInventoryError && error.code === "MINIAPP_UNSAFE_SECRET_VALUE",
+  );
+  const referenceOnly = inventoryMiniappSource(inventoryInput([
+    ...reactFiles,
+    { path: ".npmrc", content: "auth-token=vault://tenant/npm-token\n" },
+  ]));
+  assert.equal(referenceOnly.configurationEvidence.find(item => item.kind === "npmrc")?.parsed, true);
 });
 
 test("inventory output and its canonical form are deterministic for reordered input", () => {
