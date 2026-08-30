@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+import elmos_polyglot_route.discovery as discovery_module
 import elmos_polyglot_route.pipeline as pipeline_module
 from elmos_polyglot_route.models import RouteError
 from elmos_polyglot_route.pipeline import PROJECT_GRAPH_NAME, run_repository_pipeline
@@ -416,6 +417,42 @@ def test_repository_pipeline_refuses_to_package_without_behavior_evidence(tmp_pa
             "local:test-repository",
             "python",
             "typescript",
+            cases,
+            tmp_path / "pipeline",
+        )
+
+
+def test_repository_pipeline_preserves_uniform_module_analyzer_not_run_reason(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    (repository / "math.swift").write_text(
+        "func add(_ left: Int64, _ right: Int64) -> Int64 { left + right }\n",
+        encoding="utf-8",
+    )
+    cases = tmp_path / "cases"
+    cases.mkdir()
+    (cases / "WU-00001.json").write_text(
+        json.dumps([{"args": [2, 3], "expected": 5}]),
+        encoding="utf-8",
+    )
+
+    def analyzer_not_run(*_args: object, **_kwargs: object) -> dict[str, object]:
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OFFLINE_SEED_NOT_RUN")
+
+    monkeypatch.setattr(discovery_module, "inventory_module", analyzer_not_run)
+
+    with pytest.raises(
+        RouteError,
+        match="^SWIFT_ANALYZER_DEPENDENCY_OFFLINE_SEED_NOT_RUN$",
+    ):
+        run_repository_pipeline(
+            repository,
+            "local:swift-analyzer-not-run",
+            "swift",
+            "java",
             cases,
             tmp_path / "pipeline",
         )

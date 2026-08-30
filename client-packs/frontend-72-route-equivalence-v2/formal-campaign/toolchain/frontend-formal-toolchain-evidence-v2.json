@@ -1,16 +1,16 @@
 {
   "campaign": {
     "byte_count": 1593573,
-    "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-refresh-v2-vococ3hs/engine-output/frontend-interaction-formal-campaign.json",
+    "path": "/Users/stephen/Library/Caches/elmos-swift-java-arkui-recovery-20260830/arkui-engine.ZjG3YN/engine-output/frontend-interaction-formal-campaign.json",
     "profile_count": 9,
     "proof_profile": "bounded-frontend-interaction-v1",
     "route_count": 72,
     "sha256": "sha256:acf686961ae3b96b13db978695c431f7f26095238152adfa2948706874fce69e"
   },
   "engine_preverification": {
-    "evidence_digest": "sha256:4dde01c2f96b5c41347a157c41750f5239571c4bc8062b52c070102d2ff9f9b1",
+    "evidence_digest": "sha256:b298f7bbbfc6d42374fb73edd16e6ddd7b9794681ed859d42a9efa50a0a13863",
     "implementation_identity": {
-      "closure_digest": "sha256:84ad445f78a4aae42029c7c834a0f11dce363fdace2ccf09797e36d17a9b146b",
+      "closure_digest": "sha256:00beeb3b3419219e54a51bc363c5aae9e4bbf2f484a8a64e92ed5dd255f69cee",
       "dist_tree": {
         "digest": "sha256:e7c22e6a2d78a3a4a9eb12b05204529c168e2d204e7404cdebdbd1aaebcea7ab",
         "file_count": 159,
@@ -811,55 +811,55 @@
             "sha256": "sha256:bbf70ff60c2f0b05de3c4754f3ff9f3b87cbd75a8ba14f3d502a640e02a2e6ba"
           }
         ],
-        "root": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/dist/src"
+        "root": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/dist/src"
       },
       "files": {
         "cli_dist": {
           "byte_count": 2861,
-          "path": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/dist/src/frontend-interaction-formal-cli.js",
-          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/dist/src/frontend-interaction-formal-cli.js",
+          "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/dist/src/frontend-interaction-formal-cli.js",
+          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/dist/src/frontend-interaction-formal-cli.js",
           "sha256": "sha256:159603fa85be7e6525a34b362eb6e05432979e08729acebb79b42217927f10a8"
         },
         "cli_source": {
           "byte_count": 2704,
-          "path": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/src/frontend-interaction-formal-cli.ts",
-          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/src/frontend-interaction-formal-cli.ts",
+          "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/src/frontend-interaction-formal-cli.ts",
+          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/src/frontend-interaction-formal-cli.ts",
           "sha256": "sha256:695527da9f1470c4cdf17d9bd1e3f74502382a2945400ca82a770d97a6739c60"
         },
         "equivalence_dist": {
           "byte_count": 123243,
-          "path": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/dist/src/frontend-interaction-formal-equivalence.js",
-          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/dist/src/frontend-interaction-formal-equivalence.js",
+          "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/dist/src/frontend-interaction-formal-equivalence.js",
+          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/dist/src/frontend-interaction-formal-equivalence.js",
           "sha256": "sha256:a4f00762b0dcb256ae43758f97acc9e0951d577209cd54e5916ad3f7e5c9b8ab"
         },
         "equivalence_source": {
           "byte_count": 123037,
-          "path": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/src/frontend-interaction-formal-equivalence.ts",
-          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/src/frontend-interaction-formal-equivalence.ts",
+          "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/src/frontend-interaction-formal-equivalence.ts",
+          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/src/frontend-interaction-formal-equivalence.ts",
           "sha256": "sha256:a830b31a9cb25c231783a3e8a25a12484fe9f9a83e714711b204ad06043da67f"
         },
         "lock": {
           "byte_count": 8878,
-          "path": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/pnpm-lock.yaml",
-          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/pnpm-lock.yaml",
+          "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/pnpm-lock.yaml",
+          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/pnpm-lock.yaml",
           "sha256": "sha256:77592e787157ec5fb0fad3548906ee8d06524674b0698557ce15134a34b28603"
         },
         "package": {
           "byte_count": 1123,
-          "path": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/package.json",
-          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/package.json",
+          "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/package.json",
+          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/package.json",
           "sha256": "sha256:4e15dd29f10d03cc76f2d91cca03ce7ddfa14f57a078ef06a6b005c807a13b81"
         },
         "tsconfig": {
           "byte_count": 373,
-          "path": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/tsconfig.json",
-          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/tsconfig.json",
+          "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/tsconfig.json",
+          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/tsconfig.json",
           "sha256": "sha256:445643bccad04d5cb5aeae088bd9430b462b260e524412d4d19897484f73f273"
         },
         "typescript_package": {
           "byte_count": 3620,
-          "path": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/node_modules/.pnpm/typescript@5.9.2/node_modules/typescript/package.json",
-          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/node_modules/.pnpm/typescript@5.9.2/node_modules/typescript/package.json",
+          "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/node_modules/.pnpm/typescript@5.9.2/node_modules/typescript/package.json",
+          "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/node_modules/.pnpm/typescript@5.9.2/node_modules/typescript/package.json",
           "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3"
         }
       },
@@ -1142,7 +1142,7 @@
             "sha256": "sha256:04d21b898d0cae22a0bb43730ba5fbb0f67eb96def048501c3d33f2b5deac4eb"
           }
         ],
-        "root": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/src"
+        "root": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/src"
       },
       "typescript_version": "5.9.2"
     },
@@ -1159,19 +1159,20 @@
     "verification_execution": {
       "argv": [
         "/opt/homebrew/Cellar/node/26.0.0/bin/node",
-        "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/dist/src/frontend-interaction-formal-cli.js",
+        "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine/dist/src/frontend-interaction-formal-cli.js",
         "--proof-profile",
         "bounded-frontend-interaction-v1",
         "--verify",
-        "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-refresh-v2-vococ3hs/engine-output",
+        "/Users/stephen/Library/Caches/elmos-swift-java-arkui-recovery-20260830/arkui-engine.ZjG3YN/engine-output",
         "--json"
       ],
-      "cwd": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine",
-      "duration_ms": 2829,
+      "cwd": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine",
+      "duration_ms": 2927,
       "environment": {
         "allowlisted_inherited_keys": [
           "HOME",
           "LANG",
+          "LC_ALL",
           "PATH",
           "TMPDIR"
         ],
@@ -1186,7 +1187,7 @@
       "exit_code": 0,
       "reason": null,
       "signal": null,
-      "started_at": "2026-08-29T06:25:51.180869Z",
+      "started_at": "2026-08-30T22:27:29.948285Z",
       "status": "PASSED",
       "stderr": {
         "byte_count": 0,
@@ -1207,12 +1208,13 @@
         "/opt/homebrew/Cellar/node/26.0.0/bin/node",
         "--version"
       ],
-      "cwd": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine",
-      "duration_ms": 30,
+      "cwd": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/engines/frontend-client-engine",
+      "duration_ms": 23,
       "environment": {
         "allowlisted_inherited_keys": [
           "HOME",
           "LANG",
+          "LC_ALL",
           "PATH",
           "TMPDIR"
         ],
@@ -1227,7 +1229,7 @@
       "exit_code": 0,
       "reason": null,
       "signal": null,
-      "started_at": "2026-08-29T06:25:51.150434Z",
+      "started_at": "2026-08-30T22:27:29.924824Z",
       "status": "PASSED",
       "stderr": {
         "byte_count": 0,
@@ -1248,38 +1250,38 @@
     "algorithm": "sha256(canonical-json(identity_payload))",
     "identity_payload": {
       "campaign_sha256": "sha256:acf686961ae3b96b13db978695c431f7f26095238152adfa2948706874fce69e",
-      "engine_preverification_digest": "sha256:4dde01c2f96b5c41347a157c41750f5239571c4bc8062b52c070102d2ff9f9b1",
+      "engine_preverification_digest": "sha256:b298f7bbbfc6d42374fb73edd16e6ddd7b9794681ed859d42a9efa50a0a13863",
       "implementation_closure": {
-        "closure_digest": "sha256:47bde4f6f22202176503469c3a01658b12b696207e1cfa8765a9b75ec9a3f878",
+        "closure_digest": "sha256:9ed7ad463a45b996d0ebefeee64b0e72d8fe2301ad964ad79e4465ff8118a704",
         "identities": {
           "axe_package": {
             "byte_count": 2217,
-            "path": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/node_modules/.pnpm/@axe-core+playwright@4.12.1_playwright-core@1.61.1/node_modules/@axe-core/playwright/package.json",
-            "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/node_modules/.pnpm/@axe-core+playwright@4.12.1_playwright-core@1.61.1/node_modules/@axe-core/playwright/package.json",
+            "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/node_modules/.pnpm/@axe-core+playwright@4.12.1_playwright-core@1.61.1/node_modules/@axe-core/playwright/package.json",
+            "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/node_modules/.pnpm/@axe-core+playwright@4.12.1_playwright-core@1.61.1/node_modules/@axe-core/playwright/package.json",
             "sha256": "sha256:c3e69bcde1800e1e748023ce6ed68018b1ce48714160441b7ffb7e1a6f2bd2a2"
           },
           "helper": {
             "byte_count": 42528,
-            "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/frontend_formal_playwright_probe.cjs",
-            "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/frontend_formal_playwright_probe.cjs",
+            "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/frontend_formal_playwright_probe.cjs",
+            "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/frontend_formal_playwright_probe.cjs",
             "sha256": "sha256:cb330570d684a8eb4db8e49f0bafcf7fd9ddd3d0d9d456c2045ac48d43b5d42c"
           },
           "playwright_package": {
             "byte_count": 754,
-            "path": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/node_modules/.pnpm/@playwright+test@1.61.1/node_modules/@playwright/test/package.json",
-            "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/node_modules/.pnpm/@playwright+test@1.61.1/node_modules/@playwright/test/package.json",
+            "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/node_modules/.pnpm/@playwright+test@1.61.1/node_modules/@playwright/test/package.json",
+            "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/node_modules/.pnpm/@playwright+test@1.61.1/node_modules/@playwright/test/package.json",
             "sha256": "sha256:9d8556509e073169efec663b7f71c13f17d7002b307d00d48bf88ee91c387f3e"
           },
           "workspace_lock": {
             "byte_count": 35371,
-            "path": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/pnpm-lock.yaml",
-            "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/pnpm-lock.yaml",
+            "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/pnpm-lock.yaml",
+            "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/pnpm-lock.yaml",
             "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9"
           },
           "workspace_package": {
             "byte_count": 3113,
-            "path": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/package.json",
-            "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/package.json",
+            "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/package.json",
+            "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/package.json",
             "sha256": "sha256:bb2b99c7c10b7f2d3ff046b2ab1dff30e9f8a56235a06301b9bef074d66a2448"
           }
         },
@@ -1307,13 +1309,13 @@
       },
       "producer": {
         "byte_count": 471550,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/run_frontend_formal_toolchains.py",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/run_frontend_formal_toolchains.py",
         "sha256": "sha256:a698ec70012c35778ec75dd13c7ffb3af27f64740777d03e47510e55eaff7165"
       },
       "profile_execution_ids": [
         "sha256:30825d9e586e79654d6172a9ce6bce61308bb4c3e50bcf854e1cf556445a1bcb",
         "sha256:c62b3561d0b629d9e0eaa158282ba14de34a36df29376aa7f44ffc9eea99616c",
-        "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+        "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
         "sha256:d6bb7fc93cd2bb274aa6361c50c56201a249da31a74d0db34eb10f1fdaf3f433",
         "sha256:4b4a63445d4aaa6ae2ae31f06ab07c598e01be50ae9bde8b855a6046fdd99558",
         "sha256:1f55fa6c18d167ee46f7769eaa71feac812ee864f11b78c155f745609e3056f9",
@@ -1335,7 +1337,7 @@
           "route_id": "angular--to--harmony-arkui",
           "source_execution_id": "sha256:30825d9e586e79654d6172a9ce6bce61308bb4c3e50bcf854e1cf556445a1bcb",
           "status": "NOT_RUN",
-          "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157"
+          "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957"
         },
         {
           "formal_replay_digest": "sha256:af301b715b2242938e54d0cf3a1a22fa23ecf1322a3c6658f7c6e53431584efc",
@@ -1391,7 +1393,7 @@
           "route_id": "flutter--to--harmony-arkui",
           "source_execution_id": "sha256:c62b3561d0b629d9e0eaa158282ba14de34a36df29376aa7f44ffc9eea99616c",
           "status": "NOT_RUN",
-          "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157"
+          "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957"
         },
         {
           "formal_replay_digest": "sha256:0a917497c0971cc5db112f0b2cf794335f7b4fea14ea49069218118b5e308c7b",
@@ -1438,56 +1440,56 @@
         {
           "formal_replay_digest": "sha256:a5c9979b8bda9cb0a9e481f22d615e9cc618035148afd7fb8dc35032ee18bee0",
           "route_id": "harmony-arkui--to--angular",
-          "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+          "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
           "status": "NOT_RUN",
           "target_execution_id": "sha256:30825d9e586e79654d6172a9ce6bce61308bb4c3e50bcf854e1cf556445a1bcb"
         },
         {
           "formal_replay_digest": "sha256:faf1677f010a99ed26002256529ebe577617c6bdfabdb4c25d5d7e8c3087340e",
           "route_id": "harmony-arkui--to--flutter",
-          "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+          "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
           "status": "NOT_RUN",
           "target_execution_id": "sha256:c62b3561d0b629d9e0eaa158282ba14de34a36df29376aa7f44ffc9eea99616c"
         },
         {
           "formal_replay_digest": "sha256:1208bcb8cd32cbdeac3730d4e600d2ba191e30021b3e550ff1c72816900c0fdd",
           "route_id": "harmony-arkui--to--jquery",
-          "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+          "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
           "status": "NOT_RUN",
           "target_execution_id": "sha256:d6bb7fc93cd2bb274aa6361c50c56201a249da31a74d0db34eb10f1fdaf3f433"
         },
         {
           "formal_replay_digest": "sha256:89a81c5b6e3a731d597212b0f7ab509fdfb5675f0b9ad2f0625f0047a54dc433",
           "route_id": "harmony-arkui--to--react",
-          "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+          "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
           "status": "NOT_RUN",
           "target_execution_id": "sha256:4b4a63445d4aaa6ae2ae31f06ab07c598e01be50ae9bde8b855a6046fdd99558"
         },
         {
           "formal_replay_digest": "sha256:ef8076375ab6722c6dd033d37aea4bfa73b02ea9c7b57bb8cef13035e42bd18f",
           "route_id": "harmony-arkui--to--react-native",
-          "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+          "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
           "status": "NOT_RUN",
           "target_execution_id": "sha256:1f55fa6c18d167ee46f7769eaa71feac812ee864f11b78c155f745609e3056f9"
         },
         {
           "formal_replay_digest": "sha256:4e112bfc102bebbc1206a257fb4a726f77accabec4b4c5be9d00c43da85088e2",
           "route_id": "harmony-arkui--to--svelte",
-          "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+          "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
           "status": "NOT_RUN",
           "target_execution_id": "sha256:77a0740f57a4e63d638dd7b3140e99efaff3789c5b04cec68bec8986ab42a5ae"
         },
         {
           "formal_replay_digest": "sha256:d9bdd8dce423f36edf25fd2797866a3317426e97af1d8bc189d48f1addd3292d",
           "route_id": "harmony-arkui--to--vue2",
-          "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+          "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
           "status": "NOT_RUN",
           "target_execution_id": "sha256:f58d0225b6b0212f1be36555335aa42a86ae63cb4ff1181ed3901f3addc4f619"
         },
         {
           "formal_replay_digest": "sha256:b4a7f45ab65f2f3d57da1cdebcdf28a0547910d81cb27f46c46864239f1ceaca",
           "route_id": "harmony-arkui--to--vue3",
-          "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+          "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
           "status": "NOT_RUN",
           "target_execution_id": "sha256:563f6edbfa736b803c14fda518ba16fd53b0edd59e1e71ae97dd9381c75fbc57"
         },
@@ -1510,7 +1512,7 @@
           "route_id": "jquery--to--harmony-arkui",
           "source_execution_id": "sha256:d6bb7fc93cd2bb274aa6361c50c56201a249da31a74d0db34eb10f1fdaf3f433",
           "status": "NOT_RUN",
-          "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157"
+          "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957"
         },
         {
           "formal_replay_digest": "sha256:addec90b93c89736adf612249c5f1376f435a54ac816280da19802f28f2c50b8",
@@ -1566,7 +1568,7 @@
           "route_id": "react--to--harmony-arkui",
           "source_execution_id": "sha256:4b4a63445d4aaa6ae2ae31f06ab07c598e01be50ae9bde8b855a6046fdd99558",
           "status": "NOT_RUN",
-          "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157"
+          "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957"
         },
         {
           "formal_replay_digest": "sha256:f415355828a956b957c40cfdfe92e281c51721abae404667dfc07955c3f0d6c2",
@@ -1622,7 +1624,7 @@
           "route_id": "react-native--to--harmony-arkui",
           "source_execution_id": "sha256:1f55fa6c18d167ee46f7769eaa71feac812ee864f11b78c155f745609e3056f9",
           "status": "NOT_RUN",
-          "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157"
+          "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957"
         },
         {
           "formal_replay_digest": "sha256:c02710feff2aff2063b88fcbddb56e0350e1f0e9d8c9d353da9c3f2dd8192ba1",
@@ -1678,7 +1680,7 @@
           "route_id": "svelte--to--harmony-arkui",
           "source_execution_id": "sha256:77a0740f57a4e63d638dd7b3140e99efaff3789c5b04cec68bec8986ab42a5ae",
           "status": "NOT_RUN",
-          "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157"
+          "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957"
         },
         {
           "formal_replay_digest": "sha256:c3ee611f9a81f1956f396208d6b8d9074e0b9cd77bc265380d957fc285ddd68d",
@@ -1734,7 +1736,7 @@
           "route_id": "vue2--to--harmony-arkui",
           "source_execution_id": "sha256:f58d0225b6b0212f1be36555335aa42a86ae63cb4ff1181ed3901f3addc4f619",
           "status": "NOT_RUN",
-          "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157"
+          "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957"
         },
         {
           "formal_replay_digest": "sha256:7a65551dc60a6497bdcfa05e627660a34925acf09c081ed82398e4da56fa4fb4",
@@ -1790,7 +1792,7 @@
           "route_id": "vue3--to--harmony-arkui",
           "source_execution_id": "sha256:563f6edbfa736b803c14fda518ba16fd53b0edd59e1e71ae97dd9381c75fbc57",
           "status": "NOT_RUN",
-          "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157"
+          "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957"
         },
         {
           "formal_replay_digest": "sha256:d1766e419833c6b80ed7cfc908eed49f723bd1b988566bba0710b7fba2a18912",
@@ -1870,40 +1872,40 @@
       ]
     },
     "scope": "producer+engine-preverification+implementation+campaign+scenario+policy+profile-executions+route-bindings",
-    "sha256": "sha256:d7b8d8bf65336efc3030af98dfdfd24f16f2dfb1472cc0d1adf9e99faf7491a9"
+    "sha256": "sha256:a65654c16ce46ab6d71a98cec31c126ba947e855561d1eb06557cc13fbab778d"
   },
-  "generated_at": "2026-08-29T06:26:08.019177Z",
+  "generated_at": "2026-08-30T22:27:51.536136Z",
   "implementation_closure": {
-    "closure_digest": "sha256:47bde4f6f22202176503469c3a01658b12b696207e1cfa8765a9b75ec9a3f878",
+    "closure_digest": "sha256:9ed7ad463a45b996d0ebefeee64b0e72d8fe2301ad964ad79e4465ff8118a704",
     "identities": {
       "axe_package": {
         "byte_count": 2217,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/node_modules/.pnpm/@axe-core+playwright@4.12.1_playwright-core@1.61.1/node_modules/@axe-core/playwright/package.json",
-        "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/node_modules/.pnpm/@axe-core+playwright@4.12.1_playwright-core@1.61.1/node_modules/@axe-core/playwright/package.json",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/node_modules/.pnpm/@axe-core+playwright@4.12.1_playwright-core@1.61.1/node_modules/@axe-core/playwright/package.json",
+        "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/node_modules/.pnpm/@axe-core+playwright@4.12.1_playwright-core@1.61.1/node_modules/@axe-core/playwright/package.json",
         "sha256": "sha256:c3e69bcde1800e1e748023ce6ed68018b1ce48714160441b7ffb7e1a6f2bd2a2"
       },
       "helper": {
         "byte_count": 42528,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/frontend_formal_playwright_probe.cjs",
-        "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/frontend_formal_playwright_probe.cjs",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/frontend_formal_playwright_probe.cjs",
+        "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/frontend_formal_playwright_probe.cjs",
         "sha256": "sha256:cb330570d684a8eb4db8e49f0bafcf7fd9ddd3d0d9d456c2045ac48d43b5d42c"
       },
       "playwright_package": {
         "byte_count": 754,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/node_modules/.pnpm/@playwright+test@1.61.1/node_modules/@playwright/test/package.json",
-        "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/node_modules/.pnpm/@playwright+test@1.61.1/node_modules/@playwright/test/package.json",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/node_modules/.pnpm/@playwright+test@1.61.1/node_modules/@playwright/test/package.json",
+        "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/node_modules/.pnpm/@playwright+test@1.61.1/node_modules/@playwright/test/package.json",
         "sha256": "sha256:9d8556509e073169efec663b7f71c13f17d7002b307d00d48bf88ee91c387f3e"
       },
       "workspace_lock": {
         "byte_count": 35371,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/pnpm-lock.yaml",
-        "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/pnpm-lock.yaml",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/pnpm-lock.yaml",
+        "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/pnpm-lock.yaml",
         "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9"
       },
       "workspace_package": {
         "byte_count": 3113,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/package.json",
-        "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/package.json",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/package.json",
+        "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/package.json",
         "sha256": "sha256:bb2b99c7c10b7f2d3ff046b2ab1dff30e9f8a56235a06301b9bef074d66a2448"
       }
     },
@@ -3013,7 +3015,7 @@
   },
   "producer": {
     "byte_count": 471550,
-    "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/run_frontend_formal_toolchains.py",
+    "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/run_frontend_formal_toolchains.py",
     "sha256": "sha256:a698ec70012c35778ec75dd13c7ffb3af27f64740777d03e47510e55eaff7165"
   },
   "profile_executions": [
@@ -3043,7 +3045,7 @@
       "execution_id": "sha256:30825d9e586e79654d6172a9ce6bce61308bb4c3e50bcf854e1cf556445a1bcb",
       "producer": {
         "byte_count": 471550,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/run_frontend_formal_toolchains.py",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/run_frontend_formal_toolchains.py",
         "sha256": "sha256:a698ec70012c35778ec75dd13c7ffb3af27f64740777d03e47510e55eaff7165"
       },
       "profile_id": "angular",
@@ -3417,7 +3419,7 @@
       "execution_id": "sha256:c62b3561d0b629d9e0eaa158282ba14de34a36df29376aa7f44ffc9eea99616c",
       "producer": {
         "byte_count": 471550,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/run_frontend_formal_toolchains.py",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/run_frontend_formal_toolchains.py",
         "sha256": "sha256:a698ec70012c35778ec75dd13c7ffb3af27f64740777d03e47510e55eaff7165"
       },
       "profile_id": "flutter",
@@ -3770,13 +3772,13 @@
     {
       "artifacts": {
         "build_output": {
-          "digest": "sha256:4d0fbed96bdd06d38feb295146110c0b602ff604c398093f33e595d3ee69de81",
+          "digest": "sha256:c3ec5ca2e282c2b4215eb17b6aa62614afdcc325f439e6c219ea14688479f59a",
           "file_count": 60,
           "files": [
             {
-              "byte_count": 219336,
+              "byte_count": 219338,
               "path": "default/cache/default/default@CompileArkTS/esmodule/.ts_checker_cache",
-              "sha256": "sha256:a65a542628b5770ee8a044dbe7996088ec177b2528c42002ac9a70324038a135"
+              "sha256": "sha256:9b956a06cc2f7eca1143db5568c3a1e18db83cae61060170229b9d2ed1eeb9a5"
             },
             {
               "byte_count": 127659,
@@ -3806,27 +3808,27 @@
             {
               "byte_count": 7337,
               "path": "default/cache/default/default@CompileArkTS/esmodule/debug/compiler.cache/modules/EntryAbility.ets-6cb6772688a3032e3da35b425e18d98ba9971eb7777604aea10e726599977f77.msgpack",
-              "sha256": "sha256:6cb311c9f5ed6975601d45406669124d1da0490c6092baea9932f8ccade34561"
+              "sha256": "sha256:c9251eb1aeccd942921f4095ea692773e51f8d5387e0d70d9b9fafc1dac7b2f8"
             },
             {
               "byte_count": 23432,
               "path": "default/cache/default/default@CompileArkTS/esmodule/debug/compiler.cache/modules/Index.ets-f90047a353dd9b221b44a8e9fb622244ad78231d625fc4cd827257cdb1f3fdd9.msgpack",
-              "sha256": "sha256:d6174c9036143fa8dcee85b2686938aa9a5455af14d77e84da2e02861af7825b"
+              "sha256": "sha256:1c776fd609f29adff18de2debdcd24343b449d04913bde0c03f017c56023788e"
             },
             {
               "byte_count": 145849,
               "path": "default/cache/default/default@CompileArkTS/esmodule/debug/compiler.cache/modules/elmos-bounded-interaction.ts-637a8dda7e8c38d07df89e505f0f31e9310d85c37fb060099573feef116234c3.msgpack",
-              "sha256": "sha256:41ca7f20913908f3134c3750a14d31379f3b9e09f99fe6178bee059045af0749"
+              "sha256": "sha256:93991ccc44e3104c9a42fd6f2b649ad380aa9a10eddad9760e711962ea17a280"
             },
             {
               "byte_count": 13453,
               "path": "default/cache/default/default@CompileArkTS/esmodule/debug/compiler.cache/modules/elmos-bounded-navigation.ts-f45c0ca3d88d9332bb497004d7684c654844a660aab003213a1f10424e6b7b4d.msgpack",
-              "sha256": "sha256:2a7a610d2b94549de5d6fc4d1aec596b0d176e4ea6814146fef7dbd4e8a32bea"
+              "sha256": "sha256:b4daf2e727f41e8b45bdd7067735209a4bee2585fe4049ec02ad83f3490448bc"
             },
             {
               "byte_count": 39807,
               "path": "default/cache/default/default@CompileArkTS/esmodule/debug/compiler.cache/modules/elmos-interaction-runtime.ts-782d8affddb59056e2272c0d806b909dbb37b9c8e817f4b827ec616de93b28a7.msgpack",
-              "sha256": "sha256:a3c4fbae6edc24c581041f75d0e1dfacdc1433ce4958bf7c5adf73ad80890fc7"
+              "sha256": "sha256:522fc6678bb3ddb599bfab0cf45e30b722ff2387320aa5a1da4a8497d2ef9221"
             },
             {
               "byte_count": 4,
@@ -3834,9 +3836,9 @@
               "sha256": "sha256:7a43de6e3386e4287b53672b1fec7325046fa12005b85f8f358d9744bd89f69d"
             },
             {
-              "byte_count": 6833,
+              "byte_count": 7718,
               "path": "default/cache/default/default@CompileArkTS/esmodule/debug/compiler.cache/plugins/plugins.msgpack",
-              "sha256": "sha256:07701a2bb0125fee0912bb8a6da2f880ff61b164468fe08b08900a080b28d881"
+              "sha256": "sha256:2abbe5977e44aa9f174ad07b4c839e24818015d3c2c733dee0287bf17993739a"
             },
             {
               "byte_count": 29,
@@ -3846,7 +3848,7 @@
             {
               "byte_count": 96071,
               "path": "default/cache/default/default@CompileArkTS/esmodule/debug/entry/src/main/ets/elmos-bounded-interaction.protoBin",
-              "sha256": "sha256:ef4b6802704c8c43ee225cde468e2eb5fa2ae4d2cfc601e4772e4a19fbe98abd"
+              "sha256": "sha256:6051f45a046b9244585cce82c7fd8fe5adabf56282bc7fd373b344d234fa95bb"
             },
             {
               "byte_count": 29554,
@@ -3856,7 +3858,7 @@
             {
               "byte_count": 7212,
               "path": "default/cache/default/default@CompileArkTS/esmodule/debug/entry/src/main/ets/elmos-bounded-navigation.protoBin",
-              "sha256": "sha256:556272ec13250927242ca1dce9457735fb382e5e42fa32162fd4c440eb889928"
+              "sha256": "sha256:22f72bd171dc919ae2cb25f2b9afac3ab8c36e29dd8741658ba64e0accd7d0e7"
             },
             {
               "byte_count": 997,
@@ -3866,7 +3868,7 @@
             {
               "byte_count": 15660,
               "path": "default/cache/default/default@CompileArkTS/esmodule/debug/entry/src/main/ets/elmos-interaction-runtime.protoBin",
-              "sha256": "sha256:cc15097db98e6895617bf4721fe465280d093c8009fdb7c04e3a4f7bf8cf0bcb"
+              "sha256": "sha256:0025cdf1e004e9c3b58dd45f1f284d26d2619fb0dc8c839dc13a08e30172b429"
             },
             {
               "byte_count": 6057,
@@ -3876,7 +3878,7 @@
             {
               "byte_count": 4581,
               "path": "default/cache/default/default@CompileArkTS/esmodule/debug/entry/src/main/ets/entryability/EntryAbility.protoBin",
-              "sha256": "sha256:072ac64087f1c2234d881679c2e5d87247a5d16c2a5500ea61a1db01ed647e7d"
+              "sha256": "sha256:fd8facab527258afcc3e8c4f9914008797d951b3b82b1423fadd3d178863e8ce"
             },
             {
               "byte_count": 453,
@@ -3884,9 +3886,9 @@
               "sha256": "sha256:30eaa3524ad67ecff31a866bc2b1dda9f90c459bb98173a0ee70533642593b67"
             },
             {
-              "byte_count": 58919,
+              "byte_count": 58918,
               "path": "default/cache/default/default@CompileArkTS/esmodule/debug/entry/src/main/ets/pages/Index.protoBin",
-              "sha256": "sha256:5a00a4b2707b5312af7371147976ce37dd30646781ce57ce15c7d6e3165cd5cb"
+              "sha256": "sha256:d0dde97fb888973dea12d01545cacf340f57fc719760f37ffa2d6376a1835312"
             },
             {
               "byte_count": 9096,
@@ -3896,12 +3898,12 @@
             {
               "byte_count": 1827,
               "path": "default/cache/default/default@CompileArkTS/esmodule/debug/filesInfo.txt",
-              "sha256": "sha256:7048c23f0521efae49423e9c2159b8cc9400a1f6a067d9cec6b6c20f2d025cc1"
+              "sha256": "sha256:69f02c383ad3701c55ca879fc875ebeff811ef6dc8fbfb969f25f2879376cb5a"
             },
             {
               "byte_count": 2915,
               "path": "default/cache/default/default@CompileArkTS/esmodule/debug/modules.cache",
-              "sha256": "sha256:74e6ab383dabf25c7654dd3f3db2218242bd6a083978a70479bbe993ddeac812"
+              "sha256": "sha256:e92f313432ad02b481ea71a6dae1d5d7ab40cd4b935698c78915b3a7092bfa85"
             },
             {
               "byte_count": 716,
@@ -3936,7 +3938,7 @@
             {
               "byte_count": 1156,
               "path": "default/intermediates/loader/default/loader.json",
-              "sha256": "sha256:930b8b9419c924ca8af0c05a1376083a53a75c1036842d1422f49452e0f18a91"
+              "sha256": "sha256:0408a94cc816866bfd5ecc0ce8ce55c59a1012a5de92f65f58bdbdf46a8f7ee0"
             },
             {
               "byte_count": 136,
@@ -4006,7 +4008,7 @@
             {
               "byte_count": 1871,
               "path": "default/intermediates/res/default/resConfig.json",
-              "sha256": "sha256:a867ca545f67b120ef1f500399dd22947af0217c5dcf101e4b7528e234928fc6"
+              "sha256": "sha256:22ed1d49365df47630435f9964621388cdb8408db1bd6372e3bce9a5a625a16f"
             },
             {
               "byte_count": 198,
@@ -4061,7 +4063,7 @@
             {
               "byte_count": 152485,
               "path": "default/outputs/default/entry-default-unsigned.hap",
-              "sha256": "sha256:2c3340c838731b5ff2b8d51e3b7397e248a32dd518a9a21e4c4b852b45dec133"
+              "sha256": "sha256:ac453d92537d906e7e68b186a5efffdd320f83923864213199be12ea40f68c12"
             },
             {
               "byte_count": 29063,
@@ -4101,18 +4103,19 @@
             "clean",
             "--no-daemon"
           ],
-          "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-7_o_c_ic/harmony-arkui-3mzyog36/project",
-          "duration_ms": 3852,
+          "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-csdbyezo/harmony-arkui-5k0h0jxb/project",
+          "duration_ms": 6813,
           "environment": {
             "allowlisted_inherited_keys": [
               "HOME",
               "LANG",
+              "LC_ALL",
               "PATH",
               "TMPDIR"
             ],
             "explicit": {
               "CI": "1",
-              "HOME": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-7_o_c_ic/harmony-arkui-3mzyog36/home",
+              "HOME": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-csdbyezo/harmony-arkui-5k0h0jxb/home",
               "NO_COLOR": "1",
               "OHOS_BASE_SDK_HOME": "/Users/stephen/Library/OpenHarmony/Sdk"
             },
@@ -4122,7 +4125,7 @@
           "exit_code": 0,
           "reason": null,
           "signal": null,
-          "started_at": "2026-08-29T06:25:58.732494Z",
+          "started_at": "2026-08-30T22:27:37.939298Z",
           "status": "PASSED",
           "stderr": {
             "byte_count": 158,
@@ -4131,9 +4134,9 @@
             "truncated": false
           },
           "stdout": {
-            "byte_count": 427,
-            "sha256": "sha256:1b933d20eab136e81d0626dc5c98b0ecd0712fbfdb91afd6591cfbb9b8c21ff5",
-            "text": "Installing pnpm@10.28.2...\n\nadded 1 package, and audited 2 packages in 2s\n\n1 package is looking for funding\n  run `npm fund` for details\n\n1 high severity vulnerability\n\nTo address all issues, run:\n  npm audit fix --force\n\nRun `npm audit` for details.\nPnpm install success.\n> hvigor \u001b[32mFinished :entry:clean... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished ::clean... after 1 ms \u001b[39m\n> hvigor \u001b[32mBUILD SUCCESSFUL in 835 ms \u001b[39m\n",
+            "byte_count": 430,
+            "sha256": "sha256:1a789d734277679e125ad55af018b52ec4f1c34683fcd8e518a67400d6b41a35",
+            "text": "Installing pnpm@10.28.2...\n\nadded 1 package, and audited 2 packages in 5s\n\n1 package is looking for funding\n  run `npm fund` for details\n\n1 high severity vulnerability\n\nTo address all issues, run:\n  npm audit fix --force\n\nRun `npm audit` for details.\nPnpm install success.\n> hvigor \u001b[32mFinished :entry:clean... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished ::clean... after 1 ms \u001b[39m\n> hvigor \u001b[32mBUILD SUCCESSFUL in 1 s 49 ms \u001b[39m\n",
             "truncated": false
           },
           "timeout_seconds": 3600
@@ -4150,18 +4153,19 @@
             "buildMode=debug",
             "--no-daemon"
           ],
-          "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-7_o_c_ic/harmony-arkui-3mzyog36/project",
-          "duration_ms": 4391,
+          "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-csdbyezo/harmony-arkui-5k0h0jxb/project",
+          "duration_ms": 4160,
           "environment": {
             "allowlisted_inherited_keys": [
               "HOME",
               "LANG",
+              "LC_ALL",
               "PATH",
               "TMPDIR"
             ],
             "explicit": {
               "CI": "1",
-              "HOME": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-7_o_c_ic/harmony-arkui-3mzyog36/home",
+              "HOME": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-csdbyezo/harmony-arkui-5k0h0jxb/home",
               "NO_COLOR": "1",
               "OHOS_BASE_SDK_HOME": "/Users/stephen/Library/OpenHarmony/Sdk"
             },
@@ -4171,27 +4175,27 @@
           "exit_code": 0,
           "reason": null,
           "signal": null,
-          "started_at": "2026-08-29T06:26:02.584739Z",
+          "started_at": "2026-08-30T22:27:44.752814Z",
           "status": "PASSED",
           "stderr": {
             "byte_count": 1170,
-            "sha256": "sha256:9a3edd7069b9a66b47bb4c9d360cc491ed53a5ad25354c0d245807d24c534bd8",
-            "text": "> hvigor \u001b[33mWARN: The version number of the 'entry' module does not comply with the SemVer specification.\n               This will affect the installation and publication by ohpm.\n               Make sure the value of version in the oh-package.json5 file of the module complies with the SemVer specification.\u001b[39m\n> hvigor \u001b[33mWARN: \u001b[33mWARN: \u001b[33m\u001b[33mArkTS:WARN File: /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-7_o_c_ic/harmony-arkui-3mzyog36/project/entry/src/main/ets/entryability/EntryAbility.ets:5:64\n Function may throw exceptions. Special handling is required.\n\u001b[39m\u001b[39m\n\u001b[39m\n> hvigor \u001b[33mWARN: WARNING: A terminally deprecated method in sun.misc.Unsafe has been called\nWARNING: sun.misc.Unsafe::arrayBaseOffset has been called by com.alibaba.fastjson2.util.JDKUtils (file:/Users/stephen/Library/OpenHarmony/Sdk/20/toolchains/lib/app_packing_tool.jar)\nWARNING: Please consider reporting this to the maintainers of class com.alibaba.fastjson2.util.JDKUtils\nWARNING: sun.misc.Unsafe::arrayBaseOffset will be removed in a future release\n\u001b[39m\n> hvigor \u001b[33mWARN: No signingConfig found for product default\u001b[39m\n",
+            "sha256": "sha256:bd6c31478a7dcfd6a1eef709a8666b5a4d3225e703ce218ffba49555f8ea9d14",
+            "text": "> hvigor \u001b[33mWARN: The version number of the 'entry' module does not comply with the SemVer specification.\n               This will affect the installation and publication by ohpm.\n               Make sure the value of version in the oh-package.json5 file of the module complies with the SemVer specification.\u001b[39m\n> hvigor \u001b[33mWARN: \u001b[33mWARN: \u001b[33m\u001b[33mArkTS:WARN File: /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-csdbyezo/harmony-arkui-5k0h0jxb/project/entry/src/main/ets/entryability/EntryAbility.ets:5:64\n Function may throw exceptions. Special handling is required.\n\u001b[39m\u001b[39m\n\u001b[39m\n> hvigor \u001b[33mWARN: WARNING: A terminally deprecated method in sun.misc.Unsafe has been called\nWARNING: sun.misc.Unsafe::arrayBaseOffset has been called by com.alibaba.fastjson2.util.JDKUtils (file:/Users/stephen/Library/OpenHarmony/Sdk/20/toolchains/lib/app_packing_tool.jar)\nWARNING: Please consider reporting this to the maintainers of class com.alibaba.fastjson2.util.JDKUtils\nWARNING: sun.misc.Unsafe::arrayBaseOffset will be removed in a future release\n\u001b[39m\n> hvigor \u001b[33mWARN: No signingConfig found for product default\u001b[39m\n",
             "truncated": false
           },
           "stdout": {
-            "byte_count": 2505,
-            "sha256": "sha256:895dd03ec9fc59070e4d2d4eed905184d6ef3bc1ec5908aa79a693b0fee1ec75",
-            "text": "> hvigor \u001b[32mFinished :entry:default@PreBuild... after 58 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@CreateModuleInfo... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@GenerateMetadata... after 2 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ConfigureCmake... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@MergeProfile... after 2 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@CreateBuildProfile... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@PreCheckSyscap... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@GeneratePkgContextInfo... after 4 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@GeneratePkgSdkInfo... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessIntegratedHsp... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@BuildNativeWithCmake... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@MakePackInfo... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessProfile... after 195 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessRouterMap... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessShareConfig... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessStartupConfig... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@BuildNativeWithNinja... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessResource... after 2 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@GenerateLoaderJson... after 3 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessLibs... after 2 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@SyscapTransform... after 30 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@DoNativeStrip... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@CacheNativeLibs... after 2 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@CompileResource... after 67 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@BuildJS... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@CompileArkTS... after 2 s 169 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@GeneratePkgModuleJson... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessCompiledResources... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@PackageHap... after 441 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@PackingCheck... after 2 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@SignHap... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@CollectDebugSymbol... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:assembleHap... after 1 ms \u001b[39m\n> hvigor \u001b[32mBUILD SUCCESSFUL in 3 s 973 ms \u001b[39m\n",
+            "byte_count": 2504,
+            "sha256": "sha256:5d2508892b6cd8b1b82d21a1774b794a8e54e0f16df9e4ab0b7e7b72d967b1eb",
+            "text": "> hvigor \u001b[32mFinished :entry:default@PreBuild... after 52 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@CreateModuleInfo... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@GenerateMetadata... after 2 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ConfigureCmake... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@MergeProfile... after 2 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@CreateBuildProfile... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@PreCheckSyscap... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@GeneratePkgContextInfo... after 4 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@GeneratePkgSdkInfo... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessIntegratedHsp... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@BuildNativeWithCmake... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@MakePackInfo... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessProfile... after 95 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessRouterMap... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessShareConfig... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessStartupConfig... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@BuildNativeWithNinja... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessResource... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@GenerateLoaderJson... after 3 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessLibs... after 2 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@CompileResource... after 53 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@DoNativeStrip... after 2 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@BuildJS... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@SyscapTransform... after 21 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@CacheNativeLibs... after 4 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@CompileArkTS... after 2 s 163 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@GeneratePkgModuleJson... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@ProcessCompiledResources... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@PackageHap... after 336 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@PackingCheck... after 2 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@SignHap... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:default@CollectDebugSymbol... after 1 ms \u001b[39m\n> hvigor \u001b[32mFinished :entry:assembleHap... after 1 ms \u001b[39m\n> hvigor \u001b[32mBUILD SUCCESSFUL in 3 s 720 ms \u001b[39m\n",
             "truncated": false
           },
           "timeout_seconds": 3600
         }
       ],
-      "execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "producer": {
         "byte_count": 471550,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/run_frontend_formal_toolchains.py",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/run_frontend_formal_toolchains.py",
         "sha256": "sha256:a698ec70012c35778ec75dd13c7ffb3af27f64740777d03e47510e55eaff7165"
       },
       "profile_id": "harmony-arkui",
@@ -4400,36 +4404,36 @@
               ],
               "execution_status": "NOT_RUN",
               "implementation_closure": {
-                "closure_digest": "sha256:47bde4f6f22202176503469c3a01658b12b696207e1cfa8765a9b75ec9a3f878",
+                "closure_digest": "sha256:9ed7ad463a45b996d0ebefeee64b0e72d8fe2301ad964ad79e4465ff8118a704",
                 "identities": {
                   "axe_package": {
                     "byte_count": 2217,
-                    "path": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/node_modules/.pnpm/@axe-core+playwright@4.12.1_playwright-core@1.61.1/node_modules/@axe-core/playwright/package.json",
-                    "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/node_modules/.pnpm/@axe-core+playwright@4.12.1_playwright-core@1.61.1/node_modules/@axe-core/playwright/package.json",
+                    "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/node_modules/.pnpm/@axe-core+playwright@4.12.1_playwright-core@1.61.1/node_modules/@axe-core/playwright/package.json",
+                    "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/node_modules/.pnpm/@axe-core+playwright@4.12.1_playwright-core@1.61.1/node_modules/@axe-core/playwright/package.json",
                     "sha256": "sha256:c3e69bcde1800e1e748023ce6ed68018b1ce48714160441b7ffb7e1a6f2bd2a2"
                   },
                   "helper": {
                     "byte_count": 42528,
-                    "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/frontend_formal_playwright_probe.cjs",
-                    "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/frontend_formal_playwright_probe.cjs",
+                    "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/frontend_formal_playwright_probe.cjs",
+                    "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/frontend_formal_playwright_probe.cjs",
                     "sha256": "sha256:cb330570d684a8eb4db8e49f0bafcf7fd9ddd3d0d9d456c2045ac48d43b5d42c"
                   },
                   "playwright_package": {
                     "byte_count": 754,
-                    "path": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/node_modules/.pnpm/@playwright+test@1.61.1/node_modules/@playwright/test/package.json",
-                    "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/node_modules/.pnpm/@playwright+test@1.61.1/node_modules/@playwright/test/package.json",
+                    "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/node_modules/.pnpm/@playwright+test@1.61.1/node_modules/@playwright/test/package.json",
+                    "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/node_modules/.pnpm/@playwright+test@1.61.1/node_modules/@playwright/test/package.json",
                     "sha256": "sha256:9d8556509e073169efec663b7f71c13f17d7002b307d00d48bf88ee91c387f3e"
                   },
                   "workspace_lock": {
                     "byte_count": 35371,
-                    "path": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/pnpm-lock.yaml",
-                    "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/pnpm-lock.yaml",
+                    "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/pnpm-lock.yaml",
+                    "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/pnpm-lock.yaml",
                     "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9"
                   },
                   "workspace_package": {
                     "byte_count": 3113,
-                    "path": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/package.json",
-                    "realpath": "/Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/package.json",
+                    "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/package.json",
+                    "realpath": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/apps/web-console/package.json",
                     "sha256": "sha256:bb2b99c7c10b7f2d3ff046b2ab1dff30e9f8a56235a06301b9bef074d66a2448"
                   }
                 },
@@ -4441,7 +4445,7 @@
               "required_execution_plan": [
                 [
                   "/opt/homebrew/Cellar/node/26.0.0/bin/node",
-                  "/Users/stephen/DevProjects/AIProjects/elmos/tooling/frontend_formal_playwright_probe.cjs",
+                  "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/frontend_formal_playwright_probe.cjs",
                   "{CONTENT_ADDRESSED_CONFIG_PATH}",
                   "{CONTENT_ADDRESSED_RESULT_PATH}"
                 ]
@@ -4452,12 +4456,13 @@
                     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
                     "--version"
                   ],
-                  "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-7_o_c_ic/harmony-arkui-3mzyog36/project",
-                  "duration_ms": 148,
+                  "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-csdbyezo/harmony-arkui-5k0h0jxb/project",
+                  "duration_ms": 51,
                   "environment": {
                     "allowlisted_inherited_keys": [
                       "HOME",
                       "LANG",
+                      "LC_ALL",
                       "PATH",
                       "TMPDIR"
                     ],
@@ -4471,7 +4476,7 @@
                   "exit_code": 0,
                   "reason": null,
                   "signal": null,
-                  "started_at": "2026-08-29T06:26:06.981032Z",
+                  "started_at": "2026-08-30T22:27:48.915351Z",
                   "status": "PASSED",
                   "stderr": {
                     "byte_count": 0,
@@ -4492,12 +4497,13 @@
                     "/Applications/Firefox.app/Contents/MacOS/firefox",
                     "--version"
                   ],
-                  "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-7_o_c_ic/harmony-arkui-3mzyog36/project",
-                  "duration_ms": 667,
+                  "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-csdbyezo/harmony-arkui-5k0h0jxb/project",
+                  "duration_ms": 1094,
                   "environment": {
                     "allowlisted_inherited_keys": [
                       "HOME",
                       "LANG",
+                      "LC_ALL",
                       "PATH",
                       "TMPDIR"
                     ],
@@ -4511,7 +4517,7 @@
                   "exit_code": 0,
                   "reason": null,
                   "signal": null,
-                  "started_at": "2026-08-29T06:26:07.128908Z",
+                  "started_at": "2026-08-30T22:27:48.966451Z",
                   "status": "PASSED",
                   "stderr": {
                     "byte_count": 0,
@@ -4698,12 +4704,13 @@
                   "targets",
                   "-v"
                 ],
-                "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-7_o_c_ic/harmony-arkui-3mzyog36/project",
-                "duration_ms": 21,
+                "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-csdbyezo/harmony-arkui-5k0h0jxb/project",
+                "duration_ms": 1340,
                 "environment": {
                   "allowlisted_inherited_keys": [
                     "HOME",
                     "LANG",
+                    "LC_ALL",
                     "PATH",
                     "TMPDIR"
                   ],
@@ -4717,7 +4724,7 @@
                 "exit_code": 0,
                 "reason": null,
                 "signal": null,
-                "started_at": "2026-08-29T06:26:07.805486Z",
+                "started_at": "2026-08-30T22:27:50.070206Z",
                 "status": "PASSED",
                 "stderr": {
                   "byte_count": 0,
@@ -4925,18 +4932,19 @@
             "/Applications/DevEco-Studio.app/Contents/tools/hvigor/bin/hvigorw",
             "--version"
           ],
-          "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-7_o_c_ic/harmony-arkui-3mzyog36/project",
-          "duration_ms": 218,
+          "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-csdbyezo/harmony-arkui-5k0h0jxb/project",
+          "duration_ms": 188,
           "environment": {
             "allowlisted_inherited_keys": [
               "HOME",
               "LANG",
+              "LC_ALL",
               "PATH",
               "TMPDIR"
             ],
             "explicit": {
               "CI": "1",
-              "HOME": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-7_o_c_ic/harmony-arkui-3mzyog36/home",
+              "HOME": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frontend-formal-toolchains-csdbyezo/harmony-arkui-5k0h0jxb/home",
               "NO_COLOR": "1"
             },
             "network_allowed": false,
@@ -4945,7 +4953,7 @@
           "exit_code": 0,
           "reason": null,
           "signal": null,
-          "started_at": "2026-08-29T06:25:58.509120Z",
+          "started_at": "2026-08-30T22:27:37.746187Z",
           "status": "PASSED",
           "stderr": {
             "byte_count": 0,
@@ -4989,7 +4997,7 @@
       "execution_id": "sha256:d6bb7fc93cd2bb274aa6361c50c56201a249da31a74d0db34eb10f1fdaf3f433",
       "producer": {
         "byte_count": 471550,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/run_frontend_formal_toolchains.py",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/run_frontend_formal_toolchains.py",
         "sha256": "sha256:a698ec70012c35778ec75dd13c7ffb3af27f64740777d03e47510e55eaff7165"
       },
       "profile_id": "jquery",
@@ -5363,7 +5371,7 @@
       "execution_id": "sha256:4b4a63445d4aaa6ae2ae31f06ab07c598e01be50ae9bde8b855a6046fdd99558",
       "producer": {
         "byte_count": 471550,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/run_frontend_formal_toolchains.py",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/run_frontend_formal_toolchains.py",
         "sha256": "sha256:a698ec70012c35778ec75dd13c7ffb3af27f64740777d03e47510e55eaff7165"
       },
       "profile_id": "react",
@@ -5737,7 +5745,7 @@
       "execution_id": "sha256:1f55fa6c18d167ee46f7769eaa71feac812ee864f11b78c155f745609e3056f9",
       "producer": {
         "byte_count": 471550,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/run_frontend_formal_toolchains.py",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/run_frontend_formal_toolchains.py",
         "sha256": "sha256:a698ec70012c35778ec75dd13c7ffb3af27f64740777d03e47510e55eaff7165"
       },
       "profile_id": "react-native",
@@ -6113,7 +6121,7 @@
       "execution_id": "sha256:77a0740f57a4e63d638dd7b3140e99efaff3789c5b04cec68bec8986ab42a5ae",
       "producer": {
         "byte_count": 471550,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/run_frontend_formal_toolchains.py",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/run_frontend_formal_toolchains.py",
         "sha256": "sha256:a698ec70012c35778ec75dd13c7ffb3af27f64740777d03e47510e55eaff7165"
       },
       "profile_id": "svelte",
@@ -6487,7 +6495,7 @@
       "execution_id": "sha256:f58d0225b6b0212f1be36555335aa42a86ae63cb4ff1181ed3901f3addc4f619",
       "producer": {
         "byte_count": 471550,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/run_frontend_formal_toolchains.py",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/run_frontend_formal_toolchains.py",
         "sha256": "sha256:a698ec70012c35778ec75dd13c7ffb3af27f64740777d03e47510e55eaff7165"
       },
       "profile_id": "vue2",
@@ -6861,7 +6869,7 @@
       "execution_id": "sha256:563f6edbfa736b803c14fda518ba16fd53b0edd59e1e71ae97dd9381c75fbc57",
       "producer": {
         "byte_count": 471550,
-        "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/run_frontend_formal_toolchains.py",
+        "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/run_frontend_formal_toolchains.py",
         "sha256": "sha256:a698ec70012c35778ec75dd13c7ffb3af27f64740777d03e47510e55eaff7165"
       },
       "profile_id": "vue3",
@@ -7213,10 +7221,10 @@
   "replay": {
     "argv": [
       "/Users/stephen/Downloads/ENTER/bin/python3.12",
-      "/Users/stephen/DevProjects/AIProjects/elmos/tooling/run_frontend_formal_toolchains.py",
-      "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-refresh-v2-vococ3hs/engine-output/frontend-interaction-formal-campaign.json",
+      "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/run_frontend_formal_toolchains.py",
+      "/Users/stephen/Library/Caches/elmos-swift-java-arkui-recovery-20260830/arkui-engine.ZjG3YN/engine-output/frontend-interaction-formal-campaign.json",
       "--output",
-      "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-refresh-v2-vococ3hs/toolchain-evidence-v2.json",
+      "/Users/stephen/Library/Caches/elmos-swift-java-arkui-recovery-20260830/toolchain-evidence-v2.json",
       "--profile",
       "harmony-arkui",
       "--no-network",
@@ -7236,16 +7244,16 @@
     ],
     "campaign_byte_count": 1593573,
     "campaign_sha256": "sha256:acf686961ae3b96b13db978695c431f7f26095238152adfa2948706874fce69e",
-    "cwd": "/Users/stephen/DevProjects/AIProjects/elmos",
+    "cwd": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830",
     "environment": {
       "inherits_only_per_command_allowlist": true,
       "network_allowed": false
     },
-    "expected_output_path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-refresh-v2-vococ3hs/toolchain-evidence-v2.json",
+    "expected_output_path": "/Users/stephen/Library/Caches/elmos-swift-java-arkui-recovery-20260830/toolchain-evidence-v2.json",
     "portable_pack_replay": "NOT_RUN",
     "producer": {
       "byte_count": 471550,
-      "path": "/Users/stephen/DevProjects/AIProjects/elmos/tooling/run_frontend_formal_toolchains.py",
+      "path": "/Users/stephen/DevProjects/AIProjects/elmos-swift-java-arkui-recovery-20260830/tooling/run_frontend_formal_toolchains.py",
       "sha256": "sha256:a698ec70012c35778ec75dd13c7ffb3af27f64740777d03e47510e55eaff7165"
     },
     "python_version": "3.12.12",
@@ -8227,7 +8235,7 @@
       "source_toolchain_status": "NOT_RUN",
       "status": "NOT_RUN",
       "target_browser_status": "NOT_RUN",
-      "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "target_profile": "harmony-arkui",
       "target_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "target_required_runtime_channels": [
@@ -12153,7 +12161,7 @@
       "source_toolchain_status": "NOT_RUN",
       "status": "NOT_RUN",
       "target_browser_status": "NOT_RUN",
-      "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "target_profile": "harmony-arkui",
       "target_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "target_required_runtime_channels": [
@@ -15588,7 +15596,7 @@
       },
       "runtime_ready": false,
       "source_browser_status": "NOT_RUN",
-      "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "source_profile": "harmony-arkui",
       "source_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "source_required_runtime_channels": [
@@ -16078,7 +16086,7 @@
       },
       "runtime_ready": false,
       "source_browser_status": "NOT_RUN",
-      "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "source_profile": "harmony-arkui",
       "source_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "source_required_runtime_channels": [
@@ -16570,7 +16578,7 @@
       },
       "runtime_ready": false,
       "source_browser_status": "NOT_RUN",
-      "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "source_profile": "harmony-arkui",
       "source_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "source_required_runtime_channels": [
@@ -17060,7 +17068,7 @@
       },
       "runtime_ready": false,
       "source_browser_status": "NOT_RUN",
-      "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "source_profile": "harmony-arkui",
       "source_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "source_required_runtime_channels": [
@@ -17550,7 +17558,7 @@
       },
       "runtime_ready": false,
       "source_browser_status": "NOT_RUN",
-      "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "source_profile": "harmony-arkui",
       "source_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "source_required_runtime_channels": [
@@ -18042,7 +18050,7 @@
       },
       "runtime_ready": false,
       "source_browser_status": "NOT_RUN",
-      "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "source_profile": "harmony-arkui",
       "source_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "source_required_runtime_channels": [
@@ -18532,7 +18540,7 @@
       },
       "runtime_ready": false,
       "source_browser_status": "NOT_RUN",
-      "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "source_profile": "harmony-arkui",
       "source_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "source_required_runtime_channels": [
@@ -19022,7 +19030,7 @@
       },
       "runtime_ready": false,
       "source_browser_status": "NOT_RUN",
-      "source_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "source_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "source_profile": "harmony-arkui",
       "source_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "source_required_runtime_channels": [
@@ -20503,7 +20511,7 @@
       "source_toolchain_status": "NOT_RUN",
       "status": "NOT_RUN",
       "target_browser_status": "NOT_RUN",
-      "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "target_profile": "harmony-arkui",
       "target_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "target_required_runtime_channels": [
@@ -24427,7 +24435,7 @@
       "source_toolchain_status": "NOT_RUN",
       "status": "NOT_RUN",
       "target_browser_status": "NOT_RUN",
-      "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "target_profile": "harmony-arkui",
       "target_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "target_required_runtime_channels": [
@@ -28357,7 +28365,7 @@
       "source_toolchain_status": "NOT_RUN",
       "status": "NOT_RUN",
       "target_browser_status": "NOT_RUN",
-      "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "target_profile": "harmony-arkui",
       "target_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "target_required_runtime_channels": [
@@ -32289,7 +32297,7 @@
       "source_toolchain_status": "NOT_RUN",
       "status": "NOT_RUN",
       "target_browser_status": "NOT_RUN",
-      "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "target_profile": "harmony-arkui",
       "target_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "target_required_runtime_channels": [
@@ -36213,7 +36221,7 @@
       "source_toolchain_status": "NOT_RUN",
       "status": "NOT_RUN",
       "target_browser_status": "NOT_RUN",
-      "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "target_profile": "harmony-arkui",
       "target_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "target_required_runtime_channels": [
@@ -40137,7 +40145,7 @@
       "source_toolchain_status": "NOT_RUN",
       "status": "NOT_RUN",
       "target_browser_status": "NOT_RUN",
-      "target_execution_id": "sha256:e4567fac7add041b71ffa51a4cd8479cd2035f5835f63e975007b51e01938157",
+      "target_execution_id": "sha256:2bcc970e29ef466de6be251d59dd1162fa76f21ff06aacc37e90cb90c0b8e957",
       "target_profile": "harmony-arkui",
       "target_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
       "target_required_runtime_channels": [

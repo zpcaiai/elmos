@@ -1,83 +1,174 @@
-"""Serving gateway, quality-cost-latency router, fallback circuit breaker, and inference caching.
-
-Implements runtime routing across base models, private adapters, and fallback providers.
-"""
+"""Provider-neutral inference route planning with no prompt or result cache."""
 
 from __future__ import annotations
 
-import hashlib
-import json
-import time
+import math
+from threading import RLock
+from types import MappingProxyType
 from typing import Any, Mapping, Sequence
 
-from .domain import ContentDigest, ExecutionResult, TenantScope
+from .authorizations import AuthorizationVerifier, require_authorization
+from .canonical import canonical_digest, canonical_value, validate_digest
+from .domain import TenantScope
 from .kernel import ExecutionKernel
 
 
-class ModelServingGateway:
-    """Enterprise model inference router and serving gateway."""
+def _finite_number(value: Any, label: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{label} must be a number")
+    result = float(value)
+    if not math.isfinite(result):
+        raise ValueError(f"{label} must be finite")
+    return result
 
-    def __init__(self, kernel: ExecutionKernel | None = None) -> None:
+
+class ModelServingGateway:
+    """Select from caller-supplied verified candidates; never invoke a model."""
+
+    def __init__(
+        self,
+        kernel: ExecutionKernel | None = None,
+        *,
+        route_verifier: AuthorizationVerifier | None = None,
+    ) -> None:
         self.kernel = kernel or ExecutionKernel()
-        self._prefix_cache: dict[str, Mapping[str, Any]] = {}
-        self._circuit_breakers: dict[str, int] = {}  # model -> consecutive_failures
+        self._route_verifier = route_verifier
+        self._health: dict[tuple[str, str, str], str] = {}
+        self._lock = RLock()
 
     def route_inference(
         self,
-        prompt: str,
-        task_complexity: str = "standard",  # low, standard, high, critical
-        max_cost_usd: float = 0.05,
-        max_latency_ms: float = 3000.0,
+        request_digest: str,
+        candidates: Sequence[Mapping[str, Any]],
+        *,
+        max_cost_usd: float,
+        max_latency_ms: float,
+        verification_receipt_digest: str,
         tenant_scope: TenantScope | None = None,
     ) -> Mapping[str, Any]:
-        """Intelligently route inference based on quality, cost, and latency SLAs."""
         scope = tenant_scope or self.kernel.current_tenant
-
-        # 1. Prefix KV Cache Check
-        prefix_key = hashlib.sha256((scope.tenant_id + ":" + prompt[:100]).encode()).hexdigest()
-        if prefix_key in self._prefix_cache:
-            cached = dict(self._prefix_cache[prefix_key])
-            cached["cached"] = True
-            return cached
-
-        # 2. Select Model & Adapter
-        if task_complexity in ("high", "critical"):
-            primary_model = "elmos-private-deepseek-v3"
-            fallback_model = "claude-3-5-sonnet"
-            cost = 0.008
-            est_latency = 1200.0
-        elif task_complexity == "low":
-            primary_model = "elmos-private-qwen2.5-coder-7b"
-            fallback_model = "gpt-4o-mini"
-            cost = 0.0005
-            est_latency = 300.0
-        else:
-            primary_model = "elmos-private-qwen2.5-coder-32b"
-            fallback_model = "gpt-4o"
-            cost = 0.003
-            est_latency = 800.0
-
-        # Check circuit breaker
-        active_model = primary_model
-        if self._circuit_breakers.get(primary_model, 0) >= 3:
-            active_model = fallback_model
-
-        result = {
-            "selected_model": active_model,
-            "fallback_model": fallback_model,
-            "complexity": task_complexity,
-            "cost_usd": cost,
-            "latency_ms": est_latency,
-            "cached": False,
+        self.kernel.require_context(scope, "foundry.serving.route")
+        validate_digest(request_digest, "request_digest")
+        validate_digest(verification_receipt_digest, "verification_receipt_digest")
+        if (
+            not math.isfinite(max_cost_usd)
+            or max_cost_usd < 0
+            or not math.isfinite(max_latency_ms)
+            or max_latency_ms <= 0
+        ):
+            raise ValueError("route cost and latency limits must be finite and bounded")
+        if not candidates or len(candidates) > 64:
+            raise ValueError("routing requires 1..64 exact candidates")
+        normalized = canonical_value(candidates)
+        if not isinstance(normalized, list):
+            raise ValueError("route candidates must canonicalize to an array")
+        authorization = require_authorization(
+            self._route_verifier,
+            authorization_type="model-route-verification",
+            receipt_digest=verification_receipt_digest,
+            request={
+                "request_digest": request_digest,
+                "candidates": normalized,
+                "max_cost_usd": max_cost_usd,
+                "max_latency_ms": max_latency_ms,
+            },
+            scope=scope,
+        )
+        accepted: list[dict[str, Any]] = []
+        for raw in normalized:
+            if not isinstance(raw, dict):
+                raise ValueError("each route candidate must be an object")
+            exact = {
+                "candidate_id",
+                "provider_instance_id",
+                "model_version",
+                "artifact_digest",
+                "quality_score",
+                "estimated_cost_usd",
+                "estimated_latency_ms",
+                "availability_status",
+            }
+            if set(raw) != exact:
+                raise ValueError("route candidate shape is not exact")
+            validate_digest(raw["artifact_digest"], "candidate.artifact_digest")
+            quality = _finite_number(raw["quality_score"], "candidate.quality_score")
+            cost = _finite_number(raw["estimated_cost_usd"], "candidate.estimated_cost_usd")
+            latency = _finite_number(
+                raw["estimated_latency_ms"], "candidate.estimated_latency_ms"
+            )
+            if not 0 <= quality <= 1:
+                raise ValueError("candidate metrics are outside bounds")
+            if cost < 0 or latency <= 0:
+                raise ValueError("candidate cost and latency must be positive")
+            with self._lock:
+                local_health = self._health.get(
+                    (scope.tenant_id, scope.project_id, str(raw["candidate_id"])),
+                    "UNKNOWN",
+                )
+            if (
+                raw["availability_status"] == "VERIFIED_CURRENT"
+                and local_health == "AVAILABLE"
+                and cost <= max_cost_usd
+                and latency <= max_latency_ms
+            ):
+                accepted.append(dict(raw))
+        if not accepted:
+            return MappingProxyType(
+                {
+                    "status": "BLOCKED",
+                    "reason": "no verified candidate satisfies the route contract",
+                    "request_digest": request_digest,
+                    "provider_execution_status": "NOT_RUN",
+                    "external_evidence_status": "NOT_RUN",
+                    "certification_status": "NOT_CERTIFIED",
+                }
+            )
+        selected = sorted(
+            accepted,
+            key=lambda item: (
+                -float(item["quality_score"]),
+                float(item["estimated_cost_usd"]),
+                float(item["estimated_latency_ms"]),
+                str(item["candidate_id"]),
+            ),
+        )[0]
+        plan = {
+            "status": "READY_FOR_EXTERNAL_GATE",
+            "selected_candidate": selected,
+            "request_digest": request_digest,
+            "verification_receipt_digest": verification_receipt_digest,
+            "verification_request_digest": authorization.request_digest,
             "tenant_id": scope.tenant_id,
+            "project_id": scope.project_id,
+            "prompt_stored": False,
+            "provider_execution_status": "NOT_RUN",
+            "external_evidence_status": "NOT_RUN",
+            "certification_status": "NOT_CERTIFIED",
         }
+        return MappingProxyType({**plan, "route_plan_digest": canonical_digest(plan)})
 
-        # Populate prefix cache
-        self._prefix_cache[prefix_key] = result
-        return result
+    def record_health(
+        self,
+        candidate_id: str,
+        status: str,
+        tenant_scope: TenantScope | None = None,
+    ) -> None:
+        scope = tenant_scope or self.kernel.current_tenant
+        self.kernel.require_context(scope, "foundry.serving.health")
+        if status not in {"AVAILABLE", "DEGRADED", "UNAVAILABLE", "UNKNOWN"}:
+            raise ValueError("candidate health status is invalid")
+        with self._lock:
+            self._health[(scope.tenant_id, scope.project_id, candidate_id)] = status
 
-    def record_failure(self, model_name: str) -> None:
-        self._circuit_breakers[model_name] = self._circuit_breakers.get(model_name, 0) + 1
+    def record_failure(
+        self, model_name: str, tenant_scope: TenantScope | None = None
+    ) -> None:
+        self.record_health(model_name, "UNAVAILABLE", tenant_scope)
 
-    def record_success(self, model_name: str) -> None:
-        self._circuit_breakers[model_name] = 0
+    def record_success(
+        self, model_name: str, tenant_scope: TenantScope | None = None
+    ) -> None:
+        self.record_health(model_name, "AVAILABLE", tenant_scope)
+
+
+__all__ = ["ModelServingGateway"]

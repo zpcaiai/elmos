@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRisk, VerdictStatus
 
@@ -12,7 +12,7 @@ from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRi
 class VerificationTestingModule:
     """Manages test migration, automatic test generation, assertion quality, and dual-run comparators."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.test_runs: List[Dict[str, Any]] = []
 
     def execute_dual_run_comparison(
@@ -27,7 +27,8 @@ class VerificationTestingModule:
             "test_id": source_test_id,
             "source_result": str(source_result),
             "target_result": str(target_result),
-            "verdict": VerdictStatus.EQUIVALENT.value if is_match else VerdictStatus.DIVERGENT.value,
+            "verdict": VerdictStatus.UNDETERMINED.value if is_match else VerdictStatus.DIVERGENT.value,
+            "execution_evidence": "NOT_RUN",
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         }
         self.test_runs.append(res)
@@ -48,7 +49,7 @@ class VerificationTestingModule:
             source_construct=source_suite,
             target_construct=target_suite,
             property_name=property_name,
-            invariants=["TEST_ORACLE_EQUIVALENCE", "MUTATION_SCORE_THRESHOLD_75"],
+            invariants=("TEST_ORACLE_EQUIVALENCE", "MUTATION_SCORE_THRESHOLD_75"),
             risk=SemanticRisk.HIGH,
             status=ObligationStatus.NOT_RUN,
         )

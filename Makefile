@@ -49,6 +49,7 @@ operations-scripts-test:
 .PHONY: pi-harness
 pi-harness:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_pi_harness.py --check
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/pi-harness -p 'test_*.py' -v
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/pi-harness/src python3 -m unittest discover -s packages/pi-harness/tests -p 'test_*.py'
 backend:
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B verify
@@ -168,6 +169,10 @@ ai-capability-enhancement-skills:
 .PHONY: knowledge-skill-model-foundry-skills
 knowledge-skill-model-foundry-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_knowledge_skill_model_foundry_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet python tooling/qualify_knowledge_skill_model_foundry.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet python -m compileall -q engines/knowledge-skill-model-foundry-engine/src/elmos_foundry tooling/integrate_knowledge_skill_model_foundry_skills.py tooling/qualify_knowledge_skill_model_foundry.py
+	$(UV) run --quiet --with ruff==0.12.10 ruff check tooling/integrate_knowledge_skill_model_foundry_skills.py tooling/qualify_knowledge_skill_model_foundry.py engines/knowledge-skill-model-foundry-engine/src engines/knowledge-skill-model-foundry-engine/tests tests/knowledge-skill-model-foundry-skills
+	PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet --with mypy==1.17.1 mypy --strict engines/knowledge-skill-model-foundry-engine/src/elmos_foundry tooling/qualify_knowledge_skill_model_foundry.py
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s engines/knowledge-skill-model-foundry-engine/tests -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/knowledge-skill-model-foundry-skills -p 'test_*.py'
 

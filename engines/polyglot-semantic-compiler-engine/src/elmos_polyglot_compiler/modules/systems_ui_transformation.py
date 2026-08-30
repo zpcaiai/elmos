@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import hashlib
-import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRisk
 
@@ -12,7 +11,7 @@ from ..models import BatchType, ObligationStatus, SemanticObligation, SemanticRi
 class SystemsUiTransformationModule:
     """Manages UI component IR, reactive state mapping, and ArkUI/Flutter/React/Vue direction packs."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.ui_components: Dict[str, Dict[str, Any]] = {}
 
     def transform_ui_component(
@@ -21,7 +20,7 @@ class SystemsUiTransformationModule:
         target_framework: str,
         component_spec: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """Transforms UI component tree, props, events, and layout constraints."""
+        """Create a UI migration plan without claiming a generated component."""
         comp_id = f"ui-{component_spec.get('name', 'Component')}-{source_framework}-to-{target_framework}"
         res = {
             "component_id": comp_id,
@@ -30,7 +29,10 @@ class SystemsUiTransformationModule:
             "component_name": component_spec.get("name", "Component"),
             "state_variables": component_spec.get("state", []),
             "event_handlers": component_spec.get("events", []),
-            "status": "CONVERTED",
+            "status": "TARGET_UI_ADAPTER_REQUIRED",
+            "generated_component": None,
+            "journey_evidence": "NOT_RUN",
+            "certification": "NOT_CERTIFIED",
         }
         self.ui_components[comp_id] = res
         return res
@@ -50,7 +52,7 @@ class SystemsUiTransformationModule:
             source_construct=source_component,
             target_construct=target_component,
             property_name=property_name,
-            invariants=["UI_STATE_MACHINE_ISOMORPHISM", "EVENT_HANDLER_SEMANTIC_PRESERVATION"],
+            invariants=("UI_STATE_MACHINE_ISOMORPHISM", "EVENT_HANDLER_SEMANTIC_PRESERVATION"),
             risk=SemanticRisk.HIGH,
             status=ObligationStatus.NOT_RUN,
         )
