@@ -1,5 +1,7 @@
 import { createHash } from "node:crypto";
 
+import ts from "typescript";
+
 import {
   MINIAPP_SOURCE_LABELS,
   type MiniappConfigurationEvidence,
@@ -48,6 +50,9 @@ const miniappTemplateExtensions = new Set([".axml", ".swan", ".ttml", ".wxml"]);
 const unsupportedSourceExtensions = new Set([".astro", ".coffee", ".elm", ".mdx", ".svelte"]);
 const appConfigNames = new Set([
   "app.json", "manifest.json", "mini.project.json", "pages.json", "project.config.json",
+]);
+const viteConfigNames = new Set([
+  "vite.config.js", "vite.config.mjs", "vite.config.mts", "vite.config.ts",
 ]);
 const selectionOrder: readonly MiniappSourceLabel[] = [
   "taro", "uni-app", "native-miniapp", "flutter", "vue3", "vue2", "react", "h5", "typescript", "javascript",
@@ -139,13 +144,14 @@ function explicitlyNonRuntimeText(path: string): boolean {
   const name = baseName(path);
   return /^(?:readme|license|notice|changelog|contributing|code_of_conduct)(?:\..*)?$/iu.test(name)
     || /^(?:package-lock\.json|pnpm-lock\.yaml|yarn\.lock|npm-shrinkwrap\.json)$/u.test(name)
+    || /^(?:tsconfig\.json|\.npmrc)$/u.test(name)
     || /^\.(?:git|docker|eslint|prettier|npm)ignore$/u.test(name);
 }
 
 function fileKind(path: string, binary: boolean): MiniappInventoryFileKind {
   if (binary) return "binary";
   const extension = fileExtension(path);
-  if (path.endsWith("package.json") || appConfigNames.has(baseName(path))) return "json-config";
+  if (path.endsWith("package.json") || baseName(path) === "tsconfig.json" || appConfigNames.has(baseName(path))) return "json-config";
   if (baseName(path) === "pubspec.yaml" || extension === ".yaml" || extension === ".yml") return "yaml-config";
   if (extension === ".vue") return "vue-sfc";
   if (extension === ".ts" || extension === ".tsx" || extension === ".mts" || extension === ".cts") return "typescript";
@@ -627,6 +633,241 @@ function parseAppConfig(path: string, digest: string, text: string, state: Mutab
   }
 }
 
+function parseTsconfig(path: string, digest: string, text: string, state: MutableScanState): boolean {
+  try {
+    const value = JSON.parse(text) as unknown;
+    scanStructuredSecretValues(value, path);
+    if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("root must be an object");
+    const config = value as Readonly<Record<string, unknown>>;
+    const compilerOptions = config.compilerOptions;
+    if (!compilerOptions || typeof compilerOptions !== "object" || Array.isArray(compilerOptions)) {
+      throw new Error("compilerOptions object is required");
+    }
+    const optionKeys = Object.keys(compilerOptions as Readonly<Record<string, unknown>>).sort(compareText);
+    const include = config.include;
+    if (include !== undefined && (!Array.isArray(include) || !include.every(item => typeof item === "string" && item.length > 0))) {
+      throw new Error("include must be an array of non-empty strings");
+    }
+    state.configurations.push({
+      kind: "tsconfig",
+      path,
+      digest,
+      parsed: true,
+      signals: [
+        `compiler-options:${optionKeys.join(",") || "none"}`,
+        `include-patterns:${Array.isArray(include) ? include.length : 0}`,
+      ],
+    });
+    return true;
+  } catch (error) {
+    if (error instanceof MiniappInventoryError) throw error;
+    const message = error instanceof Error ? error.message.slice(0, 256) : "invalid tsconfig JSON";
+    state.configurations.push({ kind: "tsconfig", path, digest, parsed: false, signals: [], error: message });
+    state.configErrors.push({ path, message });
+    return false;
+  }
+}
+
+function parseNpmrc(path: string, digest: string, text: string, state: MutableScanState): boolean {
+  try {
+    const keys = new Set<string>();
+    for (const [index, rawLine] of text.split(/\r?\n/u).entries()) {
+      const line = rawLine.trim();
+      if (!line || line.startsWith("#") || line.startsWith(";")) continue;
+      const match = /^([A-Za-z0-9][A-Za-z0-9._-]{0,127})\s*=\s*([^\r\n]{1,1024})$/u.exec(line);
+      if (!match) throw new Error(`line ${index + 1} is outside the bounded key=value grammar`);
+      const rawKey = match[1]!;
+      const key = rawKey.toLowerCase();
+      if (keys.has(key)) throw new Error(`line ${index + 1} repeats ${key}`);
+      if (isSensitiveKey(rawKey)) assertSafeSecretValue(match[2]!, path, rawKey);
+      keys.add(key);
+    }
+    if (keys.size === 0) throw new Error("at least one bounded setting is required");
+    state.configurations.push({
+      kind: "npmrc",
+      path,
+      digest,
+      parsed: true,
+      signals: [
+        ...[...keys].sort(compareText).map(key => `key:${key}`),
+        `lifecycle-scripts:${keys.has("ignore-scripts") && /^\s*ignore-scripts\s*=\s*true\s*$/imu.test(text) ? "disabled" : "not-disabled"}`,
+      ],
+    });
+    return true;
+  } catch (error) {
+    if (error instanceof MiniappInventoryError) throw error;
+    const message = error instanceof Error ? error.message.slice(0, 256) : "invalid npmrc";
+    state.configurations.push({ kind: "npmrc", path, digest, parsed: false, signals: [], error: message });
+    state.configErrors.push({ path, message });
+    return false;
+  }
+}
+
+function parseViteConfig(path: string, digest: string, text: string, state: MutableScanState): boolean {
+  try {
+    const sourceFile = ts.createSourceFile(
+      path,
+      text,
+      ts.ScriptTarget.Latest,
+      true,
+      path.endsWith(".js") || path.endsWith(".mjs") ? ts.ScriptKind.JS : ts.ScriptKind.TS,
+    );
+    const parseDiagnostics = (sourceFile as ts.SourceFile & {
+      readonly parseDiagnostics: readonly ts.Diagnostic[];
+    }).parseDiagnostics;
+    if (parseDiagnostics.length > 0) throw new Error("TypeScript parser rejected the build configuration");
+
+    const viteImports = sourceFile.statements.filter((statement): statement is ts.ImportDeclaration =>
+      ts.isImportDeclaration(statement)
+      && ts.isStringLiteral(statement.moduleSpecifier)
+      && statement.moduleSpecifier.text === "vite");
+    if (viteImports.length !== 1) throw new Error("exactly one static import from vite is required");
+    const viteClause = viteImports[0]!.importClause;
+    const namedImports = viteClause?.namedBindings && ts.isNamedImports(viteClause.namedBindings)
+      ? viteClause.namedBindings.elements
+      : [];
+    if (viteClause?.isTypeOnly || viteClause?.name || namedImports.length !== 1
+      || namedImports[0]!.propertyName !== undefined
+      || namedImports[0]!.isTypeOnly
+      || namedImports[0]!.name.text !== "defineConfig") {
+      throw new Error("vite must provide one unaliased named defineConfig import");
+    }
+
+    const vueImports = sourceFile.statements.filter((statement): statement is ts.ImportDeclaration =>
+      ts.isImportDeclaration(statement)
+      && ts.isStringLiteral(statement.moduleSpecifier)
+      && statement.moduleSpecifier.text === "@vitejs/plugin-vue");
+    if (vueImports.length > 1) throw new Error("@vitejs/plugin-vue import is repeated");
+    const vueImported = vueImports.length === 1;
+    if (vueImported) {
+      const clause = vueImports[0]!.importClause;
+      if (!clause || clause.isTypeOnly || clause.name?.text !== "vue" || clause.namedBindings !== undefined) {
+        throw new Error("@vitejs/plugin-vue must use one default vue import");
+      }
+    }
+
+    const exportAssignments = sourceFile.statements.filter((statement): statement is ts.ExportAssignment =>
+      ts.isExportAssignment(statement) && !statement.isExportEquals);
+    if (exportAssignments.length !== 1) throw new Error("exactly one export default defineConfig call is required");
+    const exported = exportAssignments[0]!.expression;
+    const configArgument = ts.isCallExpression(exported) ? exported.arguments[0] : undefined;
+    if (!ts.isCallExpression(exported)
+      || !ts.isIdentifier(exported.expression)
+      || exported.expression.text !== "defineConfig"
+      || exported.arguments.length !== 1
+      || !configArgument
+      || !ts.isObjectLiteralExpression(configArgument)) {
+      throw new Error("export default must directly call defineConfig with one object literal");
+    }
+
+    const config = configArgument;
+    if (config.properties.some(property => ts.isSpreadAssignment(property)
+      || (property.name !== undefined && ts.isComputedPropertyName(property.name)))) {
+      throw new Error("dynamic or spread build configuration is not supported");
+    }
+    const pluginMembers = config.properties.filter(property => property.name !== undefined
+      && (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name))
+      && property.name.text === "plugins");
+    if (pluginMembers.length > 1) throw new Error("plugins configuration is repeated");
+    if (pluginMembers.length === 1 && !ts.isPropertyAssignment(pluginMembers[0]!)) {
+      throw new Error("plugins must be one direct property assignment");
+    }
+    const pluginProperties = pluginMembers.filter((property): property is ts.PropertyAssignment =>
+      ts.isPropertyAssignment(property));
+    const pluginNames: string[] = [];
+    if (pluginProperties.length === 1) {
+      const initializer = pluginProperties[0]!.initializer;
+      if (!ts.isArrayLiteralExpression(initializer)) {
+        throw new Error("plugins must be one static array literal");
+      }
+      for (const element of initializer.elements) {
+        if (!ts.isCallExpression(element)
+          || !ts.isIdentifier(element.expression)
+          || element.arguments.length !== 0
+          || element.questionDotToken !== undefined) {
+          throw new Error("every plugin must be one unconditional zero-argument identifier call");
+        }
+        pluginNames.push(element.expression.text);
+      }
+      if (new Set(pluginNames).size !== pluginNames.length) throw new Error("plugin calls must not be repeated");
+    }
+
+    let defineConfigCallCount = 0;
+    let vueCallCount = 0;
+    let dynamicVueModuleReference = false;
+    let mutatedOrShadowedBuildBinding = false;
+    const bindingContainsBuildName = (name: ts.BindingName): boolean => {
+      if (ts.isIdentifier(name)) return name.text === "defineConfig" || name.text === "vue";
+      return name.elements.some(element => !ts.isOmittedExpression(element)
+        && bindingContainsBuildName(element.name));
+    };
+    const visit = (node: ts.Node): void => {
+      if (ts.isCallExpression(node)
+        && ts.isIdentifier(node.expression)
+        && node.expression.text === "defineConfig") defineConfigCallCount += 1;
+      if (ts.isCallExpression(node)
+        && ts.isIdentifier(node.expression)
+        && node.expression.text === "vue") vueCallCount += 1;
+      if (ts.isCallExpression(node)
+        && (node.expression.kind === ts.SyntaxKind.ImportKeyword
+          || (ts.isIdentifier(node.expression) && node.expression.text === "require"))
+        && node.arguments.some(argument => ts.isStringLiteral(argument) && argument.text === "@vitejs/plugin-vue")) {
+        dynamicVueModuleReference = true;
+      }
+      if ((ts.isVariableDeclaration(node) || ts.isParameter(node))
+        && bindingContainsBuildName(node.name)) mutatedOrShadowedBuildBinding = true;
+      if ((ts.isFunctionDeclaration(node) || ts.isClassDeclaration(node))
+        && node.name && (node.name.text === "defineConfig" || node.name.text === "vue")) {
+        mutatedOrShadowedBuildBinding = true;
+      }
+      if (ts.isBinaryExpression(node)
+        && ts.isIdentifier(node.left)
+        && (node.left.text === "defineConfig" || node.left.text === "vue")
+        && node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment
+        && node.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
+        mutatedOrShadowedBuildBinding = true;
+      }
+      if ((ts.isPrefixUnaryExpression(node) || ts.isPostfixUnaryExpression(node))
+        && ts.isIdentifier(node.operand)
+        && (node.operand.text === "defineConfig" || node.operand.text === "vue")) {
+        mutatedOrShadowedBuildBinding = true;
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(sourceFile);
+    if (dynamicVueModuleReference) throw new Error("dynamic @vitejs/plugin-vue loading is not supported");
+    if (mutatedOrShadowedBuildBinding) throw new Error("build configuration imports must not be shadowed or mutated");
+    if (defineConfigCallCount !== 1) throw new Error("defineConfig must be called exactly once");
+    if (vueImported && (vueCallCount !== 1 || pluginNames.filter(name => name === "vue").length !== 1)) {
+      throw new Error("the imported vue plugin must be called exactly once in the static plugins array");
+    }
+    if (!vueImported && (vueCallCount > 0 || pluginNames.includes("vue"))) {
+      throw new Error("vue plugin calls require the exact @vitejs/plugin-vue import");
+    }
+
+    state.configurations.push({
+      kind: "vite-config",
+      path,
+      digest,
+      parsed: true,
+      signals: [
+        "build-tool:vite",
+        "define-config-call:direct-object",
+        vueImported ? "plugin-import:@vitejs/plugin-vue:vue" : "plugin-import:@vitejs/plugin-vue:absent",
+        vueImported ? "plugin-call:@vitejs/plugin-vue:vue():1" : "plugin-call:@vitejs/plugin-vue:0",
+        `plugins-wiring:static:${pluginNames.join(",") || "empty"}`,
+      ],
+    });
+    return true;
+  } catch (error) {
+    if (error instanceof MiniappInventoryError) throw error;
+    const message = error instanceof Error ? error.message.slice(0, 256) : "invalid Vite build configuration";
+    state.configurations.push({ kind: "vite-config", path, digest, parsed: false, signals: [], error: message });
+    state.configErrors.push({ path, message });
+    return false;
+  }
+}
+
 function collectPathSignals(path: string, text: string | null, state: MutableScanState): void {
   const extension = fileExtension(path);
   const name = baseName(path);
@@ -795,6 +1036,9 @@ export function inventoryMiniappSource(value: unknown): MiniappSourceInventory {
     if (text !== null && name === "package.json") parsed = parsePackageJson(inputFile.path, digest, text, state);
     else if (text !== null && name === "package-lock.json") parsed = parsePackageLock(inputFile.path, digest, text, state);
     else if (text !== null && name === "pnpm-lock.yaml") parsed = parsePnpmLock(inputFile.path, digest, text, state);
+    else if (text !== null && name === "tsconfig.json") parsed = parseTsconfig(inputFile.path, digest, text, state);
+    else if (text !== null && name === ".npmrc") parsed = parseNpmrc(inputFile.path, digest, text, state);
+    else if (text !== null && viteConfigNames.has(name)) parsed = parseViteConfig(inputFile.path, digest, text, state);
     else if (text !== null && name === "pubspec.yaml") parsed = parsePubspec(inputFile.path, digest, text, state);
     else if (text !== null && appConfigNames.has(name)) parsed = parseAppConfig(inputFile.path, digest, text, state);
     const kind = fileKind(inputFile.path, text === null);

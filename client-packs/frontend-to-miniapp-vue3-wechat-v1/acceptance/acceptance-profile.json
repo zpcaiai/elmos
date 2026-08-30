@@ -14,16 +14,18 @@
   },
   "accessibility": {
     "standard": "source-contract-preservation-candidate-v1",
-    "critical_violations": 0,
+    "maximum_allowed_critical_violations": 0,
+    "observed_critical_violations": null,
     "automated_state": "NOT_RUN",
     "assistive_technology_state": "NOT_RUN"
   },
-  "interaction": {"p0_pass_rate": 1.0, "state": "NOT_RUN"},
+  "interaction": {"required_p0_pass_rate": 1.0, "observed_p0_pass_rate": null, "state": "NOT_RUN"},
   "performance": {"budgets": {"launch_ms": 2000, "interaction_ms": 100}, "state": "NOT_RUN"},
   "seo": {"required": false, "reason": "native MiniApp candidate"},
-  "i18n": {"missing_keys": 0, "state": "NOT_RUN"},
+  "i18n": {"maximum_allowed_missing_keys": 0, "observed_missing_keys": null, "state": "NOT_RUN"},
   "security": {
-    "authorization_regressions": 0,
+    "maximum_allowed_authorization_regressions": 0,
+    "observed_authorization_regressions": null,
     "forbidden_generated_capabilities": ["network", "platform-identity", "payment", "upload", "review", "release"],
     "state": "NOT_RUN"
   },

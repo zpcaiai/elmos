@@ -21,6 +21,7 @@ import {
   type MiniappConversionPlan,
   type MiniappPlatformDescriptor,
   type MiniappStyleDecision,
+  MINIAPP_PLATFORM_CAPABILITY_OPERATIONS,
 } from "./miniapp-planning.js";
 
 export interface MiniappGeneratedArtifact {
@@ -238,12 +239,32 @@ function hasStaticBooleanAttribute(component: MiniappAnalyzedComponent, name: st
   return value !== undefined && !/\{\{|\}\}/u.test(value);
 }
 
-function commonAttributes(component: MiniappAnalyzedComponent, className: string): string {
+function accessibilityRoleAttribute(platform: MiniappPlatform): "aria-role" | "role" {
+  return platform === "wechat" ? "aria-role" : "role";
+}
+
+function commonAttributes(
+  component: MiniappAnalyzedComponent,
+  className: string,
+  platform: MiniappPlatform,
+): string {
   const sourceClass = staticAttribute(component, "class") ?? staticAttribute(component, "className");
-  const values: Array<[string, string]> = [["class", [className, sourceClass].filter(Boolean).join(" ")], ["data-source-node", component.id]];
-  for (const name of ["id", "role", "aria-label", "tabindex", "name", "placeholder"]) {
+  const values: Array<[string, string]> = [[
+    "class",
+    [className, sourceClass, ...(component.styleScopeClasses ?? [])].filter(Boolean).join(" "),
+  ], ["data-source-node", component.id]];
+  for (const name of ["id", "aria-label", "aria-level", "tabindex", "name", "placeholder"]) {
     const value = staticAttribute(component, name);
     if (value !== undefined) values.push([name, value]);
+  }
+  const explicitRole = staticAttribute(component, "role")?.trim();
+  const accessibilityRole = explicitRole && !/^\{\{[\s\S]*\}\}$/u.test(explicitRole)
+    ? explicitRole
+    : component.implicitAccessibility?.role;
+  if (accessibilityRole !== undefined) values.push([accessibilityRoleAttribute(platform), accessibilityRole]);
+  if (staticAttribute(component, "aria-level") === undefined && component.implicitAccessibility?.level !== null
+    && component.implicitAccessibility?.level !== undefined) {
+    values.push(["aria-level", String(component.implicitAccessibility.level)]);
   }
   for (const [source, target] of [["tabIndex", "tabindex"]] as const) {
     const value = staticAttribute(component, source);
@@ -262,7 +283,7 @@ function pageMarkup(
   routeId: string,
 ): string {
   const syntax = syntaxFor(platform);
-  const lines = ['<view class="elmos-page" role="main" aria-label="{{pageLabel}}">'];
+  const lines = ['<view class="elmos-page">'];
   const selected = componentsForRoute(ir, routeId).slice(0, 64);
   const routeContent = routeContentComponents(ir, routeId).filter(component => selected.some(item => item.id === component.id));
   const shell = applicationShellComponents(ir, routeContent).filter(component => selected.some(item => item.id === component.id));
@@ -301,11 +322,11 @@ function pageMarkup(
     const tag = componentTag(decision);
     const binding = interactionByComponent.get(component.id);
     if (binding && component.id === binding.interaction.inputComponentId) {
-      const attributes = commonAttributes(component, "elmos-control");
+      const attributes = commonAttributes(component, "elmos-control", platform);
       return [`${indent}<input ${attributes} value="{{${binding.draftKey}}}" ${syntax.eventInput}="${binding.inputHandler}" />`];
     }
     if (binding && component.id === binding.interaction.submitComponentId) {
-      const attributes = commonAttributes(component, "elmos-control");
+      const attributes = commonAttributes(component, "elmos-control", platform);
       const label = staticDescendantText(component) || staticAttribute(component, "aria-label") || "Submit";
       const disabled = hasStaticBooleanAttribute(component, "disabled")
         ? ""
@@ -315,16 +336,17 @@ function pageMarkup(
     if (binding && component.id === binding.interaction.listComponentId) {
       const collectionBinding = component.collectionBinding;
       if (!collectionBinding || collectionBinding.valueExpression !== collectionBinding.itemAlias) {
-        const attributes = commonAttributes(component, "elmos-blocked");
-        return [`${indent}<view ${attributes} role="alert"><text>List item binding requires an exact source expression.</text></view>`];
+        const attributes = commonAttributes(component, "elmos-blocked", platform)
+          .replace(/\s(?:aria-role|role)="[^"]*"/u, "");
+        return [`${indent}<view ${attributes} ${accessibilityRoleAttribute(platform)}="alert"><text>List item binding requires an exact source expression.</text></view>`];
       }
       return [
         `${indent}${syntax.loopOpen(binding.renderCollectionKey, "item", "__elmosKey")}`,
-        `${indent}  <view ${commonAttributes(component, "elmos-list-item")}><text>{{item.value}}</text></view>`,
+        `${indent}  <view ${commonAttributes(component, "elmos-list-item", platform)}><text>{{item.value}}</text></view>`,
         `${indent}${syntax.loopClose}`,
       ];
     }
-    const attributes = commonAttributes(component, decision?.strategy === "decision" ? "elmos-node elmos-blocked" : "elmos-node");
+    const attributes = commonAttributes(component, decision?.strategy === "decision" ? "elmos-node elmos-blocked" : "elmos-node", platform);
     if (component.semanticRole === "form-control") return [`${indent}<input ${attributes} />`];
     if (component.semanticRole === "media") return [`${indent}<${tag} ${attributes} mode="aspectFit" />`];
     const label = /\{\{|\}\}/u.test(component.textContent) ? "" : component.textContent;
@@ -342,7 +364,7 @@ function pageMarkup(
   for (const component of primaryRoots) lines.push(...renderComponent(component, "  "));
   for (const component of selected) lines.push(...renderComponent(component, "  "));
   if (selected.length === 0) {
-    lines.push('  <view class="elmos-blocked" role="alert"><text>No source component could be recovered; see migration-findings.json.</text></view>');
+    lines.push(`  <view class="elmos-blocked" ${accessibilityRoleAttribute(platform)}="alert"><text>No source component could be recovered; see migration-findings.json.</text></view>`);
   }
   lines.push("</view>", "");
   return lines.join("\n");
@@ -426,25 +448,36 @@ function pageStyles(plan: MiniappConversionPlan, platform: MiniappPlatform): str
   ].join("\n");
 }
 
-function platformAdapter(platform: MiniappPlatform, profile: MiniappPlatformDescriptor): string {
+function platformAdapter(
+  platform: MiniappPlatform,
+  profile: MiniappPlatformDescriptor,
+  ir: MiniappSemanticIr,
+): string {
   const api = profile.apiNamespace;
+  const capabilityNames = new Set(ir.capabilities.map(capability => capability.name.toLowerCase()));
+  const methods: string[] = [];
+  const operations = Object.entries(MINIAPP_PLATFORM_CAPABILITY_OPERATIONS) as readonly [string, string][];
+  for (const [method, operation] of operations) {
+    if (capabilityNames.has(operation.toLowerCase())) {
+      methods.push(`  ${method}: options => requireApi(${JSON.stringify(method)})(options),`);
+    }
+  }
   return [
     '"use strict";',
     `const platformApi = typeof ${api} === "object" ? ${api} : null;`,
-    "function requireApi(name) {",
-    "  if (!platformApi || typeof platformApi[name] !== \"function\") {",
-    "    const error = new Error(`PLATFORM_CAPABILITY_UNAVAILABLE:${name}`);",
-    "    error.code = \"PLATFORM_CAPABILITY_UNAVAILABLE\";",
-    "    throw error;",
-    "  }",
-    "  return platformApi[name].bind(platformApi);",
-    "}",
+    ...(methods.length > 0 ? [
+      "function requireApi(name) {",
+      "  if (!platformApi || typeof platformApi[name] !== \"function\") {",
+      "    const error = new Error(`PLATFORM_CAPABILITY_UNAVAILABLE:${name}`);",
+      "    error.code = \"PLATFORM_CAPABILITY_UNAVAILABLE\";",
+      "    throw error;",
+      "  }",
+      "  return platformApi[name].bind(platformApi);",
+      "}",
+    ] : []),
     "module.exports = Object.freeze({",
     `  platform: ${JSON.stringify(platform)},`,
-    "  navigateTo: options => requireApi(\"navigateTo\")(options),",
-    "  request: options => requireApi(\"request\")(options),",
-    "  getStorage: options => requireApi(\"getStorage\")(options),",
-    "  setStorage: options => requireApi(\"setStorage\")(options),",
+    ...methods,
     "});",
     "",
   ].join("\n");
@@ -622,7 +655,7 @@ function buildFiles(
   });
   files[`app${syntax.styleExtension}`] = pageStyles(plan, platform);
   files[profile.projectFile] = json(projectConfiguration(platform, request));
-  files["adapters/platform.js"] = platformAdapter(platform, profile);
+  files["adapters/platform.js"] = platformAdapter(platform, profile, ir);
   const applicationInteractionStateIds = new Set(runtimeInteractions(ir)
     .filter(binding => binding.collectionScope === "application")
     .map(binding => binding.interaction.collectionStateId));
@@ -653,7 +686,11 @@ function buildFiles(
   // Platform adapters are the executable boundary for capability nodes. Keep
   // their source identities in the trace map so capability obligations cannot
   // disappear merely because the adapter itself is generated code.
-  traceMap["adapters/platform.js"] = ir.capabilities.map(capability => capability.id).sort();
+  const emittedPlatformOperations = new Set<string>(Object.values(MINIAPP_PLATFORM_CAPABILITY_OPERATIONS));
+  traceMap["adapters/platform.js"] = ir.capabilities
+    .filter(capability => emittedPlatformOperations.has(capability.name))
+    .map(capability => capability.id)
+    .sort();
   traceMap["migration-findings.json"] = [];
   files["migration-findings.json"] = json({
     schemaVersion: "1.0",

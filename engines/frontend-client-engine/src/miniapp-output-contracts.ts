@@ -1163,10 +1163,12 @@ function sourceAnalysisSchemaBody(
           attributes: component.attributes,
           children: component.children,
           events: component.events,
+          implicit_accessibility: component.implicitAccessibility ?? null,
           model_binding: component.modelBinding,
           props: component.props,
           semantic_role: component.semanticRole,
           source_tag: component.sourceTag,
+          style_scope_classes: component.styleScopeClasses ?? [],
           text_content: component.textContent,
         },
         id: component.id,
@@ -1258,6 +1260,7 @@ function sourceAnalysisSchemaBody(
           data: {
             declarations: style.declarations,
             responsive: style.responsive,
+            scope_class: style.scopeClass ?? null,
             selector: style.selector,
           },
           id: style.id,
@@ -1466,6 +1469,7 @@ function semanticIrSchemaBody(run: MiniappConversionRun): unknown {
           })),
           events: component.events,
           id: component.id,
+          implicit_accessibility: component.implicitAccessibility ?? null,
           model_binding: component.modelBinding,
           name: component.name,
           props: component.props,
@@ -1473,6 +1477,7 @@ function semanticIrSchemaBody(run: MiniappConversionRun): unknown {
           source_kind: component.sourceKind,
           source_refs: component.sourceRefs.map(sourceRefString),
           source_tag: component.sourceTag,
+          style_scope_classes: component.styleScopeClasses ?? [],
           text_content: component.textContent,
           collection_binding:
             component.collectionBinding === null
@@ -1514,6 +1519,7 @@ function semanticIrSchemaBody(run: MiniappConversionRun): unknown {
           declarations: style.declarations,
           id: style.id,
           responsive: style.responsive,
+          scope_class: style.scopeClass ?? null,
           selector: style.selector,
           source_refs: style.sourceRefs.map(sourceRefString),
         })),
@@ -2207,6 +2213,7 @@ function outputPayload(
           componentId: mapping.componentId,
           platform: mapping.platform,
           targetComponent: mapping.targetComponent,
+          implicitAccessibility: mapping.implicitAccessibility,
         }));
       }
       return run.plan.components.map((mapping) => ({

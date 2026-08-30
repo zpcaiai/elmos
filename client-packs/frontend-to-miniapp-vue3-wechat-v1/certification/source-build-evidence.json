@@ -4,6 +4,8 @@
   "source_snapshot_id": "vue3-todo-source-snapshot-1.0.1",
   "source_snapshot_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
   "source_root": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1",
+  "source_manifest": "source-snapshots/manifest.json",
+  "source_manifest_sha256": "sha256:1f1848a8d4d40f1aa5a47ee61bc1b5157ebe55001b8aef6759266e8ea6c8c04b",
   "package": {
     "name": "elmos-vue3-todo-fixture",
     "version": "1.0.1",
@@ -14,6 +16,9 @@
     "lockfile": "pnpm-lock.yaml",
     "lockfile_sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
     "lockfile_bytes": 27372,
+    "build_script": "pnpm run build",
+    "build_config": "vite.config.ts",
+    "build_config_sha256": "sha256:de24feac0f30281260058a655af8b0f057301e84e49425bdcdd36e5d6bee7d5a",
     "frozen_install": {
       "command": "pnpm install --frozen-lockfile --ignore-scripts --registry=https://registry.npmjs.org",
       "exit_code": 0,
@@ -34,33 +39,47 @@
     {
       "name": "typecheck",
       "command": "pnpm run typecheck",
-      "exit_code": 0
+      "exit_code": 0,
+      "log": "certification/source-build/typecheck.log",
+      "log_sha256": "sha256:d7e2ba67bf6942bbead0980409883dae6466944dc521adc921c809c7f4c25b51"
     },
     {
       "name": "build",
       "command": "pnpm run build",
-      "exit_code": 0
+      "exit_code": 0,
+      "log": "certification/source-build/build.log",
+      "log_sha256": "sha256:6fbff7409c4a1ffe1f485dcceafd69b3dcc0437900f8f146361d9465242960eb"
     }
   ],
+  "environment_evidence": {
+    "path": "certification/source-build/environment.json",
+    "sha256": "sha256:321ef6a75cb237d6dbe10ccc3a4d17b5023e4bc94976874f3a7d2a1a5ad35f73"
+  },
+  "install_evidence": {
+    "command": "pnpm install --frozen-lockfile --ignore-scripts --prefer-offline",
+    "exit_code": 0,
+    "log": "certification/source-build/install.log",
+    "log_sha256": "sha256:150646a5408f0b9e1ebbea6ab9a84f36db3ab88ba6b23ea1bee285fdc6f3bcdb"
+  },
   "artifacts": [
     {
-      "path": "dist/assets/index-BXpip7di.css",
+      "path": "certification/source-build/dist/assets/index-BXpip7di.css",
       "bytes": 72,
       "sha256": "sha256:2ab1c50e9c9081a2b38375cec37f6bc6ddd3bbfab5d2a6750d7ee361dbc33855"
     },
     {
-      "path": "dist/assets/index-BmN7W3Nz.js",
+      "path": "certification/source-build/dist/assets/index-BmN7W3Nz.js",
       "bytes": 92691,
       "sha256": "sha256:372078315cc3f4f0ef084e77201ab1d2f49310b7e9ebafac922f8d07cd12a53c"
     },
     {
-      "path": "dist/index.html",
+      "path": "certification/source-build/dist/index.html",
       "bytes": 388,
       "sha256": "sha256:aedaf319aa008552e75067519402a95834c00a2411d4b4ffaaa1090c5f8128db"
     }
   ],
   "artifact_policy": {
-    "output_root": "dist",
+    "output_root": "certification/source-build/dist",
     "all_entries_content_addressed": true,
     "source_snapshot_bound": true
   },
