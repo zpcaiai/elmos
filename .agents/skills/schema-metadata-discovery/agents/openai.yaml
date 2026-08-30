@@ -1,0 +1,6 @@
+interface:
+  display_name: "Schema Metadata Discovery"
+  short_description: "Run schema-metadata-discovery with bounded commercial controls"
+  default_prompt: "Use $schema-metadata-discovery through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

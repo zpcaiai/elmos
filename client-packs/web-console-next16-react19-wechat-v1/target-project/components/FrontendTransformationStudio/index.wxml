@@ -1,0 +1,12 @@
+<view class="card" data-component="{{componentName}}">
+  <button class="heading" bindtap="toggleExpanded" aria-expanded="{{expanded}}">{{title}}</button>
+  <view wx:if="{{expanded}}" class="content">
+    <text class="source-label">#frt-skill-catalog</text>
+    <text class="source-label">#route-planner</text>
+    <text class="source-label">* EXECUTE 只准备受限提案；客户代码、真实 Provider、设备与生产操作需要外部 Runner 和授权。</text>
+    <text class="source-label">/api/frt/runs</text>
+    <text class="source-label">1. 运行作用域</text>
+    <text class="source-label">2. Skill 类型化输入</text>
+    <view wx:for="{{rows}}" wx:key="key"><text>{{item.key}}: {{item.value}}</text></view>
+  </view>
+</view>

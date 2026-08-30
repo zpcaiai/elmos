@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-flaky-nondeterminism-classifier"
+  short_description: "Separate true semantic mismatches from scheduler, timing, network, hash-order and environment noi..."
+  default_prompt: "Use $elmos-flaky-nondeterminism-classifier through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-flaky-nondeterminism-classifier"
+  handler_id: "execute_elmos_flaky_nondeterminism_classifier"
+  operation: "FUZZ_EXECUTION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

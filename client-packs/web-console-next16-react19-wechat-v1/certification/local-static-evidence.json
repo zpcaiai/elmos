@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "pack_key": "web-console-next16-react19-wechat-v1",
+  "status": "PASSED_LOCAL_STATIC",
+  "source_revision": "f734a4d9a2dd9253d975b998eb5bbe5a7c624dff",
+  "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+  "component_scan": {
+    "discovered": 71,
+    "inSubset": 32,
+    "outOfSubset": 39,
+    "scanErrors": 0,
+    "notComponents": 162
+  },
+  "implementation_closure": {
+    "discovered": 71,
+    "automatic": 32,
+    "hand_ported": 39,
+    "unhandled": 0,
+    "scan_errors": 0
+  },
+  "manual_ir_components": 39,
+  "target_component_directories": 71,
+  "placeholder_count": 0,
+  "source_build": "PASSED_LOCAL_SOURCE_BUILD",
+  "runtime_evidence": "NOT_RUN",
+  "independent_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

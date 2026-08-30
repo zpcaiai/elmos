@@ -1,0 +1,41 @@
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-integer-ub-language-lawyer"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_LOCAL_BOUNDED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_integer_ub_language_lawyer",
+    "operation": "MODEL_NORMALIZATION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-integer-ub-language-lawyer"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-integer-ub-language-lawyer",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-integer-ub-language-lawyer/SKILL.md",
+    "sourceSha256": "sha256:a50993e407735485a92b50d8df6985e8591ff2d8062caad1c58ab961f61a5c38",
+    "sourceSkillId": "ELMOS-POLY-224"
+  }
+}

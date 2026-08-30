@@ -2,11 +2,11 @@
   "approved_at": null,
   "evidence_refs": [],
   "exact_scope": {
-    "environment_digest": "sha256:52654ab6a82a0654a1f741e77be914741a900e02807c542ea3e9e2b2887044f9",
+    "environment_digest": "sha256:2b011aac50dfbab920ebd93fa7d1a2e46073c4eee582402c8bf150af9d0e80e4",
     "migration_route": "formal-assurance-kernel-local-runtime",
     "risk_tier": "P1",
     "source_artifact_digest": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
-    "target_artifact_digest": "sha256:d31a8f3213e40c0d4be84d74eac09c3549ad29c7d899ed399f8caa30771c9f4b",
+    "target_artifact_digest": "sha256:f25a8908dc346254518ae69fe27a7dac2763a9dde6f81dc776a04e93492d5663",
     "workload_key": "formal-assurance-kernel-60-skills"
   },
   "limitations": [
@@ -20,7 +20,7 @@
   ],
   "metrics": {
     "local_test_pass_rate": 1.0,
-    "local_tests": 536
+    "local_tests": 562
   },
   "owner": "elmos-formal-assurance-engineering",
   "pack_key": "formal-assurance-kernel-local",

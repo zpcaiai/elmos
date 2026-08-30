@@ -1,0 +1,7 @@
+<view class="card" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <scroll-view scroll-x class="table-scroll">
+    <view wx:for="{{rows}}" wx:key="key" class="table-row"><text class="table-key">{{item.key}}</text><text>{{item.value}}</text></view>
+  </scroll-view>
+</view>

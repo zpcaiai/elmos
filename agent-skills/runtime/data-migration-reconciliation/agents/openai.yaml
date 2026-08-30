@@ -1,0 +1,6 @@
+interface:
+  display_name: "Data Migration Reconciliation"
+  short_description: "Run data-migration-reconciliation with bounded commercial controls"
+  default_prompt: "Use $data-migration-reconciliation through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

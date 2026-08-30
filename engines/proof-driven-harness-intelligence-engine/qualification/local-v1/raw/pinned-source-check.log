@@ -1,0 +1,13 @@
+{
+  "archive_bytes": 28988,
+  "archive_code_executed": false,
+  "archive_sha256": "9dcf9a4ac6eafad4d24df12dfc4e31da2fb5c20bde840611d81c43fa9607910e",
+  "canonical_capability_count": 260,
+  "certification_status": "NOT_CERTIFIED",
+  "external_evidence_status": "NOT_RUN",
+  "member_count": 25,
+  "mode": "CHECK",
+  "package": "elmos-proof-driven-harness-intelligence@1.0.0",
+  "skill_count": 12,
+  "source_occurrence_count": 262
+}

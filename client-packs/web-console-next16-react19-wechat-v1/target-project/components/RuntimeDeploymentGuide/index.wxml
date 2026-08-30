@@ -1,0 +1,12 @@
+<view class="card" data-component="{{componentName}}">
+  <button class="heading" bindtap="toggleExpanded" aria-expanded="{{expanded}}">{{title}}</button>
+  <view wx:if="{{expanded}}" class="content">
+    <text class="source-label">LOCAL RUN · CLOUD HANDOFF</text>
+    <text class="source-label">RECOMMENDED</text>
+    <text class="source-label">_blank</text>
+    <text class="source-label">chevron</text>
+    <text class="source-label">cloud</text>
+    <text class="source-label">cloud-option-grid</text>
+    <view wx:for="{{rows}}" wx:key="key"><text>{{item.key}}: {{item.value}}</text></view>
+  </view>
+</view>

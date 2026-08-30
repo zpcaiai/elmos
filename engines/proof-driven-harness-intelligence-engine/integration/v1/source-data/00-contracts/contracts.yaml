@@ -1,0 +1,128 @@
+AgentTask:
+  required:
+    - task_id
+    - project_id
+    - job_id
+    - goal
+    - input_revision
+    - read_scope
+    - write_scope
+    - authority_profile
+    - output_schema
+    - invariants
+  optional:
+    - model_role
+    - model_candidates
+    - effort_ceiling
+    - token_budget
+    - cost_budget
+    - wall_clock_budget
+    - dependencies
+    - workspace_id
+    - lease_id
+    - fence_token
+    - certification_target
+
+ProofCarryingAgentResult:
+  required:
+    - task_id
+    - status
+    - changed_artifacts
+    - evidence
+    - findings
+    - unresolved
+    - verification_status
+  optional:
+    - assumptions
+    - semantic_diff
+    - runtime_diff
+    - tests
+    - proofs
+    - confidence
+    - rollback_token
+    - metrics
+
+PatchTransaction:
+  required:
+    - transaction_id
+    - base_revision
+    - target_scope
+    - intent
+    - preconditions
+    - read_set
+    - write_set
+    - postconditions
+    - rollback
+  optional:
+    - syntax_anchor
+    - semantic_anchor
+    - rule_ids
+    - expected_reference_count
+
+EvidenceRecord:
+  required:
+    - evidence_id
+    - evidence_type
+    - producer
+    - produced_at
+    - input_digests
+    - artifact_digest
+    - tool_version
+  optional:
+    - model
+    - runtime
+    - environment
+    - confidence
+    - related_findings
+
+DurableJobState:
+  required:
+    - job_id
+    - state
+    - version
+    - last_durable_checkpoint
+    - completed_effects
+    - pending_effects
+  optional:
+    - active_agents
+    - leases
+    - retries
+    - provider_sessions
+    - cost
+    - tokens
+    - wall_clock
+
+RuleIR:
+  required:
+    - rule_id
+    - namespace
+    - name
+    - version
+    - authority
+    - scope
+    - enforcement
+  optional:
+    - trigger
+    - invariant
+    - evidence_requirement
+    - remediation
+    - compatibility
+
+SkillManifest:
+  required:
+    - skill_id
+    - namespace
+    - name
+    - version
+    - status
+    - triggers
+    - inputs
+    - outputs
+    - acceptance
+  optional:
+    - fixtures
+    - golden_routes
+    - dependencies
+    - conflicts
+    - deprecation
+    - lineage

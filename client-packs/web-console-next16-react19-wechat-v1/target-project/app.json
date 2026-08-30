@@ -1,0 +1,10 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "ELMOS WeChat Migration",
+    "backgroundColor": "#f4f6fa"
+  },
+  "sitemapLocation": "sitemap.json"
+}

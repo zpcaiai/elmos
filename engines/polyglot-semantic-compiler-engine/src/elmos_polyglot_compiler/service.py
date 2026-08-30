@@ -1,178 +1,441 @@
-"""Master orchestration service for ELMOS Polyglot Repository Semantic Compiler Engine v3.0.0."""
+"""Fail-closed service facade for the Polyglot Semantic Compiler.
+
+The repository-owned engine is a local control plane. It loads only the
+digest-bound compiled catalog and can prepare content-addressed plans, but it
+does not contain native language adapters, an SMT solver, a fuzz runner, or a
+certification authority. This module deliberately keeps those external
+effects and their evidence in ``NOT_RUN`` / ``NOT_CERTIFIED`` state.
+"""
 
 from __future__ import annotations
 
-from collections import defaultdict
+from collections import Counter
+from functools import lru_cache
 import hashlib
-import json
-import time
-from typing import Any, Dict, List, Optional
+from types import MappingProxyType
+from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
+from .catalog import CompiledCatalog, load_catalog
+from .contracts import ExecutionAuthority, RuntimeRequest, digest_json
 from .models import (
-    BatchType,
     CertificationRun,
+    CertificationState,
     ObligationStatus,
     ProofObligation,
     RouteCell,
-    RouteCertificationPlan,
-    SemanticObligation,
-    SemanticRisk,
-    TechnologySurface,
     VerdictStatus,
 )
-from .modules import (
-    DiscoveryIngestionModule,
-    IrNormalizationModule,
-    AdaptersFrontendsModule,
-    CoreTransformationModule,
-    SystemsUiTransformationModule,
-    DatabaseDataTransformationModule,
-    IntegrationSpecializedTransformationModule,
-    VerificationTestingModule,
-    DeliveryOrchestrationModule,
-    FrontendSyntaxSemanticsModule,
-    TypeContractSemanticsModule,
-    ControlDataflowSemanticsModule,
-    RuntimeMemoryConcurrencyModule,
-    ObservableBehaviorOracleModule,
-    CorpusGovernanceModule,
-    NativeRuntimeLabModule,
-    FormalAssuranceModule,
-    SemanticFuzzingModule,
+
+if TYPE_CHECKING:
+    from .runtime import SkillRuntime
+
+
+IMPLEMENTATION_STATE = "CODE_COMPLETE_LOCAL_CONTROL_PLANE"
+NOT_RUN = "NOT_RUN"
+NOT_CERTIFIED = "NOT_CERTIFIED"
+ENGINE_NAME = "ELMOS Polyglot Repository Semantic Compiler"
+ENGINE_VERSION = "3.0.0"
+
+_CERTIFICATION_EVIDENCE = (
+    "IMMUTABLE_SOURCE_AND_TARGET_ARTIFACTS",
+    "SOURCE_NATIVE_BUILD_AND_RUNTIME",
+    "TARGET_NATIVE_BUILD_AND_RUNTIME",
+    "INDEPENDENT_HOLDOUT_CORPUS",
+    "FORMAL_PROOF_RECEIPTS",
+    "DIFFERENTIAL_FUZZING_RECEIPTS",
+    "OBSERVABLE_BEHAVIOR_ORACLE_RECEIPTS",
+    "INDEPENDENT_VERIFICATION",
+    "SIGNED_CERTIFICATION_DECISION",
 )
+
+
+class ServiceError(ValueError):
+    """The local service could not safely prepare or execute a request."""
+
+
+def _bounded_text(value: Any, label: str, *, maximum: int) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ServiceError(f"{label} must be a non-empty string")
+    if len(value.encode("utf-8")) > maximum:
+        raise ServiceError(f"{label} exceeds the bounded size")
+    return value
+
+
+def _text_digest(value: str) -> str:
+    return "sha256:" + hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _index_raw_records(value: Any) -> Mapping[str, Mapping[str, Any]]:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+        return MappingProxyType({})
+    indexed: dict[str, Mapping[str, Any]] = {}
+    for row in value:
+        if not isinstance(row, Mapping):
+            continue
+        identity = row.get("name") or row.get("id") or row.get("surface_id")
+        if isinstance(identity, str) and identity:
+            indexed[identity] = MappingProxyType(dict(row))
+    return MappingProxyType(indexed)
 
 
 class PolyglotSemanticCompilerService:
-    """Enterprise service coordinating all 18 Batches (Batches A-R, 300 skills) and 784 route cells."""
+    """Read-only catalog and conservative planning facade.
 
-    def __init__(self, manifest_data: Optional[Dict[str, Any]] = None):
-        # Initialize all 18 batch modules
-        self.batch_a = DiscoveryIngestionModule()
-        self.batch_b = IrNormalizationModule()
-        self.batch_c = AdaptersFrontendsModule()
-        self.batch_d = CoreTransformationModule()
-        self.batch_e = SystemsUiTransformationModule()
-        self.batch_f = DatabaseDataTransformationModule()
-        self.batch_g = IntegrationSpecializedTransformationModule()
-        self.batch_h = VerificationTestingModule()
-        self.batch_i = DeliveryOrchestrationModule()
-        self.batch_j = FrontendSyntaxSemanticsModule()
-        self.batch_k = TypeContractSemanticsModule()
-        self.batch_l = ControlDataflowSemanticsModule()
-        self.batch_m = RuntimeMemoryConcurrencyModule()
-        self.batch_n = ObservableBehaviorOracleModule()
-        self.batch_o = CorpusGovernanceModule()
-        self.batch_p = NativeRuntimeLabModule()
-        self.batch_q = FormalAssuranceModule()
-        self.batch_r = SemanticFuzzingModule()
+    A :class:`SkillRuntime` may be attached by the trusted host. The facade
+    never constructs execution authority, never creates an implicit state
+    store, and never converts a plan into evidence. Runtime requests are
+    delegated only with the caller-supplied :class:`ExecutionAuthority`.
+    """
 
-        # Aliases for direct module calls
-        self.formal_assurance = self.batch_q
-        self.semantic_fuzzing = self.batch_r
+    def __init__(
+        self,
+        catalog: CompiledCatalog | None = None,
+        *,
+        runtime: SkillRuntime | None = None,
+    ) -> None:
+        # load_catalog verifies canonical bytes and the companion SHA-256. There
+        # is intentionally no source-manifest fallback.
+        self.catalog = catalog or load_catalog()
+        if runtime is not None and runtime.catalog.digest != self.catalog.digest:
+            raise ServiceError("attached runtime catalog digest differs")
+        self.runtime = runtime
 
-        self.skills_registry: Dict[str, Dict[str, Any]] = {}
-        self.technology_surfaces: Dict[str, Dict[str, Any]] = {}
-        self.repository_surfaces: Dict[str, Dict[str, Any]] = {}
-        self.certification_plans: Dict[str, Dict[str, Any]] = {}
-        self.route_cells: Dict[str, RouteCell] = {}
+        # Compatibility views are derived only from the compiled catalog.
+        self.skills_registry = MappingProxyType(
+            {item.name: MappingProxyType(item.to_dict()) for item in self.catalog.skills}
+        )
+        self.technology_surfaces = _index_raw_records(
+            self.catalog.raw.get("technologies")
+        )
+        self.repository_surfaces = _index_raw_records(
+            self.catalog.raw.get("repository_surfaces")
+        )
+        self.certification_plans = self.catalog.reference_routes_by_id
+        self.route_cells = self.catalog.routes_by_id
 
-        if manifest_data:
-            self._load_manifest(manifest_data)
-        else:
-            self._init_default_routes()
+        pair_index: dict[tuple[str, str], RouteCell] = {}
+        alias_index: dict[str, RouteCell] = {}
+        for route in self.catalog.routes:
+            pair = (
+                route.source_language.casefold(),
+                route.target_language.casefold(),
+            )
+            if pair in pair_index:
+                raise ServiceError("compiled catalog contains a duplicate route pair")
+            pair_index[pair] = route
+            aliases = {
+                route.route_id,
+                f"{route.source_language}_to_{route.target_language}",
+                f"{route.source_language}-to-{route.target_language}",
+                f"route-{route.source_language}-{route.target_language}",
+            }
+            for alias in aliases:
+                normalized = alias.casefold()
+                previous = alias_index.get(normalized)
+                if previous is not None and previous.route_id != route.route_id:
+                    raise ServiceError("compiled catalog route aliases are ambiguous")
+                alias_index[normalized] = route
+        self._routes_by_pair = MappingProxyType(pair_index)
+        self._route_aliases = MappingProxyType(alias_index)
 
-    def _load_manifest(self, manifest_data: Dict[str, Any]) -> None:
-        for s in manifest_data.get("skills", []):
-            if isinstance(s, dict):
-                self.skills_registry[s.get("name", s.get("id"))] = s
-            else:
-                self.skills_registry[str(s)] = {"id": str(s), "name": str(s)}
+    def execute_skill(
+        self,
+        skill_name: str,
+        request: RuntimeRequest | Mapping[str, Any],
+        *,
+        authority: ExecutionAuthority,
+    ) -> dict[str, Any]:
+        """Delegate an exact request to an explicitly attached runtime."""
 
-        for t in manifest_data.get("technologies", []):
-            if isinstance(t, dict):
-                self.technology_surfaces[t.get("name", t.get("id"))] = t
-            else:
-                self.technology_surfaces[str(t)] = {"id": str(t), "name": str(t)}
+        if self.runtime is None:
+            raise ServiceError("a trusted host must attach SkillRuntime explicitly")
+        request_value = request.to_dict() if isinstance(request, RuntimeRequest) else request
+        return self.runtime.execute(skill_name, request_value, authority=authority)
 
-        for r in manifest_data.get("repository_surfaces", []):
-            if isinstance(r, dict):
-                self.repository_surfaces[r.get("name", r.get("id"))] = r
-            else:
-                self.repository_surfaces[str(r)] = {"id": str(r), "name": str(r)}
+    def _route_for_pair(self, source: str, target: str) -> RouteCell:
+        source = _bounded_text(source, "source_language", maximum=64)
+        target = _bounded_text(target, "target_language", maximum=64)
+        route = self._routes_by_pair.get((source.casefold(), target.casefold()))
+        if route is None:
+            raise ServiceError("requested directional route is absent from the compiled catalog")
+        return route
 
-        self._init_default_routes()
+    def _route_for_id(self, route_id: str) -> RouteCell:
+        route_id = _bounded_text(route_id, "route_id", maximum=200)
+        route = self._route_aliases.get(route_id.casefold())
+        if route is None:
+            raise ServiceError("route_id is absent from the compiled catalog")
+        return route
 
-    def _init_default_routes(self) -> None:
-        # Golden Routes & standard route grid
-        langs = ["java", "csharp", "python", "typescript", "go", "rust", "cpp", "kotlin", "swift", "php", "ruby", "dart"]
-        for src in langs:
-            for tgt in langs:
-                if src != tgt:
-                    route_id = f"{src}_to_{tgt}"
-                    tier = "Tier 1 (Golden)" if (src, tgt) in [
-                        ("java", "csharp"), ("csharp", "java"), ("python", "typescript"),
-                        ("typescript", "python"), ("cpp", "rust"), ("rust", "cpp"),
-                    ] else "Tier 2 (Standard)"
-                    self.route_cells[route_id] = RouteCell(
-                        route_id=route_id,
-                        source_language=src,
-                        target_language=tgt,
-                        tier=tier,
-                    )
+    def get_compiler_status(self) -> dict[str, Any]:
+        """Return implementation state without promoting execution evidence."""
 
-    def get_compiler_status(self) -> Dict[str, Any]:
-        """Returns comprehensive compiler readiness status."""
+        batch_counts = Counter(item.batch.value for item in self.catalog.skills)
+        dependency_edges = sum(len(item.dependencies) for item in self.catalog.skills)
+        source = self.catalog.raw.get("source")
+        source_digest = source.get("archive_sha256") if isinstance(source, Mapping) else None
         return {
-            "engine": "ELMOS Polyglot Repository Semantic Compiler v3.0.0",
-            "status": "READY",
-            "batches_count": 18,
-            "batches_ready": ["Batch A through Batch R"],
-            "total_skills": 300,
-            "technology_surfaces": 28,
-            "registered_route_cells": len(self.route_cells),
-            "formal_assurance_solver": "Z3-SMT-v4.12",
-            "differential_fuzzing": "Grammar & Coverage Guided",
+            "engine": ENGINE_NAME,
+            "version": ENGINE_VERSION,
+            "status": IMPLEMENTATION_STATE,
+            "implementation": IMPLEMENTATION_STATE,
+            "catalog_state": "DIGEST_VERIFIED",
+            "catalog_digest": self.catalog.digest,
+            "source_archive_sha256": source_digest,
+            "runtime_attached": self.runtime is not None,
+            "counts": {
+                "batches": len(batch_counts),
+                "skills": len(self.catalog.skills),
+                "dependency_edges": dependency_edges,
+                "technology_surfaces": len(self.technology_surfaces),
+                "repository_surfaces": len(self.repository_surfaces),
+                "route_cells": len(self.catalog.routes),
+                "reference_routes": len(self.catalog.reference_routes),
+            },
+            "batch_skill_counts": dict(sorted(batch_counts.items())),
+            "native_runtime": NOT_RUN,
+            "external_runtime": NOT_RUN,
+            "formal_solver_execution": NOT_RUN,
+            "differential_fuzzing_execution": NOT_RUN,
+            "external_evidence": NOT_RUN,
+            "independent_verification": NOT_RUN,
+            "certification": NOT_CERTIFIED,
         }
 
-    def get_supported_routes(self) -> List[Dict[str, Any]]:
-        """Returns list of supported language modernization routes."""
+    def get_catalog_skills(self, batch: str | None = None) -> list[dict[str, Any]]:
+        """Return exact compiled Skill records with honest evidence state."""
+
+        normalized_batch = batch.upper() if batch is not None else None
+        records: list[dict[str, Any]] = []
+        for definition in self.catalog.skills:
+            if normalized_batch is not None and definition.batch.value != normalized_batch:
+                continue
+            records.append(
+                {
+                    **definition.to_dict(),
+                    "implementation": IMPLEMENTATION_STATE,
+                    "external_runtime": NOT_RUN,
+                    "external_evidence": NOT_RUN,
+                    "certification": NOT_CERTIFIED,
+                    "catalog_digest": self.catalog.digest,
+                }
+            )
+        return records
+
+    def get_supported_routes(self) -> list[dict[str, Any]]:
+        """Return declared route cells; declaration is not route qualification."""
+
         return [
             {
-                "route_id": r.route_id,
-                "source_language": r.source_language,
-                "target_language": r.target_language,
-                "tier": r.tier,
-                "status": "ACTIVE",
+                **route.to_dict(),
+                "readiness": NOT_RUN,
+                "status": NOT_RUN,
+                "external_runtime": NOT_RUN,
+                "external_evidence": NOT_RUN,
+                "certification": NOT_CERTIFIED,
+                "catalog_digest": self.catalog.digest,
             }
-            for r in self.route_cells.values()
+            for route in self.catalog.routes
         ]
 
-    def transform_snippet(self, source_lang: str, target_lang: str, source_code: str) -> Dict[str, Any]:
-        """Executes snippet transformation across language pairs."""
-        res = self.batch_d.transform_snippet(source_lang, target_lang, source_code)
+    def transform_snippet(
+        self,
+        source_language: str,
+        target_language: str,
+        source_code: str,
+    ) -> dict[str, Any]:
+        """Create a directional external-adapter plan without target code."""
+
+        route = self._route_for_pair(source_language, target_language)
+        source_code = _bounded_text(source_code, "source_code", maximum=4_194_304)
+        source_digest = _text_digest(source_code)
+        plan_digest = digest_json(
+            {
+                "kind": "external-adapter-transformation-plan",
+                "catalog_digest": self.catalog.digest,
+                "route_id": route.route_id,
+                "source_digest": source_digest,
+            }
+        )
         return {
-            "source_language": source_lang,
-            "target_language": target_lang,
+            "transformation_id": f"tx-plan-{plan_digest[-24:]}",
+            "route_id": route.route_id,
+            "source_language": route.source_language,
+            "target_language": route.target_language,
             "source_code": source_code,
-            "transformed_code": res.get("target_code", f"// Converted\n{source_code}"),
-            "status": "SUCCESS",
-            "applied_rules": ["canonical_type_lowering", "control_flow_refinement"],
+            "source_digest": source_digest,
+            "target_code": None,
+            "target_digest": None,
+            "status": "EXTERNAL_ADAPTER_REQUIRED",
+            "execution_state": NOT_RUN,
+            "capability_mode": "EXTERNAL_ADAPTER_REQUIRED",
+            "adapter_plan": {
+                "directional_route": route.route_id,
+                "required_inputs": [
+                    "IMMUTABLE_SOURCE_ARTIFACT",
+                    "EXACT_SOURCE_PROFILE",
+                    "EXACT_TARGET_PROFILE",
+                    "TYPED_SEMANTIC_IR",
+                    "AUTHORIZED_ADAPTER",
+                ],
+                "required_outputs": [
+                    "TARGET_ARTIFACT",
+                    "SOURCE_MAP",
+                    "SEMANTIC_GAP_RECORDS",
+                    "BUILD_RECEIPT",
+                    "RUNTIME_EVIDENCE",
+                ],
+                "certification_authority": False,
+            },
+            "implementation": IMPLEMENTATION_STATE,
+            "external_runtime": NOT_RUN,
+            "external_evidence": NOT_RUN,
+            "certification": NOT_CERTIFIED,
+            "missing_evidence": [
+                "EXTERNAL_ADAPTER_EXECUTION",
+                "TARGET_BUILD",
+                "TARGET_RUNTIME",
+                "INDEPENDENT_SEMANTIC_VERIFICATION",
+            ],
+            "catalog_digest": self.catalog.digest,
         }
 
-    def certify_language_route(self, source_lang: str, target_lang: str) -> Dict[str, Any]:
-        """Runs full 18-batch certification for language pair."""
-        source_code = f"class Source {{ int id = 1; }}"
-        target_code = f"class Target {{ int id = 1; }}"
-        run = self.certify_route(source_lang, target_lang, source_code, target_code)
+    def check_smt_formula(
+        self,
+        formula: str,
+        *,
+        solver_family: str = "SMT_Z3",
+        timeout_ms: int = 5_000,
+    ) -> dict[str, Any]:
+        """Create a proof obligation; no solver is executed by this service."""
+
+        formula = _bounded_text(formula, "formula", maximum=1_048_576)
+        solver_family = _bounded_text(
+            solver_family,
+            "solver_family",
+            maximum=64,
+        )
+        if not isinstance(timeout_ms, int) or isinstance(timeout_ms, bool):
+            raise ServiceError("timeout_ms must be an integer")
+        if timeout_ms < 1 or timeout_ms > 3_600_000:
+            raise ServiceError("timeout_ms must be between 1 and 3600000")
+        formula_digest = _text_digest(formula)
+        proof_digest = digest_json(
+            {
+                "formula_digest": formula_digest,
+                "solver_family": solver_family,
+                "timeout_ms": timeout_ms,
+            }
+        )
+        proof = ProofObligation(
+            proof_id=f"proof-{proof_digest[-24:]}",
+            formula_digest=formula_digest,
+            solver_family=solver_family,
+            timeout_ms=timeout_ms,
+            status=ObligationStatus.NOT_RUN,
+        )
         return {
-            "certification_id": run.certification_id,
-            "route_id": run.route_id,
-            "overall_verdict": run.overall_verdict.value,
-            "proved_obligations": run.proved_obligations,
-            "total_obligations": run.total_obligations,
-            "receipt_digest": run.receipt_digest,
-            "status": "CERTIFIED",
+            **proof.to_dict(),
+            "status": NOT_RUN,
+            "execution_state": NOT_RUN,
+            "solver_executed": False,
+            "expected_evidence_type": f"formal-proof/{proof.proof_id}",
+            "implementation": IMPLEMENTATION_STATE,
+            "external_runtime": NOT_RUN,
+            "external_evidence": NOT_RUN,
+            "certification": NOT_CERTIFIED,
+            "missing_evidence": [
+                "AUTHORIZED_SOLVER_EXECUTION",
+                "SOLVER_RECEIPT",
+                "INDEPENDENT_PROOF_VERIFICATION",
+            ],
+            "catalog_digest": self.catalog.digest,
         }
+
+    def run_differential_fuzzing(
+        self,
+        source_surface: str,
+        target_surface: str,
+        cases: int = 20,
+    ) -> dict[str, Any]:
+        """Create a fuzz campaign request; no cases are synthesized or run."""
+
+        route = self._route_for_pair(source_surface, target_surface)
+        if not isinstance(cases, int) or isinstance(cases, bool):
+            raise ServiceError("cases must be an integer")
+        if cases < 1 or cases > 1_000_000:
+            raise ServiceError("cases must be between 1 and 1000000")
+        fuzz_digest = digest_json(
+            {
+                "kind": "external-differential-fuzz-plan",
+                "catalog_digest": self.catalog.digest,
+                "route_id": route.route_id,
+                "iterations_requested": cases,
+            }
+        )
+        return {
+            "fuzz_id": f"fuzz-plan-{fuzz_digest[-24:]}",
+            "route_id": route.route_id,
+            "iterations_requested": cases,
+            "iterations_completed": 0,
+            "iterations": 0,
+            "divergences_found": 0,
+            "undetermined_cases": 0,
+            "verdict": VerdictStatus.UNDETERMINED.value,
+            "results_digest": None,
+            "completed_at": None,
+            "status": NOT_RUN,
+            "reason": "DIGEST_BOUND_EXECUTED_CASE_RESULTS_REQUIRED",
+            "cases_requested": cases,
+            "cases_run": 0,
+            "implementation": IMPLEMENTATION_STATE,
+            "external_runtime": NOT_RUN,
+            "external_evidence": NOT_RUN,
+            "certification": NOT_CERTIFIED,
+            "missing_evidence": [
+                "AUTHORIZED_SOURCE_RUNTIME",
+                "AUTHORIZED_TARGET_RUNTIME",
+                "DIGEST_BOUND_EXECUTED_CASE_RESULTS",
+                "INDEPENDENT_CORPUS_ATTESTATION",
+            ],
+            "catalog_digest": self.catalog.digest,
+        }
+
+    def _conservative_certification_run(
+        self,
+        route: RouteCell,
+        *,
+        source_digest: str | None,
+        target_digest: str | None,
+    ) -> CertificationRun:
+        batch_coverage = {
+            batch: 0 for batch in sorted({item.batch.value for item in self.catalog.skills})
+        }
+        decision_material = {
+            "schema_version": "1.0",
+            "kind": "polyglot-route-certification-plan",
+            "catalog_digest": self.catalog.digest,
+            "route_id": route.route_id,
+            "source_digest": source_digest,
+            "target_digest": target_digest,
+            "proved_obligations": 0,
+            "verdict": VerdictStatus.UNDETERMINED.value,
+            "certification": NOT_CERTIFIED,
+            "missing_evidence": list(_CERTIFICATION_EVIDENCE),
+        }
+        plan_digest = digest_json(decision_material)
+        return CertificationRun(
+            certification_id=f"certification-plan-{plan_digest[-24:]}",
+            route_id=route.route_id,
+            batch_coverage=batch_coverage,
+            total_obligations=len(self.catalog.skills),
+            proved_obligations=0,
+            counterexamples_found=0,
+            overall_verdict=VerdictStatus.UNDETERMINED,
+            receipt_digest=plan_digest,
+            certification=CertificationState.NOT_CERTIFIED,
+            missing_evidence=_CERTIFICATION_EVIDENCE,
+        )
 
     def certify_route(
         self,
@@ -180,170 +443,120 @@ class PolyglotSemanticCompilerService:
         target_lang: str,
         source_code: str,
         target_code: str,
-        route_id: Optional[str] = None,
+        route_id: str | None = None,
     ) -> CertificationRun:
-        """Executes full 18-batch polyglot semantic compiler certification campaign."""
-        rid = route_id or f"{source_lang}_to_{target_lang}"
-        cert_id = f"cert-v3-{rid}-{int(time.time()*1000)}"
+        """Return a digest-bound, non-certifying decision for supplied artifacts."""
 
-        batch_coverage = {
-            "A": 16, "B": 16, "C": 16, "D": 16, "E": 20, "F": 22,
-            "G": 24, "H": 22, "I": 16, "J": 16, "K": 14, "L": 16,
-            "M": 18, "N": 16, "O": 14, "P": 12, "Q": 14, "R": 12,
-        }
-
-        # 1. Batch A: Discovery & Intake
-        a_res = self.batch_a.scan_repository_surface("sample_project", [source_lang, target_lang])
-
-        # 2. Batch B: IR Normalization
-        b_res = self.batch_b.lift_to_uir(source_lang, [{"kind": "FunctionDecl", "name": "main"}])
-
-        # 3. Batch C: Adapters & Frontends
-        c_res = self.batch_c.get_adapter_profile(source_lang)
-
-        # 4. Batch D: Core Transformation
-        d_res = self.batch_d.transform_snippet(source_lang, target_lang, source_code)
-
-        # 5. Batch E: Systems & UI
-        e_res = self.batch_e.transform_ui_component("react", "vue3", {"name": "AppView"})
-
-        # 6. Batch F: Database & Stored Procedures
-        f_res = self.batch_f.transform_schema_ddl("oracle", "postgres", ["CREATE TABLE T(ID INT)"])
-
-        # 7. Batch G: Legacy Integration
-        g_res = self.batch_g.get_legacy_migration_strategy("cobol")
-
-        # 8. Batch H: Verification Testing
-        h_res = self.batch_h.execute_dual_run_comparison("test-main", 42, 42)
-
-        # 9. Batch I: Delivery Orchestration
-        i_res = self.batch_i.assemble_project_manifest("MigratedApp", target_lang, ["Program.cs", "app.json"])
-
-        # 10. Batch J: Frontend Syntax
-        j_res = self.batch_j.detect_syntax_dialect(source_lang, source_code)
-
-        # 11. Batch K: Type Algebra & Contracts
-        k_res = self.batch_k.verify_algebraic_preservation("int", "int", rid)
-
-        # 12. Batch L: Control Flow & Dataflow
-        l_res = self.batch_l.analyze_cfg_bisimulation("main", 3)
-
-        # 13. Batch M: Memory & Concurrency
-        m_res = self.batch_m.calculate_memory_layout("Record", [("id", 4, 4), ("val", 8, 8)])
-
-        # 14. Batch N: Behavior Oracle
-        n_res = self.batch_n.compare_differential_output(source_lang, target_lang, "tc-e2e", "OK", "OK")
-
-        # 15. Batch O: Corpus Coverage
-        o_res = self.batch_o.assess_feature_coverage(20, [f"feat_{i}" for i in range(18)])
-
-        # 16. Batch P: Native Runtime Lab
-        p_res = self.batch_p.attest_lab_execution("openjdk21", "mvn test", 0)
-
-        # 17. Batch Q: Formal SMT Proof
-        q_proof = self.batch_q.create_proof_obligation(f"forall x . {source_lang}(x) == {target_lang}(x)")
-        q_res = self.batch_q.solve_proof(q_proof.proof_id, simulated_pass=True)
-
-        # 18. Batch R: Differential Fuzzing
-        r_res = self.batch_r.execute_differential_fuzz_campaign(rid, iterations=100)
-
-        all_passed = (
-            h_res["verdict"] == VerdictStatus.EQUIVALENT.value
-            and k_res["is_type_safe"]
-            and n_res.verdict == VerdictStatus.EQUIVALENT
-            and p_res["status"] == "ATTESTED"
-            and q_res.status == ObligationStatus.PROVED
-            and r_res["verdict"] == VerdictStatus.EQUIVALENT.value
+        route = self._route_for_pair(source_lang, target_lang)
+        if route_id is not None and self._route_for_id(route_id).route_id != route.route_id:
+            raise ServiceError("route_id does not match the requested language pair")
+        source_code = _bounded_text(source_code, "source_code", maximum=4_194_304)
+        target_code = _bounded_text(target_code, "target_code", maximum=4_194_304)
+        return self._conservative_certification_run(
+            route,
+            source_digest=digest_json({"source_code": source_code}),
+            target_digest=digest_json({"target_code": target_code}),
         )
 
-        total_obligations = sum(batch_coverage.values())
-        proved_obligations = total_obligations if all_passed else total_obligations - 5
+    def certify_language_route(self, route_id: str) -> dict[str, Any]:
+        """Prepare a route-level certification plan with no fabricated inputs."""
 
-        receipt_raw = f"{cert_id}:{rid}:{all_passed}:{proved_obligations}:{total_obligations}"
-        receipt_digest = hashlib.sha256(receipt_raw.encode("utf-8")).hexdigest()
-
-        return CertificationRun(
-            certification_id=cert_id,
-            route_id=rid,
-            batch_coverage=batch_coverage,
-            total_obligations=total_obligations,
-            proved_obligations=proved_obligations,
-            counterexamples_found=0 if all_passed else 1,
-            overall_verdict=VerdictStatus.EQUIVALENT if all_passed else VerdictStatus.DIVERGENT,
-            receipt_digest=receipt_digest,
+        route = self._route_for_id(route_id)
+        run = self._conservative_certification_run(
+            route,
+            source_digest=None,
+            target_digest=None,
         )
+        reference = self.catalog.reference_routes_by_id.get(route.route_id)
+        if reference is None:
+            reference = next(
+                (
+                    item
+                    for item in self.catalog.reference_routes
+                    if item.source_language.casefold() == route.source_language.casefold()
+                    and item.target_language.casefold() == route.target_language.casefold()
+                ),
+                None,
+            )
+        result = run.to_dict()
+        result.update(
+            {
+                "status": NOT_CERTIFIED,
+                "route": route.to_dict(),
+                "reference_plan": (
+                    {
+                        "plan_id": reference.plan_id,
+                        "route_id": reference.route_id,
+                        "required_skills": list(reference.required_skills),
+                        "required_labs": list(reference.required_labs),
+                        "target_levels": list(reference.target_levels),
+                        "status": NOT_RUN,
+                    }
+                    if reference is not None
+                    else None
+                ),
+                "implementation": IMPLEMENTATION_STATE,
+                "native_runtime": NOT_RUN,
+                "external_runtime": NOT_RUN,
+                "external_evidence": NOT_RUN,
+                "independent_verification": NOT_RUN,
+                "catalog_digest": self.catalog.digest,
+            }
+        )
+        return result
 
 
-_DEFAULT_SERVICE = PolyglotSemanticCompilerService()
+@lru_cache(maxsize=1)
+def _default_service() -> PolyglotSemanticCompilerService:
+    # Lazy loading keeps package import side-effect free while ensuring each
+    # public operation fails closed if compiled resources are unavailable.
+    return PolyglotSemanticCompilerService()
 
 
-def get_compiler_status() -> Dict[str, Any]:
-    return {
-        "status": "READY",
-        "version": "3.0.0",
-        "batches": 18,
-        "skills_total": 300,
-        "route_cells": 784,
-        "technology_surfaces": 28,
-        "formal_verifiers": ["SMT-Z3", "CVC5", "Alloy"],
-    }
+def get_compiler_status() -> dict[str, Any]:
+    return _default_service().get_compiler_status()
 
 
-def get_supported_routes() -> List[Dict[str, Any]]:
-    return [
-        {"route_id": "ROUTE-JAVA-CSHARP", "source": "java", "target": "csharp", "status": "CERTIFIED", "smt_verified": True},
-        {"route_id": "ROUTE-CSHARP-JAVA", "source": "csharp", "target": "java", "status": "CERTIFIED", "smt_verified": True},
-        {"route_id": "ROUTE-JAVA-PYTHON", "source": "java", "target": "python", "status": "CERTIFIED", "smt_verified": True},
-        {"route_id": "ROUTE-JAVA-GO", "source": "java", "target": "go", "status": "CERTIFIED", "smt_verified": True},
-        {"route_id": "ROUTE-JAVA-RUST", "source": "java", "target": "rust", "status": "CERTIFIED", "smt_verified": True},
-        {"route_id": "ROUTE-PYTHON-TYPESCRIPT", "source": "python", "target": "typescript", "status": "CERTIFIED", "smt_verified": True},
-        {"route_id": "ROUTE-COBOL-JAVA", "source": "cobol", "target": "java", "status": "CERTIFIED", "smt_verified": True},
-        {"route_id": "ROUTE-ABAP-JAVA", "source": "abap", "target": "java", "status": "CERTIFIED", "smt_verified": True},
-    ]
+def get_supported_routes() -> list[dict[str, Any]]:
+    return _default_service().get_supported_routes()
 
 
-def transform_snippet(src_lang: str, tgt_lang: str, code: str) -> Dict[str, Any]:
-    res = _DEFAULT_SERVICE.batch_d.transform_snippet(src_lang, tgt_lang, code)
-    return {
-        "source_language": src_lang,
-        "target_language": tgt_lang,
-        "source_code": code,
-        "target_code": res.get("target_code", f"// Converted to {tgt_lang}\n{code}"),
-        "status": "SUCCESS",
-    }
+def transform_snippet(src_lang: str, tgt_lang: str, code: str) -> dict[str, Any]:
+    return _default_service().transform_snippet(src_lang, tgt_lang, code)
 
 
-def check_smt_formula(formula: str) -> Dict[str, Any]:
-    proof = _DEFAULT_SERVICE.batch_q.create_proof_obligation(formula)
-    solved = _DEFAULT_SERVICE.batch_q.solve_proof(proof.proof_id, simulated_pass=True)
-    return {
-        "formula": formula,
-        "proof_id": proof.proof_id,
-        "status": solved.status.value,
-        "solver": "Z3-SMT-v4.12",
-        "counterexamples": 0,
-    }
+def check_smt_formula(formula: str) -> dict[str, Any]:
+    return _default_service().check_smt_formula(formula)
 
 
-def run_differential_fuzzing(source_surface: str, target_surface: str, cases: int = 20) -> Dict[str, Any]:
-    route_id = f"ROUTE-{source_surface.upper()}-{target_surface.upper()}"
-    res = _DEFAULT_SERVICE.batch_r.execute_differential_fuzz_campaign(route_id, iterations=cases)
-    return {
-        "route_id": route_id,
-        "cases_run": cases,
-        "verdict": res.get("verdict", "EQUIVALENT"),
-        "status": "PASS",
-    }
+def run_differential_fuzzing(
+    source_surface: str,
+    target_surface: str,
+    cases: int = 20,
+) -> dict[str, Any]:
+    return _default_service().run_differential_fuzzing(
+        source_surface,
+        target_surface,
+        cases,
+    )
 
 
-def certify_language_route(route_id: str) -> Dict[str, Any]:
-    run = _DEFAULT_SERVICE.run_full_route_certification(route_id)
-    return {
-        "certification_id": run.certification_id,
-        "route_id": run.route_id,
-        "verdict": run.overall_verdict.value,
-        "proved_obligations": run.proved_obligations,
-        "total_obligations": run.total_obligations,
-        "receipt_digest": run.receipt_digest,
-    }
+def certify_language_route(route_id: str) -> dict[str, Any]:
+    return _default_service().certify_language_route(route_id)
 
+
+__all__ = [
+    "ENGINE_NAME",
+    "ENGINE_VERSION",
+    "IMPLEMENTATION_STATE",
+    "NOT_CERTIFIED",
+    "NOT_RUN",
+    "PolyglotSemanticCompilerService",
+    "ServiceError",
+    "certify_language_route",
+    "check_smt_formula",
+    "get_compiler_status",
+    "get_supported_routes",
+    "run_differential_fuzzing",
+    "transform_snippet",
+]

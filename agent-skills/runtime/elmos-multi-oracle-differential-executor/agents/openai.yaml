@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-multi-oracle-differential-executor"
+  short_description: "Execute source and target under matched inputs/environments and compare multiple independent obse..."
+  default_prompt: "Use $elmos-multi-oracle-differential-executor through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-multi-oracle-differential-executor"
+  handler_id: "execute_elmos_multi_oracle_differential_executor"
+  operation: "SEMANTIC_COMPARISON"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

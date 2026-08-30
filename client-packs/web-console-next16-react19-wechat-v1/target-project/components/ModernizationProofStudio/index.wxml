@@ -1,0 +1,12 @@
+<view class="card" data-component="{{componentName}}">
+  <button class="heading" bindtap="toggleExpanded" aria-expanded="{{expanded}}">{{title}}</button>
+  <view wx:if="{{expanded}}" class="content">
+    <text class="source-label">(?:sha256:)?[a-f0-9]{64}</text>
+    <text class="source-label">/api/modernization-proof/contracts</text>
+    <text class="source-label">/api/modernization-proof/jobs</text>
+    <text class="source-label">/api/modernization-proof/subject-digest</text>
+    <text class="source-label">AbortError</text>
+    <text class="source-label">B108-S16</text>
+    <view wx:for="{{rows}}" wx:key="key"><text>{{item.key}}: {{item.value}}</text></view>
+  </view>
+</view>

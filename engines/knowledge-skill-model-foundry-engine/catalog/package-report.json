@@ -1,0 +1,186 @@
+{
+  "archive": {
+    "compressed_member_bytes": 10276814,
+    "controlled_files": 9316,
+    "crc_status": "PASS",
+    "directories": 6690,
+    "entries": 16007,
+    "executable_files": [
+      "tools/coverage_audit.py",
+      "tools/deep_quality_audit.py",
+      "tools/new_skill.py",
+      "tools/package_diff.py",
+      "tools/validate_package.py"
+    ],
+    "files": 9317,
+    "maximum_member_compression_ratio": 14.733441,
+    "uncompressed_bytes": 23561976
+  },
+  "authority": {
+    "auxiliary_json_status": "STALE_NON_AUTHORITATIVE",
+    "catalog_path": "registry/skill-catalog.yaml",
+    "catalog_sha256": "57b25a220f20b01207443e3a748c82f495752a468a5b9c3e95073f8293f45e52"
+  },
+  "auxiliary_json_catalog": {
+    "extra_vs_authoritative": 0,
+    "missing_from_authoritative": 852,
+    "skill_count": 458,
+    "status": "STALE_NON_AUTHORITATIVE",
+    "version": "2.0.0"
+  },
+  "capability_states": {
+    "LOCAL": 26,
+    "PREPARE_ONLY": 1284
+  },
+  "certification_status": "NOT_CERTIFIED",
+  "counts": {
+    "atomic_skills": 1310,
+    "business_lines": 24,
+    "dependency_edges": 9090,
+    "meta_activation_cases": 188,
+    "meta_skills": 41,
+    "packs": 41,
+    "pipeline_steps": 127,
+    "pipelines": 14,
+    "policies": 9,
+    "postgresql_tables": 38,
+    "schemas": 13
+  },
+  "dependency_graph": {
+    "cycles": 0,
+    "edges": 9090,
+    "pack_graph_references": 72,
+    "pack_graph_unique_references": 57,
+    "self_dependencies": 0,
+    "unresolved": 0
+  },
+  "evaluation_counts": {
+    "adversarial": 5240,
+    "ambiguous": 5240,
+    "negative": 10480,
+    "positive": 10480,
+    "total": 31440
+  },
+  "external_evidence_status": "NOT_RUN",
+  "gaps": [
+    {
+      "code": "AUXILIARY_JSON_CATALOG_STALE",
+      "detail": "registry/skill-catalog.json is v2.0.0 with 458 Skills and omits 852 authoritative YAML Skills.",
+      "status": "STALE_NON_AUTHORITATIVE"
+    },
+    {
+      "code": "DUPLICATE_SKILL_CONTRACT_SCHEMA",
+      "detail": "skill-contract.schema.json and skill-contract-v3.schema.json are byte-identical.",
+      "status": "DECLARED_GAP"
+    },
+    {
+      "code": "POSTGRESQL_RLS_NOT_IMPLEMENTED",
+      "detail": "The SQL design has no ENABLE ROW LEVEL SECURITY or CREATE POLICY statements.",
+      "status": "DECLARED_GAP"
+    },
+    {
+      "code": "LICENSE_TEXT_PLACEHOLDER",
+      "detail": "LICENSE requires company-approved replacement legal text.",
+      "status": "BLOCKS_DISTRIBUTION"
+    },
+    {
+      "code": "PACKAGE_SIGNATURE_MISSING",
+      "detail": "No package-level detached signature or trusted signing bundle is present.",
+      "status": "NOT_PROVIDED"
+    },
+    {
+      "code": "SBOM_MISSING",
+      "detail": "No package-level SPDX or CycloneDX SBOM is present.",
+      "status": "NOT_PROVIDED"
+    },
+    {
+      "code": "PROVENANCE_ATTESTATION_MISSING",
+      "detail": "No package-level provenance attestation is present.",
+      "status": "NOT_PROVIDED"
+    },
+    {
+      "code": "SOURCE_PACKAGE_RUNTIME_IMPLEMENTATION_ABSENT",
+      "detail": "All 1,310 conformance manifests state that the source package itself has no runtime implementation; repository-owned exact handlers are tracked separately by capability_states.",
+      "status": "SOURCE_DECLARED_ABSENT"
+    },
+    {
+      "code": "TECHNOLOGY_MATRIX_VERSION_TUPLES_ABSENT",
+      "detail": "The matrix has adapter names but no exact version or execution-evidence tuples.",
+      "status": "CATALOG_ONLY"
+    }
+  ],
+  "meta_source_version_counts": {
+    "2.0.0": 17,
+    "3.0.0": 24
+  },
+  "pack_counts": {
+    "00-foundation-contracts": 14,
+    "01-knowledge-ingestion-governance": 20,
+    "02-repository-semantic-intelligence": 24,
+    "03-retrieval-context-engineering": 20,
+    "04-memory-experience-flywheel": 20,
+    "05-skill-foundry-runtime": 29,
+    "06-dataset-foundry": 30,
+    "07-private-model-foundry": 34,
+    "08-agentic-training-rl": 28,
+    "09-evaluation-proof-certification": 36,
+    "10-serving-routing-inference": 28,
+    "11-security-privacy-compliance": 36,
+    "12-observability-lineage-finops": 28,
+    "13-commercial-multitenant-platform": 24,
+    "14-human-governance-operations": 20,
+    "15-domain-engineering-packs": 37,
+    "16-self-evolution-release-engineering": 30,
+    "17-repository-execution-os": 34,
+    "18-java-spring-enterprise-modernization": 48,
+    "19-cross-language-semantic-conversion": 52,
+    "20-sql-database-modernization": 50,
+    "21-project-generation-product-engineering": 44,
+    "22-frontend-mobile-miniapp-modernization": 44,
+    "23-repository-refactoring-technical-debt": 32,
+    "24-api-event-integration-modernization": 32,
+    "25-data-engineering-lakehouse-analytics": 40,
+    "26-cloud-native-devops-platform-engineering": 38,
+    "27-test-quality-assurance-factory": 44,
+    "28-security-compliance-supply-chain": 40,
+    "29-performance-reliability-cost-engineering": 32,
+    "30-architecture-documentation-ide": 32,
+    "31-ai-agent-rag-ml-engineering": 46,
+    "32-legacy-mainframe-enterprise-modernization": 40,
+    "33-industrial-iot-edge-robotics": 32,
+    "34-language-runtime-adapters": 36,
+    "35-database-engine-adapters": 24,
+    "36-framework-runtime-adapters": 36,
+    "37-cloud-platform-adapters": 16,
+    "38-golden-route-customer-delivery": 24,
+    "39-product-commercialization-marketplace": 16,
+    "40-regulated-industry-assurance": 20
+  },
+  "package": {
+    "archive_bytes": 16668810,
+    "archive_sha256": "e29673a598756deff422e8dd7f36b2826e9c1aaff6df22db2c0699b0857ee0e4",
+    "id": "elmos-knowledge-skill-model-foundry-v3.0.0",
+    "name": "elmos-knowledge-skill-model-foundry",
+    "version": "3.0.0"
+  },
+  "priority_counts": {
+    "P0": 916,
+    "P1": 368,
+    "P2": 26
+  },
+  "profiles": {
+    "cloud_platforms": 16,
+    "database_engines": 24,
+    "frameworks_and_runtimes": 36,
+    "languages_and_builds": 36
+  },
+  "risk_counts": {
+    "critical": 112,
+    "high": 871,
+    "medium": 307,
+    "research": 20
+  },
+  "schema_version": "elmos.knowledge-skill-model-foundry.package-report.v1",
+  "source_execution": "NEVER_EXECUTED",
+  "validation_state": "STRUCTURAL_VALIDATED_WITH_DECLARED_GAPS"
+}

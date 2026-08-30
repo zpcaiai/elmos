@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-compiler-runtime-version-matrix"
+  short_description: "Execute fixture suites across supported compiler/runtime versions and optimization modes to expos..."
+  default_prompt: "Use $elmos-compiler-runtime-version-matrix through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-compiler-runtime-version-matrix"
+  handler_id: "execute_elmos_compiler_runtime_version_matrix"
+  operation: "NATIVE_EXECUTION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

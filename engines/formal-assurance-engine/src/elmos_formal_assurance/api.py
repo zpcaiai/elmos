@@ -122,7 +122,12 @@ class FormalAssuranceApi:
                     raise RuntimeRequestError(
                         "new proof runs must begin in QUEUED state"
                     )
-                if int(payload.get("fencingToken", 1)) != 1:
+                fencing_token = payload.get("fencingToken", 1)
+                if (
+                    not isinstance(fencing_token, int)
+                    or isinstance(fencing_token, bool)
+                    or fencing_token != 1
+                ):
                     raise RuntimeRequestError(
                         "new proof runs must begin with fencingToken 1"
                     )
@@ -165,10 +170,66 @@ class FormalAssuranceApi:
                 )
                 identity = self._identity(environ)
                 payload = self._payload(environ)
+                if "scope" in payload or "runId" in payload:
+                    raise RuntimeAuthorizationError(
+                        "execution body cannot override trusted scope or run ID"
+                    )
                 payload["runId"] = run_id
                 payload["scope"] = self._scope_from_headers(environ, identity)
                 result = self.runtime.execute_local_run(payload, identity)
                 return _response(start_response, "200 OK", result)
+            if (
+                method == "POST"
+                and path.startswith("/v1/proof-runs/")
+                and path.endswith("/checkpoints")
+            ):
+                run_id = path[
+                    len("/v1/proof-runs/") : -len("/checkpoints")
+                ].strip("/")
+                if not run_id or "/" in run_id:
+                    return _response(
+                        start_response, "404 Not Found", {"error": "not found"}
+                    )
+                identity = self._identity(environ)
+                payload = self._payload(environ)
+                if "scope" in payload or "runId" in payload:
+                    raise RuntimeAuthorizationError(
+                        "checkpoint body cannot override trusted scope or run ID"
+                    )
+                payload["runId"] = run_id
+                payload["scope"] = self._scope_from_headers(environ, identity)
+                payload.setdefault(
+                    "idempotencyKey",
+                    environ.get("HTTP_X_ELMOS_IDEMPOTENCY_KEY"),
+                )
+                result = self.runtime.checkpoint_run(payload, identity)
+                return _response(start_response, "202 Accepted", result)
+            if (
+                method == "POST"
+                and path.startswith("/v1/proof-runs/")
+                and path.endswith("/retries")
+            ):
+                run_id = path[
+                    len("/v1/proof-runs/") : -len("/retries")
+                ].strip("/")
+                if not run_id or "/" in run_id:
+                    return _response(
+                        start_response, "404 Not Found", {"error": "not found"}
+                    )
+                identity = self._identity(environ)
+                payload = self._payload(environ)
+                if "scope" in payload or "runId" in payload:
+                    raise RuntimeAuthorizationError(
+                        "retry body cannot override trusted scope or run ID"
+                    )
+                payload["runId"] = run_id
+                payload["scope"] = self._scope_from_headers(environ, identity)
+                payload.setdefault(
+                    "idempotencyKey",
+                    environ.get("HTTP_X_ELMOS_IDEMPOTENCY_KEY"),
+                )
+                result = self.runtime.retry_run(payload, identity)
+                return _response(start_response, "202 Accepted", result)
             if (
                 method == "POST"
                 and path.startswith("/v1/proof-runs/")
@@ -177,6 +238,10 @@ class FormalAssuranceApi:
                 run_id = path[len("/v1/proof-runs/") : -len("/actions")].strip("/")
                 identity = self._identity(environ)
                 payload = self._payload(environ)
+                if "scope" in payload or "runId" in payload:
+                    raise RuntimeAuthorizationError(
+                        "action body cannot override trusted scope or run ID"
+                    )
                 payload["runId"] = run_id
                 payload["scope"] = self._scope_from_headers(environ, identity)
                 result = self.runtime.control_run(payload, identity)

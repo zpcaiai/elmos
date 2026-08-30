@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-lifetime-ownership-borrow-semantics"
+  short_description: "Model ownership, borrowing, lifetimes, aliasing and move/copy semantics for safe translation betw..."
+  default_prompt: "Use $elmos-lifetime-ownership-borrow-semantics through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-lifetime-ownership-borrow-semantics"
+  handler_id: "execute_elmos_lifetime_ownership_borrow_semantics"
+  operation: "MODEL_NORMALIZATION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

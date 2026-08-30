@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Iterable, Mapping
 
+from .canonical import validate_digest
 from .contracts import (
     AssuranceLevel,
     Criticality,
@@ -39,55 +40,83 @@ class ResultValidationError(ValueError):
     pass
 
 
-def validate_result(result: ProofResult) -> None:
-    if not isinstance(result.engine, str) or not result.engine.strip():
-        raise ResultValidationError("proof result requires a verifier engine")
-    if result.mode not in _PROOF_MODES:
-        raise ResultValidationError(f"unsupported proof mode: {result.mode}")
+def validate_status_claim(
+    status: ProofStatus,
+    assurance_level: AssuranceLevel,
+    mode: str,
+    *,
+    bound: dict[str, object] | None = None,
+    assumption_hash: str | None = None,
+    tcb_hash: str | None = None,
+    counterexample_id: str | None = None,
+) -> None:
+    """Reject status/assurance/mode claims that overstate supplied evidence."""
+    if mode not in _PROOF_MODES:
+        raise ResultValidationError(f"unsupported proof mode: {mode}")
     expected_modes = {
         ProofStatus.PROVED_CERTIFIED: {"CERTIFIED"},
         ProofStatus.PROVED_INDUCTIVE: {"INDUCTIVE"},
         ProofStatus.PROVED_SOLVER_TRUSTED: {"SMT"},
         ProofStatus.PROVED_FOR_SUPPORTED_FRAGMENT: {"CERTIFIED", "INDUCTIVE", "SMT"},
     }
-    if result.status in expected_modes and result.mode not in expected_modes[result.status]:
+    if status in expected_modes and mode not in expected_modes[status]:
         raise ResultValidationError(
-            f"{result.status} is incompatible with mode {result.mode}"
+            f"{status} is incompatible with mode {mode}"
         )
-    if result.status in _PROVED and result.assurance_level in {
+    if status in _PROVED and assurance_level in {
         AssuranceLevel.NONE,
         AssuranceLevel.A0_TESTED,
         AssuranceLevel.A1_BOUNDED,
     }:
         raise ResultValidationError("proved status requires solver-level assurance")
-    if result.status == ProofStatus.RUNTIME_MONITORED and result.mode != "RUNTIME":
+    if status == ProofStatus.RUNTIME_MONITORED and mode != "RUNTIME":
         raise ResultValidationError("runtime monitored status requires RUNTIME mode")
-    if result.status == ProofStatus.BOUNDED_NO_COUNTEREXAMPLE:
-        if result.mode != "BOUNDED":
+    if status == ProofStatus.BOUNDED_NO_COUNTEREXAMPLE:
+        if mode != "BOUNDED":
             raise ResultValidationError("bounded status requires BOUNDED mode")
-        if result.assurance_level != AssuranceLevel.A1_BOUNDED:
+        if assurance_level != AssuranceLevel.A1_BOUNDED:
             raise ResultValidationError("bounded status requires A1_BOUNDED")
-        if not result.bound:
+        if not bound:
             raise ResultValidationError("bounded status requires an explicit bound")
-    if result.status in _PROVED and result.mode == "BOUNDED":
+    if status in _PROVED and mode == "BOUNDED":
         raise ResultValidationError("a bounded run cannot emit a proved status")
-    if result.status in {
+    if status in {
         ProofStatus.UNKNOWN_TIMEOUT,
         ProofStatus.UNKNOWN_RESOURCE_LIMIT,
         ProofStatus.UNSUPPORTED,
         ProofStatus.ASSUMPTION_REQUIRED,
         ProofStatus.REFUTED_WITH_COUNTEREXAMPLE,
-    } and result.assurance_level not in {AssuranceLevel.NONE, AssuranceLevel.A0_TESTED}:
+        ProofStatus.RUNTIME_MONITORED,
+        ProofStatus.WAIVED_BY_APPROVER,
+    } and assurance_level not in {AssuranceLevel.NONE, AssuranceLevel.A0_TESTED}:
         raise ResultValidationError("non-passing status cannot claim proof assurance")
     if (
-        result.status == ProofStatus.REFUTED_WITH_COUNTEREXAMPLE
-        and not result.counterexample_id
+        status == ProofStatus.REFUTED_WITH_COUNTEREXAMPLE
+        and not counterexample_id
     ):
         raise ResultValidationError("refuted result requires counterexampleId")
-    if result.status in _PROVED and not result.assumption_hash:
+    if status in _PROVED and not assumption_hash:
         raise ResultValidationError("proved result requires assumption hash")
-    if result.status in _PROVED and not result.tcb_hash:
+    if status in _PROVED and not tcb_hash:
         raise ResultValidationError("proved result requires TCB hash")
+    if assumption_hash is not None:
+        validate_digest(assumption_hash, "proofResult.assumptionHash")
+    if tcb_hash is not None:
+        validate_digest(tcb_hash, "proofResult.tcbHash")
+
+
+def validate_result(result: ProofResult) -> None:
+    if not isinstance(result.engine, str) or not result.engine.strip():
+        raise ResultValidationError("proof result requires a verifier engine")
+    validate_status_claim(
+        result.status,
+        result.assurance_level,
+        result.mode,
+        bound=result.bound,
+        assumption_hash=result.assumption_hash,
+        tcb_hash=result.tcb_hash,
+        counterexample_id=result.counterexample_id,
+    )
 
 
 def _parse_time(value: str) -> datetime:

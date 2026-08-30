@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-thread-scheduler-determinism-lab"
+  short_description: "Systematically explore permitted thread schedules, races, deadlocks and starvation-sensitive beha..."
+  default_prompt: "Use $elmos-thread-scheduler-determinism-lab through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-thread-scheduler-determinism-lab"
+  handler_id: "execute_elmos_thread_scheduler_determinism_lab"
+  operation: "NATIVE_EXECUTION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

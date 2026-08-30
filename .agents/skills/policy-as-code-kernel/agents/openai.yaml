@@ -1,0 +1,6 @@
+interface:
+  display_name: "Policy As Code Kernel"
+  short_description: "Run policy-as-code-kernel with bounded commercial controls"
+  default_prompt: "Use $policy-as-code-kernel through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

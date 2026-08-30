@@ -1,0 +1,3917 @@
+{
+  "schema_version": 1,
+  "kind": "elmos.git-source-snapshot-manifest",
+  "source_revision": "f734a4d9a2dd9253d975b998eb5bbe5a7c624dff",
+  "observed_at": "2026-08-31T06:47:25+08:00",
+  "repository_relative_root": "apps/web-console",
+  "file_count": 781,
+  "files": [
+    {
+      "path": "apps/web-console/.dockerignore",
+      "sha256": "sha256:2216c3133243204ea0ed701001f5aea250067b9b9a0b94d2645a9d6b44f363e9",
+      "bytes": 85
+    },
+    {
+      "path": "apps/web-console/.npmrc",
+      "sha256": "sha256:57bc24510d9a8622acd921d238441185fac138e67ad55f6591760431fc5bd043",
+      "bytes": 82
+    },
+    {
+      "path": "apps/web-console/AGENTS.md",
+      "sha256": "sha256:63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+      "bytes": 678
+    },
+    {
+      "path": "apps/web-console/CLAUDE.md",
+      "sha256": "sha256:336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+      "bytes": 11
+    },
+    {
+      "path": "apps/web-console/Dockerfile",
+      "sha256": "sha256:2d7df7dfebb09d3fb9724ccb90c50cccce0c4b2096c706285854ba679a0392d4",
+      "bytes": 2108
+    },
+    {
+      "path": "apps/web-console/Dockerfile.local",
+      "sha256": "sha256:9e92b9a73f754b7b6dd4ae8e202632446ddae3a94c771320e0d69f7eac6dcdaf",
+      "bytes": 2141
+    },
+    {
+      "path": "apps/web-console/acceptance/acceptance-profile.json",
+      "sha256": "sha256:f1dd19aee8dd1c69d562bc8fdc1ad3008045f1ebf639a352f421b353a6176703",
+      "bytes": 1726
+    },
+    {
+      "path": "apps/web-console/acceptance/quality-matrix-v1.json",
+      "sha256": "sha256:9495ce3d3e48a89585ee731f1b47e8ee867826bcc18c3d3c347564fc5220041e",
+      "bytes": 995
+    },
+    {
+      "path": "apps/web-console/app/account/AccountOrganizationStudio.module.css",
+      "sha256": "sha256:338040377dfa0c054880f2d8effd5295838f082d29ab47528e9b5d05debb74ff",
+      "bytes": 1765
+    },
+    {
+      "path": "apps/web-console/app/account/AccountOrganizationStudio.tsx",
+      "sha256": "sha256:98df93a6ef767e471a1f70f9890a74eab997411ec0f6657c8695d18967e6e76f",
+      "bytes": 10610
+    },
+    {
+      "path": "apps/web-console/app/account/AccountWalletPanel.tsx",
+      "sha256": "sha256:200579d81e50f84e976dca0b711d7dfbc01da52b71a34ea99534828b8147a215",
+      "bytes": 13340
+    },
+    {
+      "path": "apps/web-console/app/account/page.tsx",
+      "sha256": "sha256:233cab6dca4d203556766376b6a08d11999a565a21dae5f5e437d1619d42a851",
+      "bytes": 259
+    },
+    {
+      "path": "apps/web-console/app/admin/OperationsAdmin.module.css",
+      "sha256": "sha256:2066f94c4167d0814d85367c56d52a7102af06b8f5208c0cefd94b900be95552",
+      "bytes": 11822
+    },
+    {
+      "path": "apps/web-console/app/admin/OperationsAdmin.tsx",
+      "sha256": "sha256:887dfc4ed913566b13192fb8ca4b4a86b6487f501806b3bc31b77183259f390f",
+      "bytes": 99667
+    },
+    {
+      "path": "apps/web-console/app/admin/PlatformJobsPanel.tsx",
+      "sha256": "sha256:3233268915de085f38d5e618a88ad6d47793570299b8bc8116bf950f1f837332",
+      "bytes": 9014
+    },
+    {
+      "path": "apps/web-console/app/admin/PlatformWalletPanel.tsx",
+      "sha256": "sha256:264530e63449713173afb307dd119d8d7d557ef0e6765879579b950df1e79c80",
+      "bytes": 19719
+    },
+    {
+      "path": "apps/web-console/app/admin/page.tsx",
+      "sha256": "sha256:6f4f3fb4045a8747d9c48d47f3b4e765865bc6db6d01799a87633f383baedd4d",
+      "bytes": 300
+    },
+    {
+      "path": "apps/web-console/app/api/account/[[...path]]/route.ts",
+      "sha256": "sha256:aafca03cc104422bb3f1533c9af82e050dc0fff63c2957f4cfe44f65c645eaa9",
+      "bytes": 613
+    },
+    {
+      "path": "apps/web-console/app/api/admin/audit-export/route.ts",
+      "sha256": "sha256:030f4e7ee422743adb8b949d0db4a8130d4293f31320b3b1ea7bac3e9240e607",
+      "bytes": 1157
+    },
+    {
+      "path": "apps/web-console/app/api/admin/billing/reconciliation/route.ts",
+      "sha256": "sha256:16447ddd82bf61a8667c7e2f1cbf06e6e6bf143bb8eaf34469facb52449991ce",
+      "bytes": 6217
+    },
+    {
+      "path": "apps/web-console/app/api/admin/execution-jobs/route.ts",
+      "sha256": "sha256:4ee6b2bd470188253b96799a56404cce8bc18bf44ffac8f4eef9afdfd901724f",
+      "bytes": 870
+    },
+    {
+      "path": "apps/web-console/app/api/admin/jobs/[jobId]/cancel/route.ts",
+      "sha256": "sha256:ab405e4d829b80fc94b00065617a1dc73c44f65115e6493118c5205fe97de329",
+      "bytes": 1033
+    },
+    {
+      "path": "apps/web-console/app/api/admin/jobs/route.ts",
+      "sha256": "sha256:a24c7aed6b4ca64e00f4a4f27ed88694ee944b6e607a6fc0fb25c66575c1a76b",
+      "bytes": 683
+    },
+    {
+      "path": "apps/web-console/app/api/admin/operations/route.ts",
+      "sha256": "sha256:3ad524c888d3dc4a1625ee5953a0801acc82a1f854ac7b0d868e936358ae8619",
+      "bytes": 5146
+    },
+    {
+      "path": "apps/web-console/app/api/admin/platform-admins/route.ts",
+      "sha256": "sha256:51c643a24c55f4a74535c5ebf2518cebe60b062630682013ac5581fcbfe0ab1d",
+      "bytes": 988
+    },
+    {
+      "path": "apps/web-console/app/api/admin/platformRelay.ts",
+      "sha256": "sha256:8ad3d1370c683d348d2e4762116eaab25b147146a4cbd24204de69ae6e833624",
+      "bytes": 1465
+    },
+    {
+      "path": "apps/web-console/app/api/admin/run-replay/[migrationRunId]/route.ts",
+      "sha256": "sha256:7ee4f3a9e42eec87696731154abb2b498c0934e916eab0b6b3b5c83630c9cbdb",
+      "bytes": 1618
+    },
+    {
+      "path": "apps/web-console/app/api/admin/runners/[runnerNodeId]/attestation/verify/route.ts",
+      "sha256": "sha256:af498909ef16a8979d7c7152f285e0c579d67209a261b18d8181724244a3ba78",
+      "bytes": 1048
+    },
+    {
+      "path": "apps/web-console/app/api/admin/runners/[runnerNodeId]/drain/route.ts",
+      "sha256": "sha256:200c115e741ecdb27c03ad99874b3a73b93a59d845291f66e086a46c37834874",
+      "bytes": 1035
+    },
+    {
+      "path": "apps/web-console/app/api/admin/runners/route.ts",
+      "sha256": "sha256:57dc6b13e34c2828c59c61612a1b75418e545a4caf1ba9a6753346403b0fb012",
+      "bytes": 677
+    },
+    {
+      "path": "apps/web-console/app/api/admin/tenant-quota/route.ts",
+      "sha256": "sha256:420294e23d1fe71d1a0c433a4709b772689090414552113e38e5309d735ac8b4",
+      "bytes": 2617
+    },
+    {
+      "path": "apps/web-console/app/api/admin/topups/route.ts",
+      "sha256": "sha256:dfeeeac978b0ab3d76061becd64a9133e33801fa89cdf3bf1dcded7459c908bf",
+      "bytes": 532
+    },
+    {
+      "path": "apps/web-console/app/api/admin/wallets/[organizationId]/ledger/route.ts",
+      "sha256": "sha256:fbea0343a9f54f3cd9c4f382ec84bea8c8b536fb5cdc9364cf83e029f9bddddb",
+      "bytes": 678
+    },
+    {
+      "path": "apps/web-console/app/api/admin/wallets/adjust/route.ts",
+      "sha256": "sha256:b7bff92263ece365c568e12c2118c8547c81acc2da341bbbaae648ba45a9672e",
+      "bytes": 890
+    },
+    {
+      "path": "apps/web-console/app/api/admin/wallets/route.ts",
+      "sha256": "sha256:a7154b9c9c20a482aa8e5614ed2d0de611ed5e828884c03ca3c70d0e351b8220",
+      "bytes": 674
+    },
+    {
+      "path": "apps/web-console/app/api/auth/callback/route.ts",
+      "sha256": "sha256:c4b13ca56c7cec916d8d5d38c8fc3c4c57e1ee4bd0c794a0de627f9de0f67162",
+      "bytes": 2895
+    },
+    {
+      "path": "apps/web-console/app/api/auth/login/route.ts",
+      "sha256": "sha256:7e7b77858ab41050a5a720e773cb93ef8611a893ca980d3b70993ff458b252ff",
+      "bytes": 4651
+    },
+    {
+      "path": "apps/web-console/app/api/auth/logout/route.ts",
+      "sha256": "sha256:faffa0c925637d202b755221ec665b3821168d8ea5ab5f485b0368f5994c2f1f",
+      "bytes": 1678
+    },
+    {
+      "path": "apps/web-console/app/api/auth/refresh/route.ts",
+      "sha256": "sha256:ceefc7df506bb0fb7e2bcbfa36d1c48d790a18d459651f45b30396c427f9682f",
+      "bytes": 2047
+    },
+    {
+      "path": "apps/web-console/app/api/auth/session/route.ts",
+      "sha256": "sha256:ab7d04d896a0693c1306d085aede16dd8e6dee3eb06d63be50c46860689f4a6a",
+      "bytes": 992
+    },
+    {
+      "path": "apps/web-console/app/api/auth/tenant/route.ts",
+      "sha256": "sha256:6a81ba27140fdd28718d503be72b56411da3eb83df260a101260c8cf724ff7b7",
+      "bytes": 3539
+    },
+    {
+      "path": "apps/web-console/app/api/billing/cancel/route.ts",
+      "sha256": "sha256:aab04c5d7598740439c08939577d81b0d61484407b432139ca934c8c35a58a9c",
+      "bytes": 1332
+    },
+    {
+      "path": "apps/web-console/app/api/billing/checkout/route.ts",
+      "sha256": "sha256:790aad4bb49cb7dd168862176486ea736de1e2f1af170bec611d88d45f955f34",
+      "bytes": 4828
+    },
+    {
+      "path": "apps/web-console/app/api/billing/subscription/route.ts",
+      "sha256": "sha256:937c40907f5af3dc18f7399e75abf45a2c4e5262d9379cc5fc29686042691919",
+      "bytes": 880
+    },
+    {
+      "path": "apps/web-console/app/api/billing/trial/route.ts",
+      "sha256": "sha256:1da78df8118959b55fbff60d3bb3a4114a3301cc294a12af5c4c8408018d11c9",
+      "bytes": 1317
+    },
+    {
+      "path": "apps/web-console/app/api/capabilities/database-sql/route.ts",
+      "sha256": "sha256:b6756e515cbb656c89b6e5e23d9984b248559f15f38ac50f81878f796bf9c8c2",
+      "bytes": 752
+    },
+    {
+      "path": "apps/web-console/app/api/capabilities/generation/route.ts",
+      "sha256": "sha256:127d873fd8865cae846c868961e29cfe89c82220f20ded9d8f6b081fe5a1b1fe",
+      "bytes": 1216
+    },
+    {
+      "path": "apps/web-console/app/api/capabilities/migration/route.ts",
+      "sha256": "sha256:a88b46c74e9d549960b41a821a877f40713d63d62188779317dac203c5818e22",
+      "bytes": 1983
+    },
+    {
+      "path": "apps/web-console/app/api/capabilities/product/route.ts",
+      "sha256": "sha256:cbf09fa9161b896d240ae06a393704a9189760d75ee3dec02cdae6e93a708668",
+      "bytes": 1571
+    },
+    {
+      "path": "apps/web-console/app/api/capabilities/spring/route.ts",
+      "sha256": "sha256:1d02c3d58c6ad31e5c4575dff9f34436c0782ee49d3dfa5f1ad2bed8741e9344",
+      "bytes": 1964
+    },
+    {
+      "path": "apps/web-console/app/api/capabilities/translation/route.ts",
+      "sha256": "sha256:67f53eee3c1eb231b9616a064db40291f8381032eeefd23ef7319b3a4e9de80e",
+      "bytes": 1134
+    },
+    {
+      "path": "apps/web-console/app/api/database-sql/preflight/route.ts",
+      "sha256": "sha256:0d0fe2f35625917eb2589cd41507573833e502c2e63ad8beec4d6eefca700abc",
+      "bytes": 2632
+    },
+    {
+      "path": "apps/web-console/app/api/frt/catalog/route.ts",
+      "sha256": "sha256:b618ec5bb0433f7a2700250faa27ebc462c484607a8b447b2c21b64456105b15",
+      "bytes": 1259
+    },
+    {
+      "path": "apps/web-console/app/api/frt/runs/[runId]/[operation]/route.ts",
+      "sha256": "sha256:7f00e76aa00bb170c1c056548a29ac361a97482408d04fb4d4b6f5a8a5600c86",
+      "bytes": 3930
+    },
+    {
+      "path": "apps/web-console/app/api/frt/runs/[runId]/audit/route.ts",
+      "sha256": "sha256:f22e1d0826347bacaeb2704b85cafa6ee527633c44b719193d20c53a88aaac16",
+      "bytes": 940
+    },
+    {
+      "path": "apps/web-console/app/api/frt/runs/[runId]/route.ts",
+      "sha256": "sha256:d8fc2b987bbb6526a2e004a190afe768f2fbd8e6f59ff0636d8b7064b987c1b2",
+      "bytes": 927
+    },
+    {
+      "path": "apps/web-console/app/api/frt/runs/route.ts",
+      "sha256": "sha256:4fbcbf59aa8918c12c2bc661c33bc4f085c9db42868808dd9c84eddcb5ce2c74",
+      "bytes": 1183
+    },
+    {
+      "path": "apps/web-console/app/api/generation/analyze/route.ts",
+      "sha256": "sha256:81be97b2c0c28a2b3e5441c44c1c306a0778fc631ef937a20bea1040805305c2",
+      "bytes": 1771
+    },
+    {
+      "path": "apps/web-console/app/api/generation/jobs/[jobId]/artifact/route.ts",
+      "sha256": "sha256:ba9944511409fe46225debd1754635e606b2405eb3366ca8644183dd2b067cf7",
+      "bytes": 1788
+    },
+    {
+      "path": "apps/web-console/app/api/generation/jobs/[jobId]/cancel/route.ts",
+      "sha256": "sha256:6c572a3f38fa709094be311653e282723e462500b75054292b826dca6ab7e024",
+      "bytes": 1524
+    },
+    {
+      "path": "apps/web-console/app/api/generation/jobs/[jobId]/github/route.ts",
+      "sha256": "sha256:1e813e4ef471ae539f3636e64a7842cf02533540c17fa13db2eea1dda977b2ab",
+      "bytes": 4539
+    },
+    {
+      "path": "apps/web-console/app/api/generation/jobs/[jobId]/preview/route.ts",
+      "sha256": "sha256:6ef92aa00371fa500ad49ae1abab09a48944a85cd133d17876f28e94002e7f56",
+      "bytes": 1109
+    },
+    {
+      "path": "apps/web-console/app/api/generation/jobs/[jobId]/route.ts",
+      "sha256": "sha256:6f109a6e68d502ab734a46da65c14afd5ab7e2969ee46beaca96d0389e726687",
+      "bytes": 930
+    },
+    {
+      "path": "apps/web-console/app/api/generation/jobs/[jobId]/run/route.ts",
+      "sha256": "sha256:eb2416668fb972c0aa47ad1a3399e456f3b2f10899f930e979fcefbf3b97239d",
+      "bytes": 2303
+    },
+    {
+      "path": "apps/web-console/app/api/generation/jobs/[jobId]/stop/route.ts",
+      "sha256": "sha256:46b9f784de291a80c9d7aea3fa457be842d7705bf639ff30b3221aa638ab0df7",
+      "bytes": 1530
+    },
+    {
+      "path": "apps/web-console/app/api/generation/jobs/route.ts",
+      "sha256": "sha256:255d4b7e955467fd420bf2ad94c923c7afe5c3f8b32bd93ef2c2a255d0706ce7",
+      "bytes": 1997
+    },
+    {
+      "path": "apps/web-console/app/api/generation/sources/route.ts",
+      "sha256": "sha256:f9c6b5b5f239b3159aa9414f53b23613da26a28c7f87a1847b0d972aad1cb705",
+      "bytes": 3558
+    },
+    {
+      "path": "apps/web-console/app/api/github-installation/route.ts",
+      "sha256": "sha256:7373739dbd2b79ffd8b5fbbc1dcf5932fc05f89cc179b0a2aba809cc4d8ca786",
+      "bytes": 1722
+    },
+    {
+      "path": "apps/web-console/app/api/github-repositories/route.ts",
+      "sha256": "sha256:e66f8ff86cca787154d63e746a4ef9d8eaf501cf4c63313ba986057b7fc0498d",
+      "bytes": 1819
+    },
+    {
+      "path": "apps/web-console/app/api/health/route.ts",
+      "sha256": "sha256:26eea7327e1453d64eaf330cf3bd63ed87c9d74b56ebb928f35ac27b2e9ba8e6",
+      "bytes": 1336
+    },
+    {
+      "path": "apps/web-console/app/api/modernization-proof/contracts/route.ts",
+      "sha256": "sha256:de941f37b9d610effda04ab258fa9cea5a0b1f454313c9bf6d03735cc1559839",
+      "bytes": 692
+    },
+    {
+      "path": "apps/web-console/app/api/modernization-proof/jobs/[jobId]/route.ts",
+      "sha256": "sha256:db8c982b50cf5929e7799df917d5b9773d3c9093eaf4f4e4bcf6ade0f1f812ad",
+      "bytes": 1149
+    },
+    {
+      "path": "apps/web-console/app/api/modernization-proof/jobs/route.ts",
+      "sha256": "sha256:a723412778940417c2f9465b8aa354d55ef8ca1c555598efe7ef0e8a0b78a7a4",
+      "bytes": 1143
+    },
+    {
+      "path": "apps/web-console/app/api/modernization-proof/subject-digest/route.ts",
+      "sha256": "sha256:996470712fb3e3fdc7e2a33cfd94f9a0b4425dd927feccbf2ada2cc60afc7cc7",
+      "bytes": 1029
+    },
+    {
+      "path": "apps/web-console/app/api/multimodal-intake/v1/execute/route.ts",
+      "sha256": "sha256:a51893fcb8894da5203d971d596fc3dc44eea7978d14312fc39d16718653e24d",
+      "bytes": 4636
+    },
+    {
+      "path": "apps/web-console/app/api/multimodal-intake/v1/progress/jobs/[jobId]/route.ts",
+      "sha256": "sha256:8ef8d48b28c9404b707259ef5549695aa5fee0dfeca60f8bc8268c06b875bb0d",
+      "bytes": 3323
+    },
+    {
+      "path": "apps/web-console/app/api/precision-migration/jobs/[jobId]/artifacts/[artifact]/route.ts",
+      "sha256": "sha256:d3f3496fcced2cc1c1c93a4e992dd44550a649540320dd6583442a6b0772f420",
+      "bytes": 1099
+    },
+    {
+      "path": "apps/web-console/app/api/precision-migration/jobs/[jobId]/route.ts",
+      "sha256": "sha256:11a7fd15f90ece9675cc84c11cca09be7f3fd692ddd206f0b9a54338b2c500d7",
+      "bytes": 2001
+    },
+    {
+      "path": "apps/web-console/app/api/precision-migration/jobs/gc/route.ts",
+      "sha256": "sha256:7018b5c41114b302d89ef03c4c48d2bef4c9205c65ec0065928b9880a06f272a",
+      "bytes": 1121
+    },
+    {
+      "path": "apps/web-console/app/api/precision-migration/jobs/route.ts",
+      "sha256": "sha256:f7e276b18a1f9c9facd82f2a37fa50957537ead4464883fc52154c61724e0b1f",
+      "bytes": 1267
+    },
+    {
+      "path": "apps/web-console/app/api/pricing/route.ts",
+      "sha256": "sha256:163169a96856277a6f33be1c213b5f07e74a8a70abb448bf6b4fed55e75e03dd",
+      "bytes": 382
+    },
+    {
+      "path": "apps/web-console/app/api/repository-orchestrator/models/route.ts",
+      "sha256": "sha256:a4602832197cd410b8768c811a760d4f1ad11580d48bf12d2df8207d0eb4d7f5",
+      "bytes": 836
+    },
+    {
+      "path": "apps/web-console/app/api/repository-orchestrator/preflight/route.ts",
+      "sha256": "sha256:2b792c4fb32fa4e1fd3aecedbeb60a2c3c2ca7d7b5172224ed434bbcbba9fc92",
+      "bytes": 1531
+    },
+    {
+      "path": "apps/web-console/app/api/repository-workspaces/[[...path]]/route.ts",
+      "sha256": "sha256:e88a245f13902e06d2c4f41bb9fb095debf7524ff35ea4cb60f806879feee01b",
+      "bytes": 588
+    },
+    {
+      "path": "apps/web-console/app/api/smoke/capability/route.ts",
+      "sha256": "sha256:cc642e7f9a7a2686ec7b5c2b5e1ee378bea53ca56f346613e2e7eb7247485506",
+      "bytes": 672
+    },
+    {
+      "path": "apps/web-console/app/api/smoke/pack/route.ts",
+      "sha256": "sha256:5316d1ec973f2ee337efb5702209e4c170438b63b31623982d88de0bf4277ed9",
+      "bytes": 761
+    },
+    {
+      "path": "apps/web-console/app/api/smoke/sessions/[sessionId]/evidence/route.ts",
+      "sha256": "sha256:c90993d1414ba0b73afe86b95464f97c68e1a54eeee53c4f3d85026b1fe01be2",
+      "bytes": 924
+    },
+    {
+      "path": "apps/web-console/app/api/smoke/sessions/[sessionId]/extend/route.ts",
+      "sha256": "sha256:3df08e5e9478afe33f045900bf275da74b3022adab8482ccdae151a67b2a7ebd",
+      "bytes": 1807
+    },
+    {
+      "path": "apps/web-console/app/api/smoke/sessions/[sessionId]/route.ts",
+      "sha256": "sha256:5f753e026c3918951a5294cbc81562961b08272df616df134279c70f1b03b9ab",
+      "bytes": 831
+    },
+    {
+      "path": "apps/web-console/app/api/smoke/sessions/[sessionId]/stop/route.ts",
+      "sha256": "sha256:98683956541a8614caf3d6464a0c260dacd6196023399f6a0ae99abe78469c74",
+      "bytes": 1643
+    },
+    {
+      "path": "apps/web-console/app/api/smoke/sessions/route.ts",
+      "sha256": "sha256:5d62d692a868f2542262106458dd5193c6cfdb447d49be7225fa47c24ee03ded",
+      "bytes": 1441
+    },
+    {
+      "path": "apps/web-console/app/api/spring-upgrades/[...path]/route.ts",
+      "sha256": "sha256:029bb560559fd489c1165408b5f3ce67f6780ecb12dba89d93f6068043a35b46",
+      "bytes": 4675
+    },
+    {
+      "path": "apps/web-console/app/api/spring-upgrades/proxyPolicy.ts",
+      "sha256": "sha256:aacc90ef41eb849593b61f7e4e84aab8325a908fd141f3df03942b09df4958db",
+      "bytes": 7271
+    },
+    {
+      "path": "apps/web-console/app/api/spring-upgrades/route.ts",
+      "sha256": "sha256:6de504b132fd160ab56767ca1b38819583de9a97efbc49fd56d6c6418140ad16",
+      "bytes": 10756
+    },
+    {
+      "path": "apps/web-console/app/api/telemetry/events/route.ts",
+      "sha256": "sha256:d7364876f856d560afeec137ca9a12d224095920300f5ed5be0e0108e25e0de5",
+      "bytes": 3463
+    },
+    {
+      "path": "apps/web-console/app/api/translation/discovery-report/route.ts",
+      "sha256": "sha256:0319fc4a2a90d8b0e0cfb31cb653fc78ecf4c42c854cfa2ebfdac38686af299a",
+      "bytes": 3233
+    },
+    {
+      "path": "apps/web-console/app/api/translation/health/route.ts",
+      "sha256": "sha256:5a21bf5a632046d36aa574c599f5ad5a0b1e407dd24e0fdcaa3be70ef132c8e3",
+      "bytes": 421
+    },
+    {
+      "path": "apps/web-console/app/api/translation/jobs/[jobId]/artifact/route.ts",
+      "sha256": "sha256:7a916aef53aa10462f543e6ba705003efb9e38c9080583ecd41dd21b11cf7669",
+      "bytes": 1719
+    },
+    {
+      "path": "apps/web-console/app/api/translation/jobs/[jobId]/cancel/route.ts",
+      "sha256": "sha256:935eeea6356dda4145043c337cc01be81cf448a42468e42c1c92debd11ea7e03",
+      "bytes": 1530
+    },
+    {
+      "path": "apps/web-console/app/api/translation/jobs/[jobId]/report/route.ts",
+      "sha256": "sha256:4626a66fee1239f6f1a33919640aa59ad9fe81cf7687c53e551c18a1f851d566",
+      "bytes": 2624
+    },
+    {
+      "path": "apps/web-console/app/api/translation/jobs/[jobId]/route.ts",
+      "sha256": "sha256:73ff1ef3e470b586c8094b4229077d614d8ed32bf9dca41108732908ea8fe583",
+      "bytes": 1010
+    },
+    {
+      "path": "apps/web-console/app/api/translation/jobs/route.ts",
+      "sha256": "sha256:1c3a0ab00dead6644ed382a0f7242e5035dd04f0c7d09c034b9df6f13352db8b",
+      "bytes": 2037
+    },
+    {
+      "path": "apps/web-console/app/api/translation/repository-plan/route.ts",
+      "sha256": "sha256:3e14f30c788a20fa0fd3d013c06f4046f97227903628862e4adcd8cb37d7c40f",
+      "bytes": 3074
+    },
+    {
+      "path": "apps/web-console/app/api/usage/alerts/route.ts",
+      "sha256": "sha256:2745a3406a0219b704b6a5126a2556f19fde6f6b29493c85949667df9f57dc99",
+      "bytes": 1112
+    },
+    {
+      "path": "apps/web-console/app/api/usage/current/route.ts",
+      "sha256": "sha256:47bfa89ed030ca63e6aca33fc080c59cf96e67e11ccef8579d566a310f64b9f0",
+      "bytes": 3591
+    },
+    {
+      "path": "apps/web-console/app/api/usage/export/route.ts",
+      "sha256": "sha256:13e606d4561c223b3483501f6eabe6f39d8b7d8e5b56ac880fda421e3dd51e6d",
+      "bytes": 1568
+    },
+    {
+      "path": "apps/web-console/app/api/usage/history/route.ts",
+      "sha256": "sha256:1fddd52cd186f5d5b0891e371f463282da3d62b2dde206032936129b0b40cf24",
+      "bytes": 1443
+    },
+    {
+      "path": "apps/web-console/app/api/wallet/ledger/route.ts",
+      "sha256": "sha256:8c609b9759dd23edfd75b5f17a709821c91981c6dbcebf24bce5af2cc86c8f18",
+      "bytes": 1170
+    },
+    {
+      "path": "apps/web-console/app/api/wallet/route.ts",
+      "sha256": "sha256:0bf9f97a779d6b838d880d5dde80990f4b128a357792283408856a80144f7413",
+      "bytes": 1294
+    },
+    {
+      "path": "apps/web-console/app/api/wallet/topup/[topupOrderId]/route.ts",
+      "sha256": "sha256:5b309a74f30d8bd257c1afbba49abed4ffcb4082c0718bd9face47ff4f2d1882",
+      "bytes": 1461
+    },
+    {
+      "path": "apps/web-console/app/api/wallet/topup/route.ts",
+      "sha256": "sha256:23f91596dbd8b74552aed7e4439c45da7b73aff6442b09cbf67e384513af782c",
+      "bytes": 2994
+    },
+    {
+      "path": "apps/web-console/app/commercialization/CommercializationConsole.tsx",
+      "sha256": "sha256:ee51fb034a155dbcd446de5ee5d6cfe9e0b07ff3c400a0858f427edc401e0e64",
+      "bytes": 15001
+    },
+    {
+      "path": "apps/web-console/app/commercialization/page.tsx",
+      "sha256": "sha256:7fb0d280ec813a44153eb810f38a2d9357ab8e8c1ac82dff4a1a5b2d1e223b5b",
+      "bytes": 269
+    },
+    {
+      "path": "apps/web-console/app/components/AccountSessionProvider.tsx",
+      "sha256": "sha256:5eeb7245de7ee2b85a5fde36819b059a1c2e1e437b5225f1648e2091efec1945",
+      "bytes": 5168
+    },
+    {
+      "path": "apps/web-console/app/components/AppShell.module.css",
+      "sha256": "sha256:5c18c17335ba782959e31439c06b94ea4b52af54a487cacefe968833af8d2c6b",
+      "bytes": 82
+    },
+    {
+      "path": "apps/web-console/app/components/AppShell.tsx",
+      "sha256": "sha256:2b3161832ec8413c9a1d2405a5ef48106612c775cc86a677d44f66d1b351762b",
+      "bytes": 22444
+    },
+    {
+      "path": "apps/web-console/app/components/Icon.tsx",
+      "sha256": "sha256:1454edb408e7acbf7febd33f67e882f87a9ab3b56666b823f3c7935fcd0cd6fa",
+      "bytes": 3983
+    },
+    {
+      "path": "apps/web-console/app/components/ProjectEvidenceCharts.tsx",
+      "sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
+      "bytes": 24453
+    },
+    {
+      "path": "apps/web-console/app/components/RuntimeDeploymentGuide.tsx",
+      "sha256": "sha256:2982aa717205f11ffed88ddc53f5f62ecedf9bf3f1575e4f47455c2daa5a784b",
+      "bytes": 6557
+    },
+    {
+      "path": "apps/web-console/app/components/SmokeRunButton.module.css",
+      "sha256": "sha256:9b2703f3a5214f2c176242900acd018cc9f619dc2189d8b6e21df7fd2699f47c",
+      "bytes": 4380
+    },
+    {
+      "path": "apps/web-console/app/components/SmokeRunButton.tsx",
+      "sha256": "sha256:db3b9af0bb07b114d7fba77f72d2022b8a831fcc5d55c637be7689f0b3f43819",
+      "bytes": 18817
+    },
+    {
+      "path": "apps/web-console/app/components/StatusChip.tsx",
+      "sha256": "sha256:74906605601d35e164fccc63eb91571ff7c4d1f4f0915fc65d79acdc901738d3",
+      "bytes": 1103
+    },
+    {
+      "path": "apps/web-console/app/components/UiPreferencesProvider.tsx",
+      "sha256": "sha256:e42a90912474fce7aa4dafb5a7e0f9f6f574486aecd116d461733b81932b31bf",
+      "bytes": 2136
+    },
+    {
+      "path": "apps/web-console/app/components/UserActivityCollector.tsx",
+      "sha256": "sha256:f99d7ee50c35446fa93f8e8f2742061a745864eda46ea005ac7150a8be7f1750",
+      "bytes": 17472
+    },
+    {
+      "path": "apps/web-console/app/frontend/FrontendTransformationStudio.module.css",
+      "sha256": "sha256:59b15b76c3a8db96e8dc0060ecce1a4717c63e9720a20e6b5b636c34d88dd090",
+      "bytes": 22373
+    },
+    {
+      "path": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+      "sha256": "sha256:146c5d65be5d140ada7af4fb9e6a58921cce935e217379f15dd6034ada0b1695",
+      "bytes": 34735
+    },
+    {
+      "path": "apps/web-console/app/frontend/page.tsx",
+      "sha256": "sha256:3bc2c69c69e74d1b175af52123a66c7223ca69b5b062f82d8c0e60f530756fa4",
+      "bytes": 395
+    },
+    {
+      "path": "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+      "sha256": "sha256:42160731ba1beea98e4bc4cafe94a3cb9e648b6b944abaa9f084808ef560b751",
+      "bytes": 78436
+    },
+    {
+      "path": "apps/web-console/app/generation/page.tsx",
+      "sha256": "sha256:e9e543434898f50b9e4cf213c39182cbf7681eff05d09d01f8ddbb724f2b3de0",
+      "bytes": 262
+    },
+    {
+      "path": "apps/web-console/app/governance/GovernanceWorkspace.module.css",
+      "sha256": "sha256:edaa72532528b9b49220f10088b93effa3d5704ce6e21cdba83de8fd34f4f69c",
+      "bytes": 5458
+    },
+    {
+      "path": "apps/web-console/app/governance/GovernanceWorkspace.tsx",
+      "sha256": "sha256:6e4df100ea8494750f34ea97b13567df1002a14e00e44c3f5bf578a961b86e69",
+      "bytes": 9867
+    },
+    {
+      "path": "apps/web-console/app/governance/page.tsx",
+      "sha256": "sha256:f76ade38961ccea8c125f05363d7ff9426e77dc3495ab225c150c1ae25e9af94",
+      "bytes": 141
+    },
+    {
+      "path": "apps/web-console/app/help/HelpCenter.tsx",
+      "sha256": "sha256:3de4e8529ce03968e3b25f2be70bdb289440a398a14c535d25638132ad950498",
+      "bytes": 7501
+    },
+    {
+      "path": "apps/web-console/app/help/page.tsx",
+      "sha256": "sha256:adb5c5ca5d5296651e9618720b6d33754fd6ca94f5778c3a47f680f590a7ebc4",
+      "bytes": 308
+    },
+    {
+      "path": "apps/web-console/app/icon.svg",
+      "sha256": "sha256:803c49b74c980bad9dabc0047c8f5ff47430ac9da25f99357e5d0e07b4b792bb",
+      "bytes": 192
+    },
+    {
+      "path": "apps/web-console/app/intake/MultimodalIntakeWorkbench.module.css",
+      "sha256": "sha256:b716eff979e5962bcf75800dd7b4d10062dd5c1a00b98fa993ab9603d290dc19",
+      "bytes": 8078
+    },
+    {
+      "path": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+      "sha256": "sha256:2116ac344e8bff9551f28388582ad926d9f4a0f8d8a3a4d6caaa6999c3f1c8ac",
+      "bytes": 241369
+    },
+    {
+      "path": "apps/web-console/app/intake/page.tsx",
+      "sha256": "sha256:74043ecc35875e8ba9d95fe35d1c223546de0edbd38c7c5e6f9f3891cde03666",
+      "bytes": 278
+    },
+    {
+      "path": "apps/web-console/app/intake/useMicrophoneRecorder.ts",
+      "sha256": "sha256:bb32b275cffdebe20e91200f72fd992f758f8bfa89a6c2b284e607833a632a87",
+      "bytes": 5026
+    },
+    {
+      "path": "apps/web-console/app/layout.tsx",
+      "sha256": "sha256:cfb13ad9af43d647ac18d845ad0cae68f8eba9e1db71e673f2ca549fe6be5405",
+      "bytes": 1305
+    },
+    {
+      "path": "apps/web-console/app/lib/businessLines.ts",
+      "sha256": "sha256:451097290318ec1ee8d179c8f99b77e10a77e05ec47d3f7adc647df2bf2a468f",
+      "bytes": 10674
+    },
+    {
+      "path": "apps/web-console/app/lib/catalog.ts",
+      "sha256": "sha256:a21bc4a7855605456682102fcf8bfd73ecf326abe3d42fd4346f95c516ef45e4",
+      "bytes": 10418
+    },
+    {
+      "path": "apps/web-console/app/lib/chinadbSqlContracts.ts",
+      "sha256": "sha256:99773b85f6cd42925e4374d6a22f14e5090eae3c55c7a0b4abf049138de286b2",
+      "bytes": 28459
+    },
+    {
+      "path": "apps/web-console/app/lib/contracts.ts",
+      "sha256": "sha256:13b4fbc5e85a1283dcde988910fc09eb671ec20df27f97fa91425fd1f6b73138",
+      "bytes": 27134
+    },
+    {
+      "path": "apps/web-console/app/lib/deploymentGuidance.ts",
+      "sha256": "sha256:4b75925484abbba0e2727cb58f9a68ef779126709feac5af81d6c8ff291fcda9",
+      "bytes": 10112
+    },
+    {
+      "path": "apps/web-console/app/lib/frtCatalog.generated.ts",
+      "sha256": "sha256:729bc5ab4002cc43be8ab55fc8766a4f18131e36e907707e911ccf58fd2f7ee2",
+      "bytes": 2308365
+    },
+    {
+      "path": "apps/web-console/app/lib/multimodalSkillCatalog.ts",
+      "sha256": "sha256:53742e4d83e7c87552d6f3a276af51645565ace7de5d88fb21914b63525e857f",
+      "bytes": 12339
+    },
+    {
+      "path": "apps/web-console/app/lib/operationsContracts.ts",
+      "sha256": "sha256:67b46eebcf18ead907e1435a98f943692d1ad8756db507f513bf34396dc531d3",
+      "bytes": 9669
+    },
+    {
+      "path": "apps/web-console/app/lib/precisionMigrationCatalog.generated.ts",
+      "sha256": "sha256:e6299df2e55f4463fac8f6369113d751d3393f787eed8cef5cc3f58b5ea3f5b2",
+      "bytes": 2924
+    },
+    {
+      "path": "apps/web-console/app/lib/pricingCatalog.ts",
+      "sha256": "sha256:1452878bf1d2840e0b7604ea5ecb24e1ec3bdb43bddb98a3d016cb221fc9f164",
+      "bytes": 4844
+    },
+    {
+      "path": "apps/web-console/app/lib/qrCode.ts",
+      "sha256": "sha256:f9d26014f471d3738a20c22b7fe074621ee22e872a19910f6f4e7a0c328a46cc",
+      "bytes": 19522
+    },
+    {
+      "path": "apps/web-console/app/lib/qrCode.verify.mjs",
+      "sha256": "sha256:ce151901c24f62fd37283f14481ea76d42d15d163bc4a6d14ec3645297cc504e",
+      "bytes": 6194
+    },
+    {
+      "path": "apps/web-console/app/lib/repositoryOrchestratorContracts.ts",
+      "sha256": "sha256:03e68739c34bd920d48627fab53915b8399074188fc1a004bffab2da002ecba2",
+      "bytes": 26362
+    },
+    {
+      "path": "apps/web-console/app/lib/server/accountControlPlane.ts",
+      "sha256": "sha256:9e4330996a7dc1a2b671cdf4284a4f35620b24f4834311dba66720b2ea5423ab",
+      "bytes": 4395
+    },
+    {
+      "path": "apps/web-console/app/lib/server/accountSession.ts",
+      "sha256": "sha256:c7ad86d8bbc7c10335b4166a042d5958db403b8c21820d24d98655a36f0e179d",
+      "bytes": 32457
+    },
+    {
+      "path": "apps/web-console/app/lib/server/adminMutationPolicy.ts",
+      "sha256": "sha256:d4c15b42f8015d7ba8d420e4c6a99a97ac620cdf42c8e0b00fc704afda13dfd9",
+      "bytes": 5108
+    },
+    {
+      "path": "apps/web-console/app/lib/server/adminMutationPolicy.verify.mjs",
+      "sha256": "sha256:66f8b3ad3262a9fe3979b3dd7cf0a35bbedabf1862824cd1117f8d68c745a79c",
+      "bytes": 3242
+    },
+    {
+      "path": "apps/web-console/app/lib/server/billingReconciliation.verify.mjs",
+      "sha256": "sha256:c456a1e925e990d13985ba6e1584f3a141cc7525c2fc3276885815a1b83bfee9",
+      "bytes": 4749
+    },
+    {
+      "path": "apps/web-console/app/lib/server/billingReconciliationPolicy.ts",
+      "sha256": "sha256:6f2d36000cce1dcdd0b0f8b1ce9c97ef1e2adb14fec98abdd67ebdac5f697163",
+      "bytes": 5022
+    },
+    {
+      "path": "apps/web-console/app/lib/server/boundedJson.ts",
+      "sha256": "sha256:0a6e85b362cb06901da36c63ed485e84b83dbfb7a18c23352f8b6ea395e09a26",
+      "bytes": 2422
+    },
+    {
+      "path": "apps/web-console/app/lib/server/chinadbSql.verify.mjs",
+      "sha256": "sha256:0cbdaae1664e8f9cff77b002bed9969c42830ab6f31ff8c97a27af754d5dd306",
+      "bytes": 5442
+    },
+    {
+      "path": "apps/web-console/app/lib/server/chinadbSqlPreflight.ts",
+      "sha256": "sha256:b756e6b99e6f7648dd4c0e7bee7747bb53fce62ce2e165b476ffaa567b430327",
+      "bytes": 8518
+    },
+    {
+      "path": "apps/web-console/app/lib/server/chinadbSqlUpstreamPolicy.ts",
+      "sha256": "sha256:c044b5b8df191c705a7a070cf0d457f95dfebc1a779207dd9cdaafa91c80df3f",
+      "bytes": 970
+    },
+    {
+      "path": "apps/web-console/app/lib/server/commercialBillingPolicy.ts",
+      "sha256": "sha256:ec0cf12e2977bc76ae0a6044c5ac614a90141bbf388507c336da1218c6503779",
+      "bytes": 1685
+    },
+    {
+      "path": "apps/web-console/app/lib/server/commercialBillingProxy.ts",
+      "sha256": "sha256:98cd21e8a9c9ebcce85f4db967c56828c3f315712f2b74e396073a522a532aa0",
+      "bytes": 5691
+    },
+    {
+      "path": "apps/web-console/app/lib/server/commercialUsageProducer.ts",
+      "sha256": "sha256:e116f047ee4cad3e29ad05e4cc64a79c19aca9d5a0b64d3b837732e9e9e2128f",
+      "bytes": 8418
+    },
+    {
+      "path": "apps/web-console/app/lib/server/durableJobLease.ts",
+      "sha256": "sha256:d82a4147d8ce7e7507016724a565115856b9d234ff2581264a346199d05ecc65",
+      "bytes": 22061
+    },
+    {
+      "path": "apps/web-console/app/lib/server/frtEngineProxy.ts",
+      "sha256": "sha256:ba0645f49330d1bd422ca85461447d7999589128b54bbf243544069a4dc0df92",
+      "bytes": 18807
+    },
+    {
+      "path": "apps/web-console/app/lib/server/generationGitHubPublisher.ts",
+      "sha256": "sha256:a4f5cf7d78b19e4df18e6b066d1f712488e3390ff85ddbc77c1db468ce176834",
+      "bytes": 27306
+    },
+    {
+      "path": "apps/web-console/app/lib/server/generationInsights.ts",
+      "sha256": "sha256:1941ef140193a32c684a9340a10065f035dd5fd4c22b353627e487de8f9ef772",
+      "bytes": 28262
+    },
+    {
+      "path": "apps/web-console/app/lib/server/generationInsights.verify.mjs",
+      "sha256": "sha256:514c66c2096eb5aa26a8b6d30f8962ba195d61f23a6eb8084dcf83bf22710038",
+      "bytes": 16299
+    },
+    {
+      "path": "apps/web-console/app/lib/server/generationRunner.ts",
+      "sha256": "sha256:98f2396e0931f33b8e09f64b369890042624a1109389afa1525759964f2f6efc",
+      "bytes": 133571
+    },
+    {
+      "path": "apps/web-console/app/lib/server/generationSourceIngestion.ts",
+      "sha256": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
+      "bytes": 18360
+    },
+    {
+      "path": "apps/web-console/app/lib/server/hostedExecutionClient.ts",
+      "sha256": "sha256:3719d633a95f8b0b9fbe84ac046620ce71b477c2ffdb9340754f93bc958a85dd",
+      "bytes": 10671
+    },
+    {
+      "path": "apps/web-console/app/lib/server/modernizationProofClient.ts",
+      "sha256": "sha256:1de6702d5e25cfd3a790c872e52e838265ce7e8c3b1e0000366a5d5e7f851239",
+      "bytes": 6004
+    },
+    {
+      "path": "apps/web-console/app/lib/server/multimodalIntakeRunner.ts",
+      "sha256": "sha256:7b67eca89ad5f28779bb21c5a2e5ca629a3048977956fa90ae4c718f42af96bc",
+      "bytes": 38140
+    },
+    {
+      "path": "apps/web-console/app/lib/server/multimodalIntakeRunner.verify.mjs",
+      "sha256": "sha256:de76f0ac0bb094635ca9d33313a2b25da4481619b9b5acf50ee76daed748282f",
+      "bytes": 44696
+    },
+    {
+      "path": "apps/web-console/app/lib/server/operationsJobsPolicy.ts",
+      "sha256": "sha256:87d39b99fbbc97c44be7cdea9fff56536da53db673df83a8598e08972caf5bd6",
+      "bytes": 3639
+    },
+    {
+      "path": "apps/web-console/app/lib/server/operationsJobsPolicy.verify.mjs",
+      "sha256": "sha256:28dce5445ab0d0d5615ab5cf20ae48a08c77fc521e0e55731a84c0ba197a2de7",
+      "bytes": 2964
+    },
+    {
+      "path": "apps/web-console/app/lib/server/operationsProxy.ts",
+      "sha256": "sha256:950d49d5f58706dfd0ace4727d1303128ab2cb10efdcb5799f79012926214360",
+      "bytes": 38203
+    },
+    {
+      "path": "apps/web-console/app/lib/server/precisionMigrationRunner.ts",
+      "sha256": "sha256:d0626caebc60320d9fd42b01a1377a5fb098b68f0851fd17cdf7f90ab3dbdb76",
+      "bytes": 9260
+    },
+    {
+      "path": "apps/web-console/app/lib/server/repositoryOrchestratorGateway.ts",
+      "sha256": "sha256:7856944543016332a594dfcebf43bdcc02f665ba5a124e96167f46b0d9e0ad7c",
+      "bytes": 8812
+    },
+    {
+      "path": "apps/web-console/app/lib/server/repositoryWorkspaceProxy.ts",
+      "sha256": "sha256:efd3de13518b1de9c4af3730e28fe43f85de776e6200666460645f99b2f061d4",
+      "bytes": 34245
+    },
+    {
+      "path": "apps/web-console/app/lib/server/runnerFleetPolicy.ts",
+      "sha256": "sha256:40f3da1b608bd005554d22522d2dd27b5f23680720fb43368c92259e952a087b",
+      "bytes": 14482
+    },
+    {
+      "path": "apps/web-console/app/lib/server/runnerFleetPolicy.verify.mjs",
+      "sha256": "sha256:faf8d439f07c4945a0238a24571024ec46896b6f4715c9f1f0fe0f18e4ab4f03",
+      "bytes": 8413
+    },
+    {
+      "path": "apps/web-console/app/lib/server/smokeLeaseRunner.ts",
+      "sha256": "sha256:c0d118b29fc7478ce9f4c4805cf88fbf08207d9b865a90ce5d136a5c115a7890",
+      "bytes": 40208
+    },
+    {
+      "path": "apps/web-console/app/lib/server/strictJson.ts",
+      "sha256": "sha256:3f5cf6d0b5a6d6aedec111c27be155ee704bcce0ad7b491d2d6001d29d903428",
+      "bytes": 3298
+    },
+    {
+      "path": "apps/web-console/app/lib/server/translationConversionReport.ts",
+      "sha256": "sha256:84ea9c570b39c9709d865836b23d1f61b5882d1d760120e6e5d1fbb0a15bbd63",
+      "bytes": 61721
+    },
+    {
+      "path": "apps/web-console/app/lib/server/translationDiscovery.ts",
+      "sha256": "sha256:469cf20f726ebc8ad4079f02a78fd94024fd1b5d652fb64dd6d08a73a9c4c61f",
+      "bytes": 9514
+    },
+    {
+      "path": "apps/web-console/app/lib/server/translationRepositoryPlan.ts",
+      "sha256": "sha256:f14de0b46c15b852d2e46f8a2f0875acce92d649791c5abfff7388f830137859",
+      "bytes": 16772
+    },
+    {
+      "path": "apps/web-console/app/lib/server/translationRequestBody.ts",
+      "sha256": "sha256:b8d11f2695cea5660d5bb48ec35f95f4a4e8eacea0a90f218f9b85b0232d219a",
+      "bytes": 3702
+    },
+    {
+      "path": "apps/web-console/app/lib/server/translationRoutes.ts",
+      "sha256": "sha256:9ed53cb9ad9f632bc88a4f7a0ebb17fffe6ecc03613fc255de7d98f1d891d90f",
+      "bytes": 61376
+    },
+    {
+      "path": "apps/web-console/app/lib/server/translationRunner.ts",
+      "sha256": "sha256:9d3a75c122841e2c152a4882b7c6409a88d50529651ff40f19804338eb75cc15",
+      "bytes": 121235
+    },
+    {
+      "path": "apps/web-console/app/lib/server/trustedUpstream.ts",
+      "sha256": "sha256:cb863a44a734ec772f1ab121b4487b58f5f0ffb929fe731854e934cee30e8f68",
+      "bytes": 6132
+    },
+    {
+      "path": "apps/web-console/app/lib/server/trustedUpstream.verify.mjs",
+      "sha256": "sha256:0ef40ad0dfd8f220d25eb0b8be825c544251928c2520ca96e7332daf705775de",
+      "bytes": 4068
+    },
+    {
+      "path": "apps/web-console/app/lib/server/upstreamReadiness.ts",
+      "sha256": "sha256:883b70ad1613948cf626ab4b026f2fa992fe48c0f3b5c62efde3b41ac62797cc",
+      "bytes": 3753
+    },
+    {
+      "path": "apps/web-console/app/lib/server/usageMeter.ts",
+      "sha256": "sha256:5a1d884fae4c907a3ec50b280740a57a290d420e0d1fad9e770deeb237e5b764",
+      "bytes": 16009
+    },
+    {
+      "path": "apps/web-console/app/lib/server/walletTopupPolicy.ts",
+      "sha256": "sha256:e75082bfc167246c993e31c2f6a94d9ff383dd2d35a48b438437af15deaffc1b",
+      "bytes": 5322
+    },
+    {
+      "path": "apps/web-console/app/lib/server/walletTopupPolicy.verify.mjs",
+      "sha256": "sha256:c1ea9261f4c745256cac0ccec5e34565291eee4a55187200842c6feabecbb194",
+      "bytes": 6743
+    },
+    {
+      "path": "apps/web-console/app/lib/sha256Accumulator.ts",
+      "sha256": "sha256:05b16c6f156415cd8ffd9278f4e2b9e1ca803b06b2d27de87674c700fcc817d4",
+      "bytes": 4536
+    },
+    {
+      "path": "apps/web-console/app/lib/smokeContracts.ts",
+      "sha256": "sha256:bcb7f1f940027a70f0cdc9a8d9ec2207a9cea655a0c757558f94834fff42206b",
+      "bytes": 2619
+    },
+    {
+      "path": "apps/web-console/app/lib/springRoutes.ts",
+      "sha256": "sha256:df5ab8ca2b040dea799e27b5a4f279ae47a4861c0ff23f006cc07a0f9153d342",
+      "bytes": 23019
+    },
+    {
+      "path": "apps/web-console/app/lib/telemetry/contracts.ts",
+      "sha256": "sha256:41a9dda920ec35fc7ef3b675a63c417cb7deac974be743a283f508feb2be79ec",
+      "bytes": 3136
+    },
+    {
+      "path": "apps/web-console/app/lib/telemetry/filter.ts",
+      "sha256": "sha256:021820174d691821d7dc15a1e1fd4f290e230afb1f59645b0ea0ec60125af765",
+      "bytes": 6866
+    },
+    {
+      "path": "apps/web-console/app/lib/usageSnapshot.ts",
+      "sha256": "sha256:73b9002b3e30465cf172896ec7eb33651b170fd608d3c85cd7ae46b993e712c9",
+      "bytes": 5955
+    },
+    {
+      "path": "apps/web-console/app/login/page.tsx",
+      "sha256": "sha256:56c094fdf03884c2e7bfad9b1d360aa5cc1b3337ed6f2fbfc20d151a3c7c609f",
+      "bytes": 3693
+    },
+    {
+      "path": "apps/web-console/app/migration/MigrationStudio.tsx",
+      "sha256": "sha256:af0df409a9921bec3801daa9e7bce63619141ec81ca514c070476f1b25b80b5f",
+      "bytes": 22440
+    },
+    {
+      "path": "apps/web-console/app/migration/page.tsx",
+      "sha256": "sha256:92fed1bea4c3da06197538b8d8da6b4a77e1ee6e0658566c2cf6ad7625caafba",
+      "bytes": 228
+    },
+    {
+      "path": "apps/web-console/app/migration/sql/ChinaDbSqlPreflightStudio.module.css",
+      "sha256": "sha256:e74a92f2f06e804e3e1e4e9cfd21ad8252e47b847d7d4274c4d6e5acf0249a2e",
+      "bytes": 7211
+    },
+    {
+      "path": "apps/web-console/app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "sha256": "sha256:ed319e03c4dfb31ec46e4c713ab04df4d5cb94e101181618299f26ff35fee9c8",
+      "bytes": 21120
+    },
+    {
+      "path": "apps/web-console/app/migration/sql/page.tsx",
+      "sha256": "sha256:1c15608e58445c54090f26d00d273ec73850c71a20814046410dd2a12be6e55d",
+      "bytes": 284
+    },
+    {
+      "path": "apps/web-console/app/observability/ObservabilityWorkspace.module.css",
+      "sha256": "sha256:4ea006e1ad81c5076f979e1250a26b90072d832c0c825bea3084b3ee985e76a9",
+      "bytes": 4573
+    },
+    {
+      "path": "apps/web-console/app/observability/ObservabilityWorkspace.tsx",
+      "sha256": "sha256:09653cd1b9253c7d7d575e1aeac4e5a399e1210fd115e04bdf28ce38b6c1cc20",
+      "bytes": 8871
+    },
+    {
+      "path": "apps/web-console/app/observability/page.tsx",
+      "sha256": "sha256:fc213e4af3bddcdbde4e7f048e98ff06e3e6644fbc6ae14ef2527118bb5a7a65",
+      "bytes": 153
+    },
+    {
+      "path": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.module.css",
+      "sha256": "sha256:0342367aa62374b9623d0b7a62b34ffdb00e38de49cb6dc225399400187b807e",
+      "bytes": 9499
+    },
+    {
+      "path": "apps/web-console/app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "sha256": "sha256:94cf80c45cfde92de4a15528c7c6ebb7489e213e99c12216ec8135436695c10e",
+      "bytes": 21119
+    },
+    {
+      "path": "apps/web-console/app/orchestration/page.tsx",
+      "sha256": "sha256:11da799c3973ab839a9aa87b94aca98a785594a38d343ba5d3d8e8b7f319ae71",
+      "bytes": 403
+    },
+    {
+      "path": "apps/web-console/app/page.tsx",
+      "sha256": "sha256:fb5eb5f302fa51806f0c4c2648652e79a07de5401050eafcb2728f7e0c7749ef",
+      "bytes": 9217
+    },
+    {
+      "path": "apps/web-console/app/playground/PlaygroundWorkspace.tsx",
+      "sha256": "sha256:ce49066ffce81485aec4a0683ffff54409bde3b0d62051cbb9de734d70cdf6c5",
+      "bytes": 16663
+    },
+    {
+      "path": "apps/web-console/app/playground/page.tsx",
+      "sha256": "sha256:03967bfb8666799e7040efc95c96b53fd79f418e7d98d075ff2bfbca94461b3b",
+      "bytes": 592
+    },
+    {
+      "path": "apps/web-console/app/pricing/BillingActions.module.css",
+      "sha256": "sha256:45759e09a79410bd2f088a42e604aea50265f31713667cbb885c4cae96cfdb3b",
+      "bytes": 1694
+    },
+    {
+      "path": "apps/web-console/app/pricing/BillingActions.tsx",
+      "sha256": "sha256:f8886c700e43d4769668a30e60a5a02c8e801ccf7b8d3897e5ff16ef68f60e29",
+      "bytes": 11826
+    },
+    {
+      "path": "apps/web-console/app/pricing/PricingPage.module.css",
+      "sha256": "sha256:5c8a233fb78ce368bafc9358c9ab26ef5404f9d4ec1ecf5854e88770f9b92d07",
+      "bytes": 6212
+    },
+    {
+      "path": "apps/web-console/app/pricing/UsageDashboard.module.css",
+      "sha256": "sha256:6ba090cb08e00df4cdaeb07b5fc982d0b3008b8b76b85d728528ce0589c68b83",
+      "bytes": 8157
+    },
+    {
+      "path": "apps/web-console/app/pricing/UsageDashboard.tsx",
+      "sha256": "sha256:13a07e674998e609a1dc106fc3cf96562f65fab44c27414a8b9990b98b216533",
+      "bytes": 23381
+    },
+    {
+      "path": "apps/web-console/app/pricing/page.tsx",
+      "sha256": "sha256:89fe2fda31ee4263c106c1011e815e849b27da2831658d3faf97f6c9c14b363d",
+      "bytes": 7148
+    },
+    {
+      "path": "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx",
+      "sha256": "sha256:ad19b406e3b1afff3c4af5c1011eaac4f16e065d2fcc8ab75567a571479d721e",
+      "bytes": 11916
+    },
+    {
+      "path": "apps/web-console/app/proof-loop/page.tsx",
+      "sha256": "sha256:193cda28334f6cbcb73cbc3096ba114903a327fb906577bbc04e5c8423c80a6f",
+      "bytes": 274
+    },
+    {
+      "path": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.module.css",
+      "sha256": "sha256:eef8ebc55e8d3e8da2c9d4b20951dd11942fee8a536c5447f2690a6f1d4ed0ac",
+      "bytes": 9141
+    },
+    {
+      "path": "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx",
+      "sha256": "sha256:98ec19f726b01677cacfc578f28e60afae3a80654f9d4e54b43bbf028eea86a5",
+      "bytes": 28675
+    },
+    {
+      "path": "apps/web-console/app/repositories/page.tsx",
+      "sha256": "sha256:7f4b7f7be31151dbff2968e085d7d6e71c6584eef395b2b4a84afb229c4e9123",
+      "bytes": 270
+    },
+    {
+      "path": "apps/web-console/app/skills/PrecisionMigrationJobs.tsx",
+      "sha256": "sha256:f02823e4442841704d5832ef16e897dff1906c511ed66d5ccdf0551879bf5e39",
+      "bytes": 9038
+    },
+    {
+      "path": "apps/web-console/app/skills/SkillsWorkspace.tsx",
+      "sha256": "sha256:21249a99cee595a685701e6cf03435d3f4b7acdba5c09d76f90725a5c8bc0db3",
+      "bytes": 15962
+    },
+    {
+      "path": "apps/web-console/app/skills/page.tsx",
+      "sha256": "sha256:c1c79caf34ff0e5ced7a452cebcfcb1be7c31e8669667cf143cbeca060ea9812",
+      "bytes": 229
+    },
+    {
+      "path": "apps/web-console/app/smoke/SmokeConsole.tsx",
+      "sha256": "sha256:e18f51160fedeb1587af0d8f053c947eeb608a359c0c718fa7ea99e7825ce045",
+      "bytes": 1638
+    },
+    {
+      "path": "apps/web-console/app/smoke/page.tsx",
+      "sha256": "sha256:d7ba3b95f9f563667ba546613a2af40982b285a4ca2d79c53cf3a4a4647a87d8",
+      "bytes": 221
+    },
+    {
+      "path": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "sha256": "sha256:629e8e56e5a04e3024f5ddf888c53191510a05769369a83e29bf7594f3136d2a",
+      "bytes": 48724
+    },
+    {
+      "path": "apps/web-console/app/spring/page.tsx",
+      "sha256": "sha256:6c8616fc03df9402bac51a45bde321ca69a6864daac60bcb539fb465cf7ac45f",
+      "bytes": 278
+    },
+    {
+      "path": "apps/web-console/app/styles.css",
+      "sha256": "sha256:080375c9986800aa6d23040d7d7e65cdebccc80c658491b2ffad0e33a58f4200",
+      "bytes": 137273
+    },
+    {
+      "path": "apps/web-console/app/translation/TranslationStudio.tsx",
+      "sha256": "sha256:a3e4f64b8aab2060dc23ffd3ece9772eb0512c61f28ba35175bda4092fe87124",
+      "bytes": 61147
+    },
+    {
+      "path": "apps/web-console/app/translation/page.tsx",
+      "sha256": "sha256:5ccd9bae7e5d821d3002536872efcb5527a35657d5760aa56501c859efbdbce1",
+      "bytes": 245
+    },
+    {
+      "path": "apps/web-console/baselines/accessibility/generation.json",
+      "sha256": "sha256:bb8fc1b15ca8aa510ddd917215a4f35f7453be8109aff899829a9d9533edbfc6",
+      "bytes": 182
+    },
+    {
+      "path": "apps/web-console/baselines/network/generation.json",
+      "sha256": "sha256:133456ff1a5c363c2d42b16f8222ae176bae6da8b560efaccadc68caa9a92b72",
+      "bytes": 198
+    },
+    {
+      "path": "apps/web-console/baselines/performance/generation.json",
+      "sha256": "sha256:fea68f4401f996989f490b2db8e3359fe5c7fb77762f2b420e8aa77d1b547b5e",
+      "bytes": 131
+    },
+    {
+      "path": "apps/web-console/baselines/visual/GOVERNANCE.md",
+      "sha256": "sha256:3225648eabac6c7cf0c2cc298f4ab9267449b87c423ce2d367b3a01be618bee1",
+      "bytes": 331
+    },
+    {
+      "path": "apps/web-console/e2e/account-session-ui.spec.ts",
+      "sha256": "sha256:013c5b7da5acbceb54ca140c1a67eba52cad787d31a192b24dd0f6fa365ac754",
+      "bytes": 1527
+    },
+    {
+      "path": "apps/web-console/e2e/admin-billing-reconciliation.spec.ts",
+      "sha256": "sha256:49b4c9957c3d75fa0a4b201456368b9e7d823fc13302fa97fa4d6a3c7969e17d",
+      "bytes": 5884
+    },
+    {
+      "path": "apps/web-console/e2e/admin-jobs-runner.spec.ts",
+      "sha256": "sha256:8ec8537efa469ed0b4f5064116fedf2fcd37ce2cab9a17715620f5fa6a677cb1",
+      "bytes": 7329
+    },
+    {
+      "path": "apps/web-console/e2e/console-usability.spec.ts",
+      "sha256": "sha256:e60b7dfeb846fd9ca331882a76c7e20e8410a025e7a8c90cccb3389ecc54855d",
+      "bytes": 3174
+    },
+    {
+      "path": "apps/web-console/e2e/core-business-lines-ui.spec.ts",
+      "sha256": "sha256:ec8e1926af3146fafcc2dcfefeb0755f5b69ea58519b415af5f98acdd0e839a0",
+      "bytes": 20442
+    },
+    {
+      "path": "apps/web-console/e2e/experience-quality.spec.ts",
+      "sha256": "sha256:719409791864ba8101461b2167f83385790b83e4437164e3d8443c2ef6d9f097",
+      "bytes": 2272
+    },
+    {
+      "path": "apps/web-console/e2e/fixtures/production-node-ca-preflight.cjs",
+      "sha256": "sha256:23fc0932a97ce27ed2345124e2e3e39fd02014b27100f8c2220dacd607871f05",
+      "bytes": 511
+    },
+    {
+      "path": "apps/web-console/e2e/fixtures/production-oidc-harness.mjs",
+      "sha256": "sha256:ddc992e511f24d883b0afd0e711a46c47e3b4e87f83a8a6dac674949c78d34ea",
+      "bytes": 16358
+    },
+    {
+      "path": "apps/web-console/e2e/fixtures/smoke-projects/demo-service/.env.example",
+      "sha256": "sha256:62fa44ec2ef186d42ab1e5e057ffdbda31f8111ace895644b11e5b5ec9c1d6ff",
+      "bytes": 95
+    },
+    {
+      "path": "apps/web-console/e2e/fixtures/smoke-projects/demo-service/app.py",
+      "sha256": "sha256:64732c628cef7cc35091c7a31adc613e3476d841fb8459e838bb40c6d1bd5c29",
+      "bytes": 1379
+    },
+    {
+      "path": "apps/web-console/e2e/fixtures/smoke-projects/demo-service/db/schema.sql",
+      "sha256": "sha256:8298481f18857c5c31556aecfe45b97ee0c12f341586ac595780a62f8ec7ae0f",
+      "bytes": 351
+    },
+    {
+      "path": "apps/web-console/e2e/fixtures/smoke-projects/demo-service/openapi.json",
+      "sha256": "sha256:df0964b09c710fb548df5c13a3b3db1a13e6981d398dfa8d3ae406fa257f0784",
+      "bytes": 183
+    },
+    {
+      "path": "apps/web-console/e2e/fixtures/smoke-projects/demo-service/requirements.txt",
+      "sha256": "sha256:8d663e073ae622b54597198cc0f90b61772e5ac741c12715acee52bfe009aee3",
+      "bytes": 37
+    },
+    {
+      "path": "apps/web-console/e2e/fixtures/translation-cases/pure-python-empty/README.md",
+      "sha256": "sha256:5afee1ec5c76b840cf280bd0a4ebfe9ecde82f918f9d01b26aabb80f878ad813",
+      "bytes": 211
+    },
+    {
+      "path": "apps/web-console/e2e/fixtures/translation-cases/pure-python-holdout/WU-00001.json",
+      "sha256": "sha256:0615fd754888b38640f86ff15a4499840d5336a896a9a175370f941b80679ab0",
+      "bytes": 98
+    },
+    {
+      "path": "apps/web-console/e2e/fixtures/translation-sources/pure-python/math.py",
+      "sha256": "sha256:0049214146c09e015865e54237ecc4d15c9e043886cb20d1d9c68659bf744bc9",
+      "bytes": 63
+    },
+    {
+      "path": "apps/web-console/e2e/frt-external-quality.spec.ts",
+      "sha256": "sha256:13c3eeba77838f3484f625be5c533adbe2db972ae5aba9d392b37d9d6a9cbfe2",
+      "bytes": 5217
+    },
+    {
+      "path": "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+      "sha256": "sha256:c1cb6341b1d5297635ad65a11ec9cb06199952162a205b3bfcc911fbb659f5fd",
+      "bytes": 7893
+    },
+    {
+      "path": "apps/web-console/e2e/frt-local-qualification.spec.ts",
+      "sha256": "sha256:eda64674677d9a0381703caff806798aef64755b9d6b032e5667bd0d08a3907e",
+      "bytes": 5883
+    },
+    {
+      "path": "apps/web-console/e2e/frt-visual-candidate.spec.ts",
+      "sha256": "sha256:6f2a554a80ebfaa7e62e742166e14515e66dc1dfff845b186b55ef2661bee073",
+      "bytes": 1203
+    },
+    {
+      "path": "apps/web-console/e2e/generation-runner.spec.ts",
+      "sha256": "sha256:3106f69353b4d083ce0188d8c28917f2f1bc01def0fb82ac6f146bcb74f31cb9",
+      "bytes": 33294
+    },
+    {
+      "path": "apps/web-console/e2e/generation-source-ingestion.spec.ts",
+      "sha256": "sha256:54aa5faddc9cc05390997c55af8ee90509c76cb7937fbe259db79e304f036563",
+      "bytes": 11852
+    },
+    {
+      "path": "apps/web-console/e2e/generation-ui.spec.ts",
+      "sha256": "sha256:2c09dd001a708b29fcf7cf154ed8db78974df58db0c68201bb963f76225d3b91",
+      "bytes": 20129
+    },
+    {
+      "path": "apps/web-console/e2e/github-api-mock.mjs",
+      "sha256": "sha256:81d56d3dd65477f759c7ba3033bda297251b28ff23231f5d232930ae1e566570",
+      "bytes": 12217
+    },
+    {
+      "path": "apps/web-console/e2e/global-teardown.ts",
+      "sha256": "sha256:3b23b2af90ce63128561b3c73788097f3643fea89902ea13feb5efd72623d715",
+      "bytes": 3066
+    },
+    {
+      "path": "apps/web-console/e2e/maturity-status-ui.spec.ts",
+      "sha256": "sha256:6733bd08fc41c3bbf5b62802ab3ee1437ef92b77557d140d09a21ff12cfbc945",
+      "bytes": 1323
+    },
+    {
+      "path": "apps/web-console/e2e/modernization-proof.spec.ts",
+      "sha256": "sha256:31ebacf391bfc971dc0b007a8c7a3715b085220091ad8b4231dfe71ec67c5f3a",
+      "bytes": 2884
+    },
+    {
+      "path": "apps/web-console/e2e/multimodal-intake.spec.ts",
+      "sha256": "sha256:b7218653986245c107d0f9ee80d71b205d2ae6eba51acd5a9fd0fa299fd18b22",
+      "bytes": 139171
+    },
+    {
+      "path": "apps/web-console/e2e/operations-admin-ui.spec.ts",
+      "sha256": "sha256:1615883d5f578dec0aaa3a14c86c3a57523aa8a5ec4411a59231262b344e3fab",
+      "bytes": 6223
+    },
+    {
+      "path": "apps/web-console/e2e/precision-migration-jobs.spec.ts",
+      "sha256": "sha256:5c934dd68efb4f6a875ccd0c2bcd4415fc550acce8e6abafb30121afca1e55a4",
+      "bytes": 7281
+    },
+    {
+      "path": "apps/web-console/e2e/pricing-ui.spec.ts",
+      "sha256": "sha256:482fa0669bfab408d9934243cc0725a41709eb35156e6c4c4273ffdbcfd80287",
+      "bytes": 2213
+    },
+    {
+      "path": "apps/web-console/e2e/project-evidence-charts.spec.ts",
+      "sha256": "sha256:f415a55d0bece6ea39095329eefd0560cc3aed4cdb0c6bc5b797b700e169ea46",
+      "bytes": 14421
+    },
+    {
+      "path": "apps/web-console/e2e/repository-orchestrator.spec.ts",
+      "sha256": "sha256:99cb063e960e6df4ba5dab16bd7236166282f2b1da6a468c042030d605497286",
+      "bytes": 8366
+    },
+    {
+      "path": "apps/web-console/e2e/repository-workspace-ui.spec.ts",
+      "sha256": "sha256:0305dfce6fa109043b7b7541887ec1eef20ce886ef60140d7ed679d8f2d8154f",
+      "bytes": 11255
+    },
+    {
+      "path": "apps/web-console/e2e/runtime-deployment-guide.spec.ts",
+      "sha256": "sha256:1c130e1a84d8b2abbec9316c435d1a0ad8d6218ee09c7546c5c9b6351a797720",
+      "bytes": 3228
+    },
+    {
+      "path": "apps/web-console/e2e/smoke-run-button.spec.ts",
+      "sha256": "sha256:3316b82b02f491821d522bf47d5854f935d7d1a657d37586da65141ddbaf2460",
+      "bytes": 21833
+    },
+    {
+      "path": "apps/web-console/e2e/spring-production-oidc-boundary.spec.ts",
+      "sha256": "sha256:1c84852112fc6f9f57e045ae16d068c3147452680146ad91439dd713b90e859f",
+      "bytes": 7096
+    },
+    {
+      "path": "apps/web-console/e2e/spring-real-journey-ui.spec.ts",
+      "sha256": "sha256:9ea0544521e6bd3c19ea8246b702a3e162474a6e8453054ea5f02a0058fce89a",
+      "bytes": 26433
+    },
+    {
+      "path": "apps/web-console/e2e/translation-evidence-adversarial.spec.ts",
+      "sha256": "sha256:f0facda17461eb6b46d96ba61725b78d3ddff73378d884f642a04cbf17e7caaa",
+      "bytes": 56885
+    },
+    {
+      "path": "apps/web-console/e2e/usage-meter-ui.spec.ts",
+      "sha256": "sha256:cccb95958db6cc013f42c0d7c9f044767592e6033d007677153e9fa4a3d2c0f0",
+      "bytes": 8340
+    },
+    {
+      "path": "apps/web-console/lib/multimodal-intake/strictJson.ts",
+      "sha256": "sha256:6f7c2a9edc0c941449a0dedd0916aae49c0e4128c932d0760e449fcc542506aa",
+      "bytes": 6868
+    },
+    {
+      "path": "apps/web-console/next-env.d.ts",
+      "sha256": "sha256:1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b",
+      "bytes": 288
+    },
+    {
+      "path": "apps/web-console/next.config.ts",
+      "sha256": "sha256:0e0607ee837ad539892359613d444086c5c74120fd0599ba02f45872ba43535f",
+      "bytes": 584
+    },
+    {
+      "path": "apps/web-console/package.json",
+      "sha256": "sha256:bb2b99c7c10b7f2d3ff046b2ab1dff30e9f8a56235a06301b9bef074d66a2448",
+      "bytes": 3113
+    },
+    {
+      "path": "apps/web-console/playwright.config.ts",
+      "sha256": "sha256:588408ae25ba689cc8418c924cf8f6a920350b77745966e5f57664de3a9d0692",
+      "bytes": 21756
+    },
+    {
+      "path": "apps/web-console/playwright.external-quality.config.ts",
+      "sha256": "sha256:e0bf935dc8428d30c392db817595f05ad0b3fa3ef4ef7d80dbfb5794ddfa09e7",
+      "bytes": 989
+    },
+    {
+      "path": "apps/web-console/playwright.proof-loop.config.ts",
+      "sha256": "sha256:00c470215f3df9f9aaad8ceecce5c39841f10e87d782fe94ace17a7947bd62bb",
+      "bytes": 1348
+    },
+    {
+      "path": "apps/web-console/pnpm-lock.yaml",
+      "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+      "bytes": 35371
+    },
+    {
+      "path": "apps/web-console/pnpm-workspace.yaml",
+      "sha256": "sha256:32254d8edbe4b2426dfd09adbe9d1ecdf896ef801a5383ba1e520093177900e6",
+      "bytes": 96
+    },
+    {
+      "path": "apps/web-console/proxy.ts",
+      "sha256": "sha256:fa464160624d8d92ee3967988082ec7958c91bad2bf05e7854c4561d2937fd9e",
+      "bytes": 6722
+    },
+    {
+      "path": "apps/web-console/public/.gitkeep",
+      "sha256": "sha256:01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1
+    },
+    {
+      "path": "apps/web-console/src/features/g01/frt-0100-foundation-orchestrator/surface-manifest.json",
+      "sha256": "sha256:d0fb2370f8d144f57834ad493107bf861216d34f73006af150717d3147af5769",
+      "bytes": 1143
+    },
+    {
+      "path": "apps/web-console/src/features/g01/frt-0101-system-charter-and-non-negotiable-invariants/surface-manifest.json",
+      "sha256": "sha256:0721a63cbfe6e8a2c07209b4285b81cafa24b10393a21d8c2f3027fff1cd7b22",
+      "bytes": 1206
+    },
+    {
+      "path": "apps/web-console/src/features/g01/frt-0102-monorepo-bootstrap-and-module-boundaries/surface-manifest.json",
+      "sha256": "sha256:56bca33039e40d80e908ebfa63d644273bf2797556942b9b140126342b0fdab9",
+      "bytes": 1194
+    },
+    {
+      "path": "apps/web-console/src/features/g01/frt-0103-skill-specification-standard/surface-manifest.json",
+      "sha256": "sha256:1de17d3141636595119963f848019df0df3a0a525c81391430832dc25bdaeda4",
+      "bytes": 1158
+    },
+    {
+      "path": "apps/web-console/src/features/g01/frt-0104-plugin-and-extension-protocol/surface-manifest.json",
+      "sha256": "sha256:c6ae5b2e99cf7e456122b889be188552d7d5d8cbe2a2236078d3b3b3942d40e9",
+      "bytes": 1161
+    },
+    {
+      "path": "apps/web-console/src/features/g01/frt-0105-skill-registry-foundation/surface-manifest.json",
+      "sha256": "sha256:9d588bbeb803e609dadff7f8ce2142fdc1d497123ba3553287ee6dfee312d93b",
+      "bytes": 1149
+    },
+    {
+      "path": "apps/web-console/src/features/g01/frt-0106-artifact-and-provenance-model/surface-manifest.json",
+      "sha256": "sha256:535445758ad8cc59bee3fc8044691a9187a83073ba6c94353a3d8b196cc5068c",
+      "bytes": 1161
+    },
+    {
+      "path": "apps/web-console/src/features/g01/frt-0107-configuration-and-versioning-foundation/surface-manifest.json",
+      "sha256": "sha256:80ab5d56f3a29709585f6f55d84664888e96ed1a9db429bd1082d62e35af164f",
+      "bytes": 1191
+    },
+    {
+      "path": "apps/web-console/src/features/g01/frt-0108-sandbox-and-worktree-isolation/surface-manifest.json",
+      "sha256": "sha256:4f0bc7a0f338e0a16668ac9f85ce3f888981155eef5636f328b76f0baec7535a",
+      "bytes": 1164
+    },
+    {
+      "path": "apps/web-console/src/features/g01/frt-0109-fixture-golden-and-corpus-foundation/surface-manifest.json",
+      "sha256": "sha256:39d3f8572f91b6ae1332d474b505cc3115540e9128b02274e27bb8ffd1a9bd2c",
+      "bytes": 1182
+    },
+    {
+      "path": "apps/web-console/src/features/g01/frt-0110-release-gate-foundation/surface-manifest.json",
+      "sha256": "sha256:08b8c350a1ed82adcc063d13b5fd6aa20eeb57a3646bf46671ab7e4219ef46b8",
+      "bytes": 1143
+    },
+    {
+      "path": "apps/web-console/src/features/g01/frt-0111-safety-constitution-and-trust-boundary/surface-manifest.json",
+      "sha256": "sha256:c0f3d559e8643c48105c80c213853b3f20fb1f07e4796a7d7bf0c47301823544",
+      "bytes": 1188
+    },
+    {
+      "path": "apps/web-console/src/features/g02/frt-0200-repository-discovery-orchestrator/surface-manifest.json",
+      "sha256": "sha256:3439ad714ee960f7d6fe6504af67e6041f16a3a0b0fc18b4b2afa85b2a463f2d",
+      "bytes": 1100
+    },
+    {
+      "path": "apps/web-console/src/features/g02/frt-0201-workspace-and-package-detector/surface-manifest.json",
+      "sha256": "sha256:e9011766d37436995b9d10c58ce66b78c2de4b362a831d2ff5c1f4caa85f815c",
+      "bytes": 1091
+    },
+    {
+      "path": "apps/web-console/src/features/g02/frt-0202-framework-and-version-detector/surface-manifest.json",
+      "sha256": "sha256:0a8250744949c973a8214976983b84c30e5723c909a48ac373def278bca3f31f",
+      "bytes": 1091
+    },
+    {
+      "path": "apps/web-console/src/features/g02/frt-0203-build-toolchain-detector/surface-manifest.json",
+      "sha256": "sha256:ef91e330cacc583b998e5c1d17a7b4e6bbf7e045b0d3b4563714916b14e53b8a",
+      "bytes": 1073
+    },
+    {
+      "path": "apps/web-console/src/features/g02/frt-0204-dependency-graph-builder/surface-manifest.json",
+      "sha256": "sha256:ee0804c8836012a2ccf68be1aa37f3f62a60caa3998d941af2f7478c214ad599",
+      "bytes": 1073
+    },
+    {
+      "path": "apps/web-console/src/features/g02/frt-0205-module-boundary-analyzer/surface-manifest.json",
+      "sha256": "sha256:53ba99a24b75c92e2e9b209ff02c8b18f9e4f9d8336b3660e2f8f9d75ff9d0de",
+      "bytes": 1073
+    },
+    {
+      "path": "apps/web-console/src/features/g02/frt-0206-route-and-page-inventory/surface-manifest.json",
+      "sha256": "sha256:9055f8eccffb19def0605e051cbd2c29d53092cdb65a28a1faa26c18952eb773",
+      "bytes": 1073
+    },
+    {
+      "path": "apps/web-console/src/features/g02/frt-0207-component-inventory/surface-manifest.json",
+      "sha256": "sha256:0d2570c93f83290bc0f26be98c187eeb8efea16510dc252159e0059360b1dba3",
+      "bytes": 1058
+    },
+    {
+      "path": "apps/web-console/src/features/g02/frt-0208-state-and-store-inventory/surface-manifest.json",
+      "sha256": "sha256:969ec6ff3d97655a2a6a2aec663fbba0be1031927372e8395cacf0d0402e102d",
+      "bytes": 1076
+    },
+    {
+      "path": "apps/web-console/src/features/g02/frt-0209-api-event-and-storage-inventory/surface-manifest.json",
+      "sha256": "sha256:c6f48aa724507809565747b2974400b7b3159ba644606f433e3227c87e0de924",
+      "bytes": 1094
+    },
+    {
+      "path": "apps/web-console/src/features/g02/frt-0210-asset-i18n-and-accessibility-inventory/surface-manifest.json",
+      "sha256": "sha256:adddcd0c9cf3a51e6e6fa8d022a8fbe4c71bf390860d4ff31f33d00633ca4f34",
+      "bytes": 1115
+    },
+    {
+      "path": "apps/web-console/src/features/g02/frt-0211-repository-risk-classifier/surface-manifest.json",
+      "sha256": "sha256:c9ebf3b61fea7ada51cb95a733d821f1d29d7b5bf28e89aa37182e3ea2159772",
+      "bytes": 1079
+    },
+    {
+      "path": "apps/web-console/src/features/g02/frt-0212-repository-model-certification/surface-manifest.json",
+      "sha256": "sha256:2c9a2f4ba340cc6d0f80d0a10d864c81890cd80b9073a92447306800dbc4a44b",
+      "bytes": 1091
+    },
+    {
+      "path": "apps/web-console/src/features/g03/frt-0300-semantic-ir-orchestrator/surface-manifest.json",
+      "sha256": "sha256:496556bc436d40d3b165d0fe3f8faee2475390894ba57adecf40844aefbc3e01",
+      "bytes": 1068
+    },
+    {
+      "path": "apps/web-console/src/features/g03/frt-0301-universal-semantic-type-system/surface-manifest.json",
+      "sha256": "sha256:325296a08989029578e76255c4250c3760c882a5f0f328d88a8dca208023b127",
+      "bytes": 1086
+    },
+    {
+      "path": "apps/web-console/src/features/g03/frt-0302-symbol-scope-and-reference-graph/surface-manifest.json",
+      "sha256": "sha256:fe7e29994e02601c871d4e2c10fa28866b14dcead11e3e944b1e3ccc17e54588",
+      "bytes": 1092
+    },
+    {
+      "path": "apps/web-console/src/features/g03/frt-0303-component-semantic-ir/surface-manifest.json",
+      "sha256": "sha256:f6264ba0214b595c865972c6f6b4da45cce079dafa825b37b1f4526c994b643b",
+      "bytes": 1059
+    },
+    {
+      "path": "apps/web-console/src/features/g03/frt-0304-state-effect-and-lifecycle-ir/surface-manifest.json",
+      "sha256": "sha256:ddd7850542592c1873c7a439a88002d468ffb0d177a0536cef9de5e8e940a848",
+      "bytes": 1083
+    },
+    {
+      "path": "apps/web-console/src/features/g03/frt-0305-navigation-semantic-ir/surface-manifest.json",
+      "sha256": "sha256:5d539a425d877b64ec578e45443f42ea5eb7f48a42c403d38d39a9655f1f2aee",
+      "bytes": 1062
+    },
+    {
+      "path": "apps/web-console/src/features/g03/frt-0306-data-network-and-storage-ir/surface-manifest.json",
+      "sha256": "sha256:09c069765f554ab245fc3c0b723aed774170181b425b52427133f82f8f130243",
+      "bytes": 1077
+    },
+    {
+      "path": "apps/web-console/src/features/g03/frt-0307-ui-layout-and-style-ir/surface-manifest.json",
+      "sha256": "sha256:766a6103124de3d4cea60402b892cce7358a6f0b914a60ce121b95c3f95e94e4",
+      "bytes": 1062
+    },
+    {
+      "path": "apps/web-console/src/features/g03/frt-0308-platform-capability-ir/surface-manifest.json",
+      "sha256": "sha256:3a084b984c1ea6403411c7d8e3e18a784ee547d5cb707c235d49f0693abfb548",
+      "bytes": 1062
+    },
+    {
+      "path": "apps/web-console/src/features/g03/frt-0309-source-location-and-provenance-ir/surface-manifest.json",
+      "sha256": "sha256:071787f21b647ccc57cfb0635d59258214e6232018d6b5d70073bd2e39c06564",
+      "bytes": 1095
+    },
+    {
+      "path": "apps/web-console/src/features/g03/frt-0310-semantic-invariant-registry/surface-manifest.json",
+      "sha256": "sha256:70d80978715cc1060e3249e5a02f2956824f606464f8bbe11d7980a550c30027",
+      "bytes": 1077
+    },
+    {
+      "path": "apps/web-console/src/features/g03/frt-0311-ir-versioning-and-migration/surface-manifest.json",
+      "sha256": "sha256:de8e65ecadd95937a86e52a7bd5d20e4a676a7feeaead03a0579b84b69881b16",
+      "bytes": 1077
+    },
+    {
+      "path": "apps/web-console/src/features/g03/frt-0312-semantic-ir-validator/surface-manifest.json",
+      "sha256": "sha256:e242f2768870fda7c9d8291bc8840d24ecaa8ee9d50f2c17d3c25285d91be879",
+      "bytes": 1059
+    },
+    {
+      "path": "apps/web-console/src/features/g04/frt-0400-source-adapter-orchestrator/surface-manifest.json",
+      "sha256": "sha256:cf10207e6f492d388028e4a244af7f25526313edd326b59959d711876a0281c8",
+      "bytes": 1080
+    },
+    {
+      "path": "apps/web-console/src/features/g04/frt-0401-vue-2-source-adapter/surface-manifest.json",
+      "sha256": "sha256:93d02f723a37edf87a5c207eb900915c545851cf4497757863a2662de6a555ad",
+      "bytes": 1059
+    },
+    {
+      "path": "apps/web-console/src/features/g04/frt-0402-vue-3-source-adapter/surface-manifest.json",
+      "sha256": "sha256:2506ed05ad61fe2a734452a4cab6621701edc22535f4fa2e374f740ab935a605",
+      "bytes": 1059
+    },
+    {
+      "path": "apps/web-console/src/features/g04/frt-0403-react-source-adapter/surface-manifest.json",
+      "sha256": "sha256:3fb8c3dc82f1667df447f0a423c2c8109223856c0d8e4f523c23c74711586e35",
+      "bytes": 1059
+    },
+    {
+      "path": "apps/web-console/src/features/g04/frt-0404-wechat-mini-program-source-adapter/surface-manifest.json",
+      "sha256": "sha256:35a38df8fc0501046c65fd113c07b395ffd1381941b938c68ef9d9c1adab9f72",
+      "bytes": 1101
+    },
+    {
+      "path": "apps/web-console/src/features/g04/frt-0405-arkui-source-adapter/surface-manifest.json",
+      "sha256": "sha256:ccfc0556234dd1a23d2d2046e3f120865c3979838d1c1ca9f8df505b71b34f6f",
+      "bytes": 1059
+    },
+    {
+      "path": "apps/web-console/src/features/g04/frt-0406-flutter-source-adapter/surface-manifest.json",
+      "sha256": "sha256:65c306c63a0eba244f009a3dfef935082949620bcdf859782b99c76b9a9e8219",
+      "bytes": 1065
+    },
+    {
+      "path": "apps/web-console/src/features/g04/frt-0407-source-ast-normalizer/surface-manifest.json",
+      "sha256": "sha256:23518d605d84068575bd6af93217d1e4f69d67932ebf4839178e14063b1d1762",
+      "bytes": 1062
+    },
+    {
+      "path": "apps/web-console/src/features/g04/frt-0408-template-jsx-and-widget-extractor/surface-manifest.json",
+      "sha256": "sha256:f5fa52bd6329f31236e6e1070eac5b828a1bda823ac4050ea0c836131dcf35ba",
+      "bytes": 1098
+    },
+    {
+      "path": "apps/web-console/src/features/g04/frt-0409-reactive-state-extractor/surface-manifest.json",
+      "sha256": "sha256:49295baafb8976424f68414f239b1cc47eecac83d294fe4a6734217fff5ac6dd",
+      "bytes": 1071
+    },
+    {
+      "path": "apps/web-console/src/features/g04/frt-0410-lifecycle-and-effect-extractor/surface-manifest.json",
+      "sha256": "sha256:34c079ae3319008e908c46bc5a176ec76f2d05f312556d48d777238370c7d68e",
+      "bytes": 1089
+    },
+    {
+      "path": "apps/web-console/src/features/g04/frt-0411-router-navigation-and-capability-extractor/surface-manifest.json",
+      "sha256": "sha256:ab6ecf654d9644b1158a1311e7e2b63400ea1e06896d245e32e8d2d8348d1fdc",
+      "bytes": 1125
+    },
+    {
+      "path": "apps/web-console/src/features/g04/frt-0412-source-adapter-conformance-certification/surface-manifest.json",
+      "sha256": "sha256:8232676b0ad55549f000d29f2bc2fb3266f57f9951c4218a254cab39e544c305",
+      "bytes": 1119
+    },
+    {
+      "path": "apps/web-console/src/features/g05/frt-0500-migration-planning-orchestrator/surface-manifest.json",
+      "sha256": "sha256:7fe11c88a1851a4ee652274c27849589e818c01ea85ebd5275f36d20148c3846",
+      "bytes": 1145
+    },
+    {
+      "path": "apps/web-console/src/features/g05/frt-0501-semantic-gap-detector/surface-manifest.json",
+      "sha256": "sha256:78fed86496464b1237844d161ef5463eae2edb9a0ec71542c877b0d15310bb6d",
+      "bytes": 1115
+    },
+    {
+      "path": "apps/web-console/src/features/g05/frt-0502-capability-compatibility-matrix/surface-manifest.json",
+      "sha256": "sha256:ee03461ca90d62c7cb6915cf9fd101c25cbe70d048ece68a2c90f16c91f0f5f8",
+      "bytes": 1145
+    },
+    {
+      "path": "apps/web-console/src/features/g05/frt-0503-source-target-feature-mapper/surface-manifest.json",
+      "sha256": "sha256:b1238f7ca957b595954f19a71796decc52ac87410fdfdeaf90ddf678097b9f3d",
+      "bytes": 1136
+    },
+    {
+      "path": "apps/web-console/src/features/g05/frt-0504-product-decision-generator/surface-manifest.json",
+      "sha256": "sha256:4885497fc911e79476e55d9c2b5bc20b127347930aa2f0581545267574029c6e",
+      "bytes": 1130
+    },
+    {
+      "path": "apps/web-console/src/features/g05/frt-0505-shim-requirement-planner/surface-manifest.json",
+      "sha256": "sha256:4766977674fa2db2cb6969cf80fc914afd5f01ff1865fafe1127a427064b70e8",
+      "bytes": 1124
+    },
+    {
+      "path": "apps/web-console/src/features/g05/frt-0506-manual-boundary-planner/surface-manifest.json",
+      "sha256": "sha256:5941dd7e1d80e1e17a7e7b227704f540f9b0906564b0615d52862863f8712949",
+      "bytes": 1121
+    },
+    {
+      "path": "apps/web-console/src/features/g05/frt-0507-risk-confidence-and-criticality-scorer/surface-manifest.json",
+      "sha256": "sha256:4cd2009e7179d607b81adff6bd78a0cfde0bd515908f61adae96664f049639ce",
+      "bytes": 1166
+    },
+    {
+      "path": "apps/web-console/src/features/g05/frt-0508-migration-effort-and-duration-estimator/surface-manifest.json",
+      "sha256": "sha256:c0247e8b2d5b24bba97b2e7b99361f07ecad63781d0de376488d021461184615",
+      "bytes": 1169
+    },
+    {
+      "path": "apps/web-console/src/features/g05/frt-0509-multi-pass-migration-plan-generator/surface-manifest.json",
+      "sha256": "sha256:c5b0e7f00acda3e9c551bccb7b8a2614f1ae35730ff699538d04d1624b52b0eb",
+      "bytes": 1157
+    },
+    {
+      "path": "apps/web-console/src/features/g05/frt-0510-migration-plan-freezer/surface-manifest.json",
+      "sha256": "sha256:d37c4d9d8b470dff467f3bed2ccac06826da1502c08dbb6111cb0c7637e527df",
+      "bytes": 1118
+    },
+    {
+      "path": "apps/web-console/src/features/g05/frt-0511-plan-explainability-generator/surface-manifest.json",
+      "sha256": "sha256:7b7fa0f47695c194cafc04f2a392e6a076008fbe08cde2b256ac6a9088c69abc",
+      "bytes": 1139
+    },
+    {
+      "path": "apps/web-console/src/features/g05/frt-0512-migration-plan-certification/surface-manifest.json",
+      "sha256": "sha256:f82f88387c1c77204dfe3cf45e07be57b99e6b8056c1cb833d72a070a588e84a",
+      "bytes": 1136
+    },
+    {
+      "path": "apps/web-console/src/features/g06/frt-0600-target-architecture-orchestrator/surface-manifest.json",
+      "sha256": "sha256:2ebc7f7d5195a8b45c7d4cc989459886e5371d505667e3dc27b89e0fa0bdb7f9",
+      "bytes": 1112
+    },
+    {
+      "path": "apps/web-console/src/features/g06/frt-0601-vue-2-architecture-synthesizer/surface-manifest.json",
+      "sha256": "sha256:bc5b2c03aa96859a68a9c4cc0e1ea0b30525c5ae69cd8e5a0b108025c50c2de6",
+      "bytes": 1106
+    },
+    {
+      "path": "apps/web-console/src/features/g06/frt-0602-vue-3-architecture-synthesizer/surface-manifest.json",
+      "sha256": "sha256:a039155ca67bcfc4f1802fb077a478df038ced4151a5105acc8f4d2948a4a9db",
+      "bytes": 1106
+    },
+    {
+      "path": "apps/web-console/src/features/g06/frt-0603-react-architecture-synthesizer/surface-manifest.json",
+      "sha256": "sha256:79b2082428dd020964dfb4b1b60509f5a903055b7dcd92a4f3b13df7ae5225c8",
+      "bytes": 1106
+    },
+    {
+      "path": "apps/web-console/src/features/g06/frt-0604-wechat-mini-program-architecture-synthesizer/surface-manifest.json",
+      "sha256": "sha256:3c803c41eea976c4e8fcf5bcb2d4d3630c1b693cd2a82e35360fa2c23a3fabca",
+      "bytes": 1148
+    },
+    {
+      "path": "apps/web-console/src/features/g06/frt-0605-arkui-architecture-synthesizer/surface-manifest.json",
+      "sha256": "sha256:90764bf9e5940c1c074c064824bf39a0a744a9643b5f9d5c9f6d807d1cc21198",
+      "bytes": 1106
+    },
+    {
+      "path": "apps/web-console/src/features/g06/frt-0606-flutter-architecture-synthesizer/surface-manifest.json",
+      "sha256": "sha256:5980bad2cf067f129a5f8d93c91f0b2509e9e09aba5521f445c39156a4ad7b46",
+      "bytes": 1112
+    },
+    {
+      "path": "apps/web-console/src/features/g06/frt-0607-target-module-boundary-synthesizer/surface-manifest.json",
+      "sha256": "sha256:de2e578bdc69c14aeed1d669541bd77082a6b14041175d1e91ed53a879739a21",
+      "bytes": 1118
+    },
+    {
+      "path": "apps/web-console/src/features/g06/frt-0608-dependency-and-toolchain-resolver/surface-manifest.json",
+      "sha256": "sha256:c17c491d31c34bd8eb0ba36e9ea9655efa879c0d3b7720f5b33091f4f21eba3d",
+      "bytes": 1115
+    },
+    {
+      "path": "apps/web-console/src/features/g06/frt-0609-project-layout-generator/surface-manifest.json",
+      "sha256": "sha256:62d57d339ed3cef5ff59f56ba43d279bddaa79838e859ea29c54be7e18551e67",
+      "bytes": 1088
+    },
+    {
+      "path": "apps/web-console/src/features/g06/frt-0610-buildable-skeleton-generator/surface-manifest.json",
+      "sha256": "sha256:56f9c4f1824a776bcffc8db505976ecc966c6272e7e243dfa878ee2e96eb3ca9",
+      "bytes": 1100
+    },
+    {
+      "path": "apps/web-console/src/features/g06/frt-0611-bootstrap-and-smoke-validator/surface-manifest.json",
+      "sha256": "sha256:d1aaaf2ef5519a6cf361b29ad1f91942ccb4e2c4f5e7a2e422871baf25328794",
+      "bytes": 1103
+    },
+    {
+      "path": "apps/web-console/src/features/g06/frt-0612-target-architecture-certification/surface-manifest.json",
+      "sha256": "sha256:35bdf86631d3acfba49254df8d16035d3da69963a98b4e2fe40a18b47cf538a3",
+      "bytes": 1115
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0700-code-generation-orchestrator/surface-manifest.json",
+      "sha256": "sha256:1ba7671e844798580f1a4ed1db2c261937c3cbb2fe37b7a2b7409a781ed8ac11",
+      "bytes": 1173
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0701-typed-semantic-lowering-engine/surface-manifest.json",
+      "sha256": "sha256:9bc154bd2a2a8e6f86449652ffa5ab9b23809b86097cdc4e5a1924d5e2970182",
+      "bytes": 1179
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0702-rule-registry-and-pass-manager/surface-manifest.json",
+      "sha256": "sha256:3ab05bdbf573b0dbd6d2c31c5617bea1e37b385b679eab99ae1317b4ba860701",
+      "bytes": 1179
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0703-target-native-ast-emitter/surface-manifest.json",
+      "sha256": "sha256:86dad603e8a9352a1f0c7505c968597c446b04ab147aa900da7dc57dd83a5be9",
+      "bytes": 1164
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0704-template-jsx-and-widget-emitter/surface-manifest.json",
+      "sha256": "sha256:1c9648af0138385e74233a6a4ce8db536cca18e456636cb07374f99dd738bb59",
+      "bytes": 1182
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0705-import-and-dependency-resolver/surface-manifest.json",
+      "sha256": "sha256:ea62235af380b208440353c858f17923063723d62020dc6a2a336ae9905ba007",
+      "bytes": 1179
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0706-deterministic-naming-and-file-allocation/surface-manifest.json",
+      "sha256": "sha256:f6dffcb1f9b35460adba007e7d01d03133301edd78ed64d950eeba8938e98100",
+      "bytes": 1209
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0707-typed-hole-and-gap-emitter/surface-manifest.json",
+      "sha256": "sha256:f6d17ff2379742927dfe73e69d2434179c1f0eac064cb9b7370c4dc8d77b8afb",
+      "bytes": 1167
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0708-formatter-linter-and-analyzer-integration/surface-manifest.json",
+      "sha256": "sha256:0c0624b6fb58285cee354f7d48b5c5abc189faeb77305ed25867eec75769eb92",
+      "bytes": 1212
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0709-build-and-diagnostic-adapter/surface-manifest.json",
+      "sha256": "sha256:8b35b8bbd65e131720afab8f93672a0ac76e464cbb0d2054bfce11d9a33394c8",
+      "bytes": 1173
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0710-deterministic-repair-loop/surface-manifest.json",
+      "sha256": "sha256:764ebdf771c5b2a52fbde3287db4d3c3819a2f9d2f352d6e9a9dbb22fc68f282",
+      "bytes": 1164
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0711-restricted-agent-repair-envelope/surface-manifest.json",
+      "sha256": "sha256:e297d27c0b87018ab0c703770972fc41de5110b396c5780e7697b54948ebdbab",
+      "bytes": 1185
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0712-incremental-regeneration-and-three-way-merge/surface-manifest.json",
+      "sha256": "sha256:e6665c8834f008283ccfdc4514c210f1868ab08d5675e42ccb442485868102ad",
+      "bytes": 1221
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0713-source-target-map-generator/surface-manifest.json",
+      "sha256": "sha256:4f820227339d71ddc58bb554e032b109b8b6eaef87ee035f652dd316d96559f8",
+      "bytes": 1170
+    },
+    {
+      "path": "apps/web-console/src/features/g07/frt-0714-code-generation-certification/surface-manifest.json",
+      "sha256": "sha256:cbbef23667fd2c2020dd7e7d29466e602581ae32d5885a8f0e31067a6ffa96f8",
+      "bytes": 1176
+    },
+    {
+      "path": "apps/web-console/src/features/g08/frt-0800-component-semantics-orchestrator/surface-manifest.json",
+      "sha256": "sha256:321be6a025bd810812a9c8ad52ae8beb777011aa48ce0f4f40f838f82e85d39f",
+      "bytes": 1093
+    },
+    {
+      "path": "apps/web-console/src/features/g08/frt-0801-component-boundary-mapper/surface-manifest.json",
+      "sha256": "sha256:3188a79611683ae41fc478369c2826ea87b73fcc16e2ca2c6528aab78855da57",
+      "bytes": 1072
+    },
+    {
+      "path": "apps/web-console/src/features/g08/frt-0802-props-and-input-contract-mapper/surface-manifest.json",
+      "sha256": "sha256:ff24ba36ab4e269b9d0f1f25eba710d9ffb33184f0fe0213d1741d9faeea892b",
+      "bytes": 1090
+    },
+    {
+      "path": "apps/web-console/src/features/g08/frt-0803-events-callback-and-emit-mapper/surface-manifest.json",
+      "sha256": "sha256:9be9dc5a6e8fdf14be6f2dd8cebf99748ab66263ec4cad36463796e489c1e966",
+      "bytes": 1090
+    },
+    {
+      "path": "apps/web-console/src/features/g08/frt-0804-slots-children-and-builder-mapper/surface-manifest.json",
+      "sha256": "sha256:d2eda6dd35be5cf08185c162884d934767c5cedda700e702b89864576337fb5f",
+      "bytes": 1096
+    },
+    {
+      "path": "apps/web-console/src/features/g08/frt-0805-refs-keys-and-identity-mapper/surface-manifest.json",
+      "sha256": "sha256:3f2b1e7199ccd61c9579584de29b8a548c1340c752f8adea9f651e0cabb2795f",
+      "bytes": 1084
+    },
+    {
+      "path": "apps/web-console/src/features/g08/frt-0806-hooks-composables-and-context-mapper/surface-manifest.json",
+      "sha256": "sha256:b892cd857e6a4467bbaf4e4a6175b2f60299baaaa01b4072c57cdda6a7a31871",
+      "bytes": 1105
+    },
+    {
+      "path": "apps/web-console/src/features/g08/frt-0807-controlled-and-uncontrolled-state-mapper/surface-manifest.json",
+      "sha256": "sha256:1d63cb6f8dfdf6c04873aa75eb3ccbbe91d877ea74d87c6ce81cd30566471d38",
+      "bytes": 1117
+    },
+    {
+      "path": "apps/web-console/src/features/g08/frt-0808-component-lifecycle-mapper/surface-manifest.json",
+      "sha256": "sha256:01500578ecd4ed4429b48968ab5602d5077e682b8e993c2c991d01e314bcd28f",
+      "bytes": 1075
+    },
+    {
+      "path": "apps/web-console/src/features/g08/frt-0809-portal-teleport-and-overlay-mapper/surface-manifest.json",
+      "sha256": "sha256:1ab22507542b717b9b3ed68b1f3f35efc674c689ddc9be247818fc23547ef0c1",
+      "bytes": 1099
+    },
+    {
+      "path": "apps/web-console/src/features/g08/frt-0810-dynamic-component-mapper/surface-manifest.json",
+      "sha256": "sha256:ca30197e126f5a652a9da1c8bbebe6e2b4f2b87f22a639cb412b36221a50b23d",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g08/frt-0811-component-test-generator/surface-manifest.json",
+      "sha256": "sha256:aa13924df00aab1c8339b701c035cc9493c927a45a87b4aa821c933c726d43fa",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g08/frt-0812-component-semantics-certification/surface-manifest.json",
+      "sha256": "sha256:e8459a1617b877b7b3bec828d6077ebdbcaaea4e16be5925b979da03c5a29d04",
+      "bytes": 1096
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0900-runtime-semantics-orchestrator/surface-manifest.json",
+      "sha256": "sha256:6c09ffe5a44b301987636c82e953c616808a33e7c2b3b834593cfaf6208e48d4",
+      "bytes": 1131
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0901-state-ownership-mapper/surface-manifest.json",
+      "sha256": "sha256:f9b40cd40c23835737bbf8ac40d980643850cef08f1cd98235263dd8b254a3ca",
+      "bytes": 1107
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0902-derived-state-and-memoization-mapper/surface-manifest.json",
+      "sha256": "sha256:3631c0986b7a919ceb6a43c56bdd4b3ffc65e1ea0636d23c464c46228083ef36",
+      "bytes": 1149
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0903-effect-semantics-mapper/surface-manifest.json",
+      "sha256": "sha256:a53f0984244f6a326b682614e9f55ec4ca018caddf8c27c07e1b60e6e54dd4aa",
+      "bytes": 1110
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0904-lifecycle-ordering-validator/surface-manifest.json",
+      "sha256": "sha256:ecb24961a45ea779e1b7fce29c017ad5a2551ff8bbf5bc16feb43779e4b3b4ec",
+      "bytes": 1125
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0905-async-and-concurrency-mapper/surface-manifest.json",
+      "sha256": "sha256:405bcbd56e63a8a34bce2bf48839635ee305fe5f7be44a5ee2a1129bace13125",
+      "bytes": 1125
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0906-cancellation-propagation-mapper/surface-manifest.json",
+      "sha256": "sha256:b75e820a82480261f23688ced47fcdc27f9ae2943601cf7a5fb0e641c165bc9b",
+      "bytes": 1134
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0907-resource-ownership-and-cleanup-mapper/surface-manifest.json",
+      "sha256": "sha256:18a49a606f1c77a3bd2046385df951d0187e239571e34e5379aadc67ae37b676",
+      "bytes": 1152
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0908-retry-backoff-and-idempotency-mapper/surface-manifest.json",
+      "sha256": "sha256:a2f534306bd11e675eb8d69a235dd9f4d91402bd69b2c6be60154831f2899f4a",
+      "bytes": 1149
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0909-persistence-and-hydration-mapper/surface-manifest.json",
+      "sha256": "sha256:5a9912f3b44de60a942437173e8a2d40b81f0394a4258dfbd53b02f8f0fe101e",
+      "bytes": 1137
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0910-offline-resume-and-checkpoint-mapper/surface-manifest.json",
+      "sha256": "sha256:26479f0a85b5d2a8a464ea3db661e4c37f1cc538fb8e8056320ee813c9d28ef6",
+      "bytes": 1149
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0911-runtime-race-detector/surface-manifest.json",
+      "sha256": "sha256:b728d1436b1d83a8e647f1544f1bac5f414b9933979cbcb5bc263f33037216b0",
+      "bytes": 1104
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0912-runtime-semantics-test-generator/surface-manifest.json",
+      "sha256": "sha256:23fc1169f9d3d42afda675309d1c6fa1d24fe4545eb34d3c49b23df322d65bd0",
+      "bytes": 1137
+    },
+    {
+      "path": "apps/web-console/src/features/g09/frt-0913-runtime-semantics-certification/surface-manifest.json",
+      "sha256": "sha256:c06d16e07320039713d258df34c755823f9c5f6287127503d8c72936684e5af9",
+      "bytes": 1134
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1000-application-boundary-orchestrator/surface-manifest.json",
+      "sha256": "sha256:6e1c92269deebbbc4d65fce2e00b76e3779dc64ac628fb5770046cabcda93cad",
+      "bytes": 1165
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1001-route-graph-generator/surface-manifest.json",
+      "sha256": "sha256:daea7b87cafeed916b8f2ba90e6fc91b4a97edd294b9e88e87d912cbabe98d13",
+      "bytes": 1129
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1002-navigation-and-history-mapper/surface-manifest.json",
+      "sha256": "sha256:cbe7310cca91e590e5fe9307754b3a295ebec3702c8e248edfd1b97c31f79a47",
+      "bytes": 1153
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1003-route-guard-mapper/surface-manifest.json",
+      "sha256": "sha256:b42e175487c84f23893eac628a374125b4b58de937ca73f3eb8ddea89462fcbb",
+      "bytes": 1120
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1004-form-model-generator/surface-manifest.json",
+      "sha256": "sha256:66517b4bcfde78abdd362daf889c6e322482355b7f893029142cf9b91fb2cb80",
+      "bytes": 1126
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1005-validation-and-error-contract-mapper/surface-manifest.json",
+      "sha256": "sha256:5113248cdf3143aa7e9e3670d2a4c016ec9a7927787b0897301a8f487076f7e4",
+      "bytes": 1174
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1006-network-client-generator/surface-manifest.json",
+      "sha256": "sha256:daafc587d66ede019771dec7051a85bed793c457195fff00b46351c8b57e3eca",
+      "bytes": 1138
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1007-api-contract-mapper/surface-manifest.json",
+      "sha256": "sha256:65f6a937b4872d4df48c041fc631f258d2b62746b7e5ebb32800610c0a21ffb6",
+      "bytes": 1123
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1008-storage-adapter-generator/surface-manifest.json",
+      "sha256": "sha256:2b3c323f22ccb94ae4d3e2c1b814bb8bf6aa7ce7283594fe94046097105180aa",
+      "bytes": 1141
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1009-identity-and-session-mapper/surface-manifest.json",
+      "sha256": "sha256:500c66a6b298e0e9eab87a3e59b2295e79c0d0c0ae5f904925ddde8009b1d033",
+      "bytes": 1147
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1010-authorization-and-tenant-scope-mapper/surface-manifest.json",
+      "sha256": "sha256:9a8d9e5eba9aba14c2fdab6541e9cf7a371819d55edf9fb4ef0051acd60a6da4",
+      "bytes": 1177
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1011-realtime-webhook-and-subscription-mapper/surface-manifest.json",
+      "sha256": "sha256:87d84a266a599ba5552d08ea30a178d7519f3811bfd2d64121d60fd970cb406d",
+      "bytes": 1186
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1012-permission-and-capability-mapper/surface-manifest.json",
+      "sha256": "sha256:8ab48e207c76b9418e18a25ea641ec2199410ba073ed4925d5fe35de68d8836d",
+      "bytes": 1162
+    },
+    {
+      "path": "apps/web-console/src/features/g10/frt-1013-application-boundary-certification/surface-manifest.json",
+      "sha256": "sha256:6766d2cca03d4ae2f41026fc994d9e84adbb69977b4b617b278d23e5f3dfee35",
+      "bytes": 1168
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1100-ui-fidelity-orchestrator/surface-manifest.json",
+      "sha256": "sha256:4e2b5bf333cbd7f5a08dae86c4f0836a7abc4529d7878938bb7df9f976079c99",
+      "bytes": 1147
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1101-layout-semantic-mapper/surface-manifest.json",
+      "sha256": "sha256:2c2a43d40f6a4f9c6742359a45f3aa3edb3d87188f9deaeedf0d9ecc1f1a6b20",
+      "bytes": 1141
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1102-style-and-design-token-mapper/surface-manifest.json",
+      "sha256": "sha256:83855d9a05770a79acee6c0ceb7a2acd4ae714bf720810db63df967129c681ae",
+      "bytes": 1162
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1103-responsive-layout-mapper/surface-manifest.json",
+      "sha256": "sha256:181b8f440a5302ee742c39b76432292fa108cbb2354e362b7520c03edeafcb74",
+      "bytes": 1147
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1104-theme-and-appearance-mapper/surface-manifest.json",
+      "sha256": "sha256:58a283938ce5987f16335d113ed5a112b1d0ce34ab5b95eee64ce8c495d61848",
+      "bytes": 1156
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1105-asset-pipeline-mapper/surface-manifest.json",
+      "sha256": "sha256:4230eb25585fbc7d873c923ef5e3b2a798bf7bedfcdbd1b97d609086cefa4b42",
+      "bytes": 1138
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1106-font-icon-and-typography-mapper/surface-manifest.json",
+      "sha256": "sha256:4a501a44695b1580db8944eac66cde8b2344ca342865616f0e9580f83afc1d03",
+      "bytes": 1168
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1107-internationalization-mapper/surface-manifest.json",
+      "sha256": "sha256:7385b76ecfebcb52dbbcc823da426deb23a018e52195e92b99d2daaff2a09305",
+      "bytes": 1156
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1108-rtl-and-bidirectional-text-mapper/surface-manifest.json",
+      "sha256": "sha256:6705fbbd957447c337ac5c7d0d7db48cf36113c5aff1d073b0b7ccf4be79128f",
+      "bytes": 1174
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1109-accessibility-semantic-mapper/surface-manifest.json",
+      "sha256": "sha256:eeeec13cfa27e070a102912ece2d5464cf847f66de60390448ee3877741203af",
+      "bytes": 1162
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1110-animation-and-transition-mapper/surface-manifest.json",
+      "sha256": "sha256:a97feee049f416b493dd4819f2b3d563f22253e7b934fdf43630336419a40477",
+      "bytes": 1168
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1111-visual-regression-generator/surface-manifest.json",
+      "sha256": "sha256:965fd38b9dca94824400014ee02af5e4b31dc7563c420b852d29e1979b347e72",
+      "bytes": 1156
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1112-semantic-ui-regression-generator/surface-manifest.json",
+      "sha256": "sha256:edb942dd9201a10005fe3978dd206f232dd382036146a62a0ef9906f3319872f",
+      "bytes": 1171
+    },
+    {
+      "path": "apps/web-console/src/features/g11/frt-1113-ui-fidelity-certification/surface-manifest.json",
+      "sha256": "sha256:4dfcdda8d14aa9bf1ee2fd82844e56ac81475fe3408620d5ed83a9c09a1cca48",
+      "bytes": 1150
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1200-platform-capability-orchestrator/surface-manifest.json",
+      "sha256": "sha256:d781ac6e3656f2ca449babe90602064726266427a752233d3e2a9fca4ec83f41",
+      "bytes": 1153
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1201-platform-capability-registry/surface-manifest.json",
+      "sha256": "sha256:94ddf2652439d7ccdc19d848f61a2bf0d5f189b56327d5fa99ec61c871d42e27",
+      "bytes": 1141
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1202-native-bridge-generator/surface-manifest.json",
+      "sha256": "sha256:7a98937bfbbf71113f3135b42bbdc07489f7157970bb72b8414a08cacd4f78a1",
+      "bytes": 1126
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1203-file-clipboard-and-share-capability/surface-manifest.json",
+      "sha256": "sha256:3e50ac1bca15430d06c572679aef86ebb1332a7744ed130c48a8cfed1c2b9703",
+      "bytes": 1162
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1204-camera-media-and-picker-capability/surface-manifest.json",
+      "sha256": "sha256:31d7ba64895bf5fd888366f4df71b8acb729da86eac2b82fd7b222b6a828a40d",
+      "bytes": 1159
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1205-location-bluetooth-and-device-capability/surface-manifest.json",
+      "sha256": "sha256:d433e921b7a1c40194f7979232a7f9f53a34fb6a5799647c039919ad14468dde",
+      "bytes": 1177
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1206-notification-capability/surface-manifest.json",
+      "sha256": "sha256:350a008a50add8f158ae325cca08e542394ec9bcb454977bc40572e913de1138",
+      "bytes": 1126
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1207-payment-capability/surface-manifest.json",
+      "sha256": "sha256:9fb893f07a8d37490f0ff4ce39aa5f6e7585aec23aea7294d0a4a736d096176b",
+      "bytes": 1111
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1208-permission-state-machine-generator/surface-manifest.json",
+      "sha256": "sha256:14ba1c01bab7a426443d4633404f351d731c2b7ee3c763458ff32905e7526399",
+      "bytes": 1159
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1209-app-lifecycle-and-background-capability/surface-manifest.json",
+      "sha256": "sha256:be7db55ba116aae61641ed9ce6307a9e7d5fe3c48402f79f3680b7bebebd3831",
+      "bytes": 1174
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1210-device-fake-and-simulator-generator/surface-manifest.json",
+      "sha256": "sha256:1009367c8b17c094300fde9731fa6563ed50bc588bfe3eb9902b97f7f2a7b569",
+      "bytes": 1162
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1211-unsupported-capability-ux-generator/surface-manifest.json",
+      "sha256": "sha256:579070b8c79ba93c0b15b94679792338e581dd88265579ef7e76493a575aa212",
+      "bytes": 1162
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1212-platform-safety-validator/surface-manifest.json",
+      "sha256": "sha256:81d56b8dcb9425c8219ff036d0953634fc9a5243890df986bed3a5830827cf89",
+      "bytes": 1132
+    },
+    {
+      "path": "apps/web-console/src/features/g12/frt-1213-platform-capability-certification/surface-manifest.json",
+      "sha256": "sha256:c3de1a25e994262e3e3589bc3bf5a50276cb7c3ef7a22310e8f6fc3c63e5b059",
+      "bytes": 1156
+    },
+    {
+      "path": "apps/web-console/src/features/g13/frt-1300-web-triangle-route-orchestrator/surface-manifest.json",
+      "sha256": "sha256:42066a484be320fd773a590df35d903c826435aa76ccfadd04ae2005f5187b57",
+      "bytes": 1112
+    },
+    {
+      "path": "apps/web-console/src/features/g13/frt-1301-vue-2-to-vue-3-route-pack/surface-manifest.json",
+      "sha256": "sha256:a668c5172fdd75fd53e0dd459eaffe46d8275aade2c3699f1d6bf3e64fe0645b",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g13/frt-1302-vue-3-to-vue-2-route-pack/surface-manifest.json",
+      "sha256": "sha256:90dc0a67d5d0bc1d10137282b56c696d92212e27e2063d4a60ca02548c12fe1d",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g13/frt-1303-vue-2-to-react-route-pack/surface-manifest.json",
+      "sha256": "sha256:ec72247dbc7a1921e95c6b9e241dbdcaad7ee12ee86883ecaa20b6f93ce38928",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g13/frt-1304-react-to-vue-2-route-pack/surface-manifest.json",
+      "sha256": "sha256:7e1715e5c0f365749dc67c744f9720f8b0cd762b8d414f1571961cf63d78e8c9",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g13/frt-1305-vue-3-to-react-route-pack/surface-manifest.json",
+      "sha256": "sha256:aba87529aaf5b46800d03190fe91b75ca08dc18c8ed240984505549e34a4ed2d",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g13/frt-1306-react-to-vue-3-route-pack/surface-manifest.json",
+      "sha256": "sha256:802491e3314422f816a505fefc965d10b63148b154d9cf1a0750ba5849161dd4",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g13/frt-1307-web-direction-pack-registry/surface-manifest.json",
+      "sha256": "sha256:2c294b0b9a53f721177621f03bc983f8d6b32ff7ab54e372221e58cdc1b9c07f",
+      "bytes": 1100
+    },
+    {
+      "path": "apps/web-console/src/features/g13/frt-1308-web-state-router-and-ui-mapping/surface-manifest.json",
+      "sha256": "sha256:903f1b63219caa76aa028986877982aec9c4649b961ed51d51eba522aea73876",
+      "bytes": 1112
+    },
+    {
+      "path": "apps/web-console/src/features/g13/frt-1309-web-differential-corpus/surface-manifest.json",
+      "sha256": "sha256:7917e61ba50ccf5453e230de13e18097af6ca94bdea1742365ab1a2779eb5a48",
+      "bytes": 1088
+    },
+    {
+      "path": "apps/web-console/src/features/g13/frt-1310-web-route-certification/surface-manifest.json",
+      "sha256": "sha256:afbc02ce5912e3e124f3c89f7743df84cda7acdfd9a3cb3c7d98f91727f404e4",
+      "bytes": 1088
+    },
+    {
+      "path": "apps/web-console/src/features/g14/frt-1400-web-mini-program-route-orchestrator/surface-manifest.json",
+      "sha256": "sha256:186fa969ff21e87be553406177007b506a644398fbde5d48b4e9cf4d94a0c815",
+      "bytes": 1124
+    },
+    {
+      "path": "apps/web-console/src/features/g14/frt-1401-vue-2-to-mini-program-route-pack/surface-manifest.json",
+      "sha256": "sha256:a5f8865056d86b6c0f3069a18eca97a0b717165a0c1d88964b3ca8734a67d91f",
+      "bytes": 1090
+    },
+    {
+      "path": "apps/web-console/src/features/g14/frt-1402-mini-program-to-vue-2-route-pack/surface-manifest.json",
+      "sha256": "sha256:ebb9b0416aa3f8a1f0088a1b440c4e833cd3db29df12d4e19c8db66aaa05946d",
+      "bytes": 1090
+    },
+    {
+      "path": "apps/web-console/src/features/g14/frt-1403-vue-3-to-mini-program-route-pack/surface-manifest.json",
+      "sha256": "sha256:639d381a756fc89592654f39af48f8b1278f5d01a4c6f7dadfdeff908e4d1e03",
+      "bytes": 1090
+    },
+    {
+      "path": "apps/web-console/src/features/g14/frt-1404-mini-program-to-vue-3-route-pack/surface-manifest.json",
+      "sha256": "sha256:3ee29607b61150d7924dceca9834dd6d616bf1b42543c1a7e25e77fda5b335c1",
+      "bytes": 1090
+    },
+    {
+      "path": "apps/web-console/src/features/g14/frt-1405-react-to-mini-program-route-pack/surface-manifest.json",
+      "sha256": "sha256:dc2a8177383f081d950f93fafaa174d2d4ab6a63b1dfc68301658b6697129e63",
+      "bytes": 1090
+    },
+    {
+      "path": "apps/web-console/src/features/g14/frt-1406-mini-program-to-react-route-pack/surface-manifest.json",
+      "sha256": "sha256:4f4f94addba17112fdcac93f3761118dc2d052f8f0fe790777d23f65b6941aae",
+      "bytes": 1090
+    },
+    {
+      "path": "apps/web-console/src/features/g14/frt-1407-mini-program-capability-gap-planner/surface-manifest.json",
+      "sha256": "sha256:1a1e6e57144af45636395d6585ee2e772571cdbaad4c9933643e269ba5e58ffa",
+      "bytes": 1124
+    },
+    {
+      "path": "apps/web-console/src/features/g14/frt-1408-mini-program-route-form-and-storage-mapper/surface-manifest.json",
+      "sha256": "sha256:2e2be2be8d66f15d20f0fa7f59bef92104f2d846263dc5c83f2105567ef2b1f2",
+      "bytes": 1145
+    },
+    {
+      "path": "apps/web-console/src/features/g14/frt-1409-mini-program-identity-payment-and-permission-mapper/surface-manifest.json",
+      "sha256": "sha256:4bf50679bc42aa541e60c1966d7b24f68adb33a438fb6fcbada49ebe7a74327d",
+      "bytes": 1172
+    },
+    {
+      "path": "apps/web-console/src/features/g14/frt-1410-web-mini-program-differential-corpus/surface-manifest.json",
+      "sha256": "sha256:5f2c0cbc68993a62c4406b7cf33801d5b46ddd8e64c2491c8b5d4aa0f2dd80ff",
+      "bytes": 1127
+    },
+    {
+      "path": "apps/web-console/src/features/g14/frt-1411-web-mini-program-route-certification/surface-manifest.json",
+      "sha256": "sha256:590849a6739e1f76d07364ab37a5ce4747e560cc25d81664e5ca75a20562074f",
+      "bytes": 1127
+    },
+    {
+      "path": "apps/web-console/src/features/g15/frt-1500-web-arkui-route-orchestrator/surface-manifest.json",
+      "sha256": "sha256:46d4993eaa83f3992c985e6352f8a1e3ae74880b5f816bc8fbcc996bc8ec2672",
+      "bytes": 1103
+    },
+    {
+      "path": "apps/web-console/src/features/g15/frt-1501-vue-2-to-arkui-route-pack/surface-manifest.json",
+      "sha256": "sha256:21e5402aa8786d7ceddaca409c769a0e22a54d35dd88dd36503acaa60e596c25",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g15/frt-1502-arkui-to-vue-2-route-pack/surface-manifest.json",
+      "sha256": "sha256:0c70a766db5b4bf504421ebb744f48c0de837ffffd680867df76a20094f7c015",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g15/frt-1503-vue-3-to-arkui-route-pack/surface-manifest.json",
+      "sha256": "sha256:3157c47adc6f680204170425ae0669b50df4e3241b8b539416d2f575f5ab4d15",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g15/frt-1504-arkui-to-vue-3-route-pack/surface-manifest.json",
+      "sha256": "sha256:4f3a7293684b3f42133f8d6a3d6e8ce295fe9d3d106ab91d6c55c68989254f00",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g15/frt-1505-react-to-arkui-route-pack/surface-manifest.json",
+      "sha256": "sha256:31118216d4cc2b5d629ce955b7381294fa8813d702772695baf98ec736a5542e",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g15/frt-1506-arkui-to-react-route-pack/surface-manifest.json",
+      "sha256": "sha256:1f6315733fa41a10952f8672b837e84c1c1ab71fdb6bec9ae7b919784ab82ebd",
+      "bytes": 1069
+    },
+    {
+      "path": "apps/web-console/src/features/g15/frt-1507-arkui-capability-gap-planner/surface-manifest.json",
+      "sha256": "sha256:dbea6853580f3f5029a74a56194ef288b097f5be63dc2652587cdff06d365e0f",
+      "bytes": 1103
+    },
+    {
+      "path": "apps/web-console/src/features/g15/frt-1508-arkui-state-navigation-and-lifecycle-mapper/surface-manifest.json",
+      "sha256": "sha256:0d6849d5853e0e48b952b099e987f4ab95ca3208ad8ba16e308fdc1b08bc6dd2",
+      "bytes": 1148
+    },
+    {
+      "path": "apps/web-console/src/features/g15/frt-1509-arkui-native-capability-mapper/surface-manifest.json",
+      "sha256": "sha256:901c0be1bd23578237a25be13e50571280ca4709ce3a0709b258b14f7e5dfaba",
+      "bytes": 1109
+    },
+    {
+      "path": "apps/web-console/src/features/g15/frt-1510-web-arkui-device-differential-corpus/surface-manifest.json",
+      "sha256": "sha256:036900af47350adf9980c61a58d63031f19f1fe5d59bfd3c591810304c5056f7",
+      "bytes": 1127
+    },
+    {
+      "path": "apps/web-console/src/features/g15/frt-1511-web-arkui-route-certification/surface-manifest.json",
+      "sha256": "sha256:d4641a52da19c0bfce7c27637a0bd534f8d2a761bbc8549c48a597e46fea685e",
+      "bytes": 1106
+    },
+    {
+      "path": "apps/web-console/src/features/g16/frt-1600-web-flutter-route-orchestrator/surface-manifest.json",
+      "sha256": "sha256:0d7abee1e269e203230899c4772d843747106fee22c6173985fbec85e26cd584",
+      "bytes": 1109
+    },
+    {
+      "path": "apps/web-console/src/features/g16/frt-1601-vue-2-to-flutter-route-pack/surface-manifest.json",
+      "sha256": "sha256:6fb96ebe4c78a7e1a8ba7c2a4d3b757a2a38a52fd7d4e512e9401beefa32a730",
+      "bytes": 1075
+    },
+    {
+      "path": "apps/web-console/src/features/g16/frt-1602-flutter-to-vue-2-route-pack/surface-manifest.json",
+      "sha256": "sha256:8ce727ec12b65d82c1bcca650133566384e4ef47308cba394653bd71932b7156",
+      "bytes": 1075
+    },
+    {
+      "path": "apps/web-console/src/features/g16/frt-1603-vue-3-to-flutter-route-pack/surface-manifest.json",
+      "sha256": "sha256:391d2f05e52c597c30fd2342bcdfe5011f458c1a5f912c0600794ba1cc0addb7",
+      "bytes": 1075
+    },
+    {
+      "path": "apps/web-console/src/features/g16/frt-1604-flutter-to-vue-3-route-pack/surface-manifest.json",
+      "sha256": "sha256:d2fe92c7abe064e44f22a422658c489ac837ed667d3083aa131dd4b67f83c759",
+      "bytes": 1075
+    },
+    {
+      "path": "apps/web-console/src/features/g16/frt-1605-react-to-flutter-route-pack/surface-manifest.json",
+      "sha256": "sha256:babfdd5827e355b80a5ee2264f414c12d00ba1d47f14f6af09f2c733a3aa2259",
+      "bytes": 1075
+    },
+    {
+      "path": "apps/web-console/src/features/g16/frt-1606-flutter-to-react-route-pack/surface-manifest.json",
+      "sha256": "sha256:49498cc1dba2a0ef4929cca5c42214eb93cfd0a987fd75fcd89a1d3c8db8fcf3",
+      "bytes": 1075
+    },
+    {
+      "path": "apps/web-console/src/features/g16/frt-1607-flutter-capability-gap-planner/surface-manifest.json",
+      "sha256": "sha256:3fd2465bb37f9e937827e363fa289584d142a9b06dbbeaa56ee159a04ec5d5d8",
+      "bytes": 1109
+    },
+    {
+      "path": "apps/web-console/src/features/g16/frt-1608-flutter-widget-state-and-navigation-mapper/surface-manifest.json",
+      "sha256": "sha256:84eadc6237919224849ee4e046ad692fcba760310df3e915dd86aeff32bb989a",
+      "bytes": 1145
+    },
+    {
+      "path": "apps/web-console/src/features/g16/frt-1609-flutter-plugin-and-platform-channel-mapper/surface-manifest.json",
+      "sha256": "sha256:62a555205730c32e4d34d7972266168a844290ded1aa9a8c25dbad81ad191ae6",
+      "bytes": 1145
+    },
+    {
+      "path": "apps/web-console/src/features/g16/frt-1610-web-flutter-differential-corpus/surface-manifest.json",
+      "sha256": "sha256:29bdb770eeb681b19c4d893c3ff1e1ccc691a074cc8147e0f0e16b06647b8982",
+      "bytes": 1112
+    },
+    {
+      "path": "apps/web-console/src/features/g16/frt-1611-web-flutter-route-certification/surface-manifest.json",
+      "sha256": "sha256:a3a630bc146c5ebd7f1c3aa652ac9eafe21184e4bcc435ed2ded5bb45a857759",
+      "bytes": 1112
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1700-mobile-triangle-route-orchestrator/surface-manifest.json",
+      "sha256": "sha256:cf5cfb28e247dd8dae4b9476633b0c058999d959adef1c62d91db95560eaaf9d",
+      "bytes": 1121
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1701-mini-program-to-arkui-route-pack/surface-manifest.json",
+      "sha256": "sha256:5f354d075e8df5c067a2cdb261e68f92f138491f40008894c4616c2a71795bbc",
+      "bytes": 1090
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1702-arkui-to-mini-program-route-pack/surface-manifest.json",
+      "sha256": "sha256:3ce6dcc92b454eecc7f3f2fbe89fab1622dad969831429d69c44f5d51b1199b1",
+      "bytes": 1090
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1703-mini-program-to-flutter-route-pack/surface-manifest.json",
+      "sha256": "sha256:7d9794b66ece1b09b2039e97c0976db54c6d0d5b9b11a45c218dc0035ab3bbeb",
+      "bytes": 1096
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1704-flutter-to-mini-program-route-pack/surface-manifest.json",
+      "sha256": "sha256:7bf10c27cbd6db274c47d7b5e96e00aca57761071a5432834134317ab5b82b36",
+      "bytes": 1096
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1705-arkui-to-flutter-route-pack/surface-manifest.json",
+      "sha256": "sha256:b6ad1f7cfe05c6787d360d4944477fbb280aceb6bf4e76ac3a09be9f79bcb0a1",
+      "bytes": 1075
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1706-flutter-to-arkui-route-pack/surface-manifest.json",
+      "sha256": "sha256:20a970b720f396870dcbd4bae91f6c9d666d16aab04ae22e1763de590e111ccb",
+      "bytes": 1075
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1707-mobile-capability-normalizer/surface-manifest.json",
+      "sha256": "sha256:08b98686310c5c2077786e75594900a67ffdea10f3d06abd4d82225f095b61b5",
+      "bytes": 1103
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1708-mobile-navigation-and-lifecycle-mapper/surface-manifest.json",
+      "sha256": "sha256:55f4ca19d6450c8827440836a2dd2e039011c71b01d99375f6d10e2f7d154127",
+      "bytes": 1133
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1709-native-bridge-and-device-mapper/surface-manifest.json",
+      "sha256": "sha256:70e1495d69987ffd91d810ce6b568b2efe14a5430a27109ea1fc7e7f2197fd48",
+      "bytes": 1112
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1710-mobile-device-matrix-validator/surface-manifest.json",
+      "sha256": "sha256:944a37930cab6d07490610d9310d2ce0ab7263caa4ac84188fae6fdfac936e74",
+      "bytes": 1109
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1711-triangle-path-equivalence-validator/surface-manifest.json",
+      "sha256": "sha256:5f306afff1c1e1566cd18ba5048c09dd57d4110a898f64c9176be094f7e7f8f9",
+      "bytes": 1124
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1712-thirty-path-coverage-registry/surface-manifest.json",
+      "sha256": "sha256:9fe6a01c9d529ca66b5bcfc5b9012f0dbcd59cbebc0de47e46b3db99f9071b05",
+      "bytes": 1106
+    },
+    {
+      "path": "apps/web-console/src/features/g17/frt-1713-thirty-path-certification/surface-manifest.json",
+      "sha256": "sha256:75b7433735ffad73d7f96e9dcb6a6b4ec228919eda35278a03ddb9b48c1d80d5",
+      "bytes": 1094
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1800-pack-composition-orchestrator/surface-manifest.json",
+      "sha256": "sha256:8fe6c42fe1aa60fbc98cd03fb3d955f985c39fc0c3235b041b95f8802c6ba18d",
+      "bytes": 1077
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1801-domain-pack-framework/surface-manifest.json",
+      "sha256": "sha256:4487f393c0f6c341edb8611117b86d4cd506733334a6491597b41645bf64c1b0",
+      "bytes": 1053
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1802-framework-pack-framework/surface-manifest.json",
+      "sha256": "sha256:ee8546f4eb579e8628083f181ce66f99380176bb8427b876d0249411ef6c5a57",
+      "bytes": 1062
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1803-ui-library-pack-framework/surface-manifest.json",
+      "sha256": "sha256:84ce68adb7aea8752cc98cfad60eba63b50a046d0d4f9cf900657e456e244690",
+      "bytes": 1065
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1804-state-management-pack-framework/surface-manifest.json",
+      "sha256": "sha256:05b51e1be907d1f962de70e5b59b0e26faeb6c79c4e9de15d77b8ac9fcfbf062",
+      "bytes": 1083
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1805-router-pack-framework/surface-manifest.json",
+      "sha256": "sha256:e21b4553d157f45e26ea969829af655afac93e3b43f90ca6f53b616e843a400d",
+      "bytes": 1053
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1806-build-tool-pack-framework/surface-manifest.json",
+      "sha256": "sha256:f9a12c6bf1b252e24bd69f097aa9dc15ef1e7f94bea52d56fe081b76c9a5e792",
+      "bytes": 1065
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1807-version-compatibility-pack/surface-manifest.json",
+      "sha256": "sha256:f49ad4d3b99f2407cd182a87f5a2d6baea66e6d54c4f04bcfd8abd501780cb74",
+      "bytes": 1068
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1808-enterprise-pack-framework/surface-manifest.json",
+      "sha256": "sha256:98965a605728d58966b1b0e1ea397c6f2c267a9cbdff79c57b185927f73542af",
+      "bytes": 1065
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1809-industry-pack-framework/surface-manifest.json",
+      "sha256": "sha256:d016e3042e45a6e1960f8f5fa7ed47b439b97d5b4b792e557dc3baef04b507bc",
+      "bytes": 1059
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1810-pack-dependency-resolver/surface-manifest.json",
+      "sha256": "sha256:84424341dcd842e53974bd00d94bc46975874f6de35b493058effc934bc09c42",
+      "bytes": 1062
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1811-pack-conflict-and-precedence-resolver/surface-manifest.json",
+      "sha256": "sha256:4ed17c5e38da6fdf2cac787062b6bee716879babdb92edce736ed1e29a0af400",
+      "bytes": 1101
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1812-pack-signature-and-permission-validator/surface-manifest.json",
+      "sha256": "sha256:b4842c05c10c3ac01dd6384772694547ed10ab247e01d799bfd88fddf3cbcc94",
+      "bytes": 1107
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1813-pack-conformance-test-generator/surface-manifest.json",
+      "sha256": "sha256:b3c33f3a47c07ed02e6dd2bf6f53d25fd2fa016f6923414c4fab3ddee75840ce",
+      "bytes": 1083
+    },
+    {
+      "path": "apps/web-console/src/features/g18/frt-1814-pack-composition-certification/surface-manifest.json",
+      "sha256": "sha256:8fac4e063b711c0315201b2c7a4ec254a35125543213a254b6e3a021b1119bdf",
+      "bytes": 1080
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1900-proof-assurance-orchestrator/surface-manifest.json",
+      "sha256": "sha256:d66eef20949334fd2ba720fb2261a00f9679f99409731e13de300ab67a46d896",
+      "bytes": 1146
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1901-proof-obligation-ir/surface-manifest.json",
+      "sha256": "sha256:68be8bee3d4c90f342a440092958a2b2d7a1b706c9e0081d0a5f6d1f0200fdce",
+      "bytes": 1119
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1902-lean-specification-generator/surface-manifest.json",
+      "sha256": "sha256:285ad99d0d7590ad69addac67c74d583a27904d4a3d79dfe7ad25e4a5d805b7d",
+      "bytes": 1146
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1903-leanstral-candidate-adapter/surface-manifest.json",
+      "sha256": "sha256:cccadfb88d57b5ff9b44d619d206140124864cfd2eeb37d5b3834468dc4f1fcd",
+      "bytes": 1143
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1904-lean-kernel-verifier/surface-manifest.json",
+      "sha256": "sha256:b2db9bd352bf8723a0118248c5879ac3f0bf02bffaaa40d1dcbe00f7d0c23bba",
+      "bytes": 1122
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1905-smt-solver-adapter/surface-manifest.json",
+      "sha256": "sha256:0557951225f096a39327d51e2780b84360f29db82f2c6e546389c2ecd357a614",
+      "bytes": 1116
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1906-model-checker-adapter/surface-manifest.json",
+      "sha256": "sha256:79a77495d161af9b9265048ec61a8ca9b2a121bb47aed9503db366327641fdb6",
+      "bytes": 1125
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1907-symbolic-execution-adapter/surface-manifest.json",
+      "sha256": "sha256:dae8476ddc1b314cd547799d458a530277603f5c80ad2d20da41284b4fe7752e",
+      "bytes": 1140
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1908-temporal-typestate-and-refinement-verifier/surface-manifest.json",
+      "sha256": "sha256:6d848f4e40b7ea05fd2d224ececb9b2ae3aba926e8644d5ca5bf40ae7eed11be",
+      "bytes": 1188
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1909-noninterference-proof-generator/surface-manifest.json",
+      "sha256": "sha256:75154814f79a0bc95c5587b82b41401d8aa8a86d03c0ca8920f73dd81521b3fb",
+      "bytes": 1155
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1910-counterexample-ir/surface-manifest.json",
+      "sha256": "sha256:fb9d80023b828c9db6cc4208d494c4e8940603b8af46b514765c467691fb3b60",
+      "bytes": 1113
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1911-cegar-loop/surface-manifest.json",
+      "sha256": "sha256:12dfa5afc508ddd382142353da4bb65aa1bf7b275074ce2296df5032f11b3aef",
+      "bytes": 1092
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1912-cegis-loop/surface-manifest.json",
+      "sha256": "sha256:ea30438596aaf3a0d4fadf1ac95cb894ea90e7b8e89842633834252fb446f3ec",
+      "bytes": 1092
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1913-counterexample-guided-repair/surface-manifest.json",
+      "sha256": "sha256:94ee1526cf3aa63c3e85360f1f82d7ce89ca83cb94d32594c20f53eb4397c3f5",
+      "bytes": 1146
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1914-proof-carrying-pack/surface-manifest.json",
+      "sha256": "sha256:06c09e04fcc90bec3bf899d1e796a78887b63bf1c88ffa46be0c377d98394e5f",
+      "bytes": 1119
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1915-hidden-golden-mutation-and-adversarial-bank/surface-manifest.json",
+      "sha256": "sha256:2efab4760386d2979b83d07dec954f999ce8e4a48517d6e04b764fae985b20cf",
+      "bytes": 1191
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1916-semantic-drift-detector/surface-manifest.json",
+      "sha256": "sha256:63b37d91a7f608a126926c4b7e6a44ab6e56f8451dc1d4a4a938b57e7c7379f3",
+      "bytes": 1131
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1917-proof-evidence-graph/surface-manifest.json",
+      "sha256": "sha256:9fb1225762f1d8bb93607aa01547fd511c5bd8924478d1aa427e6b26e1e899ea",
+      "bytes": 1122
+    },
+    {
+      "path": "apps/web-console/src/features/g19/frt-1918-formal-assurance-certification/surface-manifest.json",
+      "sha256": "sha256:8df22882a82716f81b6ce973cc5d0c2cc1190de6b2d624c3cc209bf4a9e8b5b5",
+      "bytes": 1152
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2000-productization-orchestrator/surface-manifest.json",
+      "sha256": "sha256:b7f21374e96e916f222b7794c4f4d6f8e2d72f7dc639c4b74587261473c34aa8",
+      "bytes": 1139
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2001-skill-sdk/surface-manifest.json",
+      "sha256": "sha256:e45c0216ccc833ec3200d9d16d5d72931ebcb7568f67d53f4482ea00a40ea3f6",
+      "bytes": 1085
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2002-skill-runtime/surface-manifest.json",
+      "sha256": "sha256:b6b959535384239f49639fd1e4fafa70e98fe8613ec17d60d3d9d8a2a1944208",
+      "bytes": 1097
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2003-skill-registry/surface-manifest.json",
+      "sha256": "sha256:5fb441f4aa1d459d7b1c00ecc1bc35f501663405b5df331462c057001d88bed8",
+      "bytes": 1100
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2004-pack-marketplace/surface-manifest.json",
+      "sha256": "sha256:d4eb5a052f139582035c2a489e0999b61f27582b73cb3072ce551ad357230ca2",
+      "bytes": 1106
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2005-signing-permission-and-trust-framework/surface-manifest.json",
+      "sha256": "sha256:c8f4d8bf82395937546d2d3bd3d59936a55d877e6c793c7b1300566c9a953977",
+      "bytes": 1172
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2006-frt-cli/surface-manifest.json",
+      "sha256": "sha256:ae733a2feae01f2cd808bdb2536a9ccc5d5b17df48d5b2db90262e7fa8222725",
+      "bytes": 1079
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2007-frt-api/surface-manifest.json",
+      "sha256": "sha256:ef645477862727cef7e17a0c8eb6389ae7682f9ef65bd1550e07992cd79ff158",
+      "bytes": 1079
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2008-ide-integration/surface-manifest.json",
+      "sha256": "sha256:f4851710b7c1ef942f7f3532503db367addc3314d37a66f59b981e79f98fb403",
+      "bytes": 1103
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2009-web-console/surface-manifest.json",
+      "sha256": "sha256:19ad200695ccb725788bfec1d481d4ed64e75005a9dfa4580e8fa65fc301e1ad",
+      "bytes": 1091
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2010-workspace-multi-tenant-platform/surface-manifest.json",
+      "sha256": "sha256:829aed37c39bd6e0853587dbed84b60c94b8eb8711dd7988ff5056710ef210f2",
+      "bytes": 1151
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2011-durable-job-orchestration/surface-manifest.json",
+      "sha256": "sha256:54c57218a63e301d474ea2039e7736edede5a4118b5c9672a14b306840c69b31",
+      "bytes": 1133
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2012-distributed-worker-runtime/surface-manifest.json",
+      "sha256": "sha256:e955ae3722c637beda2097ce0bfbcb8316c019f4be69d231c40a345fef9d7d3c",
+      "bytes": 1136
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2013-model-router-and-cost-governor/surface-manifest.json",
+      "sha256": "sha256:fc29a9d0b6089aa6e83886e017b4c3bb8de21ff06507c0cf7be0fae8bcb44ad8",
+      "bytes": 1148
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2014-artifact-and-evidence-store/surface-manifest.json",
+      "sha256": "sha256:3e3fdaf1e9cf4c49060d2cedc49ea0b34acf49dcdc8fed12a49a1ff88cde9a8f",
+      "bytes": 1139
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2015-approval-policy-rbac-and-audit/surface-manifest.json",
+      "sha256": "sha256:b6f709b09a1f40713db3716c9b5b83d0965b8247f921bf2fc9b6cf2eb4aa5d06",
+      "bytes": 1148
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2016-enterprise-deployment-pack/surface-manifest.json",
+      "sha256": "sha256:c818fccced45c4b0a5efd1604d9fe8ee350d45c5fe125eb5118b10f9a85461cf",
+      "bytes": 1136
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2017-kubernetes-single-node-and-air-gapped-deployment/surface-manifest.json",
+      "sha256": "sha256:8b2d55891ca1c4580815dc3303a35e1f8eed9293e783fc9b4ac85557cee9a01c",
+      "bytes": 1202
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2018-one-click-migration/surface-manifest.json",
+      "sha256": "sha256:c805f1a745b186d6678a428d678ac899c8ee5dd6406d1b9cf2df78d88566de50",
+      "bytes": 1115
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2019-one-click-verification/surface-manifest.json",
+      "sha256": "sha256:cd39871689ba7ee43d81dba91080268f8d4b441a561e54256d4e525e782e8d75",
+      "bytes": 1124
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2020-one-click-delivery/surface-manifest.json",
+      "sha256": "sha256:d7e0c9f377176c2bfd5309ff117b77c6bea694596edee2f5ccd9d0724d787bba",
+      "bytes": 1112
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2021-billing-slo-and-observability/surface-manifest.json",
+      "sha256": "sha256:1bed8574e5ea77cc597a2fe4eac092f5eaf4c8d78082842362f080a9f12a4ecb",
+      "bytes": 1145
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2022-security-red-team-harness/surface-manifest.json",
+      "sha256": "sha256:3ac7aa094c687dc42b6e2d084daca2cbf6cc43dbe07b83e3a8f0f5da4b688aaf",
+      "bytes": 1133
+    },
+    {
+      "path": "apps/web-console/src/features/g20/frt-2023-productization-certification/surface-manifest.json",
+      "sha256": "sha256:9cfe8ae2b9e5eec28cb820a6e6bc06ffc2505b563b1b24eefbfa5b7d43f58623",
+      "bytes": 1142
+    },
+    {
+      "path": "apps/web-console/src/features/g21/frt-2100-product-closure-orchestrator/surface-manifest.json",
+      "sha256": "sha256:94f6fd35a365822d6a27df58bb2d7d50b33a9d84e8fa5c7ef2b61ffb820fe1fe",
+      "bytes": 1194
+    },
+    {
+      "path": "apps/web-console/src/features/g21/frt-2101-requirement-registry/surface-manifest.json",
+      "sha256": "sha256:fc5264c411c00f08b2e5dfd22ddd128ae51d6fb97025ccc6fcddf9b92c1db78b",
+      "bytes": 1170
+    },
+    {
+      "path": "apps/web-console/src/features/g21/frt-2102-business-capability-map-generator/surface-manifest.json",
+      "sha256": "sha256:e1e04133a81a4754b24c18087330d71a67dbd96994476e9ef109bde5072f2f95",
+      "bytes": 1209
+    },
+    {
+      "path": "apps/web-console/src/features/g21/frt-2103-requirement-to-artifact-traceability/surface-manifest.json",
+      "sha256": "sha256:2d0afd196153d32c8e4f1bb57931a3902d3da63f82ec76febb19301c6a01b1f0",
+      "bytes": 1218
+    },
+    {
+      "path": "apps/web-console/src/features/g21/frt-2104-acceptance-criteria-compiler/surface-manifest.json",
+      "sha256": "sha256:c82db114ec046f234aa6b2f02e33735cfa655b40f121883d345c91024a732830",
+      "bytes": 1194
+    },
+    {
+      "path": "apps/web-console/src/features/g21/frt-2105-feature-completeness-matrix/surface-manifest.json",
+      "sha256": "sha256:535f5c5a0b2e5db727cd9438c957deef2cabd3292603a7e3a518abd10da85948",
+      "bytes": 1191
+    },
+    {
+      "path": "apps/web-console/src/features/g21/frt-2106-critical-user-journey-registry/surface-manifest.json",
+      "sha256": "sha256:5e85b5c512fd69b1ed039fd4efc52d1f05505991c9ff96260341dbdb87248401",
+      "bytes": 1200
+    },
+    {
+      "path": "apps/web-console/src/features/g21/frt-2107-critical-admin-journey-registry/surface-manifest.json",
+      "sha256": "sha256:0e767004ef1ff5403462d564833c72143313c09cec26a60f0e997669d36a00cd",
+      "bytes": 1203
+    },
+    {
+      "path": "apps/web-console/src/features/g21/frt-2108-orphan-feature-and-dead-flow-detector/surface-manifest.json",
+      "sha256": "sha256:990a759bfbab3d4ca8588e9311431e79b4cf773b349b55d77fda19214a3e08be",
+      "bytes": 1221
+    },
+    {
+      "path": "apps/web-console/src/features/g21/frt-2109-missing-implementation-link-detector/surface-manifest.json",
+      "sha256": "sha256:7184187c741862e21b6c711abf8424afe343a81583be92ba9355c597e63ee7de",
+      "bytes": 1218
+    },
+    {
+      "path": "apps/web-console/src/features/g21/frt-2110-release-scope-closure-manager/surface-manifest.json",
+      "sha256": "sha256:1f5a144108b19c21f8dbb922c728ab45537d8665e928467bfb890380a7998436",
+      "bytes": 1197
+    },
+    {
+      "path": "apps/web-console/src/features/g21/frt-2111-functional-coverage-certification/surface-manifest.json",
+      "sha256": "sha256:8ac63244a205bd1ab1f4acdfdb5591c67d2e6a3cd29d42d52dbe1de491106d6f",
+      "bytes": 1209
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2200-business-line-closure-orchestrator/surface-manifest.json",
+      "sha256": "sha256:281bb12080974fe298ab4918d06e2d19e442e9b633b664d7e209049d1e1da689",
+      "bytes": 1212
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2201-end-to-end-value-stream-compiler/surface-manifest.json",
+      "sha256": "sha256:727d38b5f7c7e65628aea52688b258cb2345f40eb95473b843f4fec0e39d6a4d",
+      "bytes": 1206
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2202-business-state-machine-completeness-checker/surface-manifest.json",
+      "sha256": "sha256:0929cf0cf0d18b20306b226514093fe2546496cad915a8eb86de35147939de79",
+      "bytes": 1239
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2203-cross-domain-saga-generator/surface-manifest.json",
+      "sha256": "sha256:50168d224589f86204583b170ef27fc17c8767150498d2975819d0724da40f7c",
+      "bytes": 1191
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2204-compensation-and-reconciliation-generator/surface-manifest.json",
+      "sha256": "sha256:bee2837eed8cd1df69349406f7241ce1df787cb8681a7da78fb3ca267f74f592",
+      "bytes": 1233
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2205-business-exception-taxonomy/surface-manifest.json",
+      "sha256": "sha256:98e0bbdb0a3494c6adbc4a9078590c6480d30251319742974ea4c523aa66a940",
+      "bytes": 1191
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2206-manual-intervention-workflow-generator/surface-manifest.json",
+      "sha256": "sha256:50fa9cb668cf5cc632a676bf19cbfecafbc1f63acc8f030a551c616f4382171e",
+      "bytes": 1224
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2207-business-deadline-and-timeout-generator/surface-manifest.json",
+      "sha256": "sha256:87446f1b3b67ad0c0937c216a308c9565d72a8e2163e6a1784d6ce09b2d04b44",
+      "bytes": 1227
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2208-business-audit-trail-generator/surface-manifest.json",
+      "sha256": "sha256:c40edb3e9bd77a21b804a78d93845d9abc4ae526b3dd074f3584f4da67c36192",
+      "bytes": 1200
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2209-business-journey-replay-generator/surface-manifest.json",
+      "sha256": "sha256:103d38fc0ad8ec9a28e837482e9b85814195b27f816ca9d3ce1e37e15fd341b1",
+      "bytes": 1209
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2210-commerce-order-to-cash-closure-pack/surface-manifest.json",
+      "sha256": "sha256:7636d9389f8cbd06f858960663b59730fbd72bf222231f137ad0769bfdf5b8ea",
+      "bytes": 1215
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2211-inventory-procure-to-availability-closure-pack/surface-manifest.json",
+      "sha256": "sha256:442cdd605ca4b6ce5020e67a8fedb0b0051f160db03d3eba93fbbf928f7ee533",
+      "bytes": 1248
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2212-payment-to-settlement-closure-pack/surface-manifest.json",
+      "sha256": "sha256:c354c76072b7ad14f692fea40a85fd8fc914161168c88088df0825ef07498242",
+      "bytes": 1212
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2213-identity-to-account-closure-pack/surface-manifest.json",
+      "sha256": "sha256:a3454159cb06b75d1c379a9e673eb6aa313c8865489acfd3359da292393ab53d",
+      "bytes": 1206
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2214-healthcare-encounter-closure-pack/surface-manifest.json",
+      "sha256": "sha256:fec640d620cd500a5f0543384390e92f7faeb1860a3535dfaf46f49289fd4070",
+      "bytes": 1209
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2215-industrial-command-to-acknowledgement-closure-pack/surface-manifest.json",
+      "sha256": "sha256:045d5de358c5f9512afc3abe6eaa6774ed03c3376433a462dfe461bfae748644",
+      "bytes": 1260
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2216-logistics-order-to-delivery-closure-pack/surface-manifest.json",
+      "sha256": "sha256:f8c843306e838cc9314a9945902429420b5a3acbcabd32f25eec839f52ef2062",
+      "bytes": 1230
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2217-energy-dispatch-to-reconciliation-closure-pack/surface-manifest.json",
+      "sha256": "sha256:bfa7c4c11ab05bee09b3be47dd59775d4511fa1ed9e2cf158ac472f8c8f1c8e2",
+      "bytes": 1248
+    },
+    {
+      "path": "apps/web-console/src/features/g22/frt-2218-agent-run-to-human-approval-closure-pack/surface-manifest.json",
+      "sha256": "sha256:5032e780e5a85a30751275aeec0ebde0919c0c958f78b03c0e8bf87aa8d6929f",
+      "bytes": 1230
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2300-data-integrity-orchestrator/surface-manifest.json",
+      "sha256": "sha256:e9018ef990f27de5f93b72bde6cd5577901a25c9e2b07ea58c26a0e5fb136246",
+      "bytes": 1191
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2301-data-contract-registry/surface-manifest.json",
+      "sha256": "sha256:42715029d449aa75e87fb606da13a3b5cd1029f8519cac67b1fef8f415204a3f",
+      "bytes": 1176
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2302-end-to-end-data-lineage-generator/surface-manifest.json",
+      "sha256": "sha256:9213ed44daa273273259cdced230d48b9e4b06a7f809fb68e2da85ec1dadab20",
+      "bytes": 1209
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2303-write-to-read-path-validator/surface-manifest.json",
+      "sha256": "sha256:ec71dd094c61c14fa03bb57055d44dfa58e21823ec62667120b982ad71140e5a",
+      "bytes": 1194
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2304-data-ownership-and-authority-registry/surface-manifest.json",
+      "sha256": "sha256:b40f98550774569009640d7f7e4974309ef7048d08221746b2f59650975cd63f",
+      "bytes": 1221
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2305-schema-evolution-and-compatibility-manager/surface-manifest.json",
+      "sha256": "sha256:01f75eb518da8dbe862f66b7a8b696f00e5f1ad955ddeb24d01f6740de3ee84f",
+      "bytes": 1236
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2306-event-ordering-and-deduplication-generator/surface-manifest.json",
+      "sha256": "sha256:909b7ca143ee1f221128dfae2ae0e5fc212bbe32f672160c786341591797f81c",
+      "bytes": 1236
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2307-cache-coherence-validator/surface-manifest.json",
+      "sha256": "sha256:fd87daef94ca47e8b56d5ad058a30ea7af31ec4b06383820430232618e2b876f",
+      "bytes": 1185
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2308-offline-synchronization-validator/surface-manifest.json",
+      "sha256": "sha256:8066302d7acbaf3d33b26f62692448a06bb8119a0514cae8c4367ce0c73d4a51",
+      "bytes": 1209
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2309-data-reconciliation-engine/surface-manifest.json",
+      "sha256": "sha256:f4c3122ed140e3f1c8286535d78f39758bc8ddc67d466e45df08c43bce884ae3",
+      "bytes": 1188
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2310-data-quality-rule-engine/surface-manifest.json",
+      "sha256": "sha256:713fdb75a90154c8e0347ffc76686457912b862e01062ec5f3e92b6b044c9246",
+      "bytes": 1182
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2311-data-repair-workflow/surface-manifest.json",
+      "sha256": "sha256:a3002fe13327e420b29b550f928ea3ad214b868406fcceda2e4ed3678acdf5f1",
+      "bytes": 1170
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2312-sensitive-data-label-propagator/surface-manifest.json",
+      "sha256": "sha256:4ff4c1200f7918ad9545aab15a8194f4b1a2c464d572c60bffd62a888eb44edd",
+      "bytes": 1203
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2313-data-retention-and-deletion-validator/surface-manifest.json",
+      "sha256": "sha256:b4c2346c9c064a476c59397545a0475cba5ad0fbfbb3043b53c2a178a1f1f696",
+      "bytes": 1221
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2314-cross-tenant-data-isolation-validator/surface-manifest.json",
+      "sha256": "sha256:ab8f81075a4ec4a2b4fc23ae2325cf58d62b2e799bc12bcdc38f4b7037e6cf8e",
+      "bytes": 1221
+    },
+    {
+      "path": "apps/web-console/src/features/g23/frt-2315-migration-data-verification-generator/surface-manifest.json",
+      "sha256": "sha256:2ef32adb30026e012533c6254318862ddf0177c99d388551f20a55caf3dbd46a",
+      "bytes": 1221
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2400-admin-console-completeness-orchestrator/surface-manifest.json",
+      "sha256": "sha256:93d41623022d5db06bfffd7f70fc41b211836db064b77d1c983d16f670acd3f6",
+      "bytes": 1160
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2401-admin-capability-matrix/surface-manifest.json",
+      "sha256": "sha256:a43d9d93810906602278b5076d181513cdcd850ff9a8e451354f5d10d43fe033",
+      "bytes": 1112
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2402-organization-and-tenant-administration/surface-manifest.json",
+      "sha256": "sha256:7cf2ef07af031535c1a9fa106385de04330a223b9936e8f7fd3f2408b3d78eac",
+      "bytes": 1157
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2403-user-role-and-permission-administration/surface-manifest.json",
+      "sha256": "sha256:bec2d59e87447daaaff906a51acbd51d9d20ed976790bc071ab54d8a7f184e5b",
+      "bytes": 1160
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2404-business-operations-administration/surface-manifest.json",
+      "sha256": "sha256:e68d7f4b53733a8639c2c6a363fb913ede706abe8019e1d1b5ad552aac43af1d",
+      "bytes": 1145
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2405-order-payment-and-refund-administration/surface-manifest.json",
+      "sha256": "sha256:c68acdb5c436f591278300a270f132b874de4a96bff610d33b048e9e46d029e3",
+      "bytes": 1160
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2406-inventory-and-resource-administration/surface-manifest.json",
+      "sha256": "sha256:0fd54b4a2d8faa617b46662ac49a3179c8993146207a87859997a4ca75d9dffc",
+      "bytes": 1154
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2407-content-and-configuration-administration/surface-manifest.json",
+      "sha256": "sha256:c14a095cffd03a0e468be889372bf8d3479b598c78b7238e6b165775046ba1c7",
+      "bytes": 1163
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2408-notification-and-message-administration/surface-manifest.json",
+      "sha256": "sha256:1c2dc82beab4b8732bb1a0f2f1f7642b9a6fc42c11ac17fdde95141a548307d4",
+      "bytes": 1160
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2409-workflow-and-approval-administration/surface-manifest.json",
+      "sha256": "sha256:c63f9539d023bc916445d6a01d355e93d4aceb7b31e801c10fb89e112f938b54",
+      "bytes": 1151
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2410-exception-and-manual-intervention-console/surface-manifest.json",
+      "sha256": "sha256:06b602ec61c64dace590f4e7f91707b971459105f218b34c6d5f1e974a50bbcd",
+      "bytes": 1166
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2411-data-correction-and-reconciliation-console/surface-manifest.json",
+      "sha256": "sha256:bd031cc98bcbafc27fa922880c315a6868a704af5b556ba0084d7b3163dc7766",
+      "bytes": 1169
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2412-job-and-worker-administration/surface-manifest.json",
+      "sha256": "sha256:e187fbdbf1228b4d6ed151f4bedb4acbb4373ebca3cba6830e1573c79b1a868a",
+      "bytes": 1130
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2413-skill-pack-and-model-administration/surface-manifest.json",
+      "sha256": "sha256:df7d3ab7de4436a870dd517c2f34e83cb4edcab41c938ec1c1d6910c7e854c25",
+      "bytes": 1148
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2414-artifact-evidence-and-certificate-administration/surface-manifest.json",
+      "sha256": "sha256:f6972c9b996fe617646b7fbef42924f0823c141b46a91ce8ac60d3f10794f914",
+      "bytes": 1187
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2415-audit-and-security-administration/surface-manifest.json",
+      "sha256": "sha256:b09c3220145a46e9ea9c27990d2ad777066bf15927295a650084793fd163e0df",
+      "bytes": 1142
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2416-bulk-operation-and-import-export-generator/surface-manifest.json",
+      "sha256": "sha256:3622010941ea265049ba59fed06926b1fa3731d8c63d5d733609f5f2bac96927",
+      "bytes": 1169
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2417-admin-search-and-advanced-filtering/surface-manifest.json",
+      "sha256": "sha256:7ea8abb6d787a37bf32b60011a9b2afbd26cf3892d1e1478db98e7f2cf9afaf4",
+      "bytes": 1148
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2418-admin-dashboard-and-kpi-pack/surface-manifest.json",
+      "sha256": "sha256:5d7625404d3bd4d21d5651bf43478ca4fff76099793bd1f64652dcd2eb8f3005",
+      "bytes": 1127
+    },
+    {
+      "path": "apps/web-console/src/features/g24/frt-2419-admin-end-to-end-test-generator/surface-manifest.json",
+      "sha256": "sha256:0d70a8af2800f850d60cd0fd4d5793c0574ea79bfd0da6cd00ad74b1099134bd",
+      "bytes": 1136
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2500-functional-usability-orchestrator/surface-manifest.json",
+      "sha256": "sha256:c154ec9e62f18e29bc06b0a7cf3475b50f7091be94ffb26c7aa4371257b6d339",
+      "bytes": 1209
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2501-task-completion-test-generator/surface-manifest.json",
+      "sha256": "sha256:3455a5d6ce87a3f4d4d2c53254faf8e44edb4bf058578fe852c5f3e218f50431",
+      "bytes": 1200
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2502-user-journey-usability-validator/surface-manifest.json",
+      "sha256": "sha256:0b6d9e95a1c01fe473708898882e9f9c4ab59b9e3d3f2e80c6a7a9d7f892dba8",
+      "bytes": 1206
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2503-admin-journey-usability-validator/surface-manifest.json",
+      "sha256": "sha256:cccad73495cc8b2704940a482ff89afcdb08201bd4a6c7ef97a5a1345183c094",
+      "bytes": 1209
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2504-form-and-validation-usability-validator/surface-manifest.json",
+      "sha256": "sha256:da22f65cf7bd7539c262beec216c8b7d186ceb4d2a480f66b40c05c36dd914f0",
+      "bytes": 1227
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2505-loading-empty-error-and-retry-state-validator/surface-manifest.json",
+      "sha256": "sha256:85da834cb5dcb48ba72cd988870bb7d6e8afa86c3f83ca5f5f57d9b9a9ea94e5",
+      "bytes": 1245
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2506-navigation-discoverability-validator/surface-manifest.json",
+      "sha256": "sha256:00a9da20531398bfe5ebfbcae5aa11740d97728a60efe81ac8c02f544c4787e9",
+      "bytes": 1218
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2507-user-guidance-and-recovery-generator/surface-manifest.json",
+      "sha256": "sha256:6a960ae0c7eba675efca2e889fad26daa6dea90d03f2c6eb762eaff5c944579f",
+      "bytes": 1218
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2508-accessibility-acceptance-suite/surface-manifest.json",
+      "sha256": "sha256:f8552c26bb139c809cb5c5927a140b013e7eef5be3cfea545563b385bb087961",
+      "bytes": 1200
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2509-keyboard-pointer-touch-and-gesture-matrix/surface-manifest.json",
+      "sha256": "sha256:6e7714f61549cc71483b5463ab6aad04b5c874cdecd36d1efd99653534356f7d",
+      "bytes": 1233
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2510-ime-and-international-input-validator/surface-manifest.json",
+      "sha256": "sha256:b2d1aee75d2c1cf1824671e89598e4e1e51b36ebaf2f95ae8338e15a2713af36",
+      "bytes": 1221
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2511-internationalization-and-rtl-acceptance/surface-manifest.json",
+      "sha256": "sha256:2fe27a34c25344c23581081486fd8db253ed967cd8e8201fcfee15724d346917",
+      "bytes": 1227
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2512-browser-and-device-compatibility-matrix/surface-manifest.json",
+      "sha256": "sha256:86a0f118da6cebfb118f523dba5088727f2f441cc1ae478d72bfaed5a72cf37d",
+      "bytes": 1227
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2513-responsive-and-adaptive-acceptance/surface-manifest.json",
+      "sha256": "sha256:76d8281b12aa78c08638dc0257eea01b4917d593f276821c5db6a0b51aa74a71",
+      "bytes": 1212
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2514-visual-consistency-validator/surface-manifest.json",
+      "sha256": "sha256:bae8bc4572f4ced9f83b96b31c21273204f5ba1e181a78393871dfcaf2b04ab5",
+      "bytes": 1194
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2515-perceived-performance-validator/surface-manifest.json",
+      "sha256": "sha256:050230c615346a22e13418afc3517fe0d17e674472463e2cc5e0c4bdda8f28c5",
+      "bytes": 1203
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2516-feature-availability-and-unsupported-state-ux/surface-manifest.json",
+      "sha256": "sha256:0cfdcccea3775cad38f5e6ab2302ce3d106fd6e50802b038f87a13f73f3fe3bf",
+      "bytes": 1245
+    },
+    {
+      "path": "apps/web-console/src/features/g25/frt-2517-usability-evidence-generator/surface-manifest.json",
+      "sha256": "sha256:fec6fe3d8e0d5ac7e4f8efd002fa9c5f81b133c8e896bfeb9325fff82659b87b",
+      "bytes": 1194
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2600-regression-assurance-orchestrator/surface-manifest.json",
+      "sha256": "sha256:94c99ad1f57ec20ea6653468ae231e0bf6765d09ace3a198a7cfe25304e8be14",
+      "bytes": 1209
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2601-requirement-derived-test-generator/surface-manifest.json",
+      "sha256": "sha256:d2eb9324f5be8f3551970319110d04c93f52d0bd4f78d63c5992694934fb574e",
+      "bytes": 1212
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2602-model-based-business-test-generator/surface-manifest.json",
+      "sha256": "sha256:3e360c86c1e7a352029a5a5281ddb3c8e856ed1ba53056ea1eb05b1e67958c7a",
+      "bytes": 1215
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2603-unit-and-component-test-coordinator/surface-manifest.json",
+      "sha256": "sha256:2fdc4a91e4b12eb9755577453c77894bd9c49c408cd8baf070e2012b4f0670c7",
+      "bytes": 1215
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2604-api-and-event-contract-test-coordinator/surface-manifest.json",
+      "sha256": "sha256:3dc8fc958f1ac01b91e69db24cc7fe9f71dff9f38b4a77b61c04c0330ccf1bf8",
+      "bytes": 1227
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2605-end-to-end-journey-test-coordinator/surface-manifest.json",
+      "sha256": "sha256:12f510b7ed07a328e0bdca015b0a9c2434e52464377080cd236b7656c464552d",
+      "bytes": 1215
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2606-differential-test-coordinator/surface-manifest.json",
+      "sha256": "sha256:c2b51985f0428997c489b0020ef6863db3b242837a38b02912b4041dd64a901a",
+      "bytes": 1197
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2607-mutation-test-coordinator/surface-manifest.json",
+      "sha256": "sha256:2845743240f4cd8e1e8e9cd11783213effde62ee81596cb1607eeaf91cf1f60b",
+      "bytes": 1185
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2608-visual-and-semantic-regression-coordinator/surface-manifest.json",
+      "sha256": "sha256:1f852325a94f807c6f9733c0a286f2faca2f07d73782d002ae8744a1736d5097",
+      "bytes": 1236
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2609-security-regression-coordinator/surface-manifest.json",
+      "sha256": "sha256:f69e35b451164fa4fbf4ef9a744b8a32af31ef86e491f45e73dd23ca1cf41112",
+      "bytes": 1203
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2610-performance-regression-coordinator/surface-manifest.json",
+      "sha256": "sha256:2f1a38117a6781bce8600d68d007510053719755a0156b838e30cd12a6f3c7e7",
+      "bytes": 1212
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2611-test-data-management/surface-manifest.json",
+      "sha256": "sha256:2a061ed90a71f65d08da95e1be2b3f74061b25391e8da913dfb85a956ce4c031",
+      "bytes": 1170
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2612-synthetic-tenant-and-account-generator/surface-manifest.json",
+      "sha256": "sha256:76fe92113213a601ed016dabfabfc5629e30cb3536e793ef7eb79e4e7ab8d27d",
+      "bytes": 1224
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2613-environment-parity-validator/surface-manifest.json",
+      "sha256": "sha256:c8d3c200036d5f9066caa3d0177fddc856277d878fbcf7ff59d823a810162721",
+      "bytes": 1194
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2614-flaky-test-detection-and-quarantine/surface-manifest.json",
+      "sha256": "sha256:fe7eb6f6ac4549d22ecd378a73348a8f17b9dbe7186c17af202bee097c5e642d",
+      "bytes": 1215
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2615-impacted-test-selection/surface-manifest.json",
+      "sha256": "sha256:d5d54cdec4e312fa30cb3e06f0b1110d01e7a2c8fc78c5a1d6197347296212a9",
+      "bytes": 1179
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2616-parallel-test-grid/surface-manifest.json",
+      "sha256": "sha256:b9a141d5307b1f5be6416cf749b25864701372b814fc718246a350a33eec2253",
+      "bytes": 1164
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2617-test-worker-failover/surface-manifest.json",
+      "sha256": "sha256:ffcb9e5ba548c4040d88bbf32a9845dff2a36038e4933105f6f2ddc9cce75f3f",
+      "bytes": 1170
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2618-release-qualification-engine/surface-manifest.json",
+      "sha256": "sha256:51625d9e636a82cad6e84d1377a00c24a10f53ae9bad6371e368f1fde886d3ce",
+      "bytes": 1194
+    },
+    {
+      "path": "apps/web-console/src/features/g26/frt-2619-regression-evidence-certificate/surface-manifest.json",
+      "sha256": "sha256:82bec842d3bf000e59e0f816b2a473af3a3ddf0b0e77a5a4940ad46408453e4f",
+      "bytes": 1203
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2700-performance-and-capacity-orchestrator/surface-manifest.json",
+      "sha256": "sha256:b724acb979dd7a76601ac06de1cd212e4d8b64f83aec624529839bc6143dd4d6",
+      "bytes": 1193
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2701-workload-model-registry/surface-manifest.json",
+      "sha256": "sha256:3e1b2dab3c042c8bbd0087d818c55394cfa6932f6bc130e54d0864fb5cd96124",
+      "bytes": 1151
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2702-concurrency-correctness-validator/surface-manifest.json",
+      "sha256": "sha256:4ce00404527cbbe9e23aaf79b2fe2b74f404b54114e063c92ebe6a5ce7c35ed4",
+      "bytes": 1181
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2703-race-and-lost-update-detector/surface-manifest.json",
+      "sha256": "sha256:ad73fec3fcbbfa82542bf77d6bd29d46476840ac1edd9df7e8dc6d533b82b753",
+      "bytes": 1169
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2704-idempotency-under-load-validator/surface-manifest.json",
+      "sha256": "sha256:48e8cf5d083a7d9c4fb8172403ad4c9ca911c0706e4ee6db280e80bdff9becca",
+      "bytes": 1178
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2705-throughput-and-latency-test-generator/surface-manifest.json",
+      "sha256": "sha256:06d74c08cf4a731a3e4ff1f5ee3e1600697c3a08f101cbb1f58124949466753b",
+      "bytes": 1193
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2706-load-test-coordinator/surface-manifest.json",
+      "sha256": "sha256:7005d20bce91a637f299d15447cda6ba9e8392f71f8a9501fc703404f1941095",
+      "bytes": 1145
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2707-stress-test-coordinator/surface-manifest.json",
+      "sha256": "sha256:bbd048ef07a54ea4e4df2f2dfe0248faacfafe10daf72cb7c2863f1f4b2869b1",
+      "bytes": 1151
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2708-spike-test-coordinator/surface-manifest.json",
+      "sha256": "sha256:0df64efbf53fe8c1eaad3e491220b9aac7086df4d14c3576788992c09a1dd9e8",
+      "bytes": 1148
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2709-soak-and-memory-leak-test-coordinator/surface-manifest.json",
+      "sha256": "sha256:531b8b33f32baf34780d60630230003b2ce353b913c54de19b40386773f95eb0",
+      "bytes": 1193
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2710-queue-and-backpressure-validator/surface-manifest.json",
+      "sha256": "sha256:058012a5ed95785d6525c50fed54a1d977ff86749e949139e3389b2b8d345ff5",
+      "bytes": 1178
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2711-rate-limit-and-quota-validator/surface-manifest.json",
+      "sha256": "sha256:f1c8e0086e815ddd53918b817dfcffa023cf15d1955c6a67dc05ba2f031de6ef",
+      "bytes": 1172
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2712-cache-performance-and-stampede-validator/surface-manifest.json",
+      "sha256": "sha256:46ec88b4ed42fec3b2db83c994915d75fd517dcb2de873a53416eba139042929",
+      "bytes": 1202
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2713-database-hotspot-and-query-validator/surface-manifest.json",
+      "sha256": "sha256:01a80b393ef681cc8c3d0876e861fa3a267da09f564300ad278e273510498c6b",
+      "bytes": 1190
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2714-connection-pool-and-resource-validator/surface-manifest.json",
+      "sha256": "sha256:3b5a950fe693c060385e1bbd993e3e13b5b6f131d3e8446038f7ccb843b08c17",
+      "bytes": 1196
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2715-capacity-planning-generator/surface-manifest.json",
+      "sha256": "sha256:fd068b545a42baf819af42a58ce76b71b852ff5f68fc6b67bb704c22c0393cf7",
+      "bytes": 1163
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2716-autoscaling-policy-validator/surface-manifest.json",
+      "sha256": "sha256:f6c8dd7783d4571168f035717d1b9977297126f7019b79a79471651138fb2673",
+      "bytes": 1166
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2717-graceful-degradation-validator/surface-manifest.json",
+      "sha256": "sha256:df55c851463ca92ae4dbfe16cfde4b6ee0a4f979a8282ab329cbcaeede81a967",
+      "bytes": 1172
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2718-performance-budget-governor/surface-manifest.json",
+      "sha256": "sha256:09c0e029fdf9f18711452d606dd92a0d594c3e616065030dfdb65e0b25b061fd",
+      "bytes": 1163
+    },
+    {
+      "path": "apps/web-console/src/features/g27/frt-2719-performance-and-capacity-certificate/surface-manifest.json",
+      "sha256": "sha256:faf717423e54a4571362919ed5188ae2358567239961c0191c9778438a6b27c2",
+      "bytes": 1190
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2800-resilience-orchestrator/surface-manifest.json",
+      "sha256": "sha256:748e21a996909ebad11715cb9f7a225a8f04b5fe4336937f7428c00c7cb37e5d",
+      "bytes": 1132
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2801-dependency-failure-model-registry/surface-manifest.json",
+      "sha256": "sha256:5d39635d3eb89f017dede7b07fea41edcb80951c05ab6eecafc7ebd5a10c3736",
+      "bytes": 1162
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2802-timeout-retry-and-circuit-breaker-validator/surface-manifest.json",
+      "sha256": "sha256:f395784ad4c660507ee8d0d9cf4696213b8379648c0fa5f3b7fd49358e25eb7a",
+      "bytes": 1192
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2803-bulkhead-and-failure-isolation-validator/surface-manifest.json",
+      "sha256": "sha256:07ab2146411e332cf9305288685a4ed836263cfa569b00c6078e5730d7ef69fb",
+      "bytes": 1183
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2804-graceful-degradation-runtime/surface-manifest.json",
+      "sha256": "sha256:cc0027f71f96b6f435c2945c1bea2fd03ff41d79e9c4ebbcd052fc8ee37401de",
+      "bytes": 1147
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2805-queue-durability-and-replay-validator/surface-manifest.json",
+      "sha256": "sha256:b7b6d870430dd187e20332d1ff289f398ce7dab017f460b911f35e58a341ee72",
+      "bytes": 1174
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2806-stateful-failover-validator/surface-manifest.json",
+      "sha256": "sha256:ec980fac9539d05aa43b4b357025fa63c815e01c41994f8062f8eab68c657951",
+      "bytes": 1144
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2807-control-plane-high-availability/surface-manifest.json",
+      "sha256": "sha256:f77bbba7c7e052ff099f7e7aa93cad3fa02c98a1d81e893f2d630fb499d9268e",
+      "bytes": 1156
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2808-worker-pool-high-availability/surface-manifest.json",
+      "sha256": "sha256:e209318327c3f23a4974aaf442816120707e36751caee9ba0c1dcd3dfa20aa79",
+      "bytes": 1150
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2809-artifact-and-evidence-store-resilience/surface-manifest.json",
+      "sha256": "sha256:493c1eda16606eb9926474dc5cd93fb0105b8a88fb8b418d706570b52045e596",
+      "bytes": 1177
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2810-database-failover-validator/surface-manifest.json",
+      "sha256": "sha256:64cbc6d0fef05c87e32f4d75f5164f0f98406ca5bb6af7154304c479cb3d46ac",
+      "bytes": 1144
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2811-region-failure-validator/surface-manifest.json",
+      "sha256": "sha256:a2edd6e4923a68db97d1bfe1a2cedf44ce31422157658d5f15518d8e436a762b",
+      "bytes": 1135
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2812-chaos-experiment-generator/surface-manifest.json",
+      "sha256": "sha256:f74a61ae67160c6a50060ad6e2f4966dae9ead6313ea8fb72cb3ed95f2f5ceaa",
+      "bytes": 1141
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2813-backup-and-restore-validator/surface-manifest.json",
+      "sha256": "sha256:17eda361de0959f6c0d6a747fd7d145de4f0f2276f31be38ee09ec82f25b6c2a",
+      "bytes": 1147
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2814-disaster-recovery-drill-generator/surface-manifest.json",
+      "sha256": "sha256:cfcf84bd7f506d6d2374e85459fd31e79c1e012f6f8456a8a42e29d5d08f4e32",
+      "bytes": 1162
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2815-rto-and-rpo-compliance-validator/surface-manifest.json",
+      "sha256": "sha256:45b9efb0f80783db287651e16d2e73c7fc57d0d046259747894fbe61c4679fa7",
+      "bytes": 1159
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2816-safe-mode-and-read-only-mode-generator/surface-manifest.json",
+      "sha256": "sha256:e65ae3701b5ea4d43e0cc25127543367ff9a59a6fbd352c182d83b8b5e4af7db",
+      "bytes": 1177
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2817-partial-service-availability-validator/surface-manifest.json",
+      "sha256": "sha256:16dcce0927473e0fcbab6bd8a61fff10898fc11168f2f9b5057873ae088d015b",
+      "bytes": 1177
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2818-resilience-runbook-generator/surface-manifest.json",
+      "sha256": "sha256:2851e1ada8ba842693c98ab7136ba70d79088046443748227d4f66b22d7b44ed",
+      "bytes": 1147
+    },
+    {
+      "path": "apps/web-console/src/features/g28/frt-2819-resilience-certification/surface-manifest.json",
+      "sha256": "sha256:e6216aff5e2a06930907e23e17429c6e8932b26fd6f96338854e472b7c64eb89",
+      "bytes": 1135
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2900-security-assurance-orchestrator/surface-manifest.json",
+      "sha256": "sha256:5d0d3171db6c3a21505b9ff3eef7f8097d9b7207b1d810613390ad5dd3f931e8",
+      "bytes": 1167
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2901-threat-model-generator/surface-manifest.json",
+      "sha256": "sha256:eee13aa788d3f89f82ca8f603972cf4096e247397c98807b2ba00c33c46f642d",
+      "bytes": 1140
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2902-attack-surface-inventory/surface-manifest.json",
+      "sha256": "sha256:b8391dab1577785db62cc37d2e77f4eb559bc17f40c45296aeb5b58c1425d033",
+      "bytes": 1146
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2903-authentication-security-validator/surface-manifest.json",
+      "sha256": "sha256:ec1779c52fe28d4b27e196e13a62acc528b5424e099974e45851ea039d78a4e4",
+      "bytes": 1173
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2904-authorization-and-policy-validator/surface-manifest.json",
+      "sha256": "sha256:97fe1860f0df6a7017e860f42f0efaa39935a75c906891563661dcad6cffa336",
+      "bytes": 1176
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2905-tenant-isolation-security-validator/surface-manifest.json",
+      "sha256": "sha256:4be4e3a99e5e0d07d97ee4c0502d2eedcdce27fa5502bdc89674e159c3e51c91",
+      "bytes": 1179
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2906-session-and-token-security-validator/surface-manifest.json",
+      "sha256": "sha256:51865ada8d0dcec72aba097818adb9111136c9d912673b0cca3476af7fce704e",
+      "bytes": 1182
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2907-api-security-validator/surface-manifest.json",
+      "sha256": "sha256:7425755a06922d17abbe1838ef60ea7bf595d8680da525e4a360daf810bc4a46",
+      "bytes": 1140
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2908-input-validation-and-injection-validator/surface-manifest.json",
+      "sha256": "sha256:162f66d0a03d283c72ec4f04943ca734f88f4a13ec52048da1fd3a6e83debd86",
+      "bytes": 1194
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2909-file-upload-and-content-security-validator/surface-manifest.json",
+      "sha256": "sha256:834dcc5aba1c1a494a0ab1db217b1d19985d590cacd5408409eb5a1a46ce9ef9",
+      "bytes": 1200
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2910-secrets-and-key-management-validator/surface-manifest.json",
+      "sha256": "sha256:cdbfdd01e28b936ed95b23882493c8c288c3ced86c6b83211d68c9ccdd796ddb",
+      "bytes": 1182
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2911-supply-chain-security-validator/surface-manifest.json",
+      "sha256": "sha256:590d907f18fc510d471cde3adc8e83fbfa3489c914f0ca5a53587eddd1684409",
+      "bytes": 1167
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2912-sbom-and-vulnerability-governance/surface-manifest.json",
+      "sha256": "sha256:aabdeda47d65e8f88b30041d4bf138512683877d5bcd1df963e55922436701a3",
+      "bytes": 1173
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2913-sast-coordinator/surface-manifest.json",
+      "sha256": "sha256:86e0b23f6673aeb0768868560f746843d8b745283647e810a80c77924f9015fa",
+      "bytes": 1122
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2914-dast-coordinator/surface-manifest.json",
+      "sha256": "sha256:1bfb50a836e1b0236efa49740dc7dcba6789f74785edd71e5a6da88e390c2ba7",
+      "bytes": 1122
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2915-fuzzing-and-protocol-abuse-generator/surface-manifest.json",
+      "sha256": "sha256:410d03627cb25fecde6ef8209f7c348a0c3143ac14855cb776d8ae1f39e172ce",
+      "bytes": 1182
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2916-rate-abuse-and-bot-protection-validator/surface-manifest.json",
+      "sha256": "sha256:c2aa2fb4bcf303267ddb58103f5e6ae532198c8f843f34bb138b48fa8af7e43b",
+      "bytes": 1191
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2917-privacy-and-consent-validator/surface-manifest.json",
+      "sha256": "sha256:cb6b67f42b10e10ae08ef6229d1c60f0ccc271a9d61e6d06df9c19545067e43f",
+      "bytes": 1161
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2918-retention-and-deletion-compliance/surface-manifest.json",
+      "sha256": "sha256:a20a5403cd6eb0ceed1190196952c1f5c9b350779060f93fba0ad18eee68cd62",
+      "bytes": 1173
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2919-security-incident-response-generator/surface-manifest.json",
+      "sha256": "sha256:0acb27c08017286f2c9f3c6d4abe73801aab672b23253ae4543293b4b175c43e",
+      "bytes": 1182
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2920-penetration-test-evidence-manager/surface-manifest.json",
+      "sha256": "sha256:afd1fa148d354244d450a8c49d0f1cad8a6daa1ddf2648889edce8663b036b6e",
+      "bytes": 1173
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2921-secure-admin-console-validator/surface-manifest.json",
+      "sha256": "sha256:a1098c31b6a53a7bc759b9dfe718e1b000325cecd90106974ff04e9b58339a10",
+      "bytes": 1164
+    },
+    {
+      "path": "apps/web-console/src/features/g29/frt-2922-security-regression-and-recertification/surface-manifest.json",
+      "sha256": "sha256:477feede57328499f61cbc409ad3f1e7dd48bf69a387831a6b0c2339564ecc9b",
+      "bytes": 1191
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3000-production-readiness-orchestrator/surface-manifest.json",
+      "sha256": "sha256:3e6f51a34d7d83d3b84affeaa43a5a16bcb2e1b67d9a7402b2455cf38d9fe539",
+      "bytes": 1166
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3001-production-readiness-checklist-compiler/surface-manifest.json",
+      "sha256": "sha256:485589cceab1593315216b18633c1209909ff3f9eb8cb28683f6ce64319918ee",
+      "bytes": 1184
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3002-service-catalog-generator/surface-manifest.json",
+      "sha256": "sha256:9e1bb599407257b1ce1dde0f54e83fbc061f0859a7a1bcb5993d0842d32d396e",
+      "bytes": 1142
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3003-sli-and-slo-generator/surface-manifest.json",
+      "sha256": "sha256:cd037f81dac4eb3dcaf8587b35e957b8dea12245f97ab6a44384268db6ff2db4",
+      "bytes": 1130
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3004-business-sli-generator/surface-manifest.json",
+      "sha256": "sha256:30917c264bb916325c89a4dc943bb6208c3adaf7557d36b5cea8b046be92908e",
+      "bytes": 1133
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3005-observability-coverage-validator/surface-manifest.json",
+      "sha256": "sha256:ba720e5569620dc840e2173ebe1d7bd6d102f50a0c86bd599a23f27468b7ca05",
+      "bytes": 1163
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3006-alert-quality-validator/surface-manifest.json",
+      "sha256": "sha256:403d3b972d4c6cef3e82327254a2775bcbe2cf6e1e94c68eac69099f74e84c22",
+      "bytes": 1136
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3007-runbook-completeness-validator/surface-manifest.json",
+      "sha256": "sha256:9356c147ada76b95736a392257a442edd6a1341f47d1c6212b1fb641f8897a95",
+      "bytes": 1157
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3008-on-call-readiness-generator/surface-manifest.json",
+      "sha256": "sha256:16a6323722073eccaa26a004c607f7b0362c60b667a48752804f0f3f90b15713",
+      "bytes": 1148
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3009-incident-management-workflow/surface-manifest.json",
+      "sha256": "sha256:229aa93936b0a0238a5ee900e39c9822c1dbefc80b0501e5a29ea09a27dbe6be",
+      "bytes": 1151
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3010-release-train-orchestrator/surface-manifest.json",
+      "sha256": "sha256:80bf25de93672227eaa681f719424b6c42a7aa90c8c0916d3cd75905a4ae5034",
+      "bytes": 1145
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3011-canary-and-progressive-delivery/surface-manifest.json",
+      "sha256": "sha256:784b29b3626340e67368c1389cf1156749fe3be2e3f560284c536d55cbcebd47",
+      "bytes": 1160
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3012-feature-flag-safety-validator/surface-manifest.json",
+      "sha256": "sha256:f21aa5c0021ffaf1ec16112ef4a79d713cd96234c870e15b617c9cd36d583740",
+      "bytes": 1154
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3013-automated-rollback-generator/surface-manifest.json",
+      "sha256": "sha256:a293ec826ac0d73de16680294ffc94cc20a7875695199c8fc24783421bf1578b",
+      "bytes": 1151
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3014-database-and-data-cutover-manager/surface-manifest.json",
+      "sha256": "sha256:85534aa49591bc71df5b1d6ec2aa598620cd7904266f27be7eba6929790291b4",
+      "bytes": 1166
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3015-legacy-coexistence-and-cutover-validator/surface-manifest.json",
+      "sha256": "sha256:4c16f732a1b881737ed7a17d8376459aa18cb28513c21b276284a22b9f5ac22f",
+      "bytes": 1187
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3016-customer-support-readiness/surface-manifest.json",
+      "sha256": "sha256:177e31927a1bad6606bd260bb844154d837e71e92a6617a4d56f88778817f229",
+      "bytes": 1145
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3017-operational-dashboard-generator/surface-manifest.json",
+      "sha256": "sha256:804de803674d6e4e80cd1a69002aa2d8fc9afe168cf24fab38389e9536ad9377",
+      "bytes": 1160
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3018-continuous-verification-scheduler/surface-manifest.json",
+      "sha256": "sha256:3d8bf7abc6adda288ec65e60ea26ae01235620404037f41f74e46cbf44bea914",
+      "bytes": 1166
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3019-continuous-security-recertification/surface-manifest.json",
+      "sha256": "sha256:2257456d5152307eab50409fa91ca8c2eb035766fc4406fbbd9f6fdd22357aac",
+      "bytes": 1172
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3020-continuous-performance-recertification/surface-manifest.json",
+      "sha256": "sha256:344a3d728741ae8ab16b2a67f548444782adbd078b44a96ffde33a72bc999fad",
+      "bytes": 1181
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3021-production-closure-certificate/surface-manifest.json",
+      "sha256": "sha256:f42bdeda2434479ba526fca45a9053a40cb68914fc6adf8f656ae52e0bd2e516",
+      "bytes": 1157
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3022-post-release-verification/surface-manifest.json",
+      "sha256": "sha256:2c342078916849f841acdd20918f37722e9e5fbcb4e94cbd5eda0d54c09ee1a5",
+      "bytes": 1142
+    },
+    {
+      "path": "apps/web-console/src/features/g30/frt-3023-production-incident-learning-pack/surface-manifest.json",
+      "sha256": "sha256:3278c4e8400596d0297b13245562cd348f00e6764c75a207a4cd7bf9b0342fa4",
+      "bytes": 1166
+    },
+    {
+      "path": "apps/web-console/test-results/spring-real-engine-tls-pin-final-report/index.html",
+      "sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "apps/web-console/test/accountSession.test.mjs",
+      "sha256": "sha256:f31c2aa4fda737a7fb992b54234ff7cc1eb84011c370277380ad9bef57ea0b47",
+      "bytes": 3536
+    },
+    {
+      "path": "apps/web-console/test/durableJobLease.test.mjs",
+      "sha256": "sha256:f4e92e20badef842828c8f1056f0b0fe1707ad9ed281562ee00b14dea858ca1a",
+      "bytes": 5541
+    },
+    {
+      "path": "apps/web-console/test/produceShardedTranslationReport.py",
+      "sha256": "sha256:a1de06da236011cf0e630f750eca6006b107f75a35a829cb44d1d323c99e54ba",
+      "bytes": 6186
+    },
+    {
+      "path": "apps/web-console/test/repositoryTranslationWorkspace.test.mjs",
+      "sha256": "sha256:636fd660e4618bbd76e7e539d7680aad40a28b638c3b0b78dd5f89ed785c6a51",
+      "bytes": 6375
+    },
+    {
+      "path": "apps/web-console/test/translationCancellationWorker.mjs",
+      "sha256": "sha256:b1d3c62eafd6d64c1548a501b56c933fa75b1a5ee783625946fb375786bd453a",
+      "bytes": 689
+    },
+    {
+      "path": "apps/web-console/test/translationConversionReport.test.mjs",
+      "sha256": "sha256:5f508eb7875338cedcf79e2543465c61162f65570fd47068a44209822bd9ee2a",
+      "bytes": 33581
+    },
+    {
+      "path": "apps/web-console/test/translationRunnerCancellation.test.mjs",
+      "sha256": "sha256:cae35f444b66bfc68c55df72e8da487680a7a3e7653759ecb9d5c1b9c72547ab",
+      "bytes": 34042
+    },
+    {
+      "path": "apps/web-console/test/ts-extension-loader.mjs",
+      "sha256": "sha256:4bfc363337f9a09185c365cfe7255ef5bf438af0a6f247985338182c3f8ea49f",
+      "bytes": 1112
+    },
+    {
+      "path": "apps/web-console/tsconfig.json",
+      "sha256": "sha256:9039f21c64cae99a3cd0d988333ca95979826ef8932930689f12f1215e9d536e",
+      "bytes": 717
+    },
+    {
+      "path": "apps/web-console/tsconfig.tsbuildinfo",
+      "sha256": "sha256:18d13202645e08c2f944408c3d61abec89d77f144e99b3ec6fa8db731552260f",
+      "bytes": 133669
+    },
+    {
+      "path": "apps/web-console/types/html-to-text.d.ts",
+      "sha256": "sha256:acec70545d2908d576aa9f9d64f4632be9750acdf9dedc7d7dc20905b4eae194",
+      "bytes": 459
+    },
+    {
+      "path": "apps/web-console/vercel.json",
+      "sha256": "sha256:bad479590ddc1feb7eded48273c96dd1d16a498c6d30900d0b8fa17c3c734945",
+      "bytes": 82
+    }
+  ],
+  "snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+  "boundary": "References exact tracked source bytes at source_revision; source scripts are not executed by this generator."
+}
