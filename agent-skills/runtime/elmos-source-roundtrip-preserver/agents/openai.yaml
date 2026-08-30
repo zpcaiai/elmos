@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-source-roundtrip-preserver"
+  short_description: "Guarantee parse→model→print round trips preserve source meaning and intentionally preserved lexic..."
+  default_prompt: "Use $elmos-source-roundtrip-preserver through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-source-roundtrip-preserver"
+  handler_id: "execute_elmos_source_roundtrip_preserver"
+  operation: "SEMANTIC_COMPARISON"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

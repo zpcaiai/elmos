@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-grammar-based-semantic-fuzzer"
+  short_description: "Generate/mutate syntactically valid programs and inputs from grammar plus semantic constraints to..."
+  default_prompt: "Use $elmos-grammar-based-semantic-fuzzer through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-grammar-based-semantic-fuzzer"
+  handler_id: "execute_elmos_grammar_based_semantic_fuzzer"
+  operation: "FUZZ_EXECUTION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

@@ -20,7 +20,7 @@ from ..models import (
 class ObservableBehaviorOracleModule:
     """Defines observable behavior oracles, input domain partitioning, and differential output evaluation."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.oracles: Dict[str, BehaviorOracle] = {}
         self.differential_results: List[DifferentialResult] = []
 
@@ -37,9 +37,9 @@ class ObservableBehaviorOracleModule:
         oracle = BehaviorOracle(
             oracle_id=oracle_id,
             scope=scope,
-            observable_signals=signals,
-            input_domain_partitions=partitions,
-            side_effect_channels=side_effects or ["return_value", "stdout"],
+            observable_signals=tuple(signals),
+            input_domain_partitions=tuple(partitions),
+            side_effect_channels=tuple(side_effects or ["return_value", "stdout"]),
             tolerance_epsilon=tolerance_epsilon,
         )
         self.oracles[oracle_id] = oracle
@@ -58,13 +58,16 @@ class ObservableBehaviorOracleModule:
         run_id = f"diff-{test_case_id}-{int(time.time()*1000)}"
 
         if source_output == target_output:
-            verdict = VerdictStatus.EQUIVALENT
-            summary = "Strict identical output"
+            verdict = VerdictStatus.UNDETERMINED
+            summary = "Caller-supplied outputs match; execution provenance is not verified"
         elif isinstance(source_output, (int, float)) and isinstance(target_output, (int, float)):
             diff = abs(source_output - target_output)
             if diff <= epsilon:
-                verdict = VerdictStatus.EQUIVALENT
-                summary = f"Numeric match within epsilon {epsilon} (diff={diff})"
+                verdict = VerdictStatus.UNDETERMINED
+                summary = (
+                    f"Caller-supplied numeric outputs match within epsilon {epsilon} "
+                    f"(diff={diff}); execution provenance is not verified"
+                )
             else:
                 verdict = VerdictStatus.DIVERGENT
                 summary = f"Numeric divergence: diff={diff} > {epsilon}"
@@ -100,7 +103,7 @@ class ObservableBehaviorOracleModule:
             source_construct=source_func,
             target_construct=target_func,
             property_name=property_name,
-            invariants=["IO_EQUIVALENCE", "SIDE_EFFECT_CONFINEMENT", "DETERMINISTIC_REPLAY_STABILITY"],
+            invariants=("IO_EQUIVALENCE", "SIDE_EFFECT_CONFINEMENT", "DETERMINISTIC_REPLAY_STABILITY"),
             risk=SemanticRisk.CRITICAL,
             status=ObligationStatus.NOT_RUN,
         )

@@ -1,0 +1,25 @@
+CertificationBundle:
+  required:
+    - project_id
+    - job_id
+    - source_revision
+    - target_revision
+    - target_level
+    - gates
+    - findings
+    - residual_risks
+    - verdict
+    - evidence_index
+  gates:
+    E0:
+      status: PASS|FAIL|INSUFFICIENT_EVIDENCE|NOT_REQUIRED
+    E1:
+      status: PASS|FAIL|INSUFFICIENT_EVIDENCE|NOT_REQUIRED
+    E2:
+      status: PASS|FAIL|INSUFFICIENT_EVIDENCE|NOT_REQUIRED
+    E3:
+      status: PASS|FAIL|INSUFFICIENT_EVIDENCE|NOT_REQUIRED
+    E4:
+      status: PASS|FAIL|INSUFFICIENT_EVIDENCE|NOT_REQUIRED
+    E5:
+      status: PASS|FAIL|INSUFFICIENT_EVIDENCE|NOT_REQUIRED

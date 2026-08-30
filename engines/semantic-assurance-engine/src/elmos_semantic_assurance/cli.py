@@ -1,155 +1,136 @@
-"""CLI for Elmos Semantic Assurance Engine."""
+"""Fail-closed CLI for semantic-assurance planning and exact invocation."""
 
 from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
 import sys
-from typing import Any, Dict
+from pathlib import Path
+from typing import Any
 
-from .models import BatchType, ObligationStatus, VerdictStatus
+from .adapters import AdapterSet
+from .contracts import TrustedIdentity
 from .service import SemanticAssuranceService
+from .store import SemanticAssuranceStore
+
+_MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 
 
-def get_default_service() -> SemanticAssuranceService:
-    root = Path(__file__).resolve().parents[4]
-    manifest_path = root / "skills/elmos-semantic-assurance-expansion-skills-v1.0.0/manifest.json"
-    manifest_data = {}
-    if manifest_path.is_file():
-        try:
-            manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
-        except Exception:
-            pass
-    return SemanticAssuranceService(manifest_data)
+def _strict_object(path_text: str, label: str) -> dict[str, Any]:
+    path = Path(path_text)
+    if not path.is_file() or path.is_symlink():
+        raise ValueError(f"{label} must be a regular non-symlink file")
+    raw = path.read_bytes()
+    if len(raw) > _MAX_DOCUMENT_BYTES:
+        raise ValueError(f"{label} exceeds {_MAX_DOCUMENT_BYTES} bytes")
+
+    def no_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        value: dict[str, Any] = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError(f"{label} contains duplicate key {key!r}")
+            value[key] = item
+        return value
+
+    try:
+        document = json.loads(raw.decode("utf-8"), object_pairs_hook=no_duplicates)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"{label} is not strict UTF-8 JSON: {exc}") from exc
+    if not isinstance(document, dict):
+        raise ValueError(f"{label} must contain a JSON object")
+    return document
+
+
+def _identity(document: dict[str, Any]) -> TrustedIdentity:
+    allowed = {"tenantId", "projectId", "actorId", "roles", "authorizationRef"}
+    extra = sorted(set(document) - allowed)
+    if extra:
+        raise ValueError(f"identity contains unsupported fields: {extra}")
+    roles = document.get("roles", [])
+    if not isinstance(roles, list):
+        raise ValueError("identity.roles must be an array")
+    tenant_id = document.get("tenantId")
+    if not isinstance(tenant_id, str):
+        raise ValueError("identity.tenantId must be a string")
+    project_id = document.get("projectId")
+    if not isinstance(project_id, str):
+        raise ValueError("identity.projectId must be a string")
+    actor_id = document.get("actorId")
+    if not isinstance(actor_id, str):
+        raise ValueError("identity.actorId must be a string")
+    authorization_ref = document.get("authorizationRef")
+    if authorization_ref is not None and not isinstance(authorization_ref, str):
+        raise ValueError("identity.authorizationRef must be a string or null")
+    return TrustedIdentity(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        actor_id=actor_id,
+        roles=tuple(roles),
+        authorization_ref=authorization_ref,
+    )
+
+
+def _parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="elmos-semantic-assurance")
+    commands = parser.add_subparsers(dest="command", required=True)
+    commands.add_parser("status", help="show fail-closed implementation status")
+    catalog = commands.add_parser("catalog", help="list exact registered Skills")
+    catalog.add_argument("--batch", choices=list("JKLMNOPQR"))
+    plan = commands.add_parser("campaign-plan", help="prepare a non-executing route plan")
+    plan.add_argument("--source-technology", required=True)
+    plan.add_argument("--target-technology", required=True)
+    plan.add_argument("--source", required=True)
+    plan.add_argument("--target", required=True)
+    plan.add_argument("--route-id")
+    invoke = commands.add_parser("invoke", help="invoke one exact Skill")
+    invoke.add_argument("--skill", required=True)
+    invoke.add_argument("--request", required=True)
+    invoke.add_argument("--identity", required=True)
+    invoke.add_argument("--state-db", required=True)
+    return parser
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        prog="elmos-semantic-assurance",
-        description="Elmos Semantic Assurance Engine v1.0.0 (Batches J-R, Skills 169-300)",
-    )
-    subparsers = parser.add_subparsers(dest="command", required=True)
-
-    # status
-    p_status = subparsers.add_parser("status", help="Show engine status and registered skills")
-    p_status.add_argument("--json", action="store_true", help="Output as JSON")
-
-    # catalog
-    p_cat = subparsers.add_parser("catalog", help="List skills in catalog")
-    p_cat.add_argument("--batch", type=str, choices=["J", "K", "L", "M", "N", "O", "P", "Q", "R"], help="Filter by Batch")
-    p_cat.add_argument("--json", action="store_true", help="Output as JSON")
-
-    # differential-run
-    p_diff = subparsers.add_parser("differential-run", help="Run differential oracle comparison")
-    p_diff.add_argument("--src-lang", default="java", help="Source language")
-    p_diff.add_argument("--tgt-lang", default="csharp", help="Target language")
-    p_diff.add_argument("--src-out", default="42", help="Source output")
-    p_diff.add_argument("--tgt-out", default="42", help="Target output")
-    p_diff.add_argument("--json", action="store_true", help="Output as JSON")
-
-    # formal-check
-    p_formal = subparsers.add_parser("formal-check", help="Solve SMT formal proof obligation")
-    p_formal.add_argument("--formula", default="forall x . f(x) == g(x)", help="Formula string")
-    p_formal.add_argument("--solver", default="SMT_Z3", help="Solver family")
-    p_formal.add_argument("--json", action="store_true", help="Output as JSON")
-
-    # fuzz-matrix
-    p_fuzz = subparsers.add_parser("fuzz-matrix", help="Execute differential fuzz campaign")
-    p_fuzz.add_argument("--target", default="java_to_csharp", help="Target route")
-    p_fuzz.add_argument("--iterations", type=int, default=100, help="Fuzz iterations")
-    p_fuzz.add_argument("--json", action="store_true", help="Output as JSON")
-
-    # run-gate
-    p_gate = subparsers.add_parser("run-gate", help="Execute 9-layer certification campaign")
-    p_gate.add_argument("--src-lang", default="java", help="Source language")
-    p_gate.add_argument("--tgt-lang", default="csharp", help="Target language")
-    p_gate.add_argument("--src-code", default="class Main { static int add(int a, int b) { return a + b; } }", help="Source code snippet")
-    p_gate.add_argument("--tgt-code", default="class Main { static int Add(int a, int b) => a + b; }", help="Target code snippet")
-    p_gate.add_argument("--json", action="store_true", help="Output as JSON")
-
-    args = parser.parse_args(argv)
-    svc = get_default_service()
-
-    if args.command == "status":
-        status_info = {
-            "engine": "elmos-semantic-assurance-engine",
-            "version": "1.0.0",
-            "registered_skills_count": len(svc.skills_registry),
-            "batches_ready": ["J", "K", "L", "M", "N", "O", "P", "Q", "R"],
-            "status": "READY",
-        }
-        if args.json:
-            print(json.dumps(status_info, indent=2))
+    args = _parser().parse_args(argv)
+    try:
+        result: dict[str, Any] | list[dict[str, Any]]
+        if args.command == "invoke":
+            store = SemanticAssuranceStore(args.state_db)
+            service = SemanticAssuranceService(store=store, adapters=AdapterSet())
+            result = service.dispatch(
+                args.skill,
+                _strict_object(args.request, "request"),
+                _identity(_strict_object(args.identity, "identity")),
+            )
         else:
-            print(f"Elmos Semantic Assurance Engine v{status_info['version']}")
-            print(f"Registered Skills: {status_info['registered_skills_count']}")
-            print(f"Batches Ready: {', '.join(status_info['batches_ready'])}")
+            service = SemanticAssuranceService()
+            if args.command == "status":
+                result = service.status()
+            elif args.command == "catalog":
+                result = service.catalog(batch=args.batch)
+            else:
+                result = service.prepare_route_assurance_campaign(
+                    source_technology=args.source_technology,
+                    target_technology=args.target_technology,
+                    source_bytes=Path(args.source).read_bytes(),
+                    target_bytes=Path(args.target).read_bytes(),
+                    route_id=args.route_id,
+                )
+        print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+        if isinstance(result, dict) and result.get("executionStatus") in {
+            "BLOCKED",
+            "FAILED",
+            "REQUIRES_ADAPTER",
+        }:
+            return 3
         return 0
-
-    elif args.command == "catalog":
-        skills = list(svc.skills_registry.values())
-        if args.batch:
-            skills = [s for s in skills if s.get("batch") == args.batch]
-        if args.json:
-            print(json.dumps(skills, indent=2))
-        else:
-            print(f"Total skills listed: {len(skills)}")
-            for s in skills:
-                print(f"  [Batch {s.get('batch')}] {s.get('id')}: {s.get('name')} ({s.get('layer')})")
-        return 0
-
-    elif args.command == "differential-run":
-        res = svc.oracle.evaluate_differential_execution(
-            args.src_lang, args.tgt_lang, "tc-cli", args.src_out, args.tgt_out
+    except (KeyError, OSError, PermissionError, RuntimeError, ValueError) as exc:
+        print(
+            json.dumps({"error": type(exc).__name__, "message": str(exc)}),
+            file=sys.stderr,
         )
-        if args.json:
-            print(json.dumps(res.to_dict(), indent=2))
-        else:
-            print(f"Differential Verdict: {res.verdict.value}")
-            print(f"Summary: {res.divergence_summary}")
-        return 0
-
-    elif args.command == "formal-check":
-        proof = svc.formal.create_proof_obligation(args.formula, solver_family=args.solver)
-        solved = svc.formal.solve_obligation(proof.proof_id, simulated_pass=True)
-        if args.json:
-            print(json.dumps(solved.to_dict(), indent=2))
-        else:
-            print(f"Proof ID: {solved.proof_id}")
-            print(f"Status: {solved.status.value}")
-            print(f"Witness: {solved.proof_witness}")
-        return 0
-
-    elif args.command == "fuzz-matrix":
-        fuzz_res = svc.fuzz.run_differential_fuzz_campaign(args.target, iterations=args.iterations)
-        if args.json:
-            print(json.dumps(fuzz_res, indent=2))
-        else:
-            print(f"Fuzz Campaign ID: {fuzz_res['campaign_id']}")
-            print(f"Iterations: {fuzz_res['iterations_executed']}")
-            print(f"Verdict: {fuzz_res['verdict']}")
-        return 0
-
-    elif args.command == "run-gate":
-        run = svc.run_route_assurance_campaign(
-            source_lang=args.src_lang,
-            target_lang=args.tgt_lang,
-            source_code=args.src_code,
-            target_code=args.tgt_code,
-        )
-        if args.json:
-            print(json.dumps(run.to_dict(), indent=2))
-        else:
-            print(f"Certification Run ID: {run.certification_id}")
-            print(f"Route: {run.route_id}")
-            print(f"Overall Verdict: {run.overall_verdict.value}")
-            print(f"Proved Obligations: {run.proved_obligations}/{run.total_obligations}")
-            print(f"Receipt Digest: {run.receipt_digest}")
-        return 0
-
-    return 0
+        return 2
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

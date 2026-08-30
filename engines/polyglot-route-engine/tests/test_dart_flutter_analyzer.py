@@ -100,6 +100,63 @@ def test_flutter_expression_function_body_is_inventory_and_ir_analyzable(
 
 
 @pytest.mark.parametrize(
+    ("function_name", "operator"),
+    [("maximum", ">"), ("minimum", "<")],
+)
+def test_flutter_conditional_expression_body_lowers_to_typed_if_ir(
+    tmp_path: Path,
+    function_name: str,
+    operator: str,
+) -> None:
+    source = tmp_path / f"{function_name}.dart"
+    source.write_text(
+        f"int {function_name}(int left, int right) "
+        f"=> left {operator} right ? left : right;\n",
+        encoding="utf-8",
+    )
+    toolchain = exact_toolchain("flutter")
+
+    inventory = inventory_flutter(source, toolchain)
+    subject = inventory["subjects"][0]
+    assert subject["name"] == function_name
+    assert subject["analyzable"] is True
+    assert [parameter["name"] for parameter in subject["signature"]["parameters"]] == [
+        "left",
+        "right",
+    ]
+
+    function = analyze_flutter(source, function_name, toolchain).functions[0]
+    conditional = function.body[0]
+    assert conditional.kind == "if"
+    assert conditional.condition is not None
+    assert conditional.condition.operator == operator
+    assert len(conditional.then_body) == 1
+    assert conditional.then_body[0].kind == "return"
+    assert conditional.then_body[0].expression is not None
+    assert conditional.then_body[0].expression.value == "left"
+    assert len(conditional.else_body) == 1
+    assert conditional.else_body[0].kind == "return"
+    assert conditional.else_body[0].expression is not None
+    assert conditional.else_body[0].expression.value == "right"
+
+
+def test_flutter_conditional_expression_body_fails_closed_on_branch_type_mismatch(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "invalid.dart"
+    source.write_text(
+        "int invalid(bool chooseLeft) => chooseLeft ? 1 : true;\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        RouteError,
+        match=r"^DART_RETURN_TYPE_MISMATCH:integer:boolean$",
+    ):
+        analyze_flutter(source, "invalid", exact_toolchain("flutter"))
+
+
+@pytest.mark.parametrize(
     ("relative", "function_name", "diagnostic"),
     [
         ("negative/widget.dart", "build", "FLUTTER_UI_SEMANTICS_UNSUPPORTED"),

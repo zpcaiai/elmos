@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-dialect-version-fixture-matrix"
+  short_description: "Maintain representative fixtures across language editions, vendor compilers, compatibility modes..."
+  default_prompt: "Use $elmos-dialect-version-fixture-matrix through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-dialect-version-fixture-matrix"
+  handler_id: "execute_elmos_dialect_version_fixture_matrix"
+  operation: "CORPUS_GOVERNANCE"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

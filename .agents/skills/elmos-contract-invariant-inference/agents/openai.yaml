@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-contract-invariant-inference"
+  short_description: "Infer candidate preconditions, postconditions and invariants from code, traces and tests while di..."
+  default_prompt: "Use $elmos-contract-invariant-inference through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-contract-invariant-inference"
+  handler_id: "execute_elmos_contract_invariant_inference"
+  operation: "FORMAL_EXECUTION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

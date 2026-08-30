@@ -1,0 +1,6 @@
+interface:
+  display_name: "Cross Repository Impact Analysis"
+  short_description: "Run cross-repository-impact-analysis with bounded commercial controls"
+  default_prompt: "Use $cross-repository-impact-analysis through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

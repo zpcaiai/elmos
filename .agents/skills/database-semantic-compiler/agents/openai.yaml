@@ -1,0 +1,6 @@
+interface:
+  display_name: "Database Semantic Compiler"
+  short_description: "Run database-semantic-compiler with bounded commercial controls"
+  default_prompt: "Use $database-semantic-compiler through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

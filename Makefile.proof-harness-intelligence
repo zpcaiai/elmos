@@ -1,0 +1,41 @@
+PYTHON ?= python3
+PYTEST ?= pytest
+RUFF ?= ruff
+MYPY ?= mypy
+
+PDHI_ENGINE := engines/proof-driven-harness-intelligence-engine
+PDHI_ARCHIVE := skills/subskills/sub/elmos-proof-driven-harness-intelligence-v1.0.0.zip
+PDHI_IMPORTER := tooling/integrate_proof_driven_harness_intelligence_v1.py
+PDHI_TEST_ROOT := $(PDHI_ENGINE)/tests
+PDHI_INTEGRATION_TEST_ROOT := tests/proof-driven-harness-intelligence
+PDHI_PYTHONPATH := $(PDHI_ENGINE)/src
+
+.PHONY: pdhi-source-check pdhi-install pdhi-test pdhi-static pdhi-qualify pdhi-check pdhi-gate pdhi-qic
+
+pdhi-source-check:
+	$(PYTHON) $(PDHI_IMPORTER) --archive $(PDHI_ARCHIVE) --check
+
+pdhi-install:
+	$(PYTHON) $(PDHI_IMPORTER) --archive $(PDHI_ARCHIVE) --write
+
+pdhi-test:
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$(PDHI_PYTHONPATH) \
+		$(PYTEST) -q $(PDHI_TEST_ROOT) $(PDHI_INTEGRATION_TEST_ROOT)
+
+pdhi-static:
+	$(RUFF) check $(PDHI_ENGINE)/src/elmos_pdhi $(PDHI_TEST_ROOT) $(PDHI_INTEGRATION_TEST_ROOT) $(PDHI_ENGINE)/tools
+	PYTHONPATH=$(PDHI_PYTHONPATH) $(MYPY) --strict $(PDHI_ENGINE)/src/elmos_pdhi
+
+pdhi-qualify: pdhi-source-check pdhi-test pdhi-static
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$(PDHI_PYTHONPATH) \
+		$(PYTHON) $(PDHI_ENGINE)/tools/qualify_local.py
+
+pdhi-check: pdhi-source-check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$(PDHI_PYTHONPATH) \
+		$(PYTHON) $(PDHI_ENGINE)/tools/validate_installation.py
+
+pdhi-gate:
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$(PDHI_PYTHONPATH) \
+		$(PYTHON) $(PDHI_ENGINE)/tools/run_certification_gate.py
+
+pdhi-qic: pdhi-install pdhi-check pdhi-qualify

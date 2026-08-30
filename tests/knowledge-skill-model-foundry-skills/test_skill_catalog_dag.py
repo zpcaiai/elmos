@@ -1,68 +1,93 @@
-"""Root-level DAG and dual-root installation validation tests for Foundry v3.0.0."""
+"""Independent checks for compiled Skill identity, candidates, and DAG closure."""
 
 from __future__ import annotations
 
+from collections import Counter, defaultdict, deque
+import importlib.util
 from pathlib import Path
+import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
+TOOL_PATH = ROOT / "tooling/integrate_knowledge_skill_model_foundry_skills.py"
+MODULE_NAME = "_knowledge_skill_model_foundry_importer_under_test"
+
+
+def load_tool():
+    existing = sys.modules.get(MODULE_NAME)
+    if existing is not None:
+        return existing
+    spec = importlib.util.spec_from_file_location(MODULE_NAME, TOOL_PATH)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("cannot load Foundry importer")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[MODULE_NAME] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def audited_package(tool):
+    result = getattr(tool, "_FOCUSED_TEST_AUDIT", None)
+    if result is None:
+        result = tool.audit_archive(tool.resolve_archive())
+        setattr(tool, "_FOCUSED_TEST_AUDIT", result)
+    return result
 
 
 class SkillCatalogDagTests(unittest.TestCase):
-    def test_dual_root_installation_parity(self) -> None:
-        ws_skills = ROOT / ".agents/skills"
-        rt_skills = ROOT / "agent-skills/runtime"
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.tool = load_tool()
+        cls.catalog = audited_package(cls.tool).compiled_catalog
 
-        # Check all 41 meta-skills exist in both roots
-        pack_names = [
-            "00-foundation-contracts", "01-knowledge-ingestion-governance", "02-repository-semantic-intelligence",
-            "03-retrieval-context-engineering", "04-memory-experience-flywheel", "05-skill-foundry-runtime",
-            "06-dataset-foundry", "07-private-model-foundry", "08-agentic-training-rl",
-            "09-evaluation-proof-certification", "10-serving-routing-inference", "11-security-privacy-compliance",
-            "12-observability-lineage-finops", "13-commercial-multitenant-platform", "14-human-governance-operations",
-            "15-domain-engineering-packs", "16-self-evolution-release-engineering", "17-repository-execution-os",
-            "18-java-spring-enterprise-modernization", "19-cross-language-semantic-conversion",
-            "20-sql-database-modernization", "21-project-generation-product-engineering",
-            "22-frontend-mobile-miniapp-modernization", "23-repository-refactoring-technical-debt",
-            "24-api-event-integration-modernization", "25-data-engineering-lakehouse-analytics",
-            "26-cloud-native-devops-platform-engineering", "27-test-quality-assurance-factory",
-            "28-security-compliance-supply-chain", "29-performance-reliability-cost-engineering",
-            "30-architecture-documentation-ide", "31-ai-agent-rag-ml-engineering",
-            "32-legacy-mainframe-enterprise-modernization", "33-industrial-iot-edge-robotics",
-            "34-language-runtime-adapters", "35-database-engine-adapters",
-            "36-framework-runtime-adapters", "37-cloud-platform-adapters",
-            "38-golden-route-customer-delivery", "39-product-commercialization-marketplace",
-            "40-regulated-industry-assurance",
-        ]
-        for pack_name in pack_names:
-            meta_name = f"elmos-{pack_name}"
-            ws_target = ws_skills / meta_name / "SKILL.md"
-            rt_target = rt_skills / meta_name / "SKILL.md"
-            self.assertTrue(ws_target.is_file(), f"Missing {ws_target}")
-            self.assertTrue(rt_target.is_file(), f"Missing {rt_target}")
-            self.assertEqual(ws_target.read_bytes(), rt_target.read_bytes(), f"Parity mismatch on {meta_name}")
+    def test_exact_pack_counts_and_meta_candidate_closure(self) -> None:
+        atomic = self.catalog["atomic_skills"]
+        observed = Counter(row["pack"] for row in atomic)
+        self.assertEqual(dict(observed), dict(self.tool.EXPECTED_PACK_COUNTS))
+        atomic_by_pack: dict[str, list[str]] = defaultdict(list)
+        for row in atomic:
+            atomic_by_pack[row["pack"]].append(row["name"])
+        for meta in self.catalog["meta_skills"]:
+            self.assertEqual(meta["candidates"], sorted(atomic_by_pack[meta["pack"]]))
 
-    def test_atomic_skills_dual_root_installed(self) -> None:
-        ws_skills = ROOT / ".agents/skills"
-        rt_skills = ROOT / "agent-skills/runtime"
-        
-        # Test representative sample of atomic skills installed by foundry v3.0.0
-        sample_skills = [
-            "elmos-capability-taxonomy-governance",
-            "elmos-source-freshness-and-expiry",
-            "elmos-symbol-aware-retrieval",
-            "elmos-episodic-memory-store",
-            "elmos-dataset-contract-and-schema",
-            "elmos-lora-qlora-adapter-training",
-            "elmos-router-and-risk-dataset",
-            "elmos-cross-tenant-data-separation",
-            "elmos-long-task-checkpoint-and-resume",
-            "elmos-consumer-driven-compatibility",
-            "elmos-consumer-driven-contract-test",
-        ]
-        for skill in sample_skills:
-            self.assertTrue((ws_skills / skill / "SKILL.md").is_file(), f"Missing in workspace: {skill}")
-            self.assertTrue((rt_skills / skill / "SKILL.md").is_file(), f"Missing in runtime: {skill}")
+    def test_dependency_graph_is_complete_and_acyclic(self) -> None:
+        atomic = self.catalog["atomic_skills"]
+        names = {row["name"] for row in atomic}
+        dependencies = {row["name"]: row["dependencies"] for row in atomic}
+        self.assertEqual(sum(map(len, dependencies.values())), 9_090)
+        self.assertFalse(
+            [
+                (name, dependency)
+                for name, values in dependencies.items()
+                for dependency in values
+                if dependency not in names
+            ]
+        )
+        self.assertFalse([name for name, values in dependencies.items() if name in values])
+
+        indegree = {name: len(dependencies[name]) for name in names}
+        outgoing: dict[str, list[str]] = defaultdict(list)
+        for name, values in dependencies.items():
+            for dependency in values:
+                outgoing[dependency].append(name)
+        queue = deque(sorted(name for name, degree in indegree.items() if degree == 0))
+        visited = 0
+        while queue:
+            node = queue.popleft()
+            visited += 1
+            for successor in outgoing[node]:
+                indegree[successor] -= 1
+                if indegree[successor] == 0:
+                    queue.append(successor)
+        self.assertEqual(visited, 1_310)
+
+    def test_dag_validator_fails_closed(self) -> None:
+        with self.assertRaisesRegex(self.tool.IntegrationError, "unresolved"):
+            self.tool._check_dag({"a"}, {"a": ["missing"]})
+        with self.assertRaisesRegex(self.tool.IntegrationError, "self dependencies"):
+            self.tool._check_dag({"a"}, {"a": ["a"]})
+        with self.assertRaisesRegex(self.tool.IntegrationError, "cycle"):
+            self.tool._check_dag({"a", "b"}, {"a": ["b"], "b": ["a"]})
 
 
 if __name__ == "__main__":

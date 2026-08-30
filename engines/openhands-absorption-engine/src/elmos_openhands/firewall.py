@@ -6,9 +6,10 @@ import json
 import re
 import shlex
 import threading
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 from urllib.parse import urlparse
 
 from .models import Action, Identity, PolicyDecision, RiskLevel, new_id
@@ -116,7 +117,7 @@ class ActionFirewall:
     def classify(action: Action) -> RiskLevel:
         tool = action.tool.lower()
         operation = str(action.args.get("operation", "")).lower()
-        if tool.startswith("browser") or tool.startswith("cloud") or "network" in tool:
+        if tool.startswith(("browser", "cloud")) or "network" in tool:
             return RiskLevel.R4 if operation in {"navigate", "request", "mutate"} else RiskLevel.R3
         if tool.startswith("git") and operation in {"push", "force_push", "merge", "delete_branch"}:
             return RiskLevel.R4
@@ -197,8 +198,8 @@ class ActionFirewall:
         compact = " ".join(tokens)
         patterns = (
             r"(^|\s)rm\s+-[a-z]*r[a-z]*f",
-            r"(^|\s)git\s+push\b",
             r"(^|\s)git\s+reset\s+--hard",
+            r"(^|\s)git\s+push\b.*(?:--force(?:-with-lease)?|-f)(?:\s|$)",
             r"force[-_ ]push",
             r"\bdrop\s+(database|table|schema)\b",
             r"\btruncate\s+table\b",

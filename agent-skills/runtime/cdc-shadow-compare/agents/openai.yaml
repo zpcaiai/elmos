@@ -1,0 +1,6 @@
+interface:
+  display_name: "Cdc Shadow Compare"
+  short_description: "Run cdc-shadow-compare with bounded commercial controls"
+  default_prompt: "Use $cdc-shadow-compare through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

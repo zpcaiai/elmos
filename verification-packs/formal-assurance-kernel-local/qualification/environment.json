@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-08-30T12:12:38Z",
+  "capturedAt": "2026-08-30T22:57:53Z",
   "format": "elmos-formal-local-environment/v1",
   "machine": "arm64",
   "platform": "macOS-26.6.2-arm64-arm-64bit",
@@ -17,19 +17,19 @@
     },
     {
       "name": "java",
-      "path": "/Users/stephen/.sdkman/candidates/java/25.0.4-tem/bin/java",
-      "sha256": "sha256:2187a28d325113dd5a4af73cb35a3e4049876d474d601b5b1d60c5474cf2d28e",
+      "path": "/opt/homebrew/Cellar/openjdk/26.0.1/libexec/openjdk.jdk/Contents/Home/bin/java",
+      "sha256": "sha256:2da49bf8bd5f40f858f99debf4dc0d4a318f5aa1046c5f465ee778de1fbac4e3",
       "status": "AVAILABLE",
-      "versionOutput": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
-      "versionOutputDigest": "sha256:0f18eedd92fd0816e5fa71e235ef8f1e1f2ea20dd37260a7fbf54e1d4f5fde56"
+      "versionOutput": "openjdk version \"26.0.1\" 2026-04-21\nOpenJDK Runtime Environment Homebrew (build 26.0.1)\nOpenJDK 64-Bit Server VM Homebrew (build 26.0.1, mixed mode, sharing)",
+      "versionOutputDigest": "sha256:2a02c980fe45a3091b255c752166dbec53cff2e08f4ed6f07134089dd9580cd2"
     },
     {
       "name": "mvn",
-      "path": "/Users/stephen/.sdkman/candidates/maven/3.9.10/bin/mvn",
-      "sha256": "sha256:f9381d0cb98abaaf9592dae421eddc497e84ed9bfb723b84c111d1350863c3a2",
+      "path": "/opt/homebrew/Cellar/maven/3.9.10/bin/mvn",
+      "sha256": "sha256:028b56796c2b82784b832caf63bd8c0a94efc131dd32f39fe55c853a2df7a939",
       "status": "AVAILABLE",
-      "versionOutput": "Apache Maven 3.9.10 (5f519b97e944483d878815739f519b2eade0a91d)\nMaven home: /Users/stephen/.sdkman/candidates/maven/3.9.10\nJava version: 25.0.4, vendor: Eclipse Adoptium, runtime: /Users/stephen/.sdkman/candidates/java/25.0.4-tem\nDefault locale: en_US, platform encoding: UTF-8\nOS name: \"mac os x\", version: \"26.6.2\", arch: \"aarch64\", family: \"mac\"",
-      "versionOutputDigest": "sha256:03a91322e64fd679b843cabfe86f096f278e255ccb384d8a6dd24b87364f43aa"
+      "versionOutput": "Apache Maven 3.9.10 (5f519b97e944483d878815739f519b2eade0a91d)\nMaven home: /opt/homebrew/Cellar/maven/3.9.10/libexec\nJava version: 26.0.1, vendor: Homebrew, runtime: /opt/homebrew/Cellar/openjdk/26.0.1/libexec/openjdk.jdk/Contents/Home\nDefault locale: en_US, platform encoding: UTF-8\nOS name: \"mac os x\", version: \"26.6.2\", arch: \"aarch64\", family: \"mac\"",
+      "versionOutputDigest": "sha256:792f69a2d190b67726a2dea8e522467dd44db5e183d93df69863821217dd0793"
     },
     {
       "name": "gradle",
