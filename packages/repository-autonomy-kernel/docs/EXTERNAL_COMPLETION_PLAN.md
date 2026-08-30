@@ -8,7 +8,7 @@
 
 当前已完成的是本地工程基础：31 个 Skill handler、SQLite 事件与租约、内容寻址制品、fail-closed authority/policy、HTTP/CLI、PostgreSQL 目标迁移、OpenAPI/OPA/Docker/Kubernetes/Helm 资产。它们只能支撑 `LOCAL_ENGINEERING_VALIDATED`，不能替代本计划中的外部证据。
 
-截至当前实现，适合在无客户凭据和无生产权限条件下编码的部分已经落地：外部操作 SPI 与状态机、HMAC 授权验证、幂等/补偿/未知结果 reconciliation、外部收据与 transactional outbox、S3/Event Bus/Secrets Broker 传输边界、真实本地 Git exact-commit 适配器、7 个 Provider canonical adapter、84 单元语义 conformance、PostgreSQL V001–V006/RLS/迁移锁/备份恢复 API、Kubernetes digest-bound apply/rollback/cleanup、客户仓库绑定、Golden Route 验收、T00–T08/E1–E5/P05 保守聚合器。它们的本地测试结果仍是工程证据；下表所列真实环境执行状态不因代码存在而变化。
+截至当前实现，适合在无客户凭据和无生产权限条件下编码的部分已经落地：外部操作 SPI 与状态机、HMAC 授权验证、幂等/补偿/未知结果 reconciliation、外部收据与 transactional outbox、S3/Event Bus/Secrets Broker 传输边界、真实本地 Git exact-commit 适配器、7 个 Provider canonical adapter、84 单元语义 conformance、PostgreSQL V001–V006/RLS/迁移锁/备份恢复 API、Kubernetes digest-bound apply/rollback/cleanup、客户仓库绑定、Golden Route 验收、T00–T08/E1–E5/P05 保守聚合器，以及 SHA-256/协议双重锁定、无 shell、限时限流、仅环境引用凭据的外部 sidecar transport 与统一资格预检。预检只验证已批准绑定是否可进入后续授权执行，不调用外部系统、不生产外部证据，也不签发认证。它们的本地测试结果仍是工程证据；下表所列真实环境执行状态不因代码存在而变化。
 
 | 波次 | 代码状态 | 真实环境状态 | 认证状态 |
 |---|---|---|---|
@@ -44,6 +44,8 @@
 - 增加 `external_evidence`、`authorization_receipt`、`verification_receipt`、`cleanup_receipt` 和 `unknown_outcome` 的持久化结构；禁止用调用者 payload 伪造执行结果。
 - 为每个外部操作建立 `DRY_RUN -> AUTHORIZED -> EXECUTED -> RECONCILED` 状态机，任何不确定的网络结果进入 `UNKNOWN`，禁止自动重试可能有副作用的操作。
 - 固化开发、负例、holdout、代表性和灾备数据集的 digest，互不复用。
+- 使用 `external-qualification-manifest.schema.json` 固化 tenant/account/project/actor、revision/candidate/workload digest、授权 receipt、精确资源、7 个 Provider 和独立验证者；`external-preflight` 只输出 `READY_FOR_AUTHORIZED_EXECUTION/BLOCKED`，所有执行与认证字段保持否定状态。
+- 外部 sidecar 必须使用绝对路径、非符号链接、不可组/全局写的 executable、精确 SHA-256 和协议 allowlist；stdin/stdout 为有界 canonical JSON，二进制显式 base64+digest 编码，输出仅保存 hash，超时和输出洪泛进入 `UNKNOWN`。
 
 退出条件：本地 schema/anti-fabrication/幂等/租约/重放测试通过；外部能力仍保持 `NOT_RUN`。
 
