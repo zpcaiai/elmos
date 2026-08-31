@@ -34,9 +34,18 @@ from elmos_polyglot_route.identifier_hygiene import (
     alpha_normalize_target,
     identifier_plan_bytes,
     plan_identifiers,
+    repository_work_unit_namespace,
     target_ir_view,
 )
-from elmos_polyglot_route.models import Expression, Language, RouteError, SemanticIR, SourceSpan, Statement
+from elmos_polyglot_route.models import (
+    REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
+    Expression,
+    Language,
+    RouteError,
+    SemanticIR,
+    SourceSpan,
+    Statement,
+)
 from elmos_polyglot_route.native import analyze, inventory_module
 from elmos_polyglot_route.toolchains import exact_toolchain
 
@@ -1690,10 +1699,19 @@ def test_java_to_javascript_single_function_migration_relifts_internal_helper(
         "identity",
         cases,
         tmp_path / "single-evidence",
+        repository_execution_mode=True,
+        repository_language_lifecycle=REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
+        identifier_unit_namespace=repository_work_unit_namespace(
+            repository_snapshot_sha256=sha256_bytes(b"javascript-replay-repository"),
+            work_unit_id="WU-00001",
+            source_logical_path=source.name,
+            source_sha256=sha256_bytes(source.read_bytes()),
+        ),
     )
 
-    assert report["status"] == "PASSED"
+    assert report["status"] == "PASSED_LOCAL_UNCERTIFIED"
     assert report["route"] == "java-to-javascript"
+    assert report["repository_language_lifecycle"] == REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
 
 
 def test_java_to_javascript_multifunction_module_closes_each_internal_helper(
@@ -1707,6 +1725,8 @@ def test_java_to_javascript_multifunction_module_closes_each_internal_helper(
         "javascript",
         ENGINE_ROOT / "fixtures/module/nodejs-cases.json",
         tmp_path / "multi-evidence",
+        repository_execution_mode=True,
+        repository_language_lifecycle=REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
     )
 
     helpers = report["whole_file_closure"]["target_helper_symbols"]
@@ -1779,9 +1799,13 @@ def test_module_pipeline_uses_private_input_snapshots_across_phase_tamper(
     real_inventory = route_engine.inventory_module
     tampered = False
 
-    def inventory_then_tamper(path: Path, language: str) -> dict[str, object]:
+    def inventory_then_tamper(
+        path: Path,
+        language: str,
+        **kwargs: object,
+    ) -> dict[str, object]:
         nonlocal tampered
-        inventory = real_inventory(path, language)  # type: ignore[arg-type]
+        inventory = real_inventory(path, language, **kwargs)  # type: ignore[arg-type]
         if not tampered and language == "java" and path.name == source.name:
             assert path.resolve() != source.resolve()
             source.write_text("public final class EquivalenceModule {}\n", encoding="utf-8")

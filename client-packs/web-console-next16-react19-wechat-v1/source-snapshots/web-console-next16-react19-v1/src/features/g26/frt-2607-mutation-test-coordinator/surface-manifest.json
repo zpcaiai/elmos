@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2607",
+  "skill_name": "frt-2607-mutation-test-coordinator",
+  "batch": "G26",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g26/frt-2607-mutation-test-coordinator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g26.mutation-test-coordinator",
+  "execution_contract_sha256": "sha256:67795ecadab11308350b09d11d6e9fcfd6761c4db8e6ab3fcef8d839b8cf59fe",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:2c7e6b7b5b57e9ab3e1a1e12ec846bd3338f691cf9e1154ba62ac09fb13a106a",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

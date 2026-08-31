@@ -54,6 +54,19 @@ EXPECTED_DEPENDENCY_EDGES = 67
 EXPECTED_SCHEMA_COUNT = 11
 EXPECTED_WORKFLOW_COUNT = 6
 
+# ``--refresh-owned`` may replace generated outputs only when the previous
+# installation marker is one of these reviewed, repository-owned markers.  A
+# marker is deliberately bound to the complete installed trees below; this
+# allowlist is not a general-purpose permission to overwrite arbitrary files.
+TRUSTED_PREVIOUS_INSTALLED_MANIFEST_SHA256S = frozenset(
+    {
+        # The pre-refresh installation present in the repository.
+        "sha256:47e3283b40045c3d6781a062e6ab2de70ce2069cf3538fc47323a69c2a7da980",
+        # The manifest emitted by the current deterministic generator.
+        "sha256:9b7f13b8dd371c5eb91278b0c6165ed3fdfaf51f7a7e6473a61db7a35bc5f895",
+    }
+)
+
 NAMESPACE = "autonomous-qa-self-healing-v1"
 ALIAS_PREFIX = "autonomous-qa-"
 RUNTIME_MODULE = (
@@ -3703,20 +3716,26 @@ def _create_transaction(
 def _cleanup_transaction(
     transaction: PinnedTransaction,
     staged_snapshots: Mapping[int, ManagedTreeSnapshot],
+    rollback_snapshots: Mapping[int, ManagedTreeSnapshot] | None = None,
 ) -> None:
     errors: list[str] = []
+    rollback_snapshots = rollback_snapshots or {}
     try:
         for index, snapshot in sorted(staged_snapshots.items(), reverse=True):
-            name = f"{index:03d}"
-            for descriptor, location in (
-                (transaction.staged_descriptor, "staged"),
-                (transaction.rollback_descriptor, "rollback"),
+            for descriptor, location, cleanup_snapshot in (
+                (transaction.staged_descriptor, "staged", snapshot),
+                (
+                    transaction.rollback_descriptor,
+                    "rollback",
+                    rollback_snapshots.get(index, snapshot),
+                ),
             ):
+                name = f"{index:03d}"
                 try:
                     _remove_exact_tree_at(
                         descriptor,
                         name,
-                        snapshot,
+                        cleanup_snapshot,
                         label=f"transaction {location} tree {name}",
                         allow_missing=True,
                     )
@@ -3790,12 +3809,318 @@ def _cleanup_transaction(
         )
 
 
+def _assert_owned_refresh_installation(
+    repository_root: Path,
+    snapshot: PackageSnapshot,
+    expected: Mapping[str, Any],
+) -> Mapping[Path, ManagedTreeSnapshot]:
+    """Authenticate the complete prior installation before permitting replacement."""
+
+    generated = _resolve_below(repository_root, GENERATED_DOC_RELATIVE)
+    generated_snapshot = _read_tree_snapshot(generated)
+    expected_docs = set(expected["docs_tree"])
+    if set(generated_snapshot.tree) != expected_docs:
+        raise IntegrationError(
+            "refusing owned refresh with generated documentation path drift: "
+            f"missing={sorted(expected_docs - set(generated_snapshot.tree))}, "
+            f"extra={sorted(set(generated_snapshot.tree) - expected_docs)}"
+        )
+    manifest_payload = generated_snapshot.tree.get("installed-manifest.json")
+    if manifest_payload is None:
+        raise IntegrationError("refusing owned refresh without installed manifest")
+    manifest_digest = "sha256:" + _sha256(manifest_payload.content)
+    if manifest_digest not in TRUSTED_PREVIOUS_INSTALLED_MANIFEST_SHA256S:
+        raise IntegrationError(
+            "refusing owned refresh with an unrecognized installed manifest: "
+            f"{manifest_digest}"
+        )
+    try:
+        previous = json.loads(manifest_payload.content.decode("utf-8"))
+    except (UnicodeError, json.JSONDecodeError) as exc:
+        raise IntegrationError("refusing owned refresh with invalid installed manifest") from exc
+    if not isinstance(previous, Mapping):
+        raise IntegrationError("refusing owned refresh with non-object installed manifest")
+
+    required_bindings = {
+        "schema_version": "elmos.autonomous-qa.installed-manifest.v1",
+        "namespace": NAMESPACE,
+        "source_archive": ARCHIVE_RELATIVE.as_posix(),
+        "source_archive_sha256": "sha256:" + snapshot.archive_sha256,
+        "source_archive_bytes": snapshot.archive_bytes,
+        "source_entry_count": snapshot.entry_count,
+        "canonical_source_path": SOURCE_RELATIVE.as_posix(),
+        "canonical_source_tree_sha256": _tree_digest(expected["source_tree"]),
+        "install_roots": [root.as_posix() for root in INSTALL_ROOTS],
+        "installed_skill_count_per_root": EXPECTED_SKILL_COUNT,
+        "dual_root_byte_identical": True,
+    }
+    if any(previous.get(key) != value for key, value in required_bindings.items()):
+        raise IntegrationError("refusing owned refresh with identity-drifted manifest")
+    for relative, payload in generated_snapshot.tree.items():
+        if relative == "installed-manifest.json":
+            continue
+        manifest_key = {
+            "implementation-matrix.json": "implementation_matrix_sha256",
+            "compiled-manifest.json": "compiled_manifest_sha256",
+        }.get(relative)
+        if manifest_key is None or previous.get(manifest_key) != "sha256:" + _sha256(
+            payload.content
+        ):
+            raise IntegrationError(
+                "refusing owned refresh because generated documentation ownership drifted: "
+                f"{relative}"
+            )
+
+    records = previous.get("skills")
+    expected_records = expected["installed_manifest"]["skills"]
+    if not isinstance(records, list) or len(records) != EXPECTED_SKILL_COUNT:
+        raise IntegrationError("refusing owned refresh with incomplete Skill ownership inventory")
+    expected_by_alias = {
+        record["installed_alias"]: record for record in expected_records
+    }
+    if tuple(
+        record.get("installed_alias") if isinstance(record, Mapping) else None
+        for record in records
+    ) != tuple(expected_by_alias):
+        raise IntegrationError("refusing owned refresh with reordered Skill ownership inventory")
+
+    installed_by_root: dict[Path, dict[str, ManagedTreeSnapshot]] = {}
+    for install_root in INSTALL_ROOTS:
+        _validate_installed_alias_inventory(repository_root, expected, allow_missing=False)
+        trees: dict[str, ManagedTreeSnapshot] = {}
+        for alias in expected["skill_trees"]:
+            destination = _resolve_below(repository_root, install_root / alias)
+            tree_snapshot = _read_tree_snapshot(destination)
+            trees[alias] = tree_snapshot
+        aggregate = _aggregate_skill_tree_digest(
+            {alias: tree_snapshot.tree for alias, tree_snapshot in trees.items()}
+        )
+        if previous.get("installed_tree_sha256_per_root") != aggregate:
+            raise IntegrationError(
+                "refusing owned refresh because a prior installed tree digest drifted: "
+                f"{install_root.as_posix()}"
+            )
+        installed_by_root[install_root] = trees
+
+    left, right = INSTALL_ROOTS
+    for alias in expected["skill_trees"]:
+        if installed_by_root[left][alias].tree != installed_by_root[right][alias].tree:
+            raise IntegrationError(f"refusing owned refresh with dual-root drift: {alias}")
+        record = next(item for item in records if item.get("installed_alias") == alias)
+        if record.get("installed_tree_sha256") != _tree_digest(
+            installed_by_root[left][alias].tree
+        ):
+            raise IntegrationError(f"refusing owned refresh with Skill receipt drift: {alias}")
+        expected_record = expected_by_alias[alias]
+        for key in ("source_id", "source_name", "source_path", "source_sha256"):
+            if record.get(key) != expected_record.get(key):
+                raise IntegrationError(f"refusing owned refresh with source receipt drift: {alias}")
+
+    previous_snapshots: dict[Path, ManagedTreeSnapshot] = {
+        generated: generated_snapshot
+    }
+    for install_root, trees in installed_by_root.items():
+        for alias, tree_snapshot in trees.items():
+            previous_snapshots[
+                _resolve_below(repository_root, install_root / alias)
+            ] = tree_snapshot
+    return previous_snapshots
+
+
+def _refresh_owned_installation(
+    repository_root: Path,
+    expected: Mapping[str, Any],
+    changes: Sequence[tuple[ManagedAction, ManagedTreeSnapshot]],
+    *,
+    initial_repository_identity: tuple[int, int],
+    before_commit: Callable[[int, ManagedAction], None] | None = None,
+) -> None:
+    """Replace only authenticated generated trees with descriptor-pinned rollback."""
+
+    transaction = _create_transaction(
+        repository_root,
+        expected_repository_identity=initial_repository_identity,
+    )
+    staged_snapshots: dict[int, ManagedTreeSnapshot] = {}
+    rollback_snapshots = {
+        index: previous for index, (_action, previous) in enumerate(changes)
+    }
+    states: dict[int, dict[str, Any]] = {}
+    created_parents: dict[Path, tuple[int, int]] = {}
+    preserve_transaction = False
+    try:
+        for index, (action, _previous) in enumerate(changes):
+            stage_name = f"{index:03d}"
+            staged_snapshots[index] = _stage_tree(
+                transaction.staged_descriptor,
+                stage_name,
+                transaction.path / "staged" / stage_name,
+                action.tree,
+            )
+            states[index] = {
+                "action": action,
+                "previous": rollback_snapshots[index],
+                "old_moved": False,
+                "published": False,
+            }
+
+        try:
+            for index, (action, previous) in enumerate(changes):
+                state = states[index]
+                if before_commit is not None:
+                    before_commit(index, action)
+                relative = action.destination.relative_to(repository_root)
+                parent_descriptor = _open_managed_parent(
+                    repository_root,
+                    relative,
+                    create=True,
+                    created_parents=created_parents,
+                    repository_descriptor=transaction.parent_descriptor,
+                )
+                try:
+                    _revalidate_managed_parent(repository_root, relative, parent_descriptor)
+                    _verify_tree_entry_at(
+                        parent_descriptor,
+                        relative.name,
+                        previous,
+                        label=f"owned refresh destination {action.destination}",
+                    )
+                    backup = _rename_directory_no_replace(
+                        Path(relative.name),
+                        Path(f"{index:03d}"),
+                        transaction.rollback_descriptor,
+                        expected_snapshot=previous,
+                        source_parent_descriptor=parent_descriptor,
+                    )
+                    state["old_moved"] = True
+                    if not backup.durable:
+                        raise IntegrationError(
+                            f"owned refresh backup durability is unknown: {action.destination}"
+                        )
+                    published = _rename_directory_no_replace(
+                        transaction.path / "staged" / f"{index:03d}",
+                        action.destination,
+                        parent_descriptor,
+                        expected_snapshot=staged_snapshots[index],
+                        source_parent_descriptor=transaction.staged_descriptor,
+                    )
+                    state["published"] = True
+                    if not published.durable:
+                        raise IntegrationError(
+                            f"owned refresh publication durability is unknown: {action.destination}"
+                        )
+                    _revalidate_repository_root_path(
+                        repository_root,
+                        transaction.repository_identity,
+                        transaction.parent_descriptor,
+                    )
+                    _revalidate_managed_parent(repository_root, relative, parent_descriptor)
+                    _verify_tree_entry_at(
+                        parent_descriptor,
+                        relative.name,
+                        staged_snapshots[index],
+                        label=f"owned refresh publication {action.destination}",
+                    )
+                finally:
+                    _close_descriptor(parent_descriptor)
+
+            _revalidate_repository_root_path(
+                repository_root,
+                transaction.repository_identity,
+                transaction.parent_descriptor,
+            )
+            _check_expected(repository_root, expected)
+        except BaseException as exc:
+            rollback_errors: list[str] = []
+            for index in reversed(range(len(changes))):
+                state = states[index]
+                action = state["action"]
+                previous = state["previous"]
+                parent_descriptor = -1
+                try:
+                    relative = action.destination.relative_to(repository_root)
+                    parent_descriptor = _open_managed_parent(
+                        repository_root,
+                        relative,
+                        create=False,
+                        repository_descriptor=transaction.parent_descriptor,
+                    )
+                    _revalidate_managed_parent(repository_root, relative, parent_descriptor)
+                    if state["published"]:
+                        _verify_tree_entry_at(
+                            parent_descriptor,
+                            relative.name,
+                            staged_snapshots[index],
+                            label=f"owned refresh rollback publication {action.destination}",
+                        )
+                        discarded = _rename_directory_no_replace(
+                            Path(relative.name),
+                            Path(f"{index:03d}"),
+                            transaction.staged_descriptor,
+                            expected_snapshot=staged_snapshots[index],
+                            source_parent_descriptor=parent_descriptor,
+                        )
+                        if not discarded.durable:
+                            raise IntegrationError(
+                                f"owned refresh rollback discard durability is unknown: {action.destination}"
+                            )
+                    if state["old_moved"]:
+                        restored = _rename_directory_no_replace(
+                            Path(f"{index:03d}"),
+                            Path(relative.name),
+                            parent_descriptor,
+                            expected_snapshot=previous,
+                            source_parent_descriptor=transaction.rollback_descriptor,
+                        )
+                        if not restored.durable:
+                            raise IntegrationError(
+                                f"owned refresh rollback durability is unknown: {action.destination}"
+                            )
+                except (IntegrationError, OSError) as rollback_exc:
+                    rollback_errors.append(f"{action.destination}: {rollback_exc}")
+                finally:
+                    _close_descriptor(parent_descriptor)
+            if rollback_errors:
+                preserve_transaction = True
+                raise IntegrationError(
+                    "owned refresh failed and rollback was incomplete; "
+                    f"transaction preserved at {transaction.path}: {rollback_errors}"
+                ) from exc
+            raise
+    finally:
+        pending_error = sys.exc_info()[1]
+        if preserve_transaction:
+            _close_descriptors(
+                (
+                    transaction.parent_descriptor,
+                    transaction.root_descriptor,
+                    transaction.staged_descriptor,
+                    transaction.rollback_descriptor,
+                )
+            )
+        else:
+            try:
+                _cleanup_transaction(
+                    transaction,
+                    staged_snapshots,
+                    rollback_snapshots,
+                )
+            except IntegrationError as cleanup_exc:
+                if pending_error is not None:
+                    raise IntegrationError(
+                        "owned refresh failed and transaction cleanup was incomplete: "
+                        f"{cleanup_exc}"
+                    ) from pending_error
+                raise
+
+
 def write_integration(
     repository_root: Path,
     archive_path: Path,
     *,
     yaml_loader: YamlLoader | None = None,
     before_commit: Callable[[int, ManagedAction], None] | None = None,
+    refresh_owned: bool = False,
 ) -> PackageSnapshot:
     if repository_root.is_symlink():
         raise IntegrationError(f"repository root must not be a symlink: {repository_root}")
@@ -3814,7 +4139,16 @@ def write_integration(
         allow_missing=True,
     )
 
+    previous_snapshots: Mapping[Path, ManagedTreeSnapshot] = {}
+    if refresh_owned:
+        previous_snapshots = _assert_owned_refresh_installation(
+            repository_root,
+            snapshot,
+            expected,
+        )
+
     missing: list[ManagedAction] = []
+    refresh: list[tuple[ManagedAction, ManagedTreeSnapshot]] = []
     for action in actions:
         if action.destination.exists() or action.destination.is_symlink():
             if action.destination.is_symlink():
@@ -3822,11 +4156,37 @@ def write_integration(
             try:
                 _compare_action(action)
             except IntegrationError as exc:
-                raise IntegrationError(
-                    f"refusing unowned, incomplete, or drifted collision: {action.destination}: {exc}"
-                ) from exc
+                if refresh_owned and action.destination in previous_snapshots:
+                    refresh.append((action, previous_snapshots[action.destination]))
+                else:
+                    raise IntegrationError(
+                        f"refusing unowned, incomplete, or drifted collision: {action.destination}: {exc}"
+                    ) from exc
         else:
             missing.append(action)
+
+    if refresh_owned:
+        if missing:
+            raise IntegrationError(
+                "refusing owned refresh because an authenticated generated tree is missing: "
+                + ", ".join(str(action.destination) for action in missing)
+            )
+        if refresh:
+            _refresh_owned_installation(
+                repository_root,
+                expected,
+                refresh,
+                initial_repository_identity=initial_repository_identity,
+                before_commit=before_commit,
+            )
+        _reject_reserved_transaction_roots(
+            repository_root, expected_identity=initial_repository_identity
+        )
+        _check_expected(repository_root, expected)
+        _reject_reserved_transaction_roots(
+            repository_root, expected_identity=initial_repository_identity
+        )
+        return snapshot
 
     if missing:
         transaction = _create_transaction(
@@ -4051,6 +4411,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     operation = parser.add_mutually_exclusive_group(required=True)
     operation.add_argument("--write", action="store_true", help="safely extract and install")
     operation.add_argument("--check", action="store_true", help="verify identity and drift only")
+    operation.add_argument(
+        "--refresh-owned",
+        action="store_true",
+        help="digest-verify and atomically refresh previously owned generated outputs",
+    )
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--archive", type=Path)
     arguments = parser.parse_args(argv)
@@ -4064,6 +4429,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         if arguments.write:
             snapshot = write_integration(repository_root, archive_path)
             decision = "SOURCE_EXTRACTED_AND_SKILLS_INSTALLED"
+        elif arguments.refresh_owned:
+            snapshot = write_integration(
+                repository_root,
+                archive_path,
+                refresh_owned=True,
+            )
+            decision = "OWNED_OUTPUTS_REFRESHED"
         else:
             snapshot = check_integration(repository_root, archive_path)
             decision = "INSTALLATION_VERIFIED"

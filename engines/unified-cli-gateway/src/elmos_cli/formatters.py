@@ -65,11 +65,14 @@ def generate_executive_html_report(title: str, payload: Dict[str, Any], output_f
     
     stages = payload.get("stages", {})
     smt_info = stages.get("smt_formal_proof", {})
-    smt_status = smt_info.get("status", "SAT_PROVED")
+    smt_status = smt_info.get("status", "NOT_RUN")
     finops_info = stages.get("finops_metering", {})
-    est_cost = finops_info.get("estimated_cost_usd", 0.0042)
-    pipeline_verdict = payload.get("status", "SUCCESS")
+    est_cost = finops_info.get("estimated_cost_usd", 0.0)
+    pipeline_verdict = payload.get("status", "NOT_RUN")
     total_dur = payload.get("total_duration_ms", payload.get("duration_ms", 128))
+    receipt = payload.get("receipt", {})
+    slsa_level = receipt.get("slsa_level", "NOT_ASSESSED")
+    certification = receipt.get("certification", payload.get("certification", "NOT_CERTIFIED"))
 
     html_content = f"""<!DOCTYPE html>
 <html lang="zh-CN">
@@ -219,8 +222,8 @@ def generate_executive_html_report(title: str, payload: Dict[str, Any], output_f
       <div class="meta-bar">
         <div class="meta-item">Generated: <strong>{timestamp}</strong></div>
         <div class="meta-item">Engine Pipeline: <strong>ELMOS v3.0.0</strong></div>
-        <div class="meta-item">Assurance Level: <strong>E0–E5 Certified</strong></div>
-        <div class="meta-item">SLSA Provenance: <strong>Level 3 Merkle Signed</strong></div>
+        <div class="meta-item">Assurance Readiness: <strong>{html.escape(str(certification))}</strong></div>
+        <div class="meta-item">SLSA Provenance: <strong>{html.escape(str(slsa_level))}</strong></div>
       </div>
     </header>
 
@@ -228,7 +231,7 @@ def generate_executive_html_report(title: str, payload: Dict[str, Any], output_f
       <div class="metric-card">
         <span>Pipeline Verdict</span>
         <strong>{pipeline_verdict}</strong>
-        <small>Formal proof verified</small>
+        <small>Formal proof execution: {html.escape(str(smt_status))}</small>
       </div>
       <div class="metric-card">
         <span>Duration</span>
@@ -238,7 +241,7 @@ def generate_executive_html_report(title: str, payload: Dict[str, Any], output_f
       <div class="metric-card">
         <span>SMT Solved</span>
         <strong>{smt_status}</strong>
-        <small>Z3/CVC5 Solver certified</small>
+        <small>Solver evidence remains independently gated</small>
       </div>
       <div class="metric-card">
         <span>FinOps Metered</span>
@@ -264,7 +267,11 @@ def generate_executive_html_report(title: str, payload: Dict[str, Any], output_f
     for stage_name, stage_data in stages.items():
         st_status = stage_data.get("status", "SUCCESS")
         st_dur = stage_data.get("duration_ms", 15)
-        st_digest = stage_data.get("sha256", stage_data.get("receipt_digest", stage_data.get("formula_digest", "N/A")))[:16]
+        raw_digest = stage_data.get(
+            "sha256",
+            stage_data.get("receipt_digest", stage_data.get("formula_digest", "N/A")),
+        )
+        st_digest = str(raw_digest or "N/A")[:16]
         chip_cls = "chip-pass" if "PASS" in str(st_status) or "SAT" in str(st_status) or "SUCCESS" in str(st_status) or "READY" in str(st_status) else "chip-ready"
         html_content += f"""          <tr>
             <td><strong>{html.escape(stage_name)}</strong></td>
@@ -280,7 +287,7 @@ def generate_executive_html_report(title: str, payload: Dict[str, Any], output_f
     </div>
 
     <div class="section-card">
-      <div class="section-title">SLSA Level 3 Evidence Bundle & Merkle Tree</div>
+      <div class="section-title">Evidence Bundle & Provenance State</div>
       <pre><code>{html.escape(json_dump)}</code></pre>
     </div>
 

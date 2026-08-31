@@ -45,12 +45,12 @@ public class AccountLedger {
             code_snippet=java_src,
             options={"fuzz_cases": 50, "budget_limit_usd": 100.0, "cache_enabled": True},
         )
-        self.assertEqual(res["status"], "SUCCESS")
-        self.assertIn("AccountLedger", res["transformed_code"])
-        self.assertEqual(res["formal_assurance"]["status"], "SAT_PROVED")
-        self.assertEqual(res["differential_fuzzing"]["status"], "FUZZ_PASSED")
-        self.assertEqual(res["differential_fuzzing"]["cases_passed"], 50)
-        self.assertEqual(res["receipt"]["slsa_level"], "SLSA_BUILD_LEVEL_3")
+        self.assertEqual(res["status"], "READY_FOR_EXTERNAL_GATE")
+        self.assertIsNone(res["transformed_code"])
+        self.assertEqual(res["formal_assurance"]["status"], "NOT_RUN")
+        self.assertEqual(res["differential_fuzzing"]["status"], "NOT_RUN")
+        self.assertEqual(res["differential_fuzzing"]["cases_passed"], 0)
+        self.assertEqual(res["receipt"]["slsa_level"], "NOT_ASSESSED")
         self.assertTrue(res["evidence_bundle_digest"].startswith("sha256:"))
 
     def test_e2e_csharp_to_rust_systems_route(self) -> None:
@@ -64,9 +64,9 @@ public class AccountLedger {
             code_snippet=cs_src,
             options={"fuzz_cases": 30},
         )
-        self.assertEqual(res["status"], "SUCCESS")
-        self.assertIn("pub fn execute", res["transformed_code"])
-        self.assertEqual(res["receipt"]["certification"], "CERTIFIED")
+        self.assertEqual(res["status"], "READY_FOR_EXTERNAL_GATE")
+        self.assertIsNone(res["transformed_code"])
+        self.assertEqual(res["receipt"]["certification"], "NOT_CERTIFIED")
 
     def test_e2e_python_to_typescript_route(self) -> None:
         py_src = """def calculate_discount(price: float, rate: float) -> float:
@@ -77,8 +77,8 @@ public class AccountLedger {
             tgt_lang="typescript",
             code_snippet=py_src,
         )
-        self.assertEqual(res["status"], "SUCCESS")
-        self.assertEqual(res["formal_assurance"]["verdict"], "SATISFIED")
+        self.assertEqual(res["status"], "READY_FOR_EXTERNAL_GATE")
+        self.assertEqual(res["formal_assurance"]["verdict"], "UNDETERMINED")
 
     def test_chaos_budget_exhaustion_circuit_breaker(self) -> None:
         res = run_composite_pipeline(
@@ -96,20 +96,20 @@ public class AccountLedger {
 
         # Run 1: Cold execution
         res1 = run_composite_pipeline("java", "csharp", code, opts)
-        self.assertEqual(res1["status"], "SUCCESS")
+        self.assertEqual(res1["status"], "READY_FOR_EXTERNAL_GATE")
         self.assertFalse(res1.get("cache_hit", False))
 
         # Run 2: Cache hit execution
         res2 = run_composite_pipeline("java", "csharp", code, opts)
-        self.assertEqual(res2["status"], "SUCCESS")
+        self.assertEqual(res2["status"], "READY_FOR_EXTERNAL_GATE")
         self.assertTrue(res2.get("cache_hit", True))
         self.assertEqual(res1["evidence_bundle_digest"], res2["evidence_bundle_digest"])
 
     def test_smt_solver_proof_soundness(self) -> None:
         # Valid invariant
         res = check_smt_formula("forall x . (x > 0) ==> (x + 1 > 1)")
-        self.assertEqual(res["status"].lower(), "proved")
-        self.assertEqual(res["counterexamples"], 0)
+        self.assertEqual(res["status"], "NOT_RUN")
+        self.assertFalse(res["solver_executed"])
 
     def test_full_18_batch_route_certification(self) -> None:
         cert_run = self.service.certify_route(
@@ -118,10 +118,10 @@ public class AccountLedger {
             source_code="class Foo { static int Add(int a, int b) { return a + b; } }",
             target_code="class Foo { static int Add(int a, int b) => a + b; }",
         )
-        self.assertEqual(cert_run.overall_verdict, VerdictStatus.EQUIVALENT)
+        self.assertEqual(cert_run.overall_verdict, VerdictStatus.UNDETERMINED)
         self.assertEqual(cert_run.counterexamples_found, 0)
         self.assertEqual(len(cert_run.batch_coverage), 18)
-        self.assertEqual(cert_run.proved_obligations, cert_run.total_obligations)
+        self.assertEqual(cert_run.proved_obligations, 0)
 
 
 if __name__ == "__main__":

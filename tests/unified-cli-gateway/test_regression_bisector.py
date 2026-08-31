@@ -44,6 +44,16 @@ class SemanticRegressionBisectorTests(unittest.TestCase):
         self.assertEqual(res.status, "ALL_PASSING")
         self.assertIsNone(res.first_bad_revision)
 
+    def test_single_legacy_snapshot_cannot_establish_a_boundary(self) -> None:
+        for is_valid in (True, False):
+            with self.subTest(is_valid=is_valid):
+                res = self.bisector.bisect_revisions(
+                    [{"id": "r1", "is_valid": is_valid}]
+                )
+                self.assertEqual(res.status, "NOT_RUN")
+                self.assertIsNone(res.first_bad_revision)
+                self.assertEqual(res.total_steps, 0)
+
     def test_cli_polyglot_bisect(self) -> None:
         stdout_orig = sys.stdout
         sys.stdout = io.StringIO()
@@ -51,8 +61,8 @@ class SemanticRegressionBisectorTests(unittest.TestCase):
             code = main(["polyglot", "bisect", "--json"])
             self.assertEqual(code, 0)
             data = json.loads(sys.stdout.getvalue())
-            self.assertEqual(data["status"], "FOUND_CULPRIT")
-            self.assertEqual(data["first_bad_revision"], "c104")
+            self.assertEqual(data["status"], "NOT_RUN")
+            self.assertIn("revision", data["culprit_message"].lower())
         finally:
             sys.stdout = stdout_orig
 

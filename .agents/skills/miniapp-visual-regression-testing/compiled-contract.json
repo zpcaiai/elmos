@@ -104,7 +104,7 @@
     }
   },
   "contract_state": "HANDLER_IMPLEMENTED",
-  "runtime_implementation_digest": "sha256:255f06f31a98683e67eae0d1582cb9935df8d22f8f38c799d48816a05bcdd4e9",
+  "runtime_implementation_digest": "sha256:6542fb48c3d9292501671185cdd9b919bb1b34b95eb3cbc6becdd827d62cd908",
   "runtime_evidence_status": "DECLARED",
   "external_evidence_status": "NOT_RUN",
   "certification": "NOT_CERTIFIED",

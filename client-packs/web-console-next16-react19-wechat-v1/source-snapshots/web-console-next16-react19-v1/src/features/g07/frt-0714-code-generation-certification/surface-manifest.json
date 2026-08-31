@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0714",
+  "skill_name": "frt-0714-code-generation-certification",
+  "batch": "G07",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g07/frt-0714-code-generation-certification/",
+  "status": "shared_implementation",
+  "handler_kind": "build_toolchain",
+  "capability_key": "frt.g07.code-generation-certification",
+  "execution_contract_sha256": "sha256:78cd023ab4eb579e302d6e72423201b9171ae32c4ecc0f93486302997b609ecf",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "astNodes"
+    ],
+    "optional": [
+      "imports",
+      "diagnostics",
+      "unsupportedSemantics",
+      "repairPasses"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:6867d945fad66d7fe1610cc334aca42d44a263e5e584f37fecd7e3c965b4e58c",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0512",
+  "skill_name": "frt-0512-migration-plan-certification",
+  "batch": "G05",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g05/frt-0512-migration-plan-certification/",
+  "status": "shared_implementation",
+  "handler_kind": "migration_planning",
+  "capability_key": "frt.g05.migration-plan-certification",
+  "execution_contract_sha256": "sha256:daf139a23a17506436f6eafe5f7f48a38f6bc864e542028b277f18acfa3c3bc3",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "inventory",
+      "target"
+    ],
+    "optional": [
+      "currentVersions"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:392563fe89413a348692c413917c600414ff1834bbe55e5f40591e05b826f643",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

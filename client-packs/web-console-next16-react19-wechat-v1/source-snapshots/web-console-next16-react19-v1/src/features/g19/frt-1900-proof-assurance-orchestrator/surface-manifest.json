@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1900",
+  "skill_name": "frt-1900-proof-assurance-orchestrator",
+  "batch": "G19",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g19/frt-1900-proof-assurance-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.proof-assurance-orchestrator",
+  "execution_contract_sha256": "sha256:d404d9aa44cb6cf4a39bb39ec3bf478c5a906d80870e9abd0e1cf134d80c6559",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:c824ee59fafcd259c977d86623d3f001c9045e35a522cccedc7c8c2ecf46587d",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

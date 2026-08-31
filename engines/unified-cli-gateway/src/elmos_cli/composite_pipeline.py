@@ -1,21 +1,25 @@
-"""Composite Multi-Engine Modernization & Assurance Pipeline with Action Cache.
+"""Composite modernization plan with honest, digest-bound evidence states.
 
-Executes an end-to-end composite workflow:
-Ingest Source -> Action Cache Lookup -> Polyglot Transform -> SMT Formal Check ->
-Differential Fuzz -> Usage FinOps -> Immutable SLSA Level 3 Evidence Receipt.
+The unified CLI is a local control plane. It may ingest source, create an
+exact directional transformation plan, create formal/fuzzing requests, and
+produce a content-addressed plan bundle. It must not manufacture target code,
+solver results, fuzz results, signatures, or certification receipts. Those
+results require separately authorized native/provider runners and independent
+verifiers.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
-from pathlib import Path
-import time
 from typing import Any, Mapping
+import time
 import uuid
 
-# In-memory action cache store
+
 _ACTION_CACHE_STORE: dict[str, dict[str, Any]] = {}
+_NOT_RUN = "NOT_RUN"
+_NOT_CERTIFIED = "NOT_CERTIFIED"
 
 
 def derive_action_key(
@@ -28,6 +32,37 @@ def derive_action_key(
     return hashlib.sha256(seed.encode("utf-8")).hexdigest()
 
 
+def _digest(value: Any) -> str:
+    return "sha256:" + hashlib.sha256(
+        json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode(
+            "utf-8"
+        )
+    ).hexdigest()
+
+
+def _error_result(
+    *,
+    run_id: str,
+    timestamp: str,
+    route: str,
+    action_key: str,
+    reason: str,
+    status: str = "INPUT_REJECTED",
+) -> dict[str, Any]:
+    return {
+        "status": status,
+        "run_id": run_id,
+        "action_key": action_key,
+        "cache_hit": False,
+        "timestamp": timestamp,
+        "route": route,
+        "reason": reason,
+        "external_evidence": _NOT_RUN,
+        "certification": _NOT_CERTIFIED,
+        "stages": {},
+    }
+
+
 def run_composite_pipeline(
     src_lang: str = "java",
     tgt_lang: str = "csharp",
@@ -35,7 +70,14 @@ def run_composite_pipeline(
     options: Mapping[str, Any] | None = None,
     **kwargs: Any,
 ) -> dict[str, Any]:
-    # Support backward-compatible positional or kwargs arguments
+    """Prepare a modernization run without claiming external execution.
+
+    Backward-compatible keyword aliases are retained for callers of the old
+    gateway. The returned ``transformed_code`` is intentionally ``None``; a
+    target artifact may only be supplied by an authorized adapter after a
+    typed semantic IR, build, runtime, and evidence chain exist.
+    """
+
     if "source_language" in kwargs:
         src_lang = kwargs["source_language"]
     if "target_language" in kwargs:
@@ -47,27 +89,34 @@ def run_composite_pipeline(
         opts["budget_limit_usd"] = kwargs["budget_limit_usd"]
         options = opts
 
-    opts = options or {}
+    opts = dict(options or {})
     start_time = time.perf_counter()
     run_id = f"elmos-run-{uuid.uuid4().hex[:12]}"
     timestamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-
-    cache_enabled = opts.get("cache_enabled", True)
+    route = f"{src_lang} -> {tgt_lang}"
     action_key = derive_action_key(src_lang, tgt_lang, code_snippet, opts)
 
-    # Check budget constraints
-    budget_limit = float(opts.get("budget_limit_usd", 50.0))
+    try:
+        budget_limit = float(opts.get("budget_limit_usd", 50.0))
+    except (TypeError, ValueError):
+        return _error_result(
+            run_id=run_id,
+            timestamp=timestamp,
+            route=route,
+            action_key=action_key,
+            reason="budget_limit_usd must be numeric",
+        )
     if budget_limit <= 0.0:
-        return {
-            "status": "BUDGET_EXHAUSTED",
-            "run_id": run_id,
-            "timestamp": timestamp,
-            "route": f"{src_lang} -> {tgt_lang}",
-            "reason": "Execution blocked: budget limit must be greater than 0",
-            "stages": {},
-        }
+        return _error_result(
+            run_id=run_id,
+            timestamp=timestamp,
+            route=route,
+            action_key=action_key,
+            status="BUDGET_EXHAUSTED",
+            reason="Execution blocked: budget limit must be greater than 0",
+        )
 
-    # Action Cache Check
+    cache_enabled = bool(opts.get("cache_enabled", True))
     if cache_enabled and action_key in _ACTION_CACHE_STORE:
         cached = dict(_ACTION_CACHE_STORE[action_key])
         cached["run_id"] = run_id
@@ -76,130 +125,144 @@ def run_composite_pipeline(
         cached["duration_ms"] = round((time.perf_counter() - start_time) * 1000, 2)
         return cached
 
-    # Stage 1: Ingest & AST Analysis
-    source_hash = hashlib.sha256(code_snippet.encode()).hexdigest()
-    t_stage1 = time.perf_counter()
+    source_bytes = code_snippet.encode("utf-8")
+    source_hash = "sha256:" + hashlib.sha256(source_bytes).hexdigest()
     stage_ingest = {
         "status": "INGESTED",
         "sha256": source_hash,
-        "bytes": len(code_snippet.encode()),
-        "duration_ms": round((time.perf_counter() - t_stage1) * 1000, 2),
+        "bytes": len(source_bytes),
+        "duration_ms": 0.0,
     }
 
-    # Stage 2: Polyglot Transform
-    t_stage2 = time.perf_counter()
-    transformed_code = f"// Modernized from {src_lang} to {tgt_lang}\n"
-    if src_lang.lower() in ("java", "csharp", "c#") and tgt_lang.lower() in ("csharp", "c#", "java"):
-        transformed_code += code_snippet.replace("public class", "public class Modernized")
-    elif tgt_lang.lower() in ("rust", "rs"):
-        transformed_code += "pub fn execute() -> Result<(), Box<dyn std::error::Error>> {\n    Ok(())\n}"
-    elif tgt_lang.lower() in ("go", "golang"):
-        transformed_code += "package main\n\nfunc Execute() error {\n    return nil\n}"
-    elif tgt_lang.lower() in ("python", "py"):
-        transformed_code += "def execute() -> None:\n    pass\n"
-    else:
-        transformed_code += f"// Target ({tgt_lang}) equivalent\n{code_snippet}\n"
+    try:
+        from elmos_polyglot_compiler.service import (
+            check_smt_formula,
+            run_differential_fuzzing,
+            transform_snippet,
+        )
 
-    target_hash = hashlib.sha256(transformed_code.encode()).hexdigest()
-    stage_polyglot = {
-        "status": "TRANSFORMED",
-        "sha256": target_hash,
-        "target_code": transformed_code,
-        "duration_ms": round((time.perf_counter() - t_stage2) * 1000, 2),
-    }
+        transformation_plan = transform_snippet(src_lang, tgt_lang, code_snippet)
+        proof_obligation = (
+            f"forall x: Invariant_{src_lang}(x) ==> Invariant_{tgt_lang}(x)"
+        )
+        formal_plan = check_smt_formula(proof_obligation)
+        fuzz_cases = opts.get("fuzz_cases", 25)
+        if not isinstance(fuzz_cases, int) or isinstance(fuzz_cases, bool):
+            raise ValueError("fuzz_cases must be an integer")
+        fuzz_plan = run_differential_fuzzing(src_lang, tgt_lang, fuzz_cases)
+    except (ImportError, TypeError, ValueError) as exc:
+        return _error_result(
+            run_id=run_id,
+            timestamp=timestamp,
+            route=route,
+            action_key=action_key,
+            reason=str(exc),
+        )
 
-    # Stage 3: SMT Formal Proof & Lean 4 / Dafny Machine-Checked Theorem Obligations
-    t_stage3 = time.perf_counter()
-    proof_obligation = f"forall x: Invariant_{src_lang}(x) ==> Invariant_{tgt_lang}(x)"
-    
-    # Lean 4 & Dafny theorem bridge
+    # The formal bridge emits source candidates only. It never verifies them;
+    # retaining the request makes the missing native evidence inspectable.
     try:
         from elmos_formal_assurance.lean_dafny_bridge import generate_lean4_proof
-        proof_cert = generate_lean4_proof(
+
+        proof_request = generate_lean4_proof(
             obligation_name=f"PreserveInvariant_{src_lang}_to_{tgt_lang}",
             formula=proof_obligation,
             source_lang=src_lang,
             target_lang=tgt_lang,
         )
-        lean4_spec = proof_cert.get("lean4_specification", "")
-        dafny_spec = proof_cert.get("dafny_specification", "")
-        proof_id = proof_cert.get("proof_id", "")
-    except Exception:
-        lean4_spec = f"theorem InvariantEquivalence : {proof_obligation} := by intro h; exact h"
-        dafny_spec = "method {:verify true} InvariantEquivalence() ensures true {}"
-        proof_id = "PROOF-LEAN4-SYNTHESIZED"
-
+    except (ImportError, TypeError, ValueError) as exc:
+        proof_request = {
+            "verification_status": _NOT_RUN,
+            "proof_status": _NOT_RUN,
+            "error": str(exc),
+            "external_evidence_status": _NOT_RUN,
+            "independent_verification_status": _NOT_RUN,
+            "certification_status": _NOT_CERTIFIED,
+        }
 
     formal_verdict = {
         "formula": proof_obligation,
-        "formula_digest": hashlib.sha256(proof_obligation.encode()).hexdigest(),
-        "solver": "Z3-CVC5-SMT-v4.12+Lean4_Kernel",
-        "proof_id": proof_id,
-        "lean4_specification": lean4_spec,
-        "dafny_specification": dafny_spec,
-        "status": "SAT_PROVED",
-        "verdict": "SATISFIED",
+        "formula_digest": formal_plan.get("formula_digest"),
+        "solver": formal_plan.get("solver_family", "SMT_Z3"),
+        "status": _NOT_RUN,
+        "verdict": "UNDETERMINED",
         "counterexamples_found": 0,
-        "soundness_verified": True,
-        "duration_ms": round((time.perf_counter() - t_stage3) * 1000, 2),
+        "soundness_verified": False,
+        "solver_plan": formal_plan,
+        "proof_request": proof_request,
+        "missing_evidence": [
+            "AUTHORIZED_SOLVER_EXECUTION",
+            "NATIVE_PROOF_VERIFICATION",
+            "INDEPENDENT_PROOF_VERIFICATION",
+        ],
     }
-
-
-    # Stage 4: Differential Fuzzing
-    t_stage4 = time.perf_counter()
-    fuzz_cases = int(opts.get("fuzz_cases", 25))
     fuzz_verdict = {
-        "cases_generated": fuzz_cases,
-        "cases_passed": fuzz_cases,
+        **fuzz_plan,
+        "status": _NOT_RUN,
+        "cases_generated": 0,
+        "cases_passed": 0,
         "oracle_divergences": 0,
-        "status": "FUZZ_PASSED",
-        "duration_ms": round((time.perf_counter() - t_stage4) * 1000, 2),
+        "missing_evidence": fuzz_plan.get("missing_evidence", []),
     }
 
-    # Stage 5: Usage FinOps Metering
-    t_stage5 = time.perf_counter()
-    tokens = len(code_snippet.split()) * 4 + len(transformed_code.split()) * 4 + 120
+    # This is a local estimate, not a charge, invoice, or accounting event.
+    tokens = len(code_snippet.split()) * 4 + 120
     cost_usd = round(tokens * 0.0000035, 6)
     metering = {
         "tokens_metered": tokens,
         "estimated_cost_usd": cost_usd,
         "tier": "enterprise-standard",
         "currency": "USD",
-        "status": "METERED",
-        "duration_ms": round((time.perf_counter() - t_stage5) * 1000, 2),
+        "status": "ESTIMATE_ONLY",
+        "charge_created": False,
+        "duration_ms": 0.0,
     }
 
-    # Stage 6: Seal Evidence Bundle & SLSA Receipt
     bundle_data = {
+        "schema_version": "1.0",
+        "kind": "composite-modernization-plan",
         "run_id": run_id,
         "action_key": action_key,
         "timestamp": timestamp,
-        "route": f"{src_lang} -> {tgt_lang}",
+        "route": route,
         "source_hash": source_hash,
-        "target_hash": target_hash,
-        "formal_verdict": formal_verdict,
-        "fuzz_verdict": fuzz_verdict,
+        "target_hash": None,
+        "transformation_plan": transformation_plan,
+        "formal_assurance": formal_verdict,
+        "differential_fuzzing": fuzz_verdict,
         "metering": metering,
-        "gate_level": "E5_CERTIFIED",
+        "readiness": "READY_FOR_EXTERNAL_GATE",
+        "certification": _NOT_CERTIFIED,
     }
-    raw_json = json.dumps(bundle_data, sort_keys=True)
-    bundle_digest = "sha256:" + hashlib.sha256(raw_json.encode()).hexdigest()
+    bundle_digest = _digest(bundle_data)
     total_duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+    stage_polyglot = {
+        "status": transformation_plan.get("status", "EXTERNAL_ADAPTER_REQUIRED"),
+        "sha256": None,
+        "target_code": None,
+        "plan_digest": _digest(transformation_plan),
+        "duration_ms": 0.0,
+    }
 
     result = {
-        "status": "SUCCESS",
+        "status": "READY_FOR_EXTERNAL_GATE",
         "run_id": run_id,
         "action_key": action_key,
         "cache_hit": False,
         "timestamp": timestamp,
         "total_duration_ms": total_duration_ms,
         "duration_ms": total_duration_ms,
-        "route": f"{src_lang} -> {tgt_lang}",
-        "transformed_code": transformed_code,
+        "route": route,
+        "source_hash": source_hash,
+        "target_hash": None,
+        "transformed_code": None,
+        "transformation_plan": transformation_plan,
         "formal_assurance": formal_verdict,
         "differential_fuzzing": fuzz_verdict,
         "metering": metering,
         "evidence_bundle_digest": bundle_digest,
+        "external_evidence": _NOT_RUN,
+        "certification": _NOT_CERTIFIED,
         "stages": {
             "source_ingestion": stage_ingest,
             "polyglot_transform": stage_polyglot,
@@ -208,13 +271,23 @@ def run_composite_pipeline(
             "finops_metering": metering,
         },
         "receipt": {
-            "slsa_level": "SLSA_BUILD_LEVEL_3",
-            "certification": "CERTIFIED",
+            "slsa_level": "NOT_ASSESSED",
+            "provenance_status": _NOT_RUN,
+            "certification": _NOT_CERTIFIED,
             "digest": bundle_digest,
         },
+        "missing_evidence": sorted(
+            {
+                "AUTHORIZED_TRANSFORMATION_ADAPTER",
+                "TARGET_BUILD_AND_RUNTIME",
+                "AUTHORIZED_SOLVER_EXECUTION",
+                "DIFFERENTIAL_FUZZ_EXECUTION",
+                "INDEPENDENT_VERIFICATION",
+                "SIGNED_CERTIFICATION_DECISION",
+            }
+        ),
     }
 
     if cache_enabled:
         _ACTION_CACHE_STORE[action_key] = dict(result)
-
     return result

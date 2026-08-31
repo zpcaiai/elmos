@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2711",
+  "skill_name": "frt-2711-rate-limit-and-quota-validator",
+  "batch": "G27",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g27/frt-2711-rate-limit-and-quota-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.rate-limit-and-quota-validator",
+  "execution_contract_sha256": "sha256:b4a9cdec3939f8851bd93bcf4026104c37ca54a1e6da38f2a2d5579915ea285d",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:610b63d869dd81b54b8a19b0744ca4c4b33f962289f22e39f9cda2f7a0588b34",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

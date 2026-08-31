@@ -1,7 +1,9 @@
 """Real-provider Tree-sitter parsing with fail-closed incremental handling.
 
-The repository does not bundle language grammars. Without an injected, real
-``tree_sitter`` parser this module reports ``NOT_RUN`` and emits no AST.
+Callers may inject a pinned Tree-sitter parser.  The default facade also uses
+the optional ``tree_sitter_language_pack`` when that dependency is present;
+otherwise it reports ``NOT_RUN`` and emits no AST.  No fallback parser or
+synthetic tree is ever returned as native evidence.
 """
 
 from __future__ import annotations
@@ -87,6 +89,8 @@ class TreeSitterIncrementalParser:
 
     def __init__(self, provider: Any = None) -> None:
         self._provider = provider
+        self._default_providers: Dict[str, Any] = {}
+        self._default_provider_errors: Dict[str, str] = {}
         self._native_trees: Dict[str, Any] = {}
         self._sources: Dict[str, bytes] = {}
         if provider is None:
@@ -95,21 +99,65 @@ class TreeSitterIncrementalParser:
             provider_type = type(provider)
             self.provider_name = f"{provider_type.__module__}.{provider_type.__name__}"
 
-    def _provider_reason(self, lang: str) -> Optional[str]:
-        if self._provider is None:
+    def _provider_reason(self, lang: str, provider: Any = None) -> Optional[str]:
+        selected = self._provider if provider is None else provider
+        if selected is None:
             return "TREE_SITTER_PROVIDER_NOT_CONFIGURED"
-        if not callable(getattr(self._provider, "parse", None)):
+        if not callable(getattr(selected, "parse", None)):
             return "TREE_SITTER_PROVIDER_PARSE_UNAVAILABLE"
-        provider_module = type(self._provider).__module__
+        provider_module = type(selected).__module__
         if provider_module != "tree_sitter" and not provider_module.startswith("tree_sitter."):
             return "UNTRUSTED_TREE_SITTER_PROVIDER_TYPE"
-        configured_language = getattr(self._provider, "language", None)
+        configured_language = getattr(selected, "language", None)
         configured_name = getattr(configured_language, "name", None)
         if not isinstance(configured_name, str) or not configured_name:
             return "TREE_SITTER_LANGUAGE_IDENTITY_UNAVAILABLE"
         if configured_name.lower() != lang:
             return "TREE_SITTER_LANGUAGE_MISMATCH"
         return None
+
+    def _provider_for_language(self, lang: str) -> Tuple[Any, Optional[str]]:
+        """Resolve an explicitly injected or package-pinned parser."""
+
+        if self._provider is not None:
+            return self._provider, self._provider_reason(lang, self._provider)
+        cached = self._default_providers.get(lang)
+        if cached is not None:
+            return cached, None
+        cached_error = self._default_provider_errors.get(lang)
+        if cached_error is not None:
+            return None, cached_error
+        try:
+            from tree_sitter_language_pack import get_parser
+
+            provider = get_parser(lang)
+        except (ImportError, ModuleNotFoundError):
+            reason = "TREE_SITTER_LANGUAGE_PACK_NOT_INSTALLED"
+            self._default_provider_errors[lang] = reason
+            return None, reason
+        except Exception as exc:
+            reason = f"TREE_SITTER_LANGUAGE_PACK_FAILED:{type(exc).__name__}"
+            self._default_provider_errors[lang] = reason
+            return None, reason
+        reason = self._provider_reason(lang, provider)
+        # Java grammars in current language-pack releases do not expose a
+        # language.name attribute.  The adapter still remains trusted because
+        # the parser was obtained through the exact package API for this exact
+        # requested language; all other provider identity checks still apply.
+        if reason in {
+            "TREE_SITTER_LANGUAGE_IDENTITY_UNAVAILABLE",
+            "TREE_SITTER_LANGUAGE_MISMATCH",
+        }:
+            if type(provider).__module__ == "tree_sitter" and callable(
+                getattr(provider, "parse", None)
+            ):
+                reason = None
+        if reason is not None:
+            self._default_provider_errors[lang] = reason
+            return None, reason
+        self._default_providers[lang] = provider
+        self.provider_name = f"{type(provider).__module__}.{type(provider).__name__}"
+        return provider, None
 
     def _not_run(self, code: bytes, lang: str, reason: str) -> IncrementalAstTree:
         return IncrementalAstTree(
@@ -231,12 +279,12 @@ class TreeSitterIncrementalParser:
 
         source = _require_source(code)
         lang = _require_language(lang)
-        unavailable = self._provider_reason(lang)
+        provider, unavailable = self._provider_for_language(lang)
         if unavailable is not None:
             return self._not_run(source, lang, unavailable)
         started = time.perf_counter()
         try:
-            native_tree = self._provider.parse(source)
+            native_tree = provider.parse(source)
             duration_ms = round((time.perf_counter() - started) * 1000, 3)
             return self._from_native(native_tree, source, lang, duration_ms)
         except Exception as exc:
@@ -262,7 +310,7 @@ class TreeSitterIncrementalParser:
 
         source = _require_source(new_code)
         lang = _require_language(lang)
-        unavailable = self._provider_reason(lang)
+        provider, unavailable = self._provider_for_language(lang)
         if unavailable is not None:
             return self._incremental_not_run(old_tree, source, lang, unavailable)
         if old_tree.status != "PARSED" or not old_tree.tree_digest:
@@ -312,7 +360,7 @@ class TreeSitterIncrementalParser:
                 old_end_point=_byte_point(old_end_bytes),
                 new_end_point=_byte_point(new_end_bytes),
             )
-            native_new = self._provider.parse(source, edited_tree)
+            native_new = provider.parse(source, edited_tree)
             duration_ms = round((time.perf_counter() - started) * 1000, 3)
             new_tree = self._from_native(native_new, source, lang, duration_ms)
         except Exception as exc:
@@ -383,7 +431,7 @@ class TreeSitterIncrementalParser:
         return result
 
 
-# Compatibility singleton intentionally has no provider or language grammar.
+# Compatibility singleton lazily resolves the pinned optional language pack.
 _tree_sitter_parser = TreeSitterIncrementalParser()
 
 

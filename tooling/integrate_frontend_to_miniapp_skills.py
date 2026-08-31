@@ -722,19 +722,20 @@ def _frontend_make_target_payload(repository_root: Path) -> bytes:
         end += 1
     payload = "".join(lines[start:end]).encode("utf-8")
     required = (
-        b"trap closeout EXIT",
-        b"--qualify-local",
-        b"--refresh-owned",
-        b"integrate_frontend_to_miniapp_skills.py --check",
-        b"replay-local-runtime.mjs --check",
-        b"run_client_gate.py",
-        b"--closeout-portable",
+        (b"trap closeout EXIT", 1),
+        (b"--qualify-local", 1),
+        (b"--refresh-owned", 1),
+        (b"integrate_frontend_to_miniapp_skills.py --check", 1),
+        (b"replay-local-runtime.mjs --check", 1),
+        # The target certifies both the MiniApp pack and the Web Console pack.
+        (b"run_client_gate.py", 2),
+        (b"--closeout-portable", 1),
     )
-    for value in required:
-        if payload.count(value) != 1:
+    for value, expected_count in required:
+        if payload.count(value) != expected_count:
             fail(
                 "frontend-to-miniapp Make target binding is missing or duplicated: "
-                f"{value.decode('ascii')}"
+                f"{value.decode('ascii')} (expected {expected_count})"
             )
     if not (
         payload.index(b"--qualify-local")

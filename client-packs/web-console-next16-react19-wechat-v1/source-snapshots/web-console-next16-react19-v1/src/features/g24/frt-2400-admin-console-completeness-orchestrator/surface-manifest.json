@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2400",
+  "skill_name": "frt-2400-admin-console-completeness-orchestrator",
+  "batch": "G24",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g24/frt-2400-admin-console-completeness-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "administration",
+  "capability_key": "frt.g24.admin-console-completeness-orchestrator",
+  "execution_contract_sha256": "sha256:7a611f5a6967236b104ab94b7e344ad7b1f0b8112f567f327b11beb3578a62a6",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:cef408c1dd6bc0c5a0ee528b509e11e543b27a3e6e5a0733106aeda13517c863",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

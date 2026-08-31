@@ -11,7 +11,7 @@ import hashlib
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 
 class SupportedDialect(str, Enum):
@@ -34,8 +34,8 @@ class SqlTranspileResult:
     target_dialect: str
     source_sql: str
     target_sql: str
-    transformed_constructs: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    transformed_constructs: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
     semantic_equivalence: str = "PROVEN"
     merkle_receipt: str = ""
 
@@ -49,8 +49,8 @@ class SqlTranspilerGateway:
     def transpile(self, sql: str, src_dialect: str, tgt_dialect: str) -> SqlTranspileResult:
         src = src_dialect.lower().strip()
         tgt = tgt_dialect.lower().strip()
-        transformed: List[str] = []
-        warnings: List[str] = []
+        transformed: list[str] = []
+        warnings: list[str] = []
         out = sql
 
         # 1. Oracle -> Modern Dialects (Postgres, MySQL, TiDB, DM8, etc.)
@@ -173,7 +173,7 @@ class SqlTranspilerGateway:
                     out = re.sub(r"\bAUTO_INCREMENT\b", "IDENTITY(1,1)", out, flags=re.IGNORECASE)
                 transformed.append("AUTO_INCREMENT -> Target Identity construct")
 
-        h = hashlib.sha256(f"{src}:{tgt}:{sql}:{out}".encode("utf-8")).hexdigest()
+        h = hashlib.sha256(f"{src}:{tgt}:{sql}:{out}".encode()).hexdigest()
 
         return SqlTranspileResult(
             source_dialect=src,
@@ -195,7 +195,7 @@ class SqlTranspilerGateway:
             flags=re.IGNORECASE,
         )
 
-    def diff_schemas(self, source_ddl: str, target_ddl: str) -> Dict[str, Any]:
+    def diff_schemas(self, source_ddl: str, target_ddl: str) -> dict[str, Any]:
         """Compares two DDL definitions and produces a schema diff manifest."""
         src_tables = set(re.findall(r"CREATE\s+TABLE\s+([a-zA-Z0-9_]+)", source_ddl, re.IGNORECASE))
         tgt_tables = set(re.findall(r"CREATE\s+TABLE\s+([a-zA-Z0-9_]+)", target_ddl, re.IGNORECASE))
@@ -214,7 +214,7 @@ class SqlTranspilerGateway:
         }
 
 
-def get_supported_dialects() -> List[Dict[str, str]]:
+def get_supported_dialects() -> list[dict[str, str]]:
     return [
         {"id": "oracle", "name": "Oracle Database (11g/12c/19c/23c)", "type": "commercial"},
         {"id": "postgres", "name": "PostgreSQL (13-17+)", "type": "open_source"},

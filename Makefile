@@ -168,7 +168,7 @@ autonomous-qa-self-healing-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/autonomous-qa-self-healing -p 'test_*.py'
 .PHONY: ai-capability-enhancement-skills
 ai-capability-enhancement-skills:
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_ai_capability_enhancement_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_ai_capability_enhancement_skills.py --write
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/ai-capability-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s engines/ai-capability-engine/tests -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/ai-capability-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/ai-capability-enhancement -p 'test_*.py'
 	cd skills/elmos-ai-capability-enhancement-skills-v4.1.0 && PYTHONPATH=. $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests -p 'test_*.py'
@@ -208,7 +208,7 @@ polyglot-semantic-assurance-skills:
 
 .PHONY: unified-cli-gateway
 unified-cli-gateway:
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/unified-cli-gateway/src:engines/polyglot-semantic-compiler-engine/src:engines/commercial-capability-expansion-engine/src:engines/semantic-assurance-engine/src:engines/knowledge-skill-model-foundry-engine/src:engines/build-cache-engine/src:engines/formal-assurance-engine/src:engines/autonomous-qa-engine/src:engines/sql-dialect-engine/src:engines/security-compliance-engine/src:engines/edge-iot-industrial-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest tests/unified-cli-gateway/ -v
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/unified-cli-gateway/src:engines/polyglot-semantic-compiler-engine/src:engines/commercial-capability-expansion-engine/src:engines/semantic-assurance-engine/src:engines/knowledge-skill-model-foundry-engine/src:engines/build-cache-engine/src:engines/formal-assurance-engine/src:engines/autonomous-qa-engine/src:engines/sql-dialect-engine/src:engines/security-compliance-engine/src:engines/edge-iot-industrial-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with tree-sitter==0.26.0 --with tree-sitter-language-pack==1.14.3 --with pytest python -m pytest tests/unified-cli-gateway/ -v
 
 
 
@@ -528,9 +528,9 @@ sql-transpiler:
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked ruff check src tests
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked mypy src
 sql-dialect:
-	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev pytest
-	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev ruff check src tests
-	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev mypy --ignore-missing-imports src
+	$(UV) --directory engines/sql-dialect-engine run --locked --group dev pytest
+	$(UV) --directory engines/sql-dialect-engine run --locked --group dev ruff check src tests
+	$(UV) --directory engines/sql-dialect-engine run --locked --group dev mypy --ignore-missing-imports src
 
 # What the polyglot engine actually does right now, by running it rather than
 # by reading it. Every capability question here had been answered by reading

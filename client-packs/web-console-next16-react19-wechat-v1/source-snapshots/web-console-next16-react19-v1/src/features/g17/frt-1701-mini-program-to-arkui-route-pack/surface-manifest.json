@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1701",
+  "skill_name": "frt-1701-mini-program-to-arkui-route-pack",
+  "batch": "G17",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g17/frt-1701-mini-program-to-arkui-route-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "directional_route",
+  "capability_key": "frt.g17.mini-program-to-arkui-route-pack",
+  "execution_contract_sha256": "sha256:613113eca98e281858ddd9e1041322f08b44ab7fe1be3b573b0097fc2fd2b08c",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:97e7b07e05a2ddffc5fdd79e161fef82ae2423e90f6bde348bd1141f9bdb14de",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

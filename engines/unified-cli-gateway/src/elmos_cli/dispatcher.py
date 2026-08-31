@@ -495,6 +495,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             try:
                 from elmos_formal_assurance.hermetic_environment_builder import export_hermetic_toolchain
                 result_data = export_hermetic_toolchain(format_type=parsed.toolchain_format)
+            except (TypeError, ValueError) as e:
+                # The CLI has no trusted image/toolchain manifest input. A plan
+                # must not invent digests, so report a bounded NOT_RUN result.
+                result_data = {
+                    "status": "NOT_RUN",
+                    "reason": str(e),
+                    "required_input": "ToolchainManifest",
+                    "external_evidence_status": "NOT_RUN",
+                    "certification_status": "NOT_CERTIFIED",
+                }
             except ImportError as e:
                 result_data = {"status": "ERROR", "message": f"Formal assurance engine error: {e}"}
         elif act == "sign-sbom":
@@ -504,6 +514,28 @@ def main(argv: Sequence[str] | None = None) -> int:
                     artifact_name=parsed.artifact,
                     format_type=parsed.sbom_format,
                 )
+            except (TypeError, ValueError) as e:
+                # Artifact digests, component hashes, builder identity and a
+                # signer are security inputs; the convenience CLI does not
+                # have authority to fabricate any of them.
+                result_data = {
+                    "status": "NOT_RUN",
+                    "artifact_name": parsed.artifact,
+                    "reason": str(e),
+                    "required_inputs": [
+                        "artifact_version",
+                        "artifact_digest",
+                        "components",
+                        "builder_id",
+                        "invocation_digest",
+                        "environment_digest",
+                        "materials",
+                        "issued_at",
+                        "signer",
+                    ],
+                    "external_signature_status": "NOT_RUN",
+                    "certification_status": "NOT_CERTIFIED",
+                }
             except ImportError as e:
                 result_data = {"status": "ERROR", "message": f"Formal assurance engine error: {e}"}
         else:
