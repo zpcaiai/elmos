@@ -102,10 +102,12 @@ function CoverageMeter({
         className="evidence-meter-track"
         role={safeTotal > 0 ? "progressbar" : "status"}
         aria-label={`${label}，${valueText}`}
-        aria-valuemin={0}
-        aria-valuemax={safeTotal}
-        aria-valuenow={safePassed}
-        aria-valuetext={valueText}
+        {...(safeTotal > 0 ? {
+          "aria-valuemin": 0,
+          "aria-valuemax": safeTotal,
+          "aria-valuenow": safePassed,
+          "aria-valuetext": valueText,
+        } : {})}
       >
         {segments.map((segment) => (
           <span

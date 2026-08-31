@@ -23,10 +23,13 @@ done
 
 REPOSITORY_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 readonly REPOSITORY_ROOT
-readonly PINNED_HOME="/Users/stephen"
+readonly PINNED_HOME="${ELMOS_ROUTE_CI_HOME:-${HOME}}"
 readonly PINNED_LOCAL="${PINNED_HOME}/.local"
 readonly TOOLCHAIN_ROOT="${PINNED_LOCAL}/share/elmos/toolchains"
 readonly PINNED_BIN="${PINNED_LOCAL}/bin"
+readonly HOMEBREW_PREFIX="$(brew --prefix)"
+readonly HOMEBREW_CELLAR="$(brew --cellar)"
+readonly UV_PATH="${HOMEBREW_CELLAR}/uv/0.11.16/bin/uv"
 readonly TAP_NAME="elmos/pinned-route-ci"
 readonly CI_PROFILE="${ELMOS_POLYGLOT_ROUTE_CI_PROFILE:-full}"
 temporary_root="$(mktemp -d "${RUNNER_TEMP}/elmos-route-ci-toolchains.XXXXXX")"
@@ -60,7 +63,7 @@ download_verified() {
   fi
 }
 
-sudo install -d -m 0755 -o "$(id -u)" -g "$(id -g)" "${PINNED_HOME}"
+install -d -m 0755 "${PINNED_HOME}"
 install -d -m 0755 "${PINNED_LOCAL}" "${TOOLCHAIN_ROOT}" "${PINNED_BIN}"
 
 if ! brew tap | grep -Fqx "${TAP_NAME}"; then
@@ -146,6 +149,12 @@ assert platform.python_version() == "3.14.6", platform.python_version()
 assert sqlite3.sqlite_version == "3.53.3", sqlite3.sqlite_version
 PY
   exit 0
+fi
+
+HOMEBREW_NO_AUTO_UPDATE=1 brew install uv
+if [[ "$(brew list --formula --versions uv)" != "uv 0.11.16" ]]; then
+  printf 'Pinned Homebrew uv version is unavailable: %s\n' "$(brew list --formula --versions uv)" >&2
+  exit 3
 fi
 
 install_pinned_formula \
@@ -243,30 +252,33 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
   HOME="${PINNED_HOME}" \
   ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT="${TOOLCHAIN_ROOT}" \
   ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT="${TOOLCHAIN_ROOT}" \
-  ELMOS_JAVA21_HOME="/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home" \
+  ELMOS_JAVA21_HOME="${HOMEBREW_CELLAR}/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home" \
     bash "${REPOSITORY_ROOT}/scripts/toolchains/install_polyglot_route_toolchains.sh"
 fi
 
 {
-  printf 'ELMOS_JAVA21_HOME=%s\n' "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home"
+  printf 'ELMOS_JAVA21_HOME=%s\n' "${HOMEBREW_CELLAR}/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home"
   printf 'ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT=%s\n' "${TOOLCHAIN_ROOT}"
   printf 'ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT=%s\n' "${TOOLCHAIN_ROOT}"
+  printf 'ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX=%s\n' "${HOMEBREW_PREFIX}"
+  printf 'ELMOS_BATCH29_PINNED_UV_PATH=%s\n' "${UV_PATH}"
+  printf 'ELMOS_BATCH29_TOOLCHAIN_CACHE_ANCHOR=%s\n' "${PINNED_LOCAL}"
 } >>"${GITHUB_ENV}"
 if [[ "${CI_PROFILE}" == "full" ]]; then
   {
-    printf '%s\n' "/opt/homebrew/bin"
+    printf '%s\n' "${HOMEBREW_PREFIX}/bin"
     printf '%s\n' "${PINNED_BIN}"
   } >>"${GITHUB_PATH}"
 fi
 
-"/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java" -version
+"${HOMEBREW_CELLAR}/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java" -version
 "${PYTHON_RUNTIME_TARGET}/bin/python3.12" --version
 if [[ "${CI_PROFILE}" == "full" ]]; then
-  "/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet" --version
-  "/opt/homebrew/Cellar/node/26.0.0/bin/node" --version
+  "${HOMEBREW_CELLAR}/dotnet/10.0.301/libexec/dotnet" --version
+  "${HOMEBREW_CELLAR}/node/26.0.0/bin/node" --version
   "${TOOLCHAIN_ROOT}/go/1.25.0/bin/go" version
   "${TOOLCHAIN_ROOT}/rust/1.89.0/rustup/toolchains/1.89.0-aarch64-apple-darwin/bin/rustc" --version
-  "/opt/homebrew/Cellar/php/8.5.9/bin/php" --version | sed -n '1,2p'
+  "${HOMEBREW_CELLAR}/php/8.5.9/bin/php" --version | sed -n '1,2p'
   "${TOOLCHAIN_ROOT}/kotlin/2.2.20/bin/kotlinc" -version
-  "/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/dart" --version
+  "${HOMEBREW_PREFIX}/share/flutter/bin/cache/dart-sdk/bin/dart" --version
 fi
