@@ -15,10 +15,12 @@
     },
     {
       "name": "criticalOpenVulnerabilities",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "b40-dependabot-alerts"
+      ],
+      "note": "exact GitHub Dependabot snapshot; independent verification and non-GitHub advisory coverage remain outstanding"
     },
     {
       "name": "crossTenantEvidenceLeaks",

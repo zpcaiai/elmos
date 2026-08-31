@@ -99,6 +99,33 @@
       "evidenceRefs": [
         "b40-secret-scan"
       ]
+    },
+    {
+      "claimId": "b40-dependabot-alert-status",
+      "statement": "The GitHub Dependabot snapshot for zpcaiai/elmos at commit b49dc2315e515d51e1537ec26e59d91def356b1b contains 0 open alerts out of 277 total alerts; critical open alerts: 0; high open alerts: 0.",
+      "scope": {
+        "repository": "zpcaiai/elmos",
+        "commit": "b49dc2315e515d51e1537ec26e59d91def356b1b",
+        "alertCount": 277,
+        "stateCounts": {
+          "dismissed": 129,
+          "fixed": 148
+        },
+        "openBySeverity": {
+          "critical": 0,
+          "high": 0,
+          "low": 0,
+          "moderate": 0
+        }
+      },
+      "limitations": [
+        "This is an exact GitHub Dependabot alert API snapshot, not a complete build-graph SCA result.",
+        "A clean snapshot does not prove that unreported, unreachable, or non-GitHub advisories do not exist.",
+        "The snapshot is self-attested evidence until an independently authorized verifier signs it."
+      ],
+      "evidenceRefs": [
+        "b40-dependabot-alerts"
+      ]
     }
   ],
   "packKey": "elmos-platform-supply-chain"
