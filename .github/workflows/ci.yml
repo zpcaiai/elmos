@@ -483,6 +483,10 @@ jobs:
           # image; 3.12.10 is the pinned supported patch used by the route
           # jobs and is sufficient for the console validation scripts.
           python-version: "3.12.10"
+      - name: Provision receipt-bound Node for Batch 32 replay
+        env:
+          ELMOS_POLYGLOT_ROUTE_CI_PROFILE: frontend-formal
+        run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
       - name: Install locked pnpm tool
         run: |
           python -m pip install --disable-pip-version-check uv==0.11.16
