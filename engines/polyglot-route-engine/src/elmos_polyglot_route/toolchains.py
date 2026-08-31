@@ -3883,7 +3883,10 @@ def _php() -> ExactToolchain:
 # they are pinned the probe fails closed with EXACT_TOOLCHAIN_KOTLIN_NOT_PINNED
 # rather than accepting whatever `kotlinc` happens to be on PATH.
 _KOTLIN_VERSION_VARIABLE = "ELMOS_KOTLIN_VERSION"
-_EXPECTED_KOTLIN_VERSION = "kotlinc-jvm 2.2.20 (JRE 21.0.11)"
+_EXPECTED_KOTLIN_VERSION_BY_JAVA_DISTRIBUTION = {
+    "homebrew": "kotlinc-jvm 2.2.20 (JRE 21.0.11)",
+    "temurin": "kotlinc-jvm 2.2.20 (JRE 21.0.11+10-LTS)",
+}
 
 
 def configured_polyglot_toolchain_root() -> Path:
@@ -4077,6 +4080,20 @@ def _kotlin_jvm_binding() -> tuple[Path, str]:
     return home, release_digest
 
 
+def _kotlin_version_contract() -> tuple[str, str]:
+    """Select the one exact Kotlin banner for the already pinned JDK distribution."""
+    distribution = os.environ.get("ELMOS_JAVA21_DISTRIBUTION", "").strip().lower()
+    if not distribution:
+        distribution = "homebrew"
+    expected = _EXPECTED_KOTLIN_VERSION_BY_JAVA_DISTRIBUTION.get(distribution)
+    if expected is None:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_KOTLIN_JVM_DISTRIBUTION_UNSUPPORTED:"
+            f"{distribution}"
+        )
+    return distribution, expected
+
+
 def _kotlin_version_banner(jvm_home: Path) -> str:
     """The `kotlinc -version` banner, run against the pinned JDK.
 
@@ -4144,7 +4161,7 @@ def _kotlin() -> ExactToolchain:
             f"observed={platform.system()}/{platform.machine()}"
         )
     if not (
-        _EXPECTED_KOTLIN_VERSION
+        _EXPECTED_KOTLIN_VERSION_BY_JAVA_DISTRIBUTION
         and _EXPECTED_KOTLINC_EXECUTABLE_SHA256
         and _EXPECTED_KOTLIN_COMPILER_JAR_SHA256
         and _EXPECTED_KOTLIN_STDLIB_JAR_SHA256
@@ -4155,9 +4172,10 @@ def _kotlin() -> ExactToolchain:
         raise RouteError(
             "EXACT_TOOLCHAIN_KOTLIN_NOT_PINNED:run tools/pin_kotlin_toolchain.py on the pinning host"
         )
-    expected_version = _pinned(_KOTLIN_VERSION_VARIABLE, "kotlin", _EXPECTED_KOTLIN_VERSION)
     _kotlin_classpath_binding()
     jvm_home, jvm_release_digest = _kotlin_jvm_binding()
+    jvm_distribution, repository_version = _kotlin_version_contract()
+    expected_version = _pinned(_KOTLIN_VERSION_VARIABLE, "kotlin", repository_version)
     tree_before = _kotlin_tree_identity()
     records_before = _kotlin_file_records()
     build_number = _kotlin_build_number()
@@ -4206,6 +4224,7 @@ def _kotlin() -> ExactToolchain:
             # interpreter, and `_toolchain_executable_dirs` has nothing to read to
             # put that JVM on PATH for the emit-time runs.
             f"kotlin-jvm-home={jvm_home}",
+            f"kotlin-jvm-distribution={jvm_distribution}",
             f"kotlin-jvm-release-sha256={jvm_release_digest}",
             "integer=int64",
             "number=binary64",

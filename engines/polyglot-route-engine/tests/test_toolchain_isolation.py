@@ -365,6 +365,35 @@ def test_temurin_contract_rejects_an_unpinned_setup_java_home(
         toolchains._java_contract()
 
 
+@pytest.mark.parametrize(
+    ("distribution", "expected"),
+    (
+        ("homebrew", "kotlinc-jvm 2.2.20 (JRE 21.0.11)"),
+        ("temurin", "kotlinc-jvm 2.2.20 (JRE 21.0.11+10-LTS)"),
+    ),
+)
+def test_kotlin_banner_contract_is_exact_for_the_selected_java_distribution(
+    distribution: str,
+    expected: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", distribution)
+
+    assert toolchains._kotlin_version_contract() == (distribution, expected)
+
+
+def test_kotlin_banner_contract_rejects_an_unknown_java_distribution(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", "untrusted")
+
+    with pytest.raises(
+        RouteError,
+        match="EXACT_TOOLCHAIN_KOTLIN_JVM_DISTRIBUTION_UNSUPPORTED:untrusted",
+    ):
+        toolchains._kotlin_version_contract()
+
+
 def test_java_toolchain_binds_launchers_runtime_modules_and_bundle_signature() -> None:
     contract = toolchains._java_contract()
     selected = toolchains.exact_toolchain("java")
