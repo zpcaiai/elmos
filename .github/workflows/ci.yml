@@ -185,18 +185,31 @@ jobs:
         run: >-
           python3.11 -m pip install --disable-pip-version-check
           'jsonschema==4.25.1' 'uv==0.11.16'
+      - name: Install locked dependencies
+        run: pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+      - name: Bind locked Z3 solver
+        run: |
+          chmod +x client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3
+          echo "ELMOS_FRONTEND_Z3=$GITHUB_WORKSPACE/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3" >> "$GITHUB_ENV"
+      - name: Test Frontend Client Engine
+        run: pnpm --dir engines/frontend-client-engine check
       - name: Bind OpenSSL 3 Ed25519 runtime
         run: |
-          brew install openssl@3
-          openssl_prefix="$(brew --prefix openssl@3)"
-          openssl_bin="${openssl_prefix}/bin/openssl"
-          test "${openssl_prefix}" = "/opt/homebrew/opt/openssl@3"
+          openssl_bin="/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl"
+          openssl_opt_bin="/opt/homebrew/opt/openssl@3/bin/openssl"
+          test -f "${openssl_bin}"
           test -x "${openssl_bin}"
-          case "$("${openssl_bin}" version)" in
-            "OpenSSL 3."*) ;;
-            *) printf 'OpenSSL 3 is required for Ed25519 external-gate replay\n' >&2; exit 1 ;;
-          esac
-          probe_root="$(mktemp -d "${RUNNER_TEMP}/elmos-openssl3-probe.XXXXXX")"
+          test "$(python3.11 -I -B -c \
+            'import os, sys; print(os.path.realpath(sys.argv[1], strict=True))' \
+            "${openssl_bin}")" = "${openssl_bin}"
+          test "$(python3.11 -I -B -c \
+            'import os, sys; print(os.path.realpath(sys.argv[1], strict=True))' \
+            "${openssl_opt_bin}")" = "${openssl_bin}"
+          test "$("${openssl_bin}" version)" = \
+            "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
+          /usr/bin/codesign --verify --strict --verbose=2 "${openssl_bin}"
+          probe_root="$(/usr/bin/mktemp -d "${RUNNER_TEMP}/elmos-openssl3-probe.XXXXXX")"
+          trap '/bin/rm -rf -- "${probe_root}"' EXIT
           printf 'elmos-openssl3-ed25519-probe\n' >"${probe_root}/payload"
           "${openssl_bin}" genpkey -algorithm ed25519 \
             -out "${probe_root}/private.pem"
@@ -207,15 +220,25 @@ jobs:
           "${openssl_bin}" pkeyutl -verify -pubin \
             -inkey "${probe_root}/public.pem" -rawin \
             -in "${probe_root}/payload" -sigfile "${probe_root}/signature"
-          printf '%s\n' "${openssl_prefix}/bin" >>"${GITHUB_PATH}"
-      - name: Install locked dependencies
-        run: pnpm --dir engines/frontend-client-engine install --frozen-lockfile
-      - name: Bind locked Z3 solver
+          printf '%s\n' "/opt/homebrew/Cellar/openssl@3/3.6.3/bin" >>"${GITHUB_PATH}"
+      - name: Verify bound OpenSSL runtime
         run: |
-          chmod +x client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3
-          echo "ELMOS_FRONTEND_Z3=$GITHUB_WORKSPACE/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3" >> "$GITHUB_ENV"
-      - name: Test Frontend Client Engine
-        run: pnpm --dir engines/frontend-client-engine check
+          openssl_bin="/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl"
+          test "$(command -v openssl)" = "${openssl_bin}"
+          test "$(openssl version)" = \
+            "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
+          /usr/bin/codesign --verify --strict --verbose=2 "${openssl_bin}"
+          probe_root="$(/usr/bin/mktemp -d "${RUNNER_TEMP}/elmos-openssl3-path-probe.XXXXXX")"
+          trap '/bin/rm -rf -- "${probe_root}"' EXIT
+          printf 'elmos-openssl3-path-ed25519-probe\n' >"${probe_root}/payload"
+          openssl genpkey -algorithm ed25519 -out "${probe_root}/private.pem"
+          openssl pkey -in "${probe_root}/private.pem" -pubout \
+            -out "${probe_root}/public.pem"
+          openssl pkeyutl -sign -inkey "${probe_root}/private.pem" -rawin \
+            -in "${probe_root}/payload" -out "${probe_root}/signature"
+          openssl pkeyutl -verify -pubin -inkey "${probe_root}/public.pem" \
+            -rawin -in "${probe_root}/payload" \
+            -sigfile "${probe_root}/signature"
       - name: Replay complete Batch 32 and Batch 35 formal gates
         run: |
           make batch32-check
