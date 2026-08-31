@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "FRT_EXTERNAL_QUALIFICATION_PREFLIGHT",
-  "generated_at": "2026-08-06T02:56:44.188982Z",
+  "generated_at": "2026-08-31T00:51:22.385268Z",
   "plan_sha256": "sha256:1445cff828fee5cecfa89f787c4f03b799171897a78e43d21f5decf9fbf8cddd",
   "plan_file_ref": {
     "path": "client-packs/frt-g01-g30-platform/acceptance/external-qualification-plan.json",
@@ -11,36 +11,11 @@
   "case_count": 15,
   "tools": {
     "browser_runtimes": {
-      "schema_version": 1,
-      "kind": "FRT_PLAYWRIGHT_RUNTIME_PREFLIGHT",
-      "playwright_version": "1.61.1",
-      "runtimes": {
-        "firefox": {
-          "name": "firefox",
-          "executable_present": true,
-          "executable_sha256": "sha256:cc46f4ac861dbeef56bf718d9e3a54c3c5f9e7365270b19a771db20132d0cb1b",
-          "launch_attempted": true,
-          "launch_available": true,
-          "detected_version": "151.0",
-          "reason": null
-        },
-        "webkit": {
-          "name": "webkit",
-          "executable_present": true,
-          "executable_sha256": "sha256:a85baad3d8c07173ac387a59b41500c382b21ed692afe0964d29aac247ccc63b",
-          "launch_attempted": true,
-          "launch_available": true,
-          "detected_version": "26.5",
-          "reason": null
-        }
-      },
-      "boundaries": {
-        "downloads_attempted": false,
-        "browser_journeys_executed": false,
-        "external_state": "NOT_RUN",
-        "certification": "NOT_CERTIFIED"
-      },
-      "state": "PASSED"
+      "state": "FAILED",
+      "reason": "BROWSER_PROBE_OUTPUT_INVALID",
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:25aacadc504ce476201577d3b2406998307a2ab59ed235df5076abab99a2c678",
+      "runtimes": {}
     },
     "arkui_hvigor": {
       "available": false,
@@ -80,8 +55,10 @@
     {
       "case_id": "FRT-EXT-001-FIREFOX-DESKTOP",
       "adapter_id": "PLAYWRIGHT_FIREFOX_DESKTOP",
-      "harness_state": "READY_FOR_AUTHORIZED_EXECUTION",
-      "blockers": [],
+      "harness_state": "BLOCKED_PRECONDITION",
+      "blockers": [
+        "EXACT_FIREFOX_RUNTIME_UNAVAILABLE"
+      ],
       "external_state": "NOT_RUN",
       "production_operation_authorized": false,
       "certification": "NOT_CERTIFIED"
@@ -89,8 +66,10 @@
     {
       "case_id": "FRT-EXT-002-WEBKIT-DESKTOP",
       "adapter_id": "PLAYWRIGHT_WEBKIT_DESKTOP",
-      "harness_state": "READY_FOR_AUTHORIZED_EXECUTION",
-      "blockers": [],
+      "harness_state": "BLOCKED_PRECONDITION",
+      "blockers": [
+        "EXACT_WEBKIT_RUNTIME_UNAVAILABLE"
+      ],
       "external_state": "NOT_RUN",
       "production_operation_authorized": false,
       "certification": "NOT_CERTIFIED"
@@ -98,8 +77,10 @@
     {
       "case_id": "FRT-EXT-003-WEBKIT-IPHONE15",
       "adapter_id": "PLAYWRIGHT_WEBKIT_IPHONE15",
-      "harness_state": "READY_FOR_AUTHORIZED_EXECUTION",
-      "blockers": [],
+      "harness_state": "BLOCKED_PRECONDITION",
+      "blockers": [
+        "EXACT_WEBKIT_RUNTIME_UNAVAILABLE"
+      ],
       "external_state": "NOT_RUN",
       "production_operation_authorized": false,
       "certification": "NOT_CERTIFIED"
