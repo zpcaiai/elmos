@@ -14,7 +14,7 @@ if [[ "${GITHUB_ACTIONS:-}" != "true" || "${RUNNER_ENVIRONMENT:-}" != "github-ho
   printf 'Refusing to provision the CI closure outside a GitHub-hosted runner.\n' >&2
   exit 2
 fi
-for command_name in brew chmod curl find git install mv python3 shasum stat sudo tar; do
+for command_name in brew chmod codesign curl find git install mv python3 shasum stat sudo tar; do
   if ! command -v "${command_name}" >/dev/null 2>&1; then
     printf 'Required host command is unavailable: %s\n' "${command_name}" >&2
     exit 2
@@ -266,11 +266,53 @@ fi
 
 install_pinned_uv
 
-install_pinned_formula \
-  "openjdk@21" "21.0.11" \
-  "c739c5820462b4ca246f217cbc164ce7348bc48a" \
-  "Formula/o/openjdk@21.rb" \
-  "748be615c1c7b6713143e88aa2895d93f6a1fbbb2ae17e6566cd38c869bad647"
+if [[ "${CI_PROFILE}" == "java-python" ]]; then
+  : "${JAVA_HOME:?JAVA_HOME must be provided by actions/setup-java}"
+  readonly TEMURIN_JAVA_HOME="$(cd "${JAVA_HOME}" && pwd -P)"
+  readonly TEMURIN_JAVA_HOME_SUFFIX="Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"
+  if [[ "${TEMURIN_JAVA_HOME}" != */${TEMURIN_JAVA_HOME_SUFFIX} ]]; then
+    printf 'setup-java did not provide the pinned Temurin home: %s\n' "${TEMURIN_JAVA_HOME}" >&2
+    exit 3
+  fi
+  readonly TEMURIN_JAVA_BUNDLE="$(cd "${TEMURIN_JAVA_HOME}/../.." && pwd -P)"
+  readonly TEMURIN_JAVA_SHA256="afb8ed976e06d85c89192312923301959535169abe087d70166cd00fb96de2e5"
+  readonly TEMURIN_JAVAC_SHA256="56d42d414a2dfb4ca26a67074ebc7c64271fcf37e5ca6f2d6db2f6c292b5daf1"
+  readonly TEMURIN_JAVA_MODULES_SHA256="915c525cd0b9d4db404cdc2368bfb4f3e0ab2a6a598b2d6a76d932de19dd2d33"
+  readonly TEMURIN_JAVA_JVM_SHA256="34bc0bc23d87abb85147409ccdbf604ccd3d2fe8b83ac567a966a5df8a81eded"
+  readonly TEMURIN_JAVA_RELEASE_SHA256="5fccc331767cf526748f17402c7355efb0d1c24f397c49ff9836760f4a3f3d17"
+  readonly TEMURIN_JAVA_CDHASH_FULL="e392fdd40bd00e2e6a6986716901ee08ad1e0200e65bdafab50f70554364a5a2"
+  readonly TEMURIN_JAVA_VERSION="$(printf '%s\n' \
+    'openjdk version "21.0.11" 2026-04-21 LTS' \
+    'OpenJDK Runtime Environment Temurin-21.0.11+10 (build 21.0.11+10-LTS)' \
+    'OpenJDK 64-Bit Server VM Temurin-21.0.11+10 (build 21.0.11+10-LTS, mixed mode, sharing)')"
+  if [[ "$(file_sha256 "${TEMURIN_JAVA_HOME}/bin/java")" != "${TEMURIN_JAVA_SHA256}" \
+    || "$(file_sha256 "${TEMURIN_JAVA_HOME}/bin/javac")" != "${TEMURIN_JAVAC_SHA256}" \
+    || "$(file_sha256 "${TEMURIN_JAVA_HOME}/lib/modules")" != "${TEMURIN_JAVA_MODULES_SHA256}" \
+    || "$(file_sha256 "${TEMURIN_JAVA_HOME}/lib/server/libjvm.dylib")" != "${TEMURIN_JAVA_JVM_SHA256}" \
+    || "$(file_sha256 "${TEMURIN_JAVA_HOME}/release")" != "${TEMURIN_JAVA_RELEASE_SHA256}" \
+    || "$("${TEMURIN_JAVA_HOME}/bin/java" -version 2>&1)" != "${TEMURIN_JAVA_VERSION}" \
+    || "$("${TEMURIN_JAVA_HOME}/bin/javac" -version 2>&1)" != "javac 21.0.11" ]]; then
+    printf 'Pinned Temurin Java identity mismatch.\n' >&2
+    exit 3
+  fi
+  if ! /usr/bin/codesign --verify --deep --strict "${TEMURIN_JAVA_BUNDLE}"; then
+    printf 'Pinned Temurin Java bundle signature verification failed.\n' >&2
+    exit 3
+  fi
+  readonly TEMURIN_JAVA_SIGNATURE="$(/usr/bin/codesign -d --verbose=4 "${TEMURIN_JAVA_BUNDLE}" 2>&1)"
+  if [[ "${TEMURIN_JAVA_SIGNATURE}" != *'Identifier=net.java.openjdk.jdk'* \
+    || "${TEMURIN_JAVA_SIGNATURE}" != *'TeamIdentifier=JCDTMS22B4'* \
+    || "${TEMURIN_JAVA_SIGNATURE}" != *"CandidateCDHashFull sha256=${TEMURIN_JAVA_CDHASH_FULL}"* ]]; then
+    printf 'Pinned Temurin Java signed identity mismatch.\n' >&2
+    exit 3
+  fi
+else
+  install_pinned_formula \
+    "openjdk@21" "21.0.11" \
+    "c739c5820462b4ca246f217cbc164ce7348bc48a" \
+    "Formula/o/openjdk@21.rb" \
+    "748be615c1c7b6713143e88aa2895d93f6a1fbbb2ae17e6566cd38c869bad647"
+fi
 
 if [[ "${CI_PROFILE}" == "full" ]]; then
   # Node's fixed Mach-O receipt includes every non-system dynamic dependency.
@@ -399,7 +441,13 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
 fi
 
 {
-  printf 'ELMOS_JAVA21_HOME=%s\n' "${HOMEBREW_CELLAR}/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home"
+  if [[ "${CI_PROFILE}" == "java-python" ]]; then
+    printf 'ELMOS_JAVA21_DISTRIBUTION=temurin\n'
+    printf 'ELMOS_JAVA21_HOME=%s\n' "${TEMURIN_JAVA_HOME}"
+  else
+    printf 'ELMOS_JAVA21_DISTRIBUTION=homebrew\n'
+    printf 'ELMOS_JAVA21_HOME=%s\n' "${HOMEBREW_CELLAR}/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home"
+  fi
   printf 'ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT=%s\n' "${TOOLCHAIN_ROOT}"
   printf 'ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT=%s\n' "${TOOLCHAIN_ROOT}"
   printf 'ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX=%s\n' "${HOMEBREW_PREFIX}"
@@ -417,7 +465,11 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
   } >>"${GITHUB_PATH}"
 fi
 
-"${HOMEBREW_CELLAR}/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java" -version
+if [[ "${CI_PROFILE}" == "java-python" ]]; then
+  "${TEMURIN_JAVA_HOME}/bin/java" -version
+else
+  "${HOMEBREW_CELLAR}/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java" -version
+fi
 "${PYTHON_RUNTIME_TARGET}/bin/python3.12" --version
 if [[ "${CI_PROFILE}" == "full" ]]; then
   "${HOMEBREW_CELLAR}/dotnet/10.0.301/libexec/dotnet" --version

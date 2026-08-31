@@ -283,6 +283,19 @@ def test_java_python_ci_profile_materializes_the_required_typescript_closure() -
     assert installer.index(manifest_validation) < installer.index(full_only_toolchains)
 
 
+def test_java_python_ci_profile_uses_the_verified_setup_java_temurin_contract() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    temurin_guard = 'if [[ "${CI_PROFILE}" == "java-python" ]]; then\n  : "${JAVA_HOME:?JAVA_HOME must be provided by actions/setup-java}"'
+    homebrew_install = 'install_pinned_formula \\\n    "openjdk@21" "21.0.11"'
+    signature_verification = "/usr/bin/codesign --verify --deep --strict "
+    environment_binding = "printf 'ELMOS_JAVA21_DISTRIBUTION=temurin\\n'"
+
+    assert temurin_guard in installer
+    assert installer.index(temurin_guard) < installer.index(homebrew_install)
+    assert signature_verification in installer
+    assert environment_binding in installer
+
+
 def test_python_archive_rejects_same_size_content_drift() -> None:
     runtime = _runtime()
     archive = runtime.PYTHON_ARCHIVE_CACHE.read_bytes()
@@ -497,6 +510,11 @@ def test_fresh_runtime_forwards_only_explicit_archive_input(
         assert isinstance(environment, dict)
         assert "ELMOS_BATCH29_PYTHON_ARCHIVE" not in environment
         assert environment["PATH"] == "/fixed/bin:/bin:/usr/bin"
+        assert command[command.index("run") + 1] == "--no-dev"
+        assert command.index("--no-dev") < command.index("--locked")
+        assert "mypy" not in command
+        assert "pytest" not in command
+        assert "ruff" not in command
         return subprocess.CompletedProcess(command, 0)
 
     monkeypatch.setenv("PATH", "/hostile/bin")
