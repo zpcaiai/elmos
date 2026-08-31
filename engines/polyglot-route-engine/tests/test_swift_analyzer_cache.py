@@ -311,6 +311,50 @@ def test_swift_git_metadata_manifest_rejects_persistent_directory_timestamp_drif
     assert calls == 6
 
 
+def test_swift_git_metadata_manifest_ignores_only_ancestor_timestamp_drift(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = tmp_path / "repository"
+    metadata_root = repository / ".git"
+    metadata_root.mkdir(parents=True)
+    (metadata_root / "HEAD").write_text("pinned\n", encoding="utf-8")
+    calls = 0
+
+    def chain(_path: Path, _failure: str) -> tuple[tuple[object, ...], ...]:
+        nonlocal calls
+        calls += 1
+        return (
+            (
+                str(repository),
+                1,
+                1,
+                stat.S_IFDIR | 0o700,
+                os.getuid(),
+                os.getgid(),
+                calls,
+                calls,
+            ),
+            (
+                str(metadata_root),
+                1,
+                2,
+                stat.S_IFDIR | 0o700,
+                os.getuid(),
+                os.getgid(),
+                1,
+                1,
+            ),
+        )
+
+    monkeypatch.setattr(native, "_verify_secure_directory_chain", chain)
+
+    receipt = native._swift_git_metadata_manifest(repository, require_worktree=True)
+
+    assert receipt["file_count"] == 1
+    assert calls == 4
+
+
 def test_swift_git_metadata_manifest_rejects_file_inode_or_content_drift(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

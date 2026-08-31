@@ -18,6 +18,45 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 _GO_TELEMETRY_MODE = b"off\n"
 
 
+def _installer_bound_toolchain_root() -> Path:
+    """Resolve the exact toolchain root selected by the CI installer.
+
+    The byte/tree digests below are immutable route-contract inputs.  The
+    filesystem location is deliberately relocatable so a GitHub-hosted runner
+    does not inherit the developer's home directory from a captured receipt.
+    """
+
+    raw = os.environ.get("ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT", "").strip()
+    if not raw:
+        raw = os.environ.get("ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT", "").strip()
+    candidate = Path(raw).expanduser() if raw else Path.home() / ".local/share/elmos/toolchains"
+    normalized = Path(os.path.normpath(str(candidate)))
+    if (
+        not candidate.is_absolute()
+        or candidate != normalized
+        or candidate in {Path("/"), Path.home()}
+        or any(part in {".", ".."} for part in candidate.parts)
+    ):
+        raise RouteError(f"EXACT_TOOLCHAIN_ROOT_UNSAFE:{candidate}")
+    return candidate
+
+
+_EXPECTED_TOOLCHAIN_ROOT = _installer_bound_toolchain_root()
+_EXPECTED_HOMEBREW_PREFIX = Path(
+    os.environ.get("ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX", "/opt/homebrew")
+).expanduser()
+if (
+    not _EXPECTED_HOMEBREW_PREFIX.is_absolute()
+    or _EXPECTED_HOMEBREW_PREFIX
+    != Path(os.path.normpath(str(_EXPECTED_HOMEBREW_PREFIX)))
+    or _EXPECTED_HOMEBREW_PREFIX in {Path("/"), Path.home()}
+):
+    raise RouteError(
+        f"EXACT_TOOLCHAIN_HOMEBREW_PREFIX_UNSAFE:{_EXPECTED_HOMEBREW_PREFIX}"
+    )
+_EXPECTED_HOMEBREW_CELLAR = _EXPECTED_HOMEBREW_PREFIX / "Cellar"
+
+
 def _disabled_go_telemetry_directory(home: Path) -> Path:
     """Create a private Go telemetry directory that cannot spawn a sidecar."""
 
@@ -260,7 +299,10 @@ def _output(
     return (completed.stdout + (completed.stderr if include_stderr else "")).strip()
 
 
-_EXPECTED_JAVA_HOME = Path("/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home")
+_EXPECTED_JAVA_HOME = (
+    _EXPECTED_HOMEBREW_CELLAR
+    / "openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home"
+)
 _EXPECTED_JAVA_SHA256 = "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42"
 _EXPECTED_JAVAC_SHA256 = "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db"
 _EXPECTED_JAVA_MODULES_SHA256 = "5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee"
@@ -276,8 +318,8 @@ _EXPECTED_JAVAC_VERSION = "javac 21.0.11"
 
 _EXPECTED_DOTNET_VERSION = "10.0.301"
 _EXPECTED_DOTNET_RUNTIME_VERSION = "10.0.9"
-_EXPECTED_DOTNET_SHIM = Path("/opt/homebrew/bin/dotnet")
-_EXPECTED_DOTNET_CELLAR = Path("/opt/homebrew/Cellar/dotnet/10.0.301")
+_EXPECTED_DOTNET_SHIM = _EXPECTED_HOMEBREW_PREFIX / "bin/dotnet"
+_EXPECTED_DOTNET_CELLAR = _EXPECTED_HOMEBREW_CELLAR / "dotnet/10.0.301"
 _EXPECTED_DOTNET_WRAPPER = _EXPECTED_DOTNET_CELLAR / "bin" / "dotnet"
 _EXPECTED_DOTNET_ROOT = _EXPECTED_DOTNET_CELLAR / "libexec"
 _EXPECTED_DOTNET_MUXER = _EXPECTED_DOTNET_ROOT / "dotnet"
@@ -1020,17 +1062,18 @@ def _java() -> ExactToolchain:
     )
 
 
-_EXPECTED_PYTHON_LOCAL_ANCHOR = Path("/Users/stephen/.local")
-_EXPECTED_PYTHON_ROOT = Path(
-    "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/"
-    "runtimes/3.12.12+20260211-aarch64-apple-darwin/"
+_EXPECTED_PYTHON_LOCAL_ANCHOR = _EXPECTED_TOOLCHAIN_ROOT.parents[2]
+_EXPECTED_PYTHON_ROOT = (
+    _EXPECTED_TOOLCHAIN_ROOT
+    / "python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/"
     "sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python"
 )
 _EXPECTED_PYTHON_EXECUTABLE = _EXPECTED_PYTHON_ROOT / "bin" / "python3.12"
 _EXPECTED_PYTHON_STDLIB = _EXPECTED_PYTHON_ROOT / "lib" / "python3.12"
 _EXPECTED_PYTHON_LIBPYTHON = _EXPECTED_PYTHON_ROOT / "lib" / "libpython3.12.dylib"
-_EXPECTED_PYTHON_ARCHIVE = Path(
-    "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/archives/"
+_EXPECTED_PYTHON_ARCHIVE = (
+    _EXPECTED_TOOLCHAIN_ROOT
+    / "python-build-standalone/archives/"
     "sha256-22625deaf5757e7c266cf1a096c9151a06b598b1e14632a2ec9993d58ec5fe84.tar.gz"
 )
 _EXPECTED_PYTHON_EXECUTABLE_SHA256 = "3874a935f7242b660e652d35c25a1b87415fcfea3ee191ff262fcca5c50102c5"
@@ -1437,8 +1480,6 @@ def _typescript() -> ExactToolchain:
     )
 
 
-_EXPECTED_HOMEBREW_PREFIX = Path("/opt/homebrew")
-_EXPECTED_HOMEBREW_CELLAR = _EXPECTED_HOMEBREW_PREFIX / "Cellar"
 _EXPECTED_NODE_ROOT = _EXPECTED_HOMEBREW_CELLAR / "node" / "26.0.0"
 _EXPECTED_NODE_SHIM = _EXPECTED_HOMEBREW_PREFIX / "bin" / "node"
 _EXPECTED_NODE_EXECUTABLE = _EXPECTED_NODE_ROOT / "bin" / "node"
@@ -1477,9 +1518,10 @@ _EXPECTED_NODE_PROCESS_VERSIONS_SHA256 = "3d1c55b1d3598ed3740b8d5461151069351d53
 _NODE_TOPOLOGY_CACHE: dict[str, object] | None = None
 
 
-_EXPECTED_TYPESCRIPT_CACHE_ANCHOR = Path("/Users/stephen/.local")
-_EXPECTED_TYPESCRIPT_ROOT = Path(
-    "/Users/stephen/.local/share/elmos/toolchains/typescript/5.9.2/"
+_EXPECTED_TYPESCRIPT_CACHE_ANCHOR = _EXPECTED_TOOLCHAIN_ROOT.parents[2]
+_EXPECTED_TYPESCRIPT_ROOT = (
+    _EXPECTED_TOOLCHAIN_ROOT
+    / "typescript/5.9.2/"
     "sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a"
 )
 _EXPECTED_TYPESCRIPT_LAUNCHER = _EXPECTED_TYPESCRIPT_ROOT / "bin" / "tsc"
@@ -2701,7 +2743,7 @@ def _javascript() -> ExactToolchain:
     )
 
 
-_EXPECTED_USER_LOCAL = Path("/Users/stephen/.local")
+_EXPECTED_USER_LOCAL = _EXPECTED_TOOLCHAIN_ROOT.parents[2]
 
 _EXPECTED_GO_ROOT = _EXPECTED_USER_LOCAL / "share" / "elmos" / "toolchains" / "go" / "1.25.0"
 _EXPECTED_GO_PUBLIC = _EXPECTED_USER_LOCAL / "bin" / "go"
@@ -3152,8 +3194,8 @@ def _swift() -> ExactToolchain:
 # `php` happens to be on PATH.
 _PHP_VERSION_VARIABLE = "ELMOS_PHP_VERSION"
 _EXPECTED_PHP_VERSION = 'PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)'
-_EXPECTED_PHP_ROOT = Path('/opt/homebrew/Cellar/php/8.5.9')
-_EXPECTED_PHP_ANCHOR = Path('/opt/homebrew/Cellar/php')
+_EXPECTED_PHP_ROOT = _EXPECTED_HOMEBREW_CELLAR / "php/8.5.9"
+_EXPECTED_PHP_ANCHOR = _EXPECTED_HOMEBREW_CELLAR / "php"
 _EXPECTED_PHP_EXECUTABLE = _EXPECTED_PHP_ROOT / "bin" / "php"
 _EXPECTED_PHP_EXECUTABLE_SHA256 = '6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218'
 _EXPECTED_PHP_EXECUTABLE_BYTES = 23795728
@@ -3939,7 +3981,7 @@ def _kotlin() -> ExactToolchain:
     )
 
 
-_EXPECTED_FLUTTER_ROOT = Path("/opt/homebrew/share/flutter")
+_EXPECTED_FLUTTER_ROOT = _EXPECTED_HOMEBREW_PREFIX / "share/flutter"
 _EXPECTED_FLUTTER_EXECUTABLE = _EXPECTED_FLUTTER_ROOT / "bin" / "flutter"
 _EXPECTED_FLUTTER_EXECUTABLE_SHA256 = "7d486c33b30a0cf1ea5146231c68bb8f966cdb4e087c5cd8b37e14513f536e7d"
 _EXPECTED_FLUTTER_EXECUTABLE_BYTES = 2_385

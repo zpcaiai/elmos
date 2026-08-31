@@ -6,6 +6,8 @@ import {
   assertLocalCredentialRequest,
   assertSameOriginMutation,
   authenticateLocalCredentials,
+  localAccountCookieNames,
+  localAccountCookieOptions,
   registerLocalAccount,
   sessionCookieMaxAge,
   trustedPublicOrigin,
@@ -34,22 +36,18 @@ function registrationError(request: NextRequest, code: string): NextResponse {
 }
 
 function setLocalSessionCookies(
+  request: NextRequest,
   response: NextResponse,
   result: ReturnType<typeof authenticateLocalCredentials>,
 ): void {
   const maxAge = sessionCookieMaxAge(result.expiresAt);
-  response.cookies.set(accountCookieNames.session, result.session, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
+  const options = localAccountCookieOptions(request);
+  response.cookies.set(localAccountCookieNames.session, result.session, {
+    ...options,
     maxAge,
   });
-  response.cookies.set(accountCookieNames.accessToken, result.accessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
+  response.cookies.set(localAccountCookieNames.accessToken, result.accessToken, {
+    ...options,
     maxAge,
   });
   for (const name of [
@@ -123,7 +121,7 @@ export async function POST(request: NextRequest) {
         new URL(fields.returnTo, trustedPublicOrigin(request)),
         303,
       );
-    setLocalSessionCookies(response, result);
+    setLocalSessionCookies(request, response, result);
     response.headers.set("Cache-Control", "no-store, private");
     return response;
   } catch (error) {

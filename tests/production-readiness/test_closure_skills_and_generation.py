@@ -43,12 +43,20 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
                 "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
             ),
         )
-        self.assertEqual(
-            4,
-            all_workflows.count(
-                "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
-            ),
-        )
+        expected_evidence_workflows = {
+            ".github/workflows/ci.yml": 3,
+            ".github/workflows/repository-migration-platform-skills.yml": 1,
+            ".github/workflows/vercel-deployment-smoke.yml": 1,
+        }
+        for workflow_path, expected_count in expected_evidence_workflows.items():
+            workflow_text = (ROOT / workflow_path).read_text(encoding="utf-8")
+            self.assertEqual(
+                expected_count,
+                workflow_text.count(
+                    "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
+                ),
+                workflow_path,
+            )
         for evidence_path in (
             "apps/web-console/test-results/ci-playwright-report",
             "apps/web-console/test-results/ci-generation-browser-matrix-report",

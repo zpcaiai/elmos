@@ -1953,6 +1953,16 @@ def _stable_secure_directory_chain_identity(
     return tuple(identity[:-2] for identity in chain)
 
 
+def _secure_directory_chain_with_root_timestamps(
+    chain: tuple[tuple[object, ...], ...],
+) -> tuple[tuple[object, ...], ...]:
+    """Ignore ancestor timestamp churn while retaining the target directory timestamps."""
+
+    if not chain:
+        return ()
+    return (*tuple(identity[:-2] for identity in chain[:-1]), chain[-1])
+
+
 def _bounded_swift_object_store_paths(objects: Path) -> list[Path]:
     """Discover at most the configured object-store entry count plus one."""
 
@@ -2401,7 +2411,10 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_UNSAFE") from error
         return files
 
-    def capture() -> tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]]:
+    def capture() -> (
+        tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]]
+        | None
+    ):
         root_before = _verify_secure_directory_chain(
             metadata_root,
             "SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_UNSAFE",
@@ -2439,17 +2452,17 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
             metadata_root,
             "SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED",
         )
-        # The chain is walked from / down, so it includes the per-user temporary
-        # directory, whose mtime every other process on the machine moves. Only
-        # the two timestamps are dropped: dev, ino, mode, uid, gid and the path
-        # still have to match, and every capture re-checks that no component is
-        # a symlink, a non-directory or group/world-writable. This is the
-        # comparison _verify_swift_git_repository already makes on the same kind
-        # of chain.
+        # The chain is walked from / down, so it includes shared temporary
+        # ancestors whose timestamps unrelated processes can move. Their
+        # timestamps are excluded, but dev, ino, mode, uid, gid and path still
+        # have to match. The metadata root itself retains both timestamps so an
+        # empty-directory mutation cannot escape the manifest stability check.
         if _stable_secure_directory_chain_identity(
             root_after
         ) != _stable_secure_directory_chain_identity(root_before):
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
+        if not root_before or root_after[-1] != root_before[-1]:
+            return None
         return (
             {
                 "sha256": _canonical_digest({"files": files}),
@@ -2460,19 +2473,31 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
             after_identities,
         )
 
-    # Two captures that have to agree. The three-attempt budget existed only to
-    # absorb a capture voided by timestamp churn; now that churn cannot void
-    # one, a third attempt could not observe anything the second did not.
-    previous_receipt, previous_root, previous_files = capture()
-    receipt, root_identity, file_identities = capture()
-    if (
-        receipt != previous_receipt
-        or file_identities != previous_files
-        or _stable_secure_directory_chain_identity(root_identity)
-        != _stable_secure_directory_chain_identity(previous_root)
-    ):
-        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
-    return receipt
+    # Require two agreeing captures, with one bounded retry available when the
+    # metadata root itself changes timestamps during a capture. Persistent root
+    # churn remains a hard failure; ancestor-only timestamp churn is harmless.
+    previous: (
+        tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]]
+        | None
+    ) = None
+    for _attempt in range(3):
+        captured = capture()
+        if captured is None:
+            continue
+        if previous is None:
+            previous = captured
+            continue
+        previous_receipt, previous_root, previous_files = previous
+        receipt, root_identity, file_identities = captured
+        if (
+            receipt != previous_receipt
+            or file_identities != previous_files
+            or _secure_directory_chain_with_root_timestamps(root_identity)
+            != _secure_directory_chain_with_root_timestamps(previous_root)
+        ):
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
+        return receipt
+    raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
 
 
 def _swift_dependency_tree_identity(value: dict[str, Any]) -> dict[str, Any]:

@@ -528,9 +528,9 @@ sql-transpiler:
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked ruff check src tests
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked mypy src
 sql-dialect:
-	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev pytest
-	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev ruff check src tests
-	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev mypy --ignore-missing-imports src
+	$(UV) --directory engines/sql-dialect-engine run --locked --group dev pytest
+	$(UV) --directory engines/sql-dialect-engine run --locked --group dev ruff check src tests
+	$(UV) --directory engines/sql-dialect-engine run --locked --group dev mypy --ignore-missing-imports src
 
 # What the polyglot engine actually does right now, by running it rather than
 # by reading it. Every capability question here had been answered by reading

@@ -6,13 +6,16 @@ BATCH29_ROUTE_PYTHON ?= $(UV) --directory engines/polyglot-route-engine run --lo
 BATCH29_ROUTE_ENTRY ?= python3
 B29_REPOSITORY_SCHEMA_FILES := schemas/batch29/repository-capability-campaign.schema.json schemas/batch29/repository-gate-result.schema.json
 B29_REPOSITORY_CONTRACT_FILES := $(B29_REPOSITORY_SCHEMA_FILES) scripts/batch29/run_repository_gate.py tests/batch29/test_repository_gate.py docs/batch29/REPOSITORY_QUALITY_GATES.md
-.PHONY: b29-skills-test b29-route-validate b29-route-gate b29-specialized-exact8 b29-nine-language-prepare b29-nine-language-replay b29-nodejs-verify b29-nodejs-prepare b29-nodejs-replay b29-ten-language-verify b29-ten-language-replay b29-specialized-formal-pack b29-repository-contract-check b29-repository-gate
+.PHONY: b29-skills-test b29-portable-skills-test b29-route-validate b29-route-gate b29-specialized-exact8 b29-nine-language-prepare b29-nine-language-replay b29-nodejs-verify b29-nodejs-prepare b29-nodejs-replay b29-ten-language-verify b29-ten-language-replay b29-specialized-formal-pack b29-repository-contract-check b29-repository-gate
 b29-repository-contract-check:
 	@for file in $(B29_REPOSITORY_CONTRACT_FILES); do test -f "$$file" || { echo "missing Batch 29 repository contract file: $$file"; exit 1; }; done
 	$(BATCH29_PYTHON) -c 'import json; from pathlib import Path; from jsonschema import Draft202012Validator; files = "$(B29_REPOSITORY_SCHEMA_FILES)".split(); [Draft202012Validator.check_schema(json.loads(Path(path).read_text(encoding="utf-8"))) for path in files]'
 b29-skills-test: b29-repository-contract-check external-gate-intake-test
 	$(BATCH29_PYTHON) scripts/batch29/validate_skill_bundle.py
 	$(BATCH29_ROUTE_PYTHON) -m unittest discover -s ../../tests/batch29 -p 'test_*.py'
+b29-portable-skills-test: b29-repository-contract-check external-gate-intake-test
+	$(BATCH29_PYTHON) scripts/batch29/validate_skill_bundle.py
+	$(BATCH29_PYTHON) -m unittest discover -s tests/batch29 -p 'test_repository_gate.py'
 b29-route-validate:
 	@test -n "$(ROUTE)" || (echo "ROUTE=<source>-to-<target> required" && exit 2)
 	$(BATCH29_ROUTE_ENTRY) scripts/batch29/validate_route.py routes/$(ROUTE)
