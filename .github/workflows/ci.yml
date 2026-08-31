@@ -463,10 +463,11 @@ jobs:
 
   web-console:
     name: Web Console
-    # Batch 32 formal packs carry locked macOS arm64 Z3 4.16.0 and Homebrew
-    # Node 26.0.0 Tahoe receipts. Keep replay on the matching runner; the
-    # browser jobs below remain real journeys, not a certification claim.
-    runs-on: macos-26
+    # Receipt-bound Batch 32 replay was captured on a different macOS point
+    # release and remains a distinct NOT_RUN/NOT_CERTIFIED native gate here.
+    # This job validates its captured evidence portably and still executes the
+    # real web build and browser journeys on the hosted Linux runtime.
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
       - name: Check out repository
@@ -474,17 +475,11 @@ jobs:
       - name: Set up Node.js 22
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "22"
-      - name: Set up Python 3.12.10
+          node-version: "22.23.1"
+      - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          # The exact captured 3.12.12 route runtime is provisioned separately;
-          # this supported arm64 interpreter only bootstraps validation scripts.
-          python-version: "3.12.10"
-      - name: Provision receipt-bound Node for Batch 32 replay
-        env:
-          ELMOS_POLYGLOT_ROUTE_CI_PROFILE: frontend-formal
-        run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
+          python-version: "3.12.12"
       - name: Install locked pnpm tool
         run: |
           python -m pip install --disable-pip-version-check uv==0.11.16
@@ -494,23 +489,26 @@ jobs:
           uv --directory engines/polyglot-route-engine sync --locked --no-dev
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           pnpm --dir apps/web-console install --frozen-lockfile
-      - name: Build frontend client engine for Batch 32 replay
+      - name: Build frontend client engine
         run: pnpm --dir engines/frontend-client-engine build
       - name: Verify WeChat Native QR encoder
         run: pnpm --dir apps/web-console test:qr-code
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
-      - name: Verify every Batch 32 client pack
+      - name: Verify every Batch 32 client pack with portable evidence boundary
         run: |
+          make batch32-portable-check
           python scripts/batch32/validate_account_usage_corpora.py
           find client-packs -mindepth 1 -maxdepth 1 -type d -print | sort | while IFS= read -r pack; do
-            python scripts/batch32/run_client_gate.py "$pack"
+            uv run --quiet --with jsonschema==4.25.1 --with pyyaml==6.0.2 \
+              python scripts/batch32/run_client_gate.py --portable "$pack"
           done
       - name: Install locked pnpm tool for Translation execution
         run: npm install --global pnpm@10.12.4
       - name: Install Chromium for browser journeys
         run: pnpm --dir apps/web-console exec playwright install --with-deps chromium
       - name: Verify desktop and mobile browser journeys
+        id: browser-journeys
         env:
           ELMOS_E2E_PORT: "3210"
           ELMOS_E2E_WEB_SERVER_MODE: development
@@ -530,7 +528,7 @@ jobs:
           e2e/runtime-deployment-guide.spec.ts
           e2e/usage-meter-ui.spec.ts
       - name: Preserve browser journey evidence
-        if: always()
+        if: ${{ always() && steps.browser-journeys.outcome != 'skipped' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: web-console-browser-evidence-${{ github.sha }}-${{ github.run_attempt }}

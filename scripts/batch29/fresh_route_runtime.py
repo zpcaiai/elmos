@@ -46,6 +46,15 @@ PINNED_UV_SHA256 = (
     "sha256:d4182a7bba32f331b2c5a74568cf1c88aa50f31fe643a2c56118c6610db0aff0"
 )
 PINNED_UV_BYTES = 46_541_136
+# GitHub's macOS 26 arm64 image pours the immutable Tahoe bottle without the
+# workstation-local rebuild/re-signing represented by the evidence receipt
+# above.  Keep that supply-chain receipt separate and explicit: accepting the
+# exact bottle bytes permits CI execution, but never rewrites the captured
+# evidence identity or upgrades its NOT_CERTIFIED boundary.
+PINNED_UV_CI_BOTTLE_SHA256 = (
+    "sha256:96e422f83fd306848446170d97c1d1af8290f00e4aacfa7134e130280d573126"
+)
+PINNED_UV_CI_BOTTLE_BYTES = 46_508_144
 PINNED_UV_VERSION = "uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)"
 PINNED_UV_MODE = 0o555
 PINNED_UV_UID = 501
@@ -1209,6 +1218,10 @@ def _pinned_uv() -> Path:
             before.st_nlink,
             before.st_mtime_ns,
         )
+        authorized_content_receipts = {
+            (PINNED_UV_BYTES, PINNED_UV_SHA256),
+            (PINNED_UV_CI_BOTTLE_BYTES, PINNED_UV_CI_BOTTLE_SHA256),
+        }
         if (
             identity
             != (
@@ -1248,8 +1261,8 @@ def _pinned_uv() -> Path:
             or after.st_uid != PINNED_UV_UID
             or after.st_gid != PINNED_UV_GID
             or after.st_nlink != PINNED_UV_NLINK
-            or byte_count != PINNED_UV_BYTES
-            or "sha256:" + digest.hexdigest() != PINNED_UV_SHA256
+            or (byte_count, "sha256:" + digest.hexdigest())
+            not in authorized_content_receipts
         ):
             raise RuntimeError("Batch29 pinned uv bytes/metadata/digest mismatch")
         return (*chain, str(expected), *identity, byte_count, digest.hexdigest())

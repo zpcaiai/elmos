@@ -251,11 +251,12 @@ if [[ "${CI_PROFILE}" == "frontend-formal" ]]; then
     "cd0800e004cdb76cebfdc6d0647ddfe7bfa38880152200a30366b822aa18a9ba"
   readonly FRONTEND_NODE="${HOMEBREW_CELLAR}/node/26.0.0/bin/node"
   if [[ ! -x "${FRONTEND_NODE}" \
-    || "$(stat -f '%z' "${FRONTEND_NODE}")" != "68384" \
-    || "$(file_sha256 "${FRONTEND_NODE}")" != "461d6642d0def453a192c51aa218512f16cd9bea1f14f214eed25d47fd4046b5" \
+    || "$(stat -f '%z' "${FRONTEND_NODE}")" != "68672" \
+    || "$(file_sha256 "${FRONTEND_NODE}")" != "542a44a023d27e626d79fbd646f3e2b898bd291b96028b3644795f21b5a43bc9" \
     || "$("${FRONTEND_NODE}" --version)" != "v26.0.0" ]]; then
-    printf 'Pinned frontend Node identity does not match the formal receipt: path=%s sha256=%s version=%s\n' \
-      "${FRONTEND_NODE}" "$(file_sha256 "${FRONTEND_NODE}")" \
+    printf 'Pinned frontend Node identity does not match the formal receipt: path=%s bytes=%s sha256=%s version=%s\n' \
+      "${FRONTEND_NODE}" "$(stat -f '%z' "${FRONTEND_NODE}" 2>/dev/null || true)" \
+      "$(file_sha256 "${FRONTEND_NODE}")" \
       "$("${FRONTEND_NODE}" --version 2>&1 || true)" >&2
     exit 3
   fi

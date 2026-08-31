@@ -489,6 +489,14 @@ def certification_evidence_is_real(
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("pack_dir")
+    parser.add_argument(
+        "--portable",
+        action="store_true",
+        help=(
+            "validate host-independent contracts and captured evidence without "
+            "claiming receipt-bound native replay"
+        ),
+    )
     args = parser.parse_args()
     pack = Path(args.pack_dir)
     here = Path(__file__).resolve().parent
@@ -535,13 +543,16 @@ def main() -> int:
 
     if manifest.get("frontend_formal_route_campaign_v2") is not None:
         frontend_campaign_version = 2
+        command = [
+            sys.executable,
+            str(here / "validate_frontend_formal_route_campaign_v2.py"),
+            str(pack),
+            "--json",
+        ]
+        if args.portable:
+            command.append("--no-replay-execute")
         completed = subprocess.run(
-            [
-                sys.executable,
-                str(here / "validate_frontend_formal_route_campaign_v2.py"),
-                str(pack),
-                "--json",
-            ],
+            command,
             capture_output=True,
             text=True,
             check=False,
@@ -575,13 +586,16 @@ def main() -> int:
         and frontend_campaign_version is None
     ):
         frontend_campaign_version = 1
+        command = [
+            sys.executable,
+            str(here / "validate_frontend_formal_route_campaign.py"),
+            str(pack),
+            "--json",
+        ]
+        if args.portable:
+            command.append("--no-replay-execute")
         completed = subprocess.run(
-            [
-                sys.executable,
-                str(here / "validate_frontend_formal_route_campaign.py"),
-                str(pack),
-                "--json",
-            ],
+            command,
             capture_output=True,
             text=True,
             check=False,

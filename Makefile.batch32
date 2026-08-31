@@ -1,5 +1,5 @@
 UV ?= uv
-BATCH32_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
+BATCH32_PYTHON ?= $(UV) run --quiet --with jsonschema==4.25.1 --with pyyaml==6.0.2 python
 .PHONY: batch32-validate batch32-test batch32-check batch32-portable-check batch32-score
 batch32-validate:
 	$(BATCH32_PYTHON) scripts/batch32/validate_skill_bundle.py .agents/skills

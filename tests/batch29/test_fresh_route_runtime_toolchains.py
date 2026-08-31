@@ -142,6 +142,33 @@ def test_pinned_uv_is_path_independent_in_a_scrubbed_environment(
     assert runtime._pinned_uv() == executable
 
 
+def test_pinned_uv_accepts_only_the_explicit_ci_bottle_receipt(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime = _runtime()
+    executable = _fake_uv(tmp_path)
+    _patch_uv_identity(runtime, monkeypatch, executable)
+    content = executable.read_bytes()
+    monkeypatch.setattr(runtime, "PINNED_UV_SHA256", "sha256:" + "0" * 64)
+    monkeypatch.setattr(runtime, "PINNED_UV_BYTES", len(content) + 1)
+    monkeypatch.setattr(
+        runtime,
+        "PINNED_UV_CI_BOTTLE_SHA256",
+        "sha256:" + hashlib.sha256(content).hexdigest(),
+    )
+    monkeypatch.setattr(runtime, "PINNED_UV_CI_BOTTLE_BYTES", len(content))
+    monkeypatch.setattr(
+        runtime.subprocess,
+        "run",
+        lambda command, **kwargs: subprocess.CompletedProcess(
+            command, 0, stdout="uv fixture 0.11.16\n", stderr=""
+        ),
+    )
+
+    assert runtime._pinned_uv() == executable
+
+
 def test_pinned_uv_rejects_retargeting(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
