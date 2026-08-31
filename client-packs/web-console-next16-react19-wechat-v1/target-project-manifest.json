@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "file_count": 297,
+  "file_count": 301,
   "files": [
     {
       "path": "target-project/app.js",
@@ -560,8 +560,8 @@
     },
     {
       "path": "target-project/components/LoginPage/index.js",
-      "sha256": "sha256:d5187000971bd22ecbbe2da56df78314e6fb6f7c53dea28bea25701c22a64cb0",
-      "bytes": 1643
+      "sha256": "sha256:20bee12009943835f125bcd6cb49f8ca69310eec0560ce28403749ef361d115a",
+      "bytes": 1636
     },
     {
       "path": "target-project/components/LoginPage/index.json",
@@ -955,6 +955,26 @@
     },
     {
       "path": "target-project/components/ProjectGenerationStudio/index.wxss",
+      "sha256": "sha256:b5c40e3c0b7a5bb352cfff7a125f56c0050330f6ad37f85dbb32792333a4b707",
+      "bytes": 1233
+    },
+    {
+      "path": "target-project/components/RegisterPage/index.js",
+      "sha256": "sha256:bbf3565438d7ae7f5ab52de89e4b1fbb304f6fabac8622bfee8ab424257ee72b",
+      "bytes": 1538
+    },
+    {
+      "path": "target-project/components/RegisterPage/index.json",
+      "sha256": "sha256:dcd04eaf580f07ff886e476c2e6c786be20f8334b99247ef5afc64b7947b295d",
+      "bytes": 60
+    },
+    {
+      "path": "target-project/components/RegisterPage/index.wxml",
+      "sha256": "sha256:633e3c02e42a4442a88e09a7f143ee7e3e73acfcadf7584c13cdfab2f7b8a171",
+      "bytes": 591
+    },
+    {
+      "path": "target-project/components/RegisterPage/index.wxss",
       "sha256": "sha256:b5c40e3c0b7a5bb352cfff7a125f56c0050330f6ad37f85dbb32792333a4b707",
       "bytes": 1233
     },
@@ -1440,28 +1460,28 @@
     },
     {
       "path": "target-project/coverage-report.json",
-      "sha256": "sha256:3303f92e6e7f6e5f0311fa1796eaaf5ce7b58b231e6d98bf26e0af52e225ffe0",
-      "bytes": 56536
+      "sha256": "sha256:bd5f1771771e3f35e4e26be545fa90b0ba3dbb529f36609300a951e69856ea88",
+      "bytes": 57034
     },
     {
       "path": "target-project/handoff.json",
-      "sha256": "sha256:741f70b8dc323c39a6cfe28577409038a3fd2620eb4346a6f9f87a5652b34fab",
-      "bytes": 32072
+      "sha256": "sha256:8a3857f0873d8413f395cd2c65b5f746247c57e8f0a3e0599735bf889e7b8a09",
+      "bytes": 32754
     },
     {
       "path": "target-project/pages/index/index.js",
-      "sha256": "sha256:4fbbc8326ba91f64dea5c1e182edc8cbc5aa1248e84f936a99b0cb1483abe37e",
-      "bytes": 4541
+      "sha256": "sha256:1239bed81be658ec9041f9fb65ad7a7b829dc399a0094497145fb7da15ef0413",
+      "bytes": 4638
     },
     {
       "path": "target-project/pages/index/index.json",
-      "sha256": "sha256:d759e41248c48fae691e52a331c032df3abae5acd95a9625080dfe8651cf971e",
-      "bytes": 2731
+      "sha256": "sha256:25139cebda97cceddb9c4420cd7ea91d47c37964c2ba10901c510b7c0c331c93",
+      "bytes": 2786
     },
     {
       "path": "target-project/pages/index/index.wxml",
-      "sha256": "sha256:f9744747b35e753f6f6aa87d3c6d97cebdc49c1317fd9790c25f54481cb7cd5d",
-      "bytes": 3771
+      "sha256": "sha256:222e19bade1be2214a27d60a38544fe11a96dfd35f4760333f0485df87c2bca6",
+      "bytes": 3851
     },
     {
       "path": "target-project/pages/index/index.wxss",
@@ -1489,7 +1509,7 @@
       "bytes": 140
     }
   ],
-  "target_digest": "sha256:45decb4f5df096d31756c6102399485fc6a1b9a35629cfc4d7bda0699098783b",
+  "target_digest": "sha256:48f6042cb0057a1a4fe736ec41179d14393c2f6e21972282b3236f6c6a6e2354",
   "official_build": "NOT_RUN",
   "certification": "NOT_CERTIFIED"
 }

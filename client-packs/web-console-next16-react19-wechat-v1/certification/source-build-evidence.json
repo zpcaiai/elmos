@@ -3,7 +3,7 @@
   "pack_key": "web-console-next16-react19-wechat-v1",
   "status": "NOT_RUN",
   "command": "pnpm build",
-  "exact_source_revision": "97d99d75bfe083c1fbd11dbb663f9ec59704d081",
+  "exact_source_revision": "6f18bd578f1b4fd13c37e1867b97e929b77870d4",
   "executor": null,
   "artifact_digest": null,
   "certification": "NOT_CERTIFIED"

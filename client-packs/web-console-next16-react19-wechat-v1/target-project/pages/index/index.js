@@ -175,26 +175,31 @@ Page({
     },
     {
         "index": 34,
+        "name": "RegisterPage",
+        "tag": "register-page"
+    },
+    {
+        "index": 35,
         "name": "RepositoryWorkspaceStudio",
         "tag": "repository-workspace-studio"
     },
     {
-        "index": 35,
+        "index": 36,
         "name": "PrecisionMigrationJobs",
         "tag": "precision-migration-jobs"
     },
     {
-        "index": 36,
+        "index": 37,
         "name": "SkillsWorkspace",
         "tag": "skills-workspace"
     },
     {
-        "index": 37,
+        "index": 38,
         "name": "SpringModernizationStudio",
         "tag": "spring-modernization-studio"
     },
     {
-        "index": 38,
+        "index": 39,
         "name": "TranslationStudio",
         "tag": "translation-studio"
     }

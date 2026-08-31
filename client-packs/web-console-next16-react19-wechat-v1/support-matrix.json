@@ -17,7 +17,7 @@
         "transformations/component-migration-closure.json",
         "target-project/coverage-report.json"
       ],
-      "reason": "71/71 components have target implementations: 32 automatic and 39 explicit hand ports; runtime equivalence remains NOT_RUN."
+      "reason": "72/72 components have target implementations: 32 automatic and 40 explicit hand ports; runtime equivalence remains NOT_RUN."
     },
     {
       "id": "typed-hook-effect-and-collection-ir",

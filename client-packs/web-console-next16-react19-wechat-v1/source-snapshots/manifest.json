@@ -2,11 +2,11 @@
   "schema_version": 1,
   "kind": "elmos.git-source-snapshot-manifest",
   "source_root": "source-snapshots/web-console-next16-react19-v1",
-  "aggregate_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
-  "source_revision": "97d99d75bfe083c1fbd11dbb663f9ec59704d081",
-  "observed_at": "2026-08-31T07:52:06+08:00",
+  "aggregate_digest": "sha256:ee3bb01b1f19b5c5b7610aa957e73a73edf42e5526bb073182656bedacd99a83",
+  "source_revision": "6f18bd578f1b4fd13c37e1867b97e929b77870d4",
+  "observed_at": "2026-08-31T16:35:14+08:00",
   "repository_relative_root": "apps/web-console",
-  "file_count": 781,
+  "file_count": 785,
   "files": [
     {
       "path": ".dockerignore",
@@ -204,9 +204,14 @@
       "bytes": 2047
     },
     {
+      "path": "app/api/auth/register/route.ts",
+      "sha256": "sha256:09ca5d2fd3f1ffc9a9d4a552b66b13bb6c9391337b6f907a0112b0e6eedd6edd",
+      "bytes": 4933
+    },
+    {
       "path": "app/api/auth/session/route.ts",
-      "sha256": "sha256:ab7d04d896a0693c1306d085aede16dd8e6dee3eb06d63be50c46860689f4a6a",
-      "bytes": 992
+      "sha256": "sha256:9b2d7c33e53420e7d8857b577cec587e6219c87f14f62a932b01e1e2555cb0e1",
+      "bytes": 1054
     },
     {
       "path": "app/api/auth/tenant/route.ts",
@@ -255,8 +260,8 @@
     },
     {
       "path": "app/api/capabilities/spring/route.ts",
-      "sha256": "sha256:f6516fd1a9e5038b86d887a847557bf18f95a9546466877a97d79173b7cd8fbe",
-      "bytes": 2029
+      "sha256": "sha256:d3dd0ffe93a1ec0677970899eaf0a674403af5b32535f5e326def6a1f0a12660",
+      "bytes": 2051
     },
     {
       "path": "app/api/capabilities/translation/route.ts",
@@ -715,7 +720,7 @@
     },
     {
       "path": "app/lib/catalog.ts",
-      "sha256": "sha256:a21bc4a7855605456682102fcf8bfd73ecf326abe3d42fd4346f95c516ef45e4",
+      "sha256": "sha256:5d20d6284461a12aae1a364d9b2f35bda46b1f49f8e38a514c9f7f853602b554",
       "bytes": 10418
     },
     {
@@ -780,8 +785,8 @@
     },
     {
       "path": "app/lib/server/accountSession.ts",
-      "sha256": "sha256:c7ad86d8bbc7c10335b4166a042d5958db403b8c21820d24d98655a36f0e179d",
-      "bytes": 32457
+      "sha256": "sha256:a4df344b7a0472f39c6cbdfeeaf72f1fdc31f8a6d23e99dfaa54e3935e0063b3",
+      "bytes": 44452
     },
     {
       "path": "app/lib/server/adminMutationPolicy.ts",
@@ -1035,8 +1040,8 @@
     },
     {
       "path": "app/login/page.tsx",
-      "sha256": "sha256:56c094fdf03884c2e7bfad9b1d360aa5cc1b3337ed6f2fbfc20d151a3c7c609f",
-      "bytes": 3693
+      "sha256": "sha256:ef1719bfed2fbc3eca9d74b8dcff37df54d309829bc7bef671900252cd8c4995",
+      "bytes": 4317
     },
     {
       "path": "app/migration/MigrationStudio.tsx",
@@ -1149,6 +1154,11 @@
       "bytes": 274
     },
     {
+      "path": "app/register/page.tsx",
+      "sha256": "sha256:7a3d403961ce8e8ed01cd9a6fcb260bd95c350e40485c04f747ccf75864c97cd",
+      "bytes": 4167
+    },
+    {
       "path": "app/repositories/RepositoryWorkspaceStudio.module.css",
       "sha256": "sha256:eef8ebc55e8d3e8da2c9d4b20951dd11942fee8a536c5447f2690a6f1d4ed0ac",
       "bytes": 9141
@@ -1200,8 +1210,8 @@
     },
     {
       "path": "app/styles.css",
-      "sha256": "sha256:080375c9986800aa6d23040d7d7e65cdebccc80c658491b2ffad0e33a58f4200",
-      "bytes": 137273
+      "sha256": "sha256:f1ecc9379b257fa72c12078397a33817b3aefe1087ba4c1fe8a7b1bd6e737332",
+      "bytes": 137569
     },
     {
       "path": "app/translation/TranslationStudio.tsx",
@@ -1235,8 +1245,8 @@
     },
     {
       "path": "e2e/account-session-ui.spec.ts",
-      "sha256": "sha256:013c5b7da5acbceb54ca140c1a67eba52cad787d31a192b24dd0f6fa365ac754",
-      "bytes": 1527
+      "sha256": "sha256:56cc1cf4ca29071e9ebdc0c844a06fe781eaa043af6a014259183286547ab584",
+      "bytes": 2533
     },
     {
       "path": "e2e/admin-billing-reconciliation.spec.ts",
@@ -1434,6 +1444,11 @@
       "bytes": 8340
     },
     {
+      "path": "e2e/vercel-deployment-smoke.spec.ts",
+      "sha256": "sha256:2ad24cf4fb4e297145693c7ededb5238694db372b0a2a58181260a3124c07c9d",
+      "bytes": 3052
+    },
+    {
       "path": "lib/multimodal-intake/strictJson.ts",
       "sha256": "sha256:6f7c2a9edc0c941449a0dedd0916aae49c0e4128c932d0760e449fcc542506aa",
       "bytes": 6868
@@ -1450,13 +1465,13 @@
     },
     {
       "path": "package.json",
-      "sha256": "sha256:d3c78215f883a2f295c8f70e5b3c1abdbbf72189b748a959cb4fffdd0eb1fa58",
-      "bytes": 3144
+      "sha256": "sha256:de1874216fb08857c9cd2f268397292a1e5b9d27c4f53c5915b022a8b49298d8",
+      "bytes": 3225
     },
     {
       "path": "playwright.config.ts",
-      "sha256": "sha256:588408ae25ba689cc8418c924cf8f6a920350b77745966e5f57664de3a9d0692",
-      "bytes": 21756
+      "sha256": "sha256:d3153402371bb31a429142fd103fc967fd4aef1c18f3b17195f62dfa43d07e25",
+      "bytes": 21848
     },
     {
       "path": "playwright.external-quality.config.ts",
@@ -1467,6 +1482,11 @@
       "path": "playwright.proof-loop.config.ts",
       "sha256": "sha256:00c470215f3df9f9aaad8ceecce5c39841f10e87d782fe94ace17a7947bd62bb",
       "bytes": 1348
+    },
+    {
+      "path": "playwright.vercel.config.ts",
+      "sha256": "sha256:96855b0ca3afc3c5291f4c1f09230f475706ef0ab4ee2436a5ea16d9ba8f66e2",
+      "bytes": 1953
     },
     {
       "path": "pnpm-lock.yaml",
@@ -1480,8 +1500,8 @@
     },
     {
       "path": "proxy.ts",
-      "sha256": "sha256:fa464160624d8d92ee3967988082ec7958c91bad2bf05e7854c4561d2937fd9e",
-      "bytes": 6722
+      "sha256": "sha256:ab8c15043fbddc3974d7eb9e384363e86f80901981f4fbe52518f5ae464aef93",
+      "bytes": 7088
     },
     {
       "path": "public/.gitkeep",
@@ -3855,8 +3875,8 @@
     },
     {
       "path": "test/accountSession.test.mjs",
-      "sha256": "sha256:f31c2aa4fda737a7fb992b54234ff7cc1eb84011c370277380ad9bef57ea0b47",
-      "bytes": 3536
+      "sha256": "sha256:608544b7a4c5251493a427585e4d45ad2bd74ad7ce930a2568324313d50f1e02",
+      "bytes": 5220
     },
     {
       "path": "test/durableJobLease.test.mjs",
@@ -3914,6 +3934,6 @@
       "bytes": 82
     }
   ],
-  "snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
+  "snapshot_digest": "sha256:ee3bb01b1f19b5c5b7610aa957e73a73edf42e5526bb073182656bedacd99a83",
   "boundary": "References exact tracked source bytes at source_revision; source scripts are not executed by this generator."
 }

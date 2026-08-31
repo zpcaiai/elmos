@@ -7,21 +7,21 @@
   "status": "PARTIAL",
   "deliveryStatus": "COMPLETE_WITH_HANDOFF",
   "totals": {
-    "discovered": 71,
+    "discovered": 72,
     "converted": 32,
     "blocked": 0,
-    "manuallyPorted": 39
+    "manuallyPorted": 40
   },
   "handoff": {
-    "total": 39,
+    "total": 40,
     "unassigned": 0,
     "assigned": 0,
-    "manuallyPorted": 39,
+    "manuallyPorted": 40,
     "stale": 0,
     "byAssignee": [
       {
         "assignee": "elmos-web-console-wechat-migration",
-        "count": 39
+        "count": 40
       }
     ]
   },
@@ -163,6 +163,11 @@
     },
     {
       "sourcePath": "app/proof-loop/ModernizationProofStudio.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/register/page.tsx",
       "alerts": [],
       "detail": []
     },
@@ -1433,6 +1438,18 @@
       "notes": [
         "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
       ]
+    },
+    {
+      "sourcePath": "app/register/page.tsx",
+      "targetPath": "components/RegisterPage",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "prop searchParams.then has no object fields",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
     },
     {
       "sourcePath": "app/repositories/RepositoryWorkspaceStudio.tsx",

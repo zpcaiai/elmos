@@ -44,7 +44,7 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
             ),
         )
         self.assertEqual(
-            4,
+            5,
             all_workflows.count(
                 "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
             ),
@@ -55,6 +55,10 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
             "apps/web-console/test-results/ci-runner-playwright-report",
         ):
             self.assertIn(evidence_path, rendered)
+        self.assertIn(
+            "apps/web-console/test-results/vercel-deployment-smoke-report",
+            all_workflows,
+        )
 
     def test_ci_covers_every_polyglot_engine_business_line(self) -> None:
         workflow = yaml.safe_load((ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8"))

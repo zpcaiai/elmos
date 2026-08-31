@@ -2,10 +2,10 @@
   "schema_version": 1,
   "pack_key": "web-console-next16-react19-wechat-v1",
   "state": "LOCAL_STATIC_EXECUTED",
-  "source_revision": "97d99d75bfe083c1fbd11dbb663f9ec59704d081",
-  "snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
-  "file_count": 781,
-  "component_count": 71,
+  "source_revision": "6f18bd578f1b4fd13c37e1867b97e929b77870d4",
+  "snapshot_digest": "sha256:ee3bb01b1f19b5c5b7610aa957e73a73edf42e5526bb073182656bedacd99a83",
+  "file_count": 785,
+  "component_count": 72,
   "scan_errors": 0,
   "certification": "NOT_CERTIFIED"
 }

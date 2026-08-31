@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {
   localCredentialsConfigured,
+  localRegistrationConfigured,
   oidcConfigured,
 } from "../lib/server/accountSession";
 
@@ -20,17 +21,19 @@ const errorMessages: Record<string, string> = {
   LOCAL_CREDENTIALS_DISABLED: "本地测试账号未启用。",
   LOCAL_CREDENTIALS_LOOPBACK_ONLY: "本地测试账号仅允许从 localhost 使用。",
   LOCAL_CREDENTIALS_CONFIGURATION_INVALID: "本地测试账号配置无效。",
+  LOCAL_CREDENTIALS_LOCKED: "本地账户暂时锁定，请稍后重试。",
   LOCAL_CREDENTIALS_UNAVAILABLE: "本地测试账号当前不可用。",
 };
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; returnTo?: string }>;
+  searchParams: Promise<{ error?: string; registered?: string; returnTo?: string }>;
 }) {
   const parameters = await searchParams;
   const configured = oidcConfigured();
   const localConfigured = localCredentialsConfigured();
+  const registrationConfigured = localRegistrationConfigured();
   const returnTo = parameters.returnTo?.startsWith("/") ? parameters.returnTo : "/";
   const error = parameters.error ? errorMessages[parameters.error] ?? "登录未完成，未建立账户会话。" : null;
   return (
@@ -40,6 +43,9 @@ export default async function LoginPage({
         <h1 id="login-title">登录 ELMOS 控制中心</h1>
         <p>通过企业 OIDC 身份提供商登录。租户、角色和权限只从已验证的令牌声明派生。</p>
         {error && <div className="auth-error" role="alert">{error}</div>}
+        {parameters.registered === "1" && (
+          <div className="auth-success" role="status">账户已创建，请使用新账户登录。</div>
+        )}
         {configured && (
           <a
             className="button button-primary"
@@ -63,6 +69,12 @@ export default async function LoginPage({
             </label>
             <button className="button button-primary" type="submit">使用本地测试账号登录</button>
           </form>
+        )}
+        {registrationConfigured && (
+          <div className="auth-links">
+            <span>还没有本地账户？</span>
+            <a className="text-link" href={`/register?${new URLSearchParams({ returnTo })}`}>注册本地账户</a>
+          </div>
         )}
         {!configured && !localConfigured && (
           <div className="auth-not-configured" role="status">

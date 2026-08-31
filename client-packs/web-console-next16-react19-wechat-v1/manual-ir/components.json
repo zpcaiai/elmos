@@ -2,8 +2,8 @@
   "schema_version": 1,
   "kind": "elmos.manual-component-ir-bundle",
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "source_revision": "97d99d75bfe083c1fbd11dbb663f9ec59704d081",
-  "component_count": 39,
+  "source_revision": "6f18bd578f1b4fd13c37e1867b97e929b77870d4",
+  "component_count": 40,
   "components": [
     {
       "schemaVersion": "1.0",
@@ -9236,10 +9236,10 @@
       "source": {
         "file": "app/login/page.tsx",
         "componentName": "LoginPage",
-        "sha256": "sha256:56c094fdf03884c2e7bfad9b1d360aa5cc1b3337ed6f2fbfc20d151a3c7c609f",
+        "sha256": "sha256:ef1719bfed2fbc3eca9d74b8dcff37df54d309829bc7bef671900252cd8c4995",
         "range": {
-          "start": 930,
-          "end": 3002
+          "start": 1008,
+          "end": 3538
         }
       },
       "blocker": {
@@ -9250,7 +9250,7 @@
       "props": [
         {
           "name": "searchParams",
-          "type": "Promise<{ error?: string; returnTo?: string }>",
+          "type": "Promise<{ error?: string; registered?: string; returnTo?: string }>",
           "optional": false
         }
       ],
@@ -9270,8 +9270,10 @@
         "auth-card",
         "auth-error",
         "auth-form",
+        "auth-links",
         "auth-not-configured",
         "auth-page",
+        "auth-success",
         "button button-primary",
         "current-password",
         "eyebrow",
@@ -9283,11 +9285,9 @@
         "status",
         "submit",
         "test",
+        "text-link",
         "username",
-        "仅限 localhost 的开发测试登录，默认账号为 test/test；生产环境永久禁用。",
-        "使用企业账户登录",
-        "使用本地测试账号登录",
-        "密码"
+        "仅限 localhost 的开发测试登录，默认账号为 test/test；生产环境永久禁用。"
       ],
       "obligations": [
         {
@@ -9311,7 +9311,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:4daa6201239fa52a6355352d1aead7209302bf0b80e989c1a5b3d53bf4c0f092"
+      "irDigest": "sha256:5d0d13976a192191e46712a8a0db5ea1f6e505fe78ca96d47ce30f8a1bfce0fa"
     },
     {
       "schemaVersion": "1.0",
@@ -12296,6 +12296,89 @@
       "schemaVersion": "1.0",
       "kind": "elmos.manual-component-ir",
       "source": {
+        "file": "app/register/page.tsx",
+        "componentName": "RegisterPage",
+        "sha256": "sha256:7a3d403961ce8e8ed01cd9a6fcb260bd95c350e40485c04f747ccf75864c97cd",
+        "range": {
+          "start": 857,
+          "end": 3502
+        }
+      },
+      "blocker": {
+        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "prop searchParams.then has no object fields",
+        "category": "data-contracts"
+      },
+      "props": [
+        {
+          "name": "searchParams",
+          "type": "Promise<{ error?: string; returnTo?: string }>",
+          "optional": false
+        }
+      ],
+      "state": [],
+      "hooks": [],
+      "effects": [],
+      "collections": [],
+      "platformSemantics": [],
+      "cssModuleTokens": [],
+      "apiPaths": [
+        "/api/auth/register"
+      ],
+      "textLabels": [
+        "//",
+        "/api/auth/register",
+        "LOCAL DEVELOPMENT IDENTITY",
+        "alert",
+        "auth-card",
+        "auth-error",
+        "auth-form",
+        "auth-links",
+        "auth-not-configured",
+        "auth-page",
+        "button button-primary",
+        "displayName",
+        "email",
+        "eyebrow",
+        "hidden",
+        "name",
+        "new-password",
+        "password",
+        "passwordConfirmation",
+        "post",
+        "register-title",
+        "returnTo",
+        "status",
+        "submit"
+      ],
+      "obligations": [
+        {
+          "id": "RegisterPage:source-blocker",
+          "category": "data-contracts",
+          "evidence": [
+            "official-target-build",
+            "emulator-or-device-journey",
+            "differential-behavior",
+            "independent-review"
+          ],
+          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: prop searchParams.then has no object fields"
+        }
+      ],
+      "targetPlan": {
+        "platform": "wechat",
+        "disposition": "HAND_PORTED",
+        "adapters": [
+          "wechat-cancellable-request-v1"
+        ],
+        "runtimeEvidence": "NOT_RUN",
+        "certification": "NOT_CERTIFIED"
+      },
+      "irDigest": "sha256:f208b5e9560e7e5e91bc0196a5cb28515f5bcb2117fb49250b49f620587d6a24"
+    },
+    {
+      "schemaVersion": "1.0",
+      "kind": "elmos.manual-component-ir",
+      "source": {
         "file": "app/repositories/RepositoryWorkspaceStudio.tsx",
         "componentName": "RepositoryWorkspaceStudio",
         "sha256": "sha256:98ec19f726b01677cacfc578f28e60afae3a80654f9d4e54b43bbf028eea86a5",
@@ -14962,5 +15045,5 @@
       "irDigest": "sha256:7e2dea0e31ff3e08f1519acf8670f42d28d7287412232a6cd87958722b2fe582"
     }
   ],
-  "bundle_digest": "sha256:3d98f0f805c207a67fd1974270bcfde3936f8ff93d76322c2c15f11c20c052f4"
+  "bundle_digest": "sha256:13a7061bea8f3e21f869f90214c8aa0b9de23c41643d9d2230b707c78c13b56b"
 }

@@ -35,9 +35,10 @@
   <pricing-page wx:if="{{activeIndex == 31}}" api-base-url="{{apiBaseUrl}}" />
   <usage-dashboard wx:if="{{activeIndex == 32}}" api-base-url="{{apiBaseUrl}}" />
   <modernization-proof-studio wx:if="{{activeIndex == 33}}" api-base-url="{{apiBaseUrl}}" />
-  <repository-workspace-studio wx:if="{{activeIndex == 34}}" api-base-url="{{apiBaseUrl}}" />
-  <precision-migration-jobs wx:if="{{activeIndex == 35}}" api-base-url="{{apiBaseUrl}}" />
-  <skills-workspace wx:if="{{activeIndex == 36}}" api-base-url="{{apiBaseUrl}}" />
-  <spring-modernization-studio wx:if="{{activeIndex == 37}}" api-base-url="{{apiBaseUrl}}" />
-  <translation-studio wx:if="{{activeIndex == 38}}" api-base-url="{{apiBaseUrl}}" />
+  <register-page wx:if="{{activeIndex == 34}}" api-base-url="{{apiBaseUrl}}" />
+  <repository-workspace-studio wx:if="{{activeIndex == 35}}" api-base-url="{{apiBaseUrl}}" />
+  <precision-migration-jobs wx:if="{{activeIndex == 36}}" api-base-url="{{apiBaseUrl}}" />
+  <skills-workspace wx:if="{{activeIndex == 37}}" api-base-url="{{apiBaseUrl}}" />
+  <spring-modernization-studio wx:if="{{activeIndex == 38}}" api-base-url="{{apiBaseUrl}}" />
+  <translation-studio wx:if="{{activeIndex == 39}}" api-base-url="{{apiBaseUrl}}" />
 </view>

@@ -2,16 +2,16 @@ const { createHandPortComponent } = require("../../runtime/hand-port-runtime");
 
 Component(createHandPortComponent({
   "schemaVersion": "1.0",
-  "componentName": "LoginPage",
-  "title": "/api/auth/login",
+  "componentName": "RegisterPage",
+  "title": "//",
   "role": "shell",
   "source": {
-    "file": "app/login/page.tsx",
-    "componentName": "LoginPage",
-    "sha256": "sha256:ef1719bfed2fbc3eca9d74b8dcff37df54d309829bc7bef671900252cd8c4995",
+    "file": "app/register/page.tsx",
+    "componentName": "RegisterPage",
+    "sha256": "sha256:7a3d403961ce8e8ed01cd9a6fcb260bd95c350e40485c04f747ccf75864c97cd",
     "range": {
-      "start": 1008,
-      "end": 3538
+      "start": 857,
+      "end": 3502
     }
   },
   "blocker": {
@@ -22,7 +22,7 @@ Component(createHandPortComponent({
   "props": [
     {
       "name": "searchParams",
-      "type": "Promise<{ error?: string; registered?: string; returnTo?: string }>",
+      "type": "Promise<{ error?: string; returnTo?: string }>",
       "optional": false
     }
   ],
@@ -30,11 +30,12 @@ Component(createHandPortComponent({
   "hooks": [],
   "resources": [],
   "apiPaths": [
-    "/api/auth/login"
+    "/api/auth/register"
   ],
   "labels": [
-    "/api/auth/login",
-    "Enterprise identity",
+    "//",
+    "/api/auth/register",
+    "LOCAL DEVELOPMENT IDENTITY",
     "alert",
     "auth-card",
     "auth-error",
@@ -42,27 +43,26 @@ Component(createHandPortComponent({
     "auth-links",
     "auth-not-configured",
     "auth-page",
-    "auth-success",
     "button button-primary",
-    "current-password",
+    "displayName",
+    "email",
     "eyebrow",
     "hidden",
-    "login-title",
+    "name",
+    "new-password",
     "password",
+    "passwordConfirmation",
     "post",
+    "register-title",
     "returnTo",
     "status",
-    "submit",
-    "test",
-    "text-link",
-    "username",
-    "仅限 localhost 的开发测试登录，默认账号为 test/test；生产环境永久禁用。"
+    "submit"
   ],
   "adapters": [
     "wechat-cancellable-request-v1"
   ],
   "obligations": [
-    "LoginPage:source-blocker"
+    "RegisterPage:source-blocker"
   ],
-  "irDigest": "sha256:5d0d13976a192191e46712a8a0db5ea1f6e505fe78ca96d47ce30f8a1bfce0fa"
+  "irDigest": "sha256:f208b5e9560e7e5e91bc0196a5cb28515f5bcb2117fb49250b49f620587d6a24"
 }));

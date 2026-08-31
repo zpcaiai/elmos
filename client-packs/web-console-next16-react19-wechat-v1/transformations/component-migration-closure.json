@@ -2,8 +2,8 @@
   "schema_version": 1,
   "kind": "elmos.frontend-component-migration-closure",
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "source_revision": "97d99d75bfe083c1fbd11dbb663f9ec59704d081",
-  "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
+  "source_revision": "6f18bd578f1b4fd13c37e1867b97e929b77870d4",
+  "source_snapshot_digest": "sha256:ee3bb01b1f19b5c5b7610aa957e73a73edf42e5526bb073182656bedacd99a83",
   "target_tuple": {
     "stack": "wechat-native-miniapp-candidate",
     "versions": [
@@ -60,13 +60,13 @@
     ]
   },
   "totals": {
-    "discovered": 71,
+    "discovered": 72,
     "automatic": 32,
-    "hand_ported": 39,
+    "hand_ported": 40,
     "unhandled": 0,
     "scan_errors": 0
   },
-  "automatic_coverage": 0.450704,
+  "automatic_coverage": 0.444444,
   "implementation_coverage": 1,
   "delivery_status": "COMPLETE_WITH_HANDOFF",
   "runtime_evidence": "NOT_RUN",
@@ -1004,7 +1004,7 @@
     {
       "source_path": "app/login/page.tsx",
       "component_name": "LoginPage",
-      "source_sha256": "sha256:56c094fdf03884c2e7bfad9b1d360aa5cc1b3337ed6f2fbfc20d151a3c7c609f",
+      "source_sha256": "sha256:ef1719bfed2fbc3eca9d74b8dcff37df54d309829bc7bef671900252cd8c4995",
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
@@ -1012,9 +1012,9 @@
         "reason": "prop searchParams.then has no object fields",
         "semantic_category": "data-contracts"
       },
-      "manual_ir_digest": "sha256:4daa6201239fa52a6355352d1aead7209302bf0b80e989c1a5b3d53bf4c0f092",
+      "manual_ir_digest": "sha256:5d0d13976a192191e46712a8a0db5ea1f6e505fe78ca96d47ce30f8a1bfce0fa",
       "target_path": "target-project/components/LoginPage",
-      "target_sha256": "sha256:858bda7cbaef88ec02a255587068d31989150beeae853c6af619c9d15d1ea949",
+      "target_sha256": "sha256:fa83f400d3ed5970fdf6934622b81d8c9bc135e7ccf9dc3a6cf0b2ddbd64bcaf",
       "target_files": [
         "target-project/components/LoginPage/index.js",
         "target-project/components/LoginPage/index.json",
@@ -1470,6 +1470,31 @@
       "certification": "NOT_CERTIFIED"
     },
     {
+      "source_path": "app/register/page.tsx",
+      "component_name": "RegisterPage",
+      "source_sha256": "sha256:7a3d403961ce8e8ed01cd9a6fcb260bd95c350e40485c04f747ccf75864c97cd",
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "prop searchParams.then has no object fields",
+        "semantic_category": "data-contracts"
+      },
+      "manual_ir_digest": "sha256:f208b5e9560e7e5e91bc0196a5cb28515f5bcb2117fb49250b49f620587d6a24",
+      "target_path": "target-project/components/RegisterPage",
+      "target_sha256": "sha256:2a2f2bd0a1a48afcc67c3ae3672eac9273874349c447d3a8a51f72e45aff0c73",
+      "target_files": [
+        "target-project/components/RegisterPage/index.js",
+        "target-project/components/RegisterPage/index.json",
+        "target-project/components/RegisterPage/index.wxml",
+        "target-project/components/RegisterPage/index.wxss"
+      ],
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
+      "runtime_evidence": "NOT_RUN",
+      "independent_evidence": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
       "source_path": "app/repositories/page.tsx",
       "component_name": "RepositoriesPage",
       "source_sha256": "sha256:7f4b7f7be31151dbff2968e085d7d6e71c6584eef395b2b4a84afb229c4e9123",
@@ -1721,5 +1746,5 @@
       "certification": "NOT_CERTIFIED"
     }
   ],
-  "registry_digest": "sha256:cb5584d59ee674a44dd74ffbb922052f9b0cfe720145149f56a16e6f371b7645"
+  "registry_digest": "sha256:ea77fc989b615655238abd434d3937c221218e14604c277fa7dc84aac6ad0879"
 }

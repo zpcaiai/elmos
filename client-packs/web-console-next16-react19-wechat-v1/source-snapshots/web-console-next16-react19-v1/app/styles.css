@@ -151,6 +151,8 @@ a.secondary-link:hover, button.secondary-link:hover { background: rgba(255,255,2
 .auth-error, .auth-not-configured { width: 100%; display: flex; flex-direction: column; gap: 4px; padding: 12px; border: 1px solid #e7c6c2; border-radius: 9px; background: var(--red-soft); color: var(--red); font-size: 11px; line-height: 1.5; }
 .auth-not-configured { border-color: #ead9c5; background: var(--amber-soft); color: var(--amber); }
 .auth-not-configured span { color: var(--ink-soft); font-size: 10px; }
+.auth-success { width: 100%; padding: 12px; border: 1px solid #b9ded8; border-radius: 9px; background: var(--cyan-soft); color: var(--cyan-dark); font-size: 11px; line-height: 1.5; }
+.auth-links { width: 100%; display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; }
 .page-stack { display: flex; flex-direction: column; gap: 24px; }
 
 .overline { display: inline-block; color: var(--muted); font-size: 10px; line-height: 1.4; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }

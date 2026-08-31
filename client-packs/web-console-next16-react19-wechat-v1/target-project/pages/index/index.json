@@ -34,6 +34,7 @@
     "pricing-page": "/components/PricingPage/index",
     "usage-dashboard": "/components/UsageDashboard/index",
     "modernization-proof-studio": "/components/ModernizationProofStudio/index",
+    "register-page": "/components/RegisterPage/index",
     "repository-workspace-studio": "/components/RepositoryWorkspaceStudio/index",
     "precision-migration-jobs": "/components/PrecisionMigrationJobs/index",
     "skills-workspace": "/components/SkillsWorkspace/index",
