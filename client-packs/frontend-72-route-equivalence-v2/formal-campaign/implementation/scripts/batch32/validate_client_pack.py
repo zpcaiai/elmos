@@ -9,6 +9,18 @@ REQUIRED_DIRS = [
     'corpus/holdout', 'corpus/representative-workloads',
     'visual-baselines', 'accessibility', 'certification',
 ]
+BASE_REQUIRED_DIRS = [
+    'source-fingerprint', 'ui-ir', 'target-profile', 'acceptance',
+    'certification',
+]
+FORMAL_CAMPAIGN_LAYOUTS = {
+    'frontend_formal_route_campaign': (
+        'formal-campaign/frontend-formal-route-campaign.json',
+    ),
+    'frontend_formal_route_campaign_v2': (
+        'formal-campaign/frontend-formal-route-campaign-v2.json',
+    ),
+}
 PACK_STATUS = {'research', 'experimental', 'limited', 'certified', 'deprecated', 'blocked'}
 CAP_STATUS = {'certified', 'supported', 'conditional', 'experimental', 'detected-only', 'blocked'}
 MODES = {'assessment', 'migration', 'upgrade', 'modernization', 'coexistence'}
@@ -52,8 +64,32 @@ def main() -> int:
 
     if not pack.is_dir():
         errors.append(f'missing pack dir: {pack}')
-    for relative in REQUIRED_DIRS:
+
+    # The original Batch 32 layout stores each evidence family in a
+    # top-level directory. Formal route campaigns are a deliberately
+    # self-contained layout: their immutable source, transformation, corpus,
+    # visual, and accessibility material lives under formal-campaign and is
+    # validated by the campaign validator. Requiring both layouts rejected
+    # valid generated v1/v2 packs before their strict campaign validator ran.
+    layout_manifest: dict = {}
+    try:
+        candidate = load(pack / 'pack.json')
+        if isinstance(candidate, dict):
+            layout_manifest = candidate
+    except Exception:
+        pass
+    required_dirs = list(REQUIRED_DIRS)
+    required_files: tuple[str, ...] = ()
+    for declaration, files in FORMAL_CAMPAIGN_LAYOUTS.items():
+        if layout_manifest.get(declaration) is not None:
+            required_dirs = BASE_REQUIRED_DIRS + ['formal-campaign']
+            required_files = files
+            break
+    for relative in required_dirs:
         if not (pack / relative).exists():
+            errors.append(f'missing: {pack / relative}')
+    for relative in required_files:
+        if not (pack / relative).is_file():
             errors.append(f'missing: {pack / relative}')
 
     manifest: dict = {}

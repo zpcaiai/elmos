@@ -302,6 +302,20 @@ class ToolkitTests(unittest.TestCase):
                 str(pack / 'ui-ir' / 'model.json')
             ], check=True)
 
+    def test_generated_formal_campaign_layout_uses_its_canonical_root(self):
+        for pack_key in (
+            'frontend-72-route-equivalence-v1',
+            'frontend-72-route-equivalence-v2',
+        ):
+            pack = ROOT / 'client-packs' / pack_key
+            result = subprocess.run([
+                sys.executable,
+                str(SCRIPTS / 'validate_client_pack.py'),
+                str(pack),
+            ], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertNotIn('source-snapshots', result.stderr)
+
     def test_ui_ir_validator_rejects_unknown_reference(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'ir.json'

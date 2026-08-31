@@ -3,7 +3,7 @@
   "route_id": "vue2--to--svelte",
   "source_lifting": {
     "profile_id": "vue2",
-    "project_digest": "sha256:743d0bd2952ebe93989e0224bab4448db3b3c9b6d82eeffdfe04a44c19bf257f",
+    "project_digest": "sha256:2b38cdd4f571ef100efcf3fd9da227576cd8f6286cc0e8dd95559f8bf6f675df",
     "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
   },
   "target_lowering_relift": {
