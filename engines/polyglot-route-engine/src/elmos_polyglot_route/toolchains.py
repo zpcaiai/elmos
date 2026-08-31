@@ -1705,6 +1705,13 @@ _EXPECTED_NODE_CLOSURE_PROFILES = (
         "libada_sha256": "e4b04b323411a5ca0f06086ad54378f21d02831fb571f09ea61db8f20dfdedc4",
         "libada_bytes": 613_248,
     },
+    {
+        "profile": "homebrew-node26-libada-b39ba5c76cfa-598704",
+        "sha256": "81c23d23750fdd04240bc4debddd6044d6466a7f1fb2993f34087b12162319b7",
+        "bytes": 120_495_296,
+        "libada_sha256": "b39ba5c76cfa9e8d7a37b51daf937414316b671f51360daae62b9885e9d089f8",
+        "libada_bytes": 598_704,
+    },
 )
 
 

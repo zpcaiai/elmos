@@ -338,7 +338,7 @@ def test_ci_node_profiles_pin_the_exact_ada_url_abi_and_node_receipt() -> None:
     assert "homebrew-node26-libada-e4b04b323411-613248" in installer
     assert "e4b04b323411a5ca0f06086ad54378f21d02831fb571f09ea61db8f20dfdedc4" in installer
     assert "598704:b39ba5c76cfa9e8d7a37b51daf937414316b671f51360daae62b9885e9d089f8" in installer
-    assert "github-macos26-libada-b39ba5c76cfa-598704" in installer
+    assert "homebrew-node26-libada-b39ba5c76cfa-598704" in installer
     assert "observed %s:%s" in installer
     assert "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb" in installer
     assert "ada-url brotli" not in installer
