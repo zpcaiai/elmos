@@ -850,6 +850,30 @@ def build_expected(repository_root: Path = ROOT) -> dict[str, Any]:
             "canonical_source_mutated": False,
             "production_resolution": "NOT_APPROVED",
         },
+        "postgresql_temporal_identity_uniqueness_defect": {
+            "state": "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+            "source_migration": (
+                SOURCE_RELATIVE
+                / "database/migrations/V020__runs_tasks_sessions_and_recovery.sql"
+            ).as_posix(),
+            "source_sha256": (
+                "sha256:1d9b6641ed8f2f423938ff067de56a33b86dc754220832d423a078b81ac5bc6e"
+            ),
+            "affected_table": "exec.run",
+            "source_constraint": (
+                "UNIQUE NULLS NOT DISTINCT "
+                "(tenant_id, temporal_namespace, temporal_workflow_id, temporal_run_id)"
+            ),
+            "runtime_requirement": (
+                "multiple non-Temporal runs per tenant while preserving uniqueness "
+                "when a complete Temporal identity is present"
+            ),
+            "compatibility_overlay": (
+                "UNIQUE (tenant_id, temporal_namespace, temporal_workflow_id, temporal_run_id)"
+            ),
+            "canonical_source_mutated": False,
+            "production_resolution": "NOT_APPROVED",
+        },
         "installation": {
             "runtime_root": RUNTIME_RELATIVE.as_posix(),
             "workspace_root": WORKSPACE_RELATIVE.as_posix(),
