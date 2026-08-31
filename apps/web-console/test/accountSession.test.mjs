@@ -9,6 +9,7 @@ import {
   accountSessionFromRequest,
   assertLocalCredentialRequest,
   authenticateLocalCredentials,
+  localAccountCookieNames,
   localCredentialsConfigured,
   localRegistrationConfigured,
   registerLocalAccount,
@@ -58,6 +59,26 @@ test("local test account issues an encrypted least-privilege session", () => {
     const request = new Request("http://127.0.0.1/api/auth/session", {
       headers: {
         cookie: `${accountCookieNames.session}=${result.session}; ${accountCookieNames.accessToken}=${result.accessToken}`,
+      },
+    });
+    const session = accountSessionFromRequest(request, "spring:execute");
+    assert.equal(session.principal.actorId, "local:test");
+  });
+});
+
+test("local session cookies work on loopback HTTP without weakening production cookies", () => {
+  withEnvironment({
+    NODE_ENV: "test",
+    ELMOS_ALLOW_LOCAL_CREDENTIALS: "true",
+    ELMOS_SESSION_SECRET: "local-test-session-secret-at-least-32-characters",
+  }, () => {
+    assert.ok(Object.values(accountCookieNames).every((name) => name.startsWith("__Host-")));
+    assert.ok(Object.values(localAccountCookieNames).every((name) => !name.startsWith("__Host-")));
+    const result = authenticateLocalCredentials("test", "test");
+    const request = new Request("http://127.0.0.1:3200/api/auth/session", {
+      headers: {
+        host: "127.0.0.1:3200",
+        cookie: `${localAccountCookieNames.session}=${result.session}; ${localAccountCookieNames.accessToken}=${result.accessToken}`,
       },
     });
     const session = accountSessionFromRequest(request, "spring:execute");

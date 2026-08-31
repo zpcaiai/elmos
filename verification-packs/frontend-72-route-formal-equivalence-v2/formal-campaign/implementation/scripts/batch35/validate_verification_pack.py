@@ -12,8 +12,21 @@ from _common import load, local_ref_path
 try:
     import jsonschema
 except ImportError as exc:
-    jsonschema = None
-    JSONSCHEMA_IMPORT_ERROR = str(exc)
+    # Batch 35 schemas intentionally use a closed JSON Schema subset.  Keep
+    # validation fail-closed without requiring an ambient package install.
+    from _local_jsonschema import SchemaError, ValidationError, validate
+
+    class _LocalJsonSchema:
+        class exceptions:
+            SchemaError = SchemaError
+            ValidationError = ValidationError
+
+        @staticmethod
+        def validate(instance, schema):
+            return validate(instance, schema)
+
+    jsonschema = _LocalJsonSchema()
+    JSONSCHEMA_IMPORT_ERROR = None
 else:
     JSONSCHEMA_IMPORT_ERROR = None
 VALIDATION_EXCEPTIONS = (OSError, TypeError, ValueError)
@@ -323,11 +336,6 @@ def main():
     )
     schemas = Path(__file__).resolve().parents[2] / "schemas/batch35"
     errors = []
-    if jsonschema is None:
-        errors.append(
-            "jsonschema dependency is required for fail-closed validation: "
-            f"{JSONSCHEMA_IMPORT_ERROR}"
-        )
     for rel, schema in PAIRS:
         document_path = local_ref_path(pack, rel)
         if document_path is None:

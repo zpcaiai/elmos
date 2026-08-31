@@ -16,7 +16,7 @@
   "duration_seconds": 12.2,
   "source_digest": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
   "test_digest": "sha256:54aa5faddc9cc05390997c55af8ee90509c76cb7937fbe259db79e304f036563",
-  "environment_digest": "sha256:bb2b99c7c10b7f2d3ff046b2ab1dff30e9f8a56235a06301b9bef074d66a2448",
+  "environment_digest": "sha256:de1874216fb08857c9cd2f268397292a1e5b9d27c4f53c5915b022a8b49298d8",
   "repository_bindings": [
     {
       "role": "source",
@@ -33,8 +33,8 @@
     {
       "role": "environment",
       "path": "apps/web-console/package.json",
-      "byte_size": 3113,
-      "sha256": "sha256:bb2b99c7c10b7f2d3ff046b2ab1dff30e9f8a56235a06301b9bef074d66a2448"
+      "byte_size": 3225,
+      "sha256": "sha256:de1874216fb08857c9cd2f268397292a1e5b9d27c4f53c5915b022a8b49298d8"
     }
   ],
   "coverage": {

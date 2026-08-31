@@ -27,6 +27,11 @@ export const accountCookieNames = {
   tenant: "__Host-elmos_tenant",
 } as const;
 
+export const localAccountCookieNames = {
+  session: "elmos_local_session",
+  accessToken: "elmos_local_access_token",
+} as const;
+
 export type AccountCookieName =
   typeof accountCookieNames[keyof typeof accountCookieNames];
 
@@ -36,6 +41,23 @@ export function accountCookieDeletionOptions(name: AccountCookieName) {
     secure: true,
     sameSite: name === accountCookieNames.refreshToken ? "strict" : "lax",
     path: "/",
+    maxAge: 0,
+    expires: new Date(0),
+  } as const;
+}
+
+export function localAccountCookieOptions(request: Request) {
+  return {
+    httpOnly: true,
+    secure: new URL(trustedPublicOrigin(request)).protocol === "https:",
+    sameSite: "lax",
+    path: "/",
+  } as const;
+}
+
+export function localAccountCookieDeletionOptions(request: Request) {
+  return {
+    ...localAccountCookieOptions(request),
     maxAge: 0,
     expires: new Date(0),
   } as const;
@@ -1320,8 +1342,19 @@ export function accountSessionFromRequest(
   expiresAt: number;
 } {
   const cookies = cookieMap(request.headers.get("cookie"));
-  const sealed = cookies.get(accountCookieNames.session) ?? "";
-  const accessToken = cookies.get(accountCookieNames.accessToken) ?? "";
+  let sealed = cookies.get(accountCookieNames.session) ?? "";
+  let accessToken = cookies.get(accountCookieNames.accessToken) ?? "";
+  let localCredentialSession = false;
+  if (!sealed && !accessToken) {
+    const localSession = cookies.get(localAccountCookieNames.session) ?? "";
+    const localAccessToken = cookies.get(localAccountCookieNames.accessToken) ?? "";
+    if (localSession || localAccessToken) {
+      assertLocalCredentialRequest(request);
+      sealed = localSession;
+      accessToken = localAccessToken;
+      localCredentialSession = true;
+    }
+  }
   if (!sealed || !accessToken) {
     throw new AccountSessionError(401, "ACCOUNT_SESSION_REQUIRED", "请先登录企业账户。");
   }
@@ -1335,7 +1368,7 @@ export function accountSessionFromRequest(
   }
   const selected = activeMembership(
     session.principal,
-    cookies.get(accountCookieNames.tenant),
+    localCredentialSession ? undefined : cookies.get(accountCookieNames.tenant),
   );
   const principal = {
     ...session.principal,

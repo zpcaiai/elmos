@@ -5,11 +5,11 @@
   "proof_profile": "bounded-navigation-v1",
   "links": {
     "formal_input_path": "routes/vue3--to--vue2/formal-input.json",
-    "formal_input_digest": "sha256:dcca39d06dd60d8672db11f106ad9e1eb90597b427324a55f6fed122fabab4ee",
+    "formal_input_digest": "sha256:b4a55afe3b7f14b442af941794057270a5116dcdb3db6da11fa7244792f6dcba",
     "smt2_path": "routes/vue3--to--vue2/proof.smt2",
-    "smt2_digest": "sha256:33d8e225e9bbb0924d5002f9baf116ebf0ad68eb78fe9d9c1525736bdf6f54e6",
+    "smt2_digest": "sha256:571d73fefd7f965eefb346bd2a990f3b6582e1b229185b87969970dcdc6397a9",
     "solver_result_path": "routes/vue3--to--vue2/solver-result.json",
-    "solver_result_digest": "sha256:00182312471af186e738532c2892c895d1c518e147c22f4e29816b462dc109a1",
+    "solver_result_digest": "sha256:09ab87cfa1f6695c5f72b588b84883500c9ef692e2ec34c3d6924bfa1b4b4a3d",
     "source_model_path": "routes/vue3--to--vue2/source-model.json",
     "source_model_digest": "sha256:2dfd7e48810772426bee93715e224b81ce621db9be1a2c6ba4051f02743f2818",
     "target_model_path": "routes/vue3--to--vue2/target-model.json",
@@ -19,7 +19,7 @@
     "chunks_path": "routes/vue3--to--vue2/chunks.json",
     "chunks_digest": "sha256:e06bc9b68d15784ea5eb38a1934f468874d381354b0b34e92d881468ca261828",
     "composition_path": "routes/vue3--to--vue2/composition.json",
-    "composition_digest": "sha256:fa044463eed5ea59d87d9d2478f22b3c99b04ca142606034bc656316206c511d"
+    "composition_digest": "sha256:3b7606327af3fa2cb845d06d09fc2fce518f40a1a803cac0c9b8e88d37d7b2c0"
   },
   "layers": {
     "emitted_source_relift": "PASSED",
