@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -721,17 +722,47 @@ class Tests(unittest.TestCase):
                 blockers,
             )
 
-    def test_validator_fails_closed_without_jsonschema(self):
-        pack = ROOT / "verification-packs/elmos-project-generation-source-ingestion"
-        completed = run_command(
+    def test_validator_uses_fail_closed_local_schema_without_jsonschema(self):
+        source = ROOT / "verification-packs/elmos-project-generation-source-ingestion"
+        isolated_environment = {
+            key: value
+            for key, value in os.environ.items()
+            if key not in {"PYTHONHOME", "PYTHONPATH"}
+        }
+        isolated_environment["ELMOS_BATCH35_FORCE_LOCAL_JSONSCHEMA"] = "true"
+        valid = run_command(
             [
                 sys.executable,
                 "-S",
                 str(SCRIPTS / "validate_verification_pack.py"),
-                str(pack),
-            ]
+                str(source),
+            ],
+            env=isolated_environment,
+            capture_output=True,
+            text=True,
         )
-        self.assertEqual(completed.returncode, 1)
+        self.assertEqual(valid.returncode, 0, valid.stderr)
+
+        with tempfile.TemporaryDirectory() as directory:
+            pack = Path(directory) / source.name
+            copytree(source, pack)
+            manifest = load(pack / "pack.json")
+            manifest["owner"] = 7
+            write(pack / "pack.json", manifest)
+            refresh_integrity_manifest(pack)
+            invalid = run_command(
+                [
+                    sys.executable,
+                    "-S",
+                    str(SCRIPTS / "validate_verification_pack.py"),
+                    str(pack),
+                ],
+                env=isolated_environment,
+                capture_output=True,
+                text=True,
+            )
+        self.assertEqual(invalid.returncode, 1)
+        self.assertIn("pack.json", invalid.stderr)
 
     def test_not_run_corpus_cannot_certify(self):
         with tempfile.TemporaryDirectory() as d:

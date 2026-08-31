@@ -6,6 +6,7 @@ import importlib.util
 import io
 import json
 import os
+import platform
 import shutil
 import subprocess
 import sys
@@ -20,6 +21,11 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts" / "batch35"
 sys.path.insert(0, str(ROOT / "engines" / "polyglot-route-engine" / "src"))
+EXACT_DARWIN_ARM64_REPLAY_ENABLED = (
+    os.environ.get("ELMOS_BATCH35_PORTABLE_ONLY") != "true"
+    and sys.platform == "darwin"
+    and platform.machine() == "arm64"
+)
 LANGUAGES = ("csharp", "go", "java", "python", "rust", "typescript")
 PACKED_REPLAY_COMMAND = [
     "python3",
@@ -1746,6 +1752,10 @@ class FormalRouteCampaignTests(unittest.TestCase):
         ):
             generator._bind_specialized_arithmetic_evidence(campaign)
 
+    @unittest.skipUnless(
+        EXACT_DARWIN_ARM64_REPLAY_ENABLED,
+        "receipt-bound uv replay requires Darwin arm64",
+    )
     def test_specialized_packed_replay_rejects_path_shadow_uv(self) -> None:
         validator = load_formal_campaign_validator()
         with tempfile.TemporaryDirectory() as directory:
@@ -2061,6 +2071,10 @@ class FormalRouteCampaignTests(unittest.TestCase):
         self.assertEqual(specialized_command[:3], ["python", "-I", "-B"])
         self.assertEqual(legacy_command, PACKED_REPLAY_COMMAND)
 
+    @unittest.skipUnless(
+        EXACT_DARWIN_ARM64_REPLAY_ENABLED,
+        "receipt-bound TypeScript replay requires Darwin arm64",
+    )
     def test_packed_launcher_validates_engine_manifest_before_unique_insertion(
         self,
     ) -> None:

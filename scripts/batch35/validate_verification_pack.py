@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import subprocess
 import sys
@@ -10,8 +11,10 @@ from pathlib import Path
 from _common import load, local_ref_path
 
 try:
+    if os.environ.get("ELMOS_BATCH35_FORCE_LOCAL_JSONSCHEMA") == "true":
+        raise ImportError("local schema validator requested")
     import jsonschema
-except ImportError as exc:
+except ImportError:
     # Batch 35 schemas intentionally use a closed JSON Schema subset.  Keep
     # validation fail-closed without requiring an ambient package install.
     from _local_jsonschema import SchemaError, ValidationError, validate

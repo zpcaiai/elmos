@@ -813,7 +813,7 @@ jobs:
           # repository/skill contracts without claiming an exact macOS
           # compiler matrix executed here.
           make b29-portable-skills-test b30-skills-test b31-skills-test
-          for batch in 33 34 35 36 37 38 39 40 41 42 43 44 45; do
+          for batch in 33 34 36 37 38 39 40 41 42 43 44 45; do
             make "batch${batch}-check"
           done
           # Batch 32's complete formal replay is intentionally executed in
@@ -821,6 +821,10 @@ jobs:
           # toolchain exists. This target validates the portable contracts on
           # Ubuntu without pretending that native browser evidence ran here.
           make batch32-portable-check
+          # Batch 35 contains immutable Mach-O Z3 and Homebrew TypeScript
+          # receipts. Exercise portable/static and negative contracts on
+          # Ubuntu while receipt replay stays in the macOS formal jobs.
+          make batch35-portable-check
       - name: Optional-source-package guard holds in both directions
         run: |
           make batch97-104-skills product-batch56-skills batch66-80-skills
