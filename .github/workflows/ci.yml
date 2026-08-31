@@ -568,7 +568,10 @@ jobs:
           npm install --global pnpm@10.12.4
           pnpm --dir apps/web-console install --frozen-lockfile
       - name: Verify immutable package, adapters, evidence trust, coverage, and Batch 35 boundary
-        run: make precision-migration-b01-44-check
+        # The captured native route receipts bind a different Darwin point
+        # release. Validate their content-addressed closure while marking this
+        # job's native replay NOT_RUN; the full native target remains separate.
+        run: make precision-migration-b01-44-portable-check
       - name: Type-check and build the job API and Skills workspace
         run: pnpm --dir apps/web-console check
 
