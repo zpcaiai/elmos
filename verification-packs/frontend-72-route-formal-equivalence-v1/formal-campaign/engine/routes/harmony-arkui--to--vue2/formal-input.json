@@ -11,8 +11,8 @@
     "target_profile": "vue2",
     "target_framework_version": "2.7.16"
   },
-  "source_project_digest": "sha256:7702d8bae218047e121b2f4197d25346f1b4e617dd5cfdb0727f403254655610",
-  "target_project_digest": "sha256:743d0bd2952ebe93989e0224bab4448db3b3c9b6d82eeffdfe04a44c19bf257f",
+  "source_project_digest": "sha256:632643db8f438a23ca1eab0cbec700d75af4c42470046366be6bfd5fd52feb69",
+  "target_project_digest": "sha256:2b38cdd4f571ef100efcf3fd9da227576cd8f6286cc0e8dd95559f8bf6f675df",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-navigation-v1",
@@ -57,12 +57,12 @@
   "canonical_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
   "source_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
   "target_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
-  "source_model_artifact_digest": "sha256:be191243a5ca4cac3ef3d780088c1199d1d6069598011f8cddeff34d487ebac2",
+  "source_model_artifact_digest": "sha256:d16b57269187eff7b6dcb478f754740467f1a5e348c39a948dde4a872b44707a",
   "target_model_artifact_digest": "sha256:fbd9712f55389543d18351f48081293a3e609525e9624a6e81165bcbe769c539",
   "semantic_equal": true,
   "behavior_digest": "sha256:18874c140e01cc56cbc0ff0113cb04943938a273310344b45e99b3fbb01d7be9",
   "behavior_equal": true,
-  "chunk_digest": "sha256:42e19a9aa4deb763926163c7c1a9c75fe618083b09e176b83e9a271ecc4a24b4",
+  "chunk_digest": "sha256:f0f88d1edc35c0404552ea3996f95b1f4e8f03d0311e6c544537bc2c13d33d49",
   "chunk_equal": true,
   "assumptions": [
     "The proof covers only the canonical bounded-navigation-v1 IR and ELMOS-emitted profile projects, not arbitrary customer source.",

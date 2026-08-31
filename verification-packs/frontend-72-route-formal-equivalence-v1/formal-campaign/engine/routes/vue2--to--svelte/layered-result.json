@@ -5,11 +5,11 @@
   "proof_profile": "bounded-navigation-v1",
   "links": {
     "formal_input_path": "routes/vue2--to--svelte/formal-input.json",
-    "formal_input_digest": "sha256:51c6be7fc54e9696653ebccdbcfc86d17827b848abce94bedf529b8a2a31b365",
+    "formal_input_digest": "sha256:ddbef814b2d68f13a00bdc216972132c3865d7130b9b9268b200f532b6b9f8ff",
     "smt2_path": "routes/vue2--to--svelte/proof.smt2",
-    "smt2_digest": "sha256:0ac577f6c482172113e7d1e57a7ca3a07d194d0f857739b8e3847abfa5165907",
+    "smt2_digest": "sha256:af9a68e71ec7ec2c6b0d348e0bd01f45d2f24683c13b49e05de4243b32ee9b2b",
     "solver_result_path": "routes/vue2--to--svelte/solver-result.json",
-    "solver_result_digest": "sha256:7f017e82997e0db54f7f9e2c4b26916015d6e77b0d730f7fb8d72d6c20f53be4",
+    "solver_result_digest": "sha256:247499a9f8025e790068cfd763958fa4d48b3ed0a0ab2fda3f936aced2bdb896",
     "source_model_path": "routes/vue2--to--svelte/source-model.json",
     "source_model_digest": "sha256:fbd9712f55389543d18351f48081293a3e609525e9624a6e81165bcbe769c539",
     "target_model_path": "routes/vue2--to--svelte/target-model.json",
@@ -19,7 +19,7 @@
     "chunks_path": "routes/vue2--to--svelte/chunks.json",
     "chunks_digest": "sha256:f9c8198841651cfd9929a5eb7d60f98401e2850e1a94b26754b762cfc72d0af4",
     "composition_path": "routes/vue2--to--svelte/composition.json",
-    "composition_digest": "sha256:1845104d13ef7996e0918b9b309613e7a8bf2556780a8b9f5ce9e0a9a72fa3af"
+    "composition_digest": "sha256:07709743fdf5844a725d69795af7a9fded9ffa53e7e80cd49c05533f8c338b97"
   },
   "layers": {
     "emitted_source_relift": "PASSED",
