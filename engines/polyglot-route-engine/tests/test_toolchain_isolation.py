@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import stat
 from dataclasses import replace
@@ -365,13 +366,54 @@ def test_temurin_contract_rejects_an_unpinned_setup_java_home(
 
 
 def test_java_toolchain_binds_launchers_runtime_modules_and_bundle_signature() -> None:
+    contract = toolchains._java_contract()
     selected = toolchains.exact_toolchain("java")
 
-    assert selected.executable_sha256 == toolchains._EXPECTED_JAVA_SHA256
-    assert selected.auxiliary_sha256 == toolchains._EXPECTED_JAVAC_SHA256
-    assert f"jdk-cdhash-full={toolchains._EXPECTED_JAVA_BUNDLE_CDHASH_FULL}" in selected.profile
-    assert f"jdk-modules-sha256={toolchains._EXPECTED_JAVA_MODULES_SHA256}" in selected.profile
-    assert f"libjvm-sha256={toolchains._EXPECTED_JAVA_JVM_SHA256}" in selected.profile
+    assert selected.executable_sha256 == contract.java_sha256
+    assert selected.auxiliary_sha256 == contract.javac_sha256
+    assert f"jdk-cdhash-full={contract.bundle_cdhash_full}" in selected.profile
+    assert f"jdk-modules-sha256={contract.modules_sha256}" in selected.profile
+    assert f"libjvm-sha256={contract.jvm_sha256}" in selected.profile
+
+
+def test_python_runtime_identity_is_root_portable_and_path_confined(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw = toolchains._output(
+        [
+            str(toolchains._EXPECTED_PYTHON_EXECUTABLE),
+            "-I",
+            "-B",
+            "-c",
+            toolchains._PYTHON_RUNTIME_IDENTITY_SCRIPT,
+        ]
+    )
+    identity = json.loads(raw)
+    canonical = toolchains._canonical_python_runtime_identity(identity)
+    assert hashlib.sha256(canonical.encode("utf-8")).hexdigest() == (
+        toolchains._EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256
+    )
+
+    local_root = str(toolchains._EXPECTED_PYTHON_ROOT)
+    runner_root = "/Users/runner/.local/share/elmos/toolchains/python-build-standalone/" + (
+        local_root.split("/python-build-standalone/", 1)[1]
+    )
+    runner_identity = dict(identity)
+    for field in toolchains._PYTHON_RUNTIME_PATH_FIELDS:
+        runner_identity[field] = runner_identity[field].replace(
+            local_root,
+            runner_root,
+            1,
+        )
+    monkeypatch.setattr(toolchains, "_EXPECTED_PYTHON_ROOT", Path(runner_root))
+    assert toolchains._canonical_python_runtime_identity(runner_identity) == canonical
+
+    runner_identity["executable"] = "/private/tmp/forged-python"
+    with pytest.raises(
+        RouteError,
+        match="EXACT_TOOLCHAIN_PYTHON_IDENTITY_PATH_MISMATCH:executable",
+    ):
+        toolchains._canonical_python_runtime_identity(runner_identity)
 
 
 def test_typescript_toolchain_resolves_pinned_node_in_minimal_environment() -> None:
@@ -446,6 +488,7 @@ def test_java_analysis_and_native_replay_ignore_ambient_vm_options(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    contract = toolchains._java_contract()
     monkeypatch.setenv("JAVA_TOOL_OPTIONS", "-javaagent:/does/not/exist.jar")
     monkeypatch.setenv("_JAVA_OPTIONS", "-Xbootclasspath/a:/does/not/exist")
     monkeypatch.setenv("JDK_JAVA_OPTIONS", "--class-path=/does/not/exist")
@@ -465,8 +508,8 @@ def test_java_analysis_and_native_replay_ignore_ambient_vm_options(
     )
 
     assert report["status"] == "PASSED"
-    assert report["toolchain"]["executable_sha256"] == toolchains._EXPECTED_JAVA_SHA256
-    assert report["toolchain"]["auxiliary_sha256"] == toolchains._EXPECTED_JAVAC_SHA256
+    assert report["toolchain"]["executable_sha256"] == contract.java_sha256
+    assert report["toolchain"]["auxiliary_sha256"] == contract.javac_sha256
 
 
 @pytest.mark.skipif(os.uname().sysname != "Darwin", reason="exact Swift evidence is Darwin-only")

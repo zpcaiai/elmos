@@ -1231,7 +1231,14 @@ _EXPECTED_PYTHON_SYMLINKS = {
     "lib/pkgconfig/python3.pc": "python-3.12.pc",
     "share/man/man1/python3.1": "python3.12.1",
 }
-_EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256 = "07be3b00a639caff021e966cccbfe8d52b943e4aabe9630fcaa62c777610acfa"
+_EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256 = "8776314c1c57bbf83332a98d947144d329c8e6e57d2fe1cd850875f27d807d0a"
+_PYTHON_RUNTIME_PATH_FIELDS = (
+    "executable",
+    "prefix",
+    "base_prefix",
+    "stdlib",
+    "platstdlib",
+)
 _PYTHON_RUNTIME_IDENTITY_SCRIPT = (
     "import importlib.util,json,platform,sys,sysconfig;"
     "print(json.dumps({'version':platform.python_version(),'sys_version':sys.version,"
@@ -1244,6 +1251,28 @@ _PYTHON_RUNTIME_IDENTITY_SCRIPT = (
     "'config_args':sysconfig.get_config_var('CONFIG_ARGS'),"
     "'math_origin':importlib.util.find_spec('math').origin},sort_keys=True,separators=(',',':')))"
 )
+
+
+def _canonical_python_runtime_identity(runtime: dict[str, object]) -> str:
+    """Bind the exact runtime identity without binding the account home path."""
+
+    normalized = dict(runtime)
+    root = str(_EXPECTED_PYTHON_ROOT)
+    for field in _PYTHON_RUNTIME_PATH_FIELDS:
+        value = normalized.get(field)
+        if not isinstance(value, str):
+            raise RouteError(
+                f"EXACT_TOOLCHAIN_PYTHON_IDENTITY_PATH_MISMATCH:{field}"
+            )
+        if value == root:
+            normalized[field] = "@PYTHON_ROOT@"
+        elif value.startswith(root + os.sep):
+            normalized[field] = "@PYTHON_ROOT@" + value[len(root) :]
+        else:
+            raise RouteError(
+                f"EXACT_TOOLCHAIN_PYTHON_IDENTITY_PATH_MISMATCH:{field}"
+            )
+    return json.dumps(normalized, sort_keys=True, separators=(",", ":"))
 
 
 def python_source_archive_receipt() -> dict[str, object]:
@@ -1434,6 +1463,9 @@ def _python() -> ExactToolchain:
         runtime = json.loads(observed)
     except json.JSONDecodeError as error:
         raise RouteError("EXACT_TOOLCHAIN_PYTHON_IDENTITY_INVALID") from error
+    if not isinstance(runtime, dict):
+        raise RouteError("EXACT_TOOLCHAIN_PYTHON_IDENTITY_INVALID")
+    canonical_runtime = _canonical_python_runtime_identity(runtime)
     libpython_after = _qualified_file_record(
         _EXPECTED_PYTHON_LIBPYTHON,
         _EXPECTED_PYTHON_ROOT,
@@ -1478,7 +1510,10 @@ def _python() -> ExactToolchain:
         mismatch_fields.append("archive_sha256")
     if archive_after.get("bytes") != _EXPECTED_PYTHON_SOURCE_ARCHIVE_BYTES:
         mismatch_fields.append("archive_bytes")
-    if hashlib.sha256(observed.encode("utf-8")).hexdigest() != _EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256:
+    if (
+        hashlib.sha256(canonical_runtime.encode("utf-8")).hexdigest()
+        != _EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256
+    ):
         mismatch_fields.append("runtime_identity_sha256")
     for key, expected in (
         ("version", "3.12.12"),
@@ -1487,6 +1522,7 @@ def _python() -> ExactToolchain:
         ("prefix", str(_EXPECTED_PYTHON_ROOT)),
         ("base_prefix", str(_EXPECTED_PYTHON_ROOT)),
         ("stdlib", str(_EXPECTED_PYTHON_STDLIB)),
+        ("platstdlib", str(_EXPECTED_PYTHON_STDLIB)),
         ("math_origin", "built-in"),
     ):
         if runtime.get(key) != expected:
