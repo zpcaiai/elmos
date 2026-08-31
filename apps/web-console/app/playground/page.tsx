@@ -1,18 +1,15 @@
 import React from "react";
-import { AppShell } from "../components/AppShell";
 import { PlaygroundWorkspace } from "./PlaygroundWorkspace";
 
 export const metadata = {
-  title: "实时编译与形式化证明沙箱 | Elmos 工业级软件翻新与迁移工厂",
-  description: "体验毫秒级 AST 语法降解、双语重构、SMT 形式化不变式证明与 Lean 4 定理综合。",
+  title: "转换与形式化验证准备工作台 | Elmos 工业级软件翻新与迁移工厂",
+  description: "准备跨语言转换与形式化验证输入，并明确区分静态示例、未执行状态和真实 Runner 证据。",
 };
 
 export default function PlaygroundPage() {
   return (
-    <AppShell>
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <PlaygroundWorkspace />
-      </div>
-    </AppShell>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <PlaygroundWorkspace />
+    </div>
   );
 }

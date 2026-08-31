@@ -1,15 +1,29 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { Icon } from "../components/Icon";
+import React, { useMemo, useState } from "react";
+import { Icon, type IconName } from "../components/Icon";
+
+type PlaygroundTab = "code" | "ast" | "lean4" | "pr_daemon";
+type ExecutionState = "NOT_RUN" | "CHECKING" | "BLOCKED";
 
 interface ASTNode {
   id: string;
   label: string;
   type: "source" | "ir" | "formal" | "target";
-  status: "verified" | "analyzing" | "idle";
+  status: "not-run";
   details: string;
 }
+
+const PLAYGROUND_TABS: ReadonlyArray<{
+  id: PlaygroundTab;
+  label: string;
+  icon: IconName;
+}> = [
+  { id: "code", label: "双栏示例编辑器", icon: "code" },
+  { id: "ast", label: "AST 拓扑要求（未执行）", icon: "workflow" },
+  { id: "lean4", label: "Lean 4 / Dafny 规格示例", icon: "shield" },
+  { id: "pr_daemon", label: "Git PR 演练示例", icon: "box" },
+];
 
 const DEFAULT_JAVA_SNIPPET = `public class AccountService {
     private double balance;
@@ -55,14 +69,19 @@ export function PlaygroundWorkspace() {
   const [sourceLang, setSourceLang] = useState<string>("java");
   const [targetLang, setTargetLang] = useState<string>("csharp");
   const [sourceCode, setSourceCode] = useState<string>(DEFAULT_JAVA_SNIPPET);
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<"code" | "ast" | "lean4" | "pr_daemon">("code");
-  const [proofVerified, setProofVerified] = useState<boolean>(true);
+  const [executionState, setExecutionState] = useState<ExecutionState>("NOT_RUN");
+  const [executionMessage, setExecutionMessage] = useState(
+    "当前页面仅展示静态输入、目标与规格示例；尚未连接真实转换、SMT、Lean、SCM 或签名 Runner。",
+  );
+  const [activeTab, setActiveTab] = useState<PlaygroundTab>("code");
+  const isProcessing = executionState === "CHECKING";
 
-  // Modernized target code simulation
+  // This is deliberately a static example. It is never presented as output
+  // derived from sourceCode and never contributes execution evidence.
   const targetCode = useMemo(() => {
     if (targetLang === "csharp") {
-      return `// Modernized by ELMOS Polyglot Compiler v3.0.0 (Target: .NET 9 C#)
+      return `// STATIC EXAMPLE ONLY — NOT GENERATED FROM THE SOURCE INPUT
+// Execution: NOT_RUN · Certification: NOT_CERTIFIED
 public class AccountService
 {
     public double Balance { get; private set; }
@@ -86,7 +105,8 @@ public class AccountService
     }
 }`;
     } else if (targetLang === "rust") {
-      return `// Modernized by ELMOS Polyglot Compiler v3.0.0 (Target: Rust 2024 Edition)
+      return `// STATIC EXAMPLE ONLY — NOT GENERATED FROM THE SOURCE INPUT
+// Execution: NOT_RUN · Certification: NOT_CERTIFIED
 pub struct AccountService {
     balance: f64,
 }
@@ -112,7 +132,8 @@ impl AccountService {
     }
 }`;
     } else {
-      return `// Modernized by ELMOS Polyglot Compiler v3.0.0 (Target: Go 1.23)
+      return `// STATIC EXAMPLE ONLY — NOT GENERATED FROM THE SOURCE INPUT
+// Execution: NOT_RUN · Certification: NOT_CERTIFIED
 package account
 
 type AccountService struct {
@@ -135,26 +156,35 @@ func (s *AccountService) Withdraw(amount float64) bool {
     }
   }, [targetLang]);
 
-  // Synthetic AST graph nodes
+  // Planned stages are an explanatory graph, not a replay or proof receipt.
   const astNodes: ASTNode[] = [
-    { id: "node-src-ast", label: `Source AST (${sourceLang.toUpperCase()})`, type: "source", status: "verified", details: "Classes: 1, Methods: 2, StateVars: 1" },
-    { id: "node-type-algebra", label: "Canonical Type Algebra", type: "ir", status: "verified", details: "Primitives normalized to IEEE754 & Checked Numerics" },
-    { id: "node-cfg-flow", label: "Control Flow & Effect Graph", type: "ir", status: "verified", details: "Cyclomatic complexity: 3, Branches verified" },
-    { id: "node-smt-solver", label: "SMT Invariant Solver (Z3/CVC5)", type: "formal", status: "verified", details: "SAT_PROVED: Invariant balance >= 0 preserved" },
-    { id: "node-lean4-kernel", label: "Lean 4 Theorem Checker", type: "formal", status: "verified", details: "Machine proof certified with tactic 'omega'" },
-    { id: "node-tgt-ast", label: `Target AST (${targetLang.toUpperCase()})`, type: "target", status: "verified", details: "Zero semantic loss, SLSA Level 3 certified" },
+    { id: "node-src-ast", label: `Source AST (${sourceLang.toUpperCase()})`, type: "source", status: "not-run", details: "Parser invocation and AST counts are NOT_RUN." },
+    { id: "node-type-algebra", label: "Canonical Type Algebra", type: "ir", status: "not-run", details: "Type normalization is a planned obligation; no IR artifact exists." },
+    { id: "node-cfg-flow", label: "Control Flow & Effect Graph", type: "ir", status: "not-run", details: "CFG and effect analysis have not executed." },
+    { id: "node-smt-solver", label: "SMT Invariant Solver (Z3/CVC5)", type: "formal", status: "not-run", details: "No solver was invoked and no SAT/UNSAT verdict exists." },
+    { id: "node-lean4-kernel", label: "Lean 4 Theorem Checker", type: "formal", status: "not-run", details: "No theorem artifact was checked by a Lean kernel." },
+    { id: "node-tgt-ast", label: `Target AST (${targetLang.toUpperCase()})`, type: "target", status: "not-run", details: "No target AST, build, provenance, or certification was produced." },
   ];
 
   const handleModernize = () => {
-    setIsProcessing(true);
+    setExecutionState("CHECKING");
+    setExecutionMessage("正在检查真实 Runner 是否已绑定；不会生成模拟证明或认证状态。");
     setTimeout(() => {
-      setIsProcessing(false);
-      setProofVerified(true);
+      setExecutionState("BLOCKED");
+      setExecutionMessage(
+        "BLOCKED：此示例页未绑定真实转换、形式化验证、独立签名或 SCM Runner；执行保持 NOT_RUN，认证保持 NOT_CERTIFIED。",
+      );
     }, 450);
+  };
+
+  const resetExecution = () => {
+    setExecutionState("NOT_RUN");
+    setExecutionMessage("输入或目标已变化；尚未执行转换、证明、构建、签名或发布。");
   };
 
   const handleSnippetChange = (lang: string) => {
     setSourceLang(lang);
+    resetExecution();
     if (SAMPLE_SNIPPETS[lang]) {
       setSourceCode(SAMPLE_SNIPPETS[lang]);
     }
@@ -168,13 +198,13 @@ func (s *AccountService) Withdraw(amount float64) bool {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
               <Icon name="spark" className="h-3.5 w-3.5" />
-              Interactive Code & Proof Sandbox v3.0.0
+              Static workbench preview · NOT_RUN
             </div>
             <h1 className="mt-2 text-2xl font-bold tracking-tight text-foreground">
-              实时跨语言编译与形式化证明工作台
+              跨语言转换与形式化验证准备工作台
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              体验毫秒级 AST 语法降解、双语重构、SMT 形式化不变式证明与 Lean 4 定理综合。
+              编辑输入、查看目标与证明规格示例；真实执行和证据只由受控 Runner 与独立门禁产生。
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -185,34 +215,38 @@ func (s *AccountService) Withdraw(amount float64) bool {
               className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:opacity-50"
             >
               <Icon name="spark" className={`h-4 w-4 ${isProcessing ? "animate-spin" : ""}`} />
-              {isProcessing ? "编译与定理求解中..." : "一键转换与形式化证明"}
+              {isProcessing ? "检查 Runner 绑定中..." : "检查真实执行条件"}
             </button>
           </div>
         </div>
 
         {/* View Tabs */}
         <div className="mt-6 flex flex-wrap gap-2 border-b border-border pb-3">
-          {[
-            { id: "code", label: "双栏实时编辑器", icon: "code" },
-            { id: "ast", label: "AST 拓扑与数据流", icon: "workflow" },
-            { id: "lean4", label: "Lean 4 / Dafny 定理凭证", icon: "shield" },
-            { id: "pr_daemon", label: "Git PR 自愈演练", icon: "box" },
-          ].map((tab) => (
+          {PLAYGROUND_TABS.map((tab) => (
             <button
               key={tab.id}
               type="button"
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id)}
+              aria-pressed={activeTab === tab.id}
               className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition ${
                 activeTab === tab.id
                   ? "bg-primary text-primary-foreground shadow-xs"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
-              <Icon name={tab.icon as any} className="h-4 w-4" />
+              <Icon name={tab.icon} className="h-4 w-4" />
               {tab.label}
             </button>
           ))}
         </div>
+      </div>
+
+      <div
+        role="status"
+        aria-live="polite"
+        className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+      >
+        <strong>{executionState}</strong> · {executionMessage}
       </div>
 
       {/* Main Tab Content */}
@@ -223,9 +257,11 @@ func (s *AccountService) Withdraw(amount float64) bool {
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="flex h-2.5 w-2.5 rounded-full bg-amber-500" />
-                <span className="font-semibold text-foreground">源语言输入 (Source Code)</span>
+                <label htmlFor="playground-source-code" className="font-semibold text-foreground">源语言输入 (Source Code)</label>
               </div>
               <select
+                id="playground-source-language"
+                aria-label="源语言"
                 value={sourceLang}
                 onChange={(e) => handleSnippetChange(e.target.value)}
                 className="rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs font-medium text-foreground focus:outline-hidden"
@@ -236,15 +272,20 @@ func (s *AccountService) Withdraw(amount float64) bool {
               </select>
             </div>
             <textarea
+              id="playground-source-code"
+              aria-label="源代码输入"
               value={sourceCode}
-              onChange={(e) => setSourceCode(e.target.value)}
+              onChange={(e) => {
+                setSourceCode(e.target.value);
+                resetExecution();
+              }}
               rows={16}
               className="w-full resize-y rounded-xl border border-border bg-muted/20 p-4 font-mono text-xs text-foreground focus:border-primary focus:outline-hidden"
               spellCheck={false}
             />
             <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
               <span>Lines: {sourceCode.split("\n").length}</span>
-              <span>Syntax: CST Ready</span>
+              <span>Parser: NOT_RUN</span>
             </div>
           </div>
 
@@ -253,16 +294,19 @@ func (s *AccountService) Withdraw(amount float64) bool {
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                <span className="font-semibold text-foreground">目标代码输出 (Target Output)</span>
-                {proofVerified && (
-                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
-                    SMT PROVED
-                  </span>
-                )}
+                <label htmlFor="playground-target-code" className="font-semibold text-foreground">静态目标示例（非转换结果）</label>
+                <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                  NOT_RUN
+                </span>
               </div>
               <select
+                id="playground-target-language"
+                aria-label="目标语言"
                 value={targetLang}
-                onChange={(e) => setTargetLang(e.target.value)}
+                onChange={(e) => {
+                  setTargetLang(e.target.value);
+                  resetExecution();
+                }}
                 className="rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs font-medium text-foreground focus:outline-hidden"
               >
                 <option value="csharp">C# (.NET 9 / Modern)</option>
@@ -271,6 +315,8 @@ func (s *AccountService) Withdraw(amount float64) bool {
               </select>
             </div>
             <textarea
+              id="playground-target-code"
+              aria-label="静态目标代码示例"
               readOnly
               value={targetCode}
               rows={16}
@@ -278,8 +324,8 @@ func (s *AccountService) Withdraw(amount float64) bool {
               spellCheck={false}
             />
             <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-              <span>Status: SLSA Level 3 Certified</span>
-              <span>Action Cache: CAS Enabled</span>
+              <span>Execution: NOT_RUN</span>
+              <span>Certification: NOT_CERTIFIED</span>
             </div>
           </div>
         </div>
@@ -305,7 +351,7 @@ func (s *AccountService) Withdraw(amount float64) bool {
                   <span className="text-xs font-mono text-muted-foreground">Step 0{idx + 1}</span>
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
                     <Icon name="test" className="h-3 w-3" />
-                    Verified
+                    NOT_RUN
                   </span>
                 </div>
                 <h4 className="mt-2 text-sm font-semibold text-foreground">{node.label}</h4>
@@ -328,7 +374,7 @@ func (s *AccountService) Withdraw(amount float64) bool {
               </span>
             </div>
             <pre className="rounded-xl border border-border bg-muted/30 p-4 font-mono text-xs text-foreground overflow-x-auto">
-{`-- Generated by ELMOS Formal Proof Engine v3.0.0
+{`-- SPECIFICATION EXAMPLE ONLY — NOT GENERATED OR CHECKED
 import Mathlib.Data.Real.Basic
 
 theorem PreserveNonNegativeBalance 
@@ -350,7 +396,7 @@ theorem PreserveNonNegativeBalance
               </span>
             </div>
             <pre className="rounded-xl border border-border bg-muted/30 p-4 font-mono text-xs text-foreground overflow-x-auto">
-{`// Generated by ELMOS Formal Proof Engine v3.0.0
+{`// SPECIFICATION EXAMPLE ONLY — NOT GENERATED OR VERIFIED
 method {:verify true} Withdraw(balance: int, amount: int) returns (newBal: int, ok: bool)
   requires balance >= 0
   requires amount > 0
@@ -376,20 +422,20 @@ method {:verify true} Withdraw(balance: int, amount: int) returns (newBal: int, 
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-base font-semibold text-foreground">
-                Git PR 自愈智能体模拟演练 (Webhook Simulator)
+                Git PR 自愈流程静态示例
               </h3>
               <p className="text-xs text-muted-foreground">
-                模拟 GitHub / GitLab 提交 Pull Request 时自动触发审查与自愈补丁生成。
+                仅展示预期补丁形状；未接收 Webhook、未创建分支、未推送或审批 Pull Request。
               </p>
             </div>
             <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-              Webhook: http://127.0.0.1:8080/webhook
+              SCM EFFECTS: NOT_RUN
             </span>
           </div>
 
           <div className="rounded-xl border border-border bg-muted/20 p-4">
             <h4 className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
-              PR #142 Auto-Generated Git Diff Patch
+              Illustrative Git Diff (not generated)
             </h4>
             <pre className="mt-2 text-xs font-mono text-foreground overflow-x-auto">
 {`--- a/src/main/java/LegacyAccount.java
@@ -404,10 +450,10 @@ method {:verify true} Withdraw(balance: int, amount: int) returns (newBal: int, 
 
           <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
             <h4 className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-              PR Review Verdict: PASS (Auto-Healing Branch Ready)
+              SAMPLE_ONLY · Review NOT_RUN
             </h4>
             <p className="mt-1 text-xs text-muted-foreground">
-              ELMOS 检测到 1 项过时同步集合规则违规（ELMOS-RULE-JAVA-001），已自动为您生成并推送到 `elmos-fix/pr-142` 分支。
+              此示例没有执行规则检查，也没有创建或推送 `elmos-fix/pr-142` 分支；需要 SCM 授权、Runner 回执和独立复核后才能产生真实结论。
             </p>
           </div>
         </div>
