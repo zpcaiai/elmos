@@ -472,6 +472,8 @@ jobs:
           uv --directory engines/polyglot-route-engine sync --locked --no-dev
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           pnpm --dir apps/web-console install --frozen-lockfile
+      - name: Build frontend client engine for Batch 32 replay
+        run: pnpm --dir engines/frontend-client-engine build
       - name: Verify WeChat Native QR encoder
         run: pnpm --dir apps/web-console test:qr-code
       - name: Type-check and build

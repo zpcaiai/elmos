@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1704",
+  "skill_name": "frt-1704-flutter-to-mini-program-route-pack",
+  "batch": "G17",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g17/frt-1704-flutter-to-mini-program-route-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "directional_route",
+  "capability_key": "frt.g17.flutter-to-mini-program-route-pack",
+  "execution_contract_sha256": "sha256:2fe06381300acfee8e679ae94f44fe866e0168a4008412c13e697c3a15eec883",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:63b455d08ad8a38d7e81c5d13336e2ab0b801b4c9cac32fbe99eb313566bd06b",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

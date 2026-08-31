@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1607",
+  "skill_name": "frt-1607-flutter-capability-gap-planner",
+  "batch": "G16",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g16/frt-1607-flutter-capability-gap-planner/",
+  "status": "shared_implementation",
+  "handler_kind": "route_orchestration",
+  "capability_key": "frt.g16.flutter-capability-gap-planner",
+  "execution_contract_sha256": "sha256:6f82bf88b7bdff954e6843dab3f96ba5f2c421089d2698c059aabc10e882d237",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:1927ccba2884e3b2f14e533d79909a9d8e23d92d5c0e07e2e4696df35709dd16",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

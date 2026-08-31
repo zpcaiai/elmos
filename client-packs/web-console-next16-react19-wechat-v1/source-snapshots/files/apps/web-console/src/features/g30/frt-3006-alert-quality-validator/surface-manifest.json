@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-3006",
+  "skill_name": "frt-3006-alert-quality-validator",
+  "batch": "G30",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g30/frt-3006-alert-quality-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.alert-quality-validator",
+  "execution_contract_sha256": "sha256:cfc036c07ec4f55e4744e819b491b54be5c54d54e70ba90d1db5d1af4821cc82",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:8271cdf03bcf3b03b3cb61f3fead4263aea448f76261720cac616147d53b7247",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

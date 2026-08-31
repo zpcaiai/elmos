@@ -69,9 +69,13 @@ evidence['claims'] = [
      "externalOperationExecuted": False, "authorizationRefs": []},
 ]
 if dependabot is not None:
+    dependabot_status = {
+        'PASS': 'PASS',
+        'BLOCKED': 'FAIL',
+    }.get(dependabot.get('status'), 'INCONCLUSIVE')
     evidence['claims'].append({
         'claimId': 'b40-dependabot-alert-status',
-        'status': 'PASS' if dependabot.get('status') == 'PASS' else 'INCONCLUSIVE',
+        'status': dependabot_status,
         'evidenceRefs': ['b40-dependabot-alerts'],
         'provenanceRefs': ['batch40-dependabot-alerts-provenance'],
         'externalOperationExecuted': True,
@@ -109,11 +113,13 @@ claims['claims'] = [
      "evidenceRefs": ["b40-secret-scan"]},
 ]
 if dependabot is not None:
+    open_count = dependabot['openCount']
+    alert_label = 'alert' if open_count == 1 else 'alerts'
     claims['claims'].append({
         'claimId': 'b40-dependabot-alert-status',
         'statement': (
             f"The GitHub Dependabot snapshot for {dependabot['repository']} at commit "
-            f"{dependabot['commit']} contains {dependabot['openCount']} open alerts "
+            f"{dependabot['commit']} contains {open_count} open {alert_label} "
             f"out of {dependabot['alertCount']} total alerts; critical open alerts: "
             f"{dependabot['metrics']['criticalVulnerabilityCount']}; high open alerts: "
             f"{dependabot['metrics']['highVulnerabilityCount']}."
@@ -142,7 +148,7 @@ for entry in metrics['metrics']:
             'measured': True,
             'value': dependabot['metrics']['criticalVulnerabilityCount'],
             'evidenceRefs': ['b40-dependabot-alerts'],
-            'note': 'open critical alerts in the exact GitHub Dependabot snapshot; high and moderate counts are recorded separately',
+            'note': 'open critical alerts in the exact GitHub Dependabot snapshot; high and medium counts are recorded separately',
         })
 (P / 'metrics.json').write_text(json.dumps(metrics, indent=2, ensure_ascii=False) + '\n')
 

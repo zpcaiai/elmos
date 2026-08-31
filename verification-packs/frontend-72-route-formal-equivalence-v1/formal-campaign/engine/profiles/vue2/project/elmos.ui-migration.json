@@ -43,7 +43,7 @@
     ]
   },
   "digestScope": "all generated files except elmos.ui-migration.json",
-  "contentDigest": "sha256:7803cc82ee8c459e0c72fe37ecda268139867fd0bed5ae48f076e402b981396c",
+  "contentDigest": "sha256:701e7d25917dc80e3030895d9f95aecf4faaddd8daa1207dc3e13e4ca3037415",
   "ownership": {
     "generated": [
       ".editorconfig",

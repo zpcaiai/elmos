@@ -8,18 +8,18 @@
   "owner": "elmos-platform-maintainers",
   "source": {
     "repository": "zpcaiai/elmos",
-    "commit": "b49dc2315e515d51e1537ec26e59d91def356b1b",
+    "commit": "4fc2678d7c411c54ae8f35e35ad7a25e6e9644aa",
     "endpoint": "https://api.github.com/repos/zpcaiai/elmos/dependabot/alerts",
-    "queriedAt": "2026-08-31T00:56:03Z",
+    "queriedAt": "2026-08-31T04:00:15.520000Z",
     "rawSnapshot": {
       "path": "evidence/execution/b40-dependabot-alerts.raw.json",
-      "sha256": "sha256:cc2b1d0c05fef39cb66a2c4cc80bdea5bb48a88c1aafa3c53b581246c369b5e2",
-      "bytes": 1212564
+      "sha256": "sha256:d013927ffa7d16aed2611dd9c735e2b9924ac25d510bd569ac8051385e0a1bde",
+      "bytes": 1212543
     }
   },
   "analyzer": {
     "path": "scripts/batch40_dependabot_alerts.py",
-    "sha256": "sha256:302762e1d0a21a41e57280c3a16bff72f22e285d7cde327f37c7cb67775ec044"
+    "sha256": "sha256:bd6c4bd5912df4801a18be124546dc510326e37d46e69ffa8b03b8409560fd5f"
   },
   "limitations": [
     "This is an exact GitHub Dependabot alert API snapshot, not a complete build-graph SCA result.",

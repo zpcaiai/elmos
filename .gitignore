@@ -35,6 +35,9 @@ playwright-report/
 **/playwright-report/
 test-results/
 **/test-results/
+# This file is an immutable Git-source fixture inside the Batch32 client pack.
+!client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/test-results/
+!client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/test-results/**
 .env
 .env.*
 !.env.example

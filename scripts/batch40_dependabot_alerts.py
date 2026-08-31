@@ -25,7 +25,8 @@ from typing import Any
 
 
 ALLOWED_STATES = {"open", "fixed", "dismissed", "auto_dismissed"}
-ALLOWED_SEVERITIES = {"critical", "high", "moderate", "low"}
+ALLOWED_SEVERITIES = {"critical", "high", "medium", "low"}
+SEVERITY_ALIASES = {"moderate": "medium"}
 REPOSITORY_PATTERN = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 COMMIT_PATTERN = re.compile(r"^[0-9a-f]{40}$")
 
@@ -74,6 +75,7 @@ def _severity(alert: dict[str, Any], number: int) -> str:
     advisory = advisory if isinstance(advisory, dict) else {}
     vulnerability = vulnerability if isinstance(vulnerability, dict) else {}
     value = advisory.get("severity") or vulnerability.get("severity")
+    value = SEVERITY_ALIASES.get(value, value)
     if value not in ALLOWED_SEVERITIES:
         raise AlertSnapshotError(
             f"open alert {number} has no supported security severity"
@@ -214,6 +216,13 @@ def _write_report(path: Path | None, report: dict[str, Any]) -> None:
     path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
+def _write_raw_snapshot(path: Path | None, raw: bytes) -> None:
+    if path is None:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(raw)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--alerts-file", type=Path, required=True)
@@ -223,10 +232,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--queried-at", required=True)
     parser.add_argument("--max-open", type=int, default=0)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--raw-output",
+        type=Path,
+        help="optional path that receives the exact input snapshot bytes",
+    )
     args = parser.parse_args(argv)
 
     try:
         raw = args.alerts_file.read_bytes()
+        _write_raw_snapshot(args.raw_output, raw)
         payload = json.loads(raw.decode("utf-8"))
         report = analyze_snapshot(
             raw,

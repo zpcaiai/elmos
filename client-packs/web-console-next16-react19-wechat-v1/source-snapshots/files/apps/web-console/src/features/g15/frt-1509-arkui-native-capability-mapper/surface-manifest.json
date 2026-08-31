@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1509",
+  "skill_name": "frt-1509-arkui-native-capability-mapper",
+  "batch": "G15",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g15/frt-1509-arkui-native-capability-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "route_orchestration",
+  "capability_key": "frt.g15.arkui-native-capability-mapper",
+  "execution_contract_sha256": "sha256:4e558f5169adb6c3f9e83945277b10a738b5e35a9a3ca2b289edf9dbe936ff8d",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:dee8674e5df510878c3c25a6ea51b00e5fc96f50ef7fd5eb4de25884ba589168",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

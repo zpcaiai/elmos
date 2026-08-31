@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2216",
+  "skill_name": "frt-2216-logistics-order-to-delivery-closure-pack",
+  "batch": "G22",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g22/frt-2216-logistics-order-to-delivery-closure-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g22.logistics-order-to-delivery-closure-pack",
+  "execution_contract_sha256": "sha256:8bece3d516cfbc0f922d8909d7312072fe65558b76c3ab0fe114718d0475d655",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:393dbea4e21d1a718312b045e25f849acc05070128e175826076f30539c748e2",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

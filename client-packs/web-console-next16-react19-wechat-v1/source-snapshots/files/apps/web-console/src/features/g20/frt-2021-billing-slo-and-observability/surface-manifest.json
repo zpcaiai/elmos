@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2021",
+  "skill_name": "frt-2021-billing-slo-and-observability",
+  "batch": "G20",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g20/frt-2021-billing-slo-and-observability/",
+  "status": "shared_implementation",
+  "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.billing-slo-and-observability",
+  "execution_contract_sha256": "sha256:6a2285f9ca2869794e7f6403d8835c271069a71bef455c1af751dfb3847d6b32",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:bd50ca9a681313728580d824185ddab04e5585780a3ca42e7140a4d61918d939",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}
