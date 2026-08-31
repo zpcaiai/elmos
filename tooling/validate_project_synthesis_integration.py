@@ -9,12 +9,24 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from source_package_guard import resolve_source_package
+
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE_PACKAGE = ROOT / "elmos-project-synthesis-batch46-60"
-EXTENSION_PACKAGE = ROOT / "elmos-project-synthesis-batch61-65"
-POLYGLOT_PACKAGE = ROOT / "elmos-codex-skills-batch66-80-complete"
-LANGUAGE_PACKAGE = ROOT / "elmos-language-packs-batch81-95-complete"
+
+
+def package_root(name: str, manifest: str) -> Path:
+    return resolve_source_package(Path(name), Path(manifest), root=ROOT) or ROOT / name
+
+
+BASE_PACKAGE = package_root("elmos-project-synthesis-batch46-60", "manifest.json")
+EXTENSION_PACKAGE = package_root(
+    "elmos-project-synthesis-batch61-65", "package-manifest.json"
+)
+POLYGLOT_PACKAGE = package_root("elmos-codex-skills-batch66-80-complete", "manifest.json")
+LANGUAGE_PACKAGE = package_root(
+    "elmos-language-packs-batch81-95-complete", "package-manifest.json"
+)
 LANGUAGE_INSTALL_MANIFEST = ROOT / "docs/language-packs-batch81-95/installed-manifest.json"
 RUNTIME_ROOT = ROOT / "agent-skills" / "runtime"
 errors: list[str] = []

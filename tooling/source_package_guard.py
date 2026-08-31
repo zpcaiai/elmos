@@ -40,6 +40,28 @@ def _confined_relative(value: str, *, label: str) -> Path:
     return relative
 
 
+def resolve_source_package(
+    package: Path,
+    manifest_name: Path,
+    *,
+    root: Path = ROOT,
+) -> Path | None:
+    """Return the canonical package directory from either supported layout."""
+
+    resolved_root = root.resolve()
+    for parent in (resolved_root, resolved_root / "skills"):
+        candidate = (parent / package).resolve()
+        manifest = (candidate / manifest_name).resolve()
+        try:
+            candidate.relative_to(resolved_root)
+            manifest.relative_to(candidate)
+        except ValueError:
+            continue
+        if manifest.is_file():
+            return candidate
+    return None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -73,11 +95,7 @@ def main() -> int:
             print(f"{INVALID_MARKER} reason={exc}", file=sys.stderr, flush=True)
         return 2
 
-    if manifest.is_file():
-        return 0
-
-    skills_manifest = (ROOT / "skills" / package / manifest_name).resolve()
-    if skills_manifest.is_file():
+    if resolve_source_package(package, manifest_name) is not None:
         return 0
 
     if not arguments.quiet:

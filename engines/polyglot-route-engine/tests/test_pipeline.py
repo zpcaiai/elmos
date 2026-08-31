@@ -12,6 +12,7 @@ import elmos_polyglot_route.pipeline as pipeline_module
 from elmos_polyglot_route.models import RouteError
 from elmos_polyglot_route.pipeline import PROJECT_GRAPH_NAME, run_repository_pipeline
 from elmos_polyglot_route.project_graph import verify_project_graph
+from elmos_polyglot_route.validation import safe_output
 
 
 def _repository(root: Path) -> Path:
@@ -37,6 +38,16 @@ def _cases(root: Path) -> Path:
         encoding="utf-8",
     )
     return cases
+
+
+def test_safe_output_rejects_symlinked_parent_component(tmp_path: Path) -> None:
+    real_parent = tmp_path / "real-parent"
+    real_parent.mkdir()
+    alias = tmp_path / "alias"
+    alias.symlink_to(real_parent, target_is_directory=True)
+
+    with pytest.raises(RouteError, match="OUTPUT_SYMLINK_REJECTED"):
+        safe_output(alias / "generated")
 
 
 def test_repository_pipeline_is_complete_content_addressed_and_resumable(tmp_path: Path) -> None:
