@@ -284,9 +284,13 @@ def test_java_python_ci_profile_materializes_the_required_typescript_closure() -
     assert installer.index(manifest_validation) < installer.index(full_only_toolchains)
 
 
-def test_java_python_ci_profile_uses_the_verified_setup_java_temurin_contract() -> None:
+def test_ci_java_profiles_use_the_verified_setup_java_temurin_contract() -> None:
     installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
-    temurin_guard = 'if [[ "${CI_PROFILE}" == "java-python" ]]; then\n  : "${JAVA_HOME:?JAVA_HOME must be provided by actions/setup-java}"'
+    temurin_guard = (
+        'if [[ "${CI_PROFILE}" == "full" || '
+        '"${CI_PROFILE}" == "java-python" ]]; then\n'
+        '  : "${JAVA_HOME:?JAVA_HOME must be provided by actions/setup-java}"'
+    )
     homebrew_install = 'install_pinned_formula \\\n    "openjdk@21" "21.0.11"'
     signature_verification = "/usr/bin/codesign --verify --deep --strict "
     environment_binding = "printf 'ELMOS_JAVA21_DISTRIBUTION=temurin\\n'"
@@ -297,7 +301,7 @@ def test_java_python_ci_profile_uses_the_verified_setup_java_temurin_contract() 
     assert environment_binding in installer
 
 
-def test_full_ci_profile_rebuilds_only_the_exact_homebrew_java_resource_seal() -> None:
+def test_ci_java_profiles_never_mutate_or_inject_a_homebrew_signature() -> None:
     installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
     homebrew_install = 'install_pinned_formula \\\n    "openjdk@21" "21.0.11"'
     input_identity = (
@@ -340,33 +344,28 @@ def test_full_ci_profile_rebuilds_only_the_exact_homebrew_java_resource_seal() -
         '!= "${HOMEBREW_JAVA_CODE_RESOURCES_SHA256}"'
     )
 
+    assert '"${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python"' in installer
+    assert 'ELMOS_JAVA21_HOME="${TEMURIN_JAVA_HOME}"' in installer
+    assert 'ELMOS_JAVA21_DISTRIBUTION=temurin' in installer
     assert homebrew_install in installer
-    assert input_identity in installer
-    assert preseal_identity in installer
-    assert preseal_cases in installer
-    assert signature_entry_enumeration in installer
-    assert signature_entry_freeze in installer
-    assert signature_entry_guard in installer
-    assert resource_preimage_guard in installer
-    assert exact_resign in installer
-    assert strict_verification in installer
-    assert sealed_identity in installer
-    assert "dbf6c7847b3bd0a476bd5e980ada9112a35c4ef00348209ad511031944d986fc" in installer
-    assert "83bba6f42332fe76c090d99acd7b68947f687fade1827a0917d7e27df9b1258d" in installer
-    assert "02f323e9d3f58bc04d228d475b745111af37871c3a1f7acdd23d656bde1452a3" in installer
-    assert "56f1666041b6451258db96c168353f40ffeb3c98d0b7d8b7c4f2d29257563e4f" in installer
-    assert "5a88122cc14733538f6b92d150fafb7f5b560455bfda0ae83c93a34eef2887e8" in installer
-    assert installer.index(homebrew_install) < installer.index(input_identity)
-    assert installer.index(input_identity) < installer.index(preseal_identity)
-    assert installer.index(preseal_identity) < installer.index(exact_resign)
-    assert installer.index(signature_entry_enumeration) < installer.index(
-        signature_entry_freeze
+    assert all(
+        marker not in installer
+        for marker in (
+            input_identity,
+            preseal_identity,
+            preseal_cases,
+            signature_entry_enumeration,
+            signature_entry_freeze,
+            signature_entry_guard,
+            resource_preimage_guard,
+            exact_resign,
+            strict_verification,
+            sealed_identity,
+        )
     )
-    assert installer.index(signature_entry_guard) < installer.index(exact_resign)
-    assert installer.index(resource_preimage_guard) < installer.index(exact_resign)
-    assert installer.index(sealed_identity) < installer.index(exact_resign)
-    assert installer.index(exact_resign) < installer.index(strict_verification)
-    assert installer.index(strict_verification) < installer.rindex(sealed_identity)
+    assert 'HOMEBREW_JAVA_CODE_RESOURCES' not in installer
+    assert 'HOMEBREW_JAVA_BUNDLE' not in installer
+    assert "/usr/bin/codesign --force --deep --sign -" not in installer
 
 
 def test_python_archive_rejects_same_size_content_drift() -> None:
