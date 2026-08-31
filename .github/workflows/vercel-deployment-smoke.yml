@@ -35,8 +35,6 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: "22"
-          cache: pnpm
-          cache-dependency-path: apps/web-console/pnpm-lock.yaml
 
       - name: Install exact pnpm
         run: npm install --global pnpm@10.12.4
