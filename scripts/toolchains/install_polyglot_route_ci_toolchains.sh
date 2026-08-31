@@ -35,7 +35,7 @@ readonly CI_PROFILE="${ELMOS_POLYGLOT_ROUTE_CI_PROFILE:-full}"
 temporary_root="$(mktemp -d "${RUNNER_TEMP}/elmos-route-ci-toolchains.XXXXXX")"
 
 case "${CI_PROFILE}" in
-  full|java-python|typed-sql) ;;
+  full|frontend-formal|java-python|typed-sql) ;;
   *) printf 'Unknown ELMOS_POLYGLOT_ROUTE_CI_PROFILE: %s\n' "${CI_PROFILE}" >&2; exit 2 ;;
 esac
 
@@ -132,8 +132,16 @@ install_pinned_cask() {
   fi
 }
 
+if [[ "${CI_PROFILE}" == "typed-sql" || "${CI_PROFILE}" == "full" \
+  || "${CI_PROFILE}" == "frontend-formal" ]]; then
+  install_pinned_formula \
+    "sqlite" "3.53.3" \
+    "0394ff5fbc5b66a3c7e8787cdc26ae23d2d8a1aa" \
+    "Formula/s/sqlite.rb" \
+    "095e3e37a0e81c397362801a80c0d8420ca4d7f918b854926bc8da2c218abe4d"
+fi
+
 if [[ "${CI_PROFILE}" == "typed-sql" ]]; then
-  HOMEBREW_NO_AUTO_UPDATE=1 brew install sqlite
   install_pinned_formula \
     "python@3.14" "3.14.6" \
     "38adcf3b2e2f5f90f72fb559467495200b1ee8bb" \
@@ -151,11 +159,35 @@ PY
   exit 0
 fi
 
-HOMEBREW_NO_AUTO_UPDATE=1 brew install uv
-if [[ "$(brew list --formula --versions uv)" != "uv 0.11.16" ]]; then
-  printf 'Pinned Homebrew uv version is unavailable: %s\n' "$(brew list --formula --versions uv)" >&2
-  exit 3
+if [[ "${CI_PROFILE}" == "frontend-formal" ]]; then
+  # The Batch 32 receipt binds the verifier to the Homebrew Node 26.0.0
+  # bottle and its /opt/homebrew Cellar identity. Install the complete named
+  # dependency closure before the historical bottle so hosted-image updates
+  # cannot silently substitute a newer Node binary.
+  HOMEBREW_NO_AUTO_UPDATE=1 brew install \
+    ada-url brotli c-ares hdrhistogram_c icu4c@78 libnghttp2 libnghttp3 \
+    libngtcp2 libuv llhttp merve nbytes openssl@3 simdjson simdutf uvwasi zstd
+  install_pinned_formula \
+    "node" "26.0.0" \
+    "98aa23ff4d1956be3df92906ff21b7e2b4c7a14b" \
+    "Formula/n/node.rb" \
+    "cd0800e004cdb76cebfdc6d0647ddfe7bfa38880152200a30366b822aa18a9ba"
+  readonly FRONTEND_NODE="${HOMEBREW_CELLAR}/node/26.0.0/bin/node"
+  if [[ ! -x "${FRONTEND_NODE}" \
+    || "$(file_sha256 "${FRONTEND_NODE}")" != "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb" \
+    || "$("${FRONTEND_NODE}" --version)" != "v26.0.0" ]]; then
+    printf 'Pinned frontend Node identity does not match the formal receipt.\n' >&2
+    exit 3
+  fi
+  printf '%s\n' "${HOMEBREW_PREFIX}/bin" >>"${GITHUB_PATH}"
+  exit 0
 fi
+
+install_pinned_formula \
+  "uv" "0.11.16" \
+  "b6942cd097e4bea3caf268ea8ff418b749f6d2f3" \
+  "Formula/u/uv.rb" \
+  "a85594f7cc529d80a545785cb31e684470d12e33f86808b8c2fe1574bae1f36d"
 
 install_pinned_formula \
   "openjdk@21" "21.0.11" \
@@ -169,8 +201,7 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
   # hashes every resolved component and fails closed if any formula has drifted.
   HOMEBREW_NO_AUTO_UPDATE=1 brew install \
     ada-url brotli c-ares hdrhistogram_c icu4c@78 libnghttp2 libnghttp3 \
-    libngtcp2 libuv llhttp merve nbytes openssl@3 simdjson simdutf sqlite \
-    uvwasi zstd
+    libngtcp2 libuv llhttp merve nbytes openssl@3 simdjson simdutf uvwasi zstd
   install_pinned_formula \
     "dotnet" "10.0.301" \
     "12d2ab0af5e553745d065e02d444f8985983c03a" \
