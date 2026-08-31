@@ -129,6 +129,19 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
             validator.REQUIRED_REPLAY_REPOSITORY_PATHS,
         )
         self.assertEqual(
+            tuple(generator.LOCKED_NODE_IDENTITIES_V2),
+            tuple(validator.LOCKED_NODE_IDENTITIES),
+        )
+        schema = load(
+            ROOT / "schemas/batch32/frontend-formal-route-campaign-v2.schema.json"
+        )
+        self.assertEqual(
+            "PINNED_NODE_ENVIRONMENT_MATRIX",
+            schema["properties"]["engine_verifier"]["properties"]["portability"][
+                "const"
+            ],
+        )
+        self.assertEqual(
             (
                 runtime_runner.LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_FILE_COUNT,
                 runtime_runner.LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_SHA256,
@@ -148,6 +161,77 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
                 validator.LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_SHA256,
             ),
         )
+        self.assertEqual(
+            (
+                generator.LOCKED_V2_UNDICI_TYPES_VERSION,
+                generator.LOCKED_V2_UNDICI_TYPES_TREE_FILE_COUNT,
+                generator.LOCKED_V2_UNDICI_TYPES_TREE_SHA256,
+            ),
+            (
+                validator.LOCKED_ENGINE_VERIFIER_UNDICI_TYPES_VERSION,
+                validator.LOCKED_ENGINE_VERIFIER_UNDICI_TYPES_TREE_FILE_COUNT,
+                validator.LOCKED_ENGINE_VERIFIER_UNDICI_TYPES_TREE_SHA256,
+            ),
+        )
+
+    def test_vendored_engine_verifier_type_closure_is_git_tracked(self) -> None:
+        pack_roots = (
+            "client-packs/frontend-72-route-equivalence-v2/formal-campaign/"
+            "engine-verifier/node_modules",
+            "verification-packs/frontend-72-route-formal-equivalence-v2/"
+            "formal-campaign/engine-verifier/node_modules",
+        )
+        closures = (("@types/node", 67), ("undici-types", 44))
+        tracked_by_closure: dict[str, list[str]] = {}
+        for pack_root in pack_roots:
+            for relative, expected_count in closures:
+                repository_prefix = f"{pack_root}/{relative}"
+                completed = subprocess.run(
+                    ["git", "ls-files", "--", repository_prefix],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    timeout=30,
+                    check=False,
+                )
+                self.assertEqual(0, completed.returncode, completed.stderr)
+                tracked = [
+                    item for item in completed.stdout.splitlines() if item.strip()
+                ]
+                self.assertEqual(expected_count, len(tracked), repository_prefix)
+                suffixes = [
+                    item.removeprefix(repository_prefix + "/") for item in tracked
+                ]
+                if relative in tracked_by_closure:
+                    self.assertEqual(tracked_by_closure[relative], suffixes)
+                else:
+                    tracked_by_closure[relative] = suffixes
+                for repository_file in tracked:
+                    absolute_file = ROOT / repository_file
+                    self.assertTrue(absolute_file.is_file(), repository_file)
+                    self.assertFalse(absolute_file.is_symlink(), repository_file)
+
+    def test_locked_node_resolver_rejects_relocated_same_binary(self) -> None:
+        live_node = generator.locked_node_executable_v2(
+            unavailable_code="TEST_NODE_UNAVAILABLE",
+            drift_code="TEST_NODE_DRIFT",
+        )
+        with tempfile.TemporaryDirectory(prefix="frontend-v2-node-drift-") as directory:
+            relocated = Path(directory) / "node"
+            shutil.copy2(live_node, relocated)
+            relocated.chmod(0o755)
+            with mock.patch.object(generator.shutil, "which", return_value=str(relocated)):
+                with self.assertRaisesRegex(RuntimeError, "TEST_NODE_DRIFT"):
+                    generator.locked_node_executable_v2(
+                        unavailable_code="TEST_NODE_UNAVAILABLE",
+                        drift_code="TEST_NODE_DRIFT",
+                    )
+            errors: list[str] = []
+            with mock.patch.object(validator.shutil, "which", return_value=str(relocated)):
+                self.assertIsNone(
+                    validator.locked_node_executable(label="test", errors=errors)
+                )
+            self.assertTrue(any("exact pinned matrix" in error for error in errors))
 
     def test_dimension_closure_schema_reference_is_resolvable(self) -> None:
         if validator.jsonschema is None:
@@ -448,6 +532,94 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
                 "test invalid root authorization signature is invalid",
                 validator_errors,
             )
+            valid_signature = signature_path.read_bytes()
+            for length in (63, 65):
+                candidate = (
+                    valid_signature[:length]
+                    if length < len(valid_signature)
+                    else valid_signature + b"\x00"
+                )
+                encoded = base64.b64encode(candidate).decode("ascii")
+                with self.subTest(signature_length=length):
+                    with self.assertRaisesRegex(
+                        RuntimeError, "V2_EXTERNAL_SIGNATURE_LENGTH_INVALID"
+                    ):
+                        generator._verify_ed25519_v2(
+                            public_key_pem=public_keys["root-key"],
+                            signature_base64=encoded,
+                            payload=unsigned_trust,
+                            label="length test",
+                        )
+                    length_errors: list[str] = []
+                    self.assertFalse(
+                        validator.verify_external_ed25519(
+                            public_key_pem=public_keys["root-key"],
+                            signature_base64=encoded,
+                            payload=unsigned_trust,
+                            label="length test",
+                            errors=length_errors,
+                        )
+                    )
+                    self.assertIn("length test signature length is invalid", length_errors)
+
+            rsa_private = pack / "rsa.private.pem"
+            rsa_public = pack / "rsa.public.pem"
+            subprocess.run(
+                [
+                    openssl,
+                    "genpkey",
+                    "-algorithm",
+                    "RSA",
+                    "-pkeyopt",
+                    "rsa_keygen_bits:2048",
+                    "-out",
+                    str(rsa_private),
+                ],
+                capture_output=True,
+                check=True,
+            )
+            subprocess.run(
+                [
+                    openssl,
+                    "pkey",
+                    "-in",
+                    str(rsa_private),
+                    "-pubout",
+                    "-out",
+                    str(rsa_public),
+                ],
+                capture_output=True,
+                check=True,
+            )
+            for name, key in (
+                ("rsa", rsa_public.read_text(encoding="utf-8")),
+                ("malformed", "-----BEGIN PUBLIC KEY-----\ninvalid\n"),
+            ):
+                with self.subTest(public_key=name):
+                    with self.assertRaisesRegex(
+                        RuntimeError, "V2_EXTERNAL_SIGNATURE_INVALID"
+                    ):
+                        generator._verify_ed25519_v2(
+                            public_key_pem=key,
+                            signature_base64=base64.b64encode(valid_signature).decode(
+                                "ascii"
+                            ),
+                            payload=unsigned_trust,
+                            label=f"{name} test",
+                        )
+                    key_errors: list[str] = []
+                    self.assertFalse(
+                        validator.verify_external_ed25519(
+                            public_key_pem=key,
+                            signature_base64=base64.b64encode(valid_signature).decode(
+                                "ascii"
+                            ),
+                            payload=unsigned_trust,
+                            label=f"{name} test",
+                            errors=key_errors,
+                        )
+                    )
+                    self.assertIn(f"{name} test signature is invalid", key_errors)
             errors: list[str] = []
             result = validator.validate_external_trust_chain_v2(
                 pack=pack,
@@ -2217,6 +2389,56 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
             )
             self.save_campaign(pack, campaign)
             self.assert_invalid(pack, "Node types tree identity drift")
+        finally:
+            temporary.cleanup()
+
+    @unittest.skipUnless(
+        frozen_v2_pack_available(
+            ROOT / "client-packs/frontend-72-route-equivalence-v2",
+            "ELMOS_FRONTEND_V2_CLIENT_PACK",
+        ),
+        "frozen block-specific v2 pack has not been staged or published",
+    )
+    def test_fully_rehashed_undici_types_mutation_fails_closed(self) -> None:
+        temporary, pack = self.copy_pack()
+        try:
+            _, campaign = self.campaign(pack)
+            declaration = campaign["engine_verifier"]
+            runtime_ids = [str(item) for item in declaration["runtime_artifact_ids"]]
+            target = next(
+                row
+                for row in campaign["artifacts"]
+                if row["id"] in runtime_ids
+                and row["path"].endswith("/node_modules/undici-types/fetch.d.ts")
+            )
+            content = (pack / target["path"]).read_bytes() + b"\n// mutation\n"
+            self.rewrite_artifact(pack, campaign, target["id"], content)
+            artifact_map = {row["id"]: row for row in campaign["artifacts"]}
+            declaration["fingerprint"] = validator.v1.bundle_fingerprint(
+                runtime_ids + [str(declaration["node_identity_artifact_id"])],
+                artifact_map,
+            )
+            self.save_campaign(pack, campaign)
+            self.assert_invalid(pack, "undici types tree identity drift")
+        finally:
+            temporary.cleanup()
+
+    @unittest.skipUnless(
+        frozen_v2_pack_available(
+            ROOT / "client-packs/frontend-72-route-equivalence-v2",
+            "ELMOS_FRONTEND_V2_CLIENT_PACK",
+        ),
+        "frozen block-specific v2 pack has not been staged or published",
+    )
+    def test_engine_verifier_portability_downgrade_fails_closed(self) -> None:
+        temporary, pack = self.copy_pack()
+        try:
+            _, campaign = self.campaign(pack)
+            campaign["engine_verifier"]["portability"] = (
+                "PINNED_NODE_ENVIRONMENT_ASSUMPTION"
+            )
+            self.save_campaign(pack, campaign)
+            self.assert_invalid(pack, "exact pinned Node matrix")
         finally:
             temporary.cleanup()
 

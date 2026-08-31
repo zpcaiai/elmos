@@ -108,7 +108,7 @@
                     "items": {"$ref": "#/$defs/nonEmpty"}
                 },
                 "status": {"enum": ["PASSED", "FAILED", "NOT_RUN"]},
-                "portability": {"const": "PINNED_NODE_ENVIRONMENT_ASSUMPTION"}
+                "portability": {"const": "PINNED_NODE_ENVIRONMENT_MATRIX"}
             }
         },
         "gap_inventory_artifact_id": {"$ref": "#/$defs/nonEmpty"},

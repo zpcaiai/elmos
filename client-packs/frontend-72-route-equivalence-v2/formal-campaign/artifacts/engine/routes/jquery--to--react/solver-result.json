@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
   "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "jquery--to--react",
-  "formal_input_digest": "sha256:d5824ca6d66d557d49cf1dab5a37416bc3fd208bf2308f44b523467e57452205",
-  "solver_input_digest": "sha256:8adedf2beb7f70af0583cb66bc8c97e85be89354ad577bf59dc4c7af581bcf36",
-  "smt2_digest": "sha256:8adedf2beb7f70af0583cb66bc8c97e85be89354ad577bf59dc4c7af581bcf36"
+  "formal_input_digest": "sha256:3ad39eaab4b2c9fb747b6a02e766cd068dcdaae8ee3f58068eb0ff55aa292fd8",
+  "solver_input_digest": "sha256:7539d1ef3b48a7b101e8493195619ef8e3a385d5003ff8b0cf384a8ef1724350",
+  "smt2_digest": "sha256:7539d1ef3b48a7b101e8493195619ef8e3a385d5003ff8b0cf384a8ef1724350"
 }

@@ -37,6 +37,7 @@ from .repository import javascript_esm_descriptor
 from .toolchains import (
     ExactToolchain,
     exact_toolchain,
+    node_closure_profile_id,
     sanitized_subprocess_env,
     typescript_parser_receipt,
     verify_csharp_toolchain,
@@ -6157,16 +6158,21 @@ def _javascript_toolchain_binding(toolchain: ExactToolchain) -> dict[str, str]:
     closure_items = [
         (key, value) for key, value in profile.items() if re.fullmatch(r"node(?:-toolchain)?-closure-sha256", key)
     ]
+    closure_sha256 = closure_items[0][1] if len(closure_items) == 1 else ""
+    expected_profile = node_closure_profile_id(closure_sha256)
     if (
         len(closure_items) != 1
-        or re.fullmatch(r"[0-9a-f]{64}", closure_items[0][1]) is None
+        or re.fullmatch(r"[0-9a-f]{64}", closure_sha256) is None
         or profile.get("node-toolchain-closure-schema") != "v1"
+        or expected_profile is None
+        or profile.get("node-closure-profile") != expected_profile
     ):
         raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_POLICY_INVALID")
     profile_bytes = json.dumps(list(toolchain.profile), ensure_ascii=True, separators=(",", ":")).encode("ascii")
     return {
         "closure_field": closure_items[0][0],
-        "closure_sha256": closure_items[0][1],
+        "closure_sha256": closure_sha256,
+        "closure_profile": expected_profile,
         "profile_sha256": hashlib.sha256(profile_bytes).hexdigest(),
     }
 
@@ -6402,6 +6408,8 @@ def _typescript_toolchain_binding(
         if not separator or not key or not value or key in profile:
             raise RouteError(failure)
         profile[key] = value
+    node_closure_sha256 = profile.get("node-closure-sha256", "")
+    expected_node_profile = node_closure_profile_id(node_closure_sha256)
     if (
         toolchain.language != "typescript"
         or toolchain.version != "5.9.2 / Node 26.0.0"
@@ -6420,7 +6428,9 @@ def _typescript_toolchain_binding(
         or profile.get("typescript-closure-bytes") != str(parser_receipt["compiler_closure_bytes"])
         or profile.get("typescript-parser-sha256") != parser_receipt["sha256"]
         or profile.get("typescript-compiler-runtime-semantic-soundness") != "NOT_RUN"
-        or re.fullmatch(r"[0-9a-f]{64}", profile.get("node-closure-sha256", "")) is None
+        or re.fullmatch(r"[0-9a-f]{64}", node_closure_sha256) is None
+        or expected_node_profile is None
+        or profile.get("node-closure-profile") != expected_node_profile
     ):
         raise RouteError(failure)
     for key in (
@@ -6436,7 +6446,8 @@ def _typescript_toolchain_binding(
     profile_bytes = json.dumps(list(toolchain.profile), ensure_ascii=True, separators=(",", ":")).encode("ascii")
     return {
         "typescript_closure_sha256": str(parser_receipt["compiler_closure_sha256"]),
-        "node_closure_sha256": profile["node-closure-sha256"],
+        "node_closure_sha256": node_closure_sha256,
+        "node_closure_profile": expected_node_profile,
         "profile_sha256": hashlib.sha256(profile_bytes).hexdigest(),
     }
 

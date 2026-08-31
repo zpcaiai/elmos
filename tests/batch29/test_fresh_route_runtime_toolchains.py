@@ -331,7 +331,12 @@ def test_ci_node_profiles_pin_the_exact_ada_url_abi_and_node_receipt() -> None:
     assert '[[ "${resolved_target}" == "${versioned_library}" ]]' in installer
     assert 'verify_pinned_formula_opt_link "${ADA_URL_ROOT}" "${ADA_URL_OPT_LINK}"' in installer
     assert '[[ "${resolved_target}" == "${root}" ]]' in installer
-    assert "77917065434cb8263f1bd0768b0e54cda7793269be8a4d11d4bf72a67211881c" in installer
+    assert 'verify_pinned_ada_url_library_identity "${ADA_URL_LIBRARY}"' in installer
+    assert "616512:77917065434cb8263f1bd0768b0e54cda7793269be8a4d11d4bf72a67211881c" in installer
+    assert "homebrew-node26-libada-77917065434c-616512" in installer
+    assert "613248:e4b04b323411a5ca0f06086ad54378f21d02831fb571f09ea61db8f20dfdedc4" in installer
+    assert "homebrew-node26-libada-e4b04b323411-613248" in installer
+    assert "e4b04b323411a5ca0f06086ad54378f21d02831fb571f09ea61db8f20dfdedc4" in installer
     assert "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb" in installer
     assert "ada-url brotli" not in installer
 

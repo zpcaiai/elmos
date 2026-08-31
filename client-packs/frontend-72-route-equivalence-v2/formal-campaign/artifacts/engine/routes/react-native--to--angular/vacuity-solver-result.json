@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
   "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "react-native--to--angular",
-  "formal_input_digest": "sha256:01a97ebf46c23b33ced7cbd61ff88ab23e99fe070d5ddba74a357dd39b153257",
-  "solver_input_digest": "sha256:e25d295d9018a91c8d284b5f3d873c2e07f0521ec3d648f2ba32bedb747565c6",
-  "smt2_digest": "sha256:e25d295d9018a91c8d284b5f3d873c2e07f0521ec3d648f2ba32bedb747565c6",
+  "formal_input_digest": "sha256:155b30cf09a644a8b30d8e83a23289b037ab73e40456309fb242c964b74b22b8",
+  "solver_input_digest": "sha256:6f312368dd673f3bdaa60c2a57985ad80b5fd0499ea45150302a64a2d6a2290c",
+  "smt2_digest": "sha256:6f312368dd673f3bdaa60c2a57985ad80b5fd0499ea45150302a64a2d6a2290c",
   "precheck_status": "PASSED"
 }

@@ -214,8 +214,17 @@ def validate_local_evidence_consistency(pack, pack_manifest, evidence, errors):
                 errors.append(
                     f"{record_field} does not match the {role} repository binding: {ref}"
                 )
+        environment = record.get("environment")
+        environment_fields = environment if isinstance(environment, dict) else {}
         environment_ref = record.get("environment_identity_ref")
+        if environment is not None and not isinstance(environment, dict):
+            errors.append(f"environment must be an object when declared: {ref}")
+        if isinstance(environment, dict) and not isinstance(environment_ref, str):
+            errors.append(f"environment identity is unsafe or missing: {ref}")
         if environment_ref is not None:
+            if not isinstance(environment_ref, str):
+                errors.append(f"environment identity is unsafe or missing: {ref}")
+                continue
             environment_path = local_ref_path(pack, environment_ref)
             if environment_path is None:
                 errors.append(f"environment identity is unsafe or missing: {ref}")
@@ -282,13 +291,9 @@ def validate_local_evidence_consistency(pack, pack_manifest, evidence, errors):
                         r"sha256:[0-9a-f]{64}", str(browser.get("sha256", ""))
                     )
                     or browser.get("project")
-                    != record.get("environment", {}).get(
-                        "configured_browser_project"
-                    )
+                    != environment_fields.get("configured_browser_project")
                     or browser.get("channel")
-                    != record.get("environment", {}).get(
-                        "configured_browser_channel"
-                    )
+                    != environment_fields.get("configured_browser_channel")
                     or not isinstance(platform, dict)
                     or any(
                         not isinstance(platform.get(field), str)
@@ -303,14 +308,12 @@ def validate_local_evidence_consistency(pack, pack_manifest, evidence, errors):
                     )
                 ):
                     errors.append(f"environment browser/OS identity is malformed: {ref}")
-                browser_execution = record.get("environment", {}).get(
-                    "browser_execution"
-                )
+                browser_execution = environment_fields.get("browser_execution")
                 if browser_execution not in {"PASSED", "NOT_RUN"}:
                     errors.append(f"browser execution status is invalid: {ref}")
-                if browser_execution == "NOT_RUN" and not record.get(
-                    "environment", {}
-                ).get("browser_execution_reason"):
+                if browser_execution == "NOT_RUN" and not environment_fields.get(
+                    "browser_execution_reason"
+                ):
                     errors.append(f"browser NOT_RUN reason is missing: {ref}")
     certification_path = local_ref_path(pack, "certification/certification.json")
     if certification_path is not None:

@@ -11,6 +11,7 @@ from typing import Any
 import pytest
 
 import elmos_polyglot_route.native as native
+import elmos_polyglot_route.toolchains as toolchains
 from elmos_polyglot_route.models import RouteError
 from elmos_polyglot_route.toolchains import (
     ExactToolchain,
@@ -130,7 +131,8 @@ def _synthetic_toolchain(receipt: dict[str, str | int]) -> ExactToolchain:
             f"typescript-closure-bytes={receipt['compiler_closure_bytes']}",
             f"typescript-parser-sha256={receipt['sha256']}",
             "typescript-compiler-runtime-semantic-soundness=NOT_RUN",
-            f"node-closure-sha256={'d' * 64}",
+            "node-closure-sha256=bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b",
+            "node-closure-profile=homebrew-node26-libada-77917065434c-616512",
             "node-closure-component-count=25",
             "node-closure-edge-count=49",
             "node-closure-system-edge-count=43",
@@ -150,6 +152,31 @@ def _synthetic_analyzer_inputs(tmp_path: Path) -> tuple[Path, Path, dict[str, st
     source.write_text(_source(), encoding="utf-8")
     receipt = _synthetic_receipt(parser)
     return source, parser, receipt, _synthetic_toolchain(receipt)
+
+
+@pytest.mark.parametrize("profile_value", [None, "mismatched-profile"])
+def test_typescript_binding_requires_matching_node_closure_profile(
+    tmp_path: Path,
+    profile_value: str | None,
+) -> None:
+    _source_path, _parser, receipt, toolchain = _synthetic_analyzer_inputs(tmp_path)
+    profile = tuple(
+        item for item in toolchain.profile if not item.startswith("node-closure-profile=")
+    )
+    if profile_value is not None:
+        profile = (*profile, f"node-closure-profile={profile_value}")
+    candidate = ExactToolchain(
+        language=toolchain.language,
+        version=toolchain.version,
+        executable=toolchain.executable,
+        auxiliary=toolchain.auxiliary,
+        profile=profile,
+        executable_sha256=toolchain.executable_sha256,
+        auxiliary_sha256=toolchain.auxiliary_sha256,
+    )
+
+    with pytest.raises(RouteError, match="^TYPESCRIPT_ANALYZER_TOOLCHAIN_POLICY_INVALID$"):
+        native._typescript_toolchain_binding(candidate, receipt)
 
 
 def test_typescript_analyzer_uses_exact_private_snapshot(
@@ -182,7 +209,10 @@ def test_typescript_analyzer_uses_exact_private_snapshot(
     result = native._run_trusted_typescript_analyzer(toolchain, source, "calculate")
 
     assert "typescript-closure=" + "c" * 64 in result["analyzer_version"]
-    assert "node-closure=" + "d" * 64 in result["analyzer_version"]
+    assert (
+        "node-closure=bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b"
+        in result["analyzer_version"]
+    )
 
 
 @pytest.mark.parametrize(
@@ -525,6 +555,12 @@ def test_detached_captured_typescript_source_inventory_and_target_relift(
         "PYTHONHASHSEED": "0",
         "PYTHONDONTWRITEBYTECODE": "1",
         "PYTHONNOUSERSITE": "1",
+        "ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT": str(
+            toolchains._EXPECTED_TOOLCHAIN_ROOT
+        ),
+        "ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX": str(
+            toolchains._EXPECTED_HOMEBREW_PREFIX
+        ),
     }
     script = """
 import json

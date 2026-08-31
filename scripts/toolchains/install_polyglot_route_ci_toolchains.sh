@@ -191,6 +191,26 @@ verify_pinned_formula_opt_link() {
   [[ "${resolved_target}" == "${root}" ]]
 }
 
+verify_pinned_ada_url_library_identity() {
+  local library="$1"
+  local byte_count
+  local sha256
+  if [[ ! -f "${library}" || -L "${library}" ]]; then
+    return 1
+  fi
+  byte_count="$(stat -f '%z' "${library}")" || return 1
+  sha256="$(file_sha256 "${library}")" || return 1
+  case "${byte_count}:${sha256}" in
+    "616512:77917065434cb8263f1bd0768b0e54cda7793269be8a4d11d4bf72a67211881c")
+      printf '%s\n' "homebrew-node26-libada-77917065434c-616512"
+      ;;
+    "613248:e4b04b323411a5ca0f06086ad54378f21d02831fb571f09ea61db8f20dfdedc4")
+      printf '%s\n' "homebrew-node26-libada-e4b04b323411-613248"
+      ;;
+    *) return 1 ;;
+  esac
+}
+
 install_pinned_ada_url() {
   install_pinned_formula \
     "ada-url" "3.4.4" \
@@ -201,12 +221,15 @@ install_pinned_ada_url() {
   readonly ADA_URL_LIBRARY="${ADA_URL_ROOT}/lib/libada.3.4.4.dylib"
   readonly ADA_URL_ABI_LINK="${ADA_URL_ROOT}/lib/libada.3.dylib"
   readonly ADA_URL_OPT_LINK="${HOMEBREW_PREFIX}/opt/ada-url"
-  if [[ ! -f "${ADA_URL_LIBRARY}" || -L "${ADA_URL_LIBRARY}" \
-    || "$(stat -f '%z' "${ADA_URL_LIBRARY}")" != "616512" \
-    || "$(file_sha256 "${ADA_URL_LIBRARY}")" != "77917065434cb8263f1bd0768b0e54cda7793269be8a4d11d4bf72a67211881c" ]]; then
+  local ada_url_library_profile
+  if ! ada_url_library_profile="$(
+      verify_pinned_ada_url_library_identity "${ADA_URL_LIBRARY}"
+    )"; then
     printf 'Pinned ada-url identity does not provide the exact libada.3 closure.\n' >&2
     exit 3
   fi
+  printf 'Pinned ada-url installed library profile: %s\n' \
+    "${ada_url_library_profile}"
   if ! verify_pinned_formula_opt_link "${ADA_URL_ROOT}" "${ADA_URL_OPT_LINK}"; then
     printf 'Pinned ada-url opt link escapes or drifts from the exact Cellar root.\n' >&2
     exit 3

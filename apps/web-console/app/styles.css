@@ -1202,7 +1202,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 @media (max-width: 900px) {
   .sidebar { transform: translateX(-105%); width: 260px; transition: transform .2s ease; box-shadow: var(--shadow-lg); }.sidebar-open { transform: translateX(0); }.sidebar-close { display: grid !important; }
-  .sidebar-scrim { position: fixed; z-index: 25; inset: 0; border: 0; background: rgba(9,24,26,.45); }
+  .sidebar-scrim { position: fixed; z-index: 25; inset: 0 0 0 260px; border: 0; background: rgba(9,24,26,.45); }
   .content-shell { margin-left: 0; padding-bottom: 70px; }.mobile-menu { display: grid; }.breadcrumb { margin-right: auto; margin-left: 8px; }
   .command-trigger { min-width: 38px; width: 38px; padding: 0; justify-content: center; }.command-trigger span, .command-trigger kbd { display: none; }
   .brand-mark { width: 44px; height: 44px; }.sidebar-close, .secondary-link { min-height: 44px; }.sidebar-close { width: 44px; }

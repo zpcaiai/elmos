@@ -759,6 +759,7 @@ class FlywayMigrationTest {
         } catch (SQLException error) {
             throw new AssertionError("runtime role ACL negative test failed", error);
         } finally {
+            jdbc.sql("DROP OWNED BY " + role).update();
             jdbc.sql("DROP ROLE IF EXISTS " + role).update();
         }
     }

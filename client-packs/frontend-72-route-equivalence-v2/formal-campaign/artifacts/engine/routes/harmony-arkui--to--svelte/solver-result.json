@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
   "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "harmony-arkui--to--svelte",
-  "formal_input_digest": "sha256:178fd78c81d2497ac9ff153a232755e27d17a1e144d803c94e728b41901cb66d",
-  "solver_input_digest": "sha256:1a8b6ff33546857be0211f39240dae1739303e8679e4213d14fe33366579c844",
-  "smt2_digest": "sha256:1a8b6ff33546857be0211f39240dae1739303e8679e4213d14fe33366579c844"
+  "formal_input_digest": "sha256:f4ce41bafdf0c867740e4d677263dbd8dfadbce12410e8c0079dcc30802a411f",
+  "solver_input_digest": "sha256:eed5e4a15012ccc7650d478f8394df493d37cf92e0b05978806919da19f89314",
+  "smt2_digest": "sha256:eed5e4a15012ccc7650d478f8394df493d37cf92e0b05978806919da19f89314"
 }

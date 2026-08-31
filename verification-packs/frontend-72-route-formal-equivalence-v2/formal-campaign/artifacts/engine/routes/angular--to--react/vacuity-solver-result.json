@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
   "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "angular--to--react",
-  "formal_input_digest": "sha256:47163e71059201b8daadf8345a819dbad70b033dbb15a42dc0362f87a22a8d68",
-  "solver_input_digest": "sha256:c9b2af3bf418d45ac65cbf61d025bedd22e09ab00a9dc6473c006de7eaee2733",
-  "smt2_digest": "sha256:c9b2af3bf418d45ac65cbf61d025bedd22e09ab00a9dc6473c006de7eaee2733",
+  "formal_input_digest": "sha256:16c8dab5a884e9c4de44a8b761177b38eb0db791011feaf0c62282fce5487d88",
+  "solver_input_digest": "sha256:5901c3fc3d3ce8dfd215bf51c1acee5f5bc0004324f34531777fb47a83db1512",
+  "smt2_digest": "sha256:5901c3fc3d3ce8dfd215bf51c1acee5f5bc0004324f34531777fb47a83db1512",
   "precheck_status": "PASSED"
 }

@@ -655,6 +655,30 @@ LOCKED_Z3_ENVIRONMENT = {
     "arch": "arm64",
     "node_version": "v26.0.0",
 }
+LOCKED_NODE_IDENTITIES_V2 = (
+    {
+        "realpath": "/opt/homebrew/Cellar/node/26.0.0/bin/node",
+        "sha256": "sha256:73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb",
+        "bytes": 68672,
+        "version": "v26.0.0",
+        "platform": "darwin",
+        "arch": "arm64",
+        "distribution": "homebrew-core-node-26.0.0",
+        "source_url": "https://ghcr.io/v2/homebrew/core/node/blobs/sha256:d1fe8663479f817e4b39067b5731d9561c61303ee7ae6fc373906ee89cc13345",
+        "distribution_sha256": "sha256:d1fe8663479f817e4b39067b5731d9561c61303ee7ae6fc373906ee89cc13345",
+    },
+    {
+        "realpath": "/Users/runner/hostedtoolcache/node/26.0.0/arm64/bin/node",
+        "sha256": "sha256:7d7b6664e04723d372ad5a6565616b77f401f76f3e3aaa12ba09b7ff7ca636e9",
+        "bytes": 143020080,
+        "version": "v26.0.0",
+        "platform": "darwin",
+        "arch": "arm64",
+        "distribution": "nodejs-node-v26.0.0-darwin-arm64",
+        "source_url": "https://nodejs.org/dist/v26.0.0/node-v26.0.0-darwin-arm64.tar.xz",
+        "distribution_sha256": "sha256:880cf6f35eb9dea84b2373adba13b6023b50cc0decbad47b57824d146373265a",
+    },
+)
 V2_IMPLEMENTATION_PATHS = (
     "engines/frontend-client-engine/src/frontend-interaction-formal-equivalence.ts",
     "engines/frontend-client-engine/src/frontend-interaction-formal-cli.ts",
@@ -762,6 +786,11 @@ V2_ENGINE_VERIFIER_MODULES = (
 LOCKED_V2_NODE_TYPES_TREE_FILE_COUNT = 67
 LOCKED_V2_NODE_TYPES_TREE_SHA256 = (
     "sha256:b0c1c8b3aaa62dfb2f57156c9493db374c5ae99b6f9e27e3bc2344e8e5704fe3"
+)
+LOCKED_V2_UNDICI_TYPES_VERSION = "7.10.0"
+LOCKED_V2_UNDICI_TYPES_TREE_FILE_COUNT = 44
+LOCKED_V2_UNDICI_TYPES_TREE_SHA256 = (
+    "sha256:bf784f82f590837f3952fe8438ebac5c1fd3c9c63e165e41fb16dd62e3a4678c"
 )
 ENGINE_SOLVER_RESULT_KEYS = {
     "schema_version",
@@ -939,6 +968,92 @@ def locked_v2_node_types_sources(repo_root: Path) -> list[tuple[Path, str]]:
     ):
         raise RuntimeError("V2_NODE_TYPES_TREE_IDENTITY_DRIFT")
     return sources
+
+
+def locked_v2_undici_types_sources(repo_root: Path) -> list[tuple[Path, str]]:
+    """Return the exact regular-file closure required by @types/node."""
+
+    engine_root = repo_root / "engines/frontend-client-engine"
+    expected_root = (
+        engine_root
+        / "node_modules/.pnpm/undici-types@7.10.0/node_modules/undici-types"
+    )
+    try:
+        resolved_expected = expected_root.resolve(strict=True)
+        resolved_expected.relative_to(engine_root.resolve(strict=True))
+    except (FileNotFoundError, OSError, ValueError) as exc:
+        raise RuntimeError("V2_UNDICI_TYPES_ROOT_UNAVAILABLE") from exc
+    current = engine_root
+    for part in expected_root.relative_to(engine_root).parts:
+        current = current / part
+        if current.is_symlink():
+            raise RuntimeError("V2_UNDICI_TYPES_ROOT_SYMLINK_FORBIDDEN")
+    if not resolved_expected.is_dir():
+        raise RuntimeError("V2_UNDICI_TYPES_DIRECTORY_REQUIRED")
+    rows: list[dict[str, object]] = []
+    sources: list[tuple[Path, str]] = []
+    for source in sorted(resolved_expected.rglob("*"), key=lambda item: item.as_posix()):
+        relative = source.relative_to(resolved_expected).as_posix()
+        if source.is_symlink():
+            raise RuntimeError(f"V2_UNDICI_TYPES_NESTED_SYMLINK_FORBIDDEN:{relative}")
+        if source.is_dir():
+            continue
+        if not source.is_file():
+            raise RuntimeError(f"V2_UNDICI_TYPES_REGULAR_FILE_REQUIRED:{relative}")
+        content = source.read_bytes()
+        rows.append(
+            {
+                "path": relative,
+                "sha256": digest_bytes(content),
+                "byte_count": len(content),
+            }
+        )
+        sources.append((source, relative))
+    package = load_json(resolved_expected / "package.json")
+    if (
+        package.get("name") != "undici-types"
+        or package.get("version") != LOCKED_V2_UNDICI_TYPES_VERSION
+        or len(rows) != LOCKED_V2_UNDICI_TYPES_TREE_FILE_COUNT
+        or canonical_digest(rows) != LOCKED_V2_UNDICI_TYPES_TREE_SHA256
+    ):
+        raise RuntimeError("V2_UNDICI_TYPES_TREE_IDENTITY_DRIFT")
+    return sources
+
+
+def locked_node_executable_v2(*, unavailable_code: str, drift_code: str) -> Path:
+    """Resolve Node only when its executable matches an allowlisted distribution."""
+
+    node_command = shutil.which("node")
+    if node_command is None:
+        raise RuntimeError(unavailable_code)
+    try:
+        node_realpath = Path(node_command).resolve(strict=True)
+    except (FileNotFoundError, OSError, RuntimeError) as exc:
+        raise RuntimeError(drift_code) from exc
+    if not node_realpath.is_file() or node_realpath.is_symlink():
+        raise RuntimeError(drift_code)
+    completed = subprocess.run(
+        [str(node_realpath), "--version"],
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
+    )
+    node_bytes = node_realpath.read_bytes()
+    live_node = {
+        "realpath": str(node_realpath),
+        "sha256": digest_bytes(node_bytes),
+        "bytes": len(node_bytes),
+        "version": completed.stdout.strip(),
+        "platform": sys.platform,
+        "arch": os.uname().machine,
+    }
+    if completed.returncode != 0 or not any(
+        all(live_node[key] == identity[key] for key in live_node)
+        for identity in LOCKED_NODE_IDENTITIES_V2
+    ):
+        raise RuntimeError(drift_code)
+    return node_realpath
 
 
 def pointer_escape(value: str) -> str:
@@ -1626,6 +1741,14 @@ def capture_engine_verifier_v2(
                 "engine-verifier-runtime-v2",
             )
         )
+    for source, relative in locked_v2_undici_types_sources(repo_root):
+        sources.append(
+            (
+                source,
+                f"formal-campaign/engine-verifier/node_modules/undici-types/{relative}",
+                "engine-verifier-runtime-v2",
+            )
+        )
     runtime_ids: list[str] = []
     entrypoint_id: str | None = None
     for source, relative, role in sources:
@@ -1637,30 +1760,15 @@ def capture_engine_verifier_v2(
         runtime_ids.append(identifier)
         if role == "engine-verifier-entrypoint-v2":
             entrypoint_id = identifier
-    node_command = shutil.which("node")
-    if node_command is None:
-        raise RuntimeError("V2_NODE_UNAVAILABLE")
-    node_realpath = Path(node_command).resolve(strict=True)
-    completed = subprocess.run(
-        [str(node_realpath), "--version"],
-        capture_output=True,
-        text=True,
-        timeout=10,
-        check=False,
+    locked_node_executable_v2(
+        unavailable_code="V2_NODE_UNAVAILABLE",
+        drift_code="V2_NODE_IDENTITY_DRIFT",
     )
-    if completed.returncode != 0 or completed.stdout.strip() != "v26.0.0":
-        raise RuntimeError("V2_NODE_VERSION_DRIFT")
-    node_bytes = node_realpath.read_bytes()
     node_identity = {
         "schema_version": 2,
-        "kind": "node-environment-identity-v2",
-        "realpath": str(node_realpath),
-        "sha256": digest_bytes(node_bytes),
-        "bytes": len(node_bytes),
-        "version": "v26.0.0",
-        "platform": sys.platform,
-        "arch": os.uname().machine,
-        "portability": "PINNED_NODE_ENVIRONMENT_ASSUMPTION",
+        "kind": "node-environment-identity-set-v2",
+        "identities": list(LOCKED_NODE_IDENTITIES_V2),
+        "portability": "PINNED_NODE_ENVIRONMENT_MATRIX",
     }
     node_relative = "formal-campaign/engine-verifier/node-identity.json"
     write_json(pack_root / node_relative, node_identity, canonical=True)
@@ -1686,7 +1794,7 @@ def capture_engine_verifier_v2(
             "--json",
         ],
         "status": "PASSED",
-        "portability": "PINNED_NODE_ENVIRONMENT_ASSUMPTION",
+        "portability": "PINNED_NODE_ENVIRONMENT_MATRIX",
     }
 
 
@@ -1902,13 +2010,16 @@ def _parse_utc_v2(value: object, label: str) -> datetime:
 def _verify_ed25519_v2(
     *, public_key_pem: str, signature_base64: str, payload: bytes, label: str
 ) -> None:
-    node = shutil.which("node")
-    if node is None:
-        raise RuntimeError("V2_EXTERNAL_NODE_UNAVAILABLE")
+    node = locked_node_executable_v2(
+        unavailable_code="V2_EXTERNAL_NODE_UNAVAILABLE",
+        drift_code="V2_EXTERNAL_NODE_IDENTITY_DRIFT",
+    )
     try:
         signature = base64.b64decode(signature_base64, validate=True)
     except (binascii.Error, ValueError) as exc:
         raise RuntimeError(f"V2_EXTERNAL_SIGNATURE_BASE64_INVALID:{label}") from exc
+    if len(signature) != 64:
+        raise RuntimeError(f"V2_EXTERNAL_SIGNATURE_LENGTH_INVALID:{label}")
     with tempfile.TemporaryDirectory(prefix="frontend-v2-ed25519-") as directory:
         root = Path(directory)
         public_key = root / "public.pem"
@@ -1919,15 +2030,17 @@ def _verify_ed25519_v2(
         signature_path.write_bytes(signature)
         completed = subprocess.run(
             [
-                node,
+                str(node),
                 "-e",
                 (
                     "const fs=require('node:fs');"
                     "const crypto=require('node:crypto');"
                     "const [key,input,signature]=process.argv.slice(1);"
                     "let valid=false;"
-                    "try { valid=crypto.verify(null,fs.readFileSync(input),"
-                    "fs.readFileSync(key),fs.readFileSync(signature)); }"
+                    "try { const publicKey=crypto.createPublicKey(fs.readFileSync(key));"
+                    "const sig=fs.readFileSync(signature);"
+                    "if(publicKey.asymmetricKeyType!=='ed25519'||sig.length!==64)process.exit(3);"
+                    "valid=crypto.verify(null,fs.readFileSync(input),publicKey,sig); }"
                     "catch (error) { process.stderr.write(String(error));process.exit(2); }"
                     "process.exit(valid?0:1);"
                 ),

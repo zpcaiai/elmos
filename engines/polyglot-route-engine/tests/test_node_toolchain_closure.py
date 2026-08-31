@@ -25,21 +25,24 @@ def typescript_closure() -> dict[str, object]:
 
 def test_javascript_exact_toolchain_binds_recursive_node26_closure_without_ambient_path(
     monkeypatch: pytest.MonkeyPatch,
+    node_closure: dict[str, object],
 ) -> None:
     monkeypatch.setenv("PATH", "/usr/bin:/bin")
 
     selected = toolchains.exact_toolchain("javascript")
+    closure_profile = toolchains._verify_node_dependency_closure(node_closure)
 
     assert selected.executable == str(toolchains._EXPECTED_NODE_EXECUTABLE)
     assert selected.executable_sha256 == toolchains._EXPECTED_NODE_SHA256
     assert {
         "node-toolchain-closure-schema=v1",
         f"node-install-root={toolchains._EXPECTED_NODE_ROOT}",
-        f"node-closure-sha256={toolchains._EXPECTED_NODE_CLOSURE_SHA256}",
+        f"node-closure-sha256={node_closure['sha256']}",
+        f"node-closure-profile={closure_profile}",
         f"node-closure-component-count={toolchains._EXPECTED_NODE_CLOSURE_COMPONENT_COUNT}",
         f"node-closure-edge-count={toolchains._EXPECTED_NODE_CLOSURE_EDGE_COUNT}",
         f"node-closure-system-edge-count={toolchains._EXPECTED_NODE_CLOSURE_SYSTEM_EDGE_COUNT}",
-        f"node-closure-bytes={toolchains._EXPECTED_NODE_CLOSURE_BYTES}",
+        f"node-closure-bytes={node_closure['bytes']}",
         f"node-system-edge-sha256={toolchains._EXPECTED_NODE_SYSTEM_EDGE_SHA256}",
         f"libnode-sha256={toolchains._EXPECTED_NODE_LIBNODE_SHA256}",
         f"libnode-bytes={toolchains._EXPECTED_NODE_LIBNODE_BYTES}",
@@ -51,10 +54,12 @@ def test_javascript_exact_toolchain_binds_recursive_node26_closure_without_ambie
 
 def test_typescript_exact_toolchain_binds_node_and_compiler_closures_without_ambient_path(
     monkeypatch: pytest.MonkeyPatch,
+    node_closure: dict[str, object],
 ) -> None:
     monkeypatch.setenv("PATH", "/usr/bin:/bin")
 
     selected = toolchains.exact_toolchain("typescript")
+    closure_profile = toolchains._verify_node_dependency_closure(node_closure)
 
     assert selected.executable == str(toolchains._EXPECTED_NODE_EXECUTABLE)
     assert selected.executable_sha256 == toolchains._EXPECTED_NODE_SHA256
@@ -70,7 +75,8 @@ def test_typescript_exact_toolchain_binds_node_and_compiler_closures_without_amb
         f"typescript-standard-library-file-count={toolchains._EXPECTED_TYPESCRIPT_LIBRARY_FILE_COUNT}",
         f"typescript-compiler-sha256={toolchains._EXPECTED_TYPESCRIPT_COMPILER_SHA256}",
         f"typescript-parser-sha256={toolchains._EXPECTED_TYPESCRIPT_PARSER_SHA256}",
-        f"node-closure-sha256={toolchains._EXPECTED_NODE_CLOSURE_SHA256}",
+        f"node-closure-sha256={node_closure['sha256']}",
+        f"node-closure-profile={closure_profile}",
         "typescript-compiler-runtime-semantic-soundness=NOT_RUN",
     } <= set(selected.profile)
     assert (
@@ -109,7 +115,7 @@ def test_typescript_full_stdlib_compiles_and_validates_es2022_with_scrubbed_path
 def test_node_closure_binds_every_component_edge_and_explicit_system_boundary(
     node_closure: dict[str, object],
 ) -> None:
-    toolchains._verify_node_dependency_closure(node_closure)
+    closure_profile = toolchains._verify_node_dependency_closure(node_closure)
     manifest = node_closure["manifest"]
     assert isinstance(manifest, dict)
     components = manifest["components"]
@@ -119,11 +125,16 @@ def test_node_closure_binds_every_component_edge_and_explicit_system_boundary(
     assert isinstance(edges, list)
     assert isinstance(system_edges, list)
 
-    assert node_closure["sha256"] == toolchains._EXPECTED_NODE_CLOSURE_SHA256
+    expected_profile = next(
+        profile
+        for profile in toolchains._EXPECTED_NODE_CLOSURE_PROFILES
+        if profile["profile"] == closure_profile
+    )
+    assert node_closure["sha256"] == expected_profile["sha256"]
     assert len(components) == toolchains._EXPECTED_NODE_CLOSURE_COMPONENT_COUNT
     assert len(edges) == toolchains._EXPECTED_NODE_CLOSURE_EDGE_COUNT
     assert len(system_edges) == toolchains._EXPECTED_NODE_CLOSURE_SYSTEM_EDGE_COUNT
-    assert node_closure["bytes"] == toolchains._EXPECTED_NODE_CLOSURE_BYTES
+    assert node_closure["bytes"] == expected_profile["bytes"]
     assert node_closure["system_edge_sha256"] == toolchains._EXPECTED_NODE_SYSTEM_EDGE_SHA256
     assert manifest["system_content_boundary"] == {
         "scope": "dyld-shared-cache-and-system-libraries",
@@ -152,6 +163,12 @@ def test_node_closure_binds_every_component_edge_and_explicit_system_boundary(
             "resolved_path": str(toolchains._EXPECTED_NODE_LIBNODE),
         }
         for edge in edges
+    )
+    assert any(
+        component["resolved_path"] == str(toolchains._EXPECTED_NODE_LIBADA)
+        and component["sha256"] == expected_profile["libada_sha256"]
+        and component["bytes"] == expected_profile["libada_bytes"]
+        for component in components
     )
 
 
@@ -187,6 +204,59 @@ def test_node_closure_rejects_executable_drift_even_with_recomputed_identity(
 
     with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_NODE_EXECUTABLE_MISMATCH"):
         toolchains._verify_node_dependency_closure(forged)
+
+
+def test_node_closure_rejects_libada_content_drift_even_with_recomputed_identity(
+    node_closure: dict[str, object],
+) -> None:
+    manifest = copy.deepcopy(node_closure["manifest"])
+    assert isinstance(manifest, dict)
+    components = manifest["components"]
+    assert isinstance(components, list)
+    libada = next(
+        component
+        for component in components
+        if component["resolved_path"] == str(toolchains._EXPECTED_NODE_LIBADA)
+    )
+    libada["sha256"] = "4" * 64
+    forged = toolchains._node_closure_identity(manifest)
+
+    with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_NODE_LIBADA_MISMATCH"):
+        toolchains._verify_node_dependency_closure(forged)
+
+
+@pytest.mark.parametrize("profile", toolchains._EXPECTED_NODE_CLOSURE_PROFILES)
+def test_node_closure_accepts_each_complete_declared_libada_profile(
+    node_closure: dict[str, object],
+    profile: dict[str, str | int],
+) -> None:
+    manifest = copy.deepcopy(node_closure["manifest"])
+    assert isinstance(manifest, dict)
+    components = manifest["components"]
+    assert isinstance(components, list)
+    libada = next(
+        component
+        for component in components
+        if component["resolved_path"] == str(toolchains._EXPECTED_NODE_LIBADA)
+    )
+    libada["sha256"] = profile["libada_sha256"]
+    libada["bytes"] = profile["libada_bytes"]
+    candidate = toolchains._node_closure_identity(manifest)
+
+    assert candidate["sha256"] == profile["sha256"]
+    assert candidate["bytes"] == profile["bytes"]
+    assert toolchains._verify_node_dependency_closure(candidate) == profile["profile"]
+
+
+def test_ci_installer_and_runtime_share_the_exact_libada_profile_matrix() -> None:
+    installer = (
+        Path(__file__).resolve().parents[3]
+        / "scripts/toolchains/install_polyglot_route_ci_toolchains.sh"
+    ).read_text(encoding="utf-8")
+    for profile in toolchains._EXPECTED_NODE_CLOSURE_PROFILES:
+        identity = f"{profile['libada_bytes']}:{profile['libada_sha256']}"
+        assert identity in installer
+        assert str(profile["profile"]) in installer
 
 
 def test_node_closure_rejects_self_consistent_non_libnode_forgery(

@@ -1610,7 +1610,7 @@ def _csharp() -> ExactToolchain:
 def _typescript() -> ExactToolchain:
     shim_before = _node_shim_identity()
     node_before = _node_dependency_closure()
-    _verify_node_dependency_closure(node_before)
+    node_profile_before = _verify_node_dependency_closure(node_before)
     compiler_before = _typescript_compiler_closure()
     _verify_typescript_compiler_closure(compiler_before)
     _node_runtime_identity()
@@ -1618,11 +1618,12 @@ def _typescript() -> ExactToolchain:
     compiler_after = _typescript_compiler_closure()
     _verify_typescript_compiler_closure(compiler_after)
     node_after = _node_dependency_closure()
-    _verify_node_dependency_closure(node_after)
+    node_profile_after = _verify_node_dependency_closure(node_after)
     shim_after = _node_shim_identity()
     if (
         shim_before != shim_after
         or node_before != node_after
+        or node_profile_before != node_profile_after
         or compiler_before != compiler_after
         or typescript_version != "Version 5.9.2"
     ):
@@ -1651,6 +1652,7 @@ def _typescript() -> ExactToolchain:
             f"typescript-package-json-sha256={_EXPECTED_TYPESCRIPT_PACKAGE_SHA256}",
             f"typescript-license-sha256={_EXPECTED_TYPESCRIPT_LICENSE_SHA256}",
             f"node-closure-sha256={node_after['sha256']}",
+            f"node-closure-profile={node_profile_after}",
             f"node-closure-component-count={node_after['component_count']}",
             f"node-closure-edge-count={node_after['edge_count']}",
             f"node-closure-system-edge-count={node_after['system_edge_count']}",
@@ -1667,6 +1669,9 @@ _EXPECTED_NODE_ROOT = _EXPECTED_HOMEBREW_CELLAR / "node" / "26.0.0"
 _EXPECTED_NODE_SHIM = _EXPECTED_HOMEBREW_PREFIX / "bin" / "node"
 _EXPECTED_NODE_EXECUTABLE = _EXPECTED_NODE_ROOT / "bin" / "node"
 _EXPECTED_NODE_LIBNODE = _EXPECTED_NODE_ROOT / "lib" / "libnode.147.dylib"
+_EXPECTED_NODE_LIBADA = (
+    _EXPECTED_HOMEBREW_CELLAR / "ada-url" / "3.4.4" / "lib" / "libada.3.4.4.dylib"
+)
 _EXPECTED_NODE_OTOOL = Path("/usr/bin/otool")
 _EXPECTED_NODE_SHIM_TARGET = "../Cellar/node/26.0.0/bin/node"
 _EXPECTED_NODE_SHA256 = "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb"
@@ -1678,15 +1683,38 @@ _EXPECTED_NODE_LIBNODE_BYTES = 70_843_136
 # and link count; every loader/load-path/resolved-path edge; and every declared
 # system-library edge.  It is intentionally a fixed repository expectation,
 # not a digest copied from the observed closure at runtime.
-_EXPECTED_NODE_CLOSURE_SHA256 = "bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b"
 _EXPECTED_NODE_CLOSURE_COMPONENT_COUNT = 25
 _EXPECTED_NODE_CLOSURE_EDGE_COUNT = 49
 _EXPECTED_NODE_CLOSURE_SYSTEM_EDGE_COUNT = 43
-_EXPECTED_NODE_CLOSURE_BYTES = 120_513_104
 _EXPECTED_NODE_SYSTEM_EDGE_SHA256 = "74106326c0673ff63a85e6fbc892c55a7c7f329eaad0fd715817beae4ba2b6c4"
 _EXPECTED_NODE_TOPOLOGY_SHA256 = (
     "2a77ac1d4bcf11286a97e403060b6a6490d21127857b6d1ba21806f026451bfd"
 )
+_EXPECTED_NODE_CLOSURE_PROFILES = (
+    {
+        "profile": "homebrew-node26-libada-77917065434c-616512",
+        "sha256": "bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b",
+        "bytes": 120_513_104,
+        "libada_sha256": "77917065434cb8263f1bd0768b0e54cda7793269be8a4d11d4bf72a67211881c",
+        "libada_bytes": 616_512,
+    },
+    {
+        "profile": "homebrew-node26-libada-e4b04b323411-613248",
+        "sha256": "3139bcc0851234d404144c824707a1e7d17c2841ff8af0dac05d37ce36dccf4f",
+        "bytes": 120_509_840,
+        "libada_sha256": "e4b04b323411a5ca0f06086ad54378f21d02831fb571f09ea61db8f20dfdedc4",
+        "libada_bytes": 613_248,
+    },
+)
+
+
+def node_closure_profile_id(closure_sha256: str) -> str | None:
+    matches = [
+        str(profile["profile"])
+        for profile in _EXPECTED_NODE_CLOSURE_PROFILES
+        if profile["sha256"] == closure_sha256
+    ]
+    return matches[0] if len(matches) == 1 else None
 _EXPECTED_NODE_PROCESS_VERSIONS = (
     '{"acorn":"8.16.0","ada":"3.4.4","amaro":"1.1.8","ares":"1.34.6",'
     '"brotli":"1.2.0","cldr":"48.0","icu":"78.3","lief":"0.17.0",'
@@ -2760,19 +2788,28 @@ def _node_dependency_closure() -> dict[str, object]:
     return _node_closure_identity(manifest)
 
 
-def _verify_node_dependency_closure(identity: dict[str, object]) -> None:
+def _verify_node_dependency_closure(identity: dict[str, object]) -> str:
     try:
         manifest = cast(dict[str, object], identity["manifest"])
         recomputed = _node_closure_identity(manifest)
         components = cast(list[dict[str, object]], manifest["components"])
         executable = next(item for item in components if item.get("resolved_path") == str(_EXPECTED_NODE_EXECUTABLE))
         libnode = next(item for item in components if item.get("resolved_path") == str(_EXPECTED_NODE_LIBNODE))
+        libada = next(item for item in components if item.get("resolved_path") == str(_EXPECTED_NODE_LIBADA))
     except (KeyError, StopIteration, TypeError) as error:
         raise RouteError("EXACT_TOOLCHAIN_NODE_CLOSURE_INVALID") from error
     if executable.get("sha256") != _EXPECTED_NODE_SHA256 or executable.get("bytes") != _EXPECTED_NODE_BYTES:
         raise RouteError("EXACT_TOOLCHAIN_NODE_EXECUTABLE_MISMATCH")
     if libnode.get("sha256") != _EXPECTED_NODE_LIBNODE_SHA256 or libnode.get("bytes") != _EXPECTED_NODE_LIBNODE_BYTES:
         raise RouteError("EXACT_TOOLCHAIN_NODE_LIBNODE_MISMATCH")
+    matching_libada_profiles = [
+        profile
+        for profile in _EXPECTED_NODE_CLOSURE_PROFILES
+        if libada.get("sha256") == profile["libada_sha256"]
+        and libada.get("bytes") == profile["libada_bytes"]
+    ]
+    if len(matching_libada_profiles) != 1:
+        raise RouteError("EXACT_TOOLCHAIN_NODE_LIBADA_MISMATCH")
     for field in (
         "sha256",
         "component_count",
@@ -2783,16 +2820,18 @@ def _verify_node_dependency_closure(identity: dict[str, object]) -> None:
     ):
         if recomputed[field] != identity.get(field):
             raise RouteError("EXACT_TOOLCHAIN_NODE_CLOSURE_IDENTITY_INVALID")
+    selected_profile = matching_libada_profiles[0]
     expected = {
-        "sha256": _EXPECTED_NODE_CLOSURE_SHA256,
+        "sha256": selected_profile["sha256"],
         "component_count": _EXPECTED_NODE_CLOSURE_COMPONENT_COUNT,
         "edge_count": _EXPECTED_NODE_CLOSURE_EDGE_COUNT,
         "system_edge_count": _EXPECTED_NODE_CLOSURE_SYSTEM_EDGE_COUNT,
-        "bytes": _EXPECTED_NODE_CLOSURE_BYTES,
+        "bytes": selected_profile["bytes"],
         "system_edge_sha256": _EXPECTED_NODE_SYSTEM_EDGE_SHA256,
     }
     if any(recomputed[field] != value for field, value in expected.items()):
         raise RouteError("EXACT_TOOLCHAIN_NODE_CLOSURE_MISMATCH")
+    return str(selected_profile["profile"])
 
 
 def _node_shim_identity() -> tuple[object, ...]:
@@ -2889,12 +2928,16 @@ def _javascript() -> ExactToolchain:
 
     shim_before = _node_shim_identity()
     closure_before = _node_dependency_closure()
-    _verify_node_dependency_closure(closure_before)
+    closure_profile_before = _verify_node_dependency_closure(closure_before)
     _node_runtime_identity()
     closure_after = _node_dependency_closure()
-    _verify_node_dependency_closure(closure_after)
+    closure_profile_after = _verify_node_dependency_closure(closure_after)
     shim_after = _node_shim_identity()
-    if closure_before != closure_after or shim_before != shim_after:
+    if (
+        closure_before != closure_after
+        or closure_profile_before != closure_profile_after
+        or shim_before != shim_after
+    ):
         raise RouteError("EXACT_TOOLCHAIN_NODE_CLOSURE_CHANGED_DURING_PROBE")
     return ExactToolchain(
         "javascript",
@@ -2911,6 +2954,7 @@ def _javascript() -> ExactToolchain:
             f"process-versions-sha256={_EXPECTED_NODE_PROCESS_VERSIONS_SHA256}",
             f"node-install-root={_EXPECTED_NODE_ROOT}",
             f"node-closure-sha256={closure_after['sha256']}",
+            f"node-closure-profile={closure_profile_after}",
             f"node-closure-component-count={closure_after['component_count']}",
             f"node-closure-edge-count={closure_after['edge_count']}",
             f"node-closure-system-edge-count={closure_after['system_edge_count']}",

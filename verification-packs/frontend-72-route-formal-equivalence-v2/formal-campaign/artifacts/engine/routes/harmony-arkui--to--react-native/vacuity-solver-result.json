@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
   "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "harmony-arkui--to--react-native",
-  "formal_input_digest": "sha256:7a7e1e3bc33fd04715e84f5e262aea08087e080316fcb932ee67cd612cb947a3",
-  "solver_input_digest": "sha256:3395e8889e277864f54fcc59bba51181dd7f9accadd713aba576674f768dae1a",
-  "smt2_digest": "sha256:3395e8889e277864f54fcc59bba51181dd7f9accadd713aba576674f768dae1a",
+  "formal_input_digest": "sha256:32d94a172947ac62f30ac34350ada16f98f0da169f7ef592ddbd155f1af3b166",
+  "solver_input_digest": "sha256:831b707fc2f9053f8b4f1051fef7f8d248c585bcaf1d4056004efdecd0022efa",
+  "smt2_digest": "sha256:831b707fc2f9053f8b4f1051fef7f8d248c585bcaf1d4056004efdecd0022efa",
   "precheck_status": "PASSED"
 }

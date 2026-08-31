@@ -2,3 +2,5 @@ skills/precision-migration-skills-batch-01-44/catalog.csv -text whitespace=cr-at
 engines/polyglot-route-engine/native/javascript/vendor/typescript-5.9.2/LICENSE.txt -text -whitespace
 # Immutable Batch32 Git-blob evidence must retain exact bytes and is not source-review text.
 client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/** -diff -text
+client-packs/frontend-72-route-equivalence-v2/formal-campaign/engine-verifier/node_modules/@types/node/README.md -text whitespace=cr-at-eol
+verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/engine-verifier/node_modules/@types/node/README.md -text whitespace=cr-at-eol
