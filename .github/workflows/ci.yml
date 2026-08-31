@@ -508,10 +508,6 @@ jobs:
           find client-packs -mindepth 1 -maxdepth 1 -type d -print | sort | while IFS= read -r pack; do
             python scripts/batch32/run_client_gate.py "$pack"
           done
-      - name: Set up Node.js 26.0.0 for exact Translation execution
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: "26.0.0"
       - name: Install locked pnpm tool for Translation execution
         run: npm install --global pnpm@10.12.4
       - name: Install Chromium for browser journeys
