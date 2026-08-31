@@ -170,10 +170,11 @@ install_pinned_uv() {
     "Formula/u/uv.rb" \
     "a85594f7cc529d80a545785cb31e684470d12e33f86808b8c2fe1574bae1f36d"
 
-  # Batch 29 binds the exact Homebrew bottle and its filesystem receipt.
-  # GitHub image ownership can differ from the captured receipt even when the
-  # bottle bytes are identical, so normalize only this immutable executable on
-  # the disposable hosted runner and then verify every bound field fail-closed.
+  # The hosted-runner closure binds the immutable arm64 Tahoe bottle receipt.
+  # A developer workstation may contain a locally rebuilt or re-signed binary
+  # with the same version string; that is a different receipt and is never
+  # accepted here. Normalize only filesystem metadata on the disposable runner,
+  # then verify the bottle bytes and version independently of Homebrew's state.
   chmod 0555 "${UV_PATH}"
   if [[ "$(stat -f '%u:%g' "${UV_PATH}")" != "501:80" ]]; then
     sudo chown 501:80 "${UV_PATH}"
@@ -182,8 +183,8 @@ install_pinned_uv() {
   readonly observed_uv_receipt="$(stat -f '%Lp:%u:%g:%l:%z' "${UV_PATH}")"
   readonly observed_uv_sha256="$(file_sha256 "${UV_PATH}")"
   readonly observed_uv_version="$("${UV_PATH}" --version)"
-  if [[ "${observed_uv_receipt}" != "555:501:80:1:46541136" \
-    || "${observed_uv_sha256}" != "d4182a7bba32f331b2c5a74568cf1c88aa50f31fe643a2c56118c6610db0aff0" \
+  if [[ "${observed_uv_receipt}" != "555:501:80:1:46508144" \
+    || "${observed_uv_sha256}" != "96e422f83fd306848446170d97c1d1af8290f00e4aacfa7134e130280d573126" \
     || "${observed_uv_version}" != "${expected_uv_version}" ]]; then
     printf 'Pinned uv receipt mismatch: metadata=%s sha256=%s version=%s\n' \
       "${observed_uv_receipt}" "${observed_uv_sha256}" "${observed_uv_version}" >&2
@@ -233,7 +234,16 @@ if [[ "${CI_PROFILE}" == "frontend-formal" ]]; then
   # cannot silently substitute a newer Node binary.
   HOMEBREW_NO_AUTO_UPDATE=1 brew install \
     ada-url brotli c-ares hdrhistogram_c icu4c@78 libnghttp2 libnghttp3 \
-    libngtcp2 libuv llhttp merve nbytes openssl@3 simdjson simdutf uvwasi zstd
+    libngtcp2 libuv merve nbytes openssl@3 simdjson simdutf uvwasi zstd
+  # Node 26.0.0 was built against llhttp 9.4.1. Homebrew's rolling hosted
+  # image currently carries 9.4.2, whose ABI removed the symbol Node loads;
+  # install the exact historical bottle from the same signed formula commit
+  # before checking the Node executable.
+  install_pinned_formula \
+    "llhttp" "9.4.1" \
+    "98aa23ff4d1956be3df92906ff21b7e2b4c7a14b" \
+    "Formula/l/llhttp.rb" \
+    "9ac45f03b3eb376fb6deb22eafea34e914b9f5f3cab1a80416d58b56ea8cdcfa"
   install_pinned_formula \
     "node" "26.0.0" \
     "98aa23ff4d1956be3df92906ff21b7e2b4c7a14b" \
@@ -241,9 +251,12 @@ if [[ "${CI_PROFILE}" == "frontend-formal" ]]; then
     "cd0800e004cdb76cebfdc6d0647ddfe7bfa38880152200a30366b822aa18a9ba"
   readonly FRONTEND_NODE="${HOMEBREW_CELLAR}/node/26.0.0/bin/node"
   if [[ ! -x "${FRONTEND_NODE}" \
-    || "$(file_sha256 "${FRONTEND_NODE}")" != "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb" \
+    || "$(stat -f '%z' "${FRONTEND_NODE}")" != "68384" \
+    || "$(file_sha256 "${FRONTEND_NODE}")" != "461d6642d0def453a192c51aa218512f16cd9bea1f14f214eed25d47fd4046b5" \
     || "$("${FRONTEND_NODE}" --version)" != "v26.0.0" ]]; then
-    printf 'Pinned frontend Node identity does not match the formal receipt.\n' >&2
+    printf 'Pinned frontend Node identity does not match the formal receipt: path=%s sha256=%s version=%s\n' \
+      "${FRONTEND_NODE}" "$(file_sha256 "${FRONTEND_NODE}")" \
+      "$("${FRONTEND_NODE}" --version 2>&1 || true)" >&2
     exit 3
   fi
   printf '%s\n' "${HOMEBREW_PREFIX}/bin" >>"${GITHUB_PATH}"
@@ -264,7 +277,12 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
   # hashes every resolved component and fails closed if any formula has drifted.
   HOMEBREW_NO_AUTO_UPDATE=1 brew install \
     ada-url brotli c-ares hdrhistogram_c icu4c@78 libnghttp2 libnghttp3 \
-    libngtcp2 libuv llhttp merve nbytes openssl@3 simdjson simdutf uvwasi zstd
+    libngtcp2 libuv merve nbytes openssl@3 simdjson simdutf uvwasi zstd
+  install_pinned_formula \
+    "llhttp" "9.4.1" \
+    "98aa23ff4d1956be3df92906ff21b7e2b4c7a14b" \
+    "Formula/l/llhttp.rb" \
+    "9ac45f03b3eb376fb6deb22eafea34e914b9f5f3cab1a80416d58b56ea8cdcfa"
   install_pinned_formula \
     "dotnet" "10.0.301" \
     "12d2ab0af5e553745d065e02d444f8985983c03a" \
