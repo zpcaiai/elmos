@@ -296,7 +296,9 @@ jobs:
           ELMOS_POLYGLOT_ROUTE_CI_PROFILE: typed-sql
         run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
       - name: Verify locked uv tool
-        run: test "$(uv --version)" = "uv 0.11.16"
+        run: >-
+          test "$(uv --version)" =
+          "uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)"
       - name: Verify typed SQL transpiler exact-runtime qualification
         working-directory: engines/database-data-engine/sql-transpiler
         run: |
@@ -461,10 +463,10 @@ jobs:
 
   web-console:
     name: Web Console
-    # Batch 32 formal packs carry a locked macOS arm64 Z3 4.16.0 binary.
-    # Keep pack replay on the matching runner; the browser jobs below remain
-    # real Playwright journeys and are not converted into a certification claim.
-    runs-on: macos-15
+    # Batch 32 formal packs carry locked macOS arm64 Z3 4.16.0 and Homebrew
+    # Node 26.0.0 Tahoe receipts. Keep replay on the matching runner; the
+    # browser jobs below remain real journeys, not a certification claim.
+    runs-on: macos-26
     timeout-minutes: 35
     steps:
       - name: Check out repository
@@ -476,9 +478,8 @@ jobs:
       - name: Set up Python 3.12.10
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          # setup-python does not publish 3.12.12 for the macOS 15 arm64
-          # image; 3.12.10 is the pinned supported patch used by the route
-          # jobs and is sufficient for the console validation scripts.
+          # The exact captured 3.12.12 route runtime is provisioned separately;
+          # this supported arm64 interpreter only bootstraps validation scripts.
           python-version: "3.12.10"
       - name: Provision receipt-bound Node for Batch 32 replay
         env:
@@ -568,7 +569,6 @@ jobs:
         run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
       - name: Install locked tools and web dependencies
         run: |
-          python -m pip install --disable-pip-version-check uv==0.11.16
           uv --directory engines/polyglot-route-engine sync --locked --no-dev
           npm install --global pnpm@10.12.4
           pnpm --dir apps/web-console install --frozen-lockfile

@@ -337,6 +337,17 @@
     "canonical_source_mutated": false,
     "production_resolution": "NOT_APPROVED"
   },
+  "postgresql_claim_ready_task_ambiguity_defect": {
+    "state": "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+    "source_migration": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V090__transactional_runtime_functions.sql",
+    "source_sha256": "sha256:8eb1646c5c0200a81769edc542b26fd6beb3d515bf122b570b140a6c797a6ddf",
+    "affected_function": "exec.claim_ready_task",
+    "source_query": "unqualified run_attempt id, tenant_id, run_id, status, and attempt_no inside a RETURNS TABLE function",
+    "runtime_requirement": "claim one ready task while preserving tenant, run-attempt, lease, and fencing-token identities",
+    "compatibility_overlay": "qualify the run_attempt relation as ra and every referenced column",
+    "canonical_source_mutated": false,
+    "production_resolution": "NOT_APPROVED"
+  },
   "installation": {
     "runtime_root": "agent-skills/runtime",
     "workspace_root": ".agents/skills",

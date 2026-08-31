@@ -14,7 +14,7 @@ if [[ "${GITHUB_ACTIONS:-}" != "true" || "${RUNNER_ENVIRONMENT:-}" != "github-ho
   printf 'Refusing to provision the CI closure outside a GitHub-hosted runner.\n' >&2
   exit 2
 fi
-for command_name in brew curl git install mv python3 shasum stat tar; do
+for command_name in brew chmod curl git install mv python3 shasum stat sudo tar; do
   if ! command -v "${command_name}" >/dev/null 2>&1; then
     printf 'Required host command is unavailable: %s\n' "${command_name}" >&2
     exit 2
@@ -169,6 +169,26 @@ install_pinned_uv() {
     "b6942cd097e4bea3caf268ea8ff418b749f6d2f3" \
     "Formula/u/uv.rb" \
     "a85594f7cc529d80a545785cb31e684470d12e33f86808b8c2fe1574bae1f36d"
+
+  # Batch 29 binds the exact Homebrew bottle and its filesystem receipt.
+  # GitHub image ownership can differ from the captured receipt even when the
+  # bottle bytes are identical, so normalize only this immutable executable on
+  # the disposable hosted runner and then verify every bound field fail-closed.
+  chmod 0555 "${UV_PATH}"
+  if [[ "$(stat -f '%u:%g' "${UV_PATH}")" != "501:80" ]]; then
+    sudo chown 501:80 "${UV_PATH}"
+  fi
+  readonly expected_uv_version="uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)"
+  readonly observed_uv_receipt="$(stat -f '%Lp:%u:%g:%l:%z' "${UV_PATH}")"
+  readonly observed_uv_sha256="$(file_sha256 "${UV_PATH}")"
+  readonly observed_uv_version="$("${UV_PATH}" --version)"
+  if [[ "${observed_uv_receipt}" != "555:501:80:1:46541136" \
+    || "${observed_uv_sha256}" != "d4182a7bba32f331b2c5a74568cf1c88aa50f31fe643a2c56118c6610db0aff0" \
+    || "${observed_uv_version}" != "${expected_uv_version}" ]]; then
+    printf 'Pinned uv receipt mismatch: metadata=%s sha256=%s version=%s\n' \
+      "${observed_uv_receipt}" "${observed_uv_sha256}" "${observed_uv_version}" >&2
+    exit 3
+  fi
 }
 
 if [[ "${CI_PROFILE}" == "typed-sql" || "${CI_PROFILE}" == "full" \
@@ -191,7 +211,7 @@ if [[ "${CI_PROFILE}" == "typed-sql" ]]; then
     printf '%s\n' "${HOMEBREW_CELLAR}/uv/0.11.16/bin"
     printf '%s\n' "$(brew --prefix python@3.14)/bin"
   } >>"${GITHUB_PATH}"
-  if [[ "$("${UV_PATH}" --version)" != "uv 0.11.16" ]]; then
+  if [[ "$("${UV_PATH}" --version)" != "uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)" ]]; then
     printf 'Pinned uv identity does not match the typed SQL runtime.\n' >&2
     exit 3
   fi
@@ -338,6 +358,9 @@ fi
   printf 'ELMOS_BATCH29_PINNED_UV_PATH=%s\n' "${UV_PATH}"
   printf 'ELMOS_BATCH29_TOOLCHAIN_CACHE_ANCHOR=%s\n' "${PINNED_LOCAL}"
 } >>"${GITHUB_ENV}"
+if [[ "${CI_PROFILE}" == "java-python" ]]; then
+  printf '%s\n' "${HOMEBREW_CELLAR}/uv/0.11.16/bin" >>"${GITHUB_PATH}"
+fi
 if [[ "${CI_PROFILE}" == "full" ]]; then
   {
     printf '%s\n' "${HOMEBREW_PREFIX}/bin"

@@ -6,14 +6,17 @@ account slots unique with ``NULLS NOT DISTINCT``, which prevents provisioning
 the three empty slots required by the runtime. Its V020 migration applies the
 same NULL-equal semantics to optional Temporal identities and partitions two
 event tables by run/session identifiers while declaring tenant-scoped unique
-event identifiers. PostgreSQL therefore rejects valid local runs and the event
-tables themselves cannot be created as written.
+event identifiers. Its V090 function also leaves ``run_attempt`` columns
+unqualified inside a ``RETURNS TABLE`` function, making ``attempt_no``
+ambiguous in PL/pgSQL. PostgreSQL therefore rejects valid local runs and the
+event tables themselves cannot be created as written.
 
-This renderer verifies the source checksum manifest and applies three exact,
+This renderer verifies the source checksum manifest and applies exact,
 digest-bound substitutions to a temporary runtime copy. The compatibility copy
-uses ordinary NULL-distinct uniqueness for slot claims and partitions the event
-tables by tenant_id, preserving the intended admission and event identities. It
-is bounded engineering tooling, not a production migration rewrite.
+uses ordinary NULL-distinct uniqueness for slot claims, partitions the event
+tables by tenant_id, and qualifies the run-attempt lookup, preserving the
+intended admission, event, and lease identities. It is bounded engineering
+tooling, not a production migration rewrite.
 """
 
 from __future__ import annotations
@@ -30,6 +33,7 @@ EXPECTED_CHECKSUMS_SHA256 = (
 )
 PATCHED_MIGRATION = "V020__runs_tasks_sessions_and_recovery.sql"
 ACCOUNT_SLOT_MIGRATION = "V010__tenancy_projects_jobs_and_admission.sql"
+RUNTIME_FUNCTION_MIGRATION = "V090__transactional_runtime_functions.sql"
 EXPECTED_ACCOUNT_SLOT_SOURCE_SHA256 = (
     "ca02afa6f4df7881ad85b1139faf137732a0146dbcf247abf4e40205bca53829"
 )
@@ -42,6 +46,12 @@ EXPECTED_PATCH_SOURCE_SHA256 = (
 EXPECTED_PATCH_OUTPUT_SHA256 = (
     "0f11c646b90b8d3d03ed5107500d422df60f29a15c01e71cf6c65c7d064a2270"
 )
+EXPECTED_RUNTIME_FUNCTION_SOURCE_SHA256 = (
+    "8eb1646c5c0200a81769edc542b26fd6beb3d515bf122b570b140a6c797a6ddf"
+)
+EXPECTED_RUNTIME_FUNCTION_OUTPUT_SHA256 = (
+    "b29238d0655db56c320351f145402594198e781261629f15c8f33ec9e81705cf"
+)
 EXPECTED_MIGRATIONS = (
     "V001__extensions_schemas_and_helpers.sql",
     ACCOUNT_SLOT_MIGRATION,
@@ -53,7 +63,7 @@ EXPECTED_MIGRATIONS = (
     "V060__model_tool_metering_cost_eta_and_cache.sql",
     "V070__integration_learning_deployment_and_audit.sql",
     "V080__cross_links_rls_and_read_models.sql",
-    "V090__transactional_runtime_functions.sql",
+    RUNTIME_FUNCTION_MIGRATION,
 )
 PATCHES = (
     (b") PARTITION BY HASH (run_id);", b") PARTITION BY HASH (tenant_id);"),
@@ -66,6 +76,18 @@ PATCHES = (
 ACCOUNT_SLOT_PATCH = (
     b"  UNIQUE NULLS NOT DISTINCT (tenant_id, claimed_by_run_id),",
     b"  UNIQUE (tenant_id, claimed_by_run_id),",
+)
+RUNTIME_FUNCTION_PATCH = (
+    b"""  SELECT id INTO v_run_attempt_id
+  FROM exec.run_attempt
+  WHERE tenant_id = p_tenant_id AND run_id = p_run_id AND status IN ('starting', 'running')
+  ORDER BY attempt_no DESC LIMIT 1;""",
+    b"""  SELECT ra.id INTO v_run_attempt_id
+  FROM exec.run_attempt AS ra
+  WHERE ra.tenant_id = p_tenant_id AND ra.run_id = p_run_id
+    AND ra.status IN ('starting', 'running')
+  ORDER BY ra.attempt_no DESC
+  LIMIT 1;""",
 )
 
 
@@ -165,6 +187,22 @@ def render_runtime_migrations(package_root: Path, output_root: Path) -> dict[str
                     "V020 compatibility output digest changed: "
                     f"expected {EXPECTED_PATCH_OUTPUT_SHA256}, found {output_digest}"
                 )
+        if name == RUNTIME_FUNCTION_MIGRATION:
+            if actual_digest != EXPECTED_RUNTIME_FUNCTION_SOURCE_SHA256:
+                raise RuntimeMigrationError("V090 source digest is not the pinned input")
+            old, new = RUNTIME_FUNCTION_PATCH
+            if output_bytes.count(old) != 1:
+                raise RuntimeMigrationError(
+                    f"V090 compatibility anchor count changed: {old!r}"
+                )
+            output_bytes = output_bytes.replace(old, new)
+            output_digest = sha256_bytes(output_bytes)
+            if output_digest != EXPECTED_RUNTIME_FUNCTION_OUTPUT_SHA256:
+                raise RuntimeMigrationError(
+                    "V090 compatibility output digest changed: "
+                    f"expected {EXPECTED_RUNTIME_FUNCTION_OUTPUT_SHA256}, "
+                    f"found {output_digest}"
+                )
         rendered[name] = output_bytes
 
     output_root.mkdir(mode=0o700)
@@ -175,16 +213,23 @@ def render_runtime_migrations(package_root: Path, output_root: Path) -> dict[str
 
     return {
         "migration_count": len(rendered),
-        "patched_migrations": [ACCOUNT_SLOT_MIGRATION, PATCHED_MIGRATION],
+        "patched_migrations": [
+            ACCOUNT_SLOT_MIGRATION,
+            PATCHED_MIGRATION,
+            RUNTIME_FUNCTION_MIGRATION,
+        ],
         "patched_migration": PATCHED_MIGRATION,
         "account_slot_source_sha256": EXPECTED_ACCOUNT_SLOT_SOURCE_SHA256,
         "account_slot_output_sha256": EXPECTED_ACCOUNT_SLOT_OUTPUT_SHA256,
         "source_sha256": EXPECTED_PATCH_SOURCE_SHA256,
         "output_sha256": EXPECTED_PATCH_OUTPUT_SHA256,
+        "runtime_function_source_sha256": EXPECTED_RUNTIME_FUNCTION_SOURCE_SHA256,
+        "runtime_function_output_sha256": EXPECTED_RUNTIME_FUNCTION_OUTPUT_SHA256,
         "repairs": [
             "treat unclaimed account slot NULL values as distinct",
             "treat absent Temporal identity values as distinct",
             "partition run_event and session_event by tenant_id",
+            "qualify run_attempt columns inside claim_ready_task",
         ],
         "repair": "partition run_event and session_event by tenant_id",
         "production_authorized": False,
