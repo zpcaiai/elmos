@@ -301,17 +301,20 @@ class TrustStore:
             raise OSError("trust store must not be a symlink")
         if not stat.S_ISREG(path_stat.st_mode):
             raise ValueError("trust store must be a regular file")
-        store_snapshot = read_regular_file_snapshot(
-            supplied_store,
-            max_bytes=1024 * 1024,
-            label="trust store",
+        # Keep the compatibility seam around the bounded one-shot reader.  It
+        # performs the descriptor-level identity check; the path stat captured
+        # before and after the call below closes the rename/swap window between
+        # descriptor close and parsing.
+        store_bytes = read_regular_file_once(
+            supplied_store, max_bytes=1024 * 1024, label="trust store"
         )
+        store_stat = os.stat(supplied_store, follow_symlinks=False)
         return cls._from_bytes_with_document(
             resolved_store,
-            store_snapshot.content,
+            store_bytes,
             supplied_store=supplied_store,
             store_path_stat=path_stat,
-            store_stat=store_snapshot.stat_result,
+            store_stat=store_stat,
         )
 
     @classmethod
@@ -408,24 +411,25 @@ class TrustStore:
                 raise OSError(f"trust store key {key_id} must not be a symlink")
             if not stat.S_ISREG(key_stat.st_mode):
                 raise ValueError(f"trust store key {key_id} must be a regular file")
-            key_snapshot = read_regular_file_snapshot(
+            # Use the bounded one-shot reader so callers can observe and
+            # reject a path replacement during loading.  The pre/post path
+            # identity check complements its descriptor-level check.
+            key_bytes = read_regular_file_once(
                 supplied_key_path,
                 max_bytes=64 * 1024,
                 label=f"trust store key {key_id}",
             )
-            if _file_identity(key_stat) != _file_identity(
-                key_snapshot.stat_result
-            ):
+            key_after_read = os.stat(supplied_key_path, follow_symlinks=False)
+            if _file_identity(key_stat) != _file_identity(key_after_read):
                 raise ValueError(
                     "trust store public key changed while its snapshot was loaded"
                 )
-            key_bytes = key_snapshot.content
             key_path_stats.append(
                 (
                     supplied_key_path,
                     key_path,
                     key_stat,
-                    key_snapshot.stat_result,
+                    key_after_read,
                 )
             )
             key_digest = "sha256:" + hashlib.sha256(key_bytes).hexdigest()
