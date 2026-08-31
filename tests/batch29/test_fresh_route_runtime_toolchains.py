@@ -262,6 +262,27 @@ def test_ci_installer_seals_the_captured_python_runtime_before_use() -> None:
     assert installer.index(directories) < installer.index(python_probe)
 
 
+def test_java_python_ci_profile_materializes_the_required_typescript_closure() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    profile_guard = (
+        'if [[ "${CI_PROFILE}" == "full" || '
+        '"${CI_PROFILE}" == "java-python" ]]; then'
+    )
+    capture_guard = 'if [[ ! -d "${TYPESCRIPT_CAPTURE}" || -L "${TYPESCRIPT_CAPTURE}" ]]'
+    manifest_validation = (
+        "fresh_route_runtime._typescript_runtime_manifest(target)"
+    )
+    full_only_toolchains = (
+        'if [[ "${CI_PROFILE}" == "full" ]]; then\n'
+        '  HOME="${PINNED_HOME}"'
+    )
+
+    assert profile_guard in installer
+    assert installer.index(profile_guard) < installer.index(capture_guard)
+    assert installer.index(capture_guard) < installer.index(manifest_validation)
+    assert installer.index(manifest_validation) < installer.index(full_only_toolchains)
+
+
 def test_python_archive_rejects_same_size_content_drift() -> None:
     runtime = _runtime()
     archive = runtime.PYTHON_ARCHIVE_CACHE.read_bytes()

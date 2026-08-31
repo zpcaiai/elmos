@@ -268,6 +268,60 @@ def test_java_declared_home_cannot_replace_the_pinned_distribution(
         toolchains.exact_toolchain("java")
 
 
+def test_java_codesign_receipt_keeps_strict_verify_and_display_separate(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    bundle = Path("/fixed/openjdk.jdk")
+    commands: list[list[str]] = []
+
+    def output(command: list[str], **_: object) -> str:
+        commands.append(command)
+        return "Identifier=net.java.openjdk.jdk"
+
+    monkeypatch.setattr(toolchains, "_output", output)
+
+    assert toolchains._java_bundle_signature(bundle) == (
+        "Identifier=net.java.openjdk.jdk"
+    )
+    assert commands == [
+        [
+            "/usr/bin/codesign",
+            "--verify",
+            "--deep",
+            "--strict",
+            str(bundle),
+        ],
+        ["/usr/bin/codesign", "-d", "--verbose=4", str(bundle)],
+    ]
+
+
+@pytest.mark.parametrize(
+    ("failed_flag", "diagnostic"),
+    [
+        ("--verify", "EXACT_TOOLCHAIN_UNAVAILABLE:java:codesign-verify"),
+        ("-d", "EXACT_TOOLCHAIN_UNAVAILABLE:java:codesign-display"),
+    ],
+)
+def test_java_codesign_receipt_reports_the_exact_failed_stage(
+    monkeypatch: pytest.MonkeyPatch,
+    failed_flag: str,
+    diagnostic: str,
+) -> None:
+    def output(command: list[str], **_: object) -> str:
+        if failed_flag in command:
+            raise RouteError(
+                "EXACT_TOOLCHAIN_UNAVAILABLE:/usr/bin/codesign:"
+                "exit=1:diagnostic=strict verification failed"
+            )
+        return ""
+
+    monkeypatch.setattr(toolchains, "_output", output)
+
+    with pytest.raises(RouteError, match=diagnostic) as caught:
+        toolchains._java_bundle_signature(Path("/fixed/openjdk.jdk"))
+    assert "exit=1:diagnostic=strict verification failed" in str(caught.value)
+
+
 def test_java_toolchain_binds_launchers_runtime_modules_and_bundle_signature() -> None:
     selected = toolchains.exact_toolchain("java")
 

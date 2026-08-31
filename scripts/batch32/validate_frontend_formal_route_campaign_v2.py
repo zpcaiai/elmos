@@ -2363,7 +2363,7 @@ def validate_engine_verifier(
         ),
     ):
         runtime_ref = artifacts.get(str(runtime_by_path.get(runtime_path)), {})
-        if not captured_replay:
+        if not captured_replay and live_runtime_replay:
             live = Path(__file__).resolve().parents[2] / live_relative
             if (
                 not live.is_file()

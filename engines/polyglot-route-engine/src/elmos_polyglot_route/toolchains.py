@@ -272,6 +272,7 @@ def _output(
     *,
     executable_dirs: tuple[Path, ...] = (),
     include_stderr: bool = True,
+    include_failure_diagnostic: bool = False,
 ) -> str:
     try:
         with tempfile.TemporaryDirectory(prefix="elmos-toolchain-env-") as temporary:
@@ -295,7 +296,18 @@ def _output(
     except (OSError, subprocess.TimeoutExpired) as error:
         raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}") from error
     if completed.returncode != 0:
-        raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}")
+        detail = ""
+        if include_failure_diagnostic:
+            diagnostic = (completed.stderr or completed.stdout).strip()
+            diagnostic = "".join(
+                character if character.isprintable() else "?"
+                for character in diagnostic[-1000:]
+            )
+            detail = f":diagnostic={diagnostic or 'EMPTY'}"
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}:"
+            f"exit={completed.returncode}{detail}"
+        )
     return (completed.stdout + (completed.stderr if include_stderr else "")).strip()
 
 
@@ -992,6 +1004,38 @@ def verify_csharp_toolchain(toolchain: ExactToolchain) -> dict[str, object]:
     return identity
 
 
+def _java_bundle_signature(bundle: Path) -> str:
+    """Strictly verify and then display the pinned JDK bundle signature.
+
+    Keep verification and receipt display as distinct fail-closed stages so a
+    hosted-runner diagnostic cannot be mistaken for an identity mismatch.  The
+    verification flags are part of the native receipt contract and must not be
+    relaxed to make a runner pass.
+    """
+
+    codesign = Path("/usr/bin/codesign")
+    try:
+        _output(
+            [str(codesign), "--verify", "--deep", "--strict", str(bundle)],
+            include_failure_diagnostic=True,
+        )
+    except RouteError as error:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_UNAVAILABLE:java:codesign-verify:"
+            f"{error}"
+        ) from error
+    try:
+        return _output(
+            [str(codesign), "-d", "--verbose=4", str(bundle)],
+            include_failure_diagnostic=True,
+        )
+    except RouteError as error:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_UNAVAILABLE:java:codesign-display:"
+            f"{error}"
+        ) from error
+
+
 def _java() -> ExactToolchain:
     try:
         expected_home = _EXPECTED_JAVA_HOME.resolve(strict=True)
@@ -1022,9 +1066,7 @@ def _java() -> ExactToolchain:
     observed_java = _output([str(java), "-version"])
     observed_javac = _output([str(javac), "-version"])
     bundle = expected_home.parents[1]
-    codesign = Path("/usr/bin/codesign")
-    _output([str(codesign), "--verify", "--deep", "--strict", str(bundle)])
-    signature = _output([str(codesign), "-d", "--verbose=4", str(bundle)])
+    signature = _java_bundle_signature(bundle)
     signature_lines = set(signature.splitlines())
     if (
         java_digest != _EXPECTED_JAVA_SHA256

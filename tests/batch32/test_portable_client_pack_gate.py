@@ -46,11 +46,26 @@ class PortableClientPackGateTest(unittest.TestCase):
 
     def test_v2_portable_validation_never_executes_solver_or_node(self) -> None:
         pack = ROOT / "client-packs/frontend-72-route-equivalence-v2"
-        with mock.patch.object(
-            formal_v2.subprocess,
-            "run",
-            side_effect=AssertionError("portable v2 attempted native execution"),
-        ) as execute:
+        original_read_bytes = Path.read_bytes
+
+        def reject_live_dependency_read(path: Path) -> bytes:
+            if (
+                "engines/frontend-client-engine/node_modules/typescript"
+                in path.as_posix()
+            ):
+                raise AssertionError(
+                    "portable v2 attempted to bind an untracked live dependency"
+                )
+            return original_read_bytes(path)
+
+        with (
+            mock.patch.object(
+                formal_v2.subprocess,
+                "run",
+                side_effect=AssertionError("portable v2 attempted native execution"),
+            ) as execute,
+            mock.patch.object(Path, "read_bytes", reject_live_dependency_read),
+        ):
             result = formal_v2.validate_campaign(
                 pack,
                 execute_replay=False,
@@ -58,6 +73,47 @@ class PortableClientPackGateTest(unittest.TestCase):
             )
 
         self.assertEqual("valid", result["status"], result["errors"])
+        self.assertEqual("NOT_RUN", result["live_engine_verifier_status"])
+        execute.assert_not_called()
+
+    def test_v2_portable_validation_rejects_captured_artifact_digest_drift(
+        self,
+    ) -> None:
+        pack = ROOT / "client-packs/frontend-72-route-equivalence-v2"
+        captured_typescript = (
+            pack
+            / "formal-campaign/engine-verifier/node_modules/typescript/lib/typescript.js"
+        )
+        original_read_bytes = Path.read_bytes
+
+        def tamper_captured_artifact(path: Path) -> bytes:
+            content = original_read_bytes(path)
+            return content + b"\n" if path == captured_typescript else content
+
+        with (
+            mock.patch.object(
+                formal_v2.subprocess,
+                "run",
+                side_effect=AssertionError("portable v2 attempted native execution"),
+            ) as execute,
+            mock.patch.object(Path, "read_bytes", tamper_captured_artifact),
+        ):
+            result = formal_v2.validate_campaign(
+                pack,
+                execute_replay=False,
+                portable_evidence_only=True,
+            )
+
+        self.assertEqual("invalid", result["status"])
+        self.assertTrue(
+            any(
+                "artifact v2-engine-verifier-" in error
+                and "sha256 mismatch" in error
+                for error in result["errors"]
+            ),
+            result["errors"],
+        )
+        self.assertFalse(result["certification_ready"])
         self.assertEqual("NOT_RUN", result["live_engine_verifier_status"])
         execute.assert_not_called()
 

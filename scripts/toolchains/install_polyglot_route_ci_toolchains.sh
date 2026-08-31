@@ -352,7 +352,7 @@ find "${PYTHON_RUNTIME_TARGET}" -type d -exec chmod 0555 {} +
 readonly TYPESCRIPT_CAPTURE_SHA256="61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a"
 readonly TYPESCRIPT_CAPTURE="${CAPTURE_ROOT}/typescript/sha256-${TYPESCRIPT_CAPTURE_SHA256}"
 readonly TYPESCRIPT_TARGET="${TOOLCHAIN_ROOT}/typescript/5.9.2/sha256-${TYPESCRIPT_CAPTURE_SHA256}"
-if [[ "${CI_PROFILE}" == "full" ]]; then
+if [[ "${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python" ]]; then
   if [[ ! -d "${TYPESCRIPT_CAPTURE}" || -L "${TYPESCRIPT_CAPTURE}" ]]; then
     printf 'Repository TypeScript capture is unavailable or unsafe.\n' >&2
     exit 3
@@ -367,6 +367,24 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
     find "${TYPESCRIPT_TARGET}" -type d -exec chmod 0555 {} +
   fi
 
+  # Reuse the route runtime's exact inventory, byte, digest, ownership, mode,
+  # and anti-race checks before exposing this closure to a later CI step.
+  # This validates both a fresh copy and any pre-existing disposable-runner
+  # cache; an incomplete, writable, or substituted tree fails closed here.
+  PYTHONDONTWRITEBYTECODE=1 python3 - "${REPOSITORY_ROOT}" "${TYPESCRIPT_TARGET}" <<'PY'
+import sys
+from pathlib import Path
+
+repository = Path(sys.argv[1])
+target = Path(sys.argv[2])
+sys.path.insert(0, str(repository / "scripts" / "batch29"))
+import fresh_route_runtime  # noqa: E402
+
+fresh_route_runtime._typescript_runtime_manifest(target)
+PY
+fi
+
+if [[ "${CI_PROFILE}" == "full" ]]; then
   HOME="${PINNED_HOME}" \
   ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT="${TOOLCHAIN_ROOT}" \
   ELMOS_PROJECT_SYNTHESIS_LOCAL_BIN="${PINNED_BIN}" \
