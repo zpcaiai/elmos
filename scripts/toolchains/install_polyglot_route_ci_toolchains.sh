@@ -66,6 +66,14 @@ download_verified() {
 install -d -m 0755 "${PINNED_HOME}"
 install -d -m 0755 "${PINNED_LOCAL}" "${TOOLCHAIN_ROOT}" "${PINNED_BIN}"
 
+# GitHub's macOS images can carry an unrelated, untrusted AWS tap. Homebrew
+# refuses to resolve even the explicitly pinned closure while that tap is
+# present. The runner is disposable; remove only that known unrelated tap so
+# dependency resolution remains fail-closed instead of disabling tap trust.
+if brew tap | grep -Fqx "aws/tap"; then
+  HOMEBREW_NO_AUTO_UPDATE=1 brew untap aws/tap
+fi
+
 if ! brew tap | grep -Fqx "${TAP_NAME}"; then
   brew tap-new --no-git "${TAP_NAME}"
 fi
@@ -92,6 +100,9 @@ source = Path(sys.argv[1]).read_text(encoding="utf-8")
 marker = "  bottle do\n"
 if source.count(marker) != 1:
     raise SystemExit("pinned Homebrew formula has an unexpected bottle contract")
+# Homebrew core formulas can carry no_autobump!, but that publication
+# directive is rejected in a temporary non-official tap. Remove only the
+# metadata directive; the downloaded formula body and checksum remain bound.
 autobump_lines = [
     line for line in source.splitlines(keepends=True)
     if line.startswith("  no_autobump!")
@@ -112,6 +123,16 @@ PY
 
   if brew list --formula --versions "${token}" >/dev/null 2>&1; then
     brew uninstall --formula --force --ignore-dependencies "${token}"
+  fi
+  if [[ "${token}" == "node" ]]; then
+    # setup-node and the hosted image may leave a linked node@22/node@24
+    # installation behind. The pinned custom-tap Node must own the PATH
+    # symlinks without overwriting another formula's files.
+    while IFS= read -r installed_formula; do
+      case "${installed_formula}" in
+        node|node@*) HOMEBREW_NO_AUTO_UPDATE=1 brew unlink "${installed_formula}" ;;
+      esac
+    done < <(brew list --formula)
   fi
   HOMEBREW_NO_AUTO_UPDATE=1 brew install --formula --force-bottle "${TAP_NAME}/${token}"
   if [[ "$(brew list --formula --versions "${token}")" != "${token} ${expected_version}" ]]; then
@@ -142,6 +163,14 @@ install_pinned_cask() {
   fi
 }
 
+install_pinned_uv() {
+  install_pinned_formula \
+    "uv" "0.11.16" \
+    "b6942cd097e4bea3caf268ea8ff418b749f6d2f3" \
+    "Formula/u/uv.rb" \
+    "a85594f7cc529d80a545785cb31e684470d12e33f86808b8c2fe1574bae1f36d"
+}
+
 if [[ "${CI_PROFILE}" == "typed-sql" || "${CI_PROFILE}" == "full" \
   || "${CI_PROFILE}" == "frontend-formal" ]]; then
   install_pinned_formula \
@@ -152,12 +181,20 @@ if [[ "${CI_PROFILE}" == "typed-sql" || "${CI_PROFILE}" == "full" \
 fi
 
 if [[ "${CI_PROFILE}" == "typed-sql" ]]; then
+  install_pinned_uv
   install_pinned_formula \
     "python@3.14" "3.14.6" \
     "38adcf3b2e2f5f90f72fb559467495200b1ee8bb" \
     "Formula/p/python@3.14.rb" \
     "a658a88637d2d4668c7d98e0b32e3c38fc2e30695e614d061b7017b8d9b208b3"
-  printf '%s\n' "$(brew --prefix python@3.14)/bin" >>"${GITHUB_PATH}"
+  {
+    printf '%s\n' "${HOMEBREW_CELLAR}/uv/0.11.16/bin"
+    printf '%s\n' "$(brew --prefix python@3.14)/bin"
+  } >>"${GITHUB_PATH}"
+  if [[ "$("${UV_PATH}" --version)" != "uv 0.11.16" ]]; then
+    printf 'Pinned uv identity does not match the typed SQL runtime.\n' >&2
+    exit 3
+  fi
   "$(brew --prefix python@3.14)/bin/python3.14" - <<'PY'
 import platform
 import sqlite3
@@ -193,11 +230,7 @@ if [[ "${CI_PROFILE}" == "frontend-formal" ]]; then
   exit 0
 fi
 
-install_pinned_formula \
-  "uv" "0.11.16" \
-  "b6942cd097e4bea3caf268ea8ff418b749f6d2f3" \
-  "Formula/u/uv.rb" \
-  "a85594f7cc529d80a545785cb31e684470d12e33f86808b8c2fe1574bae1f36d"
+install_pinned_uv
 
 install_pinned_formula \
   "openjdk@21" "21.0.11" \

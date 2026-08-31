@@ -455,6 +455,14 @@ class LargeRepositoryDatabaseDesignIntegrationTests(unittest.TestCase):
             self.assertNotIn(b") PARTITION BY HASH (run_id);", patched)
             self.assertNotIn(b") PARTITION BY HASH (session_id);", patched)
             self.assertIn(b"UNIQUE (tenant_id, event_id)", patched)
+            self.assertIn(
+                b"UNIQUE (tenant_id, temporal_namespace, temporal_workflow_id, temporal_run_id)",
+                patched,
+            )
+            self.assertNotIn(
+                b"UNIQUE NULLS NOT DISTINCT (tenant_id, temporal_namespace, temporal_workflow_id, temporal_run_id)",
+                patched,
+            )
 
             account_slot = (
                 output_root / runtime_renderer.ACCOUNT_SLOT_MIGRATION

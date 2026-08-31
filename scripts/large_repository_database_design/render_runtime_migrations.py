@@ -3,10 +3,11 @@
 
 The supplied package is immutable. Its V010 migration declares unclaimed
 account slots unique with ``NULLS NOT DISTINCT``, which prevents provisioning
-the three empty slots required by the runtime. Its V020 migration partitions
-two event tables by run/session identifiers while also declaring tenant-scoped
-unique event identifiers. PostgreSQL requires every unique key on a partitioned
-table to include the partition key, so that source cannot be executed as written.
+the three empty slots required by the runtime. Its V020 migration applies the
+same NULL-equal semantics to optional Temporal identities and partitions two
+event tables by run/session identifiers while declaring tenant-scoped unique
+event identifiers. PostgreSQL therefore rejects valid local runs and the event
+tables themselves cannot be created as written.
 
 This renderer verifies the source checksum manifest and applies three exact,
 digest-bound substitutions to a temporary runtime copy. The compatibility copy
@@ -39,7 +40,7 @@ EXPECTED_PATCH_SOURCE_SHA256 = (
     "1d9b6641ed8f2f423938ff067de56a33b86dc754220832d423a078b81ac5bc6e"
 )
 EXPECTED_PATCH_OUTPUT_SHA256 = (
-    "4cc21c57b6fe81039b752669fb1d9246f68f4e06568f07104db8f92c1f0dd139"
+    "0f11c646b90b8d3d03ed5107500d422df60f29a15c01e71cf6c65c7d064a2270"
 )
 EXPECTED_MIGRATIONS = (
     "V001__extensions_schemas_and_helpers.sql",
@@ -57,6 +58,10 @@ EXPECTED_MIGRATIONS = (
 PATCHES = (
     (b") PARTITION BY HASH (run_id);", b") PARTITION BY HASH (tenant_id);"),
     (b") PARTITION BY HASH (session_id);", b") PARTITION BY HASH (tenant_id);"),
+    (
+        b"  UNIQUE NULLS NOT DISTINCT (tenant_id, temporal_namespace, temporal_workflow_id, temporal_run_id),",
+        b"  UNIQUE (tenant_id, temporal_namespace, temporal_workflow_id, temporal_run_id),",
+    ),
 )
 ACCOUNT_SLOT_PATCH = (
     b"  UNIQUE NULLS NOT DISTINCT (tenant_id, claimed_by_run_id),",
@@ -178,6 +183,7 @@ def render_runtime_migrations(package_root: Path, output_root: Path) -> dict[str
         "output_sha256": EXPECTED_PATCH_OUTPUT_SHA256,
         "repairs": [
             "treat unclaimed account slot NULL values as distinct",
+            "treat absent Temporal identity values as distinct",
             "partition run_event and session_event by tenant_id",
         ],
         "repair": "partition run_event and session_event by tenant_id",

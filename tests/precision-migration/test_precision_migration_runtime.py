@@ -637,8 +637,12 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
             adapter_registry=self.adapter_registry,
             skill_registry=self.registry,
         )
-        self.assertEqual("LOCAL_EXECUTED", result["execution_state"])
         report = json.loads((output / "route-execution.json").read_text())
+        self.assertEqual(
+            "LOCAL_EXECUTED",
+            result["execution_state"],
+            json.dumps({"result": result, "report": report}, indent=2),
+        )
         self.assertEqual(0, report["engine_exit_code"])
         self.assertEqual(0, report["route_gate_exit_code"])
         self.assertTrue((output / "migration" / "migrated.py").is_file())
