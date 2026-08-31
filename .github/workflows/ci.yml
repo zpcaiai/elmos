@@ -162,7 +162,11 @@ jobs:
 
   frontend-client-engine:
     name: Frontend Client Engine
-    runs-on: ubuntu-24.04
+    # The locked frontend formal profile is a macOS arm64 Z3 4.16.0
+    # artifact. Running this contract on Linux would correctly return
+    # MISSING and make the fail-closed solver tests fail before they exercise
+    # the engine.
+    runs-on: macos-15
     timeout-minutes: 15
     steps:
       - name: Check out repository
@@ -175,6 +179,10 @@ jobs:
         run: npm install --global pnpm@10.12.4
       - name: Install locked dependencies
         run: pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+      - name: Bind locked Z3 solver
+        run: |
+          chmod +x client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3
+          echo "ELMOS_FRONTEND_Z3=$GITHUB_WORKSPACE/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3" >> "$GITHUB_ENV"
       - name: Test Frontend Client Engine
         run: pnpm --dir engines/frontend-client-engine check
 
