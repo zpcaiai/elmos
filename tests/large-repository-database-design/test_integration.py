@@ -196,6 +196,14 @@ class LargeRepositoryDatabaseDesignIntegrationTests(unittest.TestCase):
             )
             self.assertFalse(partition_defect["canonical_source_mutated"])
             self.assertEqual("NOT_APPROVED", partition_defect["production_resolution"])
+            slot_defect = manifest["postgresql_account_slot_uniqueness_defect"]
+            self.assertEqual(
+                "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+                slot_defect["state"],
+            )
+            self.assertEqual("core.account_task_slot", slot_defect["affected_table"])
+            self.assertFalse(slot_defect["canonical_source_mutated"])
+            self.assertEqual("NOT_APPROVED", slot_defect["production_resolution"])
             evidence = manifest["evidence"]
             self.assertEqual("STATIC_VALIDATED", evidence["maximum_local_status"])
             self.assertFalse(evidence["source_scripts_executed_by_importer"])
@@ -447,6 +455,21 @@ class LargeRepositoryDatabaseDesignIntegrationTests(unittest.TestCase):
             self.assertNotIn(b") PARTITION BY HASH (run_id);", patched)
             self.assertNotIn(b") PARTITION BY HASH (session_id);", patched)
             self.assertIn(b"UNIQUE (tenant_id, event_id)", patched)
+
+            account_slot = (
+                output_root / runtime_renderer.ACCOUNT_SLOT_MIGRATION
+            ).read_bytes()
+            self.assertEqual(
+                runtime_renderer.EXPECTED_ACCOUNT_SLOT_OUTPUT_SHA256,
+                runtime_renderer.sha256_bytes(account_slot),
+            )
+            self.assertIn(
+                b"UNIQUE (tenant_id, claimed_by_run_id)", account_slot
+            )
+            self.assertNotIn(
+                b"UNIQUE NULLS NOT DISTINCT (tenant_id, claimed_by_run_id)",
+                account_slot,
+            )
 
             unchanged = runtime_renderer.EXPECTED_MIGRATIONS[0]
             self.assertEqual(

@@ -827,6 +827,29 @@ def build_expected(repository_root: Path = ROOT) -> dict[str, Any]:
             "canonical_source_mutated": False,
             "production_resolution": "NOT_APPROVED",
         },
+        "postgresql_account_slot_uniqueness_defect": {
+            "state": "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+            "source_migration": (
+                SOURCE_RELATIVE
+                / "database/migrations/V010__tenancy_projects_jobs_and_admission.sql"
+            ).as_posix(),
+            "source_sha256": (
+                "sha256:ca02afa6f4df7881ad85b1139faf137732a0146dbcf247abf4e40205bca53829"
+            ),
+            "affected_table": "core.account_task_slot",
+            "source_constraint": (
+                "UNIQUE NULLS NOT DISTINCT (tenant_id, claimed_by_run_id)"
+            ),
+            "runtime_requirement": (
+                "three unclaimed slots per account and at most one claimed slot "
+                "per tenant and run"
+            ),
+            "compatibility_overlay": (
+                "UNIQUE (tenant_id, claimed_by_run_id)"
+            ),
+            "canonical_source_mutated": False,
+            "production_resolution": "NOT_APPROVED",
+        },
         "installation": {
             "runtime_root": RUNTIME_RELATIVE.as_posix(),
             "workspace_root": WORKSPACE_RELATIVE.as_posix(),
