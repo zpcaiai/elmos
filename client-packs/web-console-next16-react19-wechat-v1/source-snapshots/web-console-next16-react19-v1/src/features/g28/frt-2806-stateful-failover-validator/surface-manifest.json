@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2806",
+  "skill_name": "frt-2806-stateful-failover-validator",
+  "batch": "G28",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g28/frt-2806-stateful-failover-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.stateful-failover-validator",
+  "execution_contract_sha256": "sha256:bb79cf733cb908959c997e92509f30776db466441c75c46a6d4ed27d2cd388b9",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:f416b36270ac65defc273d1df1b67efd7d004a6cd76afa556599a9fa7a1e2fb7",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

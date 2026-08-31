@@ -89,11 +89,11 @@ def test_installed_catalog_binds_all_wrappers_and_collisions() -> None:
     result = importer.validate_installed_integration(ROOT, snapshot, catalog)
 
     assert catalog["counts"]["skills"] == 300
-    assert catalog["counts"]["repository_owned_wrappers"] == 297
-    assert catalog["counts"]["collision_bindings"] == 3
+    assert catalog["counts"]["repository_owned_wrappers"] == 167
+    assert catalog["counts"]["collision_bindings"] == 133
     assert result == {
-        "repository_owned_wrappers": 297,
-        "collision_bindings": 3,
+        "repository_owned_wrappers": 167,
+        "collision_bindings": 133,
         "dual_root_bytes_equal": True,
         "generated_artifacts_digest_bound": True,
     }

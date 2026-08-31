@@ -129,12 +129,41 @@ for (const entry of closure.entries) {
   try { JSON.parse(fs.readFileSync(path.join(targetDir, "index.json"), "utf8")); } catch (error) { errors.push(`component JSON failed ${identity}: ${error.message}`); }
 }
 
-const snapshotRecords = snapshot.files.map(({ path: file, sha256 }) => ({ path: file, sha256 }));
-fail(errors, snapshot.snapshot_digest === canonicalDigest(snapshotRecords), "source snapshot digest mismatch");
+const snapshotRoot = snapshot.source_root
+  ? path.resolve(pack, snapshot.source_root)
+  : null;
+const snapshotRootRelative = snapshotRoot ? path.relative(pack, snapshotRoot) : "";
+const snapshotRootSafe = Boolean(
+  snapshotRoot
+  && snapshotRootRelative
+  && !snapshotRootRelative.startsWith("..")
+  && !path.isAbsolute(snapshotRootRelative)
+  && fs.existsSync(snapshotRoot)
+  && fs.statSync(snapshotRoot).isDirectory(),
+);
+fail(errors, snapshotRootSafe, "source snapshot root is missing or escapes the pack");
+const snapshotRecords = snapshot.files.map(({ path: file, sha256, bytes }) => ({ path: file, sha256, bytes }));
+const snapshotDigest = hash(
+  snapshotRecords
+    .slice()
+    .sort()
+    .map(({ path: file, sha256, bytes }) => `${file}\0${sha256}\0${bytes}`)
+    .join("\n"),
+);
+fail(errors, snapshot.snapshot_digest === snapshotDigest, "source snapshot digest mismatch");
 for (const item of snapshot.files) {
-  const full = path.join(root, item.path);
+  const full = snapshotRootSafe
+    ? path.resolve(snapshotRoot, item.path)
+    : path.resolve(root, item.path);
+  const relative = path.relative(snapshotRootSafe ? snapshotRoot : root, full);
+  fail(errors, Boolean(relative && !relative.startsWith("..") && !path.isAbsolute(relative)), `snapshot path escapes its root: ${item.path}`);
   fail(errors, fs.existsSync(full), `snapshot source missing: ${item.path}`);
   if (fs.existsSync(full)) fail(errors, hash(fs.readFileSync(full)) === item.sha256, `snapshot source drift: ${item.path}`);
+}
+if (snapshotRootSafe) {
+  const actualSnapshotFiles = filesRecursively(snapshotRoot).map((file) => path.relative(snapshotRoot, file)).sort();
+  const declaredSnapshotFiles = snapshot.files.map(({ path: file }) => file).slice().sort();
+  fail(errors, JSON.stringify(actualSnapshotFiles) === JSON.stringify(declaredSnapshotFiles), "source snapshot file set drift");
 }
 
 const currentTargetFiles = filesRecursively(targetRoot).map((file) => ({ path: path.relative(pack, file), sha256: hash(fs.readFileSync(file)), bytes: fs.statSync(file).size }));

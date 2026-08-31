@@ -22,6 +22,19 @@
     "evidence": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
     "execution_kind": {"enum": ["real", "approved-equivalent"]},
     "failure_class": {"type": "string", "minLength": 1},
+    "blocked_reason": {"type": "string", "minLength": 1},
+    "unexercised_required_corpora": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "unmet_preconditions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
     "replay_command": {"type": "string", "minLength": 1},
     "trace_coverage": {"type": "number", "minimum": 0, "maximum": 1},
     "source_target_trace_coverage": {"type": "number", "minimum": 0, "maximum": 1},

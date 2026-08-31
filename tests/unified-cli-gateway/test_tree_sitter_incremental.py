@@ -31,7 +31,7 @@ class TreeSitterIncrementalParserTests(unittest.TestCase):
         )
         tree = self.parser.parse(code, lang="java")
         self.assertEqual(tree.language, "java")
-        self.assertEqual(tree.root.node_type, "compilation_unit")
+        self.assertEqual(tree.root.node_type, "program")
         self.assertEqual(len(tree.root.children), 1)
 
         class_node = tree.root.children[0]
@@ -57,7 +57,7 @@ class TreeSitterIncrementalParserTests(unittest.TestCase):
         res = parse_incremental_cst(new_code, lang="java", previous_code=old_code)
         self.assertIn("modified_nodes", res)
         self.assertGreaterEqual(res["modified_nodes_count"], 1)
-        self.assertEqual(res["reparse_speedup"], "94.2%")
+        self.assertIsNone(res["reparse_speedup"])
 
     def test_cli_polyglot_parse_incremental(self) -> None:
         stdout_orig = sys.stdout
@@ -72,7 +72,7 @@ class TreeSitterIncrementalParserTests(unittest.TestCase):
             ])
             self.assertEqual(code, 0)
             data = json.loads(sys.stdout.getvalue())
-            self.assertEqual(data["status"], "PARSED_SUCCESS")
+            self.assertEqual(data["status"], "PARSED")
             self.assertEqual(data["language"], "csharp")
             self.assertIn("tree_digest", data)
         finally:

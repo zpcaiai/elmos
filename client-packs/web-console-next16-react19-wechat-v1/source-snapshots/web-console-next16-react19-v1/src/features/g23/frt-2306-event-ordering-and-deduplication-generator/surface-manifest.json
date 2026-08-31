@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2306",
+  "skill_name": "frt-2306-event-ordering-and-deduplication-generator",
+  "batch": "G23",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g23/frt-2306-event-ordering-and-deduplication-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g23.event-ordering-and-deduplication-generator",
+  "execution_contract_sha256": "sha256:81a46714401ce92ef21a2643a7b6e10cc5d3eb0eaf15e0f4f7313d48cb5cd9d3",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:ccb16f2d25d619f9d07e0e6e580f2aab42c2532ce8d2a8cec423915add662585",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,31 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringFramework3_2To5_2MvcToSpringBoot3_5_3Java21
+displayName: Prepare Spring MVC 3.2 through 5.2 for Spring Boot 3.5.3 on Java 21
+description: >-
+  Performs deterministic Java, Jakarta, Spring Framework and Maven dependency
+  preparation for the exact non-Boot MVC route. XML, web.xml, servlet
+  registration, JSP, security, persistence and transaction behavior are not
+  inferred by this recipe; the source Framework Contract Model and real target
+  runtime remain mandatory before promotion.
+recipeList:
+  - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta
+  - org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_2
+  - org.openrewrite.java.dependencies.ChangeDependency:
+      oldGroupId: org.springframework
+      oldArtifactId: spring-webmvc
+      newGroupId: org.springframework.boot
+      newArtifactId: spring-boot-starter-web
+      newVersion: 3.5.3
+      overrideManagedVersion: false
+  - org.openrewrite.maven.AddParentPom:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      version: 3.5.3
+      relativePath: ""
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "21"
+      addIfMissing: true
+      trustParent: false

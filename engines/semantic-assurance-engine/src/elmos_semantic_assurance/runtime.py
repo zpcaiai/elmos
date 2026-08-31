@@ -31,6 +31,7 @@ class RuntimeStatus:
         return {
             "engine": "elmos-semantic-assurance-engine",
             "version": "1.0.0",
+            "status": "BLOCKED_EXTERNAL_EVIDENCE_REQUIRED",
             "registeredSkills": self.registered_skills,
             "exactHandlers": self.exact_handlers,
             "compiledContractDigest": self.contract_digest,

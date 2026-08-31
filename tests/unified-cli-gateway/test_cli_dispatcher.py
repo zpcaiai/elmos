@@ -66,9 +66,11 @@ class UnifiedCliGatewayTests(unittest.TestCase):
             tgt_lang="csharp",
             code_snippet="public class UserAuthService { public String token; }",
         )
-        self.assertEqual(res1["status"], "SUCCESS")
+        self.assertEqual(res1["status"], "READY_FOR_EXTERNAL_GATE")
         self.assertIn("receipt", res1)
-        self.assertEqual(res1["receipt"]["slsa_level"], "SLSA_BUILD_LEVEL_3")
+        self.assertEqual(res1["receipt"]["slsa_level"], "NOT_ASSESSED")
+        self.assertIsNone(res1["transformed_code"])
+        self.assertEqual(res1["certification"], "NOT_CERTIFIED")
         self.assertFalse(res1.get("cache_hit", False))
 
         # Second execution (cache hit)
@@ -77,7 +79,7 @@ class UnifiedCliGatewayTests(unittest.TestCase):
             tgt_lang="csharp",
             code_snippet="public class UserAuthService { public String token; }",
         )
-        self.assertEqual(res2["status"], "SUCCESS")
+        self.assertEqual(res2["status"], "READY_FOR_EXTERNAL_GATE")
         self.assertTrue(res2.get("cache_hit", False))
         self.assertEqual(res1["action_key"], res2["action_key"])
 
@@ -117,7 +119,7 @@ class UnifiedCliGatewayTests(unittest.TestCase):
                 self.assertTrue(out_html.is_file())
                 content = out_html.read_text(encoding="utf-8")
                 self.assertIn("ELMOS Executive Assurance Report", content)
-                self.assertIn("SLSA Level 3", content)
+                self.assertIn("Evidence Bundle &amp; Provenance State".replace("&amp;", "&"), content)
             finally:
                 sys.stdout = stdout_orig
 
@@ -146,13 +148,12 @@ class UnifiedCliGatewayTests(unittest.TestCase):
             ])
             self.assertEqual(code, 0)
             data = json.loads(sys.stdout.getvalue())
-            self.assertEqual(data["verification_status"], "PROVED_VERIFIED")
-            self.assertIn("theorem PreserveNonNegativeBalance", data["lean4_specification"])
-            self.assertIn("method {:verify true}", data["dafny_specification"])
+            self.assertEqual(data["verification_status"], "NATIVE_VERIFICATION_NOT_RUN")
+            self.assertFalse(data["certificate_issued"])
+            self.assertEqual(data["certification_status"], "NOT_CERTIFIED")
         finally:
             sys.stdout = stdout_orig
 
 
 if __name__ == "__main__":
     unittest.main()
-

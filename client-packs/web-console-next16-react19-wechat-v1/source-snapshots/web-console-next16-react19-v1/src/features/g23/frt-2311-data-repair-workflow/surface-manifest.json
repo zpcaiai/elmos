@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2311",
+  "skill_name": "frt-2311-data-repair-workflow",
+  "batch": "G23",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g23/frt-2311-data-repair-workflow/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g23.data-repair-workflow",
+  "execution_contract_sha256": "sha256:3df271750d057c447acc5e6c52e258ab150764329e9cc6e956734d3f4d8500db",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:141b7cd6f2c07be76a46884260e0ef4a8a3cc0743d2050fefcee1be2490d18dc",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

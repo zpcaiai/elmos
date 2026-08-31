@@ -178,6 +178,8 @@ class PolyglotSemanticCompilerService:
             "engine": ENGINE_NAME,
             "version": ENGINE_VERSION,
             "status": IMPLEMENTATION_STATE,
+            "readiness": "LOCAL_CONTROL_PLANE_ONLY",
+            "ready": "LOCAL_CONTROL_PLANE_ONLY",
             "implementation": IMPLEMENTATION_STATE,
             "catalog_state": "DIGEST_VERIFIED",
             "catalog_digest": self.catalog.digest,

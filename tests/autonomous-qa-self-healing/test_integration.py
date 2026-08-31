@@ -311,6 +311,36 @@ class AutonomousQaIntegrationTest(unittest.TestCase):
             )
             self.assertEqual(left, right)
 
+    def test_refresh_owned_replaces_authenticated_generated_trees_after_runtime_drift(self) -> None:
+        temporary, root, archive = self.temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        integration.write_integration(root, archive)
+        runtime = root / integration.RUNTIME_MODULE
+        runtime.write_bytes(runtime.read_bytes() + b"\n# reviewed runtime evolution\n")
+
+        with self.assertRaisesRegex(integration.IntegrationError, "refusing unowned"):
+            integration.write_integration(root, archive)
+
+        integration.write_integration(root, archive, refresh_owned=True)
+        integration.check_integration(root, archive)
+
+    def test_refresh_owned_rejects_drifted_prior_output_without_overwriting_it(self) -> None:
+        temporary, root, archive = self.temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        snapshot = integration.write_integration(root, archive)
+        target = (
+            root
+            / integration.INSTALL_ROOTS[0]
+            / snapshot.skills[0].alias
+            / "SKILL.md"
+        )
+        original = target.read_bytes()
+        target.write_bytes(original + b"\nreviewer-owned drift\n")
+
+        with self.assertRaisesRegex(integration.IntegrationError, "prior installed tree digest drifted"):
+            integration.write_integration(root, archive, refresh_owned=True)
+        self.assertEqual(original + b"\nreviewer-owned drift\n", target.read_bytes())
+
     def test_unexpected_autonomous_qa_alias_fails_write_preflight_and_check(self) -> None:
         for install_root in integration.INSTALL_ROOTS:
             with self.subTest(write_root=install_root.as_posix()):

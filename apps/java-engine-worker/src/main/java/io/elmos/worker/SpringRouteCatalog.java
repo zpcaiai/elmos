@@ -352,17 +352,17 @@ final class SpringRouteCatalog {
                     SourceFamily.SPRING_BOOT),
             new SpringRoute(
                     "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21",
-                    "spring-boot-1-5-3-5-15-to-3-5-16-inventory-only",
+                    "spring-boot-1-5-3-5-15-to-3-5-16",
                     "Spring Boot 1.5–3.5.15 / Java 8, 11, 17, 21 / Maven → Boot 3.5.16 / Java 21",
                     "1.5.0", "3.5.16", Set.of("8", "11", "17", "21"), MAVEN_BUILD_TOOL,
                     TARGET_BOOT_3_5_16, TARGET_JAVA,
-                    "", "",
+                    "/rewrite/spring-boot-1.5-to-3.5.16.yml",
+                    "io.elmos.openrewrite.SpringBoot1_5ToBoot3_5_16Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_IMPLEMENTED, "", "",
-                    "Inventory-only current maintenance target. No exact pinned OpenRewrite "
-                            + "composition, executable Batch 30 pack or source/target runtime evidence "
-                            + "exists for Boot 3.5.16 / Java 21, so selection must fail closed. The "
-                            + "existing Boot 3.5.3 routes and their recorded evidence remain unchanged.",
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Executable exact recipe is available for the Boot 3.5.16 / Java 21 target. "
+                            + "Real source/target build, startup, security, persistence, transaction, "
+                            + "holdout and independent evidence remain NOT_RUN.",
                     SourceFamily.SPRING_BOOT),
             new SpringRoute(
                     "boot-1.5-maven-to-boot-4.1.0-java-21",
@@ -525,11 +525,14 @@ final class SpringRouteCatalog {
                     "Spring MVC non-Boot 3.2–5.2 / Maven → Boot 3.5.3 / Java 21",
                     "3.2.0", "5.3.0", Set.of("8", "11", "17"), MAVEN_BUILD_TOOL,
                     TARGET_BOOT, TARGET_JAVA,
-                    "", "",
+                    "/rewrite/spring-framework-3.2-5.2-mvc-to-spring-boot-3.5.3.yml",
+                    "io.elmos.openrewrite.SpringFramework3_2To5_2MvcToSpringBoot3_5_3Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_IMPLEMENTED, "", "",
-                    "Inventory-only declaration. No exact Batch 30 pack or execution driver exists "
-                            + "for Spring Framework 3.2 through 5.2, so route selection must fail closed.",
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Executable exact preparation recipe is available for non-Boot Spring MVC "
+                            + "3.2 through 5.2. XML, web.xml, servlet registration, JSP, security, "
+                            + "persistence, transaction and provider behavior remain explicit FCM "
+                            + "obligations until a real source/target project is executed.",
                     SourceFamily.SPRING_MVC),
             new SpringRoute(
                     "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21",

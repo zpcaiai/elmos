@@ -51,8 +51,8 @@ class SemanticRegressionBisectorTests(unittest.TestCase):
             code = main(["polyglot", "bisect", "--json"])
             self.assertEqual(code, 0)
             data = json.loads(sys.stdout.getvalue())
-            self.assertEqual(data["status"], "FOUND_CULPRIT")
-            self.assertEqual(data["first_bad_revision"], "c104")
+            self.assertEqual(data["status"], "NOT_RUN")
+            self.assertIn("revision", data["culprit_message"].lower())
         finally:
             sys.stdout = stdout_orig
 

@@ -134,6 +134,136 @@ COLLISIONS: Mapping[str, Mapping[str, str]] = {
         "owner_value": "elmos-formal-assurance-kernel-v1.0.0",
         "skill_sha256": "6bd59de089b71e742a6842a298c62c02d40dc525e29df1d66f20db0bfd40899c",
     },
+    'elmos-abi-calling-convention-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "745ef38a35208aa37aeda6a4fc9ee97a0f76d93833e97cae3680a4de8711dd7f"},
+    'elmos-abstract-interpretation-invariant-engine': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "f5c0515364b200067ad42c6f6e5bc7a96bc8facefd76792eb9290466b9bc40e1"},
+    'elmos-actor-channel-mailbox-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "1024c13b1efca806a6366a58273824e4d32a8ead563175f8af92ebe1898b12f8"},
+    'elmos-adversarial-edge-case-corpus': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "cb805611b2f7e6d3ab52061473864955a42cc1b57e07c49c5e73a58900ad1a42"},
+    'elmos-alias-points-to-analysis': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "d1d149a573345a4a684b1ddce159652c0bee91436a999a3f9f128df7fcadc395"},
+    'elmos-annotation-attribute-reflection-modeler': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "262f9f8782f88c8abfc82f96c22be61fd56113371c8a148e1cd9b5bc47410617"},
+    'elmos-api-contract-behavior-equivalence': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "589f34543e9f3eda7bde10d836d2699595edc8ff7dddacb0160dabe4651cc30e"},
+    'elmos-async-await-task-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "f2379940ddbe7237a59d936253153676a07007fa50ffbf80de5d83f288ee921d"},
+    'elmos-atomic-memory-order-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "6f237a4910d474930946bebc202d64614bebd2a4ef6a235feac8695409af364c"},
+    'elmos-behavior-equivalence-verdict-aggregator': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "3d5a9ac7ac95f15e8f873fd0f94dae3a1516d6f04360f497fcefec9c98585322"},
+    'elmos-binary-record-wire-layout-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "0ed10ba24f67b009cbc8291789cc5a49f76d8b9c25210304250d205ba06b13b7"},
+    'elmos-bounded-model-checking-equivalence': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "e248640f9ad511dc4bb34170d668f857b9c28076f6b8793a8e00af13dd0ed1d4"},
+    'elmos-browser-js-wasm-runtime-lab': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "acdcb78b5df7dbb98165be1c7f2514f713ed50b3de311a44caf5ce9791252a7d"},
+    'elmos-bug-regression-corpus': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "bd4519d2cb073bd844a81c71ebed48e530981ab0fcce3b9e7d0e0a339440d1ad"},
+    'elmos-bug-seed-feedback-loop': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "b625b9febe33504d4780847035735f10a4fdc854da13c9b5e351720f6ab7b9a5"},
+    'elmos-canonical-type-algebra': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "81b80bd13a8abf109c38574039ada0ff4649c3d22587e67299421eaeefb97a21"},
+    'elmos-certification-corpus-readiness-gate': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "1f840f167811c1402e0f2d20cc6231a000ea532f46f8ae9ea6f52c9a74c8bb26"},
+    'elmos-cfg-equivalence-builder': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "a76d2bb3095b51132889c9ec7588494a7d0f8a920b095294f6a67a85c532f2b0"},
+    'elmos-closure-capture-lambda-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "d8cc1e82f92cb01ec8b47fa7df03b9ca1b706208fe335993519cfc8bcf8699e7"},
+    'elmos-collection-order-mutability-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "6d0057d274437a176e90170b91872f2ec3cbfa57910fbff8e21d97d88d5645f8"},
+    'elmos-comments-directives-trivia-provenance': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "c0b2e8f8e7d64d4e153d9d53fb2e24dee1c0d5f0c1a61a9c5ff01d0eab42cda3"},
+    'elmos-compiler-matrix-nversion-oracle': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "b0a07da7901107ce41475b41ceb5cbd9a643f3121531e948ec9179b5b169e590"},
+    'elmos-compiler-runtime-version-matrix': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "998b7802b5a75ab576a631558be1cc7fa308cfaec306c05576094e65af420383"},
+    'elmos-contract-invariant-inference': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "edf3b53fd59d0ade6e6150b1b6a93581412a4156057b1393236e7c5f314ded17"},
+    'elmos-control-data-effect-equivalence-gate': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "c19045c346420489aef052b6597abf7b29576c2969c98dbc39c5bae7924f35a0"},
+    'elmos-corpus-drift-freshness-manager': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "d0a47853c961a5d363a0fb93deaef78edaf32cda6cb2214cb2e9168bf18abe37"},
+    'elmos-coverage-guided-differential-fuzzer': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "ad90071333817d1d6032545237f7f43964bf412bd432380b710716382fb963f7"},
+    'elmos-cross-language-memory-model': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "6ca51e882e03c7ad724f8b024af0d6acbf100ad2c686c16e094e4b8bb353eb61"},
+    'elmos-cross-runtime-trace-alignment': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "fa83f45e57b7baf4fc88f92f4a3de2142335edad2be24c4c9e5a408b0f74f10a"},
+    'elmos-database-message-runtime-lab': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "8344c2a407e6d55e7a3ce6c18e13d7c9901cd55a3f244b0c800882669c670ceb"},
+    'elmos-database-state-equivalence': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "05b02cc600edba0313df3d46d322036a32889d16fba4b4970438c61b5c642841"},
+    'elmos-datetime-timezone-calendar-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "1274ccf74e76b67a806f177de317bca0de138634151a69ccb886b1d1fdcd6e72"},
+    'elmos-decimal-money-arithmetic-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "1e3cab451c7a494131832bf63106d6f8fd39c58607ac3ee7e5615bc9b97dc8b6"},
+    'elmos-deterministic-replay-oracle': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "976a2ab5c1e88663f0bfeb7eb2e74f78b2b93dc0647bb989bb72507b1eafb20e"},
+    'elmos-dialect-version-detector': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "bc3860abbd94409e59b60cacba05ff6605f826a5c746a38684c8b7464f87c30a"},
+    'elmos-dialect-version-fixture-matrix': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "3817e91d306fb1eac01a1e5500f8f122082e3bd2c4e1c3c984c5ab273d0f73e9"},
+    'elmos-dynamic-language-shape-inference': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "ab655b257df96c16485dfb6045bba1ae1d984b91f52ab19937782c3afebfbbb4"},
+    'elmos-enum-variant-sumtype-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "1d4ae7d421d886b4b5652022079038a4e1556c9c4de8d216944b6427a801ec25"},
+    'elmos-equivalent-mutant-classifier': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "5c680575e9ec479875c1f2151e7c6050d2f8d6184a451d60465d6bde01172c26"},
+    'elmos-exception-effect-type-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "0b47f496cea769ebf055a4c1c155a2562c19fe5cfefdefb8630a6bbfe8ee4e9a"},
+    'elmos-exception-unwind-equivalence': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "23a26189319c92ceaa273ada28c6e815eb93a268fa2c9cdc563dd64adf361007"},
+    'elmos-failure-reducer-minimizer': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "d7ef61754c8c6ed0499de29db5db605846fdc670ae475190828807722f9772bf"},
+    'elmos-ffi-marshalling-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "d7c8045603c482be70c441cc67fa56a618f053e4faf1915d9737ee614366b0d7"},
+    'elmos-file-network-sideeffect-equivalence': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "82e74933d7b60405cd9b52f9e55b0d3347597d6a3c0b9b7cd94bc0a91cb86d24"},
+    'elmos-fixture-corpus-governance': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "d6da23f6f3b9e267497e35a65348186ad4248ea5ae9af8dc4ac22fa065f4cde0"},
+    'elmos-fixture-minimizer-deduplicator': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "d4e9b7ab974fcb7e14d54e5eb2ab94a3ec5bb9b9581f855357519d956b48ecdf"},
+    'elmos-flaky-nondeterminism-classifier': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "abe05b4111a2d18d23ad093341b171d0de97eba67891a6e82d35ac71e96631b2"},
+    'elmos-formal-assurance-gate': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "47a4b1f633a53e987def383d6ffb0d32652728716f5b4d57879bbf6a3b8c2f8f"},
+    'elmos-formal-semantics-contract': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "569c2b570e23f87e34e766b28d450a3345bca60404840188d2bf6d2df9cf581f"},
+    'elmos-frontend-consistency-gate': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "c586b7a37e16a47b291383308395c693951b9f22b972d88cef1909ba90b6664a"},
+    'elmos-generated-program-corpus': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "9f655fd46898e3a2ad85c4398823535029d875ae6564f2204c1d83ec56296748"},
+    'elmos-generic-template-specialization-modeler': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "a1ab4036790801a3641cf8d14a32be444630880d2370dd8fa12dcbbe60d16aa2"},
+    'elmos-generics-variance-erasure-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "d0323b1db710d16516cceb91f94d4c785b3abb8fe3bd27ca84f10e27f0ca05dc"},
+    'elmos-golden-route-repository-fixtures': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "17a16b854afde8654f2696c08629eb55c03db46f6e2461e1451190168724d179"},
+    'elmos-grammar-based-semantic-fuzzer': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "3efa5d6d206ef8b151d8caa338b9f744491ebfad527ff3732821a172b3838c34"},
+    'elmos-grammar-feature-coverage': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "08b05e16e5cf7255eda012728945bbf8f6138e64b2f4fd980cc4b841dac9f3d5"},
+    'elmos-grammar-spec-ingestor': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "7cda401d4a91a03aa9dd755c764db4d75cfcc8fea9576d3ff8a54cd3a70e72d5"},
+    'elmos-hermetic-toolchain-image-builder': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "8fa38084b539a665a2d9a5beb74b3a69e1781f7554cd1fad1aa9a60a5588992e"},
+    'elmos-ibmi-native-runtime-lab': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "96ecc7cde8e4c6fdca98bf554f64581764e2b4ef94848d61fca473f9b248a6db"},
+    'elmos-ieee754-floating-point-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "8823fd49f5eeb9967a5ce9527c9170a0a6195d3f6190aeeef70cb2b9b1fd2add"},
+    'elmos-input-domain-partitioner': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "dd2815089ec93a3fb5575604b304d66d8860935544427a47563904de9c3c42f6"},
+    'elmos-integer-ub-language-lawyer': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "3adb2119ffe732cfc4964036540a0ee1c725503d3020a8204f53faf9625eb61d"},
+    'elmos-interprocedural-callgraph-resolver': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "4d36d449d1d3bf14af3793238fe30e3d48110ec33fa89de0e79cb30ff2eff2b2"},
+    'elmos-io-environment-observable-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "d14717959e49b4ea88229010d6ea96f621708c48492620897874fa81f9b2c9a7"},
+    'elmos-iterator-generator-coroutine-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "1a762f0c586e007dd3f835a2dfeda2b559637baa9d3e947f3e7b201ec1023f09"},
+    'elmos-language-spec-conformance-mapper': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "cfd9fd2b7b34f61826008aad8a65f37cd00e4a266c7d3120396fc31cc32d0d9f"},
+    'elmos-legacy-business-pattern-corpus': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "1bfe49963f50a6405664b18a9b3234626021770139b0548a797346200748e85a"},
+    'elmos-lexical-layout-fidelity-engine': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "f601ed4a6a6bc8fd4878fefaa0a4bfb65ae190b8ba43e8f2d47e6d5e3f6d7d2c"},
+    'elmos-lifetime-ownership-borrow-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "77162d899b62f96ee510b3280dcb4bfb933d03d88987dd1090247d3c87cb2476"},
+    'elmos-llvm-ir-refinement-checker': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "1e48dc109c6c3f7820a0b9c2167dba52ca5d77c42839c45e3f1647ba9e271331"},
+    'elmos-lock-condition-semaphore-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "cc06b62a867817ba001a037a3e9ac51c18889e28e583a4a68e9160632f8b5416"},
+    'elmos-lossless-cst-builder': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "ace6542e20f3768e374319ff101bf2d5b012e86afd1c31b88435a8fc307de250"},
+    'elmos-mainframe-native-runtime-lab': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "f02b4e18fcac74c090dd920087d21d01c59fad56252d4e3fcd7b3917f34f6a06"},
+    'elmos-message-event-equivalence': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "e1dd607640fc8efe733bd2b6cd71e86b213a3cd118ec2f6423bdf955459a7c18"},
+    'elmos-metamorphic-transformation-tester': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "7248cb8c6ad4da23ad73e7818ce0e31a7bb5cc68a294b0d24fa7354d6e0e6260"},
+    'elmos-metaprogramming-runtime-codegen-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "cdc0e740707c1bfff3e79e47be421b7d17ffe327f2ae84841a706a8880a9195b"},
+    'elmos-mobile-native-runtime-lab': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "4eeb19997b34dec8a7bd887f7379dd30ba01056de4089e80dd31fb079a681ea7"},
+    'elmos-multi-oracle-differential-executor': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "cde350795078c6230f45e810ad8e4b4f44d1bc23100287aee1ebcae30e2009a6"},
+    'elmos-native-ast-cross-checker': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "d91f2655644bc85bd98124e1096fc915c23fd985276432df260c4e88ee1eb2cf"},
+    'elmos-native-runtime-lab-evidence-attestor': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "dca398ff9c4a2daeede1d40fe2c2a7a09698d72da0129b24898e101462bb349b"},
+    'elmos-native-ub-sanitizer-orchestrator': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "99d3f4780b254908d54089431b3bbe949c2ddcff00fd4aa8ecf480fcf4647fc1"},
+    'elmos-nominal-structural-subtyping-mapper': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "35db11283ed12432d75040f4fcc8277e994cc4c707059f7d7d551c8c934ced0e"},
+    'elmos-nullability-optionality-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "482ee11bbd8c5f72d7cd3809b6d109fd8b6c77e6348bc5852fca8d6fae96e729"},
+    'elmos-numeric-type-range-overflow': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "0e08149eeac08d62f4523bd31bb061c32f12d830754b37b830256a27d9302808"},
+    'elmos-object-layout-vtable-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "1900614483927b4a67e9f5d07ac5f3642c42bd5f27fca9c1e1a78a10c9929e24"},
+    'elmos-observable-behavior-specification': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "f193317b88dcb9fb95c816ea2c6b1d0ac3ed5d4bda58c665f1dec97b55c4cb1d"},
+    'elmos-os-arch-libc-matrix': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "e97b2ad3e618336b941608615e7b3c757a0a32a75354a729e8698af50bb1b9f2"},
+    'elmos-overload-dispatch-resolver': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "da23fe32dc9f951c530d12546efc4eba4cb42fa5846853bdc5eaa203ff173ad8"},
+    'elmos-parse-error-recovery-validator': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "43eb3c1482e8ef73b66343d04d4d97f0083d5a2814ea207737bfba492eb11c46"},
+    'elmos-performance-complexity-equivalence': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "19a8cbc5e0f6e3b7bafdd62352bd1207044d2af5c54b3969033f91c0a768f2de"},
+    'elmos-pointer-layout-endianness-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "672b324bc319d52ba5971420acc81eb0d519a8e3d115544d5164f96ecab4c150"},
+    'elmos-preprocessor-macro-expansion-modeler': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "d7c1451eb4b9c0ab593acbf82e632cad90926efd66254856357fbb891f1aa4c4"},
+    'elmos-program-dependence-graph-analyzer': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "336ded7d844180024c4992029f35c92e0239ad753c140bd3869317fd0066302a"},
+    'elmos-proof-counterexample-replayer': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "28e8354c746d7a03351a45c5258fc8b9fc28d422f5eebcbd1e45f64656b3794a"},
+    'elmos-property-based-cross-language-tester': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "e6b9432b38d364a77a3f814a0d0a40fdef66f5a425a443595dd59187da401136"},
+    'elmos-public-api-binary-compatibility': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "ce2c49033d864c18d6a9a5e29a14a6b58f3a22b6a1d70d8bfa05ad74c101b80a"},
+    'elmos-public-fixture-license-provenance': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "552864bee0b5a0f025c66fcf14501494ad7a8ec2225bcfb7a070b7a3e0ee8f30"},
+    'elmos-refinement-range-contract-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "f25db416f0ed9f5b322b7fca5825cf1f7725645749009a7b0a7d6dadebcfab27"},
+    'elmos-reflection-dynamic-dispatch-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "ae13ffae330aa7605962638fd23cd2ba6d7432b5e37c1b6cb94fb0157a6e69a6"},
+    'elmos-resource-lifetime-finalization': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "775384126f31d9116f6b1c6f762098366ba65fc0af18e8ff26bd2c32b7d4fa2e"},
+    'elmos-runtime-edge-semantics-gate': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "2206f722bfaf02eb122e05c1974acc6577da7e155e053b04de859238e96b3e16"},
+    'elmos-sap-abap-runtime-lab': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "d09fe7465f4a7cbc985480c568de569e0ba916bc03c3f1e7ea16927d852d07a8"},
+    'elmos-scientific-hpc-runtime-lab': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "55c3febf04807659a64f7d8a03118f59d57f23975a560539df5a4636364d102e"},
+    'elmos-scope-resolution-engine': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "4098999a3a091b5b5da6995b3b1ffffa7084fcd9af57686d40f4ae7d62e3657e"},
+    'elmos-security-policy-equivalence': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "c935235f03f1b384631865490c291d7408f0c00716b7f64beaaaf588ac0164ac"},
+    'elmos-semantic-feature-coverage': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "ca2855514074de1cde5b8c6d9d80d113e1b3e025b46af741271bb518a8a6628a"},
+    'elmos-semantic-golden-master-capture': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "2b95e215369caa49374b1273f1928afe95a15d573c8cdbdb4f98ebd9d18c32cc"},
+    'elmos-semantic-mutation-testing': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "8097ab0c42dea64cc1d7b3a791b50f4f61cb81af2e6ff52a82b58e4d9bed9363"},
+    'elmos-semantic-refinement-counterexample': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "6e7493f3e0f118b5ef7678cae3bde877a073caa3856969eb53ea4194370c7b5f"},
+    'elmos-semantic-stress-certification-gate': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "e894837c8d66a299308a57ef575c9c0f4008a32b72746dac82eb71a5d000ebc8"},
+    'elmos-serialization-schema-type-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "0534fe2d94857b36acccfbfae7eac1dfd51510f2fe8f3489b4a5cac67a0061ae"},
+    'elmos-side-effect-footprint-model': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "4de3d090e0dc0485c9cab81f2de2a55119722aad49af1830a4a58893d68c5d3d"},
+    'elmos-smt-equivalence-prover': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "7af7bf923604813a667496bce02b31b1511c154a6eccde4949078ab190b49d13"},
+    'elmos-source-roundtrip-preserver': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "7128b9ff505f588ccd55a4d6761728829a2bc82bbce751c579302403ddbe7458"},
+    'elmos-sql-null-collation-isolation-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "3aaef076607f62cf154b2c1773d1ee986a3821adb5a6edc9e5014ff218e76d15"},
+    'elmos-ssa-dataflow-lowering': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "281f8ebe459d9103d2bbf24950f5eccd24a08bf7bfc7a36b9cb53db9dd532902"},
+    'elmos-state-snapshot-equivalence': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "ccf22710bdd8c169cec9468b93f646883f2fc7d6fd1457ed5c659d458ac46430"},
+    'elmos-string-char-codepoint-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "12379e0680f6e20bf9595cec9de59d97714e76bd1ccac9c41e330d9c90770771"},
+    'elmos-symbol-table-builder': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "a4bc89647594dfc73d0506370b8d38961733e4a53c7bbce7e9d2fd7661c2ab0f"},
+    'elmos-symbolic-execution-equivalence': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "b8b850f885a3ecaf90edbab8e33ff0bc278ac5a8744152421c66146248709e7e"},
+    'elmos-text-encoding-collation-locale-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "c5bc25c4813d609b31f54db042d6d7b45234845c98c7f4eb7ac86c4f02ed095f"},
+    'elmos-thread-scheduler-determinism-lab': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "4bfdf646ec6c509e9f58f410b8c57b41212bc143076c78dec962bb3bd9ebaa84"},
+    'elmos-time-randomness-nondeterminism-semantics': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "c4d09d26f05afffb1fb3523e60332d128b5bd675d7704291b4aacea75f03bb04"},
+    'elmos-translation-validation-planner': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "b877b0148d1f6106d13617ae9e78953b3857c2b7e124ad1368f7459eba915548"},
+    'elmos-type-semantic-loss-gate': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "805f6eaf7d88f4d382861f11b379df0bc9e903107915d18ce703284f8b5943d5"},
+    'elmos-ui-interaction-equivalence': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "7dc0bfa661be942134f4a8aeaf174bdea5f1e67b3e67a6302bfd13ece5e37d4f"},
+    'elmos-undefined-behavior-filter': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "ea42aceac9fabdd2cdcf781ba3e3799e8f684a9fc8a063efac32204ee26ef6a5"},
+    'elmos-verified-lowering-route': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "068045ebde68edf6ec7dd6f664d5e17574991971a4a6bddc2c89921bbc9a787f"},
+    'elmos-wasm-portable-semantics-oracle': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "9160145405ad4a2f5b275e63ef3cb669b6203990b612dcb78817a99c4952dc58"},
+    'elmos-windows-legacy-runtime-lab': {"owner": "elmos-semantic-assurance-expansion-skills-v1.0.0", "owner_file": "compiled-contract.json", "owner_field": "packageId", "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0", "skill_sha256": "e0caafff2bf079bbcdbe3681d75ba2ca3d9611359588eb1bd33e2b7e3c8d2a3b"},
 }
 
 MAX_ARCHIVE_BYTES = 8 * 1024 * 1024
@@ -1032,6 +1162,33 @@ def _json_bytes(value: Any) -> bytes:
         )
         + "\n"
     ).encode("utf-8")
+
+
+def _owned_generated_prior(content: bytes, *, refresh_owned: bool) -> bool:
+    """Allow refresh only for this importer’s authenticated generated JSON."""
+
+    if not refresh_owned:
+        return False
+    try:
+        document = json.loads(content)
+    except (json.JSONDecodeError, UnicodeDecodeError, TypeError, ValueError):
+        return False
+    if not isinstance(document, Mapping):
+        return False
+    if document.get("managed_by") == MANAGED_BY:
+        return document.get("package_id") == PACKAGE or (
+            isinstance(document.get("package"), Mapping)
+            and document["package"].get("id") == PACKAGE
+        )
+    # The original compiled catalog predates the managed_by marker.  Its
+    # schema and package identity are still exact and the refresh remains
+    # explicit, so only that narrowly typed legacy artifact is eligible.
+    return (
+        document.get("schema_version")
+        == "elmos.polyglot-semantic-assurance.compiled-catalog.v1"
+        and isinstance(document.get("package"), Mapping)
+        and document["package"].get("id") == PACKAGE
+    )
 
 
 def _tree(root: Path) -> Mapping[str, bytes]:
@@ -2043,7 +2200,12 @@ def check_integration(
             os.close(repository_fd)
 
 
-def write_integration(repository_root: Path, archive_path: Path) -> PackageSnapshot:
+def write_integration(
+    repository_root: Path,
+    archive_path: Path,
+    *,
+    refresh_owned: bool = False,
+) -> PackageSnapshot:
     """Install one fail-closed generation with the receipt as final commit marker."""
 
     repository_root = Path(os.path.abspath(repository_root))
@@ -2157,7 +2319,13 @@ def write_integration(repository_root: Path, archive_path: Path) -> PackageSnaps
         for label, stage_name, destination_path, content in generated:
             destination = PurePosixPath(destination_path.as_posix())
             prior = _snapshot_relative(repository_fd, destination, label)
-            if prior is not None and (prior[0] != "file" or prior[1] != content):
+            if prior is not None and (
+                prior[0] != "file"
+                or (
+                    prior[1] != content
+                    and not _owned_generated_prior(prior[1], refresh_owned=refresh_owned)
+                )
+            ):
                 raise IntegrationError(f"refusing to overwrite unowned {label}")
             generated_priors[destination] = prior
             stage = PurePosixPath("staged") / stage_name
@@ -2249,7 +2417,13 @@ def write_integration(repository_root: Path, archive_path: Path) -> PackageSnaps
             "qualification receipt",
         )
         if receipt_prior is not None and (
-            receipt_prior[0] != "file" or receipt_prior[1] != receipt_bytes
+            receipt_prior[0] != "file"
+            or (
+                receipt_prior[1] != receipt_bytes
+                and not _owned_generated_prior(
+                    receipt_prior[1], refresh_owned=refresh_owned
+                )
+            )
         ):
             raise IntegrationError("refusing to overwrite unowned qualification receipt")
         receipt_stage = PurePosixPath("staged/receipt")
@@ -2364,13 +2538,24 @@ def main(argv: Sequence[str] | None = None) -> int:
     operation.add_argument("--write", action="store_true", help="atomic repository-wrapper install")
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--archive", type=Path)
+    parser.add_argument(
+        "--refresh-owned",
+        action="store_true",
+        help="refresh only generated JSON already authenticated as owned by this importer",
+    )
     args = parser.parse_args(argv)
+    if args.refresh_owned and not args.write:
+        parser.error("--refresh-owned requires --write")
     repository_root = Path(os.path.abspath(args.root))
     paths = get_paths(repository_root)
     archive_path = Path(os.path.abspath(args.archive)) if args.archive else paths["archive_path"]
     try:
         if args.write:
-            snapshot = write_integration(repository_root, archive_path)
+            snapshot = write_integration(
+                repository_root,
+                archive_path,
+                refresh_owned=args.refresh_owned,
+            )
             catalog = build_expected(snapshot)
             decision = "REPOSITORY_WRAPPERS_INSTALLED"
         else:

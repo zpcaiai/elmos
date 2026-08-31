@@ -2,8 +2,8 @@
   "schema_version": 1,
   "kind": "elmos.frontend-component-migration-closure",
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "source_revision": "f734a4d9a2dd9253d975b998eb5bbe5a7c624dff",
-  "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+  "source_revision": "97d99d75bfe083c1fbd11dbb663f9ec59704d081",
+  "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
   "target_tuple": {
     "stack": "wechat-native-miniapp-candidate",
     "versions": [
@@ -958,7 +958,7 @@
     {
       "source_path": "app/intake/page.tsx",
       "component_name": "MultimodalIntakePage",
-      "source_sha256": "sha256:74043ecc35875e8ba9d95fe35d1c223546de0edbd38c7c5e6f9f3891cde03666",
+      "source_sha256": "sha256:c28e91082cc8a0f83e185efe57031b5dbd5c7b85ece1219df21eeef2b924f3a5",
       "disposition": "AUTOMATIC",
       "automatic_subset_status": "IN_SUBSET",
       "blocker": null,
@@ -1209,7 +1209,7 @@
     {
       "source_path": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
       "component_name": "RepositoryOrchestratorWorkbench",
-      "source_sha256": "sha256:94cf80c45cfde92de4a15528c7c6ebb7489e213e99c12216ec8135436695c10e",
+      "source_sha256": "sha256:1743a60296e6221e75adc6c14b3ca8dd592f9830b84e3818aae86db293d34380",
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
@@ -1217,9 +1217,9 @@
         "reason": "state catalog has unsupported type \"RepositoryModelCatalog\"",
         "semantic_category": "data-contracts"
       },
-      "manual_ir_digest": "sha256:a28d848f49a4a40f9ce97fb62bc16b4234fa934286a761b963d20e96cb92c87c",
+      "manual_ir_digest": "sha256:05df34c98e0fe4ec9e1b1da247f0bb5d58b43c9b82a8227afdb885b8ed5d0b43",
       "target_path": "target-project/components/RepositoryOrchestratorWorkbench",
-      "target_sha256": "sha256:b6088e48058609a3a858c2c0f0c8486c1410b5d3e3b59bd513afdcd0a8bf15f0",
+      "target_sha256": "sha256:098ca7def38fbe86ed74819cd4a4dfe4c1d177483f929a0d4c2b7a23b3cfc0f3",
       "target_files": [
         "target-project/components/RepositoryOrchestratorWorkbench/index.js",
         "target-project/components/RepositoryOrchestratorWorkbench/index.json",
@@ -1280,7 +1280,7 @@
     {
       "source_path": "app/playground/PlaygroundWorkspace.tsx",
       "component_name": "PlaygroundWorkspace",
-      "source_sha256": "sha256:ce49066ffce81485aec4a0683ffff54409bde3b0d62051cbb9de734d70cdf6c5",
+      "source_sha256": "sha256:044932f80cf783ca91439b29611dab173589fb4c1915e450eeecfd9a6b2da868",
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
@@ -1288,9 +1288,9 @@
         "reason": "state \"sourceCode\" requires a primitive literal initializer",
         "semantic_category": "effects-and-resources"
       },
-      "manual_ir_digest": "sha256:44e638446c0e3da6106bef05a25b75a1b4a2583aa2d8f1a7447be862984ae409",
+      "manual_ir_digest": "sha256:bf0c53646c91354a607e4bcb8c71803231b8078cc083ac0f5536d9004a8c3223",
       "target_path": "target-project/components/PlaygroundWorkspace",
-      "target_sha256": "sha256:c46c76fba4875826db0a71f6be25e49dc49791b970af410cb09be91610293dc2",
+      "target_sha256": "sha256:8d7727fc14075c7f1cdaaece5835996021daa86b48bacb71c5ac6835ec1a087f",
       "target_files": [
         "target-project/components/PlaygroundWorkspace/index.js",
         "target-project/components/PlaygroundWorkspace/index.json",
@@ -1652,7 +1652,7 @@
     {
       "source_path": "app/spring/SpringModernizationStudio.tsx",
       "component_name": "SpringModernizationStudio",
-      "source_sha256": "sha256:629e8e56e5a04e3024f5ddf888c53191510a05769369a83e29bf7594f3136d2a",
+      "source_sha256": "sha256:048f5c6dbf28a160dc8a797240fc28ec2bf0b24f9bd6b554dbf07b398850126d",
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
@@ -1660,9 +1660,9 @@
         "reason": "expression kind CallExpression is outside certified-component-v1",
         "semantic_category": "effects-and-resources"
       },
-      "manual_ir_digest": "sha256:70b72c5ebb0b179883470fbf0a3847b6d79755a04645f88aaf0408a9956780f0",
+      "manual_ir_digest": "sha256:9e805c8e0ec458bdca6d4ec10d8b5318058e248de1d5613af3d9fa041e5e6160",
       "target_path": "target-project/components/SpringModernizationStudio",
-      "target_sha256": "sha256:c9fe32bd777e077eee255b07cbd81663290547adf861ea39ef5ca30631729824",
+      "target_sha256": "sha256:388d572bcf876f596b0a6bcc6b1b9a2b403bd04157cd5dde2b0eb8d765e4b7f1",
       "target_files": [
         "target-project/components/SpringModernizationStudio/index.js",
         "target-project/components/SpringModernizationStudio/index.json",
@@ -1721,5 +1721,5 @@
       "certification": "NOT_CERTIFIED"
     }
   ],
-  "registry_digest": "sha256:a7992267b481a2117fd80bcdab03371a936c55ea8d1e7d4d4deeabdf1bc3d580"
+  "registry_digest": "sha256:cb5584d59ee674a44dd74ffbb922052f9b0cfe720145149f56a16e6f371b7645"
 }

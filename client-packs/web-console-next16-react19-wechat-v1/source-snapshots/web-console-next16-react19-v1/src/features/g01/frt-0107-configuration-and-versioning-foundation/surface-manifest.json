@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0107",
+  "skill_name": "frt-0107-configuration-and-versioning-foundation",
+  "batch": "G01",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g01/frt-0107-configuration-and-versioning-foundation/",
+  "status": "shared_implementation",
+  "handler_kind": "governance",
+  "capability_key": "frt.g01.configuration-and-versioning-foundation",
+  "execution_contract_sha256": "sha256:283cfaf0f987651ea7360a701098c0a4d22dd1a13a4af5eed6d8208171f1a05b",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "invariants"
+    ],
+    "optional": [
+      "dependencies",
+      "allowedDependencies",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:a124fe1fdf8e6223686eb56a6905b4c19cc89957d4873c6d16c7238f19fcb740",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

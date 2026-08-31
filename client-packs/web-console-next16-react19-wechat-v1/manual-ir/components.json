@@ -2,7 +2,7 @@
   "schema_version": 1,
   "kind": "elmos.manual-component-ir-bundle",
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "source_revision": "f734a4d9a2dd9253d975b998eb5bbe5a7c624dff",
+  "source_revision": "97d99d75bfe083c1fbd11dbb663f9ec59704d081",
   "component_count": 39,
   "components": [
     {
@@ -10348,7 +10348,7 @@
       "source": {
         "file": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
         "componentName": "RepositoryOrchestratorWorkbench",
-        "sha256": "sha256:94cf80c45cfde92de4a15528c7c6ebb7489e213e99c12216ec8135436695c10e",
+        "sha256": "sha256:1743a60296e6221e75adc6c14b3ca8dd592f9830b84e3818aae86db293d34380",
         "range": {
           "start": 1677,
           "end": 19957
@@ -10782,7 +10782,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:a28d848f49a4a40f9ce97fb62bc16b4234fa934286a761b963d20e96cb92c87c"
+      "irDigest": "sha256:05df34c98e0fe4ec9e1b1da247f0bb5d58b43c9b82a8227afdb885b8ed5d0b43"
     },
     {
       "schemaVersion": "1.0",
@@ -10848,10 +10848,10 @@
       "source": {
         "file": "app/playground/PlaygroundWorkspace.tsx",
         "componentName": "PlaygroundWorkspace",
-        "sha256": "sha256:ce49066ffce81485aec4a0683ffff54409bde3b0d62051cbb9de734d70cdf6c5",
+        "sha256": "sha256:044932f80cf783ca91439b29611dab173589fb4c1915e450eeecfd9a6b2da868",
         "range": {
           "start": 1307,
-          "end": 16296
+          "end": 16295
         }
       },
       "blocker": {
@@ -11043,7 +11043,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:44e638446c0e3da6106bef05a25b75a1b4a2583aa2d8f1a7447be862984ae409"
+      "irDigest": "sha256:bf0c53646c91354a607e4bcb8c71803231b8078cc083ac0f5536d9004a8c3223"
     },
     {
       "schemaVersion": "1.0",
@@ -13314,10 +13314,10 @@
       "source": {
         "file": "app/spring/SpringModernizationStudio.tsx",
         "componentName": "SpringModernizationStudio",
-        "sha256": "sha256:629e8e56e5a04e3024f5ddf888c53191510a05769369a83e29bf7594f3136d2a",
+        "sha256": "sha256:048f5c6dbf28a160dc8a797240fc28ec2bf0b24f9bd6b554dbf07b398850126d",
         "range": {
           "start": 9025,
-          "end": 46037
+          "end": 46056
         }
       },
       "blocker": {
@@ -14065,22 +14065,22 @@
         {
           "operation": "map",
           "sourceRange": {
-            "start": 42842,
-            "end": 43677
+            "start": 42861,
+            "end": 43696
           }
         },
         {
           "operation": "map",
           "sourceRange": {
-            "start": 44341,
-            "end": 44736
+            "start": 44360,
+            "end": 44755
           }
         },
         {
           "operation": "filter",
           "sourceRange": {
-            "start": 44524,
-            "end": 44588
+            "start": 44543,
+            "end": 44607
           }
         }
       ],
@@ -14152,7 +14152,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:70b72c5ebb0b179883470fbf0a3847b6d79755a04645f88aaf0408a9956780f0"
+      "irDigest": "sha256:9e805c8e0ec458bdca6d4ec10d8b5318058e248de1d5613af3d9fa041e5e6160"
     },
     {
       "schemaVersion": "1.0",
@@ -14962,5 +14962,5 @@
       "irDigest": "sha256:7e2dea0e31ff3e08f1519acf8670f42d28d7287412232a6cd87958722b2fe582"
     }
   ],
-  "bundle_digest": "sha256:5d08f08928c94f032863404927fb555b8d7024d3ad95f18d1f393053793b6697"
+  "bundle_digest": "sha256:3d98f0f805c207a67fd1974270bcfde3936f8ff93d76322c2c15f11c20c052f4"
 }

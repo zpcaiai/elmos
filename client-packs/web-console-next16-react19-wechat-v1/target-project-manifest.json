@@ -860,7 +860,7 @@
     },
     {
       "path": "target-project/components/PlaygroundWorkspace/index.js",
-      "sha256": "sha256:29fb131699797aa09d188bb62d16c6b5082c1f62a96f9a750e86a15f751bb827",
+      "sha256": "sha256:f5a8bb9ce803d8483b818d5d3f9f73dd859148b43fb0dc1c0571be6dbc49d404",
       "bytes": 2534
     },
     {
@@ -1020,7 +1020,7 @@
     },
     {
       "path": "target-project/components/RepositoryOrchestratorWorkbench/index.js",
-      "sha256": "sha256:dd1526fa1a4d1b9671bb1f3d11521e458eeced28b0d499be5f0795f4da6974fb",
+      "sha256": "sha256:e275fc72c532b34364610b7019485894f60c70da80c7346f2d102c5cb73cb511",
       "bytes": 2924
     },
     {
@@ -1240,7 +1240,7 @@
     },
     {
       "path": "target-project/components/SpringModernizationStudio/index.js",
-      "sha256": "sha256:a781faad13d43298dd023e5644e7c09b9d0af4c12ad971515651d54ca7e6dcce",
+      "sha256": "sha256:2a3682dfb491c979da7999e7abc2ff882f58496883632f606cf034f201ae28b8",
       "bytes": 4130
     },
     {
@@ -1445,7 +1445,7 @@
     },
     {
       "path": "target-project/handoff.json",
-      "sha256": "sha256:402e44357e7ec48a9075114055b89a29699e0cf41b929c570b0f3a11ecf1443d",
+      "sha256": "sha256:741f70b8dc323c39a6cfe28577409038a3fd2620eb4346a6f9f87a5652b34fab",
       "bytes": 32072
     },
     {
@@ -1489,7 +1489,7 @@
       "bytes": 140
     }
   ],
-  "target_digest": "sha256:8037e2b6d20395ce8bc7def9d9038b03f7663e703ac725e14283f2ad65ad9dd8",
+  "target_digest": "sha256:45decb4f5df096d31756c6102399485fc6a1b9a35629cfc4d7bda0699098783b",
   "official_build": "NOT_RUN",
   "certification": "NOT_CERTIFIED"
 }

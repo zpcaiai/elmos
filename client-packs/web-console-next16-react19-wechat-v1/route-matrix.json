@@ -5,7 +5,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -23,7 +23,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -41,7 +41,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -59,7 +59,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -77,7 +77,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -95,7 +95,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -113,7 +113,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -131,7 +131,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -149,7 +149,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -167,7 +167,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -185,7 +185,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -203,7 +203,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -221,7 +221,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -239,7 +239,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -257,7 +257,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -275,7 +275,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -293,7 +293,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -311,7 +311,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -329,7 +329,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -347,7 +347,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -365,7 +365,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",
@@ -383,7 +383,7 @@
     {
       "source_stack": "nextjs-react-web-console",
       "source_version": "next-16.3.0-react-19.2.7-typescript-5.9.2",
-      "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "source_snapshot_digest": "sha256:abf86782a735baa0a9434a7e53fa13ff0b664e4dad35b046b0b1c75230c6b5cd",
       "target_stack": "wechat-native-miniapp-candidate",
       "target_version": "wechat-base-library-3.9.1",
       "target_toolchain_version": "wechat-devtools-2.01.2510290",

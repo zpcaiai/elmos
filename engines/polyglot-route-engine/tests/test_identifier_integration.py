@@ -24,7 +24,12 @@ from elmos_polyglot_route.identifier_hygiene import (
     target_function_view,
     target_ir_view,
 )
-from elmos_polyglot_route.models import Language, RouteError, SemanticIR
+from elmos_polyglot_route.models import (
+    REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
+    Language,
+    RouteError,
+    SemanticIR,
+)
 from elmos_polyglot_route.toolchains import exact_toolchain
 from elmos_polyglot_route.validation import _apple_sdk, validate
 
@@ -480,6 +485,7 @@ def test_repository_local_target_rename_prevents_javascript_object_shadowing(
         cases,
         output,
         repository_execution_mode=True,
+        repository_language_lifecycle=REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
         identifier_unit_namespace=_repository_namespace(source),
     )
 
@@ -538,6 +544,7 @@ def test_node_route_rejects_unsafe_integer_intermediate_before_output(tmp_path: 
             cases,
             output,
             repository_execution_mode=True,
+            repository_language_lifecycle=REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
             identifier_unit_namespace=_repository_namespace(source),
         )
 
@@ -750,6 +757,7 @@ def test_node_route_rejects_unsafe_integer_intermediates_for_every_return_type(
             cases,
             output,
             repository_execution_mode=True,
+            repository_language_lifecycle=REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
             identifier_unit_namespace=_repository_namespace(source),
         )
 
@@ -810,6 +818,7 @@ def test_node_route_wraps_canonical_errors_before_any_output(
             cases,
             output,
             repository_execution_mode=True,
+            repository_language_lifecycle=REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
             identifier_unit_namespace=_repository_namespace(source),
         )
 

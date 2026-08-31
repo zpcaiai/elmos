@@ -23,7 +23,7 @@
   "package_version": "1.1.0",
   "repository_owned_wrapper": true,
   "runtime_binding": {
-    "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+    "authority_sha256": "sha256:b6437e80cab248e00ae3e8461dc7e59fecf8968399d85aff020f2a8f246c2b84",
     "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
     "certification_status": "NOT_CERTIFIED",
     "dispatcher": "dispatch_skill",

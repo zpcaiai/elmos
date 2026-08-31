@@ -1,16 +1,61 @@
 # Batch 35 gate: multimodal-intake-authorization-v1
 
 - Pack status: `experimental`
-- Structural status: `PASSED`
-- Local equivalence status: `NOT_EVALUATED`
-- Bounded proof profile ready: `false`
-- Formal ready: `false`
-- External evidence status: `NOT_RUN`
-- Model/formal ready: `false`
-- Browser ready: `false`
-- Native ready: `false`
-- Cross-channel runtime ready: `false`
-- Independent ready: `false`
+- Structural gate status: `passed`
 - Certification decision: `NOT_CERTIFIED`
+- Certification readiness: `BLOCKED`
+- Evaluated pack digest: `sha256:8e94cc0babf88c142cdfbfb217b4449ade042ca6340992c8097b277dc59cb2da`
 
-The pack is structurally valid but is not certified.
+## Certification blockers
+- pack and certification status must both request certified
+- unknown required verification technique: negative-content
+- representative_workload_pass_rate below 1.0
+- source_map_coverage below 0.95
+- evidence_trace_coverage below 0.95
+- p0_contract_pass_rate below 1.0
+- fuzz_campaign_pass_rate below 1.0
+- metamorphic_pass_rate below 1.0
+- model_transition_coverage below 0.95
+- mutation_score below 0.8
+- property_pass_rate below 1.0
+- security_property_pass_rate below 1.0
+- critical_fuzz_crashes must be explicitly zero
+- critical_unknown_obligations must be explicitly zero
+- forbidden_concurrency_outcomes must be explicitly zero
+- race_deadlock_liveness_violations must be explicitly zero
+- security_property_violations must be explicitly zero
+- surviving_critical_mutants must be explicitly zero
+- test_integrity_violations must be explicitly zero
+- unapproved_oracle_changes must be explicitly zero
+- unapproved_tolerance_changes must be explicitly zero
+- unresolved_oracle_conflicts must be explicitly zero
+- unsupported_p0_claims must be explicitly zero
+- negative corpus status must be passed
+- negative corpus evidence_refs empty
+- holdout corpus status must be passed
+- holdout corpus evidence_refs empty
+- holdout corpus is not independently verified
+- holdout corpus independent verifier missing
+- holdout corpus executor missing
+- representative-workloads corpus status must be passed
+- representative-workloads corpus evidence_refs empty
+- representative workload corpus is not production-derived
+- representative workload authorization record is missing, invalid, or not content-bound locally
+- assurance claim claim.identity-scope-binding is not fully supported
+- assurance claim claim.operation-authorization is not fully supported
+- assurance claim claim.deny-no-side-effects is not fully supported
+- assurance claim claim.untrusted-content-boundary is not fully supported
+- assurance claim claim.append-only-corrections is not fully supported
+- assurance case approvals empty
+- validation profile approvals empty
+- oracle registry approvals empty
+- certification approval timestamp missing
+- P0 claim claim.identity-scope-binding has no independent external oracle evidence
+- P0 claim claim.operation-authorization has no independent external oracle evidence
+- P0 claim claim.deny-no-side-effects has no independent external oracle evidence
+- P0 claim claim.untrusted-content-boundary has no independent external oracle evidence
+- scope controlled_public_dns_rebinding_campaign must be passed (found None)
+- scope independent_holdout must be passed (found 'NOT_RUN')
+- scope representative_production_workload must be passed (found 'NOT_RUN')
+- content-addressed evidence manifest is required
+- repository binding records are required for readiness

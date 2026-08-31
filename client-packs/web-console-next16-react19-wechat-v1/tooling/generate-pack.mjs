@@ -14,6 +14,8 @@ const root = path.resolve(packDir, "..", "..");
 const sourceRoot = path.join(root, "apps", "web-console");
 const targetRoot = path.join(packDir, "target-project");
 const engineRoot = path.join(root, "engines", "component-dialect-engine");
+const sourceSnapshotRelative = "source-snapshots/web-console-next16-react19-v1";
+const sourceSnapshotRoot = path.join(packDir, sourceSnapshotRelative);
 const { runRepository } = require(path.join(engineRoot, "dist", "pipeline.js"));
 const { scanRepository } = require(path.join(engineRoot, "dist", "scan.js"));
 const { markPorted } = require(path.join(engineRoot, "dist", "handoff.js"));
@@ -128,12 +130,19 @@ function sourceManifest(sourceRevision, observedAt) {
   const files = tracked.map((relative) => {
     const full = path.join(root, relative);
     if (!fs.existsSync(full) || !fs.statSync(full).isFile()) throw new Error(`PINNED_SOURCE_FILE_MISSING: ${relative}`);
-    return { path: relative, sha256: hashBytes(fs.readFileSync(full)), bytes: fs.statSync(full).size };
+    const sourceRelative = path.relative("apps/web-console", relative);
+    return { path: sourceRelative, sha256: hashBytes(fs.readFileSync(full)), bytes: fs.statSync(full).size };
   });
-  const snapshotDigest = canonicalDigest(files.map(({ path: file, sha256 }) => ({ path: file, sha256 })));
+  const snapshotDigest = hashBytes(
+    files
+      .map(({ path: file, sha256, bytes }) => `${file}\0${sha256}\0${bytes}`)
+      .join("\n"),
+  );
   return {
     schema_version: 1,
     kind: "elmos.git-source-snapshot-manifest",
+    source_root: sourceSnapshotRelative,
+    aggregate_digest: snapshotDigest,
     source_revision: sourceRevision,
     observed_at: observedAt,
     repository_relative_root: "apps/web-console",
@@ -142,6 +151,24 @@ function sourceManifest(sourceRevision, observedAt) {
     snapshot_digest: snapshotDigest,
     boundary: "References exact tracked source bytes at source_revision; source scripts are not executed by this generator.",
   };
+}
+
+function materializeSourceSnapshot(snapshot) {
+  const temporary = fs.mkdtempSync(path.join(path.dirname(sourceSnapshotRoot), ".web-console-source-snapshot-"));
+  try {
+    for (const entry of snapshot.files) {
+      const destination = path.join(temporary, entry.path);
+      const relativeDestination = path.relative(temporary, destination);
+      if (!relativeDestination || relativeDestination.startsWith("..")) throw new Error(`SOURCE_SNAPSHOT_PATH_ESCAPE: ${entry.path}`);
+      const source = path.join(sourceRoot, entry.path);
+      atomicWrite(destination, fs.readFileSync(source));
+    }
+    if (fs.existsSync(sourceSnapshotRoot)) fs.rmSync(sourceSnapshotRoot, { recursive: true, force: true });
+    fs.renameSync(temporary, sourceSnapshotRoot);
+  } catch (error) {
+    if (fs.existsSync(temporary)) fs.rmSync(temporary, { recursive: true, force: true });
+    throw error;
+  }
 }
 
 function unitKey(item) {
@@ -421,6 +448,7 @@ async function main() {
       registry_digest: canonicalDigest(entries),
     };
     writeJson("transformations/component-migration-closure.json", closure);
+    materializeSourceSnapshot(snapshot);
     writeJson("source-snapshots/manifest.json", snapshot);
     writeJson("source-fingerprint/fingerprint.json", {
       schema_version: 1,

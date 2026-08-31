@@ -8,7 +8,7 @@ Component(createHandPortComponent({
   "source": {
     "file": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
     "componentName": "RepositoryOrchestratorWorkbench",
-    "sha256": "sha256:94cf80c45cfde92de4a15528c7c6ebb7489e213e99c12216ec8135436695c10e",
+    "sha256": "sha256:1743a60296e6221e75adc6c14b3ca8dd592f9830b84e3818aae86db293d34380",
     "range": {
       "start": 1677,
       "end": 19957
@@ -118,5 +118,5 @@ Component(createHandPortComponent({
   "obligations": [
     "RepositoryOrchestratorWorkbench:source-blocker"
   ],
-  "irDigest": "sha256:a28d848f49a4a40f9ce97fb62bc16b4234fa934286a761b963d20e96cb92c87c"
+  "irDigest": "sha256:05df34c98e0fe4ec9e1b1da247f0bb5d58b43c9b82a8227afdb885b8ed5d0b43"
 }));
