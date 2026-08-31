@@ -6,6 +6,11 @@ on:
     paths:
       - "apps/web-console/**"
       - ".github/workflows/vercel-deployment-smoke.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/web-console/**"
+      - ".github/workflows/vercel-deployment-smoke.yml"
   workflow_dispatch:
     inputs:
       deployment_url:

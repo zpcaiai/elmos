@@ -136,6 +136,169 @@ COLLISIONS: Mapping[str, Mapping[str, str]] = {
     },
 }
 
+# The semantic-assurance package is installed before this package and owns the
+# 130 shared names below. The two proof names it aliases are already covered
+# by the stronger formal/knowledge owners above. Keep this list explicit so a
+# package cannot silently claim a shared installed name.
+SEMANTIC_ASSURANCE_COLLISION_NAMES = frozenset(
+    {
+        "elmos-abi-calling-convention-semantics",
+        "elmos-abstract-interpretation-invariant-engine",
+        "elmos-actor-channel-mailbox-semantics",
+        "elmos-adversarial-edge-case-corpus",
+        "elmos-alias-points-to-analysis",
+        "elmos-annotation-attribute-reflection-modeler",
+        "elmos-api-contract-behavior-equivalence",
+        "elmos-async-await-task-semantics",
+        "elmos-atomic-memory-order-semantics",
+        "elmos-behavior-equivalence-verdict-aggregator",
+        "elmos-binary-record-wire-layout-semantics",
+        "elmos-bounded-model-checking-equivalence",
+        "elmos-browser-js-wasm-runtime-lab",
+        "elmos-bug-regression-corpus",
+        "elmos-bug-seed-feedback-loop",
+        "elmos-canonical-type-algebra",
+        "elmos-certification-corpus-readiness-gate",
+        "elmos-cfg-equivalence-builder",
+        "elmos-closure-capture-lambda-semantics",
+        "elmos-collection-order-mutability-semantics",
+        "elmos-comments-directives-trivia-provenance",
+        "elmos-compiler-matrix-nversion-oracle",
+        "elmos-compiler-runtime-version-matrix",
+        "elmos-contract-invariant-inference",
+        "elmos-control-data-effect-equivalence-gate",
+        "elmos-corpus-drift-freshness-manager",
+        "elmos-coverage-guided-differential-fuzzer",
+        "elmos-cross-language-memory-model",
+        "elmos-cross-runtime-trace-alignment",
+        "elmos-database-message-runtime-lab",
+        "elmos-database-state-equivalence",
+        "elmos-datetime-timezone-calendar-semantics",
+        "elmos-decimal-money-arithmetic-semantics",
+        "elmos-deterministic-replay-oracle",
+        "elmos-dialect-version-detector",
+        "elmos-dialect-version-fixture-matrix",
+        "elmos-dynamic-language-shape-inference",
+        "elmos-enum-variant-sumtype-semantics",
+        "elmos-equivalent-mutant-classifier",
+        "elmos-exception-effect-type-semantics",
+        "elmos-exception-unwind-equivalence",
+        "elmos-failure-reducer-minimizer",
+        "elmos-ffi-marshalling-semantics",
+        "elmos-file-network-sideeffect-equivalence",
+        "elmos-fixture-corpus-governance",
+        "elmos-fixture-minimizer-deduplicator",
+        "elmos-flaky-nondeterminism-classifier",
+        "elmos-formal-assurance-gate",
+        "elmos-formal-semantics-contract",
+        "elmos-frontend-consistency-gate",
+        "elmos-generated-program-corpus",
+        "elmos-generic-template-specialization-modeler",
+        "elmos-generics-variance-erasure-semantics",
+        "elmos-golden-route-repository-fixtures",
+        "elmos-grammar-based-semantic-fuzzer",
+        "elmos-grammar-feature-coverage",
+        "elmos-grammar-spec-ingestor",
+        "elmos-hermetic-toolchain-image-builder",
+        "elmos-ibmi-native-runtime-lab",
+        "elmos-ieee754-floating-point-semantics",
+        "elmos-input-domain-partitioner",
+        "elmos-integer-ub-language-lawyer",
+        "elmos-interprocedural-callgraph-resolver",
+        "elmos-io-environment-observable-semantics",
+        "elmos-iterator-generator-coroutine-semantics",
+        "elmos-language-spec-conformance-mapper",
+        "elmos-legacy-business-pattern-corpus",
+        "elmos-lexical-layout-fidelity-engine",
+        "elmos-lifetime-ownership-borrow-semantics",
+        "elmos-llvm-ir-refinement-checker",
+        "elmos-lock-condition-semaphore-semantics",
+        "elmos-lossless-cst-builder",
+        "elmos-mainframe-native-runtime-lab",
+        "elmos-message-event-equivalence",
+        "elmos-metamorphic-transformation-tester",
+        "elmos-metaprogramming-runtime-codegen-semantics",
+        "elmos-mobile-native-runtime-lab",
+        "elmos-multi-oracle-differential-executor",
+        "elmos-native-ast-cross-checker",
+        "elmos-native-runtime-lab-evidence-attestor",
+        "elmos-native-ub-sanitizer-orchestrator",
+        "elmos-nominal-structural-subtyping-mapper",
+        "elmos-nullability-optionality-semantics",
+        "elmos-numeric-type-range-overflow",
+        "elmos-object-layout-vtable-semantics",
+        "elmos-observable-behavior-specification",
+        "elmos-os-arch-libc-matrix",
+        "elmos-overload-dispatch-resolver",
+        "elmos-parse-error-recovery-validator",
+        "elmos-performance-complexity-equivalence",
+        "elmos-pointer-layout-endianness-semantics",
+        "elmos-preprocessor-macro-expansion-modeler",
+        "elmos-program-dependence-graph-analyzer",
+        "elmos-proof-counterexample-replayer",
+        "elmos-property-based-cross-language-tester",
+        "elmos-public-api-binary-compatibility",
+        "elmos-public-fixture-license-provenance",
+        "elmos-refinement-range-contract-semantics",
+        "elmos-reflection-dynamic-dispatch-semantics",
+        "elmos-resource-lifetime-finalization",
+        "elmos-runtime-edge-semantics-gate",
+        "elmos-sap-abap-runtime-lab",
+        "elmos-scientific-hpc-runtime-lab",
+        "elmos-scope-resolution-engine",
+        "elmos-security-policy-equivalence",
+        "elmos-semantic-feature-coverage",
+        "elmos-semantic-golden-master-capture",
+        "elmos-semantic-mutation-testing",
+        "elmos-semantic-refinement-counterexample",
+        "elmos-semantic-stress-certification-gate",
+        "elmos-serialization-schema-type-semantics",
+        "elmos-side-effect-footprint-model",
+        "elmos-smt-equivalence-prover",
+        "elmos-source-roundtrip-preserver",
+        "elmos-sql-null-collation-isolation-semantics",
+        "elmos-ssa-dataflow-lowering",
+        "elmos-state-snapshot-equivalence",
+        "elmos-string-char-codepoint-semantics",
+        "elmos-symbol-table-builder",
+        "elmos-symbolic-execution-equivalence",
+        "elmos-text-encoding-collation-locale-semantics",
+        "elmos-thread-scheduler-determinism-lab",
+        "elmos-time-randomness-nondeterminism-semantics",
+        "elmos-translation-validation-planner",
+        "elmos-type-semantic-loss-gate",
+        "elmos-ui-interaction-equivalence",
+        "elmos-undefined-behavior-filter",
+        "elmos-verified-lowering-route",
+        "elmos-wasm-portable-semantics-oracle",
+        "elmos-windows-legacy-runtime-lab",
+    }
+)
+SEMANTIC_ASSURANCE_OWNER = {
+    "owner": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+    "owner_file": "compiled-contract.json",
+    "owner_field": "packageId",
+    "owner_value": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+    "owner_manifest": "docs/semantic-assurance-expansion/installed-manifest.json",
+}
+COLLISIONS = {
+    **dict(COLLISIONS),
+    **{
+        name: dict(SEMANTIC_ASSURANCE_OWNER)
+        for name in sorted(SEMANTIC_ASSURANCE_COLLISION_NAMES)
+    },
+}
+
+SEMANTIC_OWNER_MANIFEST_SHA256 = (
+    "3020d3a70410f5b81bdc02c2ded3504e1642813c6aa536d2901e1dded195aba4"
+)
+SEMANTIC_OWNER_ARCHIVE_SHA256 = (
+    "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60"
+)
+SEMANTIC_OWNER_DUAL_ROOT_TREE_SHA256 = (
+    "6f3828a53f70cc3ea7421588dc7fefa11e009e36e80b64b7c4c5863d3a16b9f4"
+)
+
 MAX_ARCHIVE_BYTES = 8 * 1024 * 1024
 MAX_ENTRIES = 2_000
 MAX_MEMBER_BYTES = 1024 * 1024
@@ -465,6 +628,33 @@ def _json(files: Mapping[str, ArchiveRecord], relative: str) -> Any:
         raise
     except (json.JSONDecodeError, TypeError, ValueError) as exc:
         raise IntegrationError(f"invalid JSON in {relative}: {exc}") from exc
+
+
+def _repository_json(
+    repository_root: Path,
+    relative: Path,
+    label: str,
+    *,
+    expected_sha256: str | None = None,
+) -> Mapping[str, Any]:
+    content = _read_file(
+        repository_root / relative,
+        label,
+        MAX_MEMBER_BYTES,
+    )
+    if expected_sha256 is not None and _sha(content) != expected_sha256:
+        raise IntegrationError(f"{label} digest differs from the pinned owner manifest")
+    try:
+        document: Any = json.loads(
+            content,
+            object_pairs_hook=_unique_pairs,
+            parse_constant=_bad_constant,
+        )
+    except IntegrationError:
+        raise
+    except (json.JSONDecodeError, TypeError, ValueError) as exc:
+        raise IntegrationError(f"invalid {label}: {exc}") from exc
+    return _mapping(document, label)
 
 
 def _mapping(value: Any, label: str) -> Mapping[str, Any]:
@@ -1034,6 +1224,39 @@ def _json_bytes(value: Any) -> bytes:
     ).encode("utf-8")
 
 
+def _owned_generated_file(label: str, content: bytes) -> bool:
+    try:
+        document: Any = json.loads(
+            content,
+            object_pairs_hook=_unique_pairs,
+            parse_constant=_bad_constant,
+        )
+    except (IntegrationError, json.JSONDecodeError, TypeError, ValueError):
+        return False
+    if not isinstance(document, Mapping):
+        return False
+    if label in {"docs catalog", "engine catalog"}:
+        package = document.get("package")
+        return (
+            document.get("schema_version") == "elmos.polyglot-semantic-assurance.compiled-catalog.v1"
+            and isinstance(package, Mapping)
+            and package.get("id") == PACKAGE
+            and package.get("version") == VERSION
+        )
+    return (
+        document.get("managed_by") == MANAGED_BY
+        and document.get("package_id") == PACKAGE
+        and (
+            (label == "collision ledger"
+             and document.get("schema_version")
+             == "elmos.polyglot-semantic-assurance.collision-ledger.v1")
+            or (label == "qualification receipt"
+                and document.get("schema_version")
+                == "elmos.polyglot-semantic-assurance.integration-receipt.v1")
+        )
+    )
+
+
 def _tree(root: Path) -> Mapping[str, bytes]:
     """Read a small installed tree without following links or special files."""
 
@@ -1042,6 +1265,81 @@ def _tree(root: Path) -> Mapping[str, bytes]:
         return _tree_from_fd(descriptor, "installed owner tree")
     finally:
         os.close(descriptor)
+
+
+def _semantic_owner_tree_digest(
+    repository_root: Path,
+    relative_root: Path,
+    installed_names: Sequence[str],
+) -> str:
+    digest = hashlib.sha256()
+    expected_files = frozenset({"SKILL.md", "agents/openai.yaml", "compiled-contract.json"})
+    for name in sorted(installed_names):
+        skill_root = repository_root / relative_root / name
+        tree = _tree(skill_root)
+        if frozenset(tree) != expected_files:
+            raise IntegrationError(f"semantic owner tree shape differs: {relative_root}/{name}")
+        for relative, content in sorted(tree.items()):
+            file_path = skill_root / relative
+            try:
+                metadata = file_path.lstat()
+            except OSError as exc:
+                raise IntegrationError(
+                    f"cannot inspect semantic owner file: {relative_root}/{name}/{relative}"
+                ) from exc
+            if not stat.S_ISREG(metadata.st_mode) or stat.S_IMODE(metadata.st_mode) != 0o644:
+                raise IntegrationError(
+                    f"semantic owner file mode differs: {relative_root}/{name}/{relative}"
+                )
+            relative_path = (PurePosixPath(name) / PurePosixPath(relative)).as_posix()
+            digest.update(relative_path.encode("utf-8"))
+            digest.update(b"\0")
+            digest.update(b"0644")
+            digest.update(b"\0")
+            digest.update(content)
+            digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def _validate_semantic_owner_manifest(repository_root: Path) -> frozenset[str]:
+    relative = Path("docs/semantic-assurance-expansion/installed-manifest.json")
+    document = _repository_json(
+        repository_root,
+        relative,
+        "semantic assurance owner manifest",
+        expected_sha256=SEMANTIC_OWNER_MANIFEST_SHA256,
+    )
+    if document.get("packageId") != "elmos-semantic-assurance-expansion-skills-v1.0.0":
+        raise IntegrationError("semantic assurance owner package identity differs")
+    if document.get("archiveSha256") != SEMANTIC_OWNER_ARCHIVE_SHA256:
+        raise IntegrationError("semantic assurance owner archive identity differs")
+    installed = document.get("installedNames")
+    if not isinstance(installed, list) or len(installed) != 132:
+        raise IntegrationError("semantic assurance owner installed-name manifest differs")
+    if any(not isinstance(name, str) or SAFE_NAME.fullmatch(name) is None for name in installed):
+        raise IntegrationError("semantic assurance owner installed-name manifest differs")
+    if len(set(installed)) != 132:
+        raise IntegrationError("semantic assurance owner installed-name manifest differs")
+    aliases = document.get("collisionAliases")
+    if aliases != {
+        "elmos-proof-cache-invalidation": "elmos-semantic-assurance-proof-cache-invalidation",
+        "elmos-proof-obligation-generator": "elmos-semantic-assurance-proof-obligation-generator",
+    }:
+        raise IntegrationError("semantic assurance owner collision aliases differ")
+    if document.get("dualRootTreeSha256") != SEMANTIC_OWNER_DUAL_ROOT_TREE_SHA256:
+        raise IntegrationError("semantic assurance owner dual-root digest differs")
+    expected_roots = {
+        WORKSPACE_RELATIVE.as_posix(): SEMANTIC_OWNER_DUAL_ROOT_TREE_SHA256,
+        RUNTIME_RELATIVE.as_posix(): SEMANTIC_OWNER_DUAL_ROOT_TREE_SHA256,
+    }
+    if document.get("dualRoots") != expected_roots:
+        raise IntegrationError("semantic assurance owner root digest map differs")
+    names = frozenset(installed)
+    for relative_root in (WORKSPACE_RELATIVE, RUNTIME_RELATIVE):
+        observed = _semantic_owner_tree_digest(repository_root, relative_root, tuple(names))
+        if observed != SEMANTIC_OWNER_DUAL_ROOT_TREE_SHA256:
+            raise IntegrationError(f"semantic assurance owner tree digest differs: {relative_root}")
+    return names
 
 
 def _head_tree(repository_root: Path, relative_root: Path) -> Mapping[str, bytes]:
@@ -1102,7 +1400,16 @@ def validate_collision_owners(repository_root: Path) -> Mapping[str, Any]:
     """Verify both roots keep the other packages' exact, equal owner trees."""
 
     verified: list[Mapping[str, Any]] = []
+    semantic_owner_names: frozenset[str] | None = None
     for name, owner in sorted(COLLISIONS.items()):
+        owner_manifest = owner.get("owner_manifest")
+        if owner_manifest is not None:
+            if owner_manifest != "docs/semantic-assurance-expansion/installed-manifest.json":
+                raise IntegrationError(f"unknown collision owner manifest: {name}")
+            if semantic_owner_names is None:
+                semantic_owner_names = _validate_semantic_owner_manifest(repository_root)
+            if name not in semantic_owner_names:
+                raise IntegrationError(f"collision owner is not installed under its manifest: {name}")
         roots = (
             WORKSPACE_RELATIVE / name,
             RUNTIME_RELATIVE / name,
@@ -1112,7 +1419,9 @@ def validate_collision_owners(repository_root: Path) -> Mapping[str, Any]:
         if workspace_tree != runtime_tree:
             raise IntegrationError(f"collision owner roots differ byte-for-byte: {name}")
         skill = workspace_tree.get("SKILL.md")
-        if skill is None or _sha(skill) != owner["skill_sha256"]:
+        if skill is None:
+            raise IntegrationError(f"collision owner SKILL.md is absent: {name}")
+        if owner_manifest is None and _sha(skill) != owner["skill_sha256"]:
             raise IntegrationError(f"collision owner SKILL.md identity differs: {name}")
         owner_file = owner.get("owner_file", "SKILL.md")
         owner_content = workspace_tree.get(owner_file)
@@ -1130,7 +1439,13 @@ def validate_collision_owners(repository_root: Path) -> Mapping[str, Any]:
                 raise IntegrationError(f"collision owner metadata differs: {name}")
         else:
             try:
-                document: Any = json.loads(owner_content)
+                document = json.loads(
+                    owner_content,
+                    object_pairs_hook=_unique_pairs,
+                    parse_constant=_bad_constant,
+                )
+            except IntegrationError:
+                raise
             except (json.JSONDecodeError, UnicodeDecodeError, TypeError, ValueError) as exc:
                 raise IntegrationError(
                     f"collision owner identity document is invalid: {name}"
@@ -1146,7 +1461,7 @@ def validate_collision_owners(repository_root: Path) -> Mapping[str, Any]:
         verified.append(
             {
                 "name": name, "owner": owner["owner"],
-                "skill_sha256": "sha256:" + owner["skill_sha256"],
+                "skill_sha256": "sha256:" + owner.get("skill_sha256", _sha(skill)),
                 "tree_files": len(workspace_tree), "dual_root_bytes_equal": True,
                 "worktree_mutated": False,
             }
@@ -2157,7 +2472,10 @@ def write_integration(repository_root: Path, archive_path: Path) -> PackageSnaps
         for label, stage_name, destination_path, content in generated:
             destination = PurePosixPath(destination_path.as_posix())
             prior = _snapshot_relative(repository_fd, destination, label)
-            if prior is not None and (prior[0] != "file" or prior[1] != content):
+            if prior is not None and (
+                prior[0] != "file"
+                or (prior[1] != content and not _owned_generated_file(label, prior[1]))
+            ):
                 raise IntegrationError(f"refusing to overwrite unowned {label}")
             generated_priors[destination] = prior
             stage = PurePosixPath("staged") / stage_name
@@ -2249,7 +2567,11 @@ def write_integration(repository_root: Path, archive_path: Path) -> PackageSnaps
             "qualification receipt",
         )
         if receipt_prior is not None and (
-            receipt_prior[0] != "file" or receipt_prior[1] != receipt_bytes
+            receipt_prior[0] != "file"
+            or (
+                receipt_prior[1] != receipt_bytes
+                and not _owned_generated_file("qualification receipt", receipt_prior[1])
+            )
         ):
             raise IntegrationError("refusing to overwrite unowned qualification receipt")
         receipt_stage = PurePosixPath("staged/receipt")
