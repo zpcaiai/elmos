@@ -196,6 +196,8 @@ jobs:
       - name: Bind OpenSSL 3 Ed25519 runtime
         run: |
           openssl_bin="/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl"
+          openssl_libssl="/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libssl.3.dylib"
+          openssl_libcrypto="/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libcrypto.3.dylib"
           openssl_opt_bin="/opt/homebrew/opt/openssl@3/bin/openssl"
           openssl_receipt="/opt/homebrew/Cellar/openssl@3/3.6.3/INSTALL_RECEIPT.json"
           image_os="${ImageOS:-UNSET}"
@@ -221,6 +223,24 @@ jobs:
           openssl_sha256="$(/usr/bin/shasum -a 256 "${openssl_bin}" | /usr/bin/awk '{print $1}')"
           printf 'OPENSSL3_RUNNER_RECEIPT image_os=%s image_version=%s stat=%s sha256=%s\n' \
             "${image_os}" "${image_version}" "${openssl_stat}" "${openssl_sha256}"
+          for component in \
+            "libssl:${openssl_libssl}" \
+            "libcrypto:${openssl_libcrypto}"; do
+            role="${component%%:*}"
+            component_path="${component#*:}"
+            test -f "${component_path}"
+            test ! -L "${component_path}"
+            test "$(python3.11 -I -B -c \
+              'import os, sys; print(os.path.realpath(sys.argv[1], strict=True))' \
+              "${component_path}")" = "${component_path}"
+            component_stat="$(/usr/bin/stat -f '%Lp:%u:%g:%l:%z' "${component_path}")"
+            component_sha256="$(/usr/bin/shasum -a 256 "${component_path}" | /usr/bin/awk '{print $1}')"
+            printf 'OPENSSL3_COMPONENT_RECEIPT role=%s path=%s stat=%s sha256=%s\n' \
+              "${role}" "${component_path}" "${component_stat}" "${component_sha256}"
+            /usr/bin/codesign --verify --strict --verbose=2 "${component_path}"
+            /usr/bin/codesign -d --verbose=4 "${component_path}" 2>&1
+          done
+          /usr/bin/otool -L "${openssl_bin}"
           test "${image_os}" = "macos15"
           test "${image_version}" = "20260727.0256.1"
           test "${openssl_stat}" = "555:501:80:1:878752"
@@ -406,6 +426,109 @@ jobs:
           test "${UV_PROJECT_ENVIRONMENT}" = \
             "${RUNNER_TEMP}/elmos-polyglot-route-venv"
           uv --directory engines/polyglot-route-engine sync --locked
+          # This receipt is diagnostic-only until every value is promoted to
+          # an immutable repository pin.  It cannot authorize or weaken any
+          # exact-toolchain check below.
+          uv --directory engines/polyglot-route-engine run --locked python - <<'PY'
+          import json
+          from pathlib import Path
+
+          from elmos_polyglot_route import toolchains
+
+          topology_identity = toolchains._discover_node_topology()
+          topology = topology_identity["topology"]
+          print(
+              "NODE26_TOPOLOGY_DIAGNOSTIC "
+              + json.dumps(topology_identity, sort_keys=True, separators=(",", ":"))
+          )
+          components = [
+              toolchains._node_file_binding(
+                  Path(path),
+                  "EXACT_TOOLCHAIN_NODE_COMPONENT_UNSAFE",
+              )
+              for path in topology["component_paths"]
+          ]
+          closure = toolchains._node_closure_identity(
+              {
+                  "schema_version": 1,
+                  "kind": "elmos.node26-homebrew-macho-closure",
+                  "install_root": str(toolchains._EXPECTED_NODE_ROOT),
+                  "discovery": {
+                      "tool": str(toolchains._EXPECTED_NODE_OTOOL),
+                      "commands": ["-L", "-D", "-l"],
+                      "system_tool_content_soundness": "NOT_RUN",
+                  },
+                  "components": sorted(
+                      components, key=lambda item: str(item["resolved_path"])
+                  ),
+                  "edges": topology["edges"],
+                  "system_edges": topology["system_edges"],
+                  "system_content_boundary": {
+                      "scope": "dyld-shared-cache-and-system-libraries",
+                      "status": "NOT_RUN",
+                  },
+              }
+          )
+          closure_summary = {
+              key: closure[key]
+              for key in (
+                  "sha256",
+                  "component_count",
+                  "edge_count",
+                  "system_edge_count",
+                  "bytes",
+                  "system_edge_sha256",
+              )
+          }
+          closure_summary["components"] = components
+          print(
+              "NODE26_CLOSURE_DIAGNOSTIC "
+              + json.dumps(closure_summary, sort_keys=True, separators=(",", ":"))
+          )
+          typescript = toolchains._typescript_compiler_closure()
+          print(
+              "TYPESCRIPT592_CLOSURE_DIAGNOSTIC "
+              + json.dumps(
+                  {
+                      "sha256": typescript["sha256"],
+                      "file_count": typescript["file_count"],
+                      "bytes": typescript["bytes"],
+                      "package_root": typescript["manifest"]["package_root"],
+                      "directories": typescript["manifest"]["directories"],
+                  },
+                  sort_keys=True,
+                  separators=(",", ":"),
+              )
+          )
+          PY
+          printf 'APPLE_ROUTE_HOST_DIAGNOSTIC xcode=%q sdk_version=%q sdk_path=%q\n' \
+            "$(/usr/bin/xcodebuild -version)" \
+            "$(/usr/bin/xcrun --sdk macosx --show-sdk-version)" \
+            "$(/usr/bin/xcrun --sdk macosx --show-sdk-path)"
+          for tool_name in clang clang++ swiftc swift; do
+            tool_path="$(/usr/bin/xcrun --find "${tool_name}")"
+            printf 'APPLE_ROUTE_TOOL_DIAGNOSTIC name=%s path=%s stat=%s sha256=%s\n' \
+              "${tool_name}" "${tool_path}" \
+              "$(/usr/bin/stat -f '%Lp:%u:%g:%l:%z' "${tool_path}")" \
+              "$(/usr/bin/shasum -a 256 "${tool_path}" | /usr/bin/awk '{print $1}')"
+            "${tool_path}" --version 2>&1
+          done
+          for system_tool in /usr/bin/sandbox-exec /usr/bin/codesign; do
+            printf 'APPLE_SYSTEM_TOOL_DIAGNOSTIC path=%s stat=%s sha256=%s\n' \
+              "${system_tool}" \
+              "$(/usr/bin/stat -f '%Lp:%u:%g:%l:%z' "${system_tool}")" \
+              "$(/usr/bin/shasum -a 256 "${system_tool}" | /usr/bin/awk '{print $1}')"
+            /usr/bin/codesign -d --verbose=4 "${system_tool}" 2>&1
+          done
+          /bin/ls -ld \
+            /Applications \
+            /Applications/Xcode.app \
+            /Applications/Xcode.app/Contents \
+            /Applications/Xcode.app/Contents/Developer \
+            /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs \
+            /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+          /usr/bin/readlink \
+            /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
           uv --directory engines/polyglot-route-engine run --locked pytest \
             "$GITHUB_WORKSPACE/tests/batch35/test_packed_replay_schema_closure.py"
           uv --directory engines/polyglot-route-engine run --locked pytest

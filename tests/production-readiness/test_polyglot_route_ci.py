@@ -33,7 +33,16 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             "os.path.realpath(sys.argv[1], strict=True)",
             frontend_job,
         )
-        self.assertEqual(frontend_job.count("python3.11 -I -B -c"), 3)
+        self.assertEqual(frontend_job.count("python3.11 -I -B -c"), 4)
+        self.assertEqual(frontend_job.count("OPENSSL3_COMPONENT_RECEIPT"), 1)
+        self.assertIn(
+            "/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libssl.3.dylib",
+            frontend_job,
+        )
+        self.assertIn(
+            "/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libcrypto.3.dylib",
+            frontend_job,
+        )
         self.assertNotIn("/usr/bin/realpath", frontend_job)
         self.assertIn('test "$(/usr/bin/uname -m)" = "arm64"', frontend_job)
         self.assertIn(
@@ -62,15 +71,15 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             ),
             2,
         )
-        self.assertEqual(frontend_job.count("/usr/bin/stat -f"), 2)
-        self.assertEqual(frontend_job.count("/usr/bin/shasum -a 256"), 2)
+        self.assertEqual(frontend_job.count("/usr/bin/stat -f"), 3)
+        self.assertEqual(frontend_job.count("/usr/bin/shasum -a 256"), 3)
         self.assertGreaterEqual(
             frontend_job.count(
                 "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
             ),
             2,
         )
-        self.assertEqual(frontend_job.count("/usr/bin/codesign --verify --strict"), 2)
+        self.assertEqual(frontend_job.count("/usr/bin/codesign --verify --strict"), 3)
         self.assertEqual(frontend_job.count("/usr/bin/mktemp -d"), 2)
         self.assertEqual(frontend_job.count("trap '/bin/rm -rf --"), 2)
         self.assertGreaterEqual(frontend_job.count("pkeyutl -sign"), 2)
