@@ -134,7 +134,9 @@ def validate_execution(sql: str, dialect: Dialect, dsn: str | None) -> tuple[str
 
 def _validate_postgres(sql: str, dsn: str) -> tuple[str, tuple[str, ...]]:
     try:
-        import psycopg2
+        import importlib
+
+        psycopg2 = importlib.import_module("psycopg2")
     except ImportError:
         return "FAILED", (
             "psycopg2-binary is not installed; install the [execution] extra to run real Postgres validation",
